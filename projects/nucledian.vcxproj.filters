@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\source\nucledian\engine\core\engine.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\glad.c" />
+    <ClCompile Include="..\source\nucledian\engine\graphics\graphics_system.cpp" />
+    <ClCompile Include="..\source\nucledian\main.cpp" />
+    <ClCompile Include="..\source\libs\imgui\imgui.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\libs\imgui\imgui_demo.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\libs\imgui\imgui_draw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\libs\imgui\imgui_impl_glfw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\libs\imgui\imgui_impl_sdl2.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\libs\imgui\imgui_tables.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\libs\imgui\imgui_widgets.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\source\nucledian\common.h" />
+    <ClInclude Include="..\source\nucledian\engine\core\engine.h" />
+    <ClInclude Include="..\source\nucledian\engine\core\engine_module.h" />
+    <ClInclude Include="..\source\nucledian\engine\core\engine_module_id.h" />
+    <ClInclude Include="..\source\nucledian\engine\core\engine_module_types.h" />
+    <ClInclude Include="..\source\nucledian\engine\core\is_engine_module.h" />
+    <ClInclude Include="..\source\nucledian\engine\core\module_event.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\graphics_system.h" />
+    <ClInclude Include="..\source\nucledian\types.h" />
+    <ClInclude Include="..\source\libs\imgui\imconfig.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\libs\imgui\imgui.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\libs\imgui\imgui_impl_glfw.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\libs\imgui\imgui_impl_sdl2.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\libs\imgui\imgui_internal.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\libs\imgui\imstb_rectpack.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\libs\imgui\imstb_textedit.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\libs\imgui\imstb_truetype.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\source\nucledian\engine\core\engine.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{c42709dc-1733-4134-b548-ee76270b89d3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

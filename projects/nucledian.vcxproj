@@ -11,12 +11,27 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\source\libs\imgui\imgui.cpp" />
+    <ClCompile Include="..\source\libs\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\source\libs\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\source\libs\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="..\source\libs\imgui\imgui_impl_sdl2.cpp" />
+    <ClCompile Include="..\source\libs\imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\source\libs\imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\source\nucledian\engine\core\engine.cpp" />
     <ClCompile Include="..\source\nucledian\engine\glad.c" />
     <ClCompile Include="..\source\nucledian\engine\graphics\graphics_system.cpp" />
     <ClCompile Include="..\source\nucledian\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\libs\imgui\imconfig.h" />
+    <ClInclude Include="..\source\libs\imgui\imgui.h" />
+    <ClInclude Include="..\source\libs\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="..\source\libs\imgui\imgui_impl_sdl2.h" />
+    <ClInclude Include="..\source\libs\imgui\imgui_internal.h" />
+    <ClInclude Include="..\source\libs\imgui\imstb_rectpack.h" />
+    <ClInclude Include="..\source\libs\imgui\imstb_textedit.h" />
+    <ClInclude Include="..\source\libs\imgui\imstb_truetype.h" />
     <ClInclude Include="..\source\nucledian\common.h" />
     <ClInclude Include="..\source\nucledian\engine\core\engine.h" />
     <ClInclude Include="..\source\nucledian\engine\core\engine_module.h" />
