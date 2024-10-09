@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include <config.h>
+
 #include <cstdlib>    // std::abort
 
 namespace nc
@@ -10,8 +12,10 @@ namespace nc
 //==============================================================================
 inline void NC_ERROR([[maybe_unused]]const char* msg = nullptr) noexcept
 {
+#ifdef NC_ASSERTS
   // TODO: log the error and dump callstack..
   std::abort();
+#endif
 }
 
 //==============================================================================
