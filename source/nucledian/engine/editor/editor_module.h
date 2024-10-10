@@ -12,6 +12,13 @@ namespace nc
   };
 
   struct ModuleEvent;
+  
+  class Grid {
+    double xOffset;
+    double yOffset;
+
+    // definition of the lines themeself
+  };
 
   class EditorSystem : public IEngineModule
   {
@@ -19,9 +26,14 @@ namespace nc
     static EngineModuleId get_module_id();
     void on_event(ModuleEvent& event) override;
 
+    void render_grid();
+    void render_map_2d();
+
   private:
     editorView view;
+    Grid grid;
   };
 
+  
   
 }
