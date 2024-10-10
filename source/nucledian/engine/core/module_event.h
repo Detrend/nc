@@ -21,6 +21,11 @@ namespace ModuleEventType
     loading_update,   // during loading
     render,
 
+    editor_update_2d, // top-down wiew in editor update
+    editor_update_3d, // camera in editor update
+    editor_render_2d, // 
+    editor_render_3d, //
+
     cleanup,          // at the end of a frame
 
     pre_terminate,

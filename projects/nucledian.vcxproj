@@ -62,6 +62,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\source\nucledian\engine\core\engine.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\editor\editor_module.cpp" />
     <ClCompile Include="..\source\nucledian\engine\glad.c" />
     <ClCompile Include="..\source\nucledian\engine\graphics\graphics_system.cpp" />
     <ClCompile Include="..\source\nucledian\main.cpp" />
@@ -123,6 +124,7 @@
     <ClInclude Include="..\source\nucledian\engine\core\engine_module_types.h" />
     <ClInclude Include="..\source\nucledian\engine\core\is_engine_module.h" />
     <ClInclude Include="..\source\nucledian\engine\core\module_event.h" />
+    <ClInclude Include="..\source\nucledian\engine\editor\editor_module.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\graphics_system.h" />
     <ClInclude Include="..\source\nucledian\types.h" />
   </ItemGroup>
