@@ -17,13 +17,17 @@ namespace nc
     f64 y;
   };
 
+  class WallDeff;
 
   class Sector
   {
     double floorHeight;
     double ceilingHeight;
 
-    // missing textures
+    // topTexture
+    // bottomTexture
+
+    std::vector<WallDef> walls;
   };
 
   class SideDef
@@ -38,7 +42,7 @@ namespace nc
     double offsetX;
     double offsetY;
 
-    Sector* sector; // sector we are pointing to, can be NULL
+    Sector& sector; // sector we are pointing to, can be NULL
   };
 
   // Definition of a wall, a line in a editor
@@ -48,9 +52,16 @@ namespace nc
     vertex_2d end;
     double height;
 
-    SideDef frontSideDef;
-    SideDef backSideDef;
+    SideDef& frontSideDef;
+    SideDef& backSideDef;
 
   };
 
+  class Map
+  {
+    std::vector<Sector> sectors;
+    std::vector<WallDef> walls;
+
+    //entities
+  };
 }
