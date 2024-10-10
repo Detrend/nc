@@ -127,6 +127,7 @@
     <ClInclude Include="..\source\nucledian\engine\editor\editor_module.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\graphics_system.h" />
     <ClInclude Include="..\source\nucledian\types.h" />
+    <ClInclude Include="map_info.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
