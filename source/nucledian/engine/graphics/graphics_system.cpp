@@ -7,6 +7,7 @@
 #include <engine/core/module_event.h>
 
 #include <engine/graphics/graphics_system.h>
+#include <engine/input/input_system.h>
 
 #include <SDL2/include/SDL.h>
 
@@ -84,12 +85,25 @@ void GraphicsSystem::update_window_and_pump_messages()
   SDL_Event event;
   while (SDL_PollEvent(&event))
   {
-    if (event.type == SDL_QUIT)
+    switch (event.type)
     {
-      get_engine().request_quit();
-    }
+      case SDL_QUIT:
+      {
+        get_engine().request_quit();
+        break;
+      }
 
-    // TODO: send the events to some listeners
+      case SDL_KEYDOWN:
+      case SDL_KEYUP:
+      case SDL_MOUSEBUTTONDOWN:
+      case SDL_MOUSEBUTTONUP:
+      case SDL_MOUSEWHEEL:
+      case SDL_MOUSEMOTION:
+      {
+        InputSystem::get().handle_app_event(event);
+        break;
+      }
+    }
   }
 }
 

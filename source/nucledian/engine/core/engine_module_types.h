@@ -13,6 +13,7 @@ namespace EngineModule
     graphics_system = 0,
     entity_system,
     resource_system,
+    input_system,
     // -- //
     count
   };

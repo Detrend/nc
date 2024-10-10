@@ -13,6 +13,7 @@ namespace nc
 
 struct ModuleEvent;
 class  IEngineModule;
+struct EventJournal;
 
 class Engine
 {
@@ -32,17 +33,37 @@ public:
   // probably introduce a quit reason enum as well
   void request_quit();
 
+  // Installs a new event journal and starts replaying from it
+  // from the next frame
+  void install_and_replay_event_journal(EventJournal&& journal);
+  void stop_event_journal();
+
+  // Might be a nullptr
+  void set_recording_journal(EventJournal* journal);
+
 private:
-  bool should_quit();
+  bool should_quit()             const;
+  bool event_journal_installed() const;
+  bool event_journal_active()    const;
+
+  // Handles the local state and sends appropriate
+  // module messages
+  void handle_journal_state_during_update();
 
 private:
   using ModuleArray  = std::array<std::unique_ptr<IEngineModule>, 8>;
   using ModuleVector = std::vector<IEngineModule*>;
+  using JournalSmart = std::unique_ptr<EventJournal>;
 
 private:
-  ModuleArray  m_modules;
-  ModuleVector m_module_init_order;
-  bool         m_should_quit = false;
+  ModuleArray   m_modules;
+  ModuleVector  m_module_init_order;
+  JournalSmart  m_journal;
+  EventJournal* m_recorded_journal;
+  bool          m_should_quit         : 1 = false;
+  bool          m_journal_installed   : 1 = false;
+  bool          m_journal_active      : 1 = false;
+  bool          m_journal_interrupted : 1 = false;
 };
 
 Engine& get_engine();

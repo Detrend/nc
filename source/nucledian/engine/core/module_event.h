@@ -21,6 +21,9 @@ namespace ModuleEventType
     loading_update,   // during loading
     render,
 
+    event_journal_installed,
+    event_journal_uninstalled,
+
     cleanup,          // at the end of a frame
 
     pre_terminate,
