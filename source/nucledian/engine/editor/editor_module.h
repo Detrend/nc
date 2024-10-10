@@ -5,6 +5,12 @@
 
 namespace nc
 {
+  enum editorView
+  {
+    view_2d,
+    view_3d
+  };
+
   struct ModuleEvent;
 
   class EditorSystem : public IEngineModule
@@ -17,9 +23,5 @@ namespace nc
     editorView view;
   };
 
-  enum editorView
-  {
-    view_2d,
-    view_3d
-  };
+  
 }
