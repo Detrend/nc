@@ -14,6 +14,12 @@ namespace nc
     void on_event(ModuleEvent& event) override;
 
   private:
+    editorView view;
+  };
 
+  enum editorView
+  {
+    view_2d,
+    view_3d
   };
 }

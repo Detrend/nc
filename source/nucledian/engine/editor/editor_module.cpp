@@ -17,19 +17,11 @@ namespace nc
   {
     switch (event.type)
     {
-    case ModuleEventType::editor_update_2d:
+    case ModuleEventType::editor_update:
     {
       break;
     }
-    case ModuleEventType::editor_update_3d:
-    {
-      break;
-    }
-    case ModuleEventType::editor_render_2d:
-    {
-      break;
-    }
-    case ModuleEventType::editor_render_3d:
+    case ModuleEventType::editor_render:
     {
       break;
     }
@@ -37,4 +29,5 @@ namespace nc
       break;
     }
   }
+  //===========================================================
 }
