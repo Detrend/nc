@@ -11,6 +11,10 @@
 #include <engine/graphics/graphics_system.h>
 #include <engine/input/input_system.h>
 
+#ifdef NC_PROFILING
+#include <benchmark/benchmark.h>
+#include <algorithm>
+#endif
 
 #include <ranges>
 #include <chrono>
@@ -43,8 +47,65 @@ Engine& get_engine()
 }
 
 //==============================================================================
-int init_engine_and_run_game([[maybe_unused]] const std::vector<std::string>& args)
+#ifdef NC_BENCHMARK
+static bool execute_benchmarks_if_required(const std::vector<std::string>& args)
 {
+  constexpr cstr BENCHMARK_ARG = "-benchmark";
+
+  auto benchmark_arg_it = std::find_if(
+    args.begin(),
+    args.end(),
+    [&](const std::string& str)
+    {
+      return str == BENCHMARK_ARG;
+    });
+
+  if (benchmark_arg_it == args.end())
+  {
+    // do not run benchmarks
+    return false;
+  }
+
+  // transform the array of remaining arguments from std::strings to an
+  // array of c-strings
+  std::vector<char*> c_str_args;
+  std::transform(
+    benchmark_arg_it+1,
+    args.end(),
+    std::back_inserter(c_str_args),
+    [&](const std::string& string)
+    {
+      return const_cast<char*>(string.c_str());
+    });
+
+  int    argc = static_cast<int>(c_str_args.size());
+  char** argv = c_str_args.data();
+
+  ::benchmark::Initialize(&argc, argv);
+  if (::benchmark::ReportUnrecognizedArguments(argc, argv))
+  {
+    // TODO: log out failure
+    return true;
+  }
+
+  ::benchmark::RunSpecifiedBenchmarks();
+  ::benchmark::Shutdown();
+  return true;
+}
+
+#endif
+
+//==============================================================================
+int init_engine_and_run_game([[maybe_unused]]const std::vector<std::string>& args)
+{
+  #ifdef NC_BENCHMARK
+  if (execute_benchmarks_if_required(args))
+  {
+    // only benchmark run, exit
+    return 0;
+  }
+  #endif
+
   // create instance of the engine
   g_engine = new Engine();
 

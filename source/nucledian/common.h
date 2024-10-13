@@ -30,5 +30,17 @@ inline void NC_ASSERT(T&& check, const char* msg = nullptr) noexcept
 
 }
 
+#if defined(_MSC_VER) && !defined(__clang__)
+#define NC_MSVC
+#elif defined(_MSC_VER)
+#define NC_CLANG
+#endif
+
 #define NC_TODO(_msg) __pragma(message ("TODO: " _msg))
+
+#ifdef NC_CLANG
+#define NC_FORCE_INLINE __attribute__((always_inline))
+#elif defined(NC_MSVC)
+#define NC_FORCE_INLINE __forceinline
+#endif
 

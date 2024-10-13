@@ -18,6 +18,11 @@
 #endif
 
 #if defined (NC_Profiling)
-#define NC_PROFILING
+#define NC_PROFILING // code profiling tools should be on
+#define NC_BENCHMARK // benchmarks should be compiled
+
+// Google benchmark library requires this in order to link.
+#pragma comment (lib, "Shlwapi.lib")
+#define BENCHMARK_STATIC_DEFINE
 #endif
 

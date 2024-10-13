@@ -6,12 +6,15 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nucledian", "projects\nucledian.vcxproj", "{245240D2-F36E-4D17-A894-341070A91AAC}"
 	ProjectSection(ProjectDependencies) = postProject
 		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68} = {81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}
+		{D488C38A-5417-3DB1-A9B5-446A8019CDCB} = {D488C38A-5417-3DB1-A9B5-446A8019CDCB}
 		{DA956FD3-E142-46F2-9DD5-C78BEBB56B7A} = {DA956FD3-E142-46F2-9DD5-C78BEBB56B7A}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sdl2", "projects\SDL.vcxproj", "{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SDL2main", "projects\SDLmain.vcxproj", "{DA956FD3-E142-46F2-9DD5-C78BEBB56B7A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "benchmark", "projects\benchmark.vcxproj", "{D488C38A-5417-3DB1-A9B5-446A8019CDCB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +38,9 @@ Global
 		{245240D2-F36E-4D17-A894-341070A91AAC}.Deploy|x86.Build.0 = Deploy|x64
 		{245240D2-F36E-4D17-A894-341070A91AAC}.Profiling|x64.ActiveCfg = Profiling|x64
 		{245240D2-F36E-4D17-A894-341070A91AAC}.Profiling|x64.Build.0 = Profiling|x64
-		{245240D2-F36E-4D17-A894-341070A91AAC}.Profiling|x86.ActiveCfg = Profiling|x64
-		{245240D2-F36E-4D17-A894-341070A91AAC}.Profiling|x86.Build.0 = Profiling|x64
-		{245240D2-F36E-4D17-A894-341070A91AAC}.Release|x64.ActiveCfg = Debug|x64
-		{245240D2-F36E-4D17-A894-341070A91AAC}.Release|x64.Build.0 = Debug|x64
+		{245240D2-F36E-4D17-A894-341070A91AAC}.Profiling|x86.ActiveCfg = Release|x64
+		{245240D2-F36E-4D17-A894-341070A91AAC}.Release|x64.ActiveCfg = Release|x64
+		{245240D2-F36E-4D17-A894-341070A91AAC}.Release|x64.Build.0 = Release|x64
 		{245240D2-F36E-4D17-A894-341070A91AAC}.Release|x86.ActiveCfg = Release|x64
 		{245240D2-F36E-4D17-A894-341070A91AAC}.Release|x86.Build.0 = Release|x64
 		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}.Debug|x64.ActiveCfg = Debug|x64
@@ -73,6 +75,22 @@ Global
 		{DA956FD3-E142-46F2-9DD5-C78BEBB56B7A}.Release|x64.Build.0 = Release|x64
 		{DA956FD3-E142-46F2-9DD5-C78BEBB56B7A}.Release|x86.ActiveCfg = Release|x64
 		{DA956FD3-E142-46F2-9DD5-C78BEBB56B7A}.Release|x86.Build.0 = Release|x64
+		{D488C38A-5417-3DB1-A9B5-446A8019CDCB}.Debug|x64.ActiveCfg = Profiling|x64
+		{D488C38A-5417-3DB1-A9B5-446A8019CDCB}.Debug|x64.Build.0 = Profiling|x64
+		{D488C38A-5417-3DB1-A9B5-446A8019CDCB}.Debug|x86.ActiveCfg = Debug|x64
+		{D488C38A-5417-3DB1-A9B5-446A8019CDCB}.Debug|x86.Build.0 = Debug|x64
+		{D488C38A-5417-3DB1-A9B5-446A8019CDCB}.Deploy|x64.ActiveCfg = Profiling|x64
+		{D488C38A-5417-3DB1-A9B5-446A8019CDCB}.Deploy|x64.Build.0 = Profiling|x64
+		{D488C38A-5417-3DB1-A9B5-446A8019CDCB}.Deploy|x86.ActiveCfg = Debug|x64
+		{D488C38A-5417-3DB1-A9B5-446A8019CDCB}.Deploy|x86.Build.0 = Debug|x64
+		{D488C38A-5417-3DB1-A9B5-446A8019CDCB}.Profiling|x64.ActiveCfg = Profiling|x64
+		{D488C38A-5417-3DB1-A9B5-446A8019CDCB}.Profiling|x64.Build.0 = Profiling|x64
+		{D488C38A-5417-3DB1-A9B5-446A8019CDCB}.Profiling|x86.ActiveCfg = Debug|x64
+		{D488C38A-5417-3DB1-A9B5-446A8019CDCB}.Profiling|x86.Build.0 = Debug|x64
+		{D488C38A-5417-3DB1-A9B5-446A8019CDCB}.Release|x64.ActiveCfg = Profiling|x64
+		{D488C38A-5417-3DB1-A9B5-446A8019CDCB}.Release|x64.Build.0 = Profiling|x64
+		{D488C38A-5417-3DB1-A9B5-446A8019CDCB}.Release|x86.ActiveCfg = Release|x64
+		{D488C38A-5417-3DB1-A9B5-446A8019CDCB}.Release|x86.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
