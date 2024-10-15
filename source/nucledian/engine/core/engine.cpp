@@ -8,6 +8,7 @@
 #include <engine/core/engine_module_types.h>
 
 #include <engine/graphics/graphics_system.h>
+#include <engine/editor/editor_module.h>
 
 #include <ranges>
 
@@ -79,7 +80,14 @@ bool Engine::init()
   }
   m_module_init_order.push_back(graphics.get());
   m_modules[graphics_system] = std::move(graphics);
-  
+
+  auto editor = std::make_unique<EditorSystem>();
+  if (editor->init())
+  {
+    m_module_init_order.push_back(editor.get());
+    m_modules[editor_system] = std::move(editor);
+  }
+
   return true;
 }
 

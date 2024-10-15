@@ -31,9 +31,23 @@ namespace nc
     {
       break;
     }
+    case ModuleEventType::terminate:
+    {
+      break;
+    }
     default:
       break;
     }
+  }
+
+  EditorSystem::~EditorSystem()
+  {
+    
+  }
+
+  bool EditorSystem::init()
+  {
+    return true;
   }
 
   //===========================================================
@@ -61,6 +75,12 @@ namespace nc
 
       i += 4;
     }
+
+    // bind to VBO
+  }
+
+  Grid::~Grid()
+  {
   }
 
   //===========================================================

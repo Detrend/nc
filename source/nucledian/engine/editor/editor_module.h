@@ -24,6 +24,7 @@ namespace nc
   public:
     void init();
     void render_grid(f64 xOffset, f64 yOffset);
+    ~Grid();
 
   private:  
     std::vector<vertex_3d> points;
@@ -37,7 +38,9 @@ namespace nc
   public:
     static EngineModuleId get_module_id();
     void on_event(ModuleEvent& event) override;
+    ~EditorSystem();
 
+    bool init();
     
     void render_grid();
     void render_map_2d();
