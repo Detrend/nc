@@ -6,6 +6,9 @@
 
 #include <vector>
 
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_sdl2.h>
+
 namespace nc
 {
   //=========================================================
