@@ -1,6 +1,8 @@
 // Project Nucledian Source File
 #pragma once
 
+#include <types.h>
+
 #include <engine/core/engine_module.h>
 #include <engine/core/engine_module_id.h>
 
@@ -22,10 +24,12 @@ public:
 
 private:
   void terminate();
+  void render();
 
 private:
   SDL_Window* m_window     = nullptr;
   void*       m_gl_context = nullptr;
+  u32         m_vao        = 0;
 };
 
 }

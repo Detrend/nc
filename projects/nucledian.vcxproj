@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\source\libs\glad\glad.c" />
     <ClCompile Include="..\source\libs\imgui\imgui.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">true</ExcludedFromBuild>
@@ -63,9 +64,10 @@
     </ClCompile>
     <ClCompile Include="..\source\nucledian\aabb.cpp" />
     <ClCompile Include="..\source\nucledian\engine\core\engine.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\glad.c" />
     <ClCompile Include="..\source\nucledian\engine\graphics\graphics_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\input\input_system.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\map\map_system.cpp" />
+    <ClCompile Include="..\source\nucledian\intersect.cpp" />
     <ClCompile Include="..\source\nucledian\main.cpp" />
     <ClCompile Include="..\source\nucledian\vector_maths.cpp" />
     <ClCompile Include="..\source\nucledian\vector_maths_non_sse.cpp" />
@@ -74,6 +76,8 @@
     <ClCompile Include="..\source\nucledian\vec.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\source\libs\glad\glad.h" />
+    <ClInclude Include="..\source\libs\glad\khrplatform.h" />
     <ClInclude Include="..\source\libs\imgui\imconfig.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">true</ExcludedFromBuild>
