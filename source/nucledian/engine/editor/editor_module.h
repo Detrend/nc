@@ -5,6 +5,9 @@
 
 #include <engine/editor/map_info.h>
 
+#include <SDL.h>
+#include <SDL_opengl.h>
+
 namespace nc
 {
   const f64 GRID_SIZE = 0.25;
@@ -25,6 +28,8 @@ namespace nc
   private:  
     std::vector<vertex_3d> points;
     // definition of the lines themeself
+
+    GLuint vertex_buffer;
   };
 
   class EditorSystem : public IEngineModule

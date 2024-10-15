@@ -6,9 +6,6 @@
 
 #include <vector>
 
-#include <SDL.h>
-#include <SDL_opengl.h>
-
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_sdl2.h>
 #include <imgui/imgui_impl_opengl3.h>
@@ -52,7 +49,7 @@ namespace nc
 
   void Grid::init()
   {
-    points.resize((100 * 4 + 1) * 2);
+    points.resize((100 + 1) * 2 * 2);
 
     size_t i = 0;
     for (f64 x = -50; x <= 50 + GRID_SIZE / 2; x += GRID_SIZE)
