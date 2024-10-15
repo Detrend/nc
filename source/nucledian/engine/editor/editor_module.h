@@ -3,8 +3,12 @@
 #include <engine/core/engine_module.h>
 #include <engine/core/engine_module_id.h>
 
+#include <engine/editor/map_info.h>
+
 namespace nc
 {
+  const f64 GRID_SIZE = 0.25;
+
   enum editorView
   {
     view_2d,
@@ -14,9 +18,12 @@ namespace nc
   struct ModuleEvent;
   
   class Grid {
-    double xOffset;
-    double yOffset;
+  public:
+    void init();
+    void render_grid(f64 xOffset, f64 yOffset);
 
+  private:  
+    std::vector<vertex_3d> points;
     // definition of the lines themeself
   };
 
@@ -30,8 +37,26 @@ namespace nc
     void render_map_2d();
 
   private:
+
+    // mouse checkers for manipulating with drawing
+
+    vertex_2d getMousePos();
+    vertex_2d getPrevMousePos();
+    vertex_2d getMouseShift();
+    vertex_2d applyMouseShift();
+
+    //
+
     editorView view;
     Grid grid;
+
+    //
+    
+    vertex_2d prevMousePos;
+    vertex_2d curMousePos;
+    
+    double xOffset;
+    double yOffset;
   };
 
   
