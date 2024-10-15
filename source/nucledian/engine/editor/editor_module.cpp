@@ -6,8 +6,12 @@
 
 #include <vector>
 
+#include <SDL.h>
+#include <SDL_opengl.h>
+
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_sdl2.h>
+#include <imgui/imgui_impl_opengl3.h>
 
 namespace nc
 {
