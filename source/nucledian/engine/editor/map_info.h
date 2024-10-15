@@ -10,11 +10,30 @@ namespace nc
     f64 x;
     f64 y;
     f64 z;
+
+    vertex_3d(f64 x, f64 y, f64 z) {
+      this->x = x;
+      this->y = y;
+      this->z = z;
+    }
   };
 
   struct vertex_2d {
     f64 x;
     f64 y;
+
+    vertex_2d(f64 x, f64 y) {
+      this->x = x;
+      this->y = y;
+    }
+
+    vertex_2d operator+(vertex_2d const& other) {
+      return vertex_2d(this->x + other.x, this->y + other.y);
+    }
+
+    vertex_2d operator-(vertex_2d const& other) {
+      return vertex_2d(this->x - other.x, this->y - other.y);
+    }
   };
 
   class WallDeff;
