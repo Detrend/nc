@@ -33,10 +33,19 @@ namespace nc
     static EngineModuleId get_module_id();
     void on_event(ModuleEvent& event) override;
 
+    
     void render_grid();
     void render_map_2d();
 
+    void destroy();
+
   private:
+    // imgui skeleton
+    void draw_ui();
+    void draw_mode_select_ui();
+    void draw_line_mod_ui();
+    void draw_sector_mod_ui();
+    void draw_texture_select_ui();
 
     // mouse checkers for manipulating with drawing
 
