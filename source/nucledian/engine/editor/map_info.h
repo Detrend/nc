@@ -7,9 +7,9 @@
 namespace nc
 {
   struct vertex_3d {
-    f64 x;
-    f64 y;
-    f64 z;
+    f32 x;
+    f32 y;
+    f32 z;
 
     vertex_3d() {
       x = 0;
@@ -17,7 +17,7 @@ namespace nc
       z = 0;
     }
 
-    vertex_3d(f64 x, f64 y, f64 z) {
+    vertex_3d(f32 x, f32 y, f32 z) {
       this->x = x;
       this->y = y;
       this->z = z;
@@ -25,15 +25,15 @@ namespace nc
   };
 
   struct vertex_2d {
-    f64 x;
-    f64 y;
+    f32 x;
+    f32 y;
 
     vertex_2d() {
       x = 0;
       y = 0;
     }
 
-    vertex_2d(f64 x, f64 y) {
+    vertex_2d(f32 x, f32 y) {
       this->x = x;
       this->y = y;
     }

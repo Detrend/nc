@@ -81,8 +81,11 @@ bool Engine::init()
   m_module_init_order.push_back(graphics.get());
   m_modules[graphics_system] = std::move(graphics);
 
+  // this is an ugly hack
+  auto g = (GraphicsSystem*) m_modules[graphics_system].get();
+
   auto editor = std::make_unique<EditorSystem>();
-  if (editor->init())
+  if (editor->init(g->get_window(), g->get_gl_context()))
   {
     m_module_init_order.push_back(editor.get());
     m_modules[editor_system] = std::move(editor);

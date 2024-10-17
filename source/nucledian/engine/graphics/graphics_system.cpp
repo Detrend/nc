@@ -93,6 +93,16 @@ void GraphicsSystem::update_window_and_pump_messages()
   }
 }
 
+SDL_Window* GraphicsSystem::get_window()
+{
+    return m_window;
+}
+
+void* GraphicsSystem::get_gl_context()
+{
+  return m_gl_context;
+}
+
 //==============================================================================
 void GraphicsSystem::terminate()
 {

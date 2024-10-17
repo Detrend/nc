@@ -20,6 +20,9 @@ public:
 
   void update_window_and_pump_messages();
 
+  SDL_Window* get_window();
+  void* get_gl_context();
+
 private:
   void terminate();
 
