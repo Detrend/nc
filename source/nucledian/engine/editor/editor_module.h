@@ -1,19 +1,19 @@
 #pragma once
 
+#include <glad/glad.h>#
+
 #include <engine/core/engine_module.h>
 #include <engine/core/engine_module_id.h>
 
 #include <engine/editor/map_info.h>
 
 #include <imgui/imgui.h>
-#include <imgui/imgui_impl_sdl2.h>
-#include <imgui/imgui_impl_opengl3.h>
+//#include <imgui/imgui_impl_sdl2.h>
+//#include <imgui/imgui_impl_opengl3.h>
 
 #include <SDL.h>
 
 #include <SDL_opengl.h>
-//#define GL_GLEXT_PROTOTYPES
-
 #include <SDL_opengl_glext.h>
 
 
@@ -48,7 +48,7 @@ namespace nc
   class EditorSystem : public IEngineModule
   {
   public:
-    EditorSystem();
+    EditorSystem() : io(* new ImGuiIO()) {}
     static EngineModuleId get_module_id();  
     void on_event(ModuleEvent& event) override;
     ~EditorSystem();
@@ -89,6 +89,9 @@ namespace nc
     
     double xOffset;
     double yOffset;
+
+    SDL_Window* window;
+    ImGuiIO& io;
   };
 
   

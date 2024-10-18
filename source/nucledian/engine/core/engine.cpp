@@ -108,6 +108,15 @@ void Engine::run()
       .type = ModuleEventType::game_update,
     });
 
+    // editor
+    this->send_event(ModuleEvent{
+      .type = ModuleEventType::editor_update
+    });
+
+    this->send_event(ModuleEvent{
+      .type = ModuleEventType::editor_render
+    });
+
     // cleanup
     this->send_event(ModuleEvent
     {

@@ -6,24 +6,20 @@
 
 #include <vector>
 
-#include <imgui/imgui.h>
+// #include <imgui/imgui.h>
 #include <imgui/imgui_impl_sdl2.h>
 #include <imgui/imgui_impl_opengl3.h>
 
-// #define GL_GLEXT_PROTOTYPES
-#include <gl/GL.h>
-#include <gl/GLU.h>
-
 #include <SDL.h>
 #include <SDL_opengl.h>
-// #include <SDL_opengl_glext.h>
 
 
 namespace nc
 {
-  EditorSystem::EditorSystem()
-  {
-  }
+  //EditorSystem::EditorSystem()
+  //{
+  //  this->io = ImGui::GetIO();
+  //}
   //=========================================================
   EngineModuleId EditorSystem::get_module_id()
   {
@@ -41,16 +37,14 @@ namespace nc
     }
     case ModuleEventType::editor_update:
     {
-      
+      draw_ui();
       break;
     }
     case ModuleEventType::editor_render:
     {
-      draw_ui();
-      break;
-    }
-    case ModuleEventType::cleanup:
-    {
+      ImGui::Render();
+      ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+      SDL_GL_SwapWindow(window);
       break;
     }
     case ModuleEventType::terminate:
@@ -70,13 +64,14 @@ namespace nc
 
   bool EditorSystem::init(SDL_Window* window, void* gl_context)
   {
-    glOrtho(64, 64, 48, 48, -10, 10);
+    // glOrtho(64, 64, 48, 48, -10, 10);
+    
 
     grid.init();
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
+    io = ImGui::GetIO();
 
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -86,11 +81,31 @@ namespace nc
     ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
     ImGui_ImplOpenGL3_Init("#version 330");
 
+    this->window = window;
+
     return true;
   }
 
   void EditorSystem::draw_ui()
   {
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
+    ImGui::NewFrame();
+    [[maybe_unused]] float x = ImGui::GetWindowWidth();
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::SetNextWindowSize(ImVec2(ImGui::GetWindowWidth(), 50.0f));
+    ImGui::Begin("TEST");
+    
+    ImGui::Text("Hello");
+    ImGui::Button("label", ImVec2(20, 20));
+    ImGui::End();
+
+    ImGui::SetNextWindowPos(ImVec2(0, 50.0f));
+    ImGui::SetNextWindowSize(ImVec2(ImGui::GetWindowWidth(), 50.0f));
+    ImGui::Begin("TEST2");
+
+    ImGui::Text("Hello 2 ");
+    ImGui::End();
   }
 
   void EditorSystem::terminate_imgui()
