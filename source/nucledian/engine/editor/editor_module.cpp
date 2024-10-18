@@ -65,7 +65,7 @@ namespace nc
   bool EditorSystem::init(SDL_Window* window, void* gl_context)
   {
     // glOrtho(64, 64, 48, 48, -10, 10);
-    
+    gladLoadGLLoader(SDL_GL_GetProcAddress);
 
     grid.init();
 
@@ -141,9 +141,9 @@ namespace nc
     }
 
     // bind to VBO
-    //glGenBuffers(1, &vertex_buffer);
-    //glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * points.size(), &points.front(), GL_STATIC_DRAW);
+    glGenBuffers(1, &vertex_buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * points.size(), &points.front(), GL_STATIC_DRAW);
 
   }
 
