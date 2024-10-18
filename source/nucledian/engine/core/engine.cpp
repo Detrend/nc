@@ -11,6 +11,9 @@
 #include <engine/graphics/graphics_system.h>
 #include <engine/input/input_system.h>
 
+#include <engine/map/map_system.h>
+#include <vec.h>
+
 #ifdef NC_PROFILING
 #include <benchmark/benchmark.h>
 #include <algorithm>
@@ -166,6 +169,8 @@ bool Engine::init()
   INIT_MODULE(InputSystem);
 
   #undef INIT_MODULE
+
+  this->build_map_and_sectors();
   
   return true;
 }
@@ -265,6 +270,80 @@ void Engine::terminate()
     NC_ASSERT(module);
     module->on_event(terminate_event);
   }
+}
+
+//==============================================================================
+static void test_make_sector(
+  const std::vector<u16>&                     points,
+  std::vector<map_building::SectorBuildData>& out)
+{
+  auto wall_port = WallPortableData
+  {
+    .texture_id = 0,
+    .texture_offset_x = 0,
+    .texture_offset_y = 0
+  };
+
+  auto sector_port = SectorPortableData
+  {
+    .floor_texture_id = 1,
+    .ceil_texture_id  = 0,
+    .floor_height     = 0,
+    .ceil_height      = 13,
+  };
+
+  std::vector<map_building::WallBuildData> walls;
+  for (auto& p : points)
+  {
+    walls.push_back(map_building::WallBuildData
+    {
+      .point_index = p,
+      .port = wall_port,
+    });
+  }
+  out.push_back(map_building::SectorBuildData
+  {
+    .points = std::move(walls),
+    .portable = sector_port,
+  });
+}
+
+//==============================================================================
+void Engine::build_map_and_sectors()
+{
+  m_map = std::make_unique<MapSectors>();
+
+  std::vector<vec2> points;
+
+  points.push_back(vec2{-0.5f,  0.0f});
+  points.push_back(vec2{-0.5f, -0.5f});
+  points.push_back(vec2{ 0.0f,  0.0f});
+  points.push_back(vec2{ 0.6f,  0.0f});
+  points.push_back(vec2{ 0.8f,  0.8f});
+
+  points.push_back(vec2{ 0.0f, -0.6f});
+  points.push_back(vec2{ 0.6f, -0.6f});
+
+  points.push_back(vec2{ 0.8f, -0.1f});     // 7
+
+  points.push_back(vec2{-0.9f,  0.2f});     // 8
+  points.push_back(vec2{-0.9f, -0.2f});     // 9
+
+  std::vector<map_building::SectorBuildData> sectors;
+
+  test_make_sector({0, 1, 2, 3, 4}, sectors);
+  test_make_sector({2, 3, 6, 5}, sectors);
+  test_make_sector({3, 4, 7}, sectors);
+  test_make_sector({0, 1, 9, 8}, sectors);
+
+  map_building::build_map(points, sectors, *m_map);
+}
+
+//==============================================================================
+MapSectors& Engine::get_map()
+{
+  NC_ASSERT(m_map);
+  return *m_map;
 }
 
 //==============================================================================

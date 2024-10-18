@@ -12,5 +12,7 @@ bool segment_segment_2d(vec2 start_a, vec2 end_a, vec2 start_b, vec2 end_b, f32&
 
 bool aabb_aabb_2d(const aabb2& a, const aabb2& b);
 
+bool point_triangle(vec2 point, vec2 a, vec2 b, vec2 c);
+
 }
 

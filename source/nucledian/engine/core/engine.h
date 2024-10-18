@@ -14,6 +14,7 @@ namespace nc
 struct ModuleEvent;
 class  IEngineModule;
 struct EventJournal;
+struct MapSectors;
 
 class Engine
 {
@@ -28,6 +29,10 @@ public:
   bool init();
   void run();
   void terminate();
+
+  void build_map_and_sectors();
+
+  MapSectors& get_map();
 
   // TODO: if we use this in multiple places then
   // probably introduce a quit reason enum as well
@@ -64,6 +69,8 @@ private:
   bool          m_journal_installed   : 1 = false;
   bool          m_journal_active      : 1 = false;
   bool          m_journal_interrupted : 1 = false;
+
+  std::unique_ptr<MapSectors> m_map = nullptr;
 };
 
 Engine& get_engine();

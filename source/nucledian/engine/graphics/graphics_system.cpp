@@ -9,6 +9,9 @@
 #include <engine/graphics/graphics_system.h>
 #include <engine/input/input_system.h>
 
+#include <engine/map/map_system.h>
+#include <intersect.h>
+
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
 
@@ -16,6 +19,28 @@
 
 namespace nc
 {
+
+constexpr cstr FRAGMENT_FUCKER = R"ABC(
+#version 430 core
+out vec4 FragColor;
+
+layout(location = 0) uniform vec3 u_color;
+
+void main()
+{
+  FragColor = vec4(u_color, 1.0f);
+} 
+)ABC";
+
+constexpr cstr VERTEX_FUCKER = R"ABC(
+#version 430 core
+layout (location = 0) in vec3 aPos;
+
+void main()
+{
+  gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+}
+)ABC";
 
 //==============================================================================
 EngineModuleId GraphicsSystem::get_module_id()
@@ -25,9 +50,14 @@ EngineModuleId GraphicsSystem::get_module_id()
 
 //==============================================================================
 static void APIENTRY gl_debug_message(
-  GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum /*severity*/,
+  GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum severity,
   GLsizei /*length*/, const GLchar* message, const void* /*userParam*/)
 {
+  if (severity == GL_DEBUG_SEVERITY_LOW || severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+  {
+    return;
+  }
+
   std::cout << "GL Debug Message: " << message << std::endl;
 }
 
@@ -85,6 +115,8 @@ bool GraphicsSystem::init()
   glGenVertexArrays(1, &m_vao);
   glBindVertexArray(m_vao);
 
+  this->compile_the_retarded_shaders();
+
   return true;
 }
 
@@ -136,6 +168,39 @@ void GraphicsSystem::update_window_and_pump_messages()
 }
 
 //==============================================================================
+void GraphicsSystem::push_line(
+  const vec2& from,
+  const vec2& to,
+  const vec3& col)
+{
+  m_primitives.push_back(Primitive
+  {
+  .type = PrimitiveType::LineType,
+  .line = Line
+  {
+    .from  = from,
+    .to    = to,
+    .color = col,
+  }});
+}
+
+//==============================================================================
+void GraphicsSystem::push_triangle(const vec2& a, const vec2& b, const vec2& c, const vec3& col)
+{
+  m_primitives.push_back(Primitive
+  {
+    .type = PrimitiveType::TriangleType,
+    .triangle = Triangle
+    {
+      .a = a,
+      .b = b,
+      .c = c,
+      .color = col
+    }
+  });
+}
+
+//==============================================================================
 void GraphicsSystem::terminate()
 {
   SDL_GL_DeleteContext(m_gl_context);
@@ -155,7 +220,255 @@ void GraphicsSystem::render()
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  this->render_map();
+
   SDL_GL_SwapWindow(m_window);
+}
+
+//==============================================================================
+void GraphicsSystem::render_map()
+{
+  glUseProgram(m_funckin_gpu_program);
+
+  auto& map = get_engine().get_map();
+
+  int width = 0, height = 0;
+  SDL_GetWindowSize(m_window, &width, &height);
+
+  int x = 0, y = 0;
+  SDL_GetMouseState(&x, &y);
+
+  vec2 sz = vec2{(f32)width, (f32)height};
+  vec2 mouse_norm = ((vec2{(f32)x, (f32)y} / sz) - vec2{0.5f}) * vec2{2.0f, -2.0f};
+
+  s32 point_sector = -1;
+  // find the sector we are pointing at
+  for (u16 i = 0; i < map.sectors.size(); ++i)
+  {
+    auto&& sector = map.sectors[i];
+    auto& repr = sector.repr;
+    const s32 wall_count = repr.last_wall - repr.first_wall;
+    NC_ASSERT(wall_count >= 0);
+
+    if (wall_count < 3)
+    {
+      continue;
+    }
+
+    const auto& first_wall = map.walls[repr.first_wall];
+
+    for (WallID index = 1; index < wall_count; ++index)
+    {
+      WallID next_index = (index+1) % wall_count;
+      WallID index_in_arr = repr.first_wall + index;
+      WallID next_in_arr  = repr.first_wall + next_index;
+      NC_ASSERT(index_in_arr < map.walls.size());
+      NC_ASSERT(next_in_arr  < map.walls.size());
+
+      const auto& wall1 = map.walls[index_in_arr];
+      const auto& wall2 = map.walls[next_in_arr];
+      this->render_triangle(Triangle
+      {
+        .a = first_wall.pos,
+        .b = wall1.pos,
+        .c = wall2.pos,
+        .color = vec3{0.5f},
+      });
+
+      if (intersect::point_triangle(mouse_norm, first_wall.pos, wall1.pos, wall2.pos))
+      {
+        point_sector = i;
+        break;
+      }
+    }
+
+    if (point_sector >= 0)
+    {
+      break;
+    }
+  }
+
+  // first, render the floors of the sectors with gray
+  for (u16 i = 0; i < map.sectors.size(); ++i)
+  {
+    auto&& sector = map.sectors[i];
+    auto& repr = sector.repr;
+    const s32 wall_count = repr.last_wall - repr.first_wall;
+    NC_ASSERT(wall_count >= 0);
+
+    if (wall_count < 3)
+    {
+      continue;
+    }
+
+    const bool pointed_at = i == point_sector;
+
+    const auto& first_wall = map.walls[repr.first_wall];
+
+    for (WallID index = 1; index < wall_count; ++index)
+    {
+      WallID next_index = (index+1) % wall_count;
+      WallID index_in_arr = repr.first_wall + index;
+      WallID next_in_arr  = repr.first_wall + next_index;
+      NC_ASSERT(index_in_arr < map.walls.size());
+      NC_ASSERT(next_in_arr  < map.walls.size());
+
+      const auto& wall1 = map.walls[index_in_arr];
+      const auto& wall2 = map.walls[next_in_arr];
+      this->render_triangle(Triangle
+      {
+        .a = first_wall.pos,
+        .b = wall1.pos,
+        .c = wall2.pos,
+        .color = pointed_at ? vec3{0.75f} : vec3{0.5f},
+      });
+    }
+  }
+
+  // then render the walls with white
+  for (auto&& sector : map.sectors)
+  {
+    auto& repr = sector.repr;
+    const s32 wall_count = repr.last_wall - repr.first_wall;
+    NC_ASSERT(wall_count >= 0);
+
+    for (WallID index = 0; index < wall_count; ++index)
+    {
+      WallID next_index = (index+1) % wall_count;
+      WallID index_in_arr = repr.first_wall + index;
+      WallID next_in_arr  = repr.first_wall + next_index;
+      NC_ASSERT(index_in_arr < map.walls.size());
+      NC_ASSERT(next_in_arr  < map.walls.size());
+
+      const auto& wall1 = map.walls[index_in_arr];
+      const auto& wall2 = map.walls[next_in_arr];
+      this->render_line(Line
+      {
+        .from = wall1.pos,
+        .to   = wall2.pos,
+        .color = vec3{1},
+      });
+    }
+  }
+
+  // and then render portals with red
+  for (auto&& sector : map.sectors)
+  {
+    auto& repr = sector.repr;
+    const s32 wall_count   = repr.last_wall   - repr.first_wall;
+    const s32 portal_count = repr.last_portal - repr.first_portal;
+    NC_ASSERT(portal_count >= 0);
+    NC_ASSERT(wall_count   >= 0);
+
+    for (WallID index = 0; index < portal_count; ++index)
+    {
+      WallID index_in_arr = map.portals[repr.first_portal+index].wall_index;
+      WallID next_in_arr  = index_in_arr+1;
+      if (index_in_arr >= repr.last_wall)
+      {
+        next_in_arr -= wall_count;
+      }
+      NC_ASSERT(index_in_arr < map.walls.size());
+      NC_ASSERT(next_in_arr  < map.walls.size());
+
+      const auto& wall1 = map.walls[index_in_arr];
+      const auto& wall2 = map.walls[next_in_arr];
+      this->render_line(Line
+      {
+        .from = wall1.pos,
+        .to   = wall2.pos,
+        .color = vec3{1, 0, 0},
+      });
+    }
+  }
+}
+
+//==============================================================================
+void GraphicsSystem::compile_the_retarded_shaders()
+{
+  // compile the fragment
+  auto frag = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(frag, 1, &FRAGMENT_FUCKER, nullptr);
+  glCompileShader(frag);
+  int ok;
+  glGetShaderiv(frag, GL_COMPILE_STATUS, &ok);
+  if (!ok)
+  {
+    char log[512];
+    glGetShaderInfoLog(frag, 512, NULL, log);
+    std::cout << log << std::endl;
+  }
+
+  // compile the vertex
+  auto vert = glCreateShader(GL_VERTEX_SHADER);
+  glShaderSource(vert, 1, &VERTEX_FUCKER, nullptr);
+  glCompileShader(vert);
+  glGetShaderiv(vert, GL_COMPILE_STATUS, &ok);
+  if (!ok)
+  {
+    char log[512];
+    glGetShaderInfoLog(vert, 512, NULL, log);
+    std::cout << log << std::endl;
+  }
+
+  m_funckin_gpu_program = glCreateProgram();
+  glAttachShader(m_funckin_gpu_program, frag);
+  glAttachShader(m_funckin_gpu_program, vert);
+  glLinkProgram(m_funckin_gpu_program);
+  glGetProgramiv(m_funckin_gpu_program, GL_LINK_STATUS, &ok);
+  if(!ok)
+  {
+    char log[512];
+    glGetProgramInfoLog(m_funckin_gpu_program, 512, NULL, log);
+  }
+
+  glDeleteShader(frag);
+  glDeleteShader(vert);
+}
+
+//==============================================================================
+void GraphicsSystem::render_line(const Line& line)
+{
+  GLuint vertex_buffer;
+  glGenBuffers(1, &vertex_buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+
+  vec3 data[2] = {vec3(line.from, -0.5f), vec3(line.to, -0.5f)};
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * 2, data, GL_DYNAMIC_DRAW);
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glEnableVertexAttribArray(0); 
+
+  glUniform3f(0, line.color.x, line.color.y, line.color.z);
+
+  glDrawArrays(GL_LINES, 0, 2);
+
+  glDeleteBuffers(1, &vertex_buffer);
+}
+
+//==============================================================================
+void GraphicsSystem::render_triangle(const Triangle& tri)
+{
+  GLuint vertex_buffer;
+  glGenBuffers(1, &vertex_buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+
+  vec3 data[3] = 
+  {
+    vec3(tri.a, -0.5f),
+    vec3(tri.b, -0.5f),
+    vec3(tri.c, -0.5f),
+  };
+  glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_DYNAMIC_DRAW);
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glEnableVertexAttribArray(0); 
+
+  glUniform3f(0, tri.color.x, tri.color.y, tri.color.z);
+
+  glDrawArrays(GL_TRIANGLES, 0, 3);
+
+  glDeleteBuffers(1, &vertex_buffer);
 }
 
 }

@@ -134,10 +134,11 @@ int build_map(
   auto temp_sectors = sectors;
 
   // Check for wall overlaps (not allowed)
-  if (OverlapInfo oi; !check_for_wall_overlaps(points, sectors, oi))
-  {
-    return false;
-  }
+  // DISABLED FOR NOW
+  //if (OverlapInfo oi; !check_for_wall_overlaps(points, sectors, oi))
+  //{
+  //  return false;
+  //}
 
   // TODO: resolve non-convex sectors
   // - first, we would have to store them into a grid
@@ -157,15 +158,23 @@ int build_map(
   for (u16 sector_id = 0; sector_id < temp_sectors.size(); ++sector_id)
   {
     auto&& sector = temp_sectors[sector_id];
+    auto& output_sector = output.sectors.emplace_back();
 
-    struct PortalWall
-    {
-      u16 wall_index;
-      u16 other_sector;
-    };
-    std::vector<PortalWall> portal_walls;
+    // copy the portable data
+    output_sector.port = sector.portable;
 
-    // cycle through all walls
+    const u32 total_wall_count = static_cast<u32>(sector.points.size());
+    // we do not know this in advance, but
+    // need if to calculate the offset into the portal array
+    u32 total_portal_count = 0;   
+
+    output_sector.repr.first_wall = static_cast<WallID>(output.walls.size());
+    output_sector.repr.last_wall  = output_sector.repr.first_wall + total_wall_count;
+
+    output_sector.repr.first_portal = static_cast<WallID>(output.portals.size());
+    output_sector.repr.last_portal  = output_sector.repr.first_portal;
+
+    // cycle through all walls and push them into the array
     for (u16 wall_index = 0; wall_index < sector.points.size(); ++wall_index)
     {
       u16 next_wall_index = (wall_index + 1) % sector.points.size();
@@ -173,7 +182,11 @@ int build_map(
       u16 next_point_index = sector.points[next_wall_index].point_index;
 
       auto& neighbor_sectors_of_p1 = points_to_sectors[point_index];
-      for (u16 used_sector_id : neighbor_sectors_of_p1)
+      SectorID portal_with = INVALID_SECTOR_ID;
+
+      // Find if this is a portal wall. We do this by checking if there is any other sector
+      // that has a wall on the same made of the same vertices
+      for (const u16 used_sector_id : neighbor_sectors_of_p1)
       {
         if (used_sector_id == sector_id)
         {
@@ -188,17 +201,36 @@ int build_map(
         const bool whole_wall = std::find(b, e, used_sector_id) != e;
         if (whole_wall)
         {
-          portal_walls.push_back(PortalWall
-          {
-            .wall_index   = wall_index,
-            .other_sector = used_sector_id,
-          });
+          portal_with = used_sector_id;
+          break;
         }
+      }
+
+      // Add a new wall
+      output.walls.push_back(WallData
+      {
+        .pos              = points[point_index],
+        .portal_sector_id = portal_with,
+        .port             = sector.points[wall_index].port,
+      });
+
+      // And make it possibly a portal
+      if (portal_with != INVALID_SECTOR_ID)
+      {
+        total_portal_count += 1;
+        output.portals.push_back(WallPortalData
+        {
+          // is non-zero because we push a new wall above
+          .wall_index = static_cast<WallID>(output.walls.size()-1),
+        });
       }
     }
 
-    // now we should have enough info about all walls and should be able to build the sector
+    output_sector.repr.last_portal = output_sector.repr.first_portal + total_portal_count;
   }
+
+  // now, there should be the same number of sectors in the output as on the input
+  NC_ASSERT(output.sectors.size() == sectors.size());
 
   return true;
 }

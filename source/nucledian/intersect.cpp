@@ -1,5 +1,6 @@
 // Project Nucledian Source File
 #include <intersect.h>
+#include <vector_maths.h>
 #include <aabb.h>
 
 namespace nc::intersect
@@ -54,6 +55,32 @@ bool aabb_aabb_2d(const aabb2& a, const aabb2& b)
   vec2 mx = min(a.max, b.max);
   aabb2 new_aabb{mn, mx};
   return new_aabb.is_valid();
+}
+
+//==============================================================================
+static f32 sign(f32 input)
+{
+  return input == 0.0f ? 0.0f : (input > 0.0f ? 1.0f : -1.0f);
+}
+
+//==============================================================================
+bool point_triangle(vec2 p, vec2 a, vec2 b, vec2 c)
+{
+  const auto a_to_b = b-a;
+  const auto b_to_c = c-b;
+  const auto c_to_a = a-c;
+
+  const auto a_to_p = p-a;
+  const auto b_to_p = p-b;
+  const auto c_to_p = p-c;
+
+  const f32 gl_sign = sign(cross(a_to_b, b_to_c));
+
+  const f32 a_sign = sign(cross(a_to_b, a_to_p));
+  const f32 b_sign = sign(cross(b_to_c, b_to_p));
+  const f32 c_sign = sign(cross(c_to_a, c_to_p));
+
+  return gl_sign == a_sign && gl_sign == b_sign && gl_sign == c_sign;
 }
 
 }
