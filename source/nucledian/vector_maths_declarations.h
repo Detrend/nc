@@ -49,4 +49,12 @@ vec4 cross(const vec4& a, const vec4& b);
 // Computes a "2D" cross product, returning scalar
 f32  cross(const vec2& a, const vec2& b);
 
+// Returns a length of a vector
+template<typename T, u64 SIZE>
+T length(const vec<T, SIZE>& a);
+
+// Returns a normalized vector. If the original
+// vector has zero length then returns 0 vector
+template<typename T, u64 SIZE>
+vec<T, SIZE> normalize(const vec<T, SIZE>& a);
 

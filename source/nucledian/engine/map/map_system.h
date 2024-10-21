@@ -9,6 +9,7 @@
 #include <utility>
 #include <float.h>
 #include <algorithm>
+#include <functional>
 
 namespace nc
 {
@@ -27,7 +28,7 @@ struct SectorReprData
   WallID first_wall;   // [0..total_wall_count]
   WallID last_wall;    // [first_wall+1..total_wall_count]
   WallID first_portal; // [0..total_wall_count]
-  WallID last_portal;  // [first_portal+1..total_wall_count]
+  WallID last_portal;  // [first_portal..total_wall_count]
 };
 
 struct SectorPortableData
@@ -53,6 +54,8 @@ struct WallPortableData
 
 struct WallData
 {
+  // The wall starts here and ends in the same point as the next
+  // wall begins
   vec2             pos;
   SectorID         portal_sector_id;    // if is portal
   WallPortableData port;
@@ -60,7 +63,10 @@ struct WallData
 
 struct WallPortalData
 {
-  WallID wall_index;
+  WallID wall_index     = 0;
+  // we are gonna need this for traversal of
+  // literal portals
+  u8     recursion_mark = 0;
 };
 
 struct MapSectors
@@ -68,6 +74,12 @@ struct MapSectors
   std::vector<SectorData>     sectors;
   std::vector<WallData>       walls;
   std::vector<WallPortalData> portals;
+
+  using VisitorFunc = std::function<void(SectorID, Frustum2)>;
+  void traverse_visible_areas(
+    const Frustum2& input_frustum,
+    VisitorFunc     visitor,
+    u8              recursion_depth = 4) const;
 };
 
 namespace map_building

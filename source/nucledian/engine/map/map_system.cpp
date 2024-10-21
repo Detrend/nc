@@ -3,6 +3,130 @@
 
 #include <aabb.h>
 #include <vec.h>
+#include <vector_maths.h>
+
+namespace nc
+{
+
+namespace map_helpers
+{
+
+//==============================================================================
+// calls lambda(PortalID portal_id, WallID first_wall_id, WallID second_wall_id)
+template<typename F>
+void for_each_portal(const MapSectors& map, SectorID sector_id, F&& lambda)
+{
+  NC_ASSERT(sector_id < map.sectors.size());
+  const auto& repr = map.sectors[sector_id].repr;
+
+  for (auto pid = repr.first_portal; pid < repr.last_portal; ++pid)
+  {
+    NC_ASSERT(pid < map.walls.size());
+
+    const auto wall1_index = map.portals[pid].wall_index;
+    NC_ASSERT(wall1_index < repr.last_wall);
+
+    const auto wall2_index = wall1_index + 1 >= repr.last_wall
+      ? repr.first_wall
+      : wall1_index + 1;
+
+    lambda(pid, wall1_index, wall2_index);
+  }
+}
+
+//==============================================================================
+// TODO!!!
+SectorID get_sector_from_point(const MapSectors& /*map*/, vec2 /*point*/)
+{
+  return INVALID_SECTOR_ID;
+}
+
+}
+
+//==============================================================================
+void MapSectors::traverse_visible_areas(
+  const Frustum2&    input_frustum,
+  VisitorFunc        visitor,
+  [[maybe_unused]]u8 max_recursion_depth) const
+{
+  NC_ASSERT(visitor);
+  namespace mh = map_helpers;
+
+  SectorID start_sector = mh::get_sector_from_point(*this, input_frustum.point);
+
+  if (start_sector == INVALID_SECTOR_ID)
+  {
+    // TODO: maybe error? Or return a value?
+    return;
+  }
+
+  struct SectorToVisit
+  {
+    Frustum2 frustum;
+    SectorID id;
+    u8       depth;
+  };
+
+  // TODO: pick a better data structure for BFS than vector
+  // - deque seems not to be a good idea, as according to the
+  //   https://en.cppreference.com/w/cpp/container/deque it has
+  //   a large memory footprint (4096 bytes at minimum)
+  // - maybe a circular buffer?
+  std::vector<SectorToVisit> sectors_to_visit;
+  sectors_to_visit.push_back(SectorToVisit
+  {
+    .frustum = input_frustum,
+    .id      = start_sector,
+    .depth   = 0,   // not used for now
+  });
+
+  // Now do a BFS
+  while (sectors_to_visit.size())
+  {
+    // pop the front element
+    auto[frustum, id, depth] = sectors_to_visit.front();
+    sectors_to_visit.erase(sectors_to_visit.begin());
+
+    NC_ASSERT(id < sectors.size());
+
+    // call the visitor
+    visitor(id, frustum);
+
+    // now traverse all portals of the sector and check if we can slide
+    // into a neighbor sector
+    mh::for_each_portal(*this, id, [&](PortalID, WallID w1, WallID w2)
+    {
+      const auto p1 = walls[w1].pos;
+      const auto p2 = walls[w2].pos;
+
+      NC_ASSERT(walls[w1].portal_sector_id != INVALID_SECTOR_ID);
+
+      // TODO: handle the direction of the wall
+      //const auto index3 = w2+1 == sectors[id].repr.last_wall
+      //  ? sectors[id].repr.first_wall
+      //  : w2+1;
+      //const auto p3 = walls[index3].pos;
+      //const auto p1_to_p2  = p2-p1;
+      //const auto p2_to_p3  = p3-p2;
+      //const auto p1_to_cam = frustum.point-p1;
+
+      if (!frustum.intersects_wall(p1, p2))
+      {
+        // early exit, we do not see the portal
+        return;
+      }
+
+      sectors_to_visit.push_back(SectorToVisit
+      {
+        .frustum = frustum.modify_with_wall(p1, p2),
+        .id      = walls[w1].portal_sector_id,
+        .depth   = 0,
+      });
+    });
+  }
+}
+
+}
 
 namespace nc::map_building
 {

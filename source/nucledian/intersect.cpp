@@ -80,8 +80,59 @@ bool point_triangle(vec2 p, vec2 a, vec2 b, vec2 c)
   const f32 b_sign = sign(cross(b_to_c, b_to_p));
   const f32 c_sign = sign(cross(c_to_a, c_to_p));
 
-  return gl_sign == a_sign && gl_sign == b_sign && gl_sign == c_sign;
+  auto eq_or_zero = [](f32 f1, f32 f2)
+  {
+    return f1 == f2 || f2 == 0.0f;
+  };
+
+  return eq_or_zero(gl_sign, a_sign)
+      && eq_or_zero(gl_sign, b_sign)
+      && eq_or_zero(gl_sign, c_sign);
 }
 
+//==============================================================================
+bool sse::point_triangle(vec2 p, vec2 a, vec2 b, vec2 c)
+{
+  const auto a_to_b = b-a;
+  const auto b_to_c = c-b;
+  const auto c_to_a = a-c;
+
+  const auto a_to_p = p-a;
+  const auto b_to_p = p-b;
+  const auto c_to_p = p-c;
+
+  const f32 g_sign = sign(cross(a_to_b, b_to_c));
+  const f32 a_sign = sign(cross(a_to_b, a_to_p));
+  const f32 b_sign = sign(cross(b_to_c, b_to_p));
+  const f32 c_sign = sign(cross(c_to_a, c_to_p));
+
+  auto eq_or_zero = [](f32 f1, f32 f2)
+  {
+    return f1 == f2 || f2 == 0.0f;
+  };
+
+  return eq_or_zero(g_sign, a_sign)
+      && eq_or_zero(g_sign, b_sign)
+      && eq_or_zero(g_sign, c_sign);
+}
+
+}
+
+//==============================================================================
+bool nc::Frustum2::contains_point(vec2 /*p*/) const
+{
+  return false;
+}
+
+//==============================================================================
+bool nc::Frustum2::intersects_wall(vec2 /*p1*/, vec2 /*p2*/) const
+{
+  return false;
+}
+
+//==============================================================================
+nc::Frustum2 nc::Frustum2::modify_with_wall(vec2 /*p1*/, vec2 /*p2*/) const
+{
+  return Frustum2{};
 }
 

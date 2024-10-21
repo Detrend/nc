@@ -133,6 +133,31 @@ vec4 cross(const vec4& a, const vec4& b)
     0.0f};
 }
 
+//==============================================================================
+template<typename T, u64 SIZE>
+T length(const vec<T, SIZE>& a)
+{
+  T result = 0;
+  for (u64 i = 0; i < SIZE; ++i)
+  {
+    result += a[i];
+  }
+
+  return result;
+}
+
+//==============================================================================
+template<typename T, u64 SIZE>
+vec<T, SIZE> normalize(const vec<T, SIZE>& a)
+{
+  T result = 0;
+  for (u64 i = 0; i < SIZE; ++i)
+  {
+    result += a[i];
+  }
+  return result;
+}
+
 }
 
 namespace nc::non_sse

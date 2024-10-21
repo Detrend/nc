@@ -267,15 +267,7 @@ void GraphicsSystem::render_map()
 
       const auto& wall1 = map.walls[index_in_arr];
       const auto& wall2 = map.walls[next_in_arr];
-      this->render_triangle(Triangle
-      {
-        .a = first_wall.pos,
-        .b = wall1.pos,
-        .c = wall2.pos,
-        .color = vec3{0.5f},
-      });
-
-      if (intersect::point_triangle(mouse_norm, first_wall.pos, wall1.pos, wall2.pos))
+      if (intersect::point_triangle(mouse_norm, first_wall.pos, wall2.pos, wall1.pos))
       {
         point_sector = i;
         break;
