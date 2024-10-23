@@ -37,11 +37,14 @@ namespace nc
     }
     case ModuleEventType::editor_update:
     {
-      draw_ui();
+      
       break;
     }
     case ModuleEventType::editor_render:
     {
+      draw_ui();
+      grid.render_grid();
+
       ImGui::Render();
       ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
       SDL_GL_SwapWindow(window);
@@ -66,6 +69,7 @@ namespace nc
   {
     // glOrtho(64, 64, 48, 48, -10, 10);
     gladLoadGLLoader(SDL_GL_GetProcAddress);
+    glViewport(0, 0, 640, 480);
 
     grid.init();
 
@@ -140,15 +144,72 @@ namespace nc
       i += 4;
     }
 
+    // vertex shader
+    const char* vertexShaderSource = "#version 330 core\n"
+      "layout (location = 0) in vec3 aPos;\n"
+      "void main()\n"
+      "{\n"
+      "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+      "}\0";
+
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glCompileShader(vertexShader);
+
+    // fragment shader
+    const char* fragmentShaderSource = "#version 330 core\n"
+      "out vec4 FragColor;\n"
+      "void main()\n"
+      "{\n"
+      "  FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);\n"
+      "}\0";
+
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glCompileShader(fragmentShader);
+
+    //Link Program
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+
     // bind to VBO
-    glGenBuffers(1, &vertex_buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+    glGenBuffers(1, &vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * points.size(), &points.front(), GL_STATIC_DRAW);
 
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    //bind to VAO
+    glGenVertexArrays(1, &vertexArrayBuffer);
+    glBindVertexArray(vertexArrayBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(points) * 3, &points.front(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
+  }
+
+  void Grid::render_grid()
+  {
+    glClear(GL_COLOR_BUFFER_BIT);
+    
+    glUseProgram(shaderProgram);  
+    glLineWidth(5);
+    glBindVertexArray(vertexArrayBuffer);
+    glDrawArrays(GL_LINES, 0, sizeof(points));
+
+    
   }
 
   Grid::~Grid()
   {
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
   }
 
   

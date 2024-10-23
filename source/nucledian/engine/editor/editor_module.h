@@ -22,8 +22,6 @@ namespace nc
 {
   const f64 GRID_SIZE = 0.25;
 
-  
-
   enum editorView
   {
     view_2d,
@@ -35,14 +33,19 @@ namespace nc
   class Grid {
   public:
     void init();
-    void render_grid(f64 xOffset, f64 yOffset);
+    void render_grid();
     ~Grid();
 
   private:  
     std::vector<vertex_3d> points;
     // definition of the lines themeself
 
-    GLuint vertex_buffer;
+    GLuint vertexBuffer;
+    GLuint vertexShader;
+    GLuint fragmentShader;
+    GLuint shaderProgram;
+
+    GLuint vertexArrayBuffer;
   };
 
   class EditorSystem : public IEngineModule
