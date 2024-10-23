@@ -16,7 +16,9 @@
 #include <SDL_opengl.h>
 #include <SDL_opengl_glext.h>
 
-
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace nc
 {
@@ -32,6 +34,7 @@ namespace nc
   
   class Grid {
   public:
+    
     void init();
     void render_grid();
     ~Grid();
@@ -46,6 +49,7 @@ namespace nc
     GLuint shaderProgram;
 
     GLuint vertexArrayBuffer;
+    glm::mat4 viewMatrix;
   };
 
   class EditorSystem : public IEngineModule
@@ -95,6 +99,8 @@ namespace nc
 
     SDL_Window* window;
     ImGuiIO& io;
+
+    
   };
 
   

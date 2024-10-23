@@ -13,7 +13,6 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
 
-
 namespace nc
 {
   //EditorSystem::EditorSystem()
@@ -131,16 +130,17 @@ namespace nc
 
   void Grid::init()
   {
-    
-    points.resize((8 + 1) * 2 * 2);
+    viewMatrix = glm::ortho(-4.0f, 4.0f, -3.0f, 3.0f);
+
+    points.resize((800 + 1) * 2 * 2);
 
     size_t i = 0;
-    for (f32 x = -1; x <= 1 + GRID_SIZE / 2; x += GRID_SIZE)
+    for (f32 x = -50; x <= 50 + GRID_SIZE / 2; x += GRID_SIZE)
     {
-      points[i] = vertex_3d(x, -10, 0);
-      points[i + 1] = vertex_3d(x, 10, 0);
-      points[i + 2] = vertex_3d(-10, x, 0);
-      points[i + 3] = vertex_3d(10, x, 0);
+      points[i] = vertex_3d(x, -50, 0);
+      points[i + 1] = vertex_3d(x, 50, 0);
+      points[i + 2] = vertex_3d(-50, x, 0);
+      points[i + 3] = vertex_3d(50, x, 0);
 
       i += 4;
     }
@@ -148,9 +148,10 @@ namespace nc
     // vertex shader
     const char* vertexShaderSource = "#version 330 core\n"
       "layout (location = 0) in vec3 aPos;\n"
+      "uniform mat4 transform;\n"
       "void main()\n"
       "{\n"
-      "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+      "   gl_Position = transform * vec4(aPos, 1.0);\n"
       "}\0";
 
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -187,7 +188,7 @@ namespace nc
     glGenVertexArrays(1, &vertexArrayBuffer);
     glBindVertexArray(vertexArrayBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(points) * 3 * sizeof(float), &points[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, points.size() * 3 * sizeof(float), &points[0], GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -199,13 +200,16 @@ namespace nc
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
     
-    glUseProgram(shaderProgram);  
-    
+    glUseProgram(shaderProgram); 
+
+    unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+
     glEnableVertexAttribArray(0);
 
-    glLineWidth(5);
+    glLineWidth(1);
     glBindVertexArray(vertexArrayBuffer);
-    glDrawArrays(GL_LINES, 0, sizeof(points));
+    glDrawArrays(GL_LINES, 0, points.size());
     glDisableVertexAttribArray(0);
   }
 
