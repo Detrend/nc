@@ -36,13 +36,14 @@ namespace nc
     }
     case ModuleEventType::editor_update:
     {
-      
+      prevMousePos = curMousePos;
+      curMousePos = getMousePos();
       break;
     }
     case ModuleEventType::editor_render:
     {
-      draw_ui();
-      grid.render_grid();
+      draw_ui(windowSize);
+      grid.render_grid(windowSize, vertex_2d(), zoom);
 
       ImGui::Render();
       ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -66,9 +67,19 @@ namespace nc
 
   bool EditorSystem::init(SDL_Window* window, void* gl_context)
   {
-    // glOrtho(64, 64, 48, 48, -10, 10);
+    zoom = 200.0f;
+
     gladLoadGLLoader(SDL_GL_GetProcAddress);
-    glViewport(0, 0, 640, 480);
+    
+    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+
+    int width;
+    int height;
+
+    SDL_GetWindowSize(window, &width, &height);
+    glViewport(0, 0, width, height);
+
+    windowSize = vertex_2d(width, height);
 
     grid.init();
 
@@ -89,25 +100,17 @@ namespace nc
     return true;
   }
 
-  void EditorSystem::draw_ui()
+  void EditorSystem::draw_ui(vertex_2d windowSize)
   {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
-    [[maybe_unused]] float x = ImGui::GetWindowWidth();
-    ImGui::SetNextWindowPos(ImVec2(0, 0));
-    ImGui::SetNextWindowSize(ImVec2(ImGui::GetWindowWidth(), 50.0f));
-    ImGui::Begin("TEST");
-    
-    ImGui::Text("Hello");
-    ImGui::Button("label", ImVec2(20, 20));
-    ImGui::End();
 
-    ImGui::SetNextWindowPos(ImVec2(0, 50.0f));
-    ImGui::SetNextWindowSize(ImVec2(ImGui::GetWindowWidth(), 50.0f));
-    ImGui::Begin("TEST2");
+    ImGui::SetNextWindowPos(ImVec2(0, windowSize.y - 50.0f));
+    ImGui::SetNextWindowSize(ImVec2(windowSize.x, 50.0f));
+    ImGui::Begin("Info");
 
-    ImGui::Text("Hello 2 ");
+    ImGui::Text("Location: %.2f, %.2f", curMousePos.x, curMousePos.y);
     ImGui::End();
   }
 
@@ -116,6 +119,15 @@ namespace nc
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
+  }
+  vertex_2d EditorSystem::getMousePos()
+  {
+    int x;
+    int y;
+    SDL_GetMouseState(&x, &y); // get pixel coords
+    x = x - windowSize.x / 2; // shift
+    y = -y + windowSize.y / 2;
+    return vertex_2d(x / zoom, y / zoom); // zoom
   }
   //===========================================================
 
@@ -130,8 +142,6 @@ namespace nc
 
   void Grid::init()
   {
-    viewMatrix = glm::ortho(-4.0f, 4.0f, -3.0f, 3.0f);
-
     points.resize((800 + 1) * 2 * 2);
 
     size_t i = 0;
@@ -195,9 +205,12 @@ namespace nc
     glBindVertexArray(0);
   }
 
-  void Grid::render_grid()
+  void Grid::render_grid(vertex_2d windowSize, [[maybe_unused]] vertex_2d offset, float zoom)
   {
+    viewMatrix = glm::ortho(-windowSize.x / (zoom), windowSize.x / (zoom),
+      -windowSize.y / (zoom), windowSize.y / (zoom));
     glClearColor(0, 0, 0, 1);
+
     glClear(GL_COLOR_BUFFER_BIT);
     
     glUseProgram(shaderProgram); 

@@ -36,7 +36,7 @@ namespace nc
   public:
     
     void init();
-    void render_grid();
+    void render_grid(vertex_2d windowSize, vertex_2d offset, float zoom);
     ~Grid();
 
   private:  
@@ -69,7 +69,7 @@ namespace nc
 
   private:
     // imgui skeleton
-    void draw_ui();
+    void draw_ui(vertex_2d windowSize);
     void draw_mode_select_ui();
     void draw_line_mod_ui();
     void draw_sector_mod_ui();
@@ -80,7 +80,6 @@ namespace nc
     // mouse checkers for manipulating with drawing
 
     vertex_2d getMousePos();
-    vertex_2d getPrevMousePos();
     vertex_2d getMouseShift();
     vertex_2d applyMouseShift();
 
@@ -88,6 +87,7 @@ namespace nc
 
     editorView view;
     Grid grid;
+    vertex_2d windowSize;
 
     //
     
@@ -100,7 +100,7 @@ namespace nc
     SDL_Window* window;
     ImGuiIO& io;
 
-    
+    float zoom;
   };
 
   
