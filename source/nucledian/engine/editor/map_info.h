@@ -37,6 +37,40 @@ namespace nc
       this->x = x;
       this->y = y;
     }
+
+    vertex_2d operator+(vertex_2d other) 
+    {
+      return vertex_2d(x + other.x, y + other.y);
+    }
+
+    vertex_2d operator-(vertex_2d other)
+    {
+      return vertex_2d(x - other.x, y - other.y);
+    }
+
+    vertex_2d operator*(float const& other)
+    {
+      return vertex_2d(x * other, y * other);
+    }
+
+    vertex_2d operator/(float const& other)
+    {
+      return vertex_2d(x / other, y / other);
+    }
+
+    vertex_2d& operator+=(vertex_2d const& other)
+    {
+      x += other.x;
+      y += other.y;
+      return *this;
+    }
+
+    vertex_2d& operator-=(vertex_2d const& other)
+    {
+      x -= other.x;
+      y -= other.y;
+      return *this;
+    }
   };
 
   class WallDef;
