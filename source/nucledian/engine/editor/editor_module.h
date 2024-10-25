@@ -80,6 +80,7 @@ namespace nc
     // mouse checkers for manipulating with drawing
 
     vertex_2d getMousePos(int x, int y);
+    vertex_2d getSnapToGridPos(float x, float y);
     vertex_2d getMouseShift();
     vertex_2d applyMouseShift();
 

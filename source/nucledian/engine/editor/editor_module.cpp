@@ -135,6 +135,8 @@ namespace nc
 
   void EditorSystem::draw_ui(vertex_2d windowSize)
   {
+    vertex_2d snapPos = getSnapToGridPos(curGridMousePos.x, curGridMousePos.y);
+
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
@@ -165,12 +167,15 @@ namespace nc
     ImGui::Text("Zoom: %f", zoom);
     ImGui::End();
 
-    ImGui::SetNextWindowPos(ImVec2(0, windowSize.y - 70.0f));
-    ImGui::SetNextWindowSize(ImVec2(windowSize.x, 70.0f));
+    ImGui::SetNextWindowPos(ImVec2(0, windowSize.y - 80.0f));
+    ImGui::SetNextWindowSize(ImVec2(windowSize.x, 80.0f));
     ImGui::Begin("Info");
 
-    ImGui::Text("Screen Location: %.2f, %.2f", curMousePos.x, curMousePos.y);
-    ImGui::Text("Grid Location: %.2f, %.2f", curGridMousePos.x, curGridMousePos.y);
+    ImGui::Text("MousePos: %.2f:%.2f", curMousePos.x, curMousePos.y);
+    ImGui::SameLine();
+    ImGui::Text("GridPos: %.2f:%.2f", curGridMousePos.x, curGridMousePos.y);
+    ImGui::SameLine();
+    ImGui::Text("SnapToPos: %.2f: %.2f", snapPos.x, snapPos.y);
     ImGui::End();
   }
 
@@ -180,11 +185,29 @@ namespace nc
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
   }
+
+  //============================================================
+
   vertex_2d EditorSystem::getMousePos(int x, int y)
   {
     x = x - windowSize.x / 2; // shift
     y = -y + windowSize.y / 2;
     return vertex_2d(x / zoom, y / zoom) * 2; // zoom
+  }
+
+  //==========================================================
+
+  vertex_2d EditorSystem::getSnapToGridPos(float x, float y)
+  {
+    float newX = floor(x / GRID_SIZE) * GRID_SIZE;
+    if (x - newX > GRID_SIZE / 2) {
+      newX += GRID_SIZE;
+    }
+    float newY = floor(y / GRID_SIZE) * GRID_SIZE;
+    if (y - newY > GRID_SIZE / 2) {
+      newY += GRID_SIZE;
+    }
+    return vertex_2d(newX, newY);
   }
   //===========================================================
 
