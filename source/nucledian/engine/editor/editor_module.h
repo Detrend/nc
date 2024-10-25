@@ -79,7 +79,7 @@ namespace nc
 
     // mouse checkers for manipulating with drawing
 
-    vertex_2d getMouseState();
+    vertex_2d getMousePos(int x, int y);
     vertex_2d getMouseShift();
     vertex_2d applyMouseShift();
 
@@ -95,13 +95,16 @@ namespace nc
     vertex_2d curMousePos;
     vertex_2d prevGridMousePos;
     vertex_2d curGridMousePos;
-    
+
     vertex_2d gridOffset;
 
     SDL_Window* window;
     ImGuiIO& io;
 
     float zoom;
+
+    bool prevLeftMouse;
+    bool curLeftMouse;
   };
 
   

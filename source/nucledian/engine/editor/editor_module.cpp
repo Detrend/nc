@@ -36,11 +36,31 @@ namespace nc
     }
     case ModuleEventType::editor_update:
     {
-      prevMousePos = curMousePos;
-      curMousePos = getMouseState();
 
-      if (SDL_GetMouseState(NULL, NULL) == SDL_BUTTON_LEFT) {
+      int x;
+      int y;
+      Uint32 mouseState = SDL_GetMouseState(&x, &y);
+      io.AddMousePosEvent(x, y);
+
+      prevLeftMouse = curLeftMouse;
+      curLeftMouse = false;
+
+      prevMousePos = curMousePos;
+      curMousePos = getMousePos(x, y);
+
+      if (mouseState == SDL_BUTTON_LEFT)
+      {
+        curLeftMouse = true;
+
         gridOffset += (prevMousePos - curMousePos);
+        if (!prevLeftMouse) {
+          io.AddMouseButtonEvent(0, true);
+        }
+
+      }
+
+      if (prevLeftMouse && !curLeftMouse) {
+        io.AddMouseButtonEvent(0, false);
       }
 
       curGridMousePos = curMousePos + gridOffset;
@@ -49,12 +69,14 @@ namespace nc
     }
     case ModuleEventType::editor_render:
     {
-      draw_ui(windowSize);
       grid.render_grid(windowSize, gridOffset, zoom);
+
+      draw_ui(windowSize);
 
       ImGui::Render();
       ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
       SDL_GL_SwapWindow(window);
+
       break;
     }
     case ModuleEventType::terminate:
@@ -69,7 +91,7 @@ namespace nc
 
   EditorSystem::~EditorSystem()
   {
-    
+
   }
 
   bool EditorSystem::init(SDL_Window* window, void* gl_context)
@@ -77,8 +99,11 @@ namespace nc
     zoom = 200.0f;
     gridOffset = vertex_2d();
 
+    curLeftMouse = false;
+    prevLeftMouse = false;
+
     gladLoadGLLoader(SDL_GL_GetProcAddress);
-    
+
     SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 
     int width;
@@ -95,8 +120,8 @@ namespace nc
     ImGui::CreateContext();
     io = ImGui::GetIO();
 
+    io.WantCaptureMouse = true;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
     ImGui::StyleColorsDark();
 
@@ -114,6 +139,32 @@ namespace nc
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::SetNextWindowSize(ImVec2(400, 60));
+    ImGui::Begin("MENU");
+
+    //ImGui::ShowDemoWindow();
+
+    if (ImGui::Button("ZOOM IN")) 
+    {
+      if (zoom < 400) 
+      {
+        zoom *= 2;
+      }
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("ZOOM OUT")) 
+    {
+      if (zoom > 25) 
+      {
+        zoom /= 2;
+      }
+      
+    }
+    ImGui::SameLine();
+    ImGui::Text("Zoom: %f", zoom);
+    ImGui::End();
+
     ImGui::SetNextWindowPos(ImVec2(0, windowSize.y - 70.0f));
     ImGui::SetNextWindowSize(ImVec2(windowSize.x, 70.0f));
     ImGui::Begin("Info");
@@ -129,11 +180,8 @@ namespace nc
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
   }
-  vertex_2d EditorSystem::getMouseState()
+  vertex_2d EditorSystem::getMousePos(int x, int y)
   {
-    int x;
-    int y;
-    SDL_GetMouseState(&x, &y); // get pixel coords
     x = x - windowSize.x / 2; // shift
     y = -y + windowSize.y / 2;
     return vertex_2d(x / zoom, y / zoom) * 2; // zoom
@@ -160,14 +208,14 @@ namespace nc
       points[i + 2] = vertex_3d(x, 50, 0);
       points[i + 4] = vertex_3d(-50, x, 0);
       points[i + 6] = vertex_3d(50, x, 0);
-      if (i % 32 == 0) 
+      if (i % 32 == 0)
       {
         points[i + 1] = vertex_3d(1.0f, 1.0f, 1.0f);
         points[i + 3] = vertex_3d(1.0f, 1.0f, 1.0f);
         points[i + 5] = vertex_3d(1.0f, 1.0f, 1.0f);
         points[i + 7] = vertex_3d(1.0f, 1.0f, 1.0f);
       }
-      else 
+      else
       {
         points[i + 1] = vertex_3d(0.25f, 0.25f, 0.25f);
         points[i + 3] = vertex_3d(0.25f, 0.25f, 0.25f);
@@ -187,7 +235,7 @@ namespace nc
       "void main()\n"
       "{\n"
       "   vertexColor = vec4(color, 1.0);\n"
-      "   gl_Position = transform * vec4(aPos, 1.0);\n"      
+      "   gl_Position = transform * vec4(aPos, 1.0);\n"
       "}\0";
 
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -216,7 +264,7 @@ namespace nc
     // bind to VBO
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * points.size(), &points[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * points.size(), &points[0], GL_DYNAMIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -228,27 +276,27 @@ namespace nc
     glGenVertexArrays(1, &vertexArrayBuffer);
     glBindVertexArray(vertexArrayBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, points.size() * 3 * sizeof(float), &points[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, points.size() * 3 * sizeof(float), &points[0], GL_DYNAMIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));    
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-    
+
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
   }
 
   void Grid::render_grid(vertex_2d windowSize, vertex_2d offset, float zoom)
   {
-    viewMatrix = glm::ortho(-windowSize.x / (zoom) + offset.x, windowSize.x / (zoom) + offset.x,
-      -windowSize.y / (zoom) + offset.y, windowSize.y / (zoom) + offset.y);
+    viewMatrix = glm::ortho(-windowSize.x / (zoom)+offset.x, windowSize.x / (zoom)+offset.x,
+      -windowSize.y / (zoom)+offset.y, windowSize.y / (zoom)+offset.y);
     glClearColor(0, 0, 0, 1);
 
     glClear(GL_COLOR_BUFFER_BIT);
-    
-    glUseProgram(shaderProgram); 
+
+    glUseProgram(shaderProgram);
 
     unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
@@ -269,7 +317,7 @@ namespace nc
     glDeleteVertexArrays(1, &vertexArrayBuffer);
   }
 
-  
+
 
 
   //===========================================================
