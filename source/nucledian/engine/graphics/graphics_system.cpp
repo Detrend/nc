@@ -15,7 +15,12 @@
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
 
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_sdl2.h>
+#include <imgui/imgui_impl_opengl3.h>
+
 #include <iostream>
+#include <string>
 
 namespace nc
 {
@@ -117,6 +122,11 @@ bool GraphicsSystem::init()
 
   this->compile_the_retarded_shaders();
 
+  // init imgui
+  ImGui::CreateContext();
+  ImGui_ImplSDL2_InitForOpenGL(m_window, m_gl_context);
+  ImGui_ImplOpenGL3_Init(nullptr);
+
   return true;
 }
 
@@ -145,6 +155,7 @@ void GraphicsSystem::update_window_and_pump_messages()
   SDL_Event event;
   while (SDL_PollEvent(&event))
   {
+    ImGui_ImplSDL2_ProcessEvent(&event);
     switch (event.type)
     {
       case SDL_QUIT:
@@ -203,6 +214,10 @@ void GraphicsSystem::push_triangle(const vec2& a, const vec2& b, const vec2& c, 
 //==============================================================================
 void GraphicsSystem::terminate()
 {
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplSDL2_Shutdown();
+  ImGui::DestroyContext();
+
   SDL_GL_DeleteContext(m_gl_context);
   m_gl_context = nullptr;
 
@@ -220,7 +235,14 @@ void GraphicsSystem::render()
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  ImGui_ImplOpenGL3_NewFrame();
+  ImGui_ImplSDL2_NewFrame();
+  ImGui::NewFrame();
+
   this->render_map();
+
+  ImGui::Render();
+  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
   SDL_GL_SwapWindow(m_window);
 }
@@ -240,6 +262,12 @@ void GraphicsSystem::render_map()
 
   vec2 sz = vec2{(f32)width, (f32)height};
   vec2 mouse_norm = ((vec2{(f32)x, (f32)y} / sz) - vec2{0.5f}) * vec2{2.0f, -2.0f};
+
+  auto debug_print_text = [&](vec2 coords, cstr text, ImU32 col = 0xFFFFFFFF)
+  {
+    coords = (coords * vec2{1.0f, -1.0f} + vec2{1}) * vec2{0.5f} * vec2{(f32)width, (f32)height};
+    ImGui::GetForegroundDrawList()->AddText(ImVec2{coords.x, coords.y}, col, text);
+  };
 
   s32 point_sector = -1;
   // find the sector we are pointing at
@@ -296,6 +324,25 @@ void GraphicsSystem::render_map()
     const bool pointed_at = i == point_sector;
 
     const auto& first_wall = map.walls[repr.first_wall];
+
+    if (pointed_at && wall_count > 0)
+    {
+      vec2 avg_pos = vec2{0};
+
+      for (WallID index = 0; index < wall_count; ++index)
+      {
+        WallID index_in_arr = repr.first_wall + index;
+        const auto& wall1 = map.walls[index_in_arr];
+        auto point_name = std::to_string(index_in_arr);
+        debug_print_text(wall1.pos, point_name.c_str());
+
+        avg_pos = avg_pos + wall1.pos;
+      }
+
+      avg_pos = avg_pos / vec2{(f32)wall_count};
+      auto sector_name = std::to_string(i);
+      debug_print_text(avg_pos, sector_name.c_str(), ImColor(255, 0, 0, 255));
+    }
 
     for (WallID index = 1; index < wall_count; ++index)
     {

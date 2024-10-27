@@ -507,7 +507,7 @@ static stbrp__findresult stbrp__skyline_pack_rectangle(stbrp_context *context, i
    STBRP_ASSERT(cur->next == NULL);
 
    {
-      int count=0;
+      [[maybe_unused]]int count=0;
       cur = context->active_head;
       while (cur) {
          cur = cur->next;
