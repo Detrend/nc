@@ -205,6 +205,13 @@ vec<T, SIZE> div(const vec<T, SIZE>& a, const vec<T, SIZE>& b)
   return non_sse::div(a, b);
 }
 
+//==============================================================================
+template<typename T, u64 SIZE>
+vec<T, SIZE> normalize(const vec<T, SIZE>& a)
+{
+  return non_sse::normalize(a);
+}
+
 }
 
 namespace nc::sse

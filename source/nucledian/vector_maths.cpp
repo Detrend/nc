@@ -88,6 +88,13 @@ f32 cross(const vec2& a, const vec2& b)
   return sse::cross(a, b);
 }
 
+//==============================================================================
+template<typename T, u64 SIZE>
+vec<T, SIZE> normalize(const vec<T, SIZE>& a)
+{
+  return sse::normalize(a);
+}
+
 }
 
 namespace nc

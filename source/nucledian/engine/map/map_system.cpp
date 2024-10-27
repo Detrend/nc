@@ -5,6 +5,12 @@
 #include <vec.h>
 #include <vector_maths.h>
 
+#include <algorithm>
+#include <array>
+#include <vector>
+#include <set>
+#include <iterator>   // std::back_inserter
+
 namespace nc
 {
 
@@ -12,7 +18,7 @@ namespace map_helpers
 {
 
 //==============================================================================
-// calls lambda(PortalID portal_id, WallID first_wall_id, WallID second_wall_id)
+// calls lambda(PortalID portal_id, WallID wall_index)
 template<typename F>
 void for_each_portal(const MapSectors& map, SectorID sector_id, F&& lambda)
 {
@@ -23,14 +29,10 @@ void for_each_portal(const MapSectors& map, SectorID sector_id, F&& lambda)
   {
     NC_ASSERT(pid < map.walls.size());
 
-    const auto wall1_index = map.portals[pid].wall_index;
-    NC_ASSERT(wall1_index < repr.last_wall);
+    const auto wall_index = map.portals[pid].wall_index;
+    NC_ASSERT(wall_index < repr.last_wall);
 
-    const auto wall2_index = wall1_index + 1 >= repr.last_wall
-      ? repr.first_wall
-      : wall1_index + 1;
-
-    lambda(pid, wall1_index, wall2_index);
+    lambda(pid, wall_index);
   }
 }
 
@@ -39,6 +41,21 @@ void for_each_portal(const MapSectors& map, SectorID sector_id, F&& lambda)
 SectorID get_sector_from_point(const MapSectors& /*map*/, vec2 /*point*/)
 {
   return INVALID_SECTOR_ID;
+}
+
+//==============================================================================
+WallID next_wall(const MapSectors& map, SectorID sector, WallID wall)
+{
+  NC_ASSERT(sector < map.sectors.size());
+  NC_ASSERT(wall < map.sectors[sector].repr.last_wall);
+  WallID next = wall+1;
+
+  if (next == map.sectors[sector].repr.last_wall)
+  {
+    next = map.sectors[sector].repr.first_wall;
+  }
+
+  return next;
 }
 
 }
@@ -94,21 +111,22 @@ void MapSectors::traverse_visible_areas(
 
     // now traverse all portals of the sector and check if we can slide
     // into a neighbor sector
-    mh::for_each_portal(*this, id, [&](PortalID, WallID w1, WallID w2)
+    mh::for_each_portal(*this, id, [&](PortalID, WallID wall1_idx)
     {
-      const auto p1 = walls[w1].pos;
-      const auto p2 = walls[w2].pos;
+      const auto wall2_idx = mh::next_wall(*this, id, wall1_idx);
+      NC_ASSERT(walls[wall1_idx].portal_sector_id != INVALID_SECTOR_ID);
 
-      NC_ASSERT(walls[w1].portal_sector_id != INVALID_SECTOR_ID);
+      const auto p1 = walls[wall1_idx].pos;
+      const auto p2 = walls[wall2_idx].pos;
 
-      // TODO: handle the direction of the wall
-      //const auto index3 = w2+1 == sectors[id].repr.last_wall
-      //  ? sectors[id].repr.first_wall
-      //  : w2+1;
-      //const auto p3 = walls[index3].pos;
-      //const auto p1_to_p2  = p2-p1;
-      //const auto p2_to_p3  = p3-p2;
-      //const auto p1_to_cam = frustum.point-p1;
+      const auto p1_to_p2  = p2-p1;
+      const auto p1_to_cam = frustum.point-p1;
+
+      if (cross(p1_to_p2, p1_to_cam) >= 0.0f)
+      {
+        // early exit, the wall is turned away from the camera
+        return;
+      }
 
       if (!frustum.intersects_wall(p1, p2))
       {
@@ -119,7 +137,7 @@ void MapSectors::traverse_visible_areas(
       sectors_to_visit.push_back(SectorToVisit
       {
         .frustum = frustum.modify_with_wall(p1, p2),
-        .id      = walls[w1].portal_sector_id,
+        .id      = walls[wall1_idx].portal_sector_id,
         .depth   = 0,
       });
     });
@@ -132,7 +150,8 @@ namespace nc::map_building
 {
   
 //==============================================================================
-bool check_for_wall_overlaps(
+// a stupid algoritm (TODO: make smarter) for wall overlap check
+static bool check_for_wall_overlaps(
   const std::vector<vec2>&            points,
   const std::vector<SectorBuildData>& sectors,
   OverlapInfo&                        overlap)
@@ -231,41 +250,311 @@ bool check_for_wall_overlaps(
 }
 
 //==============================================================================
+// TODO: we are doing 2x the amount of intersections (each 2 sectors are
+// intersected 2 times instead of only once).
+// TODO: use some data structure instead of the grid
+static bool check_for_sector_overlaps(
+  const std::vector<vec2>&            points,
+  const std::vector<SectorBuildData>& sectors,
+  OverlapInfo&                        overlap)
+{
+  using std::numeric_limits;
+
+  // the range of the map
+  vec2 map_min = vec2{FLT_MAX, FLT_MAX};
+  vec2 map_max = vec2{FLT_MIN, FLT_MIN};
+
+  for (auto&& point : points)
+  {
+    map_min = min(map_min, point);
+    map_max = max(map_max, point);
+  }
+
+  // make a 128x128 grid
+  constexpr u64 GRID_SIZE = 128;
+  using SectorList = std::vector<SectorID>;
+  using SectorGrid = std::array<std::array<SectorList, GRID_SIZE>, GRID_SIZE>;
+
+  struct LocalUvec2
+  {
+    u16 x;
+    u16 y;
+  };
+
+  SectorGrid grid{};
+
+  // This remaps the points to the indices of the grid
+  auto remap_to_indices = [&](vec2 point)->LocalUvec2
+  {
+    NC_ASSERT(point.x <= map_max.x && point.y <= map_max.y);
+    NC_ASSERT(point.x >= map_min.x && point.y >= map_min.y);
+
+    const vec2 map_size = map_max - map_min;
+
+    constexpr f32 coeff = 0.99999f;
+
+    const f32 fx = ((point.x - map_min.x) / map_size.x) * coeff;
+    const f32 fy = ((point.y - map_min.y) / map_size.y) * coeff;
+
+    return LocalUvec2
+    {
+      .x = static_cast<u16>(fx * GRID_SIZE),
+      .y = static_cast<u16>(fy * GRID_SIZE),
+    };
+  };
+
+  // calculate bboxes for the sectors
+  std::vector<aabb2> sector_bboxes(sectors.size());
+  for (SectorID sector_idx = 0; sector_idx < sectors.size(); ++sector_idx)
+  {
+    // make an aabb out of the sector points
+    aabb2 bbox;
+
+    for (auto&& point : sectors[sector_idx].points)
+    {
+      bbox.insert_point(points[point.point_index]);
+    }
+
+    sector_bboxes[sector_idx] = bbox;
+  }
+
+  // populate the grid
+  for (SectorID sector_idx = 0; sector_idx < sectors.size(); ++sector_idx)
+  {
+    const auto& bbox = sector_bboxes[sector_idx];
+
+    NC_ASSERT(bbox.is_valid());
+
+    auto[fromx, fromy] = remap_to_indices(bbox.min);
+    auto[tox,   toy]   = remap_to_indices(bbox.max);
+
+    // now traverse all the grid points
+    for (u16 xi = fromx; xi <= tox; ++xi)
+    {
+      for (u16 yi = fromy; yi <= toy; ++yi)
+      {
+        grid[xi][yi].push_back(sector_idx);
+      }
+    }
+  }
+
+  // check sectors overlap
+  for (SectorID sector_idx = 0; sector_idx < sectors.size(); ++sector_idx)
+  {
+    const auto& bbox = sector_bboxes[sector_idx];
+
+    NC_ASSERT(bbox.is_valid());
+
+    auto[fromx, fromy] = remap_to_indices(bbox.min);
+    auto[tox,   toy]   = remap_to_indices(bbox.max);
+
+    std::set<SectorID> possible_intersection_sectors;
+
+    for (u16 xi = fromx; xi <= tox; ++xi)
+    {
+      for (u16 yi = fromy; yi <= toy; ++yi)
+      {
+        const auto& cell = grid[xi][yi];
+        possible_intersection_sectors.insert(cell.begin(), cell.end());
+      }
+    }
+
+    // remove ourselves
+    possible_intersection_sectors.erase(sector_idx);
+
+    for (SectorID other_idx : possible_intersection_sectors)
+    {
+      const auto& sector1 = sectors[sector_idx];
+      const auto& sector2 = sectors[other_idx];
+
+      NC_ASSERT(sector1.points.size() >= 3);
+      NC_ASSERT(sector2.points.size() >= 3);
+
+      std::vector<vec2> points1, points2;
+      points1.reserve(sector1.points.size());
+      points2.reserve(sector2.points.size());
+
+      auto wb_data_to_point = [&](const WallBuildData& wb)->vec2
+      {
+        return points[wb.point_index];
+      };
+
+      std::transform(
+        sector1.points.begin(),
+        sector1.points.end(),
+        std::back_inserter(points1),
+        wb_data_to_point);
+
+      std::transform(
+        sector2.points.begin(),
+        sector2.points.end(),
+        std::back_inserter(points2),
+        wb_data_to_point);
+
+      if (intersect::convex_convex(points1, points2))
+      {
+        overlap = OverlapInfo
+        {
+          .sector1 = sector_idx,
+          .sector2 = other_idx,
+        };
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+//==============================================================================
+static f32 sign(f32 value)
+{
+  union float_and_uint
+  {
+    f32 real;
+    u32 integral;
+  };
+  float_and_uint fu{.real = value};
+
+  auto retval = value == 0.0f ? 0.0f : (1.0f - 2.0f * (fu.integral >> 31));
+  NC_ASSERT((value == 0.0f && retval == 0.0f)
+    || (value > 0.0f && retval == 1.0f)
+    || (value < 0.0f && retval == -1.0f));
+  return retval;
+}
+
+//==============================================================================
+static void resolve_clockwise_wall_order(SectorBuildData& sector)
+{
+  // just revert the direction of the walls..
+  std::reverse(sector.points.begin(), sector.points.end());
+
+  // and make sure that we remap the portable data properly
+  for (u32 index = 0; index < sector.points.size(); ++index)
+  {
+    u32 next_index = (index+1) % sector.points.size();
+    std::swap(
+      sector.points[index].port,
+      sector.points[next_index].port);
+  }
+}
+
+//==============================================================================
+static bool resolve_non_convex_and_clockwise(
+  const std::vector<vec2>&      points,
+  std::vector<SectorBuildData>& sectors,
+  NonConvexInfo&                error)    // we might add or modify this
+{
+  for (SectorID sector_id = 0; sector_id < sectors.size(); ++sector_id)
+  {
+    auto& sector = sectors[sector_id];
+    // If the shape is convex then it will have only counter-clockwise
+    // angles or only clockwise angles
+    u32 counter_clockwise_count = 0;
+    u32 clockwise_count         = 0;
+
+    // First, check the counter-clockwise ordering.
+    // We want the points to be in counter clockwise order. This can be
+    // determined by examining the sign of 2D cross product of two wall
+    // directions.
+    // The sign of the cross product should be positive or zero for
+    // clockwise rotated walls.
+    for (u32 curr_index = 0; curr_index < sector.points.size(); ++curr_index)
+    {
+      u32 next_index  = (curr_index+1) % sector.points.size();
+      u32 third_index = (next_index+1) % sector.points.size();
+
+      const auto& p1 = points[sector.points[curr_index].point_index];
+      const auto& p2 = points[sector.points[next_index].point_index];
+      const auto& p3 = points[sector.points[third_index].point_index];
+
+      const auto p1_to_p2 = p2-p1;    // first wall direction
+      const auto p2_to_p3 = p3-p2;    // second wall direction
+
+      // By using the 2D cross product we determine if two walls
+      // are counter clockwise or clockwise
+      const f32 sg = sign(cross(p1_to_p2, p2_to_p3));
+      if (sg < 0.0f)
+      {
+        // this angle between two walls is
+        clockwise_count += 1;
+      }
+      else if (sg > 0.0f)
+      {
+        counter_clockwise_count += 1;
+      }
+
+      if (clockwise_count && counter_clockwise_count)
+      {
+        // the shape is non convex, we can stop here..
+        break;
+      }
+    }
+
+    if (clockwise_count && counter_clockwise_count)
+    {
+      // the sector is non-convex, not good
+      error = NonConvexInfo
+      {
+        .sector = sector_id,
+      };
+      return false;
+    }
+    else if (clockwise_count)
+    {
+      // rotate the walls around so that they are in a
+      // counter clockwise order
+      resolve_clockwise_wall_order(sector);
+    }
+  }
+
+  return true;
+}
+
+//==============================================================================
 int build_map(
   const std::vector<vec2>&            points,
   const std::vector<SectorBuildData>& sectors,
-  MapSectors&                         output)
+  MapSectors&                         output,
+  MapBuildFlags                       flags)
 {
   output.sectors.clear();
   output.walls.clear();
   output.portals.clear();
 
-  //vec2 map_min = vec2{FLT_MAX, FLT_MAX};
-  //vec2 map_max = vec2{FLT_MIN, FLT_MIN};
-
-  //// find map minimum and maximum
-  //for (auto&& point : points)
-  //{
-  //  map_min = min(map_min, point);
-  //  map_max = max(map_max, point);
-  //}
-
   // list of sectors for each point
-  std::vector<std::vector<u16>> points_to_sectors;
+  std::vector<std::vector<SectorID>> points_to_sectors;
   points_to_sectors.resize(points.size());
 
   // copy of the original sectors
   auto temp_sectors = sectors;
 
-  // Check for wall overlaps (not allowed)
-  // DISABLED FOR NOW
-  //if (OverlapInfo oi; !check_for_wall_overlaps(points, sectors, oi))
-  //{
-  //  return false;
-  //}
+  // Check for wall overlaps
+  if (!(flags & MapBuildFlag::omit_wall_overlap_check))
+  {
+    if (OverlapInfo oi; !check_for_wall_overlaps(points, temp_sectors, oi))
+    {
+      return false;
+    }
+  }
 
-  // TODO: resolve non-convex sectors
-  // - first, we would have to store them into a grid
+  // Check for non convex and non-clockwise order sectors
+  if (!(flags & MapBuildFlag::omit_convexity_clockwise_check))
+  {
+    if (NonConvexInfo oi; !resolve_non_convex_and_clockwise(points, temp_sectors, oi))
+    {
+      return false;
+    }
+  }
+
+  // Check for sector overlaps (not allowed)
+  if (!(flags & MapBuildFlag::omit_sector_overlap_check))
+  {
+    if (OverlapInfo oi; !check_for_sector_overlaps(points, temp_sectors, oi))
+    {
+      return false;
+    }
+  }
 
   // store which points are used by which sectors
   for (u64 i = 0; i < temp_sectors.size(); ++i)

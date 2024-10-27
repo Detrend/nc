@@ -336,7 +336,12 @@ void Engine::build_map_and_sectors()
   test_make_sector({3, 4, 7}, sectors);
   test_make_sector({0, 1, 9, 8}, sectors);
 
-  map_building::build_map(points, sectors, *m_map);
+  map_building::build_map(
+    points, sectors, *m_map,
+
+    map_building::MapBuildFlag::omit_wall_overlap_check |
+    map_building::MapBuildFlag::omit_sector_overlap_check |
+    map_building::MapBuildFlag::omit_convexity_clockwise_check);
 }
 
 //==============================================================================

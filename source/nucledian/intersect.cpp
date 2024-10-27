@@ -3,6 +3,10 @@
 #include <vector_maths.h>
 #include <aabb.h>
 
+#include <limits>     // FLT_MIN, FLT_MAX
+#include <algorithm>  // std::min, std::max
+#include <array>
+
 namespace nc::intersect
 {
   
@@ -114,6 +118,86 @@ bool sse::point_triangle(vec2 p, vec2 a, vec2 b, vec2 c)
   return eq_or_zero(g_sign, a_sign)
       && eq_or_zero(g_sign, b_sign)
       && eq_or_zero(g_sign, c_sign);
+}
+
+//==============================================================================
+bool triangle_triangle(vec2 a1, vec2 b1, vec2 c1, vec2 a2, vec2 b2, vec2 c2)
+{
+  auto arr1 = std::array{a1, b1, c1};
+  auto arr2 = std::array{a2, b2, c2};
+  return convex_convex(
+    std::span{arr1.data(), arr1.size()},
+    std::span{arr2.data(), arr2.size()});
+}
+
+//==============================================================================
+bool convex_convex(std::span<vec2> a, std::span<vec2> b, f32 threshold)
+{
+  // iterate edges of both shapes and search for a line that separates
+  // both of them
+  const std::span<vec2> points[2] = {a, b};
+
+  // shapes must have at least 3 points
+  if (points[0].size() < 3 || points[1].size() < 3)
+  {
+    return false;
+  }
+
+  for (u8 shape_idx = 0; shape_idx < 2; ++shape_idx)
+  {
+    for (u8 side_idx = 0; side_idx < points[shape_idx].size(); ++side_idx)
+    {
+      const u8 next_side_idx = (side_idx + 1) % points[shape_idx].size();
+
+      const auto& p1 = points[shape_idx][side_idx];
+      const auto& p2 = points[shape_idx][next_side_idx];
+      const auto  line   = normalize(p1-p2);
+      const auto  normal = vec2{line.y, -line.x};
+
+      struct LocalInterval
+      {
+        f32 min = FLT_MAX;
+        f32 max = FLT_MIN;
+      };
+
+      LocalInterval intervals[2]{};
+
+      // now project all points onto the normal and create
+      // an interval for each of the two triangles - if the
+      // intervals overlap then the triangles MIGHT overlap,
+      // but we must check all other hyperplanes as well
+      for (u8 pset_idx = 0; pset_idx < 2; ++pset_idx)
+      {
+        for (u8 point_idx = 0; point_idx < points[pset_idx].size(); ++point_idx)
+        {
+          const f32 projected = dot(points[pset_idx][point_idx], normal);
+
+          // update min/max of the interval
+          auto& interval = intervals[pset_idx];
+          interval.min = std::min(interval.min, projected);
+          interval.max = std::max(interval.max, projected);
+        }
+      }
+
+      const f32 interval_min = std::max(intervals[0].min, intervals[1].min);
+      const f32 interval_max = std::min(intervals[0].max, intervals[1].max);
+
+      // if the shapes have an intersection smaller than 1cm
+      // then we pretend they do not intersect
+      if (interval_max - interval_min < threshold)
+      {
+        // if we got here than it means that we found a hyperplane that separates
+        // both triangles from each other and therefore they do not intersect
+        return false;
+      }
+
+      // plane not found, go on
+    }
+  }
+
+  // there is no hyperplane that separates the two shapes, therefore
+  // they must intersect
+  return true;
 }
 
 }

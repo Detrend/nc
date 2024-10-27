@@ -5,6 +5,8 @@
 #include <vector_maths.h>
 #include <aabb.h>
 
+#include <span>
+
 namespace nc
 {
 
@@ -30,6 +32,10 @@ bool segment_segment_2d(vec2 start_a, vec2 end_a, vec2 start_b, vec2 end_b, f32&
 bool aabb_aabb_2d(const aabb2& a, const aabb2& b);
 
 bool point_triangle(vec2 point, vec2 a, vec2 b, vec2 c);
+
+bool triangle_triangle(vec2 a1, vec2 b1, vec2 c1, vec2 a2, vec2 b2, vec2 c2);
+
+bool convex_convex(std::span<vec2> a, std::span<vec2> b, f32 threshold = 0.01f);
 
 }
 

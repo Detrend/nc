@@ -13,11 +13,15 @@
 
 namespace nc
 {
-using SectorID = u16;
-using WallID   = u16;
-using PortalID = u16;
+using SectorID  = u16;
+using WallID    = u16;
+using PortalID  = u16;
+using TextureID = u16;
 
-constexpr auto INVALID_SECTOR_ID = static_cast<SectorID>(-1);
+constexpr auto INVALID_SECTOR_ID  = static_cast<SectorID>(-1);
+constexpr auto INVALID_WALL_ID    = static_cast<WallID>(-1);
+constexpr auto INVALID_PORTAL_ID  = static_cast<PortalID>(-1);
+constexpr auto INVALID_TEXTURE_ID = static_cast<TextureID>(-1);
 
 struct SectorReprData
 {
@@ -25,18 +29,18 @@ struct SectorReprData
   // To get number of walls in a sector you use
   // last_wall - first_wall
   // If first_wall == last_wall then the sector has no walls
-  WallID first_wall;   // [0..total_wall_count]
-  WallID last_wall;    // [first_wall+1..total_wall_count]
-  WallID first_portal; // [0..total_wall_count]
-  WallID last_portal;  // [first_portal..total_wall_count]
+  WallID   first_wall   = INVALID_WALL_ID; // [0..total_wall_count]
+  WallID   last_wall    = INVALID_WALL_ID; // [first_wall+1..total_wall_count]
+  PortalID first_portal = INVALID_WALL_ID; // [0..total_wall_count]
+  PortalID last_portal  = INVALID_WALL_ID; // [first_portal..total_wall_count]
 };
 
 struct SectorPortableData
 {
-  u32 floor_texture_id;
-  u32 ceil_texture_id;
-  f32 floor_height;
-  f32 ceil_height;
+  TextureID floor_texture_id = INVALID_TEXTURE_ID;
+  TextureID ceil_texture_id  = INVALID_TEXTURE_ID;
+  f32       floor_height     = 0;
+  f32       ceil_height      = 0;
 };
 
 struct SectorData
@@ -47,17 +51,17 @@ struct SectorData
 
 struct WallPortableData
 {
-  u32  texture_id;
-  u8   texture_offset_x;
-  u8   texture_offset_y;
+  TextureID texture_id;
+  u8        texture_offset_x;
+  u8        texture_offset_y;
 };
 
 struct WallData
 {
   // The wall starts here and ends in the same point as the next
   // wall begins
-  vec2             pos;
-  SectorID         portal_sector_id;    // if is portal
+  vec2             pos = vec2{0};
+  SectorID         portal_sector_id = INVALID_SECTOR_ID;    // if is portal
   WallPortableData port;
 };
 
@@ -87,7 +91,7 @@ namespace map_building
 
 struct WallBuildData
 {
-  u16 point_index;
+  u16              point_index = 0;
   WallPortableData port;
 };
 
@@ -110,16 +114,27 @@ struct OverlapInfo
   vec2 p;
 };
 
-// a stupid algoritm (TODO: make smarter) for wall overlap check
-bool check_for_wall_overlaps(
-  const std::vector<vec2>&            points,
-  const std::vector<SectorBuildData>& sectors,
-  OverlapInfo&                        overlap);
-  
+struct NonConvexInfo
+{
+  SectorID sector;
+};
+
+using MapBuildFlags = u8;
+namespace MapBuildFlag
+{
+  enum etype : MapBuildFlags
+  {
+    omit_wall_overlap_check        = 1 << 0,
+    omit_convexity_clockwise_check = 1 << 1,
+    omit_sector_overlap_check      = 1 << 2,
+  };
+}
+
 int build_map(
   const std::vector<vec2>&            points,
   const std::vector<SectorBuildData>& sectors,
-  MapSectors&                         output);
+  MapSectors&                         output,
+  MapBuildFlags                       flags = 0);
 
 }
 
