@@ -55,42 +55,32 @@ namespace nc
   class EditorSystem : public IEngineModule
   {
   public:
-    EditorSystem() : io(* new ImGuiIO()) {}
-    static EngineModuleId get_module_id();  
+    EditorSystem() : io(*new ImGuiIO()) {}
+    static EngineModuleId get_module_id();
     void on_event(ModuleEvent& event) override;
     ~EditorSystem();
 
     bool init(SDL_Window* window, void* gl_context);
-    
-    void render_grid();
-    void render_map_2d();
-
-    void destroy();
 
   private:
-    // imgui skeleton
+    void initImGui(SDL_Window* window, void* gl_context);
     void draw_ui(vertex_2d windowSize);
-    void draw_mode_select_ui();
-    void draw_line_mod_ui();
-    void draw_sector_mod_ui();
-    void draw_texture_select_ui();
-
+    void CreateBottomBar(vertex_2d& windowSize);
+    void CreateMenuBar();
     void terminate_imgui();
 
-    // mouse checkers for manipulating with drawing
-
+    void getMouseInput();
+    void getLeftMouseButton(Uint32 mouseState);
     vertex_2d getMousePos(int x, int y);
     vertex_2d getSnapToGridPos(float x, float y);
-    vertex_2d getMouseShift();
-    vertex_2d applyMouseShift();
-
-    //
 
     editorView view;
     Grid grid;
-    vertex_2d windowSize;
 
-    //
+    bool prevLeftMouse[5] = {false, false, false, false, false};
+    bool curLeftMouse[5] = {false, false, false, false, false};
+
+    vertex_2d windowSize;
     
     vertex_2d prevMousePos;
     vertex_2d curMousePos;
@@ -103,9 +93,6 @@ namespace nc
     ImGuiIO& io;
 
     float zoom;
-
-    bool prevLeftMouse;
-    bool curLeftMouse;
   };
 
   

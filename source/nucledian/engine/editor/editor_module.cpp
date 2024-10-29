@@ -36,35 +36,7 @@ namespace nc
     }
     case ModuleEventType::editor_update:
     {
-
-      int x;
-      int y;
-      Uint32 mouseState = SDL_GetMouseState(&x, &y);
-      io.AddMousePosEvent(x, y);
-
-      prevLeftMouse = curLeftMouse;
-      curLeftMouse = false;
-
-      prevMousePos = curMousePos;
-      curMousePos = getMousePos(x, y);
-
-      if (mouseState == SDL_BUTTON_LEFT)
-      {
-        curLeftMouse = true;
-
-        gridOffset += (prevMousePos - curMousePos);
-        if (!prevLeftMouse) {
-          io.AddMouseButtonEvent(0, true);
-        }
-
-      }
-
-      if (prevLeftMouse && !curLeftMouse) {
-        io.AddMouseButtonEvent(0, false);
-      }
-
-      curGridMousePos = curMousePos + gridOffset;
-
+      getMouseInput();
       break;
     }
     case ModuleEventType::editor_render:
@@ -89,18 +61,12 @@ namespace nc
     }
   }
 
-  EditorSystem::~EditorSystem()
-  {
-
-  }
-
   bool EditorSystem::init(SDL_Window* window, void* gl_context)
   {
+    this->window = window;
+
     zoom = 200.0f;
     gridOffset = vertex_2d();
-
-    curLeftMouse = false;
-    prevLeftMouse = false;
 
     gladLoadGLLoader(SDL_GL_GetProcAddress);
 
@@ -116,77 +82,56 @@ namespace nc
 
     grid.init();
 
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    io = ImGui::GetIO();
-
-    io.WantCaptureMouse = true;
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-
-    ImGui::StyleColorsDark();
-
-    ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
-    ImGui_ImplOpenGL3_Init("#version 330");
-
-    this->window = window;
-
+    initImGui(window, gl_context);
     return true;
   }
 
-  void EditorSystem::draw_ui(vertex_2d windowSize)
+  EditorSystem::~EditorSystem()
   {
-    vertex_2d snapPos = getSnapToGridPos(curGridMousePos.x, curGridMousePos.y);
 
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplSDL2_NewFrame();
-    ImGui::NewFrame();
-
-    ImGui::SetNextWindowPos(ImVec2(0, 0));
-    ImGui::SetNextWindowSize(ImVec2(400, 60));
-    ImGui::Begin("MENU");
-
-    //ImGui::ShowDemoWindow();
-
-    if (ImGui::Button("ZOOM IN")) 
-    {
-      if (zoom < 400) 
-      {
-        zoom *= 2;
-      }
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("ZOOM OUT")) 
-    {
-      if (zoom > 25) 
-      {
-        zoom /= 2;
-      }
-      
-    }
-    ImGui::SameLine();
-    ImGui::Text("Zoom: %f", zoom);
-    ImGui::End();
-
-    ImGui::SetNextWindowPos(ImVec2(0, windowSize.y - 80.0f));
-    ImGui::SetNextWindowSize(ImVec2(windowSize.x, 80.0f));
-    ImGui::Begin("Info");
-
-    ImGui::Text("MousePos: %.2f:%.2f", curMousePos.x, curMousePos.y);
-    ImGui::SameLine();
-    ImGui::Text("GridPos: %.2f:%.2f", curGridMousePos.x, curGridMousePos.y);
-    ImGui::SameLine();
-    ImGui::Text("SnapToPos: %.2f: %.2f", snapPos.x, snapPos.y);
-    ImGui::End();
   }
 
-  void EditorSystem::terminate_imgui()
+  //=================================================================
+  // MOUSE HANDLES
+  //=================================================================
+
+  void EditorSystem::getMouseInput()
   {
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplSDL2_Shutdown();
-    ImGui::DestroyContext();
+    int x;
+    int y;
+    Uint32 mouseState = SDL_GetMouseState(&x, &y);
+    io.AddMousePosEvent(x, y);
+
+    for (int i = 0; i < 5; i++) {
+      prevLeftMouse[i] = curLeftMouse[i];
+      curLeftMouse[i] = false;
+    }
+
+    prevMousePos = curMousePos;
+    curMousePos = getMousePos(x, y);
+
+    getLeftMouseButton(mouseState);
+
+    curGridMousePos = curMousePos + gridOffset;
   }
 
-  //============================================================
+  void EditorSystem::getLeftMouseButton(Uint32 mouseState)
+  {
+    if (mouseState == SDL_BUTTON_LEFT)
+    {
+      curLeftMouse[0] = true;
+
+      gridOffset += (prevMousePos - curMousePos);
+      if (!prevLeftMouse[0]) {
+        io.AddMouseButtonEvent(0, true);
+      }
+
+    }
+
+    if (prevLeftMouse[0] && !curLeftMouse[0]) {
+      io.AddMouseButtonEvent(0, false);
+    }
+  }
 
   vertex_2d EditorSystem::getMousePos(int x, int y)
   {
@@ -194,8 +139,6 @@ namespace nc
     y = -y + windowSize.y / 2;
     return vertex_2d(x / zoom, y / zoom) * 2; // zoom
   }
-
-  //==========================================================
 
   vertex_2d EditorSystem::getSnapToGridPos(float x, float y)
   {
@@ -209,15 +152,89 @@ namespace nc
     }
     return vertex_2d(newX, newY);
   }
-  //===========================================================
 
-  /**
-  void EditorSystem::render_grid()
+  //=================================================================
+  // IMGUI HANDLES
+  //=================================================================
+
+  void EditorSystem::initImGui(SDL_Window* window, void* gl_context)
   {
-    grid.render_grid(xOffset, yOffset);
-  }
-  */
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    io = ImGui::GetIO();
 
+    io.WantCaptureMouse = true;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplSDL2_InitForOpenGL(window, gl_context);
+    ImGui_ImplOpenGL3_Init("#version 330");
+  }
+
+  void EditorSystem::draw_ui(vertex_2d windowSize)
+  {  
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplSDL2_NewFrame();
+    ImGui::NewFrame();
+
+    CreateMenuBar();
+    CreateBottomBar(windowSize);
+  }
+
+  void EditorSystem::CreateBottomBar(vertex_2d& windowSize)
+  {
+    vertex_2d snapPos = getSnapToGridPos(curGridMousePos.x, curGridMousePos.y);
+
+    ImGui::SetNextWindowPos(ImVec2(0, windowSize.y - 50.0f));
+    ImGui::SetNextWindowSize(ImVec2(windowSize.x, 50.0f));
+    ImGui::Begin("Info");
+
+    ImGui::Text("MousePos: %.2f:%.2f", curMousePos.x, curMousePos.y);
+    ImGui::SameLine();
+    ImGui::Text("GridPos: %.2f:%.2f", curGridMousePos.x, curGridMousePos.y);
+    ImGui::SameLine();
+    ImGui::Text("SnapToPos: %.2f: %.2f", snapPos.x, snapPos.y);
+    ImGui::End();
+  }
+
+  void EditorSystem::CreateMenuBar()
+  {
+    ImGui::SetNextWindowPos(ImVec2(0, 0));
+    ImGui::SetNextWindowSize(ImVec2(400, 60));
+    ImGui::Begin("MENU");
+
+    if (ImGui::Button("ZOOM IN"))
+    {
+      if (zoom < 400)
+      {
+        zoom *= 2;
+      }
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("ZOOM OUT"))
+    {
+      if (zoom > 50)
+      {
+        zoom /= 2;
+      }
+    }
+    ImGui::SameLine();
+    ImGui::Text("Zoom: %f", zoom);
+    ImGui::End();
+  }
+
+  void EditorSystem::terminate_imgui()
+  {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
+  }
+
+  //============================================================
+  //
+  // GRID
+  // 
   //===========================================================
 
   void Grid::init()
@@ -313,6 +330,9 @@ namespace nc
 
   void Grid::render_grid(vertex_2d windowSize, vertex_2d offset, float zoom)
   {
+    offset.x -= floor(offset.x);
+    offset.y -= floor(offset.y);
+
     viewMatrix = glm::ortho(-windowSize.x / (zoom)+offset.x, windowSize.x / (zoom)+offset.x,
       -windowSize.y / (zoom)+offset.y, windowSize.y / (zoom)+offset.y);
     glClearColor(0, 0, 0, 1);
@@ -339,9 +359,4 @@ namespace nc
     glDeleteShader(fragmentShader);
     glDeleteVertexArrays(1, &vertexArrayBuffer);
   }
-
-
-
-
-  //===========================================================
 }
