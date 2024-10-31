@@ -1,5 +1,6 @@
 // Project Nucledian Source File
 #include <vec.h>
+#include <cmath>
 
 namespace nc::non_sse
 {
@@ -138,23 +139,29 @@ template<typename T, u64 SIZE>
 T length(const vec<T, SIZE>& a)
 {
   T result = 0;
+
   for (u64 i = 0; i < SIZE; ++i)
   {
-    result += a[i];
+    result += a[i] * a[i];
   }
 
-  return result;
+  return std::sqrt(result);
 }
 
 //==============================================================================
 template<typename T, u64 SIZE>
 vec<T, SIZE> normalize(const vec<T, SIZE>& a)
 {
-  T result = 0;
+  const auto len = length(a);
+  NC_ASSERT(len > 0.0f);
+
+  auto result = a;
+
   for (u64 i = 0; i < SIZE; ++i)
   {
-    result += a[i];
+    result[i] = result[i] / len;
   }
+
   return result;
 }
 

@@ -21,6 +21,7 @@
 
 #include <ranges>
 #include <chrono>
+#include <cstdlib>    // std::rand
 
 namespace nc
 {
@@ -49,6 +50,7 @@ Engine& get_engine()
   return *g_engine;
 }
 
+#pragma optimize("", off)
 //==============================================================================
 #ifdef NC_BENCHMARK
 static bool execute_benchmarks_if_required(const std::vector<std::string>& args)
@@ -277,14 +279,14 @@ static void test_make_sector(
   const std::vector<u16>&                     points,
   std::vector<map_building::SectorBuildData>& out)
 {
-  auto wall_port = WallPortableData
+  auto wall_port = WallExtData
   {
     .texture_id = 0,
     .texture_offset_x = 0,
     .texture_offset_y = 0
   };
 
-  auto sector_port = SectorPortableData
+  auto sector_port = SectorExtData
   {
     .floor_texture_id = 1,
     .ceil_texture_id  = 0,
@@ -298,50 +300,68 @@ static void test_make_sector(
     walls.push_back(map_building::WallBuildData
     {
       .point_index = p,
-      .port = wall_port,
+      .ext_data = wall_port,
     });
   }
   out.push_back(map_building::SectorBuildData
   {
-    .points = std::move(walls),
-    .portable = sector_port,
+    .points   = std::move(walls),
+    .ext_data = sector_port,
   });
+}
+
+//==============================================================================
+static void make_random_square_maze_map(MapSectors& map, u32 size, u32 seed)
+{
+  std::srand(seed);
+
+  std::vector<vec2> points;
+
+  // first up the points
+  for (u32 i = 0; i < size; ++i)
+  {
+    for (u32 j = 0; j < size; ++j)
+    {
+      const f32 x = (j / static_cast<f32>(size-1)) * 2.0f - 1.0f;
+      const f32 y = (i / static_cast<f32>(size-1)) * 2.0f - 1.0f;
+      points.push_back(vec2{x, y});
+    }
+  }
+
+  // and then the sectors
+  std::vector<map_building::SectorBuildData> sectors;
+
+  for (u16 i = 0; i < size-1; ++i)
+  {
+    for (u16 j = 0; j < size-1; ++j)
+    {
+      auto rng = std::rand();
+      if (rng % 4 != 0)
+      {
+        u16 i1 = i * size + j;
+        u16 i2 = i1+1;
+        u16 i3 = (i+1) * size + j + 1;
+        u16 i4 = i3-1;
+        test_make_sector({i1, i2, i3, i4}, sectors);
+      }
+    }
+  }
+
+  using namespace map_building::MapBuildFlag;
+
+  map_building::build_map(
+    points, sectors, map,
+    //omit_convexity_clockwise_check |
+    //omit_sector_overlap_check      |
+    //omit_wall_overlap_check        |
+    assert_on_fail);
 }
 
 //==============================================================================
 void Engine::build_map_and_sectors()
 {
   m_map = std::make_unique<MapSectors>();
-
-  std::vector<vec2> points;
-
-  points.push_back(vec2{-0.5f,  0.0f});
-  points.push_back(vec2{-0.5f, -0.5f});
-  points.push_back(vec2{ 0.0f,  0.0f});
-  points.push_back(vec2{ 0.6f,  0.0f});
-  points.push_back(vec2{ 0.8f,  0.8f});
-
-  points.push_back(vec2{ 0.0f, -0.6f});
-  points.push_back(vec2{ 0.6f, -0.6f});
-
-  points.push_back(vec2{ 0.8f, -0.1f});     // 7
-
-  points.push_back(vec2{-0.9f,  0.2f});     // 8
-  points.push_back(vec2{-0.9f, -0.2f});     // 9
-
-  std::vector<map_building::SectorBuildData> sectors;
-
-  test_make_sector({0, 1, 2, 3, 4}, sectors);
-  test_make_sector({2, 3, 6, 5}, sectors);
-  test_make_sector({3, 4, 7}, sectors);
-  test_make_sector({0, 1, 9, 8}, sectors);
-
-  map_building::build_map(
-    points, sectors, *m_map,
-
-    map_building::MapBuildFlag::omit_wall_overlap_check |
-    map_building::MapBuildFlag::omit_sector_overlap_check |
-    map_building::MapBuildFlag::omit_convexity_clockwise_check);
+  make_random_square_maze_map(*m_map, 32, 0);
 }
 
 //==============================================================================

@@ -12,7 +12,7 @@ namespace nc
 template<typename FT, u64 S>
 aabb<FT, S>::aabb()
 : min(vec_type{std::numeric_limits<FT>::max()})
-, max(vec_type{std::numeric_limits<FT>::min()})
+, max(vec_type{std::numeric_limits<FT>::lowest()})
 {
 
 }

@@ -11,10 +11,6 @@
 #include <set>
 #include <iterator>   // std::back_inserter
 
-#ifdef NC_BENCHMARK
-#include <benchmark/benchmark.h>
-#endif
-
 namespace nc
 {
 
@@ -27,7 +23,7 @@ template<typename F>
 void for_each_portal(const MapSectors& map, SectorID sector_id, F&& lambda)
 {
   NC_ASSERT(sector_id < map.sectors.size());
-  const auto& repr = map.sectors[sector_id].int_data;
+  const auto& repr = map.sectors[sector_id].repr;
 
   for (auto pid = repr.first_portal; pid < repr.last_portal; ++pid)
   {
@@ -41,32 +37,9 @@ void for_each_portal(const MapSectors& map, SectorID sector_id, F&& lambda)
 }
 
 //==============================================================================
-// TODO: an acceleration data structure is a MUST HAVE here!!!
-SectorID get_sector_from_point(const MapSectors& map, vec2 point)
+// TODO!!!
+SectorID get_sector_from_point(const MapSectors& /*map*/, vec2 /*point*/)
 {
-  for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)
-  {
-    const auto& sector = map.sectors[sector_id];
-
-    const auto first = sector.int_data.first_wall;
-    const auto last  = sector.int_data.last_wall;
-
-    NC_ASSERT(first < map.walls.size());
-    const auto p1 = map.walls[first].pos;
-
-    for (WallID wall_index = first+1; wall_index < last-1; ++wall_index)
-    {
-      WallID next_index = wall_index+1;
-      const auto p2 = map.walls[wall_index].pos;
-      const auto p3 = map.walls[next_index].pos;
-
-      if (intersect::point_triangle(point, p1, p2, p3))
-      {
-        return sector_id;
-      }
-    }
-  }
-
   return INVALID_SECTOR_ID;
 }
 
@@ -74,12 +47,12 @@ SectorID get_sector_from_point(const MapSectors& map, vec2 point)
 WallID next_wall(const MapSectors& map, SectorID sector, WallID wall)
 {
   NC_ASSERT(sector < map.sectors.size());
-  NC_ASSERT(wall < map.sectors[sector].int_data.last_wall);
+  NC_ASSERT(wall < map.sectors[sector].repr.last_wall);
   WallID next = wall+1;
 
-  if (next == map.sectors[sector].int_data.last_wall)
+  if (next == map.sectors[sector].repr.last_wall)
   {
-    next = map.sectors[sector].int_data.first_wall;
+    next = map.sectors[sector].repr.first_wall;
   }
 
   return next;
@@ -96,7 +69,7 @@ void MapSectors::traverse_visible_areas(
   NC_ASSERT(visitor);
   namespace mh = map_helpers;
 
-  SectorID start_sector = mh::get_sector_from_point(*this, input_frustum.center);
+  SectorID start_sector = mh::get_sector_from_point(*this, input_frustum.point);
 
   if (start_sector == INVALID_SECTOR_ID)
   {
@@ -147,7 +120,7 @@ void MapSectors::traverse_visible_areas(
       const auto p2 = walls[wall2_idx].pos;
 
       const auto p1_to_p2  = p2-p1;
-      const auto p1_to_cam = frustum.center-p1;
+      const auto p1_to_cam = frustum.point-p1;
 
       if (cross(p1_to_p2, p1_to_cam) >= 0.0f)
       {
@@ -192,7 +165,7 @@ static bool check_for_wall_overlaps(
     auto&& sector = sectors[sector_idx];
     for (u64 point_idx = 0; point_idx < sector.points.size(); ++point_idx)
     {
-      auto&& point = points[sector.points[point_idx].point_index];
+      auto&& point = points[point_idx];
       sector_bboxes[sector_idx].insert_point(point);
     }
   }
@@ -249,7 +222,8 @@ static bool check_for_wall_overlaps(
               continue;
             }
 
-            if (!intersect::segment_segment(s1p1, s1p2, s2p1, s2p2))
+            f32 _; bool __; // unused
+            if (!intersect::segment_segment_2d(s1p1, s1p2, s2p1, s2p2, _, __))
             {
               continue;
             }
@@ -460,8 +434,8 @@ static void resolve_clockwise_wall_order(SectorBuildData& sector)
   {
     u32 next_index = (index+1) % sector.points.size();
     std::swap(
-      sector.points[index].ext_data,
-      sector.points[next_index].ext_data);
+      sector.points[index].port,
+      sector.points[next_index].port);
   }
 }
 
@@ -557,7 +531,9 @@ int build_map(
   // copy of the original sectors
   auto temp_sectors = sectors;
 
-  [[maybe_unused]]const bool assert_on_check_fail = flags & assert_on_fail;
+  #ifdef NC_ASSERTS
+  const bool assert_on_check_fail = flags & assert_on_fail;
+  #endif
 
   const bool do_wall_overlap_check = !(flags & omit_wall_overlap_check);
   const bool do_convexity_check    = !(flags & omit_convexity_clockwise_check);
@@ -565,8 +541,7 @@ int build_map(
 
   // Check for point and sector count
   u64 MAX_U16 = static_cast<u16>(-1);
-  NC_ASSERT(points.size()  < MAX_U16);
-  NC_ASSERT(sectors.size() < MAX_U16);
+  NC_ASSERT(points.size() < MAX_U16);
 
   // Check for wall overlaps
   if (do_wall_overlap_check)
@@ -616,18 +591,18 @@ int build_map(
     auto& output_sector = output.sectors.emplace_back();
 
     // copy the portable data
-    output_sector.ext_data = sector.ext_data;
+    output_sector.port = sector.portable;
 
     const u32 total_wall_count = static_cast<u32>(sector.points.size());
     // we do not know this in advance, but
-    // need if to calculate the offset into the ext_dataal array
+    // need if to calculate the offset into the portal array
     u32 total_portal_count = 0;   
 
-    output_sector.int_data.first_wall = static_cast<WallID>(output.walls.size());
-    output_sector.int_data.last_wall  = output_sector.int_data.first_wall + total_wall_count;
+    output_sector.repr.first_wall = static_cast<WallID>(output.walls.size());
+    output_sector.repr.last_wall  = output_sector.repr.first_wall + total_wall_count;
 
-    output_sector.int_data.first_portal = static_cast<WallID>(output.portals.size());
-    output_sector.int_data.last_portal  = output_sector.int_data.first_portal;
+    output_sector.repr.first_portal = static_cast<WallID>(output.portals.size());
+    output_sector.repr.last_portal  = output_sector.repr.first_portal;
 
     // cycle through all walls and push them into the array
     for (u16 wall_index = 0; wall_index < sector.points.size(); ++wall_index)
@@ -666,7 +641,7 @@ int build_map(
       {
         .pos              = points[point_index],
         .portal_sector_id = portal_with,
-        .ext_data             = sector.points[wall_index].ext_data,
+        .port             = sector.points[wall_index].port,
       });
 
       // And make it possibly a portal
@@ -681,7 +656,7 @@ int build_map(
       }
     }
 
-    output_sector.int_data.last_portal = output_sector.int_data.first_portal + total_portal_count;
+    output_sector.repr.last_portal = output_sector.repr.first_portal + total_portal_count;
   }
 
   // now, there should be the same number of sectors in the output as on the input
@@ -689,105 +664,6 @@ int build_map(
 
   return true;
 }
-
-#ifdef NC_BENCHMARK
-
-static void test_make_sector(
-  const std::vector<u16>&                     points,
-  std::vector<map_building::SectorBuildData>& out)
-{
-  auto wall_port = WallExtData
-  {
-    .texture_id = 0,
-    .texture_offset_x = 0,
-    .texture_offset_y = 0
-  };
-
-  auto sector_port = SectorExtData
-  {
-    .floor_texture_id = 1,
-    .ceil_texture_id  = 0,
-    .floor_height     = 0,
-    .ceil_height      = 13,
-  };
-
-  std::vector<map_building::WallBuildData> walls;
-  for (auto& p : points)
-  {
-    walls.push_back(map_building::WallBuildData
-    {
-      .point_index = p,
-      .ext_data = wall_port,
-    });
-  }
-  out.push_back(map_building::SectorBuildData
-  {
-    .points = std::move(walls),
-    .ext_data = sector_port,
-  });
-}
-
-
-void benchmark_map_creation_squared(
-  benchmark::State&           state,
-  map_building::MapBuildFlags flags)
-{
-  std::vector<vec2> points;
-
-  const u32 SIZE = static_cast<u32>(state.range(0));
-
-  // first up the points
-  for (u32 i = 0; i < SIZE; ++i)
-  {
-    for (u32 j = 0; j < SIZE; ++j)
-    {
-      const f32 x = (j / static_cast<f32>(SIZE-1)) * 2.0f - 1.0f;
-      const f32 y = (i / static_cast<f32>(SIZE-1)) * 2.0f - 1.0f;
-      points.push_back(vec2{x, y});
-    }
-  }
-
-  // and then the sectors
-  std::vector<map_building::SectorBuildData> sectors;
-
-  for (u16 i = 0; i < SIZE-1; ++i)
-  {
-    for (u16 j = 0; j < SIZE-1; ++j)
-    {
-      u16 i1 = i * SIZE + j;
-      u16 i2 = i1+1;
-      u16 i3 = (i+1) * SIZE + j + 1;
-      u16 i4 = i3-1;
-      test_make_sector({i1, i2, i3, i4}, sectors);
-    }
-  }
-
-  using namespace map_building::MapBuildFlag;
-
-  for (auto _ : state)
-  {
-    MapSectors map;
-    map_building::build_map(points, sectors, map, flags);
-
-    benchmark::DoNotOptimize(map);
-    benchmark::ClobberMemory();
-  }
-}
-
-constexpr auto OMIT_CHECKS_FLAGS
-  = map_building::MapBuildFlag::omit_convexity_clockwise_check
-  | map_building::MapBuildFlag::omit_sector_overlap_check
-  | map_building::MapBuildFlag::omit_wall_overlap_check;
-
-BENCHMARK_CAPTURE(benchmark_map_creation_squared, "Map building (with checks)", 0)                ->Arg(16)->Unit(benchmark::kMillisecond);
-BENCHMARK_CAPTURE(benchmark_map_creation_squared, "Map building (no checks)",   OMIT_CHECKS_FLAGS)->Arg(16)->Unit(benchmark::kMillisecond);
-
-BENCHMARK_CAPTURE(benchmark_map_creation_squared, "Map building (with checks)", 0)                ->Arg(32)->Unit(benchmark::kMillisecond);
-BENCHMARK_CAPTURE(benchmark_map_creation_squared, "Map building (no checks)",   OMIT_CHECKS_FLAGS)->Arg(32)->Unit(benchmark::kMillisecond);
-
-BENCHMARK_CAPTURE(benchmark_map_creation_squared, "Map building (with checks)", 0)                ->Arg(48)->Unit(benchmark::kMillisecond);
-BENCHMARK_CAPTURE(benchmark_map_creation_squared, "Map building (no checks)",   OMIT_CHECKS_FLAGS)->Arg(48)->Unit(benchmark::kMillisecond);
-#endif
 
 }
 

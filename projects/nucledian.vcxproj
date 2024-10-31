@@ -70,6 +70,7 @@
     <ClCompile Include="..\source\nucledian\engine\map\map_system.cpp" />
     <ClCompile Include="..\source\nucledian\intersect.cpp" />
     <ClCompile Include="..\source\nucledian\main.cpp" />
+    <ClCompile Include="..\source\nucledian\maths.cpp" />
     <ClCompile Include="..\source\nucledian\vector_maths.cpp" />
     <ClCompile Include="..\source\nucledian\vector_maths_non_sse.cpp" />
     <ClCompile Include="..\source\nucledian\vector_maths_sse.cpp" />
@@ -145,6 +146,7 @@
     <ClInclude Include="..\source\nucledian\engine\input\input_system.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_system.h" />
     <ClInclude Include="..\source\nucledian\intersect.h" />
+    <ClInclude Include="..\source\nucledian\maths.h" />
     <ClInclude Include="..\source\nucledian\vector_maths.h" />
     <ClInclude Include="..\source\nucledian\vector_maths_declarations.h" />
     <ClInclude Include="..\source\nucledian\vector_maths_instantiations.h" />

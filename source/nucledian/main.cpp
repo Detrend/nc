@@ -1,8 +1,9 @@
 // Project Nucledian Source File
 #include <config.h>
 #include <engine/core/engine.h>
+
+// SDL must be included here, as it redefines "main" as a macro
 #include <SDL2/include/SDL.h>
-#include <vector_maths.h>
 
 #include <vector>
 #include <string>

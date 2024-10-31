@@ -212,6 +212,13 @@ vec<T, SIZE> normalize(const vec<T, SIZE>& a)
   return non_sse::normalize(a);
 }
 
+//==============================================================================
+template<typename T, u64 SIZE>
+T length(const vec<T, SIZE>& a)
+{
+  return non_sse::length(a);
+}
+
 }
 
 namespace nc::sse

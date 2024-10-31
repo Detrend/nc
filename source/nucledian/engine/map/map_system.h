@@ -1,14 +1,40 @@
 // Project Nucledian Source File
 #pragma once
 
+// MR says:
+// This is a primary data representation of the map during runtime
+// of the game. It is supposed to be fully static (no adding/removing
+// of sectors during runtime).
+// The map is composed of sectors, where each sector is a convex 2D
+// shape surrounded by walls. The ordering of the walls is in
+// counter-clockwise order.
+// Two sectors can be connected together by so-called "portal",
+// which acts as an edge on the graph whose vertices are the
+// individual sectors.
+// The purpose of this data representation is a fast traversal and
+// visibility culling. Therefore, the main use is in rendering and
+// enemy-player visibility checking.
+// The data of walls and sectors is tightly packed together in an
+// array for cache-friendly traversal.
+// It should be possible to fully derive the level geometry from
+// this data representation.
+
+// INTERNAL vs EXTERNAL data:
+// Several parts of this code work with internal/external sector/wall
+// data.
+// Internal data is a set of data generated during building of the
+// map from other type of data. Do not touch internal data.
+// External data is a set of data associated with walls/sectors
+// that can be shared with other map representation (editor for
+// example). These are never changed during building of the sector.
+// If you want to associate some data with each sector/wall, then
+// put it into external data.
+
 #include <types.h>
 #include <vector_maths.h>
 #include <intersect.h>
 
 #include <vector>
-#include <utility>
-#include <float.h>
-#include <algorithm>
 #include <functional>
 
 namespace nc
@@ -23,7 +49,26 @@ constexpr auto INVALID_WALL_ID    = static_cast<WallID>(-1);
 constexpr auto INVALID_PORTAL_ID  = static_cast<PortalID>(-1);
 constexpr auto INVALID_TEXTURE_ID = static_cast<TextureID>(-1);
 
-struct SectorReprData
+// Portable data are a set of data that can be shared among two different
+// map representations. Put here anything that you want in sectors
+struct SectorExtData
+{
+  TextureID floor_texture_id = INVALID_TEXTURE_ID;
+  TextureID ceil_texture_id  = INVALID_TEXTURE_ID;
+  f32       floor_height     = 0;
+  f32       ceil_height      = 0;
+};
+
+// Put here anything you want in each wall
+struct WallExtData
+{
+  TextureID texture_id;
+  u8        texture_offset_x;
+  u8        texture_offset_y;
+};
+
+// Internal data of this map representation.
+struct SectorIntData
 {
   // All indices are exclusive from top
   // To get number of walls in a sector you use
@@ -35,34 +80,20 @@ struct SectorReprData
   PortalID last_portal  = INVALID_WALL_ID; // [first_portal..total_wall_count]
 };
 
-struct SectorPortableData
-{
-  TextureID floor_texture_id = INVALID_TEXTURE_ID;
-  TextureID ceil_texture_id  = INVALID_TEXTURE_ID;
-  f32       floor_height     = 0;
-  f32       ceil_height      = 0;
-};
-
+// Each sector is comprised of internal data (data 
 struct SectorData
 {
-  SectorReprData     repr;
-  SectorPortableData port;
-};
-
-struct WallPortableData
-{
-  TextureID texture_id;
-  u8        texture_offset_x;
-  u8        texture_offset_y;
+  SectorIntData int_data;
+  SectorExtData ext_data;
 };
 
 struct WallData
 {
   // The wall starts here and ends in the same point as the next
   // wall begins
-  vec2             pos = vec2{0};
-  SectorID         portal_sector_id = INVALID_SECTOR_ID;    // if is portal
-  WallPortableData port;
+  vec2        pos = vec2{0};
+  SectorID    portal_sector_id = INVALID_SECTOR_ID;    // if is portal
+  WallExtData ext_data;
 };
 
 struct WallPortalData
@@ -91,14 +122,14 @@ namespace map_building
 
 struct WallBuildData
 {
-  u16              point_index = 0;
-  WallPortableData port;
+  u16         point_index = 0;
+  WallExtData ext_data;
 };
 
 struct SectorBuildData
 {
   std::vector<WallBuildData> points;
-  SectorPortableData         portable;
+  SectorExtData              ext_data;
 };
 
 struct OverlapInfo
@@ -127,6 +158,7 @@ namespace MapBuildFlag
     omit_wall_overlap_check        = 1 << 0,
     omit_convexity_clockwise_check = 1 << 1,
     omit_sector_overlap_check      = 1 << 2,
+    assert_on_fail                 = 1 << 3,
   };
 }
 

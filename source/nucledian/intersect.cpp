@@ -1,55 +1,80 @@
 // Project Nucledian Source File
 #include <intersect.h>
+#include <maths.h>
+#include <math.h>
 #include <vector_maths.h>
 #include <aabb.h>
 
 #include <limits>     // FLT_MIN, FLT_MAX
-#include <algorithm>  // std::min, std::max
+#include <algorithm>  // std::min, std::max, std::abs
 #include <array>
 
 namespace nc::intersect
 {
-  
-//==============================================================================
-bool segment_segment_2d(
-  vec2  start_a,
-  vec2  end_a,
-  vec2  start_b,
-  vec2  end_b,
-  f32&  t,
-  bool& parallel)
-{
-  vec2 dir_a = end_a - start_a;
-  vec2 dir_b = end_b - start_b;
-  f32 top    = cross(dir_a, dir_b);
-  f32 bottom = cross(start_b - start_a, dir_b);
 
-  if (top == 0 && bottom == 0)
+//==============================================================================
+bool segment_segment(
+  vec2 start_a,
+  vec2 end_a,
+  vec2 start_b,
+  vec2 end_b)
+{
+  constexpr f32 TOLERANCE = 0.0001f;   // 0.1mm
+
+  const vec2 dir_a  = end_a - start_a;
+  const vec2 dir_b  = end_b - start_b;
+  const f32  top    = cross(dir_b, start_b - start_a);
+  const f32  bottom = cross(dir_b, dir_a);
+
+  NC_ASSERT(length(dir_a) > TOLERANCE);
+  NC_ASSERT(length(dir_b) > TOLERANCE);
+
+  const bool tp_zero = is_zero(top,    TOLERANCE);
+  const bool bt_zero = is_zero(bottom, TOLERANCE);
+
+  if (tp_zero && bt_zero)
   {
-    parallel = true;
-    return true;
+    // parallel and lines are intersecting, check for segment
+    // intersection by projecting onto an interval
+    // TODO: can be probably done faster
+    // TODO: maybe no need to normalize?
+    const vec2 projection_plane = /*normalize(*/dir_a/*)*/;
+
+    const f32 a1 = dot(start_a, projection_plane);
+    const f32 a2 = dot(end_a,   projection_plane);
+    const f32 b1 = dot(start_b, projection_plane);
+    const f32 b2 = dot(end_b,   projection_plane);
+
+    const f32 imin = std::max(std::min(a1, a2), std::min(b1, b2));
+    const f32 imax = std::min(std::max(a1, a2), std::max(b1, b2));
+
+    return imax >= imin;
   }
-  else if (top == 0)
+  else if (bt_zero)
   {
     // parallel and non-intersecting
-    parallel = true;
     return false;
   }
   else
   {
-    parallel = false;
+    const f32 t = top / bottom;
 
-    t = top / bottom;
     if (t >= 0 && t <= 1)
     {
       // might be intersecting, check for u as well
-      return true;
+      const f32 utop    = cross(dir_a, start_a - start_b);
+      const f32 ubottom = -bottom;
+
+      // This should not happen AFAIK
+      NC_ASSERT(!is_zero(ubottom, TOLERANCE));
+
+      const f32 u = utop / ubottom;
+      return u >= 0 && u <= 1;
     }
 
-    // intersecting, but only lines, not segments
+    // lines intersect, but segments do not
+    return false;
   }
-
-  return false;   // TODO: remove
 }
 
 //==============================================================================
@@ -59,12 +84,6 @@ bool aabb_aabb_2d(const aabb2& a, const aabb2& b)
   vec2 mx = min(a.max, b.max);
   aabb2 new_aabb{mn, mx};
   return new_aabb.is_valid();
-}
-
-//==============================================================================
-static f32 sign(f32 input)
-{
-  return input == 0.0f ? 0.0f : (input > 0.0f ? 1.0f : -1.0f);
 }
 
 //==============================================================================
@@ -78,11 +97,11 @@ bool point_triangle(vec2 p, vec2 a, vec2 b, vec2 c)
   const auto b_to_p = p-b;
   const auto c_to_p = p-c;
 
-  const f32 gl_sign = sign(cross(a_to_b, b_to_c));
+  const f32 gl_sign = sgn(cross(a_to_b, b_to_c));
 
-  const f32 a_sign = sign(cross(a_to_b, a_to_p));
-  const f32 b_sign = sign(cross(b_to_c, b_to_p));
-  const f32 c_sign = sign(cross(c_to_a, c_to_p));
+  const f32 a_sign = sgn(cross(a_to_b, a_to_p));
+  const f32 b_sign = sgn(cross(b_to_c, b_to_p));
+  const f32 c_sign = sgn(cross(c_to_a, c_to_p));
 
   auto eq_or_zero = [](f32 f1, f32 f2)
   {
@@ -105,10 +124,10 @@ bool sse::point_triangle(vec2 p, vec2 a, vec2 b, vec2 c)
   const auto b_to_p = p-b;
   const auto c_to_p = p-c;
 
-  const f32 g_sign = sign(cross(a_to_b, b_to_c));
-  const f32 a_sign = sign(cross(a_to_b, a_to_p));
-  const f32 b_sign = sign(cross(b_to_c, b_to_p));
-  const f32 c_sign = sign(cross(c_to_a, c_to_p));
+  const f32 g_sign = sgn(cross(a_to_b, b_to_c));
+  const f32 a_sign = sgn(cross(a_to_b, a_to_p));
+  const f32 b_sign = sgn(cross(b_to_c, b_to_p));
+  const f32 c_sign = sgn(cross(c_to_a, c_to_p));
 
   auto eq_or_zero = [](f32 f1, f32 f2)
   {
@@ -203,15 +222,73 @@ bool convex_convex(std::span<vec2> a, std::span<vec2> b, f32 threshold)
 }
 
 //==============================================================================
-bool nc::Frustum2::contains_point(vec2 /*p*/) const
+bool nc::Frustum2::contains_point(vec2 p) const
 {
-  return false;
+  const auto to_point = p-center;
+
+  if (length(to_point) == 0.0f)
+  {
+    return true;
+  }
+
+  const auto projected = dot(normalize(to_point), direction);
+
+  // We must use ">" instead of ">=" for the case
+  // when the angle is 1.0 and therefore 0 degrees
+  return projected > angle;
 }
 
 //==============================================================================
-bool nc::Frustum2::intersects_wall(vec2 /*p1*/, vec2 /*p2*/) const
+bool nc::Frustum2::intersects_wall(vec2 p1, vec2 p2) const
 {
-  return false;
+  if (this->is_empty())
+  {
+    return false;
+  }
+
+  if (this->contains_point(p1) || this->contains_point(p2))
+  {
+    return true;
+  }
+
+  const auto to_p1 = normalize(p1-center);
+  const auto to_p2 = normalize(p2-center);
+  const auto sgn1  = sgn(cross(to_p1, direction));
+  const auto sgn2  = sgn(cross(to_p2, direction));
+
+  if (sgn1 == sgn2)
+  {
+    // both points of the wall are on the same side,
+    // therefore the wall does not intersect with
+    // the frustum
+    return false;
+  }
+
+  // intersect the direction and wall
+  const auto p1_to_p2     = p2-p1;
+  const auto center_to_p1 = p1-center;
+  const auto top = cross(p1_to_p2, center_to_p1);
+  const auto bot = cross(p1_to_p2, direction);
+
+  // should never happen as both points are on different sides
+  NC_ASSERT(bot != 0.0f);
+
+  // if t is 0 or more then the wall intersects with the direction
+  // line and therefore is contained in the frustum
+  const auto t = top / bot;
+  return t >= 0.0f;
+}
+
+//==============================================================================
+bool nc::Frustum2::is_full() const
+{
+  return angle < -1.0f;
+}
+
+//==============================================================================
+bool nc::Frustum2::is_empty() const
+{
+  return angle >= 1.0f;
 }
 
 //==============================================================================

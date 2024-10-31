@@ -274,7 +274,7 @@ void GraphicsSystem::render_map()
   for (u16 i = 0; i < map.sectors.size(); ++i)
   {
     auto&& sector = map.sectors[i];
-    auto& repr = sector.repr;
+    auto& repr = sector.int_data;
     const s32 wall_count = repr.last_wall - repr.first_wall;
     NC_ASSERT(wall_count >= 0);
 
@@ -312,7 +312,7 @@ void GraphicsSystem::render_map()
   for (u16 i = 0; i < map.sectors.size(); ++i)
   {
     auto&& sector = map.sectors[i];
-    auto& repr = sector.repr;
+    auto& repr = sector.int_data;
     const s32 wall_count = repr.last_wall - repr.first_wall;
     NC_ASSERT(wall_count >= 0);
 
@@ -367,7 +367,7 @@ void GraphicsSystem::render_map()
   // then render the walls with white
   for (auto&& sector : map.sectors)
   {
-    auto& repr = sector.repr;
+    auto& repr = sector.int_data;
     const s32 wall_count = repr.last_wall - repr.first_wall;
     NC_ASSERT(wall_count >= 0);
 
@@ -393,7 +393,7 @@ void GraphicsSystem::render_map()
   // and then render portals with red
   for (auto&& sector : map.sectors)
   {
-    auto& repr = sector.repr;
+    auto& repr = sector.int_data;
     const s32 wall_count   = repr.last_wall   - repr.first_wall;
     const s32 portal_count = repr.last_portal - repr.first_portal;
     NC_ASSERT(portal_count >= 0);
@@ -403,7 +403,7 @@ void GraphicsSystem::render_map()
     {
       WallID index_in_arr = map.portals[repr.first_portal+index].wall_index;
       WallID next_in_arr  = index_in_arr+1;
-      if (index_in_arr >= repr.last_wall)
+      if (next_in_arr >= repr.last_wall)
       {
         next_in_arr -= wall_count;
       }
