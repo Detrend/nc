@@ -163,7 +163,7 @@ void MapSectors::traverse_visible_areas(
 
       sectors_to_visit.push_back(SectorToVisit
       {
-        .frustum = frustum.modify_with_wall(p1, p2),
+        .frustum = frustum.modify_with_portal(p1, p2),
         .id      = walls[wall1_idx].portal_sector_id,
         .depth   = 0,
       });

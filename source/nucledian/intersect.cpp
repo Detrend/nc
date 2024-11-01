@@ -219,10 +219,8 @@ bool convex_convex(std::span<vec2> a, std::span<vec2> b, f32 threshold)
   return true;
 }
 
-}
-
 //==============================================================================
-bool nc::Frustum2::contains_point(vec2 p) const
+bool Frustum2::contains_point(vec2 p) const
 {
   const auto to_point = p-center;
 
@@ -239,7 +237,7 @@ bool nc::Frustum2::contains_point(vec2 p) const
 }
 
 //==============================================================================
-bool nc::Frustum2::intersects_wall(vec2 p1, vec2 p2) const
+bool Frustum2::intersects_wall(vec2 p1, vec2 p2) const
 {
   if (this->is_empty())
   {
@@ -280,20 +278,57 @@ bool nc::Frustum2::intersects_wall(vec2 p1, vec2 p2) const
 }
 
 //==============================================================================
-bool nc::Frustum2::is_full() const
+bool Frustum2::is_full() const
 {
   return angle < -1.0f;
 }
 
 //==============================================================================
-bool nc::Frustum2::is_empty() const
+bool Frustum2::is_empty() const
 {
   return angle >= 1.0f;
 }
 
 //==============================================================================
-nc::Frustum2 nc::Frustum2::modify_with_wall(vec2 /*p1*/, vec2 /*p2*/) const
+Frustum2 Frustum2::modify_with_portal(vec2 p1, vec2 p2) const
 {
   return Frustum2{};
+}
+
+//==============================================================================
+Frustum2 Frustum2::from_point_and_portal(vec2 point, vec2 a, vec2 b)
+{
+  auto new_frustum = Frustum2
+  {
+    .center    = point,
+    .direction = vec2{0, 1},
+    .angle     = -2.0f,
+  };
+
+  if (point == a || point == b)
+  {
+    return new_frustum;
+  }
+
+  const auto to_a = normalize(a-point);
+  const auto to_b = normalize(b-point);
+
+  if (dot(to_a, to_b) == -1.0f)
+  {
+    // stuck in the wall, return empty frustum
+    new_frustum.angle = 1.0f;
+    new_frustum.direction = vec2{to_a.y, to_a.x};
+
+    NC_ASSERT(new_frustum.is_empty());
+
+    return new_frustum;
+  }
+
+  new_frustum.direction = normalize(to_a + to_b);
+  new_frustum.angle     = dot(to_a, new_frustum.direction);
+  NC_ASSERT(new_frustum.angle >= 0.0f);
+  return new_frustum;
+}
+
 }
 

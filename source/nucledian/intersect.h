@@ -25,7 +25,9 @@ struct Frustum2
   bool is_empty() const;
 
   // inserts a "portal" into the frustum, modifying it
-  Frustum2 modify_with_wall(vec2 p1, vec2 p2) const;
+  Frustum2 modify_with_portal(vec2 p1, vec2 p2) const;
+
+  static Frustum2 from_point_and_portal(vec2 point, vec2 a, vec2 b);
 };
 
 }
