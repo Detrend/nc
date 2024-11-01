@@ -5,7 +5,7 @@
 #include <vector_maths.h>
 #include <aabb.h>
 
-#include <limits>     // FLT_MIN, FLT_MAX
+#include <limits>     // FLT_MAX
 #include <algorithm>  // std::min, std::max, std::abs
 #include <array>
 
@@ -150,7 +150,7 @@ bool convex_convex(std::span<vec2> a, std::span<vec2> b, f32 threshold)
       struct LocalInterval
       {
         f32 min = FLT_MAX;
-        f32 max = FLT_MIN;
+        f32 max = -FLT_MAX;
       };
 
       LocalInterval intervals[2]{};

@@ -33,6 +33,7 @@
 #include <types.h>
 #include <vector_maths.h>
 #include <intersect.h>
+#include <grid.h>
 
 #include <vector>
 #include <functional>
@@ -109,6 +110,7 @@ struct MapSectors
   std::vector<SectorData>     sectors;
   std::vector<WallData>       walls;
   std::vector<WallPortalData> portals;
+  StatGridAABB2<SectorID>     sector_grid;
 
   using VisitorFunc = std::function<void(SectorID, Frustum2)>;
   void traverse_visible_areas(
@@ -155,10 +157,9 @@ namespace MapBuildFlag
 {
   enum etype : MapBuildFlags
   {
-    omit_wall_overlap_check        = 1 << 0,
-    omit_convexity_clockwise_check = 1 << 1,
-    omit_sector_overlap_check      = 1 << 2,
-    assert_on_fail                 = 1 << 3,
+    omit_convexity_clockwise_check = 1 << 0,
+    omit_sector_overlap_check      = 1 << 1,
+    assert_on_fail                 = 1 << 2,
   };
 }
 

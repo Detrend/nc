@@ -405,7 +405,7 @@ void GraphicsSystem::render_map()
       WallID next_in_arr  = index_in_arr+1;
       if (next_in_arr >= repr.last_wall)
       {
-        next_in_arr -= wall_count;
+        next_in_arr = static_cast<WallID>(next_in_arr - wall_count);
       }
       NC_ASSERT(index_in_arr < map.walls.size());
       NC_ASSERT(next_in_arr  < map.walls.size());

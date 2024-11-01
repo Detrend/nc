@@ -4,12 +4,15 @@
 #include <aabb.h>
 #include <vec.h>
 #include <vector_maths.h>
+#include <maths.h>
+#include <grid.h>
 
 #include <algorithm>
 #include <array>
 #include <vector>
 #include <set>
 #include <iterator>   // std::back_inserter
+#include <cmath>      // std::acos
 
 #ifdef NC_BENCHMARK
 #include <benchmark/benchmark.h>
@@ -175,105 +178,6 @@ void MapSectors::traverse_visible_areas(
 
 namespace nc::map_building
 {
-  
-//==============================================================================
-// a stupid algoritm (TODO: make smarter) for wall overlap check
-static bool check_for_wall_overlaps(
-  const std::vector<vec2>&            points,
-  const std::vector<SectorBuildData>& sectors,
-  OverlapInfo&                        overlap)
-{
-  std::vector<aabb2> sector_bboxes;
-  sector_bboxes.resize(sectors.size());
-  
-  // create the bboxes
-  for (u64 sector_idx = 0; sector_idx < sectors.size(); ++sector_idx)
-  {
-    auto&& sector = sectors[sector_idx];
-    for (u64 point_idx = 0; point_idx < sector.points.size(); ++point_idx)
-    {
-      auto&& point = points[sector.points[point_idx].point_index];
-      sector_bboxes[sector_idx].insert_point(point);
-    }
-  }
-
-  // now iterate all sectors
-  for (u16 sector1_idx = 0; sector1_idx < sectors.size(); ++sector1_idx)
-  {
-    for (u16 sector2_idx = sector1_idx+1; sector2_idx < sectors.size(); ++sector2_idx)
-    {
-      auto&& sector1_bbox = sector_bboxes[sector1_idx];
-      auto&& sector2_bbox = sector_bboxes[sector2_idx];
-
-      // quick exit if the bboxes do not overlap
-      if (!intersect::aabb_aabb_2d(sector1_bbox, sector2_bbox))
-      {
-        continue;
-      }
-
-      // now intersect all the walls
-      auto&& sector1 = sectors[sector1_idx];
-      auto&& sector2 = sectors[sector2_idx];
-
-      // for all walls of sector1
-      {
-        for (u16 s1p1_idx = 0; s1p1_idx < sector1.points.size(); ++s1p1_idx)
-        {
-          u16 s1p2_idx = (s1p1_idx+1) % sector1.points.size();
-
-          for (u16 s2p1_idx = 0; s2p1_idx < sector2.points.size(); ++s2p1_idx)
-          {
-            u16 s2p2_idx = (s2p1_idx+1) % sector2.points.size();
-
-            const u16 s1p1_wi = sector1.points[s1p1_idx].point_index;
-            const u16 s1p2_wi = sector1.points[s1p2_idx].point_index;
-            const u16 s2p1_wi = sector2.points[s2p1_idx].point_index;
-            const u16 s2p2_wi = sector2.points[s2p2_idx].point_index;
-
-            if (s1p1_wi == s2p1_wi || s1p1_wi == s2p2_wi
-             || s1p2_wi == s2p1_wi || s1p2_wi == s2p2_wi)
-            {
-              continue;
-            }
-
-            const vec2 s1p1 = points[s1p1_wi];
-            const vec2 s1p2 = points[s1p2_wi];
-            const vec2 s2p1 = points[s2p1_wi];
-            const vec2 s2p2 = points[s2p2_wi];
-
-            const aabb2 bbox1{s1p1, s1p2};
-            const aabb2 bbox2{s2p1, s2p2};
-
-            if (!intersect::aabb_aabb_2d(bbox1, bbox2))
-            {
-              continue;
-            }
-
-            if (!intersect::segment_segment(s1p1, s1p2, s2p1, s2p2))
-            {
-              continue;
-            }
-
-            overlap = OverlapInfo
-            {
-              .sector1 = sector1_idx,
-              .sector2 = sector2_idx,
-              .wall1 = s1p1_idx,
-              .wall2 = s2p1_idx,
-              .w1p1 = s1p1_wi,
-              .w1p2 = s1p2_wi,
-              .w2p1 = s2p1_wi,
-              .w2p2 = s2p2_wi,
-            };
-            return false;
-          }
-        }
-      }
-    }
-  }
-
-  return true;
-}
 
 //==============================================================================
 // TODO: we are doing 2x the amount of intersections (each 2 sectors are
@@ -288,7 +192,7 @@ static bool check_for_sector_overlaps(
 
   // the range of the map
   vec2 map_min = vec2{FLT_MAX, FLT_MAX};
-  vec2 map_max = vec2{FLT_MIN, FLT_MIN};
+  vec2 map_max = vec2{-FLT_MAX, -FLT_MAX};
 
   for (auto&& point : points)
   {
@@ -296,38 +200,10 @@ static bool check_for_sector_overlaps(
     map_max = max(map_max, point);
   }
 
-  // make a 128x128 grid
   constexpr u64 GRID_SIZE = 128;
-  using SectorList = std::vector<SectorID>;
-  using SectorGrid = std::array<std::array<SectorList, GRID_SIZE>, GRID_SIZE>;
 
-  struct LocalUvec2
-  {
-    u16 x;
-    u16 y;
-  };
-
-  SectorGrid grid{};
-
-  // This remaps the points to the indices of the grid
-  auto remap_to_indices = [&](vec2 point)->LocalUvec2
-  {
-    NC_ASSERT(point.x <= map_max.x && point.y <= map_max.y);
-    NC_ASSERT(point.x >= map_min.x && point.y >= map_min.y);
-
-    const vec2 map_size = map_max - map_min;
-
-    constexpr f32 coeff = 0.99999f;
-
-    const f32 fx = ((point.x - map_min.x) / map_size.x) * coeff;
-    const f32 fy = ((point.y - map_min.y) / map_size.y) * coeff;
-
-    return LocalUvec2
-    {
-      .x = static_cast<u16>(fx * GRID_SIZE),
-      .y = static_cast<u16>(fy * GRID_SIZE),
-    };
-  };
+  StatGridAABB2<SectorID> grid;
+  grid.initialize(GRID_SIZE, GRID_SIZE, map_min, map_max);
 
   // calculate bboxes for the sectors
   std::vector<aabb2> sector_bboxes(sectors.size());
@@ -348,48 +224,30 @@ static bool check_for_sector_overlaps(
   for (SectorID sector_idx = 0; sector_idx < sectors.size(); ++sector_idx)
   {
     const auto& bbox = sector_bboxes[sector_idx];
-
     NC_ASSERT(bbox.is_valid());
 
-    auto[fromx, fromy] = remap_to_indices(bbox.min);
-    auto[tox,   toy]   = remap_to_indices(bbox.max);
-
-    // now traverse all the grid points
-    for (u16 xi = fromx; xi <= tox; ++xi)
-    {
-      for (u16 yi = fromy; yi <= toy; ++yi)
-      {
-        grid[xi][yi].push_back(sector_idx);
-      }
-    }
+    grid.insert(bbox, sector_idx);
   }
 
   // check sectors overlap
   for (SectorID sector_idx = 0; sector_idx < sectors.size(); ++sector_idx)
   {
     const auto& bbox = sector_bboxes[sector_idx];
-
     NC_ASSERT(bbox.is_valid());
 
-    auto[fromx, fromy] = remap_to_indices(bbox.min);
-    auto[tox,   toy]   = remap_to_indices(bbox.max);
-
     std::set<SectorID> possible_intersection_sectors;
-
-    for (u16 xi = fromx; xi <= tox; ++xi)
+    grid.query_aabb(bbox, [&](aabb2, SectorID sector)
     {
-      for (u16 yi = fromy; yi <= toy; ++yi)
+      if (sector != sector_idx)
       {
-        const auto& cell = grid[xi][yi];
-        possible_intersection_sectors.insert(cell.begin(), cell.end());
+        possible_intersection_sectors.insert(sector);
       }
-    }
-
-    // remove ourselves
-    possible_intersection_sectors.erase(sector_idx);
+    });
 
     for (SectorID other_idx : possible_intersection_sectors)
     {
+      NC_ASSERT(other_idx != sector_idx);
+
       const auto& sector1 = sectors[sector_idx];
       const auto& sector2 = sectors[other_idx];
 
@@ -433,23 +291,6 @@ static bool check_for_sector_overlaps(
 }
 
 //==============================================================================
-static f32 sign(f32 value)
-{
-  union float_and_uint
-  {
-    f32 real;
-    u32 integral;
-  };
-  float_and_uint fu{.real = value};
-
-  auto retval = value == 0.0f ? 0.0f : (1.0f - 2.0f * (fu.integral >> 31));
-  NC_ASSERT((value == 0.0f && retval == 0.0f)
-    || (value > 0.0f && retval == 1.0f)
-    || (value < 0.0f && retval == -1.0f));
-  return retval;
-}
-
-//==============================================================================
 static void resolve_clockwise_wall_order(SectorBuildData& sector)
 {
   // just revert the direction of the walls..
@@ -473,6 +314,9 @@ static bool resolve_non_convex_and_clockwise(
 {
   for (SectorID sector_id = 0; sector_id < sectors.size(); ++sector_id)
   {
+    // sum of inner angles
+    f32 degree_sum = 0.0f;
+
     auto& sector = sectors[sector_id];
     // If the shape is convex then it will have only counter-clockwise
     // angles or only clockwise angles
@@ -497,9 +341,13 @@ static bool resolve_non_convex_and_clockwise(
       const auto p1_to_p2 = p2-p1;    // first wall direction
       const auto p2_to_p3 = p3-p2;    // second wall direction
 
+      const auto dot_prod = dot(normalize(p1_to_p2), normalize(p2_to_p3));
+      const auto degrees  = rad2deg(std::acos(dot_prod));
+      degree_sum += degrees;
+
       // By using the 2D cross product we determine if two walls
       // are counter clockwise or clockwise
-      const f32 sg = sign(cross(p1_to_p2, p2_to_p3));
+      const f32 sg = sgn(cross(p1_to_p2, p2_to_p3));
       if (sg < 0.0f)
       {
         // this angle between two walls is
@@ -526,9 +374,24 @@ static bool resolve_non_convex_and_clockwise(
       };
       return false;
     }
-    else if (clockwise_count)
+
+    // 1/4 degree to account for float inaccuracies
+    constexpr f32 MAX_DEGREE_DIFF = 0.25f;
+    const auto degree_diff = std::abs(degree_sum - 360.0f);
+    if (degree_diff > MAX_DEGREE_DIFF)
     {
-      // rotate the walls around so that they are in a
+      // the sector is apparently degenerated
+      error = NonConvexInfo
+      {
+        .sector = sector_id,
+      };
+      return false;
+    }
+
+    if (clockwise_count)
+    {
+      // The sector is ok, just the walls have incorrect ordering..
+      // Rotate the walls around so that they are in a
       // counter clockwise order
       resolve_clockwise_wall_order(sector);
     }
@@ -559,7 +422,6 @@ int build_map(
 
   [[maybe_unused]]const bool assert_on_check_fail = flags & assert_on_fail;
 
-  const bool do_wall_overlap_check = !(flags & omit_wall_overlap_check);
   const bool do_convexity_check    = !(flags & omit_convexity_clockwise_check);
   const bool do_overlap_check      = !(flags & omit_sector_overlap_check);
 
@@ -567,16 +429,6 @@ int build_map(
   u64 MAX_U16 = static_cast<u16>(-1);
   NC_ASSERT(points.size()  < MAX_U16);
   NC_ASSERT(sectors.size() < MAX_U16);
-
-  // Check for wall overlaps
-  if (do_wall_overlap_check)
-  {
-    if (OverlapInfo oi; !check_for_wall_overlaps(points, temp_sectors, oi))
-    {
-      NC_ASSERT(!assert_on_check_fail);
-      return false;
-    }
-  }
 
   // Check for non convex and non-clockwise order sectors
   if (do_convexity_check)
@@ -588,7 +440,7 @@ int build_map(
     }
   }
 
-  // Check for sector overlaps (not allowed)
+  // Check for sector overlaps
   if (do_overlap_check)
   {
     if (OverlapInfo oi; !check_for_sector_overlaps(points, temp_sectors, oi))
@@ -624,7 +476,8 @@ int build_map(
     u32 total_portal_count = 0;   
 
     output_sector.int_data.first_wall = static_cast<WallID>(output.walls.size());
-    output_sector.int_data.last_wall  = output_sector.int_data.first_wall + total_wall_count;
+    output_sector.int_data.last_wall  = static_cast<WallID>(
+      output_sector.int_data.first_wall + total_wall_count);
 
     output_sector.int_data.first_portal = static_cast<WallID>(output.portals.size());
     output_sector.int_data.last_portal  = output_sector.int_data.first_portal;
@@ -681,7 +534,8 @@ int build_map(
       }
     }
 
-    output_sector.int_data.last_portal = output_sector.int_data.first_portal + total_portal_count;
+    output_sector.int_data.last_portal = static_cast<WallID>(
+      output_sector.int_data.first_portal + total_portal_count);
   }
 
   // now, there should be the same number of sectors in the output as on the input
@@ -776,8 +630,7 @@ void benchmark_map_creation_squared(
 
 constexpr auto OMIT_CHECKS_FLAGS
   = map_building::MapBuildFlag::omit_convexity_clockwise_check
-  | map_building::MapBuildFlag::omit_sector_overlap_check
-  | map_building::MapBuildFlag::omit_wall_overlap_check;
+  | map_building::MapBuildFlag::omit_sector_overlap_check;
 
 BENCHMARK_CAPTURE(benchmark_map_creation_squared, "Map building (with checks)", 0)                ->Arg(16)->Unit(benchmark::kMillisecond);
 BENCHMARK_CAPTURE(benchmark_map_creation_squared, "Map building (no checks)",   OMIT_CHECKS_FLAGS)->Arg(16)->Unit(benchmark::kMillisecond);

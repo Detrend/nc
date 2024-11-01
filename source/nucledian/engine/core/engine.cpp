@@ -338,9 +338,9 @@ static void make_random_square_maze_map(MapSectors& map, u32 size, u32 seed)
       auto rng = std::rand();
       if (rng % 4 != 0)
       {
-        u16 i1 = i * size + j;
+        u16 i1 = static_cast<u16>(i * size + j);
         u16 i2 = i1+1;
-        u16 i3 = (i+1) * size + j + 1;
+        u16 i3 = static_cast<u16>((i+1) * size + j + 1);
         u16 i4 = i3-1;
         test_make_sector({i1, i2, i3, i4}, sectors);
       }
