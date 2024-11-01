@@ -114,32 +114,6 @@ bool point_triangle(vec2 p, vec2 a, vec2 b, vec2 c)
 }
 
 //==============================================================================
-bool sse::point_triangle(vec2 p, vec2 a, vec2 b, vec2 c)
-{
-  const auto a_to_b = b-a;
-  const auto b_to_c = c-b;
-  const auto c_to_a = a-c;
-
-  const auto a_to_p = p-a;
-  const auto b_to_p = p-b;
-  const auto c_to_p = p-c;
-
-  const f32 g_sign = sgn(cross(a_to_b, b_to_c));
-  const f32 a_sign = sgn(cross(a_to_b, a_to_p));
-  const f32 b_sign = sgn(cross(b_to_c, b_to_p));
-  const f32 c_sign = sgn(cross(c_to_a, c_to_p));
-
-  auto eq_or_zero = [](f32 f1, f32 f2)
-  {
-    return f1 == f2 || f2 == 0.0f;
-  };
-
-  return eq_or_zero(g_sign, a_sign)
-      && eq_or_zero(g_sign, b_sign)
-      && eq_or_zero(g_sign, c_sign);
-}
-
-//==============================================================================
 bool triangle_triangle(vec2 a1, vec2 b1, vec2 c1, vec2 a2, vec2 b2, vec2 c2)
 {
   auto arr1 = std::array{a1, b1, c1};
@@ -219,6 +193,11 @@ bool convex_convex(std::span<vec2> a, std::span<vec2> b, f32 threshold)
   return true;
 }
 
+}
+
+namespace nc
+{
+
 //==============================================================================
 bool Frustum2::contains_point(vec2 p) const
 {
@@ -290,7 +269,7 @@ bool Frustum2::is_empty() const
 }
 
 //==============================================================================
-Frustum2 Frustum2::modify_with_portal(vec2 p1, vec2 p2) const
+Frustum2 Frustum2::modify_with_portal(vec2 /*p1*/, vec2 /*p2*/) const
 {
   return Frustum2{};
 }
