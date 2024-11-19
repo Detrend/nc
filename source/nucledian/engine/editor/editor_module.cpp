@@ -122,7 +122,10 @@ namespace nc
     {
       curLeftMouse[0] = true;
 
-      gridOffset += (prevMousePos - curMousePos);
+      if (editMode2D == move) {
+        gridOffset += (prevMousePos - curMousePos);
+      }
+
       if (!prevLeftMouse[0]) {
         io.AddMouseButtonEvent(0, true);
       }
@@ -176,7 +179,7 @@ namespace nc
   }
 
   void EditorSystem::draw_ui(vertex_2d windowSize)
-  {  
+  {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
@@ -243,7 +246,7 @@ namespace nc
       editMode2D = vertex;
     }
     ImGui::EndDisabled();
-    
+
     ImGui::SameLine();
     ImGui::BeginDisabled(editMode2D == line);
     if (ImGui::Button("LINE"))
