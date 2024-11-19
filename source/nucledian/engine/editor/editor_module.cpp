@@ -12,6 +12,7 @@
 
 #include <SDL.h>
 #include <SDL_opengl.h>
+#include <imgui/imgui_internal.h>
 
 namespace nc
 {
@@ -159,6 +160,8 @@ namespace nc
 
   void EditorSystem::initImGui(SDL_Window* window, void* gl_context)
   {
+    editMode2D = move;
+
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     io = ImGui::GetIO();
@@ -201,7 +204,7 @@ namespace nc
   void EditorSystem::CreateMenuBar()
   {
     ImGui::SetNextWindowPos(ImVec2(0, 0));
-    ImGui::SetNextWindowSize(ImVec2(400, 60));
+    ImGui::SetNextWindowSize(ImVec2(400, 80));
     ImGui::Begin("MENU");
 
     if (ImGui::Button("ZOOM IN"))
@@ -221,6 +224,42 @@ namespace nc
     }
     ImGui::SameLine();
     ImGui::Text("Zoom: %f", zoom);
+
+
+    ImGui::Text("EDITOR MODE:");
+    ImGui::SameLine();
+
+    ImGui::BeginDisabled(editMode2D == move);
+    if (ImGui::Button("MOVE"))
+    {
+      editMode2D = move;
+    }
+    ImGui::EndDisabled();
+
+    ImGui::SameLine();
+    ImGui::BeginDisabled(editMode2D == vertex);
+    if (ImGui::Button("VERTEX"))
+    {
+      editMode2D = vertex;
+    }
+    ImGui::EndDisabled();
+    
+    ImGui::SameLine();
+    ImGui::BeginDisabled(editMode2D == line);
+    if (ImGui::Button("LINE"))
+    {
+      editMode2D = line;
+    }
+    ImGui::EndDisabled();
+
+    ImGui::SameLine();
+    ImGui::BeginDisabled(editMode2D == sector);
+    if (ImGui::Button("SECTOR"))
+    {
+      editMode2D = sector;
+    }
+    ImGui::EndDisabled();
+
     ImGui::End();
   }
 

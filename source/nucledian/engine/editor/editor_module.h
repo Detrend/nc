@@ -30,6 +30,14 @@ namespace nc
     view_3d
   };
 
+  enum editorMode2D
+  {
+    move,
+    vertex,
+    line,
+    sector
+  };
+
   struct ModuleEvent;
   
   class Grid {
@@ -93,6 +101,7 @@ namespace nc
     ImGuiIO& io;
 
     float zoom;
+    editorMode2D editMode2D;
   };
 
   
