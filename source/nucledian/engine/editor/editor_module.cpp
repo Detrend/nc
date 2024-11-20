@@ -38,6 +38,7 @@ namespace nc
     case ModuleEventType::editor_update:
     {
       getMouseInput();
+      updateCursorGL();
       break;
     }
     case ModuleEventType::editor_render:
@@ -45,6 +46,7 @@ namespace nc
       grid.render_grid(windowSize, gridOffset, zoom);
 
       draw_ui(windowSize);
+      DrawCursor();
 
       ImGui::Render();
       ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -84,12 +86,16 @@ namespace nc
     grid.init();
 
     initImGui(window, gl_context);
+
+    initCursorGL();
     return true;
   }
 
   EditorSystem::~EditorSystem()
   {
-
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+    glDeleteVertexArrays(1, &vertexArrayBuffer);
   }
 
   //=================================================================
@@ -157,6 +163,22 @@ namespace nc
     return vertex_2d(newX, newY);
   }
 
+  vertex_2d EditorSystem::getSnapToGridPos()
+  {
+    float x = curGridMousePos.x;
+    float y = curGridMousePos.y;
+
+    float newX = floor(x/ GRID_SIZE) * GRID_SIZE;
+    if (x - newX > GRID_SIZE / 2) {
+      newX += GRID_SIZE;
+    }
+    float newY = floor(y / GRID_SIZE) * GRID_SIZE;
+    if (y - newY > GRID_SIZE / 2) {
+      newY += GRID_SIZE;
+    }
+    return vertex_2d(newX, newY);
+  }
+
   //=================================================================
   // IMGUI HANDLES
   //=================================================================
@@ -202,6 +224,105 @@ namespace nc
     ImGui::SameLine();
     ImGui::Text("SnapToPos: %.2f: %.2f", snapPos.x, snapPos.y);
     ImGui::End();
+  }
+
+  void EditorSystem::initCursorGL()
+  {
+    vertex_2d snappedPos = getSnapToGridPos();
+
+    onGridPoint[0] = vertex_3d(snappedPos.x, snappedPos.y, -1);
+    onGridPoint[1] = vertex_3d(1.0f, 0.5f, 0);
+
+    // vertex shader
+    const char* vertexShaderSource = "#version 330 core\n"
+      "layout (location = 0) in vec3 aPos;\n"
+      "layout (location = 1) in vec3 color;\n"
+      "out vec4 vertexColor;\n"
+      "uniform mat4 transform;\n"
+      "void main()\n"
+      "{\n"
+      "   vertexColor = vec4(color, 1.0);\n"
+      "   gl_Position = transform * vec4(aPos, 1.0);\n"
+      "}\0";
+
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+    glCompileShader(vertexShader);
+
+    // fragment shader
+    const char* fragmentShaderSource = "#version 330 core\n"
+      "in vec4 vertexColor;\n"
+      "out vec4 FragColor;\n"
+      "void main()\n"
+      "{\n"
+      "  FragColor = vertexColor;\n"
+      "}\0";
+
+    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    glCompileShader(fragmentShader);
+    
+    //Link Program
+    shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+
+    // bind to VBO
+    glGenBuffers(1, &vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3, &onGridPoint, GL_DYNAMIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    //bind to VAO
+    glGenVertexArrays(1, &vertexArrayBuffer);
+    glBindVertexArray(vertexArrayBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(float), &onGridPoint, GL_DYNAMIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+  }
+
+  void EditorSystem::updateCursorGL()
+  {
+    vertex_2d snappedPos = getSnapToGridPos();
+    onGridPoint[0] = vertex_3d(snappedPos.x, snappedPos.y, 1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * 2, &onGridPoint, GL_DYNAMIC_DRAW);
+
+    //bind to VAO
+    glBindVertexArray(vertexArrayBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(float) * 2, &onGridPoint, GL_DYNAMIC_DRAW);
+  }
+
+  void EditorSystem::DrawCursor()
+  {
+    viewMatrix = glm::ortho(-windowSize.x / (zoom)+gridOffset.x, windowSize.x / (zoom)+gridOffset.x,
+      -windowSize.y / (zoom)+gridOffset.y, windowSize.y / (zoom)+gridOffset.y);
+
+    glUseProgram(shaderProgram);
+
+    unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
+    glPointSize(10);
+    glBindVertexArray(vertexArrayBuffer);
+    glDrawArrays(GL_POINTS, 0, 1);
+    glDisableVertexAttribArray(0);
   }
 
   void EditorSystem::CreateMenuBar()
@@ -393,6 +514,8 @@ namespace nc
     glBindVertexArray(vertexArrayBuffer);
     glDrawArrays(GL_LINES, 0, points.size());
     glDisableVertexAttribArray(0);
+
+    
   }
 
   Grid::~Grid()

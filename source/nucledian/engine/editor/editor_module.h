@@ -74,6 +74,9 @@ namespace nc
     void initImGui(SDL_Window* window, void* gl_context);
     void draw_ui(vertex_2d windowSize);
     void CreateBottomBar(vertex_2d& windowSize);
+    void initCursorGL();
+    void updateCursorGL();
+    void DrawCursor();
     void CreateMenuBar();
     void terminate_imgui();
 
@@ -81,6 +84,7 @@ namespace nc
     void getLeftMouseButton(Uint32 mouseState);
     vertex_2d getMousePos(int x, int y);
     vertex_2d getSnapToGridPos(float x, float y);
+    vertex_2d getSnapToGridPos();
 
     editorView view;
     Grid grid;
@@ -102,6 +106,15 @@ namespace nc
 
     float zoom;
     editorMode2D editMode2D;
+
+    vertex_3d onGridPoint[2];
+
+    GLuint vertexBuffer;
+    GLuint vertexShader;
+    GLuint fragmentShader;
+    GLuint shaderProgram;
+    GLuint vertexArrayBuffer;
+    glm::mat4 viewMatrix;
   };
 
   
