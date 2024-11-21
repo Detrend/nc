@@ -38,15 +38,26 @@ namespace nc
     case ModuleEventType::editor_update:
     {
       getMouseInput();
-      updateCursorGL();
+      if (editMode2D == vertex || editMode2D == line)
+      {
+        updateCursorGL();
+      }
       break;
     }
     case ModuleEventType::editor_render:
     {
+      glClearColor(0, 0, 0, 1);
+      glClear(GL_COLOR_BUFFER_BIT);
+
       grid.render_grid(windowSize, gridOffset, zoom);
 
+      if (editMode2D == vertex || editMode2D == line)
+      {
+        drawCursor();
+      }
+
+
       draw_ui(windowSize);
-      DrawCursor();
 
       ImGui::Render();
       ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -168,7 +179,7 @@ namespace nc
     float x = curGridMousePos.x;
     float y = curGridMousePos.y;
 
-    float newX = floor(x/ GRID_SIZE) * GRID_SIZE;
+    float newX = floor(x / GRID_SIZE) * GRID_SIZE;
     if (x - newX > GRID_SIZE / 2) {
       newX += GRID_SIZE;
     }
@@ -206,11 +217,11 @@ namespace nc
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
 
-    CreateMenuBar();
-    CreateBottomBar(windowSize);
+    createMenuBar();
+    createBottomBar(windowSize);
   }
 
-  void EditorSystem::CreateBottomBar(vertex_2d& windowSize)
+  void EditorSystem::createBottomBar(vertex_2d& windowSize)
   {
     vertex_2d snapPos = getSnapToGridPos(curGridMousePos.x, curGridMousePos.y);
 
@@ -261,7 +272,7 @@ namespace nc
     fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
     glCompileShader(fragmentShader);
-    
+
     //Link Program
     shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, vertexShader);
@@ -290,6 +301,9 @@ namespace nc
 
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
   }
 
   void EditorSystem::updateCursorGL()
@@ -306,7 +320,7 @@ namespace nc
     glBufferData(GL_ARRAY_BUFFER, 3 * sizeof(float) * 2, &onGridPoint, GL_DYNAMIC_DRAW);
   }
 
-  void EditorSystem::DrawCursor()
+  void EditorSystem::drawCursor()
   {
     viewMatrix = glm::ortho(-windowSize.x / (zoom)+gridOffset.x, windowSize.x / (zoom)+gridOffset.x,
       -windowSize.y / (zoom)+gridOffset.y, windowSize.y / (zoom)+gridOffset.y);
@@ -323,9 +337,10 @@ namespace nc
     glBindVertexArray(vertexArrayBuffer);
     glDrawArrays(GL_POINTS, 0, 1);
     glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
   }
 
-  void EditorSystem::CreateMenuBar()
+  void EditorSystem::createMenuBar()
   {
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(ImVec2(400, 80));
@@ -498,9 +513,6 @@ namespace nc
 
     viewMatrix = glm::ortho(-windowSize.x / (zoom)+offset.x, windowSize.x / (zoom)+offset.x,
       -windowSize.y / (zoom)+offset.y, windowSize.y / (zoom)+offset.y);
-    glClearColor(0, 0, 0, 1);
-
-    glClear(GL_COLOR_BUFFER_BIT);
 
     glUseProgram(shaderProgram);
 
@@ -514,8 +526,7 @@ namespace nc
     glBindVertexArray(vertexArrayBuffer);
     glDrawArrays(GL_LINES, 0, points.size());
     glDisableVertexAttribArray(0);
-
-    
+    glDisableVertexAttribArray(1);
   }
 
   Grid::~Grid()

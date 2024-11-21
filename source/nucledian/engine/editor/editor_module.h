@@ -73,11 +73,11 @@ namespace nc
   private:
     void initImGui(SDL_Window* window, void* gl_context);
     void draw_ui(vertex_2d windowSize);
-    void CreateBottomBar(vertex_2d& windowSize);
+    void createBottomBar(vertex_2d& windowSize);
     void initCursorGL();
     void updateCursorGL();
-    void DrawCursor();
-    void CreateMenuBar();
+    void drawCursor();
+    void createMenuBar();
     void terminate_imgui();
 
     void getMouseInput();
