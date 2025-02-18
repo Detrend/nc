@@ -158,7 +158,7 @@ void MapSectors::traverse_visible_areas(
         return;
       }
 
-      if (!frustum.intersects_wall(p1, p2))
+      if (!frustum.intersects_segment(p1, p2))
       {
         // early exit, we do not see the portal
         return;
@@ -422,8 +422,8 @@ int build_map(
 
   [[maybe_unused]]const bool assert_on_check_fail = flags & assert_on_fail;
 
-  const bool do_convexity_check    = !(flags & omit_convexity_clockwise_check);
-  const bool do_overlap_check      = !(flags & omit_sector_overlap_check);
+  const bool do_convexity_check = !(flags & omit_convexity_clockwise_check);
+  const bool do_overlap_check   = !(flags & omit_sector_overlap_check);
 
   // Check for point and sector count
   u64 MAX_U16 = static_cast<u16>(-1);

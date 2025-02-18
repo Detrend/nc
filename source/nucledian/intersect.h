@@ -10,18 +10,28 @@
 namespace nc
 {
 
+// A 2D view frustum. Has a position and view angle.
+// Can perform basic operations like checking if an object is inside
+// or outside or shrinking the frustum.
 struct Frustum2
 {
+  static constexpr f32 EMPTY_ANGLE =  1.0f;
+  static constexpr f32 FULL_ANGLE  = -1.0f;
+
   vec2 center    = vec2{0};     // a center point of the frustum
-  vec2 direction = vec2{0, 1};  // a direction in which it is facing
+  vec2 direction = vec2{0, 1};  // a direction in which it is facing, has to be normalized
   // angle in [-1.0, 1.0] interval
   // -1 = 360 deg frustum, 1 = 0 degree frustum
-  f32  angle = -2.0f;
+  f32  angle = FULL_ANGLE;
 
-  bool contains_point(vec2 point)        const;
-  bool intersects_wall(vec2 p1, vec2 p2) const;
+  // Checks if a given point is inside the frustum
+  bool contains_point(vec2 point)           const;
+  // Checks if the line segment is partially or fully inside the frustum
+  bool intersects_segment(vec2 p1, vec2 p2) const;
 
+  // Checks if the frustum angle is 360 degrees
   bool is_full()  const;
+  // Checks if the frustum angle is 0 degrees
   bool is_empty() const;
 
   // inserts a "portal" into the frustum, modifying it

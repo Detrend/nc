@@ -12,7 +12,7 @@ namespace nc::sse
 
 #ifdef NC_MSVC
 #pragma warning(push)
-#pragma warning(disable: 4201)
+#pragma warning(disable: 4201)      // Nameless struct inside union
 #endif
 
 // ================================= //

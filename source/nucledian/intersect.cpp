@@ -1,13 +1,13 @@
 // Project Nucledian Source File
 #include <intersect.h>
 #include <maths.h>
-#include <math.h>
 #include <vector_maths.h>
 #include <aabb.h>
 
 #include <limits>     // FLT_MAX
 #include <algorithm>  // std::min, std::max, std::abs
 #include <array>
+#include <cmath>
 
 namespace nc::intersect
 {
@@ -149,8 +149,8 @@ bool convex_convex(std::span<vec2> a, std::span<vec2> b, f32 threshold)
 
       struct LocalInterval
       {
-        f32 min = FLT_MAX;
-        f32 max = -FLT_MAX;
+        f32 min =  FLT_MAX;
+        f32 max = -FLT_MAX;   // FLT_MIN is a trap..
       };
 
       LocalInterval intervals[2]{};
@@ -185,6 +185,7 @@ bool convex_convex(std::span<vec2> a, std::span<vec2> b, f32 threshold)
       }
 
       // plane not found, go on
+      // TODO: finish this!!!
     }
   }
 
@@ -201,6 +202,8 @@ namespace nc
 //==============================================================================
 bool Frustum2::contains_point(vec2 p) const
 {
+  NC_ASSERT(is_normal(this->direction));
+
   const auto to_point = p-center;
 
   if (length(to_point) == 0.0f)
@@ -216,8 +219,10 @@ bool Frustum2::contains_point(vec2 p) const
 }
 
 //==============================================================================
-bool Frustum2::intersects_wall(vec2 p1, vec2 p2) const
+bool Frustum2::intersects_segment(vec2 p1, vec2 p2) const
 {
+  NC_ASSERT(is_normal(this->direction));
+
   if (this->is_empty())
   {
     return false;
@@ -228,10 +233,10 @@ bool Frustum2::intersects_wall(vec2 p1, vec2 p2) const
     return true;
   }
 
-  const auto to_p1 = normalize(p1-center);
-  const auto to_p2 = normalize(p2-center);
-  const auto sgn1  = sgn(cross(to_p1, direction));
-  const auto sgn2  = sgn(cross(to_p2, direction));
+  const auto to_p1 = normalize(p1-this->center);
+  const auto to_p2 = normalize(p2-this->center);
+  const auto sgn1  = sgn(cross(to_p1, this->direction));
+  const auto sgn2  = sgn(cross(to_p2, this->direction));
 
   if (sgn1 == sgn2)
   {
@@ -243,9 +248,9 @@ bool Frustum2::intersects_wall(vec2 p1, vec2 p2) const
 
   // intersect the direction and wall
   const auto p1_to_p2     = p2-p1;
-  const auto center_to_p1 = p1-center;
+  const auto center_to_p1 = p1-this->center;
   const auto top = cross(p1_to_p2, center_to_p1);
-  const auto bot = cross(p1_to_p2, direction);
+  const auto bot = cross(p1_to_p2, this->direction);
 
   // should never happen as both points are on different sides
   NC_ASSERT(bot != 0.0f);
@@ -259,19 +264,92 @@ bool Frustum2::intersects_wall(vec2 p1, vec2 p2) const
 //==============================================================================
 bool Frustum2::is_full() const
 {
-  return angle < -1.0f;
+  return angle <= FULL_ANGLE;
 }
 
 //==============================================================================
 bool Frustum2::is_empty() const
 {
-  return angle >= 1.0f;
+  return angle >= EMPTY_ANGLE;
 }
 
 //==============================================================================
-Frustum2 Frustum2::modify_with_portal(vec2 /*p1*/, vec2 /*p2*/) const
+Frustum2 Frustum2::modify_with_portal(vec2 p1, vec2 p2) const
 {
-  return Frustum2{};
+  NC_ASSERT(is_normal(this->direction));
+
+  // This could have been done in a faster way probably..
+  if (this->intersects_segment(p1, p2))
+  {
+    const bool inside1 = this->contains_point(p1);
+    const bool inside2 = this->contains_point(p2);
+
+    if (inside1 && inside2)
+    {
+      // both points inside, easy case
+      const auto to_p1 = normalize(p1-center);
+      const auto to_p2 = normalize(p2-center);
+      const auto midir = normalize(to_p1 + to_p2);
+
+      return Frustum2
+      {
+        .center    = center,
+        .direction = midir,
+        .angle     = dot(to_p1, midir),
+      };
+    }
+    else if (!inside1 && !inside2)
+    {
+      // Both points outside but intersecting, easy as well.
+      // Just keep the old frustum
+      return *this;
+    }
+
+    const auto point_outside = inside1 ? p2 : p1;
+    const auto to_outside_pt = normalize(point_outside-center);
+    const bool is_on_right   = cross(point_outside-center, this->direction) > 0;
+
+    // the two frustums are overlapping, not that easy
+
+    const auto flipped = vec2{direction.y, -direction.x};
+    const auto b       = std::sqrt(1.0f - angle * angle);
+
+    const auto l_edge = direction * angle + flipped * b;
+    const auto r_edge = direction * angle - flipped * b;
+    // These should end up having an unit length mathematically speaking,
+    // but the floating point inaccuracy might have fucked it up..
+    NC_ASSERT(is_normal(l_edge));
+    NC_ASSERT(is_normal(r_edge));
+    // And these should hold as well
+    NC_ASSERT(is_zero(dot(l_edge, direction) - angle, 0.0001f));
+    NC_ASSERT(is_zero(dot(r_edge, direction) - angle, 0.0001f));
+
+    // we keep the edge in the direction the outside point is on..
+    const auto edge_we_keep = is_on_right ? r_edge : l_edge;
+
+    const auto new_frustum_dir = normalize(edge_we_keep + to_outside_pt);
+    // can be probably calculated more efficiently..
+    const auto new_frustum_angle = dot(new_frustum_dir, edge_we_keep);
+
+    // and now construct a new Frustum from the 2 edges
+    return Frustum2
+    {
+      .center    = this->center,
+      .direction = new_frustum_dir,
+      .angle     = new_frustum_angle,
+    };
+  }
+  else
+  {
+    // Return empty frustum because the portal has zero
+    // intersection with us
+    return Frustum2
+    {
+      .center    = this->center,
+      .direction = this->direction,
+      .angle     = EMPTY_ANGLE,
+    };
+  }
 }
 
 //==============================================================================
@@ -281,7 +359,7 @@ Frustum2 Frustum2::from_point_and_portal(vec2 point, vec2 a, vec2 b)
   {
     .center    = point,
     .direction = vec2{0, 1},
-    .angle     = -2.0f,
+    .angle     = FULL_ANGLE,
   };
 
   if (point == a || point == b)

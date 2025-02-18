@@ -1,5 +1,6 @@
 // Project Nucledian Source File
 #include <vector_maths.h>
+#include <cmath>                  // std::abs
 
 namespace nc::sse
 {
@@ -106,6 +107,28 @@ T length(const vec<T, SIZE>& a)
 
 namespace nc
 {
+  
+//==============================================================================
+template<typename T, u64 SIZE>
+bool is_normal(const vec<T, SIZE>& v, T threshold /*= static_cast<T>(0.01)*/)
+{
+  return std::abs(length(v) - static_cast<T>(1)) < threshold;
+}
+
+}
+
+//==============================================================================
+//                          COMMON INSTANTIATIONS                             //
+//==============================================================================
+namespace nc
+{
 #include <vector_maths_instantiations.h>
+}
+
+namespace nc
+{
+template bool is_normal<f32, 4>(const vec4&, f32);
+template bool is_normal<f32, 3>(const vec3&, f32);
+template bool is_normal<f32, 2>(const vec2&, f32);
 }
 
