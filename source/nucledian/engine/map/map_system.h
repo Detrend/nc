@@ -113,6 +113,9 @@ struct MapSectors
   StatGridAABB2<SectorID>     sector_grid;
 
   using VisitorFunc = std::function<void(SectorID, Frustum2)>;
+  // Traverses the sector system in a BFS order and calls the visitor
+  // for each sector with a frustum that describes which parts of the
+  // sector are visible.
   void traverse_visible_areas(
     const Frustum2& input_frustum,
     VisitorFunc     visitor,

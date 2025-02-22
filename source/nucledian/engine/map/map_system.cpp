@@ -11,6 +11,7 @@
 #include <array>
 #include <vector>
 #include <set>
+#include <map>
 #include <iterator>   // std::back_inserter
 #include <cmath>      // std::acos
 
@@ -97,80 +98,143 @@ void MapSectors::traverse_visible_areas(
   [[maybe_unused]]u8 max_recursion_depth) const
 {
   NC_ASSERT(visitor);
-  namespace mh = map_helpers;
 
-  SectorID start_sector = mh::get_sector_from_point(*this, input_frustum.center);
+  SectorID start_sector = map_helpers::get_sector_from_point(*this, input_frustum.center);
 
   if (start_sector == INVALID_SECTOR_ID)
   {
-    // TODO: maybe error? Or return a value?
+    // This point is outside of all sectors..
     return;
   }
 
-  struct SectorToVisit
+  constexpr u64 FRUSTUM_CNT = 4;
+  struct Frustums
   {
-    Frustum2 frustum;
-    SectorID id;
-    u8       depth;
+    std::array<Frustum2, FRUSTUM_CNT> frustums = {INVALID_FRUSTUM, INVALID_FRUSTUM, INVALID_FRUSTUM, INVALID_FRUSTUM};
+    PortalID see_through_portal_id             = INVALID_PORTAL_ID;
   };
 
-  // TODO: pick a better data structure for BFS than vector
-  // - deque seems not to be a good idea, as according to the
-  //   https://en.cppreference.com/w/cpp/container/deque it has
-  //   a large memory footprint (4096 bytes at minimum)
-  // - maybe a circular buffer?
-  std::vector<SectorToVisit> sectors_to_visit;
-  sectors_to_visit.push_back(SectorToVisit
+  std::map<SectorID, Frustums> curr_iteration;
+  std::map<SectorID, Frustums> next_iteration;
+
   {
-    .frustum = input_frustum,
-    .id      = start_sector,
-    .depth   = 0,   // not used for now
-  });
+    Frustums to_insert{};
+    to_insert.frustums[0] = input_frustum;
+    next_iteration.insert({start_sector, to_insert});
+  }
 
   // Now do a BFS
-  while (sectors_to_visit.size())
+  while (next_iteration.size())
   {
-    // pop the front element
-    auto[frustum, id, depth] = sectors_to_visit.front();
-    sectors_to_visit.erase(sectors_to_visit.begin());
+    curr_iteration = std::move(next_iteration);
+    NC_ASSERT(next_iteration.empty());
 
-    NC_ASSERT(id < sectors.size());
-
-    // call the visitor
-    visitor(id, frustum);
-
-    // now traverse all portals of the sector and check if we can slide
-    // into a neighbor sector
-    mh::for_each_portal(*this, id, [&](PortalID, WallID wall1_idx)
+    for (const auto&[id, content] : curr_iteration)
     {
-      const auto wall2_idx = mh::next_wall(*this, id, wall1_idx);
-      NC_ASSERT(walls[wall1_idx].portal_sector_id != INVALID_SECTOR_ID);
+      NC_ASSERT(id < sectors.size());
 
-      const auto p1 = walls[wall1_idx].pos;
-      const auto p2 = walls[wall2_idx].pos;
-
-      const auto p1_to_p2  = p2-p1;
-      const auto p1_to_cam = frustum.center-p1;
-
-      if (cross(p1_to_p2, p1_to_cam) >= 0.0f)
+      // Iterate all frustums in this dir
+      for (const auto& frustum : content.frustums)
       {
-        // early exit, the wall is turned away from the camera
-        return;
+        if (frustum == INVALID_FRUSTUM)
+        {
+          // this frustum was not filled in
+          continue;
+        }
+
+        // call the visitor for each existing frustum
+        visitor(id, frustum);
+
+        // now traverse all portals of the sector and check if we can slide
+        // into a neighbor sector
+        map_helpers::for_each_portal(*this, id, [&](PortalID, WallID wall1_idx)
+        {
+          const auto wall2_idx   = map_helpers::next_wall(*this, id, wall1_idx);
+          const auto next_sector = walls[wall1_idx].portal_sector_id;
+          NC_ASSERT(next_sector != INVALID_SECTOR_ID);
+
+          const auto p1 = walls[wall1_idx].pos;
+          const auto p2 = walls[wall2_idx].pos;
+
+          const auto p1_to_p2  = p2-p1;
+          const auto p1_to_cam = frustum.center-p1;
+
+          if (cross(p1_to_cam, p1_to_p2) >= 0.0f)
+          {
+            // early exit, the wall is turned away from the camera
+            return;
+          }
+
+          if (!frustum.intersects_segment(p1, p2))
+          {
+            // early exit, we do not see the portal
+            return;
+          }
+
+          const auto new_frustum = frustum.modied_with_portal(p1, p2);
+          if (new_frustum.is_empty())
+          {
+            // not sure how the hell this can happen..
+            return;
+          }
+
+          // visit the sector in the next iteration
+          if (next_iteration.contains(next_sector))
+          {
+            // Merge the two frustums if the sector is already in the queue..
+            // Merge with overlapping one or insert it as a new one..
+            auto& frustum_array = next_iteration[next_sector].frustums;
+            u64   closest_idx   = 0;
+            f32   closest_dst   = FLT_MAX;
+            bool  merged        = false;
+
+            for (u64 i = 0; i < FRUSTUM_CNT; ++i)
+            {
+              auto& other_frustum = frustum_array[i];
+              auto  is_invalid    = other_frustum == INVALID_FRUSTUM;
+
+              f32 angle_diff = is_invalid ? 0.0f : other_frustum.angle_difference(frustum);
+
+              if (angle_diff <= 0.0f)
+              {
+                // we found an overlapping frustum, lets merge with it
+                if (is_invalid)
+                {
+                  other_frustum = new_frustum;
+                }
+                else
+                {
+                  other_frustum = other_frustum.merged_with(new_frustum);
+                }
+
+                merged = true;
+                break;
+              }
+
+              if (angle_diff < closest_dst)
+              {
+                angle_diff  = closest_dst;
+                closest_idx = i;
+              }
+            }
+
+            if (!merged)
+            {
+              // no overlapping frustum found? Then merge with a closest one
+              NC_ASSERT(closest_idx < FRUSTUM_CNT);
+              frustum_array[closest_idx].merged_with(new_frustum);
+            }
+          }
+          else
+          {
+            Frustums to_insert{};
+            to_insert.frustums[0] = new_frustum;
+            next_iteration.insert({next_sector, to_insert});
+          }
+        });
       }
 
-      if (!frustum.intersects_segment(p1, p2))
-      {
-        // early exit, we do not see the portal
-        return;
-      }
-
-      sectors_to_visit.push_back(SectorToVisit
-      {
-        .frustum = frustum.modify_with_portal(p1, p2),
-        .id      = walls[wall1_idx].portal_sector_id,
-        .depth   = 0,
-      });
-    });
+    }
   }
 }
 

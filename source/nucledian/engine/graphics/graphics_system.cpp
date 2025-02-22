@@ -19,8 +19,14 @@
 #include <imgui/imgui_impl_sdl2.h>
 #include <imgui/imgui_impl_opengl3.h>
 
+#include <maths.h>
+
 #include <iostream>
 #include <string>
+#include <map>
+#include <set>
+#include <cmath>
+#include <chrono>
 
 namespace nc
 {
@@ -250,6 +256,21 @@ void GraphicsSystem::render()
 //==============================================================================
 void GraphicsSystem::render_map()
 {
+  static vec2 pointed_position = vec2{0.0f};
+  static f32  frustum_dir      = 0.0f;
+  static f32  frustum_deg      = 90.0f;
+  static f32  ms_last_frame    = 0.0f;
+
+  if (ImGui::Begin("Test Window"))
+  {
+    ImGui::SliderFloat("X",           &pointed_position.x, -1.0f, 1.0f);
+    ImGui::SliderFloat("Y",           &pointed_position.y, -1.0f, 1.0f);
+    ImGui::SliderFloat("Frustum Dir", &frustum_dir,         0.0f, 360.0f);
+    ImGui::SliderFloat("Frustum Deg", &frustum_deg,         0.0f, 360.0f);
+    ImGui::Text("MS last frame: %.4f", ms_last_frame);
+  }
+  ImGui::End();
+
   glUseProgram(m_funckin_gpu_program);
 
   auto& map = get_engine().get_map();
@@ -257,11 +278,7 @@ void GraphicsSystem::render_map()
   int width = 0, height = 0;
   SDL_GetWindowSize(m_window, &width, &height);
 
-  int x = 0, y = 0;
-  SDL_GetMouseState(&x, &y);
-
   vec2 sz = vec2{(f32)width, (f32)height};
-  vec2 mouse_norm = ((vec2{(f32)x, (f32)y} / sz) - vec2{0.5f}) * vec2{2.0f, -2.0f};
 
   auto debug_print_text = [&](vec2 coords, cstr text, ImU32 col = 0xFFFFFFFF)
   {
@@ -295,7 +312,7 @@ void GraphicsSystem::render_map()
 
       const auto& wall1 = map.walls[index_in_arr];
       const auto& wall2 = map.walls[next_in_arr];
-      if (intersect::point_triangle(mouse_norm, first_wall.pos, wall2.pos, wall1.pos))
+      if (intersect::point_triangle(pointed_position, first_wall.pos, wall2.pos, wall1.pos))
       {
         point_sector = i;
         break;
@@ -307,6 +324,28 @@ void GraphicsSystem::render_map()
       break;
     }
   }
+
+  const auto player_frustum = Frustum2
+  {
+    .center    = pointed_position,
+    .direction = vec2{std::cosf(deg2rad(frustum_dir)), std::sinf(deg2rad(frustum_dir))},
+    .angle     = std::cosf(deg2rad(frustum_deg * 0.5f)),
+  };
+
+  std::map<SectorID, u32> visible_sectors;
+  auto start_time = std::chrono::high_resolution_clock::now();
+  map.traverse_visible_areas(player_frustum, [&](SectorID id, Frustum2)
+  {
+    if (!visible_sectors.contains(id))
+    {
+      visible_sectors[id] = 0;
+    }
+
+    visible_sectors[id] += 1;
+  });
+  auto end_time = std::chrono::high_resolution_clock::now();
+  auto delta_time = end_time - start_time;
+  ms_last_frame = std::chrono::duration_cast<std::chrono::microseconds>(delta_time).count() * 0.001f;
 
   // first, render the floors of the sectors with gray
   for (u16 i = 0; i < map.sectors.size(); ++i)
@@ -322,10 +361,11 @@ void GraphicsSystem::render_map()
     }
 
     const bool pointed_at = i == point_sector;
+    const auto vis_count  = visible_sectors.contains(i) ? visible_sectors[i] : 0;
 
     const auto& first_wall = map.walls[repr.first_wall];
 
-    if (pointed_at && wall_count > 0)
+    if (wall_count > 0)
     {
       vec2 avg_pos = vec2{0};
 
@@ -334,14 +374,19 @@ void GraphicsSystem::render_map()
         WallID index_in_arr = repr.first_wall + index;
         const auto& wall1 = map.walls[index_in_arr];
         auto point_name = std::to_string(index_in_arr);
-        debug_print_text(wall1.pos, point_name.c_str());
+
+        if (pointed_at)
+        {
+          debug_print_text(wall1.pos, point_name.c_str());
+        }
 
         avg_pos = avg_pos + wall1.pos;
       }
 
       avg_pos = avg_pos / vec2{(f32)wall_count};
       auto sector_name = std::to_string(i);
-      debug_print_text(avg_pos, sector_name.c_str(), ImColor(255, 0, 0, 255));
+      const auto col = pointed_at ? ImColor(255, 0, 0, 255) : ImColor(128, 32, 32, 255);
+      debug_print_text(avg_pos, sector_name.c_str(), col);
     }
 
     for (WallID index = 1; index < wall_count; ++index)
@@ -356,10 +401,10 @@ void GraphicsSystem::render_map()
       const auto& wall2 = map.walls[next_in_arr];
       this->render_triangle(Triangle
       {
-        .a = first_wall.pos,
-        .b = wall1.pos,
-        .c = wall2.pos,
-        .color = pointed_at ? vec3{0.75f} : vec3{0.5f},
+        .a     = first_wall.pos,
+        .b     = wall1.pos,
+        .c     = wall2.pos,
+        .color = pointed_at ? vec3{0.75f} : vec3{vis_count * 0.5f},
       });
     }
   }
@@ -420,6 +465,42 @@ void GraphicsSystem::render_map()
       });
     }
   }
+
+  // Horizontal
+  this->render_line(Line
+  {
+    .from  = vec2{-1.0f, pointed_position.y},
+    .to    = vec2{1.0f,  pointed_position.y},
+    .color = vec3{1.0f},
+  });
+
+  // Vertical
+  this->render_line(Line
+  {
+    .from  = vec2{pointed_position.x,  1.0f},
+    .to    = vec2{pointed_position.x, -1.0f},
+    .color = vec3{1.0f},
+  });
+
+  // Left one
+  const auto ldir  = deg2rad(frustum_dir + frustum_deg * 0.5f);
+  const auto rdir  = deg2rad(frustum_dir - frustum_deg * 0.5f);
+  const auto ledge = vec2{std::cosf(ldir), std::sinf(ldir)};
+  const auto redge = vec2{std::cosf(rdir), std::sinf(rdir)};
+
+  this->render_line(Line
+  {
+    .from = pointed_position,
+    .to   = pointed_position + ledge * 2.0f,
+    .color = vec3{0.5f, 0.5f, 1.0f},
+  });
+
+  this->render_line(Line
+  {
+    .from = pointed_position,
+    .to   = pointed_position + redge * 2.0f,
+    .color = vec3{0.5f, 0.5f, 1.0f},
+  });
 }
 
 //==============================================================================

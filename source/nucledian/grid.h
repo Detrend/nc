@@ -15,6 +15,7 @@ template<typename T>
 class StatGridAABB2
 {
 public:
+  // Maybe RAII instead of this?
   void initialize(u64 width, u64 height, vec2 min, vec2 max);
 
   // Inserts a new AABB with some data into the grid.

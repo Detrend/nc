@@ -274,7 +274,27 @@ bool Frustum2::is_empty() const
 }
 
 //==============================================================================
-Frustum2 Frustum2::modify_with_portal(vec2 p1, vec2 p2) const
+static auto get_edges(const Frustum2& f)
+{
+  struct Edges
+  {
+    vec2 e1;
+    vec2 e2;
+  };
+
+  const auto dir = f.direction;
+  const auto flp = flipped(dir);
+  const auto a   = f.angle;
+  const auto b   = std::sqrt(1.0f - a * a);
+
+  const auto l_edge = dir * a + flp * b;
+  const auto r_edge = dir * a - flp * b;
+
+  return Edges{.e1 = l_edge, .e2 = r_edge};
+}
+
+//==============================================================================
+Frustum2 Frustum2::modied_with_portal(vec2 p1, vec2 p2) const
 {
   NC_ASSERT(is_normal(this->direction));
 
@@ -306,16 +326,15 @@ Frustum2 Frustum2::modify_with_portal(vec2 p1, vec2 p2) const
     }
 
     const auto point_outside = inside1 ? p2 : p1;
+    const auto point_inside  = inside1 ? p1 : p2;
     const auto to_outside_pt = normalize(point_outside-center);
-    const bool is_on_right   = cross(point_outside-center, this->direction) > 0;
+    const auto to_inside_pt  = normalize(point_inside -center);
+    const bool outside_right = cross(point_outside-center, this->direction) > 0;
 
     // the two frustums are overlapping, not that easy
 
-    const auto flipped = vec2{direction.y, -direction.x};
-    const auto b       = std::sqrt(1.0f - angle * angle);
+    const auto[l_edge, r_edge] = get_edges(*this);
 
-    const auto l_edge = direction * angle + flipped * b;
-    const auto r_edge = direction * angle - flipped * b;
     // These should end up having an unit length mathematically speaking,
     // but the floating point inaccuracy might have fucked it up..
     NC_ASSERT(is_normal(l_edge));
@@ -325,9 +344,9 @@ Frustum2 Frustum2::modify_with_portal(vec2 p1, vec2 p2) const
     NC_ASSERT(is_zero(dot(r_edge, direction) - angle, 0.0001f));
 
     // we keep the edge in the direction the outside point is on..
-    const auto edge_we_keep = is_on_right ? r_edge : l_edge;
+    const auto edge_we_keep = outside_right ? r_edge : l_edge;
 
-    const auto new_frustum_dir = normalize(edge_we_keep + to_outside_pt);
+    const auto new_frustum_dir   = normalize(edge_we_keep + to_inside_pt);
     // can be probably calculated more efficiently..
     const auto new_frustum_angle = dot(new_frustum_dir, edge_we_keep);
 
@@ -350,6 +369,86 @@ Frustum2 Frustum2::modify_with_portal(vec2 p1, vec2 p2) const
       .angle     = EMPTY_ANGLE,
     };
   }
+}
+
+//==============================================================================
+Frustum2 Frustum2::merged_with(const Frustum2& other) const
+{
+  NC_ASSERT(other.center == this->center);
+
+  if (other.is_full() || this->is_full()) [[unlikely]]
+  {
+    return Frustum2
+    {
+      .center    = this->center,
+      .direction = this->direction,
+      .angle     = FULL_ANGLE,
+    };
+  }
+
+  // Calculate left and right edges of the frustums and compare them
+  // TODO: can be done in a faster way using SIMD by doing 2 sqrts for a price of 1
+  const auto[this_l_edge,  this_r_edge]  = get_edges(*this);
+  const auto[other_l_edge, other_r_edge] = get_edges(other);
+
+  // Should be normal
+  NC_ASSERT(is_normal(this_l_edge)  && is_normal(this_r_edge));
+  NC_ASSERT(is_normal(other_l_edge) && is_normal(other_r_edge));
+
+  const f32 lr = dot(this_l_edge, other_r_edge);
+  const f32 rl = dot(this_r_edge, other_l_edge);
+
+  // Now check the smaller one
+  const bool lr_smaller = lr < rl;
+  const auto l_edge     = lr_smaller ? this_l_edge  : other_l_edge;
+  const auto r_edge     = lr_smaller ? other_r_edge : this_r_edge;
+
+  // negative if turned backwards, will help us flip the dir
+  const auto smaller_sgn = sgn(std::min(lr, rl)); 
+
+  // Good, then calc the dir
+  auto new_direction = normalize((l_edge + r_edge) * smaller_sgn);
+
+  if (is_zero(new_direction)) [[unlikely]]
+  {
+    // This happens if l_edge and r_edge point in an opposite directions.
+    // We flip one of them around in an appropriate direction
+    const auto l_edge2 = !lr_smaller ? this_l_edge  : other_l_edge;
+    const auto r_edge2 = !lr_smaller ? other_r_edge : this_r_edge;
+    const auto greater_sgn    = sgn(std::max(lr, rl)); 
+    const auto new_direction2 = (l_edge2 + r_edge2) * greater_sgn;
+
+    // This could theoretically happen if both angles are 0
+    NC_ASSERT(!is_zero(new_direction2));
+
+    new_direction = flipped(r_edge);
+    // The dot product will end up being negative if the flipped vector points in a wrong direction
+    new_direction = new_direction * sgn(dot(new_direction, new_direction2));
+  }
+
+  const auto new_angle = dot(l_edge, new_direction);
+
+  return Frustum2
+  {
+    .center    = this->center,
+    .direction = new_direction,
+    .angle     = new_angle,
+  };
+}
+
+//==============================================================================
+f32 Frustum2::angle_difference(const Frustum2& other) const
+{
+  NC_ASSERT(other.center == this->center);
+
+  // First, calculate the angle difference between directions.
+  // We can do this by using dot product and asin.
+  // TODO: Maybe do this without the asins?
+  const f32 diff_of_directions = std::asin(dot(this->direction, other.direction));
+  const f32 deg1 = std::asin(this->angle);
+  const f32 deg2 = std::asin(other.angle);
+
+  return diff_of_directions - deg1 - deg2;
 }
 
 //==============================================================================

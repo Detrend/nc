@@ -24,6 +24,9 @@ struct Frustum2
   // -1 = 360 deg frustum, 1 = 0 degree frustum
   f32  angle = FULL_ANGLE;
 
+  // Defaulted constructor so we can compare with INVALID_FRUSTUM
+  bool operator==(const Frustum2&) const = default;
+
   // Checks if a given point is inside the frustum
   bool contains_point(vec2 point)           const;
   // Checks if the line segment is partially or fully inside the frustum
@@ -35,10 +38,19 @@ struct Frustum2
   bool is_empty() const;
 
   // inserts a "portal" into the frustum, modifying it
-  Frustum2 modify_with_portal(vec2 p1, vec2 p2) const;
+  Frustum2 modied_with_portal(vec2 p1, vec2 p2) const;
+
+  // Merges the two frustums together into one
+  Frustum2 merged_with(const Frustum2& other) const;
+
+  // Calculates the difference between two frustums in radians.
+  // Negative if frustums overlap
+  f32 angle_difference(const Frustum2& other) const;
 
   static Frustum2 from_point_and_portal(vec2 point, vec2 a, vec2 b);
 };
+
+constexpr Frustum2 INVALID_FRUSTUM = Frustum2{vec2{0}, vec2{0}, Frustum2::EMPTY_ANGLE};
 
 }
 

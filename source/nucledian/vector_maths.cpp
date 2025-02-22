@@ -115,6 +115,19 @@ bool is_normal(const vec<T, SIZE>& v, T threshold /*= static_cast<T>(0.01)*/)
   return std::abs(length(v) - static_cast<T>(1)) < threshold;
 }
 
+//==============================================================================
+template<typename T, u64 SIZE>
+bool is_zero(const vec<T, SIZE>& v, T threshold /*= static_cast<T>(0.01)*/)
+{
+  return std::abs(length(v)) < threshold;
+}
+
+//==============================================================================
+vec2 flipped(const vec2& v)
+{
+  return vec2{-v.y, v.x};
+}
+
 }
 
 //==============================================================================
@@ -130,5 +143,9 @@ namespace nc
 template bool is_normal<f32, 4>(const vec4&, f32);
 template bool is_normal<f32, 3>(const vec3&, f32);
 template bool is_normal<f32, 2>(const vec2&, f32);
+
+template bool is_zero<f32, 4>(const vec4&, f32);
+template bool is_zero<f32, 3>(const vec3&, f32);
+template bool is_zero<f32, 2>(const vec2&, f32);
 }
 

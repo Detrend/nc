@@ -21,5 +21,12 @@ namespace nc
 template<typename T, u64 SIZE>
 bool is_normal(const vec<T, SIZE>& v, T threshold = static_cast<T>(0.01));
 
+template<typename T, u64 SIZE>
+bool is_zero(const vec<T, SIZE>& v, T threshold = static_cast<T>(0.01));
+
+// Returns a vector rotated 90 degrees to the left
+// (flips the components and negates x of the new vector)
+vec2 flipped(const vec2& v);
+
 }
 
