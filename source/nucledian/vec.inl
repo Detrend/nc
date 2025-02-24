@@ -42,6 +42,38 @@ constexpr vec<f32, 4>::vec()
 }
 
 //==============================================================================
+constexpr vec<f32, 4> vec<f32, 4>::with_x(f32 new_x)
+{
+	return vec<f32, 4>(new_x, this->y, this->z, this->w);
+}
+
+//==============================================================================
+constexpr vec<f32, 4> vec<f32, 4>::with_y(f32 new_y)
+{
+	return vec<f32, 4>(this->x, new_y, this->z, this->w);
+}
+
+//==============================================================================
+constexpr vec<f32, 4> vec<f32, 4>::with_z(f32 new_z)
+{
+	return vec<f32, 4>(this->x, this->y, new_z, this->w);
+}
+
+//==============================================================================
+constexpr vec<f32, 4> vec<f32, 4>::with_w(f32 new_w)
+{
+	return vec<f32, 4>(this->x, this->y, this->z, new_w);
+}
+
+//==============================================================================
+inline constexpr vec<f32, 4> ZERO = vec<f32, 4>(0.0f, 0.0f, 0.0f, 0.0f);
+inline constexpr vec<f32, 4> ONE  = vec<f32, 4>(1.0f, 1.0f, 1.0f, 1.0f);
+inline constexpr vec<f32, 4> X    = vec<f32, 4>(1.0f, 0.0f, 0.0f, 0.0f);
+inline constexpr vec<f32, 4> Y    = vec<f32, 4>(0.0f, 1.0f, 0.0f, 0.0f);
+inline constexpr vec<f32, 4> Z    = vec<f32, 4>(0.0f, 0.0f, 1.0f, 0.0f);
+inline constexpr vec<f32, 4> W    = vec<f32, 4>(0.0f, 0.0f, 0.0f, 1.0f);
+
+//==============================================================================
 constexpr vec<f32, 3>::vec(f32 x, f32 y, f32 z)
 : x(x)
 , y(y)
@@ -76,6 +108,31 @@ constexpr vec<f32, 3>::vec()
 {
 
 }
+
+//==============================================================================
+constexpr vec<f32, 3> vec<f32, 3>::with_x(f32 new_x)
+{
+	return vec<f32, 3>(new_x, this->y, this->z);
+}
+
+//==============================================================================
+constexpr vec<f32, 3> vec<f32, 3>::with_y(f32 new_y)
+{
+	return vec<f32, 3>(this->x, new_y, this->z);
+}
+
+//==============================================================================
+constexpr vec<f32, 3> vec<f32, 3>::with_z(f32 new_z)
+{
+	return vec<f32, 3>(this->x, this->y, new_z);
+}
+
+//==============================================================================
+inline constexpr vec<f32, 3> vec<f32, 3>::ZERO = vec<f32, 3>(0.0f, 0.0f, 0.0f);
+inline constexpr vec<f32, 3> vec<f32, 3>::ONE  = vec<f32, 3>(1.0f, 1.0f, 1.0f);
+inline constexpr vec<f32, 3> vec<f32, 3>::X    = vec<f32, 3>(1.0f, 0.0f, 0.0f);
+inline constexpr vec<f32, 3> vec<f32, 3>::Y    = vec<f32, 3>(0.0f, 1.0f, 0.0f);
+inline constexpr vec<f32, 3> vec<f32, 3>::Z    = vec<f32, 3>(0.0f, 0.0f, 1.0f);
 
 //==============================================================================
 constexpr vec<f32, 2>::vec(f32 x, f32 y)
@@ -126,6 +183,24 @@ constexpr vec<f32, 2>::vec(f32 v)
 {
   
 }
+
+//==============================================================================
+constexpr vec<f32, 2> vec<f32, 2>::with_x(f32 new_x)
+{
+	return vec<f32, 2>(new_x, this->y);
+}
+
+//==============================================================================
+constexpr vec<f32, 2> vec<f32, 2>::with_y(f32 new_y)
+{
+	return vec<f32, 2>(this->x, new_y);
+}
+
+//==============================================================================
+inline constexpr vec<f32, 2> vec<f32, 2>::ZERO = vec<f32, 2>(0.0f, 0.0f);
+inline constexpr vec<f32, 2> vec<f32, 2>::ONE  = vec<f32, 2>(1.0f, 1.0f);
+inline constexpr vec<f32, 2> vec<f32, 2>::X    = vec<f32, 2>(1.0f, 0.0f);
+inline constexpr vec<f32, 2> vec<f32, 2>::Y    = vec<f32, 2>(0.0f, 1.0f);
 
 }
 

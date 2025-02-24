@@ -186,10 +186,10 @@ f32 cross(const vec2& a, const vec2& b)
 }
 
 //==============================================================================
-vec3 cross(const vec3& a, const vec3& b)
-{
-  return cross(vec4{a}, vec4{b});
-}
+//vec3 cross(const vec3& a, const vec3& b)
+//{
+//  return cross(vec4{a}, vec4{b});
+//}
 
 //==============================================================================
 template<>
