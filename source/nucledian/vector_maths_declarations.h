@@ -40,7 +40,15 @@ template<typename T, u64 SIZE>
 T dot(const vec<T, SIZE>& a, const vec<T, SIZE>& b);
 
 // Computes a cross product of 3 dimensional vector
-vec3 cross(const vec3& a, const vec3& b);
+/*
+ * TODO: bug
+ * a = 0.0f 1.0f 0.0f
+ * b = 0.0f 0.0f - 1.0f
+ * 
+ * result is 0.0f 0.0f 0.0f
+ * correct result should be - 1.0f 0.0f 0.0f
+ */
+// vec3 cross(const vec3& a, const vec3& b);
 
 // Computes a cross product of 4 dimensional vector as if had
 // only 3 dimensions

@@ -116,13 +116,13 @@ f32 cross(const vec2& a, const vec2& b)
 }
 
 //==============================================================================
-vec3 cross(const vec3& a, const vec3& b)
-{
-  return vec3{
-    a.y * b.z - a.z * b.y,
-    a.z * b.x - a.x * b.z,
-    a.x * b.y - a.y * b.x};
-}
+//vec3 cross(const vec3& a, const vec3& b)
+//{
+//  return vec3{
+//    a.y * b.z - a.z * b.y,
+//    a.z * b.x - a.x * b.z,
+//    a.x * b.y - a.y * b.x};
+//}
 
 //==============================================================================
 vec4 cross(const vec4& a, const vec4& b)

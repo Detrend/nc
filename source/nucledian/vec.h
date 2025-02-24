@@ -42,6 +42,14 @@ struct vec<f32, 2>
 
   operator sse::reg64&();
   operator sse::reg64() const;
+
+  constexpr vec<f32, 2> with_x(f32 new_x);
+  constexpr vec<f32, 2> with_y(f32 new_y);
+
+  static const vec<f32, 2> ZERO;
+  static const vec<f32, 2> ONE;
+  static const vec<f32, 2> X;
+  static const vec<f32, 2> Y;
 };
 
 // The vec3 type.
@@ -68,6 +76,16 @@ struct vec<f32, 3>
 
   const f32& operator[](u64 index) const;
   f32&       operator[](u64 index);
+
+  constexpr vec<f32, 3> with_x(f32 new_x);
+  constexpr vec<f32, 3> with_y(f32 new_y);
+  constexpr vec<f32, 3> with_z(f32 new_z);
+
+  static const vec<f32, 3> ZERO;
+  static const vec<f32, 3> ONE;
+  static const vec<f32, 3> X;
+  static const vec<f32, 3> Y;
+  static const vec<f32, 3> Z;
 };
 
 // SSE optimized vector4
@@ -98,6 +116,18 @@ struct alignas(16) vec<f32, 4>
 
   operator sse::reg128&();
   operator sse::reg128() const;
+
+  constexpr vec<f32, 4> with_x(f32 new_x);
+  constexpr vec<f32, 4> with_y(f32 new_y);
+  constexpr vec<f32, 4> with_z(f32 new_z);
+  constexpr vec<f32, 4> with_w(f32 new_w);
+
+  static const vec<f32, 4> ZERO;
+  static const vec<f32, 4> ONE;
+  static const vec<f32, 4> X;
+  static const vec<f32, 4> Y;
+  static const vec<f32, 4> Z;
+  static const vec<f32, 4> W;
 };
 
 template<typename F, u64 S>
