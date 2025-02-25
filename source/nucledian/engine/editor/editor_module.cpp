@@ -153,28 +153,28 @@ namespace nc
     {
       curLeftMouse[0] = true;
 
-      if (editMode2D == move) 
+      if (editMode2D == move)
       {
         gridOffset += (prevMousePos - curMousePos);
       }
 
-      if (editMode2D == vertex) 
+      if (editMode2D == vertex)
       {
-        if (!prevLeftMouse[0]) 
+        if (!prevLeftMouse[0])
         {
           vertex_2d snapPos = get_snap_to_grid_pos(curGridMousePos.x, curGridMousePos.y);
           mapPoints.push_back(MapPoint(snapPos));
         }
       }
 
-      if (!prevLeftMouse[0]) 
+      if (!prevLeftMouse[0])
       {
         io.AddMouseButtonEvent(0, true);
       }
 
     }
 
-    if (prevLeftMouse[0] && !curLeftMouse[0]) 
+    if (prevLeftMouse[0] && !curLeftMouse[0])
     {
       io.AddMouseButtonEvent(0, false);
     }
@@ -356,19 +356,13 @@ namespace nc
     unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-
-    glPointSize(6);
+    glPointSize(10);
     for (size_t i = 0; i < mapPoints.size(); ++i)
     {
       mapPoints[i].draw();
     }
 
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-
-    glUseProgram(0);    
+    glUseProgram(0);
   }
 
   //=================================================================
@@ -422,12 +416,6 @@ namespace nc
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6, &onGridPoint, GL_DYNAMIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
     //bind to VAO
     glGenVertexArrays(1, &vertexArrayBuffer);
     glBindVertexArray(vertexArrayBuffer);
@@ -440,6 +428,8 @@ namespace nc
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
   }
@@ -461,6 +451,7 @@ namespace nc
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * 2, &onGridPoint, GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
   }
 
   //=================================================================
@@ -475,11 +466,10 @@ namespace nc
     unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-
     glPointSize(6);
     glBindVertexArray(vertexArrayBuffer);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
     glDrawArrays(GL_POINTS, 0, 1);
 
     glDisableVertexAttribArray(0);
@@ -564,12 +554,6 @@ namespace nc
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * points.size(), &points[0], GL_DYNAMIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
     //bind to VAO
     glGenVertexArrays(1, &vertexArrayBuffer);
     glBindVertexArray(vertexArrayBuffer);
@@ -582,6 +566,8 @@ namespace nc
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
   }
@@ -600,16 +586,17 @@ namespace nc
 
     unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-
+    
     glLineWidth(1);
     glBindVertexArray(vertexArrayBuffer);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    
     glDrawArrays(GL_LINES, 0, points.size());
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
 
+    glBindVertexArray(0);
     glUseProgram(0);
   }
 
