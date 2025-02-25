@@ -58,6 +58,7 @@
     </ClCompile>
     <ClCompile Include="..\source\nucledian\engine\core\engine.cpp" />
     <ClCompile Include="..\source\nucledian\engine\editor\editor_module.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\editor\map_info.cpp" />
     <ClCompile Include="..\source\nucledian\engine\glad.c" />
     <ClCompile Include="..\source\nucledian\engine\graphics\graphics_system.cpp" />
     <ClCompile Include="..\source\nucledian\main.cpp" />

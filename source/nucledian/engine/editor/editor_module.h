@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glad/glad.h>#
+#include <glad/glad.h>
 
 #include <engine/core/engine_module.h>
 #include <engine/core/engine_module_id.h>
@@ -55,7 +55,6 @@ namespace nc
     GLuint vertexShader;
     GLuint fragmentShader;
     GLuint shaderProgram;
-
     GLuint vertexArrayBuffer;
     glm::mat4 viewMatrix;
   };
@@ -71,20 +70,22 @@ namespace nc
     bool init(SDL_Window* window, void* gl_context);
 
   private:
-    void initImGui(SDL_Window* window, void* gl_context);
+    void init_imgui(SDL_Window* window, void* gl_context);
     void draw_ui(vertex_2d windowSize);
-    void createBottomBar(vertex_2d& windowSize);
-    void initCursorGL();
-    void updateCursorGL();
-    void drawCursor();
-    void createMenuBar();
+    void create_bottom_bar(vertex_2d& windowSize);
+    void init_cursor_gl();
+    void update_cursor_gl();
+    void draw_cursor();
+    void create_menu_bar();
     void terminate_imgui();
 
-    void getMouseInput();
-    void getLeftMouseButton(Uint32 mouseState);
-    vertex_2d getMousePos(int x, int y);
-    vertex_2d getSnapToGridPos(float x, float y);
-    vertex_2d getSnapToGridPos();
+    void draw_map();
+
+    void get_mouse_input();
+    void get_left_mouse_button(Uint32 mouseState);
+    vertex_2d get_mouse_pos(int x, int y);
+    vertex_2d get_snap_to_grid_pos(float x, float y);
+    vertex_2d get_snap_to_grid_pos();
 
     editorView view;
     Grid grid;
@@ -115,6 +116,8 @@ namespace nc
     GLuint shaderProgram;
     GLuint vertexArrayBuffer;
     glm::mat4 viewMatrix;
+
+    std::vector<MapPoint> mapPoints; // A TEMPORARY VARIABLE FOR TESTING
   };
 
   

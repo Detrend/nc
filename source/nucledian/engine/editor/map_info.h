@@ -1,8 +1,12 @@
 #pragma once
 
-#include <types.h>
+#include <glad/glad.h>
 
+#include <types.h>
 #include <vector>
+
+#include <SDL.h>
+#include <SDL_opengl.h>
 
 namespace nc
 {
@@ -38,7 +42,7 @@ namespace nc
       this->y = y;
     }
 
-    vertex_2d operator+(vertex_2d other) 
+    vertex_2d operator+(vertex_2d other)
     {
       return vertex_2d(x + other.x, y + other.y);
     }
@@ -71,6 +75,29 @@ namespace nc
       y -= other.y;
       return *this;
     }
+  };
+
+  class MapPoint
+  {
+  public:
+    MapPoint(vertex_2d position)
+    {
+      this->position[0] = vertex_3d(position.x, position.y, 1);
+      this->position[1] = vertex_3d(1, 1, 0);
+      init_gl();
+    }
+
+    void draw();
+    ~MapPoint();
+
+  private:
+    void init_gl();
+
+    vertex_3d position[2];
+
+    //OpenGL Stuff
+    GLuint vertexBuffer;
+    GLuint vertexArrayBuffer;
   };
 
   class WallDef;

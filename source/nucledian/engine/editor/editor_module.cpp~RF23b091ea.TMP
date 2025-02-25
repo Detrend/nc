@@ -62,12 +62,12 @@ namespace nc
 
       grid.render_grid(windowSize, gridOffset, zoom);
 
-      draw_map();
-
       if (editMode2D == vertex || editMode2D == line)
       {
         draw_cursor();
       }
+
+      
 
       draw_ui(windowSize);
 
@@ -350,25 +350,10 @@ namespace nc
 
   void EditorSystem::draw_map()
   {
-
-    glUseProgram(shaderProgram);
-
-    unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
-    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-
-    glPointSize(6);
     for (size_t i = 0; i < mapPoints.size(); ++i)
     {
       mapPoints[i].draw();
     }
-
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-
-    glUseProgram(0);    
   }
 
   //=================================================================
@@ -440,6 +425,8 @@ namespace nc
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
   }
@@ -461,6 +448,7 @@ namespace nc
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * 2, &onGridPoint, GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
   }
 
   //=================================================================
@@ -485,7 +473,6 @@ namespace nc
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
 
-    glBindVertexArray(0);
     glUseProgram(0);
   }
 
