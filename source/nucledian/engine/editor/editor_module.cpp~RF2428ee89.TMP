@@ -151,13 +151,22 @@ namespace nc
 
   void EditorSystem::get_left_mouse_button(Uint32 mouseState)
   {
-    if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT))
+    if (mouseState == SDL_BUTTON_LEFT)
     {
       curMouse[0] = true;
 
       if (editMode2D == move)
       {
         gridOffset += (prevMousePos - curMousePos);
+      }
+
+      if (editMode2D == vertex)
+      {
+        if (!prevMouse[0])
+        {
+          vertex_2d snapPos = get_snap_to_grid_pos(curGridMousePos.x, curGridMousePos.y);
+          mapPoints.push_back(MapPoint(snapPos));
+        }
       }
 
       if (!prevMouse[0])
@@ -175,13 +184,18 @@ namespace nc
 
   void EditorSystem::get_right_mouse_button(Uint32 mouseState)
   {
-    if (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT))
+    if (mouseState == SDL_BUTTON_RIGHT)
     {
       curMouse[1] = true;
 
+      if (editMode2D == move)
+      {
+        gridOffset += (prevMousePos - curMousePos);
+      }
+
       if (editMode2D == vertex)
       {
-        if (!prevMouse[1])
+        if (!prevMouse[0])
         {
           vertex_2d snapPos = get_snap_to_grid_pos(curGridMousePos.x, curGridMousePos.y);
           mapPoints.push_back(MapPoint(snapPos));

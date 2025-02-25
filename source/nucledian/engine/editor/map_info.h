@@ -87,6 +87,7 @@ namespace nc
       init_gl();
     }
 
+    void update();
     void draw();
     ~MapPoint();
 

@@ -1,5 +1,10 @@
 #include <engine/editor/map_info.h>
 
+void nc::MapPoint::update()
+{
+
+}
+
 void nc::MapPoint::draw()
 {
   glBindVertexArray(vertexArrayBuffer);
@@ -15,7 +20,7 @@ void nc::MapPoint::draw()
 
 nc::MapPoint::~MapPoint()
 {
-  glDeleteVertexArrays(1, &vertexArrayBuffer);
+  //glDeleteVertexArrays(1, &vertexArrayBuffer);
 }
 
 //============================================================
@@ -25,14 +30,14 @@ void nc::MapPoint::init_gl()
   // bind to VBO
   glGenBuffers(1, &vertexBuffer);
   glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6, &position, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6, &position, GL_DYNAMIC_DRAW);
 
   //bind to VAO
   glGenVertexArrays(1, &vertexArrayBuffer);
 
   glBindVertexArray(vertexArrayBuffer);
   glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-  glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), &position, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), &position, GL_DYNAMIC_DRAW);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);

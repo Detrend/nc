@@ -79,10 +79,12 @@ namespace nc
     void create_menu_bar();
     void terminate_imgui();
 
+    void update_map(vertex_2d offset);
     void draw_map();
 
     void get_mouse_input();
     void get_left_mouse_button(Uint32 mouseState);
+    void get_right_mouse_button(Uint32 mouseState);
     vertex_2d get_mouse_pos(int x, int y);
     vertex_2d get_snap_to_grid_pos(float x, float y);
     vertex_2d get_snap_to_grid_pos();
@@ -90,8 +92,8 @@ namespace nc
     editorView view;
     Grid grid;
 
-    bool prevLeftMouse[5] = {false, false, false, false, false};
-    bool curLeftMouse[5] = {false, false, false, false, false};
+    bool prevMouse[5] = {false, false, false, false, false};
+    bool curMouse[5] = {false, false, false, false, false};
 
     vertex_2d windowSize;
     
