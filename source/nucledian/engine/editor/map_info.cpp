@@ -1,6 +1,6 @@
 #include <engine/editor/map_info.h>
 
-
+//================================================================================
 
 void nc::MapPoint::move(f32 x, f32 y)
 {
@@ -19,6 +19,8 @@ void nc::MapPoint::move(f32 x, f32 y)
   glBindVertexArray(0);
 }
 
+//================================================================================
+
 void nc::MapPoint::move_to(f32 x, f32 y)
 {
   position[0].x = x;
@@ -36,10 +38,14 @@ void nc::MapPoint::move_to(f32 x, f32 y)
   glBindVertexArray(0);
 }
 
+//================================================================================
+
 void nc::MapPoint::update()
 {
 
 }
+
+//================================================================================
 
 void nc::MapPoint::draw()
 {

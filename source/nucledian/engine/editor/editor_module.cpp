@@ -88,6 +88,8 @@ namespace nc
     }
   }
 
+  //================================================================================
+
   bool EditorSystem::init(SDL_Window* window, void* gl_context)
   {
     this->window = window;
@@ -114,6 +116,8 @@ namespace nc
     init_cursor_gl();
     return true;
   }
+
+  //================================================================================
 
   EditorSystem::~EditorSystem()
   {
@@ -193,6 +197,8 @@ namespace nc
     }
   }
 
+  //================================================================================
+
   void EditorSystem::get_right_mouse_button(Uint32 mouseState)
   {
     if (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT))
@@ -220,6 +226,8 @@ namespace nc
       io.AddMouseButtonEvent(1, false);
     }
   }
+
+  //================================================================================
 
   void EditorSystem::select_point(vertex_2d mousePos)
   {
@@ -440,6 +448,8 @@ namespace nc
 
     glUseProgram(0);
   }
+
+  //================================================================================
 
   void EditorSystem::draw_map()
   {
