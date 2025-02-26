@@ -97,7 +97,7 @@ namespace nc
 
     gladLoadGLLoader(SDL_GL_GetProcAddress);
 
-    SDL_SetWindowFullscreen(window, 0);
+    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 
     int width;
     int height;
@@ -155,40 +155,20 @@ namespace nc
     {
       curMouse[0] = true;
 
-      
-
       if (editMode2D == move)
       {
         gridOffset += (prevMousePos - curMousePos);
-      }
-
-      if (editMode2D == vertex && !prevMouse[0])
-      {
-        select_point(curMousePos);
-      }
-
-      if (editMode2D == vertex) 
-      {
-        move_point(curGridMousePos);
       }
 
       if (!prevMouse[0])
       {
         io.AddMouseButtonEvent(0, true);
       }
+
     }
 
     if (prevMouse[0] && !curMouse[0])
     {
-      if (editMode2D == vertex) {
-
-        if (selected >= 0) {
-          vertex_2d snapPos = get_snap_to_grid_pos(curGridMousePos.x, curGridMousePos.y);
-          mapPoints[selected].move_to(snapPos.x, snapPos.y);
-          selected = -1;
-        }
-      }
-
       io.AddMouseButtonEvent(0, false);
     }
   }
@@ -221,37 +201,12 @@ namespace nc
     }
   }
 
-  void EditorSystem::select_point(vertex_2d mousePos)
+  void EditorSystem::select_point()
   {
-    f32 minDist = 666;
-    int candidate = -1;
-
-    for (size_t i = 0; i < mapPoints.size(); i++)
+    for (size_t i = 0; i < mapPoints.size; i++)
     {
-      f32 dist = mapPoints[i].get_distance(mousePos);
-      if (dist > 0.1)
-      {
-        continue;
-      }
 
-      if (dist < minDist)
-      {
-        minDist = dist;
-        candidate = i;
-      }
     }
-
-    selected = candidate;
-  }
-
-  void EditorSystem::move_point(vertex_2d mousePos)
-  {
-    if (selected < 0)
-    {
-      return;
-    }
-
-    mapPoints[selected].move_to(mousePos.x, mousePos.y);
   }
 
   //=================================================================
@@ -679,12 +634,12 @@ namespace nc
 
     unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
-
+    
     glLineWidth(1);
     glBindVertexArray(vertexArrayBuffer);
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
-
+    
     glDrawArrays(GL_LINES, 0, points.size());
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);

@@ -85,6 +85,10 @@ namespace nc
     void get_mouse_input();
     void get_left_mouse_button(Uint32 mouseState);
     void get_right_mouse_button(Uint32 mouseState);
+
+    void select_point(vertex_2d mousePos);
+    void move_point(vertex_2d mousePos);
+
     vertex_2d get_mouse_pos(int x, int y);
     vertex_2d get_snap_to_grid_pos(float x, float y);
     vertex_2d get_snap_to_grid_pos();
@@ -120,6 +124,7 @@ namespace nc
     glm::mat4 viewMatrix;
 
     std::vector<MapPoint> mapPoints; // A TEMPORARY VARIABLE FOR TESTING
+    int selected = -1;
   };
 
   

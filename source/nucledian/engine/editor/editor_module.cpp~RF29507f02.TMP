@@ -144,6 +144,8 @@ namespace nc
     get_left_mouse_button(mouseState);
     get_right_mouse_button(mouseState);
 
+    
+
     curGridMousePos = curMousePos + gridOffset;
   }
 
@@ -155,7 +157,7 @@ namespace nc
     {
       curMouse[0] = true;
 
-      
+      move_point(curMousePos);
 
       if (editMode2D == move)
       {
@@ -165,11 +167,6 @@ namespace nc
       if (editMode2D == vertex && !prevMouse[0])
       {
         select_point(curMousePos);
-      }
-
-      if (editMode2D == vertex) 
-      {
-        move_point(curGridMousePos);
       }
 
       if (!prevMouse[0])

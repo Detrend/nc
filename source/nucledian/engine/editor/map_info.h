@@ -87,6 +87,15 @@ namespace nc
       init_gl();
     }
 
+    f32 get_distance(vertex_2d point)
+    {
+      f32 difx = abs(point.x - position[0].x);
+      f32 dify = abs(point.y - position[0].y);
+      return difx > dify ? difx : dify;
+    }
+
+    void move(f32 x, f32 y);
+    void move_to(f32 x, f32 y);
     void update();
     void draw();
     ~MapPoint();
