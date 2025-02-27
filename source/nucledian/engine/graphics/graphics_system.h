@@ -34,7 +34,7 @@ private:
 
   u32         m_vao            = 0;
   u32         m_vbo            = 0;
-  u32         m_ebo            = 0;
+  // u32         m_ebo            = 0;
   u32         m_shader_program = 0;
 
   DebugCamera m_debug_camera;
