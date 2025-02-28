@@ -31,7 +31,7 @@ void Player::update()
 
   // APLICATION OF VELOCITY
   position.x += velocity.x * sinf(angle_yaw);
-  position.y += velocity.y *= cosf(angle_yaw);
+  position.y += velocity.y * cosf(angle_yaw);
 }
 
 
