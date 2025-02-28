@@ -1,4 +1,5 @@
-#include "player.h"
+#include <engine/player/player.h>
+#include <engine/input/game_input.h>
 
 Player::Player(nc::vec3 position)
 {
