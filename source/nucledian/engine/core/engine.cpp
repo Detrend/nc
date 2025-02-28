@@ -50,7 +50,6 @@ Engine& get_engine()
   return *g_engine;
 }
 
-#pragma optimize("", off)
 //==============================================================================
 #ifdef NC_BENCHMARK
 static bool execute_benchmarks_if_required(const std::vector<std::string>& args)

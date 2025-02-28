@@ -744,6 +744,51 @@ static void test_make_sector(
   });
 }
 
+static void make_random_square_maze_map(MapSectors& map, u32 size, u32 seed)
+{
+  std::srand(seed);
+
+  std::vector<vec2> points;
+
+  // first up the points
+  for (u32 i = 0; i < size; ++i)
+  {
+    for (u32 j = 0; j < size; ++j)
+    {
+      const f32 x = (j / static_cast<f32>(size-1)) * 2.0f - 1.0f;
+      const f32 y = (i / static_cast<f32>(size-1)) * 2.0f - 1.0f;
+      points.push_back(vec2{x, y});
+    }
+  }
+
+  // and then the sectors
+  std::vector<map_building::SectorBuildData> sectors;
+
+  for (u16 i = 0; i < size-1; ++i)
+  {
+    for (u16 j = 0; j < size-1; ++j)
+    {
+      auto rng = std::rand();
+      if (rng % 4 != 0)
+      {
+        u16 i1 = static_cast<u16>(i * size + j);
+        u16 i2 = i1+1;
+        u16 i3 = static_cast<u16>((i+1) * size + j + 1);
+        u16 i4 = i3-1;
+        test_make_sector({i1, i2, i3, i4}, sectors);
+      }
+    }
+  }
+
+  using namespace map_building::MapBuildFlag;
+
+  map_building::build_map(
+    points, sectors, map,
+    //omit_convexity_clockwise_check |
+    //omit_sector_overlap_check      |
+    //omit_wall_overlap_check        |
+    assert_on_fail);
+}
 
 void benchmark_map_creation_squared(
   benchmark::State&           state,
@@ -771,9 +816,9 @@ void benchmark_map_creation_squared(
   {
     for (u16 j = 0; j < SIZE-1; ++j)
     {
-      u16 i1 = i * SIZE + j;
+      u16 i1 = static_cast<u16>(i * SIZE + j);
       u16 i2 = i1+1;
-      u16 i3 = (i+1) * SIZE + j + 1;
+      u16 i3 = static_cast<u16>((i+1) * SIZE + j + 1);
       u16 i4 = i3-1;
       test_make_sector({i1, i2, i3, i4}, sectors);
     }
@@ -791,9 +836,47 @@ void benchmark_map_creation_squared(
   }
 }
 
+void benchmark_visibility_query(benchmark::State& state)
+{
+  MapSectors map;
+  make_random_square_maze_map(map, 32, 0);
+
+  std::vector<vec2> points_inside;
+
+  while ((int)points_inside.size() < state.range(0))
+  {
+    f32 x = ((std::rand() % 4097) - 2048) / 2048.0f;
+    f32 y = ((std::rand() % 4097) - 2048) / 2048.0f;
+    if (map.get_sector_from_point(vec2{x, y}) != INVALID_SECTOR_ID)
+    {
+      points_inside.push_back(vec2{x, y});
+    }
+  }
+
+  for (auto _ : state)
+  {
+    for (auto pt : points_inside)
+    {
+      auto viewpoint = Frustum2{.center = pt, .direction = vec2{1, 0}, .angle = Frustum2::FULL_ANGLE};
+      SectorID last_sector = INVALID_SECTOR_ID;
+      map.query_visible_sectors(viewpoint, [&](SectorID id, Frustum2)
+      {
+        last_sector = id;
+      });
+      benchmark::DoNotOptimize(last_sector);
+    }
+
+    benchmark::ClobberMemory();
+  }
+
+  state.SetItemsProcessed(points_inside.size() * state.iterations());
+}
+
 constexpr auto OMIT_CHECKS_FLAGS
   = map_building::MapBuildFlag::omit_convexity_clockwise_check
   | map_building::MapBuildFlag::omit_sector_overlap_check;
+
+BENCHMARK_CAPTURE(benchmark_visibility_query,     "Visibility query")                             ->Arg(1<<12)->Unit(benchmark::kMillisecond);
 
 BENCHMARK_CAPTURE(benchmark_map_creation_squared, "Map building (with checks)", 0)                ->Arg(16)->Unit(benchmark::kMillisecond);
 BENCHMARK_CAPTURE(benchmark_map_creation_squared, "Map building (no checks)",   OMIT_CHECKS_FLAGS)->Arg(16)->Unit(benchmark::kMillisecond);

@@ -157,7 +157,7 @@ f32 check(f32 number)
   auto b = sse_sqrt(number);
   if (a != b)
   {
-    volatile int c = a + b;
+    volatile int c = static_cast<int>(a + b);
     [[maybe_unused]]auto d = c+1;
   }
   return b;
