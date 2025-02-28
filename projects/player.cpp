@@ -7,6 +7,7 @@ Player::Player(nc::vec3 position)
 
 void Player::update()
 {
+  // INPUT HANDELING
   SDL_Event event;;
   while (SDL_PollEvent(&event)) {
     switch (event.type) {
@@ -16,11 +17,18 @@ void Player::update()
     case SDL_KEYUP:
       handle_key_ups(event);
       break;
+    case SDL_MOUSEMOTION:
+      angle_yaw += event.motion.xrel * 0.05; // MAGIC VALUES NEED TO BE REPLACED LATER ON
+      angle_pitch += event.motion.xrel * 0.05;
+      break;
     default:
       break;
     }
-
   }
+
+  // APLICATION OF VELOCITY
+  position.x += velocity.x * sinf(angle_yaw);
+  position.y += velocity.y *= cosf(angle_yaw);
 }
 
 void Player::handle_key_downs(SDL_Event& event)
