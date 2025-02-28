@@ -6,6 +6,8 @@ Player::Player(nc::vec3 position)
   this->position = position;
 }
 
+//==========================================================================
+
 void Player::update()
 {
   // INPUT HANDELING
@@ -32,6 +34,9 @@ void Player::update()
   position.y += velocity.y *= cosf(angle_yaw);
 }
 
+
+//=================================================================================================
+
 void Player::handle_key_downs(SDL_Event& event)
 {
   switch (event.key.keysym.sym) {
@@ -51,6 +56,9 @@ void Player::handle_key_downs(SDL_Event& event)
     break;
   }
 }
+
+
+//===================================================================================
 
 void Player::handle_key_ups(SDL_Event& event)
 {
