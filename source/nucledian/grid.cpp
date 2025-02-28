@@ -72,14 +72,14 @@ void StatGridAABB2<T>::initialize(u64 width, u64 height, vec2 min, vec2 max)
 
 //==============================================================================
 template<typename T>
-void StatGridAABB2<T>::query_point(vec2 point, std::function<void(aabb2, T&)> func)
+void StatGridAABB2<T>::query_point(vec2 point, Visitor func) const
 {
   this->query_aabb(aabb{point}, func);
 }
 
 //==============================================================================
 template<typename T>
-void StatGridAABB2<T>::query_aabb(aabb2 bbox, std::function<void(aabb2, T&)> func)
+void StatGridAABB2<T>::query_aabb(aabb2 bbox, Visitor func) const
 {
   NC_ASSERT(m_initialized);
 
@@ -100,7 +100,10 @@ void StatGridAABB2<T>::query_aabb(aabb2 bbox, std::function<void(aabb2, T&)> fun
       {
         if (intersect::aabb_aabb_2d(bbox, other_bbox))
         {
-          func(bbox, val);
+          if (func(bbox, val))
+          {
+            return;
+          }
         }
       }
     }

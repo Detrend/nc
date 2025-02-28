@@ -21,9 +21,10 @@ public:
   // Inserts a new AABB with some data into the grid.
   void insert(aabb2 bbox, const T& data);
 
-  void query_point(vec2 point, std::function<void(aabb2, T&)> func);
-
-  void query_aabb(aabb2 bbox, std::function<void(aabb2, T&)> func);
+  // Visitor returns true it it does not require more iterations
+  using Visitor = std::function<bool(aabb2, const T&)>;
+  void query_point(vec2 point, Visitor func) const;
+  void query_aabb(aabb2 bbox,  Visitor func) const;
 
 private:
   struct Unit

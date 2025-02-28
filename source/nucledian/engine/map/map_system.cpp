@@ -28,7 +28,7 @@ namespace map_helpers
 //==============================================================================
 // calls lambda(PortalID portal_id, WallID wall_index)
 template<typename F>
-void for_each_portal(const MapSectors& map, SectorID sector_id, F&& lambda)
+bool for_each_portal(const MapSectors& map, SectorID sector_id, F&& lambda)
 {
   NC_ASSERT(sector_id < map.sectors.size());
   const auto& repr = map.sectors[sector_id].int_data;
@@ -42,13 +42,15 @@ void for_each_portal(const MapSectors& map, SectorID sector_id, F&& lambda)
 
     lambda(pid, wall_index);
   }
+
+  return repr.first_portal < repr.last_portal;
 }
 
 //==============================================================================
 // TODO: an acceleration data structure is a MUST HAVE here!!!
 SectorID get_sector_from_point(const MapSectors& map, vec2 point)
 {
-  for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)
+  auto check_overlap = [](const MapSectors& map, SectorID sector_id, vec2 pt) -> bool
   {
     const auto& sector = map.sectors[sector_id];
 
@@ -64,14 +66,44 @@ SectorID get_sector_from_point(const MapSectors& map, vec2 point)
       const auto p2 = map.walls[wall_index].pos;
       const auto p3 = map.walls[next_index].pos;
 
-      if (intersect::point_triangle(point, p1, p2, p3))
+      if (intersect::point_triangle(pt, p1, p2, p3))
       {
-        return sector_id;
+        return true;
       }
     }
-  }
 
-  return INVALID_SECTOR_ID;
+    return false;
+  };
+
+  #ifdef DO_VALIDITY_CHECK
+  SectorID check_result = INVALID_SECTOR_ID;
+  for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)
+  {
+    if (check_overlap(map, sector_id, point))
+    {
+      check_result = sector_id;
+      break;
+    }
+  }
+  #endif
+
+  SectorID result = INVALID_SECTOR_ID;
+  map.sector_grid.query_point(point, [&](aabb2, SectorID id)->bool
+  {
+    if (check_overlap(map, id, point))
+    {
+      result = id;
+      return true;  // we can stop
+    }
+
+    return false;
+  });
+
+  #ifdef DO_VALIDITY_CHECK
+  NC_ASSERT(result == check_result);
+  #endif
+
+  return result;
 }
 
 //==============================================================================
@@ -159,14 +191,13 @@ struct FrustumBuffer
 };
 
 //==============================================================================
-void MapSectors::traverse_visible_areas(
-  const Frustum2&    input_frustum,
-  VisitorFunc        visitor,
-  [[maybe_unused]]u8 max_recursion_depth) const
+void MapSectors::query_visible_sectors(
+  Frustum2        input_frustum,
+  TraverseVisitor visitor) const
 {
   NC_ASSERT(visitor);
 
-  SectorID start_sector = map_helpers::get_sector_from_point(*this, input_frustum.center);
+  SectorID start_sector = this->get_sector_from_point(input_frustum.center);
 
   if (start_sector == INVALID_SECTOR_ID)
   {
@@ -204,7 +235,7 @@ void MapSectors::traverse_visible_areas(
 
         // now traverse all portals of the sector and check if we can slide
         // into a neighbor sector
-        map_helpers::for_each_portal(*this, id, [&](PortalID, WallID wall1_idx)
+        this->for_each_portal_of_sector(id, [&](PortalID, WallID wall1_idx)
         {
           const auto wall2_idx   = map_helpers::next_wall(*this, id, wall1_idx);
           const auto next_sector = walls[wall1_idx].portal_sector_id;
@@ -252,10 +283,60 @@ void MapSectors::traverse_visible_areas(
   }
 }
 
+//==============================================================================
+bool MapSectors::for_each_portal_of_sector(
+  SectorID      sector,
+  PortalVisitor visitor) const
+{
+  return map_helpers::for_each_portal(*this, sector, visitor);
+}
+
+//==============================================================================
+SectorID MapSectors::get_sector_from_point(vec2 point) const
+{
+  return map_helpers::get_sector_from_point(*this, point);
+}
+
 }
 
 namespace nc::map_building
 {
+
+//==============================================================================
+static void build_sector_grid(MapSectors& map)
+{
+  vec2 grid_min = vec2{ FLT_MAX};
+  vec2 grid_max = vec2{-FLT_MAX};
+
+  for (const auto& wall : map.walls)
+  {
+    grid_min = min(grid_min, wall.pos);
+    grid_max = max(grid_max, wall.pos);
+  }
+
+  vec2 size  = grid_max - grid_min;
+
+  u64 sector_count      = map.sectors.size();
+  f32 height_to_width   = size.y / size.x;
+  u64 width_grid_cells  = sector_count;
+  u64 height_grid_cells = static_cast<u64>(sector_count * height_to_width);
+
+  map.sector_grid.initialize(width_grid_cells, height_grid_cells, grid_min, grid_max);
+
+  // and now insert all the sectors
+  for (SectorID sid = 0; sid < map.sectors.size(); ++sid)
+  {
+    const auto& sector = map.sectors[sid];
+    aabb2 sector_aabb;
+
+    for (u64 id = sector.int_data.first_wall; id < sector.int_data.last_wall; ++id)
+    {
+      sector_aabb.insert_point(map.walls[id].pos);
+    }
+
+    map.sector_grid.insert(sector_aabb, sid);
+  }
+}
 
 //==============================================================================
 // TODO: we are doing 2x the amount of intersections (each 2 sectors are
@@ -269,7 +350,7 @@ static bool check_for_sector_overlaps(
   using std::numeric_limits;
 
   // the range of the map
-  vec2 map_min = vec2{FLT_MAX, FLT_MAX};
+  vec2 map_min = vec2{ FLT_MAX,  FLT_MAX};
   vec2 map_max = vec2{-FLT_MAX, -FLT_MAX};
 
   for (auto&& point : points)
@@ -314,12 +395,13 @@ static bool check_for_sector_overlaps(
     NC_ASSERT(bbox.is_valid());
 
     std::set<SectorID> possible_intersection_sectors;
-    grid.query_aabb(bbox, [&](aabb2, SectorID sector)
+    grid.query_aabb(bbox, [&](aabb2, const SectorID& sector)->bool
     {
       if (sector != sector_idx)
       {
         possible_intersection_sectors.insert(sector);
       }
+      return false;
     });
 
     for (SectorID other_idx : possible_intersection_sectors)
@@ -618,6 +700,9 @@ int build_map(
 
   // now, there should be the same number of sectors in the output as on the input
   NC_ASSERT(output.sectors.size() == sectors.size());
+
+  // and finally, build the grid
+  build_sector_grid(output);
 
   return true;
 }

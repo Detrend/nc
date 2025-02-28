@@ -112,14 +112,19 @@ struct MapSectors
   std::vector<WallPortalData> portals;
   StatGridAABB2<SectorID>     sector_grid;
 
-  using VisitorFunc = std::function<void(SectorID, Frustum2)>;
+  using TraverseVisitor = std::function<void(SectorID, Frustum2)>;
+  using PortalVisitor   = std::function<void(PortalID, WallID)>;
   // Traverses the sector system in a BFS order and calls the visitor
   // for each sector with a frustum that describes which parts of the
   // sector are visible.
-  void traverse_visible_areas(
-    const Frustum2& input_frustum,
-    VisitorFunc     visitor,
-    u8              recursion_depth = 4) const;
+  void query_visible_sectors(Frustum2 frustum, TraverseVisitor visitor) const;
+
+  // Iterates all portals of this sector
+  bool for_each_portal_of_sector(SectorID sector, PortalVisitor visitor) const;
+
+  // Returns an id of a sector that lies on this position. If there is
+  // no such sector then returns INVALID_SECTOR_ID
+  SectorID get_sector_from_point(vec2 point) const;
 };
 
 namespace map_building
