@@ -204,6 +204,11 @@ bool Frustum2::contains_point(vec2 p) const
 {
   NC_ASSERT(is_normal(this->direction));
 
+  if (is_full()) [[unlikely]]
+  {
+    return true;
+  }
+
   const auto to_point = p-center;
 
   if (length(to_point) == 0.0f)
@@ -213,9 +218,8 @@ bool Frustum2::contains_point(vec2 p) const
 
   const auto projected = dot(normalize(to_point), direction);
 
-  // We must use ">" instead of ">=" for the case
-  // when the angle is 1.0 and therefore 0 degrees
-  return projected > angle;
+  // Use > instead od >= for cases when the frustum is empty
+  return projected > this->angle;
 }
 
 //==============================================================================
@@ -223,9 +227,14 @@ bool Frustum2::intersects_segment(vec2 p1, vec2 p2) const
 {
   NC_ASSERT(is_normal(this->direction));
 
-  if (this->is_empty())
+  if (this->is_empty()) [[unlikely]]
   {
     return false;
+  }
+
+  if (this->is_full())  [[unlikely]]
+  {
+    return true;
   }
 
   if (this->contains_point(p1) || this->contains_point(p2))
@@ -264,13 +273,13 @@ bool Frustum2::intersects_segment(vec2 p1, vec2 p2) const
 //==============================================================================
 bool Frustum2::is_full() const
 {
-  return angle <= FULL_ANGLE;
+  return this->angle <= FULL_ANGLE;
 }
 
 //==============================================================================
 bool Frustum2::is_empty() const
 {
-  return angle >= EMPTY_ANGLE;
+  return this->angle >= EMPTY_ANGLE;
 }
 
 //==============================================================================
@@ -307,13 +316,13 @@ Frustum2 Frustum2::modied_with_portal(vec2 p1, vec2 p2) const
     if (inside1 && inside2)
     {
       // both points inside, easy case
-      const auto to_p1 = normalize(p1-center);
-      const auto to_p2 = normalize(p2-center);
+      const auto to_p1 = normalize(p1-this->center);
+      const auto to_p2 = normalize(p2-this->center);
       const auto midir = normalize(to_p1 + to_p2);
 
       return Frustum2
       {
-        .center    = center,
+        .center    = this->center,
         .direction = midir,
         .angle     = dot(to_p1, midir),
       };
@@ -327,9 +336,9 @@ Frustum2 Frustum2::modied_with_portal(vec2 p1, vec2 p2) const
 
     const auto point_outside = inside1 ? p2 : p1;
     const auto point_inside  = inside1 ? p1 : p2;
-    const auto to_outside_pt = normalize(point_outside-center);
-    const auto to_inside_pt  = normalize(point_inside -center);
-    const bool outside_right = cross(point_outside-center, this->direction) > 0;
+    const auto to_outside_pt = normalize(point_outside - this->center);
+    const auto to_inside_pt  = normalize(point_inside  - this->center);
+    const bool outside_right = cross(point_outside - this->center, this->direction) > 0;
 
     // the two frustums are overlapping, not that easy
 
@@ -340,8 +349,8 @@ Frustum2 Frustum2::modied_with_portal(vec2 p1, vec2 p2) const
     NC_ASSERT(is_normal(l_edge));
     NC_ASSERT(is_normal(r_edge));
     // And these should hold as well
-    NC_ASSERT(is_zero(dot(l_edge, direction) - angle, 0.0001f));
-    NC_ASSERT(is_zero(dot(r_edge, direction) - angle, 0.0001f));
+    NC_ASSERT(is_zero(dot(l_edge, this->direction) - this->angle, 0.0001f));
+    NC_ASSERT(is_zero(dot(r_edge, this->direction) - this->angle, 0.0001f));
 
     // we keep the edge in the direction the outside point is on..
     const auto edge_we_keep = outside_right ? r_edge : l_edge;

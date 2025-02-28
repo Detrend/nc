@@ -266,7 +266,7 @@ void GraphicsSystem::render_map()
     ImGui::SliderFloat("X",           &pointed_position.x, -1.0f, 1.0f);
     ImGui::SliderFloat("Y",           &pointed_position.y, -1.0f, 1.0f);
     ImGui::SliderFloat("Frustum Dir", &frustum_dir,         0.0f, 360.0f);
-    ImGui::SliderFloat("Frustum Deg", &frustum_deg,         0.0f, 360.0f);
+    ImGui::SliderFloat("Frustum Deg", &frustum_deg,         0.0f, 180.0f);
     ImGui::Text("MS last frame: %.4f", ms_last_frame);
   }
   ImGui::End();

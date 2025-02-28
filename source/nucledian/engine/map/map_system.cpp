@@ -92,6 +92,73 @@ WallID next_wall(const MapSectors& map, SectorID sector, WallID wall)
 }
 
 //==============================================================================
+constexpr u64 FRUSTUM_SLOT_CNT = 4;
+struct FrustumBuffer
+{
+  using FrustumArray = std::array<Frustum2, FRUSTUM_SLOT_CNT>;
+
+  FrustumArray frustum_slots;
+  PortalID     see_through_portal_id; // Unused for now, will be handy later
+
+  explicit FrustumBuffer(Frustum2 from_frustum)
+  : see_through_portal_id(INVALID_PORTAL_ID)
+  {
+    frustum_slots.fill(INVALID_FRUSTUM);
+    frustum_slots[0] = from_frustum;
+  }
+
+  // This merges a new frustum with overlapping one. If no overlapping frustum
+  // is found then inserts it or merges with a closest one.
+  void insert_frustum(Frustum2 new_frustum)
+  {
+    u64  closest_idx = 0;
+    f32  closest_dst = FLT_MAX;
+    bool merged      = false;
+
+    for (u64 i = 0; i < FRUSTUM_SLOT_CNT; ++i)
+    {
+      auto& other_frustum = this->frustum_slots[i];
+      auto  is_invalid    = other_frustum == INVALID_FRUSTUM;
+
+      f32 angle_diff = is_invalid ? 0.0f : other_frustum.angle_difference(new_frustum);
+
+      if (angle_diff <= 0.0f)
+      {
+        // we found an overlapping frustum, lets merge with it
+        if (is_invalid)
+        {
+          other_frustum = new_frustum;
+        }
+        else
+        {
+          other_frustum = other_frustum.merged_with(new_frustum);
+        }
+
+        merged = true;
+        break;
+      }
+
+      // not overlapping, but might be quite close
+      if (angle_diff < closest_dst)
+      {
+        angle_diff  = closest_dst;
+        closest_idx = i;
+      }
+    }
+
+    if (!merged)
+    {
+      NC_ASSERT(closest_idx < FRUSTUM_SLOT_CNT);
+
+      // No overlapping frustum found and all slots are full?
+      // Then merge with a closest one
+      auto& closest_frustum = this->frustum_slots[closest_idx];
+      closest_frustum = closest_frustum.merged_with(new_frustum);
+    }
+  }
+};
+
+//==============================================================================
 void MapSectors::traverse_visible_areas(
   const Frustum2&    input_frustum,
   VisitorFunc        visitor,
@@ -107,34 +174,24 @@ void MapSectors::traverse_visible_areas(
     return;
   }
 
-  constexpr u64 FRUSTUM_CNT = 4;
-  struct Frustums
-  {
-    std::array<Frustum2, FRUSTUM_CNT> frustums = {INVALID_FRUSTUM, INVALID_FRUSTUM, INVALID_FRUSTUM, INVALID_FRUSTUM};
-    PortalID see_through_portal_id             = INVALID_PORTAL_ID;
-  };
+  std::map<SectorID, FrustumBuffer> curr_iteration;
+  std::map<SectorID, FrustumBuffer> next_iteration;
 
-  std::map<SectorID, Frustums> curr_iteration;
-  std::map<SectorID, Frustums> next_iteration;
-
-  {
-    Frustums to_insert{};
-    to_insert.frustums[0] = input_frustum;
-    next_iteration.insert({start_sector, to_insert});
-  }
+  next_iteration.insert({start_sector, FrustumBuffer{input_frustum}});
 
   // Now do a BFS
   while (next_iteration.size())
   {
+    //swap the buffers
     curr_iteration = std::move(next_iteration);
-    NC_ASSERT(next_iteration.empty());
+    next_iteration.clear();
 
     for (const auto&[id, content] : curr_iteration)
     {
       NC_ASSERT(id < sectors.size());
 
       // Iterate all frustums in this dir
-      for (const auto& frustum : content.frustums)
+      for (const auto& frustum : content.frustum_slots)
       {
         if (frustum == INVALID_FRUSTUM)
         {
@@ -179,57 +236,14 @@ void MapSectors::traverse_visible_areas(
           }
 
           // visit the sector in the next iteration
-          if (next_iteration.contains(next_sector))
+          if (auto it = next_iteration.find(next_sector); it != next_iteration.end())
           {
-            // Merge the two frustums if the sector is already in the queue..
-            // Merge with overlapping one or insert it as a new one..
-            auto& frustum_array = next_iteration[next_sector].frustums;
-            u64   closest_idx   = 0;
-            f32   closest_dst   = FLT_MAX;
-            bool  merged        = false;
-
-            for (u64 i = 0; i < FRUSTUM_CNT; ++i)
-            {
-              auto& other_frustum = frustum_array[i];
-              auto  is_invalid    = other_frustum == INVALID_FRUSTUM;
-
-              f32 angle_diff = is_invalid ? 0.0f : other_frustum.angle_difference(frustum);
-
-              if (angle_diff <= 0.0f)
-              {
-                // we found an overlapping frustum, lets merge with it
-                if (is_invalid)
-                {
-                  other_frustum = new_frustum;
-                }
-                else
-                {
-                  other_frustum = other_frustum.merged_with(new_frustum);
-                }
-
-                merged = true;
-                break;
-              }
-
-              if (angle_diff < closest_dst)
-              {
-                angle_diff  = closest_dst;
-                closest_idx = i;
-              }
-            }
-
-            if (!merged)
-            {
-              // no overlapping frustum found? Then merge with a closest one
-              NC_ASSERT(closest_idx < FRUSTUM_CNT);
-              frustum_array[closest_idx].merged_with(new_frustum);
-            }
+            // did we already reach this sector? Then merge the frustum with some old one
+            it->second.insert_frustum(new_frustum);
           }
           else
           {
-            Frustums to_insert{};
-            to_insert.frustums[0] = new_frustum;
-            next_iteration.insert({next_sector, to_insert});
+            next_iteration.insert({next_sector, FrustumBuffer{new_frustum}});
           }
         });
       }
