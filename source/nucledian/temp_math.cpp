@@ -21,9 +21,9 @@ vec3 normalize(const vec3& vec)
 //==============================================================================
 vec3 normalize_or_zero(const vec3& vec)
 {
-    // TODO: check for infinite vector
-    // TODO: should probsbly return zero also for vectors very close to zero
-    return (vec != vec3::ZERO) ? normalize(vec) : vec3::ZERO;
+  // TODO: check for infinite vector
+  // TODO: should probsbly return zero also for vectors very close to zero
+  return (vec != vec3::ZERO) ? normalize(vec) : vec3::ZERO;
 }
 
 //==============================================================================
@@ -45,7 +45,7 @@ mat4 perspective(f32 fov, f32 aspect, f32 near, f32 far)
 //==============================================================================
 quat angleAxis(f32 angle, const vec3& vec)
 {
-    return std::bit_cast<quat>(glm::angleAxis(angle, std::bit_cast<glm::vec3>(vec)));
+  return std::bit_cast<quat>(glm::angleAxis(angle, std::bit_cast<glm::vec3>(vec)));
 }
 
 //==============================================================================
@@ -61,15 +61,21 @@ f32 cos(f32 x)
 }
 
 //==============================================================================
+f32 rem_euclid(f32 value, f32 range)
+{
+  return value - range * glm::floor(value / range);
+}
+
+//==============================================================================
 vec3 operator *(const quat& q, const vec3& vec)
 {
-    return std::bit_cast<vec3>(q * std::bit_cast<glm::vec3>(vec));
+  return std::bit_cast<vec3>(q * std::bit_cast<glm::vec3>(vec));
 }
 
 //==============================================================================
 vec3 operator *(const vec3& vec, const quat& q)
 {
-    return std::bit_cast<vec3>(std::bit_cast<glm::vec3>(vec) * q);
+  return std::bit_cast<vec3>(std::bit_cast<glm::vec3>(vec) * q);
 }
 
 //==============================================================================

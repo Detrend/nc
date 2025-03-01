@@ -10,6 +10,12 @@ namespace nc
 {
 
 //==============================================================================
+DebugCamera::DebugCamera()
+{
+  SDL_SetRelativeMouseMode(SDL_TRUE);
+}
+
+//==============================================================================
 void DebugCamera::handle_input(float delta_seconds)
 {
   this->handle_movement(delta_seconds);
