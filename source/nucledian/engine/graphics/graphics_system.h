@@ -6,6 +6,8 @@
 #include <engine/core/engine_module.h>
 #include <engine/core/engine_module_id.h>
 #include <engine/graphics/debug_camera.h>
+#include <engine/graphics/renderer.h>
+#include <temp_math.h>
 
 struct SDL_Window;
 
@@ -13,6 +15,7 @@ namespace nc
 {
 
 struct ModuleEvent;
+struct ModelHandle;
 
 class GraphicsSystem : public IEngineModule
 {
@@ -23,6 +26,17 @@ public:
 
   void update_window_and_pump_messages();
 
+  const DebugCamera& get_debug_camera() const;
+  // TODO: time to live
+  /**
+  * Creates a new gizmo.
+  *
+  * The created gizmo will remain visible until:
+  * - All GizmoPtr references are destroyed, OR
+  * - Time to live (ttl) expires (if specified) (ttl is future feature and is not currently implemented)
+  */
+  GizmoPtr create_gizmo(ResourceHandle<Mesh> mesh);
+
 private:
   void update(f32 delta_seconds);
   void render();
@@ -31,13 +45,8 @@ private:
 private:
   SDL_Window* m_window         = nullptr;
   void*       m_gl_context     = nullptr;
-
-  u32         m_vao            = 0;
-  u32         m_vbo            = 0;
-  // u32         m_ebo            = 0;
-  u32         m_shader_program = 0;
-
   DebugCamera m_debug_camera;
+  Renderer    m_renderer;
 };
 
 }
