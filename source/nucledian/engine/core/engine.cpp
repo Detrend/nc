@@ -314,7 +314,68 @@ static void test_make_sector(
 }
 
 //==============================================================================
-static void make_random_square_maze_map(MapSectors& map, u32 size, u32 seed)
+static void make_cool_looking_map(MapSectors& map)
+{
+  std::vector<vec2> points =
+  {
+    vec2{0	, 0},
+    vec2{6	, 1},
+    vec2{7	, 5},
+    vec2{9	, 5},
+    vec2{11	, 4},
+    vec2{14	, 4},
+    vec2{16	, 5},
+    vec2{16	, 8},
+    vec2{14	, 9},
+    vec2{11	, 9},
+    vec2{9	, 8},
+    vec2{8	, 8},
+    vec2{7	, 9},
+    vec2{7	, 12},
+    vec2{6	, 13},
+    vec2{5	, 13},
+    vec2{4	, 12},
+    vec2{4	, 9},
+    vec2{4	, 6},
+    vec2{2	, 4},
+    vec2{3	, 1},
+    vec2{5	, 9},
+    vec2{6	, 9},
+    vec2{6	, 10},
+    vec2{5	, 10},
+  };
+
+  constexpr vec2 max_range = {18.0f, 15.0f};
+
+  // normalize the points
+  for (auto& pt : points)
+  {
+    pt = ((pt / max_range) * 2.0f) - vec2{1.0f};
+  }
+
+  // and then the sectors
+  std::vector<map_building::SectorBuildData> sectors;
+
+  test_make_sector({1, 2, 18, 19, 20}, sectors);
+  test_make_sector({18, 2, 11, 12, 22, 21, 17}, sectors);
+  test_make_sector({2, 3, 10, 11}, sectors);
+  test_make_sector({3, 4, 5, 6, 7, 8, 9, 10}, sectors);
+  test_make_sector({22, 12, 13, 23}, sectors);
+  test_make_sector({23, 13, 14, 15, 16, 24}, sectors);
+  test_make_sector({17, 21, 24, 16}, sectors);
+
+  using namespace map_building::MapBuildFlag;
+
+  map_building::build_map(
+    points, sectors, map,
+    //omit_convexity_clockwise_check |
+    //omit_sector_overlap_check      |
+    //omit_wall_overlap_check        |
+    assert_on_fail);
+}
+
+//==============================================================================
+[[maybe_unused]]static void make_random_square_maze_map(MapSectors& map, u32 size, u32 seed)
 {
   std::srand(seed);
 
@@ -364,7 +425,8 @@ static void make_random_square_maze_map(MapSectors& map, u32 size, u32 seed)
 void Engine::build_map_and_sectors()
 {
   m_map = std::make_unique<MapSectors>();
-  make_random_square_maze_map(*m_map, 32, 0);
+  //make_random_square_maze_map(*m_map, 32, 0);
+  make_cool_looking_map(*m_map);
 }
 
 //==============================================================================
