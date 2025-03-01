@@ -163,15 +163,15 @@ const DebugCamera& GraphicsSystem::get_debug_camera() const
 }
 
 //==============================================================================
-GizmoPtr GraphicsSystem::create_gizmo(MeshHandle mesh_handle, const mat4& transform)
+GizmoPtr GraphicsSystem::create_gizmo(MeshHandle mesh_handle, const mat4& transform, const color& color)
 {
-  return m_renderer.create_gizmo(mesh_handle, transform);
+  return m_renderer.create_gizmo(mesh_handle, transform, color);
 }
 
 //==============================================================================
-GizmoPtr GraphicsSystem::create_gizmo(MeshHandle mesh_handle, const vec3& position)
+GizmoPtr GraphicsSystem::create_gizmo(MeshHandle mesh_handle, const vec3& position, const color& color)
 {
-  return m_renderer.create_gizmo(mesh_handle, position);
+  return m_renderer.create_gizmo(mesh_handle, position, color);
 }
 
 //==============================================================================

@@ -50,16 +50,19 @@ public:
   MeshHandle get_mesh() const;
   void set_mesh(MeshHandle mesh_handle);
 
-  mat4 get_transform() const;
+  const mat4& get_transform() const;
   void set_transform(const mat4& transform);
+
+  const color& get_color() const;
+  void set_color(const color& color);
 
 private:
   // Constructor is private so its callable only from Renderer class.
-  Gizmo(MeshHandle mesh_handle, const mat4& transform);
+  Gizmo(MeshHandle mesh_handle, const mat4& transform, const color& color);
 
   MeshHandle m_mesh_handle = MeshHandle::invalid();
   mat4 m_transform = mat4(1.0f);
-  // TODO: color modulation
+  color m_color = colors::WHITE;
 };
 /**
  * Smart pointer managing the lifetime of a Gizmo instance.
@@ -94,7 +97,7 @@ public:
   * - All GizmoPtr references are destroyed, OR
   * - Time to live (ttl) expires (if specified) (ttl is future feature and is not currently implemented)
   */
-  GizmoPtr create_gizmo(MeshHandle mesh_handle, const mat4& transform);
+  GizmoPtr create_gizmo(MeshHandle mesh_handle, const mat4& transform, const color& color);
   /**
   * Creates a new gizmo.
   *
@@ -102,7 +105,7 @@ public:
   * - All GizmoPtr references are destroyed, OR
   * - Time to live (ttl) expires (if specified) (ttl is future feature and is not currently implemented)
   */
-  GizmoPtr create_gizmo(MeshHandle mesh_handle, const vec3& position);
+  GizmoPtr create_gizmo(MeshHandle mesh_handle, const vec3& position, const color& color);
 
 private:
   void render_gizmos() const;
