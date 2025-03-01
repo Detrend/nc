@@ -110,10 +110,31 @@ template<typename F, u64 S>
 vec<F, S> operator-(const vec<F, S>& a, const vec<F, S>& b);
 
 template<typename F, u64 S>
+vec<F, S>& operator-=(vec<F, S>& a, const vec<F, S>& b);
+
+template<typename F, u64 S>
+vec<F, S>& operator*=(vec<F, S>& a, const vec<F, S>& b);
+
+template<typename F, u64 S>
+vec<F, S>& operator*=(vec<F, S>& a, const F& b);
+
+template<typename F, u64 S>
+vec<F, S>& operator/=(vec<F, S>& a, const vec<F, S>& b);
+
+template<typename F, u64 S>
+vec<F, S>& operator/=(vec<F, S>& a, const F& b);
+
+template<typename F, u64 S>
+vec<F, S>& operator+=(vec<F, S>& a, const vec<F, S>& b);
+
+template<typename F, u64 S>
 vec<F, S> operator*(const vec<F, S>& a, const vec<F, S>& b);
 
 template<typename F, u64 S>
 vec<F, S> operator*(const vec<F, S>& a, const F& b);
+
+template<typename F, u64 S>
+vec<F, S> operator*(const F& a, const vec<F, S>& b);
 
 template<typename F, u64 S>
 vec<F, S> operator/(const vec<F, S>& a, const vec<F, S>& b);
