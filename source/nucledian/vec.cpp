@@ -36,9 +36,23 @@ vec<F, S> operator*(const vec<F, S>& a, const vec<F, S>& b)
 
 //==============================================================================
 template<typename F, u64 S>
+vec<F, S> operator*(const vec<F, S>& a, const F& b)
+{
+  return mul(a, vec<F, S>{b});
+}
+
+//==============================================================================
+template<typename F, u64 S>
 vec<F, S> operator/(const vec<F, S>& a, const vec<F, S>& b)
 {
   return div(a, b);
+}
+
+//==============================================================================
+template<typename F, u64 S>
+vec<F, S> operator/(const vec<F, S>& a, const F& b)
+{
+  return div(a, vec<F, S>{b});
 }
 
 //==============================================================================
@@ -65,9 +79,17 @@ template vec4 operator*(const vec4&, const vec4&);
 template vec3 operator*(const vec3&, const vec3&);
 template vec2 operator*(const vec2&, const vec2&);
 
+template vec4 operator*(const vec4&, const f32&);
+template vec3 operator*(const vec3&, const f32&);
+template vec2 operator*(const vec2&, const f32&);
+
 template vec4 operator/(const vec4&, const vec4&);
 template vec3 operator/(const vec3&, const vec3&);
 template vec2 operator/(const vec2&, const vec2&);
+
+template vec4 operator/(const vec4&, const f32&);
+template vec3 operator/(const vec3&, const f32&);
+template vec2 operator/(const vec2&, const f32&);
 
 template vec4 operator-(const vec4&);
 template vec3 operator-(const vec3&);

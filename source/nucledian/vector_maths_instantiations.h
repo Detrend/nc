@@ -32,5 +32,13 @@ template vec2 div<f32, 2>(const vec2&, const vec2&);
 template f32  dot<f32, 4>(const vec4&, const vec4&);
 template f32  dot<f32, 3>(const vec3&, const vec3&);
 template f32  dot<f32, 2>(const vec2&, const vec2&);
+
+template f32  length<f32, 4>(const vec4&);
+template f32  length<f32, 3>(const vec3&);
+template f32  length<f32, 2>(const vec2&);
+
+template vec4 normalize<f32, 4>(const vec4&);
+template vec3 normalize<f32, 3>(const vec3&);
+template vec2 normalize<f32, 2>(const vec2&);
 //==============================================================================
 

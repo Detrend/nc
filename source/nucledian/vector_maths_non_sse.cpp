@@ -1,5 +1,6 @@
 // Project Nucledian Source File
 #include <vec.h>
+#include <cmath>
 
 namespace nc::non_sse
 {
@@ -131,6 +132,37 @@ vec4 cross(const vec4& a, const vec4& b)
     a.z * b.x - a.x * b.z,
     a.x * b.y - a.y * b.x,
     0.0f};
+}
+
+//==============================================================================
+template<typename T, u64 SIZE>
+T length(const vec<T, SIZE>& a)
+{
+  T result = 0;
+
+  for (u64 i = 0; i < SIZE; ++i)
+  {
+    result += a[i] * a[i];
+  }
+
+  return std::sqrt(result);
+}
+
+//==============================================================================
+template<typename T, u64 SIZE>
+vec<T, SIZE> normalize(const vec<T, SIZE>& a)
+{
+  const auto len = length(a);
+  NC_ASSERT(len > 0.0f);
+
+  auto result = a;
+
+  for (u64 i = 0; i < SIZE; ++i)
+  {
+    result[i] = result[i] / len;
+  }
+
+  return result;
 }
 
 }
