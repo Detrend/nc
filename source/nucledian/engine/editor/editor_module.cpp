@@ -37,14 +37,15 @@ namespace nc
     }
     case ModuleEventType::editor_update:
     {
-      get_mouse_input();
+      get_mouse_input();    
       update_map(gridOffset);
       switch (editMode2D)
       {
       case nc::move:
         break;
       case nc::vertex:
-        update_cursor_gl();
+        update_cursor_gl();  
+        check_for_delete();     
         break;
       case nc::line:
         update_cursor_gl();
@@ -147,8 +148,11 @@ namespace nc
 
     get_left_mouse_button(mouseState);
     get_right_mouse_button(mouseState);
+    get_closest_point();
 
     curGridMousePos = curMousePos + gridOffset;
+    
+    
   }
 
   //=================================================================
@@ -224,6 +228,48 @@ namespace nc
     if (prevMouse[1] && !curMouse[1])
     {
       io.AddMouseButtonEvent(1, false);
+    }
+  }
+
+  //================================================================================
+
+  void EditorSystem::get_closest_point()
+  {
+    f32 minDist = 666;
+    int candidate = -1;
+
+    for (size_t i = 0; i < mapPoints.size(); i++)
+    {
+      f32 dist = mapPoints[i].get()->get_distance(curGridMousePos);
+      if (dist > 0.125)
+      {
+        continue;
+      }
+
+      if (dist < minDist)
+      {
+        minDist = dist;
+        candidate = i;
+      }
+    }
+
+    closest = candidate;
+  }
+
+  //================================================================================
+
+  void EditorSystem::check_for_delete()
+  {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+      if (event.type == SDL_KEYDOWN) {
+        if (event.key.keysym.sym == SDLK_DELETE) {
+          if (closest > -1) {
+            mapPoints[closest].get()->cleanup();
+            mapPoints.erase(mapPoints.begin() + closest);
+          }
+        }
+      }
     }
   }
 
@@ -352,6 +398,8 @@ namespace nc
     ImGui::Text("GridPos: %.2f:%.2f", curGridMousePos.x, curGridMousePos.y);
     ImGui::SameLine();
     ImGui::Text("SnapToPos: %.2f: %.2f", snapPos.x, snapPos.y);
+    ImGui::SameLine();
+    ImGui::Text("Closest: %d", closest);
     ImGui::End();
   }
 

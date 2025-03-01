@@ -98,6 +98,7 @@ namespace nc
     void move_to(f32 x, f32 y);
     void update();
     void draw();
+    void cleanup();
     ~MapPoint();
 
   private:

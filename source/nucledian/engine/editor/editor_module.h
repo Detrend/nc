@@ -88,6 +88,8 @@ namespace nc
     void get_left_mouse_button(Uint32 mouseState);
     void get_right_mouse_button(Uint32 mouseState);
 
+    void get_closest_point();
+    void check_for_delete();
     void select_point(vertex_2d mousePos);
     void move_point(vertex_2d mousePos);
 
@@ -127,6 +129,7 @@ namespace nc
 
     std::vector<std::shared_ptr<MapPoint>> mapPoints; // A TEMPORARY VARIABLE FOR TESTING
     int selected = -1;
+    int closest = -1;
   };
 
   

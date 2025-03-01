@@ -58,11 +58,17 @@ void nc::MapPoint::draw()
   glBindVertexArray(0);
 }
 
+void nc::MapPoint::cleanup()
+{
+  glDeleteBuffers(1, &vertexBuffer);
+  glDeleteVertexArrays(1, &vertexArrayBuffer);
+}
+
 //============================================================
 
 nc::MapPoint::~MapPoint()
 {
-  //glDeleteVertexArrays(1, &vertexArrayBuffer);
+  
 }
 
 //============================================================
