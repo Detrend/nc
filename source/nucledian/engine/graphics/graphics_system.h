@@ -35,7 +35,15 @@ public:
   * - All GizmoPtr references are destroyed, OR
   * - Time to live (ttl) expires (if specified) (ttl is future feature and is not currently implemented)
   */
-  GizmoPtr create_gizmo(ResourceHandle<Mesh> mesh);
+  GizmoPtr create_gizmo(MeshHandle mesh_handle, const mat4& transform);
+  /**
+  * Creates a new gizmo.
+  *
+  * The created gizmo will remain visible until:
+  * - All GizmoPtr references are destroyed, OR
+  * - Time to live (ttl) expires (if specified) (ttl is future feature and is not currently implemented)
+  */
+  GizmoPtr create_gizmo(MeshHandle mesh_handle, const vec3& position);
 
 private:
   void update(f32 delta_seconds);

@@ -24,6 +24,10 @@ mat4 perspective(f32 fov, f32 aspect, f32 near, f32 far);
 constexpr vec3 cross(const vec3& vec1, const vec3& vec2);
 quat angleAxis(f32 angle, const vec3& vec);
 
+mat4 translate(const mat4& matrix, const vec3& vec);
+mat4 rotate(const mat4& matrix, f32 angle, const vec3& axis);
+mat4 scale(const mat4& matrix, const vec3& vec);
+
 constexpr f32 clamp(f32 x, f32 min, f32 max);
 f32 sin(f32 x);
 f32 cos(f32 x);

@@ -21,11 +21,12 @@ R"(
 
   uniform mat4 view;
   uniform mat4 projection;
+  uniform mat4 transform;
 
   void main()
   {
-    gl_Position = projection * view * vec4(in_pos, 1.0f);
-    normal = in_normal;
+    gl_Position = projection * view * transform * vec4(in_pos, 1.0f);
+    normal = mat3(transpose(inverse(transform))) * in_normal;
   }
 )";
 
@@ -53,23 +54,35 @@ R"(
 )";
 
 //==============================================================================
-Model::Model(ResourceHandle<Mesh> mesh)
+Model::Model(MeshHandle mesh)
   : mesh(mesh) {}
 
 //==============================================================================
-Gizmo::Gizmo(ResourceHandle<Mesh> mesh)
-  : m_mesh_handle(mesh) {}
+Gizmo::Gizmo(MeshHandle mesh, const mat4& transform)
+  : m_mesh_handle(mesh), m_transform(transform) {}
 
 //==============================================================================
-ResourceHandle<Mesh> Gizmo::get_mesh() const
+MeshHandle Gizmo::get_mesh() const
 {
   return m_mesh_handle;
 }
 
 //==============================================================================
-void Gizmo::set_mesh(ResourceHandle<Mesh> mesh)
+void Gizmo::set_mesh(MeshHandle mesh_handle)
 {
-  m_mesh_handle = mesh;
+  m_mesh_handle = mesh_handle;
+}
+
+//==============================================================================
+mat4 Gizmo::get_transform() const
+{
+  return m_transform;
+}
+
+//==============================================================================
+void Gizmo::set_transform(const mat4& transform)
+{
+  m_transform = transform;
 }
 
 //==============================================================================
@@ -106,7 +119,8 @@ void Renderer::init()
   glUseProgram(0);
 
   // TODO: temporary cube gizmo
-  m_temp_cube_gizmo = create_gizmo(MeshManager::instance()->get_cube());
+  m_temp_cube_gizmo1 = create_gizmo(Meshes::cube(),  vec3::X);
+  m_temp_cube_gizmo2 = create_gizmo(Meshes::cube(), -vec3::X);
 }
 
 //==============================================================================
@@ -121,9 +135,9 @@ void Renderer::render() const
 }
 
 //==============================================================================
-GizmoPtr Renderer::create_gizmo(ResourceHandle<Mesh> mesh_handle)
+GizmoPtr Renderer::create_gizmo(MeshHandle mesh_handle, const mat4& transform)
 {
-  m_gizmos.push_back(Gizmo(mesh_handle));
+  m_gizmos.push_back(Gizmo(mesh_handle, transform));
   auto it = std::prev(m_gizmos.end());
 
   auto deleter = [this, it](const Gizmo*)
@@ -132,6 +146,12 @@ GizmoPtr Renderer::create_gizmo(ResourceHandle<Mesh> mesh_handle)
   };
 
   return GizmoPtr(&(*it), deleter);
+}
+
+//==============================================================================
+GizmoPtr Renderer::create_gizmo(MeshHandle mesh_handle, const vec3& position)
+{
+  return create_gizmo(mesh_handle, translate(mat4(1.0f), position));
 }
 
 //==============================================================================
@@ -145,10 +165,13 @@ void Renderer::render_gizmos() const
   const mat4 view = get_engine().get_module<GraphicsSystem>().get_debug_camera().get_view();
   glad_glUniformMatrix4fv(glGetUniformLocation(m_gizmos_shader_program, "view"), 1, GL_FALSE, value_ptr(view));
 
+  const GLint transform_location = glGetUniformLocation(m_gizmos_shader_program, "transform");
+
   for (const auto& gizmo : m_gizmos)
   {
     const Mesh& mesh = meshes->get_resource(gizmo.m_mesh_handle);
 
+    glUniformMatrix4fv(transform_location, 1, GL_FALSE, value_ptr(gizmo.get_transform()));
     glBindVertexArray(mesh.get_vao());
     glDrawArrays(GL_TRIANGLES, 0, mesh.get_vertex_count());
   }

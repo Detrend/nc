@@ -18,9 +18,9 @@ struct Model
 {
   // Creates an invalid model.
   Model() {}
-  Model(ResourceHandle<Mesh> mesh);
+  Model(MeshHandle mesh);
 
-  ResourceHandle<Mesh> mesh = ResourceHandle<Mesh>::invalid();
+  MeshHandle mesh = MeshHandle::invalid();
 };
 
 /**
@@ -47,15 +47,18 @@ public:
   // Creates an invalid gizmo.
   Gizmo() {}
 
-  ResourceHandle<Mesh> get_mesh() const;
-  void set_mesh(ResourceHandle<Mesh> mesh_handle);
+  MeshHandle get_mesh() const;
+  void set_mesh(MeshHandle mesh_handle);
+
+  mat4 get_transform() const;
+  void set_transform(const mat4& transform);
 
 private:
   // Constructor is private so its callable only from Renderer class.
-  Gizmo(ResourceHandle<Mesh> mesh_handle);
+  Gizmo(MeshHandle mesh_handle, const mat4& transform);
 
-  ResourceHandle<Mesh> m_mesh_handle = ResourceHandle<Mesh>::invalid();
-  // TODO: transform
+  MeshHandle m_mesh_handle = MeshHandle::invalid();
+  mat4 m_transform = mat4(1.0f);
   // TODO: color modulation
 };
 /**
@@ -91,15 +94,23 @@ public:
   * - All GizmoPtr references are destroyed, OR
   * - Time to live (ttl) expires (if specified) (ttl is future feature and is not currently implemented)
   */
-  GizmoPtr create_gizmo(ResourceHandle<Mesh> mesh);
+  GizmoPtr create_gizmo(MeshHandle mesh_handle, const mat4& transform);
+  /**
+  * Creates a new gizmo.
+  *
+  * The created gizmo will remain visible until:
+  * - All GizmoPtr references are destroyed, OR
+  * - Time to live (ttl) expires (if specified) (ttl is future feature and is not currently implemented)
+  */
+  GizmoPtr create_gizmo(MeshHandle mesh_handle, const vec3& position);
 
 private:
   void render_gizmos() const;
 
   std::list<Gizmo> m_gizmos;
-  GLuint m_gizmos_shader_program = 0;
-  GizmoPtr m_temp_cube_gizmo;
-
+  GLuint           m_gizmos_shader_program = 0;
+  GizmoPtr         m_temp_cube_gizmo1;
+  GizmoPtr         m_temp_cube_gizmo2;
 };
 
 }

@@ -163,9 +163,15 @@ const DebugCamera& GraphicsSystem::get_debug_camera() const
 }
 
 //==============================================================================
-GizmoPtr GraphicsSystem::create_gizmo(ResourceHandle<Mesh> mesh)
+GizmoPtr GraphicsSystem::create_gizmo(MeshHandle mesh_handle, const mat4& transform)
 {
-  return m_renderer.create_gizmo(mesh);
+  return m_renderer.create_gizmo(mesh_handle, transform);
+}
+
+//==============================================================================
+GizmoPtr GraphicsSystem::create_gizmo(MeshHandle mesh_handle, const vec3& position)
+{
+  return m_renderer.create_gizmo(mesh_handle, position);
 }
 
 //==============================================================================
