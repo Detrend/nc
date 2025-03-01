@@ -35,7 +35,7 @@ public:
   * - All GizmoPtr references are destroyed, OR
   * - Time to live (ttl) expires (if specified) (ttl is future feature and is not currently implemented)
   */
-  GizmoPtr create_gizmo(MeshHandle mesh_handle, const mat4& transform);
+  GizmoPtr create_gizmo(MeshHandle mesh_handle, const mat4& transform, const color& color);
   /**
   * Creates a new gizmo.
   *
@@ -43,7 +43,7 @@ public:
   * - All GizmoPtr references are destroyed, OR
   * - Time to live (ttl) expires (if specified) (ttl is future feature and is not currently implemented)
   */
-  GizmoPtr create_gizmo(MeshHandle mesh_handle, const vec3& position);
+  GizmoPtr create_gizmo(MeshHandle mesh_handle, const vec3& position, const color& color);
 
 private:
   void update(f32 delta_seconds);
@@ -51,8 +51,8 @@ private:
   void terminate();
 
 private:
-  SDL_Window* m_window         = nullptr;
-  void*       m_gl_context     = nullptr;
+  SDL_Window* m_window       = nullptr;
+  void*       m_gl_context   = nullptr;
   DebugCamera m_debug_camera;
   Renderer    m_renderer;
 };

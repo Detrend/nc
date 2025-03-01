@@ -40,16 +40,17 @@ R"(
 
   out vec4 out_color;
 
+  uniform vec3 color;
+
   void main()
   {
     vec3 light_color = vec3(1.0f, 1.0f, 1.0f);
     vec3 light_direction = normalize(-vec3(-0.2f, -0.8f, -0.2f));
-    vec3 object_color = vec3(1.0f, 0.0f, 0.0f);
 
     vec3 ambient = 0.5f * light_color;
     vec3 diffuse = max(dot(normal, light_direction), 0.0f) * light_color;
 
-    out_color = vec4((ambient + diffuse) * object_color, 1.0f);
+    out_color = vec4((ambient + diffuse) * color, 1.0f);
   }
 )";
 
@@ -58,8 +59,8 @@ Model::Model(MeshHandle mesh)
   : mesh(mesh) {}
 
 //==============================================================================
-Gizmo::Gizmo(MeshHandle mesh, const mat4& transform)
-  : m_mesh_handle(mesh), m_transform(transform) {}
+Gizmo::Gizmo(MeshHandle mesh, const mat4& transform, const color& color)
+  : m_mesh_handle(mesh), m_transform(transform), m_color(color) {}
 
 //==============================================================================
 MeshHandle Gizmo::get_mesh() const
@@ -74,7 +75,7 @@ void Gizmo::set_mesh(MeshHandle mesh_handle)
 }
 
 //==============================================================================
-mat4 Gizmo::get_transform() const
+const mat4& Gizmo::get_transform() const
 {
   return m_transform;
 }
@@ -83,6 +84,18 @@ mat4 Gizmo::get_transform() const
 void Gizmo::set_transform(const mat4& transform)
 {
   m_transform = transform;
+}
+
+//==============================================================================
+const color& Gizmo::get_color() const
+{
+  return m_color;
+}
+
+//==============================================================================
+void Gizmo::set_color(const color& color)
+{
+  m_color = color;
 }
 
 //==============================================================================
@@ -119,8 +132,8 @@ void Renderer::init()
   glUseProgram(0);
 
   // TODO: temporary cube gizmo
-  m_temp_cube_gizmo1 = create_gizmo(Meshes::cube(),  vec3::X);
-  m_temp_cube_gizmo2 = create_gizmo(Meshes::cube(), -vec3::X);
+  m_temp_cube_gizmo1 = create_gizmo(Meshes::cube(),  vec3::X, colors::RED );
+  m_temp_cube_gizmo2 = create_gizmo(Meshes::cube(), -vec3::X, colors::BLUE);
 }
 
 //==============================================================================
@@ -135,9 +148,9 @@ void Renderer::render() const
 }
 
 //==============================================================================
-GizmoPtr Renderer::create_gizmo(MeshHandle mesh_handle, const mat4& transform)
+GizmoPtr Renderer::create_gizmo(MeshHandle mesh_handle, const mat4& transform, const color& color)
 {
-  m_gizmos.push_back(Gizmo(mesh_handle, transform));
+  m_gizmos.push_back(Gizmo(mesh_handle, transform, color));
   auto it = std::prev(m_gizmos.end());
 
   auto deleter = [this, it](const Gizmo*)
@@ -149,9 +162,9 @@ GizmoPtr Renderer::create_gizmo(MeshHandle mesh_handle, const mat4& transform)
 }
 
 //==============================================================================
-GizmoPtr Renderer::create_gizmo(MeshHandle mesh_handle, const vec3& position)
+GizmoPtr Renderer::create_gizmo(MeshHandle mesh_handle, const vec3& position, const color& color)
 {
-  return create_gizmo(mesh_handle, translate(mat4(1.0f), position));
+  return create_gizmo(mesh_handle, translate(mat4(1.0f), position), color);
 }
 
 //==============================================================================
@@ -166,12 +179,15 @@ void Renderer::render_gizmos() const
   glad_glUniformMatrix4fv(glGetUniformLocation(m_gizmos_shader_program, "view"), 1, GL_FALSE, value_ptr(view));
 
   const GLint transform_location = glGetUniformLocation(m_gizmos_shader_program, "transform");
+  const GLint color_location = glGetUniformLocation(m_gizmos_shader_program, "color");
 
   for (const auto& gizmo : m_gizmos)
   {
     const Mesh& mesh = meshes->get_resource(gizmo.m_mesh_handle);
+    const color color = gizmo.get_color();
 
     glUniformMatrix4fv(transform_location, 1, GL_FALSE, value_ptr(gizmo.get_transform()));
+    glUniform3f(color_location, color.r, color.g, color.b);
     glBindVertexArray(mesh.get_vao());
     glDrawArrays(GL_TRIANGLES, 0, mesh.get_vertex_count());
   }
