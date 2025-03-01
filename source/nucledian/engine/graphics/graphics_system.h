@@ -27,23 +27,22 @@ public:
   void update_window_and_pump_messages();
 
   const DebugCamera& get_debug_camera() const;
-  // TODO: time to live
   /**
   * Creates a new gizmo.
   *
   * The created gizmo will remain visible until:
   * - All GizmoPtr references are destroyed, OR
-  * - Time to live (ttl) expires (if specified) (ttl is future feature and is not currently implemented)
+  * - Time to live (ttl) expires (if specified) [seconds]
   */
-  GizmoPtr create_gizmo(MeshHandle mesh_handle, const mat4& transform, const color& color);
+  GizmoPtr create_gizmo(MeshHandle mesh_handle, const mat4& transform, const color& color, f32 ttl = 0.0f);
   /**
   * Creates a new gizmo.
   *
   * The created gizmo will remain visible until:
   * - All GizmoPtr references are destroyed, OR
-  * - Time to live (ttl) expires (if specified) (ttl is future feature and is not currently implemented)
+  * - Time to live (ttl) expires (if specified) [seconds]
   */
-  GizmoPtr create_gizmo(MeshHandle mesh_handle, const vec3& position, const color& color);
+  GizmoPtr create_gizmo(MeshHandle mesh_handle, const vec3& position, const color& color, f32 ttl = 0.0f);
 
 private:
   void update(f32 delta_seconds);

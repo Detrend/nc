@@ -6,7 +6,7 @@
 #include <glad/glad.h>
 
 #include <memory>
-#include <list>
+#include <unordered_map>
 
 namespace nc
 {
@@ -58,11 +58,12 @@ public:
 
 private:
   // Constructor is private so its callable only from Renderer class.
-  Gizmo(MeshHandle mesh_handle, const mat4& transform, const color& color);
+  Gizmo(MeshHandle mesh_handle, const mat4& transform, const color& color, f32 ttl);
 
   MeshHandle m_mesh_handle = MeshHandle::invalid();
-  mat4 m_transform = mat4(1.0f);
-  color m_color = colors::WHITE;
+  mat4       m_transform   = mat4(1.0f);
+  color      m_color       = colors::WHITE;
+  f32        m_ttl         = 0.0f;
 };
 /**
  * Smart pointer managing the lifetime of a Gizmo instance.
@@ -88,32 +89,38 @@ public:
    * - Gizmos
    */
   void render() const;
+  /**
+   * Update time to live of gizmos and delete gizmos with ttl less than zero.
+   */
+  void update_gizmos(f32 delta_seconds);
 
-  // TODO: time to live
   /**
   * Creates a new gizmo.
   *
   * The created gizmo will remain visible until:
   * - All GizmoPtr references are destroyed, OR
-  * - Time to live (ttl) expires (if specified) (ttl is future feature and is not currently implemented)
+  * - Time to live (ttl) expires (if specified) [seconds]
   */
-  GizmoPtr create_gizmo(MeshHandle mesh_handle, const mat4& transform, const color& color);
+  GizmoPtr create_gizmo(MeshHandle mesh_handle, const mat4& transform, const color& color, f32 ttl = 0.0f);
   /**
   * Creates a new gizmo.
   *
   * The created gizmo will remain visible until:
   * - All GizmoPtr references are destroyed, OR
-  * - Time to live (ttl) expires (if specified) (ttl is future feature and is not currently implemented)
+  * - Time to live (ttl) expires (if specified) [seconds]
   */
-  GizmoPtr create_gizmo(MeshHandle mesh_handle, const vec3& position, const color& color);
+  GizmoPtr create_gizmo(MeshHandle mesh_handle, const vec3& position, const color& color, f32 ttl = 0.0f);
 
 private:
+  using GizmoMap = std::unordered_map<u64, Gizmo>;
+  
   void render_gizmos() const;
 
-  std::list<Gizmo> m_gizmos;
-  GLuint           m_gizmos_shader_program = 0;
-  GizmoPtr         m_temp_cube_gizmo1;
-  GizmoPtr         m_temp_cube_gizmo2;
+  GizmoMap m_gizmos;
+  u64      m_next_gizmo_id         = 0;
+  GLuint   m_gizmos_shader_program = 0;
+  GizmoPtr m_temp_cube_gizmo1;
+  GizmoPtr m_temp_cube_gizmo2;
 };
 
 }

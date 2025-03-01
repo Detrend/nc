@@ -59,8 +59,8 @@ Model::Model(MeshHandle mesh)
   : mesh(mesh) {}
 
 //==============================================================================
-Gizmo::Gizmo(MeshHandle mesh, const mat4& transform, const color& color)
-  : m_mesh_handle(mesh), m_transform(transform), m_color(color) {}
+Gizmo::Gizmo(MeshHandle mesh, const mat4& transform, const color& color, f32 ttl)
+  : m_mesh_handle(mesh), m_transform(transform), m_color(color), m_ttl(ttl) {}
 
 //==============================================================================
 MeshHandle Gizmo::get_mesh() const
@@ -132,8 +132,8 @@ void Renderer::init()
   glUseProgram(0);
 
   // TODO: temporary cube gizmo
-  m_temp_cube_gizmo1 = create_gizmo(Meshes::cube(),  vec3::X, colors::RED );
-  m_temp_cube_gizmo2 = create_gizmo(Meshes::cube(), -vec3::X, colors::BLUE);
+  m_temp_cube_gizmo1 = create_gizmo(Meshes::cube(),  vec3::X, colors::RED , 5.0f);
+  m_temp_cube_gizmo2 = create_gizmo(Meshes::cube(), -vec3::X, colors::BLUE, 9.0f);
 }
 
 //==============================================================================
@@ -148,23 +148,48 @@ void Renderer::render() const
 }
 
 //==============================================================================
-GizmoPtr Renderer::create_gizmo(MeshHandle mesh_handle, const mat4& transform, const color& color)
+void Renderer::update_gizmos(f32 delta_seconds)
 {
-  m_gizmos.push_back(Gizmo(mesh_handle, transform, color));
-  auto it = std::prev(m_gizmos.end());
+  std::vector<u64> to_delete;
 
-  auto deleter = [this, it](const Gizmo*)
+  for (auto& [id, gizmo] : m_gizmos)
   {
-    m_gizmos.erase(it);
-  };
+    gizmo.m_ttl -= delta_seconds;
+    if (gizmo.m_ttl < 0.0f)
+    {
+      to_delete.push_back(id);
+    }
+  }
 
-  return GizmoPtr(&(*it), deleter);
+  for (auto& id : to_delete)
+  {
+    m_gizmos.erase(id);
+  }
 }
 
 //==============================================================================
-GizmoPtr Renderer::create_gizmo(MeshHandle mesh_handle, const vec3& position, const color& color)
+GizmoPtr Renderer::create_gizmo(MeshHandle mesh_handle, const mat4& transform, const color& color, f32 ttl)
 {
-  return create_gizmo(mesh_handle, translate(mat4(1.0f), position), color);
+  u64 id = m_next_gizmo_id++;
+  auto [it, _] = m_gizmos.emplace(id, Gizmo(mesh_handle, transform, color, ttl));
+
+  auto deleter = [this, id](const Gizmo*)
+  {
+    auto it = m_gizmos.find(id);
+
+    if (it != m_gizmos.end())
+    {
+      m_gizmos.erase(it);
+    }
+  };
+
+  return GizmoPtr(&it->second, deleter);
+}
+
+//==============================================================================
+GizmoPtr Renderer::create_gizmo(MeshHandle mesh_handle, const vec3& position, const color& color, f32 ttl)
+{
+  return create_gizmo(mesh_handle, translate(mat4(1.0f), position), color, ttl);
 }
 
 //==============================================================================
@@ -181,7 +206,7 @@ void Renderer::render_gizmos() const
   const GLint transform_location = glGetUniformLocation(m_gizmos_shader_program, "transform");
   const GLint color_location = glGetUniformLocation(m_gizmos_shader_program, "color");
 
-  for (const auto& gizmo : m_gizmos)
+  for (const auto& [_, gizmo] : m_gizmos)
   {
     const Mesh& mesh = meshes->get_resource(gizmo.m_mesh_handle);
     const color color = gizmo.get_color();
