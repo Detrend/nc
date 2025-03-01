@@ -20,6 +20,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <memory>
+
 namespace nc
 {
   const f64 GRID_SIZE = 0.25;
@@ -123,7 +125,7 @@ namespace nc
     GLuint vertexArrayBuffer;
     glm::mat4 viewMatrix;
 
-    std::vector<MapPoint> mapPoints; // A TEMPORARY VARIABLE FOR TESTING
+    std::vector<std::shared_ptr<MapPoint>> mapPoints; // A TEMPORARY VARIABLE FOR TESTING
     int selected = -1;
   };
 

@@ -188,7 +188,7 @@ namespace nc
 
         if (selected >= 0) {
           vertex_2d snapPos = get_snap_to_grid_pos(curGridMousePos.x, curGridMousePos.y);
-          mapPoints[selected].move_to(snapPos.x, snapPos.y);
+          mapPoints[selected].get()->move_to(snapPos.x, snapPos.y);
           selected = -1;
         }
       }
@@ -210,7 +210,7 @@ namespace nc
         if (!prevMouse[1])
         {
           vertex_2d snapPos = get_snap_to_grid_pos(curGridMousePos.x, curGridMousePos.y);
-          mapPoints.push_back(MapPoint(snapPos));
+          mapPoints.push_back(std::make_shared<MapPoint>(MapPoint(snapPos)));
         }
       }
 
@@ -236,7 +236,7 @@ namespace nc
 
     for (size_t i = 0; i < mapPoints.size(); i++)
     {
-      f32 dist = mapPoints[i].get_distance(mousePos);
+      f32 dist = mapPoints[i].get()->get_distance(mousePos);
       if (dist > 0.1)
       {
         continue;
@@ -259,7 +259,7 @@ namespace nc
       return;
     }
 
-    mapPoints[selected].move_to(mousePos.x, mousePos.y);
+    mapPoints[selected].get()->move_to(mousePos.x, mousePos.y);
   }
 
   //=================================================================
@@ -443,7 +443,7 @@ namespace nc
     glPointSize(10);
     for (size_t i = 0; i < mapPoints.size(); ++i)
     {
-      mapPoints[i].draw();
+      mapPoints[i].get()->draw();
     }
 
     glUseProgram(0);
@@ -462,7 +462,7 @@ namespace nc
     glPointSize(10);
     for (size_t i = 0; i < mapPoints.size(); ++i)
     {
-      mapPoints[i].draw();
+      mapPoints[i].get()->draw();
     }
 
     glUseProgram(0);
