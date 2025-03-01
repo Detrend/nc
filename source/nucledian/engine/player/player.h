@@ -4,23 +4,33 @@
 #include <types.h>
 #include <vec.h>
 #include <vector_maths.h>
+#include <engine/input/game_input.h>
 
-class Player
+namespace nc
 {
-public:
-  Player(nc::vec3 position);
 
-  void update();
+  class Player
+  {
+  public:
+    Player(vec3 position);
 
-private:
-  void handle_key_downs(SDL_Event& event);
-  void handle_key_ups(SDL_Event& event);
+    PlayerSpecificInputs get_inputs();
+    void load_inputs(PlayerSpecificInputs inputs);
+      void update();
 
-  nc::vec3 position;
-  nc::f32 speed = 0.5;
-  nc::vec3 velocity;
+  private:
+    void handle_key_downs(SDL_Event& event);
+    void handle_key_ups(SDL_Event& event);
 
-  nc::f32 angle_pitch = 0; //UP-DOWN
-  nc::f32 angle_yaw = 0; //LET-RIGHT
-};
+    vec3 position;
+    f32 speed = 0.5;
+    vec3 velocity;
 
+    f32 angle_pitch = 0; //UP-DOWN
+    f32 angle_yaw = 0; //LET-RIGHT
+
+    PlayerSpecificInputs lastInputs;
+    PlayerSpecificInputs currentInputs;
+  };
+
+}
