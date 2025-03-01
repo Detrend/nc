@@ -103,7 +103,6 @@ void GraphicsSystem::on_event(ModuleEvent& event)
   {
     case ModuleEventType::game_update:
     {
-      // TODO: only temporary for debug camera
       this->update(event.update.dt);
       break;
     }
@@ -163,15 +162,15 @@ const DebugCamera& GraphicsSystem::get_debug_camera() const
 }
 
 //==============================================================================
-GizmoPtr GraphicsSystem::create_gizmo(MeshHandle mesh_handle, const mat4& transform, const color& color)
+GizmoPtr GraphicsSystem::create_gizmo(MeshHandle mesh_handle, const mat4& transform, const color& color, f32 ttl)
 {
-  return m_renderer.create_gizmo(mesh_handle, transform, color);
+  return m_renderer.create_gizmo(mesh_handle, transform, color, ttl);
 }
 
 //==============================================================================
-GizmoPtr GraphicsSystem::create_gizmo(MeshHandle mesh_handle, const vec3& position, const color& color)
+GizmoPtr GraphicsSystem::create_gizmo(MeshHandle mesh_handle, const vec3& position, const color& color, f32 ttl)
 {
-  return m_renderer.create_gizmo(mesh_handle, position, color);
+  return m_renderer.create_gizmo(mesh_handle, position, color, ttl);
 }
 
 //==============================================================================
@@ -180,6 +179,8 @@ void GraphicsSystem::update(f32 delta_seconds)
   // TODO: only temporary for debug camera
   m_debug_camera.handle_input(delta_seconds);
   SDL_WarpMouseInWindow(m_window, 400, 300);
+
+  m_renderer.update_gizmos(delta_seconds);
 }
 
 //==============================================================================
