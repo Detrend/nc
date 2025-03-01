@@ -453,9 +453,9 @@ f32 Frustum2::angle_difference(const Frustum2& other) const
   // First, calculate the angle difference between directions.
   // We can do this by using dot product and asin.
   // TODO: Maybe do this without the asins?
-  const f32 diff_of_directions = std::asin(dot(this->direction, other.direction));
-  const f32 deg1 = std::asin(this->angle);
-  const f32 deg2 = std::asin(other.angle);
+  const f32 diff_of_directions = std::acos(dot(this->direction, other.direction));
+  const f32 deg1 = std::acos(this->angle);
+  const f32 deg2 = std::acos(other.angle);
 
   return diff_of_directions - deg1 - deg2;
 }
