@@ -117,7 +117,7 @@ MeshManager* MeshManager::instance()
 }
 
 //==============================================================================
-ResourceHandle<Mesh> MeshManager::create(const f32* vertex_data, u32 size, ResourceLifetime lifetime)
+MeshHandle MeshManager::create(const f32* vertex_data, u32 size, ResourceLifetime lifetime)
 {
   // generate buffers
   GLuint vao, vbo;
@@ -144,7 +144,7 @@ ResourceHandle<Mesh> MeshManager::create(const f32* vertex_data, u32 size, Resou
 }
 
 //==============================================================================
-ResourceHandle<Mesh> MeshManager::get_cube() const
+MeshHandle MeshManager::get_cube() const
 {
   return m_cube_mesh_handle;
 }
@@ -159,6 +159,12 @@ MeshManager::MeshManager()
 void MeshManager::create_cube()
 {
   m_cube_mesh_handle = create(cube_vertices, sizeof(cube_vertices) / sizeof(float), ResourceLifetime::Game);
+}
+
+//==============================================================================
+MeshHandle Meshes::cube()
+{
+  return MeshManager::instance()->get_cube();
 }
 
 }

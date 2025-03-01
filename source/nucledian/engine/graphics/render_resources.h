@@ -38,6 +38,7 @@ private:
 
   void unload();
 };
+using MeshHandle = ResourceHandle<Mesh>;
 
 class MeshManager : public ResourceManager<Mesh>
 {
@@ -46,8 +47,8 @@ public:
   static MeshManager* instance();
 
   // TODO: ResourceHandle<Mesh> load(std::string_view path, ResourceLifetime lifetime);
-  ResourceHandle<Mesh> create(const f32* vertex_data, u32 size, ResourceLifetime lifetime);
-  ResourceHandle<Mesh> get_cube() const;
+  MeshHandle create(const f32* vertex_data, u32 size, ResourceLifetime lifetime);
+  MeshHandle get_cube() const;
   // TODO: ResourceHandle<Mesh> get_sphere() const;
   // TODO: ResourceHandle<Mesh> get_capsule() const;
 private:
@@ -55,7 +56,13 @@ private:
 
   void create_cube();
 
-  ResourceHandle<Mesh> m_cube_mesh_handle = ResourceHandle<Mesh>::invalid();
+  MeshHandle m_cube_mesh_handle = MeshHandle::invalid();
+};
+
+// Contains handles for precreated meshes of simple 3d shapes. Handles are valid as long as mesh manager lives.
+struct Meshes
+{
+  static MeshHandle cube();
 };
 
 /**

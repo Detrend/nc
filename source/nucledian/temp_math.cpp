@@ -49,6 +49,24 @@ quat angleAxis(f32 angle, const vec3& vec)
 }
 
 //==============================================================================
+mat4 translate(const mat4& matrix, const vec3& vec)
+{
+  return std::bit_cast<mat4>(glm::translate(std::bit_cast<glm::mat4>(matrix), std::bit_cast<glm::vec3>(vec)));
+}
+
+//==============================================================================
+mat4 rotate(const mat4& matrix, f32 angle, const vec3& axis)
+{
+  return std::bit_cast<mat4>(glm::rotate(std::bit_cast<glm::mat4>(matrix), angle, std::bit_cast<glm::vec3>(axis)));
+}
+
+//==============================================================================
+mat4 scale(const mat4& matrix, const vec3& vec)
+{
+  return std::bit_cast<mat4>(glm::scale(std::bit_cast<glm::mat4>(matrix), std::bit_cast<glm::vec3>(vec)));
+}
+
+//==============================================================================
 f32 sin(f32 x)
 {
   return glm::sin(x);
