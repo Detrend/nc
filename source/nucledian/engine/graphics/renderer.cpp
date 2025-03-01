@@ -75,7 +75,7 @@ void Gizmo::set_mesh(MeshHandle mesh_handle)
 }
 
 //==============================================================================
-const mat4& Gizmo::get_transform() const
+mat4 Gizmo::get_transform() const
 {
   return m_transform;
 }
@@ -87,7 +87,7 @@ void Gizmo::set_transform(const mat4& transform)
 }
 
 //==============================================================================
-const color& Gizmo::get_color() const
+color Gizmo::get_color() const
 {
   return m_color;
 }

@@ -50,10 +50,10 @@ public:
   MeshHandle get_mesh() const;
   void set_mesh(MeshHandle mesh_handle);
 
-  const mat4& get_transform() const;
+  mat4 get_transform() const;
   void set_transform(const mat4& transform);
 
-  const color& get_color() const;
+  color get_color() const;
   void set_color(const color& color);
 
 private:
