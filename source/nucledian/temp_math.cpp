@@ -49,6 +49,18 @@ quat angleAxis(f32 angle, const vec3& vec)
 }
 
 //==============================================================================
+f32 length(const vec2& vec)
+{
+  return glm::length(std::bit_cast<glm::vec2>(vec));
+}
+
+//==============================================================================
+f32 length2(const vec2& vec)
+{
+  return glm::length2(std::bit_cast<glm::vec2>(vec));
+}
+
+//==============================================================================
 mat4 translate(const mat4& matrix, const vec3& vec)
 {
   return std::bit_cast<mat4>(glm::translate(std::bit_cast<glm::mat4>(matrix), std::bit_cast<glm::vec3>(vec)));
