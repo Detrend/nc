@@ -23,6 +23,8 @@ mat4 look_at(const vec3& pos, const vec3& target, const vec3& up);
 mat4 perspective(f32 fov, f32 aspect, f32 near, f32 far);
 constexpr vec3 cross(const vec3& vec1, const vec3& vec2);
 quat angleAxis(f32 angle, const vec3& vec);
+f32 length(const vec2& vec);
+f32 length2(const vec2& vec);
 
 mat4 translate(const mat4& matrix, const vec3& vec);
 mat4 rotate(const mat4& matrix, f32 angle, const vec3& axis);
