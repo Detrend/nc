@@ -4,6 +4,7 @@
 #include <types.h>
 #include <vec.h>
 #include <vector_maths.h>
+#include <math.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
@@ -33,7 +34,6 @@ mat4 scale(const mat4& matrix, const vec3& vec);
 constexpr f32 clamp(f32 x, f32 min, f32 max);
 f32 sin(f32 x);
 f32 cos(f32 x);
-constexpr f32 radians(f32 degrees);
 /**
  * Euclidian remained of `value` divided by `range`. Results is always non-negative and lies in the interval
  * [0, range).
