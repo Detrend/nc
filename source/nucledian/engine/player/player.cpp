@@ -13,24 +13,18 @@ namespace nc
   PlayerSpecificInputs nc::Player::get_inputs()
   {
     currentInputs = lastInputs;
+    currentInputs = PlayerSpecificInputs();
 
-    SDL_Event event;;
-    while (SDL_PollEvent(&event)) {
-      switch (event.type) {
-      case SDL_KEYDOWN:
-        handle_key_downs(event);
-        break;
-      case SDL_KEYUP:
-        handle_key_ups(event);
-        break;
-      case SDL_MOUSEMOTION:
-        currentInputs.analog[PlayerAnalogInputs::look_horizontal] = event.motion.xrel * 0.05f; // MAGIC VALUES NEED TO BE REPLACED LATER ON
-        currentInputs.analog[PlayerAnalogInputs::look_vertical] = event.motion.xrel * 0.05f;
-        break;
-      default:
-        break;
-      }
-    }
+    const u8* keyboard_state = SDL_GetKeyboardState(nullptr);
+
+    if (keyboard_state[SDL_SCANCODE_W])
+      currentInputs.keys = currentInputs.keys | (1 << PlayerKeyInputs::forward);
+    if (keyboard_state[SDL_SCANCODE_S])
+      currentInputs.keys = currentInputs.keys | (1 << PlayerKeyInputs::backward);
+    if (keyboard_state[SDL_SCANCODE_A])
+      currentInputs.keys = currentInputs.keys | (1 << PlayerKeyInputs::left);
+    if (keyboard_state[SDL_SCANCODE_D])
+      currentInputs.keys = currentInputs.keys | (1 << PlayerKeyInputs::right);   
 
     lastInputs = currentInputs;
     return currentInputs;
@@ -124,5 +118,4 @@ namespace nc
     default:
       break;
     }
-
   }
