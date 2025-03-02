@@ -1,8 +1,4 @@
-#include "render_resources.h"
-
-#include <glad/glad.h>
-
-#include <memory>
+#include <engine/graphics/resources/mesh.h>
 
 namespace nc
 {
@@ -63,7 +59,8 @@ constexpr f32 cube_vertices[] =
 
 //==============================================================================
 Mesh::Mesh(GLuint vao, GLuint vbo, u32 vertex_count)
-  : m_vao(vao), m_vbo(vbo), m_vertex_count(vertex_count) {}
+  : m_vao(vao), m_vbo(vbo), m_vertex_count(vertex_count) {
+}
 
 //==============================================================================
 GLuint Mesh::get_vao() const
@@ -100,16 +97,6 @@ void Mesh::unload()
 }
 
 //==============================================================================
-Material::Material(GLuint shader_program)
-  : m_shader_program(shader_program) {}
-
-//==============================================================================
-void Material::use() const
-{
-  glUseProgram(m_shader_program);
-}
-
-//==============================================================================
 MeshManager* MeshManager::instance()
 {
   static std::unique_ptr<MeshManager> instance(new MeshManager());
@@ -135,8 +122,6 @@ MeshHandle MeshManager::create(const f32* vertex_data, u32 size, ResourceLifetim
   // normal attribute
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(f32), reinterpret_cast<void*>(3 * sizeof(f32)));
   glEnableVertexAttribArray(1);
-  // unbind
-  glBindVertexArray(0);
 
   const u32 vertex_count = size;
 
@@ -162,7 +147,7 @@ void MeshManager::create_cube()
 }
 
 //==============================================================================
-MeshHandle Meshes::cube()
+MeshHandle meshes::cube()
 {
   return MeshManager::instance()->get_cube();
 }

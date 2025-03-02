@@ -5,8 +5,6 @@
 
 #include <glad/glad.h>
 
-#include <string_view>
-
 namespace nc
 {
 
@@ -32,9 +30,10 @@ public:
   u32    get_vertex_count() const;
 
 private:
-  GLuint m_vao          = 0;
-  GLuint m_vbo          = 0;
-  const u32    m_vertex_count = 0;
+  const u32 m_vertex_count = 0;
+
+  GLuint m_vao = 0;
+  GLuint m_vbo = 0;
 
   void unload();
 };
@@ -60,30 +59,13 @@ private:
 };
 
 // Contains handles for precreated meshes of simple 3d shapes. Handles are valid as long as mesh manager lives.
-struct Meshes
-{
-  static MeshHandle cube();
-};
-
-/**
-  * Class for manupulation with a shader.
-  *
-  * A material is typically created and managed by the `ResourceManager<Material>`. Direct interaction with the
-  * `Material` class is ussually unnecessary; instead, it is recommended to use `ResourceHandle<Material>`.
-  */
-class Material
+class meshes
 {
 public:
-  Material(GLuint shader_program);
-
-  void use() const;
-
-  // TODO: set uniform
+  static MeshHandle cube();
 
 private:
-  const GLuint m_shader_program;
+  meshes() {}
 };
-
-// TODO: textures
 
 }

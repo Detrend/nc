@@ -42,27 +42,33 @@ constexpr vec<f32, 4>::vec()
 }
 
 //==============================================================================
-constexpr vec<f32, 4> vec<f32, 4>::with_x(f32 new_x)
+constexpr vec<f32, 4> vec<f32, 4>::with_x(f32 new_x) const
 {
 	return vec<f32, 4>(new_x, this->y, this->z, this->w);
 }
 
 //==============================================================================
-constexpr vec<f32, 4> vec<f32, 4>::with_y(f32 new_y)
+constexpr vec<f32, 4> vec<f32, 4>::with_y(f32 new_y) const
 {
 	return vec<f32, 4>(this->x, new_y, this->z, this->w);
 }
 
 //==============================================================================
-constexpr vec<f32, 4> vec<f32, 4>::with_z(f32 new_z)
+constexpr vec<f32, 4> vec<f32, 4>::with_z(f32 new_z) const
 {
 	return vec<f32, 4>(this->x, this->y, new_z, this->w);
 }
 
 //==============================================================================
-constexpr vec<f32, 4> vec<f32, 4>::with_w(f32 new_w)
+constexpr vec<f32, 4> vec<f32, 4>::with_w(f32 new_w) const
 {
 	return vec<f32, 4>(this->x, this->y, this->z, new_w);
+}
+
+//==============================================================================
+constexpr vec<f32, 3> vec<f32, 4>::truncate() const
+{
+  return vec<f32, 3>(this->x, this->y, this->z);
 }
 
 //==============================================================================
@@ -110,21 +116,27 @@ constexpr vec<f32, 3>::vec()
 }
 
 //==============================================================================
-constexpr vec<f32, 3> vec<f32, 3>::with_x(f32 new_x)
+constexpr vec<f32, 3> vec<f32, 3>::with_x(f32 new_x) const
 {
 	return vec<f32, 3>(new_x, this->y, this->z);
 }
 
 //==============================================================================
-constexpr vec<f32, 3> vec<f32, 3>::with_y(f32 new_y)
+constexpr vec<f32, 3> vec<f32, 3>::with_y(f32 new_y) const
 {
 	return vec<f32, 3>(this->x, new_y, this->z);
 }
 
 //==============================================================================
-constexpr vec<f32, 3> vec<f32, 3>::with_z(f32 new_z)
+constexpr vec<f32, 3> vec<f32, 3>::with_z(f32 new_z) const
 {
 	return vec<f32, 3>(this->x, this->y, new_z);
+}
+
+//==============================================================================
+constexpr vec<f32, 2> vec<f32, 3>::truncate() const
+{
+  return vec<f32, 2>(this->x, this->y);
 }
 
 //==============================================================================
@@ -185,13 +197,13 @@ constexpr vec<f32, 2>::vec(f32 v)
 }
 
 //==============================================================================
-constexpr vec<f32, 2> vec<f32, 2>::with_x(f32 new_x)
+constexpr vec<f32, 2> vec<f32, 2>::with_x(f32 new_x) const
 {
 	return vec<f32, 2>(new_x, this->y);
 }
 
 //==============================================================================
-constexpr vec<f32, 2> vec<f32, 2>::with_y(f32 new_y)
+constexpr vec<f32, 2> vec<f32, 2>::with_y(f32 new_y) const
 {
 	return vec<f32, 2>(this->x, new_y);
 }

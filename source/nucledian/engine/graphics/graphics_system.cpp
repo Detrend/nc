@@ -4,7 +4,6 @@
 #include <engine/core/engine.h>
 #include <engine/core/engine_module_types.h>
 #include <engine/core/module_event.h>
-#include <engine/graphics/render_resources.h>
 #include <engine/input/input_system.h>
 #include <types.h>
 #include <common.h>

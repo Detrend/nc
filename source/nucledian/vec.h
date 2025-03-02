@@ -43,8 +43,8 @@ struct vec<f32, 2>
   operator sse::reg64&();
   operator sse::reg64() const;
 
-  constexpr vec<f32, 2> with_x(f32 new_x);
-  constexpr vec<f32, 2> with_y(f32 new_y);
+  constexpr vec<f32, 2> with_x(f32 new_x) const;
+  constexpr vec<f32, 2> with_y(f32 new_y) const;
 
   static const vec<f32, 2> ZERO;
   static const vec<f32, 2> ONE;
@@ -77,9 +77,12 @@ struct vec<f32, 3>
   const f32& operator[](u64 index) const;
   f32&       operator[](u64 index);
 
-  constexpr vec<f32, 3> with_x(f32 new_x);
-  constexpr vec<f32, 3> with_y(f32 new_y);
-  constexpr vec<f32, 3> with_z(f32 new_z);
+  constexpr vec<f32, 3> with_x(f32 new_x) const;
+  constexpr vec<f32, 3> with_y(f32 new_y) const;
+  constexpr vec<f32, 3> with_z(f32 new_z) const;
+
+  // Creates vec2 from self, discarding z.
+  constexpr vec<f32, 2> truncate() const;
 
   static const vec<f32, 3> ZERO;
   static const vec<f32, 3> ONE;
@@ -117,10 +120,13 @@ struct alignas(16) vec<f32, 4>
   operator sse::reg128&();
   operator sse::reg128() const;
 
-  constexpr vec<f32, 4> with_x(f32 new_x);
-  constexpr vec<f32, 4> with_y(f32 new_y);
-  constexpr vec<f32, 4> with_z(f32 new_z);
-  constexpr vec<f32, 4> with_w(f32 new_w);
+  constexpr vec<f32, 4> with_x(f32 new_x) const;
+  constexpr vec<f32, 4> with_y(f32 new_y) const;
+  constexpr vec<f32, 4> with_z(f32 new_z) const;
+  constexpr vec<f32, 4> with_w(f32 new_w) const;
+
+  // Creates vec3 from self, discarding w.
+  constexpr vec<f32, 3> truncate() const;
 
   static const vec<f32, 4> ZERO;
   static const vec<f32, 4> ONE;

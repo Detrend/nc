@@ -70,7 +70,8 @@
     <ClCompile Include="..\source\nucledian\engine\graphics\debug_camera.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\graphics_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\renderer.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\graphics\render_resources.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\graphics\resources\material.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\graphics\resources\mesh.cpp" />
     <ClCompile Include="..\source\nucledian\engine\input\input_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\map_system.cpp" />
     <ClCompile Include="..\source\nucledian\grid.cpp" />
@@ -150,7 +151,9 @@
     <ClInclude Include="..\source\nucledian\engine\graphics\debug_camera.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\graphics_system.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\renderer.h" />
-    <ClInclude Include="..\source\nucledian\engine\graphics\render_resources.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\resources\material.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\resources\mesh.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\shaders\shaders.h" />
     <ClInclude Include="..\source\nucledian\engine\input\game_input.h" />
     <ClInclude Include="..\source\nucledian\engine\input\input_system.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_system.h" />
@@ -167,6 +170,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
+    <None Include="..\source\nucledian\engine\graphics\resources\material.inl" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\gizmo_shader.frag" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\gizmo_shader.vert" />
     <None Include="..\source\nucledian\temp_math.inl" />
     <None Include="..\source\nucledian\vec.inl" />
   </ItemGroup>

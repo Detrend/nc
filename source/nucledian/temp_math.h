@@ -15,7 +15,7 @@ namespace nc
 
 using mat4 = glm::mat4;
 using quat = glm::quat;
-using color = glm::vec4;
+using color = vec4;
 
 vec3 normalize(const vec3& vec);
 // Normalize vector, if vector cant be normalized return vector with all zeros.

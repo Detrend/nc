@@ -1,7 +1,8 @@
 #pragma once
 
-#include <engine/graphics/render_resources.h>
 #include <temp_math.h>
+#include <engine/graphics/resources/mesh.h>
+#include <engine/graphics/resources/material.h>
 
 #include <glad/glad.h>
 
@@ -21,6 +22,7 @@ struct Model
   Model(MeshHandle mesh);
 
   MeshHandle mesh = MeshHandle::invalid();
+  MaterialHandle material = MaterialHandle::invalid();
 };
 
 /**
@@ -79,8 +81,6 @@ using GizmoPtr = std::shared_ptr<Gizmo>;
 class Renderer
 {
 public:
-  ~Renderer();
-
   void init();
   /**
    * Renders the complete scene including:
@@ -116,11 +116,15 @@ private:
   
   void render_gizmos() const;
 
-  GizmoMap m_gizmos;
-  u64      m_next_gizmo_id         = 0;
-  GLuint   m_gizmos_shader_program = 0;
-  GizmoPtr m_temp_cube_gizmo1;
-  GizmoPtr m_temp_cube_gizmo2;
+  u64            m_next_gizmo_id         = 0;
+  // Material used for rendering gizmos.
+  MaterialHandle m_gizmo_material_handle = MaterialHandle::invalid();
+  GizmoMap       m_gizmos;
+
+  // Temporary gizmo 1.
+  GizmoPtr       m_temp_cube_gizmo1;
+  // Temporary gizmo 2.
+  GizmoPtr       m_temp_cube_gizmo2;
 };
 
 }
