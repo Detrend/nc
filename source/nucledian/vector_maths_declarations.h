@@ -26,6 +26,10 @@ vec<T, SIZE> sub(const vec<T, SIZE>& a, const vec<T, SIZE>& b);
 template<typename T, u64 SIZE>
 vec<T, SIZE> mul(const vec<T, SIZE>& a, const vec<T, SIZE>& b);
 
+// Returns multiplication of two matrices
+template<typename T, u64 S>
+mat<T, S, S> mul(const mat<T, S, S>& a, const mat<T, S, S>& b);
+
 // Returns component-wise division of two vectors
 template<typename T, u64 SIZE>
 vec<T, SIZE> div(const vec<T, SIZE>& a, const vec<T, SIZE>& b);

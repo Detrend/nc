@@ -1,5 +1,6 @@
 // Project Nucledian Source File
 #include <vec.h>
+#include <mat.h>
 #include <cmath>
 
 namespace nc::non_sse

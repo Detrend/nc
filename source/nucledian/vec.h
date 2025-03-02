@@ -17,31 +17,19 @@ using vec2 = vec<f32, 2>;
 using vec3 = vec<f32, 3>;
 using vec4 = vec<f32, 4>;
 
-// SSE optimized vec2 type
+// SSE (not yet) optimized vec2 type
 template<>
 struct vec<f32, 2>
 {
-  union
-  {
-    struct
-    {
-      f32 x;
-      f32 y;
-    };
-    f32 v[2];
-    sse::reg64 r;
-  };
+  f32 x;
+  f32 y;
 
   constexpr vec(f32 v);
   constexpr vec(f32 x, f32 y);
-  constexpr vec(const sse::reg64& reg);
   constexpr vec();
 
   const f32& operator[](u64 index) const;
   f32&       operator[](u64 index);
-
-  operator sse::reg64&();
-  operator sse::reg64() const;
 };
 
 // The vec3 type.
@@ -74,30 +62,18 @@ struct vec<f32, 3>
 template<>
 struct alignas(16) vec<f32, 4>
 {
-  union
-  {
-    struct
-    {
-      f32 x;
-      f32 y;
-      f32 z;
-      f32 w;
-    };
-    f32 v[4];
-    sse::reg128 r;
-  };
+  f32 x;
+  f32 y;
+  f32 z;
+  f32 w;
 
   constexpr vec(f32 v);
   constexpr vec(f32 x, f32 y, f32 z, f32 w);
-  constexpr vec(const sse::reg128& sse_reg);
   constexpr vec(vec3 v3, f32 w = 0.0f);
   constexpr vec();
 
   const f32& operator[](u64 index) const;
   f32&       operator[](u64 index);
-
-  operator sse::reg128&();
-  operator sse::reg128() const;
 };
 
 template<typename F, u64 S>

@@ -2,6 +2,7 @@
 #pragma once
 
 #include <vec.h>
+#include <mat.h>
 
 // These are implemented both in SSE and NON-SSE versions so we can pick better
 // version for each implementation.
