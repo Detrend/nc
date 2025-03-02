@@ -19,6 +19,7 @@ namespace nc
       void update();
 
   private:
+    // THESE FUNCTIONS ARE OLD AND MIGHT BE TERMINATED
     void handle_key_downs(SDL_Event& event);
     void handle_key_ups(SDL_Event& event);
 
