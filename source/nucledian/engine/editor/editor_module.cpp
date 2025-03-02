@@ -260,7 +260,16 @@ namespace nc
 
   void EditorSystem::check_for_delete()
   {
-    SDL_Event event;
+    const u8* keyboard_state = SDL_GetKeyboardState(nullptr);
+
+    if (keyboard_state[SDL_SCANCODE_DELETE]) {
+      if (closest > -1) {
+        mapPoints[closest].get()->cleanup();
+        mapPoints.erase(mapPoints.begin() + closest);
+      }
+    }
+
+    /*SDL_Event event;
     while (SDL_PollEvent(&event)) {
       if (event.type == SDL_KEYDOWN) {
         if (event.key.keysym.sym == SDLK_DELETE) {
@@ -270,7 +279,7 @@ namespace nc
           }
         }
       }
-    }
+    }*/
   }
 
   //================================================================================
