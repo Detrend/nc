@@ -1,13 +1,11 @@
 // Project Nucledian Source File
 #include <engine/graphics/graphics_system.h>
 
-#include <engine/core/engine.h>
-#include <engine/core/engine_module_types.h>
-#include <engine/core/module_event.h>
-#include <engine/input/input_system.h>
-#include <types.h>
 #include <common.h>
-#include <temp_math.h>
+#include <engine/core/engine.h>
+#include <engine/core/module_event.h>
+#include <engine/core/engine_module_types.h>
+#include <engine/input/input_system.h>
 
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
@@ -90,7 +88,8 @@ bool GraphicsSystem::init()
   glEnable(GL_CULL_FACE);
   glEnable(GL_MULTISAMPLE);
 
-  m_renderer.init();
+  m_mesh_manager.init();
+  m_gizmo_manager.init();
 
   return true;
 }
@@ -100,6 +99,14 @@ void GraphicsSystem::on_event(ModuleEvent& event)
 {
   switch (event.type)
   {
+    case ModuleEventType::post_init:
+    {
+      Gizmo::create_cube(3.0f, vec3::X, 0.5f, colors::CYAN);
+      Gizmo::create_cube(6.0f, -vec3::X, 0.5f, colors::GOLD);
+      Gizmo::create_cube(9.0f, vec3::ZERO);
+      break;
+    }
+
     case ModuleEventType::game_update:
     {
       this->update(event.update.dt);
@@ -161,15 +168,21 @@ const DebugCamera& GraphicsSystem::get_debug_camera() const
 }
 
 //==============================================================================
-GizmoPtr GraphicsSystem::create_gizmo(MeshHandle mesh_handle, const mat4& transform, const color& color, f32 ttl)
+MeshManager& GraphicsSystem::get_mesh_manager()
 {
-  return m_renderer.create_gizmo(mesh_handle, transform, color, ttl);
+  return m_mesh_manager;
 }
 
 //==============================================================================
-GizmoPtr GraphicsSystem::create_gizmo(MeshHandle mesh_handle, const vec3& position, const color& color, f32 ttl)
+ModelManager& GraphicsSystem::get_model_manager()
 {
-  return m_renderer.create_gizmo(mesh_handle, position, color, ttl);
+  return m_model_manager;
+}
+
+//==============================================================================
+GizmoManager& GraphicsSystem::get_gizmo_manager()
+{
+  return m_gizmo_manager;
 }
 
 //==============================================================================
@@ -179,7 +192,7 @@ void GraphicsSystem::update(f32 delta_seconds)
   m_debug_camera.handle_input(delta_seconds);
   SDL_WarpMouseInWindow(m_window, 400, 300);
 
-  m_renderer.update_gizmos(delta_seconds);
+  m_gizmo_manager.update_ttls(delta_seconds);
 }
 
 //==============================================================================
@@ -192,7 +205,7 @@ void GraphicsSystem::render()
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  m_renderer.render();
+  m_gizmo_manager.draw_gizmos();
   
   SDL_GL_SwapWindow(m_window);
 }
@@ -206,7 +219,8 @@ void GraphicsSystem::terminate()
   SDL_DestroyWindow(m_window);
   m_window = nullptr;
 
-  MeshManager::instance()->unload_resources(ResourceLifetime::Game);
+  m_model_manager.unload<ResLifetime::Game>();
+  m_mesh_manager.unload<ResLifetime::Game>();
 }
 
 }

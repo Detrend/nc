@@ -1,9 +1,11 @@
 #pragma once
 
-#include <engine/graphics/resources/mesh.h>
-
 #include <temp_math.h>
+#include <engine/graphics/resources/mesh.h>
+#include <engine/graphics/resources/material.h>
+
 #include <memory>
+#include <unordered_map>
 
 namespace nc
 {
@@ -11,35 +13,32 @@ namespace nc
 /**
   * Temporary visual marker for debugging. Gizmos are light-weight render objects that can be created and destroyed at
   * runtime.
-  *
-  * Gizmo instances should only be created through Renderer::create_gizmo or GraphicsSystem::create_gizmo. Lifetime of
-  * gizmos is managed automatically by GizmoPtr and Renderer.
   */
 class Gizmo
 {
 public:
-  friend class Renderer;
+  friend class GizmoManager;
 
-  // Creates an invalid gizmo.
-  Gizmo() {}
+  /**
+   * Creates a new cube gizmo. Gizmo will remain visible until all GizmoPtr references are destroyed.
+   */
+  static std::shared_ptr<Gizmo> create_cube(const vec3& pos, f32 size = 0.1f, const color& color = colors::RED);
+  /**
+   * Creates a new cube gizmo. Gizmo will remain visible until time to live (ttl) reaches zero.
+   */
+  static void create_cube(f32 ttl, const vec3& pos, f32 size = 0.1f, const color& color = colors::RED);
 
-  MeshHandle get_mesh() const;
-  void set_mesh(MeshHandle mesh_handle);
-
-  mat4 get_transform() const;
-  void set_transform(const mat4& transform);
-
-  color get_color() const;
-  void set_color(const color& color);
+  // TODO: create_line
 
 private:
-  // Constructor is private so its callable only from Renderer class.
-  Gizmo(MeshHandle mesh_handle, const mat4& transform, const color& color, f32 ttl);
+  Gizmo(const Mesh& mesh, const vec3& pos, f32 size, const color& color, f32 ttl);
 
-  MeshHandle m_mesh_handle = MeshHandle::invalid();
-  mat4       m_transform   = mat4(1.0f);
-  color      m_color       = colors::WHITE;
-  f32        m_ttl         = 0.0f;
+  // time to live
+  f32 m_ttl = 0.0f;
+
+  const Mesh  m_mesh;
+  const color m_color     = colors::WHITE;
+  const mat4  m_transform = mat4(1.0f);
 };
 /**
   * Smart pointer managing the lifetime of a Gizmo instance.
@@ -49,22 +48,26 @@ private:
   */
 using GizmoPtr = std::shared_ptr<Gizmo>;
 
-/**
-* Creates a new gizmo.
-*
-* The created gizmo will remain visible until:
-* - All GizmoPtr references are destroyed, OR
-* - Time to live (ttl) expires (if specified) [seconds]
-*/
-GizmoPtr create_gizmo(MeshHandle mesh_handle, const mat4& transform, const color& color, f32 ttl = 0.0f);
+class GizmoManager
+{
+public:
+  friend class Gizmo;
 
-/**
-* Creates a new gizmo.
-*
-* The created gizmo will remain visible until:
-* - All GizmoPtr references are destroyed, OR
-* - Time to live (ttl) expires (if specified) [seconds]
-*/
-GizmoPtr create_gizmo(MeshHandle mesh_handle, const vec3& position, const color& color, f32 ttl = 0.0f);
+  void init();
+  // Update time to live (ttl) of active gizmos.
+  void update_ttls(f32 delta_seconds);
+  void draw_gizmos() const;
+
+private:
+  using GizmoMap = std::unordered_map<u32, Gizmo>;
+
+  inline static u32 m_next_gizmo_id = 0;
+
+  // Contain all active gizmos with GizmoPtr lifetime managment.
+  GizmoMap m_gizmos;
+  // Contain all active gizmos with ttl lifetime managment.
+  GizmoMap m_ttl_gizmos;
+  Material m_gizmo_material = Material::invalid();
+};
 
 }

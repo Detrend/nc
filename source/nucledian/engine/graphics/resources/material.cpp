@@ -1,33 +1,100 @@
+#include <common.h>
 #include <engine/graphics/resources/material.h>
 
-#include <stdexcept>
+#include <iostream>
 
 namespace nc
 {
 
-//==============================================================================
-Material::Material(const std::string_view& shader_name, GLuint shader_program)
-  : m_shader_program(shader_program), m_shader_name(shader_name) {
-}
-
-
-//==============================================================================
-void Material::use() const
+////==============================================================================
+Material::Material(const char* vertex_source, const char* fragment_source)
 {
-  if (m_current_program == m_shader_program)
+  const std::optional<GLuint> vertex_shader = compile_shader(vertex_source, GL_VERTEX_SHADER);
+  if (!vertex_shader)
   {
     return;
   }
 
-  glUseProgram(m_shader_program);
-  m_current_program = m_shader_program;
+  const std::optional<GLuint> fragment_shader = compile_shader(fragment_source, GL_FRAGMENT_SHADER);
+  if (!fragment_shader)
+  {
+    glDeleteShader(*vertex_shader);
+    return;
+  }
+
+  const std::optional<GLuint> shader_program = link_program(*vertex_shader, *fragment_shader);
+  if (!shader_program)
+  {
+    glDeleteShader(*vertex_shader);
+    glDeleteShader(*fragment_shader);
+    return;
+  }
+
+  glDeleteShader(*vertex_shader);
+  glDeleteShader(*fragment_shader);
+
+  this->m_shader_program = *shader_program;
 }
 
-//==============================================================================
-void Material::unload()
+////==============================================================================
+Material Material::invalid()
 {
-  glDeleteProgram(m_shader_program);
-  m_shader_program = 0;
+    return Material();
+}
+
+////==============================================================================
+std::optional<GLuint> Material::compile_shader(const char* source, GLenum type) const
+{
+  const GLuint shader = glCreateShader(type);
+  glShaderSource(shader, 1, &source, nullptr);
+  glCompileShader(shader);
+
+  GLint success = 0;
+  glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+  if (!success)
+  {
+    GLchar info_log[512];
+    glGetShaderInfoLog(shader, sizeof(info_log), nullptr, info_log);
+    glDeleteShader(shader);
+
+    std::string message =  "Shader compile error: " + std::string(info_log);
+    NC_ERROR(message.c_str());
+    std::cout << message << std::endl;
+    return std::nullopt;
+  }
+
+  return shader;
+}
+
+////==============================================================================
+std::optional<GLuint> Material::link_program(GLuint vertex_shader, GLuint fragment_shader) const
+{
+  const GLuint shader_program = glCreateProgram();
+  glAttachShader(shader_program, vertex_shader);
+  glAttachShader(shader_program, fragment_shader);
+  glLinkProgram(shader_program);
+
+  GLint success = 0;
+  glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
+  if (!success)
+  {
+    GLchar info_log[512];
+    glGetProgramInfoLog(vertex_shader, sizeof(info_log), nullptr, info_log);
+    glDeleteProgram(shader_program);
+
+    std::string message =  "Shader link error: " + std::string(info_log);
+    NC_ERROR(message.c_str());
+    std::cout << message << std::endl;
+    return std::nullopt;
+  }
+
+  return shader_program;
+}
+
+////==============================================================================
+void Material::use() const
+{
+  glUseProgram(m_shader_program);
 }
 
 //==============================================================================
@@ -42,100 +109,16 @@ void Material::set_uniform(GLint location, const vec3& value) const
   glUniform3f(location, value.x, value.y, value.z);
 }
 
+//==============================================================================
 void Material::set_uniform(GLint location, const vec4& value) const
 {
   glUniform4f(location, value.x, value.y, value.z, value.w);
 }
 
-//==============================================================================
-MaterialManager* MaterialManager::instance()
+////==============================================================================
+void Material::set_uniform(GLint location, f32 value) const
 {
-  static std::unique_ptr<MaterialManager> instance(new MaterialManager());
-  return instance.get();
-}
-
-//==============================================================================
-MaterialHandle MaterialManager::create
-(
-  const std::string_view& shader_name,
-  const char* vertex_source,
-  const char* fragment_source,
-  ResourceLifetime lifetime
-)
-{
-  GLint success = 0;
-
-  // compile vertex shader
-  const GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(vertex_shader, 1, &vertex_source, nullptr);
-  glCompileShader(vertex_shader);
-
-  // check vertex shader compile status
-  glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-  if (!success)
-  {
-    GLchar info_log[512];
-    glGetShaderInfoLog(vertex_shader, sizeof(info_log), nullptr, info_log);
-    glDeleteShader(vertex_shader);
-
-    throw std::runtime_error
-    (
-      "Vertex shader (" + std::string(shader_name) + ") compilaion failed : " + std::string(info_log)
-    );
-  }
-
-  // compile fragment shader
-  const GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragment_shader, 1, &fragment_source, nullptr);
-  glCompileShader(fragment_shader);
-
-  // check fragment shader compile status
-  glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-  if (!success)
-  {
-    GLchar info_log[512];
-    glGetShaderInfoLog(vertex_shader, sizeof(info_log), nullptr, info_log);
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
-
-    throw std::runtime_error
-    (
-      "Fragment shader (" + std::string(shader_name) + ") compilaion failed : " + std::string(info_log)
-    );
-  }
-
-  // link program
-  const GLuint shader_program = glCreateProgram();
-  glAttachShader(shader_program, vertex_shader);
-  glAttachShader(shader_program, fragment_shader);
-  glLinkProgram(shader_program);
-
-  // check program link status
-  glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
-  if (!success)
-  {
-    GLchar info_log[512];
-    glGetProgramInfoLog(vertex_shader, sizeof(info_log), nullptr, info_log);
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
-    glDeleteProgram(shader_program);
-
-    throw std::runtime_error
-    (
-      "Shader program (" + std::string(shader_name) + ") linking failed : " + std::string(info_log)
-    );
-  }
-
-  glDeleteShader(vertex_shader);
-  glDeleteShader(fragment_shader);
-
-  return this->register_resource(Material(shader_name, shader_program), lifetime);
-}
-
-//==============================================================================
-void use_material(MaterialHandle handle)
-{
-  MaterialManager::instance()->get_resource(handle).use();
+  glUniform1f(location, value);
 }
 
 }

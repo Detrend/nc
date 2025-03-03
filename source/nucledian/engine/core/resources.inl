@@ -13,19 +13,19 @@ namespace nc
 template<typename TResource>
 inline constexpr ResourceHandle<TResource> ResourceHandle<TResource>::invalid()
 {
-  return ResourceHandle<TResource>(0, 0, ResourceLifetime::None);
+  return ResourceHandle<TResource>(0, 0, ResLifetime::None);
 }
 
 //==============================================================================
 template<typename TResource>
 inline bool ResourceHandle<TResource>::is_valid() const
 {
-  return m_lifetime == ResourceLifetime::Game || m_generation == ResourceManager<TResource>::get_generation();
+  return m_lifetime == ResLifetime::Game || m_generation == ResourceManager<TResource>::get_generation();
 }
 
 //==============================================================================
 template<typename TResource>
-inline constexpr ResourceHandle<TResource>::ResourceHandle(u32 resource_id, u32 generation, ResourceLifetime lifetime)
+inline constexpr ResourceHandle<TResource>::ResourceHandle(u32 resource_id, u32 generation, ResLifetime lifetime)
   : m_resource_id(resource_id), m_lifetime(lifetime), m_generation(generation) {}
 
 //==============================================================================
@@ -33,17 +33,17 @@ template<typename TResource>
 inline ResourceHandle<TResource> ResourceManager<TResource>::register_resource
 (
   TResource&& resource,
-  ResourceLifetime lifetime
+  ResLifetime lifetime
 )
 {
   switch (lifetime)
   {
-    case ResourceLifetime::Level:
+    case ResLifetime::Level:
     {
       m_level_resources.push_back(std::forward<TResource>(resource));
       return ResourceHandle<TResource>(static_cast<u32>(m_level_resources.size()) - 1, get_generation(), lifetime);
     }
-    case ResourceLifetime::Game:
+    case ResLifetime::Game:
     {
       m_game_resources.push_back(std::forward<TResource>(resource));
       return ResourceHandle<TResource>(static_cast<u32>(m_game_resources.size()) - 1, get_generation(), lifetime);
@@ -57,11 +57,11 @@ inline ResourceHandle<TResource> ResourceManager<TResource>::register_resource
 
 //==============================================================================
 template<typename TResource>
-inline void ResourceManager<TResource>::unload_resources(ResourceLifetime lifetime)
+inline void ResourceManager<TResource>::unload_resources(ResLifetime lifetime)
 {
   switch (lifetime)
   {
-  case ResourceLifetime::Level:
+  case ResLifetime::Level:
   {
     for (auto& resource : m_level_resources)
     {
@@ -72,9 +72,9 @@ inline void ResourceManager<TResource>::unload_resources(ResourceLifetime lifeti
     m_generation++;
     break;
   }
-  case ResourceLifetime::Game:
+  case ResLifetime::Game:
   {
-    unload_resources(ResourceLifetime::Level);
+    unload_resources(ResLifetime::Level);
 
     for (auto& resource : m_game_resources)
     {
@@ -96,11 +96,11 @@ inline const TResource& ResourceManager<TResource>::get_resource(ResourceHandle<
 {
   switch (handle.m_lifetime)
   {
-    case ResourceLifetime::Level:
+    case ResLifetime::Level:
     {
       return m_level_resources[handle.m_resource_id];
     }
-    case ResourceLifetime::Game:
+    case ResLifetime::Game:
     {
       return m_game_resources[handle.m_resource_id];
     }

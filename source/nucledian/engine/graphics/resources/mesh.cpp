@@ -1,5 +1,7 @@
 #include <engine/graphics/resources/mesh.h>
 
+#include <vector>
+
 namespace nc
 {
 
@@ -57,99 +59,40 @@ constexpr f32 cube_vertices[] =
   -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f  // Back-left
 };
 
-//==============================================================================
-Mesh::Mesh(GLuint vao, GLuint vbo, u32 vertex_count)
-  : m_vao(vao), m_vbo(vbo), m_vertex_count(vertex_count) {
-}
-
-//==============================================================================
+////==============================================================================
 GLuint Mesh::get_vao() const
 {
   return m_vao;
 }
 
-//==============================================================================
+////==============================================================================
 GLuint Mesh::get_vbo() const
 {
   return m_vbo;
 }
 
-//==============================================================================
+////==============================================================================
 u32 Mesh::get_vertex_count() const
 {
   return m_vertex_count;
 }
 
-//==============================================================================
-void Mesh::unload()
+////==============================================================================
+GLenum Mesh::get_draw_mode() const
 {
-  if (m_vao != 0)
-  {
-    glDeleteVertexArrays(1, &m_vao);
-    m_vao = 0;
-  }
-
-  if (m_vbo != 0)
-  {
-    glDeleteBuffers(1, &m_vbo);
-    m_vbo = 0;
-  }
+  return m_draw_mode;
 }
 
-//==============================================================================
-MeshManager* MeshManager::instance()
+////==============================================================================
+void MeshManager::init()
 {
-  static std::unique_ptr<MeshManager> instance(new MeshManager());
-  return instance.get();
+  m_cube_mesh = this->create<ResLifetime::Game>(cube_vertices, sizeof(cube_vertices) / sizeof(f32));
 }
 
-//==============================================================================
-MeshHandle MeshManager::create(const f32* vertex_data, u32 size, ResourceLifetime lifetime)
+////==============================================================================
+Mesh MeshManager::get_cube() const
 {
-  // generate buffers
-  GLuint vao, vbo;
-  glGenVertexArrays(1, &vao);
-  glGenBuffers(1, &vbo);
-
-  // setup vao
-  glBindVertexArray(vao);
-  // vertex buffer
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, size * sizeof(f32), vertex_data, GL_STATIC_DRAW);
-  //position attribute
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(f32), reinterpret_cast<void*>(0));
-  glEnableVertexAttribArray(0);
-  // normal attribute
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(f32), reinterpret_cast<void*>(3 * sizeof(f32)));
-  glEnableVertexAttribArray(1);
-
-  const u32 vertex_count = size;
-
-  return this->register_resource(Mesh(vao, vbo, vertex_count), lifetime);
-}
-
-//==============================================================================
-MeshHandle MeshManager::get_cube() const
-{
-  return m_cube_mesh_handle;
-}
-
-//==============================================================================
-MeshManager::MeshManager()
-{
-  create_cube();
-}
-
-//==============================================================================
-void MeshManager::create_cube()
-{
-  m_cube_mesh_handle = create(cube_vertices, sizeof(cube_vertices) / sizeof(float), ResourceLifetime::Game);
-}
-
-//==============================================================================
-MeshHandle meshes::cube()
-{
-  return MeshManager::instance()->get_cube();
+  return m_cube_mesh;
 }
 
 }

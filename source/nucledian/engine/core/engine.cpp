@@ -166,6 +166,12 @@ bool Engine::init()
   INIT_MODULE(InputSystem);
 
   #undef INIT_MODULE
+
+  // post init
+  this->send_event(ModuleEvent
+  {
+    .type = ModuleEventType::post_init,
+  });
   
   return true;
 }

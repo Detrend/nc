@@ -1101,7 +1101,7 @@ static int D3D_RunCommandQueue(SDL_Renderer *renderer, SDL_RenderCommand *cmd, v
 {
     D3D_RenderData *data = (D3D_RenderData *)renderer->driverdata;
     const int vboidx = data->currentVertexBuffer;
-    IDirect3DVertexBuffer9 *vbo = NULL;
+    IDirect3DVertexBuffer9 *m_vbo = NULL;
     const SDL_bool istarget = renderer->target != NULL;
 
     if (D3D_ActivateRenderer(renderer) < 0) {
@@ -1110,35 +1110,35 @@ static int D3D_RunCommandQueue(SDL_Renderer *renderer, SDL_RenderCommand *cmd, v
 
     if (vertsize > 0) {
         /* upload the new VBO data for this set of commands. */
-        vbo = data->vertexBuffers[vboidx];
+        m_vbo = data->vertexBuffers[vboidx];
         if (data->vertexBufferSize[vboidx] < vertsize) {
             const DWORD usage = D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY;
             const DWORD fvf = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1;
-            if (vbo) {
-                IDirect3DVertexBuffer9_Release(vbo);
+            if (m_vbo) {
+                IDirect3DVertexBuffer9_Release(m_vbo);
             }
 
-            if (FAILED(IDirect3DDevice9_CreateVertexBuffer(data->device, (UINT)vertsize, usage, fvf, D3DPOOL_DEFAULT, &vbo, NULL))) {
-                vbo = NULL;
+            if (FAILED(IDirect3DDevice9_CreateVertexBuffer(data->device, (UINT)vertsize, usage, fvf, D3DPOOL_DEFAULT, &m_vbo, NULL))) {
+                m_vbo = NULL;
             }
-            data->vertexBuffers[vboidx] = vbo;
-            data->vertexBufferSize[vboidx] = vbo ? vertsize : 0;
+            data->vertexBuffers[vboidx] = m_vbo;
+            data->vertexBufferSize[vboidx] = m_vbo ? vertsize : 0;
         }
 
-        if (vbo) {
+        if (m_vbo) {
             void *ptr;
-            if (FAILED(IDirect3DVertexBuffer9_Lock(vbo, 0, (UINT)vertsize, &ptr, D3DLOCK_DISCARD))) {
-                vbo = NULL; /* oh well, we'll do immediate mode drawing.  :(  */
+            if (FAILED(IDirect3DVertexBuffer9_Lock(m_vbo, 0, (UINT)vertsize, &ptr, D3DLOCK_DISCARD))) {
+                m_vbo = NULL; /* oh well, we'll do immediate mode drawing.  :(  */
             } else {
                 SDL_memcpy(ptr, vertices, vertsize);
-                if (FAILED(IDirect3DVertexBuffer9_Unlock(vbo))) {
-                    vbo = NULL; /* oh well, we'll do immediate mode drawing.  :(  */
+                if (FAILED(IDirect3DVertexBuffer9_Unlock(m_vbo))) {
+                    m_vbo = NULL; /* oh well, we'll do immediate mode drawing.  :(  */
                 }
             }
         }
 
         /* cycle through a few VBOs so D3D has some time with the data before we replace it. */
-        if (vbo) {
+        if (m_vbo) {
             data->currentVertexBuffer++;
             if (data->currentVertexBuffer >= SDL_arraysize(data->vertexBuffers)) {
                 data->currentVertexBuffer = 0;
@@ -1152,7 +1152,7 @@ static int D3D_RunCommandQueue(SDL_Renderer *renderer, SDL_RenderCommand *cmd, v
         }
     }
 
-    IDirect3DDevice9_SetStreamSource(data->device, 0, vbo, 0, sizeof(Vertex));
+    IDirect3DDevice9_SetStreamSource(data->device, 0, m_vbo, 0, sizeof(Vertex));
 
     while (cmd) {
         switch (cmd->command) {
@@ -1224,7 +1224,7 @@ static int D3D_RunCommandQueue(SDL_Renderer *renderer, SDL_RenderCommand *cmd, v
             const size_t count = cmd->data.draw.count;
             const size_t first = cmd->data.draw.first;
             SetDrawState(data, cmd);
-            if (vbo) {
+            if (m_vbo) {
                 IDirect3DDevice9_DrawPrimitive(data->device, D3DPT_POINTLIST, (UINT)(first / sizeof(Vertex)), (UINT)count);
             } else {
                 const Vertex *verts = (Vertex *)(((Uint8 *)vertices) + first);
@@ -1246,7 +1246,7 @@ static int D3D_RunCommandQueue(SDL_Renderer *renderer, SDL_RenderCommand *cmd, v
 
             SetDrawState(data, cmd);
 
-            if (vbo) {
+            if (m_vbo) {
                 IDirect3DDevice9_DrawPrimitive(data->device, D3DPT_LINESTRIP, (UINT)(first / sizeof(Vertex)), (UINT)(count - 1));
                 if (close_endpoint) {
                     IDirect3DDevice9_DrawPrimitive(data->device, D3DPT_POINTLIST, (UINT)((first / sizeof(Vertex)) + (count - 1)), 1);
@@ -1274,7 +1274,7 @@ static int D3D_RunCommandQueue(SDL_Renderer *renderer, SDL_RenderCommand *cmd, v
             const size_t count = cmd->data.draw.count;
             const size_t first = cmd->data.draw.first;
             SetDrawState(data, cmd);
-            if (vbo) {
+            if (m_vbo) {
                 IDirect3DDevice9_DrawPrimitive(data->device, D3DPT_TRIANGLELIST, (UINT)(first / sizeof(Vertex)), (UINT)count / 3);
             } else {
                 const Vertex *verts = (Vertex *)(((Uint8 *)vertices) + first);

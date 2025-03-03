@@ -8,7 +8,7 @@ namespace nc
 {
 
 // Determines how long a resource lives.
-enum class ResourceLifetime : u8
+enum class ResLifetime : u8
 {
   None,
   // Resource lives until current level is unloaded. This is typically used for level-specific assets.
@@ -45,9 +45,9 @@ public:
 
 private:
   // Constructor is private to ensure that only the `ResourceManager<TResource>` can create handles.
-  constexpr ResourceHandle(u32 resource_id, u32 generation, ResourceLifetime lifetime);
+  constexpr ResourceHandle(u32 resource_id, u32 generation, ResLifetime lifetime);
 
-  ResourceLifetime m_lifetime = ResourceLifetime::None;
+  ResLifetime m_lifetime = ResLifetime::None;
   // Generation of resouce. Used for invalidation of handles when resources are unloaded.
   u32 m_generation = 0;
   /**
@@ -67,8 +67,8 @@ class ResourceManager
 {
 public:
   // Registers a resource with the manager, transferring ownership to it.
-  ResourceHandle<TResource> register_resource(TResource&& resource, ResourceLifetime lifetime);
-  void unload_resources(ResourceLifetime lifetime);
+  ResourceHandle<TResource> register_resource(TResource&& resource, ResLifetime lifetime);
+  void unload_resources(ResLifetime lifetime);
   const TResource& get_resource(ResourceHandle<TResource> handle) const;
 
   // Get current resoures generation. Used for invalidation of handles when resources are unloaded.

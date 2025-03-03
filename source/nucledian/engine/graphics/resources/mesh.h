@@ -1,71 +1,72 @@
 #pragma once
 
 #include <types.h>
-#include <engine/core/resources.h>
+#include <engine/graphics/resources/res_lifetime.h>
 
 #include <glad/glad.h>
+
+#include <vector>
 
 namespace nc
 {
 
 /**
-  * Contains data which are necessary for rendering a mesh.
-  *
-  * A mesh is typically created and managed by the `ResourceManager<Mesh>`. Direct interaction with the `Mesh` class
-  * is ussually unnecessary; instead, it is recommended to use `ResourceHandle<Mesh>`.
-  *
-  * Currently, this class stores only VAO (Vertex Array Object) and VBO (Vertex Buffer Object). In the future, this
-  * class content will probably change to support indirect rendering. At that point, it will probably store an offset
-  * into a global mesh buffer or one of several mesh buffers.
-  */
+ * Mesh contains information about object geometry. This class represent a only a light-weight handler. Real mesh is
+ * stored in GPU memory.
+ * 
+ * WARNING: Later on, there will be change to indect rendering, so this class contatne will probably change!
+ */
 class Mesh
 {
 public:
-  friend class ResourceManager<Mesh>;
+  friend class MeshManager;
 
-  Mesh(GLuint vao, GLuint vbo, u32 vertex_count);
-
-  GLuint get_vao()          const;
-  GLuint get_vbo()          const;
-  u32    get_vertex_count() const;
+  GLuint get_vao() const;
+  GLuint get_vbo() const;
+  u32 get_vertex_count() const;
+  GLenum get_draw_mode() const;
 
 private:
-  const u32 m_vertex_count = 0;
+  GLuint m_vao          = 0;
+  GLuint m_vbo          = 0;
+  u32    m_vertex_count = 0;
+  GLenum m_draw_mode    = GL_TRIANGLES;
+};
 
-  GLuint m_vao = 0;
-  GLuint m_vbo = 0;
+class MeshManager
+{
+/*
+  * TODO: In future, there will be need for function for which would indicate start and end of batch mesh
+  * loading/creation in order to suport indirect rendering
+  * TODO: Load mesh form file
+*/
+public:
+  void init();
 
+  /**
+   * Creates mesh from vertex data and stores it in GPU memory.
+   */
+  template <ResLifetime lifetime>
+  Mesh create(const f32* data, u32 size, GLenum draw_mode = GL_TRIANGLES);
+
+  /**
+   * Unloads all meshes with specified lifetime. 
+   */
+  template <ResLifetime lifetime>
   void unload();
-};
-using MeshHandle = ResourceHandle<Mesh>;
 
-class MeshManager : public ResourceManager<Mesh>
-{
-public:
-  // TODO: cancel singleton pattern, move instance probably to GraphicsSystem
-  static MeshManager* instance();
+  Mesh get_cube() const;
 
-  // TODO: ResourceHandle<Mesh> load(std::string_view path, ResourceLifetime lifetime);
-  MeshHandle create(const f32* vertex_data, u32 size, ResourceLifetime lifetime);
-  MeshHandle get_cube() const;
-  // TODO: ResourceHandle<Mesh> get_sphere() const;
-  // TODO: ResourceHandle<Mesh> get_capsule() const;
-private:
-  MeshManager();
-
-  void create_cube();
-
-  MeshHandle m_cube_mesh_handle = MeshHandle::invalid();
-};
-
-// Contains handles for precreated meshes of simple 3d shapes. Handles are valid as long as mesh manager lives.
-class meshes
-{
-public:
-  static MeshHandle cube();
 
 private:
-  meshes() {}
+  template<ResLifetime lifetime>
+  std::vector<Mesh>& get_storage();
+
+  std::vector<Mesh> m_level_meshes;
+  std::vector<Mesh> m_game_meshes;
+  Mesh              m_cube_mesh;
 };
 
 }
+
+#include <engine/graphics/resources/mesh.inl>
