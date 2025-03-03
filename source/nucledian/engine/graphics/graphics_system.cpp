@@ -104,6 +104,9 @@ void GraphicsSystem::on_event(ModuleEvent& event)
       Gizmo::create_cube(3.0f, vec3::X, 0.5f, colors::CYAN);
       Gizmo::create_cube(6.0f, -vec3::X, 0.5f, colors::GOLD);
       Gizmo::create_cube(9.0f, vec3::ZERO);
+
+      // TODO: crash
+      // static GizmoPtr lime_gizmo = Gizmo::create_cube(-vec3::Y, 1.0f, colors::LIME);
       break;
     }
 
@@ -191,6 +194,8 @@ void GraphicsSystem::update(f32 delta_seconds)
   // TODO: only temporary for debug camera
   m_debug_camera.handle_input(delta_seconds);
   SDL_WarpMouseInWindow(m_window, 400, 300);
+  int x, y;
+  SDL_GetRelativeMouseState(&x, &y);
 
   m_gizmo_manager.update_ttls(delta_seconds);
 }

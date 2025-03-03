@@ -87,8 +87,9 @@ void GizmoManager::draw_gizmos() const
 {
   m_gizmo_material.use();
 
-  const mat4 view = get_engine().get_module<GraphicsSystem>().get_debug_camera().get_view();
-  m_gizmo_material.set_uniform(shaders::gizmo::VIEW, view);
+  const DebugCamera& camera = get_engine().get_module<GraphicsSystem>().get_debug_camera();
+  m_gizmo_material.set_uniform(shaders::gizmo::VIEW, camera.get_view());
+  m_gizmo_material.set_uniform(shaders::gizmo::VIEW_POSITION, camera.get_position());
 
   auto combined_view = std::ranges::views::join
   (
