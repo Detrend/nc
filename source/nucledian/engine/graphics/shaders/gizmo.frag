@@ -11,8 +11,8 @@ layout(location = 4) uniform vec3 view_position;
 
 void main()
 {
-  float ambient_strength  = 0.05f;
-  float specular_strength = 0.9f;
+  float ambient_strength  = 0.3f;
+  float specular_strength = 0.6f;
   int   shininess         = 128;
 
   vec3  light_color       = vec3(1.0f, 1.0f, 1.0f);
