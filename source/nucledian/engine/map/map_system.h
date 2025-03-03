@@ -41,7 +41,8 @@
 namespace nc
 {
 using SectorID  = u16;
-using WallID    = u16;
+using WallID    = u16; // absolute indexing
+using WallRelID = u8;  // indexing relative to the sector
 using PortalID  = u16;
 using TextureID = u16;
 
@@ -49,6 +50,11 @@ constexpr auto INVALID_SECTOR_ID  = static_cast<SectorID>(-1);
 constexpr auto INVALID_WALL_ID    = static_cast<WallID>(-1);
 constexpr auto INVALID_PORTAL_ID  = static_cast<PortalID>(-1);
 constexpr auto INVALID_TEXTURE_ID = static_cast<TextureID>(-1);
+
+constexpr auto MAX_WALLS_PER_SECTOR = static_cast<u64>(WallRelID{-1});
+constexpr auto MAX_SECTORS          = static_cast<u64>(SectorID{-1});
+constexpr auto MAX_WALLS            = static_cast<u64>(WallID{-1});
+constexpr auto MAX_PORTALS          = static_cast<u64>(PortalID{-1});
 
 // Portable data are a set of data that can be shared among two different
 // map representations. Put here anything that you want in sectors
@@ -81,7 +87,7 @@ struct SectorIntData
   PortalID last_portal  = INVALID_WALL_ID; // [first_portal..total_wall_count]
 };
 
-// Each sector is comprised of internal data (data 
+// Each sector is comprised of internal data
 struct SectorData
 {
   SectorIntData int_data;
@@ -93,31 +99,52 @@ struct WallData
   // The wall starts here and ends in the same point as the next
   // wall begins
   vec2        pos = vec2{0};
-  SectorID    portal_sector_id = INVALID_SECTOR_ID;    // if is portal
+  SectorID    portal_sector_id = INVALID_SECTOR_ID; // if is portal
   WallExtData ext_data;
 };
 
+namespace PortalType
+{
+	enum evalue
+	{
+		classic       = 0,
+		non_euclidean,
+	};
+}
+
 struct WallPortalData
 {
-  WallID wall_index     = 0;
-  // we are gonna need this for traversal of
-  // literal portals
-  u8     recursion_mark = 0;
+  WallRelID wall_index           = 0;  // the index of the wall relative to us
+  WallRelID nucledean_wall_index = 0;  // only when the portal_type is PortalType::nuclidean
+  u8        portal_type          = PortalType::classic; // TODO: can be stored in a separate bitset table
 };
 
+// TODO: maybe organize each data type into separate table row instead of grouping them up?
+// TODO: the complexity of query algorithm can increase quite a lot in certain situations..
+// Doing a Dijkstra instead of traditional BFS might fix this.
 struct MapSectors
 {
-  std::vector<SectorData>     sectors;
-  std::vector<WallData>       walls;
-  std::vector<WallPortalData> portals;
-  StatGridAABB2<SectorID>     sector_grid;
+  template<typename T>
+  using column = std::vector<T>;
 
-  using TraverseVisitor = std::function<void(SectorID, Frustum2)>;
+  column<SectorData>      sectors;
+  column<WallData>        walls;
+  column<WallPortalData>  portals;
+  StatGridAABB2<SectorID> sector_grid;
+
+  using TraverseVisitor = std::function<void(SectorID, Frustum2, PortalID)>;
   using PortalVisitor   = std::function<void(PortalID, WallID)>;
   // Traverses the sector system in a BFS order and calls the visitor
   // for each sector with a frustum that describes which parts of the
   // sector are visible.
-  void query_visible_sectors(Frustum2 frustum, TraverseVisitor visitor) const;
+  void query_visible_sectors(Frustum2 frustum, TraverseVisitor visitor);
+
+private:
+  void query_visible_sectors_impl(
+    const FrustumBuffer& frustum,
+    TraverseVisitor      visitor,
+    u8                   recursion_depth = 4,
+    PortalID             source_portal   = INVALID_PORTAL_ID) const;
 
   // Iterates all portals of this sector
   bool for_each_portal_of_sector(SectorID sector, PortalVisitor visitor) const;

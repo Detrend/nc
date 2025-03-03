@@ -6,6 +6,7 @@
 #include <aabb.h>
 
 #include <span>
+#include <array>
 
 namespace nc
 {
@@ -52,8 +53,28 @@ struct Frustum2
   // Constructs a new frustum from center point and two portal points
   static Frustum2 from_point_and_portal(vec2 point, vec2 a, vec2 b);
 };
-
 constexpr Frustum2 INVALID_FRUSTUM = Frustum2{vec2{0}, vec2{0}, Frustum2::EMPTY_ANGLE};
+
+// A set of frustums
+struct FrustumBuffer
+{
+	static constexpr u64 FRUSTUM_SLOT_CNT = 4;
+  using FrustumArray = std::array<Frustum2, FRUSTUM_SLOT_CNT>;
+
+  FrustumArray frustum_slots;
+
+  explicit FrustumBuffer(Frustum2 from_frustum)
+  {
+    frustum_slots.fill(INVALID_FRUSTUM);
+    frustum_slots[0] = from_frustum;
+  }
+
+  FrustumBuffer() : FrustumBuffer(INVALID_FRUSTUM){};
+
+  // This merges a new frustum with overlapping one. If no overlapping frustum
+  // is found then inserts it or merges with a closest one.
+  void insert_frustum(Frustum2 new_frustum);
+};
 
 }
 

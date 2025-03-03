@@ -121,83 +121,44 @@ WallID next_wall(const MapSectors& map, SectorID sector, WallID wall)
   return next;
 }
 
+//==============================================================================
+void modify_nucledean_frustum(
+  [[maybe_unused]] const MapSectors& map,
+  [[maybe_unused]] const Frustum2&   frustum,
+  [[maybe_unused]] PortalID          in_portal,
+  [[maybe_unused]] SectorID          in_sector,
+  [[maybe_unused]] PortalID          out_portal,
+  [[maybe_unused]] SectorID          out_sector)
+{
+  // calculate the relative position of the frustum with respect to the in_portal
+  // and add it to the out_portal
+}
+
 }
 
 //==============================================================================
-constexpr u64 FRUSTUM_SLOT_CNT = 4;
-struct FrustumBuffer
+void MapSectors::query_visible_sectors(Frustum2 frustum, TraverseVisitor visitor)
 {
-  using FrustumArray = std::array<Frustum2, FRUSTUM_SLOT_CNT>;
-
-  FrustumArray frustum_slots;
-  PortalID     see_through_portal_id; // Unused for now, will be handy later
-
-  explicit FrustumBuffer(Frustum2 from_frustum)
-  : see_through_portal_id(INVALID_PORTAL_ID)
-  {
-    frustum_slots.fill(INVALID_FRUSTUM);
-    frustum_slots[0] = from_frustum;
-  }
-
-  // This merges a new frustum with overlapping one. If no overlapping frustum
-  // is found then inserts it or merges with a closest one.
-  void insert_frustum(Frustum2 new_frustum)
-  {
-    u64  closest_idx = 0;
-    f32  closest_dst = FLT_MAX;
-    bool merged      = false;
-
-    for (u64 i = 0; i < FRUSTUM_SLOT_CNT; ++i)
-    {
-      auto& other_frustum = this->frustum_slots[i];
-      auto  is_invalid    = other_frustum == INVALID_FRUSTUM;
-
-      f32 angle_diff = is_invalid ? 0.0f : other_frustum.angle_difference(new_frustum);
-
-      if (angle_diff <= 0.0f)
-      {
-        // we found an overlapping frustum, lets merge with it
-        if (is_invalid)
-        {
-          other_frustum = new_frustum;
-        }
-        else
-        {
-          other_frustum = other_frustum.merged_with(new_frustum);
-        }
-
-        merged = true;
-        break;
-      }
-
-      // not overlapping, but might be quite close
-      if (angle_diff < closest_dst)
-      {
-        angle_diff  = closest_dst;
-        closest_idx = i;
-      }
-    }
-
-    if (!merged)
-    {
-      NC_ASSERT(closest_idx < FRUSTUM_SLOT_CNT);
-
-      // No overlapping frustum found and all slots are full?
-      // Then merge with a closest one
-      auto& closest_frustum = this->frustum_slots[closest_idx];
-      closest_frustum = closest_frustum.merged_with(new_frustum);
-    }
-  }
-};
+  auto slots_temp = FrustumBuffer{frustum};
+  this->query_visible_sectors_impl(slots_temp, visitor);
+}
 
 //==============================================================================
-void MapSectors::query_visible_sectors(
-  Frustum2        input_frustum,
-  TraverseVisitor visitor) const
+void MapSectors::query_visible_sectors_impl(
+  const FrustumBuffer& input_frustums,
+  TraverseVisitor      visitor,
+  u8                   recursion_depth,
+  PortalID             source_portal) const
 {
-  NC_ASSERT(visitor);
+  NC_ASSERT(visitor && input_frustums.frustum_slots[0] != INVALID_FRUSTUM);
 
-  SectorID start_sector = this->get_sector_from_point(input_frustum.center);
+  if (recursion_depth == 0)
+  {
+    // exit, the recursion is over
+    return;
+  }
+
+  auto start_sector = this->get_sector_from_point(input_frustums.frustum_slots[0].center);
 
   if (start_sector == INVALID_SECTOR_ID)
   {
@@ -205,12 +166,15 @@ void MapSectors::query_visible_sectors(
     return;
   }
 
+  // TODO[performance]: this can be sped up by directly
+  // indexing into a look up table using the SectorID
   std::map<SectorID, FrustumBuffer> curr_iteration;
   std::map<SectorID, FrustumBuffer> next_iteration;
+  std::map<PortalID, FrustumBuffer> nuclidean_portals;
 
-  next_iteration.insert({start_sector, FrustumBuffer{input_frustum}});
+  next_iteration.insert({start_sector, input_frustums});
 
-  // Now do a BFS
+  // Now do a BFS in our dimension
   while (next_iteration.size())
   {
     //swap the buffers
@@ -231,14 +195,15 @@ void MapSectors::query_visible_sectors(
         }
 
         // call the visitor for each existing frustum
-        visitor(id, frustum);
+        visitor(id, frustum, source_portal);
 
         // now traverse all portals of the sector and check if we can slide
         // into a neighbor sector
-        this->for_each_portal_of_sector(id, [&](PortalID, WallID wall1_idx)
+        this->for_each_portal_of_sector(id, [&](PortalID portal_idx, WallID wall1_idx)
         {
-          const auto wall2_idx   = map_helpers::next_wall(*this, id, wall1_idx);
-          const auto next_sector = walls[wall1_idx].portal_sector_id;
+          const auto wall2_idx    = map_helpers::next_wall(*this, id, wall1_idx);
+          const auto next_sector  = walls[wall1_idx].portal_sector_id;
+          const bool is_nuclidean = portals[portal_idx].portal_type == PortalType::non_euclidean;
           NC_ASSERT(next_sector != INVALID_SECTOR_ID);
 
           const auto p1 = walls[wall1_idx].pos;
@@ -259,27 +224,44 @@ void MapSectors::query_visible_sectors(
             return;
           }
 
-          const auto new_frustum = frustum.modied_with_portal(p1, p2);
+          auto new_frustum = frustum.modied_with_portal(p1, p2);
           if (new_frustum.is_empty())
           {
             // not sure how the hell this can happen..
             return;
           }
 
-          // visit the sector in the next iteration
-          if (auto it = next_iteration.find(next_sector); it != next_iteration.end())
+          // rotate the nucledean frustum and shift it relatively to the portal's view
+          if (is_nuclidean)
           {
-            // did we already reach this sector? Then merge the frustum with some old one
-            it->second.insert_frustum(new_frustum);
+            // weird non-euclidean portal, store for later
+            map_helpers::modify_nucledean_frustum(
+              *this,
+              new_frustum,
+              portal_idx,
+              id,
+              //sectors[next_sector].int_data,    // <- quite difficult to get
+              next_sector);
           }
-          else
-          {
-            next_iteration.insert({next_sector, FrustumBuffer{new_frustum}});
-          }
+
+          // we either insert it into the normal queue or the multi dimensional one
+          auto& search_queue  = is_nuclidean ? nuclidean_portals : next_iteration;
+          auto  id_to_look_up = is_nuclidean ? portal_idx        : next_sector;
+
+          // either creates and inserts or just merges in
+          search_queue[id_to_look_up].insert_frustum(new_frustum);
         });
       }
-
     }
+  }
+
+  // Now lets go to other dimensions in DFS manner
+  for (const auto&[portal_id, frustums] : nuclidean_portals)
+  {
+    this->query_visible_sectors_impl(frustums, [&](SectorID sid, Frustum2 f, PortalID pid)
+    {
+      visitor(sid, f, pid);
+    }, recursion_depth-1, portal_id);
   }
 }
 
@@ -568,6 +550,9 @@ int build_map(
   MapBuildFlags                       flags)
 {
   using namespace MapBuildFlag;
+
+  // TODO: check if there are not too many walls, portals or walls within a sector
+  NC_ASSERT(sectors.size() <= MAX_SECTORS);
 
   output.sectors.clear();
   output.walls.clear();
@@ -859,7 +844,7 @@ void benchmark_visibility_query(benchmark::State& state)
     {
       auto viewpoint = Frustum2{.center = pt, .direction = vec2{1, 0}, .angle = Frustum2::FULL_ANGLE};
       SectorID last_sector = INVALID_SECTOR_ID;
-      map.query_visible_sectors(viewpoint, [&](SectorID id, Frustum2)
+      map.query_visible_sectors_impl(viewpoint, [&](SectorID id, Frustum2)
       {
         last_sector = id;
       });

@@ -334,7 +334,7 @@ void GraphicsSystem::render_map()
 
   std::map<SectorID, u32> visible_sectors;
   auto start_time = std::chrono::high_resolution_clock::now();
-  map.query_visible_sectors(player_frustum, [&](SectorID id, Frustum2)
+  map.query_visible_sectors(player_frustum, [&](SectorID id, Frustum2, PortalID)
   {
     if (!visible_sectors.contains(id))
     {

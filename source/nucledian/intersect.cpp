@@ -495,5 +495,54 @@ Frustum2 Frustum2::from_point_and_portal(vec2 point, vec2 a, vec2 b)
   return new_frustum;
 }
 
+//==============================================================================
+void FrustumBuffer::insert_frustum(Frustum2 new_frustum)
+{
+	u64  closest_idx = 0;
+	f32  closest_dst = FLT_MAX;
+	bool merged      = false;
+
+	for (u64 i = 0; i < FRUSTUM_SLOT_CNT; ++i)
+	{
+		auto& other_frustum = this->frustum_slots[i];
+		auto  is_invalid    = other_frustum == INVALID_FRUSTUM;
+
+		f32 angle_diff = is_invalid ? 0.0f : other_frustum.angle_difference(new_frustum);
+
+		if (angle_diff <= 0.0f)
+		{
+			// we found an overlapping frustum, lets merge with it
+			if (is_invalid)
+			{
+				other_frustum = new_frustum;
+			}
+			else
+			{
+				other_frustum = other_frustum.merged_with(new_frustum);
+			}
+
+			merged = true;
+			break;
+		}
+
+		// not overlapping, but might be quite close
+		if (angle_diff < closest_dst)
+		{
+			angle_diff  = closest_dst;
+			closest_idx = i;
+		}
+	}
+
+	if (!merged)
+	{
+		NC_ASSERT(closest_idx < FRUSTUM_SLOT_CNT);
+
+		// No overlapping frustum found and all slots are full?
+		// Then merge with a closest one
+		auto& closest_frustum = this->frustum_slots[closest_idx];
+		closest_frustum = closest_frustum.merged_with(new_frustum);
+	}
+}
+
 }
 
