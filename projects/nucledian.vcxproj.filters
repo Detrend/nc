@@ -75,6 +75,7 @@
     <ClInclude Include="..\source\nucledian\vec.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\model.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\res_lifetime.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\primitive_models.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
@@ -85,5 +86,6 @@
     <None Include="..\source\nucledian\engine\graphics\resources\model.inl" />
     <None Include="..\source\nucledian\engine\graphics\shaders\gizmo.frag" />
     <None Include="..\source\nucledian\engine\graphics\shaders\gizmo.vert" />
+    <None Include="..\source\nucledian\engine\graphics\render_component.inl" />
   </ItemGroup>
 </Project>
