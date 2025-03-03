@@ -15,7 +15,10 @@ namespace nc
     currentInputs = lastInputs;
     currentInputs = PlayerSpecificInputs();
 
+    SDL_SetRelativeMouseMode(SDL_TRUE);
     const u8* keyboard_state = SDL_GetKeyboardState(nullptr);
+
+
 
     if (keyboard_state[SDL_SCANCODE_W])
       currentInputs.keys = currentInputs.keys | (1 << PlayerKeyInputs::forward);
@@ -24,7 +27,15 @@ namespace nc
     if (keyboard_state[SDL_SCANCODE_A])
       currentInputs.keys = currentInputs.keys | (1 << PlayerKeyInputs::left);
     if (keyboard_state[SDL_SCANCODE_D])
-      currentInputs.keys = currentInputs.keys | (1 << PlayerKeyInputs::right);   
+      currentInputs.keys = currentInputs.keys | (1 << PlayerKeyInputs::right);
+
+    int x, y;
+    u8 rel_mouse_state = SDL_GetRelativeMouseState(&x, &y);
+
+
+    f32 sensitivity = 0.05;
+    angle_pitch -= y * sensitivity;
+    angle_yaw += x * sensitivity;
 
     lastInputs = currentInputs;
     return currentInputs;
