@@ -104,9 +104,6 @@ void GraphicsSystem::on_event(ModuleEvent& event)
       Gizmo::create_cube(3.0f, vec3::X, 0.5f, colors::CYAN);
       Gizmo::create_cube(6.0f, -vec3::X, 0.5f, colors::GOLD);
       Gizmo::create_cube(9.0f, vec3::ZERO);
-
-      // TODO: crash
-      // static GizmoPtr lime_gizmo = Gizmo::create_cube(-vec3::Y, 1.0f, colors::LIME);
       break;
     }
 
