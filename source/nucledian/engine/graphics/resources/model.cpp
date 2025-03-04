@@ -64,4 +64,10 @@ std::vector<Model>& ModelManager::get_storage(ResLifetime lifetime)
   }
 }
 
+////==============================================================================
+bool operator==(const ModelHandle& lhs, const ModelHandle& rhs)
+{
+  return lhs.m_lifetime == rhs.m_lifetime && lhs.m_model_id == rhs.m_model_id;
+}
+
 }

@@ -7,12 +7,15 @@
 #include <engine/core/engine_module_types.h>
 #include <engine/input/input_system.h>
 #include <engine/graphics/resources/res_lifetime.h>
+#include <engine/graphics/render_component.h>
 
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
 
 #include <iostream>
 #include <algorithm>
+#include <ranges>
+#include <unordered_map>
 
 namespace nc
 {
@@ -108,9 +111,11 @@ void GraphicsSystem::on_event(ModuleEvent& event)
   {
     case ModuleEventType::post_init:
     {
-      Gizmo::create_cube(3.0f, vec3::X, 0.5f, colors::CYAN);
-      Gizmo::create_cube(6.0f, -vec3::X, 0.5f, colors::GOLD);
-      Gizmo::create_cube(9.0f, vec3::ZERO);
+      create_render_component(1.0f, colors::MAGENTA);
+      create_render_component(0.7f, colors::MAROON, 0.5f);
+      create_render_component(0.3f, colors::NAVY, 0.85f);
+      create_render_component(0.15f, colors::PINK, 1.0f);
+
       break;
     }
 
@@ -227,6 +232,7 @@ void GraphicsSystem::render()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   m_gizmo_manager.draw_gizmos();
+  render_entities();
   
   SDL_GL_SwapWindow(m_window);
 }
@@ -242,6 +248,53 @@ void GraphicsSystem::terminate()
 
   m_model_manager.unload<ResLifetime::Game>();
   m_mesh_manager.unload<ResLifetime::Game>();
+}
+
+//==============================================================================
+void GraphicsSystem::render_entities() const
+{
+  /*
+   * 1. obtain visible secors from sector system (TODO)
+   * 2. get RenderComponents from entities within visible sectors (TODO)
+   * 3. filer visible entities (TODO)
+   * 4. group by ModelHandle
+   * 5. sort groups by: 1. program, 2. texture, 3. vao (TODO)
+   * 5. issue render command for each group (TODO)
+   */
+
+  // group entities by Models
+  std::unordered_map<ModelHandle, std::vector<u32>> model_groups;
+  for (u32 i = 0; i < g_render_components.size(); ++i)
+  {
+    model_groups[g_render_components[i].model_handle].push_back(i);
+  }
+
+  // TODO: sort groups by: 1. program, 2. texture, 3. vao
+
+  for (const auto& [handle, indices] : model_groups)
+  {
+    // TODO: switch program & vao only when neccesary
+    handle->material.use();
+    glBindVertexArray(handle->mesh.get_vao());
+
+    // TODO: some uniform locations should be shader independent
+    handle->material.set_uniform(shaders::solid::VIEW, m_debug_camera.get_view());
+    handle->material.set_uniform(shaders::solid::VIEW_POSITION, m_debug_camera.get_position());
+
+    // TODO: indirect rendering
+    for (auto& index : indices)
+    {
+      const RenderComponent& component = g_render_components[index];
+
+      // TODO: translate by entity position
+      const mat4 transform = scale(translate(mat4(1.0f), component.y_offset * vec3::Z), component.scale);
+      // TODO: should be set only when these changes and probably not here
+      handle->material.set_uniform(shaders::solid::COLOR, component.model_color);
+      handle->material.set_uniform(shaders::solid::TRANSFORM, transform);
+
+      glDrawArrays(handle->mesh.get_draw_mode(), 0, handle->mesh.get_vertex_count());
+    }
+  }
 }
 
 }

@@ -29,6 +29,7 @@
     <ClCompile Include="..\source\nucledian\math_benchmarks.cpp" />
     <ClCompile Include="..\source\nucledian\vec.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\model.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\graphics\render_component.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\nucledian\engine\core\resources.inl" />
@@ -85,8 +86,7 @@
     <None Include="..\source\nucledian\vec.inl" />
     <None Include="..\source\nucledian\engine\graphics\resources\mesh.inl" />
     <None Include="..\source\nucledian\engine\graphics\resources\model.inl" />
-    <None Include="..\source\nucledian\engine\graphics\shaders\gizmo.frag" />
-    <None Include="..\source\nucledian\engine\graphics\shaders\gizmo.vert" />
-    <None Include="..\source\nucledian\engine\graphics\render_component.inl" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\solid.frag" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\solid.vert" />
   </ItemGroup>
 </Project>

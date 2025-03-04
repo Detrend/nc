@@ -70,6 +70,7 @@
     <ClCompile Include="..\source\nucledian\engine\graphics\debug_camera.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\gizmo.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\graphics_system.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\graphics\render_component.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\material.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\mesh.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\model.cpp" />
@@ -175,12 +176,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
-    <None Include="..\source\nucledian\engine\graphics\render_component.inl" />
     <None Include="..\source\nucledian\engine\graphics\resources\mesh.inl" />
     <None Include="..\source\nucledian\engine\graphics\resources\model.inl" />
     <None Include="..\source\nucledian\engine\graphics\resources\material.inl" />
-    <None Include="..\source\nucledian\engine\graphics\shaders\gizmo.frag" />
-    <None Include="..\source\nucledian\engine\graphics\shaders\gizmo.vert" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\solid.frag" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\solid.vert" />
     <None Include="..\source\nucledian\temp_math.inl" />
     <None Include="..\source\nucledian\vec.inl" />
   </ItemGroup>

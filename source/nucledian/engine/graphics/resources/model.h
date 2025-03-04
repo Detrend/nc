@@ -1,10 +1,13 @@
 #pragma once
 
+#include <types.h>
 #include <engine/graphics/resources/mesh.h>
 #include <engine/graphics/resources/material.h>
 #include <engine/graphics/resources/res_lifetime.h>
 
 #include <vector>
+#include <functional>
+#include <cstdint>
 
 namespace nc
 {
@@ -21,6 +24,9 @@ class ModelHandle
 {
 public:
   friend class ModelManager;
+
+  friend bool operator==(const ModelHandle& lhs, const ModelHandle& rhs);
+  friend struct std::hash<ModelHandle>;
 
   // Determine if model is valid. This does not consider models deleted by unloading.
   operator bool() const;
@@ -40,6 +46,8 @@ private:
   ResLifetime   m_lifetime = ResLifetime::None;
   u32           m_model_id = 0;
 };
+
+bool operator==(const ModelHandle& lhs, const ModelHandle& rhs);
 
 class ModelManager
 {
@@ -62,6 +70,15 @@ private:
   std::vector<Model> m_game_models;
 };
 
+}
+
+namespace std
+{
+  template<>
+  struct hash<nc::ModelHandle>
+  {
+    size_t operator()(const nc::ModelHandle& handle) const;
+  };
 }
 
 #include <engine/graphics/resources/model.inl>

@@ -38,6 +38,8 @@ private:
   void render();
   void terminate();
 
+  void render_entities() const;
+
   SDL_Window*  m_window        = nullptr;
   void*        m_gl_context    = nullptr;
   DebugCamera  m_debug_camera;
