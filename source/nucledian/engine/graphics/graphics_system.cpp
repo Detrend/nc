@@ -7,7 +7,7 @@
 #include <engine/core/engine_module_types.h>
 #include <engine/input/input_system.h>
 #include <engine/graphics/resources/res_lifetime.h>
-#include <engine/graphics/render_component.h>
+#include <engine/entities.h>
 
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
@@ -109,16 +109,6 @@ void GraphicsSystem::on_event(ModuleEvent& event)
 {
   switch (event.type)
   {
-    case ModuleEventType::post_init:
-    {
-      create_render_component(1.0f, colors::MAGENTA);
-      create_render_component(0.7f, colors::MAROON, 0.5f);
-      create_render_component(0.3f, colors::NAVY, 0.85f);
-      create_render_component(0.15f, colors::PINK, 1.0f);
-
-      break;
-    }
-
     case ModuleEventType::game_update:
     {
       this->update(event.update.dt);
@@ -264,9 +254,9 @@ void GraphicsSystem::render_entities() const
 
   // group entities by Models
   std::unordered_map<ModelHandle, std::vector<u32>> model_groups;
-  for (u32 i = 0; i < g_render_components.size(); ++i)
+  for (u32 i = 0; i < g_appearance_components.size(); ++i)
   {
-    model_groups[g_render_components[i].model_handle].push_back(i);
+    model_groups[g_appearance_components[i].model_handle].push_back(i);
   }
 
   // TODO: sort groups by: 1. program, 2. texture, 3. vao
@@ -284,12 +274,12 @@ void GraphicsSystem::render_entities() const
     // TODO: indirect rendering
     for (auto& index : indices)
     {
-      const RenderComponent& component = g_render_components[index];
+      const Position& position = m_position_components[index];
+      const Appearance& appearance = g_appearance_components[index];
 
-      // TODO: translate by entity position
-      const mat4 transform = scale(translate(mat4(1.0f), component.y_offset * vec3::Z), component.scale);
+      const mat4 transform = scale(translate(mat4(1.0f), position + appearance.y_offset * vec3::Z), appearance.scale);
       // TODO: should be set only when these changes and probably not here
-      handle->material.set_uniform(shaders::solid::COLOR, component.model_color);
+      handle->material.set_uniform(shaders::solid::COLOR, appearance.model_color);
       handle->material.set_uniform(shaders::solid::TRANSFORM, transform);
 
       glDrawArrays(handle->mesh.get_draw_mode(), 0, handle->mesh.get_vertex_count());

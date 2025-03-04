@@ -29,7 +29,7 @@
     <ClCompile Include="..\source\nucledian\math_benchmarks.cpp" />
     <ClCompile Include="..\source\nucledian\vec.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\model.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\graphics\render_component.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\entities.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\nucledian\engine\core\resources.inl" />
@@ -77,7 +77,7 @@
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\model.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\res_lifetime.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\primitive_models.h" />
-    <ClInclude Include="..\source\nucledian\engine\graphics\render_component.h" />
+    <ClInclude Include="..\source\nucledian\engine\entities.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
