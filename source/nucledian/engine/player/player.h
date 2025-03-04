@@ -16,7 +16,9 @@ namespace nc
 
     PlayerSpecificInputs get_inputs();
     void load_inputs(PlayerSpecificInputs inputs);
-      void update();
+    void update();
+    void Damage(int damage);
+    void Die();
 
   private:
     // THESE FUNCTIONS ARE OLD AND MIGHT BE TERMINATED
@@ -32,6 +34,11 @@ namespace nc
 
     PlayerSpecificInputs lastInputs;
     PlayerSpecificInputs currentInputs;
+
+    int maxHealth = 100;
+    int currentHealth;
+
+    bool alive = true;
   };
 
 }
