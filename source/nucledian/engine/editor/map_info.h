@@ -8,6 +8,8 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
 
+#include <memory>
+
 namespace nc
 {
   struct vertex_3d {
@@ -153,9 +155,17 @@ namespace nc
 
   class Map
   {
+    std::vector<std::shared_ptr<MapPoint>> mapPoints;
     std::vector<Sector> sectors;
     std::vector<WallDef> walls;
 
     //entities
+
+  public:
+    void draw();
+    void add_point(vertex_2d position);
+    void remove_point(size_t index);
+    void move_vertex(vertex_2d positionTo, size_t index);
+    size_t get_closest_point_index(vertex_2d posiiton);
   };
 }

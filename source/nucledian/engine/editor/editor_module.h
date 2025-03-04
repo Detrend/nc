@@ -127,7 +127,10 @@ namespace nc
     GLuint vertexArrayBuffer;
     glm::mat4 viewMatrix;
 
-    std::vector<std::shared_ptr<MapPoint>> mapPoints; // A TEMPORARY VARIABLE FOR TESTING
+    //std::vector<std::shared_ptr<MapPoint>> mapPoints; // A TEMPORARY VARIABLE FOR TESTING
+
+    Map map;
+
     int selected = -1;
     int closest = -1;
   };

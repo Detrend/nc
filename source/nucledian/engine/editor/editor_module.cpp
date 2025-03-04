@@ -192,7 +192,7 @@ namespace nc
 
         if (selected >= 0) {
           vertex_2d snapPos = get_snap_to_grid_pos(curGridMousePos.x, curGridMousePos.y);
-          mapPoints[selected].get()->move_to(snapPos.x, snapPos.y);
+          map.move_vertex(snapPos, selected);
           selected = -1;
         }
       }
@@ -214,7 +214,8 @@ namespace nc
         if (!prevMouse[1])
         {
           vertex_2d snapPos = get_snap_to_grid_pos(curGridMousePos.x, curGridMousePos.y);
-          mapPoints.push_back(std::make_shared<MapPoint>(MapPoint(snapPos)));
+          //mapPoints.push_back(std::make_shared<MapPoint>(MapPoint(snapPos)));
+          map.add_point(snapPos);
         }
       }
 
@@ -235,7 +236,7 @@ namespace nc
 
   void EditorSystem::get_closest_point()
   {
-    f32 minDist = 666;
+    /*f32 minDist = 666;
     int candidate = -1;
 
     for (size_t i = 0; i < mapPoints.size(); i++)
@@ -251,9 +252,9 @@ namespace nc
         minDist = dist;
         candidate = i;
       }
-    }
+    }*/
 
-    closest = candidate;
+    closest = map.get_closest_point_index(curGridMousePos);
   }
 
   //================================================================================
@@ -264,8 +265,7 @@ namespace nc
 
     if (keyboard_state[SDL_SCANCODE_DELETE]) {
       if (closest > -1) {
-        mapPoints[closest].get()->cleanup();
-        mapPoints.erase(mapPoints.begin() + closest);
+        map.remove_point(closest);
       }
     }
 
@@ -286,7 +286,7 @@ namespace nc
 
   void EditorSystem::select_point(vertex_2d mousePos)
   {
-    f32 minDist = 666;
+    /*f32 minDist = 666;
     int candidate = -1;
 
     for (size_t i = 0; i < mapPoints.size(); i++)
@@ -302,9 +302,9 @@ namespace nc
         minDist = dist;
         candidate = i;
       }
-    }
+    }*/
 
-    selected = candidate;
+    selected = map.get_closest_point_index(mousePos);
   }
 
   void EditorSystem::move_point(vertex_2d mousePos)
@@ -314,7 +314,8 @@ namespace nc
       return;
     }
 
-    mapPoints[selected].get()->move_to(mousePos.x, mousePos.y);
+    //mapPoints[selected].get()->move_to(mousePos.x, mousePos.y);
+    map.move_vertex(mousePos, selected);
   }
 
   //=================================================================
@@ -498,10 +499,11 @@ namespace nc
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 
     glPointSize(10);
-    for (size_t i = 0; i < mapPoints.size(); ++i)
+    /*for (size_t i = 0; i < mapPoints.size(); ++i)
     {
       mapPoints[i].get()->draw();
-    }
+    }*/
+    map.draw();
 
     glUseProgram(0);
   }
@@ -517,10 +519,11 @@ namespace nc
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 
     glPointSize(10);
-    for (size_t i = 0; i < mapPoints.size(); ++i)
+    /*for (size_t i = 0; i < mapPoints.size(); ++i)
     {
       mapPoints[i].get()->draw();
-    }
+    }*/
+    map.draw();
 
     glUseProgram(0);
   }

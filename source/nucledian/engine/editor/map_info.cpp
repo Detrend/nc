@@ -98,3 +98,52 @@ void nc::MapPoint::init_gl()
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
 }
+
+// ===================================================================
+
+void nc::Map::draw()
+{
+  for (size_t i = 0; i < mapPoints.size(); i++)
+  {
+    mapPoints[i].get()->draw();
+  }
+}
+
+void nc::Map::add_point(vertex_2d position)
+{
+  mapPoints.push_back(std::make_shared<MapPoint>(MapPoint(position)));
+}
+
+void nc::Map::remove_point(size_t index)
+{
+  mapPoints[index].get()->cleanup();
+  mapPoints.erase(mapPoints.begin() + index);
+}
+
+void nc::Map::move_vertex(vertex_2d positionTo, size_t index)
+{
+  mapPoints[index].get()->move_to(positionTo.x, positionTo.y);
+}
+
+size_t nc::Map::get_closest_point_index(vertex_2d position)
+{
+  f32 minDist = 666;
+  int candidate = -1;
+
+  for (size_t i = 0; i < mapPoints.size(); i++)
+  {
+    f32 dist = mapPoints[i].get()->get_distance(position);
+    if (dist > 0.125)
+    {
+      continue;
+    }
+
+    if (dist < minDist)
+    {
+      minDist = dist;
+      candidate = i;
+    }
+  }
+
+  return candidate;
+}
