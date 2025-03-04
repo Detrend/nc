@@ -2,11 +2,13 @@
 
 namespace nc
 {
-  mapObject::mapObject()
+  MapObject::MapObject()
   {
   }
 
-  mapObject::mapObject(vec3 position, f32 width, f32 height, bool collision)
+  // ===============================================================================
+
+  MapObject::MapObject(vec3 position, f32 width, f32 height, bool collision)
   {
     this->position = position;
     this->width = width;
@@ -14,7 +16,9 @@ namespace nc
     this->collision = collision;
   }
 
-  bool mapObject::did_collide(mapObject collider)
+  // ===============================================================================
+
+  bool MapObject::did_collide(MapObject collider)
   {
     // EACH OBJECT HAS A CYLINDER COLLISION HULL
 
@@ -48,17 +52,30 @@ namespace nc
     }
   }
 
-  f32 mapObject::get_widht()
+  // ===============================================================================
+
+  f32 MapObject::get_widht()
   {
     return width;
   }
 
-  f32 mapObject::get_height()
+  // ===============================================================================
+
+  f32 MapObject::get_height()
   {
     return height;
   }
-  vec3 mapObject::get_position()
+
+  // ===============================================================================
+
+  vec3 MapObject::get_position()
   {
     return position;
+  }
+
+  // ===============================================================================
+
+  MapObject::~MapObject()
+  {
   }
 }

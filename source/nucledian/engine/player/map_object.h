@@ -6,19 +6,19 @@ namespace nc {
 
   // definition of a generic map object, mainly collisions
 
-  class mapObject
+  class MapObject
   {
   public:
-    mapObject();
-    mapObject(vec3 position, f32 width, f32 height, bool collision);
+    MapObject();
+    MapObject(vec3 position, f32 width, f32 height, bool collision);
 
-    bool did_collide(mapObject collider);
+    bool did_collide(MapObject collider);
 
     f32 get_widht();
     f32 get_height();
     vec3 get_position();
 
-    ~mapObject();
+    ~MapObject();
 
   protected:
     f32 width;

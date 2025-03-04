@@ -10,7 +10,7 @@
 namespace nc
 {
 
-  class Player : mapObject
+  class Player : MapObject
   {
   public:
     Player(vec3 position);
