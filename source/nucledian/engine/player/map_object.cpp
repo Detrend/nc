@@ -32,7 +32,7 @@ namespace nc
     f32 difX = abs(position.x - collider.position.x);
     f32 difY = abs(position.y - collider.position.y);
 
-    f32 topDownDistance = sqrt(difX * difX + difY * difY);
+    f32 topDownDistance = sqrtf(difX * difX + difY * difY);
 
     if (topDownDistance > width + collider.width) 
     {
@@ -50,6 +50,8 @@ namespace nc
     {
       return true;
     }
+
+    return false;
   }
 
   // ===============================================================================

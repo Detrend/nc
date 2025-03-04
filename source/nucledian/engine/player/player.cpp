@@ -35,10 +35,10 @@ namespace nc
       currentInputs.keys = currentInputs.keys | (1 << PlayerKeyInputs::right);
 
     int x, y;
-    u8 rel_mouse_state = SDL_GetRelativeMouseState(&x, &y);
+    SDL_GetRelativeMouseState(&x, &y);
 
 
-    f32 sensitivity = 0.05;
+    f32 sensitivity = 0.05f;
     angle_pitch -= y * sensitivity;
     angle_yaw += x * sensitivity;
 
@@ -62,7 +62,7 @@ namespace nc
 
     velocity = vec3(0, 0, 0);
 
-    if (!alive) 
+    if (!alive)
     {
       return;
     }
@@ -97,7 +97,7 @@ namespace nc
   {
     currentHealth -= damage;
 
-    if (currentHealth < 0) 
+    if (currentHealth < 0)
     {
       Die();
     }
@@ -155,3 +155,4 @@ namespace nc
       break;
     }
   }
+}
