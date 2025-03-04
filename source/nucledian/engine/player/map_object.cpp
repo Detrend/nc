@@ -2,6 +2,10 @@
 
 namespace nc
 {
+  mapObject::mapObject()
+  {
+  }
+
   mapObject::mapObject(vec3 position, f32 width, f32 height, bool collision)
   {
     this->position = position;
