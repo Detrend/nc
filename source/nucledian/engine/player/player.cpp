@@ -7,6 +7,10 @@ namespace nc
   {
     this->position = position;
     currentHealth = maxHealth;
+
+    width = 0.25f;
+    height = 1.5f;
+    collision = true;
   }
 
   //==========================================================================

@@ -9,6 +9,7 @@ namespace nc {
   class mapObject
   {
   public:
+    mapObject();
     mapObject(vec3 position, f32 width, f32 height, bool collision);
 
     bool did_collide(mapObject collider);
@@ -16,6 +17,8 @@ namespace nc {
     f32 get_widht();
     f32 get_height();
     vec3 get_position();
+
+    ~mapObject();
 
   protected:
     f32 width;
