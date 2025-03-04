@@ -6,6 +6,7 @@ namespace nc
   Player::Player(vec3 position)
   {
     this->position = position;
+    currentHealth = maxHealth;
   }
 
   //==========================================================================
@@ -57,6 +58,11 @@ namespace nc
 
     velocity = vec3(0, 0, 0);
 
+    if (!alive) 
+    {
+      return;
+    }
+
     // movement keys
     if (currentInputs.keys & (1 << PlayerKeyInputs::forward))
     {
@@ -81,6 +87,21 @@ namespace nc
     // APLICATION OF VELOCITY
     position.x += velocity.x * sinf(angle_yaw);
     position.y += velocity.y * cosf(angle_yaw);
+  }
+
+  void Player::Damage(int damage)
+  {
+    currentHealth -= damage;
+
+    if (currentHealth < 0) 
+    {
+      Die();
+    }
+  }
+
+  void Player::Die()
+  {
+    alive = false;
   }
 
 
