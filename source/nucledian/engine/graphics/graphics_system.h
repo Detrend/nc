@@ -30,6 +30,9 @@ public:
   ModelManager& get_model_manager();
   GizmoManager& get_gizmo_manager();
 
+  const Material& get_solid_material() const;
+  ModelHandle get_cube_model_handle() const;
+
 private:
   void update(f32 delta_seconds);
   void render();
@@ -41,6 +44,10 @@ private:
   MeshManager  m_mesh_manager;
   ModelManager m_model_manager;
   GizmoManager m_gizmo_manager;
+
+  // Material for rendering solid geometry.
+  Material     m_solid_material;
+  ModelHandle  m_cube_model_handle = ModelHandle::invalid();
 };
 
 }

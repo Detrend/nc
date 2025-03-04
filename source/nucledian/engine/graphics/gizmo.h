@@ -53,7 +53,6 @@ class GizmoManager
 public:
   friend class Gizmo;
 
-  void init();
   // Update time to live (ttl) of active gizmos.
   void update_ttls(f32 delta_seconds);
   void draw_gizmos() const;
@@ -67,7 +66,6 @@ private:
   GizmoMap m_gizmos;
   // Contain all active gizmos with ttl lifetime managment.
   GizmoMap m_ttl_gizmos;
-  Material m_gizmo_material = Material::invalid();
 };
 
 }

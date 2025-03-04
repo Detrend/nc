@@ -6,12 +6,12 @@ namespace nc
 {
  //==============================================================================
 template<ResLifetime lifetime>
-inline ModelHandle ModelManager::add(const Mesh& mesh, const Material& material, const mat4& transform)
+inline ModelHandle ModelManager::add(const Mesh& mesh, const Material& material)
 {
   auto& storage = get_storage<lifetime>();
   const u32 id = static_cast<u32>(storage.size());
 
-  storage.emplace_back(mesh, material, transform);
+  storage.emplace_back(mesh, material);
   return ModelHandle(id, lifetime);
 }
 

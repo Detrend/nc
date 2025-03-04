@@ -21,11 +21,11 @@ namespace nc
 
   namespace shaders
   {
-    // Shader for drawing gizmos.
-    namespace gizmo
+    // Shader for drawing solid geometry.
+    namespace solid
     {
-      #include <engine/graphics/shaders/gizmo.frag>
-      #include <engine/graphics/shaders/gizmo.vert>
+      #include <engine/graphics/shaders/solid.frag>
+      #include <engine/graphics/shaders/solid.vert>
 
       inline constexpr Uniform<0, mat4>  TRANSFORM;
       inline constexpr Uniform<1, mat4>  VIEW;

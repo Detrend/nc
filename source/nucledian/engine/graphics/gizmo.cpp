@@ -53,16 +53,6 @@ Gizmo::Gizmo(const Mesh& mesh, const vec3& pos, f32 size, const color& color, f3
   : m_ttl(ttl), m_mesh(mesh), m_color(color), m_transform(scale(translate(mat4(1.0f), pos), vec3(size))) {}
 
 //==============================================================================
-void GizmoManager::init()
-{
-  m_gizmo_material = Material(shaders::gizmo::VERTEX_SOURCE, shaders::gizmo::FRAGMENT_SOURCE);
-
-  const mat4 projection = perspective(radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-  m_gizmo_material.use();
-  m_gizmo_material.set_uniform(shaders::gizmo::PROJECTION, projection);
-}
-
-//==============================================================================
 void GizmoManager::update_ttls(f32 delta_seconds)
 {
   std::vector<u32> to_remove;
@@ -85,11 +75,14 @@ void GizmoManager::update_ttls(f32 delta_seconds)
 //==============================================================================
 void GizmoManager::draw_gizmos() const
 {
-  m_gizmo_material.use();
+  auto& graphics_system = get_engine().get_module<GraphicsSystem>();
+  const Material& solid_material = graphics_system.get_solid_material();
 
-  const DebugCamera& camera = get_engine().get_module<GraphicsSystem>().get_debug_camera();
-  m_gizmo_material.set_uniform(shaders::gizmo::VIEW, camera.get_view());
-  m_gizmo_material.set_uniform(shaders::gizmo::VIEW_POSITION, camera.get_position());
+  solid_material.use();
+
+  const DebugCamera& camera =graphics_system .get_debug_camera();
+  solid_material.set_uniform(shaders::solid::VIEW, camera.get_view());
+  solid_material.set_uniform(shaders::solid::VIEW_POSITION, camera.get_position());
 
   auto combined_view = std::ranges::views::join
   (
@@ -98,8 +91,8 @@ void GizmoManager::draw_gizmos() const
 
   for (const auto& [_, gizmo] : combined_view)
   {
-    m_gizmo_material.set_uniform(shaders::gizmo::TRANSFORM, gizmo.m_transform);
-    m_gizmo_material.set_uniform(shaders::gizmo::COLOR, gizmo.m_color);
+    solid_material.set_uniform(shaders::solid::TRANSFORM, gizmo.m_transform);
+    solid_material.set_uniform(shaders::solid::COLOR, gizmo.m_color);
 
     glBindVertexArray(gizmo.m_mesh.get_vao());
     glDrawArrays(gizmo.m_mesh.get_draw_mode(), 0, gizmo.m_mesh.get_vertex_count());

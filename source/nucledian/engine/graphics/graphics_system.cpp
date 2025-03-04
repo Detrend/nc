@@ -6,6 +6,7 @@
 #include <engine/core/module_event.h>
 #include <engine/core/engine_module_types.h>
 #include <engine/input/input_system.h>
+#include <engine/graphics/resources/res_lifetime.h>
 
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
@@ -89,7 +90,13 @@ bool GraphicsSystem::init()
   glEnable(GL_MULTISAMPLE);
 
   m_mesh_manager.init();
-  m_gizmo_manager.init();
+
+  m_solid_material = Material(shaders::solid::VERTEX_SOURCE, shaders::solid::FRAGMENT_SOURCE);
+  m_cube_model_handle = m_model_manager.add<ResLifetime::Game>(m_mesh_manager.get_cube(), m_solid_material);
+
+  const mat4 projection = perspective(radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+  m_solid_material.use();
+  m_solid_material.set_uniform(shaders::solid::PROJECTION, projection);
 
   return true;
 }
@@ -183,6 +190,18 @@ ModelManager& GraphicsSystem::get_model_manager()
 GizmoManager& GraphicsSystem::get_gizmo_manager()
 {
   return m_gizmo_manager;
+}
+
+//==============================================================================
+const Material& GraphicsSystem::get_solid_material() const
+{
+  return m_solid_material;
+}
+
+//==============================================================================
+ModelHandle GraphicsSystem::get_cube_model_handle() const
+{
+  return m_cube_model_handle;
 }
 
 //==============================================================================

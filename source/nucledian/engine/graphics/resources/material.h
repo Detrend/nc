@@ -15,6 +15,7 @@ struct Material
 {
 public:
   friend class GizmoManager;
+  friend class GraphicsSystem;
 
   Material(const char* vertex_source, const char* fragment_source);
 

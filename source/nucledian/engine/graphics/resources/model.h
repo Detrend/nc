@@ -1,6 +1,5 @@
 #pragma once
 
-#include <temp_math.h>
 #include <engine/graphics/resources/mesh.h>
 #include <engine/graphics/resources/material.h>
 #include <engine/graphics/resources/res_lifetime.h>
@@ -13,9 +12,8 @@ namespace nc
 // Collection of data needed to render an object.
 struct Model
 {
-  Material material;
   Mesh mesh;
-  mat4 transform;
+  Material material;
 };
 
 // Light-weight handle around model.
@@ -47,7 +45,7 @@ class ModelManager
 {
 public:
   template<ResLifetime lifetime>
-  ModelHandle add(const Mesh& mesh, const Material& material, const mat4& transform);
+  ModelHandle add(const Mesh& mesh, const Material& material);
 
   template<ResLifetime lifetime>
   void unload();
@@ -55,8 +53,6 @@ public:
   Model& get(const ModelHandle& handle);
 
 private:
-  using ModelMap = std::unordered_map<std::string_view, Model>;
-
   std::vector<Model>& get_storage(ResLifetime lifetime);
 
   template<ResLifetime lifetime>
