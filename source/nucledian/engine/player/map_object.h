@@ -21,7 +21,7 @@ namespace nc {
     ~MapObject();
 
   protected:
-    f32 width;
+    f32 width; //is actualy half a width
     f32 height;
     bool collision;
 
