@@ -51,10 +51,10 @@ constexpr auto INVALID_WALL_ID    = static_cast<WallID>(-1);
 constexpr auto INVALID_PORTAL_ID  = static_cast<PortalID>(-1);
 constexpr auto INVALID_TEXTURE_ID = static_cast<TextureID>(-1);
 
-constexpr auto MAX_WALLS_PER_SECTOR = static_cast<u64>(WallRelID{-1});
-constexpr auto MAX_SECTORS          = static_cast<u64>(SectorID{-1});
-constexpr auto MAX_WALLS            = static_cast<u64>(WallID{-1});
-constexpr auto MAX_PORTALS          = static_cast<u64>(PortalID{-1});
+constexpr auto MAX_WALLS_PER_SECTOR = static_cast<u64>(WallRelID(~0));
+constexpr auto MAX_SECTORS          = static_cast<u64>(SectorID(~0));
+constexpr auto MAX_WALLS            = static_cast<u64>(WallID(~0));
+constexpr auto MAX_PORTALS          = static_cast<u64>(PortalID(~0));
 
 // Portable data are a set of data that can be shared among two different
 // map representations. Put here anything that you want in sectors
@@ -82,9 +82,9 @@ struct SectorIntData
   // last_wall - first_wall
   // If first_wall == last_wall then the sector has no walls
   WallID   first_wall   = INVALID_WALL_ID; // [0..total_wall_count]
-  WallID   last_wall    = INVALID_WALL_ID; // [first_wall+1..total_wall_count]
-  PortalID first_portal = INVALID_WALL_ID; // [0..total_wall_count]
-  PortalID last_portal  = INVALID_WALL_ID; // [first_portal..total_wall_count]
+  WallID   last_wall    = INVALID_WALL_ID; // [first_wall..total_wall_count]
+  PortalID first_portal = INVALID_WALL_ID; // [0..total_portal_count]
+  PortalID last_portal  = INVALID_WALL_ID; // [first_portal..total_portal_count]
 };
 
 // Each sector is comprised of internal data
@@ -105,11 +105,11 @@ struct WallData
 
 namespace PortalType
 {
-	enum evalue
-	{
-		classic       = 0,
-		non_euclidean,
-	};
+  enum evalue
+  {
+    classic       = 0,
+    non_euclidean,
+  };
 }
 
 struct WallPortalData
@@ -137,14 +137,11 @@ struct MapSectors
   // Traverses the sector system in a BFS order and calls the visitor
   // for each sector with a frustum that describes which parts of the
   // sector are visible.
-  void query_visible_sectors(Frustum2 frustum, TraverseVisitor visitor);
-
-private:
-  void query_visible_sectors_impl(
-    const FrustumBuffer& frustum,
-    TraverseVisitor      visitor,
-    u8                   recursion_depth = 4,
-    PortalID             source_portal   = INVALID_PORTAL_ID) const;
+  void query_visible_sectors(
+    vec2            position,
+    vec2            view_dir,
+    f32             hor_fov_rad, // [0-Pi], in radians. >= Pi means 360 degrees of view
+    TraverseVisitor visitor);
 
   // Iterates all portals of this sector
   bool for_each_portal_of_sector(SectorID sector, PortalVisitor visitor) const;
@@ -152,6 +149,14 @@ private:
   // Returns an id of a sector that lies on this position. If there is
   // no such sector then returns INVALID_SECTOR_ID
   SectorID get_sector_from_point(vec2 point) const;
+
+private:
+  void query_visible_sectors_impl(
+    SectorID             start_sector,
+    const FrustumBuffer& frustum,
+    TraverseVisitor      visitor,
+    u8                   recursion_depth = 4,
+    PortalID             source_portal   = INVALID_PORTAL_ID) const;
 };
 
 namespace map_building

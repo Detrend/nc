@@ -325,16 +325,11 @@ void GraphicsSystem::render_map()
     }
   }
 
-  const auto player_frustum = Frustum2
-  {
-    .center    = pointed_position,
-    .direction = vec2{std::cosf(deg2rad(frustum_dir)), std::sinf(deg2rad(frustum_dir))},
-    .angle     = std::cosf(deg2rad(frustum_deg * 0.5f)),
-  };
+  auto view_direction = vec2{std::cosf(deg2rad(frustum_dir)), std::sinf(deg2rad(frustum_dir))};
 
   std::map<SectorID, u32> visible_sectors;
   auto start_time = std::chrono::high_resolution_clock::now();
-  map.query_visible_sectors(player_frustum, [&](SectorID id, Frustum2, PortalID)
+  map.query_visible_sectors(pointed_position, view_direction, deg2rad(frustum_deg), [&](SectorID id, Frustum2, PortalID)
   {
     if (!visible_sectors.contains(id))
     {
