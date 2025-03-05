@@ -76,6 +76,8 @@
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\model.cpp" />
     <ClCompile Include="..\source\nucledian\engine\input\input_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\map_system.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\player\map_object.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\player\player.cpp" />
     <ClCompile Include="..\source\nucledian\grid.cpp" />
     <ClCompile Include="..\source\nucledian\intersect.cpp" />
     <ClCompile Include="..\source\nucledian\main.cpp" />
@@ -86,7 +88,6 @@
     <ClCompile Include="..\source\nucledian\vector_maths_sse.cpp" />
     <ClCompile Include="..\source\nucledian\math_benchmarks.cpp" />
     <ClCompile Include="..\source\nucledian\vec.cpp" />
-    <ClCompile Include="player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -164,6 +165,8 @@
     <ClInclude Include="..\source\nucledian\engine\input\game_input.h" />
     <ClInclude Include="..\source\nucledian\engine\input\input_system.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_system.h" />
+    <ClInclude Include="..\source\nucledian\engine\player\map_object.h" />
+    <ClInclude Include="..\source\nucledian\engine\player\player.h" />
     <ClInclude Include="..\source\nucledian\grid.h" />
     <ClInclude Include="..\source\nucledian\intersect.h" />
     <ClInclude Include="..\source\nucledian\maths.h" />
@@ -174,7 +177,6 @@
     <ClInclude Include="..\source\nucledian\sse.h" />
     <ClInclude Include="..\source\nucledian\types.h" />
     <ClInclude Include="..\source\nucledian\vec.h" />
-    <ClInclude Include="player.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
