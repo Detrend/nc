@@ -272,11 +272,19 @@ void MapSectors::query_visible_sectors_impl(
           const auto p1_to_p2  = p2-p1;
           const auto p1_to_cam = frustum.center-p1;
 
-          if (cross(p1_to_cam, p1_to_p2) >= 0.0f)
+          if (next_sector == start_sector)
+          {
+            // If the camera is positioned EXACTLY over the border of 2 sectors
+            // then we would jump back and forth between these two, because
+            // each one would be visible from the second one.
+            return;
+          }
+
+          if (cross(p1_to_cam, p1_to_p2) > 0.0f)
           {
             // early exit, the wall is turned away from the camera
             // The comparison has to be > instead of >=, because that would
-            // report the sector we are on a border of as invisible
+            // report the sector we are on a border of as invisible.
             return;
           }
 

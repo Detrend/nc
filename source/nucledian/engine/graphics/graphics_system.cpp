@@ -441,7 +441,7 @@ void GraphicsSystem::render_map()
 
     for (WallID index = 0; index < portal_count; ++index)
     {
-      WallID index_in_arr = map.portals[repr.first_portal+index].wall_index;
+      WallID index_in_arr = map.portals[repr.first_portal+index].wall_index + repr.first_wall;
       WallID next_in_arr  = index_in_arr+1;
       if (next_in_arr >= repr.last_wall)
       {
