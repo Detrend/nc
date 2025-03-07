@@ -54,13 +54,17 @@ void InputSystem::handle_app_event([[maybe_unused]]const SDL_Event& event)
 {
   // expected to do this after COPYing previous input to current
 
+  f32 xrel = 0;
+  f32 yrel = 0;
+
   switch (event.type) 
   {
   case SDL_MOUSEMOTION:
-    f32 xrel = event.motion.xrel * 1.0f; // needs to be replaced by sensitivity
-    f32 yrel = event.motion.yrel * 1.0f;
+    xrel = event.motion.xrel * 1.0f; // needs to be replaced by sensitivity
+    yrel = event.motion.yrel * 1.0f;
     m_current_inputs.player_inputs.analog[PlayerAnalogInputs::look_horizontal] = xrel;
     m_current_inputs.player_inputs.analog[PlayerAnalogInputs::look_vertical] = -yrel;
+    break;
   case SDL_KEYDOWN:
     switch (event.key.keysym.scancode) 
     {

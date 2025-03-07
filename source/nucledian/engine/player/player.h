@@ -15,16 +15,16 @@ namespace nc
   public:
     Player(vec3 position);
 
-    PlayerSpecificInputs get_inputs();
-    void load_inputs(PlayerSpecificInputs inputs);
-    void update();
+    //PlayerSpecificInputs get_inputs();
+    //void load_inputs(PlayerSpecificInputs inputs);
+    void update(GameInputs input);
     void Damage(int damage);
     void Die();
 
   private:
     // THESE FUNCTIONS ARE OLD AND MIGHT BE TERMINATED
-    void handle_key_downs(SDL_Event& event);
-    void handle_key_ups(SDL_Event& event);
+    //void handle_key_downs(SDL_Event& event);
+    //void handle_key_ups(SDL_Event& event);
 
     //vec3 position;
     f32 speed = 0.5;
@@ -33,8 +33,8 @@ namespace nc
     f32 angle_pitch = 0; //UP-DOWN
     f32 angle_yaw = 0; //LET-RIGHT
 
-    PlayerSpecificInputs lastInputs;
-    PlayerSpecificInputs currentInputs;
+    /*PlayerSpecificInputs lastInputs;
+    PlayerSpecificInputs currentInputs;*/
 
     int maxHealth = 100;
     int currentHealth;
