@@ -60,7 +60,7 @@ void InputSystem::handle_app_event([[maybe_unused]]const SDL_Event& event)
     f32 xrel = event.motion.xrel * 1.0f; // needs to be replaced by sensitivity
     f32 yrel = event.motion.yrel * 1.0f;
     m_current_inputs.player_inputs.analog[PlayerAnalogInputs::look_horizontal] = xrel;
-    m_current_inputs.player_inputs.analog[PlayerAnalogInputs::look_vertical] = yrel;
+    m_current_inputs.player_inputs.analog[PlayerAnalogInputs::look_vertical] = -yrel;
   case SDL_KEYDOWN:
     switch (event.key.keysym.scancode) 
     {
@@ -102,6 +102,30 @@ void InputSystem::handle_app_event([[maybe_unused]]const SDL_Event& event)
   default:
     break;
   }
+}
+
+//==============================================================================
+
+void InputSystem::get_player_inputs()
+{
+  SDL_SetRelativeMouseMode(SDL_TRUE);
+  const u8* keyboard_state = SDL_GetKeyboardState(nullptr);
+
+  if (keyboard_state[SDL_SCANCODE_W])
+    m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys | (1 << PlayerKeyInputs::forward);
+  if (keyboard_state[SDL_SCANCODE_S])
+    m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys | (1 << PlayerKeyInputs::backward);
+  if (keyboard_state[SDL_SCANCODE_A])
+    m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys | (1 << PlayerKeyInputs::left);
+  if (keyboard_state[SDL_SCANCODE_D])
+    m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys | (1 << PlayerKeyInputs::right);
+
+  int x, y;
+  SDL_GetRelativeMouseState(&x, &y);
+
+  f32 sensitivity = 0.05f;
+  m_current_inputs.player_inputs.analog[PlayerAnalogInputs::look_vertical] -= y * sensitivity;
+  m_current_inputs.player_inputs.analog[PlayerAnalogInputs::look_horizontal] += x * sensitivity;
 }
 
 //==============================================================================
