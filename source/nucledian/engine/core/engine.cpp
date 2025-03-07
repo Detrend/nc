@@ -314,7 +314,7 @@ static void test_make_sector(
 }
 
 //==============================================================================
-static void make_cool_looking_map(MapSectors& map)
+[[maybe_unused]] static void make_cool_looking_map(MapSectors& map)
 {
   std::vector<vec2> points =
   {
@@ -425,8 +425,8 @@ static void make_cool_looking_map(MapSectors& map)
 void Engine::build_map_and_sectors()
 {
   m_map = std::make_unique<MapSectors>();
-  //make_random_square_maze_map(*m_map, 32, 0);
-  make_cool_looking_map(*m_map);
+  make_random_square_maze_map(*m_map, 32, 0);
+  //make_cool_looking_map(*m_map);
 }
 
 //==============================================================================

@@ -226,8 +226,9 @@ void MapSectors::query_visible_sectors_impl(
     return;
   }
 
-  // TODO[performance]: this can be sped up by directly
-  // indexing into a look up table using the SectorID
+  // According to a benchmark, the std::map here is actually faster
+  // than using std::unordered_map. Maybe due to poor cache locality?
+  // Did not investigate further.
   std::map<SectorID, FrustumBuffer> curr_iteration;
   std::map<SectorID, FrustumBuffer> next_iteration;
   std::map<PortalID, FrustumBuffer> nuclidean_portals;
@@ -896,44 +897,46 @@ void benchmark_map_creation_squared(
 void benchmark_visibility_query(benchmark::State& state)
 {
   MapSectors map;
-  make_random_square_maze_map(map, 32, 0);
+  make_random_square_maze_map(map, static_cast<u32>(state.range(0)), 0);
 
   std::vector<vec2> points_inside;
+  bool has_pt = false;
+  vec2 pt = vec2{0};
 
-  while ((int)points_inside.size() < state.range(0))
+  while (!has_pt)
   {
-    f32 x = ((std::rand() % 4097) - 2048) / 2048.0f;
-    f32 y = ((std::rand() % 4097) - 2048) / 2048.0f;
+    const f32 x = ((std::rand() % 4097) - 2048) / 2048.0f;
+    const f32 y = ((std::rand() % 4097) - 2048) / 2048.0f;
+
     if (map.get_sector_from_point(vec2{x, y}) != INVALID_SECTOR_ID)
     {
-      points_inside.push_back(vec2{x, y});
+      has_pt = true;
+      pt = vec2{x, y};
     }
   }
 
+  SectorID last_sector = INVALID_SECTOR_ID;
   for (auto _ : state)
   {
-    for (auto pt : points_inside)
+    map.query_visible_sectors(pt, vec2{1, 0}, Frustum2::FULL_ANGLE, [&](SectorID id, Frustum2, PortalID)
     {
-      auto viewpoint = Frustum2{.center = pt, .direction = vec2{1, 0}, .angle = Frustum2::FULL_ANGLE};
-      SectorID last_sector = INVALID_SECTOR_ID;
-      map.query_visible_sectors_impl(viewpoint, [&](SectorID id, Frustum2)
-      {
-        last_sector = id;
-      });
-      benchmark::DoNotOptimize(last_sector);
-    }
-
-    benchmark::ClobberMemory();
+      last_sector = id;
+    });
   }
 
-  state.SetItemsProcessed(points_inside.size() * state.iterations());
+  benchmark::DoNotOptimize(last_sector);
+  benchmark::ClobberMemory();
+
+  //state.SetItemsProcessed(points_inside.size() * state.iterations());
 }
 
 constexpr auto OMIT_CHECKS_FLAGS
   = map_building::MapBuildFlag::omit_convexity_clockwise_check
   | map_building::MapBuildFlag::omit_sector_overlap_check;
 
-BENCHMARK_CAPTURE(benchmark_visibility_query,     "Visibility query")                             ->Arg(1<<12)->Unit(benchmark::kMillisecond);
+BENCHMARK_CAPTURE(benchmark_visibility_query,     "Visibility query")                             ->Arg(20)->Unit(benchmark::kNanosecond);
+BENCHMARK_CAPTURE(benchmark_visibility_query,     "Visibility query")                             ->Arg(30)->Unit(benchmark::kNanosecond);
+BENCHMARK_CAPTURE(benchmark_visibility_query,     "Visibility query")                             ->Arg(40)->Unit(benchmark::kNanosecond);
 
 BENCHMARK_CAPTURE(benchmark_map_creation_squared, "Map building (with checks)", 0)                ->Arg(16)->Unit(benchmark::kMillisecond);
 BENCHMARK_CAPTURE(benchmark_map_creation_squared, "Map building (no checks)",   OMIT_CHECKS_FLAGS)->Arg(16)->Unit(benchmark::kMillisecond);
