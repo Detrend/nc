@@ -256,17 +256,26 @@ void GraphicsSystem::render()
 //==============================================================================
 void GraphicsSystem::render_map()
 {
+  static vec2 input_position   = vec2{0.0f};
   static vec2 pointed_position = vec2{0.0f};
   static f32  frustum_dir      = 0.0f;
   static f32  frustum_deg      = 90.0f;
   static f32  ms_last_frame    = 0.0f;
 
+  static bool follow_mouse      = false;
+  static bool inspect_sector    = false;
+  static int  inspect_sector_id = 0;
+
   if (ImGui::Begin("Test Window"))
   {
-    ImGui::SliderFloat("X",           &pointed_position.x, -1.0f, 1.0f);
-    ImGui::SliderFloat("Y",           &pointed_position.y, -1.0f, 1.0f);
+    ImGui::SliderFloat("X",           &input_position.x, -1.0f, 1.0f);
+    ImGui::SliderFloat("Y",           &input_position.y, -1.0f, 1.0f);
     ImGui::SliderFloat("Frustum Dir", &frustum_dir,         0.0f, 360.0f);
     ImGui::SliderFloat("Frustum Deg", &frustum_deg,         0.0f, 180.0f);
+    ImGui::Separator();
+    ImGui::Checkbox("Follow mouse",   &follow_mouse);
+    ImGui::Checkbox("Inspect sector", &inspect_sector);
+    ImGui::InputInt("Inspected sector", &inspect_sector_id, 1);
     ImGui::Text("MS last frame: %.4f", ms_last_frame);
   }
   ImGui::End();
@@ -278,7 +287,18 @@ void GraphicsSystem::render_map()
   int width = 0, height = 0;
   SDL_GetWindowSize(m_window, &width, &height);
 
+  int mx = 0, my = 0;
+  SDL_GetMouseState(&mx, &my);
   vec2 sz = vec2{(f32)width, (f32)height};
+
+  if (follow_mouse)
+  {
+    pointed_position = ((vec2{(f32)mx, (f32)my} / sz) - vec2{0.5f}) * vec2{2.0f, -2.0f};
+  }
+  else
+  {
+    pointed_position = input_position;
+  }
 
   auto debug_print_text = [&](vec2 coords, cstr text, ImU32 col = 0xFFFFFFFF)
   {
@@ -287,6 +307,11 @@ void GraphicsSystem::render_map()
   };
 
   s32 point_sector = -1;
+  //auto from_map = map.get_sector_from_point(pointed_position);
+  //if (from_map != INVALID_SECTOR_ID)
+  //{
+  //  point_sector = static_cast<s32>(from_map);
+  //}
   // find the sector we are pointing at
   for (u16 i = 0; i < map.sectors.size(); ++i)
   {
@@ -329,7 +354,10 @@ void GraphicsSystem::render_map()
 
   std::map<SectorID, u32> visible_sectors;
   auto start_time = std::chrono::high_resolution_clock::now();
-  map.query_visible_sectors(pointed_position, view_direction, deg2rad(frustum_deg), [&](SectorID id, Frustum2, PortalID)
+
+  std::vector<Frustum2> inspected_sector_frustums;
+
+  map.query_visible_sectors(pointed_position, view_direction, deg2rad(frustum_deg), [&](SectorID id, Frustum2 f, PortalID)
   {
     if (!visible_sectors.contains(id))
     {
@@ -337,6 +365,11 @@ void GraphicsSystem::render_map()
     }
 
     visible_sectors[id] += 1;
+
+    if (inspect_sector && inspect_sector_id == id)
+    {
+      inspected_sector_frustums.push_back(f);
+    }
   });
   auto end_time = std::chrono::high_resolution_clock::now();
   auto delta_time = end_time - start_time;
@@ -399,7 +432,7 @@ void GraphicsSystem::render_map()
         .a     = first_wall.pos,
         .b     = wall1.pos,
         .c     = wall2.pos,
-        .color = pointed_at ? vec3{0.75f} : vec3{vis_count * 0.5f},
+        .color = pointed_at ? vec3{0.75f} : vec3{vis_count * 0.1f},
       });
     }
   }
@@ -496,6 +529,45 @@ void GraphicsSystem::render_map()
     .to   = pointed_position + redge * 2.0f,
     .color = vec3{0.5f, 0.5f, 1.0f},
   });
+
+  if (inspect_sector)
+  {
+    // render the frustums of the inspected sector
+    for (auto& frustum : inspected_sector_frustums)
+    {
+      vec2 le, re;
+      frustum.get_frustum_edges(le, re);
+
+      // red cross
+      this->render_line(Line
+      {
+        .from = frustum.center + vec2{-1, 0} * 0.1f,
+        .to   = frustum.center + vec2{ 1, 0} * 0.1f,
+        .color = vec3{1.0f, 0.5f, 0.5f},
+      });
+
+      this->render_line(Line
+      {
+        .from = frustum.center + vec2{0,  1} * 0.1f,
+        .to   = frustum.center + vec2{0, -1} * 0.1f,
+        .color = vec3{1.0f, 0.5f, 0.5f},
+      });
+
+      this->render_line(Line
+      {
+        .from = frustum.center,
+        .to   = frustum.center + le * 2.0f,
+        .color = vec3{0.75f, 0.75f, 1.0f},
+      });
+
+      this->render_line(Line
+      {
+        .from = frustum.center,
+        .to   = frustum.center + re * 2.0f,
+        .color = vec3{0.75f, 0.75f, 1.0f},
+      });
+    }
+  }
 }
 
 //==============================================================================

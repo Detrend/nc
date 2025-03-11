@@ -280,7 +280,10 @@ void Engine::terminate()
 //==============================================================================
 static void test_make_sector(
   const std::vector<u16>&                     points,
-  std::vector<map_building::SectorBuildData>& out)
+  std::vector<map_building::SectorBuildData>& out,
+  int                                         portal_wall_id    = -1,
+  WallRelID                                   portal_wall_id_to = 0,
+  SectorID                                    portal_sector     = INVALID_SECTOR_ID)
 {
   auto wall_port = WallExtData
   {
@@ -298,14 +301,20 @@ static void test_make_sector(
   };
 
   std::vector<map_building::WallBuildData> walls;
-  for (auto& p : points)
+
+  for (int i = 0; i < points.size(); ++i)
   {
+    auto p = points[i];
+    bool is_portal = portal_sector != INVALID_SECTOR_ID && portal_wall_id == i;
     walls.push_back(map_building::WallBuildData
     {
-      .point_index = p,
-      .ext_data = wall_port,
+      .point_index            = p,
+      .ext_data               = wall_port,
+      .nc_portal_point_index  = is_portal ? portal_wall_id_to : INVALID_WALL_REL_ID,
+      .nc_portal_sector_index = is_portal ? portal_sector     : INVALID_SECTOR_ID,
     });
   }
+
   out.push_back(map_building::SectorBuildData
   {
     .points   = std::move(walls),
@@ -316,6 +325,7 @@ static void test_make_sector(
 //==============================================================================
 [[maybe_unused]] static void make_cool_looking_map(MapSectors& map)
 {
+  // {22, 12, 13, 23}
   std::vector<vec2> points =
   {
     vec2{0	, 0},
@@ -343,9 +353,13 @@ static void test_make_sector(
     vec2{6	, 9},
     vec2{6	, 10},
     vec2{5	, 10},
+    vec2{16	, 14},    // extra 4 pts
+    vec2{18	, 14},
+    vec2{18	, 18},
+    vec2{16	, 18},
   };
 
-  constexpr vec2 max_range = {18.0f, 15.0f};
+  constexpr vec2 max_range = {20.0f, 20.0f};
 
   // normalize the points
   for (auto& pt : points)
@@ -360,9 +374,12 @@ static void test_make_sector(
   test_make_sector({18, 2, 11, 12, 22, 21, 17}, sectors);
   test_make_sector({2, 3, 10, 11}, sectors);
   test_make_sector({3, 4, 5, 6, 7, 8, 9, 10}, sectors);
-  test_make_sector({22, 12, 13, 23}, sectors);
+  test_make_sector({22, 12, 13, 23}, sectors, 1, 0, 8);    // this one
   test_make_sector({23, 13, 14, 15, 16, 24}, sectors);
   test_make_sector({17, 21, 24, 16}, sectors);
+  test_make_sector({21, 22, 23, 24}, sectors);
+
+  test_make_sector({25, 26, 27, 28}, sectors);
 
   using namespace map_building::MapBuildFlag;
 
@@ -425,8 +442,8 @@ static void test_make_sector(
 void Engine::build_map_and_sectors()
 {
   m_map = std::make_unique<MapSectors>();
-  make_random_square_maze_map(*m_map, 32, 0);
-  //make_cool_looking_map(*m_map);
+  //make_random_square_maze_map(*m_map, 32, 0);
+  make_cool_looking_map(*m_map);
 }
 
 //==============================================================================

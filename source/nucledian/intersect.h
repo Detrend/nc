@@ -46,6 +46,8 @@ struct Frustum2
   // Merges the two frustums together into one and returns it
   Frustum2 merged_with(const Frustum2& other) const;
 
+  void get_frustum_edges(vec2& left, vec2& right) const;
+
   // Calculates the difference between two frustums in radians.
   // Negative if frustums overlap
   f32 angle_difference(const Frustum2& other) const;

@@ -46,15 +46,16 @@ using WallRelID = u8;  // indexing relative to the sector
 using PortalID  = u16;
 using TextureID = u16;
 
-constexpr auto INVALID_SECTOR_ID  = static_cast<SectorID>(-1);
-constexpr auto INVALID_WALL_ID    = static_cast<WallID>(-1);
-constexpr auto INVALID_PORTAL_ID  = static_cast<PortalID>(-1);
-constexpr auto INVALID_TEXTURE_ID = static_cast<TextureID>(-1);
+constexpr auto INVALID_SECTOR_ID   = static_cast<SectorID>(-1);
+constexpr auto INVALID_WALL_ID     = static_cast<WallID>(-1);
+constexpr auto INVALID_WALL_REL_ID = static_cast<WallRelID>(-1);
+constexpr auto INVALID_PORTAL_ID   = static_cast<PortalID>(-1);
+constexpr auto INVALID_TEXTURE_ID  = static_cast<TextureID>(-1);
 
-constexpr auto MAX_WALLS_PER_SECTOR = static_cast<u64>(WallRelID(~0));
-constexpr auto MAX_SECTORS          = static_cast<u64>(SectorID(~0));
-constexpr auto MAX_WALLS            = static_cast<u64>(WallID(~0));
-constexpr auto MAX_PORTALS          = static_cast<u64>(PortalID(~0));
+constexpr auto MAX_WALLS_PER_SECTOR = static_cast<u64>(WallRelID(~0)-1);
+constexpr auto MAX_SECTORS          = static_cast<u64>(SectorID(~0)-1);
+constexpr auto MAX_WALLS            = static_cast<u64>(WallID(~0)-1);
+constexpr auto MAX_PORTALS          = static_cast<u64>(PortalID(~0)-1);
 
 // Portable data are a set of data that can be shared among two different
 // map representations. Put here anything that you want in sectors
@@ -105,7 +106,7 @@ struct WallData
 
 namespace PortalType
 {
-  enum evalue
+  enum evalue : u8
   {
     classic       = 0,
     non_euclidean,
@@ -152,7 +153,8 @@ struct MapSectors
 
 private:
   void query_visible_sectors_impl(
-    SectorID             start_sector,
+    const SectorID*      start_sectors,
+    u32                  start_sector_cnt,
     const FrustumBuffer& frustum,
     TraverseVisitor      visitor,
     u8                   recursion_depth = 4,
@@ -164,8 +166,10 @@ namespace map_building
 
 struct WallBuildData
 {
-  u16         point_index = 0;
+  WallID      point_index = 0;
   WallExtData ext_data;
+  WallRelID   nc_portal_point_index  = 0;
+  SectorID    nc_portal_sector_index = INVALID_SECTOR_ID;
 };
 
 struct SectorBuildData

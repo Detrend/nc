@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include <numbers>    // std::pi_v<f32>
+#include <math.h>
 
 namespace nc
 {
@@ -10,7 +11,7 @@ namespace nc
 //==============================================================================
 f32 sgn(f32 value)
 {
-  return value == 0.0f ? 0.0f : (value > 0.0f ? 1.0f : -1.0f);
+  return static_cast<f32>(value > 0.0f) - static_cast<f32>(value < 0.0f);
 }
 
 //==============================================================================

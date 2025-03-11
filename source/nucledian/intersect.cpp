@@ -98,6 +98,10 @@ bool point_triangle(vec2 p, vec2 a, vec2 b, vec2 c)
   const auto c_to_p = p-c;
 
   const f32 gl_sign = sgn(cross(a_to_b, b_to_c));
+  if (gl_sign == 0.0f)
+  {
+    return false;
+  }
 
   const f32 a_sign = sgn(cross(a_to_b, a_to_p));
   const f32 b_sign = sgn(cross(b_to_c, b_to_p));
@@ -313,25 +317,33 @@ Frustum2 Frustum2::modied_with_portal(vec2 p1, vec2 p2) const
     const bool inside1 = this->contains_point(p1);
     const bool inside2 = this->contains_point(p2);
 
-    if (inside1 && inside2)
+    const auto to_p1 = p1-this->center;
+    const auto to_p2 = p2-this->center;
+
+    if ((!inside1 && !inside2) || (to_p1 == vec2{0} || to_p2 == vec2{0}))
+    {
+      if ((to_p1 == vec2{0} || to_p2 == vec2{0}))
+      {
+        int a =17;
+        (void)a;
+      }
+      // Both points outside but intersecting, easy as well.
+      // Just keep the old frustum
+      return *this;
+    }
+    else if (inside1 && inside2)
     {
       // both points inside, easy case
-      const auto to_p1 = normalize(p1-this->center);
-      const auto to_p2 = normalize(p2-this->center);
-      const auto midir = normalize(to_p1 + to_p2);
+      const auto to_p1_n = normalize(to_p1);
+      const auto to_p2_n = normalize(to_p2);
+      const auto midir   = normalize(to_p1_n + to_p2_n);
 
       return Frustum2
       {
         .center    = this->center,
         .direction = midir,
-        .angle     = dot(to_p1, midir),
+        .angle     = dot(to_p1_n, midir),
       };
-    }
-    else if (!inside1 && !inside2)
-    {
-      // Both points outside but intersecting, easy as well.
-      // Just keep the old frustum
-      return *this;
     }
 
     const auto point_outside = inside1 ? p2 : p1;
@@ -446,6 +458,14 @@ Frustum2 Frustum2::merged_with(const Frustum2& other) const
 }
 
 //==============================================================================
+void Frustum2::get_frustum_edges(vec2& left, vec2& right) const
+{
+  const auto[l, r] = get_edges(*this);
+  left = l;
+  right = r;
+}
+
+//==============================================================================
 f32 Frustum2::angle_difference(const Frustum2& other) const
 {
   NC_ASSERT(other.center == this->center);
@@ -500,7 +520,6 @@ void FrustumBuffer::insert_frustum(Frustum2 new_frustum)
 {
   u64  closest_idx = 0;
   f32  closest_dst = FLT_MAX;
-  bool merged      = false;
 
   for (u64 i = 0; i < FRUSTUM_SLOT_CNT; ++i)
   {
@@ -514,17 +533,7 @@ void FrustumBuffer::insert_frustum(Frustum2 new_frustum)
 
     if (angle_diff <= threshold)
     {
-      // we found an overlapping frustum, lets merge with it
-      if (is_invalid)
-      {
-        other_frustum = new_frustum;
-      }
-      else
-      {
-        other_frustum = other_frustum.merged_with(new_frustum);
-      }
-
-      merged = true;
+      closest_idx = i;
       break;
     }
 
@@ -536,13 +545,17 @@ void FrustumBuffer::insert_frustum(Frustum2 new_frustum)
     }
   }
 
-  if (!merged)
-  {
-    NC_ASSERT(closest_idx < FRUSTUM_SLOT_CNT);
+  NC_ASSERT(closest_idx < FRUSTUM_SLOT_CNT);
 
-    // No overlapping frustum found and all slots are full?
-    // Then merge with a closest one
-    auto& closest_frustum = this->frustum_slots[closest_idx];
+  // No overlapping frustum found and all slots are full?
+  // Then merge with a closest one
+  auto& closest_frustum = this->frustum_slots[closest_idx];
+  if (closest_frustum == INVALID_FRUSTUM)
+  {
+    closest_frustum = new_frustum;
+  }
+  else
+  {
     closest_frustum = closest_frustum.merged_with(new_frustum);
   }
 }
