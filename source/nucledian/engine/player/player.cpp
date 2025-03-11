@@ -80,7 +80,7 @@ namespace nc
       + velocity.z * forward
     );
 
-    position += movement_direction * 5.0 * 0.001;
+    position += movement_direction * 5.0f * 0.001f;
 
     //std::cout << position.x << " " << position.y << " " << position.z << std::endl;
 
