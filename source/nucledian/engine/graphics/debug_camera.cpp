@@ -40,6 +40,22 @@ void DebugCamera::update_transform(vec3 position, f32 yaw, f32 pitch)
 }
 
 //==============================================================================
+
+void DebugCamera::update_transform(vec3 position, f32 yaw, f32 pitch, f32 y_offset)
+{
+  m_position = position;
+  m_position.y += y_offset;
+  m_yaw = yaw;
+  m_pitch = pitch;
+
+  // taken from handle rotation
+  m_yaw = rem_euclid(m_yaw, 2.0f * pi);
+  m_pitch = clamp(m_pitch, -half_pi + 0.001f, half_pi - 0.001f);
+
+  m_forward = angleAxis(m_yaw, vec3::Y) * angleAxis(m_pitch, vec3::X) * -vec3::Z;
+}
+
+//==============================================================================
 mat4 DebugCamera::get_view() const
 {
   return look_at(m_position, m_position + m_forward, vec3::Y);

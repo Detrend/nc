@@ -14,7 +14,7 @@ namespace nc
     height = 1.5f;
     collision = true;
 
-    camera.update_transform(position, angle_yaw, angle_pitch);
+    camera.update_transform(position, angle_yaw, angle_pitch, 0.5f);
   }
 
   //==========================================================================
@@ -28,7 +28,7 @@ namespace nc
     height = 1.5f;
     collision = true;
 
-    camera.update_transform(position, angle_yaw, angle_pitch);
+    camera.update_transform(position, angle_yaw, angle_pitch, 0.5f);
   }
 
   //==========================================================================
@@ -84,7 +84,7 @@ namespace nc
 
     //std::cout << position.x << " " << position.y << " " << position.z << std::endl;
 
-    camera.update_transform(position, angle_yaw, angle_pitch);
+    camera.update_transform(position, angle_yaw, angle_pitch, 0.5f);
   }
 
   void Player::Damage(int damage)

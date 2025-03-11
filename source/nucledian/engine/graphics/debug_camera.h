@@ -14,6 +14,7 @@ public:
 
   void handle_input(f32 delta_seconds);
   void update_transform(vec3 position, f32 yaw, f32 pitch);
+  void update_transform(vec3 position, f32 yaw, f32 pitch, f32 y_offset);
   mat4 get_view() const;
   vec3 get_position() const;
 

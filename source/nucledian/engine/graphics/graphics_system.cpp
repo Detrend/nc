@@ -115,6 +115,7 @@ namespace nc
     {
       //SDL_ShowCursor(SDL_DISABLE);
       create_entity(Position(0, 0, 0), 1, colors::BLUE);
+      create_entity(Position(0, 0.75, 0), 0.5, colors::RED);
       break;
     }
 
