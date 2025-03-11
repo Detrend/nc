@@ -25,6 +25,21 @@ void DebugCamera::handle_input(float delta_seconds)
 }
 
 //==============================================================================
+
+void DebugCamera::update_transform(vec3 position, f32 yaw, f32 pitch)
+{
+  m_position = position;
+  m_yaw = yaw;
+  m_pitch = pitch;
+
+  // taken from handle rotation
+  m_yaw = rem_euclid(m_yaw, 2.0f * pi);
+  m_pitch = clamp(m_pitch, -half_pi + 0.001f, half_pi - 0.001f);
+
+  m_forward = angleAxis(m_yaw, vec3::Y) * angleAxis(m_pitch, vec3::X) * -vec3::Z;
+}
+
+//==============================================================================
 mat4 DebugCamera::get_view() const
 {
   return look_at(m_position, m_position + m_forward, vec3::Y);
@@ -74,10 +89,10 @@ void DebugCamera::handle_rotation()
   SDL_GetRelativeMouseState(&delta_x, &delta_y);
   const vec2 mouse_pos_delta(static_cast<f32>(delta_x), static_cast<f32>(delta_y));
 
-  if (!m_first_frame && length2(mouse_pos_delta) < 2.0f)
+  /*if (!m_first_frame && length2(mouse_pos_delta) < 2.0f)
   {
     return;
-  }
+  }*/
 
   m_yaw -= mouse_pos_delta.x * SENSITIVITY;
   m_pitch -= mouse_pos_delta.y * SENSITIVITY;

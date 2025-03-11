@@ -8,6 +8,8 @@
 
 #include <types.h>
 
+#include <engine/player/player.h>
+
 union SDL_Event;
 
 namespace nc
@@ -29,9 +31,13 @@ public:
   void get_player_inputs();
   const GameInputs& get_inputs() const;
 
+  Player* get_player();
+
 private:
   GameInputs m_current_inputs;
   GameInputs m_previous_inputs;
+
+  Player debug_player;
 };
 
 }

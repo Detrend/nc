@@ -27,6 +27,12 @@ void InputSystem::on_event(ModuleEvent& event)
 {
   switch (event.type)
   {
+  case ModuleEventType::game_update:
+  {
+    get_player_inputs();
+    debug_player.update(m_current_inputs);
+    break;
+  }
     case ModuleEventType::cleanup:
     {
       // store the old inputs and reset the current ones
@@ -40,6 +46,7 @@ void InputSystem::on_event(ModuleEvent& event)
 //==============================================================================
 bool InputSystem::init()
 {
+  debug_player = Player();
   return true;
 }
 
@@ -60,9 +67,9 @@ void InputSystem::handle_app_event([[maybe_unused]]const SDL_Event& event)
   switch (event.type) 
   {
   case SDL_MOUSEMOTION:
-    xrel = event.motion.xrel * 1.0f; // needs to be replaced by sensitivity
-    yrel = event.motion.yrel * 1.0f;
-    m_current_inputs.player_inputs.analog[PlayerAnalogInputs::look_horizontal] = xrel;
+    xrel = event.motion.xrel * 0.010f; // needs to be replaced by sensitivity
+    yrel = event.motion.yrel * 0.010f;
+    m_current_inputs.player_inputs.analog[PlayerAnalogInputs::look_horizontal] = -xrel;
     m_current_inputs.player_inputs.analog[PlayerAnalogInputs::look_vertical] = -yrel;
     break;
   case SDL_KEYDOWN:
@@ -136,6 +143,11 @@ void InputSystem::get_player_inputs()
 const GameInputs& InputSystem::get_inputs() const
 {
   return m_current_inputs;
+}
+
+Player* InputSystem::get_player()
+{
+  return &debug_player;
 }
 
 }
