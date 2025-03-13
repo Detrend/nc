@@ -78,6 +78,7 @@
     <ClCompile Include="..\source\nucledian\engine\map\map_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\player\map_object.cpp" />
     <ClCompile Include="..\source\nucledian\engine\player\player.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\player\thing_system.cpp" />
     <ClCompile Include="..\source\nucledian\grid.cpp" />
     <ClCompile Include="..\source\nucledian\intersect.cpp" />
     <ClCompile Include="..\source\nucledian\main.cpp" />
@@ -167,6 +168,7 @@
     <ClInclude Include="..\source\nucledian\engine\map\map_system.h" />
     <ClInclude Include="..\source\nucledian\engine\player\map_object.h" />
     <ClInclude Include="..\source\nucledian\engine\player\player.h" />
+    <ClInclude Include="..\source\nucledian\engine\player\thing_system.h" />
     <ClInclude Include="..\source\nucledian\grid.h" />
     <ClInclude Include="..\source\nucledian\intersect.h" />
     <ClInclude Include="..\source\nucledian\maths.h" />

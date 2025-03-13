@@ -10,6 +10,7 @@
 
 #include <engine/graphics/graphics_system.h>
 #include <engine/input/input_system.h>
+#include <engine/player/thing_system.h>
 
 #ifdef NC_PROFILING
 #include <benchmark/benchmark.h>
@@ -164,6 +165,7 @@ bool Engine::init()
 
   INIT_MODULE(GraphicsSystem);
   INIT_MODULE(InputSystem);
+  INIT_MODULE(ThingSystem);
 
   #undef INIT_MODULE
 

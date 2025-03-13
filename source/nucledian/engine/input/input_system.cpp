@@ -30,7 +30,7 @@ void InputSystem::on_event(ModuleEvent& event)
   case ModuleEventType::game_update:
   {
     get_player_inputs();
-    debug_player.update(m_current_inputs);
+    //debug_player.update(m_current_inputs);
     break;
   }
     case ModuleEventType::cleanup:
@@ -46,7 +46,7 @@ void InputSystem::on_event(ModuleEvent& event)
 //==============================================================================
 bool InputSystem::init()
 {
-  debug_player = Player();
+  //debug_player = Player();
   return true;
 }
 
@@ -119,7 +119,7 @@ void InputSystem::handle_app_event([[maybe_unused]]const SDL_Event& event)
 
 void InputSystem::get_player_inputs()
 {
-  SDL_SetRelativeMouseMode(SDL_TRUE);
+  //SDL_SetRelativeMouseMode(SDL_TRUE);
   const u8* keyboard_state = SDL_GetKeyboardState(nullptr);
 
   if (keyboard_state[SDL_SCANCODE_W])
@@ -145,10 +145,10 @@ const GameInputs& InputSystem::get_inputs() const
   return m_current_inputs;
 }
 
-Player* InputSystem::get_player()
-{
-  return &debug_player;
-}
+//Player* InputSystem::get_player()
+//{
+//  return &debug_player;
+//}
 
 }
 

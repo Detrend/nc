@@ -32,6 +32,7 @@
     <ClCompile Include="..\source\nucledian\engine\entities.cpp" />
     <ClCompile Include="..\source\nucledian\engine\player\map_object.cpp" />
     <ClCompile Include="..\source\nucledian\engine\player\player.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\player\thing_system.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\nucledian\engine\core\resources.inl" />
@@ -82,6 +83,7 @@
     <ClInclude Include="..\source\nucledian\engine\entities.h" />
     <ClInclude Include="..\source\nucledian\engine\player\map_object.h" />
     <ClInclude Include="..\source\nucledian\engine\player\player.h" />
+    <ClInclude Include="..\source\nucledian\engine\player\thing_system.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />

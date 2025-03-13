@@ -18,6 +18,7 @@
 #include <unordered_map>
 
 #include <engine/input/input_system.h>
+#include <engine/player/thing_system.h>
 
 namespace nc
 {
@@ -281,8 +282,8 @@ namespace nc
       //handle->material.set_uniform(shaders::solid::VIEW, m_debug_camera.get_view());
       //handle->material.set_uniform(shaders::solid::VIEW_POSITION, m_debug_camera.get_position());
 
-      InputSystem& inputSystem = get_engine().get_module<InputSystem>();
-      DebugCamera* cam = inputSystem.get_player()->get_camera();
+      ThingSystem& thingSystem = get_engine().get_module<ThingSystem>();
+      DebugCamera* cam = thingSystem.get_player()->get_camera();
 
       handle->material.set_uniform(shaders::solid::VIEW, cam->get_view());
       handle->material.set_uniform(shaders::solid::VIEW_POSITION, cam->get_position());
