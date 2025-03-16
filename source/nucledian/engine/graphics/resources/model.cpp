@@ -37,6 +37,12 @@ Model* ModelHandle::operator->() const
 }
 
 //==============================================================================
+bool ModelHandle::operator==(const ModelHandle& other)
+{
+  return m_lifetime == other.m_lifetime && m_model_id == other.m_model_id;
+}
+
+//==============================================================================
 ModelHandle ModelHandle::invalid()
 {
   return ModelHandle();
@@ -71,12 +77,6 @@ std::vector<Model>& ModelManager::get_storage(ResLifetime lifetime)
   {
     return m_game_models;
   }
-}
-
-//==============================================================================
-bool operator==(const ModelHandle& lhs, const ModelHandle& rhs)
-{
-  return lhs.m_lifetime == rhs.m_lifetime && lhs.m_model_id == rhs.m_model_id;
 }
 
 }

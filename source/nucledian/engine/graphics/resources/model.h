@@ -25,8 +25,8 @@ class ModelHandle
 public:
   friend class ModelManager;
 
-  friend bool operator==(const ModelHandle& lhs, const ModelHandle& rhs);
   friend struct std::hash<ModelHandle>;
+  bool operator==(const ModelHandle& other);
 
   bool is_valid() const;
   operator bool() const;
@@ -45,8 +45,6 @@ private:
   ResLifetime   m_lifetime   = ResLifetime::None;
   u32           m_model_id   = 0;
 };
-
-bool operator==(const ModelHandle& lhs, const ModelHandle& rhs);
 
 class ModelManager
 {
