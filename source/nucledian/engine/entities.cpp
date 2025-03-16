@@ -7,7 +7,7 @@
 namespace nc
 {
 
-////==============================================================================
+//==============================================================================
 u32 create_entity(const Position& position, f32 scale, const color& color, f32 y_offset)
 {
   NC_ASSERT(g_appearance_components.size() == m_position_components.size());

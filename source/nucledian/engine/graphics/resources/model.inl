@@ -48,6 +48,7 @@ inline std::vector<Model>& ModelManager::get_storage()
 
 }
 
+//==============================================================================
 namespace std
 {
 

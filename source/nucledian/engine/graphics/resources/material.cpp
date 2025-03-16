@@ -6,7 +6,7 @@
 namespace nc
 {
 
-////==============================================================================
+//==============================================================================
 Material::Material(const char* vertex_source, const char* fragment_source)
 {
   const std::optional<GLuint> vertex_shader = compile_shader(vertex_source, GL_VERTEX_SHADER);
@@ -36,25 +36,25 @@ Material::Material(const char* vertex_source, const char* fragment_source)
   this->m_shader_program = *shader_program;
 }
 
-////==============================================================================
+//==============================================================================
 bool Material::is_valid() const
 {
   return m_shader_program != 0;
 }
 
-////==============================================================================
+//==============================================================================
 Material::operator bool() const
 {
   return this->is_valid();
 }
 
-////==============================================================================
+//==============================================================================
 Material Material::invalid()
 {
     return Material();
 }
 
-////==============================================================================
+//==============================================================================
 std::optional<GLuint> Material::compile_shader(const char* source, GLenum type) const
 {
   const GLuint shader = glCreateShader(type);
@@ -78,7 +78,7 @@ std::optional<GLuint> Material::compile_shader(const char* source, GLenum type) 
   return shader;
 }
 
-////==============================================================================
+//==============================================================================
 std::optional<GLuint> Material::link_program(GLuint vertex_shader, GLuint fragment_shader) const
 {
   const GLuint shader_program = glCreateProgram();
@@ -103,7 +103,7 @@ std::optional<GLuint> Material::link_program(GLuint vertex_shader, GLuint fragme
   return shader_program;
 }
 
-////==============================================================================
+//==============================================================================
 void Material::use() const
 {
   glUseProgram(m_shader_program);
@@ -127,7 +127,7 @@ void Material::set_uniform(GLint location, const vec4& value) const
   glUniform4f(location, value.x, value.y, value.z, value.w);
 }
 
-////==============================================================================
+//==============================================================================
 void Material::set_uniform(GLint location, f32 value) const
 {
   glUniform1f(location, value);

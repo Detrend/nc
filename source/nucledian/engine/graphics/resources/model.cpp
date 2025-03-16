@@ -7,7 +7,7 @@
 namespace nc
 {
 
-////==============================================================================
+//==============================================================================
 bool ModelHandle::is_valid() const
 {
   if (m_lifetime == ResLifetime::Game && m_generation != ModelManager::generation)
@@ -18,35 +18,35 @@ bool ModelHandle::is_valid() const
   return m_lifetime != ResLifetime::None;
 }
 
-////==============================================================================
+//==============================================================================
 ModelHandle::operator bool() const
 {
   return this->is_valid();
 }
 
-////==============================================================================
+//==============================================================================
 Model& ModelHandle::operator*() const
 {
   return get_engine().get_module<GraphicsSystem>().get_model_manager().get(*this);
 }
 
-////==============================================================================
+//==============================================================================
 Model* ModelHandle::operator->() const
 {
   return &get_engine().get_module<GraphicsSystem>().get_model_manager().get(*this);
 }
 
-////==============================================================================
+//==============================================================================
 ModelHandle ModelHandle::invalid()
 {
   return ModelHandle();
 }
 
-////==============================================================================
+//==============================================================================
 ModelHandle::ModelHandle(u32 model_id, ResLifetime lifetime, u16 generation)
   : m_generation(generation), m_lifetime(lifetime), m_model_id(model_id) { }
 
-////==============================================================================
+//==============================================================================
 Model& ModelManager::get(const ModelHandle& handle)
 {
   NC_ASSERT(handle, "Inavlid handle.");
@@ -58,7 +58,7 @@ Model& ModelManager::get(const ModelHandle& handle)
   return storage[handle.m_model_id];
 }
 
-////==============================================================================
+//==============================================================================
 std::vector<Model>& ModelManager::get_storage(ResLifetime lifetime)
 {
   NC_ASSERT(lifetime == ResLifetime::Level || lifetime == ResLifetime::Game, "Invalid lifetime.");
@@ -73,7 +73,7 @@ std::vector<Model>& ModelManager::get_storage(ResLifetime lifetime)
   }
 }
 
-////==============================================================================
+//==============================================================================
 bool operator==(const ModelHandle& lhs, const ModelHandle& rhs)
 {
   return lhs.m_lifetime == rhs.m_lifetime && lhs.m_model_id == rhs.m_model_id;
