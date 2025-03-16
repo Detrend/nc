@@ -26,7 +26,12 @@ public:
   u32 get_vertex_count() const;
   GLenum get_draw_mode() const;
 
+  // Gets a invalid mesh.
+  static Mesh invalid();
+
 private:
+  Mesh() {}
+
   GLuint m_vao          = 0;
   GLuint m_vbo          = 0;
   u32    m_vertex_count = 0;

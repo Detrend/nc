@@ -84,6 +84,12 @@ GLenum Mesh::get_draw_mode() const
 }
 
 ////==============================================================================
+Mesh Mesh::invalid()
+{
+    return Mesh();
+}
+
+////==============================================================================
 void MeshManager::init()
 {
   m_cube_mesh = this->create<ResLifetime::Game>(cube_vertices, sizeof(cube_vertices) / sizeof(f32));

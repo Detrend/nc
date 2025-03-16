@@ -15,8 +15,8 @@ namespace nc
 // Collection of data needed to render an object.
 struct Model
 {
-  Mesh mesh;
-  Material material;
+  Mesh mesh = Mesh::invalid();
+  Material material = Material::invalid();
 };
 
 // Light-weight handle around model.
