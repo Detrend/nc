@@ -8,12 +8,15 @@ namespace nc
 {
 
 ////==============================================================================
-ModelHandle ModelHandle::m_invalid = ModelHandle();
+bool ModelHandle::is_valid() const
+{
+  return m_lifetime != ResLifetime::None;
+}
 
 ////==============================================================================
 ModelHandle::operator bool() const
 {
-  return m_is_valid;
+  return this->is_valid();
 }
 
 ////==============================================================================
@@ -31,13 +34,14 @@ Model* ModelHandle::operator->() const
 ////==============================================================================
 ModelHandle ModelHandle::invalid()
 {
-  return ModelHandle::m_invalid;
+  return ModelHandle();
 }
 
 ////==============================================================================
 ModelHandle::ModelHandle(u32 model_id, ResLifetime lifetime)
-  : m_is_valid(true), m_lifetime(lifetime), m_model_id(model_id) { }
+  : m_lifetime(lifetime), m_model_id(model_id) { }
 
+////==============================================================================
 Model& ModelManager::get(const ModelHandle& handle)
 {
   NC_ASSERT(handle, "Inavlid handle.");

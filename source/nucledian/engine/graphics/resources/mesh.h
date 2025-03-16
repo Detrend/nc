@@ -26,6 +26,9 @@ public:
   u32 get_vertex_count() const;
   GLenum get_draw_mode() const;
 
+  bool is_valid() const;
+  operator bool() const;
+
   // Gets a invalid mesh.
   static Mesh invalid();
 

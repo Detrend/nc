@@ -19,6 +19,9 @@ public:
 
   Material(const char* vertex_source, const char* fragment_source);
 
+  bool is_valid() const;
+  operator bool() const;
+
   // Gets a invalid material.
   static Material invalid();
 

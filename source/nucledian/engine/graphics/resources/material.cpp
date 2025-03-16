@@ -37,6 +37,18 @@ Material::Material(const char* vertex_source, const char* fragment_source)
 }
 
 ////==============================================================================
+bool Material::is_valid() const
+{
+  return m_shader_program != 0;
+}
+
+////==============================================================================
+Material::operator bool() const
+{
+  return this->is_valid();
+}
+
+////==============================================================================
 Material Material::invalid()
 {
     return Material();

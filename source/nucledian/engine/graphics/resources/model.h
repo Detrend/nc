@@ -28,8 +28,9 @@ public:
   friend bool operator==(const ModelHandle& lhs, const ModelHandle& rhs);
   friend struct std::hash<ModelHandle>;
 
-  // Determine if model is valid. This does not consider models deleted by unloading.
+  bool is_valid() const;
   operator bool() const;
+  
   Model& operator*() const;
   Model* operator->() const;
 
@@ -37,12 +38,9 @@ public:
   static ModelHandle invalid();
 
 private:
-  static ModelHandle m_invalid;
-
   ModelHandle() {}
   ModelHandle(u32 model_id, ResLifetime lifetime);
 
-  bool          m_is_valid = false;
   ResLifetime   m_lifetime = ResLifetime::None;
   u32           m_model_id = 0;
 };
