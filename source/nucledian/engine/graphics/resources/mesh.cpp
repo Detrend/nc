@@ -86,7 +86,12 @@ GLenum Mesh::get_draw_mode() const
 ////==============================================================================
 bool Mesh::is_valid() const
 {
-  return m_vao != 0 && m_vbo != 0 && m_vertex_count != 0;
+  if (m_lifetime == ResLifetime::Game && m_generation != MeshManager::generation)
+  {
+    return false;
+  }
+
+  return m_vao != 0 && m_vbo != 0 && m_vertex_count != 0 && m_lifetime != ResLifetime::None;
 }
 
 ////==============================================================================

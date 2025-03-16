@@ -39,10 +39,11 @@ public:
 
 private:
   ModelHandle() {}
-  ModelHandle(u32 model_id, ResLifetime lifetime);
+  ModelHandle(u32 model_id, ResLifetime lifetime, u16 generation);
 
-  ResLifetime   m_lifetime = ResLifetime::None;
-  u32           m_model_id = 0;
+  u16           m_generation = 0;
+  ResLifetime   m_lifetime   = ResLifetime::None;
+  u32           m_model_id   = 0;
 };
 
 bool operator==(const ModelHandle& lhs, const ModelHandle& rhs);
@@ -50,6 +51,8 @@ bool operator==(const ModelHandle& lhs, const ModelHandle& rhs);
 class ModelManager
 {
 public:
+  friend class ModelHandle;
+
   template<ResLifetime lifetime>
   ModelHandle add(const Mesh& mesh, const Material& material);
 
@@ -59,6 +62,8 @@ public:
   Model& get(const ModelHandle& handle);
 
 private:
+  static inline u16 generation = 0;
+
   std::vector<Model>& get_storage(ResLifetime lifetime);
 
   template<ResLifetime lifetime>

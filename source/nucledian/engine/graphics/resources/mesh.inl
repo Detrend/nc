@@ -12,6 +12,8 @@ template<ResLifetime lifetime>
 inline Mesh MeshManager::create(const f32* data, u32 size, GLenum draw_mode)
 {
   Mesh mesh;
+  mesh.m_lifetime = lifetime;
+  mesh.m_generation = MeshManager::generation;
   mesh.m_draw_mode = draw_mode;
   mesh.m_vertex_count = size / 6; // 3 floats per position + 3 floats per normal
   
@@ -64,6 +66,10 @@ inline void MeshManager::unload()
   glDeleteVertexArrays(static_cast<GLsizei>(vao_to_delete.size()), vao_to_delete.data());
   glDeleteBuffers(static_cast<GLsizei>(vbo_to_delete.size()), vbo_to_delete.data());
   storage.clear();
+
+  if constexpr (lifetime == ResLifetime::Game) {
+    MeshManager::generation++;
+  }
 }
 
 //==============================================================================

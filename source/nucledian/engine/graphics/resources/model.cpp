@@ -10,6 +10,11 @@ namespace nc
 ////==============================================================================
 bool ModelHandle::is_valid() const
 {
+  if (m_lifetime == ResLifetime::Game && m_generation != ModelManager::generation)
+  {
+    return false;
+  }
+
   return m_lifetime != ResLifetime::None;
 }
 
@@ -38,8 +43,8 @@ ModelHandle ModelHandle::invalid()
 }
 
 ////==============================================================================
-ModelHandle::ModelHandle(u32 model_id, ResLifetime lifetime)
-  : m_lifetime(lifetime), m_model_id(model_id) { }
+ModelHandle::ModelHandle(u32 model_id, ResLifetime lifetime, u16 generation)
+  : m_generation(generation), m_lifetime(lifetime), m_model_id(model_id) { }
 
 ////==============================================================================
 Model& ModelManager::get(const ModelHandle& handle)
