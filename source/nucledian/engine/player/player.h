@@ -20,7 +20,6 @@ namespace nc
     //PlayerSpecificInputs get_inputs();
     //void load_inputs(PlayerSpecificInputs inputs);
     void update(GameInputs input);
-
     void Damage(int damage);
     void Die();
 
@@ -33,7 +32,7 @@ namespace nc
     vec3 position;
     vec3 velocity;
 
-    f32 MAX_SPEED = 5.0f;
+    f32 MAX_SPEED = 4.5f;
     f32 ACCELERATION = 30.0f;
     f32 DECELERATION = 15.0f;
 

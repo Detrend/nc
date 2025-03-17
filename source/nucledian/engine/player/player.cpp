@@ -84,7 +84,7 @@ namespace nc
 
     apply_acceleration(movement_direction);
 
-    //std::cout << velocity.x << " " << velocity.z << std::endl;
+    std::cout << velocity.x << " " << velocity.z << std::endl;
     position += velocity * 0.001f;
 
     //std::cout << position.x << " " << position.y << " " << position.z << std::endl;
@@ -96,8 +96,8 @@ namespace nc
   {
     velocity += movement_direction * ACCELERATION * 0.001f;
 
-    if (velocity.x <= 0.0001f) velocity.x = 0;
-    if (velocity.z <= 0.0001f) velocity.z = 0;
+    if (velocity.x >= -0.001f && velocity.x <= 0.001f) velocity.x = 0;
+    if (velocity.z >= -0.001f && velocity.z <= 0.001f) velocity.z = 0;
 
     if (sqrtf(velocity.x * velocity.x + velocity.z * velocity.z) > MAX_SPEED)
     {
