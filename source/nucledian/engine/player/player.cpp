@@ -84,7 +84,7 @@ namespace nc
 
     apply_acceleration(movement_direction);
 
-    std::cout << velocity.x << " " << velocity.z << std::endl;
+    //std::cout << velocity.x << " " << velocity.z << std::endl;
     position += velocity * 0.001f;
 
     //std::cout << position.x << " " << position.y << " " << position.z << std::endl;
