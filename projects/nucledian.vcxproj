@@ -67,6 +67,7 @@
     <ClInclude Include="..\source\nucledian\engine\core\resources.inl">
       <FileType>Document</FileType>
     </ClInclude>
+    <ClCompile Include="..\source\nucledian\engine\enemies\enemy.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entities.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\debug_camera.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\gizmo.cpp" />
@@ -153,6 +154,7 @@
     <ClInclude Include="..\source\nucledian\engine\core\is_engine_module.h" />
     <ClInclude Include="..\source\nucledian\engine\core\module_event.h" />
     <ClInclude Include="..\source\nucledian\engine\core\resources.h" />
+    <ClInclude Include="..\source\nucledian\engine\enemies\enemy.h" />
     <ClInclude Include="..\source\nucledian\engine\entities.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\debug_camera.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\gizmo.h" />
