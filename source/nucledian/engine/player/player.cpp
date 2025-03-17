@@ -96,10 +96,13 @@ namespace nc
   {
     velocity += movement_direction * ACCELERATION * 0.001f;
 
-    if (velocity.x >= -0.001f && velocity.x <= 0.001f) velocity.x = 0;
-    if (velocity.z >= -0.001f && velocity.z <= 0.001f) velocity.z = 0;
+    //minimal non-zero velocity
+    if (velocity.x >= -0.005f && velocity.x <= 0.005f) velocity.x = 0;
+    if (velocity.z >= -0.005f && velocity.z <= 0.005f) velocity.z = 0;
 
-    if (sqrtf(velocity.x * velocity.x + velocity.z * velocity.z) > MAX_SPEED)
+    //speed cap
+    //if (sqrtf(velocity.x * velocity.x + velocity.z * velocity.z) > MAX_SPEED)
+    if(length(vec2(velocity.x, velocity.z)) > MAX_SPEED)
     {
       velocity = normalize_or_zero(velocity) * MAX_SPEED;
     }
@@ -107,6 +110,7 @@ namespace nc
 
   void Player::apply_deceleration(const nc::vec3& movement_direction)
   {
+    // If we are still -> return
     if (velocity.x == 0 && velocity.z == 0)
     {
       return;
@@ -114,6 +118,8 @@ namespace nc
 
     vec3 reverseVelocity = -velocity;
     reverseVelocity = normalize_or_zero(reverseVelocity);
+
+    //apply deceleration if reverse key is pressed or if directional/axis key is not pressed
     if (movement_direction.x == 0 || signbit(movement_direction.x) != signbit(velocity.x))
     {
       velocity.x = velocity.x + (reverseVelocity.x * DECELERATION * 0.001f);
@@ -124,17 +130,8 @@ namespace nc
       velocity.z = velocity.z + (reverseVelocity.z * DECELERATION * 0.001f);
     }
 
+    //apply general deceleration
     velocity = velocity + (reverseVelocity * DECELERATION * 0.001f);
-
-    if (signbit(velocity.x) && signbit(reverseVelocity.x))
-    {
-      velocity.x = 0;
-    }
-    if (signbit(velocity.z) && signbit(reverseVelocity.z))
-    {
-      velocity.z = 0;
-    }
-
   }
 
   void Player::Damage(int damage)
