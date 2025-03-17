@@ -114,12 +114,12 @@ namespace nc
 
     vec3 reverseVelocity = -velocity;
     reverseVelocity = normalize_or_zero(reverseVelocity);
-    if (movement_direction.x == 0)
+    if (movement_direction.x == 0 || signbit(movement_direction.x) != signbit(velocity.x))
     {
       velocity.x = velocity.x + (reverseVelocity.x * DECELERATION * 0.001f);
     }
 
-    if (movement_direction.z == 0)
+    if (movement_direction.z == 0 || signbit(movement_direction.z) != signbit(velocity.z))
     {
       velocity.z = velocity.z + (reverseVelocity.z * DECELERATION * 0.001f);
     }
