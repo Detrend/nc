@@ -1,7 +1,7 @@
 #include <engine/player/player.h>
 #include <engine/input/game_input.h>
 #include <engine/input/input_system.h>
-//#include <iostream>
+#include <iostream>
 
 namespace nc
 {
@@ -37,7 +37,7 @@ namespace nc
   {
     // INPUT HANDELING
 
-    velocity = vec3(0, 0, 0);
+    vec3 inputVector = vec3(0, 0, 0);
 
     if (!alive)
     {
@@ -47,19 +47,19 @@ namespace nc
     // movement keys
     if (input.player_inputs.keys & (1 << PlayerKeyInputs::forward))
     {
-      velocity = add(velocity, vec3(0, 0, 1));
+      inputVector = add(inputVector, vec3(0, 0, 1));
     }
     if (input.player_inputs.keys & (1 << PlayerKeyInputs::backward))
     {
-      velocity = add(velocity, vec3(0, 0, -1));
+      inputVector = add(inputVector, vec3(0, 0, -1));
     }
     if (input.player_inputs.keys & (1 << PlayerKeyInputs::left))
     {
-      velocity = add(velocity, vec3(-1, 0, 0));
+      inputVector = add(inputVector, vec3(-1, 0, 0));
     }
     if (input.player_inputs.keys & (1 << PlayerKeyInputs::right))
     {
-      velocity = add(velocity, vec3(1, 0, 0));
+      inputVector = add(inputVector, vec3(1, 0, 0));
     }
 
     angle_pitch += input.player_inputs.analog[PlayerAnalogInputs::look_vertical];
@@ -75,16 +75,66 @@ namespace nc
     const vec3 right = cross(forward, vec3::Y);
     const vec3 movement_direction = normalize_or_zero
     (
-      velocity.x * right
-      + velocity.y * vec3::Y
-      + velocity.z * forward
+      inputVector.x * right
+      + inputVector.y * vec3::Y
+      + inputVector.z * forward
     );
 
-    position += movement_direction * 5.0f * 0.001f;
+    apply_deceleration(movement_direction);
+
+    apply_acceleration(movement_direction);
+
+    //std::cout << velocity.x << " " << velocity.z << std::endl;
+    position += velocity * 0.001f;
 
     //std::cout << position.x << " " << position.y << " " << position.z << std::endl;
 
     camera.update_transform(position, angle_yaw, angle_pitch, 0.5f);
+  }
+
+  void Player::apply_acceleration(const nc::vec3& movement_direction)
+  {
+    velocity += movement_direction * ACCELERATION * 0.001f;
+
+    if (velocity.x <= 0.0001f) velocity.x = 0;
+    if (velocity.z <= 0.0001f) velocity.z = 0;
+
+    if (sqrtf(velocity.x * velocity.x + velocity.z * velocity.z) > MAX_SPEED)
+    {
+      velocity = normalize_or_zero(velocity) * MAX_SPEED;
+    }
+  }
+
+  void Player::apply_deceleration(const nc::vec3& movement_direction)
+  {
+    if (velocity.x == 0 && velocity.z == 0)
+    {
+      return;
+    }
+
+    vec3 reverseVelocity = -velocity;
+    reverseVelocity = normalize_or_zero(reverseVelocity);
+    if (movement_direction.x == 0)
+    {
+      velocity.x = velocity.x + (reverseVelocity.x * DECELERATION * 0.001f);
+    }
+
+    if (movement_direction.z == 0)
+    {
+      velocity.z = velocity.z + (reverseVelocity.z * DECELERATION * 0.001f);
+    }
+
+    velocity = velocity + (reverseVelocity * DECELERATION * 0.001f);
+
+    if (signbit(velocity.x) && signbit(reverseVelocity.x))
+    {
+      velocity.x = 0;
+    }
+    if (signbit(velocity.z) && signbit(reverseVelocity.z))
+    {
+      velocity.z = 0;
+    }
+
   }
 
   void Player::Damage(int damage)

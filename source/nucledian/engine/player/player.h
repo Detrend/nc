@@ -20,19 +20,22 @@ namespace nc
     //PlayerSpecificInputs get_inputs();
     //void load_inputs(PlayerSpecificInputs inputs);
     void update(GameInputs input);
+
     void Damage(int damage);
     void Die();
 
     DebugCamera* get_camera();
 
   private:
-    // THESE FUNCTIONS ARE OLD AND MIGHT BE TERMINATED
-    //void handle_key_downs(SDL_Event& event);
-    //void handle_key_ups(SDL_Event& event);
+    void apply_acceleration(const nc::vec3& movement_direction);
+    void apply_deceleration(const nc::vec3& movement_direction);
 
     vec3 position;
-    f32 speed = 0.5;
     vec3 velocity;
+
+    f32 MAX_SPEED = 5.0f;
+    f32 ACCELERATION = 30.0f;
+    f32 DECELERATION = 15.0f;
 
     vec3 m_forward = vec3::ZERO;
     f32 angle_pitch = 0; //UP-DOWN
