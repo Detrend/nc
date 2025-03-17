@@ -96,16 +96,16 @@ namespace nc
   {
     velocity += movement_direction * ACCELERATION * 0.001f;
 
-    //minimal non-zero velocity
-    if (velocity.x >= -0.005f && velocity.x <= 0.005f) velocity.x = 0;
-    if (velocity.z >= -0.005f && velocity.z <= 0.005f) velocity.z = 0;
-
     //speed cap
     //if (sqrtf(velocity.x * velocity.x + velocity.z * velocity.z) > MAX_SPEED)
     if(length(vec2(velocity.x, velocity.z)) > MAX_SPEED)
     {
       velocity = normalize_or_zero(velocity) * MAX_SPEED;
     }
+    
+    //minimal non-zero velocity
+    if (velocity.x >= -0.005f && velocity.x <= 0.005f) velocity.x = 0;
+    if (velocity.z >= -0.005f && velocity.z <= 0.005f) velocity.z = 0;
   }
 
   void Player::apply_deceleration(const nc::vec3& movement_direction)
