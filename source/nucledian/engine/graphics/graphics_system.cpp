@@ -277,7 +277,7 @@ void GraphicsSystem::render_entities() const
       const Position& position = m_position_components[index];
       const Appearance& appearance = g_appearance_components[index];
 
-      const mat4 transform = scale(translate(mat4(1.0f), position + appearance.y_offset * vec3::Z), appearance.scale);
+      const mat4 transform = scale(rotate(translate(mat4(1.0f), position), appearance.rotation, vec3::Y), appearance.scale);
       // TODO: should be set only when these changes and probably not here
       handle->material.set_uniform(shaders::solid::COLOR, appearance.model_color);
       handle->material.set_uniform(shaders::solid::TRANSFORM, transform);
