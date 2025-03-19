@@ -153,4 +153,9 @@ namespace nc
   {
     return &camera;
   }
+
+  vec3 Player::get_position()
+  {
+    return position;
+  }
 }

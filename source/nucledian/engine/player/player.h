@@ -25,6 +25,8 @@ namespace nc
 
     DebugCamera* get_camera();
 
+    vec3 get_position();
+
   private:
     void apply_acceleration(const nc::vec3& movement_direction);
     void apply_deceleration(const nc::vec3& movement_direction);

@@ -31,9 +31,18 @@ namespace nc
   void ThingSystem::on_event(ModuleEvent& event)
   {
     switch (event.type) {
+    case ModuleEventType::post_init:
+    {
+      enemies.push_back(Enemy(vec3(0, 0, 0)));
+      break;
+    }
     case ModuleEventType::game_update:
     {
       player.update(get_engine().get_module<InputSystem>().get_inputs());
+      for (size_t i = 0; i < enemies.size(); i++)
+      {
+        enemies[i].Update();
+      }
       break;
     }
     default:

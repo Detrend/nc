@@ -1,6 +1,7 @@
 #include <engine/core/engine_module_id.h>
 #include <engine/core/engine_module.h>
 #include <engine/player/player.h>
+#include <engine/enemies/enemy.h>
 
 namespace nc
 {
@@ -19,5 +20,6 @@ namespace nc
 
   private:
     Player player;
+    std::vector<Enemy> enemies;
   };
 }
