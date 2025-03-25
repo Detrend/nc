@@ -14,10 +14,13 @@ namespace nc::intersect
 
 //==============================================================================
 bool segment_segment(
-  vec2 start_a,
-  vec2 end_a,
-  vec2 start_b,
-  vec2 end_b)
+  vec2  start_a,
+  vec2  end_a,
+  vec2  start_b,
+  vec2  end_b,
+  bool* parallel_out,
+  f32*  t_out,
+  f32*  u_out)
 {
   constexpr f32 TOLERANCE = 0.0001f;   // 0.1mm
 
@@ -31,6 +34,11 @@ bool segment_segment(
 
   const bool tp_zero = is_zero(top,    TOLERANCE);
   const bool bt_zero = is_zero(bottom, TOLERANCE);
+
+  if (parallel_out)
+  {
+    *parallel_out = bt_zero;
+  }
 
   if (tp_zero && bt_zero)
   {
@@ -59,21 +67,27 @@ bool segment_segment(
   {
     const f32 t = top / bottom;
 
-    if (t >= 0 && t <= 1)
+    // might be intersecting, check for u as well
+    const f32 utop    = cross(dir_a, start_a - start_b);
+    const f32 ubottom = -bottom;
+
+    // This should not happen AFAIK
+    NC_ASSERT(!is_zero(ubottom, TOLERANCE));
+
+    const f32 u = utop / ubottom;
+
+    if (t_out)
     {
-      // might be intersecting, check for u as well
-      const f32 utop    = cross(dir_a, start_a - start_b);
-      const f32 ubottom = -bottom;
+      *t_out = t;
+    }
 
-      // This should not happen AFAIK
-      NC_ASSERT(!is_zero(ubottom, TOLERANCE));
-
-      const f32 u = utop / ubottom;
-      return u >= 0 && u <= 1;
+    if (u_out)
+    {
+      *u_out = u;
     }
 
     // lines intersect, but segments do not
-    return false;
+    return t >= 0.0f && t <= 1.0f && u >= 0.0f && u <= 1.0f;
   }
 }
 
@@ -287,6 +301,22 @@ bool Frustum2::is_empty() const
 }
 
 //==============================================================================
+static auto get_edge(vec2 dir, f32 dot_angle, bool left)
+{
+  NC_ASSERT(is_normal(dir));
+
+  const auto flp = flipped(dir);
+  const auto a   = dot_angle;
+  const auto b   = std::sqrt(1.0f - a * a);
+
+  const auto sign = left ? 1.0f : -1.0f;
+  const auto edge = dir * a + flp * b * sign;
+  NC_ASSERT(is_normal(edge));
+
+  return edge;
+}
+
+//==============================================================================
 static auto get_edges(const Frustum2& f)
 {
   struct Edges
@@ -295,101 +325,125 @@ static auto get_edges(const Frustum2& f)
     vec2 e2;
   };
 
-  const auto dir = f.direction;
-  const auto flp = flipped(dir);
-  const auto a   = f.angle;
-  const auto b   = std::sqrt(1.0f - a * a);
+  const auto l_edge = get_edge(f.direction, f.angle, true);
+  const auto r_edge = get_edge(f.direction, f.angle, false);
 
-  const auto l_edge = dir * a + flp * b;
-  const auto r_edge = dir * a - flp * b;
+  // And these should hold as well
+  NC_ASSERT(is_zero(dot(l_edge, f.direction) - f.angle, 0.0001f));
+  NC_ASSERT(is_zero(dot(r_edge, f.direction) - f.angle, 0.0001f));
 
   return Edges{.e1 = l_edge, .e2 = r_edge};
 }
 
 //==============================================================================
-Frustum2 Frustum2::modied_with_portal(vec2 p1, vec2 p2) const
+Frustum2 Frustum2::modified_with_portal(vec2 p1, vec2 p2) const
 {
   NC_ASSERT(is_normal(this->direction));
 
-  // This could have been done in a faster way probably..
-  if (this->intersects_segment(p1, p2))
+  // Is this necessary?
+  NC_ASSERT(p1 != this->center);
+  NC_ASSERT(p2 != this->center);
+  NC_ASSERT(p1 != p2);
+
+  // this is unlikely as only the start frustum is (sometimes) full
+  // and all others are not
+  if (this->is_full()) [[unlikely]] 
   {
-    const bool inside1 = this->contains_point(p1);
-    const bool inside2 = this->contains_point(p2);
-
-    const auto to_p1 = p1-this->center;
-    const auto to_p2 = p2-this->center;
-
-    if ((!inside1 && !inside2) || (to_p1 == vec2{0} || to_p2 == vec2{0}))
-    {
-      if ((to_p1 == vec2{0} || to_p2 == vec2{0}))
-      {
-        int a =17;
-        (void)a;
-      }
-      // Both points outside but intersecting, easy as well.
-      // Just keep the old frustum
-      return *this;
-    }
-    else if (inside1 && inside2)
-    {
-      // both points inside, easy case
-      const auto to_p1_n = normalize(to_p1);
-      const auto to_p2_n = normalize(to_p2);
-      const auto midir   = normalize(to_p1_n + to_p2_n);
-
-      return Frustum2
-      {
-        .center    = this->center,
-        .direction = midir,
-        .angle     = dot(to_p1_n, midir),
-      };
-    }
-
-    const auto point_outside = inside1 ? p2 : p1;
-    const auto point_inside  = inside1 ? p1 : p2;
-    const auto to_outside_pt = normalize(point_outside - this->center);
-    const auto to_inside_pt  = normalize(point_inside  - this->center);
-    const bool outside_right = cross(point_outside - this->center, this->direction) > 0;
-
-    // the two frustums are overlapping, not that easy
-
-    const auto[l_edge, r_edge] = get_edges(*this);
-
-    // These should end up having an unit length mathematically speaking,
-    // but the floating point inaccuracy might have fucked it up..
-    NC_ASSERT(is_normal(l_edge));
-    NC_ASSERT(is_normal(r_edge));
-    // And these should hold as well
-    NC_ASSERT(is_zero(dot(l_edge, this->direction) - this->angle, 0.0001f));
-    NC_ASSERT(is_zero(dot(r_edge, this->direction) - this->angle, 0.0001f));
-
-    // we keep the edge in the direction the outside point is on..
-    const auto edge_we_keep = outside_right ? r_edge : l_edge;
-
-    const auto new_frustum_dir   = normalize(edge_we_keep + to_inside_pt);
-    // can be probably calculated more efficiently..
-    const auto new_frustum_angle = dot(new_frustum_dir, edge_we_keep);
-
-    // and now construct a new Frustum from the 2 edges
-    return Frustum2
-    {
-      .center    = this->center,
-      .direction = new_frustum_dir,
-      .angle     = new_frustum_angle,
-    };
+    return Frustum2::from_point_and_portal(this->center, p1, p2);
   }
-  else
+
+  // val is from 1 to -1
+  // 1  = in front of us
+  // -1 = right behind us
+  // 0  = left/right from us 90deg
+  // remaps to range [-1, 1] where -1 is fully left, 1 is fully right and 0 is in front of us
+  auto remap_interval = [](f32 val, bool on_left)->f32
   {
-    // Return empty frustum because the portal has zero
-    // intersection with us
-    return Frustum2
-    {
-      .center    = this->center,
-      .direction = this->direction,
-      .angle     = EMPTY_ANGLE,
-    };
+    val = std::clamp<f32>(val, -1, 1);
+    const f32 sign = on_left ? -1.0f : 1.0f;
+    return (1.0f - (val + 1.0f) * 0.5f) * sign;
+  };
+
+  auto inverse_remap = [](f32 val)
+  {
+    NC_ASSERT(val == std::clamp<f32>(val, -1, 1));
+
+    const bool on_left  = val < 0.0f;
+    const auto remapped = (1.0f - std::abs(val)) * 2.0f - 1.0f;
+
+    return std::make_pair(on_left, remapped);
+  };
+
+  // interval 1
+  const f32 e_left  = remap_interval(this->angle, true);
+  const f32 e_right = remap_interval(this->angle, false);
+  NC_ASSERT(e_left <= e_right);
+
+  // interval 2
+  auto dt_p1 = dot(normalize(p1-this->center), this->direction);
+  auto dt_p2 = dot(normalize(p2-this->center), this->direction);
+
+  const auto p1_to_p2 = normalize(p2 - p1);
+  const auto p2_to_p1 = -p1_to_p2;
+
+  if (dt_p1 < 0.0f)
+  {
+    // it is in back
+    const auto p2_to_center = this->center - p2;
+    p1 = p2 + p2_to_p1 * dot(p2_to_center, p2_to_p1);
+    dt_p1 = dot(normalize(p1-this->center), this->direction);
   }
+
+  if (dt_p2 < 0.0f)
+  {
+    // it is in back
+    const auto p1_to_center = this->center - p1;
+    p2 = p1 + p1_to_p2 * dot(p1_to_center, p1_to_p2);
+    dt_p2 = dot(normalize(p2-this->center), this->direction);
+  }
+
+  const auto to_p1 = p1 - this->center;
+  const auto to_p2 = p2 - this->center;
+
+  // if the point is right in front of us then we treat it as if right
+  const auto p1_left = cross(this->direction, to_p1) >= 0;
+  const auto p2_left = cross(this->direction, to_p2) >= 0;
+
+  const f32 e_p1 = remap_interval(dt_p1, p1_left);
+  const f32 e_p2 = remap_interval(dt_p2, p2_left);
+
+  const auto i1_l = e_left;
+  const auto i1_r = e_right;
+  const auto i2_l = std::min(e_p1, e_p2);
+  const auto i2_r = std::max(e_p1, e_p2);
+
+  const auto overlap_l = std::max(i1_l, i2_l);
+  const auto overlap_r = std::min(i1_r, i2_r);
+
+  // this is unlikely as we probably will not get here due to some
+  // other check in the map system BFS code
+  if (overlap_l > overlap_r) [[unlikely]]
+  {
+    // intervals do not intersect and therefore the result is empty
+    return Frustum2::empty_frustum_from_point(this->center);
+  }
+
+  // remap the intervals back onto the dot-space
+  const auto[i1_left, i1_remap] = inverse_remap(overlap_l);
+  const auto[i2_left, i2_remap] = inverse_remap(overlap_r);
+
+  // and calculate the directions
+  const auto dir1 = get_edge(this->direction, i1_remap, i1_left);
+  const auto dir2 = get_edge(this->direction, i2_remap, i2_left);
+
+  // and now calculate the new frustum from the directions above
+  const auto new_dir   = normalize(dir1 + dir2); // the sum should not be a zero..
+  const auto new_angle = dot(dir1, new_dir);
+
+  // the new FOV should be smaller than the previous one
+  //NC_ASSERT(new_angle >= this->angle);
+
+  return Frustum2::from_point_angle_and_dir(this->center, new_dir, new_angle);
 }
 
 //==============================================================================
@@ -425,10 +479,10 @@ Frustum2 Frustum2::merged_with(const Frustum2& other) const
   const auto r_edge     = lr_smaller ? other_r_edge : this_r_edge;
 
   // negative if turned backwards, will help us flip the dir
-  const auto smaller_sgn = sgn(std::min(lr, rl)); 
+  //const auto smaller_sgn = sgn(std::min(lr, rl)); 
 
   // Good, then calc the dir
-  auto new_direction = normalize((l_edge + r_edge) * smaller_sgn);
+  auto new_direction = normalize((l_edge + r_edge) /** smaller_sgn*/);
 
   if (is_zero(new_direction)) [[unlikely]]
   {
@@ -448,6 +502,7 @@ Frustum2 Frustum2::merged_with(const Frustum2& other) const
   }
 
   const auto new_angle = dot(l_edge, new_direction);
+  NC_ASSERT(new_angle >= 0.0f);
 
   return Frustum2
   {
@@ -513,6 +568,31 @@ Frustum2 Frustum2::from_point_and_portal(vec2 point, vec2 a, vec2 b)
   new_frustum.angle     = dot(to_a, new_frustum.direction);
   NC_ASSERT(new_frustum.angle >= 0.0f);
   return new_frustum;
+}
+
+//==============================================================================
+Frustum2 Frustum2::empty_frustum_from_point(vec2 c)
+{
+  return Frustum2
+  {
+    .center    = c,
+    .direction = vec2{1, 0},
+    .angle     = EMPTY_ANGLE,
+  };
+}
+
+//==============================================================================
+Frustum2 Frustum2::from_point_angle_and_dir(vec2 point, vec2 dir, f32 angle)
+{
+  NC_ASSERT(is_normal(dir));
+  //NC_ASSERT(angle == std::clamp<f32>(angle, -1, 1));
+
+  return Frustum2
+  {
+    .center    = point,
+    .direction = dir,
+    .angle     = angle,
+  };
 }
 
 //==============================================================================

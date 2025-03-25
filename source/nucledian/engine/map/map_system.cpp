@@ -313,7 +313,7 @@ void MapSectors::query_visible_sectors_impl(
             return;
           }
 
-          auto new_frustum = frustum.modied_with_portal(p1, p2);
+          auto new_frustum = frustum.modified_with_portal(p1, p2);
           if (new_frustum.is_empty())
           {
             // not sure how the hell this can happen..

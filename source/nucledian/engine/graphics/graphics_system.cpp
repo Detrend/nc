@@ -93,6 +93,7 @@ bool GraphicsSystem::init()
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,          1);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
@@ -265,6 +266,7 @@ void GraphicsSystem::render_map()
   static bool follow_mouse      = false;
   static bool inspect_sector    = false;
   static int  inspect_sector_id = 0;
+  static bool show_sector_frustums = true;
 
   if (ImGui::Begin("Test Window"))
   {
@@ -276,6 +278,7 @@ void GraphicsSystem::render_map()
     ImGui::Checkbox("Follow mouse",   &follow_mouse);
     ImGui::Checkbox("Inspect sector", &inspect_sector);
     ImGui::InputInt("Inspected sector", &inspect_sector_id, 1);
+    ImGui::Checkbox("Show sector frustums", &show_sector_frustums);
     ImGui::Text("MS last frame: %.4f", ms_last_frame);
   }
   ImGui::End();
@@ -352,7 +355,8 @@ void GraphicsSystem::render_map()
 
   auto view_direction = vec2{std::cosf(deg2rad(frustum_dir)), std::sinf(deg2rad(frustum_dir))};
 
-  std::map<SectorID, u32> visible_sectors;
+  std::map<SectorID, u32>                   visible_sectors;
+  std::map<SectorID, std::vector<Frustum2>> visible_sectors_frustum;
   auto start_time = std::chrono::high_resolution_clock::now();
 
   std::vector<Frustum2> inspected_sector_frustums;
@@ -364,6 +368,7 @@ void GraphicsSystem::render_map()
       visible_sectors[id] = 0;
     }
 
+    visible_sectors_frustum[id].push_back(f);
     visible_sectors[id] += 1;
 
     if (inspect_sector && inspect_sector_id == id)
@@ -389,7 +394,7 @@ void GraphicsSystem::render_map()
     }
 
     const bool pointed_at = i == point_sector;
-    const auto vis_count  = visible_sectors.contains(i) ? visible_sectors[i] : 0;
+    [[maybe_unused]]const auto vis_count  = visible_sectors.contains(i) ? visible_sectors[i] : 0;
 
     const auto& first_wall = map.walls[repr.first_wall];
 
@@ -427,13 +432,104 @@ void GraphicsSystem::render_map()
 
       const auto& wall1 = map.walls[index_in_arr];
       const auto& wall2 = map.walls[next_in_arr];
+
+      vec3 col;
+      if (show_sector_frustums)
+      {
+        col = vec3{0.0f};
+      }
+      else
+      {
+        col = pointed_at ? vec3{0.75f} : vec3{vis_count * 0.1f};
+      }
+
       this->render_triangle(Triangle
       {
         .a     = first_wall.pos,
         .b     = wall1.pos,
         .c     = wall2.pos,
-        .color = pointed_at ? vec3{0.75f} : vec3{vis_count * 0.1f},
+        .color = col,
       });
+    }
+  }
+
+  // Render frustums for all visible sectors
+  if (show_sector_frustums)
+  {
+    glEnable(GL_STENCIL_TEST);
+
+    for (const auto&[sector_id, frustums] : visible_sectors_frustum)
+    {
+      glStencilMask(0xFF);
+      glStencilFunc(GL_ALWAYS, 1, 0xFF);
+      glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+      glColorMask(false, false, false, false); // do not write into the color buffer
+
+      glClearStencil(0);
+      glClear(GL_STENCIL_BUFFER_BIT);
+
+      // render the sector shape into stencil buffer
+      {
+        const auto& sector = map.sectors[sector_id];
+        auto& repr = sector.int_data;
+        const s32 wall_count = repr.last_wall - repr.first_wall;
+        NC_ASSERT(wall_count >= 0);
+
+        if (wall_count < 3)
+        {
+          continue;
+        }
+
+        const auto& first_wall = map.walls[repr.first_wall];
+
+        for (WallID index = 1; index < wall_count; ++index)
+        {
+          WallID next_index = (index+1) % wall_count;
+          WallID index_in_arr = repr.first_wall + index;
+          WallID next_in_arr  = repr.first_wall + next_index;
+          NC_ASSERT(index_in_arr < map.walls.size());
+          NC_ASSERT(next_in_arr  < map.walls.size());
+
+          const auto& wall1 = map.walls[index_in_arr];
+          const auto& wall2 = map.walls[next_in_arr];
+          this->render_triangle(Triangle
+          {
+            .a     = first_wall.pos,
+            .b     = wall1.pos,
+            .c     = wall2.pos,
+            .color = vec3{1},
+          });
+        }
+      }
+
+      // render the frustum only on parts where the stencil buffer is enabled
+      {
+        glColorMask(true, true, true, true);    // turn on the color back again
+        glStencilFunc(GL_EQUAL, 1, 0xFF);       // fail the test if the value is not 1
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // keep the value in stencil buffer even if we fail the test
+
+        // render the frustum, but with the stencil test, so only the pixels inside the sector pass
+        for (const auto& frustum : frustums)
+        {
+          vec2 le, re;
+          frustum.get_frustum_edges(le, re);
+
+          const auto color = vec3{0.25f, 0.25f, 0.25f};
+          this->render_triangle(Triangle
+          {
+            .a = frustum.center,
+            .b = frustum.center + le * 2.0f,
+            .c = frustum.center + re * 2.0f,
+            .color = color
+          });
+        }
+      }
+    }
+
+    // cleanup the stencil buffer after ourselves
+    {
+      glClear(GL_STENCIL_BUFFER_BIT);
+      glDisable(GL_STENCIL_TEST);
     }
   }
 
@@ -533,10 +629,15 @@ void GraphicsSystem::render_map()
   if (inspect_sector)
   {
     // render the frustums of the inspected sector
+    int fidx = 0;
+    constexpr int COL_CNT = 3;
+    constexpr auto COLS = std::array{vec3{0.75f, 0.2f, 0.2f}, vec3{0.2f, 0.75f, 0.2f}, vec3{0.2f, 0.2f, 0.75f}};
     for (auto& frustum : inspected_sector_frustums)
     {
       vec2 le, re;
       frustum.get_frustum_edges(le, re);
+
+      auto color = COLS[(fidx++) % COL_CNT];
 
       // red cross
       this->render_line(Line
@@ -553,18 +654,12 @@ void GraphicsSystem::render_map()
         .color = vec3{1.0f, 0.5f, 0.5f},
       });
 
-      this->render_line(Line
+      this->render_triangle(Triangle
       {
-        .from = frustum.center,
-        .to   = frustum.center + le * 2.0f,
-        .color = vec3{0.75f, 0.75f, 1.0f},
-      });
-
-      this->render_line(Line
-      {
-        .from = frustum.center,
-        .to   = frustum.center + re * 2.0f,
-        .color = vec3{0.75f, 0.75f, 1.0f},
+        .a = frustum.center,
+        .b = frustum.center + le * 2.0f,
+        .c = frustum.center + re * 2.0f,
+        .color = color
       });
     }
   }

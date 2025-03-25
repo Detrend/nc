@@ -41,7 +41,7 @@ struct Frustum2
   bool is_empty() const;
 
   // Returns a frustum modified by this portal
-  Frustum2 modied_with_portal(vec2 p1, vec2 p2) const;
+  Frustum2 modified_with_portal(vec2 p1, vec2 p2) const;
 
   // Merges the two frustums together into one and returns it
   Frustum2 merged_with(const Frustum2& other) const;
@@ -54,6 +54,10 @@ struct Frustum2
 
   // Constructs a new frustum from center point and two portal points
   static Frustum2 from_point_and_portal(vec2 point, vec2 a, vec2 b);
+
+  static Frustum2 empty_frustum_from_point(vec2 center);
+
+  static Frustum2 from_point_angle_and_dir(vec2 point, vec2 dir, f32 angle);
 };
 constexpr Frustum2 INVALID_FRUSTUM = Frustum2{vec2{0}, vec2{0}, Frustum2::EMPTY_ANGLE};
 
@@ -89,7 +93,14 @@ namespace nc::intersect
 {
 // Checks for an intersection of two 2D line segments and returns true if
 // they intersect.
-bool segment_segment(vec2 start_a, vec2 end_a, vec2 start_b, vec2 end_b);
+bool segment_segment(
+  vec2  start_a,
+  vec2  end_a,
+  vec2  start_b,
+  vec2  end_b,
+  bool* parallel = nullptr,
+  f32*  t        = nullptr,
+  f32*  u        = nullptr);
 
 // Checks for intersection of two 2D AABBs and returns true if they intersect.
 bool aabb_aabb_2d(const aabb2& a, const aabb2& b);
