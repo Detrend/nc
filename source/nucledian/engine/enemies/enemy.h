@@ -12,7 +12,7 @@ namespace nc
     Enemy(vec3 position);
     void init();
     void update();
-    void get_wish_velocity();
+    void get_wish_velocity(f32 delta_seconds);
     void check_for_collision(MapObject collider);
     void apply_velocity();
   private:

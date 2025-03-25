@@ -40,7 +40,7 @@ namespace nc
     }*/
 
     // AABB
-    if (difX > width + collider.width || difZ > width + collider.width)
+    if (difX > width + collider.width + 0.001f || difZ > width + collider.width + 0.001f)
     {
       return false;
     }

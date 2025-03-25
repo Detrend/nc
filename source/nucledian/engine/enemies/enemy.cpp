@@ -41,11 +41,11 @@ void Enemy::update()
   m_position_components[m_entity_index] = position;
 }
 
-void Enemy::get_wish_velocity()
+void Enemy::get_wish_velocity(f32 delta_seconds)
 {
   vec3 target_pos = get_engine().get_module<ThingSystem>().get_player()->get_position();
   vec3 target_dir = normalize_or_zero(target_pos - position);
-  velocity = target_dir * 1.0f * 0.001f;
+  velocity = target_dir * 1.0f * delta_seconds;
 }
 
 void Enemy::check_for_collision(MapObject collider)

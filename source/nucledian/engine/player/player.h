@@ -19,7 +19,7 @@ namespace nc
 
     //PlayerSpecificInputs get_inputs();
     //void load_inputs(PlayerSpecificInputs inputs);
-    void get_wish_velocity(GameInputs input);
+    void get_wish_velocity(GameInputs input, f32 delta_seconds);
     void check_collision(MapObject collider);
     void apply_velocity();
     void Damage(int damage);
@@ -30,16 +30,16 @@ namespace nc
     vec3 get_position();
 
   private:
-    void apply_acceleration(const nc::vec3& movement_direction);
-    void apply_deceleration(const nc::vec3& movement_direction);
+    void apply_acceleration(const nc::vec3& movement_direction, f32 delta_seconds);
+    void apply_deceleration(const nc::vec3& movement_direction, f32 delta_seconds);
 
     //vec3 position;
     vec3 velocity; // forward/back - left/right velocity
     f32 viewHeight = 0.5f;
 
-    f32 MAX_SPEED = 4.5f;
-    f32 ACCELERATION = 30.0f;
-    f32 DECELERATION = 15.0f;
+    f32 MAX_SPEED = 5.0f;
+    f32 ACCELERATION = 0.05f;
+    f32 DECELERATION = 0.02f;
 
     vec3 m_forward = vec3::ZERO;
     f32 anglePitch = 0; //UP-DOWN

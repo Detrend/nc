@@ -40,10 +40,10 @@ namespace nc
     case ModuleEventType::game_update:
     {
       //INPUT PHASE
-      player.get_wish_velocity(get_engine().get_module<InputSystem>().get_inputs());
+      player.get_wish_velocity(get_engine().get_module<InputSystem>().get_inputs(), event.update.dt);
       for (size_t i = 0; i < enemies.size(); i++)
       {
-        enemies[i].get_wish_velocity();
+        enemies[i].get_wish_velocity(event.update.dt);
       }
 
       //CHECK FOR COLLISIONS
