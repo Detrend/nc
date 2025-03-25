@@ -11,7 +11,7 @@
 namespace nc
 {
 
-  class Player : MapObject
+  class Player : public MapObject
   {
   public:
     Player();
@@ -31,16 +31,17 @@ namespace nc
     void apply_acceleration(const nc::vec3& movement_direction);
     void apply_deceleration(const nc::vec3& movement_direction);
 
-    vec3 position;
+    //vec3 position;
     vec3 velocity; // forward/back - left/right velocity
+    f32 viewHeight = 0.5f;
 
     f32 MAX_SPEED = 4.5f;
     f32 ACCELERATION = 30.0f;
     f32 DECELERATION = 15.0f;
 
     vec3 m_forward = vec3::ZERO;
-    f32 angle_pitch = 0; //UP-DOWN
-    f32 angle_yaw = 0; //LET-RIGHT
+    f32 anglePitch = 0; //UP-DOWN
+    f32 angleYaw = 0; //LET-RIGHT
 
     /*PlayerSpecificInputs lastInputs;
     PlayerSpecificInputs currentInputs;*/

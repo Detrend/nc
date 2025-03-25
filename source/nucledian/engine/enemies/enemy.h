@@ -1,10 +1,11 @@
 #pragma once
 #include <engine/entities.h>
+#include <engine/player/map_object.h>
 
 
 namespace nc
 {
-  class Enemy
+  class Enemy : public MapObject
   {
   public:
     Enemy();
@@ -12,7 +13,6 @@ namespace nc
     void Init();
     void Update();
   private:
-    vec3 m_position;
     u32 m_entity_index = -1; //this will be overwritten anyway
   };
 };

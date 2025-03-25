@@ -3,6 +3,7 @@
 #include <engine/core/engine_module_types.h>
 #include <engine/core/module_event.h>
 #include <engine/input/input_system.h>
+#include <iostream>
 
 namespace nc
 {
@@ -42,6 +43,11 @@ namespace nc
       for (size_t i = 0; i < enemies.size(); i++)
       {
         enemies[i].Update();
+      }
+
+      if (player.did_collide(enemies[0]))
+      {
+        std::cout << "Collision" << std::endl;
       }
       break;
     }

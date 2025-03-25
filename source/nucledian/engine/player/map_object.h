@@ -1,3 +1,4 @@
+#pragma once
 #include <types.h>
 #include <vec.h>
 #include <vector_maths.h>
@@ -12,7 +13,7 @@ namespace nc {
     MapObject();
     MapObject(vec3 position, f32 width, f32 height, bool collision);
 
-    bool did_collide(MapObject collider);
+    virtual bool did_collide(MapObject collider);
 
     f32 get_widht();
     f32 get_height();

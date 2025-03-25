@@ -14,7 +14,7 @@ namespace nc
     height = 1.5f;
     collision = true;
 
-    camera.update_transform(position, angle_yaw, angle_pitch, 0.5f);
+    camera.update_transform(position, angleYaw, anglePitch, viewHeight);
   }
 
   //==========================================================================
@@ -28,7 +28,7 @@ namespace nc
     height = 1.5f;
     collision = true;
 
-    camera.update_transform(position, angle_yaw, angle_pitch, 0.5f);
+    camera.update_transform(position, angleYaw, anglePitch, viewHeight);
   }
 
   //==========================================================================
@@ -62,13 +62,13 @@ namespace nc
       inputVector = add(inputVector, vec3(1, 0, 0));
     }
 
-    angle_pitch += input.player_inputs.analog[PlayerAnalogInputs::look_vertical];
-    angle_yaw += input.player_inputs.analog[PlayerAnalogInputs::look_horizontal];
+    anglePitch += input.player_inputs.analog[PlayerAnalogInputs::look_vertical];
+    angleYaw += input.player_inputs.analog[PlayerAnalogInputs::look_horizontal];
 
-    angle_yaw = rem_euclid(angle_yaw, 2.0f * pi);
-    angle_pitch = clamp(angle_pitch, -half_pi + 0.001f, half_pi - 0.001f);
+    angleYaw = rem_euclid(angleYaw, 2.0f * pi);
+    anglePitch = clamp(anglePitch, -half_pi + 0.001f, half_pi - 0.001f);
 
-    m_forward = angleAxis(angle_yaw, vec3::Y) * angleAxis(angle_pitch, vec3::X) * -vec3::Z;
+    m_forward = angleAxis(angleYaw, vec3::Y) * angleAxis(anglePitch, vec3::X) * -vec3::Z;
 
     // APLICATION OF VELOCITY
     const vec3 forward = m_forward.with_y(0);
@@ -89,7 +89,7 @@ namespace nc
 
     //std::cout << position.x << " " << position.y << " " << position.z << std::endl;
 
-    camera.update_transform(position, angle_yaw, angle_pitch, 0.5f);
+    camera.update_transform(position, angleYaw, anglePitch, viewHeight);
   }
 
   void Player::apply_acceleration(const nc::vec3& movement_direction)
