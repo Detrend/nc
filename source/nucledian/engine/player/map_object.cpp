@@ -20,9 +20,9 @@ namespace nc
 
   bool MapObject::did_collide(MapObject collider)
   {
-    // EACH OBJECT HAS A CYLINDER COLLISION HULL
+    // EACH OBJECT HAS AN AABB COLLISION HULL
 
-    if (!collision)
+    if (!collision && !collider.collision)
     {
       return false;
     }
@@ -30,7 +30,7 @@ namespace nc
     // get distance from top down
 
     f32 difX = abs(position.x - collider.position.x);
-    f32 difY = abs(position.y - collider.position.y);
+    f32 difZ = abs(position.z - collider.position.z);
 
     //f32 topDownDistance = sqrtf(difX * difX + difY * difY);
 
@@ -40,19 +40,19 @@ namespace nc
     }*/
 
     // AABB
-    if (difX > width || difY > width)
+    if (difX > width + collider.width || difZ > width + collider.width)
     {
       return false;
     }
 
     // check whether the bottom point of collider is in range of our position - height
-    if (position.z <= collider.position.z && collider.position.z <= position.z + height) 
+    if (position.y <= collider.position.y && collider.position.y <= position.y + height) 
     {
       return true;
     }
 
     // check whether the top point of collider is in range of our position - height
-    if (position.z <= collider.position.z + height && collider.position.z + height <= position.z + height)
+    if (position.y <= collider.position.y + height && collider.position.y + height <= position.y + height)
     {
       return true;
     }
@@ -62,7 +62,7 @@ namespace nc
 
   // ===============================================================================
 
-  f32 MapObject::get_widht()
+  f32 MapObject::get_width()
   {
     return width;
   }

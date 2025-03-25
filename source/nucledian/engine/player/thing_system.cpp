@@ -42,13 +42,14 @@ namespace nc
       player.update(get_engine().get_module<InputSystem>().get_inputs());
       for (size_t i = 0; i < enemies.size(); i++)
       {
-        enemies[i].update();
+        enemies[i].get_wish_velocity();
       }
 
-      if (player.did_collide(enemies[0]))
+      for (size_t i = 0; i < enemies.size(); i++)
       {
-        std::cout << "Collision" << std::endl;
+        enemies[i].check_for_collision(player);
       }
+
       break;
     }
     default:
