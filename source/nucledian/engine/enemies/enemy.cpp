@@ -71,6 +71,20 @@ void Enemy::check_for_collision(MapObject collider)
   if (mult.x < 0.05f) mult.x = 0;
   if (mult.z < 0.05f) mult.z = 0;
 
+  target_dist = collider.get_position() - position;
+  target_dist.x = abs(target_dist.x);
+  target_dist.z = abs(target_dist.z);
+
+  if (target_dist.x >= width + collider.get_width())
+  {
+    mult.z = 1;
+  }
+
+  if (target_dist.z >= width + collider.get_width())
+  {
+    mult.x = 1;
+  }
+
   velocity.x = velocity.x * mult.x;
   velocity.z = velocity.z * mult.z;
 }
