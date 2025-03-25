@@ -11,6 +11,8 @@
 namespace nc
 {
 
+// Static 2D grid storing bounding boxes.
+// TODO: not very efficient, should use better data structure
 template<typename T>
 class StatGridAABB2
 {
@@ -26,6 +28,9 @@ public:
   void query_point(vec2 point, Visitor func) const;
   void query_aabb(aabb2 bbox,  Visitor func) const;
 
+  // Resets the grid into non initialized state and frees all resources
+  void reset();
+
 private:
   struct Unit
   {
@@ -38,8 +43,8 @@ private:
 
 private:
   // MR says: I am just not a fan of std::numeric_limits<blah blah>...
-  vec2  m_min = vec2{FLT_MAX,   FLT_MAX};
-  vec2  m_max = vec2{-FLT_MAX, -FLT_MAX};
+  vec2  m_min = vec2{ FLT_MAX};
+  vec2  m_max = vec2{-FLT_MAX};
   Cells m_cells;
   bool  m_initialized = false;
 };
