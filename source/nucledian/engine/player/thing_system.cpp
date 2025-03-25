@@ -39,15 +39,30 @@ namespace nc
     }
     case ModuleEventType::game_update:
     {
-      player.update(get_engine().get_module<InputSystem>().get_inputs());
+      //INPUT PHASE
+      player.get_wish_velocity(get_engine().get_module<InputSystem>().get_inputs());
       for (size_t i = 0; i < enemies.size(); i++)
       {
         enemies[i].get_wish_velocity();
       }
 
+      //CHECK FOR COLLISIONS
+      for (size_t i = 0; i < enemies.size(); i++)
+      {
+        player.check_collision(enemies[i]);
+      }
+
       for (size_t i = 0; i < enemies.size(); i++)
       {
         enemies[i].check_for_collision(player);
+      }
+
+      //FINAL VELOCITY CHANGE
+      player.apply_velocity();
+
+      for (size_t i = 0; i < enemies.size(); i++)
+      {
+        enemies[i].apply_velocity();
       }
 
       break;

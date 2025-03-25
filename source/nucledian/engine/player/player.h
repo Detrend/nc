@@ -19,7 +19,9 @@ namespace nc
 
     //PlayerSpecificInputs get_inputs();
     //void load_inputs(PlayerSpecificInputs inputs);
-    void update(GameInputs input);
+    void get_wish_velocity(GameInputs input);
+    void check_collision(MapObject collider);
+    void apply_velocity();
     void Damage(int damage);
     void Die();
 

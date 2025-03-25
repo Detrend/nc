@@ -33,7 +33,7 @@ namespace nc
 
   //==========================================================================
 
-  void Player::update(GameInputs input)
+  void Player::get_wish_velocity(GameInputs input)
   {
     // INPUT HANDELING
 
@@ -85,11 +85,44 @@ namespace nc
     apply_acceleration(movement_direction);
 
     //std::cout << velocity.x << " " << velocity.z << std::endl;
-    position += velocity * 0.001f;
+    //position += velocity * 0.001f;
+    //velocity = velocity * 0.001f;
 
     //std::cout << position.x << " " << position.y << " " << position.z << std::endl;
 
     camera.update_transform(position, angleYaw, anglePitch, viewHeight);
+  }
+
+  void Player::check_collision(MapObject collider)
+  {
+    position += velocity * 0.001f;
+
+    if (!did_collide(collider))
+    {
+      position += -velocity * 0.001f;
+      return;
+    }
+
+    vec3 target_dist = collider.get_position() - position;
+
+    vec3 intersect_union = vec3(get_width(), 0, get_width()) - (target_dist - vec3(collider.get_width(), 0, collider.get_width()));
+
+    position += -velocity * 0.001f;
+
+    vec3 new_velocity = velocity * 0.001f - intersect_union;
+    vec3 mult = vec3(velocity.x * 0.001f / (1 - new_velocity.x), 0, velocity.z * 0.001f / (1 - new_velocity.z));
+
+    if (mult.x < 0.01f) mult.x = 0;
+    if (mult.z < 0.01f) mult.z = 0;
+
+    velocity.x = velocity.x * 0.001f * mult.x;
+    velocity.z = velocity.z * 0.001f * mult.z;
+    
+  }
+
+  void Player::apply_velocity()
+  {
+    position += velocity * 0.001f;
   }
 
   void Player::apply_acceleration(const nc::vec3& movement_direction)

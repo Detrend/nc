@@ -14,6 +14,7 @@ namespace nc
     void update();
     void get_wish_velocity();
     void check_for_collision(MapObject collider);
+    void apply_velocity();
   private:
     u32 m_entity_index = -1; //this will be overwritten anyway
     vec3 velocity;

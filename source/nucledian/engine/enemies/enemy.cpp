@@ -54,12 +54,12 @@ void Enemy::check_for_collision(MapObject collider)
  
   if (!did_collide(collider))
   {
-    m_position_components[m_entity_index] = position;
+    position += -velocity;
     return;
   }
 
-  vec3 target_pos = get_engine().get_module<ThingSystem>().get_player()->get_position();
-  vec3 target_dist = target_pos - position;
+  //vec3 target_pos = collider.get_position();
+  vec3 target_dist = collider.get_position() - position;
 
   vec3 intersect_union = vec3(get_width(), 0, get_width()) - (target_dist - vec3(collider.get_width(), 0, collider.get_width()));
   
@@ -68,9 +68,15 @@ void Enemy::check_for_collision(MapObject collider)
   vec3 new_velocity = velocity - intersect_union;
   vec3 mult = vec3(velocity.x / (1 - new_velocity.x), 0, velocity.z / (1 - new_velocity.z));
 
+  if (mult.x < 0.05f) mult.x = 0;
+  if (mult.z < 0.05f) mult.z = 0;
+
   velocity.x = velocity.x * mult.x;
   velocity.z = velocity.z * mult.z;
+}
 
+void Enemy::apply_velocity()
+{
   position += velocity;
   m_position_components[m_entity_index] = position;
 }
