@@ -42,7 +42,7 @@ namespace nc
       player.update(get_engine().get_module<InputSystem>().get_inputs());
       for (size_t i = 0; i < enemies.size(); i++)
       {
-        enemies[i].Update();
+        enemies[i].update();
       }
 
       if (player.did_collide(enemies[0]))

@@ -8,7 +8,7 @@ namespace nc
 Enemy::Enemy()
 {
   position = vec3(0, 0, 0);
-  Init();
+  init();
 
   /*collision = true;
   width = 0.5f;
@@ -18,19 +18,19 @@ Enemy::Enemy()
 Enemy::Enemy(vec3 position)
 {
   position = position;
-  Init();
+  init();
 
   /*collision = true;
   width = 0.5f;
   height = 0.5f;*/
 }
 
-void Enemy::Init()
+void Enemy::init()
 {
   m_entity_index = create_entity(position, 1, colors::GREEN);
 }
 
-void Enemy::Update()
+void Enemy::update()
 {
   vec3 target_pos = get_engine().get_module<ThingSystem>().get_player()->get_position();
   vec3 target_dir = normalize_or_zero(target_pos - position);

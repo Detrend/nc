@@ -10,8 +10,8 @@ namespace nc
   public:
     Enemy();
     Enemy(vec3 position);
-    void Init();
-    void Update();
+    void init();
+    void update();
   private:
     u32 m_entity_index = -1; //this will be overwritten anyway
   };
