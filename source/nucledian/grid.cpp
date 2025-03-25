@@ -143,6 +143,17 @@ void StatGridAABB2<T>::insert(aabb2 new_bbox, const T& data)
   }
 }
 
+//==============================================================================
+template<typename T>
+void StatGridAABB2<T>::reset()
+{
+  m_cells.clear();
+  m_min = vec2{FLT_MAX};
+  m_max = vec2{-FLT_MAX};
+  m_initialized = false;
+}
+
+//==============================================================================
 template class StatGridAABB2<u8>;
 template class StatGridAABB2<u16>;
 template class StatGridAABB2<u32>;

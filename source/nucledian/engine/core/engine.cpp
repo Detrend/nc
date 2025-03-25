@@ -469,7 +469,7 @@ void Engine::install_and_replay_event_journal(EventJournal&& journal)
   }
 
   m_journal_installed = true;
-  m_journal_active   = false;
+  m_journal_active    = false;
 
   m_journal = std::make_unique<EventJournal>(std::move(journal));
 }

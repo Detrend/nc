@@ -49,7 +49,6 @@ bool for_each_portal(const MapSectors& map, SectorID sector_id, F&& lambda)
 }
 
 //==============================================================================
-// TODO: an acceleration data structure is a MUST HAVE here!!!
 u32 get_sectors_from_point(const MapSectors& map, vec2 point, SectorID* sectors_out, u32 max_sectors_out)
 {
   NC_ASSERT(sectors_out && max_sectors_out);
@@ -183,6 +182,8 @@ void MapSectors::query_visible_sectors(
   f32             hor_fov,
   TraverseVisitor visitor)
 {
+  NC_ASSERT(is_normal(view_dir));
+
   const auto angle = hor_fov >= 180.0f
     ? Frustum2::FULL_ANGLE
     : std::cosf(hor_fov * 0.5f);
@@ -194,15 +195,16 @@ void MapSectors::query_visible_sectors(
     .angle     = angle
   };
 
-  std::array<SectorID, 8> sectors_out;
+  constexpr u64 MAX_CAMERA_SECTORS = 8; // bump this up if the assert ever fires
+  std::array<SectorID, MAX_CAMERA_SECTORS> sectors_out;
 
   const u32 sec_count = map_helpers::get_sectors_from_point(
     *this,
     position,
     sectors_out.data(),
-    8);
+    MAX_CAMERA_SECTORS);
 
-  NC_ASSERT(sec_count <= 8);
+  NC_ASSERT(sec_count <= MAX_CAMERA_SECTORS);
 
   const auto slots_temp = FrustumBuffer{frustum};
 

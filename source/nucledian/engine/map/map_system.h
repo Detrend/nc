@@ -30,6 +30,8 @@
 // If you want to associate some data with each sector/wall, then
 // put it into external data.
 
+#include <engine/map/map_types.h>
+
 #include <types.h>
 #include <vector_maths.h>
 #include <intersect.h>
@@ -40,23 +42,6 @@
 
 namespace nc
 {
-using SectorID  = u16;
-using WallID    = u16; // absolute indexing
-using WallRelID = u8;  // indexing relative to the sector
-using PortalID  = u16;
-using TextureID = u16;
-
-constexpr auto INVALID_SECTOR_ID   = static_cast<SectorID>(-1);
-constexpr auto INVALID_WALL_ID     = static_cast<WallID>(-1);
-constexpr auto INVALID_WALL_REL_ID = static_cast<WallRelID>(-1);
-constexpr auto INVALID_PORTAL_ID   = static_cast<PortalID>(-1);
-constexpr auto INVALID_TEXTURE_ID  = static_cast<TextureID>(-1);
-
-constexpr auto MAX_WALLS_PER_SECTOR = static_cast<u64>(WallRelID(~0)-1);
-constexpr auto MAX_SECTORS          = static_cast<u64>(SectorID(~0)-1);
-constexpr auto MAX_WALLS            = static_cast<u64>(WallID(~0)-1);
-constexpr auto MAX_PORTALS          = static_cast<u64>(PortalID(~0)-1);
-
 // Portable data are a set of data that can be shared among two different
 // map representations. Put here anything that you want in sectors
 struct SectorExtData
@@ -133,22 +118,25 @@ struct MapSectors
   column<WallPortalData>  portals;
   StatGridAABB2<SectorID> sector_grid;
 
+  // TODO: do not use the retarded std::function, find a better alternative
   using TraverseVisitor = std::function<void(SectorID, Frustum2, PortalID)>;
   using PortalVisitor   = std::function<void(PortalID, WallID)>;
   // Traverses the sector system in a BFS order and calls the visitor
   // for each sector with a frustum that describes which parts of the
   // sector are visible.
   void query_visible_sectors(
-    vec2            position,
-    vec2            view_dir,
+    vec2            position,    // exact position on the map
+    vec2            view_dir,    // normalized view direction
     f32             hor_fov_rad, // [0-Pi], in radians. >= Pi means 360 degrees of view
-    TraverseVisitor visitor);
+    TraverseVisitor visitor);    // callback function that is called for each visited sector
 
   // Iterates all portals of this sector
   bool for_each_portal_of_sector(SectorID sector, PortalVisitor visitor) const;
 
   // Returns an id of a sector that lies on this position. If there is
-  // no such sector then returns INVALID_SECTOR_ID
+  // no such sector then returns INVALID_SECTOR_ID. If there are multiple
+  // sectors covering this point (on sector edges) then one of them is
+  // returned.
   SectorID get_sector_from_point(vec2 point) const;
 
 private:
