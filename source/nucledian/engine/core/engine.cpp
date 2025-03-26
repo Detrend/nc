@@ -23,6 +23,9 @@
 #include <chrono>
 #include <cstdlib>    // std::rand
 
+#include <iostream>
+#include <format>
+
 namespace nc
 {
 
@@ -444,6 +447,30 @@ void Engine::build_map_and_sectors()
   m_map = std::make_unique<MapSectors>();
   //make_random_square_maze_map(*m_map, 32, 0);
   make_cool_looking_map(*m_map);
+
+  for (SectorID sid = 0; sid < m_map->sectors.size(); ++sid)
+  {
+    std::cout << std::format("# Start of sector {}", sid) << std::endl;
+
+    std::vector<vec3> vertices;
+    m_map->sector_to_vertices(sid, vertices);
+    NC_ASSERT((vertices.size() % 3) == 0);
+
+    // dump them out
+    for (u64 i = 0; i < vertices.size(); i += 3)
+    {
+      const auto v0 = vertices[i];
+      const auto v1 = vertices[i+1];
+      const auto v2 = vertices[i+2];
+      std::cout
+        << std::format(
+          "[{:3f}, {:3f}, {:3f}], [{:3f}, {:3f}, {:3f}], [{:3f}, {:3f}, {:3f}],",
+          v0.x, v0.y, v0.z,
+          v1.x, v1.y, v1.z,
+          v2.x, v2.y, v2.z)
+        << std::endl;
+    }
+  }
 }
 
 //==============================================================================

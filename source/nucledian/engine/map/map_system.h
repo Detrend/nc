@@ -139,6 +139,10 @@ struct MapSectors
   // returned.
   SectorID get_sector_from_point(vec2 point) const;
 
+  void sector_to_vertices(
+    SectorID           sector_id,
+    std::vector<vec3>& vertices_out) const;
+
 private:
   void query_visible_sectors_impl(
     const SectorID*      start_sectors,
