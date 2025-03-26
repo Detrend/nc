@@ -28,6 +28,21 @@ namespace map_helpers
 {
 
 //==============================================================================
+WallID next_wall(const MapSectors& map, SectorID sector, WallID wall)
+{
+  NC_ASSERT(sector < map.sectors.size());
+  NC_ASSERT(wall < map.sectors[sector].int_data.last_wall);
+  WallID next = wall+1;
+
+  if (next == map.sectors[sector].int_data.last_wall)
+  {
+    next = map.sectors[sector].int_data.first_wall;
+  }
+
+  return next;
+}
+
+//==============================================================================
 // calls lambda(PortalID portal_id, WallID wall_index)
 template<typename F>
 bool for_each_portal(const MapSectors& map, SectorID sector_id, F&& lambda)
@@ -46,6 +61,23 @@ bool for_each_portal(const MapSectors& map, SectorID sector_id, F&& lambda)
   }
 
   return repr.first_portal < repr.last_portal;
+}
+
+//==============================================================================
+template<typename F>
+void for_each_wall(const MapSectors& map, SectorID sector_id, F&& lambda)
+{
+  NC_ASSERT(sector_id < map.sectors.size());
+  const auto& repr = map.sectors[sector_id].int_data;
+
+  for (auto wid = repr.first_wall; wid < repr.last_wall; ++wid)
+  {
+    NC_ASSERT(wid < map.walls.size());
+
+    const auto nextid = next_wall(map, sector_id, wid); // id of the next wall
+
+    lambda(wid, nextid);
+  }
 }
 
 //==============================================================================
@@ -95,21 +127,6 @@ u32 get_sectors_from_point(const MapSectors& map, vec2 point, SectorID* sectors_
   });
 
   return counter;
-}
-
-//==============================================================================
-WallID next_wall(const MapSectors& map, SectorID sector, WallID wall)
-{
-  NC_ASSERT(sector < map.sectors.size());
-  NC_ASSERT(wall < map.sectors[sector].int_data.last_wall);
-  WallID next = wall+1;
-
-  if (next == map.sectors[sector].int_data.last_wall)
-  {
-    next = map.sectors[sector].int_data.first_wall;
-  }
-
-  return next;
 }
 
 //==============================================================================
@@ -380,6 +397,95 @@ SectorID MapSectors::get_sector_from_point(vec2 point) const
   SectorID sector = INVALID_SECTOR_ID;
   map_helpers::get_sectors_from_point(*this, point, &sector, 1);
   return sector;
+}
+
+//==============================================================================
+void MapSectors::sector_to_vertices(
+  SectorID           sector_id,
+  std::vector<vec3>& vertices_out) const
+{
+  NC_ASSERT(sector_id < this->sectors.size());
+
+  const auto& sector_data = this->sectors[sector_id].int_data;
+
+  static_assert(MAX_WALLS_PER_SECTOR <= 512,
+    "This algorithm assumes that there are not that many walls"
+    " in each sector. If the maximum number of walls per sector"
+    " has changed then use vector instead.");
+  using Points2D = std::array<vec2, MAX_WALLS_PER_SECTOR>;
+  u64      point_cnt = 0;
+  Points2D points;
+
+  // gather 2d points to build from
+  for (WallID wid = sector_data.first_wall; wid < sector_data.last_wall; ++wid)
+  {
+    NC_ASSERT(wid < this->walls.size());
+    points[point_cnt++] = this->walls[wid].pos;
+  }
+
+  // each sector should have at least 3 walls..
+  NC_ASSERT(point_cnt >= 3);
+
+  constexpr f32 FLOOR_Y = 0.0f;
+  constexpr f32 CEIL_Y  = 0.1f;
+
+  // build the floor first from the first point
+  {
+    const auto first_pt = vec3{points[0].x, FLOOR_Y, points[0].y};
+    for (u64 idx = 1; idx < point_cnt-1; ++idx)
+    {
+      const auto next_idx = idx+1;
+      const auto pt1 = vec3{points[idx].x,      FLOOR_Y, points[idx].y};
+      const auto pt2 = vec3{points[next_idx].x, FLOOR_Y, points[next_idx].y};
+
+      // build floor triangle from the first point and 2 others
+      vertices_out.push_back(first_pt);
+      vertices_out.push_back(pt1);
+      vertices_out.push_back(pt2);
+    }
+  }
+
+  // then build ceiling
+  {
+    const auto first_pt = vec3{points[0].x, CEIL_Y, points[0].y};
+    for (u64 idx = 1; idx < point_cnt-1; ++idx)
+    {
+      const auto next_idx = idx+1;
+      const auto pt1 = vec3{points[idx].x,      CEIL_Y, points[idx].y};
+      const auto pt2 = vec3{points[next_idx].x, CEIL_Y, points[next_idx].y};
+
+      // build floor triangle from the first point and 2 others
+      vertices_out.push_back(first_pt);
+      vertices_out.push_back(pt2);
+      vertices_out.push_back(pt1);
+    }
+  }
+
+  // build walls
+  {
+    for (u64 idx = 0; idx < point_cnt; ++idx)
+    {
+      const auto& wall      = this->walls[sector_data.first_wall + idx];
+      const bool  is_portal = wall.portal_sector_id != INVALID_SECTOR_ID;
+      if (is_portal)
+      {
+        continue;
+      }
+
+      u64 next_idx = (idx+1) % point_cnt;
+
+      const auto p1 = points[idx];
+      const auto p2 = points[next_idx];
+
+      const auto f1 = vec3{p1.x, FLOOR_Y, p1.y};
+      const auto f2 = vec3{p2.x, FLOOR_Y, p2.y};
+      const auto c1 = vec3{p1.x, CEIL_Y,  p1.y};
+      const auto c2 = vec3{p2.x, CEIL_Y,  p2.y};
+
+      vertices_out.insert(vertices_out.end(), {f2, f1, c1});
+      vertices_out.insert(vertices_out.end(), {f2, c1, c2});
+    }
+  }
 }
 
 }
