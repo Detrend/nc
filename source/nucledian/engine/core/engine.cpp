@@ -243,6 +243,10 @@ void Engine::run()
     NC_TODO("We might actually want to wait here or drop a frame because the "
       "journal's framerate might be different than our own");
 
+    NC_TODO("This is a quite stupid implementation of the journal.. "
+      "Instead of manipulating the journal and popping the frames we "
+      "could just keep an iterator are move it forward.");
+
     if (this->event_journal_active())
     {
       // pop the last frame of the journal
@@ -289,7 +293,7 @@ void Engine::install_and_replay_event_journal(EventJournal&& journal)
   }
 
   m_journal_installed = true;
-  m_journal_active   = false;
+  m_journal_active    = false;
 
   m_journal = std::make_unique<EventJournal>(std::move(journal));
 }

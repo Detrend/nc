@@ -168,3 +168,12 @@ vec<F, S> operator+(const vec<F, S>& a, const vec<F, S>& b);
 
 #include <vec.inl>
 
+namespace nc
+{
+
+inline constexpr vec2 ZERO2{0};
+inline constexpr vec3 ZERO3{0};
+inline constexpr vec4 ZERO4{0};
+
+}
+

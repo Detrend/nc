@@ -3,3 +3,6 @@
 /bin_temp
 **/x64
 *.vcxproj.user
+
+# ignore imgui configuration
+imgui.ini
