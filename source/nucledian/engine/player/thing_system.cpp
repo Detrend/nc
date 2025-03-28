@@ -46,22 +46,17 @@ namespace nc
         enemies[i].get_wish_velocity(event.update.dt);
       }
 
-      //CHECK FOR COLLISIONS
+      //CHECK FOR COLLISIONS AND APPLY VELOCITY
       for (size_t i = 0; i < enemies.size(); i++)
       {
         player.check_collision(enemies[i]);
       }
 
-      for (size_t i = 0; i < enemies.size(); i++)
-      {
-        enemies[i].check_for_collision(player);
-      }
-
-      //FINAL VELOCITY CHANGE
       player.apply_velocity();
 
       for (size_t i = 0; i < enemies.size(); i++)
       {
+        enemies[i].check_for_collision(player);
         enemies[i].apply_velocity();
       }
 

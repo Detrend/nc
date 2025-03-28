@@ -109,7 +109,7 @@ namespace nc
     position += -velocity;
 
     vec3 new_velocity = velocity - intersect_union;
-    vec3 mult = vec3(velocity.x / (1 - new_velocity.x), 0, velocity.z / (1 - new_velocity.z));
+    vec3 mult = vec3(velocity.x / (1 - new_velocity.x - 0.001f), 0, velocity.z / (1 - new_velocity.z - 0.001f));
 
     if (mult.x < 0.05f) mult.x = 0;
     if (mult.z < 0.05f) mult.z = 0;
