@@ -197,7 +197,7 @@ void MapSectors::query_visible_sectors(
   vec2            position,
   vec2            view_dir,
   f32             hor_fov,
-  TraverseVisitor visitor)
+  TraverseVisitor visitor) const
 {
   NC_ASSERT(is_normal(view_dir));
 

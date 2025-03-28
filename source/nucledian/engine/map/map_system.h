@@ -128,7 +128,7 @@ struct MapSectors
     vec2            position,    // exact position on the map
     vec2            view_dir,    // normalized view direction
     f32             hor_fov_rad, // [0-Pi], in radians. >= Pi means 360 degrees of view
-    TraverseVisitor visitor);    // callback function that is called for each visited sector
+    TraverseVisitor visitor) const;    // callback function that is called for each visited sector
 
   // Iterates all portals of this sector
   bool for_each_portal_of_sector(SectorID sector, PortalVisitor visitor) const;

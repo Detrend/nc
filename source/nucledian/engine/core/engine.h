@@ -30,8 +30,6 @@ public:
   void run();
   void terminate();
 
-  void build_map_and_sectors();
-
   MapSectors& get_map();
 
   // TODO: if we use this in multiple places then
@@ -50,6 +48,7 @@ private:
   bool should_quit()             const;
   bool event_journal_installed() const;
   bool event_journal_active()    const;
+  void build_map_and_sectors();
 
   // Handles the local state and sends appropriate
   // module messages

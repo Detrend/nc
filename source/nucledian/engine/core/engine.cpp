@@ -175,13 +175,14 @@ bool Engine::init()
 
   #undef INIT_MODULE
 
+  // MR says: this is temporary
+  this->build_map_and_sectors();
+
   // post init
   this->send_event(ModuleEvent
   {
     .type = ModuleEventType::post_init,
   });
-
-  this->build_map_and_sectors();
   
   return true;
 }
@@ -451,51 +452,11 @@ static void test_make_sector(
 //==============================================================================
 void Engine::build_map_and_sectors()
 {
-  constexpr auto SECTOR_COLORS = std::array
-  {
-    colors::YELLOW ,
-    colors::CYAN   ,
-    colors::MAGENTA,
-    colors::ORANGE ,
-    colors::PURPLE ,
-    colors::PINK   ,
-    colors::GRAY   ,
-    colors::BROWN  ,
-    colors::LIME   ,
-    colors::TEAL   ,
-    colors::NAVY   ,
-    colors::MAROON ,
-    colors::OLIVE  ,
-    colors::SILVER ,
-    colors::GOLD   ,
-  };
-
   m_map = std::make_unique<MapSectors>();
   make_random_square_maze_map(*m_map, 32, 0);
   //make_cool_looking_map(*m_map);
 
-  // create entities out of the sectors
-  auto& gfx       = this->get_module<GraphicsSystem>();
-  auto& mesh_man  = gfx.get_mesh_manager();
-  auto& model_man = gfx.get_model_manager();
-  const auto& solid_mat = gfx.get_solid_material();
-
-
-  for (SectorID sid = 0; sid < m_map->sectors.size(); ++sid)
-  {
-    std::vector<vec3> vertices;
-    m_map->sector_to_vertices(sid, vertices);
-
-    const f32* vertex_data = &vertices[0].x;
-    const u32  values_cnt  = static_cast<u32>(vertices.size() * 3);
-
-    const auto mesh   = mesh_man.create<ResLifetime::Game>(vertex_data, values_cnt);
-    const auto handle = model_man.add<ResLifetime::Game>(mesh, solid_mat);
-
-    const auto col = SECTOR_COLORS[sid % SECTOR_COLORS.size()];
-    create_entity(vec3{0}, handle, 1.0f, col, 0.0f);
-  }
-
+  // geometry dump
   #if 0
   for (SectorID sid = 0; sid < m_map->sectors.size(); ++sid)
   {

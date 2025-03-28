@@ -31,6 +31,12 @@ mat4 DebugCamera::get_view() const
 }
 
 //==============================================================================
+vec3 DebugCamera::get_forward() const
+{
+  return m_forward;
+}
+
+//==============================================================================
 vec3 DebugCamera::get_position() const
 {
   return m_position;

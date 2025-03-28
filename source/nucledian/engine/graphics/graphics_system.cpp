@@ -9,17 +9,23 @@
 #include <engine/graphics/resources/res_lifetime.h>
 #include <engine/entities.h>
 
+#include <engine/map/map_system.h>
+
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
 
+#include <numbers> // std::numbers::pi
 #include <iostream>
 #include <algorithm>
 #include <ranges>
 #include <unordered_map>
 #include <map>
+#include <set>
 
 namespace nc
 {
+
+std::vector<ModelHandle> g_map_sector_models;
 
 //==============================================================================
 EngineModuleId GraphicsSystem::get_module_id()
@@ -113,6 +119,12 @@ void GraphicsSystem::on_event(ModuleEvent& event)
     case ModuleEventType::game_update:
     {
       this->update(event.update.dt);
+      break;
+    }
+
+    case ModuleEventType::post_init:
+    {
+      build_map_gfx();
       break;
     }
 
@@ -223,6 +235,7 @@ void GraphicsSystem::render()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   m_gizmo_manager.draw_gizmos();
+  render_sectors();
   render_entities();
   
   SDL_GL_SwapWindow(m_window);
@@ -239,6 +252,66 @@ void GraphicsSystem::terminate()
 
   m_model_manager.unload<ResLifetime::Game>();
   m_mesh_manager.unload<ResLifetime::Game>();
+}
+
+//==============================================================================
+void GraphicsSystem::render_sectors() const
+{
+  constexpr auto SECTOR_COLORS = std::array
+  {
+    colors::YELLOW ,
+    colors::CYAN   ,
+    colors::MAGENTA,
+    colors::ORANGE ,
+    colors::PURPLE ,
+    colors::PINK   ,
+    colors::GRAY   ,
+    colors::BROWN  ,
+    colors::LIME   ,
+    colors::TEAL   ,
+    colors::NAVY   ,
+    colors::MAROON ,
+    colors::OLIVE  ,
+    colors::SILVER ,
+    colors::GOLD   ,
+  };
+
+  const auto& map = get_engine().get_map();
+  const auto  pos = m_debug_camera.get_position();
+  const auto  dir = m_debug_camera.get_forward();
+  const auto  fov = std::numbers::pi_v<f32> * 0.5f; // 90 degrees
+
+  const auto pos2   = vec2{pos.x, pos.z};
+  const auto dir2   = vec2{dir.x, dir.z};
+  const auto dir2_n = is_zero(dir2) ? vec2::X : normalize(dir2);
+
+  std::set<SectorID> sectors_to_render;
+  map.query_visible_sectors(pos2, dir2_n, fov, [&](SectorID id, Frustum2, PortalID)
+  {
+    sectors_to_render.insert(id);
+  });
+
+  m_solid_material.use();
+
+  for (auto sector_id : sectors_to_render)
+  {
+    NC_ASSERT(sector_id < g_map_sector_models.size());
+    auto handle = g_map_sector_models[sector_id];
+
+    glBindVertexArray(handle->mesh.get_vao());
+
+    m_solid_material.set_uniform(shaders::solid::VIEW,          m_debug_camera.get_view());
+    m_solid_material.set_uniform(shaders::solid::VIEW_POSITION, m_debug_camera.get_position());
+
+    const auto transform = mat4{1.0f};
+    const auto col       = SECTOR_COLORS[sector_id % SECTOR_COLORS.size()];
+    m_solid_material.set_uniform(shaders::solid::COLOR,     col);
+    m_solid_material.set_uniform(shaders::solid::TRANSFORM, transform);
+
+    glDrawArrays(handle->mesh.get_draw_mode(), 0, handle->mesh.get_vertex_count());
+  }
+
+  glBindVertexArray(0);
 }
 
 //==============================================================================
@@ -301,6 +374,30 @@ void GraphicsSystem::render_entities() const
 
       glDrawArrays(handle->mesh.get_draw_mode(), 0, handle->mesh.get_vertex_count());
     }
+  }
+}
+
+//==============================================================================
+void GraphicsSystem::build_map_gfx()
+{
+  const auto& m_map = get_engine().get_map();
+
+  auto& mesh_man        = get_mesh_manager();
+  auto& model_man       = get_model_manager();
+  const auto& solid_mat = get_solid_material();
+
+  for (SectorID sid = 0; sid < m_map.sectors.size(); ++sid)
+  {
+    std::vector<vec3> vertices;
+    m_map.sector_to_vertices(sid, vertices);
+
+    const f32* vertex_data = &vertices[0].x;
+    const u32  values_cnt  = static_cast<u32>(vertices.size() * 3);
+
+    const auto mesh   = mesh_man.create<ResLifetime::Game>(vertex_data, values_cnt);
+    const auto handle = model_man.add<ResLifetime::Game>(mesh, solid_mat);
+
+    g_map_sector_models.push_back(handle);
   }
 }
 
