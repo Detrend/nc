@@ -14,7 +14,7 @@ inline ModelHandle ModelManager::add(const Mesh& mesh, const Material& material)
   const u32 id = static_cast<u32>(storage.size());
 
   storage.emplace_back(mesh, material);
-  return ModelHandle(id, lifetime);
+  return ModelHandle(id, lifetime, ModelManager::generation);
 }
 
 //==============================================================================
@@ -23,6 +23,11 @@ inline void ModelManager::unload()
 {
   auto& storage = get_storage<lifetime>();
   storage.clear();
+
+  if constexpr (lifetime == ResLifetime::Level)
+  {
+    ModelManager::generation++;
+  }
 }
 
 //==============================================================================
@@ -43,6 +48,7 @@ inline std::vector<Model>& ModelManager::get_storage()
 
 }
 
+//==============================================================================
 namespace std
 {
 

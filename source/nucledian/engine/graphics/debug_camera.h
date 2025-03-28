@@ -14,6 +14,7 @@ public:
 
   void handle_input(f32 delta_seconds);
   mat4 get_view() const;
+  vec3 get_forward()  const;
   vec3 get_position() const;
 
 private:

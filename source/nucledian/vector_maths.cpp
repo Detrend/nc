@@ -74,7 +74,7 @@ T dot(const vec<T, SIZE>& a, const vec<T, SIZE>& b)
 //==============================================================================
 vec3 cross(const vec3& a, const vec3& b)
 {
-  return sse::cross(a, b);
+  return non_sse::cross(a, b);
 }
 
 //==============================================================================

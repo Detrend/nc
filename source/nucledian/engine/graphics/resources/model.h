@@ -15,8 +15,8 @@ namespace nc
 // Collection of data needed to render an object.
 struct Model
 {
-  Mesh mesh;
-  Material material;
+  Mesh mesh = Mesh::invalid();
+  Material material = Material::invalid();
 };
 
 // Light-weight handle around model.
@@ -25,33 +25,32 @@ class ModelHandle
 public:
   friend class ModelManager;
 
-  friend bool operator==(const ModelHandle& lhs, const ModelHandle& rhs);
   friend struct std::hash<ModelHandle>;
+  bool operator==(const ModelHandle& other);
 
-  // Determine if model is valid. This does not consider models deleted by unloading.
+  bool is_valid() const;
   operator bool() const;
+  
   Model& operator*() const;
   Model* operator->() const;
 
   // Get instance of invalid model handle.
   static ModelHandle invalid();
 
-private:
-  static ModelHandle m_invalid;
-
+public: // MR says: made public so that I can access the stupid ID
   ModelHandle() {}
-  ModelHandle(u32 model_id, ResLifetime lifetime);
+  ModelHandle(u32 model_id, ResLifetime lifetime, u16 generation);
 
-  bool          m_is_valid = false;
-  ResLifetime   m_lifetime = ResLifetime::None;
-  u32           m_model_id = 0;
+  u16           m_generation = 0;
+  ResLifetime   m_lifetime   = ResLifetime::None;
+  u32           m_model_id   = 0;
 };
-
-bool operator==(const ModelHandle& lhs, const ModelHandle& rhs);
 
 class ModelManager
 {
 public:
+  friend class ModelHandle;
+
   template<ResLifetime lifetime>
   ModelHandle add(const Mesh& mesh, const Material& material);
 
@@ -61,6 +60,8 @@ public:
   Model& get(const ModelHandle& handle);
 
 private:
+  static inline u16 generation = 0;
+
   std::vector<Model>& get_storage(ResLifetime lifetime);
 
   template<ResLifetime lifetime>

@@ -26,11 +26,21 @@ public:
   u32 get_vertex_count() const;
   GLenum get_draw_mode() const;
 
+  bool is_valid() const;
+  operator bool() const;
+
+  // Gets a invalid mesh.
+  static Mesh invalid();
+
 private:
-  GLuint m_vao          = 0;
-  GLuint m_vbo          = 0;
-  u32    m_vertex_count = 0;
-  GLenum m_draw_mode    = GL_TRIANGLES;
+  Mesh() {}
+
+  ResLifetime m_lifetime     = ResLifetime::None;
+  u16         m_generation   = 0;
+  GLuint      m_vao          = 0;
+  GLuint      m_vbo          = 0;
+  u32         m_vertex_count = 0;
+  GLenum      m_draw_mode    = GL_TRIANGLES;
 };
 
 class MeshManager
@@ -41,24 +51,28 @@ class MeshManager
   * TODO: Load mesh form file
 */
 public:
+  friend class Mesh;
+
   void init();
 
   /**
    * Creates mesh from vertex data and stores it in GPU memory.
    */
-  template <ResLifetime lifetime>
-  Mesh create(const f32* data, u32 size, GLenum draw_mode = GL_TRIANGLES);
+  template<ResLifetime lifetime>
+  Mesh create(const f32* data, u32 count, GLenum draw_mode = GL_TRIANGLES);
 
   /**
    * Unloads all meshes with specified lifetime. 
    */
-  template <ResLifetime lifetime>
+  template<ResLifetime lifetime>
   void unload();
 
   Mesh get_cube() const;
 
 
 private:
+  static inline u16 generation = 0;
+
   template<ResLifetime lifetime>
   std::vector<Mesh>& get_storage();
 

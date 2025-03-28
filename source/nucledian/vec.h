@@ -13,10 +13,6 @@
 namespace nc
 {
 
-using vec2 = vec<f32, 2>;
-using vec3 = vec<f32, 3>;
-using vec4 = vec<f32, 4>;
-
 // SSE optimized vec2 type
 template<>
 struct vec<f32, 2>
