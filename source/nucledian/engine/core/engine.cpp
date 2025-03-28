@@ -8,11 +8,13 @@
 #include <engine/core/engine_module_types.h>
 #include <engine/core/event_journal.h>
 
-#include <engine/graphics/graphics_system.h>
-#include <engine/input/input_system.h>
 #include <engine/entities.h>
 
+#include <engine/graphics/graphics_system.h>
+#include <engine/input/input_system.h>
+#include <engine/player/thing_system.h>
 #include <engine/map/map_system.h>
+
 #include <vec.h>
 
 #ifdef NC_PROFILING
@@ -20,12 +22,12 @@
 #include <algorithm>
 #endif
 
-#include <ranges>
-#include <chrono>
-#include <cstdlib>    // std::rand
+#include <ranges>  // std::views::reverse
+#include <chrono>  // std::chrono::high_resolution_clock
+#include <cstdlib> // std::rand
 
-#include <iostream>
-#include <format>
+//#include <iostream>
+//#include <format>
 
 namespace nc
 {
@@ -172,6 +174,7 @@ bool Engine::init()
 
   INIT_MODULE(GraphicsSystem);
   INIT_MODULE(InputSystem);
+  INIT_MODULE(ThingSystem);
 
   #undef INIT_MODULE
 

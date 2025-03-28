@@ -41,6 +41,8 @@ private:
   void render_sectors()  const;
   void render_entities() const;
 
+  DebugCamera* get_camera() const;
+
   void build_map_gfx();
 
   SDL_Window*  m_window        = nullptr;

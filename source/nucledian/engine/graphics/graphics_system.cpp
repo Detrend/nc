@@ -2,29 +2,33 @@
 #include <engine/graphics/graphics_system.h>
 
 #include <common.h>
+
 #include <engine/core/engine.h>
 #include <engine/core/module_event.h>
 #include <engine/core/engine_module_types.h>
-#include <engine/input/input_system.h>
-#include <engine/graphics/resources/res_lifetime.h>
-#include <engine/entities.h>
 
+#include <engine/graphics/resources/res_lifetime.h>
+
+#include <engine/entities.h>
+#include <engine/input/input_system.h>
 #include <engine/map/map_system.h>
+#include <engine/player/thing_system.h>
 
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
 
 #include <numbers> // std::numbers::pi
-#include <iostream>
 #include <algorithm>
-#include <ranges>
 #include <unordered_map>
-#include <map>
 #include <set>
+
+// Remove this after logging is added!
+#include <iostream>
 
 namespace nc
 {
 
+// Temporary solution
 std::vector<ModelHandle> g_map_sector_models;
 
 //==============================================================================
@@ -38,6 +42,7 @@ static void APIENTRY gl_debug_message(
   GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum /*severity*/,
   GLsizei /*length*/, const GLchar* message, const void* /*userParam*/)
 {
+  NC_TODO("We need a proper logging system!!!");
   std::cout << "GL Debug Message: " << message << std::endl;
 }
 
@@ -56,7 +61,7 @@ bool GraphicsSystem::init()
   if (SDL_Init(SDL_INIT_FLAGS) < 0)
   {
     // failed to init SDL, see what's the issue
-    [[maybe_unused]]cstr error = SDL_GetError();
+    [[maybe_unused]] cstr error = SDL_GetError();
     return false;
   }
 
@@ -276,9 +281,15 @@ void GraphicsSystem::render_sectors() const
     colors::GOLD   ,
   };
 
+  auto* cam = this->get_camera();
+  if (!cam)
+  {
+    return;
+  }
+
   const auto& map = get_engine().get_map();
-  const auto  pos = m_debug_camera.get_position();
-  const auto  dir = m_debug_camera.get_forward();
+  const auto  pos = cam->get_position();
+  const auto  dir = cam->get_forward();
   const auto  fov = std::numbers::pi_v<f32> * 0.5f; // 90 degrees
 
   const auto pos2   = vec2{pos.x, pos.z};
@@ -300,8 +311,8 @@ void GraphicsSystem::render_sectors() const
 
     glBindVertexArray(handle->mesh.get_vao());
 
-    m_solid_material.set_uniform(shaders::solid::VIEW,          m_debug_camera.get_view());
-    m_solid_material.set_uniform(shaders::solid::VIEW_POSITION, m_debug_camera.get_position());
+    m_solid_material.set_uniform(shaders::solid::VIEW,          cam->get_view());
+    m_solid_material.set_uniform(shaders::solid::VIEW_POSITION, cam->get_position());
 
     const auto transform = mat4{1.0f};
     const auto col       = SECTOR_COLORS[sector_id % SECTOR_COLORS.size()];
@@ -325,6 +336,12 @@ void GraphicsSystem::render_entities() const
    * 5. sort groups by: 1. program, 2. texture, 3. vao (TODO)
    * 5. issue render command for each group (TODO)
    */
+
+  auto cam = this->get_camera();
+  if (!cam)
+  {
+    return;
+  }
 
   // Group entities by Models
   // MR says: For some stupid reason using unordered_map<ModelHandle, ...> does
@@ -358,8 +375,8 @@ void GraphicsSystem::render_entities() const
     glBindVertexArray(handle->mesh.get_vao());
 
     // TODO: some uniform locations should be shader independent
-    handle->material.set_uniform(shaders::solid::VIEW, m_debug_camera.get_view());
-    handle->material.set_uniform(shaders::solid::VIEW_POSITION, m_debug_camera.get_position());
+    handle->material.set_uniform(shaders::solid::VIEW,          cam->get_view());
+    handle->material.set_uniform(shaders::solid::VIEW_POSITION, cam->get_position());
 
     // TODO: indirect rendering
     for (auto& index : indices)
@@ -375,6 +392,13 @@ void GraphicsSystem::render_entities() const
       glDrawArrays(handle->mesh.get_draw_mode(), 0, handle->mesh.get_vertex_count());
     }
   }
+}
+
+//==============================================================================
+DebugCamera* GraphicsSystem::get_camera() const
+{
+  auto& things = get_engine().get_module<ThingSystem>();
+  return things.get_player()->get_camera();
 }
 
 //==============================================================================

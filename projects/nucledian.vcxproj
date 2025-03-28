@@ -67,6 +67,7 @@
     <ClInclude Include="..\source\nucledian\engine\core\resources.inl">
       <FileType>Document</FileType>
     </ClInclude>
+    <ClCompile Include="..\source\nucledian\engine\enemies\enemy.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entities.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\debug_camera.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\gizmo.cpp" />
@@ -76,6 +77,9 @@
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\model.cpp" />
     <ClCompile Include="..\source\nucledian\engine\input\input_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\map_system.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\player\map_object.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\player\player.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\player\thing_system.cpp" />
     <ClCompile Include="..\source\nucledian\grid.cpp" />
     <ClCompile Include="..\source\nucledian\intersect.cpp" />
     <ClCompile Include="..\source\nucledian\main.cpp" />
@@ -150,6 +154,7 @@
     <ClInclude Include="..\source\nucledian\engine\core\is_engine_module.h" />
     <ClInclude Include="..\source\nucledian\engine\core\module_event.h" />
     <ClInclude Include="..\source\nucledian\engine\core\resources.h" />
+    <ClInclude Include="..\source\nucledian\engine\enemies\enemy.h" />
     <ClInclude Include="..\source\nucledian\engine\entities.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\debug_camera.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\gizmo.h" />
@@ -163,6 +168,9 @@
     <ClInclude Include="..\source\nucledian\engine\input\game_input.h" />
     <ClInclude Include="..\source\nucledian\engine\input\input_system.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_system.h" />
+    <ClInclude Include="..\source\nucledian\engine\player\map_object.h" />
+    <ClInclude Include="..\source\nucledian\engine\player\player.h" />
+    <ClInclude Include="..\source\nucledian\engine\player\thing_system.h" />
     <ClInclude Include="..\source\nucledian\grid.h" />
     <ClInclude Include="..\source\nucledian\intersect.h" />
     <ClInclude Include="..\source\nucledian\maths.h" />
@@ -289,6 +297,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalOptions>/arch:AVX %(AdditionalOptions)</AdditionalOptions>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -307,6 +316,9 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalOptions>/arch:AVX %(AdditionalOptions)</AdditionalOptions>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <Optimization>MaxSpeed</Optimization>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -331,8 +343,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
@@ -355,8 +365,6 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>

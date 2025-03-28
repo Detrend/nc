@@ -8,6 +8,8 @@
 
 #include <types.h>
 
+#include <engine/player/player.h>
+
 union SDL_Event;
 
 namespace nc
@@ -26,11 +28,16 @@ public:
   void override_player_inputs(const PlayerSpecificInputs& player_inputs);
 
   void handle_app_event(const SDL_Event& event);
+  void get_player_inputs();
   const GameInputs& get_inputs() const;
+
+  //Player* get_player();
 
 private:
   GameInputs m_current_inputs;
   GameInputs m_previous_inputs;
+
+  //Player debug_player;
 };
 
 }

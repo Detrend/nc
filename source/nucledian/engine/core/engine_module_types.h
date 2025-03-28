@@ -11,9 +11,9 @@ namespace EngineModule
   enum value : EngineModuleId
   {
     graphics_system = 0,
+    input_system,
     entity_system,
     resource_system,
-    input_system,
     // -- //
     count
   };
