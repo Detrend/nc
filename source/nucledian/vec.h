@@ -13,10 +13,6 @@
 namespace nc
 {
 
-using vec2 = vec<f32, 2>;
-using vec3 = vec<f32, 3>;
-using vec4 = vec<f32, 4>;
-
 // SSE optimized vec2 type
 template<>
 struct vec<f32, 2>
@@ -167,4 +163,13 @@ vec<F, S> operator+(const vec<F, S>& a, const vec<F, S>& b);
 #endif
 
 #include <vec.inl>
+
+namespace nc
+{
+
+inline constexpr vec2 ZERO2{0};
+inline constexpr vec3 ZERO3{0};
+inline constexpr vec4 ZERO4{0};
+
+}
 

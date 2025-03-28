@@ -37,7 +37,7 @@ public:
   // Get instance of invalid model handle.
   static ModelHandle invalid();
 
-private:
+public: // MR says: made public so that I can access the stupid ID
   ModelHandle() {}
   ModelHandle(u32 model_id, ResLifetime lifetime, u16 generation);
 

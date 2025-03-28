@@ -8,12 +8,6 @@ namespace nc
 {
 
 //==============================================================================
-constexpr vec3 cross(const vec3& vec1, const vec3& vec2)
-{
-  return std::bit_cast<vec3>(glm::cross(std::bit_cast<glm::vec3>(vec1), std::bit_cast<glm::vec3>(vec2)));
-}
-
-//==============================================================================
 constexpr f32 clamp(f32 x, f32 min, f32 max)
 {
   return glm::clamp(x, min, max);

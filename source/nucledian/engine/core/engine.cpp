@@ -10,6 +10,10 @@
 
 #include <engine/graphics/graphics_system.h>
 #include <engine/input/input_system.h>
+#include <engine/entities.h>
+
+#include <engine/map/map_system.h>
+#include <vec.h>
 
 #ifdef NC_PROFILING
 #include <benchmark/benchmark.h>
@@ -18,6 +22,10 @@
 
 #include <ranges>
 #include <chrono>
+#include <cstdlib>    // std::rand
+
+#include <iostream>
+#include <format>
 
 namespace nc
 {
@@ -167,6 +175,9 @@ bool Engine::init()
 
   #undef INIT_MODULE
 
+  // MR says: this is temporary
+  this->build_map_and_sectors();
+
   // post init
   this->send_event(ModuleEvent
   {
@@ -243,6 +254,10 @@ void Engine::run()
     NC_TODO("We might actually want to wait here or drop a frame because the "
       "journal's framerate might be different than our own");
 
+    NC_TODO("This is a quite stupid implementation of the journal.. "
+      "Instead of manipulating the journal and popping the frames we "
+      "could just keep an iterator are move it forward.");
+
     if (this->event_journal_active())
     {
       // pop the last frame of the journal
@@ -274,6 +289,209 @@ void Engine::terminate()
 }
 
 //==============================================================================
+static void test_make_sector(
+  const std::vector<u16>&                     points,
+  std::vector<map_building::SectorBuildData>& out,
+  int                                         portal_wall_id    = -1,
+  WallRelID                                   portal_wall_id_to = 0,
+  SectorID                                    portal_sector     = INVALID_SECTOR_ID)
+{
+  auto wall_port = WallExtData
+  {
+    .texture_id = 0,
+    .texture_offset_x = 0,
+    .texture_offset_y = 0
+  };
+
+  auto sector_port = SectorExtData
+  {
+    .floor_texture_id = 1,
+    .ceil_texture_id  = 0,
+    .floor_height     = 0,
+    .ceil_height      = 13,
+  };
+
+  std::vector<map_building::WallBuildData> walls;
+
+  for (int i = 0; i < static_cast<int>(points.size()); ++i)
+  {
+    auto p = points[i];
+    bool is_portal = portal_sector != INVALID_SECTOR_ID && portal_wall_id == i;
+    walls.push_back(map_building::WallBuildData
+    {
+      .point_index            = p,
+      .ext_data               = wall_port,
+      .nc_portal_point_index  = is_portal ? portal_wall_id_to : INVALID_WALL_REL_ID,
+      .nc_portal_sector_index = is_portal ? portal_sector     : INVALID_SECTOR_ID,
+    });
+  }
+
+  out.push_back(map_building::SectorBuildData
+  {
+    .points   = std::move(walls),
+    .ext_data = sector_port,
+  });
+}
+
+//==============================================================================
+[[maybe_unused]] static void make_cool_looking_map(MapSectors& map)
+{
+  // {22, 12, 13, 23}
+  std::vector<vec2> points =
+  {
+    vec2{0	, 0},
+    vec2{6	, 1},
+    vec2{7	, 5},
+    vec2{9	, 5},
+    vec2{11	, 4},
+    vec2{14	, 4},
+    vec2{16	, 5},
+    vec2{16	, 8},
+    vec2{14	, 9},
+    vec2{11	, 9},
+    vec2{9	, 8},
+    vec2{8	, 8},
+    vec2{7	, 9},
+    vec2{7	, 12},
+    vec2{6	, 13},
+    vec2{5	, 13},
+    vec2{4	, 12},
+    vec2{4	, 9},
+    vec2{4	, 6},
+    vec2{2	, 4},
+    vec2{3	, 1},
+    vec2{5	, 9},
+    vec2{6	, 9},
+    vec2{6	, 10},
+    vec2{5	, 10},
+    vec2{16	, 14},    // extra 4 pts
+    vec2{18	, 14},
+    vec2{18	, 18},
+    vec2{16	, 18},
+  };
+
+  //constexpr vec2 max_range = {20.0f, 20.0f};
+  // normalize the points
+  //for (auto& pt : points)
+  //{
+  //  pt = ((pt / max_range) * 2.0f) - vec2{1.0f};
+  //}
+
+  // and then the sectors
+  std::vector<map_building::SectorBuildData> sectors;
+
+  test_make_sector({1, 2, 18, 19, 20}, sectors);
+  test_make_sector({18, 2, 11, 12, 22, 21, 17}, sectors);
+  test_make_sector({2, 3, 10, 11}, sectors);
+  test_make_sector({3, 4, 5, 6, 7, 8, 9, 10}, sectors);
+  test_make_sector({22, 12, 13, 23}, sectors, 1, 0, 8);    // this one
+  test_make_sector({23, 13, 14, 15, 16, 24}, sectors);
+  test_make_sector({17, 21, 24, 16}, sectors);
+  test_make_sector({21, 22, 23, 24}, sectors);
+  test_make_sector({25, 26, 27, 28}, sectors);
+
+  using namespace map_building::MapBuildFlag;
+
+  map_building::build_map(
+    points, sectors, map,
+    //omit_convexity_clockwise_check |
+    //omit_sector_overlap_check      |
+    //omit_wall_overlap_check        |
+    assert_on_fail);
+}
+
+//==============================================================================
+[[maybe_unused]]static void make_random_square_maze_map(MapSectors& map, u32 size, u32 seed)
+{
+  constexpr f32 SCALING = 20.0f;
+
+  std::srand(seed);
+
+  std::vector<vec2> points;
+
+  // first up the points
+  for (u32 i = 0; i < size; ++i)
+  {
+    for (u32 j = 0; j < size; ++j)
+    {
+      const f32 x = ((j / static_cast<f32>(size-1)) * 2.0f - 1.0f) * SCALING;
+      const f32 y = ((i / static_cast<f32>(size-1)) * 2.0f - 1.0f) * SCALING;
+      points.push_back(vec2{x, y});
+    }
+  }
+
+  // and then the sectors
+  std::vector<map_building::SectorBuildData> sectors;
+
+  for (u16 i = 0; i < size-1; ++i)
+  {
+    for (u16 j = 0; j < size-1; ++j)
+    {
+      auto rng = std::rand();
+      if (rng % 4 != 0)
+      {
+        u16 i1 = static_cast<u16>(i * size + j);
+        u16 i2 = i1+1;
+        u16 i3 = static_cast<u16>((i+1) * size + j + 1);
+        u16 i4 = i3-1;
+        test_make_sector({i1, i2, i3, i4}, sectors);
+      }
+    }
+  }
+
+  using namespace map_building::MapBuildFlag;
+
+  map_building::build_map(
+    points, sectors, map,
+    //omit_convexity_clockwise_check |
+    //omit_sector_overlap_check      |
+    //omit_wall_overlap_check        |
+    assert_on_fail);
+}
+
+//==============================================================================
+void Engine::build_map_and_sectors()
+{
+  m_map = std::make_unique<MapSectors>();
+  make_random_square_maze_map(*m_map, 32, 0);
+  //make_cool_looking_map(*m_map);
+
+  // geometry dump
+  #if 0
+  for (SectorID sid = 0; sid < m_map->sectors.size(); ++sid)
+  {
+    std::cout << std::format("# Start of sector {}", sid) << std::endl;
+
+    std::vector<vec3> vertices;
+    m_map->sector_to_vertices(sid, vertices);
+    NC_ASSERT((vertices.size() % 6) == 0);
+
+    // dump them out
+    for (u64 i = 0; i < vertices.size(); i += 6)
+    {
+      const auto v0 = vertices[i];
+      const auto v1 = vertices[i+2];
+      const auto v2 = vertices[i+4];
+      std::cout
+        << std::format(
+          "[{:3f}, {:3f}, {:3f}], [{:3f}, {:3f}, {:3f}], [{:3f}, {:3f}, {:3f}],",
+          v0.x, v0.y, v0.z,
+          v1.x, v1.y, v1.z,
+          v2.x, v2.y, v2.z)
+        << std::endl;
+    }
+  }
+  #endif
+}
+
+//==============================================================================
+MapSectors& Engine::get_map()
+{
+  NC_ASSERT(m_map);
+  return *m_map;
+}
+
+//==============================================================================
 void Engine::request_quit()
 {
   m_should_quit = true;
@@ -289,7 +507,7 @@ void Engine::install_and_replay_event_journal(EventJournal&& journal)
   }
 
   m_journal_installed = true;
-  m_journal_active   = false;
+  m_journal_active    = false;
 
   m_journal = std::make_unique<EventJournal>(std::move(journal));
 }

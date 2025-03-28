@@ -30,6 +30,8 @@
 // If you want to associate some data with each sector/wall, then
 // put it into external data.
 
+#include <engine/map/map_types.h>
+
 #include <types.h>
 #include <vector_maths.h>
 #include <intersect.h>
@@ -40,16 +42,6 @@
 
 namespace nc
 {
-using SectorID  = u16;
-using WallID    = u16;
-using PortalID  = u16;
-using TextureID = u16;
-
-constexpr auto INVALID_SECTOR_ID  = static_cast<SectorID>(-1);
-constexpr auto INVALID_WALL_ID    = static_cast<WallID>(-1);
-constexpr auto INVALID_PORTAL_ID  = static_cast<PortalID>(-1);
-constexpr auto INVALID_TEXTURE_ID = static_cast<TextureID>(-1);
-
 // Portable data are a set of data that can be shared among two different
 // map representations. Put here anything that you want in sectors
 struct SectorExtData
@@ -76,12 +68,12 @@ struct SectorIntData
   // last_wall - first_wall
   // If first_wall == last_wall then the sector has no walls
   WallID   first_wall   = INVALID_WALL_ID; // [0..total_wall_count]
-  WallID   last_wall    = INVALID_WALL_ID; // [first_wall+1..total_wall_count]
-  PortalID first_portal = INVALID_WALL_ID; // [0..total_wall_count]
-  PortalID last_portal  = INVALID_WALL_ID; // [first_portal..total_wall_count]
+  WallID   last_wall    = INVALID_WALL_ID; // [first_wall..total_wall_count]
+  PortalID first_portal = INVALID_WALL_ID; // [0..total_portal_count]
+  PortalID last_portal  = INVALID_WALL_ID; // [first_portal..total_portal_count]
 };
 
-// Each sector is comprised of internal data (data 
+// Each sector is comprised of internal data
 struct SectorData
 {
   SectorIntData int_data;
@@ -93,38 +85,72 @@ struct WallData
   // The wall starts here and ends in the same point as the next
   // wall begins
   vec2        pos = vec2{0};
-  SectorID    portal_sector_id = INVALID_SECTOR_ID;    // if is portal
+  SectorID    portal_sector_id = INVALID_SECTOR_ID; // if is portal
   WallExtData ext_data;
 };
 
+namespace PortalType
+{
+  enum evalue : u8
+  {
+    classic       = 0,
+    non_euclidean,
+  };
+}
+
 struct WallPortalData
 {
-  WallID wall_index     = 0;
-  // we are gonna need this for traversal of
-  // literal portals
-  u8     recursion_mark = 0;
+  WallRelID wall_index           = 0;  // the index of the wall relative to us
+  WallRelID nucledean_wall_index = 0;  // only when the portal_type is PortalType::nuclidean
+  u8        portal_type          = PortalType::classic; // TODO: can be stored in a separate bitset table
 };
 
+// TODO: maybe organize each data type into separate table row instead of grouping them up?
+// TODO: the complexity of query algorithm can increase quite a lot in certain situations..
+// Doing a Dijkstra instead of traditional BFS might fix this.
 struct MapSectors
 {
-  std::vector<SectorData>     sectors;
-  std::vector<WallData>       walls;
-  std::vector<WallPortalData> portals;
-  StatGridAABB2<SectorID>     sector_grid;
+  template<typename T>
+  using column = std::vector<T>;
 
-  using TraverseVisitor = std::function<void(SectorID, Frustum2)>;
+  column<SectorData>      sectors;
+  column<WallData>        walls;
+  column<WallPortalData>  portals;
+  StatGridAABB2<SectorID> sector_grid;
+
+  // TODO: do not use the retarded std::function, find a better alternative
+  using TraverseVisitor = std::function<void(SectorID, Frustum2, PortalID)>;
   using PortalVisitor   = std::function<void(PortalID, WallID)>;
   // Traverses the sector system in a BFS order and calls the visitor
   // for each sector with a frustum that describes which parts of the
   // sector are visible.
-  void query_visible_sectors(Frustum2 frustum, TraverseVisitor visitor) const;
+  void query_visible_sectors(
+    vec2            position,    // exact position on the map
+    vec2            view_dir,    // normalized view direction
+    f32             hor_fov_rad, // [0-Pi], in radians. >= Pi means 360 degrees of view
+    TraverseVisitor visitor) const;    // callback function that is called for each visited sector
 
   // Iterates all portals of this sector
   bool for_each_portal_of_sector(SectorID sector, PortalVisitor visitor) const;
 
   // Returns an id of a sector that lies on this position. If there is
-  // no such sector then returns INVALID_SECTOR_ID
+  // no such sector then returns INVALID_SECTOR_ID. If there are multiple
+  // sectors covering this point (on sector edges) then one of them is
+  // returned.
   SectorID get_sector_from_point(vec2 point) const;
+
+  void sector_to_vertices(
+    SectorID           sector_id,
+    std::vector<vec3>& vertices_out) const;
+
+private:
+  void query_visible_sectors_impl(
+    const SectorID*      start_sectors,
+    u32                  start_sector_cnt,
+    const FrustumBuffer& frustum,
+    TraverseVisitor      visitor,
+    u8                   recursion_depth = 4,
+    PortalID             source_portal   = INVALID_PORTAL_ID) const;
 };
 
 namespace map_building
@@ -132,8 +158,10 @@ namespace map_building
 
 struct WallBuildData
 {
-  u16         point_index = 0;
+  WallID      point_index = 0;
   WallExtData ext_data;
+  WallRelID   nc_portal_point_index  = 0;
+  SectorID    nc_portal_sector_index = INVALID_SECTOR_ID;
 };
 
 struct SectorBuildData

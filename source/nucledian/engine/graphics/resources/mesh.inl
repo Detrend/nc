@@ -9,13 +9,13 @@ namespace nc
 
 //==============================================================================
 template<ResLifetime lifetime>
-inline Mesh MeshManager::create(const f32* data, u32 size, GLenum draw_mode)
+inline Mesh MeshManager::create(const f32* data, u32 count, GLenum draw_mode)
 {
   Mesh mesh;
   mesh.m_lifetime = lifetime;
   mesh.m_generation = MeshManager::generation;
   mesh.m_draw_mode = draw_mode;
-  mesh.m_vertex_count = size / 6; // 3 floats per position + 3 floats per normal
+  mesh.m_vertex_count = count / 6; // 3 floats per position + 3 floats per normal
   
   // generate buffers
   glGenVertexArrays(1, &mesh.m_vao);
@@ -25,7 +25,7 @@ inline Mesh MeshManager::create(const f32* data, u32 size, GLenum draw_mode)
   glBindVertexArray(mesh.m_vao);
   // vertex buffer
   glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vbo);
-  glBufferData(GL_ARRAY_BUFFER, size * sizeof(f32), data, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, count * sizeof(f32), data, GL_STATIC_DRAW);
   //position attribute
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(f32), reinterpret_cast<void*>(0));
   glEnableVertexAttribArray(0);

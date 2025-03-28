@@ -59,7 +59,7 @@ public:
    * Creates mesh from vertex data and stores it in GPU memory.
    */
   template<ResLifetime lifetime>
-  Mesh create(const f32* data, u32 size, GLenum draw_mode = GL_TRIANGLES);
+  Mesh create(const f32* data, u32 count, GLenum draw_mode = GL_TRIANGLES);
 
   /**
    * Unloads all meshes with specified lifetime. 
