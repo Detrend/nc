@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <ranges>
 #include <unordered_map>
+#include <map>
 
 namespace nc
 {
@@ -252,17 +253,33 @@ void GraphicsSystem::render_entities() const
    * 5. issue render command for each group (TODO)
    */
 
-  // group entities by Models
-  std::unordered_map<ModelHandle, std::vector<u32>> model_groups;
+  // Group entities by Models
+  // MR says: For some stupid reason using unordered_map<ModelHandle, ...> does
+  // not work properly (even though the specialized std::hash seems to be ok).
+  // Using ModelHandle causes some elements to end up colliding with each and being
+  // put into the same bucket on the same index (they are effectively being treated
+  // by the hash map as being the same, even though they have different values
+  // and a different hash).
+  // I did not have time to spend more time on this this so therefore I introduced
+  // u32 and ModelGroup - these seem to work exactly as expected.
+  struct ModelGroup
+  {
+    ModelHandle      handle;
+    std::vector<u32> component_indices;
+  };
+  std::unordered_map<u64, ModelGroup> model_groups;
   for (u32 i = 0; i < g_appearance_components.size(); ++i)
   {
-    model_groups[g_appearance_components[i].model_handle].push_back(i);
+    const auto handle = g_appearance_components[i].model_handle;
+    model_groups[handle.m_model_id].handle = handle;
+    model_groups[handle.m_model_id].component_indices.push_back(i);
   }
 
   // TODO: sort groups by: 1. program, 2. texture, 3. vao
-
-  for (const auto& [handle, indices] : model_groups)
+  for (const auto& [_, group] : model_groups)
   {
+    const auto&[handle, indices] = group;
+
     // TODO: switch program & vao only when neccesary
     handle->material.use();
     glBindVertexArray(handle->mesh.get_vao());

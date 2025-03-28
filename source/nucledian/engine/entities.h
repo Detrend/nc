@@ -41,6 +41,12 @@ inline std::vector<vec3> m_position_components;
  */
 u32 create_entity(const Position& position, f32 scale, const color& color, f32 rotation = 0.0f);
 
+
+/**
+ * Creates entity with given model.
+ */
+u32 create_entity(const Position& position, ModelHandle handle, vec3 scale, const color& color, f32 rotation = 0.0f);
+
 /**
  * Temporary helper function for creating instances of render components within g_appearance_components array. For furher
  * information see description of g_appearance_components.
