@@ -16,6 +16,14 @@
 #define NC_BAKED_CVARS
 #endif
 
+#if defined(__clang__)
+#define NC_COMPILER_CLANG
+#elif defined(_MSC_VER)
+#define NC_COMPILER_MSVC
+#else
+#error Unsupported compiler
+#endif
+
 #if defined (NC_Profiling)
 #define NC_PROFILING // code profiling tools should be on
 #define NC_BENCHMARK // benchmarks should be compiled

@@ -2,6 +2,7 @@
 #include <engine/graphics/graphics_system.h>
 
 #include <common.h>
+#include <config.h>
 
 #include <engine/core/engine.h>
 #include <engine/core/module_event.h>
@@ -728,16 +729,25 @@ static void draw_cvar_type_and_input(bool* bl, const CVars::CVarRange&)
 //==============================================================================
 static void draw_cvar_row(const std::string& name, const CVars::CVar& cvar)
 {
+  #ifdef NC_COMPILER_CLANG
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wformat-security"
+  #endif
+
   ImGui::TableNextColumn();
   ImGui::Text(name.c_str());
   ImGui::SetItemTooltip(cvar.desc);
 
+  #ifdef NC_COMPILER_CLANG
+  #pragma clang diagnostic pop
+  #endif
+
   auto& range_list = CVars::get_cvar_ranges();
   auto  it         = range_list.find(name);
 
-  auto* range = it != range_list.end() ? &it->second : &CVars::DEFAULT_RANGE;
+  const auto& range = it != range_list.end() ? it->second : CVars::DEFAULT_RANGE;
 
-  std::visit([&](auto&& t){ draw_cvar_type_and_input(t, *range); }, cvar.ptr);
+  std::visit([&](auto&& t){ draw_cvar_type_and_input(t, range); }, cvar.ptr);
 }
 
 //==============================================================================

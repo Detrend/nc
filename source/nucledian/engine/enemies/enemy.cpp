@@ -8,7 +8,7 @@ namespace nc
 {
 Enemy::Enemy()
 {
-  position = vec3(0, 0, 0);
+  this->position = vec3(0, 0, 0);
   init();
 
   collision = true;
@@ -18,7 +18,7 @@ Enemy::Enemy()
 
 Enemy::Enemy(vec3 position)
 {
-  position = position;
+  this->position = position;
   init();
 
   collision = true;
