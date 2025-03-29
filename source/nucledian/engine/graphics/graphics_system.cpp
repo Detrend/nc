@@ -151,10 +151,12 @@ static void draw_triangle(
 }
 
 //==============================================================================
-[[maybe_unused]]static void draw_text(vec2 coords, cstr text, vec3 color)
+static void draw_text(vec2 coords, cstr text, vec3 color)
 {
-  const f32 width  = ImGui::GetWindowWidth();
-  const f32 height = ImGui::GetWindowHeight();
+  int x, y;
+  SDL_GetWindowSize(SDL_GL_GetCurrentWindow(), &x, &y);
+  const f32 width  = static_cast<f32>(x);
+  const f32 height = static_cast<f32>(y);
 
   const auto col = ImColor{color.x, color.y, color.z, 1.0f};
 
@@ -487,16 +489,12 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_CULL_FACE);
 
-  static vec2 input_position   = vec2{0.0f};
   static vec2 pointed_position = vec2{0.0f};
   static vec2 player_direction = vec2{1, 0};
-  static f32  frustum_dir      = 0.0f;
-  static f32  frustum_deg      = 90.0f;
 
-  static bool follow_mouse      = false;
-  static bool inspect_sector    = false;
-  static int  inspect_sector_id = 0;
   static bool show_sector_frustums = true;
+  static bool show_visible_sectors = true;
+  static bool show_sector_ids      = false;
 
   static f32 zoom = 0.1f;
 
@@ -513,7 +511,7 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
 
   auto level_space_to_screen_space = [&](vec2 pos) -> vec2
   {
-    return vec2{1.0f, aspect} * (pos - pointed_position) * zoom;
+    return vec2{-1.0f, aspect} * (pos - pointed_position) * zoom;
   };
 
   auto draw_player = [&](vec2 coords, vec2 dir, vec3 color1, vec3 color2, f32 scale)
@@ -532,44 +530,31 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
     debug_helpers::draw_line(right, front, color2);
   };
 
-  if (ImGui::Begin("Test Window"))
+  if (ImGui::Begin("2D Top Down Debug"))
   {
-    ImGui::SliderFloat("X",           &input_position.x, -1.0f,  1.0f);
-    ImGui::SliderFloat("Y",           &input_position.y, -1.0f,  1.0f);
-    ImGui::SliderFloat("Frustum Dir", &frustum_dir,       0.0f,  360.0f);
-    ImGui::SliderFloat("Frustum Deg", &frustum_deg,       0.0f,  180.0f);
-    ImGui::SliderFloat("Zoom",        &zoom,              0.01f, 1.0f);
-
+    ImGui::SliderFloat("Zoom", &zoom, 0.01f, 1.0f);
     ImGui::Separator();
-
-    ImGui::Checkbox("Follow mouse",   &follow_mouse);
-    ImGui::Checkbox("Inspect sector", &inspect_sector);
-    ImGui::InputInt("Inspected sector", &inspect_sector_id, 1);
+    ImGui::Checkbox("Show visible sectors", &show_visible_sectors);
     ImGui::Checkbox("Show sector frustums", &show_sector_frustums);
+    ImGui::Checkbox("Show sector IDs",      &show_sector_ids);
   }
   ImGui::End();
 
   auto& map = get_engine().get_map();
 
-  auto view_direction = vec2{std::cosf(deg2rad(frustum_dir)), std::sinf(deg2rad(frustum_dir))};
-
-  // first, render the floors of the sectors with gray
+  // Render the floors of the sectors with black or gray if visible
   for (SectorID i = 0; i < map.sectors.size(); ++i)
   {
-    auto&& sector = map.sectors[i];
-    auto& repr = sector.int_data;
+    const auto& sector = map.sectors[i];
+    const auto& repr   = sector.int_data;
     const s32 wall_count = repr.last_wall - repr.first_wall;
-    NC_ASSERT(wall_count >= 0);
+    NC_ASSERT(wall_count >= 3);
 
-    if (wall_count < 3)
-    {
-      continue;
-    }
+    const bool is_visible = visible_sectors.sectors.contains(i);
+    const vec3 color = (is_visible && show_visible_sectors) ? vec3{0.25f} : vec3{colors::BLACK};
 
     const auto& first_wall = map.walls[repr.first_wall];
-    const bool  is_visible = visible_sectors.sectors.contains(i);
-
-    const auto color = is_visible ? colors::GRAY : colors::BLACK;
+    vec2 avg_position = first_wall.pos;
 
     for (WallID index = 1; index < wall_count; ++index)
     {
@@ -582,11 +567,26 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
       const auto& wall1 = map.walls[index_in_arr];
       const auto& wall2 = map.walls[next_in_arr];
 
+      avg_position = avg_position + wall1.pos;
+
       debug_helpers::draw_triangle(
         level_space_to_screen_space(first_wall.pos),
         level_space_to_screen_space(wall1.pos),
         level_space_to_screen_space(wall2.pos),
         color
+      );
+    }
+
+    avg_position = avg_position / static_cast<f32>(wall_count);
+    if (show_sector_ids)
+    {
+      const auto sector_color = is_visible ? colors::WHITE : colors::PINK;
+      const auto sector_str   = std::to_string(i);
+      debug_helpers::draw_text
+      (
+        level_space_to_screen_space(avg_position),
+        sector_str.c_str(),
+        sector_color
       );
     }
   }
@@ -609,14 +609,9 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
       // render the sector shape into stencil buffer
       {
         const auto& sector = map.sectors[sector_id];
-        auto& repr = sector.int_data;
+        const auto& repr   = sector.int_data;
         const s32 wall_count = repr.last_wall - repr.first_wall;
-        NC_ASSERT(wall_count >= 0);
-
-        if (wall_count < 3)
-        {
-          continue;
-        }
+        NC_ASSERT(wall_count >= 3);
 
         const auto& first_wall = map.walls[repr.first_wall];
 
@@ -656,7 +651,7 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
           vec2 le, re;
           frustum.get_frustum_edges(le, re);
 
-          const auto color = vec3{0.25f, 0.25f, 0.25f};
+          const auto color = vec3{0.5f, 0.5f, 0.5f};
           debug_helpers::draw_triangle(
             level_space_to_screen_space(frustum.center),
             level_space_to_screen_space(frustum.center + le * 3000.0f),
@@ -694,7 +689,7 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
       debug_helpers::draw_line(
         level_space_to_screen_space(wall1.pos),
         level_space_to_screen_space(wall2.pos),
-        vec3{1}
+        colors::WHITE
       );
     }
   }
@@ -726,36 +721,19 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
       debug_helpers::draw_line(
         level_space_to_screen_space(wall1.pos),
         level_space_to_screen_space(wall2.pos),
-        vec3{1, 0, 0}
+        colors::RED
       );
     }
   }
 
+  // and render the player
   draw_player
   (
     pointed_position,
     player_direction,
-    colors::GRAY,
+    colors::BLACK,
     colors::ORANGE,
     0.5f
-  );
-
-  // Left one
-  const auto ldir  = deg2rad(frustum_dir + frustum_deg * 0.5f);
-  const auto rdir  = deg2rad(frustum_dir - frustum_deg * 0.5f);
-  const auto ledge = vec2{std::cosf(ldir), std::sinf(ldir)};
-  const auto redge = vec2{std::cosf(rdir), std::sinf(rdir)};
-
-  debug_helpers::draw_line(
-    level_space_to_screen_space(pointed_position),
-    level_space_to_screen_space(pointed_position + ledge * 2.0f),
-    vec3{0.5f, 0.5f, 1.0f}
-  );
-
-  debug_helpers::draw_line(
-    level_space_to_screen_space(pointed_position),
-    level_space_to_screen_space(pointed_position + redge * 2.0f),
-    vec3{0.5f, 0.5f, 1.0f}
   );
 
   glEnable(GL_CULL_FACE);
