@@ -25,19 +25,21 @@ public:
   void on_event(ModuleEvent& event) override;
   bool init();
 
+  void update_window_and_pump_messages();
+
+  // Backdoor for replay system. This enables us to override player
+  // inputs.
   void override_player_inputs(const PlayerSpecificInputs& player_inputs);
 
   void handle_app_event(const SDL_Event& event);
   void get_player_inputs();
-  const GameInputs& get_inputs() const;
-
-  //Player* get_player();
+  GameInputs get_inputs() const;
 
 private:
   GameInputs m_current_inputs;
   GameInputs m_previous_inputs;
 
-  //Player debug_player;
+  bool m_disable_player_inputs : 1 = false;
 };
 
 }

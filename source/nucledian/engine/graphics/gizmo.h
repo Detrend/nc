@@ -1,5 +1,9 @@
 #pragma once
 
+#include <config.h>
+
+#ifdef NC_DEBUG_DRAW
+
 #include <temp_math.h>
 #include <engine/graphics/resources/mesh.h>
 #include <engine/graphics/resources/material.h>
@@ -57,8 +61,52 @@ public:
   void update_ttls(f32 delta_seconds);
   void draw_gizmos() const;
 
+  void draw_line(const vec2& from, const vec2& to, const vec3& col = vec3{1});
+  void draw_triangle(
+    const vec2& a,
+    const vec2& b,
+    const vec2& c,
+    const vec3& col);
+
 private:
+  enum PrimitiveType : u8
+  {
+    LineType,
+    TriangleType,
+    // - //
+    Count,
+  };
+
+  struct Line
+  {
+    vec2 from;
+    vec2 to;
+    vec3 color;
+  };
+
+  struct Triangle
+  {
+    vec2 a;
+    vec2 b;
+    vec2 c;
+    vec3 color;
+  };
+
+  struct Primitive
+  {
+    PrimitiveType type;
+    union
+    {
+      Line     line;
+      Triangle triangle;
+    };
+  };
+
+  void render_line(const Line& line);
+  void render_triangle(const Triangle& tri);
+
   using GizmoMap = std::unordered_map<u32, Gizmo>;
+  std::vector<Primitive> m_primitives;
 
   inline static u32 m_next_gizmo_id = 0;
 
@@ -69,3 +117,6 @@ private:
 };
 
 }
+
+#endif
+
