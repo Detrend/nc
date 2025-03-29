@@ -58,9 +58,24 @@ EngineModuleId GraphicsSystem::get_module_id()
 
 //==============================================================================
 static void APIENTRY gl_debug_message(
-  GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum /*severity*/,
+  GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum severity,
   GLsizei /*length*/, const GLchar* message, const void* /*userParam*/)
 {
+  s32 numeric_severity = 0;
+  switch (severity)
+  {
+    case GL_DEBUG_SEVERITY_NOTIFICATION: numeric_severity = 0; break;
+    case GL_DEBUG_SEVERITY_LOW:          numeric_severity = 1; break;
+    case GL_DEBUG_SEVERITY_MEDIUM:       numeric_severity = 2; break;
+    case GL_DEBUG_SEVERITY_HIGH:         numeric_severity = 3; break;
+    default: NC_ERROR("Unknown severity");                     break;
+  }
+
+  if (numeric_severity < CVars::opengl_debug_severity)
+  {
+    return;
+  }
+
   NC_TODO("We need a proper logging system!!!");
   std::cout << "GL Debug Message: " << message << std::endl;
 }

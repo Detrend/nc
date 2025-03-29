@@ -46,7 +46,7 @@ static inline bool NC_TOKENJOIN(_cvar_definition, _name) = []()  \
   return true;                                                   \
 }();                                                             \
 
-#define NC_REGISTER_CVAR_RANGED(_type, _name, _default_value, _desc, _range_min, _range_max) \
+#define NC_REGISTER_CVAR_RANGED(_type, _name, _default_value, _range_min, _range_max, _desc) \
 static inline bool NC_TOKENJOIN(_cvar_range_definition, _name) = []()                        \
 {                                                                                            \
   NC_ASSERT(_range_min <= _range_max);                                                       \
@@ -60,7 +60,7 @@ NC_REGISTER_CVAR(_type, _name, _default_value, _desc)
 #define NC_REGISTER_CVAR(_type, _name, _default_value, _desc) \
 static constexpr _type _name{_default_value};
 
-#define NC_REGISTER_CVAR_RANGED(_type, _name, _default_value, _desc, _range_min, _range_max) \
+#define NC_REGISTER_CVAR_RANGED(_type, _name, _default_value, _range_min, _range_max, _desc) \
 NC_REGISTER_CVAR(_type, _name, _default_value, _desc)
 
 #endif
@@ -94,7 +94,9 @@ struct CVars
   NC_REGISTER_CVAR(bool, display_debug_window,  false, "Displays debug window.");
   NC_REGISTER_CVAR(bool, display_imgui_demo,    false, "Displays imgui demo window for inspiration.");
 
-  NC_REGISTER_CVAR_RANGED(f32, time_speed, 1.0f, "Changes the update speed.", 0.0f, 10.0f);
+  NC_REGISTER_CVAR_RANGED(s32, opengl_debug_severity, 1, 0, 3,
+    "0 = everything, 1 = low and higher, 2 = medium and higher, 3 = critical only");
+  NC_REGISTER_CVAR_RANGED(f32, time_speed, 1.0f, 0.0f, 10.0f, "Changes the update speed.");
 };
 
 }
