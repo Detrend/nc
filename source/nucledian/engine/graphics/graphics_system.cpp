@@ -44,8 +44,139 @@
 #include <cmath>
 #include <chrono>
 
+#ifdef NC_DEBUG_DRAW
+namespace nc::debug_helpers
+{
+
+static Material g_top_down_material = Material::invalid();
+static GLuint   g_default_vao       = 0;
+
+//==============================================================================
+constexpr cstr TOP_DOWN_FRAGMENT_SOURCE = R"ABC(
+#version 430 core
+out vec4 FragColor;
+
+layout(location = 0) uniform vec3 u_color;
+
+void main()
+{
+  FragColor = vec4(u_color, 1.0f);
+} 
+)ABC";
+
+//==============================================================================
+constexpr cstr TOP_DOWN_VERTEX_SOURCE = R"ABC(
+#version 430 core
+layout (location = 0) in vec3 aPos;
+
+void main()
+{
+  gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+}
+)ABC";
+  
+//==============================================================================
+static void draw_line(
+  const vec2& from, const vec2& to, const vec3& color = vec3{1})
+{
+  g_top_down_material.use();
+
+  const auto  screen_bbox = aabb2{vec2{-1}, vec2{1}};
+  const aabb2 bbox = aabb2{from, to};
+
+  if (!intersect::aabb_aabb_2d(bbox, screen_bbox))
+  {
+    return;
+  }
+
+  glBindVertexArray(g_default_vao);
+
+  GLuint vertex_buffer;
+  glGenBuffers(1, &vertex_buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+
+  vec3 data[2] = {vec3(from, -0.5f), vec3(to, -0.5f)};
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * 2, data, GL_DYNAMIC_DRAW);
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glEnableVertexAttribArray(0); 
+
+  glUniform3f(0, color.x, color.y, color.z);
+
+  glDrawArrays(GL_LINES, 0, 2);
+
+  glDeleteBuffers(1, &vertex_buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindVertexArray(0);
+}
+
+//==============================================================================
+static void draw_triangle(
+  const vec2& a, const vec2& b, const vec2& c, const vec3& color)
+{
+  g_top_down_material.use();
+
+  const auto  screen_bbox = aabb2{vec2{-1}, vec2{1}};
+  const aabb2 bbox = aabb2{a, b, c};
+
+  if (!intersect::aabb_aabb_2d(bbox, screen_bbox))
+  {
+    return;
+  }
+
+  glBindVertexArray(g_default_vao);
+
+  GLuint vertex_buffer;
+  glGenBuffers(1, &vertex_buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
+
+  vec3 data[3] = 
+  {
+    vec3(a, -0.5f),
+    vec3(b, -0.5f),
+    vec3(c, -0.5f),
+  };
+  glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_DYNAMIC_DRAW);
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glEnableVertexAttribArray(0); 
+
+  glUniform3f(0, color.x, color.y, color.z);
+
+  glDrawArrays(GL_TRIANGLES, 0, 3);
+
+  glDeleteBuffers(1, &vertex_buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindVertexArray(0);
+}
+
+//==============================================================================
+[[maybe_unused]]static void draw_text(vec2 coords, cstr text, vec3 color)
+{
+  const f32 width  = ImGui::GetWindowWidth();
+  const f32 height = ImGui::GetWindowHeight();
+
+  const auto col = ImColor{color.x, color.y, color.z, 1.0f};
+
+  coords = (coords * vec2{1.0f, -1.0f} + vec2{1}) * vec2{0.5f} * vec2{width, height};
+  ImGui::GetForegroundDrawList()->AddText(ImVec2{coords.x, coords.y}, col, text);
+};
+
+}
+#endif
+
 namespace nc
 {
+
+// MR says: keeping it here instead of the header so we do not need to include
+// intersect.h and map_types.h to graphics_system.h
+struct VisibleSectors
+{
+  std::map<SectorID, FrustumBuffer> sectors;
+  vec2 position;
+  vec2 direction;
+  f32  fov;
+};
 
 // Temporary solution
 std::vector<ModelHandle> g_map_sector_models;
@@ -148,6 +279,15 @@ bool GraphicsSystem::init()
   m_solid_material.use();
   m_solid_material.set_uniform(shaders::solid::PROJECTION, projection);
 
+  #ifdef NC_DEBUG_DRAW
+  debug_helpers::g_top_down_material = Material
+  (
+    debug_helpers::TOP_DOWN_VERTEX_SOURCE,
+    debug_helpers::TOP_DOWN_FRAGMENT_SOURCE
+  );
+  glGenVertexArrays(1, &debug_helpers::g_default_vao);
+  #endif
+
   // init imgui
   #ifdef NC_IMGUI
   ImGui::CreateContext();
@@ -215,6 +355,44 @@ void GraphicsSystem::terminate()
 }
 
 //==============================================================================
+static void query_data_from_camera(
+  const DebugCamera& camera,
+  vec2& pos,
+  vec2& dir,
+  f32&  fov)
+{
+  pos = vec2{camera.get_position().x, camera.get_position().z};
+
+  vec2 d = vec2{camera.get_forward().x, camera.get_forward().z};
+  dir = is_zero(d) ? vec2{1, 0} : normalize(d);
+
+  fov = std::numbers::pi_v<f32> * 0.5f; // 90 degrees
+}
+
+//==============================================================================
+void GraphicsSystem::query_visible_sectors(VisibleSectors& out) const
+{
+  NC_ASSERT(out.sectors.empty());
+
+  const auto& map = get_engine().get_map();
+
+  auto* camera = this->get_camera();
+  if (!camera)
+  {
+    return;
+  }
+
+  query_data_from_camera(*camera, out.position, out.direction, out.fov);
+
+  NC_TODO("This does not work properly, because we can visit one sector multiple times");
+  map.query_visible_sectors(out.position, out.direction, out.fov,
+  [&](SectorID sid, Frustum2 frst, PortalID)
+  {
+    out.sectors[sid].insert_frustum(frst);
+  });
+}
+
+//==============================================================================
 MeshManager& GraphicsSystem::get_mesh_manager()
 {
   return m_mesh_manager;
@@ -276,15 +454,21 @@ void GraphicsSystem::render()
   }
   #endif
 
+  VisibleSectors visible;
+  query_visible_sectors(visible);
+
   if (CVars::enable_top_down_debug)
   {
-    render_map_top_down();
+    // Top down rendering for easier debugging
+    #ifdef NC_DEBUG_DRAW
+    render_map_top_down(visible);
+    #endif
   }
   else
   {
     m_gizmo_manager.draw_gizmos();
-    render_sectors();
-    render_entities();
+    render_sectors(visible);
+    render_entities(visible);
   }
 
   #ifdef NC_IMGUI
@@ -296,131 +480,81 @@ void GraphicsSystem::render()
 }
 
 //==============================================================================
-void GraphicsSystem::render_map_top_down()
+#ifdef NC_DEBUG_DRAW
+void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
 {
+  glClear(GL_STENCIL_BUFFER_BIT);
+  glDisable(GL_DEPTH_TEST);
+  glDisable(GL_CULL_FACE);
+
   static vec2 input_position   = vec2{0.0f};
   static vec2 pointed_position = vec2{0.0f};
+  static vec2 player_direction = vec2{1, 0};
   static f32  frustum_dir      = 0.0f;
   static f32  frustum_deg      = 90.0f;
-  static f32  ms_last_frame    = 0.0f;
 
   static bool follow_mouse      = false;
   static bool inspect_sector    = false;
   static int  inspect_sector_id = 0;
   static bool show_sector_frustums = true;
 
+  static f32 zoom = 0.1f;
+
+  if (auto* camera = this->get_camera())
+  {
+    pointed_position = vec2{camera->get_position().x, camera->get_position().z};
+    const auto frwd  = vec2{camera->get_forward().x,  camera->get_forward().z};
+    player_direction = is_zero(frwd) ? vec2{1, 0} : normalize(frwd);
+  }
+
+  int width = 0, height = 0;
+  SDL_GetWindowSize(m_window, &width, &height);
+  const f32 aspect = (f32)width / height;
+
+  auto level_space_to_screen_space = [&](vec2 pos) -> vec2
+  {
+    return vec2{1.0f, aspect} * (pos - pointed_position) * zoom;
+  };
+
+  auto draw_player = [&](vec2 coords, vec2 dir, vec3 color1, vec3 color2, f32 scale)
+  {
+    const vec2 front = level_space_to_screen_space(coords + dir * scale);
+    const vec2 back  = level_space_to_screen_space(coords - dir * 0.5f * scale);
+    const vec2 left  = level_space_to_screen_space(coords + flipped(dir) * scale * 0.5f - dir * scale);
+    const vec2 right = level_space_to_screen_space(coords - flipped(dir) * scale * 0.5f - dir * scale);
+
+    debug_helpers::draw_triangle(front, back, left,  color1);
+    debug_helpers::draw_triangle(front, back, right, color1);
+
+    debug_helpers::draw_line(front, left,  color2);
+    debug_helpers::draw_line(left,  back,  color2);
+    debug_helpers::draw_line(back,  right, color2);
+    debug_helpers::draw_line(right, front, color2);
+  };
+
   if (ImGui::Begin("Test Window"))
   {
-    ImGui::SliderFloat("X",           &input_position.x, -1.0f, 1.0f);
-    ImGui::SliderFloat("Y",           &input_position.y, -1.0f, 1.0f);
-    ImGui::SliderFloat("Frustum Dir", &frustum_dir,         0.0f, 360.0f);
-    ImGui::SliderFloat("Frustum Deg", &frustum_deg,         0.0f, 180.0f);
+    ImGui::SliderFloat("X",           &input_position.x, -1.0f,  1.0f);
+    ImGui::SliderFloat("Y",           &input_position.y, -1.0f,  1.0f);
+    ImGui::SliderFloat("Frustum Dir", &frustum_dir,       0.0f,  360.0f);
+    ImGui::SliderFloat("Frustum Deg", &frustum_deg,       0.0f,  180.0f);
+    ImGui::SliderFloat("Zoom",        &zoom,              0.01f, 1.0f);
+
     ImGui::Separator();
+
     ImGui::Checkbox("Follow mouse",   &follow_mouse);
     ImGui::Checkbox("Inspect sector", &inspect_sector);
     ImGui::InputInt("Inspected sector", &inspect_sector_id, 1);
     ImGui::Checkbox("Show sector frustums", &show_sector_frustums);
-    ImGui::Text("MS last frame: %.4f", ms_last_frame);
   }
   ImGui::End();
 
   auto& map = get_engine().get_map();
 
-  int width = 0, height = 0;
-  SDL_GetWindowSize(m_window, &width, &height);
-
-  int mx = 0, my = 0;
-  SDL_GetMouseState(&mx, &my);
-  vec2 sz = vec2{(f32)width, (f32)height};
-
-  if (follow_mouse)
-  {
-    pointed_position = ((vec2{(f32)mx, (f32)my} / sz) - vec2{0.5f}) * vec2{2.0f, -2.0f};
-  }
-  else
-  {
-    pointed_position = input_position;
-  }
-
-  auto debug_print_text = [&](vec2 coords, cstr text, ImU32 col = 0xFFFFFFFF)
-  {
-    coords = (coords * vec2{1.0f, -1.0f} + vec2{1}) * vec2{0.5f} * vec2{(f32)width, (f32)height};
-    ImGui::GetForegroundDrawList()->AddText(ImVec2{coords.x, coords.y}, col, text);
-  };
-
-  s32 point_sector = -1;
-  //auto from_map = map.get_sector_from_point(pointed_position);
-  //if (from_map != INVALID_SECTOR_ID)
-  //{
-  //  point_sector = static_cast<s32>(from_map);
-  //}
-  // find the sector we are pointing at
-  for (u16 i = 0; i < map.sectors.size(); ++i)
-  {
-    auto&& sector = map.sectors[i];
-    auto& repr = sector.int_data;
-    const s32 wall_count = repr.last_wall - repr.first_wall;
-    NC_ASSERT(wall_count >= 0);
-
-    if (wall_count < 3)
-    {
-      continue;
-    }
-
-    const auto& first_wall = map.walls[repr.first_wall];
-
-    for (WallID index = 1; index < wall_count; ++index)
-    {
-      WallID next_index = (index+1) % wall_count;
-      WallID index_in_arr = repr.first_wall + index;
-      WallID next_in_arr  = repr.first_wall + next_index;
-      NC_ASSERT(index_in_arr < map.walls.size());
-      NC_ASSERT(next_in_arr  < map.walls.size());
-
-      const auto& wall1 = map.walls[index_in_arr];
-      const auto& wall2 = map.walls[next_in_arr];
-      if (intersect::point_triangle(pointed_position, first_wall.pos, wall2.pos, wall1.pos))
-      {
-        point_sector = i;
-        break;
-      }
-    }
-
-    if (point_sector >= 0)
-    {
-      break;
-    }
-  }
-
   auto view_direction = vec2{std::cosf(deg2rad(frustum_dir)), std::sinf(deg2rad(frustum_dir))};
 
-  std::map<SectorID, u32>                   visible_sectors;
-  std::map<SectorID, std::vector<Frustum2>> visible_sectors_frustum;
-  auto start_time = std::chrono::high_resolution_clock::now();
-
-  std::vector<Frustum2> inspected_sector_frustums;
-
-  map.query_visible_sectors(pointed_position, view_direction, deg2rad(frustum_deg), [&](SectorID id, Frustum2 f, PortalID)
-  {
-    if (!visible_sectors.contains(id))
-    {
-      visible_sectors[id] = 0;
-    }
-
-    visible_sectors_frustum[id].push_back(f);
-    visible_sectors[id] += 1;
-
-    if (inspect_sector && inspect_sector_id == id)
-    {
-      inspected_sector_frustums.push_back(f);
-    }
-  });
-  auto end_time = std::chrono::high_resolution_clock::now();
-  auto delta_time = end_time - start_time;
-  ms_last_frame = std::chrono::duration_cast<std::chrono::microseconds>(delta_time).count() * 0.001f;
-
   // first, render the floors of the sectors with gray
-  for (u16 i = 0; i < map.sectors.size(); ++i)
+  for (SectorID i = 0; i < map.sectors.size(); ++i)
   {
     auto&& sector = map.sectors[i];
     auto& repr = sector.int_data;
@@ -432,34 +566,10 @@ void GraphicsSystem::render_map_top_down()
       continue;
     }
 
-    const bool pointed_at = i == point_sector;
-    [[maybe_unused]]const auto vis_count  = visible_sectors.contains(i) ? visible_sectors[i] : 0;
-
     const auto& first_wall = map.walls[repr.first_wall];
+    const bool  is_visible = visible_sectors.sectors.contains(i);
 
-    if (wall_count > 0)
-    {
-      vec2 avg_pos = vec2{0};
-
-      for (WallID index = 0; index < wall_count; ++index)
-      {
-        WallID index_in_arr = repr.first_wall + index;
-        const auto& wall1 = map.walls[index_in_arr];
-        auto point_name = std::to_string(index_in_arr);
-
-        if (pointed_at)
-        {
-          debug_print_text(wall1.pos, point_name.c_str());
-        }
-
-        avg_pos = avg_pos + wall1.pos;
-      }
-
-      avg_pos = avg_pos / vec2{(f32)wall_count};
-      auto sector_name = std::to_string(i);
-      const auto col = pointed_at ? ImColor(255, 0, 0, 255) : ImColor(128, 32, 32, 255);
-      debug_print_text(avg_pos, sector_name.c_str(), col);
-    }
+    const auto color = is_visible ? colors::GRAY : colors::BLACK;
 
     for (WallID index = 1; index < wall_count; ++index)
     {
@@ -472,21 +582,11 @@ void GraphicsSystem::render_map_top_down()
       const auto& wall1 = map.walls[index_in_arr];
       const auto& wall2 = map.walls[next_in_arr];
 
-      vec3 col;
-      if (show_sector_frustums)
-      {
-        col = vec3{0.0f};
-      }
-      else
-      {
-        col = pointed_at ? vec3{0.75f} : vec3{vis_count * 0.1f};
-      }
-
-      this->get_gizmo_manager().draw_triangle(
-        first_wall.pos,
-        wall1.pos,
-        wall2.pos,
-        col
+      debug_helpers::draw_triangle(
+        level_space_to_screen_space(first_wall.pos),
+        level_space_to_screen_space(wall1.pos),
+        level_space_to_screen_space(wall2.pos),
+        color
       );
     }
   }
@@ -496,7 +596,7 @@ void GraphicsSystem::render_map_top_down()
   {
     glEnable(GL_STENCIL_TEST);
 
-    for (const auto&[sector_id, frustums] : visible_sectors_frustum)
+    for (const auto&[sector_id, frustums] : visible_sectors.sectors)
     {
       glStencilMask(0xFF);
       glStencilFunc(GL_ALWAYS, 1, 0xFF);
@@ -530,10 +630,10 @@ void GraphicsSystem::render_map_top_down()
 
           const auto& wall1 = map.walls[index_in_arr];
           const auto& wall2 = map.walls[next_in_arr];
-          this->get_gizmo_manager().draw_triangle(
-            first_wall.pos,
-            wall1.pos,
-            wall2.pos,
+          debug_helpers::draw_triangle(
+            level_space_to_screen_space(first_wall.pos),
+            level_space_to_screen_space(wall1.pos),
+            level_space_to_screen_space(wall2.pos),
             vec3{1}
           );
         }
@@ -546,16 +646,21 @@ void GraphicsSystem::render_map_top_down()
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // keep the value in stencil buffer even if we fail the test
 
         // render the frustum, but with the stencil test, so only the pixels inside the sector pass
-        for (const auto& frustum : frustums)
+        for (const auto& frustum : frustums.frustum_slots)
         {
+          if (frustum == INVALID_FRUSTUM)
+          {
+            continue;
+          }
+
           vec2 le, re;
           frustum.get_frustum_edges(le, re);
 
           const auto color = vec3{0.25f, 0.25f, 0.25f};
-          this->get_gizmo_manager().draw_triangle(
-            frustum.center,
-            frustum.center + le * 2.0f,
-            frustum.center + re * 2.0f,
+          debug_helpers::draw_triangle(
+            level_space_to_screen_space(frustum.center),
+            level_space_to_screen_space(frustum.center + le * 3000.0f),
+            level_space_to_screen_space(frustum.center + re * 3000.0f),
             color
           );
         }
@@ -586,9 +691,9 @@ void GraphicsSystem::render_map_top_down()
 
       const auto& wall1 = map.walls[index_in_arr];
       const auto& wall2 = map.walls[next_in_arr];
-      this->get_gizmo_manager().draw_line(
-        wall1.pos,
-        wall2.pos,
+      debug_helpers::draw_line(
+        level_space_to_screen_space(wall1.pos),
+        level_space_to_screen_space(wall2.pos),
         vec3{1}
       );
     }
@@ -611,31 +716,28 @@ void GraphicsSystem::render_map_top_down()
       {
         next_in_arr = static_cast<WallID>(next_in_arr - wall_count);
       }
+
       NC_ASSERT(index_in_arr < map.walls.size());
       NC_ASSERT(next_in_arr  < map.walls.size());
 
       const auto& wall1 = map.walls[index_in_arr];
       const auto& wall2 = map.walls[next_in_arr];
-      this->get_gizmo_manager().draw_line(
-        wall1.pos,
-        wall2.pos,
+
+      debug_helpers::draw_line(
+        level_space_to_screen_space(wall1.pos),
+        level_space_to_screen_space(wall2.pos),
         vec3{1, 0, 0}
       );
     }
   }
 
-  // Horizontal
-  this->get_gizmo_manager().draw_line(
-    vec2{-1.0f, pointed_position.y},
-    vec2{1.0f,  pointed_position.y},
-    vec3{1.0f}
-  );
-
-  // Vertical
-  this->get_gizmo_manager().draw_line(
-    vec2{pointed_position.x,  1.0f},
-    vec2{pointed_position.x, -1.0f},
-    vec3{1.0f}
+  draw_player
+  (
+    pointed_position,
+    player_direction,
+    colors::GRAY,
+    colors::ORANGE,
+    0.5f
   );
 
   // Left one
@@ -644,53 +746,22 @@ void GraphicsSystem::render_map_top_down()
   const auto ledge = vec2{std::cosf(ldir), std::sinf(ldir)};
   const auto redge = vec2{std::cosf(rdir), std::sinf(rdir)};
 
-  this->get_gizmo_manager().draw_line(
-    pointed_position,
-    pointed_position + ledge * 2.0f,
+  debug_helpers::draw_line(
+    level_space_to_screen_space(pointed_position),
+    level_space_to_screen_space(pointed_position + ledge * 2.0f),
     vec3{0.5f, 0.5f, 1.0f}
   );
 
-  this->get_gizmo_manager().draw_line(
-    pointed_position,
-    pointed_position + redge * 2.0f,
+  debug_helpers::draw_line(
+    level_space_to_screen_space(pointed_position),
+    level_space_to_screen_space(pointed_position + redge * 2.0f),
     vec3{0.5f, 0.5f, 1.0f}
   );
 
-  if (inspect_sector)
-  {
-    // render the frustums of the inspected sector
-    int fidx = 0;
-    constexpr int COL_CNT = 3;
-    constexpr auto COLS = std::array{vec3{0.75f, 0.2f, 0.2f}, vec3{0.2f, 0.75f, 0.2f}, vec3{0.2f, 0.2f, 0.75f}};
-    for (auto& frustum : inspected_sector_frustums)
-    {
-      vec2 le, re;
-      frustum.get_frustum_edges(le, re);
-
-      auto color = COLS[(fidx++) % COL_CNT];
-
-      // red cross
-      this->get_gizmo_manager().draw_line(
-        frustum.center + vec2{-1, 0} * 0.1f,
-        frustum.center + vec2{ 1, 0} * 0.1f,
-        vec3{1.0f, 0.5f, 0.5f}
-      );
-
-      this->get_gizmo_manager().draw_line(
-        frustum.center + vec2{0,  1} * 0.1f,
-        frustum.center + vec2{0, -1} * 0.1f,
-        vec3{1.0f, 0.5f, 0.5f}
-      );
-
-      this->get_gizmo_manager().draw_triangle(
-        frustum.center,
-        frustum.center + le * 2.0f,
-        frustum.center + re * 2.0f,
-        color
-      );
-    }
-  }
+  glEnable(GL_CULL_FACE);
+  glEnable(GL_DEPTH_TEST);
 }
+#endif
 
 //==============================================================================
 #ifdef NC_DEBUG_DRAW
@@ -813,7 +884,7 @@ void GraphicsSystem::draw_debug_window()
 #endif
 
 //==============================================================================
-void GraphicsSystem::render_sectors() const
+void GraphicsSystem::render_sectors(const VisibleSectors& visible) const
 {
   constexpr auto SECTOR_COLORS = std::array
   {
@@ -840,24 +911,11 @@ void GraphicsSystem::render_sectors() const
     return;
   }
 
-  const auto& map = get_engine().get_map();
-  const auto  pos = cam->get_position();
-  const auto  dir = cam->get_forward();
-  const auto  fov = std::numbers::pi_v<f32> * 0.5f; // 90 degrees
-
-  const auto pos2   = vec2{pos.x, pos.z};
-  const auto dir2   = vec2{dir.x, dir.z};
-  const auto dir2_n = is_zero(dir2) ? vec2::X : normalize(dir2);
-
-  std::set<SectorID> sectors_to_render;
-  map.query_visible_sectors(pos2, dir2_n, fov, [&](SectorID id, Frustum2, PortalID)
-  {
-    sectors_to_render.insert(id);
-  });
+  const auto& sectors_to_render = visible.sectors;
 
   m_solid_material.use();
 
-  for (auto sector_id : sectors_to_render)
+  for (const auto&[sector_id, _] : sectors_to_render)
   {
     NC_ASSERT(sector_id < g_map_sector_models.size());
     auto handle = g_map_sector_models[sector_id];
@@ -879,7 +937,7 @@ void GraphicsSystem::render_sectors() const
 }
 
 //==============================================================================
-void GraphicsSystem::render_entities() const
+void GraphicsSystem::render_entities(const VisibleSectors&) const
 {
   /*
    * 1. obtain visible secors from sector system (TODO)

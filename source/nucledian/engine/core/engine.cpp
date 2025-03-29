@@ -547,6 +547,11 @@ void Engine::process_window_event(const SDL_Event& event)
         CVars::time_speed = CVars::time_speed ? 0.0f : 1.0f;
       }
 
+      if (event.key.keysym.scancode == SDL_SCANCODE_F4)
+      {
+        CVars::enable_top_down_debug = !CVars::enable_top_down_debug;
+      }
+
       if (event.key.keysym.scancode == SDL_SCANCODE_GRAVE)
       {
         CVars::display_debug_window = !CVars::display_debug_window;

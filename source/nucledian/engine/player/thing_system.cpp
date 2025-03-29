@@ -34,7 +34,7 @@ void ThingSystem::on_event(ModuleEvent& event)
   {
     case ModuleEventType::post_init:
     {
-      enemies.push_back(Enemy(vec3(0, 0, 0)));
+      //enemies.push_back(Enemy(vec3(0, 0, 0)));
       break;
     }
 

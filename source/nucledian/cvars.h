@@ -90,7 +90,7 @@ struct CVars
   static CVarRanges& get_cvar_ranges();
 
   // !!! ADD YOUR CVARS HERE !!!
-  NC_REGISTER_CVAR(bool, enable_top_down_debug, false, "Top down 2D debugging of the game");
+  NC_REGISTER_CVAR(bool, enable_top_down_debug, true, "Top down 2D debugging of the game");
   NC_REGISTER_CVAR(bool, display_debug_window,  false, "Displays debug window.");
   NC_REGISTER_CVAR(bool, display_imgui_demo,    false, "Displays imgui demo window for inspiration.");
 
