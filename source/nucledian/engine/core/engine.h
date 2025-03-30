@@ -8,6 +8,8 @@
 #include <vector>
 #include <string>
 
+union SDL_Event;
+
 namespace nc
 {
 
@@ -43,6 +45,8 @@ public:
 
   // Might be a nullptr
   void set_recording_journal(EventJournal* journal);
+
+  void process_window_event(const SDL_Event& evnt);
 
 private:
   bool should_quit()             const;

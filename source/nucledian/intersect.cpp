@@ -96,7 +96,9 @@ bool aabb_aabb_2d(const aabb2& a, const aabb2& b)
 {
   vec2 mn = max(a.min, b.min);
   vec2 mx = min(a.max, b.max);
-  aabb2 new_aabb{mn, mx};
+  aabb2 new_aabb;
+  new_aabb.min = mn;
+  new_aabb.max = mx;
   return new_aabb.is_valid();
 }
 

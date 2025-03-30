@@ -1,5 +1,9 @@
 #pragma once
 
+#include <config.h>
+
+#ifdef NC_DEBUG_DRAW
+
 #include <temp_math.h>
 #include <engine/graphics/resources/mesh.h>
 #include <engine/graphics/resources/material.h>
@@ -69,3 +73,6 @@ private:
 };
 
 }
+
+#endif
+

@@ -34,6 +34,9 @@
     <ClCompile Include="..\source\nucledian\engine\player\player.cpp" />
     <ClCompile Include="..\source\nucledian\engine\player\thing_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\enemies\enemy.cpp" />
+    <ClCompile Include="..\source\libs\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="..\source\nucledian\cvars.cpp" />
+    <ClCompile Include="..\source\libs\imgui\imgui_stdlib.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\nucledian\engine\core\resources.inl" />
@@ -86,6 +89,11 @@
     <ClInclude Include="..\source\nucledian\engine\player\player.h" />
     <ClInclude Include="..\source\nucledian\engine\player\thing_system.h" />
     <ClInclude Include="..\source\nucledian\engine\enemies\enemy.h" />
+    <ClInclude Include="..\source\libs\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="..\source\libs\imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="..\source\nucledian\cvars.h" />
+    <ClInclude Include="..\source\libs\imgui\imgui_stdlib.h" />
+    <ClInclude Include="..\source\nucledian\macros.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />

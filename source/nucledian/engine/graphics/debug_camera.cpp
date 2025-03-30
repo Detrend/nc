@@ -12,7 +12,7 @@ namespace nc
 //==============================================================================
 DebugCamera::DebugCamera()
 {
-  SDL_SetRelativeMouseMode(SDL_TRUE);
+  //SDL_SetRelativeMouseMode(SDL_TRUE);
 }
 
 //==============================================================================
