@@ -35,6 +35,7 @@
 #include <unordered_map>
 #include <set>
 #include <variant>  // std::visit
+#include <utility>  // std::pair
 
 // Remove this after logging is added!
 #include <iostream>
@@ -815,6 +816,61 @@ static void draw_cvar_row(const std::string& name, const CVars::CVar& cvar)
 }
 
 //==============================================================================
+static void draw_cvar_bar()
+{
+  auto& cvar_list = CVars::get_cvar_list();
+
+  if (ImGui::BeginTable("Cvar List", 3, ImGuiTableFlags_Borders))
+  {
+    ImGui::TableSetupColumn("Name");
+    ImGui::TableSetupColumn("Type");
+    ImGui::TableSetupColumn("Value");
+    ImGui::TableHeadersRow();
+
+    for (const auto&[name, cvar] : cvar_list)
+    {
+      ImGui::TableNextRow();
+      draw_cvar_row(name, cvar);
+    }
+
+    ImGui::EndTable();
+  }
+}
+
+//==============================================================================
+static void draw_keybinds_bar()
+{
+  constexpr auto KEYBINDS = std::array
+  {
+    std::pair{"~",   "Show/Hide Debug Window"},
+    std::pair{"ESC", "Enable/Disable Cursor And Player Inputs"},
+    std::pair{"F1",  "Cycle Between Time Speed 0 and 1"},
+    std::pair{"F4",  "Top Down Debug"},
+  };
+
+  if (ImGui::BeginTable("Keybindings", 2, ImGuiTableFlags_Borders))
+  {
+    ImGui::TableSetupColumn("Keybind");
+    ImGui::TableSetupColumn("Action");
+
+    ImGui::TableHeadersRow();
+
+    for (const auto[key, action] : KEYBINDS)
+    {
+      ImGui::TableNextRow();
+
+      ImGui::TableNextColumn();
+      ImGui::TextUnformatted(key);
+
+      ImGui::TableNextColumn();
+      ImGui::TextUnformatted(action);
+    }
+
+    ImGui::EndTable();
+  }
+}
+
+//==============================================================================
 void GraphicsSystem::draw_debug_window()
 {
   if (CVars::display_imgui_demo)
@@ -822,35 +878,19 @@ void GraphicsSystem::draw_debug_window()
     ImGui::ShowDemoWindow(&CVars::display_imgui_demo);
   }
 
-  if (ImGui::Begin("Debug window", &CVars::display_debug_window))
+  if (ImGui::Begin("Debug Window", &CVars::display_debug_window))
   {
     if (ImGui::BeginTabBar("Tab Bar"))
     {
       if (ImGui::BeginTabItem("CVars"))
       {
-        auto& cvar_list = CVars::get_cvar_list();
-
-        if (ImGui::BeginTable("cvar list", 3, ImGuiTableFlags_Borders))
-        {
-          ImGui::TableSetupColumn("Name");
-          ImGui::TableSetupColumn("Type");
-          ImGui::TableSetupColumn("Value");
-          ImGui::TableHeadersRow();
-
-          for (const auto&[name, cvar] : cvar_list)
-          {
-            ImGui::TableNextRow();
-            draw_cvar_row(name, cvar);
-          }
-
-          ImGui::EndTable();
-        }
-
+        draw_cvar_bar();
         ImGui::EndTabItem();
       }
 
-      if (ImGui::BeginTabItem("Other"))
+      if (ImGui::BeginTabItem("Keybinds"))
       {
+        draw_keybinds_bar();
         ImGui::EndTabItem();
       }
 
