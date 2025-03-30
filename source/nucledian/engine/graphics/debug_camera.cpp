@@ -36,7 +36,7 @@ void DebugCamera::update_transform(vec3 position, f32 yaw, f32 pitch)
   m_yaw = rem_euclid(m_yaw, 2.0f * pi);
   m_pitch = clamp(m_pitch, -half_pi + 0.001f, half_pi - 0.001f);
 
-  m_forward = angleAxis(m_yaw, vec3::Y) * angleAxis(m_pitch, vec3::X) * -vec3::Z;
+  m_forward = angleAxis(m_yaw, VEC3_Y) * angleAxis(m_pitch, VEC3_X) * -VEC3_Z;
 }
 
 //==============================================================================
@@ -52,13 +52,13 @@ void DebugCamera::update_transform(vec3 position, f32 yaw, f32 pitch, f32 y_offs
   m_yaw = rem_euclid(m_yaw, 2.0f * pi);
   m_pitch = clamp(m_pitch, -half_pi + 0.001f, half_pi - 0.001f);
 
-  m_forward = angleAxis(m_yaw, vec3::Y) * angleAxis(m_pitch, vec3::X) * -vec3::Z;
+  m_forward = angleAxis(m_yaw, VEC3_Y) * angleAxis(m_pitch, VEC3_X) * -VEC3_Z;
 }
 
 //==============================================================================
 mat4 DebugCamera::get_view() const
 {
-  return look_at(m_position, m_position + m_forward, vec3::Y);
+  return lookAt(m_position, m_position + m_forward, VEC3_Y);
 }
 
 //==============================================================================
@@ -78,7 +78,7 @@ void DebugCamera::handle_movement(float delta_seconds)
 {
   const u8* keyboard_state = SDL_GetKeyboardState(nullptr);
 
-  vec3 input_direction = vec3::ZERO;
+  vec3 input_direction = glm::zero<vec3>();
   if (keyboard_state[SDL_SCANCODE_W])
     input_direction.z += 1.0f;
   if (keyboard_state[SDL_SCANCODE_A])
@@ -92,12 +92,12 @@ void DebugCamera::handle_movement(float delta_seconds)
   if (keyboard_state[SDL_SCANCODE_LCTRL])
     input_direction.y -= 1.0f;
 
-  const vec3 forward = m_forward.with_y(0);
-  const vec3 right = cross(forward, vec3::Y);
+  const vec3 forward = with_y(m_forward, 0);
+  const vec3 right = cross(forward, VEC3_Y);
   const vec3 movement_direction = normalize_or_zero
   (
       input_direction.x * right
-    + input_direction.y * vec3::Y
+    + input_direction.y * VEC3_Y
     + input_direction.z * forward
   );
     
@@ -122,7 +122,7 @@ void DebugCamera::handle_rotation()
   m_yaw = rem_euclid(m_yaw, 2.0f * pi);
   m_pitch = clamp(m_pitch, -half_pi + 0.001f, half_pi - 0.001f);
 
-  m_forward = angleAxis(m_yaw, vec3::Y) * angleAxis(m_pitch, vec3::X) * -vec3::Z;
+  m_forward = angleAxis(m_yaw, VEC3_Y) * angleAxis(m_pitch, VEC3_X) * -VEC3_Z;
 }
 
 }

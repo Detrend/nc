@@ -2,7 +2,7 @@
 #pragma once
 
 #include <types.h>
-#include <temp_math.h>
+#include <nc_math.h>
 
 namespace nc
 {
@@ -33,7 +33,7 @@ private:
   bool  m_first_frame = true;
   vec3  m_position    = vec3(0.0f, 0.0f, 3.0f);
   // Camera's facing direction. Precomputed every frame by handle_rotation(f32).
-  vec3  m_forward     = vec3::ZERO;
+  vec3  m_forward     = glm::zero<vec3>();
   f32   m_yaw         = 0.0f;
   f32   m_pitch       = 0.0f;
 };

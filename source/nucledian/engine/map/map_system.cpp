@@ -1,10 +1,11 @@
 // Project Nucledian Source File
 #include <engine/map/map_system.h>
+#include <common.h>
 
 #include <aabb.h>
-#include <vec.h>
-#include <vector_maths.h>
-#include <maths.h>
+#include <nc_math.h>
+#include <nc_math.h>
+
 #include <grid.h>
 
 #include <algorithm>
@@ -428,12 +429,12 @@ void MapSectors::sector_to_vertices(
     const auto pt2      = vec3{w2pos.x, FLOOR_Y, w2pos.y};
 
     // build floor triangle from the first point and 2 others
-    vertices_out.push_back(first_pt.with_y(FLOOR_Y));
-    vertices_out.push_back(vec3::Y);
+    vertices_out.push_back(with_y(first_pt, FLOOR_Y));
+    vertices_out.push_back(VEC3_Y);
     vertices_out.push_back(pt2);
-    vertices_out.push_back(vec3::Y);
+    vertices_out.push_back(VEC3_Y);
     vertices_out.push_back(pt1);
-    vertices_out.push_back(vec3::Y);
+    vertices_out.push_back(VEC3_Y);
   }
 
   // then build ceiling
@@ -446,12 +447,12 @@ void MapSectors::sector_to_vertices(
     const auto pt2      = vec3{w2pos.x, CEIL_Y, w2pos.y};
 
     // build floor triangle from the first point and 2 others
-    vertices_out.push_back(first_pt.with_y(CEIL_Y));
-    vertices_out.push_back(-vec3::Y);
+    vertices_out.push_back(with_y(first_pt, CEIL_Y));
+    vertices_out.push_back(-VEC3_Y);
     vertices_out.push_back(pt1);
-    vertices_out.push_back(-vec3::Y);
+    vertices_out.push_back(-VEC3_Y);
     vertices_out.push_back(pt2);
-    vertices_out.push_back(-vec3::Y);
+    vertices_out.push_back(-VEC3_Y);
   }
 
   // build walls

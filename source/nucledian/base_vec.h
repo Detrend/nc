@@ -1,6 +1,8 @@
 // Project Nucledian Source File
 #pragma once
 
+#if 0
+
 #include <types.h>
 
 namespace nc
@@ -15,4 +17,5 @@ using vec4 = vec<f32, 4>;
 
 }
 
+#endif
 

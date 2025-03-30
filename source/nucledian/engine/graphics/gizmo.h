@@ -4,7 +4,7 @@
 
 #ifdef NC_DEBUG_DRAW
 
-#include <temp_math.h>
+#include <nc_math.h>
 #include <engine/graphics/resources/mesh.h>
 #include <engine/graphics/resources/material.h>
 

@@ -1,7 +1,8 @@
 // Project Nucledian Source File
 #include <intersect.h>
-#include <maths.h>
-#include <vector_maths.h>
+#include <common.h>
+
+#include <nc_math.h>
 #include <aabb.h>
 
 #include <limits>     // FLT_MAX

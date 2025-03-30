@@ -1,7 +1,7 @@
 // Project Nucledian Source File
 #pragma once
 
-#include <vec.h>
+#include <nc_math.h>
 
 #include <initializer_list>
 

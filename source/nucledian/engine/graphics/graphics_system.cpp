@@ -28,7 +28,7 @@
 #include <imgui/imgui_impl_sdl2.h>
 #include <imgui/imgui_impl_opengl3.h>
 
-#include <maths.h>
+
 
 #include <numbers> // std::numbers::pi
 #include <algorithm>
@@ -1073,7 +1073,7 @@ void GraphicsSystem::render_entities(const VisibleSectors&) const
       const Position& position = m_position_components[index];
       const Appearance& appearance = g_appearance_components[index];
 
-      const mat4 transform = scale(rotate(translate(mat4(1.0f), position), appearance.rotation, vec3::Y), appearance.scale);
+      const mat4 transform = scale(rotate(translate(mat4(1.0f), position), appearance.rotation, VEC3_Y), appearance.scale);
       // TODO: should be set only when these changes and probably not here
       handle->material.set_uniform(shaders::solid::COLOR, appearance.model_color);
       handle->material.set_uniform(shaders::solid::TRANSFORM, transform);

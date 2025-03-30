@@ -1,39 +1,56 @@
 // Project Nucledian Source File
 #pragma once
 
+// This would help us with SIMD, however, 
+//#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
+//#define GLM_FORCE_INTRINSICS
+//#define GLM_FORCE_SSE2
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include <types.h>
-#include <vec.h>
-#include <vector_maths.h>
-#include <math.h>
 
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/constants.hpp>
 
 namespace nc
 {
 
-using mat4 = glm::mat4;
-using quat = glm::quat;
+using namespace glm;
+
+template<typename T, u64 S>
+using vec = ::glm::vec<S, T>;
+
 using color = vec4;
 
-vec3 normalize(const vec3& vec);
+constexpr vec3 UP_DIR    = vec3{0, 1,  0};
+constexpr vec3 RIGHT_DIR = vec3{1, 0,  0};
+constexpr vec3 FRONT_DIR = vec3{0, 0, -1};
+
+constexpr vec3 VEC3_X = vec3{1, 0, 0};
+constexpr vec3 VEC3_Y = vec3{0, 1, 0};
+constexpr vec3 VEC3_Z = vec3{0, 0, 1};
+
+// This one is extra because it does not have different SSE/NON-SSE implementation.
+// Checks if the vector has length of 1
+template<typename T, u64 SIZE>
+bool is_normal(const vec<T, SIZE>& v, T threshold = static_cast<T>(0.01));
+
+template<typename T, u64 SIZE>
+bool is_zero(const vec<T, SIZE>& v, T threshold = static_cast<T>(0.01));
+
+// Returns a vector rotated 90 degrees to the left
+// (flips the components and negates x of the new vector)
+vec2 flipped(const vec2& v);
+
+f32 cross(const vec2& a, const vec2& b);
+
+vec3 with_y(const vec3& v, f32 y);
+
 // Normalize vector, if vector cant be normalized return vector with all zeros.
 vec3 normalize_or_zero(const vec3& vec);
-mat4 look_at(const vec3& pos, const vec3& target, const vec3& up);
-mat4 perspective(f32 fov, f32 aspect, f32 near, f32 far);
-constexpr vec3 cross(const vec3& vec1, const vec3& vec2);
-quat angleAxis(f32 angle, const vec3& vec);
-f32 length(const vec2& vec);
-f32 length2(const vec2& vec);
 
-mat4 translate(const mat4& matrix, const vec3& vec);
-mat4 rotate(const mat4& matrix, f32 angle, const vec3& axis);
-mat4 scale(const mat4& matrix, const vec3& vec);
-
-constexpr f32 clamp(f32 x, f32 min, f32 max);
-f32 sin(f32 x);
-f32 cos(f32 x);
 /**
  * Euclidian remained of `value` divided by `range`. Results is always non-negative and lies in the interval
  * [0, range).
@@ -46,13 +63,19 @@ f32 cos(f32 x);
  */
 f32 rem_euclid(f32 value, f32 range);
 
-constexpr vec3 operator*(f32 x, const vec3& vec);
-constexpr vec3 operator*(const vec3& vec, f32 x);
-constexpr vec3& operator+=(vec3& vec, const vec3& other);
-vec3 operator *(const quat& q, const vec3& vec);
-vec3 operator *(const vec3& vec, const quat& q);
+// Returns 1.0f if the value is larger than zero.
+// Returns -1.0f if the value is smaller than zero.
+// Returns 0.0f if the value is equal to zero.
+f32 sgn(f32 value);
 
-const f32* value_ptr(const mat4& m);
+// Returns true if abs(num) < tolerance
+bool is_zero(f32 num, f32 tolerance);
+
+// Converts degrees to radians
+f32 deg2rad(f32 degrees);
+
+// Converts radians to degrees
+f32 rad2deg(f32 radians);
 
 inline constexpr f32 pi			= glm::pi<f32>();
 inline constexpr f32 half_pi	= glm::half_pi<f32>();
@@ -88,4 +111,3 @@ namespace colors
 
 }
 
-#include <temp_math.inl>

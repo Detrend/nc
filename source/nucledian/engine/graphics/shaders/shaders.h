@@ -1,6 +1,6 @@
 #pragma once
 
-#include <temp_math.h>
+#include <nc_math.h>
 
 #include <glad/glad.h>
 

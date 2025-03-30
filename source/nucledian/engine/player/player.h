@@ -3,8 +3,8 @@
 
 #include <SDL.h>
 #include <types.h>
-#include <vec.h>
-#include <vector_maths.h>
+#include <nc_math.h>
+#include <nc_math.h>
 #include <engine/input/game_input.h>
 #include <engine/player/map_object.h>
 #include <engine/graphics/debug_camera.h>
@@ -42,7 +42,7 @@ private:
   f32 ACCELERATION = 0.05f;
   f32 DECELERATION = 0.02f;
 
-  vec3 m_forward = vec3::ZERO;
+  vec3 m_forward = glm::zero<vec3>();
   f32 anglePitch = 0; //UP-DOWN
   f32 angleYaw = 0; //LET-RIGHT
 

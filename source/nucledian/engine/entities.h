@@ -1,7 +1,7 @@
 #pragma once
 
 #include <types.h>
-#include <temp_math.h>
+#include <nc_math.h>
 #include <engine/graphics/resources/model.h>
 
 #include <vector>
