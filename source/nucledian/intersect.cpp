@@ -14,31 +14,28 @@ namespace nc::intersect
 
 //==============================================================================
 bool segment_segment(
-  vec2  start_a,
-  vec2  end_a,
-  vec2  start_b,
-  vec2  end_b,
-  bool* parallel_out,
-  f32*  t_out,
-  f32*  u_out)
+  vec2 start_a,
+  vec2 end_a,
+  vec2 start_b,
+  vec2 end_b,
+  f32& t_out,
+  f32& u_out)
 {
   constexpr f32 TOLERANCE = 0.0001f;   // 0.1mm
+
+  t_out = FLT_MAX;
+  u_out = FLT_MAX;
+
+  NC_ASSERT(start_a != end_a);
+  NC_ASSERT(start_b != end_b);
 
   const vec2 dir_a  = end_a - start_a;
   const vec2 dir_b  = end_b - start_b;
   const f32  top    = cross(dir_b, start_b - start_a);
   const f32  bottom = cross(dir_b, dir_a);
 
-  NC_ASSERT(length(dir_a) > TOLERANCE);
-  NC_ASSERT(length(dir_b) > TOLERANCE);
-
   const bool tp_zero = is_zero(top,    TOLERANCE);
   const bool bt_zero = is_zero(bottom, TOLERANCE);
-
-  if (parallel_out)
-  {
-    *parallel_out = bt_zero;
-  }
 
   if (tp_zero && bt_zero)
   {
@@ -76,15 +73,8 @@ bool segment_segment(
 
     const f32 u = utop / ubottom;
 
-    if (t_out)
-    {
-      *t_out = t;
-    }
-
-    if (u_out)
-    {
-      *u_out = u;
-    }
+    t_out = t;
+    u_out = u;
 
     // lines intersect, but segments do not
     return t >= 0.0f && t <= 1.0f && u >= 0.0f && u <= 1.0f;
@@ -212,6 +202,119 @@ bool convex_convex(std::span<vec2> a, std::span<vec2> b, f32 threshold)
   // there is no hyperplane that separates the two shapes, therefore
   // they must intersect
   return true;
+}
+
+//==============================================================================
+bool segment_circle(vec2 start, vec2 end, vec2 og_center, f32 r, f32& t_out, vec2& n_out)
+{
+  NC_TODO("Circle collision might not work properly if the raycasted point is inside the circle.");
+
+  NC_ASSERT(start != end);
+  NC_ASSERT(r > 0.0f);
+
+  const vec2 center = og_center - start;
+  const vec2 dir = end - start;
+
+  const f32 dx = dir.x;
+  const f32 dy = dir.y;
+  const f32 cx = center.x;
+  const f32 cy = center.y;
+  const f32 rr = r * r;
+
+  const f32 a = dx * dx + dy * dy;
+  const f32 b = -2 * (dx * cx + dy * cy);
+  const f32 c = -1 * (rr - cx * cx - cy * cy);
+  NC_ASSERT(a != 0.0f);
+
+  const f32 D2 = b * b - 4 * a * c;
+  if (D2 < 0.0f)
+  {
+    // no solution
+    return false;
+  }
+
+  const f32 a2 = 2 * a;
+  const f32 D = std::sqrtf(D2);
+
+  const f32 t1 = (-b + D) / a2;
+  const f32 t2 = (-b - D) / a2;
+
+  const bool t1_legit = t1 == std::clamp(t1, 0.0f, 1.0f);
+  const bool t2_legit = t2 == std::clamp(t2, 0.0f, 1.0f);
+
+  if (!t1_legit && !t2_legit)
+  {
+    // the circle is too far away or not intersected
+    return false;
+  }
+
+  f32 t;
+  if (t1_legit && t2_legit)
+  {
+    t = std::min(t1, t2);
+  }
+  else if (t1_legit)
+  {
+    t = t1;
+  }
+  else
+  {
+    t = t2;
+  }
+
+  const vec2 col_point = dir * t;
+  NC_ASSERT(col_point != center);
+  const vec2 center_to_col = col_point - center;
+
+  t_out = t;
+  n_out = normalize(center_to_col);
+  return true;
+}
+
+//==============================================================================
+bool segment_segment_expanded(
+  vec2  start_a,
+  vec2  end_a,
+  vec2  start_b,
+  vec2  end_b,
+  f32   expand_b,
+  vec2& out_normal,
+  f32&  out_coeff)
+{
+  NC_ASSERT(start_a != end_a);
+  NC_ASSERT(start_b != end_b);
+  NC_ASSERT(expand_b > 0.0f); // use normal intersection if the parameter is 0
+
+  f32  cs_coeff = 0, ce_coeff = 0;
+  f32 ll_coeff, lr_coeff, _;
+  vec2 cs_n, ce_n;
+
+  const vec2 b_norm   = flipped(normalize(end_b - start_b));
+  const vec2 b_offset = b_norm * expand_b;
+
+  const bool cs_intersect = segment_circle(start_a, end_a, start_b, expand_b, cs_coeff, cs_n);
+  const bool ce_intersect = segment_circle(start_a, end_a, end_b,   expand_b, ce_coeff, ce_n);
+  const bool ll_intersect = segment_segment(start_a, end_a, start_b + b_offset, end_b   + b_offset, ll_coeff, _);
+  const bool lr_intersect = segment_segment(start_a, end_a, start_b - b_offset, end_b   - b_offset, lr_coeff, _);
+
+  out_normal = vec2{0};
+  out_coeff  = FLT_MAX;
+
+  auto take_best = [&](bool intersection, f32 coeff, vec2 norm)
+  {
+    if (intersection && coeff < out_coeff)
+    {
+      out_coeff  = coeff;
+      out_normal = norm;
+    }
+  };
+
+  take_best(cs_intersect, cs_coeff,    cs_n);
+  take_best(ce_intersect, ce_coeff,    ce_n);
+  take_best(ll_intersect, ll_coeff,  b_norm);
+  take_best(lr_intersect, lr_coeff, -b_norm);
+
+  return out_coeff != FLT_MAX;
 }
 
 }

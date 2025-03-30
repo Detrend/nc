@@ -3,6 +3,9 @@
 #include <engine/input/input_system.h>
 #include <iostream>
 
+#include <engine/map/map_system.h>
+#include <engine/core/engine.h>
+
 namespace nc
 {
   Player::Player()
@@ -135,7 +138,45 @@ namespace nc
 
   void Player::apply_velocity()
   {
-    //std::cout << velocity.x << "|" << velocity.z << std::endl;
+    auto to_vec2 = [](vec3 in)
+    {
+      return vec2{in.x, in.z};
+    };
+
+    const auto& map = get_engine().get_map();
+
+    const f32 radius = 0.25f;
+
+    // MR says: For some reasong this solves some of our problems
+    // with ending up stuck in a wall (caused by float inaccuracies?)
+    constexpr f32 MAGIC = 1.01f; 
+    // MR says: The MAGIC constant actually causes some problems as well
+    // and this solves them.
+    u32 iterations_left = 12; 
+
+    while (iterations_left-->0)
+    {
+      vec2 out_n;
+      f32  out_t;
+      const auto from = to_vec2(position);
+      const auto dir  = to_vec2(velocity);
+
+      const auto prev_velocity = velocity;
+
+      if (map.raycast2d_expanded(from, from + dir, radius, out_n, out_t))
+      {
+        const auto remaining  = dir * (1.0f - out_t);
+        const auto projected  = out_n * dot(remaining, out_n);
+        const auto projected3 = vec3{projected.x, 0.0f, projected.y};
+        velocity = velocity - MAGIC * projected3;
+      }
+
+      if (prev_velocity == velocity)
+      {
+        break;
+      }
+    }
+
     position += velocity;
   }
 

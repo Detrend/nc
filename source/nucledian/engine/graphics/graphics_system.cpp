@@ -496,8 +496,14 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
   static bool show_sector_frustums = true;
   static bool show_visible_sectors = true;
   static bool show_sector_ids      = false;
+  static bool raycast2d_debug      = false;
 
-  static f32 zoom = 0.1f;
+  static vec2 raycast_pt1 = vec2{0};
+  static f32  raycast_rot = 0.0f;
+  static f32  raycast_len = 10.0f;
+  static f32  raycast_expand = 0.25f;
+
+  static f32 zoom = 0.04f;
 
   if (auto* camera = this->get_camera())
   {
@@ -538,6 +544,16 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
     ImGui::Checkbox("Show visible sectors", &show_visible_sectors);
     ImGui::Checkbox("Show sector frustums", &show_sector_frustums);
     ImGui::Checkbox("Show sector IDs",      &show_sector_ids);
+    ImGui::Separator();
+    ImGui::Checkbox("Raycast 2D Debug",     &raycast2d_debug);
+
+    if (raycast2d_debug)
+    {
+      ImGui::SliderFloat2("Raycast Point", &raycast_pt1.x,  -40.0f, 40.0f);
+      ImGui::SliderFloat("Raycast Dir",    &raycast_rot,    0.0f,   2.0f * pi);
+      ImGui::SliderFloat("Raycast Len",    &raycast_len,    0.25f,  30.0f);
+      ImGui::SliderFloat("Raycast Expand", &raycast_expand, 0.001f, 3.0f);
+    }
   }
   ImGui::End();
 
@@ -736,6 +752,50 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
     colors::ORANGE,
     0.5f
   );
+
+  // raycast 2D debug
+  if (raycast2d_debug)
+  {
+    vec2 out_n;
+    f32  out_t;
+
+    vec2 start_pt = raycast_pt1;
+    vec2 end_pt   = raycast_pt1 + vec2{std::cos(raycast_rot), std::sin(raycast_rot)} * raycast_len;
+
+    debug_helpers::draw_line
+    (
+      level_space_to_screen_space(start_pt),
+      level_space_to_screen_space(end_pt),
+      colors::WHITE
+    );
+
+    if (map.raycast2d_expanded(start_pt, end_pt, std::max(raycast_expand, 0.0001f), out_n, out_t))
+    {
+      const vec2 contact_pt = start_pt + (end_pt - raycast_pt1) * out_t;
+      end_pt = contact_pt;
+
+      debug_helpers::draw_line
+      (
+        level_space_to_screen_space(contact_pt + flipped(out_n) * 2.0f),
+        level_space_to_screen_space(contact_pt - flipped(out_n) * 2.0f),
+        colors::LIME
+      );
+
+      debug_helpers::draw_line
+      (
+        level_space_to_screen_space(contact_pt),
+        level_space_to_screen_space(contact_pt + out_n * 1.5f),
+        colors::ORANGE
+      );
+    }
+
+    debug_helpers::draw_line
+    (
+      level_space_to_screen_space(start_pt),
+      level_space_to_screen_space(end_pt),
+      colors::GREEN
+    );
+  }
 
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
