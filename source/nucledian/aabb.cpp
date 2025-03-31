@@ -1,6 +1,7 @@
 // Project Nucledian Source File
 #include <aabb.h>
-#include <nc_math.h>
+#include <math/vector.h>
+#include <math/lingebra.h>
 
 #include <initializer_list>
 #include <limits>

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <types.h>
-#include <nc_math.h>
+#include <math/vector.h>
 #include <engine/graphics/resources/model.h>
 
 #include <vector>
@@ -15,7 +15,7 @@ struct Appearance
   f32 rotation;
   ModelHandle model_handle;
   vec3 scale;
-  color model_color;
+  color4 model_color;
 };
 
 // Component holding in-world position of entity.
@@ -39,19 +39,19 @@ inline std::vector<vec3> m_position_components;
  * Temporary helper function for creating instances of render components within g_appearance_components array. For furher
  * information see description of g_appearance_components.
  */
-u32 create_entity(const Position& position, f32 scale, const color& color, f32 rotation = 0.0f);
+u32 create_entity(const Position& position, f32 scale, const color4& color, f32 rotation = 0.0f);
 
 
 /**
  * Creates entity with given model.
  */
-u32 create_entity(const Position& position, ModelHandle handle, vec3 scale, const color& color, f32 rotation = 0.0f);
+u32 create_entity(const Position& position, ModelHandle handle, vec3 scale, const color4& color, f32 rotation = 0.0f);
 
 /**
  * Temporary helper function for creating instances of render components within g_appearance_components array. For furher
  * information see description of g_appearance_components.
  */
-u32 create_entity(const Position& position, vec3 scale, const color& color, f32 rotation = 0.0f);
+u32 create_entity(const Position& position, vec3 scale, const color4& color, f32 rotation = 0.0f);
 
 
 }

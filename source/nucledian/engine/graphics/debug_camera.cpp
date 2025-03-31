@@ -3,6 +3,9 @@
 
 #include <SDL2/include/SDL.h>
 
+#include <math/utils.h>
+#include <math/lingebra.h>
+
 #include <numbers>
 #include <bit>
 
@@ -33,8 +36,8 @@ void DebugCamera::update_transform(vec3 position, f32 yaw, f32 pitch)
   m_pitch = pitch;
 
   // taken from handle rotation
-  m_yaw = rem_euclid(m_yaw, 2.0f * pi);
-  m_pitch = clamp(m_pitch, -half_pi + 0.001f, half_pi - 0.001f);
+  m_yaw = rem_euclid(m_yaw, 2.0f * PI);
+  m_pitch = clamp(m_pitch, -HALF_PI + 0.001f, HALF_PI - 0.001f);
 
   m_forward = angleAxis(m_yaw, VEC3_Y) * angleAxis(m_pitch, VEC3_X) * -VEC3_Z;
 }
@@ -49,8 +52,8 @@ void DebugCamera::update_transform(vec3 position, f32 yaw, f32 pitch, f32 y_offs
   m_pitch = pitch;
 
   // taken from handle rotation
-  m_yaw = rem_euclid(m_yaw, 2.0f * pi);
-  m_pitch = clamp(m_pitch, -half_pi + 0.001f, half_pi - 0.001f);
+  m_yaw = rem_euclid(m_yaw, 2.0f * PI);
+  m_pitch = clamp(m_pitch, -HALF_PI + 0.001f, HALF_PI - 0.001f);
 
   m_forward = angleAxis(m_yaw, VEC3_Y) * angleAxis(m_pitch, VEC3_X) * -VEC3_Z;
 }
@@ -119,8 +122,8 @@ void DebugCamera::handle_rotation()
   m_yaw -= mouse_pos_delta.x * SENSITIVITY;
   m_pitch -= mouse_pos_delta.y * SENSITIVITY;
 
-  m_yaw = rem_euclid(m_yaw, 2.0f * pi);
-  m_pitch = clamp(m_pitch, -half_pi + 0.001f, half_pi - 0.001f);
+  m_yaw = rem_euclid(m_yaw, 2.0f * PI);
+  m_pitch = clamp(m_pitch, -HALF_PI + 0.001f, HALF_PI - 0.001f);
 
   m_forward = angleAxis(m_yaw, VEC3_Y) * angleAxis(m_pitch, VEC3_X) * -VEC3_Z;
 }

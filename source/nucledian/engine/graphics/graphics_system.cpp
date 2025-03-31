@@ -18,6 +18,9 @@
 #include <engine/map/map_system.h>
 #include <intersect.h>
 
+#include <math/utils.h>
+#include <math/lingebra.h>
+
 #include <cvars.h>
 
 #include <glad/glad.h>
@@ -28,9 +31,6 @@
 #include <imgui/imgui_impl_sdl2.h>
 #include <imgui/imgui_impl_opengl3.h>
 
-
-
-#include <numbers> // std::numbers::pi
 #include <algorithm>
 #include <unordered_map>
 #include <set>
@@ -369,7 +369,7 @@ static void query_data_from_camera(
   vec2 d = vec2{camera.get_forward().x, camera.get_forward().z};
   dir = is_zero(d) ? vec2{1, 0} : normalize(d);
 
-  fov = std::numbers::pi_v<f32> * 0.5f; // 90 degrees
+  fov = HALF_PI; // 90 degrees
 }
 
 //==============================================================================
@@ -550,7 +550,7 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
     if (raycast2d_debug)
     {
       ImGui::SliderFloat2("Raycast Point", &raycast_pt1.x,  -40.0f, 40.0f);
-      ImGui::SliderFloat("Raycast Dir",    &raycast_rot,    0.0f,   2.0f * pi);
+      ImGui::SliderFloat("Raycast Dir",    &raycast_rot,    0.0f,   2.0f * PI);
       ImGui::SliderFloat("Raycast Len",    &raycast_len,    0.25f,  30.0f);
       ImGui::SliderFloat("Raycast Expand", &raycast_expand, 0.001f, 3.0f);
     }

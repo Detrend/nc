@@ -2,7 +2,7 @@
 #pragma once
 
 #include <types.h>
-#include <nc_math.h>
+#include <math/vector.h>
 #include <aabb.h>
 
 #include <span>

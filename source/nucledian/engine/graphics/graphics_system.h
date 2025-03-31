@@ -4,7 +4,7 @@
 #include <types.h>
 #include <config.h>
 
-#include <nc_math.h>
+#include <math/vector.h>
 #include <engine/core/engine_module.h>
 #include <engine/core/engine_module_id.h>
 #include <engine/graphics/gizmo.h>
@@ -12,7 +12,7 @@
 #include <engine/graphics/resources/model.h>
 #include <engine/graphics/debug_camera.h>
 
-#include <nc_math.h>
+#include <math/vector.h>
 
 #include <vector>
 

@@ -6,6 +6,9 @@
 #include <engine/map/map_system.h>
 #include <engine/core/engine.h>
 
+#include <math/utils.h>
+#include <math/lingebra.h>
+
 namespace nc
 {
   Player::Player()
@@ -68,8 +71,8 @@ namespace nc
     anglePitch += input.player_inputs.analog[PlayerAnalogInputs::look_vertical];
     angleYaw += input.player_inputs.analog[PlayerAnalogInputs::look_horizontal];
 
-    angleYaw = rem_euclid(angleYaw, 2.0f * pi);
-    anglePitch = clamp(anglePitch, -half_pi + 0.001f, half_pi - 0.001f);
+    angleYaw = rem_euclid(angleYaw, 2.0f * PI);
+    anglePitch = clamp(anglePitch, -HALF_PI + 0.001f, HALF_PI - 0.001f);
 
     m_forward = angleAxis(angleYaw, VEC3_Y) * angleAxis(anglePitch, VEC3_X) * -VEC3_Z;
 

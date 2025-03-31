@@ -3,8 +3,10 @@
 #include <common.h>
 
 #include <aabb.h>
-#include <nc_math.h>
-#include <nc_math.h>
+
+#include <math/utils.h>
+#include <math/vector.h>
+#include <math/lingebra.h>
 
 #include <grid.h>
 

@@ -2,8 +2,11 @@
 #include <intersect.h>
 #include <common.h>
 
-#include <nc_math.h>
 #include <aabb.h>
+
+#include <math/utils.h>
+#include <math/vector.h>
+#include <math/lingebra.h>
 
 #include <limits>     // FLT_MAX
 #include <algorithm>  // std::min, std::max, std::abs

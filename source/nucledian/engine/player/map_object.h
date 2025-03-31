@@ -1,7 +1,7 @@
 #pragma once
 #include <types.h>
-#include <nc_math.h>
-#include <nc_math.h>
+#include <math/vector.h>
+#include <math/vector.h>
 
 namespace nc {
 

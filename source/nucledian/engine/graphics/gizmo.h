@@ -4,7 +4,7 @@
 
 #ifdef NC_DEBUG_DRAW
 
-#include <nc_math.h>
+#include <math/vector.h>
 #include <engine/graphics/resources/mesh.h>
 #include <engine/graphics/resources/material.h>
 
@@ -26,23 +26,23 @@ public:
   /**
    * Creates a new cube gizmo. Gizmo will remain visible until all GizmoPtr references are destroyed.
    */
-  static std::shared_ptr<Gizmo> create_cube(const vec3& pos, f32 size = 0.1f, const color& color = colors::RED);
+  static std::shared_ptr<Gizmo> create_cube(const vec3& pos, f32 size = 0.1f, const color4& color = colors::RED);
   /**
    * Creates a new cube gizmo. Gizmo will remain visible until time to live (ttl) reaches zero.
    */
-  static void create_cube(f32 ttl, const vec3& pos, f32 size = 0.1f, const color& color = colors::RED);
+  static void create_cube(f32 ttl, const vec3& pos, f32 size = 0.1f, const color4& color = colors::RED);
 
   // TODO: create_line
 
 private:
-  Gizmo(const Mesh& mesh, const vec3& pos, f32 size, const color& color, f32 ttl);
+  Gizmo(const Mesh& mesh, const vec3& pos, f32 size, const color4& color, f32 ttl);
 
   // time to live
   f32 m_ttl = 0.0f;
 
-  const Mesh  m_mesh;
-  const color m_color     = colors::WHITE;
-  const mat4  m_transform = mat4(1.0f);
+  const Mesh   m_mesh;
+  const color4 m_color     = colors::WHITE;
+  const mat4   m_transform = mat4(1.0f);
 };
 /**
   * Smart pointer managing the lifetime of a Gizmo instance.

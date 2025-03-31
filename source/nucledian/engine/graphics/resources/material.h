@@ -1,6 +1,6 @@
 #pragma once
 
-#include <nc_math.h>
+#include <math/vector.h>
 #include <engine/graphics/shaders/shaders.h>
 
 #include <glad/glad.h>

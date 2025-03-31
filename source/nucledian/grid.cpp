@@ -2,7 +2,8 @@
 #include <grid.h>
 #include <common.h>
 
-#include <nc_math.h>
+#include <math/vector.h>
+#include <math/lingebra.h>
 #include <intersect.h>
 
 #include <algorithm>    // std::clamp

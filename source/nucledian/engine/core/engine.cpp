@@ -17,7 +17,7 @@
 #include <engine/player/thing_system.h>
 #include <engine/map/map_system.h>
 
-#include <nc_math.h>
+#include <math/vector.h>
 
 #ifdef NC_PROFILING
 #include <benchmark/benchmark.h>

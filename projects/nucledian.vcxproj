@@ -20,7 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\libs\glad\glad.c" />
-    <ClCompile Include="..\source\libs\glm\glm.cppm" />
+    <ClCompile Include="..\source\libs\glm\glm.cppm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\source\libs\imgui\imgui.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">true</ExcludedFromBuild>
@@ -73,7 +78,8 @@
     <ClCompile Include="..\source\nucledian\aabb.cpp" />
     <ClCompile Include="..\source\nucledian\cvars.cpp" />
     <ClCompile Include="..\source\nucledian\engine\core\engine.cpp" />
-    <ClCompile Include="..\source\nucledian\nc_math.cpp" />
+    <ClCompile Include="..\source\nucledian\math\utils.cpp" />
+    <ClCompile Include="..\source\nucledian\math\vector.cpp" />
     <ClInclude Include="..\source\libs\glm\common.hpp" />
     <ClInclude Include="..\source\libs\glm\exponential.hpp" />
     <ClInclude Include="..\source\libs\glm\ext.hpp" />
@@ -214,7 +220,11 @@
     <ClInclude Include="..\source\nucledian\grid.h" />
     <ClInclude Include="..\source\nucledian\intersect.h" />
     <ClInclude Include="..\source\nucledian\macros.h" />
-    <ClInclude Include="..\source\nucledian\nc_math.h" />
+    <ClInclude Include="..\source\nucledian\math\lingebra.h" />
+    <ClInclude Include="..\source\nucledian\math\matrix.h" />
+    <ClInclude Include="..\source\nucledian\math\quaternion.h" />
+    <ClInclude Include="..\source\nucledian\math\utils.h" />
+    <ClInclude Include="..\source\nucledian\math\vector.h" />
     <ClInclude Include="..\source\nucledian\types.h" />
   </ItemGroup>
   <ItemGroup>
@@ -224,6 +234,7 @@
     <None Include="..\source\nucledian\engine\graphics\resources\material.inl" />
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.frag" />
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.vert" />
+    <None Include="..\source\nucledian\math\vector.inl" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="benchmark.vcxproj">
