@@ -176,7 +176,7 @@ struct VisibleSectors
 };
 
 // Temporary solution
-std::vector<ModelHandle> g_map_sector_models;
+std::vector<Model> g_map_sector_models;
 
 //==============================================================================
 EngineModuleId GraphicsSystem::get_module_id()
@@ -270,7 +270,7 @@ bool GraphicsSystem::init()
   m_mesh_manager.init();
 
   m_solid_material = Material(shaders::solid::VERTEX_SOURCE, shaders::solid::FRAGMENT_SOURCE);
-  m_cube_model_handle = m_model_manager.add(ResLifetime::Game, m_mesh_manager.get_cube(), m_solid_material);
+  m_cube_model = Model(m_mesh_manager.get_cube(), m_solid_material);
 
   const mat4 projection = perspective(radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
   m_solid_material.use();
@@ -341,7 +341,6 @@ void GraphicsSystem::terminate()
   ImGui::DestroyContext();
 #endif
 
-  m_model_manager.unload(ResLifetime::Game);
   m_mesh_manager.unload(ResLifetime::Game);
 
   SDL_GL_DeleteContext(m_gl_context);
@@ -396,12 +395,6 @@ MeshManager& GraphicsSystem::get_mesh_manager()
 }
 
 //==============================================================================
-ModelManager& GraphicsSystem::get_model_manager()
-{
-  return m_model_manager;
-}
-
-//==============================================================================
 GizmoManager& GraphicsSystem::get_gizmo_manager()
 {
   return m_gizmo_manager;
@@ -414,9 +407,9 @@ const Material& GraphicsSystem::get_solid_material() const
 }
 
 //==============================================================================
-ModelHandle GraphicsSystem::get_cube_model_handle() const
+const Model& GraphicsSystem::get_cube_model() const
 {
-  return m_cube_model_handle;
+  return m_cube_model;
 }
 
 //==============================================================================
@@ -990,9 +983,9 @@ void GraphicsSystem::render_sectors(const VisibleSectors& visible) const
   for (const auto& [sector_id, _] : sectors_to_render)
   {
     NC_ASSERT(sector_id < g_map_sector_models.size());
-    auto handle = g_map_sector_models[sector_id];
+    const Model& model = g_map_sector_models[sector_id];
 
-    glBindVertexArray(handle->mesh.get_vao());
+    glBindVertexArray(model.mesh.get_vao());
 
     m_solid_material.set_uniform(shaders::solid::VIEW, cam->get_view());
     m_solid_material.set_uniform(shaders::solid::VIEW_POSITION, cam->get_position());
@@ -1002,7 +995,7 @@ void GraphicsSystem::render_sectors(const VisibleSectors& visible) const
     m_solid_material.set_uniform(shaders::solid::COLOR, col);
     m_solid_material.set_uniform(shaders::solid::TRANSFORM, transform);
 
-    glDrawArrays(handle->mesh.get_draw_mode(), 0, handle->mesh.get_vertex_count());
+    glDrawArrays(model.mesh.get_draw_mode(), 0, model.mesh.get_vertex_count());
   }
 
   glBindVertexArray(0);
@@ -1026,40 +1019,37 @@ void GraphicsSystem::render_entities(const VisibleSectors&) const
     return;
   }
 
-  // Group entities by Models
-  // MR says: For some stupid reason using unordered_map<ModelHandle, ...> does
-  // not work properly (even though the specialized std::hash seems to be ok).
-  // Using ModelHandle causes some elements to end up colliding with each and being
-  // put into the same bucket on the same index (they are effectively being treated
-  // by the hash map as being the same, even though they have different values
-  // and a different hash).
-  // I did not have time to spend more time on this this so therefore I introduced
-  // u32 and ModelGroup - these seem to work exactly as expected.
   struct ModelGroup
   {
-    ModelHandle      handle;
+    Model            model;
     std::vector<u32> component_indices;
   };
+
   std::unordered_map<u64, ModelGroup> model_groups;
-  for (u32 i = 0; i < g_appearance_components.size(); ++i)
+  for (u32 component_id = 0; component_id < g_appearance_components.size(); ++component_id)
   {
-    const auto handle = g_appearance_components[i].model_handle;
-    model_groups[handle.m_model_id].handle = handle;
-    model_groups[handle.m_model_id].component_indices.push_back(i);
+    const Appearance& appearance = g_appearance_components[component_id];
+    
+    // TODO: Use better unique identifier.
+    u64 id = (static_cast<u64>(appearance.model.material.m_shader_program) << 32)
+      + static_cast<u64>(appearance.model.mesh.get_vao());
+
+    model_groups[id].model = appearance.model;
+    model_groups[id].component_indices.push_back(component_id);
   }
 
   // TODO: sort groups by: 1. program, 2. texture, 3. vao
   for (const auto& [_, group] : model_groups)
   {
-    const auto& [handle, indices] = group;
+    const auto& [model, indices] = group;
 
     // TODO: switch program & vao only when neccesary
-    handle->material.use();
-    glBindVertexArray(handle->mesh.get_vao());
+    model.material.use();
+    glBindVertexArray(model.mesh.get_vao());
 
     // TODO: some uniform locations should be shader independent
-    handle->material.set_uniform(shaders::solid::VIEW, cam->get_view());
-    handle->material.set_uniform(shaders::solid::VIEW_POSITION, cam->get_position());
+    model.material.set_uniform(shaders::solid::VIEW, cam->get_view());
+    model.material.set_uniform(shaders::solid::VIEW_POSITION, cam->get_position());
 
     // TODO: indirect rendering
     for (auto& index : indices)
@@ -1069,10 +1059,10 @@ void GraphicsSystem::render_entities(const VisibleSectors&) const
 
       const mat4 transform = scale(rotate(translate(mat4(1.0f), position), appearance.rotation, vec3::Y), appearance.scale);
       // TODO: should be set only when these changes and probably not here
-      handle->material.set_uniform(shaders::solid::COLOR, appearance.model_color);
-      handle->material.set_uniform(shaders::solid::TRANSFORM, transform);
+      model.material.set_uniform(shaders::solid::COLOR, appearance.model_color);
+      model.material.set_uniform(shaders::solid::TRANSFORM, transform);
 
-      glDrawArrays(handle->mesh.get_draw_mode(), 0, handle->mesh.get_vertex_count());
+      glDrawArrays(model.mesh.get_draw_mode(), 0, model.mesh.get_vertex_count());
     }
   }
 }
@@ -1090,8 +1080,7 @@ void GraphicsSystem::build_map_gfx()
   const auto& m_map = get_engine().get_map();
 
   auto& mesh_man = get_mesh_manager();
-  auto& model_man = get_model_manager();
-  const auto& solid_mat = get_solid_material();
+  const auto& solid_material = get_solid_material();
 
   for (SectorID sid = 0; sid < m_map.sectors.size(); ++sid)
   {
@@ -1102,9 +1091,9 @@ void GraphicsSystem::build_map_gfx()
     const u32  values_cnt = static_cast<u32>(vertices.size() * 3);
 
     const auto mesh = mesh_man.create(ResLifetime::Game, vertex_data, values_cnt);
-    const auto handle = model_man.add(ResLifetime::Game, mesh, solid_mat);
+    const auto model = Model(mesh, solid_material);
 
-    g_map_sector_models.push_back(handle);
+    g_map_sector_models.push_back(model);
   }
 }
 

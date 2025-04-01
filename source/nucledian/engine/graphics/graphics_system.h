@@ -32,14 +32,13 @@ public:
 
   const DebugCamera& get_debug_camera() const;
   MeshManager& get_mesh_manager();
-  ModelManager& get_model_manager();
 
   #ifdef NC_DEBUG_DRAW
   GizmoManager& get_gizmo_manager();
   #endif
 
   const Material& get_solid_material() const;
-  ModelHandle get_cube_model_handle() const;
+  const Model& get_cube_model() const;
 
 private:
   void update(f32 delta_seconds);
@@ -65,13 +64,12 @@ private:
   void*        m_gl_context    = nullptr;
   DebugCamera  m_debug_camera;
   MeshManager  m_mesh_manager;
-  ModelManager m_model_manager;
   #ifdef NC_DEBUG_DRAW
   GizmoManager m_gizmo_manager;
   #endif
   // Material for rendering solid geometry.
   Material     m_solid_material;
-  ModelHandle  m_cube_model_handle = ModelHandle::invalid();
+  Model        m_cube_model;
 };
 
 }

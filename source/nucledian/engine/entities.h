@@ -13,7 +13,7 @@ namespace nc
 struct Appearance
 {
   f32 rotation;
-  ModelHandle model_handle;
+  Model model;
   vec3 scale;
   color model_color;
 };
@@ -45,7 +45,7 @@ u32 create_entity(const Position& position, f32 scale, const color& color, f32 r
 /**
  * Creates entity with given model.
  */
-u32 create_entity(const Position& position, ModelHandle handle, vec3 scale, const color& color, f32 rotation = 0.0f);
+u32 create_entity(const Position& position, Model model, vec3 scale, const color& color, f32 rotation = 0.0f);
 
 /**
  * Temporary helper function for creating instances of render components within g_appearance_components array. For furher

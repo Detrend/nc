@@ -96,7 +96,6 @@
     <ClCompile Include="..\source\nucledian\engine\graphics\graphics_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\material.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\mesh.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\graphics\resources\model.cpp" />
     <ClCompile Include="..\source\nucledian\engine\input\input_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\map_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\player\map_object.cpp" />

@@ -23,7 +23,7 @@ u32 create_entity(
   return create_entity
   (
     position, 
-    get_engine().get_module<GraphicsSystem>().get_cube_model_handle(),
+    get_engine().get_module<GraphicsSystem>().get_cube_model(),
     scale,
     color,
     rotation
@@ -33,7 +33,7 @@ u32 create_entity(
 //==============================================================================
 u32 create_entity(
   const Position& position,
-  ModelHandle     handle,
+  Model           model,
   vec3            scale,
   const color&    color,
   f32             rotation /*= 0.0f*/)
@@ -43,7 +43,7 @@ u32 create_entity(
   g_appearance_components.emplace_back
   (
     rotation,
-    handle,
+    model,
     scale,
     color
   );
