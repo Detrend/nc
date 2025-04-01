@@ -94,6 +94,7 @@
     <ClInclude Include="..\source\nucledian\cvars.h" />
     <ClInclude Include="..\source\libs\imgui\imgui_stdlib.h" />
     <ClInclude Include="..\source\nucledian\macros.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\gl_types.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />

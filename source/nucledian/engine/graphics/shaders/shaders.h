@@ -1,8 +1,7 @@
 #pragma once
 
 #include <temp_math.h>
-
-#include <glad/glad.h>
+#include <engine/graphics/gl_types.h>
 
 namespace nc
 {

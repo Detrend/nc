@@ -2,8 +2,7 @@
 
 #include <temp_math.h>
 #include <engine/graphics/shaders/shaders.h>
-
-#include <glad/glad.h>
+#include <engine/graphics/gl_types.h>
 
 #include <optional>
 

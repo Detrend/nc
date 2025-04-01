@@ -1,9 +1,8 @@
 #pragma once
 
 #include <engine/graphics/resources/res_lifetime.h>
+#include <engine/graphics/gl_types.h>
 #include <types.h>
-
-#include <glad/glad.h>
 
 #include <vector>
 

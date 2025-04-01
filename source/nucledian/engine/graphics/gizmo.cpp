@@ -6,6 +6,8 @@
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/graphics_system.h>
 
+#include <glad/glad.h>
+
 #include <bit>
 #include <ranges>
 #include <array>

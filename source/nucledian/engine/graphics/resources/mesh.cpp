@@ -1,6 +1,8 @@
 #include <engine/graphics/resources/mesh.h>
 #include <common.h>
 
+#include <glad/glad.h>
+
 #include <vector>
 
 namespace nc
