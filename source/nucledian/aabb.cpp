@@ -1,6 +1,7 @@
 // Project Nucledian Source File
 #include <aabb.h>
-#include <vector_maths.h>
+#include <math/vector.h>
+#include <math/lingebra.h>
 
 #include <initializer_list>
 #include <limits>
@@ -32,7 +33,7 @@ aabb<FT, S>::aabb(std::initializer_list<vec_type> list)
 template<typename FT, u64 S>
 bool aabb<FT, S>::is_valid() const
 {
-  return ::nc::min(min, max) == min && ::nc::max(min, max) == max;
+  return ::glm::min(min, max) == min && ::glm::max(min, max) == max;
 }
 
 //==============================================================================

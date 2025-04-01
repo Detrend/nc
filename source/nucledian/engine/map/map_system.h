@@ -33,7 +33,7 @@
 #include <engine/map/map_types.h>
 
 #include <types.h>
-#include <vector_maths.h>
+#include <math/vector.h>
 #include <intersect.h>
 #include <grid.h>
 

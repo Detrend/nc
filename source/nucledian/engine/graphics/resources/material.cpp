@@ -1,6 +1,8 @@
 #include <common.h>
 #include <engine/graphics/resources/material.h>
 
+#include <math/lingebra.h>
+
 #include <iostream>
 
 namespace nc

@@ -8,7 +8,7 @@ namespace nc
 {
 
 //==============================================================================
-u32 create_entity(const Position& position, f32 scale, const color& color, f32 rotation)
+u32 create_entity(const Position& position, f32 scale, const color4& color, f32 rotation)
 {
   return create_entity(position, vec3(scale), color, rotation);
 }
@@ -17,7 +17,7 @@ u32 create_entity(const Position& position, f32 scale, const color& color, f32 r
 u32 create_entity(
   const Position& position,
   vec3            scale,
-  const color&    color,
+  const color4&    color,
   f32             rotation /*= 0.0f*/)
 {
   return create_entity
@@ -35,7 +35,7 @@ u32 create_entity(
   const Position& position,
   ModelHandle     handle,
   vec3            scale,
-  const color&    color,
+  const color4&    color,
   f32             rotation /*= 0.0f*/)
 {
   NC_ASSERT(g_appearance_components.size() == m_position_components.size());

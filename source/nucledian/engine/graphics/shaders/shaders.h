@@ -1,6 +1,7 @@
 #pragma once
 
-#include <temp_math.h>
+#include <math/vector.h>
+#include <math/matrix.h>
 
 #include <glad/glad.h>
 
@@ -30,7 +31,7 @@ namespace nc
       inline constexpr Uniform<0, mat4>  TRANSFORM;
       inline constexpr Uniform<1, mat4>  VIEW;
       inline constexpr Uniform<2, mat4>  PROJECTION;
-      inline constexpr Uniform<3, color> COLOR;
+      inline constexpr Uniform<3, color4> COLOR;
       inline constexpr Uniform<4, vec3>  VIEW_POSITION;
     }
   }

@@ -1,6 +1,9 @@
 // Project Nucledian Source File
 #include <grid.h>
-#include <vector_maths.h>
+#include <common.h>
+
+#include <math/vector.h>
+#include <math/lingebra.h>
 #include <intersect.h>
 
 #include <algorithm>    // std::clamp
@@ -74,7 +77,7 @@ void StatGridAABB2<T>::initialize(u64 width, u64 height, vec2 min, vec2 max)
 template<typename T>
 void StatGridAABB2<T>::query_point(vec2 point, Visitor func) const
 {
-  this->query_aabb(aabb{point}, func);
+  this->query_aabb(aabb2{point}, func);
 }
 
 //==============================================================================

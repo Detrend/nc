@@ -1,8 +1,12 @@
 // Project Nucledian Source File
 #include <intersect.h>
-#include <maths.h>
-#include <vector_maths.h>
+#include <common.h>
+
 #include <aabb.h>
+
+#include <math/utils.h>
+#include <math/vector.h>
+#include <math/lingebra.h>
 
 #include <limits>     // FLT_MAX
 #include <algorithm>  // std::min, std::max, std::abs

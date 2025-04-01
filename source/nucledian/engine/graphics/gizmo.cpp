@@ -6,6 +6,8 @@
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/graphics_system.h>
 
+#include <math/lingebra.h>
+
 #include <bit>
 #include <ranges>
 #include <array>
@@ -14,7 +16,7 @@ namespace nc
 {
 
 //==============================================================================
-GizmoPtr Gizmo::create_cube(const vec3& pos, f32 size, const color& color)
+GizmoPtr Gizmo::create_cube(const vec3& pos, f32 size, const color4& color)
 {
   auto& system = get_engine().get_module<GraphicsSystem>();
   auto& gizmo_manager = system.get_gizmo_manager();
@@ -41,7 +43,7 @@ GizmoPtr Gizmo::create_cube(const vec3& pos, f32 size, const color& color)
 }
 
 //==============================================================================
-void Gizmo::create_cube(f32 ttl, const vec3& pos, f32 size, const color& color)
+void Gizmo::create_cube(f32 ttl, const vec3& pos, f32 size, const color4& color)
 {
   auto& system = get_engine().get_module<GraphicsSystem>();
   auto& gizmo_manager = system.get_gizmo_manager();
@@ -51,7 +53,7 @@ void Gizmo::create_cube(f32 ttl, const vec3& pos, f32 size, const color& color)
 }
 
 //==============================================================================
-Gizmo::Gizmo(const Mesh& mesh, const vec3& pos, f32 size, const color& color, f32 ttl)
+Gizmo::Gizmo(const Mesh& mesh, const vec3& pos, f32 size, const color4& color, f32 ttl)
   : m_ttl(ttl), m_mesh(mesh), m_color(color), m_transform(scale(translate(mat4(1.0f), pos), vec3(size))) {}
 
 //==============================================================================

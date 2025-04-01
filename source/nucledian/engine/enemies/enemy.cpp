@@ -4,6 +4,8 @@
 #include <engine/player/player.h>
 #include <iostream>
 
+#include <math/lingebra.h>
+
 namespace nc 
 {
 Enemy::Enemy()
