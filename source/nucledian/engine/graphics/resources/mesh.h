@@ -1,7 +1,7 @@
 #pragma once
 
-#include <types.h>
 #include <engine/graphics/resources/res_lifetime.h>
+#include <types.h>
 
 #include <glad/glad.h>
 
@@ -58,14 +58,12 @@ public:
   /**
    * Creates mesh from vertex data and stores it in GPU memory.
    */
-  template<ResLifetime lifetime>
-  Mesh create(const f32* data, u32 count, GLenum draw_mode = GL_TRIANGLES);
+  Mesh create(ResLifetime lifetime, const f32* data, u32 count, GLenum draw_mode = GL_TRIANGLES);
 
   /**
    * Unloads all meshes with specified lifetime. 
    */
-  template<ResLifetime lifetime>
-  void unload();
+  void unload(ResLifetime lifetime);
 
   Mesh get_cube() const;
 
@@ -73,8 +71,7 @@ public:
 private:
   static inline u16 generation = 0;
 
-  template<ResLifetime lifetime>
-  std::vector<Mesh>& get_storage();
+  std::vector<Mesh>& get_storage(ResLifetime lifetime);
 
   std::vector<Mesh> m_level_meshes;
   std::vector<Mesh> m_game_meshes;
@@ -82,5 +79,3 @@ private:
 };
 
 }
-
-#include <engine/graphics/resources/mesh.inl>

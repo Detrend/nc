@@ -51,11 +51,8 @@ class ModelManager
 public:
   friend class ModelHandle;
 
-  template<ResLifetime lifetime>
-  ModelHandle add(const Mesh& mesh, const Material& material);
-
-  template<ResLifetime lifetime>
-  void unload();
+  ModelHandle add(ResLifetime lifetime, const Mesh& mesh, const Material& material);
+  void unload(ResLifetime lifetime);
 
   Model& get(const ModelHandle& handle);
 
@@ -63,9 +60,6 @@ private:
   static inline u16 generation = 0;
 
   std::vector<Model>& get_storage(ResLifetime lifetime);
-
-  template<ResLifetime lifetime>
-  std::vector<Model>& get_storage();
 
   std::vector<Model> m_level_models;
   std::vector<Model> m_game_models;

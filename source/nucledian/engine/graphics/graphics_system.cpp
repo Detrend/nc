@@ -1,49 +1,43 @@
 // Project Nucledian Source File
 #include <engine/graphics/graphics_system.h>
 
-#include <common.h>
-#include <config.h>
-
 #include <engine/core/engine.h>
-#include <engine/core/module_event.h>
 #include <engine/core/engine_module_types.h>
-
-#include <engine/graphics/resources/res_lifetime.h>
+#include <engine/core/module_event.h>
 
 #include <engine/entities.h>
+#include <engine/graphics/resources/res_lifetime.h>
 #include <engine/input/input_system.h>
 #include <engine/map/map_system.h>
 #include <engine/player/thing_system.h>
 
-#include <engine/map/map_system.h>
-#include <intersect.h>
-
+#include <common.h>
+#include <config.h>
 #include <cvars.h>
+#include <intersect.h>
+#include <maths.h>
 
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
 
 #include <imgui/imgui.h>
-#include <imgui/imgui_stdlib.h>
-#include <imgui/imgui_impl_sdl2.h>
 #include <imgui/imgui_impl_opengl3.h>
+#include <imgui/imgui_impl_sdl2.h>
+#include <imgui/imgui_stdlib.h>
 
-#include <maths.h>
-
-#include <numbers> // std::numbers::pi
 #include <algorithm>
-#include <unordered_map>
+#include <chrono>
+#include <cmath>
+#include <map>
+#include <numbers>
 #include <set>
-#include <variant>  // std::visit
-#include <utility>  // std::pair
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <variant>
 
 // Remove this after logging is added!
 #include <iostream>
-#include <string>
-#include <map>
-#include <set>
-#include <cmath>
-#include <chrono>
 
 #ifdef NC_DEBUG_DRAW
 namespace nc::debug_helpers
@@ -276,7 +270,7 @@ bool GraphicsSystem::init()
   m_mesh_manager.init();
 
   m_solid_material = Material(shaders::solid::VERTEX_SOURCE, shaders::solid::FRAGMENT_SOURCE);
-  m_cube_model_handle = m_model_manager.add<ResLifetime::Game>(m_mesh_manager.get_cube(), m_solid_material);
+  m_cube_model_handle = m_model_manager.add(ResLifetime::Game, m_mesh_manager.get_cube(), m_solid_material);
 
   const mat4 projection = perspective(radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
   m_solid_material.use();
@@ -347,8 +341,8 @@ void GraphicsSystem::terminate()
   ImGui::DestroyContext();
 #endif
 
-  m_model_manager.unload<ResLifetime::Game>();
-  m_mesh_manager.unload<ResLifetime::Game>();
+  m_model_manager.unload(ResLifetime::Game);
+  m_mesh_manager.unload(ResLifetime::Game);
 
   SDL_GL_DeleteContext(m_gl_context);
   m_gl_context = nullptr;
@@ -1107,8 +1101,8 @@ void GraphicsSystem::build_map_gfx()
     const f32* vertex_data = &vertices[0].x;
     const u32  values_cnt = static_cast<u32>(vertices.size() * 3);
 
-    const auto mesh = mesh_man.create<ResLifetime::Game>(vertex_data, values_cnt);
-    const auto handle = model_man.add<ResLifetime::Game>(mesh, solid_mat);
+    const auto mesh = mesh_man.create(ResLifetime::Game, vertex_data, values_cnt);
+    const auto handle = model_man.add(ResLifetime::Game, mesh, solid_mat);
 
     g_map_sector_models.push_back(handle);
   }

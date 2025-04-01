@@ -53,6 +53,28 @@ ModelHandle::ModelHandle(u32 model_id, ResLifetime lifetime, u16 generation)
   : m_generation(generation), m_lifetime(lifetime), m_model_id(model_id) { }
 
 //==============================================================================
+ModelHandle ModelManager::add(ResLifetime lifetime, const Mesh& mesh, const Material& material)
+{
+  auto& storage = get_storage(lifetime);
+  const u32 id = static_cast<u32>(storage.size());
+
+  storage.emplace_back(mesh, material);
+  return ModelHandle(id, lifetime, ModelManager::generation);
+}
+
+//==============================================================================
+void ModelManager::unload(ResLifetime lifetime)
+{
+  auto& storage = get_storage(lifetime);
+  storage.clear();
+
+  if (lifetime == ResLifetime::Level)
+  {
+    ModelManager::generation++;
+  }
+}
+
+//==============================================================================
 Model& ModelManager::get(const ModelHandle& handle)
 {
   NC_ASSERT(handle, "Inavlid handle.");
