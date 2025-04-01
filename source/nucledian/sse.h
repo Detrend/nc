@@ -28,7 +28,7 @@ union reg128
 
   constexpr reg128(reg_type i) : imm(i) {};
 
-  constexpr operator reg_type&()
+  constexpr operator reg_type& ()
   {
     return imm;
   }
@@ -83,7 +83,7 @@ union reg64
 
   reg_type imm;
 
-  operator reg_type&()
+  operator reg_type& ()
   {
     return imm;
   }
@@ -110,4 +110,3 @@ static_assert(sizeof(reg64) == sizeof(__m64));
 #pragma warning(pop)
 #endif
 }
-

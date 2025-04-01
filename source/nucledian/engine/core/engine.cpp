@@ -1,5 +1,6 @@
 // Project Nucledian Source File
 #include <common.h>
+#include <config.h>
 
 #include <engine/core/engine.h>
 #include <engine/core/engine_module.h>
@@ -8,11 +9,14 @@
 #include <engine/core/engine_module_types.h>
 #include <engine/core/event_journal.h>
 
+#include <engine/entities.h>
+#include <cvars.h>
+
 #include <engine/graphics/graphics_system.h>
 #include <engine/input/input_system.h>
-#include <engine/entities.h>
-
+#include <engine/player/thing_system.h>
 #include <engine/map/map_system.h>
+
 #include <vec.h>
 
 #ifdef NC_PROFILING
@@ -20,12 +24,12 @@
 #include <algorithm>
 #endif
 
-#include <ranges>
-#include <chrono>
-#include <cstdlib>    // std::rand
+#include <ranges>  // std::views::reverse
+#include <chrono>  // std::chrono::high_resolution_clock
+#include <cstdlib> // std::rand
 
-#include <iostream>
-#include <format>
+//#include <iostream>
+//#include <format>
 
 namespace nc
 {
@@ -158,7 +162,6 @@ void Engine::send_event(ModuleEvent&& event)
 bool Engine::init()
 {
   // init the modules here..
-
   #define INIT_MODULE(_module_class, ...)                     \
   {                                                           \
     auto m = std::make_unique<_module_class>();               \
@@ -172,6 +175,7 @@ bool Engine::init()
 
   INIT_MODULE(GraphicsSystem);
   INIT_MODULE(InputSystem);
+  INIT_MODULE(ThingSystem);
 
   #undef INIT_MODULE
 
@@ -194,19 +198,18 @@ void Engine::run()
   auto previous_time = std::chrono::high_resolution_clock::now();
 
   auto& input_system = this->get_module<InputSystem>();
-  auto& gfx_system   = this->get_module<GraphicsSystem>();
 
   while (!this->should_quit())
   {
     auto current_time = std::chrono::high_resolution_clock::now();
-    f32 frame_time = eu::duration_to_seconds(previous_time, current_time);
+    const f32 frame_time = eu::duration_to_seconds(previous_time, current_time);
     previous_time = current_time;
 
     this->handle_journal_state_during_update();
     const bool replay_active = this->event_journal_active();
 
     // pump messages
-    gfx_system.update_window_and_pump_messages();
+    input_system.update_window_and_pump_messages();
 
     // override the player-specific inputs of the input system if 
     // a journal replay is active
@@ -217,9 +220,9 @@ void Engine::run()
       input_system.override_player_inputs(journal_top.player_inputs);
     }
 
-    f32 game_logic_update_time = replay_active
-      ? m_journal->frames.back().frame_time
-      : frame_time;
+    const f32 game_logic_update_time = replay_active
+      ? m_journal->frames.back().frame_time // take time speed from replay
+      : frame_time * CVars::time_speed;     // modify time speed by cvar
 
     if (m_recorded_journal)
     {
@@ -523,6 +526,40 @@ void Engine::stop_event_journal()
 void Engine::set_recording_journal(EventJournal* journal)
 {
   m_recorded_journal = journal;
+}
+
+//==============================================================================
+void Engine::process_window_event(const SDL_Event& event)
+{
+  switch (event.type)
+  {
+    case SDL_QUIT:
+    {
+      this->request_quit();
+      break;
+    }
+
+    #ifdef NC_DEBUG_DRAW
+    case SDL_KEYDOWN:
+    {
+      if (event.key.keysym.scancode == SDL_SCANCODE_F1)
+      {
+        CVars::time_speed = CVars::time_speed ? 0.0f : 1.0f;
+      }
+
+      if (event.key.keysym.scancode == SDL_SCANCODE_F4)
+      {
+        CVars::enable_top_down_debug = !CVars::enable_top_down_debug;
+      }
+
+      if (event.key.keysym.scancode == SDL_SCANCODE_GRAVE)
+      {
+        CVars::display_debug_window = !CVars::display_debug_window;
+      }
+      break;
+    }
+    #endif
+  }
 }
 
 //==============================================================================

@@ -93,14 +93,36 @@ namespace nc::intersect
 {
 // Checks for an intersection of two 2D line segments and returns true if
 // they intersect.
+// Intersection points of both segments can be calculated from t_out and
+// u_out parameters.
+// If the function returns true but both u_out and t_out are FLT_MAX then
+// the segments are parallel and intersecting.
 bool segment_segment(
+  vec2 start_a,
+  vec2 end_a,
+  vec2 start_b,
+  vec2 end_b,
+  f32& t_out,
+  f32& u_out);
+
+// Performs a segment-circle intersection.
+// Returns true if the segment and the circle intersect.
+bool segment_circle(vec2 start, vec2 end, vec2 og_center, f32 r, f32& t_out, vec2& n_out);
+
+// Checks for intersection between two segments, second of which is
+// expanded by a value.
+// Returns true if the two segments intersect. In such case the normal
+// vector of the intersection and a point of intersection are returned.
+// Point of intersection can be calculated as:
+// vec2 intersect_pt = start_a + (end_a - start_a) * out_coeff;
+bool segment_segment_expanded(
   vec2  start_a,
   vec2  end_a,
   vec2  start_b,
   vec2  end_b,
-  bool* parallel = nullptr,
-  f32*  t        = nullptr,
-  f32*  u        = nullptr);
+  f32   expand_b,
+  vec2& out_normal,
+  f32&  out_coeff);
 
 // Checks for intersection of two 2D AABBs and returns true if they intersect.
 bool aabb_aabb_2d(const aabb2& a, const aabb2& b);

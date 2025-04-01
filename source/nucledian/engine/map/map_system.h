@@ -143,6 +143,8 @@ struct MapSectors
     SectorID           sector_id,
     std::vector<vec3>& vertices_out) const;
 
+  bool raycast2d_expanded(vec2 from, vec2 to, f32 expand, vec2& out_normal, f32& out_coeff) const;
+
 private:
   void query_visible_sectors_impl(
     const SectorID*      start_sectors,

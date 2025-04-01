@@ -496,6 +496,81 @@ void MapSectors::sector_to_vertices(
   #endif
 }
 
+//==============================================================================
+bool MapSectors::raycast2d_expanded(
+  vec2 from, vec2 to, f32 expand, vec2& out_normal, f32& out_coeff) const
+{
+  NC_ASSERT(expand >= 0.0f);
+
+  if (from == to)
+  {
+    return false;
+  }
+
+  auto bbox = aabb2{from, to};
+  bbox.insert_point(bbox.min - vec2{expand});
+  bbox.insert_point(bbox.max + vec2{expand});
+
+  // TODO[perf]: Add a "query_ray" option
+  std::set<SectorID> overlap_sectors;
+  this->sector_grid.query_aabb(bbox, [&](aabb2 /*bb*/, SectorID sid)
+  {
+    overlap_sectors.insert(sid);
+    return false;
+  });
+
+  out_coeff  = FLT_MAX;
+  out_normal = vec2{0};
+  f32 count  = 1.0f;
+
+  for (auto sector_id : overlap_sectors)
+  {
+    NC_ASSERT(sector_id < this->sectors.size());
+    const auto begin_wall = this->sectors[sector_id].int_data.first_wall;
+    const auto end_wall   = this->sectors[sector_id].int_data.last_wall;
+
+    // TODO[perf]: In theory, we do not need to check all the walls.
+    // Once we hit one all other walls further away can be ignored.
+    for (auto wid = begin_wall; wid < end_wall; ++wid)
+    {
+      const auto next_wid = map_helpers::next_wall(*this, sector_id, wid);
+      const auto& w1 = this->walls[wid];
+      const auto& w2 = this->walls[next_wid];
+
+      const bool is_portal = w1.portal_sector_id != INVALID_SECTOR_ID;
+      if (is_portal)
+      {
+        // Ignore this wall, it is a portal
+        continue;
+      }
+
+      const auto& p1 = w1.pos;
+      const auto& p2 = w2.pos;
+
+      f32  coeff  = FLT_MAX;
+      vec2 normal = vec2{0};
+      if (intersect::segment_segment_expanded(from, to, p1, p2, expand, normal, coeff))
+      {
+        if (coeff == out_coeff)
+        {
+          out_normal = out_normal + normal;
+          count += 1.0f;
+        }
+        else if (coeff < out_coeff)
+        {
+          out_coeff  = coeff;
+          out_normal = normal;
+          count      = 1.0f;
+        }
+      }
+    }
+  }
+
+  out_normal = out_normal / count;
+
+  return out_coeff != FLT_MAX;
+}
+
 }
 
 namespace nc::map_building

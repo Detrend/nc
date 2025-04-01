@@ -1,5 +1,7 @@
 #include <engine/graphics/gizmo.h>
 
+#ifdef NC_DEBUG_DRAW
+
 #include <engine/core/engine.h>
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/graphics_system.h>
@@ -100,3 +102,6 @@ void GizmoManager::draw_gizmos() const
 }
 
 }
+
+#endif
+

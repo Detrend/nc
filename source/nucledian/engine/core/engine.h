@@ -8,6 +8,8 @@
 #include <vector>
 #include <string>
 
+union SDL_Event;
+
 namespace nc
 {
 
@@ -44,6 +46,8 @@ public:
   // Might be a nullptr
   void set_recording_journal(EventJournal* journal);
 
+  void process_window_event(const SDL_Event& evnt);
+
 private:
   bool should_quit()             const;
   bool event_journal_installed() const;
@@ -55,7 +59,7 @@ private:
   void handle_journal_state_during_update();
 
 private:
-  using ModuleArray  = std::array<std::unique_ptr<IEngineModule>, 8>;
+  using ModuleArray = std::array<std::unique_ptr<IEngineModule>, 8>;
   using ModuleVector = std::vector<IEngineModule*>;
   using JournalSmart = std::unique_ptr<EventJournal>;
 
@@ -64,9 +68,9 @@ private:
   ModuleVector  m_module_init_order;
   JournalSmart  m_journal;
   EventJournal* m_recorded_journal;
-  bool          m_should_quit         : 1 = false;
-  bool          m_journal_installed   : 1 = false;
-  bool          m_journal_active      : 1 = false;
+  bool          m_should_quit : 1 = false;
+  bool          m_journal_installed : 1 = false;
+  bool          m_journal_active : 1 = false;
   bool          m_journal_interrupted : 1 = false;
 
   std::unique_ptr<MapSectors> m_map = nullptr;
@@ -79,4 +83,3 @@ int init_engine_and_run_game(const std::vector<std::string>& args);
 }
 
 #include <engine/core/engine.inl>
-

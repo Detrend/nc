@@ -8,6 +8,8 @@
 
 #include <types.h>
 
+#include <engine/player/player.h>
+
 union SDL_Event;
 
 namespace nc
@@ -23,14 +25,21 @@ public:
   void on_event(ModuleEvent& event) override;
   bool init();
 
+  void update_window_and_pump_messages();
+
+  // Backdoor for replay system. This enables us to override player
+  // inputs.
   void override_player_inputs(const PlayerSpecificInputs& player_inputs);
 
   void handle_app_event(const SDL_Event& event);
-  const GameInputs& get_inputs() const;
+  void get_player_inputs();
+  GameInputs get_inputs() const;
 
 private:
   GameInputs m_current_inputs;
   GameInputs m_previous_inputs;
+
+  bool m_disable_player_inputs : 1 = false;
 };
 
 }
