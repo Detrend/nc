@@ -5,6 +5,7 @@
 #include <types.h>
 
 #include <vector>
+#include <memory>
 
 namespace nc
 {
@@ -52,23 +53,25 @@ class MeshManager
 public:
   friend class Mesh;
 
-  void init();
+  static MeshManager& instance();
 
+  void init();
   /**
    * Creates mesh from vertex data and stores it in GPU memory.
    */
   Mesh create(ResLifetime lifetime, const f32* data, u32 count, GLenum draw_mode = GL_TRIANGLES);
-
   /**
    * Unloads all meshes with specified lifetime. 
    */
   void unload(ResLifetime lifetime);
-
   Mesh get_cube() const;
 
 
 private:
-  static inline u16 generation = 0;
+  inline static std::unique_ptr<MeshManager> m_instance = nullptr;
+  MeshManager() {}
+
+  static inline u16 m_generation = 0;
 
   std::vector<Mesh>& get_storage(ResLifetime lifetime);
 

@@ -6,6 +6,7 @@
 #include <engine/core/module_event.h>
 
 #include <engine/entities.h>
+#include <engine/graphics/gizmo.h>
 #include <engine/graphics/resources/res_lifetime.h>
 #include <engine/input/input_system.h>
 #include <engine/map/map_system.h>
@@ -267,10 +268,10 @@ bool GraphicsSystem::init()
   glEnable(GL_CULL_FACE);
   glEnable(GL_MULTISAMPLE);
 
-  m_mesh_manager.init();
+  MeshManager::instance().init();
 
   m_solid_material = Material(shaders::solid::VERTEX_SOURCE, shaders::solid::FRAGMENT_SOURCE);
-  m_cube_model = Model(m_mesh_manager.get_cube(), m_solid_material);
+  m_cube_model = Model(MeshManager::instance().get_cube(), m_solid_material);
 
   const mat4 projection = perspective(radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
   m_solid_material.use();
@@ -341,7 +342,7 @@ void GraphicsSystem::terminate()
   ImGui::DestroyContext();
 #endif
 
-  m_mesh_manager.unload(ResLifetime::Game);
+  MeshManager::instance().unload(ResLifetime::Game);
 
   SDL_GL_DeleteContext(m_gl_context);
   m_gl_context = nullptr;
@@ -389,18 +390,6 @@ void GraphicsSystem::query_visible_sectors(VisibleSectors& out) const
 }
 
 //==============================================================================
-MeshManager& GraphicsSystem::get_mesh_manager()
-{
-  return m_mesh_manager;
-}
-
-//==============================================================================
-GizmoManager& GraphicsSystem::get_gizmo_manager()
-{
-  return m_gizmo_manager;
-}
-
-//==============================================================================
 const Material& GraphicsSystem::get_solid_material() const
 {
   return m_solid_material;
@@ -418,7 +407,7 @@ void GraphicsSystem::update(f32 delta_seconds)
   // TODO: only temporary for debug camera
   //m_debug_camera.handle_input(delta_seconds);
 
-  m_gizmo_manager.update_ttls(delta_seconds);
+  GizmoManager::instance().update_ttls(delta_seconds);
 }
 
 //==============================================================================
@@ -456,7 +445,7 @@ void GraphicsSystem::render()
   }
   else
   {
-    m_gizmo_manager.draw_gizmos();
+    GizmoManager::instance().draw_gizmos();
     render_sectors(visible);
     render_entities(visible);
   }
@@ -1079,8 +1068,8 @@ void GraphicsSystem::build_map_gfx()
 {
   const auto& m_map = get_engine().get_map();
 
-  auto& mesh_man = get_mesh_manager();
-  const auto& solid_material = get_solid_material();
+  MeshManager& mesh_manager = MeshManager::instance();
+  const Material& solid_material = get_solid_material();
 
   for (SectorID sid = 0; sid < m_map.sectors.size(); ++sid)
   {
@@ -1090,7 +1079,7 @@ void GraphicsSystem::build_map_gfx()
     const f32* vertex_data = &vertices[0].x;
     const u32  values_cnt = static_cast<u32>(vertices.size() * 3);
 
-    const auto mesh = mesh_man.create(ResLifetime::Game, vertex_data, values_cnt);
+    const auto mesh = mesh_manager.create(ResLifetime::Game, vertex_data, values_cnt);
     const auto model = Model(mesh, solid_material);
 
     g_map_sector_models.push_back(model);

@@ -57,6 +57,8 @@ class GizmoManager
 public:
   friend class Gizmo;
 
+  static GizmoManager& instance();
+
   // Update time to live (ttl) of active gizmos.
   void update_ttls(f32 delta_seconds);
   void draw_gizmos() const;
@@ -64,12 +66,15 @@ public:
 private:
   using GizmoMap = std::unordered_map<u32, Gizmo>;
 
+  inline static std::unique_ptr<GizmoManager> m_instance = nullptr;
   inline static u32 m_next_gizmo_id = 0;
 
   // Contain all active gizmos with GizmoPtr lifetime managment.
   GizmoMap m_gizmos;
   // Contain all active gizmos with ttl lifetime managment.
   GizmoMap m_ttl_gizmos;
+
+  GizmoManager() {}
 };
 
 }

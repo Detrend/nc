@@ -89,7 +89,7 @@ GLenum Mesh::get_draw_mode() const
 //==============================================================================
 bool Mesh::is_valid() const
 {
-  if (m_lifetime == ResLifetime::Game && m_generation != MeshManager::generation)
+  if (m_lifetime == ResLifetime::Game && m_generation != MeshManager::m_generation)
   {
     return false;
   }
@@ -110,6 +110,17 @@ Mesh Mesh::invalid()
 }
 
 //==============================================================================
+MeshManager& MeshManager::instance()
+{
+  if (m_instance == nullptr)
+  {
+    m_instance = std::unique_ptr<MeshManager>(new MeshManager());
+  }
+
+  return *m_instance;
+}
+
+//==============================================================================
 void MeshManager::init()
 {
   m_cube_mesh = this->create(ResLifetime::Game, cube_vertices, sizeof(cube_vertices) / sizeof(f32));
@@ -120,7 +131,7 @@ Mesh MeshManager::create(ResLifetime lifetime, const f32* data, u32 count, GLenu
 {
   Mesh mesh;
   mesh.m_lifetime = lifetime;
-  mesh.m_generation = MeshManager::generation;
+  mesh.m_generation = MeshManager::m_generation;
   mesh.m_draw_mode = draw_mode;
   mesh.m_vertex_count = count / 6; // 3 floats per position + 3 floats per normal
 
@@ -175,7 +186,7 @@ void MeshManager::unload(ResLifetime lifetime)
 
   if (lifetime == ResLifetime::Game)
   {
-    MeshManager::generation++;
+    MeshManager::m_generation++;
   }
 }
 

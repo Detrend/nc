@@ -3,8 +3,6 @@
 
 #include <engine/core/engine_module.h>
 #include <engine/core/engine_module_id.h>
-#include <engine/graphics/gizmo.h>
-#include <engine/graphics/resources/mesh.h>
 #include <engine/graphics/resources/model.h>
 #include <engine/graphics/debug_camera.h>
 
@@ -31,12 +29,6 @@ public:
   void on_event(ModuleEvent& event) override;
 
   const DebugCamera& get_debug_camera() const;
-  MeshManager& get_mesh_manager();
-
-  #ifdef NC_DEBUG_DRAW
-  GizmoManager& get_gizmo_manager();
-  #endif
-
   const Material& get_solid_material() const;
   const Model& get_cube_model() const;
 
@@ -63,10 +55,6 @@ private:
   SDL_Window*  m_window        = nullptr;
   void*        m_gl_context    = nullptr;
   DebugCamera  m_debug_camera;
-  MeshManager  m_mesh_manager;
-  #ifdef NC_DEBUG_DRAW
-  GizmoManager m_gizmo_manager;
-  #endif
   // Material for rendering solid geometry.
   Material     m_solid_material;
   Model        m_cube_model;

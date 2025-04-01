@@ -18,14 +18,13 @@ namespace nc
 //==============================================================================
 GizmoPtr Gizmo::create_cube(const vec3& pos, f32 size, const color& color)
 {
-  auto& system = get_engine().get_module<GraphicsSystem>();
-  auto& gizmo_manager = system.get_gizmo_manager();
+  GizmoManager& gizmo_manager = GizmoManager::instance();
   const u32 id = gizmo_manager.m_next_gizmo_id++;
 
   auto[it, _] = gizmo_manager.m_gizmos.emplace
   (
     id,
-    Gizmo(system.get_mesh_manager().get_cube(), pos, size, color, 0.0f)
+    Gizmo(MeshManager::instance().get_cube(), pos, size, color, 0.0f)
   );
 
   auto deleter = [&gizmo_manager, id](const Gizmo*)
@@ -45,16 +44,26 @@ GizmoPtr Gizmo::create_cube(const vec3& pos, f32 size, const color& color)
 //==============================================================================
 void Gizmo::create_cube(f32 ttl, const vec3& pos, f32 size, const color& color)
 {
-  auto& system = get_engine().get_module<GraphicsSystem>();
-  auto& gizmo_manager = system.get_gizmo_manager();
+  GizmoManager& gizmo_manager = GizmoManager::instance();
   const u32 id = gizmo_manager.m_next_gizmo_id++;
 
-  gizmo_manager.m_ttl_gizmos.emplace(id, Gizmo(system.get_mesh_manager().get_cube(), pos, size, color, ttl));
+  gizmo_manager.m_ttl_gizmos.emplace(id, Gizmo(MeshManager::instance().get_cube(), pos, size, color, ttl));
 }
 
 //==============================================================================
 Gizmo::Gizmo(const Mesh& mesh, const vec3& pos, f32 size, const color& color, f32 ttl)
   : m_ttl(ttl), m_mesh(mesh), m_color(color), m_transform(scale(translate(mat4(1.0f), pos), vec3(size))) {}
+
+//==============================================================================
+GizmoManager& GizmoManager::instance()
+{
+  if (m_instance == nullptr)
+  {
+    m_instance = std::unique_ptr<GizmoManager>(new GizmoManager());
+  }
+
+  return *m_instance;
+}
 
 //==============================================================================
 void GizmoManager::update_ttls(f32 delta_seconds)
