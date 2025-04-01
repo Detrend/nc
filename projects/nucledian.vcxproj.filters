@@ -47,7 +47,6 @@
     <ClInclude Include="..\source\libs\imgui\imstb_textedit.h" />
     <ClInclude Include="..\source\libs\imgui\imstb_truetype.h" />
     <ClInclude Include="..\source\nucledian\aabb.h" />
-    <ClInclude Include="..\source\nucledian\base_vec.h" />
     <ClInclude Include="..\source\nucledian\common.h" />
     <ClInclude Include="..\source\nucledian\config.h" />
     <ClInclude Include="..\source\nucledian\engine\core\engine.h" />
