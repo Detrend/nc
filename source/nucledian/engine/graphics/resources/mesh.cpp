@@ -63,31 +63,31 @@ constexpr f32 cube_vertices[] =
 };
 
 //==============================================================================
-GLuint Mesh::get_vao() const
+GLuint MeshHandle::get_vao() const
 {
   return m_vao;
 }
 
 //==============================================================================
-GLuint Mesh::get_vbo() const
+GLuint MeshHandle::get_vbo() const
 {
   return m_vbo;
 }
 
 //==============================================================================
-u32 Mesh::get_vertex_count() const
+u32 MeshHandle::get_vertex_count() const
 {
   return m_vertex_count;
 }
 
 //==============================================================================
-GLenum Mesh::get_draw_mode() const
+GLenum MeshHandle::get_draw_mode() const
 {
   return m_draw_mode;
 }
 
 //==============================================================================
-bool Mesh::is_valid() const
+bool MeshHandle::is_valid() const
 {
   if (m_lifetime == ResLifetime::Game && m_generation != MeshManager::m_generation)
   {
@@ -98,15 +98,15 @@ bool Mesh::is_valid() const
 }
 
 //==============================================================================
-Mesh::operator bool() const
+MeshHandle::operator bool() const
 {
   return this->is_valid();
 }
 
 //==============================================================================
-Mesh Mesh::invalid()
+MeshHandle MeshHandle::invalid()
 {
-    return Mesh();
+    return MeshHandle();
 }
 
 //==============================================================================
@@ -127,9 +127,9 @@ void MeshManager::init()
 }
 
 //==============================================================================
-Mesh MeshManager::create(ResLifetime lifetime, const f32* data, u32 count, GLenum draw_mode)
+MeshHandle MeshManager::create(ResLifetime lifetime, const f32* data, u32 count, GLenum draw_mode)
 {
-  Mesh mesh;
+  MeshHandle mesh;
   mesh.m_lifetime = lifetime;
   mesh.m_generation = MeshManager::m_generation;
   mesh.m_draw_mode = draw_mode;
@@ -191,13 +191,13 @@ void MeshManager::unload(ResLifetime lifetime)
 }
 
 //==============================================================================
-Mesh MeshManager::get_cube() const
+MeshHandle MeshManager::get_cube() const
 {
   return m_cube_mesh;
 }
 
 //==============================================================================
-std::vector<Mesh>& MeshManager::get_storage(ResLifetime lifetime)
+std::vector<MeshHandle>& MeshManager::get_storage(ResLifetime lifetime)
 {
   NC_ASSERT(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
 

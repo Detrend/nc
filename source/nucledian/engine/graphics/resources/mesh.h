@@ -14,9 +14,9 @@ namespace nc
  * Mesh contains information about object geometry. This class represent a only a light-weight handler. Real mesh is
  * stored in GPU memory.
  * 
- * WARNING: Later on, there will be change to indect rendering, so this class contatne will probably change!
+ * WARNING: Later on, there will be change to indirect rendering, so this class content will probably change!
  */
-class Mesh
+class MeshHandle
 {
 public:
   friend class MeshManager;
@@ -30,10 +30,10 @@ public:
   operator bool() const;
 
   // Gets a invalid mesh.
-  static Mesh invalid();
+  static MeshHandle invalid();
 
 private:
-  Mesh() {}
+  MeshHandle() {}
 
   ResLifetime m_lifetime     = ResLifetime::None;
   u16         m_generation   = 0;
@@ -47,11 +47,11 @@ class MeshManager
 {
 /*
   * TODO: In future, there will be need for function for which would indicate start and end of batch mesh
-  * loading/creation in order to suport indirect rendering
+  * loading/creation in order to support indirect rendering
   * TODO: Load mesh form file
 */
 public:
-  friend class Mesh;
+  friend class MeshHandle;
 
   static MeshManager& instance();
 
@@ -59,12 +59,12 @@ public:
   /**
    * Creates mesh from vertex data and stores it in GPU memory.
    */
-  Mesh create(ResLifetime lifetime, const f32* data, u32 count, GLenum draw_mode = GL_TRIANGLES);
+  MeshHandle create(ResLifetime lifetime, const f32* data, u32 count, GLenum draw_mode = GL_TRIANGLES);
   /**
    * Unloads all meshes with specified lifetime. 
    */
   void unload(ResLifetime lifetime);
-  Mesh get_cube() const;
+  MeshHandle get_cube() const;
 
 
 private:
@@ -73,11 +73,11 @@ private:
 
   static inline u16 m_generation = 0;
 
-  std::vector<Mesh>& get_storage(ResLifetime lifetime);
+  std::vector<MeshHandle>& get_storage(ResLifetime lifetime);
 
-  std::vector<Mesh> m_level_meshes;
-  std::vector<Mesh> m_game_meshes;
-  Mesh              m_cube_mesh;
+  std::vector<MeshHandle> m_level_meshes;
+  std::vector<MeshHandle> m_game_meshes;
+  MeshHandle              m_cube_mesh;
 };
 
 }

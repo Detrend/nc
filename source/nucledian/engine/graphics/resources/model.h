@@ -6,11 +6,11 @@
 namespace nc
 {
 
-// Collection of data needed to render an object.
+// Collection of handles needed to render an object.
 struct Model
 {
-  Mesh mesh = Mesh::invalid();
-  Material material = Material::invalid();
+  MeshHandle mesh = MeshHandle::invalid();
+  MaterialHandle material = MaterialHandle::invalid();
 };
 
 }

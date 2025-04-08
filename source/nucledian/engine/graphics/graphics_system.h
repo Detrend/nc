@@ -29,7 +29,7 @@ public:
   void on_event(ModuleEvent& event) override;
 
   const DebugCamera& get_debug_camera() const;
-  const Material& get_solid_material() const;
+  const MaterialHandle& get_solid_material() const;
   const Model& get_cube_model() const;
 
 private:
@@ -56,7 +56,7 @@ private:
   void*        m_gl_context    = nullptr;
   DebugCamera  m_debug_camera;
   // Material for rendering solid geometry.
-  Material     m_solid_material;
+  MaterialHandle     m_solid_material;
   Model        m_cube_model;
 };
 

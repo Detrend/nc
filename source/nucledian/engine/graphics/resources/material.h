@@ -10,25 +10,25 @@ namespace nc
 {
 
 // Light-weight shader handle.
-struct Material
+struct MaterialHandle
 {
 public:
   friend class GizmoManager;
   friend class GraphicsSystem;
 
-  Material(const char* vertex_source, const char* fragment_source);
+  MaterialHandle(const char* vertex_source, const char* fragment_source);
 
   bool is_valid() const;
   operator bool() const;
 
   // Gets a invalid material.
-  static Material invalid();
+  static MaterialHandle invalid();
 
   void use() const;
 
 // Shaders should be manipulated only within render system and related classes.
 private:
-  Material() {}
+  MaterialHandle() {}
 
   std::optional<GLuint> compile_shader(const char* source, GLenum type) const;
   std::optional<GLuint> link_program(GLuint vertex_shader, GLuint fragment_shader) const;

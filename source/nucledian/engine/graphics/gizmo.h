@@ -28,21 +28,21 @@ public:
    */
   static std::shared_ptr<Gizmo> create_cube(const vec3& pos, f32 size = 0.1f, const color& color = colors::RED);
   /**
-   * Creates a new cube gizmo. Gizmo will remain visible until time to live (ttl) reaches zero.
+   * Creates a new cube gizmo. Gizmo will remain visible until time to live (TTL) reaches zero.
    */
   static void create_cube(f32 ttl, const vec3& pos, f32 size = 0.1f, const color& color = colors::RED);
 
   // TODO: create_line
 
 private:
-  Gizmo(const Mesh& mesh, const vec3& pos, f32 size, const color& color, f32 ttl);
+  Gizmo(const MeshHandle& mesh, const vec3& pos, f32 size, const color& color, f32 ttl);
 
   // time to live
   f32 m_ttl = 0.0f;
 
-  const Mesh  m_mesh;
-  const color m_color     = colors::WHITE;
-  const mat4  m_transform = mat4(1.0f);
+  const MeshHandle  m_mesh;
+  const color       m_color     = colors::WHITE;
+  const mat4        m_transform = mat4(1.0f);
 };
 /**
   * Smart pointer managing the lifetime of a Gizmo instance.
@@ -59,7 +59,7 @@ public:
 
   static GizmoManager& instance();
 
-  // Update time to live (ttl) of active gizmos.
+  // Update time to live (TTL) of active gizmos.
   void update_ttls(f32 delta_seconds);
   void draw_gizmos() const;
 
@@ -69,9 +69,9 @@ private:
   inline static std::unique_ptr<GizmoManager> m_instance = nullptr;
   inline static u32 m_next_gizmo_id = 0;
 
-  // Contain all active gizmos with GizmoPtr lifetime managment.
+  // Contain all active gizmos with GizmoPtr lifetime management.
   GizmoMap m_gizmos;
-  // Contain all active gizmos with ttl lifetime managment.
+  // Contain all active gizmos with TTL lifetime management.
   GizmoMap m_ttl_gizmos;
 
   GizmoManager() {}

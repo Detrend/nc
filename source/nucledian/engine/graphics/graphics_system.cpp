@@ -44,7 +44,7 @@
 namespace nc::debug_helpers
 {
 
-static Material g_top_down_material = Material::invalid();
+static MaterialHandle g_top_down_material = MaterialHandle::invalid();
 static GLuint   g_default_vao = 0;
 
 //==============================================================================
@@ -270,7 +270,7 @@ bool GraphicsSystem::init()
 
   MeshManager::instance().init();
 
-  m_solid_material = Material(shaders::solid::VERTEX_SOURCE, shaders::solid::FRAGMENT_SOURCE);
+  m_solid_material = MaterialHandle(shaders::solid::VERTEX_SOURCE, shaders::solid::FRAGMENT_SOURCE);
   m_cube_model = Model(MeshManager::instance().get_cube(), m_solid_material);
 
   const mat4 projection = perspective(radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
@@ -278,7 +278,7 @@ bool GraphicsSystem::init()
   m_solid_material.set_uniform(shaders::solid::PROJECTION, projection);
 
 #ifdef NC_DEBUG_DRAW
-  debug_helpers::g_top_down_material = Material
+  debug_helpers::g_top_down_material = MaterialHandle
   (
     debug_helpers::TOP_DOWN_VERTEX_SOURCE,
     debug_helpers::TOP_DOWN_FRAGMENT_SOURCE
@@ -390,7 +390,7 @@ void GraphicsSystem::query_visible_sectors(VisibleSectors& out) const
 }
 
 //==============================================================================
-const Material& GraphicsSystem::get_solid_material() const
+const MaterialHandle& GraphicsSystem::get_solid_material() const
 {
   return m_solid_material;
 }
@@ -1072,7 +1072,7 @@ void GraphicsSystem::build_map_gfx()
   const auto& m_map = get_engine().get_map();
 
   MeshManager& mesh_manager = MeshManager::instance();
-  const Material& solid_material = get_solid_material();
+  const MaterialHandle& solid_material = get_solid_material();
 
   for (SectorID sid = 0; sid < m_map.sectors.size(); ++sid)
   {

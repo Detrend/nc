@@ -51,7 +51,7 @@ void Gizmo::create_cube(f32 ttl, const vec3& pos, f32 size, const color& color)
 }
 
 //==============================================================================
-Gizmo::Gizmo(const Mesh& mesh, const vec3& pos, f32 size, const color& color, f32 ttl)
+Gizmo::Gizmo(const MeshHandle& mesh, const vec3& pos, f32 size, const color& color, f32 ttl)
   : m_ttl(ttl), m_mesh(mesh), m_color(color), m_transform(scale(translate(mat4(1.0f), pos), vec3(size))) {}
 
 //==============================================================================
@@ -89,7 +89,7 @@ void GizmoManager::update_ttls(f32 delta_seconds)
 void GizmoManager::draw_gizmos() const
 {
   auto& graphics_system = get_engine().get_module<GraphicsSystem>();
-  const Material& solid_material = graphics_system.get_solid_material();
+  const MaterialHandle& solid_material = graphics_system.get_solid_material();
 
   solid_material.use();
 
