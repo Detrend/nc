@@ -44,7 +44,7 @@ private:
 
   DebugCamera* get_camera() const;
 
-  void build_map_gfx();
+  void build_map_gfx() const;
 
   #ifdef NC_DEBUG_DRAW
   void render_map_top_down(const VisibleSectors& visible);

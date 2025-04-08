@@ -173,7 +173,7 @@ struct VisibleSectors
   std::map<SectorID, FrustumBuffer> sectors;
   vec2 position;
   vec2 direction;
-  f32  fov;
+  f32  fov = 0.0f;
 };
 
 // Temporary solution
@@ -698,7 +698,8 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
 
     for (WallID index = 0; index < portal_count; ++index)
     {
-      WallID index_in_arr = map.portals[repr.first_portal + index].wall_index + repr.first_wall;
+      const std::size_t portal_index = static_cast<std::size_t>(repr.first_portal + index);
+      WallID index_in_arr = map.portals[portal_index].wall_index + repr.first_wall;
       WallID next_in_arr = index_in_arr + 1;
       if (next_in_arr >= repr.last_wall)
       {
@@ -891,7 +892,7 @@ static void draw_keybinds_bar()
 
     ImGui::TableHeadersRow();
 
-    for (const auto [key, action] : KEYBINDS)
+    for (const auto& [key, action] : KEYBINDS)
     {
       ImGui::TableNextRow();
 
@@ -980,7 +981,7 @@ void GraphicsSystem::render_sectors(const VisibleSectors& visible) const
     m_solid_material.set_uniform(shaders::solid::VIEW_POSITION, cam->get_position());
 
     const auto transform = mat4{ 1.0f };
-    const auto col = SECTOR_COLORS[sector_id % SECTOR_COLORS.size()];
+    const auto& col = SECTOR_COLORS[sector_id % SECTOR_COLORS.size()];
     m_solid_material.set_uniform(shaders::solid::COLOR, col);
     m_solid_material.set_uniform(shaders::solid::TRANSFORM, transform);
 
@@ -1067,7 +1068,7 @@ DebugCamera* GraphicsSystem::get_camera() const
 }
 
 //==============================================================================
-void GraphicsSystem::build_map_gfx()
+void GraphicsSystem::build_map_gfx() const
 {
   const auto& m_map = get_engine().get_map();
 
