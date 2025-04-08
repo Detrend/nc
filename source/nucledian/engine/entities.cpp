@@ -8,17 +8,25 @@ namespace nc
 {
 
 //==============================================================================
-u32 create_entity(const Position& position, f32 scale, const color& color, f32 rotation)
+u32 create_entity(
+  const Position& position, 
+  f32             scale,
+  const color&    color, 
+  f32             rotation /*= 0.0f*/,
+  f32             y_offset /*= 0.0f*/
+)
 {
-  return create_entity(position, vec3(scale), color, rotation);
+  return create_entity(position, vec3(scale), color, rotation, y_offset);
 }
 
 //==============================================================================
 u32 create_entity(
   const Position& position,
-  vec3            scale,
+  const vec3&     scale,
   const color&    color,
-  f32             rotation /*= 0.0f*/)
+  f32             rotation /*= 0.0f*/,
+  f32             y_offset /*= 0.0f*/
+)
 {
   return create_entity
   (
@@ -26,23 +34,27 @@ u32 create_entity(
     get_engine().get_module<GraphicsSystem>().get_cube_model(),
     scale,
     color,
-    rotation
+    rotation,
+    y_offset
   );
 }
 
 //==============================================================================
 u32 create_entity(
   const Position& position,
-  Model           model,
-  vec3            scale,
+  const Model&    model,
+  const vec3&     scale,
   const color&    color,
-  f32             rotation /*= 0.0f*/)
+  f32             rotation /*= 0.0f*/,
+  f32             y_offset /*= 0.0f*/
+)
 {
   NC_ASSERT(g_appearance_components.size() == m_position_components.size());
 
   g_appearance_components.emplace_back
   (
     rotation,
+    y_offset,
     model,
     scale,
     color

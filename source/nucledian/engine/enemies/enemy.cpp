@@ -12,8 +12,8 @@ Enemy::Enemy()
   init();
 
   collision = true;
-  width = 0.5f;
-  height = 0.5f;
+  width = 0.15f;
+  height = 0.35f;
 }
 
 Enemy::Enemy(vec3 position)
@@ -22,13 +22,13 @@ Enemy::Enemy(vec3 position)
   init();
 
   collision = true;
-  width = 0.5f;
-  height = 0.5f;
+  width = 0.15f;
+  height = 0.35f;
 }
 
 void Enemy::init()
 {
-  m_entity_index = create_entity(position, 1, colors::GREEN);
+  m_entity_index = create_entity(position, vec3(0.3f, 0.7f, 0.3f), colors::RED, 0.0f, 0.35f);
 }
 
 void Enemy::update()

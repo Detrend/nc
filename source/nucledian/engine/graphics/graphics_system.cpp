@@ -994,11 +994,11 @@ void GraphicsSystem::render_sectors(const VisibleSectors& visible) const
 void GraphicsSystem::render_entities(const VisibleSectors&) const
 {
   /*
-   * 1. obtain visible secors from sector system (TODO)
+   * 1. obtain visible sectors from sector system (TODO)
    * 2. get RenderComponents from entities within visible sectors (TODO)
    * 3. filer visible entities (TODO)
    * 4. group by ModelHandle
-   * 5. sort groups by: 1. program, 2. texture, 3. vao (TODO)
+   * 5. sort groups by: 1. program, 2. texture, 3. VAO (TODO)
    * 5. issue render command for each group (TODO)
    */
 
@@ -1027,12 +1027,12 @@ void GraphicsSystem::render_entities(const VisibleSectors&) const
     model_groups[id].component_indices.push_back(component_id);
   }
 
-  // TODO: sort groups by: 1. program, 2. texture, 3. vao
+  // TODO: sort groups by: 1. program, 2. texture, 3. VAO
   for (const auto& [_, group] : model_groups)
   {
     const auto& [model, indices] = group;
 
-    // TODO: switch program & vao only when neccesary
+    // TODO: switch program & VAO only when necessary
     model.material.use();
     glBindVertexArray(model.mesh.get_vao());
 
@@ -1046,9 +1046,12 @@ void GraphicsSystem::render_entities(const VisibleSectors&) const
       const Position& position = m_position_components[index];
       const Appearance& appearance = g_appearance_components[index];
 
-      const mat4 transform = scale(rotate(translate(mat4(1.0f), position), appearance.rotation, vec3::Y), appearance.scale);
+      const mat4 transform = translate(mat4(1.0f), position + vec3::Y * appearance.y_offset)
+        * rotate(mat4(1.0f), appearance.rotation, vec3::Y)
+        * scale(mat4(1.0f), appearance.scale);
+  
       // TODO: should be set only when these changes and probably not here
-      model.material.set_uniform(shaders::solid::COLOR, appearance.model_color);
+      model.material.set_uniform(shaders::solid::COLOR, appearance.color);
       model.material.set_uniform(shaders::solid::TRANSFORM, transform);
 
       glDrawArrays(model.mesh.get_draw_mode(), 0, model.mesh.get_vertex_count());
