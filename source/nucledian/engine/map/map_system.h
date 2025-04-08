@@ -34,8 +34,11 @@
 
 #include <types.h>
 #include <math/vector.h>
+#include <math/matrix.h>
 #include <intersect.h>
 #include <grid.h>
+
+#include <math/frustum3.h>
 
 #include <vector>
 #include <functional>
@@ -119,15 +122,14 @@ struct MapSectors
   StatGridAABB2<SectorID> sector_grid;
 
   // TODO: do not use the retarded std::function, find a better alternative
-  using TraverseVisitor = std::function<void(SectorID, Frustum2, PortalID)>;
+  using TraverseVisitor = std::function<void(SectorID, Frustum3, PortalID)>;
   using PortalVisitor   = std::function<void(PortalID, WallID)>;
   // Traverses the sector system in a BFS order and calls the visitor
   // for each sector with a frustum that describes which parts of the
   // sector are visible.
   void query_visible_sectors(
-    vec2            position,    // exact position on the map
-    vec2            view_dir,    // normalized view direction
-    f32             hor_fov_rad, // [0-Pi], in radians. >= Pi means 360 degrees of view
+    const mat4&     look_at_matrix,
+    const mat4&     proj_matrix,
     TraverseVisitor visitor) const;    // callback function that is called for each visited sector
 
   // Iterates all portals of this sector
@@ -147,12 +149,12 @@ struct MapSectors
 
 private:
   void query_visible_sectors_impl(
-    const SectorID*      start_sectors,
-    u32                  start_sector_cnt,
-    const FrustumBuffer& frustum,
-    TraverseVisitor      visitor,
-    u8                   recursion_depth = 4,
-    PortalID             source_portal   = INVALID_PORTAL_ID) const;
+    const SectorID*       start_sectors,
+    u32                   start_sector_cnt,
+    const FrustumBuffer3& frustum,
+    TraverseVisitor       visitor,
+    u8                    recursion_depth = 4,
+    PortalID              source_portal   = INVALID_PORTAL_ID) const;
 };
 
 namespace map_building

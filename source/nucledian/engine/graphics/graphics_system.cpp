@@ -175,7 +175,7 @@ namespace nc
 // intersect.h and map_types.h to graphics_system.h
 struct VisibleSectors
 {
-  std::map<SectorID, FrustumBuffer> sectors;
+  std::map<SectorID, FrustumBuffer3> sectors;
   vec2 position;
   vec2 direction;
   f32  fov;
@@ -387,9 +387,11 @@ void GraphicsSystem::query_visible_sectors(VisibleSectors& out) const
 
   query_data_from_camera(*camera, out.position, out.direction, out.fov);
 
+  const auto persp = perspective(radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
   NC_TODO("This does not work properly, because we can visit one sector multiple times");
-  map.query_visible_sectors(out.position, out.direction, out.fov,
-  [&](SectorID sid, Frustum2 frst, PortalID)
+  map.query_visible_sectors(camera->get_view(), persp,
+  [&](SectorID sid, Frustum3 frst, PortalID)
   {
     out.sectors[sid].insert_frustum(frst);
   });
@@ -505,6 +507,9 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
 
   static f32 zoom = 0.04f;
 
+  static bool inspect_sector      = false;
+  static int  inspected_sector_id = 0;
+
   if (auto* camera = this->get_camera())
   {
     pointed_position = vec2{camera->get_position().x, camera->get_position().z};
@@ -516,9 +521,12 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
   SDL_GetWindowSize(m_window, &width, &height);
   const f32 aspect = (f32)width / height;
 
+  auto& map = get_engine().get_map();
+
   auto level_space_to_screen_space = [&](vec2 pos) -> vec2
   {
-    return vec2{-1.0f, aspect} * (pos - pointed_position) * zoom;
+    //return vec2{-1.0f, aspect} * (pos - pointed_position) * zoom;
+    return vec2{ 1.0f, aspect} * (pos - pointed_position) * zoom;
   };
 
   auto draw_player = [&](vec2 coords, vec2 dir, vec3 color1, vec3 color2, f32 scale)
@@ -546,6 +554,7 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
     ImGui::Checkbox("Show sector IDs",      &show_sector_ids);
     ImGui::Separator();
     ImGui::Checkbox("Raycast 2D Debug",     &raycast2d_debug);
+    ImGui::Checkbox("Inspect Sector",       &inspect_sector);
 
     if (raycast2d_debug)
     {
@@ -554,10 +563,14 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
       ImGui::SliderFloat("Raycast Len",    &raycast_len,    0.25f,  30.0f);
       ImGui::SliderFloat("Raycast Expand", &raycast_expand, 0.001f, 3.0f);
     }
+
+    if (inspect_sector)
+    {
+      ImGui::InputInt("Inspected Sector", &inspected_sector_id, 1);
+      inspected_sector_id = std::clamp(inspected_sector_id, 0, static_cast<int>(map.sectors.size()-1));
+    }
   }
   ImGui::End();
-
-  auto& map = get_engine().get_map();
 
   // Render the floors of the sectors with black or gray if visible
   for (SectorID i = 0; i < map.sectors.size(); ++i)
@@ -615,6 +628,11 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
 
     for (const auto&[sector_id, frustums] : visible_sectors.sectors)
     {
+      if (inspect_sector && static_cast<int>(sector_id) != inspected_sector_id)
+      {
+        continue;
+      }
+
       glStencilMask(0xFF);
       glStencilFunc(GL_ALWAYS, 1, 0xFF);
       glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
@@ -654,13 +672,16 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
       // render the frustum only on parts where the stencil buffer is enabled
       {
         glColorMask(true, true, true, true);    // turn on the color back again
-        glStencilFunc(GL_EQUAL, 1, 0xFF);       // fail the test if the value is not 1
+        if (!inspect_sector)
+        {
+          glStencilFunc(GL_EQUAL, 1, 0xFF);       // fail the test if the value is not 1
+        }
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // keep the value in stencil buffer even if we fail the test
 
         // render the frustum, but with the stencil test, so only the pixels inside the sector pass
-        for (const auto& frustum : frustums.frustum_slots)
+        for (const auto& frustum : frustums.slots)
         {
-          if (frustum == INVALID_FRUSTUM)
+          if (!frustum.is_valid())
           {
             continue;
           }

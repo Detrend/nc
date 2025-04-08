@@ -64,7 +64,7 @@ constexpr Frustum2 INVALID_FRUSTUM = Frustum2{vec2{0}, vec2{0}, Frustum2::EMPTY_
 // A set of frustums
 struct FrustumBuffer
 {
-	static constexpr u64 FRUSTUM_SLOT_CNT = 4;
+  static constexpr u64 FRUSTUM_SLOT_CNT = 4;
   using FrustumArray = std::array<Frustum2, FRUSTUM_SLOT_CNT>;
 
   FrustumArray frustum_slots;
@@ -144,6 +144,8 @@ bool convex_convex(std::span<vec2> a, std::span<vec2> b, f32 threshold = 0.01f);
 // Checks for intersection of two 2D triangles using the same method as
 // convex-to-convex test.
 bool triangle_triangle(vec2 a1, vec2 b1, vec2 c1, vec2 a2, vec2 b2, vec2 c2);
+
+bool unit_cube_plane_3d(vec3 p1, vec3 p2, vec3 p3);
 
 }
 

@@ -197,26 +197,14 @@ void modify_nuclidean_frustum(
 
 //==============================================================================
 void MapSectors::query_visible_sectors(
-  vec2            position,
-  vec2            view_dir,
-  f32             hor_fov,
+  const mat4&     look_at,
+  const mat4&     proj,
   TraverseVisitor visitor) const
 {
-  NC_ASSERT(is_normal(view_dir));
-
-  const auto angle = hor_fov >= 180.0f
-    ? Frustum2::FULL_ANGLE
-    : std::cosf(hor_fov * 0.5f);
-
-  const auto frustum = Frustum2
-  {
-    .center    = position,
-    .direction = view_dir,
-    .angle     = angle
-  };
-
   constexpr u64 MAX_CAMERA_SECTORS = 8; // bump this up if the assert ever fires
   std::array<SectorID, MAX_CAMERA_SECTORS> sectors_out;
+
+  vec3 position = look_at[3].xyz;
 
   const u32 sec_count = map_helpers::get_sectors_from_point(
     *this,
@@ -225,8 +213,13 @@ void MapSectors::query_visible_sectors(
     MAX_CAMERA_SECTORS);
 
   NC_ASSERT(sec_count <= MAX_CAMERA_SECTORS);
+  if (sec_count > MAX_CAMERA_SECTORS) [[unlikely]]
+  {
+    return;
+  }
 
-  const auto slots_temp = FrustumBuffer{frustum};
+  const auto frustum    = Frustum3::from_look_at_and_perspective(look_at, proj);
+  const auto slots_temp = FrustumBuffer3{frustum};
 
   this->query_visible_sectors_impl(
     sectors_out.data(), sec_count, slots_temp, visitor);
@@ -234,15 +227,15 @@ void MapSectors::query_visible_sectors(
 
 //==============================================================================
 void MapSectors::query_visible_sectors_impl(
-  const SectorID*      start_sector,
-  u32                  start_sector_cnt,
-  const FrustumBuffer& input_frustums,
-  TraverseVisitor      visitor,
-  u8                   recursion_depth,
-  PortalID             source_portal) const
+  const SectorID*       start_sector,
+  u32                   start_sector_cnt,
+  const FrustumBuffer3& input_frustums,
+  TraverseVisitor       visitor,
+  u8                    recursion_depth,
+  PortalID              source_portal) const
 {
   NC_ASSERT(visitor);
-  NC_ASSERT(input_frustums.frustum_slots[0] != INVALID_FRUSTUM);
+  NC_ASSERT(input_frustums.slots[0].is_valid());
 
   if (recursion_depth == 0 || start_sector_cnt == 0)
   {
@@ -253,8 +246,8 @@ void MapSectors::query_visible_sectors_impl(
   // [Performance]According to a benchmark, the std::map here is actually
   // faster than using std::unordered_map. Maybe due to poor cache locality?
   // Did not investigate further.
-  std::map<SectorID, FrustumBuffer> curr_iteration;
-  std::map<SectorID, FrustumBuffer> next_iteration;
+  std::map<SectorID, FrustumBuffer3> curr_iteration;
+  std::map<SectorID, FrustumBuffer3> next_iteration;
 
   struct NucPortalStruct
   {
@@ -283,9 +276,9 @@ void MapSectors::query_visible_sectors_impl(
       NC_ASSERT(id < sectors.size());
 
       // Iterate all frustums in this dir
-      for (const auto& frustum : content.frustum_slots)
+      for (auto frustum : content.slots)
       {
-        if (frustum == INVALID_FRUSTUM)
+        if (!frustum.is_valid())
         {
           // this frustum was not filled in
           continue;
@@ -300,14 +293,14 @@ void MapSectors::query_visible_sectors_impl(
         {
           const auto wall2_idx    = map_helpers::next_wall(*this, id, wall1_idx);
           const auto next_sector  = walls[wall1_idx].portal_sector_id;
-          const bool is_nuclidean = portals[portal_idx].portal_type == PortalType::non_euclidean;
+          [[maybe_unused]]const bool is_nuclidean = portals[portal_idx].portal_type == PortalType::non_euclidean;
           NC_ASSERT(next_sector != INVALID_SECTOR_ID);
 
           const auto p1 = walls[wall1_idx].pos;
           const auto p2 = walls[wall2_idx].pos;
 
-          const auto p1_to_p2  = p2-p1;
-          const auto p1_to_cam = frustum.center-p1;
+          //const auto p1_to_p2  = p2-p1;
+          //const auto p1_to_cam = frustum.center-p1;
 
           if (std::find(begin_sector, end_sector, next_sector) != end_sector)
           {
@@ -321,55 +314,44 @@ void MapSectors::query_visible_sectors_impl(
             return;
           }
 
-          if (cross(p1_to_cam, p1_to_p2) > 0.0f)
-          {
-            // early exit, the wall is turned away from the camera
-            // The comparison has to be > instead of >=, because that would
-            // report the sector we are on a border of as invisible.
-            return;
-          }
+          const vec3 p1l = vec3{p1.x, 0.0f, p1.y};
+          const vec3 p2l = vec3{p2.x, 0.0f, p2.y};
+          const vec3 p1h = with_y(p1l, 10.0f);
+          const vec3 p2h = with_y(p2l, 10.0f);
 
-          if (!frustum.intersects_segment(p1, p2))
+          if (!frustum.try_intersect_with_portal(p1l, p2l, p1h, p2h))
           {
-            // early exit, we do not see the portal
-            return;
-          }
-
-          auto new_frustum = frustum.modified_with_portal(p1, p2);
-          if (new_frustum.is_empty())
-          {
-            // not sure how the hell this can happen..
             return;
           }
 
           // rotate the nucledean frustum and shift it relatively to the portal's view
-          if (is_nuclidean) [[unlikely]]
+          //if (is_nuclidean) [[unlikely]]
+          //{
+          //  const WallID   out_wall   = portals[portal_idx].nucledean_wall_index + sectors[next_sector].int_data.first_wall;
+          //  const SectorID out_sector = next_sector;
+
+          //  // weird non-euclidean portal, store for later
+          //  map_helpers::modify_nuclidean_frustum(
+          //    *this,
+          //    new_frustum,
+          //    wall1_idx,
+          //    id,
+          //    out_wall,
+          //    out_sector);
+
+          //  // either creates and inserts or just merges in
+          //  if (nuclidean_portals.contains(portal_idx))
+          //  {
+          //    NC_ASSERT(nuclidean_portals[portal_idx].sector == out_sector);
+          //  }
+
+          //  nuclidean_portals[portal_idx].buffer.insert_frustum(new_frustum);
+          //  nuclidean_portals[portal_idx].sector = out_sector;
+          //}
+          //else
           {
-            const WallID   out_wall   = portals[portal_idx].nucledean_wall_index + sectors[next_sector].int_data.first_wall;
-            const SectorID out_sector = next_sector;
-
-            // weird non-euclidean portal, store for later
-            map_helpers::modify_nuclidean_frustum(
-              *this,
-              new_frustum,
-              wall1_idx,
-              id,
-              out_wall,
-              out_sector);
-
             // either creates and inserts or just merges in
-            if (nuclidean_portals.contains(portal_idx))
-            {
-              NC_ASSERT(nuclidean_portals[portal_idx].sector == out_sector);
-            }
-
-            nuclidean_portals[portal_idx].buffer.insert_frustum(new_frustum);
-            nuclidean_portals[portal_idx].sector = out_sector;
-          }
-          else
-          {
-            // either creates and inserts or just merges in
-            next_iteration[next_sector].insert_frustum(new_frustum);
+            next_iteration[next_sector].insert_frustum(frustum);
           }
         });
       }
@@ -377,13 +359,13 @@ void MapSectors::query_visible_sectors_impl(
   }
 
   // Now lets go to other dimensions in DFS manner
-  for (const auto&[portal_id, data] : nuclidean_portals)
-  {
-    this->query_visible_sectors_impl(&data.sector, 1, data.buffer, [&](SectorID sid, Frustum2 f, PortalID pid)
-    {
-      visitor(sid, f, pid);
-    }, recursion_depth-1, portal_id);
-  }
+  //for (const auto&[portal_id, data] : nuclidean_portals)
+  //{
+  //  this->query_visible_sectors_impl(&data.sector, 1, data.buffer, [&](SectorID sid, Frustum2 f, PortalID pid)
+  //  {
+  //    visitor(sid, f, pid);
+  //  }, recursion_depth-1, portal_id);
+  //}
 }
 
 //==============================================================================

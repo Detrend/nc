@@ -33,6 +33,7 @@
     <ClCompile Include="..\source\libs\glm\glm.cppm" />
     <ClCompile Include="..\source\nucledian\math\utils.cpp" />
     <ClCompile Include="..\source\nucledian\math\lingebra.cpp" />
+    <ClCompile Include="..\source\nucledian\math\frustum3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\nucledian\engine\core\resources.inl" />
@@ -110,6 +111,7 @@
     <ClInclude Include="..\source\nucledian\math\quaternion.h" />
     <ClInclude Include="..\source\nucledian\math\utils.h" />
     <ClInclude Include="..\source\nucledian\math\lingebra.h" />
+    <ClInclude Include="..\source\nucledian\math\frustum3.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />

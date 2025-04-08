@@ -321,6 +321,12 @@ bool segment_segment_expanded(
   return out_coeff != FLT_MAX;
 }
 
+//==============================================================================
+bool unit_cube_plane_3d(vec3 p1, vec3 p2, vec3 p3)
+{
+  
+}
+
 }
 
 namespace nc
@@ -492,24 +498,24 @@ Frustum2 Frustum2::modified_with_portal(vec2 p1, vec2 p2) const
   auto dt_p1 = dot(normalize(p1-this->center), this->direction);
   auto dt_p2 = dot(normalize(p2-this->center), this->direction);
 
-  const auto p1_to_p2 = normalize(p2 - p1);
-  const auto p2_to_p1 = -p1_to_p2;
+  //const auto p1_to_p2 = normalize(p2 - p1);
+  //const auto p2_to_p1 = -p1_to_p2;
 
-  if (dt_p1 < 0.0f)
-  {
-    // it is in back
-    const auto p2_to_center = this->center - p2;
-    p1 = p2 + p2_to_p1 * dot(p2_to_center, p2_to_p1);
-    dt_p1 = dot(normalize(p1-this->center), this->direction);
-  }
+  //if (dt_p1 < 0.0f)
+  //{
+  //  // it is in back
+  //  const auto p2_to_center = this->center - p2;
+  //  p1 = p2 + p2_to_p1 * dot(p2_to_center, p2_to_p1);
+  //  dt_p1 = dot(normalize(p1-this->center), this->direction);
+  //}
 
-  if (dt_p2 < 0.0f)
-  {
-    // it is in back
-    const auto p1_to_center = this->center - p1;
-    p2 = p1 + p1_to_p2 * dot(p1_to_center, p1_to_p2);
-    dt_p2 = dot(normalize(p2-this->center), this->direction);
-  }
+  //if (dt_p2 < 0.0f)
+  //{
+  //  // it is in back
+  //  const auto p1_to_center = this->center - p1;
+  //  p2 = p1 + p1_to_p2 * dot(p1_to_center, p1_to_p2);
+  //  dt_p2 = dot(normalize(p2-this->center), this->direction);
+  //}
 
   const auto to_p1 = p1 - this->center;
   const auto to_p2 = p2 - this->center;
