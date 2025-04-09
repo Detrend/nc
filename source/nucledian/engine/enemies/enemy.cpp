@@ -28,7 +28,11 @@ Enemy::Enemy(vec3 position)
 
 void Enemy::init()
 {
-  m_entity_index = create_entity(position, vec3(0.3f, 0.7f, 0.3f), colors::RED, 0.0f, 0.35f);
+  m_entity_index = create_entity(
+    Transform(position, vec3(0.3f, 0.7f, 0.3f)), 
+    colors::RED, 
+    Transform(vec3(0.0f, 0.35f, 0.0f))
+  );
 }
 
 void Enemy::update()
@@ -38,7 +42,7 @@ void Enemy::update()
 
   position += target_dir * 1.0f * 0.001f;
 
-  m_position_components[m_entity_index] = position;
+  g_transform_components[m_entity_index].position() = position;
 }
 
 void Enemy::get_wish_velocity(f32 delta_seconds)
@@ -78,7 +82,7 @@ void Enemy::check_for_collision(MapObject collider)
 void Enemy::apply_velocity()
 {
   position += velocity;
-  m_position_components[m_entity_index] = position;
+  g_transform_components[m_entity_index].position() = position;
 }
 
 

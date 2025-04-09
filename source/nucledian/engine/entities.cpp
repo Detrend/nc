@@ -8,59 +8,18 @@ namespace nc
 {
 
 //==============================================================================
-u32 create_entity(
-  const Position& position, 
-  f32             scale,
-  const color&    color, 
-  f32             rotation /*= 0.0f*/,
-  f32             y_offset /*= 0.0f*/
-)
+u32 create_entity(const Transform& transform, const color& color, const Transform& model_transform)
 {
-  return create_entity(position, vec3(scale), color, rotation, y_offset);
+  return create_entity(transform, color, get_engine().get_module<GraphicsSystem>().get_cube_model(), model_transform);
 }
 
 //==============================================================================
-u32 create_entity(
-  const Position& position,
-  const vec3&     scale,
-  const color&    color,
-  f32             rotation /*= 0.0f*/,
-  f32             y_offset /*= 0.0f*/
-)
+u32 create_entity(const Transform& transform, const color& color, const Model& model, const Transform& model_transform)
 {
-  return create_entity
-  (
-    position, 
-    get_engine().get_module<GraphicsSystem>().get_cube_model(),
-    scale,
-    color,
-    rotation,
-    y_offset
-  );
-}
+  NC_ASSERT(g_appearance_components.size() == g_transform_components.size());
 
-//==============================================================================
-u32 create_entity(
-  const Position& position,
-  const Model&    model,
-  const vec3&     scale,
-  const color&    color,
-  f32             rotation /*= 0.0f*/,
-  f32             y_offset /*= 0.0f*/
-)
-{
-  NC_ASSERT(g_appearance_components.size() == m_position_components.size());
-
-  g_appearance_components.emplace_back
-  (
-    rotation,
-    y_offset,
-    model,
-    scale,
-    color
-  );
-
-  m_position_components.emplace_back(position);
+  g_transform_components.push_back(transform);
+  g_appearance_components.emplace_back(color, model, model_transform);
 
   return static_cast<u32>(g_appearance_components.size() - 1);
 }

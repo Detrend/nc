@@ -111,6 +111,7 @@
     <ClCompile Include="..\source\nucledian\vector_maths_sse.cpp" />
     <ClCompile Include="..\source\nucledian\math_benchmarks.cpp" />
     <ClCompile Include="..\source\nucledian\vec.cpp" />
+    <ClCompile Include="..\source\nucledian\transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -203,6 +204,7 @@
     <ClInclude Include="..\source\nucledian\sse.h" />
     <ClInclude Include="..\source\nucledian\types.h" />
     <ClInclude Include="..\source\nucledian\vec.h" />
+    <ClInclude Include="..\source\nucledian\transform.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />

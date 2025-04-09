@@ -2,6 +2,7 @@
 
 #include <types.h>
 #include <temp_math.h>
+#include <transform.h>
 #include <engine/graphics/resources/model.h>
 
 #include <vector>
@@ -12,15 +13,12 @@ namespace nc
 // Component which enables entities to be rendered in the scene.
 struct Appearance
 {
-  f32 rotation;
-  f32 y_offset;
-  Model model;
-  vec3 scale;
+  // Color modulation of the model.
   color color;
+  Model model;
+  // Model transform (applied after the transform of the entity).
+  Transform transform;
 };
-
-// Component holding in-world position of entity.
-using Position = vec3;
 
 /**
  * Temporary global appearance component array. This array is only temporary until necessary features are implemented.
@@ -32,40 +30,26 @@ using Position = vec3;
 inline std::vector<Appearance> g_appearance_components;
 
 /**
- * Temporary global position array. This array is only temporary until necessary features are implemented.
+ * Temporary global transform array. This array is only temporary until necessary features are implemented.
  */
-inline std::vector<vec3> m_position_components;
+inline std::vector<Transform> g_transform_components;
 
 /**
+ * @brief Creates an entity with cube model. 
+ * 
  * Temporary helper function for creating instances of render components within g_appearance_components array. For
  * more information see description of g_appearance_components.
  */
-u32 create_entity(const Position& position, f32 scale, const color& color, f32 rotation = 0.0f, f32 y_offset = 0.0f);
-
-/**
- * Temporary helper function for creating instances of render components within g_appearance_components array. For
- * more information see description of g_appearance_components.
- */
-u32 create_entity(
-  const Position& position, 
-  const vec3& scale, 
-  const color& color, 
-  f32 rotation = 0.0f, 
-  f32 y_offset = 0.0f
-);
-
+u32 create_entity(const Transform& transform, const color& color, const Transform& model_transform = Transform());
 /**
  * Temporary helper function for creating instances of render components within g_appearance_components array. For
  * more information see description of g_appearance_components.
  */
 u32 create_entity(
-  const Position& position, 
-  const Model& model, 
-  const vec3& scale, 
-  const color& color, 
-  f32 rotation = 0.0f, 
-  f32 y_offset = 0.0f
+  const Transform& transform,
+  const color& color,
+  const Model& model,
+  const Transform& model_transform = Transform()
 );
-
 
 }

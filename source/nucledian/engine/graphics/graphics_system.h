@@ -41,6 +41,7 @@ private:
 
   void render_sectors(const VisibleSectors& visible)  const;
   void render_entities(const VisibleSectors& visible) const;
+  void render_gun() const;
 
   DebugCamera* get_camera() const;
 

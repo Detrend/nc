@@ -1003,8 +1003,8 @@ void GraphicsSystem::render_entities(const VisibleSectors&) const
    * 5. issue render command for each group (TODO)
    */
 
-  auto cam = this->get_camera();
-  if (!cam)
+  DebugCamera* camera = this->get_camera();
+  if (!camera)
   {
     return;
   }
@@ -1038,22 +1038,20 @@ void GraphicsSystem::render_entities(const VisibleSectors&) const
     glBindVertexArray(model.mesh.get_vao());
 
     // TODO: some uniform locations should be shader independent
-    model.material.set_uniform(shaders::solid::VIEW, cam->get_view());
-    model.material.set_uniform(shaders::solid::VIEW_POSITION, cam->get_position());
+    model.material.set_uniform(shaders::solid::VIEW, camera->get_view());
+    model.material.set_uniform(shaders::solid::VIEW_POSITION, camera->get_position());
 
     // TODO: indirect rendering
     for (auto& index : indices)
     {
-      const Position& position = m_position_components[index];
-      const Appearance& appearance = g_appearance_components[index];
+      Transform& transform = g_transform_components[index];
+      Appearance& appearance = g_appearance_components[index];
 
-      const mat4 transform = translate(mat4(1.0f), position + vec3::Y * appearance.y_offset)
-        * rotate(mat4(1.0f), appearance.rotation, vec3::Y)
-        * scale(mat4(1.0f), appearance.scale);
+      const mat4 transform_matrix = appearance.transform.get_matrix() * transform.get_matrix();
   
       // TODO: should be set only when these changes and probably not here
       model.material.set_uniform(shaders::solid::COLOR, appearance.color);
-      model.material.set_uniform(shaders::solid::TRANSFORM, transform);
+      model.material.set_uniform(shaders::solid::TRANSFORM, transform_matrix);
 
       glDrawArrays(model.mesh.get_draw_mode(), 0, model.mesh.get_vertex_count());
     }

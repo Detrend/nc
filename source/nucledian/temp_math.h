@@ -29,6 +29,7 @@ f32 length2(const vec2& vec);
 
 mat4 translate(const mat4& matrix, const vec3& vec);
 mat4 rotate(const mat4& matrix, f32 angle, const vec3& axis);
+mat4 eulerAngleXYZ(f32 yaw, f32 pitch, f32 roll);
 mat4 scale(const mat4& matrix, const vec3& vec);
 
 constexpr f32 clamp(f32 x, f32 min, f32 max);

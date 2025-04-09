@@ -3,6 +3,7 @@
 
 #include "temp_math.h"
 
+#include <glm/gtx/euler_angles.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/quaternion.hpp>
@@ -70,6 +71,12 @@ mat4 translate(const mat4& matrix, const vec3& vec)
 mat4 rotate(const mat4& matrix, f32 angle, const vec3& axis)
 {
   return std::bit_cast<mat4>(glm::rotate(std::bit_cast<glm::mat4>(matrix), angle, std::bit_cast<glm::vec3>(axis)));
+}
+
+//==============================================================================
+mat4 eulerAngleXYZ(f32 yaw, f32 pitch, f32 roll)
+{
+  return std::bit_cast<mat4>(glm::eulerAngleXYZ(yaw, pitch, roll));
 }
 
 //==============================================================================
