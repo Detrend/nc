@@ -268,6 +268,8 @@ bool GraphicsSystem::init()
   glEnable(GL_CULL_FACE);
   glEnable(GL_MULTISAMPLE);
 
+  glLineWidth(5.0f);
+
   MeshManager::instance().init();
 
   m_solid_material = MaterialHandle(shaders::solid::VERTEX_SOURCE, shaders::solid::FRAGMENT_SOURCE);
@@ -985,6 +987,7 @@ void GraphicsSystem::render_sectors(const VisibleSectors& visible) const
 
     glBindVertexArray(model.mesh.get_vao());
 
+    model.material.set_uniform(shaders::solid::UNLIT, false);
     m_solid_material.set_uniform(shaders::solid::VIEW, cam->get_view());
     m_solid_material.set_uniform(shaders::solid::VIEW_POSITION, cam->get_position());
 
@@ -1046,6 +1049,7 @@ void GraphicsSystem::render_entities(const VisibleSectors&) const
     glBindVertexArray(model.mesh.get_vao());
 
     // TODO: some uniform locations should be shader independent
+    model.material.set_uniform(shaders::solid::UNLIT, false);
     model.material.set_uniform(shaders::solid::VIEW, camera->get_view());
     model.material.set_uniform(shaders::solid::VIEW_POSITION, camera->get_position());
 
@@ -1080,6 +1084,7 @@ void GraphicsSystem::render_gun()
   m_gun_model.material.use();
   glBindVertexArray(m_gun_model.mesh.get_vao());
 
+  m_gun_model.material.set_uniform(shaders::solid::UNLIT, false);
   m_gun_model.material.set_uniform(shaders::solid::VIEW, camera->get_view());
   m_gun_model.material.set_uniform(shaders::solid::VIEW_POSITION, camera->get_position());
   m_gun_model.material.set_uniform(shaders::solid::COLOR, colors::BROWN);

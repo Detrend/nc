@@ -35,6 +35,8 @@
     <ClCompile Include="..\source\libs\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="..\source\nucledian\cvars.cpp" />
     <ClCompile Include="..\source\libs\imgui\imgui_stdlib.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\graphics\resources\mesh.cpp" />
+    <ClCompile Include="..\source\nucledian\transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\nucledian\engine\core\resources.inl" />
@@ -92,6 +94,7 @@
     <ClInclude Include="..\source\libs\imgui\imgui_stdlib.h" />
     <ClInclude Include="..\source\nucledian\macros.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\gl_types.h" />
+    <ClInclude Include="..\source\nucledian\transform.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />

@@ -31,6 +31,7 @@ namespace nc
       inline constexpr Uniform<2, mat4>  PROJECTION;
       inline constexpr Uniform<3, color> COLOR;
       inline constexpr Uniform<4, vec3>  VIEW_POSITION;
+      inline constexpr Uniform<5, bool>  UNLIT;
     }
   }
 

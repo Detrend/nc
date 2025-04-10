@@ -26,16 +26,38 @@ public:
   /**
    * Creates a new cube gizmo. Gizmo will remain visible until all GizmoPtr references are destroyed.
    */
-  static std::shared_ptr<Gizmo> create_cube(const vec3& pos, f32 size = 0.1f, const color& color = colors::RED);
+  static std::shared_ptr<Gizmo> create_cube(const vec3& position, f32 size = 0.1f, const color& color = colors::RED);
   /**
    * Creates a new cube gizmo. Gizmo will remain visible until time to live (TTL) reaches zero.
    */
-  static void create_cube(f32 ttl, const vec3& pos, f32 size = 0.1f, const color& color = colors::RED);
+  static void create_cube(f32 ttl, const vec3& position, f32 size = 0.1f, const color& color = colors::RED);
 
-  // TODO: create_line
+  /**
+   * Creates a new ray gizmo. Gizmo will remain visible until all GizmoPtr references are destroyed.
+   */
+  static std::shared_ptr<Gizmo> create_ray(const vec3& start, const vec3& direction, const color& color = colors::RED);
+  /**
+   * Creates a new ray gizmo. Gizmo will remain visible until time to live (TTL) reaches zero.
+   */
+  static void create_ray(f32 ttl, const vec3& start, const vec3& direction, const color& color = colors::RED);
+
+  /**
+   * Creates a new line gizmo. Gizmo will remain visible until all GizmoPtr references are destroyed.
+   */
+  static std::shared_ptr<Gizmo> create_line(const vec3& start, const vec3& end, const color& color = colors::RED);
+  /**
+  * Creates a new line gizmo. Gizmo will remain visible until time to live (TTL) reaches zero.
+  */
+  static void create_line(f32 ttl, const vec3& start, const vec3& end, const color& color = colors::RED);
 
 private:
-  Gizmo(const MeshHandle& mesh, const vec3& pos, f32 size, const color& color, f32 ttl);
+  Gizmo(const MeshHandle& mesh, const mat4& transform, const color& color, f32 ttl);
+
+  static std::shared_ptr<Gizmo> create_cube_impl(f32 ttl, const vec3& position, f32 size, const color& color);
+  static std::shared_ptr<Gizmo> create_ray_impl(f32 ttl, const vec3& start, const vec3& direction, const color& color);
+  static std::shared_ptr<Gizmo> create_line_impl(f32 ttl, const vec3& start, const vec3& end, const color& color);
+
+  static std::pair<vec3, f32> compute_rotation_angle_axis(const vec3& direction);
 
   // time to live
   f32 m_ttl = 0.0f;
@@ -64,6 +86,10 @@ public:
   void draw_gizmos() const;
 
 private:
+  GizmoManager() {}
+
+  GizmoPtr add_gizmo(Gizmo gizmo, bool use_ttl);
+
   using GizmoMap = std::unordered_map<u32, Gizmo>;
 
   inline static std::unique_ptr<GizmoManager> m_instance = nullptr;
@@ -73,8 +99,6 @@ private:
   GizmoMap m_gizmos;
   // Contain all active gizmos with TTL lifetime management.
   GizmoMap m_ttl_gizmos;
-
-  GizmoManager() {}
 };
 
 }

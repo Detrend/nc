@@ -27,6 +27,9 @@ quat angleAxis(f32 angle, const vec3& vec);
 f32 length(const vec2& vec);
 f32 length2(const vec2& vec);
 
+f32 length(const vec3& vec);
+f32 length2(const vec3& vec);
+
 mat4 translate(const mat4& matrix, const vec3& vec);
 mat4 rotate(const mat4& matrix, f32 angle, const vec3& axis);
 mat4 eulerAngleXYZ(f32 x, f32 y, f32 z);
@@ -37,6 +40,7 @@ mat4 inverse(const mat4& matrix);
 constexpr f32 clamp(f32 x, f32 min, f32 max);
 f32 sin(f32 x);
 f32 cos(f32 x);
+f32 acos(f32 x);
 /**
  * @brief Euclid remained of `value` divided by `range`. Results is always non-negative and lies in the interval
  * [0, range).

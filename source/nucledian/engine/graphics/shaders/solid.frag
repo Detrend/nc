@@ -8,9 +8,16 @@ out vec4 out_color;
 
 layout(location = 3) uniform vec4 color;
 layout(location = 4) uniform vec3 view_position;
+layout(location = 5) uniform bool unlit = false;
 
 void main()
 {
+  if (unlit)
+  {
+    out_color = color;
+    return;
+  }
+
   float ambient_strength  = 0.3f;
   float specular_strength = 0.6f;
   int   shininess         = 128;

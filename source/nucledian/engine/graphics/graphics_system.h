@@ -32,6 +32,7 @@ public:
   const DebugCamera& get_debug_camera() const;
   const MaterialHandle& get_solid_material() const;
   const Model& get_cube_model() const;
+  DebugCamera* get_camera() const;
 
 private:
   void update(f32 delta_seconds);
@@ -43,8 +44,6 @@ private:
   void render_sectors(const VisibleSectors& visible)  const;
   void render_entities(const VisibleSectors& visible) const;
   void render_gun();
-
-  DebugCamera* get_camera() const;
 
   void build_map_gfx() const;
 

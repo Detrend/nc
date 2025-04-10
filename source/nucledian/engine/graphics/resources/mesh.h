@@ -65,7 +65,7 @@ public:
    */
   void unload(ResLifetime lifetime);
   MeshHandle get_cube() const;
-
+  MeshHandle get_line() const;
 
 private:
   inline static std::unique_ptr<MeshManager> m_instance = nullptr;
@@ -78,6 +78,7 @@ private:
   std::vector<MeshHandle> m_level_meshes;
   std::vector<MeshHandle> m_game_meshes;
   MeshHandle              m_cube_mesh;
+  MeshHandle              m_line_mesh;
 };
 
 }
