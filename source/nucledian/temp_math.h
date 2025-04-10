@@ -29,21 +29,25 @@ f32 length2(const vec2& vec);
 
 mat4 translate(const mat4& matrix, const vec3& vec);
 mat4 rotate(const mat4& matrix, f32 angle, const vec3& axis);
-mat4 eulerAngleXYZ(f32 yaw, f32 pitch, f32 roll);
+mat4 eulerAngleXYZ(f32 x, f32 y, f32 z);
 mat4 scale(const mat4& matrix, const vec3& vec);
+
+mat4 inverse(const mat4& matrix);
 
 constexpr f32 clamp(f32 x, f32 min, f32 max);
 f32 sin(f32 x);
 f32 cos(f32 x);
 /**
- * Euclidian remained of `value` divided by `range`. Results is always non-negative and lies in the interval
+ * @brief Euclid remained of `value` divided by `range`. Results is always non-negative and lies in the interval
  * [0, range).
  * 
  * It is equivalent to the following mathematical operation: value - range * floor(value / range).
  * 
  * Example usage:
+ * @code{.cpp}
  * f32 result  = rem_euclid( 7.5f, 3.0f); // result  = 1.5f
  * f32 result2 = rem_euclid(-2.0f, 3.0f); // result2 = 1.0f
+ * @encode
  */
 f32 rem_euclid(f32 value, f32 range);
 

@@ -2,6 +2,7 @@
 
 namespace nc
 {
+
 Transform::Transform(const vec3& position, const vec3& scale, const vec3& rotation)
   : m_position(position), m_scale(scale), m_rotation(rotation) {}
 

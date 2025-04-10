@@ -5,6 +5,9 @@
 namespace nc
 {
 
+// TODO: Transform is too big and probably an overkill, there is a chance there would be need to replace it by other
+// solution when thing system is implemented.
+
 /**
  * @brief Represents a 3D transformation, including position, rotation, and scale.
  *

@@ -74,15 +74,21 @@ mat4 rotate(const mat4& matrix, f32 angle, const vec3& axis)
 }
 
 //==============================================================================
-mat4 eulerAngleXYZ(f32 yaw, f32 pitch, f32 roll)
+mat4 eulerAngleXYZ(f32 x, f32 y, f32 z)
 {
-  return std::bit_cast<mat4>(glm::eulerAngleXYZ(yaw, pitch, roll));
+  return std::bit_cast<mat4>(glm::eulerAngleXYZ(x, y, z));
 }
 
 //==============================================================================
 mat4 scale(const mat4& matrix, const vec3& vec)
 {
   return std::bit_cast<mat4>(glm::scale(std::bit_cast<glm::mat4>(matrix), std::bit_cast<glm::vec3>(vec)));
+}
+
+//==============================================================================
+mat4 inverse(const mat4& matrix)
+{
+  return std::bit_cast<mat4>(glm::inverse(std::bit_cast<glm::mat4>(matrix)));
 }
 
 //==============================================================================

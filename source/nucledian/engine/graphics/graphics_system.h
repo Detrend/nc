@@ -5,6 +5,7 @@
 #include <engine/core/engine_module_id.h>
 #include <engine/graphics/resources/model.h>
 #include <engine/graphics/debug_camera.h>
+#include <transform.h>
 
 #include <types.h>
 #include <config.h>
@@ -41,7 +42,7 @@ private:
 
   void render_sectors(const VisibleSectors& visible)  const;
   void render_entities(const VisibleSectors& visible) const;
-  void render_gun() const;
+  void render_gun();
 
   DebugCamera* get_camera() const;
 
@@ -53,12 +54,15 @@ private:
   #endif
 
 private:
-  SDL_Window*  m_window        = nullptr;
-  void*        m_gl_context    = nullptr;
-  DebugCamera  m_debug_camera;
+  SDL_Window*    m_window        = nullptr;
+  void*          m_gl_context    = nullptr;
+  DebugCamera    m_debug_camera;
   // Material for rendering solid geometry.
-  MaterialHandle     m_solid_material;
-  Model        m_cube_model;
+  MaterialHandle m_solid_material;
+  Model          m_cube_model;
+
+  Model          m_gun_model;
+  Transform      m_gun_transform;
 };
 
 }

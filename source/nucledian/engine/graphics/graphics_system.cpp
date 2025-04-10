@@ -310,6 +310,13 @@ void GraphicsSystem::on_event(ModuleEvent& event)
     case ModuleEventType::post_init:
     {
       build_map_gfx();
+
+      m_gun_model = m_cube_model;
+      m_gun_transform = Transform(
+        vec3(0.5f, -0.3f, -1.0f),
+        vec3(0.2f, 0.2f, 0.5f),
+        vec3(10.0f, 0.0f, 0.0f)
+      );
       break;
     }
 
@@ -448,6 +455,7 @@ void GraphicsSystem::render()
     GizmoManager::instance().draw_gizmos();
     render_sectors(visible);
     render_entities(visible);
+    render_gun();
   }
 
 #ifdef NC_IMGUI
@@ -1048,7 +1056,7 @@ void GraphicsSystem::render_entities(const VisibleSectors&) const
       Appearance& appearance = g_appearance_components[index];
 
       const mat4 transform_matrix = appearance.transform.get_matrix() * transform.get_matrix();
-  
+
       // TODO: should be set only when these changes and probably not here
       model.material.set_uniform(shaders::solid::COLOR, appearance.color);
       model.material.set_uniform(shaders::solid::TRANSFORM, transform_matrix);
@@ -1057,6 +1065,31 @@ void GraphicsSystem::render_entities(const VisibleSectors&) const
     }
   }
 }
+
+//==============================================================================
+void GraphicsSystem::render_gun()
+{
+  DebugCamera* camera = get_camera();
+  if (!camera)
+  {
+    return;
+  }
+
+  glClear(GL_DEPTH_BUFFER_BIT);
+
+  m_gun_model.material.use();
+  glBindVertexArray(m_gun_model.mesh.get_vao());
+
+  m_gun_model.material.set_uniform(shaders::solid::VIEW, camera->get_view());
+  m_gun_model.material.set_uniform(shaders::solid::VIEW_POSITION, camera->get_position());
+  m_gun_model.material.set_uniform(shaders::solid::COLOR, colors::BROWN);
+
+  const mat4 transform = inverse(camera->get_view()) * m_gun_transform.get_matrix();
+  m_gun_model.material.set_uniform(shaders::solid::TRANSFORM, transform);
+
+  glDrawArrays(m_gun_model.mesh.get_draw_mode(), 0, m_gun_model.mesh.get_vertex_count());
+}
+
 
 //==============================================================================
 DebugCamera* GraphicsSystem::get_camera() const
@@ -1089,3 +1122,6 @@ void GraphicsSystem::build_map_gfx() const
 }
 
 }
+
+
+// 
