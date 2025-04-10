@@ -1,22 +1,25 @@
 // Project Nucledian Source File
+#include <common.h>
+#include <config.h>
+#include <cvars.h>
+#include <intersect.h>
+
+#include <math/utils.h>
+#include <math/lingebra.h>
+
 #include <engine/graphics/graphics_system.h>
 
 #include <engine/core/engine.h>
 #include <engine/core/engine_module_types.h>
 #include <engine/core/module_event.h>
 
-#include <engine/entities.h>
 #include <engine/graphics/gizmo.h>
 #include <engine/graphics/resources/res_lifetime.h>
+
+#include <engine/entities.h>
 #include <engine/input/input_system.h>
 #include <engine/map/map_system.h>
 #include <engine/player/thing_system.h>
-
-#include <common.h>
-#include <config.h>
-#include <cvars.h>
-#include <intersect.h>
-#include <maths.h>
 
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
@@ -171,8 +174,8 @@ namespace nc
 struct VisibleSectors
 {
   std::map<SectorID, FrustumBuffer> sectors;
-  vec2 position;
-  vec2 direction;
+  vec2 position = VEC2_ZERO;
+  vec2 direction = VEC2_ZERO;
   f32  fov = 0.0f;
 };
 
@@ -372,7 +375,7 @@ static void query_data_from_camera(
   vec2 d = vec2{ camera.get_forward().x, camera.get_forward().z };
   dir = is_zero(d) ? vec2{ 1, 0 } : normalize(d);
 
-  fov = std::numbers::pi_v<f32> *0.5f; // 90 degrees
+  fov = HALF_PI; // 90 degrees
 }
 
 //==============================================================================
@@ -535,9 +538,9 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
 
     if (raycast2d_debug)
     {
-      ImGui::SliderFloat2("Raycast Point", &raycast_pt1.x, -40.0f, 40.0f);
-      ImGui::SliderFloat("Raycast Dir", &raycast_rot, 0.0f, 2.0f * pi);
-      ImGui::SliderFloat("Raycast Len", &raycast_len, 0.25f, 30.0f);
+      ImGui::SliderFloat2("Raycast Point", &raycast_pt1.x,  -40.0f, 40.0f);
+      ImGui::SliderFloat("Raycast Dir",    &raycast_rot,    0.0f,   2.0f * PI);
+      ImGui::SliderFloat("Raycast Len",    &raycast_len,    0.25f,  30.0f);
       ImGui::SliderFloat("Raycast Expand", &raycast_expand, 0.001f, 3.0f);
     }
   }
@@ -1127,6 +1130,3 @@ void GraphicsSystem::build_map_gfx() const
 }
 
 }
-
-
-// 

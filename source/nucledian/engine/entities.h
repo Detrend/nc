@@ -1,8 +1,8 @@
 #pragma once
 
 #include <types.h>
-#include <temp_math.h>
 #include <transform.h>
+#include <math/vector.h>
 #include <engine/graphics/resources/model.h>
 
 #include <vector>
@@ -14,7 +14,7 @@ namespace nc
 struct Appearance
 {
   // Color modulation of the model.
-  color color;
+  color4 color;
   Model model;
   // Model transform (applied after the transform of the entity).
   Transform transform;
@@ -40,14 +40,14 @@ inline std::vector<Transform> g_transform_components;
  * Temporary helper function for creating instances of render components within g_appearance_components array. For
  * more information see description of g_appearance_components.
  */
-u32 create_entity(const Transform& transform, const color& color, const Transform& model_transform = Transform());
+u32 create_entity(const Transform& transform, const color4& color, const Transform& model_transform = Transform());
 /**
  * Temporary helper function for creating instances of render components within g_appearance_components array. For
  * more information see description of g_appearance_components.
  */
 u32 create_entity(
   const Transform& transform,
-  const color& color,
+  const color4& color,
   const Model& model,
   const Transform& model_transform = Transform()
 );

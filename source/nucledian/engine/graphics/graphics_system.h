@@ -1,16 +1,15 @@
 // Project Nucledian Source File
 #pragma once
 
+#include <types.h>
+#include <config.h>
+#include <transform.h>
+#include <math/vector.h>
+
 #include <engine/core/engine_module.h>
 #include <engine/core/engine_module_id.h>
 #include <engine/graphics/resources/model.h>
 #include <engine/graphics/debug_camera.h>
-#include <transform.h>
-
-#include <types.h>
-#include <config.h>
-#include <vec.h>
-#include <temp_math.h>
 
 #include <vector>
 

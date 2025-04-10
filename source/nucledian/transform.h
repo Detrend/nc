@@ -1,6 +1,7 @@
 #pragma once
 
-#include <temp_math.h>
+#include <math/vector.h>
+#include <math/matrix.h>
 
 namespace nc
 {
@@ -18,7 +19,7 @@ namespace nc
 class Transform
 {
 public:
-  Transform(const vec3& position = vec3::ZERO, const vec3& scale = vec3::ONE, const vec3& rotation = vec3::ZERO);
+  Transform(const vec3& position = VEC3_ZERO, const vec3& scale = VEC3_ONE, const vec3& rotation = VEC3_ZERO);
 
   static Transform from_position(const vec3& position);
   static Transform from_scale(const vec3& scale);
@@ -57,10 +58,10 @@ private:
   // Indicates whether the transformation matrix needs to be recomputed.
   bool m_dirty = true;
 
-  vec3 m_position = vec3::ZERO;
-  vec3 m_scale = vec3::ONE;
+  vec3 m_position = VEC3_ZERO;
+  vec3 m_scale = VEC3_ONE;
   // The rotation of the transform in Euler angles.
-  vec3 m_rotation = vec3::ZERO;
+  vec3 m_rotation = VEC3_ZERO;
 
   // The cached transformation matrix.
   mat4 m_matrix;

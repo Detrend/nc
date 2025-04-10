@@ -2,13 +2,12 @@
 
 #ifdef NC_DEBUG_DRAW
 
+#include <math/lingebra.h>
 #include <engine/core/engine.h>
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/graphics_system.h>
 
-#include <glad/glad.h>
 
-#include <bit>
 #include <ranges>
 #include <array>
 
@@ -16,47 +15,47 @@ namespace nc
 {
 
 //==============================================================================
-GizmoPtr Gizmo::create_cube(const vec3& position, f32 size, const color& color)
+GizmoPtr Gizmo::create_cube(const vec3& position, f32 size, const color4& color)
 {
   return create_cube_impl(0.0f, position, size, color);
 }
 
 //==============================================================================
-void Gizmo::create_cube(f32 ttl, const vec3& position, f32 size, const color& color)
+void Gizmo::create_cube(f32 ttl, const vec3& position, f32 size, const color4& color)
 {
   create_cube_impl(ttl, position, size, color);
 }
 
 //==============================================================================
-std::shared_ptr<Gizmo> Gizmo::create_ray(const vec3& start, const vec3& direction, const color& color)
+std::shared_ptr<Gizmo> Gizmo::create_ray(const vec3& start, const vec3& direction, const color4& color)
 {
   return create_ray_impl(0.0f, start, direction, color);
 }
 
 //==============================================================================
-void Gizmo::create_ray(f32 ttl, const vec3& start, const vec3& direction, const color& color)
+void Gizmo::create_ray(f32 ttl, const vec3& start, const vec3& direction, const color4& color)
 {
   create_ray_impl(ttl, start, direction, color);
 }
 
 //==============================================================================
-std::shared_ptr<Gizmo> Gizmo::create_line(const vec3& start, const vec3& end, const color& color)
+std::shared_ptr<Gizmo> Gizmo::create_line(const vec3& start, const vec3& end, const color4& color)
 {
   return create_line_impl(0.0f, start, end, color);
 }
 
 //==============================================================================
-void Gizmo::create_line(f32 ttl, const vec3& start, const vec3& end, const color& color)
+void Gizmo::create_line(f32 ttl, const vec3& start, const vec3& end, const color4& color)
 {
   create_line_impl(ttl, start, end, color);
 }
 
 //==============================================================================
-Gizmo::Gizmo(const MeshHandle& mesh, const mat4& transform, const color& color, f32 ttl)
+Gizmo::Gizmo(const MeshHandle& mesh, const mat4& transform, const color4& color, f32 ttl)
   : m_ttl(ttl), m_mesh(mesh), m_color(color), m_transform(transform) {}
 
 //==============================================================================
-std::shared_ptr<Gizmo> Gizmo::create_cube_impl(f32 ttl, const vec3& position, f32 size, const color& color)
+std::shared_ptr<Gizmo> Gizmo::create_cube_impl(f32 ttl, const vec3& position, f32 size, const color4& color)
 {
   const mat4 transform = translate(mat4(1.0f), position) * scale(mat4(1.0f), vec3(size));
 
@@ -65,7 +64,7 @@ std::shared_ptr<Gizmo> Gizmo::create_cube_impl(f32 ttl, const vec3& position, f3
 }
 
 //==============================================================================
-std::shared_ptr<Gizmo> Gizmo::create_ray_impl(f32 ttl, const vec3& start, const vec3& direction, const color& color)
+std::shared_ptr<Gizmo> Gizmo::create_ray_impl(f32 ttl, const vec3& start, const vec3& direction, const color4& color)
 {
   const auto [axis, angle] = compute_rotation_angle_axis(direction);
 
@@ -78,7 +77,7 @@ std::shared_ptr<Gizmo> Gizmo::create_ray_impl(f32 ttl, const vec3& start, const 
 }
 
 //==============================================================================
-std::shared_ptr<Gizmo> Gizmo::create_line_impl(f32 ttl, const vec3& start, const vec3& end, const color& color)
+std::shared_ptr<Gizmo> Gizmo::create_line_impl(f32 ttl, const vec3& start, const vec3& end, const color4& color)
 {
   const vec3 direction = end - start;
   const auto [axis, angle] = compute_rotation_angle_axis(direction);
@@ -96,15 +95,15 @@ std::pair<vec3, f32> Gizmo::compute_rotation_angle_axis(const vec3& direction)
 {
   const vec3 normalized_direction = normalize_or_zero(direction);
 
-  NC_ASSERT(normalized_direction != vec3::ZERO);
+  NC_ASSERT(normalized_direction != VEC3_ZERO);
 
-  constexpr vec3 base_direction = vec3::X;
+  constexpr vec3 base_direction = VEC3_X;
   const f32 angle = acos(dot(base_direction, normalized_direction));
 
   vec3 axis;
   if (base_direction == normalized_direction || -base_direction == normalized_direction)
     // angle is zero, so rotation axis don't matter
-    axis = vec3::Z;
+    axis = VEC3_Z;
   else
     axis = normalize(cross(base_direction, normalized_direction));
 

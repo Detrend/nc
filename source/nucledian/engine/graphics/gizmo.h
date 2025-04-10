@@ -4,7 +4,7 @@
 
 #ifdef NC_DEBUG_DRAW
 
-#include <temp_math.h>
+#include <math/vector.h>
 #include <engine/graphics/resources/mesh.h>
 #include <engine/graphics/resources/material.h>
 
@@ -26,36 +26,40 @@ public:
   /**
    * Creates a new cube gizmo. Gizmo will remain visible until all GizmoPtr references are destroyed.
    */
-  static std::shared_ptr<Gizmo> create_cube(const vec3& position, f32 size = 0.1f, const color& color = colors::RED);
+  static std::shared_ptr<Gizmo> create_cube(const vec3& position, f32 size = 0.1f, const color4& color = colors::RED);
   /**
    * Creates a new cube gizmo. Gizmo will remain visible until time to live (TTL) reaches zero.
    */
-  static void create_cube(f32 ttl, const vec3& position, f32 size = 0.1f, const color& color = colors::RED);
+  static void create_cube(f32 ttl, const vec3& position, f32 size = 0.1f, const color4& color = colors::RED);
 
   /**
    * Creates a new ray gizmo. Gizmo will remain visible until all GizmoPtr references are destroyed.
    */
-  static std::shared_ptr<Gizmo> create_ray(const vec3& start, const vec3& direction, const color& color = colors::RED);
+  static std::shared_ptr<Gizmo> create_ray(
+    const vec3& start,
+    const vec3& direction,
+    const color4& color = colors::RED
+  );
   /**
    * Creates a new ray gizmo. Gizmo will remain visible until time to live (TTL) reaches zero.
    */
-  static void create_ray(f32 ttl, const vec3& start, const vec3& direction, const color& color = colors::RED);
+  static void create_ray(f32 ttl, const vec3& start, const vec3& direction, const color4& color = colors::RED);
 
   /**
    * Creates a new line gizmo. Gizmo will remain visible until all GizmoPtr references are destroyed.
    */
-  static std::shared_ptr<Gizmo> create_line(const vec3& start, const vec3& end, const color& color = colors::RED);
+  static std::shared_ptr<Gizmo> create_line(const vec3& start, const vec3& end, const color4& color = colors::RED);
   /**
   * Creates a new line gizmo. Gizmo will remain visible until time to live (TTL) reaches zero.
   */
-  static void create_line(f32 ttl, const vec3& start, const vec3& end, const color& color = colors::RED);
+  static void create_line(f32 ttl, const vec3& start, const vec3& end, const color4& color = colors::RED);
 
 private:
-  Gizmo(const MeshHandle& mesh, const mat4& transform, const color& color, f32 ttl);
+  Gizmo(const MeshHandle& mesh, const mat4& transform, const color4& color, f32 ttl);
 
-  static std::shared_ptr<Gizmo> create_cube_impl(f32 ttl, const vec3& position, f32 size, const color& color);
-  static std::shared_ptr<Gizmo> create_ray_impl(f32 ttl, const vec3& start, const vec3& direction, const color& color);
-  static std::shared_ptr<Gizmo> create_line_impl(f32 ttl, const vec3& start, const vec3& end, const color& color);
+  static std::shared_ptr<Gizmo> create_cube_impl(f32 ttl, const vec3& position, f32 size, const color4& color);
+  static std::shared_ptr<Gizmo> create_ray_impl(f32 ttl, const vec3& start, const vec3& direction, const color4& color);
+  static std::shared_ptr<Gizmo> create_line_impl(f32 ttl, const vec3& start, const vec3& end, const color4& color);
 
   static std::pair<vec3, f32> compute_rotation_angle_axis(const vec3& direction);
 
@@ -63,7 +67,7 @@ private:
   f32 m_ttl = 0.0f;
 
   const MeshHandle  m_mesh;
-  const color       m_color     = colors::WHITE;
+  const color4       m_color     = colors::WHITE;
   const mat4        m_transform = mat4(1.0f);
 };
 /**

@@ -1,4 +1,5 @@
 #include <transform.h>
+#include <math/lingebra.h>
 
 namespace nc
 {
@@ -15,13 +16,13 @@ Transform Transform::from_position(const vec3& position)
 //==========================================================================
 Transform Transform::from_scale(const vec3& scale)
 {
-  return Transform(vec3::ZERO, scale);
+  return Transform(VEC3_ZERO, scale);
 }
 
 //==========================================================================
 Transform Transform::from_rotation(const vec3& rotation)
 {
-  return Transform(vec3::ZERO, vec3::ONE, rotation);
+  return Transform(VEC3_ZERO, VEC3_ONE, rotation);
 }
 
 //==========================================================================
