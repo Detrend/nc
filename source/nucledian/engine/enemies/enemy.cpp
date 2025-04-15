@@ -18,6 +18,7 @@ namespace nc
     height = 0.35f;
 
     facing = vec3(0, 0, 1);
+    velocity = vec3(0, 0, 0);
   }
 
   Enemy::Enemy(vec3 position)
@@ -29,6 +30,7 @@ namespace nc
     width = 0.15f;
     height = 0.35f;
     facing = vec3(0, 0, 1);
+    velocity = vec3(0, 0, 0);
   }
 
   Enemy::Enemy(vec3 position, vec3 facing)
@@ -40,6 +42,7 @@ namespace nc
     width = 0.15f;
     height = 0.35f;
     this->facing = normalize(facing);
+    velocity = vec3(0, 0, 0);
   }
 
   void Enemy::init()
@@ -53,36 +56,29 @@ namespace nc
 
   void Enemy::update()
   {
-    switch (state) {
-    case idle:
-      break;
-    case chase:
-      vec3 target_pos = get_engine().get_module<ThingSystem>().get_player()->get_position();
-      vec3 target_dir = normalize_or_zero(target_pos - position);
+    vec3 target_pos = get_engine().get_module<ThingSystem>().get_player()->get_position();
+    vec3 target_dir = normalize_or_zero(target_pos - position);
 
-      position += target_dir * 1.0f * 0.001f;
+    position += target_dir * 1.0f * 0.001f;
 
-      g_transform_components[m_entity_index].position() = position;
-      break;
-    default:
-      break;
-    }
+    g_transform_components[m_entity_index].position() = position;
   }
 
   void Enemy::get_wish_velocity(f32 delta_seconds)
   {
     vec3 target_pos = get_engine().get_module<ThingSystem>().get_player()->get_position();
-    
+
     switch (state)
     {
     case nc::idle:
+      velocity = vec3(0, 0, 0);
       if (distance(target_pos, position) <= 1)
       {
         state = chase;
       }
       break;
     case nc::chase:
-      
+
       vec3 target_dir = normalize_or_zero(target_pos - position);
       velocity = target_dir * 1.0f * delta_seconds;
       break;
