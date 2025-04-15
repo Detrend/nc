@@ -67,6 +67,7 @@ namespace nc
   void Enemy::get_wish_velocity(f32 delta_seconds)
   {
     vec3 target_pos = get_engine().get_module<ThingSystem>().get_player()->get_position();
+    vec3 target_dir = normalize_or_zero(target_pos - position);
 
     switch (state)
     {
@@ -75,11 +76,17 @@ namespace nc
       if (distance(target_pos, position) <= 1)
       {
         state = chase;
+        break;
       }
+
+      if (dot(target_dir, facing) >= cosf(3.14f / 4.0f))
+      {
+        state = chase;
+        break;
+      }
+
       break;
     case nc::chase:
-
-      vec3 target_dir = normalize_or_zero(target_pos - position);
       velocity = target_dir * 1.0f * delta_seconds;
       break;
     case nc::attack:
