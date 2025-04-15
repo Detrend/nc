@@ -5,11 +5,22 @@
 
 namespace nc
 {
+  enum EnemyState
+  {
+    idle = 0,
+    chase,
+    attack,
+    hurt,
+    dead,
+    count
+  };
+
   class Enemy : public MapObject
   {
   public:
     Enemy();
     Enemy(vec3 position);
+    Enemy(vec3 position, vec3 facing);
     void init();
     void update();
     void get_wish_velocity(f32 delta_seconds);
@@ -18,5 +29,7 @@ namespace nc
   private:
     u32 m_entity_index = 0; //this will be overwritten anyway
     vec3 velocity;
+    vec3 facing;
+    EnemyState state = idle;
   };
 };
