@@ -118,6 +118,10 @@ struct MapSectors
   column<WallPortalData>  portals;
   StatGridAABB2<SectorID> sector_grid;
 
+  // TODO: replace these later once we can do sectors with varying height
+  static constexpr f32 SECTOR_FLOOR_Y   = 0.0f;
+  static constexpr f32 SECTOR_CEILING_Y = 1.5f;
+
   // TODO: do not use the retarded std::function, find a better alternative
   using TraverseVisitor = std::function<void(SectorID, Frustum2, PortalID)>;
   using PortalVisitor   = std::function<void(PortalID, WallID)>;
@@ -144,6 +148,8 @@ struct MapSectors
     std::vector<vec3>& vertices_out) const;
 
   bool raycast2d_expanded(vec2 from, vec2 to, f32 expand, vec2& out_normal, f32& out_coeff) const;
+
+  bool raycast3d(vec3 from, vec3 to, vec3& out_normal, f32& out_coeff) const;
 
 private:
   void query_visible_sectors_impl(

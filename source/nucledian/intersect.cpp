@@ -321,6 +321,83 @@ bool segment_segment_expanded(
   return out_coeff != FLT_MAX;
 }
 
+//==============================================================================
+bool ray_wall(
+  vec3  ray_start,
+  vec3  ray_end,
+  vec2  wall_a,
+  vec2  wall_b,
+  f32   wall_y1,
+  f32   wall_y2,
+  f32&  out_coeff)
+{
+  NC_ASSERT(wall_y1   != wall_y2, "Points of the wall are the same.");
+  NC_ASSERT(ray_start != ray_end, "Ray has a zero length.");
+
+  const vec2 start2d = ray_start.xz;
+  const vec2 end2d   = ray_end.xz;
+  const vec3 ray_dir = ray_end - ray_start;
+
+  f32 _;
+  if (!segment_segment(start2d, end2d, wall_a, wall_b, out_coeff, _))
+  {
+    // not intersecting even in 2D, can't intersect in 3D
+    return false;
+  }
+
+  // if we intersect in 2D then check the Y height of the intersection
+  // point and check if it is on the wall
+  const vec3 intersect_point = ray_start + ray_dir * out_coeff;
+  const f32  y_bot = std::min(wall_y1, wall_y2);
+  const f32  y_top = std::max(wall_y1, wall_y2);
+
+  return intersect_point.y >= y_bot && intersect_point.y <= y_top;
+}
+
+//==============================================================================
+bool ray_infinite_horizontal_plane(
+  vec3 ray_start,
+  vec3 ray_end,
+  f32  plane_y,
+  f32& out_coeff)
+{
+  NC_ASSERT(ray_start != ray_end);
+  const vec3 ray_dir = ray_end - ray_start;
+
+  // check if the ray is horizontal
+  if (ray_dir.y == 0.0f) [[unlikely]]
+  {
+    // check if the ray starts at the same height as the plane
+    if (ray_start.y == plane_y) [[unlikely]]
+    {
+      out_coeff = 0.0f;
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  const f32 plane_y_adjusted = plane_y - ray_start.y;
+
+  // we are searching for parameter t such that
+  //   ray_dir.y * t = plane_y_adjusted
+  // therefore..
+  //   t = plane_y_adjusted / ray_dir.y
+  // and we have a guarantee that y is not zero
+  const f32 t = plane_y_adjusted / ray_dir.y;
+  if (t >= 0.0f && t <= 1.0f)
+  {
+    out_coeff = t;
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
 }
 
 namespace nc

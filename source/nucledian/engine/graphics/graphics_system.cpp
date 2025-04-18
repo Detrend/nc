@@ -418,6 +418,23 @@ void GraphicsSystem::update(f32 delta_seconds)
 {
   // TODO: only temporary for debug camera
   //m_debug_camera.handle_input(delta_seconds);
+  if (auto* camera = this->get_camera())
+  {
+    const auto& map = get_engine().get_map();
+
+    constexpr f32 RAY_LEN = 10.0f;
+
+    const vec3 eye_pos  = camera->get_position();
+    const vec3 look_dir = camera->get_forward();
+
+    vec3 out_normal;
+    f32  out_coeff;
+    if (map.raycast3d(eye_pos, eye_pos + look_dir * RAY_LEN, out_normal, out_coeff))
+    {
+      const vec3 hit_pt = eye_pos + look_dir * RAY_LEN * out_coeff;
+      Gizmo::create_line(0.25f, hit_pt, hit_pt + out_normal, colors::RED);
+    }
+  }
 
   GizmoManager::instance().update_ttls(delta_seconds);
 }

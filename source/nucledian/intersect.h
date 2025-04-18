@@ -124,6 +124,21 @@ bool segment_segment_expanded(
   vec2& out_normal,
   f32&  out_coeff);
 
+bool ray_wall(
+  vec3 ray_start,
+  vec3 ray_end,
+  vec2 wall_a,
+  vec2 wall_b,
+  f32  wall_y1,
+  f32  wall_y2,
+  f32& out_coeff);
+
+bool ray_infinite_horizontal_plane(
+  vec3 ray_start,
+  vec3 ray_end,
+  f32  plane_y,
+  f32& out_coeff);
+
 // Checks for intersection of two 2D AABBs and returns true if they intersect.
 bool aabb_aabb_2d(const aabb2& a, const aabb2& b);
 
