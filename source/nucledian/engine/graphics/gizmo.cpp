@@ -86,6 +86,9 @@ std::shared_ptr<Gizmo> Gizmo::create_line_impl(f32 ttl, const vec3& start, const
     * scale(mat4(1.0f), vec3(length(direction)))
     * rotate(mat4(1.0f), angle, axis);
 
+  [[maybe_unused]] const vec3 recomp_start = transform * vec4{0, 0, 0, 1};
+  [[maybe_unused]] const vec3 recomp_end   = transform * vec4{1, 0, 0, 1};
+
   GizmoManager& gizmo_manager = GizmoManager::instance();
   return gizmo_manager.add_gizmo(Gizmo(MeshManager::instance().get_line(), transform, color, ttl), ttl > 0.0f);
 }

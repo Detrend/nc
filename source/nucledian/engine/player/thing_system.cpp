@@ -76,5 +76,12 @@ Player* ThingSystem::get_player()
 {
   return &player;
 }
+
+//==========================================================
+const std::vector<Enemy>& ThingSystem::get_enemies() const
+{
+  return enemies;
+}
+
 }
 

@@ -409,10 +409,6 @@ void MapSectors::sector_to_vertices(
 {
   NC_ASSERT(sector_id < this->sectors.size());
 
-  // TODO: replace these later once we can do sectors with varying height
-  constexpr f32 FLOOR_Y = 0.0f;
-  constexpr f32 CEIL_Y  = 1.5f;
-
   const auto& sector_data = this->sectors[sector_id].int_data;
 
   // build the floor first from the first point
@@ -427,11 +423,11 @@ void MapSectors::sector_to_vertices(
     const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
     const auto w1pos    = this->walls[idx     ].pos;
     const auto w2pos    = this->walls[next_idx].pos;
-    const auto pt1      = vec3{w1pos.x, FLOOR_Y, w1pos.y};
-    const auto pt2      = vec3{w2pos.x, FLOOR_Y, w2pos.y};
+    const auto pt1      = vec3{w1pos.x, SECTOR_FLOOR_Y, w1pos.y};
+    const auto pt2      = vec3{w2pos.x, SECTOR_FLOOR_Y, w2pos.y};
 
     // build floor triangle from the first point and 2 others
-    vertices_out.push_back(with_y(first_pt, FLOOR_Y));
+    vertices_out.push_back(with_y(first_pt, SECTOR_FLOOR_Y));
     vertices_out.push_back(VEC3_Y);
     vertices_out.push_back(pt2);
     vertices_out.push_back(VEC3_Y);
@@ -445,11 +441,11 @@ void MapSectors::sector_to_vertices(
     const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
     const auto w1pos    = this->walls[idx     ].pos;
     const auto w2pos    = this->walls[next_idx].pos;
-    const auto pt1      = vec3{w1pos.x, CEIL_Y, w1pos.y};
-    const auto pt2      = vec3{w2pos.x, CEIL_Y, w2pos.y};
+    const auto pt1      = vec3{w1pos.x, SECTOR_CEILING_Y, w1pos.y};
+    const auto pt2      = vec3{w2pos.x, SECTOR_CEILING_Y, w2pos.y};
 
     // build floor triangle from the first point and 2 others
-    vertices_out.push_back(with_y(first_pt, CEIL_Y));
+    vertices_out.push_back(with_y(first_pt, SECTOR_CEILING_Y));
     vertices_out.push_back(-VEC3_Y);
     vertices_out.push_back(pt1);
     vertices_out.push_back(-VEC3_Y);
@@ -477,10 +473,10 @@ void MapSectors::sector_to_vertices(
     const auto flp         = flipped(p1_to_p2);
     const auto wall_normal = vec3{flp.x, 0.0f, flp.y};
 
-    const auto f1 = vec3{w1pos.x, FLOOR_Y, w1pos.y};
-    const auto f2 = vec3{w2pos.x, FLOOR_Y, w2pos.y};
-    const auto c1 = vec3{w1pos.x, CEIL_Y,  w1pos.y};
-    const auto c2 = vec3{w2pos.x, CEIL_Y,  w2pos.y};
+    const auto f1 = vec3{w1pos.x, SECTOR_FLOOR_Y, w1pos.y};
+    const auto f2 = vec3{w2pos.x, SECTOR_FLOOR_Y, w2pos.y};
+    const auto c1 = vec3{w1pos.x, SECTOR_CEILING_Y,  w1pos.y};
+    const auto c2 = vec3{w2pos.x, SECTOR_CEILING_Y,  w2pos.y};
 
     vertices_out.push_back(f1);
     vertices_out.push_back(wall_normal);
@@ -565,6 +561,94 @@ bool MapSectors::raycast2d_expanded(
           out_normal = normal;
           count      = 1.0f;
         }
+      }
+    }
+  }
+
+  out_normal = out_normal / count;
+
+  return out_coeff != FLT_MAX;
+}
+
+//==============================================================================
+bool MapSectors::raycast3d(vec3 from, vec3 to, vec3& out_normal, f32& out_coeff) const
+{
+  if (from == to)
+  {
+    return false;
+  }
+
+  const auto bbox = aabb2{from.xz, to.xz};
+
+  // TODO[perf]: Add a "query_ray" option
+  std::set<SectorID> overlap_sectors;
+  this->sector_grid.query_aabb(bbox, [&](aabb2 /*bb*/, SectorID sid)
+  {
+    overlap_sectors.insert(sid);
+    return false;
+  });
+
+  out_coeff  = FLT_MAX;
+  out_normal = vec3{0};
+  f32 count  = 1.0f;
+
+  auto add_hit = [&out_coeff, &out_normal, &count](f32 coeff, vec3 normal)
+  {
+    if (coeff == out_coeff)
+    {
+      out_normal = out_normal + normal;
+      count += 1.0f;
+    }
+    else if (coeff < out_coeff)
+    {
+      out_coeff  = coeff;
+      out_normal = normal;
+      count      = 1.0f;
+    }
+  };
+
+  // check floor
+  if (f32 out; intersect::ray_infinite_plane_xz(from, to, SECTOR_FLOOR_Y, out))
+  {
+    add_hit(out, UP_DIR);
+  }
+
+  // check ceiling
+  if (f32 out; intersect::ray_infinite_plane_xz(from, to, SECTOR_CEILING_Y, out))
+  {
+    add_hit(out, -UP_DIR);
+  }
+
+  for (auto sector_id : overlap_sectors)
+  {
+    NC_ASSERT(sector_id < this->sectors.size());
+    const auto begin_wall = this->sectors[sector_id].int_data.first_wall;
+    const auto end_wall   = this->sectors[sector_id].int_data.last_wall;
+
+    // TODO[perf]: In theory, we do not need to check all the walls.
+    // Once we hit one all other walls further away can be ignored.
+    for (auto wid = begin_wall; wid < end_wall; ++wid)
+    {
+      const auto next_wid = map_helpers::next_wall(*this, sector_id, wid);
+      const auto& w1 = this->walls[wid];
+      const auto& w2 = this->walls[next_wid];
+
+      const bool is_portal = w1.portal_sector_id != INVALID_SECTOR_ID;
+      if (is_portal)
+      {
+        // Ignore this wall, it is a portal
+        continue;
+      }
+
+      const auto& p1 = w1.pos;
+      const auto& p2 = w2.pos;
+      NC_ASSERT(p1 != p2);
+
+      f32  coeff  = FLT_MAX;
+      vec2 normal = flipped(normalize(p2 - p1));
+      if (intersect::ray_wall(from, to, p1, p2, SECTOR_FLOOR_Y, SECTOR_CEILING_Y, coeff))
+      {
+        add_hit(coeff, vec3{normal.x, 0.0f, normal.y});
       }
     }
   }
