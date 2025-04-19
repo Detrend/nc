@@ -133,11 +133,30 @@ bool ray_wall(
   f32  wall_y2,
   f32& out_coeff);
 
-bool ray_infinite_horizontal_plane(
+// Checks for intersection between segmented ray (has start and end) and infinite
+// horizontal plane with normal vector (0, 1, 0) and height plane_y.
+// Returns true if the ray segment intersects the plane and outputs the coefficient
+// of intersection as "out_coeff". The point of intersection can be calculated as
+// ray_start + (ray_end - ray_start) * out_coeff.
+// The "out_coeff" value is invalid (and possibly non-inicialized) if the function
+// returns false and therefore it should not be used in any further computations.
+bool ray_infinite_plane_xz(
   vec3 ray_start,
   vec3 ray_end,
   f32  plane_y,
   f32& out_coeff);
+
+// Checks for intersection of ray segment and 3d bounding box. Returns true if the
+// two intersect. If so, then also fills out the "out_normal" with normal vector
+// of the intersecting point and "out_coeff" with coefficient of the intersection,
+// from which the intersection point can be calculated as follows:
+// hit_point = ray_start + (ray_end - ray_start) * out_coeff;
+bool ray_aabb3(
+  vec3  ray_start,
+  vec3  ray_end,
+  aabb3 bbox,
+  f32&  out_coeff,
+  vec3& out_normal);
 
 // Checks for intersection of two 2D AABBs and returns true if they intersect.
 bool aabb_aabb_2d(const aabb2& a, const aabb2& b);

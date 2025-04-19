@@ -15,9 +15,9 @@ namespace nc {
 
     virtual bool did_collide(MapObject collider);
 
-    f32 get_width();
-    f32 get_height();
-    vec3 get_position();
+    f32 get_width() const;
+    f32 get_height() const;
+    vec3 get_position() const;
 
     ~MapObject();
 

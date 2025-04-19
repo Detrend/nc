@@ -21,6 +21,7 @@ public:
   void on_event(ModuleEvent& event) override;
 
   Player* get_player();
+  const std::vector<Enemy>& get_enemies() const;
 
 private:
   Player player;

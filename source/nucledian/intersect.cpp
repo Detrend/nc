@@ -355,20 +355,26 @@ bool ray_wall(
 }
 
 //==============================================================================
-bool ray_infinite_horizontal_plane(
-  vec3 ray_start,
-  vec3 ray_end,
-  f32  plane_y,
-  f32& out_coeff)
+namespace helpers
+{
+
+//==============================================================================
+template<typename SWIZZLE>
+bool ray_infinite_axis_aligned_plane(
+  vec3    ray_start,
+  vec3    ray_end,
+  f32     plane_coord,
+  f32&    out_coeff,
+  SWIZZLE swizzler)
 {
   NC_ASSERT(ray_start != ray_end);
   const vec3 ray_dir = ray_end - ray_start;
 
   // check if the ray is horizontal
-  if (ray_dir.y == 0.0f) [[unlikely]]
+  if (swizzler(ray_dir) == 0.0f) [[unlikely]]
   {
     // check if the ray starts at the same height as the plane
-    if (ray_start.y == plane_y) [[unlikely]]
+    if (swizzler(ray_start) == plane_coord) [[unlikely]]
     {
       out_coeff = 0.0f;
       return true;
@@ -379,17 +385,133 @@ bool ray_infinite_horizontal_plane(
     }
   }
 
-  const f32 plane_y_adjusted = plane_y - ray_start.y;
+  const f32 plane_coord_adjusted = plane_coord - swizzler(ray_start);
 
   // we are searching for parameter t such that
   //   ray_dir.y * t = plane_y_adjusted
   // therefore..
   //   t = plane_y_adjusted / ray_dir.y
   // and we have a guarantee that y is not zero
-  const f32 t = plane_y_adjusted / ray_dir.y;
+  const f32 t = plane_coord_adjusted / swizzler(ray_dir);
   if (t >= 0.0f && t <= 1.0f)
   {
     out_coeff = t;
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+}
+
+//==============================================================================
+bool ray_infinite_plane_xz(
+  vec3 ray_start,
+  vec3 ray_end,
+  f32  plane_y,
+  f32& out_coeff)
+{
+  auto swizzle_y = [](const vec3& v) { return v.y; };
+  return helpers::ray_infinite_axis_aligned_plane
+  (
+    ray_start,
+    ray_end,
+    plane_y,
+    out_coeff,
+    swizzle_y
+  );
+}
+
+//==============================================================================
+bool ray_aabb3(
+  vec3  ray_start,
+  vec3  ray_end,
+  aabb3 bbox,
+  f32&  out_coeff,
+  vec3& out_normal)
+{
+  if (!bbox.is_valid()) [[unlikely]]
+  {
+    return false;
+  }
+
+  using Swizzler = f32(*)(const vec3&);
+  constexpr Swizzler swizzlers[3] =
+  {
+    [](const vec3& v) { return v.x; },
+    [](const vec3& v) { return v.y; },
+    [](const vec3& v) { return v.z; },
+  };
+
+  constexpr vec3 axes[3] = {VEC3_X, VEC3_Y, VEC3_Z};
+
+  f32  closest_hit = FLT_MAX;
+  vec3 hit_normal  = vec3{0};
+
+  auto add_possible_hit = [&](f32 coeff, vec3 normal)
+  {
+    if (coeff >= closest_hit || coeff < 0.0f || coeff > 1.0f)
+    {
+      return;
+    }
+
+    const vec3 hit_pt  = ray_start + (ray_end - ray_start) * coeff;
+    const vec3 in_bbox = clamp(hit_pt, bbox.min, bbox.max);
+
+    // Check if we actually hit the box itself. Threshold for float inaccuracies
+    if (is_zero(in_bbox - hit_pt, 0.001f))
+    {
+      closest_hit = coeff;
+      hit_normal  = normal;
+    }
+  };
+
+  for (u8 i = 0; i < 3; ++i)
+  {
+    f32   intersect_coord = 0.0f;
+    vec3  normal          = vec3{0};
+    auto& swizzler        = swizzlers[i];
+
+    if (swizzler(ray_start) <= swizzler(bbox.min))
+    {
+      // use the min value
+      intersect_coord = swizzler(bbox.min);
+      normal = -axes[i];
+    }
+    else if (swizzler(ray_start) >= swizzler(bbox.max))
+    {
+      // use the max value
+      intersect_coord = swizzler(bbox.max);
+      normal = axes[i];
+    }
+    else
+    {
+      // non of these can be intersected
+      continue;
+    }
+
+    f32 out;
+    const bool hit = helpers::ray_infinite_axis_aligned_plane
+    (
+      ray_start,
+      ray_end,
+      intersect_coord,
+      out,
+      swizzler
+    );
+
+    if (hit)
+    {
+      add_possible_hit(out, normal);
+    }
+  }
+
+  if (closest_hit != FLT_MAX)
+  {
+    out_coeff  = closest_hit;
+    out_normal = hit_normal;
     return true;
   }
   else

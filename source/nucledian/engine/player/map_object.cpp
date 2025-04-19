@@ -62,21 +62,21 @@ namespace nc
 
   // ===============================================================================
 
-  f32 MapObject::get_width()
+  f32 MapObject::get_width() const
   {
     return width;
   }
 
   // ===============================================================================
 
-  f32 MapObject::get_height()
+  f32 MapObject::get_height() const
   {
     return height;
   }
 
   // ===============================================================================
 
-  vec3 MapObject::get_position()
+  vec3 MapObject::get_position() const
   {
     return position;
   }

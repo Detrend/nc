@@ -93,6 +93,7 @@ struct CVars
   NC_REGISTER_CVAR(bool, enable_top_down_debug, false, "Top down 2D debugging of the game");
   NC_REGISTER_CVAR(bool, display_debug_window,  false, "Displays debug window.");
   NC_REGISTER_CVAR(bool, display_imgui_demo,    false, "Displays imgui demo window for inspiration.");
+  NC_REGISTER_CVAR(bool, debug_player_raycasts, false, "Debug raycast from player's eyes.");
 
   NC_REGISTER_CVAR_RANGED(s32, opengl_debug_severity, 1, 0, 3,
     "0 = everything, 1 = low and higher, 2 = medium and higher, 3 = critical only");

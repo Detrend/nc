@@ -608,13 +608,13 @@ bool MapSectors::raycast3d(vec3 from, vec3 to, vec3& out_normal, f32& out_coeff)
   };
 
   // check floor
-  if (f32 out; intersect::ray_infinite_horizontal_plane(from, to, SECTOR_FLOOR_Y, out))
+  if (f32 out; intersect::ray_infinite_plane_xz(from, to, SECTOR_FLOOR_Y, out))
   {
     add_hit(out, UP_DIR);
   }
 
   // check ceiling
-  if (f32 out; intersect::ray_infinite_horizontal_plane(from, to, SECTOR_CEILING_Y, out))
+  if (f32 out; intersect::ray_infinite_plane_xz(from, to, SECTOR_CEILING_Y, out))
   {
     add_hit(out, -UP_DIR);
   }
