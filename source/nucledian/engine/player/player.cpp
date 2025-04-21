@@ -265,4 +265,9 @@ namespace nc
     //looking direction
     return angleAxis(angleYaw, VEC3_Y) * angleAxis(anglePitch, VEC3_X) * -VEC3_Z;
   }
+
+  f32 Player::get_view_height()
+  {
+    return viewHeight;
+  }
 }

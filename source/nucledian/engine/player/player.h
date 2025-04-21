@@ -31,6 +31,7 @@ public:
 
   vec3 get_position();
   vec3 get_look_direction();
+  f32 get_view_height();
 
 private:
   void apply_acceleration(const nc::vec3& movement_direction, f32 delta_seconds);

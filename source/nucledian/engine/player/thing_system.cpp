@@ -5,6 +5,8 @@
 #include <engine/core/module_event.h>
 #include <engine/input/input_system.h>
 #include <intersect.h>
+#include <engine/map/map_system.h>
+#include <engine/graphics/graphics_system.h>
 
 namespace nc
 {
@@ -54,12 +56,19 @@ void ThingSystem::on_event(ModuleEvent& event)
       bool didAttack = player.get_attack_state(curInputs, prevInputs, event.update.dt);
       if (didAttack)
       {
-        [[maybe_unused]] vec3 rayStart = player.get_position();
-        [[maybe_unused]] vec3 rayEnd = rayStart + player.get_look_direction() * 50.0f;
+        [[maybe_unused]] vec3 rayStart = player.get_position() + vec3(0, player.get_view_height(), 0);
+        [[maybe_unused]] vec3 rayEnd = rayStart + get_engine().get_module<GraphicsSystem>().get_camera()->get_forward() * 50.0f;
 
         [[maybe_unused]] f32 hitDistance = 999999;
+        [[maybe_unused]] int index = -1;
 
-        for (size_t i = 0; i < enemies.size(); i++)
+
+        f32 wallDist;
+        vec3 wallNormal;
+        const auto& map = get_engine().get_map();
+        bool wallHit = map.raycast3d(rayStart, rayEnd, wallNormal, wallDist);
+
+        for (int i = 0; i < enemies.size(); i++)
         {
           const f32   width = enemies[i].get_width();
           const f32   height = enemies[i].get_height() * 2.0f;
@@ -75,7 +84,19 @@ void ThingSystem::on_event(ModuleEvent& event)
           vec3 normal;
           if (intersect::ray_aabb3(rayStart, rayEnd, bbox, out, normal))
           {
-            enemies[i].damage(100);
+            if (hitDistance > out)
+            {
+              hitDistance = out;
+              index = i;
+            }
+          }
+        }
+
+        if (index > -1)
+        {
+          if (hitDistance < wallDist || !wallHit)
+          {
+            enemies[index].damage(100);
           }
         }
       }
