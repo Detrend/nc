@@ -53,53 +53,7 @@ void ThingSystem::on_event(ModuleEvent& event)
         enemies[i].get_wish_velocity(event.update.dt);
       }
 
-      bool didAttack = player.get_attack_state(curInputs, prevInputs, event.update.dt);
-      if (didAttack)
-      {
-        [[maybe_unused]] vec3 rayStart = player.get_position() + vec3(0, player.get_view_height(), 0);
-        [[maybe_unused]] vec3 rayEnd = rayStart + get_engine().get_module<GraphicsSystem>().get_camera()->get_forward() * 50.0f;
-
-        [[maybe_unused]] f32 hitDistance = 999999;
-        [[maybe_unused]] int index = -1;
-
-
-        f32 wallDist;
-        vec3 wallNormal;
-        const auto& map = get_engine().get_map();
-        bool wallHit = map.raycast3d(rayStart, rayEnd, wallNormal, wallDist);
-
-        for (int i = 0; i < enemies.size(); i++)
-        {
-          const f32   width = enemies[i].get_width();
-          const f32   height = enemies[i].get_height() * 2.0f;
-          const vec3  position = enemies[i].get_position();
-
-          const aabb3 bbox = aabb3
-          {
-            position - vec3{width, 0.0f,   width},
-            position + vec3{width, height, width}
-          };
-
-          f32 out;
-          vec3 normal;
-          if (intersect::ray_aabb3(rayStart, rayEnd, bbox, out, normal))
-          {
-            if (hitDistance > out)
-            {
-              hitDistance = out;
-              index = i;
-            }
-          }
-        }
-
-        if (index > -1)
-        {
-          if (hitDistance < wallDist || !wallHit)
-          {
-            enemies[index].damage(100);
-          }
-        }
-      }
+      check_player_attack(curInputs, prevInputs, event);
 
       //CHECK FOR COLLISIONS
       for (size_t i = 0; i < enemies.size(); i++)
@@ -135,6 +89,57 @@ Player* ThingSystem::get_player()
 const std::vector<Enemy>& ThingSystem::get_enemies() const
 {
   return enemies;
+}
+
+void ThingSystem::check_player_attack(GameInputs curInputs, GameInputs prevInputs, ModuleEvent event)
+{
+  bool didAttack = player.get_attack_state(curInputs, prevInputs, event.update.dt);
+  if (didAttack)
+  {
+    [[maybe_unused]] vec3 rayStart = player.get_position() + vec3(0, player.get_view_height(), 0);
+    [[maybe_unused]] vec3 rayEnd = rayStart + get_engine().get_module<GraphicsSystem>().get_camera()->get_forward() * 50.0f;
+
+    [[maybe_unused]] f32 hitDistance = 999999;
+    [[maybe_unused]] int index = -1;
+
+
+    f32 wallDist;
+    vec3 wallNormal;
+    const auto& map = get_engine().get_map();
+    bool wallHit = map.raycast3d(rayStart, rayEnd, wallNormal, wallDist);
+
+    for (int i = 0; i < enemies.size(); i++)
+    {
+      const f32   width = enemies[i].get_width();
+      const f32   height = enemies[i].get_height() * 2.0f;
+      const vec3  position = enemies[i].get_position();
+
+      const aabb3 bbox = aabb3
+      {
+        position - vec3{width, 0.0f,   width},
+        position + vec3{width, height, width}
+      };
+
+      f32 out;
+      vec3 normal;
+      if (intersect::ray_aabb3(rayStart, rayEnd, bbox, out, normal))
+      {
+        if (hitDistance > out)
+        {
+          hitDistance = out;
+          index = i;
+        }
+      }
+    }
+
+    if (index > -1)
+    {
+      if (hitDistance < wallDist || !wallHit)
+      {
+        enemies[index].damage(100);
+      }
+    }
+  }
 }
 
 }

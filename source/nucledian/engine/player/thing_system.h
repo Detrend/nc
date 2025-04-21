@@ -22,6 +22,7 @@ public:
 
   Player* get_player();
   const std::vector<Enemy>& get_enemies() const;
+  void check_player_attack(GameInputs curInputs, GameInputs prevInputs, ModuleEvent event);
 
 private:
   Player player;
