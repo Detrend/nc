@@ -1100,10 +1100,14 @@ void GraphicsSystem::render_portals(const CameraData& camera_data) const
 
       render_portal_to_stencil(camera_data, render_data);
       render_portal_to_color(camera_data, render_data);
+      render_portal_to_depth(camera_data, render_data);
+
+      glDepthFunc(GL_LESS);
       glClear(GL_STENCIL_BUFFER_BIT);
     });
   }
   
+  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   glStencilFunc(GL_ALWAYS, 0, 0xFF);
   glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
   glDisable(GL_STENCIL_TEST);
@@ -1175,24 +1179,38 @@ void GraphicsSystem::render_portal_to_color(const CameraData& camera_data, const
   glStencilFunc(GL_LEQUAL, 1, 0xFF);
   glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
-  render_sectors(virtual_camera_data);
-  render_entities(virtual_camera_data);
+  render_sectors(clipped_virtual_camera_data);
+  render_entities(clipped_virtual_camera_data);
+}
+
+//==============================================================================
+void GraphicsSystem::render_portal_to_depth(const CameraData& camera_data, const PortalRenderData& portal) const
+{
+  m_solid_material.use();
+  m_solid_material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
+  m_solid_material.set_uniform(shaders::solid::UNLIT, true);
+  m_solid_material.set_uniform(shaders::solid::VIEW, camera_data.view);
+  m_solid_material.set_uniform(shaders::solid::TRANSFORM, portal.transform);
+
+  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+  glDepthFunc(GL_ALWAYS);
+
+  const MeshHandle& quad = MeshManager::instance().get_quad();
+  glBindVertexArray(quad.get_vao());
+  glDrawArrays(quad.get_draw_mode(), 0, quad.get_vertex_count());
+  glBindVertexArray(0);
 }
 
 //==============================================================================
 mat4 GraphicsSystem::clip_projection(const CameraData& camera_data, const PortalRenderData& portal) const
 {
   // following code was copied from:
-  // https://github.com/ThomasRinsma/opengl-game-test/blob/8363bbfcce30acc458b8faacc54c199279092f81/src/entity.h
+  // https://github.com/ThomasRinsma/opengl-game-test/blob/8363bbfcce30acc458b8faacc54c199279092f81/src/sceneobject/portal.cc
   // referenced by following article:
   // https://th0mas.nl/2013/05/19/rendering-recursive-portals-with-opengl/
 
   const vec3 normal = angleAxis(portal.rotation, VEC3_Y) * -VEC3_Z;
-  const vec3 camera_to_plane = portal.position - camera_data.position;
-  const f32 portal_rotation = (dot(camera_to_plane, normal) < 0.0f) ? portal.rotation + PI : portal.rotation;
-
-  const vec3 adjusted_normal = angleAxis(portal_rotation, VEC3_Y) * -VEC3_Z;
-  const vec4 clip_plane = inverse(transpose(camera_data.view)) * vec4(adjusted_normal, length(portal.position));
+  const vec4 clip_plane = inverse(transpose(camera_data.view)) * vec4(normal, length(portal.position));
 
   if (clip_plane.w > 0.0f)
     return camera_data.projection;
@@ -1200,10 +1218,7 @@ mat4 GraphicsSystem::clip_projection(const CameraData& camera_data, const Portal
   const vec4 q = inverse(camera_data.projection) * vec4(sign(clip_plane.x), sign(clip_plane.y), 1.0f, 1.0f);
   const vec4 c = clip_plane * (2.0f / (dot(clip_plane, q)));
 
-  mat4 result = camera_data.projection;
-  result[2] = c - result[2];
-
-  return result;
+  return row(camera_data.projection, 2, c - row(camera_data.projection, 3));
 }
 
 //==============================================================================
