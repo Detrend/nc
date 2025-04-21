@@ -52,11 +52,11 @@ public:
    * The transformation matrix is cached and only recomputed if the position, scale, or rotation
    * has changed since the last call.
    */
-  const mat4& get_matrix();
+  const mat4& get_matrix() const;
 
 private:
   // Indicates whether the transformation matrix needs to be recomputed.
-  bool m_dirty = true;
+  mutable bool m_dirty = true;
 
   vec3 m_position = VEC3_ZERO;
   vec3 m_scale = VEC3_ONE;
@@ -64,7 +64,7 @@ private:
   vec3 m_rotation = VEC3_ZERO;
 
   // The cached transformation matrix.
-  mat4 m_matrix;
+  mutable mat4 m_matrix;
 };
 
 }

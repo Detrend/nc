@@ -17,8 +17,6 @@
 #include <engine/player/thing_system.h>
 #include <engine/map/map_system.h>
 
-#include <math/vector.h>
-
 #ifdef NC_PROFILING
 #include <benchmark/benchmark.h>
 #include <algorithm>
@@ -453,11 +451,77 @@ static void test_make_sector(
 }
 
 //==============================================================================
+[[maybe_unused]] static void make_simple_portal_test_map(MapSectors& map)
+{
+  /*
+  *     0-------1-------2
+  *     |               |
+  *     A               | <- sector 0
+  *     |               |   
+  *     3-------4   -   5------12
+  *             |               |
+  * sector 1 -> B       |       B <- sector 3
+  *             |               |
+  *     6-------7   -   8------13
+  *     |               |
+  *     A               | <- sector 2
+  *     |               |
+  *     9------10------11
+  * 
+  * note: its actually flip along horizontal axis
+  */
+
+  const vec2 offset = vec2(-1.0f, 0.5f);
+  std::vector<vec2> points = {
+    vec2(0, 0), //  0
+    vec2(1, 0), //  1
+    vec2(2, 0), //  2
+    vec2(0, 1), //  3
+    vec2(1, 1), //  4
+    vec2(2, 1), //  5
+    vec2(0, 2), //  6
+    vec2(1, 2), //  7
+    vec2(2, 2), //  8
+    vec2(0, 3), //  9
+    vec2(1, 3), // 10
+    vec2(2, 3), // 11
+    vec2(3, 1), // 12
+    vec2(3, 2), // 13
+  };
+
+  for (auto& point : points)
+  {
+    point += offset;
+  }
+
+  std::vector<map_building::SectorBuildData> sectors;
+
+  // sector 0
+  test_make_sector({ 0, 1, 2, 5, 4, 3 }, sectors, 5, 5, 2);
+  // sector 1
+  test_make_sector({ 4, 5, 8, 7 }, sectors, 3, 1, 3);
+  // sector 2
+  test_make_sector({ 6, 7, 8, 11, 10, 9 }, sectors, 5, 5, 0);
+  // sector 3
+  test_make_sector({ 5, 12, 13, 8 }, sectors, 1, 3, 1);
+
+  using namespace map_building::MapBuildFlag;
+
+  map_building::build_map(
+    points, sectors, map,
+    //omit_convexity_clockwise_check |
+    //omit_sector_overlap_check      |
+    //omit_wall_overlap_check        |
+    assert_on_fail);
+}
+
+//==============================================================================
 void Engine::build_map_and_sectors()
 {
   m_map = std::make_unique<MapSectors>();
-  make_random_square_maze_map(*m_map, 32, 0);
+  //make_random_square_maze_map(*m_map, 32, 0);
   //make_cool_looking_map(*m_map);
+  make_simple_portal_test_map(*m_map);
 
   // geometry dump
   #if 0

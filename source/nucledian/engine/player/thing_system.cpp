@@ -34,7 +34,7 @@ void ThingSystem::on_event(ModuleEvent& event)
   {
     case ModuleEventType::post_init:
     {
-      enemies.push_back(Enemy(vec3(0, 0, 0)));
+      enemies.push_back(Enemy(vec3(-0.5f, 0, 3.0f)));
       break;
     }
 
@@ -50,12 +50,12 @@ void ThingSystem::on_event(ModuleEvent& event)
       //CHECK FOR COLLISIONS
       for (size_t i = 0; i < enemies.size(); i++)
       {
-        player.check_collision(enemies[i]);
+        //player.check_collision(enemies[i]);
       }
 
       for (size_t i = 0; i < enemies.size(); i++)
       {
-        enemies[i].check_for_collision(player);
+        //enemies[i].check_for_collision(player);
       }
 
       //FINAL VELOCITY CHANGE
@@ -63,7 +63,7 @@ void ThingSystem::on_event(ModuleEvent& event)
 
       for (size_t i = 0; i < enemies.size(); i++)
       {
-        enemies[i].apply_velocity();
+        //enemies[i].apply_velocity();
       }
 
       break;

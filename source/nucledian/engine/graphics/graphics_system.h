@@ -20,29 +20,41 @@ namespace nc
 
 struct VisibleSectors;
 struct ModuleEvent;
+struct PortalRenderData;
 
 class GraphicsSystem : public IEngineModule
 {
 public:
   static EngineModuleId get_module_id();
+
+  GraphicsSystem();
+
   bool init();
   void on_event(ModuleEvent& event) override;
 
-  const DebugCamera& get_debug_camera() const;
   const MaterialHandle& get_solid_material() const;
   const Model& get_cube_model() const;
-  DebugCamera* get_camera() const;
+  const DebugCamera* get_camera() const;
+  const mat4 get_default_projection() const;
 
 private:
+  struct CameraData;
+
   void update(f32 delta_seconds);
   void render();
   void terminate();
 
   void query_visible_sectors(VisibleSectors& out) const;
 
-  void render_sectors(const VisibleSectors& visible)  const;
-  void render_entities(const VisibleSectors& visible) const;
-  void render_gun();
+  void render_sectors(const CameraData& camera_data)  const;
+  void render_entities(const CameraData& camera_data) const;
+  void render_portals(const CameraData& camera_data) const;
+  void render_gun(const CameraData& camera_data) const;
+
+  void render_portal_to_stencil(const CameraData& camera_data, const PortalRenderData& portal) const;
+  void render_portal_to_color(const CameraData& camera_data, const PortalRenderData& portal) const;
+
+  mat4 clip_projection(const CameraData& camera_data, const PortalRenderData& portal) const;
 
   void build_map_gfx() const;
 
@@ -52,15 +64,25 @@ private:
   #endif
 
 private:
+  const mat4     m_default_projection;
+
   SDL_Window*    m_window        = nullptr;
   void*          m_gl_context    = nullptr;
-  DebugCamera    m_debug_camera;
+
   // Material for rendering solid geometry.
   MaterialHandle m_solid_material;
   Model          m_cube_model;
 
   Model          m_gun_model;
   Transform      m_gun_transform;
+
+  struct CameraData
+  {
+    const vec3& position;
+    const mat4& view;
+    const mat4& projection;
+    const VisibleSectors& visible_sectors;
+  };
 };
 
 }

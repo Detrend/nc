@@ -64,8 +64,10 @@ public:
    * Unloads all meshes with specified lifetime. 
    */
   void unload(ResLifetime lifetime);
+
   MeshHandle get_cube() const;
   MeshHandle get_line() const;
+  MeshHandle get_quad() const;
 
 private:
   inline static std::unique_ptr<MeshManager> m_instance = nullptr;
@@ -79,6 +81,7 @@ private:
   std::vector<MeshHandle> m_game_meshes;
   MeshHandle              m_cube_mesh;
   MeshHandle              m_line_mesh;
+  MeshHandle              m_quad_mesh;
 };
 
 }

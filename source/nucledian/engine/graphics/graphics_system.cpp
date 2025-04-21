@@ -180,7 +180,11 @@ struct VisibleSectors
 };
 
 // Temporary solution
-std::vector<Model> g_map_sector_models;
+std::vector<MeshHandle> g_sector_meshes;
+
+//==============================================================================
+GraphicsSystem::GraphicsSystem()
+  : m_default_projection(perspective(radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f)) {}
 
 //==============================================================================
 EngineModuleId GraphicsSystem::get_module_id()
@@ -233,7 +237,7 @@ bool GraphicsSystem::init()
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
@@ -278,9 +282,8 @@ bool GraphicsSystem::init()
   m_solid_material = MaterialHandle(shaders::solid::VERTEX_SOURCE, shaders::solid::FRAGMENT_SOURCE);
   m_cube_model = Model(MeshManager::instance().get_cube(), m_solid_material);
 
-  const mat4 projection = perspective(radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
   m_solid_material.use();
-  m_solid_material.set_uniform(shaders::solid::PROJECTION, projection);
+  m_solid_material.set_uniform(shaders::solid::PROJECTION, m_default_projection);
 
 #ifdef NC_DEBUG_DRAW
   debug_helpers::g_top_down_material = MaterialHandle
@@ -340,12 +343,6 @@ void GraphicsSystem::on_event(ModuleEvent& event)
 }
 
 //==============================================================================
-const DebugCamera& GraphicsSystem::get_debug_camera() const
-{
-  return m_debug_camera;
-}
-
-//==============================================================================
 void GraphicsSystem::terminate()
 {
 #ifdef NC_IMGUI
@@ -364,11 +361,7 @@ void GraphicsSystem::terminate()
 }
 
 //==============================================================================
-static void query_data_from_camera(
-  const DebugCamera& camera,
-  vec2& pos,
-  vec2& dir,
-  f32& fov)
+static void query_data_from_camera(const DebugCamera& camera, vec2& pos, vec2& dir, f32& fov)
 {
   pos = vec2{ camera.get_position().x, camera.get_position().z };
 
@@ -414,6 +407,19 @@ const Model& GraphicsSystem::get_cube_model() const
 }
 
 //==============================================================================
+const DebugCamera* GraphicsSystem::get_camera() const
+{
+  auto& things = get_engine().get_module<ThingSystem>();
+  return things.get_player()->get_camera();
+}
+
+//==============================================================================
+const mat4 GraphicsSystem::get_default_projection() const
+{
+  return m_default_projection;
+}
+
+//==============================================================================
 void GraphicsSystem::update(f32 delta_seconds)
 {
   // TODO: only temporary for debug camera
@@ -445,22 +451,35 @@ void GraphicsSystem::render()
   }
 #endif
 
-  VisibleSectors visible;
-  query_visible_sectors(visible);
+  VisibleSectors visible_sectors;
+  query_visible_sectors(visible_sectors);
 
   if (CVars::enable_top_down_debug)
   {
     // Top down rendering for easier debugging
 #ifdef NC_DEBUG_DRAW
-    render_map_top_down(visible);
+    render_map_top_down(visible_sectors);
 #endif
   }
   else
   {
-    GizmoManager::instance().draw_gizmos();
-    render_sectors(visible);
-    render_entities(visible);
-    render_gun();
+    const DebugCamera* camera = get_camera();
+    if (camera)
+    {
+      const CameraData camera_data = CameraData
+      {
+        .position = camera->get_position(),
+        .view = camera->get_view(),
+        .projection = m_default_projection,
+        .visible_sectors = visible_sectors,
+      };
+
+      GizmoManager::instance().draw_gizmos();
+      render_sectors(camera_data);
+      render_entities(camera_data);
+      render_portals(camera_data);
+      render_gun(camera_data);
+    }
   }
 
 #ifdef NC_IMGUI
@@ -548,7 +567,7 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
 
   auto& map = get_engine().get_map();
 
-  // Render the floors of the sectors with black or gray if visible
+  // Render the floors of the visible_sectors with black or gray if visible_sectors
   for (SectorID i = 0; i < map.sectors.size(); ++i)
   {
     const auto& sector = map.sectors[i];
@@ -597,7 +616,7 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
     }
   }
 
-  // Render frustums for all visible sectors
+  // Render frustums for all visible_sectors visible_sectors
   if (show_sector_frustums)
   {
     glEnable(GL_STENCIL_TEST);
@@ -952,7 +971,7 @@ void GraphicsSystem::draw_debug_window()
 #endif
 
 //==============================================================================
-void GraphicsSystem::render_sectors(const VisibleSectors& visible) const
+void GraphicsSystem::render_sectors(const CameraData& camera_data) const
 {
   constexpr auto SECTOR_COLORS = std::array
   {
@@ -973,55 +992,42 @@ void GraphicsSystem::render_sectors(const VisibleSectors& visible) const
     colors::GOLD   ,
   };
 
-  auto* cam = this->get_camera();
-  if (!cam)
-  {
-    return;
-  }
-
-  const auto& sectors_to_render = visible.sectors;
+  const auto& sectors_to_render = camera_data.visible_sectors.sectors;
 
   m_solid_material.use();
+  m_solid_material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
+  m_solid_material.set_uniform(shaders::solid::UNLIT, false);
+  m_solid_material.set_uniform(shaders::solid::VIEW, camera_data.view);
+  m_solid_material.set_uniform(shaders::solid::VIEW_POSITION, camera_data.position);
 
   for (const auto& [sector_id, _] : sectors_to_render)
   {
-    NC_ASSERT(sector_id < g_map_sector_models.size());
-    const Model& model = g_map_sector_models[sector_id];
+    NC_ASSERT(sector_id < g_sector_meshes.size());
+    const MeshHandle& mesh = g_sector_meshes[sector_id];
 
-    glBindVertexArray(model.mesh.get_vao());
+    glBindVertexArray(mesh.get_vao());
 
-    model.material.set_uniform(shaders::solid::UNLIT, false);
-    m_solid_material.set_uniform(shaders::solid::VIEW, cam->get_view());
-    m_solid_material.set_uniform(shaders::solid::VIEW_POSITION, cam->get_position());
+    const color4& color = SECTOR_COLORS[sector_id % SECTOR_COLORS.size()];
+    m_solid_material.set_uniform(shaders::solid::COLOR, color);
+    m_solid_material.set_uniform(shaders::solid::TRANSFORM, mat4(1.0f));
 
-    const auto transform = mat4{ 1.0f };
-    const auto& col = SECTOR_COLORS[sector_id % SECTOR_COLORS.size()];
-    m_solid_material.set_uniform(shaders::solid::COLOR, col);
-    m_solid_material.set_uniform(shaders::solid::TRANSFORM, transform);
-
-    glDrawArrays(model.mesh.get_draw_mode(), 0, model.mesh.get_vertex_count());
+    glDrawArrays(mesh.get_draw_mode(), 0, mesh.get_vertex_count());
   }
 
   glBindVertexArray(0);
 }
 
 //==============================================================================
-void GraphicsSystem::render_entities(const VisibleSectors&) const
+void GraphicsSystem::render_entities(const CameraData& camera_data) const
 {
   /*
-   * 1. obtain visible sectors from sector system (TODO)
-   * 2. get RenderComponents from entities within visible sectors (TODO)
-   * 3. filer visible entities (TODO)
+   * 1. obtain visible_sectors visible_sectors from sector system (TODO)
+   * 2. get RenderComponents from entities within visible_sectors visible_sectors (TODO)
+   * 3. filer visible_sectors entities (TODO)
    * 4. group by ModelHandle
    * 5. sort groups by: 1. program, 2. texture, 3. VAO (TODO)
    * 5. issue render command for each group (TODO)
    */
-
-  DebugCamera* camera = this->get_camera();
-  if (!camera)
-  {
-    return;
-  }
 
   struct ModelGroup
   {
@@ -1052,9 +1058,10 @@ void GraphicsSystem::render_entities(const VisibleSectors&) const
     glBindVertexArray(model.mesh.get_vao());
 
     // TODO: some uniform locations should be shader independent
+    model.material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
     model.material.set_uniform(shaders::solid::UNLIT, false);
-    model.material.set_uniform(shaders::solid::VIEW, camera->get_view());
-    model.material.set_uniform(shaders::solid::VIEW_POSITION, camera->get_position());
+    model.material.set_uniform(shaders::solid::VIEW, camera_data.view);
+    model.material.set_uniform(shaders::solid::VIEW_POSITION, camera_data.position);
 
     // TODO: indirect rendering
     for (auto& index : indices)
@@ -1071,48 +1078,139 @@ void GraphicsSystem::render_entities(const VisibleSectors&) const
       glDrawArrays(model.mesh.get_draw_mode(), 0, model.mesh.get_vertex_count());
     }
   }
+
+  glBindVertexArray(0);
 }
 
 //==============================================================================
-void GraphicsSystem::render_gun()
+void GraphicsSystem::render_portals(const CameraData& camera_data) const
 {
-  DebugCamera* camera = get_camera();
-  if (!camera)
+  const MapSectors& map = get_engine().get_map();
+
+  glEnable(GL_STENCIL_TEST);
+
+  for (const auto& [sector_id, _] : camera_data.visible_sectors.sectors)
   {
-    return;
+    map.for_each_portal_of_sector(sector_id, [&](PortalID portal_id, WallID)
+    {
+      const WallPortalData& portal = map.portals[portal_id];
+      if (portal.portal_type != PortalType::non_euclidean)
+        return;
+      const PortalRenderData& render_data = map.portals_render_data[portal.render_data_index];
+
+      render_portal_to_stencil(camera_data, render_data);
+      render_portal_to_color(camera_data, render_data);
+      glClear(GL_STENCIL_BUFFER_BIT);
+    });
   }
+  
+  glStencilFunc(GL_ALWAYS, 0, 0xFF);
+  glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+  glDisable(GL_STENCIL_TEST);
+}
+
+//==============================================================================
+void GraphicsSystem::render_gun(const CameraData& camera_data) const
+{
+  const mat4 transform = inverse(camera_data.view) * m_gun_transform.get_matrix();
+
+  m_gun_model.material.use();
+  m_gun_model.material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
+  m_gun_model.material.set_uniform(shaders::solid::UNLIT, false);
+  m_gun_model.material.set_uniform(shaders::solid::VIEW, camera_data.view);
+  m_gun_model.material.set_uniform(shaders::solid::VIEW_POSITION, camera_data.position);
+  m_gun_model.material.set_uniform(shaders::solid::COLOR, colors::BROWN);
+  m_gun_model.material.set_uniform(shaders::solid::TRANSFORM, transform);
 
   glClear(GL_DEPTH_BUFFER_BIT);
 
-  m_gun_model.material.use();
   glBindVertexArray(m_gun_model.mesh.get_vao());
-
-  m_gun_model.material.set_uniform(shaders::solid::UNLIT, false);
-  m_gun_model.material.set_uniform(shaders::solid::VIEW, camera->get_view());
-  m_gun_model.material.set_uniform(shaders::solid::VIEW_POSITION, camera->get_position());
-  m_gun_model.material.set_uniform(shaders::solid::COLOR, colors::BROWN);
-
-  const mat4 transform = inverse(camera->get_view()) * m_gun_transform.get_matrix();
-  m_gun_model.material.set_uniform(shaders::solid::TRANSFORM, transform);
-
   glDrawArrays(m_gun_model.mesh.get_draw_mode(), 0, m_gun_model.mesh.get_vertex_count());
+  glBindVertexArray(0);
 }
 
+//==============================================================================
+void GraphicsSystem::render_portal_to_stencil(const CameraData& camera_data, const PortalRenderData& portal) const
+{
+  m_solid_material.use();
+  m_solid_material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
+  m_solid_material.set_uniform(shaders::solid::UNLIT, true);
+  m_solid_material.set_uniform(shaders::solid::VIEW, camera_data.view);
+  m_solid_material.set_uniform(shaders::solid::TRANSFORM, portal.transform);
+
+  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+  glDepthMask(GL_FALSE);
+  glStencilFunc(GL_ALWAYS, 0, 0xFF);
+  glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
+
+  const MeshHandle& quad = MeshManager::instance().get_quad();
+  glBindVertexArray(quad.get_vao());
+  glDrawArrays(quad.get_draw_mode(), 0, quad.get_vertex_count());
+  glBindVertexArray(0);
+}
 
 //==============================================================================
-DebugCamera* GraphicsSystem::get_camera() const
+void GraphicsSystem::render_portal_to_color(const CameraData& camera_data, const PortalRenderData& portal) const
 {
-  auto& things = get_engine().get_module<ThingSystem>();
-  return things.get_player()->get_camera();
+  const mat4 virtual_view = camera_data.view * portal.dest_to_src;
+  const vec3 virtual_view_pos = vec3(inverse(virtual_view) * vec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+  const CameraData virtual_camera_data = CameraData
+  {
+    .position = camera_data.position,
+    .view = virtual_view,
+    .projection = camera_data.projection,
+    .visible_sectors = camera_data.visible_sectors,
+  };
+  CameraData clipped_virtual_camera_data = CameraData
+  {
+    .position = camera_data.position,
+    .view = virtual_view,
+    .projection = clip_projection(virtual_camera_data, portal),
+    .visible_sectors = camera_data.visible_sectors,
+  };
+
+  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+  glDepthMask(GL_TRUE);
+  glStencilFunc(GL_LEQUAL, 1, 0xFF);
+  glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+  render_sectors(virtual_camera_data);
+  render_entities(virtual_camera_data);
+}
+
+//==============================================================================
+mat4 GraphicsSystem::clip_projection(const CameraData& camera_data, const PortalRenderData& portal) const
+{
+  // following code was copied from:
+  // https://github.com/ThomasRinsma/opengl-game-test/blob/8363bbfcce30acc458b8faacc54c199279092f81/src/entity.h
+  // referenced by following article:
+  // https://th0mas.nl/2013/05/19/rendering-recursive-portals-with-opengl/
+
+  const vec3 normal = angleAxis(portal.rotation, VEC3_Y) * -VEC3_Z;
+  const vec3 camera_to_plane = portal.position - camera_data.position;
+  const f32 portal_rotation = (dot(camera_to_plane, normal) < 0.0f) ? portal.rotation + PI : portal.rotation;
+
+  const vec3 adjusted_normal = angleAxis(portal_rotation, VEC3_Y) * -VEC3_Z;
+  const vec4 clip_plane = inverse(transpose(camera_data.view)) * vec4(adjusted_normal, length(portal.position));
+
+  if (clip_plane.w > 0.0f)
+    return camera_data.projection;
+
+  const vec4 q = inverse(camera_data.projection) * vec4(sign(clip_plane.x), sign(clip_plane.y), 1.0f, 1.0f);
+  const vec4 c = clip_plane * (2.0f / (dot(clip_plane, q)));
+
+  mat4 result = camera_data.projection;
+  result[2] = c - result[2];
+
+  return result;
 }
 
 //==============================================================================
 void GraphicsSystem::build_map_gfx() const
 {
   const auto& m_map = get_engine().get_map();
-
   MeshManager& mesh_manager = MeshManager::instance();
-  const MaterialHandle& solid_material = get_solid_material();
 
   for (SectorID sid = 0; sid < m_map.sectors.size(); ++sid)
   {
@@ -1123,9 +1221,7 @@ void GraphicsSystem::build_map_gfx() const
     const u32  values_cnt = static_cast<u32>(vertices.size() * 3);
 
     const auto mesh = mesh_manager.create(ResLifetime::Game, vertex_data, values_cnt);
-    const auto model = Model(mesh, solid_material);
-
-    g_map_sector_models.push_back(model);
+    g_sector_meshes.push_back(mesh);
   }
 }
 

@@ -45,6 +45,18 @@ WallID next_wall(const MapSectors& map, SectorID sector, WallID wall)
   return next;
 }
 
+WallID get_wall_id(const MapSectors& map, SectorID sector_id, WallRelID relative_wall_id)
+{
+  NC_ASSERT(sector_id < map.sectors.size());
+  const SectorIntData& sector_data = map.sectors[sector_id].int_data;
+
+  NC_ASSERT(relative_wall_id < (sector_data.last_wall - sector_data.first_wall));
+  const WallID wall_id = sector_data.first_wall + relative_wall_id;
+
+  NC_ASSERT(wall_id < sector_data.last_wall);
+  return wall_id;
+}
+
 //==============================================================================
 // calls lambda(PortalID portal_id, WallID wall_index)
 template<typename F>
@@ -169,7 +181,7 @@ void modify_nuclidean_frustum(
   const auto projection_coeff = dot(p1_to_center, in_p1_to_p2_unit);
   const auto in_projection    = in_pt1 + in_p1_to_p2_unit * projection_coeff;
 
-  // positive if center is on the left side of the portal
+  // positive if pos is on the left side of the portal
   const auto in_sign        = sgn(cross(in_p1_to_p2_unit, p1_to_center));
   const auto center_to_proj = length(in_projection - frustum.center);
 
@@ -311,13 +323,13 @@ void MapSectors::query_visible_sectors_impl(
 
           if (std::find(begin_sector, end_sector, next_sector) != end_sector)
           {
-            // If the camera is positioned EXACTLY over the border of 2 sectors
+            // If the camera is positioned EXACTLY over the border of 2 visible_sectors
             // then we would jump back and forth between these two, because
             // each one would be visible from the second one.
-            // These sectors have been visited in the first iteration and we will
+            // These visible_sectors have been visited in the first iteration and we will
             // not return to them.
             // [Performance]: the list can be kept sorted, but usually there
-            // will be only 1-4 sectors
+            // will be only 1-4 visible_sectors
             return;
           }
 
@@ -409,7 +421,7 @@ void MapSectors::sector_to_vertices(
 {
   NC_ASSERT(sector_id < this->sectors.size());
 
-  // TODO: replace these later once we can do sectors with varying height
+  // TODO: replace these later once we can do visible_sectors with varying height
   constexpr f32 FLOOR_Y = 0.0f;
   constexpr f32 CEIL_Y  = 1.5f;
 
@@ -600,7 +612,7 @@ static void build_sector_grid(MapSectors& map)
 
   map.sector_grid.initialize(width_grid_cells, height_grid_cells, grid_min, grid_max);
 
-  // and now insert all the sectors
+  // and now insert all the visible_sectors
   for (SectorID sid = 0; sid < map.sectors.size(); ++sid)
   {
     const auto& sector = map.sectors[sid];
@@ -616,7 +628,7 @@ static void build_sector_grid(MapSectors& map)
 }
 
 //==============================================================================
-// TODO: we are doing 2x the amount of intersections (each 2 sectors are
+// TODO: we are doing 2x the amount of intersections (each 2 visible_sectors are
 // intersected 2 times instead of only once).
 // TODO: use some data structure instead of the grid
 static bool check_for_sector_overlaps(
@@ -641,7 +653,7 @@ static bool check_for_sector_overlaps(
   StatGridAABB2<SectorID> grid;
   grid.initialize(GRID_SIZE, GRID_SIZE, map_min, map_max);
 
-  // calculate bboxes for the sectors
+  // calculate bboxes for the visible_sectors
   std::vector<aabb2> sector_bboxes(sectors.size());
   for (SectorID sector_idx = 0; sector_idx < sectors.size(); ++sector_idx)
   {
@@ -665,7 +677,7 @@ static bool check_for_sector_overlaps(
     grid.insert(bbox, sector_idx);
   }
 
-  // check sectors overlap
+  // check visible_sectors overlap
   for (SectorID sector_idx = 0; sector_idx < sectors.size(); ++sector_idx)
   {
     const auto& bbox = sector_bboxes[sector_idx];
@@ -838,6 +850,65 @@ static bool resolve_non_convex_and_clockwise(
 }
 
 //==============================================================================
+static std::tuple<vec3, f32, vec3> compute_pos_rotation_scale(
+  const MapSectors& map,
+  SectorID sector_id,
+  WallID wall_id
+)
+{
+  // TODO: replace these later once we can do visible_sectors with varying height
+  constexpr f32 FLOOR_Y = 0.0f;
+  constexpr f32 CEIL_Y  = 1.5f;
+
+  const WallID next_wall = map_helpers::next_wall(map, sector_id, wall_id);
+  const vec2 position1 = map.walls[wall_id].pos;
+  const vec2 position2 = map.walls[next_wall].pos;
+
+  const vec2 center_2d = (position1 + position2) * 0.5f;
+  const vec3 center = vec3(center_2d.x, FLOOR_Y + (CEIL_Y - FLOOR_Y) / 2.0f, center_2d.y);
+
+  const vec2 direction = normalize(position2 - position1);
+  const f32  angle = atan2(direction.y, direction.x);
+
+  const f32 width = length(position2 - position1);
+  const f32 height = CEIL_Y - FLOOR_Y;
+  const vec3 scale = vec3(width, height, 1.0f);
+
+  return { center, angle, scale };
+}
+
+//==============================================================================
+static void compute_portal_render_data(MapSectors& map)
+{
+  for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)
+  {
+    map.for_each_portal_of_sector(sector_id, [&](PortalID portal_id, WallID wall_id)
+    {
+      if (map.portals[portal_id].portal_type != PortalType::non_euclidean)
+        return;
+
+      const auto [src_pos, src_rotation, src_scale] = compute_pos_rotation_scale(map, sector_id, wall_id);
+      const mat4 src_transform_no_scale = translate(mat4(1.0f), src_pos) * rotate(mat4(1.0f), src_rotation, VEC3_Y);
+      const mat4 src_transform = src_transform_no_scale * scale(mat4(1.0f), src_scale);
+
+      const SectorID dest_sector_id = map.walls[wall_id].portal_sector_id;
+      const WallRelID dest_rel_wall_id = map.portals[portal_id].nucledean_wall_index;
+      const WallID dest_wall_id = map_helpers::get_wall_id(map, dest_sector_id, dest_rel_wall_id);
+      const auto [dest_pos, dest_rotation, _] = compute_pos_rotation_scale(map, dest_sector_id, dest_wall_id);
+      const mat4 dest_transform_no_scale = translate(mat4(1.0f), dest_pos) * rotate(mat4(1.0f), dest_rotation, VEC3_Y);
+
+      map.portals[portal_id].render_data_index = static_cast<PortalRenderID>(map.portals_render_data.size());
+      map.portals_render_data.emplace_back(
+        src_rotation,
+        src_pos,
+        src_transform,
+        src_transform_no_scale * rotate(mat4(1.0f), PI, VEC3_Y) * inverse(dest_transform_no_scale)
+      );
+    });
+  }
+}
+
+//==============================================================================
 int build_map(
   const std::vector<vec2>&            points,
   const std::vector<SectorBuildData>& sectors,
@@ -853,11 +924,11 @@ int build_map(
   output.walls.clear();
   output.portals.clear();
 
-  // list of sectors for each point
+  // list of visible_sectors for each point
   std::vector<std::vector<SectorID>> points_to_sectors;
   points_to_sectors.resize(points.size());
 
-  // copy of the original sectors
+  // copy of the original visible_sectors
   auto temp_sectors = sectors;
 
   [[maybe_unused]]const bool assert_on_check_fail = flags & assert_on_fail;
@@ -870,7 +941,7 @@ int build_map(
   NC_ASSERT(points.size()  < MAX_U16);
   NC_ASSERT(sectors.size() < MAX_U16);
 
-  // Check for non convex and non-clockwise order sectors
+  // Check for non convex and non-clockwise order visible_sectors
   if (do_convexity_check)
   {
     if (NonConvexInfo oi; !resolve_non_convex_and_clockwise(points, temp_sectors, oi))
@@ -890,7 +961,7 @@ int build_map(
     }
   }
 
-  // store which points are used by which sectors
+  // store which points are used by which visible_sectors
   for (u64 i = 0; i < temp_sectors.size(); ++i)
   {
     for (auto&& wall : temp_sectors[i].points)
@@ -964,7 +1035,7 @@ int build_map(
         if (portal_with != INVALID_SECTOR_ID)
         {
           // This happens if nuclidean portal wall is shared between two
-          // sectors.. We do not allow this, as it is stupid
+          // visible_sectors.. We do not allow this, as it is stupid
           NC_ASSERT(!assert_on_check_fail);
           return false;
         }
@@ -999,11 +1070,13 @@ int build_map(
       output_sector.int_data.first_portal + total_portal_count);
   }
 
-  // now, there should be the same number of sectors in the output as on the input
+  // now, there should be the same number of visible_sectors in the output as on the input
   NC_ASSERT(output.sectors.size() == sectors.size());
 
   // and finally, build the grid
   build_sector_grid(output);
+
+  compute_portal_render_data(output);
 
   return true;
 }
@@ -1062,7 +1135,7 @@ static void make_random_square_maze_map(MapSectors& map, u32 size, u32 seed)
     }
   }
 
-  // and then the sectors
+  // and then the visible_sectors
   std::vector<map_building::SectorBuildData> sectors;
 
   for (u16 i = 0; i < size-1; ++i)
@@ -1110,7 +1183,7 @@ void benchmark_map_creation_squared(
     }
   }
 
-  // and then the sectors
+  // and then the visible_sectors
   std::vector<map_building::SectorBuildData> sectors;
 
   for (u16 i = 0; i < SIZE-1; ++i)

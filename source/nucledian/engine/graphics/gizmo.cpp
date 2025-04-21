@@ -145,14 +145,13 @@ void GizmoManager::update_ttls(f32 delta_seconds)
 void GizmoManager::draw_gizmos() const
 {
   auto& graphics_system = get_engine().get_module<GraphicsSystem>();
-
-  const MaterialHandle& solid_material = graphics_system.get_solid_material();
-  solid_material.use();
-
   const DebugCamera* camera = graphics_system.get_camera();
   if (camera == nullptr)
     return;
 
+  const MaterialHandle& solid_material = graphics_system.get_solid_material();
+  solid_material.use();
+  solid_material.set_uniform(shaders::solid::PROJECTION, graphics_system.get_default_projection());
   solid_material.set_uniform(shaders::solid::VIEW, camera->get_view());
   solid_material.set_uniform(shaders::solid::VIEW_POSITION, camera->get_position());
 
@@ -163,9 +162,9 @@ void GizmoManager::draw_gizmos() const
 
   for (const auto& [_, gizmo] : combined_view)
   {
-    solid_material.set_uniform(shaders::solid::TRANSFORM, gizmo.m_transform);
-    solid_material.set_uniform(shaders::solid::COLOR, gizmo.m_color);
     solid_material.set_uniform(shaders::solid::UNLIT, gizmo.m_mesh.get_draw_mode() == GL_LINES);
+    solid_material.set_uniform(shaders::solid::COLOR, gizmo.m_color);
+    solid_material.set_uniform(shaders::solid::TRANSFORM, gizmo.m_transform);
 
     glBindVertexArray(gizmo.m_mesh.get_vao());
     glDrawArrays(gizmo.m_mesh.get_draw_mode(), 0, gizmo.m_mesh.get_vertex_count());

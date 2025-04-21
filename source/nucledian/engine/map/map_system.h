@@ -4,17 +4,17 @@
 // MR says:
 // This is a primary data representation of the map during runtime
 // of the game. It is supposed to be fully static (no adding/removing
-// of sectors during runtime).
-// The map is composed of sectors, where each sector is a convex 2D
+// of visible_sectors during runtime).
+// The map is composed of visible_sectors, where each sector is a convex 2D
 // shape surrounded by walls. The ordering of the walls is in
 // counter-clockwise order.
-// Two sectors can be connected together by so-called "portal",
+// Two visible_sectors can be connected together by so-called "portal",
 // which acts as an edge on the graph whose vertices are the
-// individual sectors.
+// individual visible_sectors.
 // The purpose of this data representation is a fast traversal and
 // visibility culling. Therefore, the main use is in rendering and
 // enemy-player visibility checking.
-// The data of walls and sectors is tightly packed together in an
+// The data of walls and visible_sectors is tightly packed together in an
 // array for cache-friendly traversal.
 // It should be possible to fully derive the level geometry from
 // this data representation.
@@ -24,7 +24,7 @@
 // data.
 // Internal data is a set of data generated during building of the
 // map from other type of data. Do not touch internal data.
-// External data is a set of data associated with walls/sectors
+// External data is a set of data associated with walls/visible_sectors
 // that can be shared with other map representation (editor for
 // example). These are never changed during building of the sector.
 // If you want to associate some data with each sector/wall, then
@@ -34,6 +34,7 @@
 
 #include <types.h>
 #include <math/vector.h>
+#include <math/matrix.h>
 #include <intersect.h>
 #include <grid.h>
 
@@ -43,7 +44,7 @@
 namespace nc
 {
 // Portable data are a set of data that can be shared among two different
-// map representations. Put here anything that you want in sectors
+// map representations. Put here anything that you want in visible_sectors
 struct SectorExtData
 {
   TextureID floor_texture_id = INVALID_TEXTURE_ID;
@@ -100,9 +101,38 @@ namespace PortalType
 
 struct WallPortalData
 {
-  WallRelID wall_index           = 0;  // the index of the wall relative to us
-  WallRelID nucledean_wall_index = 0;  // only when the portal_type is PortalType::nuclidean
-  u8        portal_type          = PortalType::classic; // TODO: can be stored in a separate bitset table
+  WallRelID      wall_index           = 0;  // the index of the wall relative to us
+  WallRelID      nucledean_wall_index = 0;  // only when the portal_type is PortalType::nuclidean
+  u8             portal_type          = PortalType::classic; // TODO: can be stored in a separate bitset table
+  PortalRenderID render_data_index    = INVALID_PORTAL_RENDER_ID;
+};
+
+struct PortalRenderData
+{
+  // Rotation along the Y-axis.
+  const f32  rotation    = 0.0f;
+  const vec3 position         = VEC3_ZERO;
+  // Local to world.
+  const mat4 transform   = mat4(1.0f);
+  /*
+  * Compute the view matrix for the virtual camera looking through the destination portal.
+  * The camera’s relative offset to the source portal is preserved when projecting through.
+  *
+  * First, build the virtual camera’s world transform by:
+  *   1. Transforming the camera from local to world space.
+  *   2. Converting from world space into the source portal’s local space.
+  *   3. Rotating 180° around the up (Y) axis.
+  *   4. Transforming into the destination portal’s world space.
+  *
+  * To get the view matrix (i.e., the inverse world-to-local transform), apply the inverse sequence:
+  *   1. Destination portal: world-to-local.
+  *   2. Rotate 180° around the up (Y) axis (inverse of 180° is 180°).
+  *   3. Source portal: local-to-world.
+  *   4. Camera: world-to-local.
+  *
+  * dest_to_src represent steps 1. - 3.
+  */
+  const mat4 dest_to_src = mat4(1.0f);
 };
 
 // TODO: maybe organize each data type into separate table row instead of grouping them up?
@@ -113,10 +143,11 @@ struct MapSectors
   template<typename T>
   using column = std::vector<T>;
 
-  column<SectorData>      sectors;
-  column<WallData>        walls;
-  column<WallPortalData>  portals;
-  StatGridAABB2<SectorID> sector_grid;
+  column<SectorData>       sectors;
+  column<WallData>         walls;
+  column<WallPortalData>   portals;
+  column<PortalRenderData> portals_render_data;
+  StatGridAABB2<SectorID>  sector_grid;
 
   // TODO: do not use the retarded std::function, find a better alternative
   using TraverseVisitor = std::function<void(SectorID, Frustum2, PortalID)>;
@@ -135,7 +166,7 @@ struct MapSectors
 
   // Returns an id of a sector that lies on this position. If there is
   // no such sector then returns INVALID_SECTOR_ID. If there are multiple
-  // sectors covering this point (on sector edges) then one of them is
+  // visible_sectors covering this point (on sector edges) then one of them is
   // returned.
   SectorID get_sector_from_point(vec2 point) const;
 
@@ -206,6 +237,15 @@ int build_map(
   const std::vector<SectorBuildData>& sectors,
   MapSectors&                         output,
   MapBuildFlags                       flags = 0);
+
+}
+
+namespace map_helpers
+{
+
+WallID next_wall(const MapSectors& map, SectorID sector, WallID wall);
+
+WallID get_wall_id(const MapSectors& map, SectorID sector_id, WallRelID relative_wall_id);
 
 }
 

@@ -16,6 +16,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/constants.hpp>
+#include <glm/gtc/matrix_access.hpp>
 
 #include <glm/gtx/euler_angles.hpp>
 
