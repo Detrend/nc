@@ -4,6 +4,7 @@
 #include <engine/core/engine_module_types.h>
 #include <engine/core/module_event.h>
 #include <engine/input/input_system.h>
+#include <intersect.h>
 
 namespace nc
 {
@@ -53,7 +54,13 @@ void ThingSystem::on_event(ModuleEvent& event)
       bool didAttack = player.get_attack_state(curInputs, prevInputs, event.update.dt);
       if (didAttack)
       {
-        didAttack = true;
+        [[maybe_unused]] vec3 rayStart = player.get_position();
+        [[maybe_unused]] vec3 rayEnd = rayStart + player.get_look_direction() * 50.0f;
+
+        for (size_t i = 0; i < enemies.size(); i++)
+        {
+          
+        }
       }
 
       //CHECK FOR COLLISIONS

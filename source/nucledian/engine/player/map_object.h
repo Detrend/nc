@@ -2,6 +2,7 @@
 #include <types.h>
 #include <math/vector.h>
 #include <math/vector.h>
+#include <aabb.h>
 
 namespace nc {
 
@@ -27,5 +28,7 @@ namespace nc {
     bool collision;
 
     vec3 position;
+
+    aabb3 bounds;
   };
 }

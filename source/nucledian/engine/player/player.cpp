@@ -259,4 +259,10 @@ namespace nc
   {
     return position;
   }
+
+  vec3 Player::get_look_direction()
+  {
+    //looking direction
+    return angleAxis(angleYaw, VEC3_Y) * angleAxis(anglePitch, VEC3_X) * -VEC3_Z;
+  }
 }

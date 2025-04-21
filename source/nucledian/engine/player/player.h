@@ -30,6 +30,7 @@ public:
   DebugCamera* get_camera();
 
   vec3 get_position();
+  vec3 get_look_direction();
 
 private:
   void apply_acceleration(const nc::vec3& movement_direction, f32 delta_seconds);
