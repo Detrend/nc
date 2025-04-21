@@ -28,6 +28,7 @@ namespace nc
     void apply_velocity();
     void damage(int damage);
     void die();
+    bool can_attack();
   private:
     u32 m_entity_index = 0; //this will be overwritten anyway
     vec3 velocity;
@@ -38,5 +39,8 @@ namespace nc
     int maxHealth;
 
     bool alive = true;
+
+    float attackDelay = 3.0f;
+    float timeRemaining = 3.0f;
   };
 };

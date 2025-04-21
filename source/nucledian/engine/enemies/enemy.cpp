@@ -102,6 +102,8 @@ namespace nc
 
       break;
     case nc::chase:
+      timeRemaining -= delta_seconds;
+
       velocity = target_dir * 1.0f * delta_seconds;
       break;
     case nc::attack:
@@ -167,6 +169,16 @@ namespace nc
 
     g_appearance_components[m_entity_index].color = colors::GREEN;
     g_appearance_components[m_entity_index].transform = Transform(position, vec3(0.3f, 0.1f, 0.3f));
+  }
+
+  bool Enemy::can_attack()
+  {
+    if (timeRemaining <= 0.0f)
+    {
+      timeRemaining = attackDelay;
+      return true;
+    }
+    return false;
   }
 
 

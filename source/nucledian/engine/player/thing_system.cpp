@@ -54,6 +54,7 @@ void ThingSystem::on_event(ModuleEvent& event)
       }
 
       check_player_attack(curInputs, prevInputs, event);
+      check_enemy_attack(event);
 
       //CHECK FOR COLLISIONS
       for (size_t i = 0; i < enemies.size(); i++)
@@ -138,6 +139,30 @@ void ThingSystem::check_player_attack(GameInputs curInputs, GameInputs prevInput
       {
         enemies[index].damage(100);
       }
+    }
+  }
+}
+
+void ThingSystem::check_enemy_attack([[maybe_unused]] ModuleEvent event)
+{
+  for (int i = 0; i < enemies.size(); i++)
+  {
+    if (enemies[i].can_attack())
+    {
+      [[maybe_unused]] vec3 rayStart = enemies[i].get_position() + vec3(0, 0.5f, 0);
+      [[maybe_unused]] vec3 rayEnd = player.get_position() + vec3(0, player.get_view_height(), 0);
+
+      f32 wallDist;
+      vec3 wallNormal;
+      const auto& map = get_engine().get_map();
+      [[maybe_unused]] bool wallHit = map.raycast3d(rayStart, rayEnd, wallNormal, wallDist);
+
+      if (wallDist < 1.0f) 
+      {
+        return;
+      }
+
+      player.Damage(10);
     }
   }
 }
