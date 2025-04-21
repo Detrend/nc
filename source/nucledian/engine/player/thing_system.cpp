@@ -57,9 +57,26 @@ void ThingSystem::on_event(ModuleEvent& event)
         [[maybe_unused]] vec3 rayStart = player.get_position();
         [[maybe_unused]] vec3 rayEnd = rayStart + player.get_look_direction() * 50.0f;
 
+        f32 hitDistance = 999999;
+
         for (size_t i = 0; i < enemies.size(); i++)
         {
-          
+          const f32   width = enemies[i].get_width();
+          const f32   height = enemies[i].get_height() * 2.0f;
+          const vec3  position = enemies[i].get_position();
+
+          const aabb3 bbox = aabb3
+          {
+            position - vec3{width, 0.0f,   width},
+            position + vec3{width, height, width}
+          };
+
+          f32 out;
+          vec3 normal;
+          if (intersect::ray_aabb3(rayStart, rayEnd, bbox, out, normal))
+          {
+            hitDistance = out;
+          }
         }
       }
 
