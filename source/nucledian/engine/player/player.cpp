@@ -141,11 +141,6 @@ namespace nc
 
   void Player::apply_velocity()
   {
-    auto to_vec2 = [](vec3 in)
-    {
-      return vec2{in.x, in.z};
-    };
-
     const auto& map = get_engine().get_map();
 
     const f32 radius = 0.25f;
@@ -161,8 +156,8 @@ namespace nc
     {
       vec2 out_n;
       f32  out_t;
-      const auto from = to_vec2(position);
-      const auto dir  = to_vec2(velocity);
+      const auto from = position.xz();
+      const auto dir  = velocity.xz();
 
       const auto prev_velocity = velocity;
 
@@ -171,7 +166,7 @@ namespace nc
         const auto remaining  = dir * (1.0f - out_t);
         const auto projected  = out_n * dot(remaining, out_n);
         const auto projected3 = vec3{projected.x, 0.0f, projected.y};
-        velocity = velocity - MAGIC * projected3;
+        velocity -= MAGIC * projected3;
       }
 
       if (prev_velocity == velocity)
@@ -180,7 +175,33 @@ namespace nc
       }
     }
 
-    position += velocity;
+    f32                 _;
+    vec2                __;
+    MapSectors::Portals portals;
+    const auto ray_from = position.xz();
+    const auto ray_to   = (position + velocity).xz();
+    map.raycast2d_expanded(ray_from, ray_to, 0, __, _, &portals);
+
+    const bool should_transform = portals.size();
+    mat4 transformation = identity<mat4>();
+    for (const auto&[wid, sid] : portals)
+    {
+      const auto trans = map.calculate_portal_to_portal_projection(sid, wid);
+      transformation = trans * transformation;
+    }
+
+    if (should_transform)
+    {
+      position = (transformation * vec4{position + velocity, 1.0f}).xyz();
+      velocity = (transformation * vec4{velocity, 0.0f}).xyz();
+
+      quat rotate_transform = quat{mat3{transformation}};
+      angleYaw = rem_euclid(angleYaw + yaw(rotate_transform), 2 * PI);
+    }
+    else
+    {
+      position += velocity;
+    }
   }
 
   void Player::apply_acceleration(const nc::vec3& movement_direction, f32 delta_seconds)

@@ -395,7 +395,7 @@ void GraphicsSystem::query_visible_sectors(VisibleSectors& out) const
 
   NC_TODO("This does not work properly, because we can visit one sector multiple times");
   map.query_visible_sectors(out.position, out.direction, out.fov,
-    [&](SectorID sid, Frustum2 frst, PortalID)
+    [&](SectorID sid, Frustum2 frst, WallID)
   {
     out.sectors[sid].insert_frustum(frst);
   });
@@ -542,6 +542,7 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
   static bool show_visible_sectors = true;
   static bool show_sector_ids = false;
   static bool raycast2d_debug = false;
+  static bool inspect_nucledian_portals = false;
 
   static vec2 raycast_pt1 = vec2{ 0 };
   static f32  raycast_rot = 0.0f;
@@ -588,9 +589,10 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
     ImGui::Separator();
     ImGui::Checkbox("Show visible sectors", &show_visible_sectors);
     ImGui::Checkbox("Show sector frustums", &show_sector_frustums);
-    ImGui::Checkbox("Show sector IDs", &show_sector_ids);
+    ImGui::Checkbox("Show sector IDs",      &show_sector_ids);
     ImGui::Separator();
-    ImGui::Checkbox("Raycast 2D Debug", &raycast2d_debug);
+    ImGui::Checkbox("Raycast 2D Debug",          &raycast2d_debug);
+    ImGui::Checkbox("Inspect nuclidean portals", &inspect_nucledian_portals);
 
     if (raycast2d_debug)
     {
@@ -734,57 +736,30 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
   // then render the walls with white
   for (auto&& sector : map.sectors)
   {
+    constexpr color4 PORTAL_TYPES_COLORS[3] = {colors::WHITE, colors::RED, colors::GREEN};
+
     auto& repr = sector.int_data;
     const s32 wall_count = repr.last_wall - repr.first_wall;
     NC_ASSERT(wall_count >= 0);
 
-    for (WallID index = 0; index < wall_count; ++index)
+    for (WallRelID index = 0; index < wall_count; ++index)
     {
-      WallID next_index = (index + 1) % wall_count;
-      WallID index_in_arr = repr.first_wall + index;
-      WallID next_in_arr = repr.first_wall + next_index;
-      NC_ASSERT(index_in_arr < map.walls.size());
-      NC_ASSERT(next_in_arr < map.walls.size());
-
-      const auto& wall1 = map.walls[index_in_arr];
-      const auto& wall2 = map.walls[next_in_arr];
-      debug_helpers::draw_line(
-        level_space_to_screen_space(wall1.pos),
-        level_space_to_screen_space(wall2.pos),
-        colors::WHITE
-      );
-    }
-  }
-
-  // and then render portals with red
-  for (auto&& sector : map.sectors)
-  {
-    auto& repr = sector.int_data;
-    const s32 wall_count = repr.last_wall - repr.first_wall;
-    const s32 portal_count = repr.last_portal - repr.first_portal;
-    NC_ASSERT(portal_count >= 0);
-    NC_ASSERT(wall_count >= 0);
-
-    for (WallID index = 0; index < portal_count; ++index)
-    {
-      const std::size_t portal_index = static_cast<std::size_t>(repr.first_portal + index);
-      WallID index_in_arr = map.portals[portal_index].wall_index + repr.first_wall;
-      WallID next_in_arr = index_in_arr + 1;
-      if (next_in_arr >= repr.last_wall)
-      {
-        next_in_arr = static_cast<WallID>(next_in_arr - wall_count);
-      }
-
+      WallRelID next_index   = (index + 1) % wall_count;
+      WallID    index_in_arr = repr.first_wall + index;
+      WallID    next_in_arr  = repr.first_wall + next_index;
       NC_ASSERT(index_in_arr < map.walls.size());
       NC_ASSERT(next_in_arr < map.walls.size());
 
       const auto& wall1 = map.walls[index_in_arr];
       const auto& wall2 = map.walls[next_in_arr];
 
+      const auto portal_type = wall1.get_portal_type();
+      const auto color = PORTAL_TYPES_COLORS[portal_type];
+
       debug_helpers::draw_line(
         level_space_to_screen_space(wall1.pos),
         level_space_to_screen_space(wall2.pos),
-        colors::RED
+        color
       );
     }
   }

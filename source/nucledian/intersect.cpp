@@ -283,11 +283,27 @@ bool segment_segment_expanded(
   vec2  end_b,
   f32   expand_b,
   vec2& out_normal,
-  f32& out_coeff)
+  f32&  out_coeff)
 {
   NC_ASSERT(start_a != end_a);
   NC_ASSERT(start_b != end_b);
-  NC_ASSERT(expand_b > 0.0f); // use normal intersection if the parameter is 0
+  NC_ASSERT(expand_b >= 0.0f); // use normal intersection if the parameter is 0
+
+  if (expand_b == 0.0f)
+  {
+    f32 _;
+    const bool intersects = segment_segment(start_a, end_a, start_b, end_b, out_coeff, _);
+
+    const vec2 dir = end_a - start_a;
+
+    out_normal = flipped(normalize(end_b - start_b));
+    if (dot(dir, out_normal) > 0.0f)
+    {
+      out_normal = -out_normal;
+    }
+
+    return intersects && out_coeff >= 0.0f && out_coeff <= 1.0f;
+  }
 
   f32  cs_coeff = 0, ce_coeff = 0;
   f32 ll_coeff, lr_coeff, _;
@@ -306,7 +322,7 @@ bool segment_segment_expanded(
 
   auto take_best = [&](bool intersection, f32 coeff, vec2 norm)
   {
-    if (intersection && coeff < out_coeff)
+    if (intersection && coeff < out_coeff && coeff >= 0.0f && coeff <= 1.0f)
     {
       out_coeff = coeff;
       out_normal = norm;

@@ -53,17 +53,19 @@ bool for_each_portal(const MapSectors& map, SectorID sector_id, F&& lambda)
   NC_ASSERT(sector_id < map.sectors.size());
   const auto& repr = map.sectors[sector_id].int_data;
 
-  for (auto pid = repr.first_portal; pid < repr.last_portal; ++pid)
+  bool at_least_one = false;
+  for (auto wid = repr.first_wall; wid < repr.last_wall; ++wid)
   {
-    NC_ASSERT(pid < map.walls.size());
+    NC_ASSERT(wid < map.walls.size());
 
-    const WallID wall_index = repr.first_wall + map.portals[pid].wall_index;
-    NC_ASSERT(wall_index < repr.last_wall);
-
-    lambda(pid, wall_index);
+    if (map.walls[wid].get_portal_type() != PortalType::none)
+    {
+      at_least_one = true;
+      lambda(wid);
+    }
   }
 
-  return repr.first_portal < repr.last_portal;
+  return at_least_one;
 }
 
 //==============================================================================
@@ -239,7 +241,7 @@ void MapSectors::query_visible_sectors_impl(
   const FrustumBuffer& input_frustums,
   TraverseVisitor      visitor,
   u8                   recursion_depth,
-  PortalID             source_portal) const
+  WallID               source_portal) const
 {
   NC_ASSERT(visitor);
   NC_ASSERT(input_frustums.frustum_slots[0] != INVALID_FRUSTUM);
@@ -261,7 +263,7 @@ void MapSectors::query_visible_sectors_impl(
     SectorID      sector;
     FrustumBuffer buffer;
   };
-  std::map<PortalID, NucPortalStruct> nuclidean_portals;
+  std::map<WallID, NucPortalStruct> nuclidean_portals;
 
   const auto* begin_sector = start_sector;
   const auto* end_sector   = begin_sector + start_sector_cnt;
@@ -296,11 +298,11 @@ void MapSectors::query_visible_sectors_impl(
 
         // now traverse all portals of the sector and check if we can slide
         // into a neighbor sector
-        map_helpers::for_each_portal(*this, id, [&](PortalID portal_idx, WallID wall1_idx)
+        map_helpers::for_each_portal(*this, id, [&](WallID wall1_idx)
         {
           const auto wall2_idx    = map_helpers::next_wall(*this, id, wall1_idx);
           const auto next_sector  = walls[wall1_idx].portal_sector_id;
-          const bool is_nuclidean = portals[portal_idx].portal_type == PortalType::non_euclidean;
+          const bool is_nuclidean = walls[wall1_idx].get_portal_type() == PortalType::non_euclidean;
           NC_ASSERT(next_sector != INVALID_SECTOR_ID);
 
           const auto p1 = walls[wall1_idx].pos;
@@ -345,7 +347,7 @@ void MapSectors::query_visible_sectors_impl(
           // rotate the nucledean frustum and shift it relatively to the portal's view
           if (is_nuclidean) [[unlikely]]
           {
-            const WallID   out_wall   = portals[portal_idx].nucledean_wall_index + sectors[next_sector].int_data.first_wall;
+            const WallID   out_wall   = walls[wall1_idx].nc_portal_wall_id;
             const SectorID out_sector = next_sector;
 
             // weird non-euclidean portal, store for later
@@ -358,13 +360,13 @@ void MapSectors::query_visible_sectors_impl(
               out_sector);
 
             // either creates and inserts or just merges in
-            if (nuclidean_portals.contains(portal_idx))
+            if (nuclidean_portals.contains(wall1_idx))
             {
-              NC_ASSERT(nuclidean_portals[portal_idx].sector == out_sector);
+              NC_ASSERT(nuclidean_portals[wall1_idx].sector == out_sector);
             }
 
-            nuclidean_portals[portal_idx].buffer.insert_frustum(new_frustum);
-            nuclidean_portals[portal_idx].sector = out_sector;
+            nuclidean_portals[wall1_idx].buffer.insert_frustum(new_frustum);
+            nuclidean_portals[wall1_idx].sector = out_sector;
           }
           else
           {
@@ -379,7 +381,7 @@ void MapSectors::query_visible_sectors_impl(
   // Now lets go to other dimensions in DFS manner
   for (const auto&[portal_id, data] : nuclidean_portals)
   {
-    this->query_visible_sectors_impl(&data.sector, 1, data.buffer, [&](SectorID sid, Frustum2 f, PortalID pid)
+    this->query_visible_sectors_impl(&data.sector, 1, data.buffer, [&](SectorID sid, Frustum2 f, WallID pid)
     {
       visitor(sid, f, pid);
     }, recursion_depth-1, portal_id);
@@ -389,7 +391,7 @@ void MapSectors::query_visible_sectors_impl(
 //==============================================================================
 bool MapSectors::for_each_portal_of_sector(
   SectorID      sector,
-  PortalVisitor visitor) const
+  WallVisitor visitor) const
 {
   return map_helpers::for_each_portal(*this, sector, visitor);
 }
@@ -400,6 +402,62 @@ SectorID MapSectors::get_sector_from_point(vec2 point) const
   SectorID sector = INVALID_SECTOR_ID;
   map_helpers::get_sectors_from_point(*this, point, &sector, 1);
   return sector;
+}
+
+//==============================================================================
+mat4 MapSectors::calculate_portal_to_portal_projection(
+  SectorID sector_from,
+  WallID   wall_from1) const
+{
+  NC_ASSERT(sector_from < this->sectors.size());
+  NC_ASSERT(wall_from1   < this->walls.size());
+
+  const auto& wall   = this->walls[wall_from1];
+  SectorID sector_to = wall.portal_sector_id;
+
+  NC_ASSERT(sector_to != INVALID_SECTOR_ID);
+  NC_ASSERT(wall.get_portal_type() == PortalType::non_euclidean);
+
+  const auto wall_from2 = map_helpers::next_wall(*this, sector_from, wall_from1);
+
+  const WallID wall_to1 = this->sectors[sector_to].int_data.first_wall + wall.nc_portal_wall_id;
+  const WallID wall_to2 = map_helpers::next_wall(*this, sector_to, wall_to1);
+
+  const auto from_p1 = this->walls[wall_from1].pos;
+  const auto from_p2 = this->walls[wall_from2].pos;
+  const auto to_p1   = this->walls[wall_to1  ].pos;
+  const auto to_p2   = this->walls[wall_to2  ].pos;
+
+  NC_ASSERT(from_p1 != from_p2);
+  NC_ASSERT(to_p1   != to_p2);
+
+  auto calc_wall_space_2_world_space = [](vec2 p1, vec2 p2, f32 h) -> mat4
+  {
+    const vec3 pos3 = vec3{p1.x, h, p1.y};
+    const vec2 dir2 = normalize(p2 - p1);
+    const vec2 nor2 = -flipped(dir2);
+
+    return mat4
+    {
+      vec4{dir2.x, 0.0f, dir2.y, 0.0f},
+      vec4{0.0f,   1.0f, 0.0f,   0.0f},
+      vec4{nor2.x, 0.0f, nor2.y, 0.0f},
+      vec4{pos3,                 1.0f},
+    };
+  };
+
+  const mat4 wall_from_space_2_world_space
+    = calc_wall_space_2_world_space(from_p1, from_p2, SECTOR_CEILING_Y);
+
+  const mat4 world_space_2_wall_from_space =
+    inverse(wall_from_space_2_world_space);
+
+  const mat4 wall_to_space_2_world_space
+    = calc_wall_space_2_world_space(to_p2, to_p1, SECTOR_CEILING_Y);
+
+  const mat4 transition_matrix
+    = wall_to_space_2_world_space * world_space_2_wall_from_space;
+  return transition_matrix;
 }
 
 //==============================================================================
@@ -497,7 +555,12 @@ void MapSectors::sector_to_vertices(
 
 //==============================================================================
 bool MapSectors::raycast2d_expanded(
-  vec2 from, vec2 to, f32 expand, vec2& out_normal, f32& out_coeff) const
+  vec2     from,
+  vec2     to,
+  f32      expand,
+  vec2&    out_normal,
+  f32&     out_coeff,
+  Portals* out_portals) const
 {
   NC_ASSERT(expand >= 0.0f);
 
@@ -510,6 +573,8 @@ bool MapSectors::raycast2d_expanded(
   bbox.insert_point(bbox.min - vec2{expand});
   bbox.insert_point(bbox.max + vec2{expand});
 
+  const auto raycast_direction = to - from;
+
   // TODO[perf]: Add a "query_ray" option
   std::set<SectorID> overlap_sectors;
   this->sector_grid.query_aabb(bbox, [&](aabb2 /*bb*/, SectorID sid)
@@ -518,9 +583,10 @@ bool MapSectors::raycast2d_expanded(
     return false;
   });
 
+  SectorID portal_sector  = INVALID_SECTOR_ID;
+  WallID   nc_portal_wall = INVALID_WALL_ID;
   out_coeff  = FLT_MAX;
   out_normal = vec2{0};
-  f32 count  = 1.0f;
 
   for (auto sector_id : overlap_sectors)
   {
@@ -530,42 +596,103 @@ bool MapSectors::raycast2d_expanded(
 
     // TODO[perf]: In theory, we do not need to check all the walls.
     // Once we hit one all other walls further away can be ignored.
-    for (auto wid = begin_wall; wid < end_wall; ++wid)
+    for (WallID wall_id = begin_wall; wall_id < end_wall; ++wall_id)
     {
-      const auto next_wid = map_helpers::next_wall(*this, sector_id, wid);
-      const auto& w1 = this->walls[wid];
+      const auto next_wid = map_helpers::next_wall(*this, sector_id, wall_id);
+      const auto& w1 = this->walls[wall_id];
       const auto& w2 = this->walls[next_wid];
 
-      const bool is_portal = w1.portal_sector_id != INVALID_SECTOR_ID;
-      if (is_portal)
+      const auto portal_type = w1.get_portal_type();
+
+      if (portal_type == PortalType::classic)
       {
-        // Ignore this wall, it is a portal
+        // ignore this wall, it is a portal
         continue;
       }
 
-      const auto& p1 = w1.pos;
-      const auto& p2 = w2.pos;
+      const auto p1 = w1.pos;
+      const auto p2 = w2.pos;
+      NC_ASSERT(p1 != p2);
 
-      f32  coeff  = FLT_MAX;
-      vec2 normal = vec2{0};
-      if (intersect::segment_segment_expanded(from, to, p1, p2, expand, normal, coeff))
+      const auto wall_normal = flipped(p2 - p1);
+      if (dot(wall_normal, raycast_direction) >= 0.0f)
       {
-        if (coeff == out_coeff)
+        // ignore wall, it is turned away from us
+        continue;
+      }
+
+      f32  c = FLT_MAX;
+      vec2 n = vec2{0};
+      if (intersect::segment_segment_expanded(from, to, p1, p2, expand, n, c) && c < out_coeff)
+      {
+        out_coeff  = c;
+        out_normal = n;
+
+        if (portal_type == PortalType::non_euclidean)
         {
-          out_normal = out_normal + normal;
-          count += 1.0f;
+          // store the information that this is a portal
+          portal_sector  = sector_id;
+          nc_portal_wall = wall_id;
         }
-        else if (coeff < out_coeff)
+        else
         {
-          out_coeff  = coeff;
-          out_normal = normal;
-          count      = 1.0f;
+          // reset the portal info
+          portal_sector  = INVALID_SECTOR_ID;
+          nc_portal_wall = INVALID_WALL_ID;
         }
       }
     }
   }
 
-  out_normal = out_normal / count;
+  if (out_coeff != FLT_MAX && nc_portal_wall != INVALID_WALL_ID)
+  {
+    NC_ASSERT(out_coeff >= 0.0f && out_coeff <= 1.0f);
+
+    const auto hit_point = from + (to - from) * out_coeff;
+    const auto new_from_non_projected = hit_point;
+    const auto new_to_non_projected   = to;
+
+    const auto transform = this->calculate_portal_to_portal_projection
+    (
+      portal_sector,
+      nc_portal_wall
+    );
+
+    const vec2 new_from
+      = (transform * vec4{new_from_non_projected.x, 0.0f, new_from_non_projected.y, 1.0f}).xz();
+
+    const vec2 new_to
+      = (transform * vec4{new_to_non_projected.x, 0.0f, new_to_non_projected.y, 1.0f}).xz();
+
+    if (out_portals)
+    {
+      out_portals->push_back(PortalSector
+      {
+        .wall_id   = nc_portal_wall,
+        .sector_id = portal_sector,
+      });
+    }
+
+    f32  new_out_coeff;
+    vec2 new_out_norm;
+    if (this->raycast2d_expanded(new_from, new_to, expand, new_out_norm, new_out_coeff, out_portals))
+    {
+      // recalculate the out_coeff and out_normal
+      out_coeff += (1.0f - out_coeff) * new_out_coeff;
+
+      // out normal has to be projected to our space (not the other portal space)
+      const auto transform_inv = inverse(transform);
+      const auto reproject_norm
+        = (transform_inv * vec4{new_out_norm.x, 0.0f, new_out_norm.y, 0.0f}).xz();
+
+      out_normal = reproject_norm;
+    }
+    else
+    {
+      // we did not hit anything behind the portal
+      out_coeff = FLT_MAX;
+    }
+  }
 
   return out_coeff != FLT_MAX;
 }
@@ -629,11 +756,11 @@ bool MapSectors::raycast3d(vec3 from, vec3 to, vec3& out_normal, f32& out_coeff)
     // Once we hit one all other walls further away can be ignored.
     for (auto wid = begin_wall; wid < end_wall; ++wid)
     {
-      const auto next_wid = map_helpers::next_wall(*this, sector_id, wid);
+      const auto  next_wid = map_helpers::next_wall(*this, sector_id, wid);
       const auto& w1 = this->walls[wid];
       const auto& w2 = this->walls[next_wid];
 
-      const bool is_portal = w1.portal_sector_id != INVALID_SECTOR_ID;
+      const bool is_portal = w1.get_portal_type() == PortalType::classic;
       if (is_portal)
       {
         // Ignore this wall, it is a portal
@@ -656,6 +783,26 @@ bool MapSectors::raycast3d(vec3 from, vec3 to, vec3& out_normal, f32& out_coeff)
   out_normal = out_normal / count;
 
   return out_coeff != FLT_MAX;
+}
+
+//==============================================================================
+PortType WallData::get_portal_type() const
+{
+  if (this->portal_sector_id == INVALID_SECTOR_ID)
+  {
+    // this is a wall
+    return PortalType::none;
+  }
+  else if (this->nc_portal_wall_id == INVALID_WALL_REL_ID)
+  {
+    // normal portal
+    return PortalType::classic;
+  }
+  else
+  {
+    // nuclidean portal
+    return PortalType::non_euclidean;
+  }
 }
 
 }
@@ -816,15 +963,6 @@ static void resolve_clockwise_wall_order(SectorBuildData& sector)
 {
   // just revert the direction of the walls..
   std::reverse(sector.points.begin(), sector.points.end());
-
-  // and make sure that we remap the portable data properly
-  for (u32 index = 0; index < sector.points.size(); ++index)
-  {
-    u32 next_index = (index+1) % sector.points.size();
-    std::swap(
-      sector.points[index].ext_data,
-      sector.points[next_index].ext_data);
-  }
 }
 
 //==============================================================================
@@ -935,7 +1073,6 @@ int build_map(
 
   output.sectors.clear();
   output.walls.clear();
-  output.portals.clear();
 
   // list of sectors for each point
   std::vector<std::vector<SectorID>> points_to_sectors;
@@ -979,8 +1116,6 @@ int build_map(
   {
     for (auto&& wall : temp_sectors[i].points)
     {
-      // TODO: can be kept sorted, so that later it takes
-      // less time to find
       points_to_sectors[wall.point_index].push_back(static_cast<u16>(i));
     }
   }
@@ -991,20 +1126,11 @@ int build_map(
     auto&& sector = temp_sectors[sector_id];
     auto& output_sector = output.sectors.emplace_back();
 
-    // copy the portable data
-    output_sector.ext_data = sector.ext_data;
-
     const u32 total_wall_count = static_cast<u32>(sector.points.size());
-    // we do not know this in advance, but
-    // need if to calculate the offset into the ext_dataal array
-    u32 total_portal_count = 0;   
 
     output_sector.int_data.first_wall = static_cast<WallID>(output.walls.size());
     output_sector.int_data.last_wall  = static_cast<WallID>(
       output_sector.int_data.first_wall + total_wall_count);
-
-    output_sector.int_data.first_portal = static_cast<WallID>(output.portals.size());
-    output_sector.int_data.last_portal  = output_sector.int_data.first_portal;
 
     // cycle through all walls and push them into the array
     NC_ASSERT(sector.points.size() <= MAX_WALLS_PER_SECTOR);
@@ -1030,7 +1156,6 @@ int build_map(
         auto& neighbor_sectors_of_p2 = points_to_sectors[next_point_index];
         const auto& b = neighbor_sectors_of_p2.begin();
         const auto& e = neighbor_sectors_of_p2.end();
-        // TODO: the sequence can be kept sorted for faster search
         const bool whole_wall = std::find(b, e, used_sector_id) != e;
         if (whole_wall)
         {
@@ -1042,45 +1167,29 @@ int build_map(
       // Check if this is not a nuclidean portal..
       const auto nuclidean_sector_id = sector.points[wall_index].nc_portal_sector_index;
       const bool is_nuclidean_portal = nuclidean_sector_id != INVALID_SECTOR_ID;
-      WallRelID nuclidean_wall_idx = INVALID_WALL_REL_ID;
+      WallRelID nuclidean_wall_rel_idx = INVALID_WALL_REL_ID;
       if (is_nuclidean_portal)
       {
         if (portal_with != INVALID_SECTOR_ID)
         {
-          // This happens if nuclidean portal wall is shared between two
-          // sectors.. We do not allow this, as it is stupid
+          // This happens if the portal is both nuclidean and non-nuclidean..
+          // We do not allow this
           NC_ASSERT(!assert_on_check_fail);
           return false;
         }
 
-        portal_with        = nuclidean_sector_id;
-        nuclidean_wall_idx = sector.points[wall_index].nc_portal_point_index;
+        portal_with            = nuclidean_sector_id;
+        nuclidean_wall_rel_idx = sector.points[wall_index].nc_portal_point_index;
       }
 
       // Add a new wall
       output.walls.push_back(WallData
       {
-        .pos              = points[point_index],
-        .portal_sector_id = portal_with,
-        .ext_data         = sector.points[wall_index].ext_data,
+        .pos               = points[point_index],
+        .portal_sector_id  = portal_with,
+        .nc_portal_wall_id = nuclidean_wall_rel_idx,
       });
-
-      // And make it possibly a portal
-      if (portal_with != INVALID_SECTOR_ID)
-      {
-        total_portal_count += 1;
-        output.portals.push_back(WallPortalData
-        {
-          // is non-zero because we push a new wall above
-          .wall_index           = wall_index,
-          .nucledean_wall_index = nuclidean_wall_idx,
-          .portal_type          = is_nuclidean_portal ? PortalType::non_euclidean : PortalType::classic,
-        });
-      }
     }
-
-    output_sector.int_data.last_portal = static_cast<WallID>(
-      output_sector.int_data.first_portal + total_portal_count);
   }
 
   // now, there should be the same number of sectors in the output as on the input
@@ -1245,7 +1354,7 @@ void benchmark_visibility_query(benchmark::State& state)
   SectorID last_sector = INVALID_SECTOR_ID;
   for (auto _ : state)
   {
-    map.query_visible_sectors(pt, vec2{1, 0}, Frustum2::FULL_ANGLE, [&](SectorID id, Frustum2, PortalID)
+    map.query_visible_sectors(pt, vec2{1, 0}, Frustum2::FULL_ANGLE, [&](SectorID id, Frustum2, WallID)
     {
       last_sector = id;
     });

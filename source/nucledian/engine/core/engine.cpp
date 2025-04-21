@@ -299,21 +299,6 @@ static void test_make_sector(
   WallRelID                                   portal_wall_id_to = 0,
   SectorID                                    portal_sector     = INVALID_SECTOR_ID)
 {
-  auto wall_port = WallExtData
-  {
-    .texture_id = 0,
-    .texture_offset_x = 0,
-    .texture_offset_y = 0
-  };
-
-  auto sector_port = SectorExtData
-  {
-    .floor_texture_id = 1,
-    .ceil_texture_id  = 0,
-    .floor_height     = 0,
-    .ceil_height      = 13,
-  };
-
   std::vector<map_building::WallBuildData> walls;
 
   for (int i = 0; i < static_cast<int>(points.size()); ++i)
@@ -323,7 +308,6 @@ static void test_make_sector(
     walls.push_back(map_building::WallBuildData
     {
       .point_index            = p,
-      .ext_data               = wall_port,
       .nc_portal_point_index  = is_portal ? portal_wall_id_to : INVALID_WALL_REL_ID,
       .nc_portal_sector_index = is_portal ? portal_sector     : INVALID_SECTOR_ID,
     });
@@ -331,8 +315,7 @@ static void test_make_sector(
 
   out.push_back(map_building::SectorBuildData
   {
-    .points   = std::move(walls),
-    .ext_data = sector_port,
+    .points = std::move(walls),
   });
 }
 
@@ -391,7 +374,7 @@ static void test_make_sector(
   test_make_sector({23, 13, 14, 15, 16, 24}, sectors);
   test_make_sector({17, 21, 24, 16}, sectors);
   test_make_sector({21, 22, 23, 24}, sectors);
-  test_make_sector({25, 26, 27, 28}, sectors);
+  test_make_sector({25, 26, 27, 28}, sectors, 0, 1, 4);
 
   using namespace map_building::MapBuildFlag;
 
@@ -456,8 +439,8 @@ static void test_make_sector(
 void Engine::build_map_and_sectors()
 {
   m_map = std::make_unique<MapSectors>();
-  make_random_square_maze_map(*m_map, 32, 0);
-  //make_cool_looking_map(*m_map);
+  //make_random_square_maze_map(*m_map, 32, 0);
+  make_cool_looking_map(*m_map);
 
   // geometry dump
   #if 0

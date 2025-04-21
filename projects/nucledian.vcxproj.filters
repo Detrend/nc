@@ -110,6 +110,7 @@
     <ClInclude Include="..\source\nucledian\math\quaternion.h" />
     <ClInclude Include="..\source\nucledian\math\utils.h" />
     <ClInclude Include="..\source\nucledian\math\vector.h" />
+    <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />

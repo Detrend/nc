@@ -34,6 +34,7 @@
 
 #include <types.h>
 #include <math/vector.h>
+#include <math/matrix.h>
 #include <intersect.h>
 #include <grid.h>
 
@@ -42,23 +43,6 @@
 
 namespace nc
 {
-// Portable data are a set of data that can be shared among two different
-// map representations. Put here anything that you want in sectors
-struct SectorExtData
-{
-  TextureID floor_texture_id = INVALID_TEXTURE_ID;
-  TextureID ceil_texture_id  = INVALID_TEXTURE_ID;
-  f32       floor_height     = 0;
-  f32       ceil_height      = 0;
-};
-
-// Put here anything you want in each wall
-struct WallExtData
-{
-  TextureID texture_id;
-  u8        texture_offset_x;
-  u8        texture_offset_y;
-};
 
 // Internal data of this map representation.
 struct SectorIntData
@@ -67,42 +51,36 @@ struct SectorIntData
   // To get number of walls in a sector you use
   // last_wall - first_wall
   // If first_wall == last_wall then the sector has no walls
-  WallID   first_wall   = INVALID_WALL_ID; // [0..total_wall_count]
-  WallID   last_wall    = INVALID_WALL_ID; // [first_wall..total_wall_count]
-  PortalID first_portal = INVALID_WALL_ID; // [0..total_portal_count]
-  PortalID last_portal  = INVALID_WALL_ID; // [first_portal..total_portal_count]
+  WallID   first_wall = INVALID_WALL_ID; // [0..total_wall_count]
+  WallID   last_wall  = INVALID_WALL_ID; // [first_wall..total_wall_count]
 };
 
 // Each sector is comprised of internal data
 struct SectorData
 {
   SectorIntData int_data;
-  SectorExtData ext_data;
 };
+
+using PortType = u8;
+namespace PortalType
+{
+  enum evalue : PortType
+  {
+    none = 0,      // a wall
+    classic,       // normal portal between two neighboring sectors
+    non_euclidean, // non euclidean portal
+  };
+}
 
 struct WallData
 {
   // The wall starts here and ends in the same point as the next
   // wall begins
-  vec2        pos = vec2{0};
-  SectorID    portal_sector_id = INVALID_SECTOR_ID; // if is portal
-  WallExtData ext_data;
-};
+  vec2      pos = vec2{0};
+  SectorID  portal_sector_id  = INVALID_SECTOR_ID; // if is portal
+  WallRelID nc_portal_wall_id = INVALID_WALL_REL_ID;
 
-namespace PortalType
-{
-  enum evalue : u8
-  {
-    classic       = 0,
-    non_euclidean,
-  };
-}
-
-struct WallPortalData
-{
-  WallRelID wall_index           = 0;  // the index of the wall relative to us
-  WallRelID nucledean_wall_index = 0;  // only when the portal_type is PortalType::nuclidean
-  u8        portal_type          = PortalType::classic; // TODO: can be stored in a separate bitset table
+  PortType get_portal_type() const;
 };
 
 // TODO: maybe organize each data type into separate table row instead of grouping them up?
@@ -115,7 +93,6 @@ struct MapSectors
 
   column<SectorData>      sectors;
   column<WallData>        walls;
-  column<WallPortalData>  portals;
   StatGridAABB2<SectorID> sector_grid;
 
   // TODO: replace these later once we can do sectors with varying height
@@ -123,8 +100,8 @@ struct MapSectors
   static constexpr f32 SECTOR_CEILING_Y = 1.5f;
 
   // TODO: do not use the retarded std::function, find a better alternative
-  using TraverseVisitor = std::function<void(SectorID, Frustum2, PortalID)>;
-  using PortalVisitor   = std::function<void(PortalID, WallID)>;
+  using TraverseVisitor = std::function<void(SectorID, Frustum2, WallID)>;
+  using WallVisitor     = std::function<void(WallID)>;
   // Traverses the sector system in a BFS order and calls the visitor
   // for each sector with a frustum that describes which parts of the
   // sector are visible.
@@ -135,7 +112,7 @@ struct MapSectors
     TraverseVisitor visitor) const;    // callback function that is called for each visited sector
 
   // Iterates all portals of this sector
-  bool for_each_portal_of_sector(SectorID sector, PortalVisitor visitor) const;
+  bool for_each_portal_of_sector(SectorID sector, WallVisitor visitor) const;
 
   // Returns an id of a sector that lies on this position. If there is
   // no such sector then returns INVALID_SECTOR_ID. If there are multiple
@@ -143,11 +120,28 @@ struct MapSectors
   // returned.
   SectorID get_sector_from_point(vec2 point) const;
 
+  mat4 calculate_portal_to_portal_projection(
+    SectorID from_sector,
+    WallID   from_portal) const;
+
   void sector_to_vertices(
     SectorID           sector_id,
     std::vector<vec3>& vertices_out) const;
 
-  bool raycast2d_expanded(vec2 from, vec2 to, f32 expand, vec2& out_normal, f32& out_coeff) const;
+  struct PortalSector
+  {
+    WallID   wall_id;
+    SectorID sector_id;
+  };
+  using Portals = std::vector<PortalSector>;
+
+  bool raycast2d_expanded(
+    vec2     from,
+    vec2     to,
+    f32      expand,
+    vec2&    out_normal,
+    f32&     out_coeff,
+    Portals* out_portals = nullptr) const;
 
   bool raycast3d(vec3 from, vec3 to, vec3& out_normal, f32& out_coeff) const;
 
@@ -158,7 +152,7 @@ private:
     const FrustumBuffer& frustum,
     TraverseVisitor      visitor,
     u8                   recursion_depth = 4,
-    PortalID             source_portal   = INVALID_PORTAL_ID) const;
+    WallID               source_portal   = INVALID_WALL_ID) const;
 };
 
 namespace map_building
@@ -166,16 +160,14 @@ namespace map_building
 
 struct WallBuildData
 {
-  WallID      point_index = 0;
-  WallExtData ext_data;
-  WallRelID   nc_portal_point_index  = 0;
-  SectorID    nc_portal_sector_index = INVALID_SECTOR_ID;
+  WallID    point_index = 0;
+  WallRelID nc_portal_point_index  = 0;
+  SectorID  nc_portal_sector_index = INVALID_SECTOR_ID;
 };
 
 struct SectorBuildData
 {
   std::vector<WallBuildData> points;
-  SectorExtData              ext_data;
 };
 
 struct OverlapInfo
