@@ -21,6 +21,7 @@ public:
   //PlayerSpecificInputs get_inputs();
   //void load_inputs(PlayerSpecificInputs inputs);
   void get_wish_velocity(GameInputs input, f32 delta_seconds);
+  bool get_attack_state(GameInputs curInput, GameInputs prevInput, f32 delta_seconds);
   void check_collision(MapObject collider);
   void apply_velocity();
   void Damage(int damage);

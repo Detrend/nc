@@ -41,10 +41,19 @@ void ThingSystem::on_event(ModuleEvent& event)
     case ModuleEventType::game_update:
     {
       //INPUT PHASE
-      player.get_wish_velocity(get_engine().get_module<InputSystem>().get_inputs(), event.update.dt);
+      GameInputs curInputs = get_engine().get_module<InputSystem>().get_inputs();
+      GameInputs prevInputs = get_engine().get_module<InputSystem>().get_prev_inputs();
+
+      player.get_wish_velocity(curInputs, event.update.dt);
       for (size_t i = 0; i < enemies.size(); i++)
       {
         enemies[i].get_wish_velocity(event.update.dt);
+      }
+
+      bool didAttack = player.get_attack_state(curInputs, prevInputs, event.update.dt);
+      if (didAttack)
+      {
+        didAttack = true;
       }
 
       //CHECK FOR COLLISIONS

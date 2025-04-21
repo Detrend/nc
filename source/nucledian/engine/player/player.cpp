@@ -98,6 +98,16 @@ namespace nc
     camera.update_transform(position, angleYaw, anglePitch, viewHeight);
   }
 
+  bool Player::get_attack_state(GameInputs curInput, GameInputs prevInput, [[maybe_unused]] f32 delta_seconds)
+  {
+    if (curInput.player_inputs.keys & (1 << PlayerKeyInputs::primary) &&
+      !(prevInput.player_inputs.keys & (1 << PlayerKeyInputs::primary)))
+    {
+      return true;
+    }
+    return false;
+  }
+
   void Player::check_collision(MapObject collider)
   {
     position += velocity;

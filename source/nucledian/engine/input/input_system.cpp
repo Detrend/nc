@@ -31,7 +31,7 @@ void InputSystem::on_event(ModuleEvent& event)
   {
   case ModuleEventType::game_update:
   {
-    get_player_inputs();
+    get_player_inputs();  
     break;
   }
     case ModuleEventType::cleanup:
@@ -172,6 +172,16 @@ GameInputs InputSystem::get_inputs() const
   }
 
   return m_current_inputs;
+}
+
+GameInputs InputSystem::get_prev_inputs() const
+{
+  if (m_disable_player_inputs)
+  {
+    return GameInputs{};
+  }
+
+  return m_previous_inputs;
 }
 
 }
