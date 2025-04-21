@@ -3,6 +3,7 @@
 #include <engine/player/thing_system.h>
 #include <engine/player/player.h>
 #include <iostream>
+#include <engine/map/map_system.h>
 
 #include <math/lingebra.h>
 
@@ -96,6 +97,20 @@ namespace nc
 
       if (dot(target_dir, facing) >= cosf(3.14f / 4.0f))
       {
+        // RAYCAST CHECK FOR LOS
+        [[maybe_unused]] vec3 rayStart = position + vec3(0, 0.5f, 0);
+        [[maybe_unused]] vec3 rayEnd = target_pos + vec3(0, 0.5f, 0);
+
+        f32 wallDist;
+        vec3 wallNormal;
+        const auto& map = get_engine().get_map();
+        [[maybe_unused]] bool wallHit = map.raycast3d(rayStart, rayEnd, wallNormal, wallDist);
+
+        if (wallDist < 1.0f)
+        {
+          break;
+        }
+
         state = chase;
         break;
       }
