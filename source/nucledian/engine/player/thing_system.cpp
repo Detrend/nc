@@ -57,7 +57,7 @@ void ThingSystem::on_event(ModuleEvent& event)
         [[maybe_unused]] vec3 rayStart = player.get_position();
         [[maybe_unused]] vec3 rayEnd = rayStart + player.get_look_direction() * 50.0f;
 
-        f32 hitDistance = 999999;
+        [[maybe_unused]] f32 hitDistance = 999999;
 
         for (size_t i = 0; i < enemies.size(); i++)
         {
@@ -75,7 +75,7 @@ void ThingSystem::on_event(ModuleEvent& event)
           vec3 normal;
           if (intersect::ray_aabb3(rayStart, rayEnd, bbox, out, normal))
           {
-            hitDistance = out;
+            enemies[i].damage(100);
           }
         }
       }

@@ -19,6 +19,9 @@ namespace nc
 
     facing = vec3(0, 0, 1);
     velocity = vec3(0, 0, 0);
+
+    maxHealth = 60;
+    health = maxHealth;
   }
 
   Enemy::Enemy(vec3 position)
@@ -31,6 +34,9 @@ namespace nc
     height = 0.35f;
     facing = vec3(0, 0, 1);
     velocity = vec3(0, 0, 0);
+
+    maxHealth = 60;
+    health = maxHealth;
   }
 
   Enemy::Enemy(vec3 position, vec3 facing)
@@ -43,6 +49,9 @@ namespace nc
     height = 0.35f;
     this->facing = normalize(facing);
     velocity = vec3(0, 0, 0);
+
+    maxHealth = 60;
+    health = maxHealth;
   }
 
   void Enemy::init()
@@ -66,6 +75,12 @@ namespace nc
 
   void Enemy::get_wish_velocity(f32 delta_seconds)
   {
+    if (!alive)
+    {
+      velocity = vec3(0, 0, 0);
+      return;
+    }
+
     vec3 target_pos = get_engine().get_module<ThingSystem>().get_player()->get_position();
     vec3 target_dir = normalize_or_zero(target_pos - position);
 
@@ -134,6 +149,24 @@ namespace nc
   {
     position += velocity;
     g_transform_components[m_entity_index].position() = position;
+  }
+
+  void Enemy::damage(int damage)
+  {
+    health -= damage;
+    if (health <= 0)
+    {
+      die();
+    }
+  }
+
+  void Enemy::die()
+  {
+    alive = false;
+    collision = false;
+
+    g_appearance_components[m_entity_index].color = colors::GREEN;
+    g_appearance_components[m_entity_index].transform = Transform(position, vec3(0.3f, 0.1f, 0.3f));
   }
 
 

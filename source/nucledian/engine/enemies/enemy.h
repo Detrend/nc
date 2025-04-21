@@ -26,10 +26,17 @@ namespace nc
     void get_wish_velocity(f32 delta_seconds);
     void check_for_collision(MapObject collider);
     void apply_velocity();
+    void damage(int damage);
+    void die();
   private:
     u32 m_entity_index = 0; //this will be overwritten anyway
     vec3 velocity;
     vec3 facing;
     EnemyState state = idle;
+
+    int health;
+    int maxHealth;
+
+    bool alive = true;
   };
 };
