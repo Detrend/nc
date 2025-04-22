@@ -26,7 +26,7 @@ ThingSystem& ThingSystem::get()
 //==========================================================
 bool ThingSystem::init()
 {
-  player = Player(vec3(0, 0, 3.0f));
+  player = Player(vec3(1, 0, 1));
   return true;
 }
 
@@ -37,7 +37,9 @@ void ThingSystem::on_event(ModuleEvent& event)
   {
     case ModuleEventType::post_init:
     {
-      enemies.push_back(Enemy(vec3(0, 0, 0), vec3(0, 0, -1)));
+      enemies.push_back(Enemy(vec3(17,    0, 3), vec3(0, 0, 1)));
+      enemies.push_back(Enemy(vec3(19.5f, 0, 3), vec3(0, 0, 1)));
+      enemies.push_back(Enemy(vec3(22,    0, 3), vec3(0, 0, 1)));
       break;
     }
 

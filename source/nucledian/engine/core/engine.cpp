@@ -434,6 +434,70 @@ static void test_make_sector(
 }
 
 //==============================================================================
+[[maybe_unused]] static void make_demo_map(MapSectors& map)
+{
+  std::vector<vec2> points =
+  {
+    vec2{0, 0},
+    vec2{9, 0},
+    vec2{9, 9},
+    vec2{0, 9}, //
+    vec2{2, 2},
+    vec2{7, 2},
+    vec2{7, 7},
+    vec2{2, 7}, //
+    vec2{3, 2},
+    vec2{6, 2},
+    vec2{7, 3},
+    vec2{7, 6},
+    vec2{6, 7},
+    vec2{3, 7},
+    vec2{2, 6},
+    vec2{2, 3},  //
+    vec2{13, 9}, // 16
+    vec2{16, 9},
+    vec2{16, 2},
+    vec2{23, 2},
+    vec2{23, 9},
+    vec2{26, 9},
+    vec2{26, 12},
+    vec2{20, 12},
+    vec2{20, 9},
+    vec2{19, 9},
+    vec2{19, 12},
+    vec2{13, 12},
+    vec2{19, 5},
+    vec2{20, 5},
+    vec2{20, 6},
+    vec2{19, 6},
+  };
+
+  // and then the sectors
+  std::vector<map_building::SectorBuildData> sectors;
+
+  test_make_sector({0, 1, 5, 9,  8,  4}, sectors);
+  test_make_sector({1, 2, 6, 11, 10, 5}, sectors, 3, 4, 9);
+  test_make_sector({2, 3, 7, 13, 12, 6}, sectors);
+  test_make_sector({3, 0, 4, 15, 14, 7}, sectors, 3, 4, 4);
+
+  test_make_sector({16, 17, 25, 26, 27}, sectors, 4, 3, 3); // 4
+  test_make_sector({25, 17, 31, 30, 20, 24}, sectors);
+  test_make_sector({31, 17, 18, 28}, sectors);
+  test_make_sector({18, 19, 29, 28}, sectors);
+  test_make_sector({19, 20, 30, 29}, sectors);
+  test_make_sector({22, 23, 24, 20, 21}, sectors, 4, 3, 1);
+
+  using namespace map_building::MapBuildFlag;
+
+  map_building::build_map(
+    points, sectors, map,
+    //omit_convexity_clockwise_check |
+    //omit_sector_overlap_check      |
+    //omit_wall_overlap_check        |
+    assert_on_fail);
+}
+
+//==============================================================================
 [[maybe_unused]] static void make_simple_portal_test_map(MapSectors& map)
 {
   /*
@@ -502,9 +566,10 @@ static void test_make_sector(
 void Engine::build_map_and_sectors()
 {
   m_map = std::make_unique<MapSectors>();
-  make_random_square_maze_map(*m_map, 32, 0);
+  //make_random_square_maze_map(*m_map, 32, 0);
   //make_cool_looking_map(*m_map);
   //make_simple_portal_test_map(*m_map);
+  make_demo_map(*m_map);
 
   // geometry dump
   #if 0
