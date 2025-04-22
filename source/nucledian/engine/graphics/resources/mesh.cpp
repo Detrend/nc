@@ -62,11 +62,27 @@ constexpr f32 cube_vertices[] =
   -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f  // Back-left
 };
 
+//==============================================================================
 constexpr f32 line_vertices[] =
 {
   // Positions      // Normals
   0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
   1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+};
+
+//==============================================================================
+constexpr f32 quad_vertices[] =
+{
+  // Positions       // Normals
+  // upper-right triangle
+  -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // top-left
+   0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // top-right
+   0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // bottom-right
+
+  // lower-left triangle
+  -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // top-left
+   0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // bottom-right
+  -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, // bottom-left
 };
 
 //==============================================================================
@@ -132,6 +148,7 @@ void MeshManager::init()
 {
   m_cube_mesh = this->create(ResLifetime::Game, cube_vertices, sizeof(cube_vertices) / sizeof(f32));
   m_line_mesh = this->create(ResLifetime::Game, line_vertices, sizeof(line_vertices) / sizeof(f32), GL_LINES);
+  m_quad_mesh = this->create(ResLifetime::Game, quad_vertices, sizeof(quad_vertices) / sizeof(f32));
 }
 
 //==============================================================================
@@ -158,6 +175,8 @@ MeshHandle MeshManager::create(ResLifetime lifetime, const f32* data, u32 count,
   // normal attribute
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(f32), reinterpret_cast<void*>(3 * sizeof(f32)));
   glEnableVertexAttribArray(1);
+
+  glBindVertexArray(0);
 
   // store created mesh
   auto& storage = this->get_storage(lifetime);
@@ -204,9 +223,16 @@ MeshHandle MeshManager::get_cube() const
   return m_cube_mesh;
 }
 
+//==============================================================================
 MeshHandle MeshManager::get_line() const
 {
   return m_line_mesh;
+}
+
+//==============================================================================
+MeshHandle MeshManager::get_quad() const
+{
+  return m_quad_mesh;
 }
 
 //==============================================================================

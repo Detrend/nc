@@ -773,7 +773,7 @@ Frustum2 Frustum2::modified_with_portal(vec2 p1, vec2 p2) const
 //==============================================================================
 Frustum2 Frustum2::merged_with(const Frustum2& other) const
 {
-  NC_ASSERT(other.center == this->center);
+  // NC_ASSERT(other.center == this->center);
 
   if (other.is_full() || this->is_full()) [[unlikely]]
   {
@@ -847,7 +847,7 @@ void Frustum2::get_frustum_edges(vec2& left, vec2& right) const
 //==============================================================================
 f32 Frustum2::angle_difference(const Frustum2& other) const
 {
-  NC_ASSERT(other.center == this->center);
+  // NC_ASSERT(other.center == this->center);
 
   // First, calculate the angle difference between directions.
   // We can do this by using dot product and asin.

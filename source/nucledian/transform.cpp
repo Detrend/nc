@@ -122,7 +122,7 @@ f32 Transform::get_rotation_z() const
 }
 
 //==========================================================================
-const mat4& Transform::get_matrix()
+const mat4& Transform::get_matrix() const
 {
   if (m_dirty)
   {

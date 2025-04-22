@@ -23,18 +23,18 @@ namespace nc
 
   namespace shaders
   {
-    // Shader for drawing solid geometry.
+    // Solid geometry.
     namespace solid
     {
       #include <engine/graphics/shaders/solid.frag>
       #include <engine/graphics/shaders/solid.vert>
 
-      inline constexpr Uniform<0, mat4>  TRANSFORM;
-      inline constexpr Uniform<1, mat4>  VIEW;
-      inline constexpr Uniform<2, mat4>  PROJECTION;
+      inline constexpr Uniform<0, mat4>   TRANSFORM;
+      inline constexpr Uniform<1, mat4>   VIEW;
+      inline constexpr Uniform<2, mat4>   PROJECTION;
       inline constexpr Uniform<3, color4> COLOR;
-      inline constexpr Uniform<4, vec3>  VIEW_POSITION;
-      inline constexpr Uniform<5, bool>  UNLIT;
+      inline constexpr Uniform<4, vec3>   VIEW_POSITION;
+      inline constexpr Uniform<5, bool>   UNLIT;
     }
   }
 

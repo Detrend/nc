@@ -192,11 +192,13 @@ namespace nc
 
     if (should_transform)
     {
-      position = (transformation * vec4{position + velocity, 1.0f}).xyz();
-      velocity = (transformation * vec4{velocity, 0.0f}).xyz();
+      position  = (transformation * vec4{position + velocity, 1.0f}).xyz();
+      velocity  = (transformation * vec4{velocity, 0.0f}).xyz();
+      m_forward = (transformation * vec4{m_forward, 0.0f}).xyz();
 
-      quat rotate_transform = quat{mat3{transformation}};
-      angleYaw = rem_euclid(angleYaw + yaw(rotate_transform), 2 * PI);
+      const auto forward = normalize(with_y(m_forward, 0.0f));
+
+      angleYaw = std::atan2f(forward.z, -forward.x) + HALF_PI;
     }
     else
     {
