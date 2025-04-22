@@ -31,7 +31,7 @@ void InputSystem::on_event(ModuleEvent& event)
   {
   case ModuleEventType::game_update:
   {
-    get_player_inputs();
+    get_player_inputs();  
     break;
   }
     case ModuleEventType::cleanup:
@@ -150,11 +150,16 @@ void InputSystem::get_player_inputs()
     m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys | (1 << PlayerKeyInputs::right);
 
   int x, y;
-  SDL_GetRelativeMouseState(&x, &y);
+  u32 mouseCode = SDL_GetRelativeMouseState(&x, &y);
 
   f32 sensitivity = -1.0f / 800.0f;
   m_current_inputs.player_inputs.analog[PlayerAnalogInputs::look_vertical]   = y * sensitivity;
   m_current_inputs.player_inputs.analog[PlayerAnalogInputs::look_horizontal] = x * sensitivity;
+
+  if (SDL_BUTTON(mouseCode) == 1)
+  {
+    m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys | (1 << PlayerKeyInputs::primary);
+  }
 }
 
 //==============================================================================
@@ -167,6 +172,16 @@ GameInputs InputSystem::get_inputs() const
   }
 
   return m_current_inputs;
+}
+
+GameInputs InputSystem::get_prev_inputs() const
+{
+  if (m_disable_player_inputs)
+  {
+    return GameInputs{};
+  }
+
+  return m_previous_inputs;
 }
 
 }

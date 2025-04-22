@@ -98,6 +98,16 @@ namespace nc
     camera.update_transform(position, angleYaw, anglePitch, viewHeight);
   }
 
+  bool Player::get_attack_state(GameInputs curInput, GameInputs prevInput, [[maybe_unused]] f32 delta_seconds)
+  {
+    if (curInput.player_inputs.keys & (1 << PlayerKeyInputs::primary) &&
+      !(prevInput.player_inputs.keys & (1 << PlayerKeyInputs::primary)))
+    {
+      return true;
+    }
+    return false;
+  }
+
   void Player::check_collision(MapObject collider)
   {
     position += velocity;
@@ -271,5 +281,16 @@ namespace nc
   vec3 Player::get_position()
   {
     return position;
+  }
+
+  vec3 Player::get_look_direction()
+  {
+    //looking direction
+    return angleAxis(angleYaw, VEC3_Y) * angleAxis(anglePitch, VEC3_X) * -VEC3_Z;
+  }
+
+  f32 Player::get_view_height()
+  {
+    return viewHeight;
   }
 }

@@ -22,7 +22,7 @@ namespace nc
   {
     // EACH OBJECT HAS AN AABB COLLISION HULL
 
-    if (!collision && !collider.collision)
+    if (!collision || !collider.collision)
     {
       return false;
     }

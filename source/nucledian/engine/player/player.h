@@ -21,6 +21,7 @@ public:
   //PlayerSpecificInputs get_inputs();
   //void load_inputs(PlayerSpecificInputs inputs);
   void get_wish_velocity(GameInputs input, f32 delta_seconds);
+  bool get_attack_state(GameInputs curInput, GameInputs prevInput, f32 delta_seconds);
   void check_collision(MapObject collider);
   void apply_velocity();
   void Damage(int damage);
@@ -29,6 +30,8 @@ public:
   DebugCamera* get_camera();
 
   vec3 get_position();
+  vec3 get_look_direction();
+  f32 get_view_height();
 
 private:
   void apply_acceleration(const nc::vec3& movement_direction, f32 delta_seconds);
