@@ -502,9 +502,9 @@ static void test_make_sector(
 void Engine::build_map_and_sectors()
 {
   m_map = std::make_unique<MapSectors>();
-  //make_random_square_maze_map(*m_map, 32, 0);
+  make_random_square_maze_map(*m_map, 32, 0);
   //make_cool_looking_map(*m_map);
-  make_simple_portal_test_map(*m_map);
+  //make_simple_portal_test_map(*m_map);
 
   // geometry dump
   #if 0

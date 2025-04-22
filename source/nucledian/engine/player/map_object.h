@@ -20,6 +20,8 @@ namespace nc {
     f32 get_height() const;
     vec3 get_position() const;
 
+    static void move(vec3& position, vec3& velocity, vec3& forward, f32 radius);
+
     ~MapObject();
 
   protected:

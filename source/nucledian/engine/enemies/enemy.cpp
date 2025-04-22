@@ -164,7 +164,7 @@ namespace nc
 
   void Enemy::apply_velocity()
   {
-    position += velocity;
+    MapObject::move(position, velocity, facing, 0.25f);
     g_transform_components[m_entity_index].position() = position;
   }
 
