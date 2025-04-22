@@ -436,7 +436,7 @@ void GraphicsSystem::render()
 
   glViewport(0, 0, width, height);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 #ifdef NC_IMGUI
   ImGui_ImplOpenGL3_NewFrame();
@@ -1098,12 +1098,7 @@ void GraphicsSystem::render_portals(const CameraData& camera_data) const
         return;
       const PortalRenderData& render_data = map.portals_render_data[portal.render_data_index];
 
-      render_portal_to_stencil(camera_data, render_data);
-      render_portal_to_color(camera_data, render_data);
-      render_portal_to_depth(camera_data, render_data);
-
-      glDepthFunc(GL_LESS);
-      glClear(GL_STENCIL_BUFFER_BIT);
+      render_portal(camera_data, render_data, 0);
     });
   }
   
@@ -1134,7 +1129,7 @@ void GraphicsSystem::render_gun(const CameraData& camera_data) const
 }
 
 //==============================================================================
-void GraphicsSystem::render_portal_to_stencil(const CameraData& camera_data, const PortalRenderData& portal) const
+void GraphicsSystem::render_portal_to_stencil(const CameraData& camera_data, const PortalRenderData& portal, u8 recursion_depth) const
 {
   m_solid_material.use();
   m_solid_material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
@@ -1144,7 +1139,7 @@ void GraphicsSystem::render_portal_to_stencil(const CameraData& camera_data, con
 
   glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
   glDepthMask(GL_FALSE);
-  glStencilFunc(GL_ALWAYS, 0, 0xFF);
+  glStencilFunc(GL_LEQUAL, recursion_depth, 0xFF);
   glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
 
   const MeshHandle& quad = MeshManager::instance().get_quad();
@@ -1154,33 +1149,15 @@ void GraphicsSystem::render_portal_to_stencil(const CameraData& camera_data, con
 }
 
 //==============================================================================
-void GraphicsSystem::render_portal_to_color(const CameraData& camera_data, const PortalRenderData& portal) const
+void GraphicsSystem::render_portal_to_color(const CameraData& camera_data, const PortalRenderData&, u8 recursion_depth) const
 {
-  const mat4 virtual_view = camera_data.view * portal.dest_to_src;
-  const vec3 virtual_view_pos = vec3(inverse(virtual_view) * vec4(0.0f, 0.0f, 0.0f, 1.0f));
-
-  const CameraData virtual_camera_data = CameraData
-  {
-    .position = camera_data.position,
-    .view = virtual_view,
-    .projection = camera_data.projection,
-    .visible_sectors = camera_data.visible_sectors,
-  };
-  CameraData clipped_virtual_camera_data = CameraData
-  {
-    .position = camera_data.position,
-    .view = virtual_view,
-    .projection = clip_projection(virtual_camera_data, portal),
-    .visible_sectors = camera_data.visible_sectors,
-  };
-
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   glDepthMask(GL_TRUE);
-  glStencilFunc(GL_LEQUAL, 1, 0xFF);
+  glStencilFunc(GL_LEQUAL, recursion_depth + 1, 0xFF);
   glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
-  render_sectors(clipped_virtual_camera_data);
-  render_entities(clipped_virtual_camera_data);
+  render_sectors(camera_data);
+  render_entities(camera_data);
 }
 
 //==============================================================================
@@ -1191,7 +1168,9 @@ void GraphicsSystem::render_portal_to_depth(const CameraData& camera_data, const
   m_solid_material.set_uniform(shaders::solid::UNLIT, true);
   m_solid_material.set_uniform(shaders::solid::VIEW, camera_data.view);
   m_solid_material.set_uniform(shaders::solid::TRANSFORM, portal.transform);
+  m_solid_material.set_uniform(shaders::solid::COLOR, colors::LIME);
 
+  glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
   glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
   glDepthFunc(GL_ALWAYS);
 
@@ -1199,6 +1178,53 @@ void GraphicsSystem::render_portal_to_depth(const CameraData& camera_data, const
   glBindVertexArray(quad.get_vao());
   glDrawArrays(quad.get_draw_mode(), 0, quad.get_vertex_count());
   glBindVertexArray(0);
+
+  glDepthFunc(GL_LESS);
+}
+
+//==============================================================================
+void GraphicsSystem::render_portal(const CameraData& camera_data, const PortalRenderData& portal, u8 recursion_depth) const
+{
+  const MapSectors& map = get_engine().get_map();
+  const mat4 virtual_view = camera_data.view * portal.dest_to_src;
+  const vec3 virtual_view_pos = vec3(inverse(virtual_view) * vec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+  const CameraData virtual_camera_data = CameraData
+  {
+    .position = camera_data.position,
+    .view = virtual_view,
+    .projection = camera_data.projection,
+    .visible_sectors = camera_data.visible_sectors,
+  };
+  const CameraData clipped_virtual_camera_data = CameraData
+  {
+    .position = camera_data.position,
+    .view = virtual_view,
+    .projection = clip_projection(virtual_camera_data, portal),
+    .visible_sectors = camera_data.visible_sectors,
+  };
+
+  render_portal_to_stencil(camera_data, portal, recursion_depth);
+  render_portal_to_color(clipped_virtual_camera_data, portal, recursion_depth);
+  
+  if (recursion_depth < m_max_recursion_depth)
+  {
+    for (const auto& [sector_id, _] : camera_data.visible_sectors.sectors)
+    {
+      map.for_each_portal_of_sector(sector_id, [&](PortalID portal_id, WallID)
+      {
+        const WallPortalData& portal = map.portals[portal_id];
+        if (portal.portal_type != PortalType::non_euclidean)
+          return;
+        const PortalRenderData& render_data = map.portals_render_data[portal.render_data_index];
+
+        render_portal(clipped_virtual_camera_data, render_data, recursion_depth + 1);
+      });
+    }
+    glStencilFunc(GL_LEQUAL, recursion_depth + 1, 0xFF);
+  }
+
+  render_portal_to_depth(camera_data, portal);
 }
 
 //==============================================================================

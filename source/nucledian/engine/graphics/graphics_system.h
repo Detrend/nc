@@ -51,9 +51,11 @@ private:
   void render_portals(const CameraData& camera_data) const;
   void render_gun(const CameraData& camera_data) const;
 
-  void render_portal_to_stencil(const CameraData& camera_data, const PortalRenderData& portal) const;
-  void render_portal_to_color(const CameraData& camera_data, const PortalRenderData& portal) const;
+  void render_portal_to_stencil(const CameraData& camera_data, const PortalRenderData& portal, u8 recursion_depth) const;
+  void render_portal_to_color(const CameraData& camera_data, const PortalRenderData& portal, u8 recursion_depth) const;
   void render_portal_to_depth(const CameraData& camera_data, const PortalRenderData& portal) const;
+
+  void render_portal(const CameraData& camera_data, const PortalRenderData& portal, u8 recursion_depth) const;
 
   mat4 clip_projection(const CameraData& camera_data, const PortalRenderData& portal) const;
 
@@ -65,6 +67,8 @@ private:
   #endif
 
 private:
+  inline static constexpr u8 m_max_recursion_depth = 3;
+
   const mat4     m_default_projection;
 
   SDL_Window*    m_window        = nullptr;
