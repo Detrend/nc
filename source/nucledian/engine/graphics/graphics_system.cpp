@@ -174,7 +174,7 @@ std::vector<MeshHandle> g_sector_meshes;
 
 //==============================================================================
 GraphicsSystem::GraphicsSystem()
-  : m_default_projection(perspective(radians(45.0f), 800.0f / 600.0f, 0.0001f, 100.0f)) {}
+  : m_default_projection(perspective(radians(70.0f), 800.0f / 600.0f, 0.0001f, 100.0f)) {}
 
 //==============================================================================
 EngineModuleId GraphicsSystem::get_module_id()
@@ -353,7 +353,7 @@ void GraphicsSystem::terminate()
 //==============================================================================
 void GraphicsSystem::query_visibility(VisibilityTree& tree) const
 {
-  constexpr u8 DEFAULT_RECURSION_DEPTH = 4;
+  constexpr u8 DEFAULT_RECURSION_DEPTH = 64;
 
   NC_ASSERT(tree.sectors.empty());
 
@@ -469,7 +469,7 @@ void GraphicsSystem::render()
 
   glViewport(0, 0, width, height);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 #ifdef NC_IMGUI
   ImGui_ImplOpenGL3_NewFrame();
@@ -1105,7 +1105,6 @@ void GraphicsSystem::render_portals(const CameraData& camera_data) const
     NC_ASSERT(wall.render_data_index != INVALID_PORTAL_RENDER_ID);
     const PortalRenderData& render_data = map.portals_render_data[wall.render_data_index];
 
-    render_portal_to_stencil(camera_data, render_data);
     const CameraData new_cam_data
     {
       .position   = camera_data.position,
@@ -1114,10 +1113,10 @@ void GraphicsSystem::render_portals(const CameraData& camera_data) const
       .vis_tree   = subtree,
     };
 
-    render_portal_to_color(new_cam_data, render_data);
-    glClear(GL_STENCIL_BUFFER_BIT);
+    render_portal(new_cam_data, render_data, 0);
   }
   
+  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   glStencilFunc(GL_ALWAYS, 0, 0xFF);
   glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
   glDisable(GL_STENCIL_TEST);
@@ -1144,7 +1143,7 @@ void GraphicsSystem::render_gun(const CameraData& camera_data) const
 }
 
 //==============================================================================
-void GraphicsSystem::render_portal_to_stencil(const CameraData& camera_data, const PortalRenderData& portal) const
+void GraphicsSystem::render_portal_to_stencil(const CameraData& camera_data, const PortalRenderData& portal, u8 recursion_depth) const
 {
   m_solid_material.use();
   m_solid_material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
@@ -1154,7 +1153,7 @@ void GraphicsSystem::render_portal_to_stencil(const CameraData& camera_data, con
 
   glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
   glDepthMask(GL_FALSE);
-  glStencilFunc(GL_ALWAYS, 0, 0xFF);
+  glStencilFunc(GL_LEQUAL, recursion_depth, 0xFF);
   glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
 
   const MeshHandle& quad = MeshManager::instance().get_quad();
@@ -1164,10 +1163,45 @@ void GraphicsSystem::render_portal_to_stencil(const CameraData& camera_data, con
 }
 
 //==============================================================================
-void GraphicsSystem::render_portal_to_color(const CameraData& camera_data, const PortalRenderData& portal) const
+void GraphicsSystem::render_portal_to_color(const CameraData& camera_data, const PortalRenderData&, u8 recursion_depth) const
 {
+  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+  glDepthMask(GL_TRUE);
+  glStencilFunc(GL_LEQUAL, recursion_depth + 1, 0xFF);
+  glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+  render_sectors(camera_data);
+  render_entities(camera_data);
+}
+
+//==============================================================================
+void GraphicsSystem::render_portal_to_depth(const CameraData& camera_data, const PortalRenderData& portal) const
+{
+  m_solid_material.use();
+  m_solid_material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
+  m_solid_material.set_uniform(shaders::solid::UNLIT, true);
+  m_solid_material.set_uniform(shaders::solid::VIEW, camera_data.view);
+  m_solid_material.set_uniform(shaders::solid::TRANSFORM, portal.transform);
+  m_solid_material.set_uniform(shaders::solid::COLOR, colors::LIME);
+
+  glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
+  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+  glDepthFunc(GL_ALWAYS);
+
+  const MeshHandle& quad = MeshManager::instance().get_quad();
+  glBindVertexArray(quad.get_vao());
+  glDrawArrays(quad.get_draw_mode(), 0, quad.get_vertex_count());
+  glBindVertexArray(0);
+
+  glDepthFunc(GL_LESS);
+}
+
+//==============================================================================
+void GraphicsSystem::render_portal(const CameraData& camera_data, const PortalRenderData& portal, u8 recursion_depth) const
+{
+  const MapSectors& map = get_engine().get_map();
   const mat4 virtual_view = camera_data.view * portal.dest_to_src;
-  // const vec3 virtual_view_pos = vec3(inverse(virtual_view) * vec4(0.0f, 0.0f, 0.0f, 1.0f));
+  const vec3 virtual_view_pos = vec3(inverse(virtual_view) * vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
   const CameraData virtual_camera_data = CameraData
   {
@@ -1176,8 +1210,7 @@ void GraphicsSystem::render_portal_to_color(const CameraData& camera_data, const
     .projection = camera_data.projection,
     .vis_tree = camera_data.vis_tree,
   };
-
-  [[maybe_unused]]CameraData clipped_virtual_camera_data = CameraData
+  CameraData clipped_virtual_camera_data = CameraData
   {
     .position = camera_data.position,
     .view = virtual_view,
@@ -1185,29 +1218,41 @@ void GraphicsSystem::render_portal_to_color(const CameraData& camera_data, const
     .vis_tree = camera_data.vis_tree,
   };
 
-  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-  glDepthMask(GL_TRUE);
-  glStencilFunc(GL_LEQUAL, 1, 0xFF);
-  glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+  render_portal_to_stencil(camera_data, portal, recursion_depth);
+  render_portal_to_color(clipped_virtual_camera_data, portal, recursion_depth);
 
-  render_sectors(virtual_camera_data);
-  render_entities(virtual_camera_data);
+  
+  for (const auto& subtree : camera_data.vis_tree.children)
+  {
+    const WallData& wall = map.walls[subtree.portal_wall];
+    NC_ASSERT(wall.get_portal_type() == PortalType::non_euclidean);
+
+    const PortalRenderData& render_data = map.portals_render_data[wall.render_data_index];
+    const CameraData new_cam_data
+    {
+      .position   = virtual_camera_data.position,
+      .view       = virtual_camera_data.view,
+      .projection = virtual_camera_data.projection,
+      .vis_tree   = subtree,
+    };
+
+    render_portal(new_cam_data, render_data, recursion_depth + 1);
+  }
+  glStencilFunc(GL_LEQUAL, recursion_depth + 1, 0xFF);
+
+  render_portal_to_depth(camera_data, portal);
 }
 
 //==============================================================================
 mat4 GraphicsSystem::clip_projection(const CameraData& camera_data, const PortalRenderData& portal) const
 {
   // following code was copied from:
-  // https://github.com/ThomasRinsma/opengl-game-test/blob/8363bbfcce30acc458b8faacc54c199279092f81/src/entity.h
+  // https://github.com/ThomasRinsma/opengl-game-test/blob/8363bbfcce30acc458b8faacc54c199279092f81/src/sceneobject/portal.cc
   // referenced by following article:
   // https://th0mas.nl/2013/05/19/rendering-recursive-portals-with-opengl/
 
   const vec3 normal = angleAxis(portal.rotation, VEC3_Y) * -VEC3_Z;
-  const vec3 camera_to_plane = portal.position - camera_data.position;
-  const f32 portal_rotation = (dot(camera_to_plane, normal) < 0.0f) ? portal.rotation + PI : portal.rotation;
-
-  const vec3 adjusted_normal = angleAxis(portal_rotation, VEC3_Y) * -VEC3_Z;
-  const vec4 clip_plane = inverse(transpose(camera_data.view)) * vec4(adjusted_normal, length(portal.position));
+  const vec4 clip_plane = inverse(transpose(camera_data.view)) * vec4(normal, length(portal.position));
 
   if (clip_plane.w > 0.0f)
     return camera_data.projection;
@@ -1215,10 +1260,7 @@ mat4 GraphicsSystem::clip_projection(const CameraData& camera_data, const Portal
   const vec4 q = inverse(camera_data.projection) * vec4(sign(clip_plane.x), sign(clip_plane.y), 1.0f, 1.0f);
   const vec4 c = clip_plane * (2.0f / (dot(clip_plane, q)));
 
-  mat4 result = camera_data.projection;
-  result[2] = c - result[2];
-
-  return result;
+  return row(camera_data.projection, 2, c - row(camera_data.projection, 3));
 }
 
 //==============================================================================
