@@ -165,11 +165,13 @@ void modify_nuclidean_frustum(
 }
 
 //==============================================================================
-void MapSectors::query_visible_sectors(
-  vec2            position,
-  vec2            view_dir,
+void MapSectors::query_visible(
+  vec3            position,
+  vec3            view_dir,
   f32             hor_fov,
-  TraverseVisitor visitor) const
+  f32             /*ver_fov*/,
+  VisibilityTree& visible,
+  u8              recursion_depth) const
 {
   NC_ASSERT(is_normal(view_dir));
 
@@ -179,26 +181,36 @@ void MapSectors::query_visible_sectors(
 
   const auto frustum = Frustum2
   {
-    .center    = position,
-    .direction = view_dir,
+    .center    = position.xz(),
+    .direction = normalize(view_dir.xz()),
     .angle     = angle
   };
+
+  visible.portal_sector = INVALID_SECTOR_ID;
+  visible.portal_wall   = INVALID_WALL_ID;
 
   constexpr u64 MAX_CAMERA_SECTORS = 8; // bump this up if the assert ever fires
   std::array<SectorID, MAX_CAMERA_SECTORS> sectors_out;
 
-  const u32 sec_count = map_helpers::get_sectors_from_point(
+  const u32 sec_count = map_helpers::get_sectors_from_point
+  (
     *this,
-    position,
+    position.xz(),
     sectors_out.data(),
-    MAX_CAMERA_SECTORS);
+    MAX_CAMERA_SECTORS
+  );
 
   NC_ASSERT(sec_count <= MAX_CAMERA_SECTORS);
+  if (sec_count == 0)
+  {
+    return;
+  }
 
   const auto slots_temp = FrustumBuffer{frustum};
-
-  this->query_visible_sectors_impl(
-    sectors_out.data(), sec_count, slots_temp, visitor);
+  this->query_visible_sectors_impl
+  (
+    sectors_out.data(), sec_count, slots_temp, visible, recursion_depth
+  );
 }
 
 //==============================================================================
@@ -206,20 +218,14 @@ void MapSectors::query_visible_sectors_impl(
   const SectorID*      start_sector,
   u32                  start_sector_cnt,
   const FrustumBuffer& input_frustums,
-  TraverseVisitor      visitor,
-  u8                   recursion_depth,
-  WallID               source_portal) const
+  VisibilityTree&      visible,
+  u8                   recursion_depth) const
 {
-  NC_ASSERT(visitor);
   NC_ASSERT(input_frustums.frustum_slots[0] != INVALID_FRUSTUM);
+  NC_ASSERT(start_sector_cnt > 0);
+  NC_ASSERT(start_sector != nullptr);
 
-  if (recursion_depth == 0 || start_sector_cnt == 0)
-  {
-    // exit, the recursion is over or the sector is invalid
-    return;
-  }
-
-  // [Performance]According to a benchmark, the std::map here is actually
+  // [Performance] According to a benchmark, the std::map here is actually
   // faster than using std::unordered_map. Maybe due to poor cache locality?
   // Did not investigate further.
   std::map<SectorID, FrustumBuffer> curr_iteration;
@@ -227,7 +233,8 @@ void MapSectors::query_visible_sectors_impl(
 
   struct NucPortalStruct
   {
-    SectorID      sector;
+    SectorID      sector_out;
+    SectorID      sector_in;
     FrustumBuffer buffer;
   };
   std::map<WallID, NucPortalStruct> nuclidean_portals;
@@ -251,6 +258,9 @@ void MapSectors::query_visible_sectors_impl(
     {
       NC_ASSERT(id < sectors.size());
 
+      // Save it to the tree
+      visible.sectors.push_back({id, content});
+
       // Iterate all frustums in this dir
       for (const auto& frustum : content.frustum_slots)
       {
@@ -259,9 +269,6 @@ void MapSectors::query_visible_sectors_impl(
           // this frustum was not filled in
           continue;
         }
-
-        // call the visitor for each existing frustum
-        visitor(id, frustum, source_portal);
 
         // now traverse all portals of the sector and check if we can slide
         // into a neighbor sector
@@ -278,7 +285,7 @@ void MapSectors::query_visible_sectors_impl(
           const auto p1_to_p2  = p2-p1;
           const auto p1_to_cam = frustum.center-p1;
 
-          if (std::find(begin_sector, end_sector, next_sector) != end_sector)
+          if (!is_nuclidean && std::find(begin_sector, end_sector, next_sector) != end_sector)
           {
             // If the camera is positioned EXACTLY over the border of 2 visible_sectors
             // then we would jump back and forth between these two, because
@@ -312,23 +319,25 @@ void MapSectors::query_visible_sectors_impl(
           }
 
           // rotate the nucledean frustum and shift it relatively to the portal's view
-          if (is_nuclidean) [[unlikely]]
+          if (is_nuclidean && recursion_depth > 0) [[unlikely]]
           {
             const SectorID out_sector = next_sector;
+            const SectorID in_sector  = id;
 
             // weird non-euclidean portal, store for later
-            map_helpers::modify_nuclidean_frustum(*this, new_frustum, wall1_idx, id);
+            map_helpers::modify_nuclidean_frustum(*this, new_frustum, wall1_idx, in_sector);
 
             // either creates and inserts or just merges in
             if (nuclidean_portals.contains(wall1_idx))
             {
-              NC_ASSERT(nuclidean_portals[wall1_idx].sector == out_sector);
+              NC_ASSERT(nuclidean_portals[wall1_idx].sector_out == out_sector);
             }
 
             nuclidean_portals[wall1_idx].buffer.insert_frustum(new_frustum);
-            nuclidean_portals[wall1_idx].sector = out_sector;
+            nuclidean_portals[wall1_idx].sector_out = out_sector;
+            nuclidean_portals[wall1_idx].sector_in  = in_sector;
           }
-          else
+          else if (!is_nuclidean)
           {
             // either creates and inserts or just merges in
             next_iteration[next_sector].insert_frustum(new_frustum);
@@ -338,13 +347,22 @@ void MapSectors::query_visible_sectors_impl(
     }
   }
 
-  // Now lets go to other dimensions in DFS manner
+  // If the recursion depth is 0 then there should be NO requests
+  // to recursively continue
+  NC_ASSERT(recursion_depth > 0 || nuclidean_portals.empty());
+
+  // Now lets go to other dimensions in DFS manner recursively if we
+  // did not run out of recursion limit
   for (const auto&[portal_id, data] : nuclidean_portals)
   {
-    this->query_visible_sectors_impl(&data.sector, 1, data.buffer, [&](SectorID sid, Frustum2 f, WallID pid)
-    {
-      visitor(sid, f, pid);
-    }, recursion_depth-1, portal_id);
+    auto& child = visible.children.emplace_back();
+    child.portal_wall   = portal_id;
+    child.portal_sector = data.sector_in;
+
+    this->query_visible_sectors_impl
+    (
+      &data.sector_out, 1, data.buffer, child, recursion_depth - 1
+    );
   }
 }
 
@@ -763,6 +781,48 @@ PortType WallData::get_portal_type() const
     // nuclidean portal
     return PortalType::non_euclidean;
   }
+}
+
+//==============================================================================
+static bool is_visible_int(const VisibilityTree& tree, SectorID id, u64& depth)
+{
+  auto it = std::find_if(tree.sectors.begin(), tree.sectors.end(), [id](const auto& pair)
+  {
+    return pair.sector == id;
+  });
+
+  bool visible = it != tree.sectors.end(); 
+  if (visible)
+  {
+    return true;
+  }
+
+  u64 depth_copy = depth + 1;
+
+  for (const auto& subtree : tree.children)
+  {
+    if (subtree.is_visible(id, depth_copy))
+    {
+      depth = depth_copy;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+//==============================================================================
+bool VisibilityTree::is_visible(SectorID id, u64& depth) const
+{
+  depth = 0;
+  return is_visible_int(*this, id, depth);
+}
+
+//==============================================================================
+bool VisibilityTree::is_visible(SectorID id) const
+{
+  u64 temp;
+  return this->is_visible(id, temp);
 }
 
 }
@@ -1375,7 +1435,7 @@ void benchmark_visibility_query(benchmark::State& state)
   SectorID last_sector = INVALID_SECTOR_ID;
   for (auto _ : state)
   {
-    map.query_visible_sectors(pt, vec2{1, 0}, Frustum2::FULL_ANGLE, [&](SectorID id, Frustum2, WallID)
+    map.query_visible(pt, vec2{1, 0}, Frustum2::FULL_ANGLE, [&](SectorID id, Frustum2, WallID)
     {
       last_sector = id;
     });

@@ -18,7 +18,7 @@ struct SDL_Window;
 namespace nc
 {
 
-struct VisibleSectors;
+struct VisibilityTree;
 struct ModuleEvent;
 struct PortalRenderData;
 
@@ -44,7 +44,7 @@ private:
   void render();
   void terminate();
 
-  void query_visible_sectors(VisibleSectors& out) const;
+  void query_visibility(VisibilityTree& out) const;
 
   void render_sectors(const CameraData& camera_data)  const;
   void render_entities(const CameraData& camera_data) const;
@@ -59,7 +59,7 @@ private:
   void build_map_gfx() const;
 
   #ifdef NC_DEBUG_DRAW
-  void render_map_top_down(const VisibleSectors& visible);
+  void render_map_top_down(const VisibilityTree& visible);
   void draw_debug_window();
   #endif
 
@@ -81,7 +81,7 @@ private:
     const vec3& position;
     const mat4& view;
     const mat4& projection;
-    const VisibleSectors& visible_sectors;
+    const VisibilityTree& vis_tree;
   };
 };
 

@@ -44,6 +44,36 @@
 namespace nc
 {
 
+// This data structure lets us check which sectors and their parts are visible
+// and which are not.
+// Can be used for occlusion culling or detecting visible regions by AI
+struct VisibilityTree
+{
+  struct SectorFrustum
+  {
+    SectorID      sector;  // part of this sector is visible
+    FrustumBuffer frustum; // and this is that part
+  };
+
+  // This is the portal we see into the sector through. If invalid
+  // then it means that we are observing the sector straight
+  // through our eyes and not through a portal
+  WallID                      portal_wall   = INVALID_WALL_ID;
+  SectorID                    portal_sector = INVALID_SECTOR_ID;
+  // This is a list of sectors that are visible
+  std::vector<SectorFrustum>  sectors;
+  // And this is a list of portals we see (might be empty)
+  std::vector<VisibilityTree> children;
+
+  // Runs through the tree and checks if the given sector is visible.
+  // If visible then also outputs the smallest depth at which this
+  // sector is visible
+  bool is_visible(SectorID id, u64& depth) const;
+
+  // Same as above but without outputting the depth
+  bool is_visible(SectorID id) const;
+};
+
 // Internal data of this map representation.
 struct SectorIntData
 {
@@ -51,8 +81,8 @@ struct SectorIntData
   // To get number of walls in a sector you use
   // last_wall - first_wall
   // If first_wall == last_wall then the sector has no walls
-  WallID   first_wall = INVALID_WALL_ID; // [0..total_wall_count]
-  WallID   last_wall  = INVALID_WALL_ID; // [first_wall..total_wall_count]
+  WallID first_wall = INVALID_WALL_ID; // [0..total_wall_count]
+  WallID last_wall  = INVALID_WALL_ID; // [first_wall..total_wall_count]
 };
 
 // Each sector is comprised of internal data
@@ -135,11 +165,15 @@ struct MapSectors
   // Traverses the sector system in a BFS order and calls the visitor
   // for each sector with a frustum that describes which parts of the
   // sector are visible.
-  void query_visible_sectors(
-    vec2            position,    // exact position on the map
-    vec2            view_dir,    // normalized view direction
-    f32             hor_fov_rad, // [0-Pi], in radians. >= Pi means 360 degrees of view
-    TraverseVisitor visitor) const;    // callback function that is called for each visited sector
+  void query_visible
+  (
+    vec3            position,        // exact position on the map
+    vec3            view_dir,        // normalized view direction
+    f32             hor_fov_rad,     // [0-Pi], in radians. >= Pi means 360 degrees of view
+    f32             ver_fov_rad,     // Vertical FOV in radians, [0-Pi)
+    VisibilityTree& visibility_tree, // callback function that is called for each visited sector
+    u8              recursion_depth  // depth 0 means only the current "dimension" without any traversal of portals
+  ) const;
 
   // Iterates all portals of this sector
   bool for_each_portal_of_sector(SectorID sector, WallVisitor visitor) const;
@@ -180,9 +214,8 @@ private:
     const SectorID*      start_sectors,
     u32                  start_sector_cnt,
     const FrustumBuffer& frustum,
-    TraverseVisitor      visitor,
-    u8                   recursion_depth = 4,
-    WallID               source_portal   = INVALID_WALL_ID) const;
+    VisibilityTree&      visible,
+    u8                   recursion_depth) const;
 };
 
 namespace map_building

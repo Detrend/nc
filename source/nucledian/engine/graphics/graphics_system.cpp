@@ -169,16 +169,6 @@ static void draw_text(vec2 coords, cstr text, vec3 color)
 namespace nc
 {
 
-// MR says: keeping it here instead of the header so we do not need to include
-// intersect.h and map_types.h to graphics_system.h
-struct VisibleSectors
-{
-  std::map<SectorID, FrustumBuffer> sectors;
-  vec2 position = VEC2_ZERO;
-  vec2 direction = VEC2_ZERO;
-  f32  fov = 0.0f;
-};
-
 // Temporary solution
 std::vector<MeshHandle> g_sector_meshes;
 
@@ -361,20 +351,11 @@ void GraphicsSystem::terminate()
 }
 
 //==============================================================================
-static void query_data_from_camera(const DebugCamera& camera, vec2& pos, vec2& dir, f32& fov)
+void GraphicsSystem::query_visibility(VisibilityTree& tree) const
 {
-  pos = vec2{ camera.get_position().x, camera.get_position().z };
+  constexpr u8 DEFAULT_RECURSION_DEPTH = 4;
 
-  vec2 d = vec2{ camera.get_forward().x, camera.get_forward().z };
-  dir = is_zero(d) ? vec2{ 1, 0 } : normalize(d);
-
-  fov = HALF_PI; // 90 degrees
-}
-
-//==============================================================================
-void GraphicsSystem::query_visible_sectors(VisibleSectors& out) const
-{
-  NC_ASSERT(out.sectors.empty());
+  NC_ASSERT(tree.sectors.empty());
 
   const auto& map = get_engine().get_map();
 
@@ -384,14 +365,10 @@ void GraphicsSystem::query_visible_sectors(VisibleSectors& out) const
     return;
   }
 
-  query_data_from_camera(*camera, out.position, out.direction, out.fov);
+  const vec3 pos = camera->get_position();
+  const vec3 dir = camera->get_forward();
 
-  NC_TODO("This does not work properly, because we can visit one sector multiple times");
-  map.query_visible_sectors(out.position, out.direction, out.fov,
-    [&](SectorID sid, Frustum2 frst, WallID)
-  {
-    out.sectors[sid].insert_frustum(frst);
-  });
+  map.query_visible(pos, dir, HALF_PI, HALF_PI, tree, DEFAULT_RECURSION_DEPTH);
 }
 
 //==============================================================================
@@ -507,8 +484,8 @@ void GraphicsSystem::render()
   }
 #endif
 
-  VisibleSectors visible_sectors;
-  query_visible_sectors(visible_sectors);
+  VisibilityTree visible_sectors;
+  query_visibility(visible_sectors);
 
   if (CVars::enable_top_down_debug)
   {
@@ -527,7 +504,7 @@ void GraphicsSystem::render()
         .position = camera->get_position(),
         .view = camera->get_view(),
         .projection = m_default_projection,
-        .visible_sectors = visible_sectors,
+        .vis_tree = visible_sectors,
       };
 
       GizmoManager::instance().draw_gizmos();
@@ -548,7 +525,7 @@ void GraphicsSystem::render()
 
 //==============================================================================
 #ifdef NC_DEBUG_DRAW
-void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
+void GraphicsSystem::render_map_top_down(const VisibilityTree& visible_sectors)
 {
   glClear(GL_STENCIL_BUFFER_BIT);
   glDisable(GL_DEPTH_TEST);
@@ -633,7 +610,7 @@ void GraphicsSystem::render_map_top_down(const VisibleSectors& visible_sectors)
     const s32 wall_count = repr.last_wall - repr.first_wall;
     NC_ASSERT(wall_count >= 3);
 
-    const bool is_visible = visible_sectors.sectors.contains(i);
+    const bool is_visible = visible_sectors.is_visible(i);
     const vec3 color = (is_visible && show_visible_sectors) ? vec3{ 0.25f } : vec3{ colors::BLACK };
 
     const auto& first_wall = map.walls[repr.first_wall];
@@ -1023,7 +1000,7 @@ void GraphicsSystem::render_sectors(const CameraData& camera_data) const
     colors::GOLD   ,
   };
 
-  const auto& sectors_to_render = camera_data.visible_sectors.sectors;
+  const auto& sectors_to_render = camera_data.vis_tree.sectors;
 
   m_solid_material.use();
   m_solid_material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
@@ -1120,19 +1097,25 @@ void GraphicsSystem::render_portals(const CameraData& camera_data) const
 
   glEnable(GL_STENCIL_TEST);
 
-  for (const auto& [sector_id, _] : camera_data.visible_sectors.sectors)
+  for (const auto& subtree : camera_data.vis_tree.children)
   {
-    map.for_each_portal_of_sector(sector_id, [&](WallID portal_id)
-    {
-      const auto& wall = map.walls[portal_id];
-      if (wall.get_portal_type() != PortalType::non_euclidean)
-        return;
-      const PortalRenderData& render_data = map.portals_render_data[wall.render_data_index];
+    const auto portal_id = subtree.portal_wall;
+    const auto& wall = map.walls[portal_id];
+    NC_ASSERT(wall.get_portal_type() == PortalType::non_euclidean);
+    NC_ASSERT(wall.render_data_index != INVALID_PORTAL_RENDER_ID);
+    const PortalRenderData& render_data = map.portals_render_data[wall.render_data_index];
 
-      render_portal_to_stencil(camera_data, render_data);
-      render_portal_to_color(camera_data, render_data);
-      glClear(GL_STENCIL_BUFFER_BIT);
-    });
+    render_portal_to_stencil(camera_data, render_data);
+    const CameraData new_cam_data
+    {
+      .position   = camera_data.position,
+      .view       = camera_data.view,
+      .projection = camera_data.projection,
+      .vis_tree   = subtree,
+    };
+
+    render_portal_to_color(new_cam_data, render_data);
+    glClear(GL_STENCIL_BUFFER_BIT);
   }
   
   glStencilFunc(GL_ALWAYS, 0, 0xFF);
@@ -1191,7 +1174,7 @@ void GraphicsSystem::render_portal_to_color(const CameraData& camera_data, const
     .position = camera_data.position,
     .view = virtual_view,
     .projection = camera_data.projection,
-    .visible_sectors = camera_data.visible_sectors,
+    .vis_tree = camera_data.vis_tree,
   };
 
   [[maybe_unused]]CameraData clipped_virtual_camera_data = CameraData
@@ -1199,7 +1182,7 @@ void GraphicsSystem::render_portal_to_color(const CameraData& camera_data, const
     .position = camera_data.position,
     .view = virtual_view,
     .projection = clip_projection(virtual_camera_data, portal),
-    .visible_sectors = camera_data.visible_sectors,
+    .vis_tree = camera_data.vis_tree,
   };
 
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
