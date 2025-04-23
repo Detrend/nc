@@ -147,64 +147,19 @@ u32 get_sectors_from_point(const MapSectors& map, vec2 point, SectorID* sectors_
 }
 
 //==============================================================================
-// TODO!!! Refactor this using matrix maths, because it is getting ugly
 void modify_nuclidean_frustum(
   const MapSectors& map,
   Frustum2&         frustum,
   WallID            in_portal,
-  SectorID          in_sector,
-  WallID            out_portal,
-  SectorID          out_sector)
+  SectorID          in_sector)
 {
-  // calculate the relative position of the frustum with respect to the in_portal
-  // and add it to the out_portal
-  auto get_pts_of_portal = [&map](WallID wall_id, SectorID sid)
-  {
-    const auto next_wall_id = next_wall(map, sid, wall_id);
+  const auto transform = map.calculate_portal_to_portal_projection(in_sector, in_portal);
+  const auto new_pos   = (transform * vec4{frustum.center.x, 0.0f, frustum.center.y, 1.0f}).xz();
+  const auto new_dir   = (transform * vec4{frustum.direction.x, 0.0f, frustum.direction.y, 0.0f}).xz();
+  NC_ASSERT(is_normal(new_dir));
 
-    const auto p1 = map.walls[wall_id].pos;
-    const auto p2 = map.walls[next_wall_id].pos;
-
-    return std::make_pair(p1, p2);
-  };
-
-  // first, lets get the position of the two points of the in portal
-  const auto[in_pt1,   in_pt2] = get_pts_of_portal(in_portal,  in_sector);
-  // then we get position of the out portal points
-  const auto[out_pt1, out_pt2] = get_pts_of_portal(out_portal, out_sector);
-
-  const auto in_p1_to_p2_unit  = normalize(in_pt2 -  in_pt1);
-  const auto out_p1_to_p2_unit = normalize(out_pt2 - out_pt1);
-
-  // we project our coords onto a plane formed by the in points
-  const auto p1_to_center  = frustum.center - in_pt1;
-
-  // find the distance to it
-  const auto projection_coeff = dot(p1_to_center, in_p1_to_p2_unit);
-  const auto in_projection    = in_pt1 + in_p1_to_p2_unit * projection_coeff;
-
-  // positive if pos is on the left side of the portal
-  const auto in_sign        = sgn(cross(in_p1_to_p2_unit, p1_to_center));
-  const auto center_to_proj = length(in_projection - frustum.center);
-
-  // and reconstruct the reflected point on the other side
-  const auto out_projection = out_pt1 + out_p1_to_p2_unit * projection_coeff;
-  const auto out_plane_flip = flipped(out_p1_to_p2_unit);
-
-  const auto reconstruct_sign = -1.0f * in_sign;
-  const auto new_center = out_projection + out_plane_flip * center_to_proj * reconstruct_sign;
-
-  const auto nc_to_p1_unit = normalize(out_pt1 - new_center);
-  const auto nc_to_p2_unit = normalize(out_pt2 - new_center);
-  const auto new_dir   = normalize(nc_to_p1_unit + nc_to_p2_unit);
-  const auto new_angle = dot(nc_to_p1_unit, new_dir);
-
-  frustum = Frustum2
-  {
-    .center    = new_center,
-    .direction = new_dir,
-    .angle     = new_angle,
-  };
+  frustum.center    = new_pos;
+  frustum.direction = new_dir;
 }
 
 }
@@ -359,17 +314,10 @@ void MapSectors::query_visible_sectors_impl(
           // rotate the nucledean frustum and shift it relatively to the portal's view
           if (is_nuclidean) [[unlikely]]
           {
-            const WallID   out_wall   = walls[wall1_idx].nc_portal_wall_id;
             const SectorID out_sector = next_sector;
 
             // weird non-euclidean portal, store for later
-            map_helpers::modify_nuclidean_frustum(
-              *this,
-              new_frustum,
-              wall1_idx,
-              id,
-              out_wall,
-              out_sector);
+            map_helpers::modify_nuclidean_frustum(*this, new_frustum, wall1_idx, id);
 
             // either creates and inserts or just merges in
             if (nuclidean_portals.contains(wall1_idx))
