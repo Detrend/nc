@@ -1,4 +1,6 @@
 // Project Nucledian Source File
+#include <config.h>
+
 #include <intersect.h>
 #include <common.h>
 
@@ -7,6 +9,10 @@
 #include <math/utils.h>
 #include <math/vector.h>
 #include <math/lingebra.h>
+
+#ifdef NC_TESTS
+#include <unit_test.h>
+#endif
 
 #include <limits>     // FLT_MAX
 #include <algorithm>  // std::min, std::max, std::abs
@@ -965,3 +971,25 @@ void FrustumBuffer::insert_frustum(Frustum2 new_frustum)
 }
 
 }
+
+#ifdef NC_TESTS
+namespace nc
+{
+
+bool test_segment(unit_test::TestCtx& /*ctx*/)
+{
+  f32 t, u;
+  intersect::segment_segment(vec2{-1, 0}, vec2{1, 0}, vec2{0, -1}, vec2{0, 1}, t, u);
+  if (t == 0.5f && u == 0.5f)
+  {
+    NC_TEST_SUCCESS;
+  }
+  else
+  {
+    NC_TEST_FAIL;
+  }
+}
+NC_UNIT_TEST(test_segment)->name("Segment segment intersection");
+
+}
+#endif

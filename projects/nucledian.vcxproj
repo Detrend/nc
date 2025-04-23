@@ -137,6 +137,7 @@
     <ClCompile Include="..\source\nucledian\engine\player\thing_system.cpp" />
     <ClCompile Include="..\source\nucledian\grid.cpp" />
     <ClCompile Include="..\source\nucledian\intersect.cpp" />
+    <ClCompile Include="..\source\nucledian\unit_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -265,6 +266,7 @@
     <ClInclude Include="..\source\nucledian\math\utils.h" />
     <ClInclude Include="..\source\nucledian\math\vector.h" />
     <ClInclude Include="..\source\nucledian\types.h" />
+    <ClInclude Include="..\source\nucledian\unit_test.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />

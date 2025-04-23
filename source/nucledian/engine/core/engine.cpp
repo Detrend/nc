@@ -22,12 +22,17 @@
 #include <algorithm>
 #endif
 
+#ifdef NC_TESTS
+#include <unit_test.h>
+#include <format>
+#include <iostream>
+#include <regex>
+#endif
+
 #include <ranges>  // std::views::reverse
 #include <chrono>  // std::chrono::high_resolution_clock
 #include <cstdlib> // std::rand
 
-//#include <iostream>
-//#include <format>
 
 namespace nc
 {
@@ -38,6 +43,10 @@ static Engine* g_engine = nullptr;
 namespace engine_utils
 {
 
+[[maybe_unused]] constexpr cstr BENCHMARK_ARG      = "-benchmark";
+[[maybe_unused]] constexpr cstr UNIT_TEST_ARG      = "-unit_test";
+[[maybe_unused]] constexpr cstr TEST_FILTER_PREFIX = "-test_filter=";
+
 //==============================================================================
 static f32 duration_to_seconds(auto t1, auto t2)
 {
@@ -47,21 +56,10 @@ static f32 duration_to_seconds(auto t1, auto t2)
   return duration_cast<microseconds>(t2 - t1).count() / 1'000'000.0f;
 }
 
-}
-
-//==============================================================================
-Engine& get_engine()
-{
-  NC_ASSERT(g_engine);
-  return *g_engine;
-}
-
 //==============================================================================
 #ifdef NC_BENCHMARK
 static bool execute_benchmarks_if_required(const std::vector<std::string>& args)
 {
-  constexpr cstr BENCHMARK_ARG = "-benchmark";
-
   auto benchmark_arg_it = std::find_if(
     args.begin(),
     args.end(),
@@ -102,19 +100,126 @@ static bool execute_benchmarks_if_required(const std::vector<std::string>& args)
   ::benchmark::Shutdown();
   return true;
 }
-
 #endif
+
+//==============================================================================
+#ifdef NC_TESTS
+//==============================================================================
+static std::string find_text_filter_regex(const std::vector<std::string>& args)
+{
+  const u64 PREFIX_SIZE = std::strlen(TEST_FILTER_PREFIX);
+
+  auto match_filter = std::string{".*"};
+
+  // search for the string prefix
+  auto it = std::find_if(args.begin(), args.end(), [&](const std::string& arg)
+  {
+    return arg.find(TEST_FILTER_PREFIX) == 0 && arg.size() > PREFIX_SIZE;
+  });
+
+  // change the match filter if the prefix was found
+  if (it != args.end())
+  {
+    match_filter = std::string{it->begin() + PREFIX_SIZE, it->end()};
+  }
+
+  return match_filter;
+}
+
+//==============================================================================
+static bool execute_unit_tests_if_required(const std::vector<std::string>& args)
+{
+  auto test_arg_it = std::find(args.begin(), args.end(), UNIT_TEST_ARG);
+  if (test_arg_it == args.end())
+  {
+    // do not run tests if the appropriate cmd line argument was not set
+    return false;
+  }
+
+  const auto  match_filter_str = find_text_filter_regex(args);
+  const auto& test_list = unit_test::get_tests();
+
+  std::regex match_filter = std::regex{match_filter_str};
+
+  u64 total_test_cnt = 0;
+  u64 ok_test_cnt    = 0;
+
+  std::cout << std::format
+  (
+    "[Unit Tests] Running tests. Match filter: \"{}\"\n", match_filter_str
+  );
+
+  for (const auto& test : test_list)
+  {
+    NC_ASSERT(test.test_name && test.test_function, "Bad test name or func!");
+
+    if (!std::regex_match(test.test_name, match_filter))
+    {
+      // this test does not match the test filter
+      continue;
+    }
+
+    unit_test::TestCtx context;
+    context.argument = test.argument_value;
+
+    const bool ok = test.test_function(context);
+
+    ok_test_cnt    += ok;
+    total_test_cnt += 1;
+
+    std::cout << std::format
+    (
+      "[{}] {}\n", ok ? "SUCCESS" : " FAIL  ", test.test_name
+    );
+  }
+
+  u64 ok_perc = total_test_cnt ? (ok_test_cnt * 100) / total_test_cnt : 100;
+
+  std::cout << std::format
+  (
+    "[Unit Tests] {} tests out of {} successful. Success rate: {}%\n",
+    ok_test_cnt, total_test_cnt, ok_perc
+  );
+
+  return true;
+}
+#endif
+
+}
+
+//==============================================================================
+Engine& get_engine()
+{
+  NC_ASSERT(g_engine);
+  return *g_engine;
+}
 
 //==============================================================================
 int init_engine_and_run_game([[maybe_unused]]const std::vector<std::string>& args)
 {
+  [[maybe_unused]] bool exit_after_benchmarks_and_tests = false;
+
   #ifdef NC_BENCHMARK
-  if (execute_benchmarks_if_required(args))
+  if (engine_utils::execute_benchmarks_if_required(args))
   {
     // only benchmark run, exit
-    return 0;
+    exit_after_benchmarks_and_tests = true;
   }
   #endif
+
+  #ifdef NC_TESTS
+  if (engine_utils::execute_unit_tests_if_required(args))
+  {
+    // running only tests, exit
+    exit_after_benchmarks_and_tests = true;
+  }
+  #endif
+
+  if (exit_after_benchmarks_and_tests)
+  {
+    // exit if we want to run only tests or benchmarks
+    return 0;
+  }
 
   // create instance of the engine
   g_engine = new Engine();

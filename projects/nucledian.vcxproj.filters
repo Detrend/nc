@@ -33,6 +33,7 @@
     <ClCompile Include="..\source\nucledian\engine\player\thing_system.cpp" />
     <ClCompile Include="..\source\nucledian\math\lingebra.cpp" />
     <ClCompile Include="..\source\nucledian\math\utils.cpp" />
+    <ClCompile Include="..\source\nucledian\unit_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -111,6 +112,7 @@
     <ClInclude Include="..\source\nucledian\math\utils.h" />
     <ClInclude Include="..\source\nucledian\math\vector.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
+    <ClInclude Include="..\source\nucledian\unit_test.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
