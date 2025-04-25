@@ -3,30 +3,46 @@
 #pragma once
 
 #include <config.h>
+#include <iostream>
+#include <format>
 
 #include <cstdlib>    // std::abort
+
+#include <logging.h>
 
 namespace nc
 {
 
-//==============================================================================
-inline void NC_ERROR([[maybe_unused]]const char* msg = nullptr) noexcept
-{
-#ifdef NC_ASSERTS
-  // TODO: log the error and dump callstack..
-  std::abort();
-#endif
+// disable warnings for when if-condition evaluates to constant
+#pragma warning(disable:4127)
+
+
+inline void assert_fail_impl(const char* const expression_str, const logging::LoggingContext &logging_ctx, const std::string& message) {
+    std::string actual_message;
+    if (expression_str) {
+        actual_message.append(std::format("Assert: `{}`", expression_str));
+    }
+    if (!message.empty()) {
+        actual_message.append(std::format(" '{}'", message));
+    }
+    logging::log_message_impl(logging::LoggingSeverity::Error, actual_message, logging_ctx);
+    abort();
 }
 
 //==============================================================================
-template<typename T>
-inline void NC_ASSERT(T&& check, const char* msg = nullptr) noexcept
-{
-  if (!(check))
-  {
-    NC_ERROR(msg);
-  }
-}
+#ifdef NC_ASSERTS
+#   define NC_ERROR(...) nc::assert_fail_impl(nullptr, CAPTURE_CURRENT_LOGGING_CONTEXT(), std::format("" __VA_ARGS__))
+#else
+#   define NC_ERROR(...)
+#endif
+
+//==============================================================================
+#ifdef NC_ASSERTS
+#   define NC_ASSERT(expr, ...) do { if(!(expr)) nc::assert_fail_impl(STRINGIFY(expr), CAPTURE_CURRENT_LOGGING_CONTEXT(), std::format("" __VA_ARGS__));} while(false)
+#else
+#   define NC_ASSERT(expr, ...)
+#endif
+
 
 }
 

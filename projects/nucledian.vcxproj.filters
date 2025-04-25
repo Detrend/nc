@@ -34,6 +34,7 @@
     <ClCompile Include="..\source\nucledian\math\lingebra.cpp" />
     <ClCompile Include="..\source\nucledian\math\utils.cpp" />
     <ClCompile Include="..\source\nucledian\unit_test.cpp" />
+    <ClCompile Include="..\source\nucledian\logging.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -113,6 +114,9 @@
     <ClInclude Include="..\source\nucledian\math\vector.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
     <ClInclude Include="..\source\nucledian\unit_test.h" />
+    <ClInclude Include="logging.h" />
+    <ClInclude Include="..\source\nucledian\logging.h" />
+    <ClInclude Include="..\source\nucledian\metaprogramming.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />

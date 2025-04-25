@@ -71,7 +71,7 @@ std::optional<GLuint> MaterialHandle::compile_shader(const char* source, GLenum 
     glDeleteShader(shader);
 
     std::string message =  "Shader compile error: " + std::string(info_log);
-    NC_ERROR(message.c_str());
+    NC_ERROR("{0}", message);
     std::cout << message << std::endl;
     return std::nullopt;
   }
@@ -96,7 +96,7 @@ std::optional<GLuint> MaterialHandle::link_program(GLuint vertex_shader, GLuint 
     glDeleteProgram(shader_program);
 
     std::string message =  "Shader link error: " + std::string(info_log);
-    NC_ERROR(message.c_str());
+    NC_ERROR("{0}", message);
     std::cout << message << std::endl;
     return std::nullopt;
   }
