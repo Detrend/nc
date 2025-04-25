@@ -51,7 +51,7 @@ namespace engine_utils
 static f32 duration_to_seconds(auto t1, auto t2)
 {
   using namespace std::chrono;
-  NC_ASSERT(t2 >= t1);
+  nc_assert(t2 >= t1);
 
   return duration_cast<microseconds>(t2 - t1).count() / 1'000'000.0f;
 }
@@ -151,7 +151,7 @@ static bool execute_unit_tests_if_required(const std::vector<std::string>& args)
 
   for (const auto& test : test_list)
   {
-    NC_ASSERT(test.test_name && test.test_function, "Bad test name or func!");
+    nc_assert(test.test_name && test.test_function, "Bad test name or func!");
 
     if (!std::regex_match(test.test_name, match_filter))
     {
@@ -190,7 +190,7 @@ static bool execute_unit_tests_if_required(const std::vector<std::string>& args)
 //==============================================================================
 Engine& get_engine()
 {
-  NC_ASSERT(g_engine);
+  nc_assert(g_engine);
   return *g_engine;
 }
 
@@ -315,7 +315,7 @@ void Engine::run()
     // a journal replay is active
     if (this->event_journal_active())
     {
-      NC_ASSERT(m_journal);
+      nc_assert(m_journal);
       auto& journal_top = m_journal->frames.back();
       input_system.override_player_inputs(journal_top.player_inputs);
     }
@@ -364,7 +364,7 @@ void Engine::run()
     if (this->event_journal_active())
     {
       // pop the last frame of the journal
-      NC_ASSERT(m_journal);
+      nc_assert(m_journal);
       m_journal->frames.pop_back();
     }
   }
@@ -386,7 +386,7 @@ void Engine::terminate()
   // terminate modules in the opposite order of initialization
   for (auto* module : m_module_init_order | std::views::reverse)
   {
-    NC_ASSERT(module);
+    nc_assert(module);
     module->on_event(terminate_event);
   }
 }
@@ -500,7 +500,7 @@ void Engine::handle_journal_state_during_update()
   if (m_journal_installed)
   {
     // new journal was installed, send a message
-    NC_ASSERT(m_journal);
+    nc_assert(m_journal);
     this->send_event(ModuleEvent
     {
       .type = ModuleEventType::event_journal_installed,

@@ -36,8 +36,8 @@ bool segment_segment(
   t_out = FLT_MAX;
   u_out = FLT_MAX;
 
-  NC_ASSERT(start_a != end_a);
-  NC_ASSERT(start_b != end_b);
+  nc_assert(start_a != end_a);
+  nc_assert(start_b != end_b);
 
   const vec2 dir_a = end_a - start_a;
   const vec2 dir_b = end_b - start_b;
@@ -79,7 +79,7 @@ bool segment_segment(
     const f32 ubottom = -bottom;
 
     // This should not happen AFAIK
-    NC_ASSERT(!is_zero(ubottom, TOLERANCE));
+    nc_assert(!is_zero(ubottom, TOLERANCE));
 
     const f32 u = utop / ubottom;
 
@@ -219,8 +219,8 @@ bool segment_circle(vec2 start, vec2 end, vec2 og_center, f32 r, f32& t_out, vec
 {
   NC_TODO("Circle collision might not work properly if the raycasted point is inside the circle.");
 
-  NC_ASSERT(start != end);
-  NC_ASSERT(r > 0.0f);
+  nc_assert(start != end);
+  nc_assert(r > 0.0f);
 
   const vec2 center = og_center - start;
   const vec2 dir = end - start;
@@ -234,7 +234,7 @@ bool segment_circle(vec2 start, vec2 end, vec2 og_center, f32 r, f32& t_out, vec
   const f32 a = dx * dx + dy * dy;
   const f32 b = -2 * (dx * cx + dy * cy);
   const f32 c = -1 * (rr - cx * cx - cy * cy);
-  NC_ASSERT(a != 0.0f);
+  nc_assert(a != 0.0f);
 
   const f32 D2 = b * b - 4 * a * c;
   if (D2 < 0.0f)
@@ -273,7 +273,7 @@ bool segment_circle(vec2 start, vec2 end, vec2 og_center, f32 r, f32& t_out, vec
   }
 
   const vec2 col_point = dir * t;
-  NC_ASSERT(col_point != center);
+  nc_assert(col_point != center);
   const vec2 center_to_col = col_point - center;
 
   t_out = t;
@@ -291,9 +291,9 @@ bool segment_segment_expanded(
   vec2& out_normal,
   f32&  out_coeff)
 {
-  NC_ASSERT(start_a != end_a);
-  NC_ASSERT(start_b != end_b);
-  NC_ASSERT(expand_b >= 0.0f); // use normal intersection if the parameter is 0
+  nc_assert(start_a != end_a);
+  nc_assert(start_b != end_b);
+  nc_assert(expand_b >= 0.0f); // use normal intersection if the parameter is 0
 
   if (expand_b == 0.0f)
   {
@@ -353,8 +353,8 @@ bool ray_wall(
   f32   wall_y2,
   f32&  out_coeff)
 {
-  NC_ASSERT(wall_y1   != wall_y2, "Points of the wall are the same.");
-  NC_ASSERT(ray_start != ray_end, "Ray has a zero length.");
+  nc_assert(wall_y1   != wall_y2, "Points of the wall are the same.");
+  nc_assert(ray_start != ray_end, "Ray has a zero length.");
 
   const vec2 start2d = ray_start.xz;
   const vec2 end2d   = ray_end.xz;
@@ -389,7 +389,7 @@ bool ray_infinite_axis_aligned_plane(
   f32&    out_coeff,
   SWIZZLE swizzler)
 {
-  NC_ASSERT(ray_start != ray_end);
+  nc_assert(ray_start != ray_end);
   const vec3 ray_dir = ray_end - ray_start;
 
   // check if the ray is horizontal
@@ -550,7 +550,7 @@ namespace nc
 //==============================================================================
 bool Frustum2::contains_point(vec2 p) const
 {
-  NC_ASSERT(is_normal(this->direction));
+  nc_assert(is_normal(this->direction));
 
   if (is_full()) [[unlikely]]
   {
@@ -573,7 +573,7 @@ bool Frustum2::contains_point(vec2 p) const
 //==============================================================================
 bool Frustum2::intersects_segment(vec2 p1, vec2 p2) const
 {
-  NC_ASSERT(is_normal(this->direction));
+  nc_assert(is_normal(this->direction));
 
   if (this->is_empty()) [[unlikely]]
   {
@@ -610,7 +610,7 @@ bool Frustum2::intersects_segment(vec2 p1, vec2 p2) const
   const auto bot = cross(p1_to_p2, this->direction);
 
   // should never happen as both points are on different sides
-  NC_ASSERT(bot != 0.0f);
+  nc_assert(bot != 0.0f);
 
   // if t is 0 or more then the wall intersects with the direction
   // line and therefore is contained in the frustum
@@ -633,7 +633,7 @@ bool Frustum2::is_empty() const
 //==============================================================================
 static auto get_edge(vec2 dir, f32 dot_angle, bool left)
 {
-  NC_ASSERT(is_normal(dir));
+  nc_assert(is_normal(dir));
 
   const auto flp = flipped(dir);
   const auto a = dot_angle;
@@ -641,7 +641,7 @@ static auto get_edge(vec2 dir, f32 dot_angle, bool left)
 
   const auto sign = left ? 1.0f : -1.0f;
   const auto edge = dir * a + flp * b * sign;
-  NC_ASSERT(is_normal(edge));
+  nc_assert(is_normal(edge));
 
   return edge;
 }
@@ -659,8 +659,8 @@ static auto get_edges(const Frustum2& f)
   const auto r_edge = get_edge(f.direction, f.angle, false);
 
   // And these should hold as well
-  NC_ASSERT(is_zero(dot(l_edge, f.direction) - f.angle, 0.0001f));
-  NC_ASSERT(is_zero(dot(r_edge, f.direction) - f.angle, 0.0001f));
+  nc_assert(is_zero(dot(l_edge, f.direction) - f.angle, 0.0001f));
+  nc_assert(is_zero(dot(r_edge, f.direction) - f.angle, 0.0001f));
 
   return Edges{ .e1 = l_edge, .e2 = r_edge };
 }
@@ -668,12 +668,12 @@ static auto get_edges(const Frustum2& f)
 //==============================================================================
 Frustum2 Frustum2::modified_with_portal(vec2 p1, vec2 p2) const
 {
-  NC_ASSERT(is_normal(this->direction));
+  nc_assert(is_normal(this->direction));
 
   // Is this necessary?
-  NC_ASSERT(p1 != this->center);
-  NC_ASSERT(p2 != this->center);
-  NC_ASSERT(p1 != p2);
+  nc_assert(p1 != this->center);
+  nc_assert(p2 != this->center);
+  nc_assert(p1 != p2);
 
   // this is unlikely as only the start frustum is (sometimes) full
   // and all others are not
@@ -696,7 +696,7 @@ Frustum2 Frustum2::modified_with_portal(vec2 p1, vec2 p2) const
 
   auto inverse_remap = [](f32 val)
   {
-    NC_ASSERT(val == std::clamp<f32>(val, -1, 1));
+    nc_assert(val == std::clamp<f32>(val, -1, 1));
 
     const bool on_left = val < 0.0f;
     const auto remapped = (1.0f - std::abs(val)) * 2.0f - 1.0f;
@@ -707,7 +707,7 @@ Frustum2 Frustum2::modified_with_portal(vec2 p1, vec2 p2) const
   // interval 1
   const f32 e_left = remap_interval(this->angle, true);
   const f32 e_right = remap_interval(this->angle, false);
-  NC_ASSERT(e_left <= e_right);
+  nc_assert(e_left <= e_right);
 
   // interval 2
   auto dt_p1 = dot(normalize(p1 - this->center), this->direction);
@@ -771,7 +771,7 @@ Frustum2 Frustum2::modified_with_portal(vec2 p1, vec2 p2) const
   const auto new_angle = dot(dir1, new_dir);
 
   // the new FOV should be smaller than the previous one
-  //NC_ASSERT(new_angle >= this->angle);
+  //nc_assert(new_angle >= this->angle);
 
   return Frustum2::from_point_angle_and_dir(this->center, new_dir, new_angle);
 }
@@ -779,7 +779,7 @@ Frustum2 Frustum2::modified_with_portal(vec2 p1, vec2 p2) const
 //==============================================================================
 Frustum2 Frustum2::merged_with(const Frustum2& other) const
 {
-  // NC_ASSERT(other.center == this->center);
+  // nc_assert(other.center == this->center);
 
   if (other.is_full() || this->is_full()) [[unlikely]]
   {
@@ -797,8 +797,8 @@ Frustum2 Frustum2::merged_with(const Frustum2& other) const
   const auto [other_l_edge, other_r_edge] = get_edges(other);
 
   // Should be normal
-  NC_ASSERT(is_normal(this_l_edge) && is_normal(this_r_edge));
-  NC_ASSERT(is_normal(other_l_edge) && is_normal(other_r_edge));
+  nc_assert(is_normal(this_l_edge) && is_normal(this_r_edge));
+  nc_assert(is_normal(other_l_edge) && is_normal(other_r_edge));
 
   const f32 lr = dot(this_l_edge, other_r_edge);
   const f32 rl = dot(this_r_edge, other_l_edge);
@@ -824,7 +824,7 @@ Frustum2 Frustum2::merged_with(const Frustum2& other) const
     const auto new_direction2 = (l_edge2 + r_edge2) * greater_sgn;
 
     // This could theoretically happen if both angles are 0
-    NC_ASSERT(!is_zero(new_direction2));
+    nc_assert(!is_zero(new_direction2));
 
     new_direction = flipped(r_edge);
     // The dot product will end up being negative if the flipped vector points in a wrong direction
@@ -832,7 +832,7 @@ Frustum2 Frustum2::merged_with(const Frustum2& other) const
   }
 
   const auto new_angle = dot(l_edge, new_direction);
-  NC_ASSERT(new_angle >= 0.0f);
+  nc_assert(new_angle >= 0.0f);
 
   return Frustum2
   {
@@ -853,7 +853,7 @@ void Frustum2::get_frustum_edges(vec2& left, vec2& right) const
 //==============================================================================
 f32 Frustum2::angle_difference(const Frustum2& other) const
 {
-  // NC_ASSERT(other.center == this->center);
+  // nc_assert(other.center == this->center);
 
   // First, calculate the angle difference between directions.
   // We can do this by using dot product and asin.
@@ -889,14 +889,14 @@ Frustum2 Frustum2::from_point_and_portal(vec2 point, vec2 a, vec2 b)
     new_frustum.angle = 1.0f;
     new_frustum.direction = vec2{ to_a.y, to_a.x };
 
-    NC_ASSERT(new_frustum.is_empty());
+    nc_assert(new_frustum.is_empty());
 
     return new_frustum;
   }
 
   new_frustum.direction = normalize(to_a + to_b);
   new_frustum.angle = dot(to_a, new_frustum.direction);
-  NC_ASSERT(new_frustum.angle >= 0.0f);
+  nc_assert(new_frustum.angle >= 0.0f);
   return new_frustum;
 }
 
@@ -914,8 +914,8 @@ Frustum2 Frustum2::empty_frustum_from_point(vec2 c)
 //==============================================================================
 Frustum2 Frustum2::from_point_angle_and_dir(vec2 point, vec2 dir, f32 angle)
 {
-  NC_ASSERT(is_normal(dir));
-  //NC_ASSERT(angle == std::clamp<f32>(angle, -1, 1));
+  nc_assert(is_normal(dir));
+  //nc_assert(angle == std::clamp<f32>(angle, -1, 1));
 
   return Frustum2
   {
@@ -955,7 +955,7 @@ void FrustumBuffer::insert_frustum(Frustum2 new_frustum)
     }
   }
 
-  NC_ASSERT(closest_idx < FRUSTUM_SLOT_CNT);
+  nc_assert(closest_idx < FRUSTUM_SLOT_CNT);
 
   // No overlapping frustum found and all slots are full?
   // Then merge with a closest one

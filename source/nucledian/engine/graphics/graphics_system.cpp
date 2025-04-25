@@ -194,16 +194,15 @@ static void APIENTRY gl_debug_message(
     case GL_DEBUG_SEVERITY_LOW:          numeric_severity = 1; break;
     case GL_DEBUG_SEVERITY_MEDIUM:       numeric_severity = 2; break;
     case GL_DEBUG_SEVERITY_HIGH:         numeric_severity = 3; break;
-    default: NC_ERROR("Unknown severity");                     break;
+    default: nc_assert(false, "Unknown severity");                     break;
   }
 
   if (numeric_severity < CVars::opengl_debug_severity)
   {
     return;
   }
-
-  NC_TODO("We need a proper logging system!!!");
-  std::cout << "GL Debug Message: " << message << std::endl;
+    
+  nc_log("GL Debug Message: '{0}'", message);
 }
 
 //==============================================================================
@@ -359,7 +358,7 @@ void GraphicsSystem::query_visibility(VisibilityTree& tree) const
 {
   constexpr u8 DEFAULT_RECURSION_DEPTH = 64;
 
-  NC_ASSERT(tree.sectors.empty());
+  nc_assert(tree.sectors.empty());
 
   const auto& map = get_engine().get_map();
 
@@ -612,7 +611,7 @@ void GraphicsSystem::render_map_top_down(const VisibilityTree& visible_sectors)
     const auto& sector = map.sectors[i];
     const auto& repr = sector.int_data;
     const s32 wall_count = repr.last_wall - repr.first_wall;
-    NC_ASSERT(wall_count >= 3);
+    nc_assert(wall_count >= 3);
 
     const bool is_visible = visible_sectors.is_visible(i);
     const vec3 color = (is_visible && show_visible_sectors) ? vec3{ 0.25f } : vec3{ colors::BLACK };
@@ -625,8 +624,8 @@ void GraphicsSystem::render_map_top_down(const VisibilityTree& visible_sectors)
       WallID next_index = (index + 1) % wall_count;
       WallID index_in_arr = repr.first_wall + index;
       WallID next_in_arr = repr.first_wall + next_index;
-      NC_ASSERT(index_in_arr < map.walls.size());
-      NC_ASSERT(next_in_arr < map.walls.size());
+      nc_assert(index_in_arr < map.walls.size());
+      nc_assert(next_in_arr < map.walls.size());
 
       const auto& wall1 = map.walls[index_in_arr];
       const auto& wall2 = map.walls[next_in_arr];
@@ -675,7 +674,7 @@ void GraphicsSystem::render_map_top_down(const VisibilityTree& visible_sectors)
         const auto& sector = map.sectors[sector_id];
         const auto& repr = sector.int_data;
         const s32 wall_count = repr.last_wall - repr.first_wall;
-        NC_ASSERT(wall_count >= 3);
+        nc_assert(wall_count >= 3);
 
         const auto& first_wall = map.walls[repr.first_wall];
 
@@ -684,8 +683,8 @@ void GraphicsSystem::render_map_top_down(const VisibilityTree& visible_sectors)
           WallID next_index = (index + 1) % wall_count;
           WallID index_in_arr = repr.first_wall + index;
           WallID next_in_arr = repr.first_wall + next_index;
-          NC_ASSERT(index_in_arr < map.walls.size());
-          NC_ASSERT(next_in_arr < map.walls.size());
+          nc_assert(index_in_arr < map.walls.size());
+          nc_assert(next_in_arr < map.walls.size());
 
           const auto& wall1 = map.walls[index_in_arr];
           const auto& wall2 = map.walls[next_in_arr];
@@ -740,15 +739,15 @@ void GraphicsSystem::render_map_top_down(const VisibilityTree& visible_sectors)
 
     auto& repr = sector.int_data;
     const s32 wall_count = repr.last_wall - repr.first_wall;
-    NC_ASSERT(wall_count >= 0);
+    nc_assert(wall_count >= 0);
 
     for (WallRelID index = 0; index < wall_count; ++index)
     {
       WallRelID next_index   = (index + 1) % wall_count;
       WallID    index_in_arr = repr.first_wall + index;
       WallID    next_in_arr  = repr.first_wall + next_index;
-      NC_ASSERT(index_in_arr < map.walls.size());
-      NC_ASSERT(next_in_arr < map.walls.size());
+      nc_assert(index_in_arr < map.walls.size());
+      nc_assert(next_in_arr < map.walls.size());
 
       const auto& wall1 = map.walls[index_in_arr];
       const auto& wall2 = map.walls[next_in_arr];
@@ -1014,7 +1013,7 @@ void GraphicsSystem::render_sectors(const CameraData& camera_data) const
 
   for (const auto& [sector_id, _] : sectors_to_render)
   {
-    NC_ASSERT(sector_id < g_sector_meshes.size());
+    nc_assert(sector_id < g_sector_meshes.size());
     const MeshHandle& mesh = g_sector_meshes[sector_id];
 
     glBindVertexArray(mesh.get_vao());
@@ -1105,8 +1104,8 @@ void GraphicsSystem::render_portals(const CameraData& camera_data) const
   {
     const auto portal_id = subtree.portal_wall;
     const auto& wall = map.walls[portal_id];
-    NC_ASSERT(wall.get_portal_type() == PortalType::non_euclidean);
-    NC_ASSERT(wall.render_data_index != INVALID_PORTAL_RENDER_ID);
+    nc_assert(wall.get_portal_type() == PortalType::non_euclidean);
+    nc_assert(wall.render_data_index != INVALID_PORTAL_RENDER_ID);
     const PortalRenderData& render_data = map.portals_render_data[wall.render_data_index];
 
     const CameraData new_cam_data
@@ -1229,7 +1228,7 @@ void GraphicsSystem::render_portal(const CameraData& camera_data, const PortalRe
   for (const auto& subtree : camera_data.vis_tree.children)
   {
     const WallData& wall = map.walls[subtree.portal_wall];
-    NC_ASSERT(wall.get_portal_type() == PortalType::non_euclidean);
+    nc_assert(wall.get_portal_type() == PortalType::non_euclidean);
 
     const PortalRenderData& render_data = map.portals_render_data[wall.render_data_index];
     const CameraData new_cam_data

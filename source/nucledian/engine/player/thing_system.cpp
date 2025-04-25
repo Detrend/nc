@@ -379,7 +379,7 @@ Player* ThingSystem::get_player()
 //==========================================================
 const MapSectors& ThingSystem::get_map() const
 {
-  NC_ASSERT(map);
+  nc_assert(map);
   return *map;
 }
 

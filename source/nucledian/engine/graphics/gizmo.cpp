@@ -98,7 +98,7 @@ std::pair<vec3, f32> Gizmo::compute_rotation_angle_axis(const vec3& direction)
 {
   const vec3 normalized_direction = normalize_or_zero(direction);
 
-  NC_ASSERT(normalized_direction != VEC3_ZERO);
+  nc_assert(normalized_direction != VEC3_ZERO);
 
   constexpr vec3 base_direction = VEC3_X;
   const f32 angle = acos(dot(base_direction, normalized_direction));
