@@ -201,9 +201,8 @@ static void APIENTRY gl_debug_message(
   {
     return;
   }
-
-  NC_TODO("We need a proper logging system!!!");
-  std::cout << "GL Debug Message: " << message << std::endl;
+    
+  NC_MESSAGE("GL Debug Message: '{0}'", message);
 }
 
 //==============================================================================

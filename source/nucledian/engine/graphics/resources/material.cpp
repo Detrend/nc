@@ -72,7 +72,7 @@ std::optional<GLuint> MaterialHandle::compile_shader(const char* source, GLenum 
 
     std::string message =  "Shader compile error: " + std::string(info_log);
     NC_ERROR("{0}", message);
-    std::cout << message << std::endl;
+    NC_LOG_ERROR("{0}", message);
     return std::nullopt;
   }
 
@@ -97,7 +97,7 @@ std::optional<GLuint> MaterialHandle::link_program(GLuint vertex_shader, GLuint 
 
     std::string message =  "Shader link error: " + std::string(info_log);
     NC_ERROR("{0}", message);
-    std::cout << message << std::endl;
+    NC_LOG_ERROR("{0}", message);
     return std::nullopt;
   }
 

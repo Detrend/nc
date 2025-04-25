@@ -90,10 +90,10 @@ namespace nc
 
     apply_acceleration(movement_direction, delta_seconds);
 
-    //std::cout << velocity.x << " " << velocity.z << std::endl;
+    //NC_MESSAGE("{} {}", velocity.x, velocity.z);
     //position += velocity * 0.001f;
 
-    //std::cout << position.x << " " << position.y << " " << position.z << std::endl;
+    //NC_MESSAGE("{} {} {}", position.x, position.y, position.z);
 
     camera.update_transform(position, angleYaw, anglePitch, viewHeight);
   }
