@@ -3,31 +3,58 @@
 
 #include <engine/core/engine_module_id.h>
 #include <engine/core/engine_module.h>
-#include <engine/player/player.h>
+
+// MR says: remove this include once the entity system works properly. We
+// do not want to include more than is necessary!!!
 #include <engine/enemies/enemy.h>
+
+#include <memory> // std::unique_ptr
 
 namespace nc
 {
 
 struct ModuleEvent;
+struct MapSectors;
+struct GameInputs;
+
+class Player;
 
 class ThingSystem : public IEngineModule
 {
 public:
+  using Enemies   = std::vector<Enemy>;
+  using PlayerPtr = std::unique_ptr<Player>;
+  using MapPtr    = std::unique_ptr<MapSectors>;
+
+public:
   static EngineModuleId get_module_id();
-  static ThingSystem& get();
+  static ThingSystem&   get();
 
   bool init();
   void on_event(ModuleEvent& event) override;
 
   Player* get_player();
-  const std::vector<Enemy>& get_enemies() const;
-  void check_player_attack(GameInputs curInputs, GameInputs prevInputs, ModuleEvent event);
-  void check_enemy_attack(ModuleEvent event);
+
+  const MapSectors& get_map()     const;
+  const Enemies&    get_enemies() const;
+
+  // TODO: remove later, only temporary
+  void build_map();
 
 private:
-  Player player;
-  std::vector<Enemy> enemies;
+  void check_player_attack
+  (
+    const GameInputs&  curr_inputs,
+    const GameInputs&  prev_inputs,
+    const ModuleEvent& event
+  );
+
+  void check_enemy_attack(const ModuleEvent& event);
+
+private:
+  PlayerPtr player;
+  MapPtr    map;
+  Enemies   enemies;
 };
 
 }

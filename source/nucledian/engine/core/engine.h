@@ -32,7 +32,7 @@ public:
   void run();
   void terminate();
 
-  MapSectors& get_map();
+  const MapSectors& get_map();
 
   // TODO: if we use this in multiple places then
   // probably introduce a quit reason enum as well

@@ -21,6 +21,8 @@ namespace ModuleEventType
     loading_update,   // during loading
     render,
 
+    on_map_rebuild,  // sent after the map is rebuilt
+
     event_journal_installed,
     event_journal_uninstalled,
 
@@ -56,4 +58,3 @@ struct ModuleEvent
 };
 
 }
-

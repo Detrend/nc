@@ -305,10 +305,14 @@ void GraphicsSystem::on_event(ModuleEvent& event)
       break;
     }
 
-    case ModuleEventType::post_init:
+    case ModuleEventType::on_map_rebuild:
     {
       build_map_gfx();
+      break;
+    }
 
+    case ModuleEventType::post_init:
+    {
       m_gun_model = m_cube_model;
       m_gun_transform = Transform(
         vec3(0.5f, -0.3f, -1.0f),
