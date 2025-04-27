@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -119,6 +119,7 @@
     <ClCompile Include="..\source\nucledian\aabb.cpp" />
     <ClCompile Include="..\source\nucledian\cvars.cpp" />
     <ClCompile Include="..\source\nucledian\engine\core\engine.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\es_prototype.cpp" />
     <ClCompile Include="..\source\nucledian\main.cpp" />
     <ClCompile Include="..\source\nucledian\transform.cpp" />
     <ClCompile Include="..\source\nucledian\math\lingebra.cpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="..\source\nucledian\common.h" />
     <ClInclude Include="..\source\nucledian\config.h" />
     <ClInclude Include="..\source\nucledian\cvars.h" />
+    <ClInclude Include="..\source\nucledian\engine\es_prototype.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
     <ClInclude Include="..\source\nucledian\transform.h" />
     <ClInclude Include="..\source\nucledian\engine\core\engine.h" />
@@ -267,6 +269,7 @@
     <ClInclude Include="..\source\nucledian\math\vector.h" />
     <ClInclude Include="..\source\nucledian\types.h" />
     <ClInclude Include="..\source\nucledian\unit_test.h" />
+    <ClInclude Include="..\source\nucledian\engine\map\entity_sector_mapping.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
@@ -291,6 +294,9 @@
     <ProjectReference Include="SDLmain.vcxproj">
       <Project>{da956fd3-e142-46f2-9dd5-c78bebb56b7a}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="entity.natvis" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />

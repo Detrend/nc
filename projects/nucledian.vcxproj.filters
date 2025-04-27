@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\source\libs\glad\glad.c" />
@@ -34,6 +34,7 @@
     <ClCompile Include="..\source\nucledian\math\lingebra.cpp" />
     <ClCompile Include="..\source\nucledian\math\utils.cpp" />
     <ClCompile Include="..\source\nucledian\unit_test.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\es_prototype.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -113,6 +114,8 @@
     <ClInclude Include="..\source\nucledian\math\vector.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
     <ClInclude Include="..\source\nucledian\unit_test.h" />
+    <ClInclude Include="..\source\nucledian\engine\map\entity_sector_mapping.h" />
+    <ClInclude Include="..\source\nucledian\engine\es_prototype.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
@@ -126,5 +129,8 @@
   <ItemGroup>
     <Text Include="..\source\libs\glm\CMakeLists.txt" />
     <Text Include="..\source\libs\glm\copying.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="entity.natvis" />
   </ItemGroup>
 </Project>
