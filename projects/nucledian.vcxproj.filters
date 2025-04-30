@@ -34,7 +34,8 @@
     <ClCompile Include="..\source\nucledian\math\lingebra.cpp" />
     <ClCompile Include="..\source\nucledian\math\utils.cpp" />
     <ClCompile Include="..\source\nucledian\unit_test.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\es_prototype.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\entity\es_prototype.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\entity\es_system.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -115,7 +116,15 @@
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
     <ClInclude Include="..\source\nucledian\unit_test.h" />
     <ClInclude Include="..\source\nucledian\engine\map\entity_sector_mapping.h" />
-    <ClInclude Include="..\source\nucledian\engine\es_prototype.h" />
+    <ClInclude Include="..\source\nucledian\engine\entity\es_prototype.h" />
+    <ClInclude Include="..\source\nucledian\engine\entity\es_pool.h" />
+    <ClInclude Include="..\source\nucledian\engine\entity\es_ipool.h" />
+    <ClInclude Include="..\source\nucledian\engine\entity\es_types.h" />
+    <ClInclude Include="..\source\nucledian\engine\entity\es_component_types.h" />
+    <ClInclude Include="..\source\nucledian\engine\entity\es_component.h" />
+    <ClInclude Include="..\source\nucledian\engine\entity\es_component_def.h" />
+    <ClInclude Include="..\source\nucledian\engine\entity\es_controller.h" />
+    <ClInclude Include="..\source\nucledian\engine\entity\es_system.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
@@ -125,6 +134,7 @@
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.frag" />
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.vert" />
     <None Include="..\source\nucledian\math\lingebra.inl" />
+    <None Include="..\source\nucledian\engine\entity\es_system.inl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\source\libs\glm\CMakeLists.txt" />

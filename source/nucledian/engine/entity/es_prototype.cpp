@@ -1,5 +1,11 @@
-#include "es_prototype.h"
+// Project Nucledian Source File
+
+#include <engine/entity/es_prototype.h>
 #include <iostream>
+
+#include <engine/entity/es_system.h>
+#include <engine/entity/es_controller.h>
+#include <engine/entity/es_component_def.h>
 
 namespace nc
 {
@@ -29,7 +35,7 @@ int test_compilation()
   const auto id2 = es.create_entity_pure<RenderComp, AIComp>();
   const auto id3 = es.create_entity_pure<RenderComp, AIComp, PhysComp>();
 
-  const auto p = es.create_entity_controled<PlayerTest>();
+  const auto p = es.create_entity_controlled<PlayerTest>();
 
   if (auto* c = es.get_component<RenderComp>(id1))
   {

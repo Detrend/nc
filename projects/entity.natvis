@@ -3,7 +3,6 @@
     <DisplayString>(n={num})</DisplayString>
     <Expand>
       <Item Name="Num">num</Item>
-      <Item Name="Num2">num</Item>
     </Expand>
   </Type>
 </AutoVisualizer>

@@ -119,7 +119,8 @@
     <ClCompile Include="..\source\nucledian\aabb.cpp" />
     <ClCompile Include="..\source\nucledian\cvars.cpp" />
     <ClCompile Include="..\source\nucledian\engine\core\engine.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\es_prototype.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\entity\es_prototype.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\entity\es_system.cpp" />
     <ClCompile Include="..\source\nucledian\main.cpp" />
     <ClCompile Include="..\source\nucledian\transform.cpp" />
     <ClCompile Include="..\source\nucledian\math\lingebra.cpp" />
@@ -231,7 +232,15 @@
     <ClInclude Include="..\source\nucledian\common.h" />
     <ClInclude Include="..\source\nucledian\config.h" />
     <ClInclude Include="..\source\nucledian\cvars.h" />
-    <ClInclude Include="..\source\nucledian\engine\es_prototype.h" />
+    <ClInclude Include="..\source\nucledian\engine\entity\es_component.h" />
+    <ClInclude Include="..\source\nucledian\engine\entity\es_component_def.h" />
+    <ClInclude Include="..\source\nucledian\engine\entity\es_component_types.h" />
+    <ClInclude Include="..\source\nucledian\engine\entity\es_controller.h" />
+    <ClInclude Include="..\source\nucledian\engine\entity\es_ipool.h" />
+    <ClInclude Include="..\source\nucledian\engine\entity\es_pool.h" />
+    <ClInclude Include="..\source\nucledian\engine\entity\es_prototype.h" />
+    <ClInclude Include="..\source\nucledian\engine\entity\es_system.h" />
+    <ClInclude Include="..\source\nucledian\engine\entity\es_types.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
     <ClInclude Include="..\source\nucledian\transform.h" />
     <ClInclude Include="..\source\nucledian\engine\core\engine.h" />
@@ -273,6 +282,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
+    <None Include="..\source\nucledian\engine\entity\es_system.inl" />
     <None Include="..\source\nucledian\engine\graphics\resources\mesh.inl" />
     <None Include="..\source\nucledian\engine\graphics\resources\model.inl" />
     <None Include="..\source\nucledian\engine\graphics\resources\material.inl" />
