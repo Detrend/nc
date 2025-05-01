@@ -29,10 +29,9 @@ struct EntityPool : IEntityPool
   u64     get_count()                 override;
   Entity* get_entity_idx(u64 idx)     override;
 
-  // MR says: this is just a prototype version, can be done
-  // better using a vector
-  std::unordered_map<u32, std::unique_ptr<T>> m_Entities;
-  u32                                         m_LastIdx = 0;
+  std::unordered_map<u32, u32> m_Mapping;
+  std::vector<T>               m_Entities;
+  u32                          m_LastIdx = 0;
 };
 
 }

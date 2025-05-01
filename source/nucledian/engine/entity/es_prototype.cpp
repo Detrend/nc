@@ -27,7 +27,8 @@ struct PlayerEntity : public Actor
 int test_func()
 {
   EntitySystem es;
-  auto* p = es.create_entity<PlayerEntity>();
+  auto p  = es.create_entity<PlayerEntity>()->id;
+  auto p2 = es.create_entity<PlayerEntity>()->id;
   auto* e = es.create_entity<EnemyEntity>();
   auto* a = es.create_entity<Actor>();
 
@@ -36,7 +37,8 @@ int test_func()
     p.id.padd[0] = 15;
   });
 
-  es.destroy_entity(p->id);
+  es.destroy_entity(p);
+  es.destroy_entity(p2);
   es.destroy_entity(e->id);
   es.destroy_entity(a->id);
 
