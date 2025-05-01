@@ -68,20 +68,23 @@ public:
     }
   }
 
-  void destroy_entity_id(EntityID id) override
+  void destroy_entity_id(std::span<EntityID> ids) override
   {
-    if (m_IndexMapping.contains(id.id))
+    for (const auto id : ids)
     {
-      const u32      idx     = m_IndexMapping[id.id];
-      const EntityID last_id = std::get<EntityID>(m_Components.back());
-
-      this->destroy_entity_idx(idx);
-
-      m_IndexMapping.erase(id.id);
-
-      if (this->get_count())
+      if (m_IndexMapping.contains(id.id))
       {
-        m_IndexMapping[last_id.id] = idx;
+        const u32      idx     = m_IndexMapping[id.id];
+        const EntityID last_id = std::get<EntityID>(m_Components.back());
+
+        this->destroy_entity_idx(idx);
+
+        m_IndexMapping.erase(id.id);
+
+        if (this->get_count())
+        {
+          m_IndexMapping[last_id.id] = idx;
+        }
       }
     }
   }

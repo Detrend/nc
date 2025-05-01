@@ -10,7 +10,7 @@
 namespace nc
 {
 
-struct PlayerTest : public EntityControllerHelper<PlayerTest, RenderComp, PhysComp>
+struct PlayerTest : public EntityControllerHelper<RenderComp, PhysComp>
 {
   virtual void on_collision(const EntityID&) override
   {

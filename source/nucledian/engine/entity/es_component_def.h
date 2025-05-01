@@ -14,7 +14,6 @@ struct IEntityController;
 namespace nc
 {
 
-
 struct IRenderIface
 {
   virtual void on_render()
