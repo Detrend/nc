@@ -506,7 +506,8 @@ void GraphicsSystem::render()
       const CameraData camera_data = CameraData
       {
         .position = camera->get_position(),
-        .view = camera->get_view(),
+        .up       = UP_DIR,
+        .forward  = camera->get_forward(),
         .projection = m_default_projection,
         .vis_tree = visible_sectors,
       };
@@ -818,6 +819,29 @@ void GraphicsSystem::render_map_top_down(const VisibilityTree& visible_sectors)
     );
   }
 
+  for (const auto& subtree : visible_sectors.children)
+  {
+    //const auto& portal_data = map.portals_render_data[map.walls[subtree.portal_wall].render_data_index];
+    const vec2  pos = (map.calculate_portal_to_portal_projection(subtree.portal_sector, subtree.portal_wall) * vec4(pointed_position.x, 0.0f, pointed_position.y, 1.0f)).xz();
+
+    const vec2 off_x = vec2{1, 0};
+    const vec2 off_y = vec2{0, 1};
+
+		debug_helpers::draw_line
+		(
+			level_space_to_screen_space(pos + off_x),
+			level_space_to_screen_space(pos - off_x),
+			colors::LIME
+		);
+
+		debug_helpers::draw_line
+		(
+			level_space_to_screen_space(pos + off_y),
+			level_space_to_screen_space(pos - off_y),
+			colors::ORANGE
+		);
+  }
+
   glEnable(GL_CULL_FACE);
   glEnable(GL_DEPTH_TEST);
 }
@@ -1009,7 +1033,7 @@ void GraphicsSystem::render_sectors(const CameraData& camera_data) const
   m_solid_material.use();
   m_solid_material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
   m_solid_material.set_uniform(shaders::solid::UNLIT, false);
-  m_solid_material.set_uniform(shaders::solid::VIEW, camera_data.view);
+  m_solid_material.set_uniform(shaders::solid::VIEW, camera_data.compute_view());
   m_solid_material.set_uniform(shaders::solid::VIEW_POSITION, camera_data.position);
 
   for (const auto& [sector_id, _] : sectors_to_render)
@@ -1072,7 +1096,7 @@ void GraphicsSystem::render_entities(const CameraData& camera_data) const
     // TODO: some uniform locations should be shader independent
     model.material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
     model.material.set_uniform(shaders::solid::UNLIT, false);
-    model.material.set_uniform(shaders::solid::VIEW, camera_data.view);
+    model.material.set_uniform(shaders::solid::VIEW, camera_data.compute_view());
     model.material.set_uniform(shaders::solid::VIEW_POSITION, camera_data.position);
 
     // TODO: indirect rendering
@@ -1112,7 +1136,8 @@ void GraphicsSystem::render_portals(const CameraData& camera_data) const
     const CameraData new_cam_data
     {
       .position   = camera_data.position,
-      .view       = camera_data.view,
+      .up         = camera_data.up,
+      .forward    = camera_data.forward,
       .projection = camera_data.projection,
       .vis_tree   = subtree,
     };
@@ -1129,12 +1154,12 @@ void GraphicsSystem::render_portals(const CameraData& camera_data) const
 //==============================================================================
 void GraphicsSystem::render_gun(const CameraData& camera_data) const
 {
-  const mat4 transform = inverse(camera_data.view) * m_gun_transform.get_matrix();
+  const mat4 transform = inverse(camera_data.compute_view()) * m_gun_transform.get_matrix();
 
   m_gun_model.material.use();
   m_gun_model.material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
   m_gun_model.material.set_uniform(shaders::solid::UNLIT, false);
-  m_gun_model.material.set_uniform(shaders::solid::VIEW, camera_data.view);
+  m_gun_model.material.set_uniform(shaders::solid::VIEW, camera_data.compute_view());
   m_gun_model.material.set_uniform(shaders::solid::VIEW_POSITION, camera_data.position);
   m_gun_model.material.set_uniform(shaders::solid::COLOR, colors::BROWN);
   m_gun_model.material.set_uniform(shaders::solid::TRANSFORM, transform);
@@ -1152,7 +1177,7 @@ void GraphicsSystem::render_portal_to_stencil(const CameraData& camera_data, con
   m_solid_material.use();
   m_solid_material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
   m_solid_material.set_uniform(shaders::solid::UNLIT, true);
-  m_solid_material.set_uniform(shaders::solid::VIEW, camera_data.view);
+  m_solid_material.set_uniform(shaders::solid::VIEW, camera_data.compute_view());
   m_solid_material.set_uniform(shaders::solid::TRANSFORM, portal.transform);
 
   glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
@@ -1171,7 +1196,7 @@ void GraphicsSystem::render_portal_to_color(const CameraData& camera_data, const
 {
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   glDepthMask(GL_TRUE);
-  glStencilFunc(GL_LEQUAL, recursion_depth + 1, 0xFF);
+  glStencilFunc(GL_ALWAYS, recursion_depth + 1, 0xFF);
   glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
   render_sectors(camera_data);
@@ -1184,7 +1209,7 @@ void GraphicsSystem::render_portal_to_depth(const CameraData& camera_data, const
   m_solid_material.use();
   m_solid_material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
   m_solid_material.set_uniform(shaders::solid::UNLIT, true);
-  m_solid_material.set_uniform(shaders::solid::VIEW, camera_data.view);
+  m_solid_material.set_uniform(shaders::solid::VIEW, camera_data.compute_view());
   m_solid_material.set_uniform(shaders::solid::TRANSFORM, portal.transform);
   m_solid_material.set_uniform(shaders::solid::COLOR, colors::LIME);
 
@@ -1204,27 +1229,31 @@ void GraphicsSystem::render_portal_to_depth(const CameraData& camera_data, const
 void GraphicsSystem::render_portal(const CameraData& camera_data, const PortalRenderData& portal, u8 recursion_depth) const
 {
   const MapSectors& map = get_engine().get_map();
-  const mat4 virtual_view = camera_data.view * portal.dest_to_src;
-  const vec3 virtual_view_pos = vec3(inverse(virtual_view) * vec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+  const mat4 transform = map.calculate_portal_to_portal_projection
+  (
+    camera_data.vis_tree.portal_sector,
+    camera_data.vis_tree.portal_wall
+	);
+
+  const vec3 new_position = transform * vec4(camera_data.position, 1.0f);
+  const vec3 new_forward  = transform * vec4(camera_data.forward,  0.0f);
+  const vec3 new_up       = transform * vec4(camera_data.up,       0.0f); // not necessary
 
   const CameraData virtual_camera_data = CameraData
   {
-    .position = camera_data.position,
-    .view = virtual_view,
+    .position   = new_position,
+    .up         = new_up,
+    .forward    = new_forward,
     .projection = camera_data.projection,
-    .vis_tree = camera_data.vis_tree,
+    .vis_tree   = camera_data.vis_tree,
   };
-  CameraData clipped_virtual_camera_data = CameraData
-  {
-    .position = camera_data.position,
-    .view = virtual_view,
-    .projection = clip_projection(virtual_camera_data, portal),
-    .vis_tree = camera_data.vis_tree,
-  };
+
+  CameraData clipped_virtual_camera_data = virtual_camera_data;
+  //clipped_virtual_camera_data.projection = clip_projection(virtual_camera_data, portal);
 
   render_portal_to_stencil(camera_data, portal, recursion_depth);
   render_portal_to_color(clipped_virtual_camera_data, portal, recursion_depth);
-
   
   for (const auto& subtree : camera_data.vis_tree.children)
   {
@@ -1232,13 +1261,14 @@ void GraphicsSystem::render_portal(const CameraData& camera_data, const PortalRe
     NC_ASSERT(wall.get_portal_type() == PortalType::non_euclidean);
 
     const PortalRenderData& render_data = map.portals_render_data[wall.render_data_index];
-    const CameraData new_cam_data
-    {
-      .position   = virtual_camera_data.position,
-      .view       = virtual_camera_data.view,
-      .projection = virtual_camera_data.projection,
-      .vis_tree   = subtree,
-    };
+		const CameraData new_cam_data = CameraData
+		{
+			.position   = new_position,
+			.up         = new_up,
+			.forward    = new_forward,
+			.projection = camera_data.projection,
+			.vis_tree   = subtree,
+		};
 
     render_portal(new_cam_data, render_data, recursion_depth + 1);
   }
@@ -1256,7 +1286,7 @@ mat4 GraphicsSystem::clip_projection(const CameraData& camera_data, const Portal
   // https://th0mas.nl/2013/05/19/rendering-recursive-portals-with-opengl/
 
   const vec3 normal = angleAxis(portal.rotation, VEC3_Y) * -VEC3_Z;
-  const vec4 clip_plane = inverse(transpose(camera_data.view)) * vec4(normal, length(portal.position));
+  const vec4 clip_plane = inverse(transpose(camera_data.compute_view())) * vec4(normal, length(portal.position));
 
   if (clip_plane.w > 0.0f)
     return camera_data.projection;
@@ -1284,6 +1314,17 @@ void GraphicsSystem::build_map_gfx() const
     const auto mesh = mesh_manager.create(ResLifetime::Game, vertex_data, values_cnt);
     g_sector_meshes.push_back(mesh);
   }
+}
+
+//==============================================================================
+mat4 GraphicsSystem::CameraData::compute_view() const
+{
+  return lookAt
+  (
+    this->position,
+    this->position + this->forward,
+    this->up
+  );
 }
 
 }

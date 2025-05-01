@@ -43,7 +43,6 @@ void DebugCamera::update_transform(vec3 position, f32 yaw, f32 pitch)
 }
 
 //==============================================================================
-
 void DebugCamera::update_transform(vec3 position, f32 yaw, f32 pitch, f32 y_offset)
 {
   m_position = position;

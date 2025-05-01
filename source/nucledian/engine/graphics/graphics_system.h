@@ -83,10 +83,13 @@ private:
 
   struct CameraData
   {
-    const vec3& position;
-    const mat4& view;
-    const mat4& projection;
+    vec3                  position;
+    vec3                  up;
+    vec3                  forward;
+    mat4                  projection;
     const VisibilityTree& vis_tree;
+
+    mat4 compute_view() const;
   };
 };
 
