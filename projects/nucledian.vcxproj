@@ -262,7 +262,6 @@
     <ClInclude Include="..\source\nucledian\engine\player\thing_system.h" />
     <ClInclude Include="..\source\nucledian\grid.h" />
     <ClInclude Include="..\source\nucledian\intersect.h" />
-    <ClInclude Include="..\source\nucledian\macros.h" />
     <ClInclude Include="..\source\nucledian\math\lingebra.h" />
     <ClInclude Include="..\source\nucledian\math\matrix.h" />
     <ClInclude Include="..\source\nucledian\math\quaternion.h" />

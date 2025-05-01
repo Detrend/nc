@@ -238,7 +238,7 @@ MeshHandle MeshManager::get_quad() const
 //==============================================================================
 std::vector<MeshHandle>& MeshManager::get_storage(ResLifetime lifetime)
 {
-  NC_ASSERT(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
+  nc_assert(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
 
   if (lifetime == ResLifetime::Level)
   {

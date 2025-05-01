@@ -76,7 +76,6 @@
     <ClInclude Include="..\source\nucledian\cvars.h" />
     <ClInclude Include="..\source\nucledian\grid.h" />
     <ClInclude Include="..\source\nucledian\intersect.h" />
-    <ClInclude Include="..\source\nucledian\macros.h" />
     <ClInclude Include="..\source\nucledian\types.h" />
     <ClInclude Include="..\source\nucledian\transform.h" />
     <ClInclude Include="..\source\nucledian\engine\core\engine.h" />

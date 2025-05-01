@@ -19,7 +19,7 @@ static auto remap_point_to_indices(
   u64  width,
   u64  height)
 {
-  NC_ASSERT(min.x < max.x && min.y < max.y);
+  nc_assert(min.x < max.x && min.y < max.y);
 
   // clamp the point to [min, max]
   point = nc::min(nc::max(point, min), max);
@@ -56,9 +56,9 @@ namespace nc
 template<typename T>
 void StatGridAABB2<T>::initialize(u64 width, u64 height, vec2 min, vec2 max)
 {
-  NC_ASSERT(m_initialized == false);
-  NC_ASSERT(width > 0 && height > 0);
-  NC_ASSERT(min.x < max.x && min.y < max.y);
+  nc_assert(m_initialized == false);
+  nc_assert(width > 0 && height > 0);
+  nc_assert(min.x < max.x && min.y < max.y);
 
   m_min = min;
   m_max = max;
@@ -84,7 +84,7 @@ void StatGridAABB2<T>::query_point(vec2 point, Visitor func) const
 template<typename T>
 void StatGridAABB2<T>::query_aabb(aabb2 bbox, Visitor func) const
 {
-  NC_ASSERT(m_initialized);
+  nc_assert(m_initialized);
 
   auto[xfrom, yfrom] = grid_helper::remap_point_to_indices(
     bbox.min, m_min, m_max, m_cells.size(), m_cells[0].size());
@@ -96,8 +96,8 @@ void StatGridAABB2<T>::query_aabb(aabb2 bbox, Visitor func) const
   {
     for (auto y = yfrom; y <= yto; ++y)
     {
-      NC_ASSERT(x < m_cells.size());
-      NC_ASSERT(y < m_cells[x].size());
+      nc_assert(x < m_cells.size());
+      nc_assert(y < m_cells[x].size());
 
       for (auto&[other_bbox, val] : m_cells[x][y])
       {
@@ -117,8 +117,8 @@ void StatGridAABB2<T>::query_aabb(aabb2 bbox, Visitor func) const
 template<typename T>
 void StatGridAABB2<T>::insert(aabb2 new_bbox, const T& data)
 {
-  NC_ASSERT(m_initialized);
-  NC_ASSERT(new_bbox.is_valid());
+  nc_assert(m_initialized);
+  nc_assert(new_bbox.is_valid());
 
   auto[xfrom, yfrom] = grid_helper::remap_point_to_indices(
     new_bbox.min, m_min, m_max, m_cells.size(), m_cells[0].size());
@@ -126,16 +126,16 @@ void StatGridAABB2<T>::insert(aabb2 new_bbox, const T& data)
   auto[xto, yto] = grid_helper::remap_point_to_indices(
     new_bbox.max, m_min, m_max, m_cells.size(), m_cells[0].size());
 
-  NC_ASSERT(xfrom <= xto && yfrom <= yto);
+  nc_assert(xfrom <= xto && yfrom <= yto);
 
   for (u64 xi = xfrom; xi <= xto; ++xi)
   {
-    NC_ASSERT(xi < m_cells.size());
+    nc_assert(xi < m_cells.size());
     Coll& col = m_cells[xi];
 
     for (u64 yi = yfrom; yi <= yto; ++yi)
     {
-      NC_ASSERT(yi < col.size());
+      nc_assert(yi < col.size());
       Cell& cell = col[yi];
       cell.push_back(Unit
       {

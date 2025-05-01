@@ -16,7 +16,7 @@ u32 create_entity(const Transform& transform, const color4& color, const Transfo
 //==============================================================================
 u32 create_entity(const Transform& transform, const color4& color, const Model& model, const Transform& model_transform)
 {
-  NC_ASSERT(g_appearance_components.size() == g_transform_components.size());
+  nc_assert(g_appearance_components.size() == g_transform_components.size());
 
   g_transform_components.push_back(transform);
   g_appearance_components.emplace_back(color, model, model_transform);

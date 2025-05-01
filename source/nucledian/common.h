@@ -25,22 +25,18 @@ inline void assert_fail_impl(const char* const expression_str, const logging::Lo
     if (!message.empty()) {
         actual_message.append(std::format(" '{}'", message));
     }
-    logging::log_message_impl(logging::LoggingSeverity::Error, actual_message, logging_ctx);
+    logging::log_message_impl(logging::LoggingSeverity::error, actual_message, logging_ctx);
     abort();
 }
 
 //==============================================================================
-#ifdef NC_ASSERTS
-#   define NC_ERROR(...) nc::assert_fail_impl(nullptr, CAPTURE_CURRENT_LOGGING_CONTEXT(), std::format("" __VA_ARGS__))
-#else
-#   define NC_ERROR(...)
-#endif
+#   define nc_expect(expr, ...) do { if(!(expr)) nc::assert_fail_impl(STRINGIFY(expr), CAPTURE_CURRENT_LOGGING_CONTEXT(), std::format("" __VA_ARGS__));} while(false)
 
 //==============================================================================
 #ifdef NC_ASSERTS
-#   define NC_ASSERT(expr, ...) do { if(!(expr)) nc::assert_fail_impl(STRINGIFY(expr), CAPTURE_CURRENT_LOGGING_CONTEXT(), std::format("" __VA_ARGS__));} while(false)
+#   define nc_assert(expr, ...) nc_expect(expr, __VA_ARGS__)
 #else
-#   define NC_ASSERT(expr, ...)
+#   define nc_assert(expr, ...)
 #endif
 
 

@@ -26,7 +26,7 @@
 #include <types.h>
 #include <config.h>
 #include <common.h>
-#include <macros.h>
+#include <metaprogramming.h>
 
 #include <variant>
 #include <string>
@@ -41,7 +41,7 @@ namespace nc
 static inline _type _name{_default_value};                       \
 static inline bool NC_TOKENJOIN(_cvar_definition, _name) = []()  \
 {                                                                \
-  NC_ASSERT(!get_cvar_list().contains(#_name));                  \
+  nc_assert(!get_cvar_list().contains(#_name));                  \
   get_cvar_list().insert({#_name, CVar{&_name, _desc}});         \
   return true;                                                   \
 }();                                                             \
@@ -49,7 +49,7 @@ static inline bool NC_TOKENJOIN(_cvar_definition, _name) = []()  \
 #define NC_REGISTER_CVAR_RANGED(_type, _name, _default_value, _range_min, _range_max, _desc) \
 static inline bool NC_TOKENJOIN(_cvar_range_definition, _name) = []()                        \
 {                                                                                            \
-  NC_ASSERT(_range_min <= _range_max);                                                       \
+  nc_assert(_range_min <= _range_max);                                                       \
   get_cvar_ranges().insert({#_name, CVarRange{_range_min, _range_max}});                     \
   return true;                                                                               \
 }();                                                                                         \
