@@ -9,13 +9,15 @@ namespace nc
 using EntityType     = u32;
 using EntityTypeMask = u64;
 
-class EntityID
+struct EntityID
 {
-  friend class EntityRegistry;
-  friend class Entity;
+  constexpr bool operator==(const EntityID& other) const = default;
+
   EntityType type;
   u32        idx;
 };
+
+constexpr EntityID INVALID_ENTITY_ID = EntityID{.type = ~0ul, .idx = ~0ul};
 
 }
 

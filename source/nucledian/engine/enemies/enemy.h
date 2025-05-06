@@ -2,6 +2,8 @@
 #include <engine/entities.h>
 #include <engine/player/map_object.h>
 
+#include <engine/entity/entity_types.h>
+
 
 namespace nc
 {
@@ -18,13 +20,14 @@ namespace nc
   class Enemy : public MapObject
   {
   public:
-    Enemy();
-    Enemy(vec3 position);
+    using Base = MapObject;
+    static EntityType get_type_static();
+
     Enemy(vec3 position, vec3 facing);
     void init();
     void update();
     void get_wish_velocity(f32 delta_seconds);
-    void check_for_collision(MapObject collider);
+    void check_for_collision(const MapObject& collider);
     void apply_velocity();
     void damage(int damage);
     void die();

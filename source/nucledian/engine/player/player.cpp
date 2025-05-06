@@ -9,31 +9,15 @@
 #include <math/utils.h>
 #include <math/lingebra.h>
 
+#include <engine/entity/entity_type_definitions.h>
+
 namespace nc
 {
-  Player::Player()
-  {
-    this->position = vec3(0.0f, 0.0f, 3.0f);
-    currentHealth = maxHealth;
-
-    width = 0.25f;
-    height = 1.5f;
-    collision = true;
-
-    camera.update_transform(position, angleYaw, anglePitch, viewHeight);
-  }
-
   //==========================================================================
-
   Player::Player(vec3 position)
+  : Base(position, 0.25f, 1.5f, true)
   {
-    this->position = position;
     currentHealth = maxHealth;
-
-    width = 0.25f;
-    height = 1.5f;
-    collision = true;
-
     camera.update_transform(position, angleYaw, anglePitch, viewHeight);
   }
 
@@ -95,7 +79,7 @@ namespace nc
 
     //NC_MESSAGE("{} {} {}", position.x, position.y, position.z);
 
-    camera.update_transform(position, angleYaw, anglePitch, viewHeight);
+    camera.update_transform(this->get_position(), angleYaw, anglePitch, viewHeight);
   }
 
   bool Player::get_attack_state(GameInputs curInput, GameInputs prevInput, [[maybe_unused]] f32 delta_seconds)
@@ -108,21 +92,23 @@ namespace nc
     return false;
   }
 
-  void Player::check_collision(MapObject collider)
+  void Player::check_collision(const MapObject& collider)
   {
-    position += velocity;
+    this->set_position(this->get_position() + velocity);
 
     if (!did_collide(collider))
     {
-      position += -velocity;
+      this->set_position(this->get_position() - velocity);
       return;
     }
 
-    vec3 target_dist = collider.get_position() - position;
+    f32 width = this->get_width();
+
+    vec3 target_dist = collider.get_position() - this->get_position();
 
     vec3 intersect_union = vec3(get_width(), 0, get_width()) - (target_dist - vec3(collider.get_width(), 0, collider.get_width()));
 
-    position += -velocity;
+    this->set_position(this->get_position() - velocity);
 
     vec3 new_velocity = velocity - intersect_union;
     vec3 mult = vec3(velocity.x / (1 - new_velocity.x), 0, velocity.z / (1 - new_velocity.z));
@@ -130,7 +116,7 @@ namespace nc
     if (mult.x < 0.05f) mult.x = 0;
     if (mult.z < 0.05f) mult.z = 0;
 
-    target_dist = collider.get_position() - position;
+    target_dist = collider.get_position() - this->get_position();
     target_dist.x = abs(target_dist.x);
     target_dist.z = abs(target_dist.z);
 
@@ -151,7 +137,9 @@ namespace nc
 
   void Player::apply_velocity()
   {
+    vec3 position = this->get_position();
     MapObject::move(position, velocity, m_forward, 0.25f);
+    this->set_position(position);
 
     // recompute the angleYaw
     const auto forward2 = normalize(with_y(m_forward, 0.0f));
@@ -220,11 +208,6 @@ namespace nc
     return &camera;
   }
 
-  vec3 Player::get_position()
-  {
-    return position;
-  }
-
   vec3 Player::get_look_direction()
   {
     //looking direction
@@ -235,4 +218,11 @@ namespace nc
   {
     return viewHeight;
   }
+
+  //==============================================================================
+  EntityType Player::get_type_static()
+  {
+    return EntityTypes::player;
+  }
+
 }

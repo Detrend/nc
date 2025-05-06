@@ -39,6 +39,11 @@ void EntityRegistry::destroy_entity(EntityID id)
 //==============================================================================
 Entity* EntityRegistry::get_entity(EntityID id)
 {
+  if (id == INVALID_ENTITY_ID)
+  {
+    return nullptr;
+  }
+
   nc_assert(id.type < EntityTypes::count);
 
   Pool& pool = m_Pools[id.type];

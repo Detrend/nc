@@ -4,33 +4,27 @@
 #include <math/vector.h>
 #include <aabb.h>
 
+#include <engine/entity/entity.h>
+
 namespace nc {
 
   // definition of a generic map object, mainly collisions
 
-  class MapObject
+  class MapObject : public Entity
   {
   public:
-    MapObject();
     MapObject(vec3 position, f32 width, f32 height, bool collision);
 
-    virtual bool did_collide(MapObject collider);
+    virtual bool did_collide(const MapObject& collider);
 
     f32 get_width() const;
-    f32 get_height() const;
-    vec3 get_position() const;
 
     static void move(vec3& position, vec3& velocity, vec3& forward, f32 radius);
 
     ~MapObject();
 
   protected:
-    f32 width; //is actualy half a width
-    f32 height;
-    bool collision;
-
-    vec3 position;
-
+    bool  collision;
     aabb3 bounds;
   };
 }

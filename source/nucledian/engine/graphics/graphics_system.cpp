@@ -404,62 +404,62 @@ void GraphicsSystem::update(f32 delta_seconds)
 {
   // TODO: only temporary for debug camera
   //m_debug_camera.handle_input(delta_seconds);
-  if (auto* camera = this->get_camera(); camera && CVars::debug_player_raycasts)
-  {
-    const auto& map = get_engine().get_map();
+  //if (auto* camera = this->get_camera(); camera && CVars::debug_player_raycasts)
+  //{
+  //  const auto& map = get_engine().get_map();
 
-    constexpr f32 RAY_LEN = 10.0f;
+  //  constexpr f32 RAY_LEN = 10.0f;
 
-    const vec3 eye_pos  = camera->get_position();
-    const vec3 look_dir = camera->get_forward();
+  //  const vec3 eye_pos  = camera->get_position();
+  //  const vec3 look_dir = camera->get_forward();
 
-    const vec3 ray_start = eye_pos;
-    const vec3 ray_end   = eye_pos + look_dir * RAY_LEN;
+  //  const vec3 ray_start = eye_pos;
+  //  const vec3 ray_end   = eye_pos + look_dir * RAY_LEN;
 
-    // first intersect the map
-    color4 col = colors::RED;
+  //  // first intersect the map
+  //  color4 col = colors::RED;
 
-    vec3 out_normal;
-    f32  out_coeff = FLT_MAX;
-    if (!map.raycast3d(ray_start, ray_end, out_normal, out_coeff))
-    {
-      out_coeff = FLT_MAX;
-    }
+  //  vec3 out_normal;
+  //  f32  out_coeff = FLT_MAX;
+  //  if (!map.raycast3d(ray_start, ray_end, out_normal, out_coeff))
+  //  {
+  //    out_coeff = FLT_MAX;
+  //  }
 
-    // then intersect enemies
-    const auto& thing_system = ThingSystem::get();
-    for (const auto& enemy : thing_system.get_enemies())
-    {
-      const f32   width    = enemy.get_width();
-      const f32   height   = enemy.get_height() * 2.0f;
-      const vec3  position = enemy.get_position();
+  //  // then intersect enemies
+  //  const auto& thing_system = ThingSystem::get();
+  //  for (const auto& enemy : thing_system.get_enemies())
+  //  {
+  //    const f32   width    = enemy.get_width();
+  //    const f32   height   = enemy.get_height() * 2.0f;
+  //    const vec3  position = enemy.get_position();
 
-      const aabb3 bbox = aabb3
-      {
-        position - vec3{width, 0.0f,   width},
-        position + vec3{width, height, width}
-      };
+  //    const aabb3 bbox = aabb3
+  //    {
+  //      position - vec3{width, 0.0f,   width},
+  //      position + vec3{width, height, width}
+  //    };
 
-      f32  out;
-      vec3 normal;
-      if (intersect::ray_aabb3(ray_start, ray_end, bbox, out, normal) && out < out_coeff)
-      {
-        out_coeff  = out;
-        out_normal = normal;
-        col        = colors::GREEN;
-      }
+  //    f32  out;
+  //    vec3 normal;
+  //    if (intersect::ray_aabb3(ray_start, ray_end, bbox, out, normal) && out < out_coeff)
+  //    {
+  //      out_coeff  = out;
+  //      out_normal = normal;
+  //      col        = colors::GREEN;
+  //    }
 
-      f32  dummy;
-      vec3 dummy_n;
-      intersect::ray_aabb3(ray_start, ray_end, bbox, dummy, dummy_n);
+  //    f32  dummy;
+  //    vec3 dummy_n;
+  //    intersect::ray_aabb3(ray_start, ray_end, bbox, dummy, dummy_n);
 
-      if (out_coeff != FLT_MAX)
-      {
-        const vec3 hit_pt = eye_pos + look_dir * RAY_LEN * out_coeff;
-        Gizmo::create_line(0.25f, hit_pt, hit_pt + out_normal, col);
-      }
-    }
-  }
+  //    if (out_coeff != FLT_MAX)
+  //    {
+  //      const vec3 hit_pt = eye_pos + look_dir * RAY_LEN * out_coeff;
+  //      Gizmo::create_line(0.25f, hit_pt, hit_pt + out_normal, col);
+  //    }
+  //  }
+  //}
 
   GizmoManager::instance().update_ttls(delta_seconds);
 }

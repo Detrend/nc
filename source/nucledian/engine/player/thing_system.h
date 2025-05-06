@@ -8,6 +8,8 @@
 // do not want to include more than is necessary!!!
 #include <engine/enemies/enemy.h>
 
+#include <engine/entity/entity_types.h>
+
 #include <memory> // std::unique_ptr
 
 namespace nc
@@ -16,15 +18,15 @@ namespace nc
 struct ModuleEvent;
 struct MapSectors;
 struct GameInputs;
-
-class Player;
+class  EntityRegistry;
+class  Player;
 
 class ThingSystem : public IEngineModule
 {
 public:
-  using Enemies   = std::vector<Enemy>;
-  using PlayerPtr = std::unique_ptr<Player>;
-  using MapPtr    = std::unique_ptr<MapSectors>;
+  using Enemies     = std::vector<EntityID>;
+  using MapPtr      = std::unique_ptr<MapSectors>;
+  using RegistryPtr = std::unique_ptr<EntityRegistry>;
 
 public:
   static EngineModuleId get_module_id();
@@ -33,15 +35,16 @@ public:
   bool init();
   void on_event(ModuleEvent& event) override;
 
-  Player* get_player();
+  Player*         get_player();
+  EntityRegistry& get_entities();
 
   const MapSectors& get_map()     const;
-  const Enemies&    get_enemies() const;
 
   // TODO: remove later, only temporary
   void build_map();
 
 private:
+  const Enemies&    get_enemies() const;
   void check_player_attack
   (
     const GameInputs&  curr_inputs,
@@ -52,9 +55,10 @@ private:
   void check_enemy_attack(const ModuleEvent& event);
 
 private:
-  PlayerPtr player;
-  MapPtr    map;
-  Enemies   enemies;
+  EntityID    player_id = INVALID_ENTITY_ID;
+  MapPtr      map;
+  Enemies     enemies;
+  RegistryPtr entities;
 };
 
 }

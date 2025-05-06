@@ -6,23 +6,17 @@
 
 namespace nc
 {
-  MapObject::MapObject()
-  {
-  }
-
   // ===============================================================================
 
   MapObject::MapObject(vec3 position, f32 width, f32 height, bool collision)
+  : Entity(position, width, height)
   {
-    this->position = position;
-    this->width = width;
-    this->height = height;
     this->collision = collision;
   }
 
   // ===============================================================================
 
-  bool MapObject::did_collide(MapObject collider)
+  bool MapObject::did_collide(const MapObject& collider)
   {
     // EACH OBJECT HAS AN AABB COLLISION HULL
 
@@ -31,10 +25,14 @@ namespace nc
       return false;
     }
 
+    vec3 position = Entity::get_position();
+    f32  width    = Entity::get_radius();
+    f32  height   = Entity::get_height();
+
     // get distance from top down
 
-    f32 difX = abs(position.x - collider.position.x);
-    f32 difZ = abs(position.z - collider.position.z);
+    f32 difX = abs(position.x - collider.get_position().x);
+    f32 difZ = abs(position.z - collider.get_position().z);
 
     //f32 topDownDistance = sqrtf(difX * difX + difY * difY);
 
@@ -44,19 +42,19 @@ namespace nc
     }*/
 
     // AABB
-    if (difX > width + collider.width + 0.01f || difZ > width + collider.width + 0.01f)
+    if (difX > width + collider.get_width() + 0.01f || difZ > width + collider.get_width() + 0.01f)
     {
       return false;
     }
 
     // check whether the bottom point of collider is in range of our position - height
-    if (position.y <= collider.position.y && collider.position.y <= position.y + height) 
+    if (position.y <= collider.get_position().y && collider.get_position().y <= position.y + height) 
     {
       return true;
     }
 
     // check whether the top point of collider is in range of our position - height
-    if (position.y <= collider.position.y + height && collider.position.y + height <= position.y + height)
+    if (position.y <= collider.get_position().y + height && collider.get_position().y + height <= position.y + height)
     {
       return true;
     }
@@ -68,21 +66,7 @@ namespace nc
 
   f32 MapObject::get_width() const
   {
-    return width;
-  }
-
-  // ===============================================================================
-
-  f32 MapObject::get_height() const
-  {
-    return height;
-  }
-
-  // ===============================================================================
-
-  vec3 MapObject::get_position() const
-  {
-    return position;
+    return Entity::get_radius();
   }
 
 // ===============================================================================

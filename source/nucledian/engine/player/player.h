@@ -9,27 +9,31 @@
 
 #include <math/vector.h>
 
+#include <engine/entity/entity_types.h>
+
 namespace nc
 {
 
 class Player : public MapObject
 {
 public:
-  Player();
+  using Base = MapObject;
+
   Player(vec3 position);
+
+  static EntityType get_type_static();
 
   //PlayerSpecificInputs get_inputs();
   //void load_inputs(PlayerSpecificInputs inputs);
   void get_wish_velocity(GameInputs input, f32 delta_seconds);
   bool get_attack_state(GameInputs curInput, GameInputs prevInput, f32 delta_seconds);
-  void check_collision(MapObject collider);
+  void check_collision(const MapObject& collider);
   void apply_velocity();
   void Damage(int damage);
   void Die();
 
   DebugCamera* get_camera();
 
-  vec3 get_position();
   vec3 get_look_direction();
   f32 get_view_height();
 

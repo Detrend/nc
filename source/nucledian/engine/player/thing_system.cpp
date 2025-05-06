@@ -7,6 +7,8 @@
 #include <engine/core/module_event.h>
 
 #include <engine/map/map_system.h>
+#include <engine/entity/entity_system.h>
+#include <engine/entity/entity_type_definitions.h>
 
 #include <engine/input/input_system.h>
 
@@ -312,7 +314,10 @@ ThingSystem& ThingSystem::get()
 //==========================================================
 bool ThingSystem::init()
 {
-  player = std::make_unique<Player>(vec3(1, 0, 1));
+  entities = std::make_unique<EntityRegistry>();
+  auto* player = entities->create_entity<Player>(vec3{0});
+  player_id = player->get_id();
+
   return true;
 }
 
@@ -324,10 +329,6 @@ void ThingSystem::on_event(ModuleEvent& event)
     case ModuleEventType::post_init:
     {
       this->build_map();
-
-      enemies.push_back(Enemy(vec3(17,    0, 3), vec3(0, 0, 1)));
-      enemies.push_back(Enemy(vec3(19.5f, 0, 3), vec3(0, 0, 1)));
-      enemies.push_back(Enemy(vec3(22,    0, 3), vec3(0, 0, 1)));
       break;
     }
 
@@ -337,33 +338,36 @@ void ThingSystem::on_event(ModuleEvent& event)
       GameInputs curInputs = get_engine().get_module<InputSystem>().get_inputs();
       GameInputs prevInputs = get_engine().get_module<InputSystem>().get_prev_inputs();
 
-      player->get_wish_velocity(curInputs, event.update.dt);
-      for (size_t i = 0; i < enemies.size(); i++)
+      auto& entity_system = this->get_entities();
+
+      this->get_player()->get_wish_velocity(curInputs, event.update.dt);
+
+      entity_system.for_each<Enemy>([&](Enemy& enemy)
       {
-        enemies[i].get_wish_velocity(event.update.dt);
-      }
+        enemy.get_wish_velocity(event.update.dt);
+      });
 
       check_player_attack(curInputs, prevInputs, event);
       check_enemy_attack(event);
 
       //CHECK FOR COLLISIONS
-      for (size_t i = 0; i < enemies.size(); i++)
+      entity_system.for_each<Enemy>([&](Enemy& enemy)
       {
-        player->check_collision(enemies[i]);
-      }
+        this->get_player()->check_collision(enemy);
+      });
 
-      for (size_t i = 0; i < enemies.size(); i++)
+      entity_system.for_each<Enemy>([&](Enemy& enemy)
       {
-        enemies[i].check_for_collision(*player);
-      }
+        enemy.check_for_collision(*this->get_player());
+      });
 
       //FINAL VELOCITY CHANGE
-      player->apply_velocity();
+      this->get_player()->apply_velocity();
 
-      for (size_t i = 0; i < enemies.size(); i++)
+      entity_system.for_each<Enemy>([&](Enemy& enemy)
       {
-        enemies[i].apply_velocity();
-      }
+        enemy.apply_velocity();
+      });
 
       break;
     }
@@ -373,7 +377,14 @@ void ThingSystem::on_event(ModuleEvent& event)
 //==========================================================
 Player* ThingSystem::get_player()
 {
-  return player.get();
+  return this->get_entities().get_entity<Player>(player_id);
+}
+
+//==============================================================================
+EntityRegistry& ThingSystem::get_entities()
+{
+  nc_assert(entities);
+  return *entities;
 }
 
 //==========================================================
@@ -408,25 +419,26 @@ void ThingSystem::check_player_attack
   const GameInputs&  prev_inputs,
   const ModuleEvent& event)
 {
-  bool didAttack = player->get_attack_state(curr_inputs, prev_inputs, event.update.dt);
+  bool didAttack = this->get_player()->get_attack_state(curr_inputs, prev_inputs, event.update.dt);
   if (didAttack)
   {
-    [[maybe_unused]] vec3 rayStart = player->get_position() + vec3(0, player->get_view_height(), 0);
+    [[maybe_unused]] vec3 rayStart = this->get_player()->get_position() + vec3(0, this->get_player()->get_view_height(), 0);
     [[maybe_unused]] vec3 rayEnd = rayStart + get_engine().get_module<GraphicsSystem>().get_camera()->get_forward() * 50.0f;
 
     [[maybe_unused]] f32 hitDistance = 999999;
-    [[maybe_unused]] int index = -1;
-
+    EntityID index = INVALID_ENTITY_ID;
 
     f32 wallDist;
     vec3 wallNormal;
     bool wallHit = map->raycast3d(rayStart, rayEnd, wallNormal, wallDist);
 
-    for (int i = 0; i < static_cast<int>(enemies.size()); i++)
+    auto& entity_system = this->get_entities();
+
+    entity_system.for_each<Enemy>([&](Enemy& enemy)
     {
-      const f32   width = enemies[i].get_width();
-      const f32   height = enemies[i].get_height() * 2.0f;
-      const vec3  position = enemies[i].get_position();
+      const f32   width    = enemy.get_width();
+      const f32   height   = enemy.get_height() * 2.0f;
+      const vec3  position = enemy.get_position();
 
       const aabb3 bbox = aabb3
       {
@@ -441,16 +453,16 @@ void ThingSystem::check_player_attack
         if (hitDistance > out)
         {
           hitDistance = out;
-          index = i;
+          index = enemy.get_id();
         }
       }
-    }
+    });
 
-    if (index > -1)
+    if (index != INVALID_ENTITY_ID)
     {
       if (hitDistance < wallDist || !wallHit)
       {
-        enemies[index].damage(100);
+        entity_system.get_entity<Enemy>(index)->damage(100);
       }
     }
   }
@@ -458,12 +470,13 @@ void ThingSystem::check_player_attack
 
 void ThingSystem::check_enemy_attack([[maybe_unused]] const ModuleEvent& event)
 {
-  for (int i = 0; i < static_cast<int>(enemies.size()); i++)
+  auto& entity_system = this->get_entities();
+  entity_system.for_each<Enemy>([&](Enemy& enemy)
   {
-    if (enemies[i].can_attack())
+    if (enemy.can_attack())
     {
-      [[maybe_unused]] vec3 rayStart = enemies[i].get_position() + vec3(0, 0.5f, 0);
-      [[maybe_unused]] vec3 rayEnd = player->get_position() + vec3(0, player->get_view_height(), 0);
+      [[maybe_unused]] vec3 rayStart = enemy.get_position() + vec3(0, 0.5f, 0);
+      [[maybe_unused]] vec3 rayEnd = this->get_player()->get_position() + vec3(0, this->get_player()->get_view_height(), 0);
 
       f32 wallDist;
       vec3 wallNormal;
@@ -474,9 +487,9 @@ void ThingSystem::check_enemy_attack([[maybe_unused]] const ModuleEvent& event)
         return;
       }
 
-      player->Damage(10);
+      this->get_player()->Damage(10);
     }
-  }
+  });
 }
 
 }

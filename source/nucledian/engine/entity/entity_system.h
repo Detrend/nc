@@ -1,5 +1,5 @@
 // Project Nucledian Source File
-
+#pragma once
 #include <engine/entity/entity.h>
 
 #include <math/vector.h> // vec3
@@ -29,6 +29,9 @@ public:
   template<typename T, typename...CtorArgs>
   T* create_entity(CtorArgs...args);
 
+  template<typename T>
+  T* get_entity(EntityID id);
+
   Entity* get_entity(EntityID id);
 
   void destroy_entity(EntityID id);
@@ -36,6 +39,9 @@ public:
   // The signature of the lambda has to be "void(Entity&)"
   template<typename L>
   void for_each(EntityTypeMask types, L lambda);
+
+  template<typename T, typename L>
+  void for_each(L lambda);
 
 private:
   // Bump this up if the entity count gets larger
