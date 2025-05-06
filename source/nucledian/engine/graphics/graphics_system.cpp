@@ -1204,7 +1204,7 @@ void GraphicsSystem::render_portal(const CameraData& camera_data, const PortalRe
 {
   const MapSectors& map = get_engine().get_map();
   const mat4 virtual_view = camera_data.view * portal.dest_to_src;
-  const vec3 virtual_view_pos = vec3(inverse(virtual_view) * vec4(0.0f, 0.0f, 0.0f, 1.0f));
+  [[maybe_unused]]const vec3 virtual_view_pos = vec3(inverse(virtual_view) * vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
   const CameraData virtual_camera_data = CameraData
   {

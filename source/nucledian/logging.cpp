@@ -81,19 +81,19 @@ static Logger DefaultLogger = Logger
 
 
 //==============================================================================
-void nc::logging::log_message_impl(const LoggingSeverity severity, const std::string& message, const LoggingContext &ctx)
+void log_message_impl(const LoggingSeverity severity, const std::string& message, const LoggingContext &ctx)
 {
     DefaultLogger.log_message(severity, message, ctx);
 }
 
 //==============================================================================
-void nc::logging::register_logging_output(const LoggingSeverity severity, const LoggingFunction& output)
+void register_logging_output(const LoggingSeverity severity, const LoggingFunction& output)
 {
     DefaultLogger.register_logging_output(severity, output);
 }
 
 //==============================================================================
-void nc::logging::unregister_logging_output(const LoggingSeverity severity, const LoggingFunction& output)
+void unregister_logging_output(const LoggingSeverity severity, const LoggingFunction& output)
 {
     DefaultLogger.unregister_logging_output(severity, output);
 }

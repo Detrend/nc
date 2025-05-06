@@ -35,6 +35,8 @@ std::vector<Test>& get_tests();
 #define NC_TEST_SUCCESS return true;
 #define NC_TEST_FAIL    return false;
 
+#define NC_TEST_ASSERT(_cond) do { if (!(_cond)) NC_TEST_FAIL } while(0);
+
 #ifdef NC_TESTS
 
 #define NC_UNIT_TEST(_test_func)                                                   \
