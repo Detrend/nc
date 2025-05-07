@@ -16,9 +16,9 @@
 #include <engine/graphics/gizmo.h>
 #include <engine/graphics/resources/res_lifetime.h>
 
-#include <engine/entities.h>
 #include <engine/input/input_system.h>
 #include <engine/map/map_system.h>
+#include <engine/entity/entity_system.h>
 #include <engine/player/thing_system.h>
 
 #include <glad/glad.h>
@@ -1042,27 +1042,29 @@ void GraphicsSystem::render_entities(const CameraData& camera_data) const
 
   struct ModelGroup
   {
-    Model            model;
-    std::vector<u32> component_indices;
+    Model                model;
+    std::vector<Entity*> entities; // for now, we keep only enemies here
   };
 
   std::unordered_map<u64, ModelGroup> model_groups;
-  for (u32 component_id = 0; component_id < g_appearance_components.size(); ++component_id)
+
+  auto& es = ThingSystem::get().get_entities();
+  es.for_each<Enemy>([&](Enemy& enemy)
   {
-    const Appearance& appearance = g_appearance_components[component_id];
-    
+    const Appearance& appearance = enemy.get_appearance();
+
     // TODO: Use better unique identifier.
     u64 id = (static_cast<u64>(appearance.model.material.m_shader_program) << 32)
       + static_cast<u64>(appearance.model.mesh.get_vao());
 
     model_groups[id].model = appearance.model;
-    model_groups[id].component_indices.push_back(component_id);
-  }
+    model_groups[id].entities.push_back(&enemy);
+  });
 
   // TODO: sort groups by: 1. program, 2. texture, 3. VAO
   for (const auto& [_, group] : model_groups)
   {
-    const auto& [model, indices] = group;
+    const auto& [model, entities] = group;
 
     // TODO: switch program & VAO only when necessary
     model.material.use();
@@ -1075,12 +1077,13 @@ void GraphicsSystem::render_entities(const CameraData& camera_data) const
     model.material.set_uniform(shaders::solid::VIEW_POSITION, camera_data.position);
 
     // TODO: indirect rendering
-    for (auto& index : indices)
+    for (auto* entity : entities)
     {
-      Transform& transform = g_transform_components[index];
-      Appearance& appearance = g_appearance_components[index];
+      auto* enemy = static_cast<Enemy*>(entity);
+      auto        transform  = enemy->calc_transform();
+      const auto& appearance = enemy->get_appearance();
 
-      const mat4 transform_matrix = appearance.transform.get_matrix() * transform.get_matrix();
+      const mat4 transform_matrix = transform.get_matrix() * appearance.transform.get_matrix();
 
       // TODO: should be set only when these changes and probably not here
       model.material.set_uniform(shaders::solid::COLOR, appearance.color);

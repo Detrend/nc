@@ -126,7 +126,6 @@
     <ClCompile Include="..\source\nucledian\math\lingebra.cpp" />
     <ClCompile Include="..\source\nucledian\math\utils.cpp" />
     <ClCompile Include="..\source\nucledian\engine\enemies\enemy.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\entities.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\debug_camera.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\gizmo.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\graphics_system.cpp" />
@@ -233,6 +232,7 @@
     <ClInclude Include="..\source\nucledian\common.h" />
     <ClInclude Include="..\source\nucledian\config.h" />
     <ClInclude Include="..\source\nucledian\cvars.h" />
+    <ClInclude Include="..\source\nucledian\engine\appearance.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\entity_types.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\entity_type_definitions.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
@@ -248,7 +248,6 @@
     <ClInclude Include="..\source\nucledian\engine\core\module_event.h" />
     <ClInclude Include="..\source\nucledian\engine\core\resources.h" />
     <ClInclude Include="..\source\nucledian\engine\enemies\enemy.h" />
-    <ClInclude Include="..\source\nucledian\engine\entities.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\debug_camera.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\gizmo.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\gl_types.h" />

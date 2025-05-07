@@ -1,8 +1,9 @@
 #pragma once
-#include <engine/entities.h>
 #include <engine/player/map_object.h>
 
 #include <engine/entity/entity_types.h>
+#include <engine/appearance.h>
+#include <transform.h>
 
 
 namespace nc
@@ -32,11 +33,16 @@ namespace nc
     void damage(int damage);
     void die();
     bool can_attack();
+
+    const Appearance& get_appearance() const;
+    Transform         calc_transform() const;
+
   private:
     u32 m_entity_index = 0; //this will be overwritten anyway
     vec3 velocity;
     vec3 facing;
     EnemyState state = idle;
+    Appearance appear;
 
     int health;
     int maxHealth;

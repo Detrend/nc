@@ -324,11 +324,16 @@ bool ThingSystem::init()
 //==========================================================
 void ThingSystem::on_event(ModuleEvent& event)
 {
+  auto& entity_system = this->get_entities();
+
   switch (event.type)
   {
     case ModuleEventType::post_init:
     {
       this->build_map();
+      entity_system.create_entity<Enemy>(vec3{1, 0.0, 1}, FRONT_DIR);
+      entity_system.create_entity<Enemy>(vec3{2, 0.0, 1}, FRONT_DIR);
+      entity_system.create_entity<Enemy>(vec3{3, 0.0, 1}, FRONT_DIR);
       break;
     }
 
@@ -337,8 +342,6 @@ void ThingSystem::on_event(ModuleEvent& event)
       //INPUT PHASE
       GameInputs curInputs = get_engine().get_module<InputSystem>().get_inputs();
       GameInputs prevInputs = get_engine().get_module<InputSystem>().get_prev_inputs();
-
-      auto& entity_system = this->get_entities();
 
       this->get_player()->get_wish_velocity(curInputs, event.update.dt);
 

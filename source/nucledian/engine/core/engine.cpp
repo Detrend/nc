@@ -9,7 +9,6 @@
 #include <engine/core/engine_module_types.h>
 #include <engine/core/event_journal.h>
 
-#include <engine/entities.h>
 #include <cvars.h>
 
 #include <engine/graphics/graphics_system.h>

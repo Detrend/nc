@@ -6,6 +6,7 @@
 #include <engine/map/map_system.h>
 
 #include <math/lingebra.h>
+#include <engine/graphics/graphics_system.h>
 
 #include <engine/entity/entity_type_definitions.h>
 
@@ -33,11 +34,14 @@ namespace nc
 
   void Enemy::init()
   {
-    m_entity_index = create_entity(
-      Transform(this->get_position(), vec3(0.3f, 0.7f, 0.3f)),
-      colors::RED,
-      Transform(vec3(0.0f, 0.35f, 0.0f))
-    );
+    auto& gfx = get_engine().get_module<GraphicsSystem>();
+
+    appear = Appearance
+    {
+      .color     = colors::RED,
+      .model     = gfx.get_cube_model(),
+      .transform = Transform{VEC3_ZERO, vec3{0.3f, 0.7f, 0.3f}}
+    };
   }
 
   void Enemy::update()
@@ -47,7 +51,7 @@ namespace nc
 
     this->set_position(this->get_position() + target_dir * 1.0f * 0.001f);
 
-    g_transform_components[m_entity_index].position() = this->get_position();
+    //g_transform_components[m_entity_index].position() = this->get_position();
   }
 
   void Enemy::get_wish_velocity(f32 delta_seconds)
@@ -143,7 +147,7 @@ namespace nc
     vec3 position = this->get_position();
     MapObject::move(position, velocity, facing, 0.25f);
     this->set_position(position);
-    g_transform_components[m_entity_index].position() = position;
+    //g_transform_components[m_entity_index].position() = position;
   }
 
   void Enemy::damage(int damage)
@@ -160,8 +164,8 @@ namespace nc
     alive = false;
     collision = false;
 
-    g_appearance_components[m_entity_index].color = colors::GREEN;
-    g_appearance_components[m_entity_index].transform = Transform(this->get_position(), vec3(0.3f, 0.1f, 0.3f));
+    //g_appearance_components[m_entity_index].color = colors::GREEN;
+    //g_appearance_components[m_entity_index].transform = Transform(this->get_position(), vec3(0.3f, 0.1f, 0.3f));
   }
 
   bool Enemy::can_attack()
@@ -175,6 +179,18 @@ namespace nc
   }
 
 
+
+  //==============================================================================
+  const Appearance& Enemy::get_appearance() const
+  {
+    return appear;
+  }
+
+  //==============================================================================
+  Transform Enemy::calc_transform() const
+  {
+    return Transform{this->get_position()};
+  }
 
 }
 

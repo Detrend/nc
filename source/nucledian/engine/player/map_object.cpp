@@ -27,7 +27,7 @@ namespace nc
 
     vec3 position = Entity::get_position();
     f32  width    = Entity::get_radius();
-    f32  height   = Entity::get_height();
+    f32  height   = Entity::get_radius();
 
     // get distance from top down
 
