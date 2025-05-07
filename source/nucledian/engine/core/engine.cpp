@@ -16,6 +16,7 @@
 #include <engine/player/thing_system.h>
 #include <engine/map/map_system.h>
 #include <engine/entity/entity_system.h>
+#include <engine/entity/sector_mapping.h>
 
 #ifdef NC_PROFILING
 #include <benchmark/benchmark.h>

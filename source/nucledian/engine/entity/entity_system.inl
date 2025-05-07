@@ -59,7 +59,7 @@ T* EntityRegistry::create_entity(Args...args)
 
   nc_assert(is_ok);
   Entity* entity = it->second.get();
-  entity->m_IdAndType = id;
+  this->setup_entity(*entity, id);
 
   return static_cast<T*>(entity);
 }

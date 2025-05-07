@@ -18,6 +18,7 @@ namespace nc
 struct ModuleEvent;
 struct MapSectors;
 struct GameInputs;
+struct SectorMapping;
 class  EntityRegistry;
 class  Player;
 
@@ -25,6 +26,7 @@ class ThingSystem : public IEngineModule
 {
 public:
   using Enemies     = std::vector<EntityID>;
+  using MappingPtr  = std::unique_ptr<SectorMapping>;
   using MapPtr      = std::unique_ptr<MapSectors>;
   using RegistryPtr = std::unique_ptr<EntityRegistry>;
 
@@ -38,7 +40,8 @@ public:
   Player*         get_player();
   EntityRegistry& get_entities();
 
-  const MapSectors& get_map()     const;
+  const MapSectors&    get_map()            const;
+  const SectorMapping& get_sector_mapping() const;
 
   // TODO: remove later, only temporary
   void build_map();
@@ -57,6 +60,7 @@ private:
 private:
   EntityID    player_id = INVALID_ENTITY_ID;
   MapPtr      map;
+  MappingPtr  mapping;
   Enemies     enemies;
   RegistryPtr entities;
 };

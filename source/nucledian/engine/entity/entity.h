@@ -8,6 +8,11 @@
 
 namespace nc
 {
+struct SectorMapping;
+}
+
+namespace nc
+{
 
 class Entity
 {
@@ -42,10 +47,11 @@ public:
   void       set_pos_rad_height(vec3 p, f32 r, f32 h);
 
 private: friend class EntityRegistry;
-  EntityID m_IdAndType;
-  vec3     m_Position;
-  f32      m_Radius2D;
-  f32      m_Height;
+  SectorMapping* m_Mapping   = nullptr;
+  EntityID       m_IdAndType = INVALID_ENTITY_ID;
+  vec3           m_Position;
+  f32            m_Radius2D;
+  f32            m_Height;
 };
 
 }

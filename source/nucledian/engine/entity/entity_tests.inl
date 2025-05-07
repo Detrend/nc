@@ -5,6 +5,7 @@
 
 #ifdef NC_TESTS
 #include <unit_test.h>
+#include <engine/map/map_system.h>
 
 namespace nc::entity_test
 { 
@@ -33,7 +34,9 @@ public:
 //==============================================================================
 bool entity_system_test([[maybe_unused]]unit_test::TestCtx& ctx)
 {
-  EntityRegistry es;
+  MapSectors     map;
+  SectorMapping  mapping(map);
+  EntityRegistry es(mapping);
 
   NC_TEST_ASSERT(TestPlayerEntity::alive_cnt == 0);
 

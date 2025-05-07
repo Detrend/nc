@@ -8,6 +8,7 @@
 
 #include <engine/map/map_system.h>
 #include <engine/entity/entity_system.h>
+#include <engine/entity/sector_mapping.h>
 #include <engine/entity/entity_type_definitions.h>
 
 #include <engine/input/input_system.h>
@@ -314,9 +315,9 @@ ThingSystem& ThingSystem::get()
 //==========================================================
 bool ThingSystem::init()
 {
-  entities = std::make_unique<EntityRegistry>();
-  auto* player = entities->create_entity<Player>(vec3{0});
-  player_id = player->get_id();
+  map      = std::make_unique<MapSectors>();
+  mapping  = std::make_unique<SectorMapping>(*map);
+  entities = std::make_unique<EntityRegistry>(*mapping);
 
   return true;
 }
@@ -331,6 +332,9 @@ void ThingSystem::on_event(ModuleEvent& event)
     case ModuleEventType::post_init:
     {
       this->build_map();
+      auto* player = entities->create_entity<Player>(vec3{0});
+      player_id = player->get_id();
+
       entity_system.create_entity<Enemy>(vec3{1, 0.0, 1}, FRONT_DIR);
       entity_system.create_entity<Enemy>(vec3{2, 0.0, 1}, FRONT_DIR);
       entity_system.create_entity<Enemy>(vec3{3, 0.0, 1}, FRONT_DIR);
@@ -397,6 +401,13 @@ const MapSectors& ThingSystem::get_map() const
   return *map;
 }
 
+//==============================================================================
+const SectorMapping& ThingSystem::get_sector_mapping() const
+{
+  nc_assert(mapping);
+  return *mapping;
+}
+
 //==========================================================
 const ThingSystem::Enemies& ThingSystem::get_enemies() const
 {
@@ -406,8 +417,8 @@ const ThingSystem::Enemies& ThingSystem::get_enemies() const
 //==========================================================
 void ThingSystem::build_map()
 {
-  map = std::make_unique<MapSectors>();
   map_helpers::make_demo_map(*map);
+  mapping->on_map_rebuild();
 
   get_engine().send_event
   (

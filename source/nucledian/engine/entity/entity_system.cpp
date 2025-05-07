@@ -6,12 +6,14 @@
 
 #include <engine/entity/entity_type_definitions.h>
 #include <engine/entity/entity.h>
+#include <engine/entity/sector_mapping.h>
 
 namespace nc
 {
 
 //==============================================================================
-EntityRegistry::EntityRegistry()
+EntityRegistry::EntityRegistry(SectorMapping& map)
+: m_Mapping(map)
 {
   static_assert(MAX_POOL_CNT >= EntityTypes::count);
 }
@@ -34,6 +36,18 @@ void EntityRegistry::destroy_entity(EntityID id)
     // destroys the entity
     pool.erase(it);
   }
+}
+
+//==============================================================================
+void EntityRegistry::setup_entity(Entity& entity, EntityID id)
+{
+  entity.m_IdAndType = id;
+  entity.m_Mapping   = &m_Mapping;
+
+  m_Mapping.on_entity_create
+  (
+    id, entity.get_position(), entity.get_radius(), entity.get_height()
+  );
 }
 
 //==============================================================================
