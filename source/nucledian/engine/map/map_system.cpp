@@ -447,6 +447,9 @@ void MapSectors::sector_to_vertices(
 
   const auto& sector_data = this->sectors[sector_id].int_data;
 
+  const f32 floor_y = this->sectors[sector_id].floor_height;
+  const f32 ceil_y  = this->sectors[sector_id].ceil_height;
+
   // build the floor first from the first point
   const auto first_wall_idx = sector_data.first_wall;
   const auto last_wall_idx  = sector_data.last_wall;
@@ -459,11 +462,11 @@ void MapSectors::sector_to_vertices(
     const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
     const auto w1pos    = this->walls[idx     ].pos;
     const auto w2pos    = this->walls[next_idx].pos;
-    const auto pt1      = vec3{w1pos.x, SECTOR_FLOOR_Y, w1pos.y};
-    const auto pt2      = vec3{w2pos.x, SECTOR_FLOOR_Y, w2pos.y};
+    const auto pt1      = vec3{w1pos.x, floor_y, w1pos.y};
+    const auto pt2      = vec3{w2pos.x, floor_y, w2pos.y};
 
     // build floor triangle from the first point and 2 others
-    vertices_out.push_back(with_y(first_pt, SECTOR_FLOOR_Y));
+    vertices_out.push_back(with_y(first_pt, floor_y));
     vertices_out.push_back(VEC3_Y);
     vertices_out.push_back(pt2);
     vertices_out.push_back(VEC3_Y);
@@ -477,11 +480,11 @@ void MapSectors::sector_to_vertices(
     const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
     const auto w1pos    = this->walls[idx     ].pos;
     const auto w2pos    = this->walls[next_idx].pos;
-    const auto pt1      = vec3{w1pos.x, SECTOR_CEILING_Y, w1pos.y};
-    const auto pt2      = vec3{w2pos.x, SECTOR_CEILING_Y, w2pos.y};
+    const auto pt1      = vec3{w1pos.x, ceil_y, w1pos.y};
+    const auto pt2      = vec3{w2pos.x, ceil_y, w2pos.y};
 
     // build floor triangle from the first point and 2 others
-    vertices_out.push_back(with_y(first_pt, SECTOR_CEILING_Y));
+    vertices_out.push_back(with_y(first_pt, ceil_y));
     vertices_out.push_back(-VEC3_Y);
     vertices_out.push_back(pt1);
     vertices_out.push_back(-VEC3_Y);
@@ -490,14 +493,56 @@ void MapSectors::sector_to_vertices(
   }
 
   // build walls
-  #if 1
   for (WallID idx = first_wall_idx; idx < last_wall_idx; ++idx)
   {
+    struct WallSegmentHeights
+    {
+      f32 y1 = 0.0f;
+      f32 y2 = 0.0f;
+    };
+
+    u32                num_wall_segments = 1;
+    WallSegmentHeights segment_heights[2]
+    {
+      {floor_y, ceil_y}, {}
+    };
+
     const auto& wall = this->walls[idx];
     if (wall.portal_sector_id != INVALID_SECTOR_ID)
     {
-      // is portal
-      continue;
+      nc_assert(wall.portal_sector_id < this->sectors.size());
+      const auto& neighbor = this->sectors[wall.portal_sector_id];
+
+      if (neighbor.floor_height >= ceil_y || neighbor.ceil_height <= floor_y)
+      {
+        // no overlap, draw the full wall
+        num_wall_segments = 1;
+        segment_heights[0] = {floor_y, ceil_y};
+      }
+      else if (neighbor.ceil_height >= ceil_y && neighbor.floor_height <= floor_y)
+      {
+        // no need to draw any wall
+        continue;
+      }
+      else if (neighbor.ceil_height >= ceil_y && neighbor.floor_height > floor_y)
+      {
+        // draw only bottom segment
+        num_wall_segments = 1;
+        segment_heights[0] = {floor_y, neighbor.floor_height};
+      }
+      else if (neighbor.ceil_height < ceil_y && neighbor.floor_height <= floor_y)
+      {
+        // draw only top segment
+        num_wall_segments = 1;
+        segment_heights[0] = {neighbor.ceil_height, ceil_y};
+      }
+      else
+      {
+        // draw both top and bottom
+        num_wall_segments = 2;
+        segment_heights[0] = {floor_y, neighbor.floor_height};
+        segment_heights[1] = {neighbor.ceil_height, ceil_y};
+      }
     }
 
     const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
@@ -509,26 +554,28 @@ void MapSectors::sector_to_vertices(
     const auto flp         = flipped(p1_to_p2);
     const auto wall_normal = vec3{flp.x, 0.0f, flp.y};
 
-    const auto f1 = vec3{w1pos.x, SECTOR_FLOOR_Y, w1pos.y};
-    const auto f2 = vec3{w2pos.x, SECTOR_FLOOR_Y, w2pos.y};
-    const auto c1 = vec3{w1pos.x, SECTOR_CEILING_Y,  w1pos.y};
-    const auto c2 = vec3{w2pos.x, SECTOR_CEILING_Y,  w2pos.y};
+    for (u32 wall_i = 0; wall_i < num_wall_segments; ++wall_i)
+    {
+      const auto f1 = vec3{w1pos.x, segment_heights[wall_i].y1, w1pos.y};
+      const auto f2 = vec3{w2pos.x, segment_heights[wall_i].y1, w2pos.y};
+      const auto c1 = vec3{w1pos.x, segment_heights[wall_i].y2, w1pos.y};
+      const auto c2 = vec3{w2pos.x, segment_heights[wall_i].y2, w2pos.y};
 
-    vertices_out.push_back(f1);
-    vertices_out.push_back(wall_normal);
-    vertices_out.push_back(f2);
-    vertices_out.push_back(wall_normal);
-    vertices_out.push_back(c1);
-    vertices_out.push_back(wall_normal);
+      vertices_out.push_back(f1);
+      vertices_out.push_back(wall_normal);
+      vertices_out.push_back(f2);
+      vertices_out.push_back(wall_normal);
+      vertices_out.push_back(c1);
+      vertices_out.push_back(wall_normal);
 
-    vertices_out.push_back(c1);
-    vertices_out.push_back(wall_normal);
-    vertices_out.push_back(f2);
-    vertices_out.push_back(wall_normal);
-    vertices_out.push_back(c2);
-    vertices_out.push_back(wall_normal);
+      vertices_out.push_back(c1);
+      vertices_out.push_back(wall_normal);
+      vertices_out.push_back(f2);
+      vertices_out.push_back(wall_normal);
+      vertices_out.push_back(c2);
+      vertices_out.push_back(wall_normal);
+    }
   }
-  #endif
 }
 
 //==============================================================================
@@ -1204,6 +1251,8 @@ int build_map(
   {
     auto&& sector = temp_sectors[sector_id];
     auto& output_sector = output.sectors.emplace_back();
+    output_sector.floor_height = sector.floor_y;
+    output_sector.ceil_height  = sector.ceil_y;
 
     const u32 total_wall_count = static_cast<u32>(sector.points.size());
 

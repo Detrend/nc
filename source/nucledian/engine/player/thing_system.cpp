@@ -22,8 +22,9 @@ namespace nc::map_helpers
 { 
 
 //==============================================================================
-static void test_make_sector
-(
+static void test_make_sector_height(
+  f32                                         in_floor_y,
+  f32                                         in_ceil_y,
   const std::vector<u16>&                     points,
   std::vector<map_building::SectorBuildData>& out,
   int                                         portal_wall_id    = -1,
@@ -46,8 +47,28 @@ static void test_make_sector
 
   out.push_back(map_building::SectorBuildData
   {
-    .points = std::move(walls),
+    .points  = std::move(walls),
+    .floor_y = in_floor_y,
+    .ceil_y  = in_ceil_y,
   });
+}
+
+//==============================================================================
+static void test_make_sector
+(
+  const std::vector<u16>&                     points,
+  std::vector<map_building::SectorBuildData>& out,
+  int                                         portal_wall_id    = -1,
+  WallRelID                                   portal_wall_id_to = 0,
+  SectorID                                    portal_sector     = INVALID_SECTOR_ID)
+{
+  test_make_sector_height
+  (
+    MapSectors::SECTOR_FLOOR_Y,
+    MapSectors::SECTOR_CEILING_Y,
+    points, out, portal_wall_id,
+    portal_wall_id_to, portal_sector
+  );
 }
 
 //==============================================================================
@@ -213,12 +234,12 @@ static void test_make_sector
   test_make_sector({2, 3, 7, 13, 12, 6}, sectors);
   test_make_sector({3, 0, 4, 15, 14, 7}, sectors, 3, 4, 4);
 
-  test_make_sector({16, 17, 25, 26, 27}, sectors, 4, 3, 3); // 4
-  test_make_sector({25, 17, 31, 30, 20, 24}, sectors);
-  test_make_sector({31, 17, 18, 28}, sectors);
-  test_make_sector({18, 19, 29, 28}, sectors);
-  test_make_sector({19, 20, 30, 29}, sectors);
-  test_make_sector({22, 23, 24, 20, 21}, sectors, 4, 3, 1);
+  test_make_sector_height(0.2f, 5.0f, {16, 17, 25, 26, 27},     sectors, 4, 3, 3); // 4
+  test_make_sector_height(0.3f, 2.0f, {25, 17, 31, 30, 20, 24}, sectors);
+  test_make_sector_height(0.3f, 2.0f, {31, 17, 18, 28},         sectors);
+  test_make_sector_height(0.3f, 2.0f, {18, 19, 29, 28},         sectors);
+  test_make_sector_height(0.3f, 2.0f, {19, 20, 30, 29},         sectors);
+  test_make_sector_height(0.2f, 5.0f, {22, 23, 24, 20, 21},     sectors, 4, 3, 1);
 
   using namespace map_building::MapBuildFlag;
 

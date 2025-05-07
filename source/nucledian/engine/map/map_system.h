@@ -89,6 +89,8 @@ struct SectorIntData
 struct SectorData
 {
   SectorIntData int_data;
+  f32           floor_height = 0.0f;
+  f32           ceil_height  = 0.0f;
 };
 
 using PortType = u8;
@@ -231,6 +233,8 @@ struct WallBuildData
 struct SectorBuildData
 {
   std::vector<WallBuildData> points;
+  f32                        floor_y;
+  f32                        ceil_y;
 };
 
 struct OverlapInfo
