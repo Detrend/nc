@@ -129,6 +129,14 @@ namespace nc
   {
     position += velocity;
   }
+
+  // change the height as well so we can move up the stairs
+  auto sector_id = map.get_sector_from_point(position.xz());
+  if (sector_id != INVALID_SECTOR_ID)
+  {
+    const f32 sector_floor_y = map.sectors[sector_id].floor_height;
+    position.y = sector_floor_y;
+  }
 }
 
   // ===============================================================================

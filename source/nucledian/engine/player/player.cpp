@@ -10,7 +10,6 @@
 #include <math/lingebra.h>
 
 #include <engine/entity/entity_type_definitions.h>
-#include <engine/player/thing_system.h>
 
 namespace nc
 {
@@ -138,24 +137,8 @@ namespace nc
 
   void Player::apply_velocity()
   {
-    const auto& map = ThingSystem::get().get_map();
-
     vec3 position = this->get_position();
     MapObject::move(position, velocity, m_forward, 0.25f);
-
-    // This code explains how you can get a floor y from the sector
-    // system. However, this is quite a stupid way to do player height
-    // management and should be refactored.
-    SectorID sector_id = map.get_sector_from_point(position.xz());
-    if (sector_id != INVALID_SECTOR_ID)
-    {
-      const auto& sector  = map.sectors[sector_id];
-      const f32   floor_y = sector.floor_height;
-
-      // set the final Y height
-      position.y = floor_y;
-    }
-
     this->set_position(position);
 
     // recompute the angleYaw after moving through a portal
