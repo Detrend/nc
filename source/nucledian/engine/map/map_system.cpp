@@ -45,6 +45,7 @@ WallID next_wall(const MapSectors& map, SectorID sector, WallID wall)
   return next;
 }
 
+//==============================================================================
 WallID get_wall_id(const MapSectors& map, SectorID sector_id, WallRelID relative_wall_id)
 {
   nc_assert(sector_id < map.sectors.size());
@@ -55,6 +56,21 @@ WallID get_wall_id(const MapSectors& map, SectorID sector_id, WallRelID relative
 
   nc_assert(wall_id < sector_data.last_wall);
   return wall_id;
+}
+
+//==============================================================================
+WallID get_nc_opposing_wall(const MapSectors& map, SectorID sid, WallID wid)
+{
+  nc_assert(sid < map.sectors.size());
+  nc_assert(wid < map.walls.size());
+  nc_assert(map.walls[wid].get_portal_type() == PortalType::non_euclidean);
+
+  WallRelID rel_wall      = map.walls[wid].nc_portal_wall_id;
+  SectorID  portal_sector = map.walls[wid].portal_sector_id;
+
+  nc_assert(portal_sector != INVALID_SECTOR_ID);
+
+  return map.sectors[portal_sector].int_data.first_wall + rel_wall;
 }
 
 //==============================================================================
@@ -585,7 +601,8 @@ bool MapSectors::raycast2d_expanded(
   f32      expand,
   vec2&    out_normal,
   f32&     out_coeff,
-  Portals* out_portals) const
+  Portals* out_portals,
+  WallID   ignore_portal) const
 {
   nc_assert(expand >= 0.0f);
 
@@ -629,7 +646,17 @@ bool MapSectors::raycast2d_expanded(
 
       const auto portal_type = w1.get_portal_type();
 
-      if (portal_type == PortalType::classic)
+      const bool is_normie_portal = portal_type == PortalType::classic;
+      const bool is_nc_portal     = portal_type == PortalType::non_euclidean;
+
+      if (wall_id == ignore_portal)
+      {
+        // ignore this portal
+        nc_assert(is_nc_portal);
+        continue;
+      }
+
+      if (is_normie_portal)
       {
         // ignore this wall, it is a portal
         continue;
@@ -639,21 +666,22 @@ bool MapSectors::raycast2d_expanded(
       const auto p2 = w2.pos;
       nc_assert(p1 != p2);
 
-      const auto wall_normal = flipped(p2 - p1);
-      if (dot(wall_normal, raycast_direction) >= 0.0f)
-      {
-        // ignore wall, it is turned away from us
-        continue;
-      }
+      //const auto wall_normal = flipped(p2 - p1);
+      //if (dot(wall_normal, raycast_direction) >= 0.0f)
+      //{
+      //  // ignore wall, it is turned away from us
+      //  continue;
+      //}
 
       f32  c = FLT_MAX;
       vec2 n = vec2{0};
-      if (intersect::segment_segment_expanded(from, to, p1, p2, expand, n, c) && c < out_coeff)
+      f32 col_exp = is_nc_portal ? 0.0f : expand; // 0 for nuclidean portals
+      if (collide::ray_exp_wall(from, to, p1, p2, col_exp, n, c) && c < out_coeff)
       {
         out_coeff  = c;
         out_normal = n;
 
-        if (portal_type == PortalType::non_euclidean)
+        if (is_nc_portal)
         {
           // store the information that this is a portal
           portal_sector  = sector_id;
@@ -698,9 +726,11 @@ bool MapSectors::raycast2d_expanded(
       });
     }
 
+    WallID wall_to_ignore = map_helpers::get_nc_opposing_wall(*this, portal_sector, nc_portal_wall);
+
     f32  new_out_coeff;
     vec2 new_out_norm;
-    if (this->raycast2d_expanded(new_from, new_to, expand, new_out_norm, new_out_coeff, out_portals))
+    if (this->raycast2d_expanded(new_from, new_to, expand, new_out_norm, new_out_coeff, out_portals, wall_to_ignore))
     {
       // recalculate the out_coeff and out_normal
       out_coeff += (1.0f - out_coeff) * new_out_coeff;

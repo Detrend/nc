@@ -1,3 +1,5 @@
+#include <cvars.h>
+
 #include <engine/player/player.h>
 #include <engine/input/game_input.h>
 #include <engine/input/input_system.h>
@@ -10,6 +12,7 @@
 #include <math/lingebra.h>
 
 #include <engine/entity/entity_type_definitions.h>
+#include <imgui/imgui.h>
 
 namespace nc
 {
@@ -57,6 +60,12 @@ namespace nc
 
     angleYaw = rem_euclid(angleYaw, 2.0f * PI);
     anglePitch = clamp(anglePitch, -HALF_PI + 0.001f, HALF_PI - 0.001f);
+
+    if (CVars::lock_camera_pitch)
+    {
+      // set the pitch permanently to 0 if the camera is locked
+      anglePitch = 0.0f;
+    }
 
     m_forward = angleAxis(angleYaw, VEC3_Y) * angleAxis(anglePitch, VEC3_X) * -VEC3_Z;
 
@@ -135,10 +144,10 @@ namespace nc
     
   }
 
-  void Player::apply_velocity()
+  void Player::apply_velocity(f32 delta_seconds)
   {
     vec3 position = this->get_position();
-    MapObject::move(position, velocity, m_forward, 0.25f);
+    MapObject::move(position, velocity * delta_seconds, m_forward, 0.25f);
     this->set_position(position);
 
     // recompute the angleYaw after moving through a portal
@@ -152,14 +161,14 @@ namespace nc
 
     //speed cap
     //if (sqrtf(velocity.x * velocity.x + velocity.z * velocity.z) > MAX_SPEED)
-    if(length(vec2(velocity.x, velocity.z)) > MAX_SPEED * delta_seconds)
+    if(length(vec2(velocity.x, velocity.z)) > MAX_SPEED)
     {
-      velocity = normalize_or_zero(velocity) * MAX_SPEED * delta_seconds;
+      velocity = normalize_or_zero(velocity) * MAX_SPEED;
     }
     
     //minimal non-zero velocity
-    if (velocity.x >= -0.01f * delta_seconds && velocity.x <= 0.01f * delta_seconds) velocity.x = 0;
-    if (velocity.z >= -0.01f * delta_seconds && velocity.z <= 0.01f * delta_seconds) velocity.z = 0;
+    if (velocity.x >= -0.0001f && velocity.x <= 0.0001f) velocity.x = 0;
+    if (velocity.z >= -0.0001f && velocity.z <= 0.0001f) velocity.z = 0;
   }
 
   void Player::apply_deceleration(const nc::vec3& movement_direction, f32 delta_seconds)

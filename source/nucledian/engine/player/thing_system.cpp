@@ -353,12 +353,12 @@ void ThingSystem::on_event(ModuleEvent& event)
     case ModuleEventType::post_init:
     {
       this->build_map();
-      auto* player = entities->create_entity<Player>(vec3{0});
+      auto* player = entities->create_entity<Player>(vec3{1, 0, 1});
       player_id = player->get_id();
 
-      entity_system.create_entity<Enemy>(vec3{1, 0.0, 1}, FRONT_DIR);
-      entity_system.create_entity<Enemy>(vec3{2, 0.0, 1}, FRONT_DIR);
-      entity_system.create_entity<Enemy>(vec3{3, 0.0, 1}, FRONT_DIR);
+      //entity_system.create_entity<Enemy>(vec3{1, 0.0, 1}, FRONT_DIR);
+      //entity_system.create_entity<Enemy>(vec3{2, 0.0, 1}, FRONT_DIR);
+      //entity_system.create_entity<Enemy>(vec3{3, 0.0, 1}, FRONT_DIR);
       break;
     }
 
@@ -390,7 +390,7 @@ void ThingSystem::on_event(ModuleEvent& event)
       });
 
       //FINAL VELOCITY CHANGE
-      this->get_player()->apply_velocity();
+      this->get_player()->apply_velocity(event.update.dt);
 
       entity_system.for_each<Enemy>([&](Enemy& enemy)
       {

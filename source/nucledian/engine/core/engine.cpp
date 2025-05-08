@@ -303,8 +303,25 @@ void Engine::run()
   while (!this->should_quit())
   {
     auto current_time = std::chrono::high_resolution_clock::now();
-    const f32 frame_time = eu::duration_to_seconds(previous_time, current_time);
+    f32 frame_time = eu::duration_to_seconds(previous_time, current_time);
+
+    // Limit the FPS if desired
+    const f32 min_frame_time = CVars::has_fps_limit ? 1.0f / CVars::fps_limit : 0.0f;
+    while (frame_time < min_frame_time)
+    {
+      // Spin until the time runs out
+      current_time = std::chrono::high_resolution_clock::now();
+      frame_time   = eu::duration_to_seconds(previous_time, current_time);
+    }
+
     previous_time = current_time;
+    m_delta_time  = frame_time;
+
+    // notify frame start
+    this->send_event(ModuleEvent
+    {
+      .type = ModuleEventType::frame_start,
+    });
 
     this->handle_journal_state_during_update();
     const bool replay_active = this->event_journal_active();
@@ -464,6 +481,12 @@ void Engine::process_window_event(const SDL_Event& event)
     }
     #endif
   }
+}
+
+//==============================================================================
+f32 Engine::get_delta_time()
+{
+  return m_delta_time;
 }
 
 //==============================================================================

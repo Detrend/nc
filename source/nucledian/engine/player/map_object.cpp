@@ -70,40 +70,29 @@ namespace nc
   }
 
 // ===============================================================================
-/*static*/ void MapObject::move(vec3& position, vec3& velocity, vec3& forward, f32 radius)
+/*static*/ void MapObject::move(vec3& position, vec3 velocity, vec3& forward, f32 radius)
 {
   const auto& map = get_engine().get_map();
 
-  // MR says: For some reasong this solves some of our problems
-  // with ending up stuck in a wall (caused by float inaccuracies?)
-  constexpr f32 MAGIC = 1.01f; 
-  // MR says: The MAGIC constant actually causes some problems as well
-  // and this solves them.
-  u32 iterations_left = 12; 
+  constexpr u32 MAX_ITERATIONS = 4;
 
-  while (iterations_left-->0)
+  // First check collisions and adjust the velocity
+  u32 iterations_left = MAX_ITERATIONS; 
+  while(iterations_left-->0)
   {
     vec2 out_n;
     f32  out_t;
-    const auto from = position.xz();
-    const auto dir  = velocity.xz();
-
-    const auto prev_velocity = velocity;
-
-    if (map.raycast2d_expanded(from, from + dir, radius, out_n, out_t))
+    if (map.raycast2d_expanded(position.xz(), position.xz() + velocity.xz(), radius, out_n, out_t))
     {
-      const auto remaining  = dir * (1.0f - out_t);
+      const auto remaining  = velocity.xz() * (1.0f - out_t);
       const auto projected  = out_n * dot(remaining, out_n);
       const auto projected3 = vec3{projected.x, 0.0f, projected.y};
-      velocity -= MAGIC * projected3;
-    }
-
-    if (prev_velocity == velocity)
-    {
-      break;
+      velocity -= projected3;
     }
   }
 
+  // Then handle nuclidean portal transitions - check which portals
+  // have we traversed through and store them.
   f32                 _;
   vec2                __;
   MapSectors::Portals portals;
@@ -111,6 +100,8 @@ namespace nc
   const auto ray_to   = (position + velocity).xz();
   map.raycast2d_expanded(ray_from, ray_to, 0, __, _, &portals);
 
+  // Now that we have the portals stored we iterate them and transform our
+  // position/direction with the portals
   const bool should_transform = portals.size();
   mat4 transformation = identity<mat4>();
   for (const auto&[wid, sid] : portals)
@@ -130,7 +121,7 @@ namespace nc
     position += velocity;
   }
 
-  // change the height as well so we can move up the stairs
+  // Change the height as well so we can move up the stairs
   auto sector_id = map.get_sector_from_point(position.xz());
   if (sector_id != INVALID_SECTOR_ID)
   {

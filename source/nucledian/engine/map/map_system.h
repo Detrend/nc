@@ -207,7 +207,8 @@ struct MapSectors
     f32      expand,
     vec2&    out_normal,
     f32&     out_coeff,
-    Portals* out_portals = nullptr) const;
+    Portals* out_portals = nullptr,
+    WallID   ignore_wall = INVALID_WALL_ID) const;
 
   bool raycast3d(vec3 from, vec3 to, vec3& out_normal, f32& out_coeff) const;
 

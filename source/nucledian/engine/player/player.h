@@ -28,7 +28,7 @@ public:
   void get_wish_velocity(GameInputs input, f32 delta_seconds);
   bool get_attack_state(GameInputs curInput, GameInputs prevInput, f32 delta_seconds);
   void check_collision(const MapObject& collider);
-  void apply_velocity();
+  void apply_velocity(f32 delta_seconds);
   void Damage(int damage);
   void Die();
 
@@ -45,9 +45,9 @@ private:
   vec3 velocity; // forward/back - left/right velocity
   f32 viewHeight = 0.5f;
 
-  f32 MAX_SPEED = 5.0f;
-  f32 ACCELERATION = 0.05f;
-  f32 DECELERATION = 0.02f;
+  f32 MAX_SPEED    = 3.0f;
+  f32 ACCELERATION = 10.00f;
+  f32 DECELERATION = 5.00f;
 
   vec3 m_forward = VEC3_ZERO;
   f32 anglePitch = 0; //UP-DOWN

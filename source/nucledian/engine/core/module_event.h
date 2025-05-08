@@ -16,6 +16,7 @@ namespace ModuleEventType
 
     post_init,        // sent to all modules after initialization
 
+    frame_start,      // a new frame has just started - before everything else
     game_update,      // during gameplay
     paused_update,    // during paused game
     loading_update,   // during loading

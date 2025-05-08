@@ -215,21 +215,35 @@ bool convex_convex(std::span<vec2> a, std::span<vec2> b, f32 threshold)
 }
 
 //==============================================================================
-bool segment_circle(vec2 start, vec2 end, vec2 og_center, f32 r, f32& t_out, vec2& n_out)
+bool segment_circle(vec2 ray_start, vec2 ray_end, vec2 circle_center, f32 circle_radius, f32& t_out, vec2& n_out)
 {
   NC_TODO("Circle collision might not work properly if the raycasted point is inside the circle.");
 
-  nc_assert(start != end);
-  nc_assert(r > 0.0f);
+  nc_assert(ray_start != ray_end);
+  nc_assert(circle_radius > 0.0f);
 
-  const vec2 center = og_center - start;
-  const vec2 dir = end - start;
+  // First handle the case when the ray starts inside the circle
+  const vec2 center_to_start    = ray_start - circle_center;
+  const f32  distance_to_center = length(center_to_start);
+  if (distance_to_center < circle_radius)
+  {
+    const f32 dist_to_r  = circle_radius - distance_to_center;
+    const f32 ray_length = length(ray_end - ray_start);
 
-  const f32 dx = dir.x;
-  const f32 dy = dir.y;
+    t_out = std::min(dist_to_r / ray_length, 1.0f);
+    n_out = is_zero(center_to_start) ? vec2{1, 0} : normalize(center_to_start);
+
+    return true;
+  }
+
+  const vec2 center  = circle_center - ray_start;
+  const vec2 ray_dir = ray_end - ray_start;
+
+  const f32 dx = ray_dir.x;
+  const f32 dy = ray_dir.y;
   const f32 cx = center.x;
   const f32 cy = center.y;
-  const f32 rr = r * r;
+  const f32 rr = circle_radius * circle_radius;
 
   const f32 a = dx * dx + dy * dy;
   const f32 b = -2 * (dx * cx + dy * cy);
@@ -249,8 +263,11 @@ bool segment_circle(vec2 start, vec2 end, vec2 og_center, f32 r, f32& t_out, vec
   const f32 t1 = (-b + D) / a2;
   const f32 t2 = (-b - D) / a2;
 
-  const bool t1_legit = t1 == std::clamp(t1, 0.0f, 1.0f);
-  const bool t2_legit = t2 == std::clamp(t2, 0.0f, 1.0f);
+  constexpr f32 MIN_COEFF = 0.0f;
+  constexpr f32 MAX_COEFF = 1.0f;
+
+  const bool t1_legit = t1 == std::clamp(t1, MIN_COEFF, MAX_COEFF);
+  const bool t2_legit = t2 == std::clamp(t2, MIN_COEFF, MAX_COEFF);
 
   if (!t1_legit && !t2_legit)
   {
@@ -272,75 +289,13 @@ bool segment_circle(vec2 start, vec2 end, vec2 og_center, f32 r, f32& t_out, vec
     t = t2;
   }
 
-  const vec2 col_point = dir * t;
+  const vec2 col_point = ray_dir * t;
   nc_assert(col_point != center);
   const vec2 center_to_col = col_point - center;
 
   t_out = t;
   n_out = normalize(center_to_col);
   return true;
-}
-
-//==============================================================================
-bool segment_segment_expanded(
-  vec2  start_a,
-  vec2  end_a,
-  vec2  start_b,
-  vec2  end_b,
-  f32   expand_b,
-  vec2& out_normal,
-  f32&  out_coeff)
-{
-  nc_assert(start_a != end_a);
-  nc_assert(start_b != end_b);
-  nc_assert(expand_b >= 0.0f); // use normal intersection if the parameter is 0
-
-  if (expand_b == 0.0f)
-  {
-    f32 _;
-    const bool intersects = segment_segment(start_a, end_a, start_b, end_b, out_coeff, _);
-
-    const vec2 dir = end_a - start_a;
-
-    out_normal = flipped(normalize(end_b - start_b));
-    if (dot(dir, out_normal) > 0.0f)
-    {
-      out_normal = -out_normal;
-    }
-
-    return intersects && out_coeff >= 0.0f && out_coeff <= 1.0f;
-  }
-
-  f32  cs_coeff = 0, ce_coeff = 0;
-  f32 ll_coeff, lr_coeff, _;
-  vec2 cs_n, ce_n;
-
-  const vec2 b_norm = flipped(normalize(end_b - start_b));
-  const vec2 b_offset = b_norm * expand_b;
-
-  const bool cs_intersect = segment_circle(start_a, end_a, start_b, expand_b, cs_coeff, cs_n);
-  const bool ce_intersect = segment_circle(start_a, end_a, end_b, expand_b, ce_coeff, ce_n);
-  const bool ll_intersect = segment_segment(start_a, end_a, start_b + b_offset, end_b + b_offset, ll_coeff, _);
-  const bool lr_intersect = segment_segment(start_a, end_a, start_b - b_offset, end_b - b_offset, lr_coeff, _);
-
-  out_normal = vec2{ 0 };
-  out_coeff = FLT_MAX;
-
-  auto take_best = [&](bool intersection, f32 coeff, vec2 norm)
-  {
-    if (intersection && coeff < out_coeff && coeff >= 0.0f && coeff <= 1.0f)
-    {
-      out_coeff = coeff;
-      out_normal = norm;
-    }
-  };
-
-  take_best(cs_intersect, cs_coeff, cs_n);
-  take_best(ce_intersect, ce_coeff, ce_n);
-  take_best(ll_intersect, ll_coeff, b_norm);
-  take_best(lr_intersect, lr_coeff, -b_norm);
-
-  return out_coeff != FLT_MAX;
 }
 
 //==============================================================================
@@ -542,6 +497,63 @@ bool ray_aabb3(
   }
 }
 
+//==============================================================================
+bool ray_segment(
+  vec2 ray_start,
+  vec2 ray_end,
+  vec2 seg_start,
+  vec2 seg_end,
+  f32& ray_t_out)
+{
+  constexpr f32 TOLERANCE = 0.0001f;   // 0.1mm
+
+  ray_t_out = FLT_MAX;
+
+  nc_assert(ray_start != ray_end);
+  nc_assert(seg_start != seg_end);
+
+  const vec2 ray_dir = ray_end - ray_start;
+  const vec2 seg_dir = seg_end - seg_start;
+  const f32  top    = cross(seg_dir, seg_start - ray_start);
+  const f32  bottom = cross(seg_dir, ray_dir);
+
+  const bool tp_zero = is_zero(top, TOLERANCE);
+  const bool bt_zero = is_zero(bottom, TOLERANCE);
+
+  if (tp_zero && bt_zero)
+  {
+    // parallel and lines are intersecting, check for segment
+    // intersection by projecting onto an interval
+    const f32 b1 = dot(seg_start - ray_start, ray_dir);
+    const f32 b2 = dot(seg_end   - ray_start, ray_dir);
+
+    ray_t_out = std::min(b1, b2);
+    return true;
+  }
+  else if (bt_zero)
+  {
+    // parallel and non-intersecting
+    return false;
+  }
+  else
+  {
+    const f32 t = top / bottom;
+
+    // might be intersecting, check for u as well
+    const f32 utop = cross(ray_dir, ray_start - seg_start);
+    const f32 ubottom = -bottom;
+
+    // This should not happen AFAIK
+    nc_assert(!is_zero(ubottom, TOLERANCE));
+
+    const f32 seg_t = utop / ubottom;
+
+    ray_t_out = t; // might be negative
+
+    // lines intersect, but segments do not
+    return seg_t >= 0.0f && seg_t <= 1.0f;
+  }
+}
 }
 
 namespace nc
@@ -968,6 +980,80 @@ void FrustumBuffer::insert_frustum(Frustum2 new_frustum)
   {
     closest_frustum = closest_frustum.merged_with(new_frustum);
   }
+}
+
+}
+
+namespace nc::collide
+{
+  
+//==============================================================================
+bool ray_exp_wall(
+  vec2  start_a,
+  vec2  end_a,
+  vec2  start_b,
+  vec2  end_b,
+  f32   wall_exp,
+  vec2& out_normal,
+  f32&  out_coeff)
+{
+  nc_assert(start_a != end_a);
+  nc_assert(start_b != end_b);
+  nc_assert(wall_exp >= 0.0f); // use normal intersection if the parameter is 0
+
+  if (wall_exp == 0.0f)
+  {
+    f32 _;
+    const bool intersects = intersect::segment_segment(start_a, end_a, start_b, end_b, out_coeff, _);
+
+    const vec2 dir = end_a - start_a;
+
+    out_normal = flipped(normalize(end_b - start_b));
+    if (dot(dir, out_normal) > 0.0f)
+    {
+      out_normal = -out_normal;
+    }
+
+    return intersects && out_coeff >= 0.0f && out_coeff <= 1.0f;
+  }
+
+  const vec2 ray_dir = end_a - start_a;
+
+  f32  cs_coeff = 0, ce_coeff = 0;
+  f32 ll_coeff = 0;
+  vec2 cs_n, ce_n;
+
+  const vec2 b_norm = flipped(normalize(end_b - start_b));
+  const vec2 b_offset = b_norm * wall_exp;
+
+  const bool cs_intersect = intersect::segment_circle(start_a, end_a, start_b, wall_exp, cs_coeff, cs_n);
+  const bool ce_intersect = intersect::segment_circle(start_a, end_a, end_b,   wall_exp, ce_coeff, ce_n);
+
+  bool ll_intersect = false;
+
+  if (dot(ray_dir, b_norm) < 0)
+  {
+    ll_intersect = intersect::ray_segment(start_a, end_a, start_b + b_offset, end_b + b_offset, ll_coeff);
+  }
+
+  out_normal = vec2{ 0 };
+  out_coeff  = FLT_MAX;
+
+  auto take_best = [&](bool intersection, f32 coeff, vec2 norm)
+  {
+    const f32 min_coeff = -wall_exp / length(ray_dir);
+    if (intersection && coeff < out_coeff && coeff >= min_coeff && coeff <= 1.0f)
+    {
+      out_coeff  = coeff;
+      out_normal = norm;
+    }
+  };
+
+  take_best(cs_intersect, cs_coeff, cs_n);
+  take_best(ce_intersect, ce_coeff, ce_n);
+  take_best(ll_intersect, ll_coeff, b_norm);
+
+  return out_coeff != FLT_MAX;
 }
 
 }

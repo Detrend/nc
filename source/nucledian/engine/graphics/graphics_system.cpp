@@ -39,6 +39,7 @@
 #include <unordered_map>
 #include <utility>
 #include <variant>
+#include <format>
 
 // Remove this after logging is added!
 #include <iostream>
@@ -46,6 +47,19 @@
 #ifdef NC_DEBUG_DRAW
 namespace nc::debug_helpers
 {
+
+//==============================================================================
+static void display_fps_as_title(SDL_Window* window)
+{
+  const auto delta_time = get_engine().get_delta_time();
+  const auto fps_number = 1.0f / delta_time;
+  const auto title_str  = std::format
+  (
+    "Nucledian Game. FPS: {:.2f}, Dt: {:.2f}ms", fps_number, delta_time * 1000.0f
+  );
+
+  SDL_SetWindowTitle(window, title_str.c_str());
+}
 
 static MaterialHandle g_top_down_material = MaterialHandle::invalid();
 static GLuint   g_default_vao = 0;
@@ -264,6 +278,9 @@ bool GraphicsSystem::init()
   glEnable(GL_CULL_FACE);
   glEnable(GL_MULTISAMPLE);
 
+  // disable vsync and unlock fps
+  SDL_GL_SetSwapInterval(0);
+
   glLineWidth(5.0f);
 
   MeshManager::instance().init();
@@ -298,6 +315,12 @@ void GraphicsSystem::on_event(ModuleEvent& event)
 {
   switch (event.type)
   {
+    case ModuleEventType::frame_start:
+    {
+      this->on_frame_start();
+      break;
+    }
+
     case ModuleEventType::game_update:
     {
       this->update(event.update.dt);
@@ -351,6 +374,16 @@ void GraphicsSystem::terminate()
 
   SDL_DestroyWindow(m_window);
   m_window = nullptr;
+}
+
+//==============================================================================
+void GraphicsSystem::on_frame_start()
+{
+#ifdef NC_IMGUI
+  ImGui_ImplOpenGL3_NewFrame();
+  ImGui_ImplSDL2_NewFrame();
+  ImGui::NewFrame();
+#endif
 }
 
 //==============================================================================
@@ -470,15 +503,13 @@ void GraphicsSystem::render()
   int width = 0, height = 0;
   SDL_GetWindowSize(m_window, &width, &height);
 
+#ifdef NC_DEBUG_DRAW
+  debug_helpers::display_fps_as_title(m_window);
+#endif
+
   glViewport(0, 0, width, height);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-#ifdef NC_IMGUI
-  ImGui_ImplOpenGL3_NewFrame();
-  ImGui_ImplSDL2_NewFrame();
-  ImGui::NewFrame();
-#endif
 
 #ifdef NC_DEBUG_DRAW
   if (CVars::display_debug_window)
