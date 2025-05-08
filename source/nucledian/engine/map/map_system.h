@@ -194,30 +194,10 @@ struct MapSectors
     SectorID           sector_id,
     std::vector<vec3>& vertices_out) const;
 
-  struct PortalSector
-  {
-    WallID   wall_id;
-    SectorID sector_id;
-  };
-  using Portals = std::vector<PortalSector>;
+  bool is_point_in_sector(vec2 pt, SectorID sector) const;
 
-  // Casts either a ray or circle and returns if it hit something.
-  // Is expected to be used for collision detection.
-  // Also returns hit coefficient, which is <= 1, but might be negative
-  // if the expand parameter is non-zero and we are stuck in a wall. This
-  // is actually a feature as it allows us to get un-stuck
-  bool raycast2d_expanded
-  (
-    vec2     from,                 // point to cast from
-    vec2     to,                   // cast to
-    f32      expand,               // 0 for ray, radius for circle
-    vec2&    out_normal,           // normal vector of the intersected geometry
-    f32&     out_coeff,            // coeff to reconstruct intersection point from
-    Portals* out_portals = nullptr,// list of portals the ray went through
-    WallID   ignore_wall = INVALID_WALL_ID // internal, do not use
-  ) const;
-
-  bool raycast3d(vec3 from, vec3 to, vec3& out_normal, f32& out_coeff) const;
+  bool is_valid_sector_id(SectorID id) const;
+  bool is_valid_wall_id(WallID id)     const;
 
 private:
   void query_visible_sectors_impl(
@@ -226,9 +206,6 @@ private:
     const FrustumBuffer& frustum,
     VisibilityTree&      visible,
     u8                   recursion_depth) const;
-
-  bool is_valid_sector_id(SectorID id) const;
-  bool is_valid_wall_id(WallID id)     const;
 };
 
 namespace map_building
@@ -291,6 +268,8 @@ namespace map_helpers
 WallID next_wall(const MapSectors& map, SectorID sector, WallID wall);
 
 WallID get_wall_id(const MapSectors& map, SectorID sector_id, WallRelID relative_wall_id);
+
+WallID get_nc_opposing_wall(const MapSectors& map, SectorID sid, WallID wid);
 
 }
 

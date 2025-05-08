@@ -18,6 +18,7 @@
 
 #include <engine/input/input_system.h>
 #include <engine/map/map_system.h>
+#include <engine/map/physics.h>
 #include <engine/entity/entity_system.h>
 #include <engine/player/thing_system.h>
 
@@ -807,8 +808,7 @@ void GraphicsSystem::render_map_top_down(const VisibilityTree& visible_sectors)
   // raycast 2D debug
   if (raycast2d_debug)
   {
-    vec2 out_n;
-    f32  out_t;
+    auto& thing = ThingSystem::get();
 
     vec2 start_pt = raycast_pt1;
     vec2 end_pt = raycast_pt1 + vec2{ std::cos(raycast_rot), std::sin(raycast_rot) } *raycast_len;
@@ -820,9 +820,10 @@ void GraphicsSystem::render_map_top_down(const VisibilityTree& visible_sectors)
       colors::WHITE
     );
 
-    if (map.raycast2d_expanded(start_pt, end_pt, std::max(raycast_expand, 0.0001f), out_n, out_t))
+    if (auto hit = thing.get_world().raycast2d_expanded(start_pt, end_pt, std::max(raycast_expand, 0.0001f)))
     {
-      const vec2 contact_pt = start_pt + (end_pt - raycast_pt1) * out_t;
+      const vec2 contact_pt = start_pt + (end_pt - raycast_pt1) * hit.coeff;
+      const vec2 out_n = hit.normal.xz();
       end_pt = contact_pt;
 
       debug_helpers::draw_line

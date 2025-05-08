@@ -12,6 +12,7 @@
 #include <engine/entity/entity_type_definitions.h>
 
 #include <engine/input/input_system.h>
+#include <engine/map/physics.h>
 
 #include <engine/graphics/graphics_system.h>
 
@@ -415,6 +416,12 @@ EntityRegistry& ThingSystem::get_entities()
   return *entities;
 }
 
+//==============================================================================
+const EntityRegistry& ThingSystem::get_entities() const
+{
+  return const_cast<ThingSystem*>(this)->get_entities();
+}
+
 //==========================================================
 const MapSectors& ThingSystem::get_map() const
 {
@@ -427,6 +434,17 @@ const SectorMapping& ThingSystem::get_sector_mapping() const
 {
   nc_assert(mapping);
   return *mapping;
+}
+
+//==============================================================================
+World ThingSystem::get_world() const
+{
+  return World
+  {
+    .entities = this->get_entities(),
+    .map      = this->get_map(),
+    .mapping  = this->get_sector_mapping(),
+  };
 }
 
 //==========================================================
@@ -463,9 +481,8 @@ void ThingSystem::check_player_attack
     [[maybe_unused]] f32 hitDistance = 999999;
     EntityID index = INVALID_ENTITY_ID;
 
-    f32 wallDist;
-    vec3 wallNormal;
-    bool wallHit = map->raycast3d(rayStart, rayEnd, wallNormal, wallDist);
+    const auto wallHit = this->get_world().raycast3d(rayStart, rayEnd);
+    f32 wallDist = wallHit ? wallHit.coeff : FLT_MAX;
 
     auto& entity_system = this->get_entities();
 
@@ -513,11 +530,9 @@ void ThingSystem::check_enemy_attack([[maybe_unused]] const ModuleEvent& event)
       [[maybe_unused]] vec3 rayStart = enemy.get_position() + vec3(0, 0.5f, 0);
       [[maybe_unused]] vec3 rayEnd = this->get_player()->get_position() + vec3(0, this->get_player()->get_view_height(), 0);
 
-      f32 wallDist;
-      vec3 wallNormal;
-      [[maybe_unused]] bool wallHit = map->raycast3d(rayStart, rayEnd, wallNormal, wallDist);
+      const auto wallHit = this->get_world().raycast3d(rayStart, rayEnd);
 
-      if (wallDist < 1.0f) 
+      if (wallHit) 
       {
         return;
       }

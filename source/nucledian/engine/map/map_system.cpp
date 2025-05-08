@@ -119,34 +119,9 @@ u32 get_sectors_from_point(const MapSectors& map, vec2 point, SectorID* sectors_
   nc_assert(sectors_out && max_sectors_out);
   u32 counter = 0;
 
-  auto check_overlap = [](const MapSectors& map, SectorID sector_id, vec2 pt) -> bool
-  {
-    const auto& sector = map.sectors[sector_id];
-
-    const auto first = sector.int_data.first_wall;
-    const auto last  = sector.int_data.last_wall;
-
-    nc_assert(first < map.walls.size());
-    const auto p1 = map.walls[first].pos;
-
-    for (WallID wall_index = first+1; wall_index < last-1; ++wall_index)
-    {
-      WallID next_index = wall_index+1;
-      const auto p2 = map.walls[wall_index].pos;
-      const auto p3 = map.walls[next_index].pos;
-
-      if (intersect::point_triangle(pt, p1, p2, p3))
-      {
-        return true;
-      }
-    }
-
-    return false;
-  };
-
   map.sector_grid.query_point(point, [&](aabb2, SectorID id)->bool
   {
-    if (check_overlap(map, id, point))
+    if (map.is_point_in_sector(point, id))
     {
       if (counter < max_sectors_out)
       {
@@ -607,258 +582,32 @@ void MapSectors::sector_to_vertices(
 }
 
 //==============================================================================
-bool MapSectors::raycast2d_expanded
-(
-  vec2     from,
-  vec2     to,
-  f32      expand,
-  vec2&    out_normal,
-  f32&     out_coeff,
-  Portals* out_portals,
-  WallID   ignore_portal
-) const
+bool MapSectors::is_point_in_sector(vec2 pt, SectorID sector_id) const
 {
-  nc_assert(expand >= 0.0f, "Radius can not be negative!");
+  nc_assert(this->is_valid_sector_id(sector_id));
 
-  if (from == to)
+  const auto& sector = this->sectors[sector_id];
+
+  const auto first = sector.int_data.first_wall;
+  const auto last  = sector.int_data.last_wall;
+
+  nc_assert(this->is_valid_wall_id(first));
+
+  const auto p1 = this->walls[first].pos;
+
+  for (WallID wall_index = first+1; wall_index < last-1; ++wall_index)
   {
-    // no need to check anything
-    return false;
-  }
+    WallID next_index = wall_index+1;
+    const auto p2 = this->walls[wall_index].pos;
+    const auto p3 = this->walls[next_index].pos;
 
-  auto bbox = aabb2{from, to};
-  bbox.insert_point(bbox.min - vec2{expand});
-  bbox.insert_point(bbox.max + vec2{expand});
-
-  const auto raycast_direction = to - from;
-
-  // TODO[perf]: Add a "query_ray" option
-  std::set<SectorID> overlap_sectors;
-  this->sector_grid.query_aabb(bbox, [&](aabb2 /*bb*/, SectorID sid)
-  {
-    overlap_sectors.insert(sid);
-    return false;
-  });
-
-  // Store these for nuclidean portal traversal
-  SectorID portal_sector  = INVALID_SECTOR_ID;
-  WallID   nc_portal_wall = INVALID_WALL_ID;
-  out_coeff  = FLT_MAX;
-  out_normal = vec2{0};
-
-  // Iterate all sectors that the ray might possibly intersect
-  for (auto sector_id : overlap_sectors)
-  {
-    nc_assert(this->is_valid_sector_id(sector_id));
-
-    const auto begin_wall = this->sectors[sector_id].int_data.first_wall;
-    const auto end_wall   = this->sectors[sector_id].int_data.last_wall;
-
-    // TODO[perf]: In theory, we do not need to check all the walls.
-    // Once we hit one all other walls further away can be ignored.
-    for (WallID wall_id = begin_wall; wall_id < end_wall; ++wall_id)
+    if (intersect::point_triangle(pt, p1, p2, p3))
     {
-      const auto next_wid = map_helpers::next_wall(*this, sector_id, wall_id);
-      const auto& w1 = this->walls[wall_id];
-      const auto& w2 = this->walls[next_wid];
-
-      const auto portal_type = w1.get_portal_type();
-
-      const bool is_normie_portal = portal_type == PortalType::classic;
-      const bool is_nc_portal     = portal_type == PortalType::non_euclidean;
-
-      if (wall_id == ignore_portal)
-      {
-        // ignore this portal, because we got here through it from the
-        // previous iteration
-        nc_assert(is_nc_portal);
-        continue;
-      }
-
-      if (is_normie_portal)
-      {
-        // ignore this wall, it is a normal portal and does not need to
-        // be checked
-        continue;
-      }
-
-      const auto p1 = w1.pos;
-      const auto p2 = w2.pos;
-      nc_assert(p1 != p2, "Invalid sector");
-
-      // 0 for nuclidean portals because we do not want to check intersection
-      // with NC portals slightly behind us
-      const f32 col_exp = is_nc_portal ? 0.0f : expand; 
-
-      f32  c = FLT_MAX;
-      vec2 n = vec2{0};
-      if (collide::ray_exp_wall(from, to, p1, p2, col_exp, n, c) && c < out_coeff)
-      {
-        out_coeff  = c;
-        out_normal = n;
-
-        if (is_nc_portal)
-        {
-          // store the information that this is a portal for later
-          portal_sector  = sector_id;
-          nc_portal_wall = wall_id;
-        }
-        else
-        {
-          // reset the portal info, the closest hit is not a nc portal
-          portal_sector  = INVALID_SECTOR_ID;
-          nc_portal_wall = INVALID_WALL_ID;
-        }
-      }
+      return true;
     }
   }
 
-  // Recurse into nuclidean portal if we have to
-  if (out_coeff != FLT_MAX && nc_portal_wall != INVALID_WALL_ID)
-  {
-    nc_assert(out_coeff >= 0.0f && out_coeff <= 1.0f, "NC portal behind us?");
-
-    // Add this portal to the list if we collect them
-    if (out_portals)
-    {
-      out_portals->push_back(PortalSector
-      {
-        .wall_id   = nc_portal_wall,
-        .sector_id = portal_sector,
-      });
-    }
-
-    const auto hit_pt = from + (to - from) * out_coeff;
-    const auto proj = this->calculate_portal_to_portal_projection
-    (
-      portal_sector,
-      nc_portal_wall
-    );
-
-    // Calculate new from and to points for the next raycast
-    const vec2 new_from = (proj * vec4{hit_pt.x, 0, hit_pt.y, 1}).xz();
-    const vec2 new_to   = (proj * vec4{to.x,     0, to.y,     1}).xz();
-
-    // We need to ignore the portal wall we came throught in the next run,
-    // because we could enter an infinite recursion, as we collide with
-    // the wall
-    WallID wall_to_ignore = map_helpers::get_nc_opposing_wall
-    (
-      *this, portal_sector, nc_portal_wall
-    );
-
-    // And cast the ray recursively
-    f32  new_out_coeff;
-    vec2 new_out_norm;
-    if (this->raycast2d_expanded(new_from, new_to, expand, new_out_norm, new_out_coeff, out_portals, wall_to_ignore))
-    {
-      // recalculate the out_coeff and out_normal
-      out_coeff += (1.0f - out_coeff) * new_out_coeff;
-
-      // out normal has to be projected to our space (not the other portal space)
-      const auto transform_inv = inverse(proj);
-      const auto reproject_norm
-        = (transform_inv * vec4{new_out_norm.x, 0.0f, new_out_norm.y, 0.0f}).xz();
-
-      out_normal = reproject_norm;
-    }
-    else
-    {
-      // we did not hit anything behind the portal
-      out_coeff = FLT_MAX;
-    }
-  }
-
-  // Return true if we hit something
-  return out_coeff != FLT_MAX;
-}
-
-//==============================================================================
-bool MapSectors::raycast3d(vec3 from, vec3 to, vec3& out_normal, f32& out_coeff) const
-{
-  if (from == to)
-  {
-    return false;
-  }
-
-  const auto bbox = aabb2{from.xz, to.xz};
-
-  // TODO[perf]: Add a "query_ray" option
-  std::set<SectorID> overlap_sectors;
-  this->sector_grid.query_aabb(bbox, [&](aabb2 /*bb*/, SectorID sid)
-  {
-    overlap_sectors.insert(sid);
-    return false;
-  });
-
-  out_coeff  = FLT_MAX;
-  out_normal = vec3{0};
-  f32 count  = 1.0f;
-
-  auto add_hit = [&out_coeff, &out_normal, &count](f32 coeff, vec3 normal)
-  {
-    if (coeff == out_coeff)
-    {
-      out_normal = out_normal + normal;
-      count += 1.0f;
-    }
-    else if (coeff < out_coeff)
-    {
-      out_coeff  = coeff;
-      out_normal = normal;
-      count      = 1.0f;
-    }
-  };
-
-  // check floor
-  if (f32 out; intersect::ray_infinite_plane_xz(from, to, SECTOR_FLOOR_Y, out))
-  {
-    add_hit(out, UP_DIR);
-  }
-
-  // check ceiling
-  if (f32 out; intersect::ray_infinite_plane_xz(from, to, SECTOR_CEILING_Y, out))
-  {
-    add_hit(out, -UP_DIR);
-  }
-
-  for (auto sector_id : overlap_sectors)
-  {
-    nc_assert(sector_id < this->sectors.size());
-    const auto begin_wall = this->sectors[sector_id].int_data.first_wall;
-    const auto end_wall   = this->sectors[sector_id].int_data.last_wall;
-
-    // TODO[perf]: In theory, we do not need to check all the walls.
-    // Once we hit one all other walls further away can be ignored.
-    for (auto wid = begin_wall; wid < end_wall; ++wid)
-    {
-      const auto  next_wid = map_helpers::next_wall(*this, sector_id, wid);
-      const auto& w1 = this->walls[wid];
-      const auto& w2 = this->walls[next_wid];
-
-      const bool is_portal = w1.get_portal_type() == PortalType::classic;
-      if (is_portal)
-      {
-        // Ignore this wall, it is a portal
-        continue;
-      }
-
-      const auto& p1 = w1.pos;
-      const auto& p2 = w2.pos;
-      nc_assert(p1 != p2);
-
-      f32  coeff  = FLT_MAX;
-      vec2 normal = flipped(normalize(p2 - p1));
-      if (intersect::ray_wall_3d(from, to, p1, p2, SECTOR_FLOOR_Y, SECTOR_CEILING_Y, coeff))
-      {
-        add_hit(coeff, vec3{normal.x, 0.0f, normal.y});
-      }
-    }
-  }
-
-  out_normal = out_normal / count;
-
-  return out_coeff != FLT_MAX;
+  return false;
 }
 
 //==============================================================================

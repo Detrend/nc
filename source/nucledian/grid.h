@@ -28,6 +28,9 @@ public:
   void query_point(vec2 point, Visitor func) const;
   void query_aabb(aabb2 bbox,  Visitor func) const;
 
+  void query_ray(vec2 from, vec2 to, f32 expand, Visitor func) const;
+  void query_ray(vec3 from, vec3 to, f32 expand, Visitor func) const;
+
   // Resets the grid into non initialized state and frees all resources
   void reset();
 

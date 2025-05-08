@@ -6,6 +6,9 @@
 #include <iostream>
 
 #include <engine/map/map_system.h>
+#include <engine/map/physics.h>
+#include <engine/player/thing_system.h>
+
 #include <engine/core/engine.h>
 
 #include <math/utils.h>
@@ -146,8 +149,10 @@ namespace nc
 
   void Player::apply_velocity(f32 delta_seconds)
   {
+    auto world = ThingSystem::get().get_world();
+
     vec3 position = this->get_position();
-    MapObject::move(position, velocity * delta_seconds, m_forward, 0.25f);
+    world.move_and_collide(position, velocity * delta_seconds, m_forward, 0.25f, 0.5f, 0.0f, 0);
     this->set_position(position);
 
     // recompute the angleYaw after moving through a portal

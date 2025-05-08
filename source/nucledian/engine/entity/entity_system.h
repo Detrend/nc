@@ -44,6 +44,8 @@ public:
   template<typename T, typename L>
   void for_each(L lambda);
 
+  const SectorMapping& get_mapping();
+
 private:
   void setup_entity(Entity& entity, EntityID id);
 

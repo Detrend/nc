@@ -4,6 +4,7 @@
 #include <engine/player/player.h>
 #include <iostream>
 #include <engine/map/map_system.h>
+#include <engine/map/physics.h>
 
 #include <math/lingebra.h>
 #include <engine/graphics/graphics_system.h>
@@ -81,12 +82,9 @@ namespace nc
         [[maybe_unused]] vec3 rayStart = this->get_position() + vec3(0, 0.5f, 0);
         [[maybe_unused]] vec3 rayEnd = target_pos + vec3(0, 0.5f, 0);
 
-        f32 wallDist;
-        vec3 wallNormal;
-        const auto& map = get_engine().get_map();
-        [[maybe_unused]] bool wallHit = map.raycast3d(rayStart, rayEnd, wallNormal, wallDist);
+        auto wallHit = ThingSystem::get().get_world().raycast3d(rayStart, rayEnd);
 
-        if (wallDist < 1.0f)
+        if (wallHit)
         {
           break;
         }
@@ -144,8 +142,10 @@ namespace nc
 
   void Enemy::apply_velocity()
   {
+    auto world = ThingSystem::get().get_world();
+
     vec3 position = this->get_position();
-    MapObject::move(position, velocity, facing, 0.25f);
+    world.move_and_collide(position, velocity, facing, 0.25f, 0.5f, 0.0f, 0);
     this->set_position(position);
     //g_transform_components[m_entity_index].position() = position;
   }

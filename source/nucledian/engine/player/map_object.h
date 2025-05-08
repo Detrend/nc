@@ -19,8 +19,6 @@ namespace nc {
 
     f32 get_width() const;
 
-    static void move(vec3& position, vec3 velocity, vec3& forward, f32 radius);
-
     ~MapObject();
 
   protected:

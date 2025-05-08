@@ -19,6 +19,7 @@ struct ModuleEvent;
 struct MapSectors;
 struct GameInputs;
 struct SectorMapping;
+struct World;
 class  EntityRegistry;
 class  Player;
 
@@ -37,11 +38,12 @@ public:
   bool init();
   void on_event(ModuleEvent& event) override;
 
-  Player*         get_player();
-  EntityRegistry& get_entities();
-
-  const MapSectors&    get_map()            const;
-  const SectorMapping& get_sector_mapping() const;
+  Player*               get_player();
+  EntityRegistry&       get_entities();
+  const EntityRegistry& get_entities()       const;
+  const MapSectors&     get_map()            const;
+  const SectorMapping&  get_sector_mapping() const;
+  World                 get_world()          const;
 
   // TODO: remove later, only temporary
   void build_map();
