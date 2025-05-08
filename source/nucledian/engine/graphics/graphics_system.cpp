@@ -25,6 +25,7 @@
 
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
+#include <SDL2/include/SDL_mixer.h>
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_opengl3.h>
@@ -242,7 +243,7 @@ bool GraphicsSystem::init()
   NC_TODO("Terminate the already set-up SDL stuff on failed initialization.");
 
   // init SDL
-  constexpr auto SDL_INIT_FLAGS = SDL_INIT_VIDEO | SDL_INIT_EVENTS;
+  constexpr auto SDL_INIT_FLAGS = SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_AUDIO;
   constexpr u32  SDL_WIN_FLAGS = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
   constexpr cstr WINDOW_NAME = "Nucledian";
   constexpr auto WIN_POS = SDL_WINDOWPOS_UNDEFINED;
@@ -250,9 +251,21 @@ bool GraphicsSystem::init()
   if (SDL_Init(SDL_INIT_FLAGS) < 0)
   {
     // failed to init SDL, see what's the issue
-    [[maybe_unused]] cstr error = SDL_GetError();
-    return false;
+      nc_expect(false, "SDL init failed: '{}'", SDL_GetError());
   }
+
+
+  //Initialize SDL_mixer
+  if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+  {
+      nc_expect(false, "SDL_mixer could not initialize! SDL_mixer Error: {0}\n", Mix_GetError());
+  }
+
+  gSound = Mix_LoadMUS("..\\art\\sounds\\166508__yoyodaman234__concrete-footstep-2.wav");
+  nc_expect(gSound, "Failed to load music file! '{}'", Mix_GetError());
+
+  Mix_PlayMusic(gSound, -1);
+
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);

@@ -102,6 +102,9 @@
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'" />
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -454,6 +457,7 @@
     <ClInclude Include="$(SolutionDir)\source\libs\SDL2\src\video\yuv2rgb\yuv_rgb_sse_func.h" />
     <ClInclude Include="$(SolutionDir)\source\libs\SDL2\src\video\yuv2rgb\yuv_rgb_std.h" />
     <ClInclude Include="$(SolutionDir)\source\libs\SDL2\src\video\yuv2rgb\yuv_rgb_std_func.h" />
+    <ClInclude Include="..\source\libs\SDL2\include\SDL_mixer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(SolutionDir)\source\libs\SDL2\src\atomic\SDL_atomic.c" />
@@ -640,6 +644,16 @@
     <ClCompile Include="$(SolutionDir)\source\libs\SDL2\src\video\yuv2rgb\yuv_rgb_lsx.c" />
     <ClCompile Include="$(SolutionDir)\source\libs\SDL2\src\video\yuv2rgb\yuv_rgb_sse.c" />
     <ClCompile Include="$(SolutionDir)\source\libs\SDL2\src\video\yuv2rgb\yuv_rgb_std.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="..\lib\dlls\SDL2_mixer.dll">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="..\lib\dlls\SDL2_mixer.pdb">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <FileType>Document</FileType>
+    </CopyFileToFolders>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
