@@ -118,7 +118,7 @@ bool ray_segment(
 // Returns true if the segment and the circle intersect.
 bool segment_circle(vec2 start, vec2 end, vec2 og_center, f32 r, f32& t_out, vec2& n_out);
 
-bool ray_wall(
+bool ray_wall_3d(
   vec3 ray_start,
   vec3 ray_end,
   vec2 wall_a,

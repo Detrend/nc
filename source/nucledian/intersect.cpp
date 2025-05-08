@@ -299,7 +299,7 @@ bool segment_circle(vec2 ray_start, vec2 ray_end, vec2 circle_center, f32 circle
 }
 
 //==============================================================================
-bool ray_wall(
+bool ray_wall_3d(
   vec3  ray_start,
   vec3  ray_end,
   vec2  wall_a,
