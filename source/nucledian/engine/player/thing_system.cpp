@@ -387,7 +387,17 @@ void ThingSystem::on_event(ModuleEvent& event)
       entity_system.for_each<Enemy>([&](Enemy& enemy)
       {
         enemy.check_for_collision(*this->get_player());
+
+        entity_system.for_each<Enemy>([&](Enemy& enemy2)
+        {
+          if (&enemy != &enemy2) // a wrong way to check equality
+          {
+            enemy.check_for_collision(enemy2);
+          }         
+        });
       });
+
+      
 
       //FINAL VELOCITY CHANGE
       this->get_player()->apply_velocity();
