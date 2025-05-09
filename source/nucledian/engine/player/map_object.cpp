@@ -135,7 +135,10 @@ namespace nc
   if (sector_id != INVALID_SECTOR_ID)
   {
     const f32 sector_floor_y = map.sectors[sector_id].floor_height;
-    position.y = sector_floor_y;
+    if (position.y < sector_floor_y)
+    {
+      position.y = sector_floor_y;
+    }   
   }
 }
 

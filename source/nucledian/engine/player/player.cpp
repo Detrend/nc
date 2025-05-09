@@ -15,7 +15,7 @@ namespace nc
 {
   //==========================================================================
   Player::Player(vec3 position)
-  : Base(position, 0.25f, 1.5f, true)
+    : Base(position, 0.25f, 1.5f, true)
   {
     currentHealth = maxHealth;
     camera.update_transform(position, angleYaw, anglePitch, viewHeight);
@@ -70,14 +70,11 @@ namespace nc
       + inputVector.z * forward
     );
 
-    apply_deceleration(movement_direction, delta_seconds);
-
-    apply_acceleration(movement_direction, delta_seconds);
-
     //NC_MESSAGE("{} {}", velocity.x, velocity.z);
     //position += velocity * 0.001f;
 
     //NC_MESSAGE("{} {} {}", position.x, position.y, position.z);
+    // GET FLOOR HEIGHT
     const auto& map = get_engine().get_map();
     f32 floor = 0;
     auto sector_id = map.get_sector_from_point(this->get_position().xz());
@@ -87,10 +84,19 @@ namespace nc
       floor = sector_floor_y;
     }
 
-    if (input.player_inputs.keys & (1 << PlayerKeyInputs::jump) && this->get_position().y > floor - 0.0001f && this->get_position().y < floor - 0.0001f)
+    // Did jump
+    vec3 jumpForce = vec3(0, 0, 0);
+    if (input.player_inputs.keys & (1 << PlayerKeyInputs::jump) && this->get_position().y > floor - 0.0001f && this->get_position().y < floor + 0.0001f)
     {
-
+      jumpForce += vec3(0, 1, 0) * 0.01f;
     }
+
+    apply_deceleration(movement_direction, delta_seconds);
+
+    apply_acceleration(movement_direction, delta_seconds);
+
+    velocity += jumpForce;
+    velocity.y -= 0.05f * delta_seconds;
 
     camera.update_transform(this->get_position(), angleYaw, anglePitch, viewHeight);
   }
@@ -145,11 +151,26 @@ namespace nc
 
     velocity.x = velocity.x * mult.x;
     velocity.z = velocity.z * mult.z;
-    
+
   }
 
   void Player::apply_velocity()
   {
+    const auto& map = get_engine().get_map();
+    f32 floor = 0;
+    auto sector_id = map.get_sector_from_point(this->get_position().xz());
+    if (sector_id != INVALID_SECTOR_ID)
+    {
+      const f32 sector_floor_y = map.sectors[sector_id].floor_height;
+      floor = sector_floor_y;
+    }
+
+    if (this->get_position().y + velocity.y < floor)
+    {
+      //velocity.y = floor - this->get_position().y;
+      velocity.y = 0;
+    }
+
     vec3 position = this->get_position();
     MapObject::move(position, velocity, m_forward, 0.25f);
     this->set_position(position);
