@@ -390,7 +390,7 @@ void ThingSystem::on_event(ModuleEvent& event)
 
         entity_system.for_each<Enemy>([&](Enemy& enemy2)
         {
-          if (&enemy != &enemy2) // a wrong way to check equality
+          if (enemy.get_id() != enemy2.get_id()) // a wrong way to check equality
           {
             enemy.check_for_collision(enemy2);
           }         
