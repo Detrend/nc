@@ -186,9 +186,12 @@ namespace nc
 
     //speed cap
     //if (sqrtf(velocity.x * velocity.x + velocity.z * velocity.z) > MAX_SPEED)
-    if(length(vec2(velocity.x, velocity.z)) > MAX_SPEED * delta_seconds)
+    if (length(vec2(velocity.x, velocity.z)) > MAX_SPEED * delta_seconds)
     {
+      float y = velocity.y;
+      velocity.y = 0;
       velocity = normalize_or_zero(velocity) * MAX_SPEED * delta_seconds;
+      velocity.y = y;
     }
     
     //minimal non-zero velocity
