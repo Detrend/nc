@@ -78,6 +78,19 @@ namespace nc
     //position += velocity * 0.001f;
 
     //NC_MESSAGE("{} {} {}", position.x, position.y, position.z);
+    const auto& map = get_engine().get_map();
+    f32 floor = 0;
+    auto sector_id = map.get_sector_from_point(this->get_position().xz());
+    if (sector_id != INVALID_SECTOR_ID)
+    {
+      const f32 sector_floor_y = map.sectors[sector_id].floor_height;
+      floor = sector_floor_y;
+    }
+
+    if (input.player_inputs.keys & (1 << PlayerKeyInputs::jump) && this->get_position().y > floor - 0.0001f && this->get_position().y < floor - 0.0001f)
+    {
+
+    }
 
     camera.update_transform(this->get_position(), angleYaw, anglePitch, viewHeight);
   }

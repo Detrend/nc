@@ -148,6 +148,8 @@ void InputSystem::get_player_inputs()
     m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys | (1 << PlayerKeyInputs::left);
   if (keyboard_state[SDL_SCANCODE_D])
     m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys | (1 << PlayerKeyInputs::right);
+  if (keyboard_state[SDL_SCANCODE_SPACE])
+    m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys | (1 << PlayerKeyInputs::jump);
 
   int x, y;
   u32 mouseCode = SDL_GetRelativeMouseState(&x, &y);
