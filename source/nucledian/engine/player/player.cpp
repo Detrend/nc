@@ -88,15 +88,15 @@ namespace nc
     vec3 jumpForce = vec3(0, 0, 0);
     if (input.player_inputs.keys & (1 << PlayerKeyInputs::jump) && this->get_position().y > floor - 0.0001f && this->get_position().y < floor + 0.0001f)
     {
-      jumpForce += vec3(0, 1, 0) * 0.01f;
+      jumpForce += vec3(0, 1, 0);
     }
 
     apply_deceleration(movement_direction, delta_seconds);
 
     apply_acceleration(movement_direction, delta_seconds);
 
-    velocity += jumpForce;
-    velocity.y -= 0.05f * delta_seconds;
+    velocity += jumpForce * 3.0f;
+    velocity.y -= 0.01f;
 
     camera.update_transform(this->get_position(), angleYaw, anglePitch, viewHeight);
   }
@@ -111,13 +111,15 @@ namespace nc
     return false;
   }
 
-  void Player::check_collision(const MapObject& collider)
-  {
-    this->set_position(this->get_position() + velocity);
+  void Player::check_collision(const MapObject& collider, f32 delta_seconds)
+  {   
+    vec3 velocity_per_frame = velocity * delta_seconds;
+
+    this->set_position(this->get_position() + velocity_per_frame);
 
     if (!did_collide(collider))
     {
-      this->set_position(this->get_position() - velocity);
+      this->set_position(this->get_position() - velocity_per_frame);
       return;
     }
 
@@ -127,10 +129,10 @@ namespace nc
 
     vec3 intersect_union = vec3(get_width(), 0, get_width()) - (target_dist - vec3(collider.get_width(), 0, collider.get_width()));
 
-    this->set_position(this->get_position() - velocity);
+    this->set_position(this->get_position() - velocity_per_frame);
 
-    vec3 new_velocity = velocity - intersect_union;
-    vec3 mult = vec3(velocity.x / (1 - new_velocity.x), 0, velocity.z / (1 - new_velocity.z));
+    vec3 new_velocity = velocity_per_frame - intersect_union;
+    vec3 mult = vec3(velocity_per_frame.x / (1 - new_velocity.x), 0, velocity_per_frame.z / (1 - new_velocity.z));
 
     if (mult.x < 0.05f) mult.x = 0;
     if (mult.z < 0.05f) mult.z = 0;
@@ -149,12 +151,12 @@ namespace nc
       mult.x = 1;
     }
 
-    velocity.x = velocity.x * mult.x;
-    velocity.z = velocity.z * mult.z;
+    velocity.x = velocity_per_frame.x * mult.x / delta_seconds;
+    velocity.z = velocity_per_frame.z * mult.z / delta_seconds;
 
   }
 
-  void Player::apply_velocity()
+  void Player::apply_velocity(f32 delta_seconds)
   {
     const auto& map = get_engine().get_map();
     f32 floor = 0;
@@ -165,14 +167,15 @@ namespace nc
       floor = sector_floor_y;
     }
 
-    if (this->get_position().y + velocity.y < floor)
+    if (this->get_position().y + velocity.y * delta_seconds < floor)
     {
       //velocity.y = floor - this->get_position().y;
       velocity.y = 0;
     }
 
+    vec3 velocity_per_frame = velocity * delta_seconds;
     vec3 position = this->get_position();
-    MapObject::move(position, velocity, m_forward, 0.25f);
+    MapObject::move(position, velocity_per_frame, m_forward, 0.25f);
     this->set_position(position);
 
     // recompute the angleYaw after moving through a portal
@@ -180,26 +183,26 @@ namespace nc
     angleYaw = rem_euclid(std::atan2f(forward2.z, -forward2.x) + HALF_PI, PI * 2);
   }
 
-  void Player::apply_acceleration(const nc::vec3& movement_direction, f32 delta_seconds)
+  void Player::apply_acceleration(const nc::vec3& movement_direction, [[maybe_unused]] f32 delta_seconds)
   {
-    velocity += movement_direction * ACCELERATION * delta_seconds;
+    velocity += movement_direction * ACCELERATION;
 
     //speed cap
     //if (sqrtf(velocity.x * velocity.x + velocity.z * velocity.z) > MAX_SPEED)
-    if (length(vec2(velocity.x, velocity.z)) > MAX_SPEED * delta_seconds)
+    if (length(vec2(velocity.x, velocity.z)) > MAX_SPEED)
     {
       float y = velocity.y;
       velocity.y = 0;
-      velocity = normalize_or_zero(velocity) * MAX_SPEED * delta_seconds;
+      velocity = normalize_or_zero(velocity) * MAX_SPEED;
       velocity.y = y;
     }
     
     //minimal non-zero velocity
-    if (velocity.x >= -0.01f * delta_seconds && velocity.x <= 0.01f * delta_seconds) velocity.x = 0;
-    if (velocity.z >= -0.01f * delta_seconds && velocity.z <= 0.01f * delta_seconds) velocity.z = 0;
+    if (velocity.x >= -0.01f && velocity.x <= 0.01f) velocity.x = 0;
+    if (velocity.z >= -0.01f && velocity.z <= 0.01f) velocity.z = 0;
   }
 
-  void Player::apply_deceleration(const nc::vec3& movement_direction, f32 delta_seconds)
+  void Player::apply_deceleration(const nc::vec3& movement_direction, [[maybe_unused]] f32 delta_seconds)
   {
     // If we are still -> return
     if (velocity.x == 0 && velocity.z == 0)
@@ -213,16 +216,16 @@ namespace nc
     //apply deceleration if reverse key is pressed or if directional/axis key is not pressed
     if (movement_direction.x == 0 || signbit(movement_direction.x) != signbit(velocity.x))
     {
-      velocity.x = velocity.x + (reverseVelocity.x * DECELERATION * delta_seconds);
+      velocity.x = velocity.x + (reverseVelocity.x * DECELERATION);
     }
 
     if (movement_direction.z == 0 || signbit(movement_direction.z) != signbit(velocity.z))
     {
-      velocity.z = velocity.z + (reverseVelocity.z * DECELERATION * delta_seconds);
+      velocity.z = velocity.z + (reverseVelocity.z * DECELERATION);
     }
 
     //apply general deceleration
-    velocity = velocity + (reverseVelocity * DECELERATION * delta_seconds);
+    velocity = velocity + (reverseVelocity * DECELERATION);
   }
 
   void Player::Damage(int damage)

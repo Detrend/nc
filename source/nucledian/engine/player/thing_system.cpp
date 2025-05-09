@@ -381,7 +381,7 @@ void ThingSystem::on_event(ModuleEvent& event)
       //CHECK FOR COLLISIONS
       entity_system.for_each<Enemy>([&](Enemy& enemy)
       {
-        this->get_player()->check_collision(enemy);
+        this->get_player()->check_collision(enemy, event.update.dt);
       });
 
       entity_system.for_each<Enemy>([&](Enemy& enemy)
@@ -400,7 +400,7 @@ void ThingSystem::on_event(ModuleEvent& event)
       
 
       //FINAL VELOCITY CHANGE
-      this->get_player()->apply_velocity();
+      this->get_player()->apply_velocity(event.update.dt);
 
       entity_system.for_each<Enemy>([&](Enemy& enemy)
       {
