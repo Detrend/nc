@@ -96,7 +96,7 @@ namespace nc
     apply_acceleration(movement_direction, delta_seconds);
 
     velocity += jumpForce * 3.0f;
-    velocity.y -= 0.01f;
+    velocity.y -= GRAVITY * delta_seconds;
 
     camera.update_transform(this->get_position(), angleYaw, anglePitch, viewHeight);
   }
@@ -210,7 +210,7 @@ namespace nc
       return;
     }
 
-    vec3 reverseVelocity = -velocity;
+    vec3 reverseVelocity = vec3 (- velocity.x, 0, -velocity.z);
     reverseVelocity = normalize_or_zero(reverseVelocity);
 
     //apply deceleration if reverse key is pressed or if directional/axis key is not pressed

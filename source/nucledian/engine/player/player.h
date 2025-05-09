@@ -46,8 +46,9 @@ private:
   f32 viewHeight = 0.5f;
 
   f32 MAX_SPEED = 5.0f;
-  f32 ACCELERATION = 20.0f;
+  f32 ACCELERATION = 25.0f;
   f32 DECELERATION = 14.0f;
+  f32 GRAVITY = 6.0f;
 
   vec3 m_forward = VEC3_ZERO;
   f32 anglePitch = 0; //UP-DOWN
