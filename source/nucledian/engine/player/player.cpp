@@ -185,7 +185,7 @@ namespace nc
 
   void Player::apply_acceleration(const nc::vec3& movement_direction, [[maybe_unused]] f32 delta_seconds)
   {
-    velocity += movement_direction * ACCELERATION;
+    velocity += movement_direction * ACCELERATION * delta_seconds;
 
     //speed cap
     //if (sqrtf(velocity.x * velocity.x + velocity.z * velocity.z) > MAX_SPEED)
@@ -216,16 +216,16 @@ namespace nc
     //apply deceleration if reverse key is pressed or if directional/axis key is not pressed
     if (movement_direction.x == 0 || signbit(movement_direction.x) != signbit(velocity.x))
     {
-      velocity.x = velocity.x + (reverseVelocity.x * DECELERATION);
+      velocity.x = velocity.x + (reverseVelocity.x * DECELERATION * delta_seconds);
     }
 
     if (movement_direction.z == 0 || signbit(movement_direction.z) != signbit(velocity.z))
     {
-      velocity.z = velocity.z + (reverseVelocity.z * DECELERATION);
+      velocity.z = velocity.z + (reverseVelocity.z * DECELERATION * delta_seconds);
     }
 
     //apply general deceleration
-    velocity = velocity + (reverseVelocity * DECELERATION);
+    velocity = velocity + (reverseVelocity * DECELERATION * delta_seconds);
   }
 
   void Player::Damage(int damage)
