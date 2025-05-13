@@ -111,50 +111,50 @@ namespace nc
     return false;
   }
 
-  void Player::check_collision(const MapObject& collider, f32 delta_seconds)
-  {   
-    vec3 velocity_per_frame = velocity * delta_seconds;
+  //void Player::check_collision(const MapObject& collider, f32 delta_seconds)
+  //{   
+  //  vec3 velocity_per_frame = velocity * delta_seconds;
 
-    this->set_position(this->get_position() + velocity_per_frame);
+  //  this->set_position(this->get_position() + velocity_per_frame);
 
-    if (!did_collide(collider))
-    {
-      this->set_position(this->get_position() - velocity_per_frame);
-      return;
-    }
+  //  if (!did_collide(collider))
+  //  {
+  //    this->set_position(this->get_position() - velocity_per_frame);
+  //    return;
+  //  }
 
-    f32 width = this->get_width();
+  //  f32 width = this->get_width();
 
-    vec3 target_dist = collider.get_position() - this->get_position();
+  //  vec3 target_dist = collider.get_position() - this->get_position();
 
-    vec3 intersect_union = vec3(get_width(), 0, get_width()) - (target_dist - vec3(collider.get_width(), 0, collider.get_width()));
+  //  vec3 intersect_union = vec3(get_width(), 0, get_width()) - (target_dist - vec3(collider.get_width(), 0, collider.get_width()));
 
-    this->set_position(this->get_position() - velocity_per_frame);
+  //  this->set_position(this->get_position() - velocity_per_frame);
 
-    vec3 new_velocity = velocity_per_frame - intersect_union;
-    vec3 mult = vec3(velocity_per_frame.x / (1 - new_velocity.x), 0, velocity_per_frame.z / (1 - new_velocity.z));
+  //  vec3 new_velocity = velocity_per_frame - intersect_union;
+  //  vec3 mult = vec3(velocity_per_frame.x / (1 - new_velocity.x), 0, velocity_per_frame.z / (1 - new_velocity.z));
 
-    if (mult.x < 0.05f) mult.x = 0;
-    if (mult.z < 0.05f) mult.z = 0;
+  //  if (mult.x < 0.05f) mult.x = 0;
+  //  if (mult.z < 0.05f) mult.z = 0;
 
-    target_dist = collider.get_position() - this->get_position();
-    target_dist.x = abs(target_dist.x);
-    target_dist.z = abs(target_dist.z);
+  //  target_dist = collider.get_position() - this->get_position();
+  //  target_dist.x = abs(target_dist.x);
+  //  target_dist.z = abs(target_dist.z);
 
-    if (target_dist.x >= width + collider.get_width())
-    {
-      mult.z = 1;
-    }
+  //  if (target_dist.x >= width + collider.get_width())
+  //  {
+  //    mult.z = 1;
+  //  }
 
-    if (target_dist.z >= width + collider.get_width())
-    {
-      mult.x = 1;
-    }
+  //  if (target_dist.z >= width + collider.get_width())
+  //  {
+  //    mult.x = 1;
+  //  }
 
-    velocity.x = velocity_per_frame.x * mult.x / delta_seconds;
-    velocity.z = velocity_per_frame.z * mult.z / delta_seconds;
+  //  velocity.x = velocity_per_frame.x * mult.x / delta_seconds;
+  //  velocity.z = velocity_per_frame.z * mult.z / delta_seconds;
 
-  }
+  //}
 
   void Player::apply_velocity(f32 delta_seconds)
   {
@@ -257,6 +257,11 @@ namespace nc
   f32 Player::get_view_height()
   {
     return viewHeight;
+  }
+
+  vec3& Player::get_velocity()
+  {
+    return velocity;
   }
 
   //==============================================================================

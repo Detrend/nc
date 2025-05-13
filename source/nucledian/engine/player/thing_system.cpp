@@ -381,18 +381,18 @@ void ThingSystem::on_event(ModuleEvent& event)
       //CHECK FOR COLLISIONS
       entity_system.for_each<Enemy>([&](Enemy& enemy)
       {
-        this->get_player()->check_collision(enemy, event.update.dt);
+          this->get_player()->check_collision(enemy, this->get_player()->get_velocity(), event.update.dt);
       });
 
       entity_system.for_each<Enemy>([&](Enemy& enemy)
       {
-        enemy.check_for_collision(*this->get_player());
+        enemy.check_collision(*this->get_player(), enemy.get_velocity(), event.update.dt);
 
         entity_system.for_each<Enemy>([&](Enemy& enemy2)
         {
           if (enemy.get_id() != enemy2.get_id()) // a wrong way to check equality
           {
-            enemy.check_for_collision(enemy2);
+            enemy.check_collision(enemy2, enemy.get_velocity(), event.update.dt);
           }         
         });
       });
