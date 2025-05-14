@@ -336,6 +336,17 @@ ThingSystem& ThingSystem::get()
 //==========================================================
 bool ThingSystem::init()
 {
+  // init level db
+  for (LevelID id = 0; id < Levels::count; ++id)
+  {
+    LevelID next_lvl_id = (id+1 < Levels::count) ? id+1 : INVALID_LEVEL_ID;
+    this->levels_db.push_back(LevelData
+    {
+      .next_level = next_lvl_id,
+      .name       = LEVEL_NAMES[id],
+    });
+  }
+
   return true;
 }
 
@@ -443,14 +454,26 @@ LevelID ThingSystem::get_level_id() const
 //==============================================================================
 void ThingSystem::request_level_change(LevelID new_level)
 {
-  nc_assert(new_level != this->level_id);
   // Another level already scheduled.
   nc_assert(this->scheduled_level_id == INVALID_LEVEL_ID);
 
   this->scheduled_level_id = new_level;
 }
 
-//==========================================================
+//==============================================================================
+void ThingSystem::request_next_level()
+{
+  nc_assert(this->level_id < this->levels_db.size());
+  const auto next_id = this->levels_db[this->level_id].next_level;
+  if (next_id == INVALID_LEVEL_ID)
+  {
+    return;
+  }
+
+  this->request_level_change(next_id);
+}
+
+//==============================================================================
 const MapSectors& ThingSystem::get_map() const
 {
   nc_assert(map);
@@ -462,6 +485,12 @@ const SectorMapping& ThingSystem::get_sector_mapping() const
 {
   nc_assert(mapping);
   return *mapping;
+}
+
+//==============================================================================
+const ThingSystem::LevelDatabase& ThingSystem::get_level_db() const
+{
+  return this->levels_db;
 }
 
 //==============================================================================

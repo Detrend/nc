@@ -956,11 +956,23 @@ static void draw_level_selection()
 {
   auto& game = ThingSystem::get();
 
-  ImGui::Text("Current Level: %s", LEVEL_NAMES[game.get_level_id()]);
-  ImGui::Separator();
+  const auto& level_db = game.get_level_db();
+  const auto  curr_lvl = game.get_level_id();
 
   bool already_selected = false;
-  for (LevelID id = 0; id < Levels::count; ++id)
+
+  ImGui::Text("Current Level: %s", level_db[curr_lvl].name);
+  ImGui::Separator();
+
+  if (ImGui::Button("Next Level"))
+  {
+    game.request_next_level();
+    already_selected = true;
+  }
+
+  ImGui::Separator();
+
+  for (LevelID id = 0; id < game.get_level_db().size(); ++id)
   {
     if (ImGui::Button(LEVEL_NAMES[id]) && !already_selected)
     {

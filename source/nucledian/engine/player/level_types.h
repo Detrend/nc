@@ -24,6 +24,12 @@ namespace Levels
   };
 }
 
+struct LevelData
+{
+  LevelID next_level = INVALID_LEVEL_ID;
+  cstr    name;
+};
+
 constexpr cstr LEVEL_NAMES[]
 {
   "demo map",

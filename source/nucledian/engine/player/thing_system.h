@@ -26,10 +26,11 @@ class  Player;
 class ThingSystem : public IEngineModule
 {
 public:
-  using Enemies     = std::vector<EntityID>;
-  using MappingPtr  = std::unique_ptr<SectorMapping>;
-  using MapPtr      = std::unique_ptr<MapSectors>;
-  using RegistryPtr = std::unique_ptr<EntityRegistry>;
+  using Enemies       = std::vector<EntityID>;
+  using MappingPtr    = std::unique_ptr<SectorMapping>;
+  using MapPtr        = std::unique_ptr<MapSectors>;
+  using RegistryPtr   = std::unique_ptr<EntityRegistry>;
+  using LevelDatabase = std::vector<LevelData>;
 
 public:
   static EngineModuleId get_module_id();
@@ -43,9 +44,11 @@ public:
 
   LevelID get_level_id() const;
   void    request_level_change(LevelID new_level);
+  void    request_next_level();
 
   const MapSectors&    get_map()            const;
   const SectorMapping& get_sector_mapping() const;
+  const LevelDatabase& get_level_db()       const;
 
 private:
   const Enemies&    get_enemies() const;
@@ -68,13 +71,14 @@ private:
   void build_map(LevelID level);
 
 private:
-  EntityID    player_id = INVALID_ENTITY_ID;
-  MapPtr      map;
-  MappingPtr  mapping;
-  Enemies     enemies;
-  RegistryPtr entities;
-  LevelID     level_id           = INVALID_LEVEL_ID;
-  LevelID     scheduled_level_id = INVALID_LEVEL_ID;
+  EntityID      player_id = INVALID_ENTITY_ID;
+  MapPtr        map;
+  MappingPtr    mapping;
+  Enemies       enemies;
+  RegistryPtr   entities;
+  LevelID       level_id           = INVALID_LEVEL_ID;
+  LevelID       scheduled_level_id = INVALID_LEVEL_ID;
+  LevelDatabase levels_db;
 };
 
 }
