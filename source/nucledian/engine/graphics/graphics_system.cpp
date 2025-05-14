@@ -1221,6 +1221,7 @@ void GraphicsSystem::render_portal(const CameraData& camera_data, const PortalRe
     .position = camera_data.position,
     .view = virtual_view,
     .projection = clip_projection(virtual_camera_data, portal),
+    //.projection = virtual_camera_data.projection,
     .vis_tree = camera_data.vis_tree,
   };
 
@@ -1257,8 +1258,14 @@ mat4 GraphicsSystem::clip_projection(const CameraData& camera_data, const Portal
   // referenced by following article:
   // https://th0mas.nl/2013/05/19/rendering-recursive-portals-with-opengl/
 
-  const vec3 normal = angleAxis(portal.rotation, VEC3_Y) * -VEC3_Z;
-  const vec4 clip_plane = inverse(transpose(camera_data.view)) * vec4(normal, length(portal.position));
+  const auto inv_view = camera_data.view;
+
+  const vec3 plane_normal = angleAxis(portal.rotation, VEC3_Y) * -VEC3_Z;
+  const vec3 plane_point  = portal.position;
+
+  const vec3 local_normal = inv_view * vec4{plane_normal, 0.0f};
+  const vec3 local_point  = inv_view * vec4{plane_point,  0.0f};
+  const vec4 clip_plane   = vec4(local_normal, dot(-local_normal, local_point));
 
   if (clip_plane.w > 0.0f)
     return camera_data.projection;
