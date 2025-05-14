@@ -20,6 +20,7 @@
 #include <engine/map/map_system.h>
 #include <engine/entity/entity_system.h>
 #include <engine/player/thing_system.h>
+#include <engine/player/level_types.h>
 
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
@@ -304,7 +305,7 @@ void GraphicsSystem::on_event(ModuleEvent& event)
       break;
     }
 
-    case ModuleEventType::on_map_rebuild:
+    case ModuleEventType::after_map_rebuild:
     {
       build_map_gfx();
       break;
@@ -951,6 +952,25 @@ static void draw_keybinds_bar()
 }
 
 //==============================================================================
+static void draw_level_selection()
+{
+  auto& game = ThingSystem::get();
+
+  ImGui::Text("Current Level: %s", LEVEL_NAMES[game.get_level_id()]);
+  ImGui::Separator();
+
+  bool already_selected = false;
+  for (LevelID id = 0; id < Levels::count; ++id)
+  {
+    if (ImGui::Button(LEVEL_NAMES[id]) && !already_selected)
+    {
+      game.request_level_change(id);
+      already_selected = true;
+    }
+  }
+}
+
+//==============================================================================
 void GraphicsSystem::draw_debug_window()
 {
   if (CVars::display_imgui_demo)
@@ -971,6 +991,12 @@ void GraphicsSystem::draw_debug_window()
       if (ImGui::BeginTabItem("Keybinds"))
       {
         draw_keybinds_bar();
+        ImGui::EndTabItem();
+      }
+
+      if (ImGui::BeginTabItem("Levels"))
+      {
+        draw_level_selection();
         ImGui::EndTabItem();
       }
 
@@ -1272,13 +1298,15 @@ mat4 GraphicsSystem::clip_projection(const CameraData& camera_data, const Portal
 //==============================================================================
 void GraphicsSystem::build_map_gfx() const
 {
-  const auto& m_map = get_engine().get_map();
+  const auto& map = ThingSystem::get().get_map();
   MeshManager& mesh_manager = MeshManager::instance();
 
-  for (SectorID sid = 0; sid < m_map.sectors.size(); ++sid)
+  g_sector_meshes.clear();
+
+  for (SectorID sid = 0; sid < map.sectors.size(); ++sid)
   {
     std::vector<vec3> vertices;
-    m_map.sector_to_vertices(sid, vertices);
+    map.sector_to_vertices(sid, vertices);
 
     const f32* vertex_data = &vertices[0].x;
     const u32  values_cnt = static_cast<u32>(vertices.size() * 3);

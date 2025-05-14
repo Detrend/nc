@@ -123,6 +123,7 @@
     <ClInclude Include="..\source\nucledian\engine\entity\entity_type_definitions.h" />
     <ClInclude Include="..\source\nucledian\engine\appearance.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\sector_mapping.h" />
+    <ClInclude Include="..\source\nucledian\engine\player\level_types.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />

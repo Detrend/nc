@@ -16,12 +16,14 @@ namespace ModuleEventType
 
     post_init,        // sent to all modules after initialization
 
+    frame_start,      // start of the frame
     game_update,      // during gameplay
     paused_update,    // during paused game
     loading_update,   // during loading
     render,
 
-    on_map_rebuild,  // sent after the map is rebuilt
+    before_map_rebuild,  // send before the map rebuild starts
+    after_map_rebuild,   // sent after the map is rebuilt
 
     event_journal_installed,
     event_journal_uninstalled,

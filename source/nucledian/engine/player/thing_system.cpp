@@ -336,34 +336,53 @@ ThingSystem& ThingSystem::get()
 //==========================================================
 bool ThingSystem::init()
 {
-  map      = std::make_unique<MapSectors>();
-  mapping  = std::make_unique<SectorMapping>(*map);
-  entities = std::make_unique<EntityRegistry>(*mapping);
-
   return true;
 }
 
 //==========================================================
 void ThingSystem::on_event(ModuleEvent& event)
 {
-  auto& entity_system = this->get_entities();
-
   switch (event.type)
   {
+    case ModuleEventType::frame_start:
+    {
+      // MR says: We want this to happen at the frame start and
+      //          not on cleanup, because for the first frame of
+      //          the game there would be no level or entities.
+      //          This simplifies the stuff a lot.
+      if (this->scheduled_level_id != INVALID_LEVEL_ID)
+      {
+        get_engine().send_event
+        (
+          ModuleEvent{.type = ModuleEventType::before_map_rebuild}
+        );
+
+        // do level transition
+        this->cleanup_map();
+        this->build_map(this->scheduled_level_id);
+        this->level_id = this->scheduled_level_id;
+        this->scheduled_level_id = INVALID_LEVEL_ID;
+
+        get_engine().send_event
+        (
+          ModuleEvent{.type = ModuleEventType::after_map_rebuild}
+        );
+      }
+      break;
+    }
+
     case ModuleEventType::post_init:
     {
-      this->build_map();
-      auto* player = entities->create_entity<Player>(vec3{0});
-      player_id = player->get_id();
-
-      entity_system.create_entity<Enemy>(vec3{1, 0.0, 1}, FRONT_DIR);
-      entity_system.create_entity<Enemy>(vec3{2, 0.0, 1}, FRONT_DIR);
-      entity_system.create_entity<Enemy>(vec3{3, 0.0, 1}, FRONT_DIR);
+      // Schedule the loading of the first level..
+      // This is probably only temporary.
+      this->request_level_change(Levels::demo_map);
       break;
     }
 
     case ModuleEventType::game_update:
     {
+      auto& entity_system = this->get_entities();
+
       //INPUT PHASE
       GameInputs curInputs = get_engine().get_module<InputSystem>().get_inputs();
       GameInputs prevInputs = get_engine().get_module<InputSystem>().get_prev_inputs();
@@ -415,6 +434,22 @@ EntityRegistry& ThingSystem::get_entities()
   return *entities;
 }
 
+//==============================================================================
+LevelID ThingSystem::get_level_id() const
+{
+  return level_id;
+}
+
+//==============================================================================
+void ThingSystem::request_level_change(LevelID new_level)
+{
+  nc_assert(new_level != this->level_id);
+  // Another level already scheduled.
+  nc_assert(this->scheduled_level_id == INVALID_LEVEL_ID);
+
+  this->scheduled_level_id = new_level;
+}
+
 //==========================================================
 const MapSectors& ThingSystem::get_map() const
 {
@@ -429,6 +464,16 @@ const SectorMapping& ThingSystem::get_sector_mapping() const
   return *mapping;
 }
 
+//==============================================================================
+void ThingSystem::cleanup_map()
+{
+  enemies.clear();
+  entities.reset();
+  mapping.reset();
+  map.reset();
+  player_id = INVALID_ENTITY_ID;
+}
+
 //==========================================================
 const ThingSystem::Enemies& ThingSystem::get_enemies() const
 {
@@ -436,15 +481,42 @@ const ThingSystem::Enemies& ThingSystem::get_enemies() const
 }
 
 //==========================================================
-void ThingSystem::build_map()
+void ThingSystem::build_map(LevelID level)
 {
-  map_helpers::make_demo_map(*map);
+  nc_assert(!map && !mapping && !entities);
+  map      = std::make_unique<MapSectors>();
+  mapping  = std::make_unique<SectorMapping>(*map);
+  entities = std::make_unique<EntityRegistry>(*mapping);
+
+  switch (level)
+  {
+    case Levels::demo_map:
+      map_helpers::make_demo_map(*map);
+      break;
+
+    case Levels::cool_map:
+      map_helpers::make_cool_looking_map(*map);
+      break;
+
+    case Levels::square_map:
+      map_helpers::make_random_square_maze_map(*map, 32, 0);
+      break;
+
+    case Levels::portal_test:
+      map_helpers::make_simple_portal_test_map(*map);
+      break;
+
+    default: nc_assert(false); break;
+  }
+
   mapping->on_map_rebuild();
 
-  get_engine().send_event
-  (
-    ModuleEvent{.type = ModuleEventType::on_map_rebuild}
-  );
+  auto* player = entities->create_entity<Player>(vec3{0.5, 0, 0.5});
+  player_id = player->get_id();
+
+  entities->create_entity<Enemy>(vec3{1, 0.0, 1}, FRONT_DIR);
+  entities->create_entity<Enemy>(vec3{2, 0.0, 1}, FRONT_DIR);
+  entities->create_entity<Enemy>(vec3{3, 0.0, 1}, FRONT_DIR);
 }
 
 //==========================================================

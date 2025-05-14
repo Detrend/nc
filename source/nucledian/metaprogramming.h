@@ -11,4 +11,4 @@
 #define STRINGIFY_impl(...) # __VA_ARGS__
 #define STRINGIFY(...) STRINGIFY_impl(__VA_ARGS__)
 
-#define ARRAY_LENGTH(...) (sizeof(__VA_ARGS__)/sizeof(*(__VA_ARGS)))
+#define ARRAY_LENGTH(...) (sizeof(__VA_ARGS__)/sizeof(*(__VA_ARGS__)))

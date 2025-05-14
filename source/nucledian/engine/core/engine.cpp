@@ -336,6 +336,12 @@ void Engine::run()
       });
     }
 
+    // frame start
+    this->send_event(ModuleEvent
+    {
+      .type = ModuleEventType::frame_start,
+    });
+
     // update
     this->send_event(ModuleEvent
     {
