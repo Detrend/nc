@@ -118,7 +118,7 @@ namespace nc
   void Enemy::apply_velocity()
   {
     vec3 position = this->get_position();
-    MapObject::move(position, velocity, facing, 0.25f);
+    Entity::move(position, velocity, facing, 0.25f);
     this->set_position(position);
     //g_transform_components[m_entity_index].position() = position;
   }
