@@ -124,6 +124,7 @@
     <ClCompile Include="..\source\nucledian\engine\entity\sector_mapping.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\physics.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\texture.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\sound\sound_system.cpp" />
     <ClCompile Include="..\source\nucledian\logging.cpp" />
     <ClCompile Include="..\source\nucledian\main.cpp" />
     <ClCompile Include="..\source\nucledian\transform.cpp" />
@@ -246,6 +247,8 @@
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
     <ClInclude Include="..\source\nucledian\engine\map\physics.h" />
     <ClInclude Include="..\source\nucledian\engine\player\level_types.h" />
+    <ClInclude Include="..\source\nucledian\engine\sound\sound_resources.h" />
+    <ClInclude Include="..\source\nucledian\engine\sound\sound_system.h" />
     <ClInclude Include="..\source\nucledian\logging.h" />
     <ClInclude Include="..\source\nucledian\metaprogramming.h" />
     <ClInclude Include="..\source\nucledian\transform.h" />

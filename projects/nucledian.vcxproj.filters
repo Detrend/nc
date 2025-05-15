@@ -39,6 +39,7 @@
     <ClCompile Include="..\source\nucledian\engine\entity\sector_mapping.cpp" />
     <ClCompile Include="..\source\nucledian\engine\player\save_types.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\physics.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\sound\sound_system.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -128,6 +129,8 @@
     <ClInclude Include="..\source\nucledian\engine\map\physics.h" />
     <ClInclude Include="..\source\nucledian\engine\player\level_types.h" />
     <ClInclude Include="..\source\nucledian\engine\player\save_types.h" />
+    <ClInclude Include="..\source\nucledian\engine\sound\sound_resources.h" />
+    <ClInclude Include="..\source\nucledian\engine\sound\sound_system.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
