@@ -356,8 +356,8 @@ void ThingSystem::on_event(ModuleEvent& event)
       auto* player = entities->create_entity<Player>(vec3{0});
       player_id = player->get_id();
 
-      entity_system.create_entity<Enemy>(vec3{1, 0.0, 1}, FRONT_DIR);
-      entity_system.create_entity<Enemy>(vec3{2, 0.0, 1}, FRONT_DIR);
+      //entity_system.create_entity<Enemy>(vec3{1, 0.0, 1}, FRONT_DIR);
+      //entity_system.create_entity<Enemy>(vec3{2, 0.0, 1}, FRONT_DIR);
       entity_system.create_entity<Enemy>(vec3{3, 0.0, 1}, FRONT_DIR);
       break;
     }

@@ -1,8 +1,6 @@
 #pragma once
 #include <types.h>
 #include <math/vector.h>
-#include <math/vector.h>
-#include <aabb.h>
 
 #include <engine/entity/entity.h>
 
@@ -26,6 +24,5 @@ namespace nc {
 
   protected:
     bool  collision;
-    aabb3 bounds;
   };
 }
