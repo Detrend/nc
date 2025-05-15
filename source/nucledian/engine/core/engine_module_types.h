@@ -14,6 +14,7 @@ namespace EngineModule
     input_system,
     entity_system,
     resource_system,
+    sound_system,
     // -- //
     count
   };

@@ -23,7 +23,6 @@
 
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
-#include <SDL2/include/SDL_mixer.h>
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_opengl3.h>
@@ -170,9 +169,6 @@ static void draw_text(vec2 coords, cstr text, vec3 color)
 namespace nc
 {
 
-
-    Mix_Music* gSound = nullptr;
-
 // Temporary solution
 std::vector<MeshHandle> g_sector_meshes;
 
@@ -224,21 +220,9 @@ bool GraphicsSystem::init()
   if (SDL_Init(SDL_INIT_FLAGS) < 0)
   {
     // failed to init SDL, see what's the issue
-      nc_expect(false, "SDL init failed: '{}'", SDL_GetError());
+    [[maybe_unused]] cstr error = SDL_GetError();
+    return false;
   }
-
-
-  //Initialize SDL_mixer
-  if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
-  {
-      nc_expect(false, "SDL_mixer could not initialize! SDL_mixer Error: {0}\n", Mix_GetError());
-  }
-
-  gSound = Mix_LoadMUS("..\\art\\sounds\\166508__yoyodaman234__concrete-footstep-2.wav");
-  nc_expect(gSound, "Failed to load music file! '{}'", Mix_GetError());
-
-  Mix_PlayMusic(gSound, -1);
-
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
