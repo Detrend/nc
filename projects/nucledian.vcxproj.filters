@@ -37,6 +37,7 @@
     <ClCompile Include="..\source\nucledian\engine\entity\entity_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\entity.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\sector_mapping.cpp" />
+    <ClCompile Include="..\source\libs\stb_image\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -124,6 +125,7 @@
     <ClInclude Include="..\source\nucledian\engine\appearance.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\sector_mapping.h" />
     <ClInclude Include="..\source\nucledian\engine\player\level_types.h" />
+    <ClInclude Include="..\source\libs\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
