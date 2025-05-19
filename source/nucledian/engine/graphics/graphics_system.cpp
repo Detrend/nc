@@ -270,10 +270,14 @@ bool GraphicsSystem::init()
   MeshManager::instance().init();
 
   m_solid_material = MaterialHandle(shaders::solid::VERTEX_SOURCE, shaders::solid::FRAGMENT_SOURCE);
-  m_cube_model = Model(MeshManager::instance().get_cube(), m_solid_material);
-
   m_solid_material.use();
   m_solid_material.set_uniform(shaders::solid::PROJECTION, m_default_projection);
+  
+  m_billboard_material = MaterialHandle(shaders::billboard::VERTEX_SOURCE, shaders::billboard::FRAGMENT_SOURCE);
+  m_billboard_material.use();
+  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, m_default_projection);
+
+  m_cube_model = Model(MeshManager::instance().get_cube(), m_solid_material);
 
 #ifdef NC_DEBUG_DRAW
   debug_helpers::g_top_down_material = MaterialHandle
@@ -290,6 +294,8 @@ bool GraphicsSystem::init()
   ImGui_ImplSDL2_InitForOpenGL(m_window, m_gl_context);
   ImGui_ImplOpenGL3_Init(nullptr);
 #endif
+
+  m_test_texture = TextureManager::instance().create(ResLifetime::Game, "content/textures/mff_pepe.png");
 
   return true;
 }
@@ -1069,6 +1075,17 @@ void GraphicsSystem::render_sectors(const CameraData& camera_data) const
 //==============================================================================
 void GraphicsSystem::render_entities(const CameraData& camera_data) const
 {
+  const MeshHandle& texturable_quad = MeshManager::instance().get_texturable_quad();
+
+  m_billboard_material.use();
+  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, camera_data.projection);
+  m_billboard_material.set_uniform(shaders::billboard::VIEW, camera_data.view);
+  m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, translate(mat4(1.0f), vec3(1.0, 0.5, 1.0f)));
+
+  glBindTexture(GL_TEXTURE_2D, m_test_texture.get_gl_handle());
+  glBindVertexArray(texturable_quad.get_vao());
+  glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
+
   /*
    * 1. obtain visible_sectors visible_sectors from sector system (TODO)
    * 2. get RenderComponents from entities within visible_sectors visible_sectors (TODO)

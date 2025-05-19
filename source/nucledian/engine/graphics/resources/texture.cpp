@@ -4,6 +4,8 @@
 #include <glad/glad.h>
 #include <stb_image/stb_image.h>
 
+#include <filesystem>
+
 namespace nc
 {
 
@@ -68,6 +70,8 @@ TextureManager& TextureManager::instance()
 //==============================================================================
 TextureHandle nc::TextureManager::create(ResLifetime lifetime, const std::string& path)
 {
+  std::cout << std::filesystem::current_path() << std::endl;
+
   GLuint gl_handle = 0;
   glGenTextures(1, &gl_handle);
   glBindTexture(GL_TEXTURE_2D, gl_handle);
@@ -82,7 +86,7 @@ TextureHandle nc::TextureManager::create(ResLifetime lifetime, const std::string
   if (data == nullptr)
   {
     // TODO: Use error texture.
-    // TODO: Log error that texture could not be loaded.
+    // TODO: Log error that texture could not be loaded (stbi_failure_reason()).
     glDeleteTextures(1, &gl_handle);
     return TextureHandle::invalid();
   }

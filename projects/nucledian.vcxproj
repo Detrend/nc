@@ -289,6 +289,8 @@
     <None Include="..\source\nucledian\engine\graphics\resources\mesh.inl" />
     <None Include="..\source\nucledian\engine\graphics\resources\model.inl" />
     <None Include="..\source\nucledian\engine\graphics\resources\material.inl" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\billboard.frag" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\billboard.vert" />
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.frag" />
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.vert" />
     <None Include="..\source\nucledian\math\lingebra.inl" />

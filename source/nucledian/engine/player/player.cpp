@@ -80,6 +80,7 @@ namespace nc
     //NC_MESSAGE("{} {} {}", position.x, position.y, position.z);
 
     camera.update_transform(this->get_position(), angleYaw, anglePitch, viewHeight);
+    std::cout << this->get_position().x << ' ' << this->get_position().z << '\n';
   }
 
   bool Player::get_attack_state(GameInputs curInput, GameInputs prevInput, [[maybe_unused]] f32 delta_seconds)
