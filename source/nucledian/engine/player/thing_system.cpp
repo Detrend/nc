@@ -15,7 +15,14 @@
 
 #include <engine/graphics/graphics_system.h>
 
+#include <common.h>
+
 #include <intersect.h>
+
+#include <fstream>
+#include <filesystem>
+#include <string>
+#include <chrono>
 
 //==============================================================================
 namespace nc::map_helpers
@@ -321,6 +328,9 @@ static void test_make_sector
 namespace nc
 {
 
+constexpr cstr SAVE_DIR_RELATIVE = "save";
+constexpr cstr SAVE_FILE_SUFFIX  = ".ncs";
+
 //==========================================================
 EngineModuleId ThingSystem::get_module_id()
 {
@@ -350,11 +360,114 @@ bool ThingSystem::init()
   return true;
 }
 
-//==========================================================
+//==============================================================================
+void ThingSystem::post_init()
+{
+  // Load game saves and populate the database
+  namespace fs = std::filesystem;
+
+  for (const auto& entry : fs::directory_iterator(SAVE_DIR_RELATIVE))
+  {
+    if (!entry.is_regular_file())
+    {
+      // Ignore
+      continue;
+    }
+
+    if (entry.path().extension() != SAVE_FILE_SUFFIX)
+    {
+      // Not a savefile
+      continue;
+    }
+
+    std::ifstream input_file;
+    input_file.open(entry, std::ios::binary | std::ios::ate);
+    if (!input_file.is_open())
+    {
+      // What?
+      nc_warn("Failed to open save game file \"{}\", skipping..", entry.path().string());
+      continue;
+    }
+
+    auto size = input_file.tellg();
+    input_file.seekg(0, std::ios::beg);
+
+    std::vector<byte> data(size, 0);
+    input_file.read(reinterpret_cast<char*>(&data[0]), size);
+
+    SaveGameData save_game;
+    if (!deserialize_save_game_from_bytes(save_game, data))
+    {
+      // Try to deserialize the data
+      nc_warn("Failed to read save game data from file \"{}\"", entry.path().string());
+      continue;
+    }
+
+    // Insert into the database
+    this->get_save_game_db().push_back(SaveDbEntry
+    {
+      .data  = save_game,
+      .dirty = false,
+    });
+
+    this->last_save_id = std::max(this->last_save_id, save_game.id);
+  }
+
+  // Schedule the loading of the first level..
+  // This is probably only temporary.
+  this->request_level_change(Levels::demo_map);
+}
+
+//==============================================================================
+void ThingSystem::pre_terminate()
+{
+  // Store the dirty save games
+  for (const auto&[save, dirty] : this->get_save_game_db())
+  {
+    if (!dirty)
+    {
+      continue;
+    }
+
+    std::vector<byte> bytes;
+    serialize_save_game_to_bytes(save, bytes);
+
+    std::string filename = std::format
+    (
+      "{}/save{}.{}", SAVE_DIR_RELATIVE, save.id, SAVE_FILE_SUFFIX
+    );
+
+    std::ofstream output;
+    output.open(filename, std::ios::binary | std::ios::trunc);
+    if (!output.is_open())
+    {
+      nc_crit("Could not open savegame file \"{}\" for writing.", filename);
+      continue;
+    }
+
+    output.write(reinterpret_cast<char*>(&bytes[0]), bytes.size());
+    output.flush();
+    output.close();
+  }
+}
+
+//==============================================================================
 void ThingSystem::on_event(ModuleEvent& event)
 {
   switch (event.type)
   {
+    case ModuleEventType::post_init:
+    {
+      this->post_init();
+      break;
+    }
+
+    case ModuleEventType::pre_terminate:
+    {
+      this->pre_terminate();
+      break;
+    }
+
     case ModuleEventType::frame_start:
     {
       // MR says: We want this to happen at the frame start and
@@ -379,14 +492,6 @@ void ThingSystem::on_event(ModuleEvent& event)
           ModuleEvent{.type = ModuleEventType::after_map_rebuild}
         );
       }
-      break;
-    }
-
-    case ModuleEventType::post_init:
-    {
-      // Schedule the loading of the first level..
-      // This is probably only temporary.
-      this->request_level_change(Levels::demo_map);
       break;
     }
 
@@ -443,6 +548,28 @@ EntityRegistry& ThingSystem::get_entities()
 {
   nc_assert(entities);
   return *entities;
+}
+
+//==============================================================================
+SaveGameData ThingSystem::save_game() const
+{
+  SaveGameData save;
+  save.last_level = this->get_level_id();
+  save.time       = SaveGameData::Clock::now();
+  save.id         = ++last_save_id;
+  return save;
+}
+
+//==============================================================================
+void ThingSystem::load_game(const SaveGameData& save)
+{
+  this->request_level_change(save.last_level);
+}
+
+//==============================================================================
+ThingSystem::SaveDatabase& ThingSystem::get_save_game_db()
+{
+  return save_db;
 }
 
 //==============================================================================

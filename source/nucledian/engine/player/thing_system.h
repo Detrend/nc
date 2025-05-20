@@ -10,6 +10,7 @@
 
 #include <engine/entity/entity_types.h>
 #include <engine/player/level_types.h>
+#include <engine/player/save_types.h>
 
 #include <memory> // std::unique_ptr
 
@@ -26,11 +27,18 @@ class  Player;
 class ThingSystem : public IEngineModule
 {
 public:
+  struct SaveDbEntry
+  {
+    SaveGameData data;
+    bool         dirty = false;
+  };
+
   using Enemies       = std::vector<EntityID>;
   using MappingPtr    = std::unique_ptr<SectorMapping>;
   using MapPtr        = std::unique_ptr<MapSectors>;
   using RegistryPtr   = std::unique_ptr<EntityRegistry>;
   using LevelDatabase = std::vector<LevelData>;
+  using SaveDatabase  = std::vector<SaveDbEntry>;
 
 public:
   static EngineModuleId get_module_id();
@@ -42,6 +50,13 @@ public:
   Player*         get_player();
   EntityRegistry& get_entities();
 
+  // Saving and loading the game. 
+  SaveGameData save_game() const;
+  void         load_game(const SaveGameData& save);
+
+  SaveDatabase& get_save_game_db();
+
+  // Level transition
   LevelID get_level_id() const;
   void    request_level_change(LevelID new_level);
   void    request_next_level();
@@ -70,15 +85,21 @@ private:
   // to happen.
   void build_map(LevelID level);
 
+  void post_init();
+
+  void pre_terminate();
+
 private:
-  EntityID      player_id = INVALID_ENTITY_ID;
-  MapPtr        map;
-  MappingPtr    mapping;
-  Enemies       enemies;
-  RegistryPtr   entities;
-  LevelID       level_id           = INVALID_LEVEL_ID;
-  LevelID       scheduled_level_id = INVALID_LEVEL_ID;
-  LevelDatabase levels_db;
+  EntityID       player_id = INVALID_ENTITY_ID;
+  MapPtr         map;
+  MappingPtr     mapping;
+  Enemies        enemies;
+  RegistryPtr    entities;
+  LevelID        level_id           = INVALID_LEVEL_ID;
+  LevelID        scheduled_level_id = INVALID_LEVEL_ID;
+  LevelDatabase  levels_db;
+  SaveDatabase   save_db;
+  mutable SaveID last_save_id = 0;
 };
 
 }
