@@ -1298,7 +1298,13 @@ void GraphicsSystem::render_portal_to_color(const CameraData& camera_data, const
 }
 
 //==============================================================================
-void GraphicsSystem::render_portal_to_depth(const CameraData& camera_data, const PortalRenderData& portal) const
+void GraphicsSystem::render_portal_to_depth
+(
+  const CameraData&       camera_data,
+  const PortalRenderData& portal,
+  bool                    overwrite_to_max,
+  u8                      recursion_depth
+) const
 {
   m_solid_material.use();
   m_solid_material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
@@ -1307,16 +1313,44 @@ void GraphicsSystem::render_portal_to_depth(const CameraData& camera_data, const
   m_solid_material.set_uniform(shaders::solid::TRANSFORM, portal.transform);
   m_solid_material.set_uniform(shaders::solid::COLOR, colors::LIME);
 
-  glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
   glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
   glDepthFunc(GL_ALWAYS);
+
+  if (overwrite_to_max)
+  {
+    // MR says: Here, we render the portal into the depth buffer, but
+    //          set all pixel depths to 1.0 (maximum one) - this resets
+    //          the depth so that recurisive rendering of the portal
+    //          does not produce artifacts.
+    // Overwrite the depth value to maximum one
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    // This makes sure that the final depth will be 1.0 everywhere
+    glDepthRange(1.0, 1.0); 
+    // No need to reset this later, a it will be changed by the
+    // "render_portal_to_color_function"
+    glDepthMask(GL_TRUE);
+    // This makes sure that we write depth 1.0 on the whole surface
+    // of the portal
+    glStencilFunc(GL_LEQUAL, recursion_depth + 1, 0xFF);
+  }
+  else
+  {
+    // Render the portal in a normal way
+    glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
+  }
 
   const MeshHandle& quad = MeshManager::instance().get_quad();
   glBindVertexArray(quad.get_vao());
   glDrawArrays(quad.get_draw_mode(), 0, quad.get_vertex_count());
   glBindVertexArray(0);
 
+  // Reset the depth function back
   glDepthFunc(GL_LESS);
+
+  if (overwrite_to_max)
+  {
+    glDepthRange(0.0, 1.0); // Back to normal
+  }
 }
 
 //==============================================================================
@@ -1333,18 +1367,11 @@ void GraphicsSystem::render_portal(const CameraData& camera_data, const PortalRe
     .projection = camera_data.projection,
     .vis_tree = camera_data.vis_tree,
   };
-  CameraData clipped_virtual_camera_data = CameraData
-  {
-    .position = camera_data.position,
-    .view = virtual_view,
-    .projection = clip_projection(virtual_camera_data, portal),
-    .vis_tree = camera_data.vis_tree,
-  };
 
   render_portal_to_stencil(camera_data, portal, recursion_depth);
-  render_portal_to_color(clipped_virtual_camera_data, portal, recursion_depth);
+  render_portal_to_depth(camera_data, portal, true, recursion_depth);
+  render_portal_to_color(virtual_camera_data, portal, recursion_depth);
 
-  
   for (const auto& subtree : camera_data.vis_tree.children)
   {
     const WallData& wall = map.walls[subtree.portal_wall];
@@ -1363,7 +1390,7 @@ void GraphicsSystem::render_portal(const CameraData& camera_data, const PortalRe
   }
   glStencilFunc(GL_LEQUAL, recursion_depth + 1, 0xFF);
 
-  render_portal_to_depth(camera_data, portal);
+  render_portal_to_depth(camera_data, portal, false, recursion_depth);
 }
 
 //==============================================================================

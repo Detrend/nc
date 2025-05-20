@@ -53,7 +53,7 @@ private:
 
   void render_portal_to_stencil(const CameraData& camera_data, const PortalRenderData& portal, u8 recursion_depth) const;
   void render_portal_to_color(const CameraData& camera_data, const PortalRenderData& portal, u8 recursion_depth) const;
-  void render_portal_to_depth(const CameraData& camera_data, const PortalRenderData& portal) const;
+  void render_portal_to_depth(const CameraData& camera_data, const PortalRenderData& portal, bool overwrite_to_max, u8 recursion_depth) const;
 
   void render_portal(const CameraData& camera_data, const PortalRenderData& portal, u8 recursion_depth) const;
 
