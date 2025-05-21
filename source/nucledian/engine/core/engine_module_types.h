@@ -15,6 +15,7 @@ namespace EngineModule
     entity_system,
     resource_system,
     sound_system,
+    tween_system,
     // -- //
     count
   };
