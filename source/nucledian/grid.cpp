@@ -115,6 +115,30 @@ void StatGridAABB2<T>::query_aabb(aabb2 bbox, Visitor func) const
 
 //==============================================================================
 template<typename T>
+void StatGridAABB2<T>::query_ray
+(
+  vec3 from, vec3 to, f32 expand, Visitor func
+) const
+{
+  return this->query_ray(from.xz(), to.xz(), expand, func);
+}
+
+//==============================================================================
+template<typename T>
+void StatGridAABB2<T>::query_ray
+(
+  vec2 from, vec2 to, f32 expand, Visitor func
+) const
+{
+  auto bbox = aabb2{from, to};
+  bbox.insert_point(bbox.min - vec2{expand});
+  bbox.insert_point(bbox.max + vec2{expand});
+
+  this->query_aabb(bbox, func);
+}
+
+//==============================================================================
+template<typename T>
 void StatGridAABB2<T>::insert(aabb2 new_bbox, const T& data)
 {
   nc_assert(m_initialized);

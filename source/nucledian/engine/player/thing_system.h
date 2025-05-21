@@ -21,6 +21,7 @@ struct ModuleEvent;
 struct MapSectors;
 struct GameInputs;
 struct SectorMapping;
+struct PhysLevel;
 class  EntityRegistry;
 class  Player;
 
@@ -47,9 +48,6 @@ public:
   bool init();
   void on_event(ModuleEvent& event) override;
 
-  Player*         get_player();
-  EntityRegistry& get_entities();
-
   // Saving and loading the game. 
   SaveGameData save_game() const;
   void         load_game(const SaveGameData& save);
@@ -61,9 +59,14 @@ public:
   void    request_level_change(LevelID new_level);
   void    request_next_level();
 
-  const MapSectors&    get_map()            const;
-  const SectorMapping& get_sector_mapping() const;
-  const LevelDatabase& get_level_db()       const;
+  Player*               get_player();
+  EntityRegistry&       get_entities();
+
+  const EntityRegistry& get_entities()       const;
+  const MapSectors&     get_map()            const;
+  const SectorMapping&  get_sector_mapping() const;
+  const LevelDatabase&  get_level_db()       const;
+  PhysLevel             get_level()          const;
 
 private:
   const Enemies&    get_enemies() const;

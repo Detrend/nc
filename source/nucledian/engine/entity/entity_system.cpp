@@ -39,6 +39,12 @@ void EntityRegistry::destroy_entity(EntityID id)
 }
 
 //==============================================================================
+const SectorMapping& EntityRegistry::get_mapping()
+{
+  return m_Mapping;
+}
+
+//==============================================================================
 void EntityRegistry::setup_entity(Entity& entity, EntityID id)
 {
   entity.m_IdAndType = id;

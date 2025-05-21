@@ -105,26 +105,20 @@ bool segment_segment(
   f32& t_out,
   f32& u_out);
 
+// Returns true if the infinite ray collides with a finite wall segment.
+// If so, then the ray_c_out contains coeff for intersection pt reconstruction
+bool ray_segment(
+  vec2 ray_start,
+  vec2 ray_end,
+  vec2 seg_a,
+  vec2 seg_b,
+  f32& ray_c_out);
+
 // Performs a segment-circle intersection.
 // Returns true if the segment and the circle intersect.
 bool segment_circle(vec2 start, vec2 end, vec2 og_center, f32 r, f32& t_out, vec2& n_out);
 
-// Checks for intersection between two segments, second of which is
-// expanded by a value.
-// Returns true if the two segments intersect. In such case the normal
-// vector of the intersection and a point of intersection are returned.
-// Point of intersection can be calculated as:
-// vec2 intersect_pt = start_a + (end_a - start_a) * out_coeff;
-bool segment_segment_expanded(
-  vec2  start_a,
-  vec2  end_a,
-  vec2  start_b,
-  vec2  end_b,
-  f32   expand_b,
-  vec2& out_normal,
-  f32&  out_coeff);
-
-bool ray_wall(
+bool ray_wall_3d(
   vec3 ray_start,
   vec3 ray_end,
   vec2 wall_a,
@@ -178,6 +172,26 @@ bool convex_convex(std::span<vec2> a, std::span<vec2> b, f32 threshold = 0.01f);
 // Checks for intersection of two 2D triangles using the same method as
 // convex-to-convex test.
 bool triangle_triangle(vec2 a1, vec2 b1, vec2 c1, vec2 a2, vec2 b2, vec2 c2);
+
+}
+
+namespace nc::collide
+{
+  
+// Checks for intersection between two segments, second of which is
+// expanded by a value.
+// Returns true if the two segments intersect. In such case the normal
+// vector of the intersection and a point of intersection are returned.
+// Point of intersection can be calculated as:
+// vec2 intersect_pt = start_a + (end_a - start_a) * out_coeff;
+bool ray_exp_wall(
+  vec2  ray_start,
+  vec2  ray_end,
+  vec2  wall_start,
+  vec2  wall_end,
+  f32   wall_exp,
+  vec2& out_normal,
+  f32&  out_coeff);
 
 }
 

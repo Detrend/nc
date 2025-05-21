@@ -48,6 +48,8 @@ public:
 
   void process_window_event(const SDL_Event& evnt);
 
+  f32  get_delta_time();
+
 private:
   bool should_quit()             const;
   bool event_journal_installed() const;
@@ -68,6 +70,7 @@ private:
   ModuleVector  m_module_init_order;
   JournalSmart  m_journal;
   EventJournal* m_recorded_journal;
+  f32           m_delta_time = 0.0f; // last frame time in seconds
   bool          m_should_quit : 1 = false;
   bool          m_journal_installed : 1 = false;
   bool          m_journal_active : 1 = false;

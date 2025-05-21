@@ -12,6 +12,7 @@
 #include <engine/entity/entity_type_definitions.h>
 
 #include <engine/input/input_system.h>
+#include <engine/map/physics.h>
 
 #include <engine/graphics/graphics_system.h>
 
@@ -516,16 +517,26 @@ void ThingSystem::on_event(ModuleEvent& event)
       //CHECK FOR COLLISIONS
       entity_system.for_each<Enemy>([&](Enemy& enemy)
       {
-        this->get_player()->check_collision(enemy);
+          this->get_player()->check_collision(enemy, this->get_player()->get_velocity(), event.update.dt);
       });
 
       entity_system.for_each<Enemy>([&](Enemy& enemy)
       {
-        enemy.check_for_collision(*this->get_player());
+        enemy.check_collision(*this->get_player(), enemy.get_velocity(), event.update.dt);
+
+        entity_system.for_each<Enemy>([&](Enemy& enemy2)
+        {
+          if (enemy.get_id() != enemy2.get_id()) // a wrong way to check equality
+          {
+            enemy.check_collision(enemy2, enemy.get_velocity(), event.update.dt);
+          }         
+        });
       });
 
+      
+
       //FINAL VELOCITY CHANGE
-      this->get_player()->apply_velocity();
+      this->get_player()->apply_velocity(event.update.dt);
 
       entity_system.for_each<Enemy>([&](Enemy& enemy)
       {
@@ -548,6 +559,12 @@ EntityRegistry& ThingSystem::get_entities()
 {
   nc_assert(entities);
   return *entities;
+}
+
+//==============================================================================
+const EntityRegistry& ThingSystem::get_entities() const
+{
+  return const_cast<ThingSystem*>(this)->get_entities();
 }
 
 //==============================================================================
@@ -621,6 +638,17 @@ const ThingSystem::LevelDatabase& ThingSystem::get_level_db() const
 }
 
 //==============================================================================
+PhysLevel ThingSystem::get_level() const
+{
+  return PhysLevel
+  {
+    .entities = this->get_entities(),
+    .map      = this->get_map(),
+    .mapping  = this->get_sector_mapping(),
+  };
+}
+
+//==============================================================================
 void ThingSystem::cleanup_map()
 {
   enemies.clear();
@@ -691,9 +719,8 @@ void ThingSystem::check_player_attack
     [[maybe_unused]] f32 hitDistance = 999999;
     EntityID index = INVALID_ENTITY_ID;
 
-    f32 wallDist;
-    vec3 wallNormal;
-    bool wallHit = map->raycast3d(rayStart, rayEnd, wallNormal, wallDist);
+    const auto wallHit = this->get_level().raycast3d(rayStart, rayEnd);
+    f32 wallDist = wallHit ? wallHit.coeff : FLT_MAX;
 
     auto& entity_system = this->get_entities();
 
@@ -741,11 +768,9 @@ void ThingSystem::check_enemy_attack([[maybe_unused]] const ModuleEvent& event)
       [[maybe_unused]] vec3 rayStart = enemy.get_position() + vec3(0, 0.5f, 0);
       [[maybe_unused]] vec3 rayEnd = this->get_player()->get_position() + vec3(0, this->get_player()->get_view_height(), 0);
 
-      f32 wallDist;
-      vec3 wallNormal;
-      [[maybe_unused]] bool wallHit = map->raycast3d(rayStart, rayEnd, wallNormal, wallDist);
+      const auto wallHit = this->get_level().raycast3d(rayStart, rayEnd);
 
-      if (wallDist < 1.0f) 
+      if (wallHit) 
       {
         return;
       }

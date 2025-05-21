@@ -18,6 +18,7 @@
 
 #include <engine/input/input_system.h>
 #include <engine/map/map_system.h>
+#include <engine/map/physics.h>
 #include <engine/entity/entity_system.h>
 #include <engine/player/thing_system.h>
 #include <engine/player/level_types.h>
@@ -40,6 +41,7 @@
 #include <unordered_map>
 #include <utility>
 #include <variant>
+#include <format>
 
 #ifdef NC_DEBUG_DRAW
 #include <chrono>
@@ -51,6 +53,19 @@
 #ifdef NC_DEBUG_DRAW
 namespace nc::debug_helpers
 {
+
+//==============================================================================
+static void display_fps_as_title(SDL_Window* window)
+{
+  const auto delta_time = get_engine().get_delta_time();
+  const auto fps_number = 1.0f / delta_time;
+  const auto title_str  = std::format
+  (
+    "Nucledian Game. FPS: {:.2f}, Dt: {:.2f}ms", fps_number, delta_time * 1000.0f
+  );
+
+  SDL_SetWindowTitle(window, title_str.c_str());
+}
 
 static MaterialHandle g_top_down_material = MaterialHandle::invalid();
 static GLuint   g_default_vao = 0;
@@ -174,6 +189,16 @@ static void draw_text(vec2 coords, cstr text, vec3 color)
 namespace nc
 {
 
+//==============================================================================
+#ifdef NC_IMGUI
+static void imgui_start_frame()
+{
+  ImGui_ImplOpenGL3_NewFrame();
+  ImGui_ImplSDL2_NewFrame();
+  ImGui::NewFrame();
+}
+#endif
+
 // Temporary solution
 std::vector<MeshHandle> g_sector_meshes;
 
@@ -269,6 +294,9 @@ bool GraphicsSystem::init()
   glEnable(GL_CULL_FACE);
   glEnable(GL_MULTISAMPLE);
 
+  // disable vsync and unlock fps
+  SDL_GL_SetSwapInterval(0);
+
   glLineWidth(5.0f);
 
   MeshManager::instance().init();
@@ -293,6 +321,8 @@ bool GraphicsSystem::init()
   ImGui::CreateContext();
   ImGui_ImplSDL2_InitForOpenGL(m_window, m_gl_context);
   ImGui_ImplOpenGL3_Init(nullptr);
+
+  imgui_start_frame();
 #endif
 
   return true;
@@ -303,6 +333,12 @@ void GraphicsSystem::on_event(ModuleEvent& event)
 {
   switch (event.type)
   {
+    case ModuleEventType::frame_start:
+    {
+      this->on_frame_start();
+      break;
+    }
+
     case ModuleEventType::game_update:
     {
       this->update(event.update.dt);
@@ -356,6 +392,11 @@ void GraphicsSystem::terminate()
 
   SDL_DestroyWindow(m_window);
   m_window = nullptr;
+}
+
+//==============================================================================
+void GraphicsSystem::on_frame_start()
+{
 }
 
 //==============================================================================
@@ -475,15 +516,13 @@ void GraphicsSystem::render()
   int width = 0, height = 0;
   SDL_GetWindowSize(m_window, &width, &height);
 
+#ifdef NC_DEBUG_DRAW
+  debug_helpers::display_fps_as_title(m_window);
+#endif
+
   glViewport(0, 0, width, height);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-#ifdef NC_IMGUI
-  ImGui_ImplOpenGL3_NewFrame();
-  ImGui_ImplSDL2_NewFrame();
-  ImGui::NewFrame();
-#endif
 
 #ifdef NC_DEBUG_DRAW
   if (CVars::display_debug_window)
@@ -526,6 +565,7 @@ void GraphicsSystem::render()
 #ifdef NC_IMGUI
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+  imgui_start_frame(); // start a new frame just after rendering the old one
 #endif
 
   SDL_GL_SwapWindow(m_window);
@@ -781,8 +821,7 @@ void GraphicsSystem::render_map_top_down(const VisibilityTree& visible_sectors)
   // raycast 2D debug
   if (raycast2d_debug)
   {
-    vec2 out_n;
-    f32  out_t;
+    auto& thing = ThingSystem::get();
 
     vec2 start_pt = raycast_pt1;
     vec2 end_pt = raycast_pt1 + vec2{ std::cos(raycast_rot), std::sin(raycast_rot) } *raycast_len;
@@ -794,9 +833,10 @@ void GraphicsSystem::render_map_top_down(const VisibilityTree& visible_sectors)
       colors::WHITE
     );
 
-    if (map.raycast2d_expanded(start_pt, end_pt, std::max(raycast_expand, 0.0001f), out_n, out_t))
+    if (auto hit = thing.get_level().raycast2d_expanded(start_pt, end_pt, std::max(raycast_expand, 0.0001f)))
     {
-      const vec2 contact_pt = start_pt + (end_pt - raycast_pt1) * out_t;
+      const vec2 contact_pt = start_pt + (end_pt - raycast_pt1) * hit.coeff;
+      const vec2 out_n = hit.normal.xz();
       end_pt = contact_pt;
 
       debug_helpers::draw_line

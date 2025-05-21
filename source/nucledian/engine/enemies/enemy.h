@@ -1,6 +1,7 @@
 #pragma once
 #include <engine/player/map_object.h>
 
+#include <engine/entity/entity.h>
 #include <engine/entity/entity_types.h>
 #include <engine/appearance.h>
 #include <transform.h>
@@ -18,21 +19,23 @@ namespace nc
     count
   };
 
-  class Enemy : public MapObject
+  class Enemy : public Entity
   {
   public:
-    using Base = MapObject;
+    using Base = Entity;
     static EntityType get_type_static();
 
     Enemy(vec3 position, vec3 facing);
     void init();
     void update();
     void get_wish_velocity(f32 delta_seconds);
-    void check_for_collision(const MapObject& collider);
+//    void check_for_collision(const MapObject& collider);
     void apply_velocity();
     void damage(int damage);
     void die();
     bool can_attack();
+
+    vec3& get_velocity();
 
     const Appearance& get_appearance() const;
     Transform         calc_transform() const;

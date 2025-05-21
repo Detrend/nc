@@ -43,6 +43,7 @@ private:
   void update(f32 delta_seconds);
   void render();
   void terminate();
+  void on_frame_start();
 
   void query_visibility(VisibilityTree& out) const;
 

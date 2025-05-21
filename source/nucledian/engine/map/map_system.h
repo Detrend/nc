@@ -194,22 +194,10 @@ struct MapSectors
     SectorID           sector_id,
     std::vector<vec3>& vertices_out) const;
 
-  struct PortalSector
-  {
-    WallID   wall_id;
-    SectorID sector_id;
-  };
-  using Portals = std::vector<PortalSector>;
+  bool is_point_in_sector(vec2 pt, SectorID sector) const;
 
-  bool raycast2d_expanded(
-    vec2     from,
-    vec2     to,
-    f32      expand,
-    vec2&    out_normal,
-    f32&     out_coeff,
-    Portals* out_portals = nullptr) const;
-
-  bool raycast3d(vec3 from, vec3 to, vec3& out_normal, f32& out_coeff) const;
+  bool is_valid_sector_id(SectorID id) const;
+  bool is_valid_wall_id(WallID id)     const;
 
 private:
   void query_visible_sectors_impl(
@@ -280,6 +268,8 @@ namespace map_helpers
 WallID next_wall(const MapSectors& map, SectorID sector, WallID wall);
 
 WallID get_wall_id(const MapSectors& map, SectorID sector_id, WallRelID relative_wall_id);
+
+WallID get_nc_opposing_wall(const MapSectors& map, SectorID sid, WallID wid);
 
 }
 

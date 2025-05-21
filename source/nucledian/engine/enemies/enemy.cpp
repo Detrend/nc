@@ -4,6 +4,7 @@
 #include <engine/player/player.h>
 #include <iostream>
 #include <engine/map/map_system.h>
+#include <engine/map/physics.h>
 
 #include <math/lingebra.h>
 #include <engine/graphics/graphics_system.h>
@@ -81,12 +82,9 @@ namespace nc
         [[maybe_unused]] vec3 rayStart = this->get_position() + vec3(0, 0.5f, 0);
         [[maybe_unused]] vec3 rayEnd = target_pos + vec3(0, 0.5f, 0);
 
-        f32 wallDist;
-        vec3 wallNormal;
-        const auto& map = get_engine().get_map();
-        [[maybe_unused]] bool wallHit = map.raycast3d(rayStart, rayEnd, wallNormal, wallDist);
+        auto wallHit = ThingSystem::get().get_level().raycast3d(rayStart, rayEnd);
 
-        if (wallDist < 1.0f)
+        if (wallHit)
         {
           break;
         }
@@ -115,37 +113,12 @@ namespace nc
 
   }
 
-  void Enemy::check_for_collision(const MapObject& collider)
-  {
-    this->set_position(this->get_position() + velocity);
-
-    if (!did_collide(collider))
-    {
-      this->set_position(this->get_position() - velocity);
-      return;
-    }
-
-    //vec3 target_pos = collider.get_position();
-    vec3 target_dist = collider.get_position() - this->get_position();
-
-    vec3 intersect_union = vec3(get_width(), 0, get_width()) - (target_dist - vec3(collider.get_width(), 0, collider.get_width()));
-
-    this->set_position(this->get_position() - velocity);
-
-    vec3 new_velocity = velocity - intersect_union;
-    vec3 mult = vec3(velocity.x / (1 - new_velocity.x), 0, velocity.z / (1 - new_velocity.z));
-
-    if (mult.x < 0.05f) mult.x = 0;
-    if (mult.z < 0.05f) mult.z = 0;
-
-    velocity.x = velocity.x * mult.x;
-    velocity.z = velocity.z * mult.z;
-  }
-
   void Enemy::apply_velocity()
   {
+    auto world = ThingSystem::get().get_level();
+
     vec3 position = this->get_position();
-    MapObject::move(position, velocity, facing, 0.25f);
+    world.move_and_collide(position, velocity, facing, 0.25f, 0.5f, 0.0f, 0);
     this->set_position(position);
     //g_transform_components[m_entity_index].position() = position;
   }
@@ -176,6 +149,11 @@ namespace nc
       return true;
     }
     return false;
+  }
+
+  vec3& Enemy::get_velocity()
+  {
+    return velocity;
   }
 
 
