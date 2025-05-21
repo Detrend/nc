@@ -387,7 +387,7 @@ void PhysLevel::move_and_collide
   [[maybe_unused]]f32            height,
   [[maybe_unused]]f32            max_step,
   [[maybe_unused]]EntityTypeMask colliders
-)
+) const
 {
   constexpr u32 MAX_ITERATIONS = 4;
 
@@ -437,7 +437,10 @@ void PhysLevel::move_and_collide
   if (sector_id != INVALID_SECTOR_ID)
   {
     const f32 sector_floor_y = map.sectors[sector_id].floor_height;
-    position.y = sector_floor_y;
+    if (position.y < sector_floor_y)
+    {
+      position.y = sector_floor_y;
+    }
   }
 }
 

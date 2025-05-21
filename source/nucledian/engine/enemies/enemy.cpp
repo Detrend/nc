@@ -113,33 +113,6 @@ namespace nc
 
   }
 
-  void Enemy::check_for_collision(const MapObject& collider)
-  {
-    this->set_position(this->get_position() + velocity);
-
-    if (!did_collide(collider))
-    {
-      this->set_position(this->get_position() - velocity);
-      return;
-    }
-
-    //vec3 target_pos = collider.get_position();
-    vec3 target_dist = collider.get_position() - this->get_position();
-
-    vec3 intersect_union = vec3(get_width(), 0, get_width()) - (target_dist - vec3(collider.get_width(), 0, collider.get_width()));
-
-    this->set_position(this->get_position() - velocity);
-
-    vec3 new_velocity = velocity - intersect_union;
-    vec3 mult = vec3(velocity.x / (1 - new_velocity.x), 0, velocity.z / (1 - new_velocity.z));
-
-    if (mult.x < 0.05f) mult.x = 0;
-    if (mult.z < 0.05f) mult.z = 0;
-
-    velocity.x = velocity.x * mult.x;
-    velocity.z = velocity.z * mult.z;
-  }
-
   void Enemy::apply_velocity()
   {
     auto world = ThingSystem::get().get_level();
@@ -176,6 +149,11 @@ namespace nc
       return true;
     }
     return false;
+  }
+
+  vec3& Enemy::get_velocity()
+  {
+    return velocity;
   }
 
 

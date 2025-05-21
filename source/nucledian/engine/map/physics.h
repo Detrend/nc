@@ -126,7 +126,7 @@ struct PhysLevel
     f32            height,   // height of the entity
     f32            max_step, // max step height the entity can do
     EntityTypeMask colliders // types of entities to collide with
-  );
+  ) const;
 };
 
 }

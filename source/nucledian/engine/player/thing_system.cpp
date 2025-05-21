@@ -359,7 +359,7 @@ void ThingSystem::on_event(ModuleEvent& event)
 
       //entity_system.create_entity<Enemy>(vec3{1, 0.0, 1}, FRONT_DIR);
       //entity_system.create_entity<Enemy>(vec3{2, 0.0, 1}, FRONT_DIR);
-      //entity_system.create_entity<Enemy>(vec3{3, 0.0, 1}, FRONT_DIR);
+      entity_system.create_entity<Enemy>(vec3{3, 0.0, 1}, FRONT_DIR);
       break;
     }
 
@@ -382,13 +382,23 @@ void ThingSystem::on_event(ModuleEvent& event)
       //CHECK FOR COLLISIONS
       entity_system.for_each<Enemy>([&](Enemy& enemy)
       {
-        this->get_player()->check_collision(enemy);
+          this->get_player()->check_collision(enemy, this->get_player()->get_velocity(), event.update.dt);
       });
 
       entity_system.for_each<Enemy>([&](Enemy& enemy)
       {
-        enemy.check_for_collision(*this->get_player());
+        enemy.check_collision(*this->get_player(), enemy.get_velocity(), event.update.dt);
+
+        entity_system.for_each<Enemy>([&](Enemy& enemy2)
+        {
+          if (enemy.get_id() != enemy2.get_id()) // a wrong way to check equality
+          {
+            enemy.check_collision(enemy2, enemy.get_velocity(), event.update.dt);
+          }         
+        });
       });
+
+      
 
       //FINAL VELOCITY CHANGE
       this->get_player()->apply_velocity(event.update.dt);
