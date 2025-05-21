@@ -149,7 +149,7 @@ namespace nc
 
   void Player::apply_velocity(f32 delta_seconds)
   {
-    auto world = ThingSystem::get().get_world();
+    auto world = ThingSystem::get().get_level();
 
     vec3 position = this->get_position();
     world.move_and_collide(position, velocity * delta_seconds, m_forward, 0.25f, 0.5f, 0.0f, 0);

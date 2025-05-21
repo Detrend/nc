@@ -82,7 +82,7 @@ namespace nc
         [[maybe_unused]] vec3 rayStart = this->get_position() + vec3(0, 0.5f, 0);
         [[maybe_unused]] vec3 rayEnd = target_pos + vec3(0, 0.5f, 0);
 
-        auto wallHit = ThingSystem::get().get_world().raycast3d(rayStart, rayEnd);
+        auto wallHit = ThingSystem::get().get_level().raycast3d(rayStart, rayEnd);
 
         if (wallHit)
         {
@@ -142,7 +142,7 @@ namespace nc
 
   void Enemy::apply_velocity()
   {
-    auto world = ThingSystem::get().get_world();
+    auto world = ThingSystem::get().get_level();
 
     vec3 position = this->get_position();
     world.move_and_collide(position, velocity, facing, 0.25f, 0.5f, 0.0f, 0);

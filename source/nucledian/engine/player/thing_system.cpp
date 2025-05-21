@@ -437,9 +437,9 @@ const SectorMapping& ThingSystem::get_sector_mapping() const
 }
 
 //==============================================================================
-World ThingSystem::get_world() const
+PhysLevel ThingSystem::get_level() const
 {
-  return World
+  return PhysLevel
   {
     .entities = this->get_entities(),
     .map      = this->get_map(),
@@ -481,7 +481,7 @@ void ThingSystem::check_player_attack
     [[maybe_unused]] f32 hitDistance = 999999;
     EntityID index = INVALID_ENTITY_ID;
 
-    const auto wallHit = this->get_world().raycast3d(rayStart, rayEnd);
+    const auto wallHit = this->get_level().raycast3d(rayStart, rayEnd);
     f32 wallDist = wallHit ? wallHit.coeff : FLT_MAX;
 
     auto& entity_system = this->get_entities();
@@ -530,7 +530,7 @@ void ThingSystem::check_enemy_attack([[maybe_unused]] const ModuleEvent& event)
       [[maybe_unused]] vec3 rayStart = enemy.get_position() + vec3(0, 0.5f, 0);
       [[maybe_unused]] vec3 rayEnd = this->get_player()->get_position() + vec3(0, this->get_player()->get_view_height(), 0);
 
-      const auto wallHit = this->get_world().raycast3d(rayStart, rayEnd);
+      const auto wallHit = this->get_level().raycast3d(rayStart, rayEnd);
 
       if (wallHit) 
       {

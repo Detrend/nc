@@ -19,7 +19,7 @@ struct ModuleEvent;
 struct MapSectors;
 struct GameInputs;
 struct SectorMapping;
-struct World;
+struct PhysLevel;
 class  EntityRegistry;
 class  Player;
 
@@ -43,7 +43,7 @@ public:
   const EntityRegistry& get_entities()       const;
   const MapSectors&     get_map()            const;
   const SectorMapping&  get_sector_mapping() const;
-  World                 get_world()          const;
+  PhysLevel             get_level()          const;
 
   // TODO: remove later, only temporary
   void build_map();

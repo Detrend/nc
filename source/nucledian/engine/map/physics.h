@@ -19,11 +19,15 @@ class  EntityRegistry;
 namespace nc
 {
 
+// Return value of the raycast. Can be a sector hit or
+// entity hit.
 struct RayHit
 {
-  // Returns true if we hit something
+  // Returns true if we hit something. Can be used in condition
+  // to check if the RayHit contains some result.
   operator bool() const;
 
+  // Construction helpers
   static RayHit no_hit();
   static RayHit build(f32 coeff, vec3 n);
 
@@ -34,8 +38,17 @@ struct RayHit
 
   struct SectorHit
   {
-    SectorID sector_id;
-    WallID   wall_id;
+    enum SectorHitType : u8
+    {
+      wall,
+      floor,
+      ceil
+    };
+
+    SectorID      sector_id;       // always valid
+    WallID        wall_id;         // only valid if type == wall
+    u8            wall_segment_id; // only valid if type == wall
+    SectorHitType type;
   };
 
   enum HitType : u8
@@ -46,17 +59,19 @@ struct RayHit
 
   union
   {
-    EntityHit entity_hit;
-    SectorHit secctor_hit;
+    EntityHit entity_hit; // valid only if type == entity
+    SectorHit sector_hit; // valid only if type == sector
   };
 
-  f32     coeff = FLT_MAX;
-  vec3    normal; // do .xz() for 2D raycast
+  f32     coeff = FLT_MAX; // coefficient to recalculate hit pos from
+  vec3    normal;          // do .xz() for 2D raycast
   HitType type  = HitType::sector;
 };
 
 
-struct World
+// Physical level representation. Level compiles all physics-related game
+// systems into one interface through which the physics can be queried.
+struct PhysLevel
 {
   const EntityRegistry& entities;
   const MapSectors&     map;

@@ -820,7 +820,7 @@ void GraphicsSystem::render_map_top_down(const VisibilityTree& visible_sectors)
       colors::WHITE
     );
 
-    if (auto hit = thing.get_world().raycast2d_expanded(start_pt, end_pt, std::max(raycast_expand, 0.0001f)))
+    if (auto hit = thing.get_level().raycast2d_expanded(start_pt, end_pt, std::max(raycast_expand, 0.0001f)))
     {
       const vec2 contact_pt = start_pt + (end_pt - raycast_pt1) * hit.coeff;
       const vec2 out_n = hit.normal.xz();

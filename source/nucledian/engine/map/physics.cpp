@@ -21,15 +21,15 @@ namespace nc::phys_helpers
 template<typename TVec, typename WallHitLambda, typename SectorHitLambda>
 RayHit raycast_basic
 (
-  const World&    world,
-  TVec            ray_from,
-  TVec            ray_to,
-  f32             expand,
-  EntityTypeMask  ent_types,
-  World::Portals* out_portals,
-  WallID          ignore_portal,
-  WallHitLambda   wall_intersect,
-  SectorHitLambda sector_intersect
+  const PhysLevel&    world,
+  TVec                ray_from,
+  TVec                ray_to,
+  f32                 expand,
+  EntityTypeMask      ent_types,
+  PhysLevel::Portals* out_portals,
+  WallID              ignore_portal,
+  WallHitLambda       wall_intersect,
+  SectorHitLambda     sector_intersect
 )
 {
   nc_assert(expand >= 0.0f, "Radius can not be negative!");
@@ -140,7 +140,7 @@ RayHit raycast_basic
     // Add this portal to the list if we collect them
     if (out_portals)
     {
-      out_portals->push_back(World::PortalSector
+      out_portals->push_back(PhysLevel::PortalSector
       {
         .wall_id   = nc_portal_wall,
         .sector_id = portal_sector,
@@ -271,13 +271,13 @@ static bool intersect_sector_2d(
 }
 
 //==============================================================================
-RayHit World::raycast2d_expanded
+RayHit PhysLevel::raycast2d_expanded
 (
   vec2            from,
   vec2            to,
   f32             expand,
   EntityTypeMask  ent_types,
-  World::Portals* out_portals
+  PhysLevel::Portals* out_portals
 ) const
 {
   return phys_helpers::raycast_basic<vec2>
@@ -288,12 +288,12 @@ RayHit World::raycast2d_expanded
 }
 
 //==============================================================================
-RayHit World::raycast2d
+RayHit PhysLevel::raycast2d
 (
   vec2            from,
   vec2            to,
   EntityTypeMask  ent_types,
-  World::Portals* out_portals
+  PhysLevel::Portals* out_portals
 ) const
 {
   return this->raycast2d_expanded(from, to, 0.0f, ent_types, out_portals);
@@ -362,7 +362,7 @@ static bool intersect_sector_3d(
 }
 
 //==============================================================================
-RayHit World::raycast3d
+RayHit PhysLevel::raycast3d
 (
   vec3           ray_start,
   vec3           ray_end,
@@ -378,12 +378,12 @@ RayHit World::raycast3d
 }
 
 //==============================================================================
-void World::move_and_collide
+void PhysLevel::move_and_collide
 (
-  vec3&          position,
-  vec3           velocity,
-  vec3&          forward,
-  f32            radius,
+  vec3&                          position,
+  vec3                           velocity,
+  vec3&                          forward,
+  f32                            radius,
   [[maybe_unused]]f32            height,
   [[maybe_unused]]f32            max_step,
   [[maybe_unused]]EntityTypeMask colliders
