@@ -15,6 +15,7 @@
 #include <engine/input/input_system.h>
 #include <engine/player/thing_system.h>
 #include <engine/sound/sound_system.h>
+#include <engine/tweens/tween_system.h>
 #include <engine/map/map_system.h>
 #include <engine/entity/entity_system.h>
 #include <engine/entity/sector_mapping.h>
@@ -282,6 +283,7 @@ bool Engine::init()
   INIT_MODULE(InputSystem);
   INIT_MODULE(ThingSystem);
   INIT_MODULE(SoundSystem);
+  INIT_MODULE(TweenSystem);
 
   #undef INIT_MODULE
 

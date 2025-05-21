@@ -40,6 +40,7 @@
     <ClCompile Include="..\source\nucledian\engine\player\save_types.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\physics.cpp" />
     <ClCompile Include="..\source\nucledian\engine\sound\sound_system.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\tweens\tween_system.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -131,6 +132,8 @@
     <ClInclude Include="..\source\nucledian\engine\player\save_types.h" />
     <ClInclude Include="..\source\nucledian\engine\sound\sound_resources.h" />
     <ClInclude Include="..\source\nucledian\engine\sound\sound_system.h" />
+    <ClInclude Include="..\source\nucledian\engine\tweens\tween_system.h" />
+    <ClInclude Include="..\source\nucledian\engine\tweens\easings.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
