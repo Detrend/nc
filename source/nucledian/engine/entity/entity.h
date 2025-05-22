@@ -29,12 +29,10 @@ public:
   // member variable containing it's type! Like this:
   // static EntityType get_type_static();
 
-  Entity(vec3 position, f32 width, f32 height, bool collision);
+  Entity(vec3 position, f32 radius, f32 height, bool collision);
 
   virtual bool did_collide(const Entity& collider);
   virtual void check_collision(const Entity& collider, vec3& velocity, f32 delta_seconds);
-
-  f32 get_width() const;
 
   static void move(vec3& position, vec3& velocity, vec3& forward, f32 radius);
 

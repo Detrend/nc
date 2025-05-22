@@ -372,7 +372,7 @@ void ThingSystem::on_event(ModuleEvent& event)
 
       entity_system.for_each<Enemy>([&](Enemy& enemy)
       {
-        enemy.get_wish_velocity(event.update.dt);
+        enemy.calculate_wish_velocity(event.update.dt);
       });
 
       check_player_attack(curInputs, prevInputs, event);
@@ -481,7 +481,7 @@ void ThingSystem::check_player_attack
 
     entity_system.for_each<Enemy>([&](Enemy& enemy)
     {
-      const f32   width    = enemy.get_width();
+      const f32   width    = enemy.get_radius();
       const f32   height   = enemy.get_height() * 2.0f;
       const vec3  position = enemy.get_position();
 
