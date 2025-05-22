@@ -18,7 +18,7 @@ namespace nc
     : Base(position, 0.25f, 1.5f, true)
   {
     currentHealth = maxHealth;
-    camera.update_transform(position, angleYaw, anglePitch, viewHeight);
+    camera.update_transform(position, angle_yaw, angle_pitch, view_height);
   }
 
   //==========================================================================
@@ -52,13 +52,13 @@ namespace nc
       inputVector += vec3(1, 0, 0);
     }
 
-    anglePitch += input.player_inputs.analog[PlayerAnalogInputs::look_vertical];
-    angleYaw += input.player_inputs.analog[PlayerAnalogInputs::look_horizontal];
+    angle_pitch += input.player_inputs.analog[PlayerAnalogInputs::look_vertical];
+    angle_yaw += input.player_inputs.analog[PlayerAnalogInputs::look_horizontal];
 
-    angleYaw = rem_euclid(angleYaw, 2.0f * PI);
-    anglePitch = clamp(anglePitch, -HALF_PI + 0.001f, HALF_PI - 0.001f);
+    angle_yaw = rem_euclid(angle_yaw, 2.0f * PI);
+    angle_pitch = clamp(angle_pitch, -HALF_PI + 0.001f, HALF_PI - 0.001f);
 
-    m_forward = angleAxis(angleYaw, VEC3_Y) * angleAxis(anglePitch, VEC3_X) * -VEC3_Z;
+    m_forward = angleAxis(angle_yaw, VEC3_Y) * angleAxis(angle_pitch, VEC3_X) * -VEC3_Z;
 
     // APLICATION OF VELOCITY
     const vec3 forward = with_y(m_forward, 0);
@@ -98,7 +98,7 @@ namespace nc
     velocity += jumpForce * 3.0f;
     velocity.y -= GRAVITY * delta_seconds;
 
-    camera.update_transform(this->get_position(), angleYaw, anglePitch, viewHeight);
+    camera.update_transform(this->get_position(), angle_yaw, angle_pitch, view_height);
   }
 
   //==============================================================================
@@ -139,7 +139,7 @@ namespace nc
 
     // recompute the angleYaw after moving through a portal
     const auto forward2 = normalize(with_y(m_forward, 0.0f));
-    angleYaw = rem_euclid(std::atan2f(forward2.z, -forward2.x) + HALF_PI, PI * 2);
+    angle_yaw = rem_euclid(std::atan2f(forward2.z, -forward2.x) + HALF_PI, PI * 2);
   }
 
   //==============================================================================
@@ -193,19 +193,19 @@ namespace nc
 
   //==============================================================================
 
-  void Player::Damage(int damage)
+  void Player::damage(int damage)
   {
     currentHealth -= damage;
 
     if (currentHealth < 0)
     {
-      Die();
+      die();
     }
   }
 
   //==============================================================================
 
-  void Player::Die()
+  void Player::die()
   {
     alive = false;
   }
@@ -222,14 +222,14 @@ namespace nc
   vec3 Player::get_look_direction()
   {
     //looking direction
-    return angleAxis(angleYaw, VEC3_Y) * angleAxis(anglePitch, VEC3_X) * -VEC3_Z;
+    return angleAxis(angle_yaw, VEC3_Y) * angleAxis(angle_pitch, VEC3_X) * -VEC3_Z;
   }
 
   //==============================================================================
 
   f32 Player::get_view_height()
   {
-    return viewHeight;
+    return view_height;
   }
 
   //==============================================================================

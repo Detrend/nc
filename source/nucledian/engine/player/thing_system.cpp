@@ -532,7 +532,7 @@ void ThingSystem::check_enemy_attack([[maybe_unused]] const ModuleEvent& event)
         return;
       }
 
-      this->get_player()->Damage(10);
+      this->get_player()->damage(10);
     }
   });
 }

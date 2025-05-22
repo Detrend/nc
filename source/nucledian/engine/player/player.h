@@ -30,8 +30,8 @@ public:
   bool get_attack_state(GameInputs curInput, GameInputs prevInput, f32 delta_seconds);
  // void check_collision(const MapObject& collider, f32 delta_seconds);
   void apply_velocity(f32 delta_seconds);
-  void Damage(int damage);
-  void Die();
+  void damage(int damage);
+  void die();
 
   DebugCamera* get_camera();
 
@@ -45,7 +45,7 @@ private:
 
   //vec3 position;
   vec3 velocity; // forward/back - left/right velocity
-  f32 viewHeight = 0.5f;
+  f32 view_height = 0.5f;
 
   f32 MAX_SPEED = 5.0f;
   f32 ACCELERATION = 25.0f;
@@ -53,8 +53,8 @@ private:
   f32 GRAVITY = 6.0f;
 
   vec3 m_forward = VEC3_ZERO;
-  f32 anglePitch = 0; //UP-DOWN
-  f32 angleYaw = 0; //LET-RIGHT
+  f32 angle_pitch = 0; //UP-DOWN
+  f32 angle_yaw = 0; //LET-RIGHT
 
   /*PlayerSpecificInputs lastInputs;
   PlayerSpecificInputs currentInputs;*/
