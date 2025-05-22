@@ -6,3 +6,7 @@
 
 # ignore imgui configuration
 imgui.ini
+/projects/nucledian.vcxproj.filters.orig
+/source/nucledian/engine/entity/entity.h.orig
+/source/nucledian/engine/entity/entity.cpp.orig
+/source/nucledian/engine/player/player.cpp.orig
