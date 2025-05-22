@@ -1,5 +1,3 @@
-#include <engine/player/map_object.h>
-
 #include <engine/entity/entity.h>
 #include <engine/player/player.h>
 #include <engine/appearance.h>

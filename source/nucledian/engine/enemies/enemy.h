@@ -1,6 +1,4 @@
 #pragma once
-#include <engine/player/map_object.h>
-
 #include <engine/entity/entity.h>
 #include <engine/entity/entity_types.h>
 #include <engine/appearance.h>

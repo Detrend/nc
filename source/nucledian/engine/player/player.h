@@ -4,7 +4,6 @@
 #include <SDL.h>
 #include <types.h>
 #include <engine/input/game_input.h>
-#include <engine/player/map_object.h>
 #include <engine/entity/entity.h>
 #include <engine/graphics/debug_camera.h>
 
