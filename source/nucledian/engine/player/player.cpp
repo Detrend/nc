@@ -101,6 +101,8 @@ namespace nc
     camera.update_transform(this->get_position(), angleYaw, anglePitch, viewHeight);
   }
 
+  //==============================================================================
+
   bool Player::get_attack_state(GameInputs curInput, GameInputs prevInput, [[maybe_unused]] f32 delta_seconds)
   {
     if (curInput.player_inputs.keys & (1 << PlayerKeyInputs::primary) &&
@@ -110,6 +112,8 @@ namespace nc
     }
     return false;
   }
+
+  //==============================================================================
 
   void Player::apply_velocity(f32 delta_seconds)
   {
@@ -138,6 +142,8 @@ namespace nc
     angleYaw = rem_euclid(std::atan2f(forward2.z, -forward2.x) + HALF_PI, PI * 2);
   }
 
+  //==============================================================================
+
   void Player::apply_acceleration(const nc::vec3& movement_direction, [[maybe_unused]] f32 delta_seconds)
   {
     velocity += movement_direction * ACCELERATION * delta_seconds;
@@ -156,6 +162,8 @@ namespace nc
     if (velocity.x >= -0.01f && velocity.x <= 0.01f) velocity.x = 0;
     if (velocity.z >= -0.01f && velocity.z <= 0.01f) velocity.z = 0;
   }
+
+  //==============================================================================
 
   void Player::apply_deceleration(const nc::vec3& movement_direction, [[maybe_unused]] f32 delta_seconds)
   {
@@ -183,6 +191,8 @@ namespace nc
     velocity = velocity + (reverseVelocity * DECELERATION * delta_seconds);
   }
 
+  //==============================================================================
+
   void Player::Damage(int damage)
   {
     currentHealth -= damage;
@@ -193,15 +203,21 @@ namespace nc
     }
   }
 
+  //==============================================================================
+
   void Player::Die()
   {
     alive = false;
   }
 
+  //==============================================================================
+
   DebugCamera* Player::get_camera()
   {
     return &camera;
   }
+
+  //==============================================================================
 
   vec3 Player::get_look_direction()
   {
@@ -209,10 +225,14 @@ namespace nc
     return angleAxis(angleYaw, VEC3_Y) * angleAxis(anglePitch, VEC3_X) * -VEC3_Z;
   }
 
+  //==============================================================================
+
   f32 Player::get_view_height()
   {
     return viewHeight;
   }
+
+  //==============================================================================
 
   vec3& Player::get_velocity()
   {
