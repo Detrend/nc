@@ -358,7 +358,9 @@ void ThingSystem::on_event(ModuleEvent& event)
 
       //entity_system.create_entity<Enemy>(vec3{1, 0.0, 1}, FRONT_DIR);
       //entity_system.create_entity<Enemy>(vec3{2, 0.0, 1}, FRONT_DIR);
-      entity_system.create_entity<Enemy>(vec3{3, 0.0, 1}, FRONT_DIR);
+      entity_system.create_entity<Enemy>(vec3{ 3, 0.0, 1 }, FRONT_DIR);
+
+      entity_system.create_entity<PickUp>(vec3{ 1, 0.0, 1 });
       break;
     }
 

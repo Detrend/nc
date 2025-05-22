@@ -11,6 +11,7 @@
 #include <engine/entity/entity_types.h>
 
 #include <memory> // std::unique_ptr
+#include <engine/entity/item.h>
 
 namespace nc
 {
@@ -25,6 +26,7 @@ class  Player;
 class ThingSystem : public IEngineModule
 {
 public:
+  using PickUps     = std::vector<PickUp>;
   using Enemies     = std::vector<EntityID>;
   using MappingPtr  = std::unique_ptr<SectorMapping>;
   using MapPtr      = std::unique_ptr<MapSectors>;
@@ -62,6 +64,7 @@ private:
   MapPtr      map;
   MappingPtr  mapping;
   Enemies     enemies;
+  PickUps     pickups;
   RegistryPtr entities;
 };
 
