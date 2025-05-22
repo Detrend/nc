@@ -76,11 +76,11 @@ namespace nc
 
     switch (state)
     {
-    case nc::idle:
+    case EnemyState::idle:
       velocity = vec3(0, 0, 0);
       if (distance(target_pos, this->get_position()) <= 1)
       {
-        state = chase;
+        state = EnemyState::chase;
         break;
       }
 
@@ -100,23 +100,23 @@ namespace nc
           break;
         }
 
-        state = chase;
+        state = EnemyState::chase;
         break;
       }
 
       break;
-    case nc::chase:
+    case EnemyState::chase:
       timeRemaining -= delta_seconds;
 
       velocity = target_dir * 1.0f * delta_seconds;
       break;
-    case nc::attack:
+    case EnemyState::attack:
       break;
-    case nc::hurt:
+    case EnemyState::hurt:
       break;
-    case nc::dead:
+    case EnemyState::dead:
       break;
-    case nc::count:
+    case EnemyState::count:
       break;
     default:
       break;

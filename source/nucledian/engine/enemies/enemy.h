@@ -9,7 +9,7 @@
 
 namespace nc
 {
-  enum EnemyState
+  enum class EnemyState
   {
     idle = 0,
     chase,
@@ -42,7 +42,7 @@ namespace nc
   private:
     vec3 velocity;
     vec3 facing;
-    EnemyState state = idle;
+    EnemyState state = EnemyState::idle;
     Appearance appear;
 
     int health;
