@@ -64,6 +64,8 @@ namespace nc
     return false;
   }
 
+  //==============================================================================
+
   void MapObject::check_collision(const MapObject& collider, vec3& velocity, f32 delta_seconds)
   {
     vec3 velocity_per_frame = velocity * delta_seconds;

@@ -15,10 +15,13 @@ namespace nc
 {
 
   //==============================================================================
+
   EntityType Enemy::get_type_static()
   {
     return EntityTypes::enemy;
   }
+
+  //==============================================================================
 
   Enemy::Enemy(vec3 position, vec3 facing)
   : Base(position, 0.15f, 0.35f, true)
@@ -33,6 +36,8 @@ namespace nc
     health = maxHealth;
   }
 
+  //==============================================================================
+
   void Enemy::init()
   {
     auto& gfx = get_engine().get_module<GraphicsSystem>();
@@ -45,6 +50,8 @@ namespace nc
     };
   }
 
+  //==============================================================================
+
   void Enemy::update()
   {
     vec3 target_pos = get_engine().get_module<ThingSystem>().get_player()->get_position();
@@ -54,6 +61,8 @@ namespace nc
 
     //g_transform_components[m_entity_index].position() = this->get_position();
   }
+
+  //==============================================================================
 
   void Enemy::get_wish_velocity(f32 delta_seconds)
   {
@@ -113,6 +122,8 @@ namespace nc
 
   }
 
+  //==============================================================================
+
   void Enemy::apply_velocity()
   {
     auto world = ThingSystem::get().get_level();
@@ -123,6 +134,8 @@ namespace nc
     //g_transform_components[m_entity_index].position() = position;
   }
 
+  //==============================================================================
+
   void Enemy::damage(int damage)
   {
     health -= damage;
@@ -132,6 +145,8 @@ namespace nc
     }
   }
 
+  //==============================================================================
+
   void Enemy::die()
   {
     alive = false;
@@ -140,6 +155,8 @@ namespace nc
     //g_appearance_components[m_entity_index].color = colors::GREEN;
     //g_appearance_components[m_entity_index].transform = Transform(this->get_position(), vec3(0.3f, 0.1f, 0.3f));
   }
+
+  //==============================================================================
 
   bool Enemy::can_attack()
   {
@@ -151,14 +168,15 @@ namespace nc
     return false;
   }
 
+  //==============================================================================
+
   vec3& Enemy::get_velocity()
   {
     return velocity;
   }
 
-
-
   //==============================================================================
+
   const Appearance& Enemy::get_appearance() const
   {
     return appear;
