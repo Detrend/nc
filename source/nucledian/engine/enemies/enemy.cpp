@@ -64,7 +64,7 @@ namespace nc
 
   //==============================================================================
 
-  void Enemy::get_wish_velocity(f32 delta_seconds)
+  void Enemy::calculate_wish_velocity(f32 delta_seconds)
   {
     if (!alive)
     {

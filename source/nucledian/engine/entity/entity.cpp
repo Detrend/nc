@@ -137,7 +137,7 @@ bool Entity::did_collide(const Entity& collider)
   }*/
 
   // AABB
-  if (difX > width + collider.get_width() + 0.01f || difZ > width + collider.get_width() + 0.01f)
+  if (difX > width + collider.get_radius() + 0.01f || difZ > width + collider.get_radius() + 0.01f)
   {
     return false;
   }
@@ -169,12 +169,12 @@ void Entity::check_collision(const Entity& collider, vec3& velocity, f32 delta_s
     return;
   }
 
-  f32 width = this->get_width();
+  f32 width = this->get_radius();
 
   vec3 target_dist = collider.get_position() - this->get_position();
   float dist = length(target_dist);
 
-  vec3 intersect_union = vec3(get_width(), 0, get_width()) - (target_dist - vec3(collider.get_width(), 0, collider.get_width()));
+  vec3 intersect_union = vec3(get_radius(), 0, get_radius()) - (target_dist - vec3(collider.get_radius(), 0, collider.get_radius()));
 
   this->set_position(this->get_position() - velocity_per_frame);
   float dist2 = length(collider.get_position() - this->get_position());
@@ -197,25 +197,18 @@ void Entity::check_collision(const Entity& collider, vec3& velocity, f32 delta_s
   target_dist.x = abs(target_dist.x);
   target_dist.z = abs(target_dist.z);
 
-  if (target_dist.x >= width + collider.get_width())
+  if (target_dist.x >= width + collider.get_radius())
   {
     mult.z = 1;
   }
 
-  if (target_dist.z >= width + collider.get_width())
+  if (target_dist.z >= width + collider.get_radius())
   {
     mult.x = 1;
   }
 
   velocity.x = velocity_per_frame.x * mult.x / delta_seconds;
   velocity.z = velocity_per_frame.z * mult.z / delta_seconds;
-}
-
-// ===============================================================================
-
-f32 Entity::get_width() const
-{
-  return Entity::get_radius();
 }
 
 // ===============================================================================

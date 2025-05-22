@@ -28,7 +28,7 @@ namespace nc
     Enemy(vec3 position, vec3 facing);
     void init();
     void update();
-    void get_wish_velocity(f32 delta_seconds);
+    void calculate_wish_velocity(f32 delta_seconds);
     void apply_velocity();
     void damage(int damage);
     void die();
