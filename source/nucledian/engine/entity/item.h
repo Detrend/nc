@@ -18,6 +18,7 @@ namespace nc
 
     virtual void OnPickUp(Player player);
 
+    const Appearance& get_appearance() const;
   private:
     Appearance appear;
   };

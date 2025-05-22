@@ -30,6 +30,11 @@ namespace nc
 void PickUp::OnPickUp([[maybe_unused]] Player player)
 {
 }
+
+const Appearance& PickUp::get_appearance() const
+{
+  return appear;
+}
 }
 
 //==============================================
