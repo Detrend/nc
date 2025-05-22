@@ -67,10 +67,10 @@ namespace nc
     if (CVars::lock_camera_pitch)
     {
       // set the pitch permanently to 0 if the camera is locked
-      anglePitch = 0.0f;
+      angle_pitch = 0.0f;
     }
 
-    m_forward = angleAxis(angleYaw, VEC3_Y) * angleAxis(anglePitch, VEC3_X) * -VEC3_Z;
+    m_forward = angleAxis(angle_yaw, VEC3_Y) * angleAxis(angle_pitch, VEC3_X) * -VEC3_Z;
 
     // APLICATION OF VELOCITY
     const vec3 forward = with_y(m_forward, 0);
