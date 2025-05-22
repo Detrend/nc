@@ -24,11 +24,8 @@ public:
 
   static EntityType get_type_static();
 
-  //PlayerSpecificInputs get_inputs();
-  //void load_inputs(PlayerSpecificInputs inputs);
   void get_wish_velocity(GameInputs input, f32 delta_seconds);
   bool get_attack_state(GameInputs curInput, GameInputs prevInput, f32 delta_seconds);
- // void check_collision(const MapObject& collider, f32 delta_seconds);
   void apply_velocity(f32 delta_seconds);
   void damage(int damage);
   void die();

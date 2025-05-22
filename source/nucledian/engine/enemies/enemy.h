@@ -29,7 +29,6 @@ namespace nc
     void init();
     void update();
     void get_wish_velocity(f32 delta_seconds);
-//    void check_for_collision(const MapObject& collider);
     void apply_velocity();
     void damage(int damage);
     void die();
