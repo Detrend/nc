@@ -14,7 +14,7 @@ namespace nc
 
     static EntityType get_type_static();
 
-    virtual void OnPickUp(Player player);
+    virtual void on_pickup(Player player);
 
     const Appearance& get_appearance() const;
   private:

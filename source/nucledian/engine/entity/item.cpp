@@ -6,7 +6,7 @@
 
 namespace nc
 {
-  PickUp::PickUp(vec3 position) : Entity(position, 0.15f, 0.2f)
+  PickUp::PickUp(vec3 position) : Entity(position, 0.15f, 0.2f, true)
 {
   auto& gfx = get_engine().get_module<GraphicsSystem>();
 
@@ -27,7 +27,7 @@ namespace nc
 
 //=========================================================
 
-void PickUp::OnPickUp([[maybe_unused]] Player player)
+void PickUp::on_pickup([[maybe_unused]] Player player)
 {
 }
 
