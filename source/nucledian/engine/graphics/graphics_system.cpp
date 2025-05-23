@@ -295,7 +295,7 @@ bool GraphicsSystem::init()
   ImGui_ImplOpenGL3_Init(nullptr);
 #endif
 
-  m_test_texture = TextureManager::instance().create(ResLifetime::Game, "content/textures/mff_pepe.png");
+  m_test_texture = TextureManager::instance().create(ResLifetime::Game, "content/textures/mff_pepe_walk.png");
 
   return true;
 }
@@ -1078,9 +1078,9 @@ void GraphicsSystem::render_entities(const CameraData& camera_data) const
   const MeshHandle& texturable_quad = MeshManager::instance().get_texturable_quad();
   const vec3 billboard_pos = vec3(1.0, 0.5, 1.0f);
 
-  const vec2 camera_dir = billboard_pos.xz - camera_data.position.xz;
   const mat4 billboard_transform = translate(mat4(1.0f), billboard_pos)
-    * eulerAngleY(atan2(camera_dir.x, camera_dir.y));
+    * mat4(transpose(mat3(camera_data.view))) * eulerAngleY(PI) // rotation
+    * scale(mat4(1.0f), vec3(0.67f, 1.0f, 1.0f));
 
   m_billboard_material.use();
   m_billboard_material.set_uniform(shaders::billboard::PROJECTION, camera_data.projection);
