@@ -295,8 +295,6 @@ bool GraphicsSystem::init()
   ImGui_ImplOpenGL3_Init(nullptr);
 #endif
 
-  m_test_texture = TextureManager::instance().create(ResLifetime::Game, "content/textures/mff_pepe_walk.png");
-
   return true;
 }
 
@@ -1075,88 +1073,87 @@ void GraphicsSystem::render_sectors(const CameraData& camera_data) const
 //==============================================================================
 void GraphicsSystem::render_entities(const CameraData& camera_data) const
 {
-  const MeshHandle& texturable_quad = MeshManager::instance().get_texturable_quad();
-  const vec3 billboard_pos = vec3(1.0, (m_test_texture.get_height() / 2048.0f) / 2.0f, 1.0f);
+  //const MeshHandle& texturable_quad = MeshManager::instance().get_texturable_quad();
+  //const vec3 billboard_pos = vec3(1.0, (m_test_texture.get_height() / 2048.0f) / 2.0f, 1.0f);
 
-  const mat3 camera_rotation = transpose(mat3(camera_data.view));
-  // Extracting X and Y components from the forward vector.
-  const float yaw = atan2(camera_rotation[2][0], camera_rotation[2][2]);
+  //const mat3 camera_rotation = transpose(mat3(camera_data.view));
+  //// Extracting X and Y components from the forward vector.
+  //const float yaw = atan2(camera_rotation[2][0], camera_rotation[2][2]);
 
-  const mat4 billboard_transform = translate(mat4(1.0f), billboard_pos)
-    * eulerAngleY(yaw + PI)
-    * scale(mat4(1.0f), vec3(m_test_texture.get_width() / 2048.0f, m_test_texture.get_height() / 2048.0f, 1.0f));
+  //const mat4 billboard_transform = translate(mat4(1.0f), billboard_pos)
+  //  * eulerAngleY(yaw + PI)
+  //  * scale(mat4(1.0f), vec3(m_test_texture.get_width() / 2048.0f, m_test_texture.get_height() / 2048.0f, 1.0f));
+
+  //m_billboard_material.use();
+  //m_billboard_material.set_uniform(shaders::billboard::PROJECTION, camera_data.projection);
+  //m_billboard_material.set_uniform(shaders::billboard::VIEW, camera_data.view);
+  //m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, billboard_transform);
+
+  //glBindTexture(GL_TEXTURE_2D, m_test_texture.get_gl_handle());
+  //glBindVertexArray(texturable_quad.get_vao());
+  //glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
+
+
+
+  // =====================
+  // =====================
+  // =====================
+
+  constexpr f32 billboard_texture_scale = 1.0f / 2048.0f;
+
+
+  std::unordered_map<u32, std::vector<Entity*>> groups;
+  // TODO: get only visible netities
+  EntityRegistry& entities = ThingSystem::get().get_entities();
+  // TODO: get_appearance should probably be directly on MapObject so we can render everything and not just enemies.
+  entities.for_each<Enemy>([&groups](Enemy& enemy)
+  {
+      const Appearance& appearance = enemy.get_appearance();
+      const u32 id = static_cast<u32>(appearance.texture.get_gl_handle());
+
+      groups[id].push_back(&enemy);
+  });
 
   m_billboard_material.use();
   m_billboard_material.set_uniform(shaders::billboard::PROJECTION, camera_data.projection);
   m_billboard_material.set_uniform(shaders::billboard::VIEW, camera_data.view);
-  m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, billboard_transform);
 
-  glBindTexture(GL_TEXTURE_2D, m_test_texture.get_gl_handle());
+  const MeshHandle& texturable_quad = MeshManager::instance().get_texturable_quad();
   glBindVertexArray(texturable_quad.get_vao());
-  glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
 
-  /*
-   * 1. obtain visible_sectors visible_sectors from sector system (TODO)
-   * 2. get RenderComponents from entities within visible_sectors visible_sectors (TODO)
-   * 3. filer visible_sectors entities (TODO)
-   * 4. group by ModelHandle
-   * 5. sort groups by: 1. program, 2. texture, 3. VAO (TODO)
-   * 5. issue render command for each group (TODO)
-   */
+  const mat3 camera_rotation = transpose(mat3(camera_data.view));
+  // Extracting X and Y components from the forward vector.
+  const float yaw = atan2(camera_rotation[2][0], camera_rotation[2][2]);
+  const mat4 rotation = eulerAngleY(yaw + PI);
 
-  struct ModelGroup
+  for (const auto& [_, group] : groups)
   {
-    Model                model;
-    std::vector<Entity*> entities; // for now, we keep only enemies here
-  };
+    const TextureHandle& texture = dynamic_cast<const Enemy*>(group[0])->get_appearance().texture;
+    const vec3 pivot_offset(0.0f, texture.get_height() * billboard_texture_scale / 2.0f, 0.0f);
 
-  std::unordered_map<u64, ModelGroup> model_groups;
+    glBindTexture(GL_TEXTURE_2D, texture.get_gl_handle());
 
-  auto& es = ThingSystem::get().get_entities();
-  es.for_each<Enemy>([&](Enemy& enemy)
-  {
-    const Appearance& appearance = enemy.get_appearance();
-
-    // TODO: Use better unique identifier.
-    u64 id = (static_cast<u64>(appearance.model.material.m_shader_program) << 32)
-      + static_cast<u64>(appearance.model.mesh.get_vao());
-
-    model_groups[id].model = appearance.model;
-    model_groups[id].entities.push_back(&enemy);
-  });
-
-  // TODO: sort groups by: 1. program, 2. texture, 3. VAO
-  for (const auto& [_, group] : model_groups)
-  {
-    const auto& [model, entities] = group;
-
-    // TODO: switch program & VAO only when necessary
-    model.material.use();
-    glBindVertexArray(model.mesh.get_vao());
-
-    // TODO: some uniform locations should be shader independent
-    model.material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
-    model.material.set_uniform(shaders::solid::UNLIT, false);
-    model.material.set_uniform(shaders::solid::VIEW, camera_data.view);
-    model.material.set_uniform(shaders::solid::VIEW_POSITION, camera_data.position);
-
-    // TODO: indirect rendering
-    for (auto* entity : entities)
+    for (const auto* entity : group)
     {
-      auto* enemy = static_cast<Enemy*>(entity);
-      auto        transform  = enemy->calc_transform();
-      const auto& appearance = enemy->get_appearance();
+      const Enemy* enemy = dynamic_cast<const Enemy*>(entity);
+      const Appearance& appearance = enemy->get_appearance();
+      const vec3 position = enemy->get_position();
 
-      const mat4 transform_matrix = transform.get_matrix() * appearance.transform.get_matrix();
-
-      // TODO: should be set only when these changes and probably not here
-      model.material.set_uniform(shaders::solid::COLOR, appearance.color);
-      model.material.set_uniform(shaders::solid::TRANSFORM, transform_matrix);
-
-      glDrawArrays(model.mesh.get_draw_mode(), 0, model.mesh.get_vertex_count());
+      const vec3 scale(
+        texture.get_width() * appearance.scale * billboard_texture_scale,
+        texture.get_height() * appearance.scale * billboard_texture_scale,
+        1.0f
+      );
+      const mat4 transform = translate(mat4(1.0f), position + pivot_offset)
+        * rotation
+        * nc::scale(mat4(1.0f), scale);
+      m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, transform);
+      
+      glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
     }
   }
 
+  glBindTexture(GL_TEXTURE_2D, 0);
   glBindVertexArray(0);
 }
 

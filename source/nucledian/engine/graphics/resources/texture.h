@@ -68,9 +68,11 @@ public:
    */
   void unload(ResLifetime lifetime);
 
+  const TextureHandle& get_test_texture();
+
 private:
   inline static std::unique_ptr<TextureManager> m_instance = nullptr;
-  TextureManager() {}
+  TextureManager();
 
   static inline u16 m_generation = 0;
 
@@ -78,6 +80,8 @@ private:
 
   std::vector<TextureHandle> m_level_textures;
   std::vector<TextureHandle> m_game_textures;
+
+  TextureHandle m_test_texture = TextureHandle::invalid();
 };
 
 }

@@ -82,8 +82,6 @@ private:
   Model          m_gun_model;
   Transform      m_gun_transform;
 
-  TextureHandle  m_test_texture = TextureHandle::invalid();
-
   struct CameraData
   {
     const vec3& position;
