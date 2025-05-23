@@ -1076,11 +1076,11 @@ void GraphicsSystem::render_sectors(const CameraData& camera_data) const
 void GraphicsSystem::render_entities(const CameraData& camera_data) const
 {
   const MeshHandle& texturable_quad = MeshManager::instance().get_texturable_quad();
-  const vec3 billboard_pos = vec3(1.0, 0.5, 1.0f);
+  const vec3 billboard_pos = vec3(1.0, (m_test_texture.get_height() / 2048.0f) / 2.0f, 1.0f);
 
   const mat4 billboard_transform = translate(mat4(1.0f), billboard_pos)
     * mat4(transpose(mat3(camera_data.view))) * eulerAngleY(PI) // rotation
-    * scale(mat4(1.0f), vec3(0.67f, 1.0f, 1.0f));
+    * scale(mat4(1.0f), vec3(m_test_texture.get_width() / 2048.0f, m_test_texture.get_height() / 2048.0f, 1.0f));
 
   m_billboard_material.use();
   m_billboard_material.set_uniform(shaders::billboard::PROJECTION, camera_data.projection);

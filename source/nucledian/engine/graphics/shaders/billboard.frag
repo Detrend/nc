@@ -11,6 +11,9 @@ uniform sampler2D sampler;
 void main()
 {
   out_color = texture(sampler, uv);
+
+  if (out_color.a == 0)
+    discard;
 }
 
 )";
