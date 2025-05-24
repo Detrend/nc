@@ -357,8 +357,8 @@ void ThingSystem::on_event(ModuleEvent& event)
       auto* player = entities->create_entity<Player>(vec3{1, 0, 1});
       player_id = player->get_id();
 
-      //entity_system.create_entity<Enemy>(vec3{1, 0.0, 1}, FRONT_DIR);
-      //entity_system.create_entity<Enemy>(vec3{2, 0.0, 1}, FRONT_DIR);
+      entity_system.create_entity<Enemy>(vec3{4, 0.0, 1}, FRONT_DIR);
+      entity_system.create_entity<Enemy>(vec3{5, 0.0, 1}, FRONT_DIR);
       entity_system.create_entity<Enemy>(vec3{ 3, 0.0, 1 }, FRONT_DIR);
 
       entity_system.create_entity<PickUp>(vec3{ 2, 0.0, 1 });
@@ -391,13 +391,30 @@ void ThingSystem::on_event(ModuleEvent& event)
       {
         enemy.check_collision(*this->get_player(), enemy.get_velocity(), event.update.dt);
 
-        entity_system.for_each<Enemy>([&](Enemy& enemy2)
+        const auto& map = get_engine().get_map();
+        auto sector_id = map.get_sector_from_point(enemy.get_position().xz());
+
+        if (sector_id != INVALID_SECTOR_ID)
         {
-          if (enemy.get_id() != enemy2.get_id()) // a wrong way to check equality
+          auto& entities_in_sector = get_sector_mapping().sectors_to_entities.entities[sector_id];
+
+          for (size_t i = 0; i < entities_in_sector.size(); i++)
           {
-            enemy.check_collision(enemy2, enemy.get_velocity(), event.update.dt);
-          }         
-        });
+            auto& cur_entity = entities_in_sector[i];
+
+            if (cur_entity.type != EntityTypes::enemy)
+            {
+              continue;
+            }
+
+            auto enemy2 = entity_system.get_entity(cur_entity);
+
+            if (enemy.get_id() != enemy2->get_id())
+            {
+              enemy.check_collision(*enemy2, enemy.get_velocity(), event.update.dt);
+            }
+          }
+        }        
       });
 
       entity_system.for_each<PickUp>([&](PickUp& pickup)
