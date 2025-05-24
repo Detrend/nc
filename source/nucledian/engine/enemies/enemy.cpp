@@ -73,7 +73,9 @@ namespace nc
     }
 
     vec3 target_pos = get_engine().get_module<ThingSystem>().get_player()->get_position();
-    vec3 target_dir = normalize_or_zero(target_pos - this->get_position());
+    vec3 target_dir = target_pos - this->get_position();
+    target_dir.y = 0;
+    target_dir = normalize_or_zero(target_dir);
 
     switch (state)
     {
@@ -107,6 +109,7 @@ namespace nc
       timeRemaining -= delta_seconds;
 
       velocity = target_dir * 1.0f * delta_seconds;
+      velocity.y -= GRAVITY * delta_seconds;
       break;
     case EnemyState::attack:
       break;
@@ -127,6 +130,20 @@ namespace nc
   void Enemy::apply_velocity()
   {
     auto world = ThingSystem::get().get_level();
+    const auto& map = get_engine().get_map();
+    f32 floor = 0;
+    auto sector_id = map.get_sector_from_point(this->get_position().xz());
+    if (sector_id != INVALID_SECTOR_ID)
+    {
+      const f32 sector_floor_y = map.sectors[sector_id].floor_height;
+      floor = sector_floor_y;
+    }
+
+    if (this->get_position().y + velocity.y < floor)
+    {
+      //velocity.y = floor - this->get_position().y;
+      velocity.y = 0;
+    }
 
     vec3 position = this->get_position();
     world.move_and_collide(position, velocity, facing, 0.25f, 0.5f, 0.0f, 0);

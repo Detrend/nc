@@ -53,6 +53,7 @@ public:
 
 protected:
   bool  collision;
+  f32 GRAVITY = 6.0f;
 
 private: friend class EntityRegistry;
   SectorMapping* m_Mapping   = nullptr;
