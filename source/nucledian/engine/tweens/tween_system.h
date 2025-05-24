@@ -17,35 +17,37 @@
 
 namespace nc
 {
+    enum class TweenSetterReturnValue {
+        ok = 0,
+        tween_is_invalid = 1
+    };
+
 
     struct TweenBase {
-        using on_finish_callback_t = std::function<void(void)>;
+        using on_finish_callback_t = std::function<void(TweenBase &tween)>;
         using ease_t = easingsf::easing_func_t;
 
-        TweenBase(float the_duration_seconds, ease_t* the_easing_func, void* the_target_object) 
+        TweenBase(float the_duration_seconds, ease_t* the_easing_func) 
             : tween_speed(1.0f/the_duration_seconds)
             , easing_func(the_easing_func)
-            , target_object(the_target_object)
         {}
 
         virtual ~TweenBase(){}
 
         void stop() {
-            is_finished = true;
+            is_done_flag = true;
         }
         bool is_done() {
-            return this->is_finished;
+            return this->is_done_flag;
         }
+        float get_progress() { return t; }
+        float get_value() { return easing_func(t); }
 
         void update(const float delta) {
-            if (is_finished) return;
-            if (! target_object) {
-                is_finished = true;
-                return;
-            }
+            if (is_done_flag) return;
             t = min(END, t + delta * tween_speed);
             if (t >= END) {
-                is_finished = true;
+                is_done_flag = true;
             }
             set_value(easing_func(t));
         }
@@ -66,11 +68,10 @@ namespace nc
         static constexpr float BEGIN = 0.0f;
         static constexpr float END = 1.0f;
 
-        bool is_finished = false;
+        bool is_done_flag = false;
         float t = 0.0f;
         float tween_speed = 1.0f;
         ease_t* easing_func;
-        void* target_object;
         std::vector<on_finish_callback_t> on_finish_callbacks;
     };
 
@@ -78,8 +79,8 @@ namespace nc
     struct Tween : public TweenBase {
     public:
 
-        Tween(float the_duration_seconds, ease_t* the_easing_func, void* the_target_object, const TValue& the_start_value, const TValue & the_end_value, TSetter &&the_setter)
-            : TweenBase(the_duration_seconds, the_easing_func, the_target_object)
+        Tween(float the_duration_seconds, ease_t* the_easing_func , const TValue& the_start_value, const TValue & the_end_value, TSetter &&the_setter)
+            : TweenBase(the_duration_seconds, the_easing_func)
             , start_value(the_start_value)
             , end_value(the_end_value)
             , setter(the_setter)
@@ -100,7 +101,9 @@ namespace nc
 
         virtual void set_value(float factor) override {
             TValue to_set = lerp(start_value, end_value, factor);
-            setter(target_object, to_set);
+            if (setter(to_set) != TweenSetterReturnValue::ok) {
+                is_done_flag = true;
+            }
         }
 
     private:
@@ -115,7 +118,7 @@ namespace nc
 
 
 
-
+    class TweenSystem;
     class TweenSystem : public IEngineModule
     {
     public:
@@ -128,17 +131,26 @@ namespace nc
 
 
         template<typename TValue, typename TSetter>
-        Tween<TValue, TSetter>& tween(void* the_target_object, const TValue& the_start_value, const TValue& the_end_value, float the_duration_seconds, TweenBase::ease_t* the_easing_func, TSetter &&the_setter) {
-            auto & ret = running_tweens.emplace_back(std::make_unique<Tween<TValue, TSetter>>(the_duration_seconds, the_easing_func, the_target_object, the_start_value, the_end_value, std::move(the_setter)));
+        Tween<TValue, TSetter>& tween(const TValue& the_start_value, const TValue& the_end_value, float the_duration_seconds, TweenBase::ease_t* the_easing_func, TSetter &&the_setter) {
+            auto & ret = running_tweens.emplace_back(std::make_unique<Tween<TValue, TSetter>>(the_duration_seconds, the_easing_func, the_start_value, the_end_value, std::move(the_setter)));
             return *static_cast<Tween<TValue, TSetter>*>(ret.get());
         }
 
-        void test() {
-
-            tween(this, -10.0f, 99.9f, 3.0f, &easingsf::bounce_in_out, [](void* dummy, float value) {
-                (void)dummy;
+        auto &test() {
+            static float begin = -10.0f, end = 99.9f;
+            std::swap(begin, end);
+            return tween(begin, end, 3.0f, &easingsf::linear, [](float value) {
                 nc_log("tween: {}", value);
-                }).add_on_finished_callback([]() { nc_log("tween finished"); });
+                return TweenSetterReturnValue::ok;
+            });
+        }
+
+        auto fff() -> decltype(std::declval<TweenSystem&>().test()) {
+            auto& ret = test();
+            ret.add_on_finished_callback([this](const auto&) {
+                fff();
+            });
+            return ret;
         }
 
     private:

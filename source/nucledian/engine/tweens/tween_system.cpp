@@ -59,7 +59,7 @@ namespace nc
     //==============================================================================
     bool TweenSystem::init()
     {
-        test();
+        fff();
         return true;
     }
 
@@ -92,15 +92,21 @@ namespace nc
     void TweenSystem::update(f32 delta_seconds)
     {
         for (size_t t = 0; t < running_tweens.size(); ++t) {
-            auto& tw = running_tweens[t];
+            auto *const tw = running_tweens[t].get();
             tw->update(delta_seconds);
             if (tw->is_done()) {
+#ifdef NC_ASSERTS
+                const size_t original_size = running_tweens.size();
+#endif
                 for (auto&& callback : tw->on_finish_callbacks) 
-                    callback();
+                    callback(*tw);
+                nc_assert(running_tweens[t].get() == tw);
+                nc_assert(running_tweens.size() >= original_size);
                 running_tweens.erase(running_tweens.begin() + t);
                 --t;
             }
         }
+        // if some additional tweens were stopped from an on_finish_callback, they will be deleted on the next frame
     }
 
 }
