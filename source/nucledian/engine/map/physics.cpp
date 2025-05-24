@@ -390,6 +390,7 @@ void PhysLevel::move_and_collide
 ) const
 {
   constexpr u32 MAX_ITERATIONS = 4;
+  constexpr f32 MAX_STEP_SIZE = 0.2f;
 
   // First check collisions and adjust the velocity
   u32 iterations_left = MAX_ITERATIONS; 
@@ -421,6 +422,10 @@ void PhysLevel::move_and_collide
     transformation = trans * transformation;
   }
 
+  vec3 prev_position = position;
+  vec3 prev_velocity = velocity;
+  vec3 prev_forward = forward;
+
   if (should_transform)
   {
     position = (transformation * vec4{position + velocity, 1.0f}).xyz();
@@ -439,6 +444,14 @@ void PhysLevel::move_and_collide
     const f32 sector_floor_y = map.sectors[sector_id].floor_height;
     if (position.y < sector_floor_y)
     {
+      if (position.y + MAX_STEP_SIZE < sector_floor_y)
+      {
+        position = prev_position;
+        velocity = vec3(0);
+        forward = prev_forward;
+        return;
+      }
+
       position.y = sector_floor_y;
     }
   }
