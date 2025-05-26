@@ -61,6 +61,10 @@ public:
    */
   MeshHandle create(ResLifetime lifetime, const f32* data, u32 count, GLenum draw_mode = GL_TRIANGLES);
   /**
+   * Creates mesh, on which texture can be applied, from vertex data and stores it in GPU memory.
+   */
+  MeshHandle create_texturable(ResLifetime lifetime, const f32* data, u32 count, GLenum draw_mode = GL_TRIANGLES);
+  /**
    * Unloads all meshes with specified lifetime. 
    */
   void unload(ResLifetime lifetime);
@@ -68,6 +72,7 @@ public:
   MeshHandle get_cube() const;
   MeshHandle get_line() const;
   MeshHandle get_quad() const;
+  MeshHandle get_texturable_quad() const;
 
 private:
   inline static std::unique_ptr<MeshManager> m_instance = nullptr;
@@ -82,6 +87,7 @@ private:
   MeshHandle              m_cube_mesh;
   MeshHandle              m_line_mesh;
   MeshHandle              m_quad_mesh;
+  MeshHandle              m_texturable_quad_mesh;
 };
 
 }
