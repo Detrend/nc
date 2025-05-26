@@ -18,6 +18,7 @@
 #include <vector>
 #include <unordered_set>
 #include <tuple>
+#include <atomic>
 
 struct Mix_Music;
 struct Mix_Chunk;
@@ -30,6 +31,12 @@ namespace nc
     struct SoundHandle {
 
     public:
+        SoundHandle() 
+            : chunk(nullptr)
+            , channel(-1)
+            , version(0)
+        {}
+
         void set_paused(const bool should_be_paused);
         void kill();
         void set_volume(float volume01);
@@ -37,6 +44,8 @@ namespace nc
         bool is_paused() const;
         bool is_playing() const;
         float get_volume();
+
+        bool check_is_valid(void) const;
 
         TweenBase& do_volume(float end_volume01, float duration_seconds, easingsf::easing_func_t ease = easingsf::linear);
 
@@ -54,8 +63,10 @@ namespace nc
         channel_t channel;
         u64 version;
 
-        bool check_is_valid(void) const;
     };
+
+    // TODO: Write a dedicated music handle that uses the music-specific API
+    using MusicHandle = SoundHandle;
 
 
     class SoundSystem : public IEngineModule
@@ -81,17 +92,26 @@ namespace nc
         Mix_Music *background_music = nullptr;
         std::unordered_map<channel_t, SoundHandle> active_chunks;
         std::unordered_map<SoundResource, Mix_Chunk*> loaded_chunks;
-        u64 version_counter;
+        u64 version_counter = 1;
+
+        std::atomic<bool> some_channel_was_just_stopped = std::atomic<bool>(false);
+
+        MusicHandle music;
 
         friend struct SoundHandle;
 
-        u64 generate_next_version_id() { return ++version_counter; }
+        inline u64 generate_next_version_id() { return ++version_counter; }
         Mix_Chunk* get_loaded_chunk(const SoundResource& rsrc);
+
+        struct Helpers;
 
     public:
 
         void play_oneshot(const SoundResource& sound);
-        SoundHandle play(const SoundResource& sound, const bool should_loop = false);
+        SoundHandle &play(const SoundResource& sound, const bool should_loop = false);
+        MusicHandle &play_music(const SoundResource& sound, const bool should_loop = false);
+
+        MusicHandle* get_music();
     };
 
 
