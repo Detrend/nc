@@ -139,14 +139,23 @@ void TextureManager::unload(ResLifetime lifetime)
 }
 
 //==============================================================================
-const TextureHandle& TextureManager::get_test_texture()
+const TextureHandle& TextureManager::get_test_enemy_texture()
 {
-  return m_test_texture;
+  return m_test_enemy_texture;
+}
+
+//==============================================================================
+const TextureHandle& TextureManager::get_test_gun_texture()
+{
+  return m_test_gun_texture;
 }
 
 //==============================================================================
 TextureManager::TextureManager()
-  : m_test_texture(create(ResLifetime::Game, "content/textures/mff_pepe_walk.png")) {}
+:
+  m_test_enemy_texture(create(ResLifetime::Game, "content/textures/mff_pepe_walk.png")),
+  m_test_gun_texture(create(ResLifetime::Game, "content/textures/math_gun.png"))
+{}
 
 //==============================================================================
 std::vector<TextureHandle>& TextureManager::get_storage(ResLifetime lifetime)

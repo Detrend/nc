@@ -36,7 +36,7 @@ namespace nc
   {
     appear = Appearance
     {
-      .texture = TextureManager::instance().get_test_texture(),
+      .texture = TextureManager::instance().get_test_enemy_texture(),
       .scale = 1.0f,
     };
   }

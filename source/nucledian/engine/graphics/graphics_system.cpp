@@ -234,9 +234,8 @@ bool GraphicsSystem::init()
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
-  // create window
-  m_window = SDL_CreateWindow(
-    WINDOW_NAME, WIN_POS, WIN_POS, 800, 600, SDL_WIN_FLAGS);
+  // create window (resolution 16:9)
+  m_window = SDL_CreateWindow(WINDOW_NAME, WIN_POS, WIN_POS, 1024, 576, SDL_WIN_FLAGS);
   if (!m_window)
   {
     [[maybe_unused]] cstr error = SDL_GetError();
@@ -1073,34 +1072,7 @@ void GraphicsSystem::render_sectors(const CameraData& camera_data) const
 //==============================================================================
 void GraphicsSystem::render_entities(const CameraData& camera_data) const
 {
-  //const MeshHandle& texturable_quad = MeshManager::instance().get_texturable_quad();
-  //const vec3 billboard_pos = vec3(1.0, (m_test_texture.get_height() / 2048.0f) / 2.0f, 1.0f);
-
-  //const mat3 camera_rotation = transpose(mat3(camera_data.view));
-  //// Extracting X and Y components from the forward vector.
-  //const float yaw = atan2(camera_rotation[2][0], camera_rotation[2][2]);
-
-  //const mat4 billboard_transform = translate(mat4(1.0f), billboard_pos)
-  //  * eulerAngleY(yaw + PI)
-  //  * scale(mat4(1.0f), vec3(m_test_texture.get_width() / 2048.0f, m_test_texture.get_height() / 2048.0f, 1.0f));
-
-  //m_billboard_material.use();
-  //m_billboard_material.set_uniform(shaders::billboard::PROJECTION, camera_data.projection);
-  //m_billboard_material.set_uniform(shaders::billboard::VIEW, camera_data.view);
-  //m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, billboard_transform);
-
-  //glBindTexture(GL_TEXTURE_2D, m_test_texture.get_gl_handle());
-  //glBindVertexArray(texturable_quad.get_vao());
-  //glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
-
-
-
-  // =====================
-  // =====================
-  // =====================
-
   constexpr f32 billboard_texture_scale = 1.0f / 2048.0f;
-
 
   std::unordered_map<u32, std::vector<Entity*>> groups;
   // TODO: get only visible netities
@@ -1123,8 +1095,8 @@ void GraphicsSystem::render_entities(const CameraData& camera_data) const
 
   const mat3 camera_rotation = transpose(mat3(camera_data.view));
   // Extracting X and Y components from the forward vector.
-  const float yaw = atan2(camera_rotation[2][0], camera_rotation[2][2]);
-  const mat4 rotation = eulerAngleY(yaw + PI);
+  const float yaw = atan2(-camera_rotation[2][0], -camera_rotation[2][2]);
+  const mat4 rotation = eulerAngleY(yaw);
 
   for (const auto& [_, group] : groups)
   {
@@ -1190,22 +1162,31 @@ void GraphicsSystem::render_portals(const CameraData& camera_data) const
 }
 
 //==============================================================================
-void GraphicsSystem::render_gun(const CameraData& camera_data) const
+void GraphicsSystem::render_gun(const CameraData&) const
 {
-  const mat4 transform = inverse(camera_data.view) * m_gun_transform.get_matrix();
+  const TextureHandle& texture = TextureManager::instance().get_test_gun_texture();
 
-  m_gun_model.material.use();
-  m_gun_model.material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
-  m_gun_model.material.set_uniform(shaders::solid::UNLIT, false);
-  m_gun_model.material.set_uniform(shaders::solid::VIEW, camera_data.view);
-  m_gun_model.material.set_uniform(shaders::solid::VIEW_POSITION, camera_data.position);
-  m_gun_model.material.set_uniform(shaders::solid::COLOR, colors::BROWN);
-  m_gun_model.material.set_uniform(shaders::solid::TRANSFORM, transform);
+  GLint viewport[4];
+  glGetIntegerv(GL_VIEWPORT, viewport);
+  const float screen_width = static_cast<float>(viewport[2]);
+  const float screen_height = static_cast<float>(viewport[3]);
 
-  glClear(GL_DEPTH_BUFFER_BIT);
+  const mat4 projection = ortho(0.0f, screen_width, screen_height, 0.0f, -1.0f, 1.0f);
+  const mat4 transform = translate(mat4(1.0f), vec3(screen_width / 2.0f, screen_height / 2.0f, 0.0f))
+     * scale(mat4(1.0f), -vec3(screen_width, screen_height, 1.0f));
 
-  glBindVertexArray(m_gun_model.mesh.get_vao());
-  glDrawArrays(m_gun_model.mesh.get_draw_mode(), 0, m_gun_model.mesh.get_vertex_count());
+  const MeshHandle& texturable_quad = MeshManager::instance().get_texturable_quad();
+  glBindVertexArray(texturable_quad.get_vao());
+
+  m_billboard_material.use();
+  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, projection);
+  m_billboard_material.set_uniform(shaders::billboard::VIEW, mat4(1.0f));
+  m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, transform);
+
+  glBindTexture(GL_TEXTURE_2D, texture.get_gl_handle());
+  glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
+
+  glBindTexture(GL_TEXTURE_2D, 0);
   glBindVertexArray(0);
 }
 
