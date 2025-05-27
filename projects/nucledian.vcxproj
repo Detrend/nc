@@ -122,6 +122,7 @@
     <ClCompile Include="..\source\nucledian\engine\entity\entity.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\sector_mapping.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\physics.cpp" />
+    <ClCompile Include="..\source\nucledian\game\projectile.cpp" />
     <ClCompile Include="..\source\nucledian\logging.cpp" />
     <ClCompile Include="..\source\nucledian\main.cpp" />
     <ClCompile Include="..\source\nucledian\transform.cpp" />
@@ -242,6 +243,7 @@
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
     <ClInclude Include="..\source\nucledian\engine\map\physics.h" />
     <ClInclude Include="..\source\nucledian\engine\player\level_types.h" />
+    <ClInclude Include="..\source\nucledian\game\projectile.h" />
     <ClInclude Include="..\source\nucledian\logging.h" />
     <ClInclude Include="..\source\nucledian\metaprogramming.h" />
     <ClInclude Include="..\source\nucledian\transform.h" />

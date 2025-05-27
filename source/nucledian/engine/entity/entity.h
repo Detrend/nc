@@ -8,7 +8,19 @@
 
 namespace nc
 {
+
 struct SectorMapping;
+struct Appearance;
+
+// TODO: Entity physics component
+struct Physics
+{
+  // TODO: this is an example how it might look like
+  f32 radius;
+  f32 height;
+  f32 neg_height;
+};
+
 }
 
 namespace nc
@@ -52,6 +64,31 @@ public:
   void       set_height(f32 nh);
 
   void       set_pos_rad_height(vec3 p, f32 r, f32 h);
+
+  // =============================================
+  //             Components
+  // =============================================
+  Appearance*       get_appearance();
+  const Appearance* get_appearance() const;
+
+  Physics*          get_physics();
+  const Physics*    get_physics() const;
+
+  // =============================================
+  //              Utility
+  // =============================================
+  // Cast the base entity to other type of entity.
+  // Returns Pointer to the other type or nullptr
+  // if the conversion is not possible.
+  template<typename T>
+  T* as()
+  {
+    if (T::get_type_static() == this->get_type())
+    {
+      return static_cast<T*>(this);
+    }
+    return nullptr;
+  }
 
 protected:
   bool  collision;

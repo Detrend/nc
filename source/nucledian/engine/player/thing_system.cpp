@@ -16,6 +16,8 @@
 
 #include <engine/graphics/graphics_system.h>
 
+#include <game/projectile.h>
+
 #include <common.h>
 
 #include <intersect.h>
@@ -453,6 +455,13 @@ void ThingSystem::pre_terminate()
 }
 
 //==============================================================================
+void ThingSystem::on_cleanup()
+{
+  // cleanup dead entities
+  this->get_entities().cleanup();
+}
+
+//==============================================================================
 void ThingSystem::on_event(ModuleEvent& event)
 {
   switch (event.type)
@@ -466,6 +475,12 @@ void ThingSystem::on_event(ModuleEvent& event)
     case ModuleEventType::pre_terminate:
     {
       this->pre_terminate();
+      break;
+    }
+
+    case ModuleEventType::cleanup:
+    {
+      this->on_cleanup();
       break;
     }
 
@@ -533,14 +548,18 @@ void ThingSystem::on_event(ModuleEvent& event)
         });
       });
 
-      
-
       //FINAL VELOCITY CHANGE
       this->get_player()->apply_velocity(event.update.dt);
 
       entity_system.for_each<Enemy>([&](Enemy& enemy)
       {
         enemy.apply_velocity();
+      });
+
+      // PROJECTILES
+      entity_system.for_each<Projectile>([&](Projectile& proj)
+      {
+        proj.update(event.update.dt);
       });
 
       break;
@@ -710,7 +729,10 @@ void ThingSystem::check_player_attack
   const GameInputs&  prev_inputs,
   const ModuleEvent& event)
 {
-  bool didAttack = this->get_player()->get_attack_state(curr_inputs, prev_inputs, event.update.dt);
+  auto& entity_system = this->get_entities();
+  auto* player        = this->get_player();
+  bool  didAttack     = player->get_attack_state(curr_inputs, prev_inputs, event.update.dt);
+
   if (didAttack)
   {
     [[maybe_unused]] vec3 rayStart = this->get_player()->get_position() + vec3(0, this->get_player()->get_view_height(), 0);
@@ -721,8 +743,6 @@ void ThingSystem::check_player_attack
 
     const auto wallHit = this->get_level().raycast3d(rayStart, rayEnd);
     f32 wallDist = wallHit ? wallHit.coeff : FLT_MAX;
-
-    auto& entity_system = this->get_entities();
 
     entity_system.for_each<Enemy>([&](Enemy& enemy)
     {
@@ -755,6 +775,20 @@ void ThingSystem::check_player_attack
         entity_system.get_entity<Enemy>(index)->damage(100);
       }
     }
+  }
+
+  if (didAttack)
+  {
+    auto dir = player->get_look_direction();
+
+    // spawn projectile
+    entity_system.create_entity<Projectile>
+    (
+      player->get_position() + UP_DIR * player->get_height() + dir * 0.3f,
+      dir * 10.0f,
+      0.15f,
+      true
+    );
   }
 }
 

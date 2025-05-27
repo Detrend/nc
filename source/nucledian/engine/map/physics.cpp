@@ -17,8 +17,43 @@ namespace nc::phys_helpers
 {
 
 //==============================================================================
+template<typename T>
+static aabb2 calc_stationary_bbox(T ray_from, f32 expand)
+{
+  const vec2 offset = vec2{expand};
+
+  if constexpr (std::is_same_v<T, vec2>)
+  {
+    return aabb2{ray_from + offset, ray_from - offset};
+  }
+  else
+  {
+    static_assert(std::is_same_v<T, vec3>);
+    return aabb2{ray_from.xz() + offset, ray_from.xz() - offset};
+  }
+}
+
+//==============================================================================
+template<typename T>
+static f32 calc_dist_to_bbox(T pt, const aabb3& bbox)
+{
+  if constexpr (std::is_same_v<T, vec2>)
+  {
+    aabb2 bbox2;
+    bbox2.min = bbox.min.xz();
+    bbox2.max = bbox.max.xz();
+    return dist::point_aabb(pt, bbox2);
+  }
+  else
+  {
+    static_assert(std::is_same_v<T, vec3>);
+    return dist::point_aabb(pt, bbox);
+  }
+}
+
+//==============================================================================
 // bool(TVec ray_from, TVec ray_to, f32 expand, const WallData& w1, const SectorData& sector, const WallData& w2, f32& c, f32& n)
-template<typename TVec, typename WallHitLambda, typename SectorHitLambda>
+template<typename TVec, typename WallHitLambda, typename SectorHitLambda, typename EntityHitLambda>
 RayHit raycast_basic
 (
   const PhysLevel&    world,
@@ -29,24 +64,35 @@ RayHit raycast_basic
   PhysLevel::Portals* out_portals,
   WallID              ignore_portal,
   WallHitLambda       wall_intersect,
-  SectorHitLambda     sector_intersect
+  SectorHitLambda     sector_intersect,
+  EntityHitLambda     entity_intersect
 )
 {
   nc_assert(expand >= 0.0f, "Radius can not be negative!");
 
-  if (ray_from == ray_to)
-  {
-    // no need to check anything
-    return RayHit::no_hit();
-  }
-
-  // TODO[perf]: Add a "query_ray" option
   std::set<SectorID> overlap_sectors;
-  world.map.sector_grid.query_ray(ray_from, ray_to, expand, [&](aabb2, SectorID sid)
+
+  // If the ray is casted from and to the same spot.
+  const bool is_stationary = ray_from == ray_to;
+
+  if (is_stationary)
   {
-    overlap_sectors.insert(sid);
-    return false;
-  });
+    aabb2 bbox = calc_stationary_bbox(ray_from, expand);
+    world.map.sector_grid.query_aabb(bbox, [&](aabb2, SectorID sid)
+    {
+      overlap_sectors.insert(sid);
+      return false;
+    });
+  }
+  else
+  {
+    // TODO[perf]: Add a "query_ray" option
+    world.map.sector_grid.query_ray(ray_from, ray_to, expand, [&](aabb2, SectorID sid)
+    {
+      overlap_sectors.insert(sid);
+      return false;
+    });
+  }
 
   // Store these for nuclidean portal traversal
   SectorID portal_sector  = INVALID_SECTOR_ID;
@@ -55,6 +101,36 @@ RayHit raycast_basic
   f32  final_coeff  = FLT_MAX;
   vec3 final_normal = vec3{0};
 
+  auto add_possible_hit = [&]
+  (
+    f32 coeff, vec3 normal, bool is_nc_hit,
+    SectorID nc_sid = INVALID_SECTOR_ID, WallID nc_wid = INVALID_WALL_ID
+  )
+  {
+    if (coeff >= final_coeff)
+    {
+      return;
+    }
+
+    final_coeff  = coeff;
+    final_normal = normal;
+
+    if (is_nc_hit)
+    {
+      // store the information that this is a portal for later
+      nc_assert(nc_wid != INVALID_WALL_ID);
+      nc_assert(nc_sid != INVALID_SECTOR_ID);
+      portal_sector  = nc_sid;
+      nc_portal_wall = nc_wid;
+    }
+    else
+    {
+      // reset the portal info, the closest hit is not a nc portal
+      portal_sector  = INVALID_SECTOR_ID;
+      nc_portal_wall = INVALID_WALL_ID;
+    }
+  };
+
   // Iterate all sectors that the ray might possibly intersect
   for (auto sector_id : overlap_sectors)
   {
@@ -62,24 +138,35 @@ RayHit raycast_basic
     const auto& sector     = world.map.sectors[sector_id];
     const auto  begin_wall = sector.int_data.first_wall;
     const auto  end_wall   = sector.int_data.last_wall;
+    const auto& bbox3      = world.map.sector_bboxes[sector_id];
+
+    // Calculate approximate distance to the sector. If the closest
+    // point of the sector bbox is further than the closest raycasted
+    // point so far then we can skip this sector.
+    const f32 distance_to_closest_pt  = calc_dist_to_bbox(ray_from, bbox3);
+    const f32 closest_hit_dist_so_far = length(ray_to - ray_from) * final_coeff;
+    if (final_coeff != FLT_MAX && distance_to_closest_pt > closest_hit_dist_so_far)
+    {
+      // We can safely ignore this sector as it is too far away
+      continue;
+    }
 
     f32  c = FLT_MAX;
     vec3 n = vec3{0};
+
+    // Check floor and ceiling intersections
     const bool sector_hit = sector_intersect
     (
       world.map, ray_from, ray_to, expand, sector_id, c, n
     );
 
-    if (sector_hit && c < final_coeff)
+    if (sector_hit)
     {
-      final_coeff  = c;
-      final_normal = n;
-
-      // reset the portal info, the floor hit can't be a nc portal
-      portal_sector  = INVALID_SECTOR_ID;
-      nc_portal_wall = INVALID_WALL_ID;
+      // Floor/ceiling can't be a nuclidean portal
+      add_possible_hit(c, n, false);
     }
 
+    // Check wall intersections
     // TODO[perf]: In theory, we do not need to check all the walls.
     // Once we hit one all other walls further away can be ignored.
     for (WallID wall_id = begin_wall; wall_id < end_wall; ++wall_id)
@@ -111,23 +198,49 @@ RayHit raycast_basic
         world.map, ray_from, ray_to, col_exp, wall_id, next_wall_id, sector_id, c, n
       );
 
-      if (does_intersect && c < final_coeff)
+      if (does_intersect)
       {
-        final_coeff  = c;
-        final_normal = n;
+        add_possible_hit(c, n, is_nc_portal, sector_id, wall_id);
+      }
+    }
 
-        if (is_nc_portal)
-        {
-          // store the information that this is a portal for later
-          portal_sector  = sector_id;
-          nc_portal_wall = wall_id;
-        }
-        else
-        {
-          // reset the portal info, the closest hit is not a nc portal
-          portal_sector  = INVALID_SECTOR_ID;
-          nc_portal_wall = INVALID_WALL_ID;
-        }
+    // Check entity intersections
+    for (auto entity_id : world.mapping.sectors_to_entities.entities[sector_id])
+    {
+      if (!(entity_id.type & ent_types))
+      {
+        // skip this entity, we do not check it
+        continue;
+      }
+
+      // Broad phase - check the distance to bbox first
+      const auto* entity = world.entities.get_entity(entity_id);
+      nc_assert(entity);
+      f32  r = entity->get_radius();
+      f32  h = entity->get_height();
+      vec3 p = entity->get_position();
+      aabb3 bbox
+      {
+        p - vec3{r, 0, r} - vec3{expand},
+        p + vec3{r, h, r} + vec3{expand}
+      };
+
+      f32 closest_pt_on_bbox = calc_dist_to_bbox(ray_from, bbox);
+      f32 closest_pt_so_far  = length(ray_from - ray_to) * final_coeff;
+      if (final_coeff != FLT_MAX && closest_pt_so_far < closest_pt_on_bbox)
+      {
+        // The point we hit is already closer, no need to check the entity
+        continue;
+      }
+
+      const bool does_intersect = entity_intersect
+      (
+        world, ray_from, ray_to, expand, *entity, c, n
+      );
+
+      if (does_intersect)
+      {
+        add_possible_hit(c, n, false);
       }
     }
   }
@@ -179,8 +292,8 @@ RayHit raycast_basic
     // And cast the ray recursively
     const auto hit = raycast_basic<TVec>
     (
-      world, new_from, new_to, expand, ent_types,
-      out_portals, wall_to_ignore, wall_intersect, sector_intersect
+      world, new_from, new_to, expand, ent_types, out_portals, wall_to_ignore,
+      wall_intersect, sector_intersect, entity_intersect
     );
 
     if (hit)
@@ -204,6 +317,7 @@ RayHit raycast_basic
   // Return true if we hit something
   return RayHit::build(final_coeff, final_normal);
 }
+
 }
 
 namespace nc
@@ -232,7 +346,8 @@ RayHit RayHit::build(f32 c, vec3 n)
 }
 
 //==============================================================================
-static bool intersect_wall_2d(
+static bool intersect_wall_2d
+(
   const MapSectors& map,
   vec2              ray_from,
   vec2              ray_to,
@@ -241,8 +356,14 @@ static bool intersect_wall_2d(
   WallID            w2id,
   SectorID          /*sid*/,
   f32&              out_c,
-  vec3&             out_n)
+  vec3&             out_n
+)
 {
+  if (ray_from == ray_to)
+  {
+    return false;
+  }
+
   const auto& w1 = map.walls[w1id];
   const auto& w2 = map.walls[w2id];
 
@@ -258,14 +379,32 @@ static bool intersect_wall_2d(
 }
 
 //==============================================================================
-static bool intersect_sector_2d(
-  [[maybe_unused]]const MapSectors& map,
-  [[maybe_unused]]vec2              from,
-  [[maybe_unused]]vec2              to,
-  [[maybe_unused]]f32               expand,
-  [[maybe_unused]]SectorID          sid,
-  [[maybe_unused]]f32&              out_c,
-  [[maybe_unused]]vec3&             out_n)
+static bool intersect_sector_2d
+(
+  [[maybe_unused]] const MapSectors& map,
+  [[maybe_unused]] vec2              from,
+  [[maybe_unused]] vec2              to,
+  [[maybe_unused]] f32               expand,
+  [[maybe_unused]] SectorID          sid,
+  [[maybe_unused]] f32&              out_c,
+  [[maybe_unused]] vec3&             out_n
+)
+{
+  return false;
+}
+
+//==============================================================================
+template<typename TVec>
+static bool intersect_entity_empty
+(
+  [[maybe_unused]] const PhysLevel& level,
+  [[maybe_unused]] TVec             from,
+  [[maybe_unused]] TVec             to,
+  [[maybe_unused]] f32              expand,
+  [[maybe_unused]] const Entity&    entity,
+  [[maybe_unused]] f32&             c_out,
+  [[maybe_unused]] vec3&            n_out
+)
 {
   return false;
 }
@@ -282,8 +421,8 @@ RayHit PhysLevel::raycast2d_expanded
 {
   return phys_helpers::raycast_basic<vec2>
   (
-    *this, from, to, expand, ent_types,
-    out_portals, INVALID_WALL_ID, &intersect_wall_2d, &intersect_sector_2d
+    *this, from, to, expand, ent_types, out_portals, INVALID_WALL_ID,
+    &intersect_wall_2d, &intersect_sector_2d, &intersect_entity_empty<vec2>
   );
 }
 
@@ -300,7 +439,8 @@ RayHit PhysLevel::raycast2d
 }
 
 //==============================================================================
-static bool intersect_wall_3d(
+static bool intersect_wall_3d
+(
   const MapSectors& map,
   vec3              ray_from,
   vec3              ray_to,
@@ -309,8 +449,14 @@ static bool intersect_wall_3d(
   WallID            w2id,
   SectorID          sid,
   f32&              out_c,
-  vec3&             out_n)
+  vec3&             out_n
+)
 {
+  if (ray_from == ray_to)
+  {
+    return false;
+  }
+
   const auto& w1 = map.walls[w1id];
   const auto& w2 = map.walls[w2id];
   const auto& sd = map.sectors[sid];
@@ -328,15 +474,22 @@ static bool intersect_wall_3d(
 }
 
 //==============================================================================
-static bool intersect_sector_3d(
+static bool intersect_sector_3d
+(
   const MapSectors& map,
   vec3              from,
   vec3              to,
   f32               /*expand*/,
   SectorID          sid,
   f32&              out_c,
-  vec3&             out_n)
+  vec3&             out_n
+)
 {
+  if (from == to)
+  {
+    return false;
+  }
+
   const auto& sector = map.sectors[sid];
   const f32 fy = sector.floor_height;
   const f32 cy = sector.ceil_height;
@@ -372,8 +525,8 @@ RayHit PhysLevel::raycast3d
 {
   return phys_helpers::raycast_basic<vec3>
   (
-    *this, ray_start, ray_end, 0.0f, ent_types,
-    out_portals, INVALID_WALL_ID, &intersect_wall_3d, &intersect_sector_3d
+    *this, ray_start, ray_end, 0.0f, ent_types, out_portals, INVALID_WALL_ID,
+    &intersect_wall_3d, &intersect_sector_3d, &intersect_entity_empty<vec3>
   );
 }
 
@@ -383,15 +536,19 @@ void PhysLevel::move_and_collide
   vec3&                          position,
   vec3&                          velocity_og,
   vec3&                          forward,
+  f32                            delta_time,
   f32                            radius,
   [[maybe_unused]]f32            height,
-  [[maybe_unused]]f32            max_step,
-  [[maybe_unused]]EntityTypeMask colliders
+  [[maybe_unused]]f32            max_step_height,
+  [[maybe_unused]]EntityTypeMask colliders,
+  [[maybe_unused]]EntityTypeMask report_only,
+  [[maybe_unused]]f32            bounce,
+  PhysLevel::CollisionListener   listener
 ) const
 {
   constexpr u32 MAX_ITERATIONS = 4;
 
-  vec3 velocity = velocity_og;
+  vec3 velocity = velocity_og * delta_time;
 
   // First check collisions and adjust the velocity
   u32 iterations_left = MAX_ITERATIONS; 
@@ -403,6 +560,11 @@ void PhysLevel::move_and_collide
       const auto projected  = hit.normal.xz() * dot(remaining, hit.normal.xz());
       const auto projected3 = vec3{projected.x, 0.0f, projected.y};
       velocity -= projected3;
+
+      if (listener && listener(hit) == CollisionReaction::stop_simulation)
+      {
+        break;
+      }
     }
     else
     {
@@ -433,21 +595,39 @@ void PhysLevel::move_and_collide
     position    = (transformation * vec4{position,    1.0f}).xyz();
     velocity    = (transformation * vec4{velocity,    0.0f}).xyz();
     forward     = (transformation * vec4{forward,     0.0f}).xyz();
-    position += velocity;
   }
-  else
-  {
-    position += velocity;
-  }
+
+  position += velocity;
 
   // Change the height as well so we can move up the stairs
   auto sector_id = map.get_sector_from_point(position.xz());
   if (sector_id != INVALID_SECTOR_ID)
   {
     const f32 sector_floor_y = map.sectors[sector_id].floor_height;
+    const f32 sector_ceil_y  = map.sectors[sector_id].ceil_height;
+
+    RayHit hit = RayHit{};
+
     if (position.y < sector_floor_y)
     {
       position.y = sector_floor_y;
+
+      hit                      = RayHit::build(0, UP_DIR);
+      hit.type                 = RayHit::sector_floor;
+      hit.sector_hit.sector_id = sector_id;
+    }
+    else if (position.y + height > sector_ceil_y)
+    {
+      position.y = sector_ceil_y - height;
+
+      hit                      = RayHit::build(0, -UP_DIR);
+      hit.type                 = RayHit::sector_ceil;
+      hit.sector_hit.sector_id = sector_id;
+    }
+
+    if (hit && listener)
+    {
+      listener(hit);
     }
   }
 }

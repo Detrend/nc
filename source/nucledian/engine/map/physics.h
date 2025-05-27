@@ -8,6 +8,7 @@
 #include <engine/entity/entity_types.h>
 
 #include <vector>
+#include <functional>
 
 namespace nc
 {
@@ -38,23 +39,19 @@ struct RayHit
 
   struct SectorHit
   {
-    enum SectorHitType : u8
-    {
-      wall,
-      floor,
-      ceil
-    };
-
-    SectorID      sector_id;       // always valid
-    WallID        wall_id;         // only valid if type == wall
-    u8            wall_segment_id; // only valid if type == wall
-    SectorHitType type;
+    SectorID sector_id;       // always valid
+    WallID   wall_id;         // only valid if type == wall
+    u8       wall_segment_id; // only valid if type == wall
   };
 
   enum HitType : u8
   {
-    sector,
-    entity,
+    sector = 1,
+    entity = 1 << 5,
+
+    sector_wall  = sector | 1 << 2,
+    sector_floor = sector | 1 << 3,
+    sector_ceil  = sector | 1 << 4,
   };
 
   union
@@ -65,7 +62,7 @@ struct RayHit
 
   f32     coeff = FLT_MAX; // coefficient to recalculate hit pos from
   vec3    normal;          // do .xz() for 2D raycast
-  HitType type  = HitType::sector;
+  HitType type  = HitType::sector_wall;
 };
 
 
@@ -76,6 +73,9 @@ struct PhysLevel
   const EntityRegistry& entities;
   const MapSectors&     map;
   const SectorMapping&  mapping;
+
+  static constexpr EntityTypeMask COLLIDE_EVERYTHING = static_cast<EntityTypeMask>(-1);
+  static constexpr EntityTypeMask COLLIDE_NOTHING    = EntityTypeMask{0};
 
   struct PortalSector
   {
@@ -114,18 +114,28 @@ struct PhysLevel
     Portals*       out_portals = nullptr           // list of portals the ray went through
   ) const;
 
+  enum CollisionReaction : u8
+  {
+    continue_simulation, // continues the simulation of movement
+    stop_simulation,     // stops simulating and exits the function
+  };
+  using CollisionListener = std::function<CollisionReaction(const RayHit& hit)>;
   // Moves the "entity" with the given position, velocity and direction and checks
   // for collisions in the way and alters the values. If there is a nc portal in
   // the way then traverses it.
   void move_and_collide
   (
-    vec3&          position, // the original position of the entity, will get changed
-    vec3&          velocity, // the velocity, does not change
-    vec3&          forward,  // forward direction, changes after nc portal traversal
-    f32            radius,   // radius of the entity
-    f32            height,   // height of the entity
-    f32            max_step, // max step height the entity can do
-    EntityTypeMask colliders // types of entities to collide with
+    vec3&             position,          // the original position of the entity, will get changed
+    vec3&             velocity,          // the velocity
+    vec3&             forward,           // forward direction, changes after nc portal traversal
+    f32               delta_time,        // frame time
+    f32               radius,            // radius of the entity
+    f32               height,            // height of the entity
+    f32               max_step,          // max step height the entity can do
+    EntityTypeMask    colliders,         // types of entities to collide with
+    EntityTypeMask    report_only,       // do not collide with these, but only report collisions
+    f32               bounce   = 0.0f,   // 
+    CollisionListener listener = nullptr // reaction to collisions
   ) const;
 };
 

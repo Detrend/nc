@@ -21,7 +21,7 @@ namespace nc
 {
   //==========================================================================
   Player::Player(vec3 position)
-    : Base(position, 0.25f, 1.5f, true)
+    : Base(position, 0.25f, viewHeight, true)
   {
     currentHealth = maxHealth;
     camera.update_transform(position, angleYaw, anglePitch, viewHeight);
@@ -141,10 +141,8 @@ namespace nc
       velocity.y = 0;
     }
 
-    vec3 velocity_per_frame = velocity * delta_seconds;
     vec3 position = this->get_position();
-    lvl.move_and_collide(position, velocity_per_frame, m_forward, 0.25f, 0.25f, 0.25f, 0);
-    velocity = velocity_per_frame / std::max(delta_seconds, 0.000001f);
+    lvl.move_and_collide(position, velocity, m_forward, delta_seconds, 0.25f, 0.25f, 0.25f, 0, 0);
     this->set_position(position);
 
     // recompute the angleYaw after moving through a portal

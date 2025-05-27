@@ -45,7 +45,7 @@ private:
 
   //vec3 position;
   vec3 velocity; // forward/back - left/right velocity
-  f32 viewHeight = 0.5f;
+  static inline f32 viewHeight = 0.5f;
 
   f32 MAX_SPEED = 5.0f;
   f32 ACCELERATION = 25.0f;

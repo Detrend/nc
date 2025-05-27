@@ -678,7 +678,7 @@ namespace nc::map_building
 {
 
 //==============================================================================
-static void build_sector_grid(MapSectors& map)
+static void build_sector_grid_and_bboxes(MapSectors& map)
 {
   vec2 grid_min = vec2{ FLT_MAX};
   vec2 grid_max = vec2{-FLT_MAX};
@@ -689,7 +689,7 @@ static void build_sector_grid(MapSectors& map)
     grid_max = max(grid_max, wall.pos);
   }
 
-  vec2 size  = grid_max - grid_min;
+  vec2 size = grid_max - grid_min;
 
   u64 sector_count      = map.sectors.size();
   f32 height_to_width   = size.y / size.x;
@@ -709,6 +709,11 @@ static void build_sector_grid(MapSectors& map)
       sector_aabb.insert_point(map.walls[id].pos);
     }
 
+    aabb3 bbox3{};
+    bbox3.min = vec3{sector_aabb.min.x, sector.floor_height, sector_aabb.min.y};
+    bbox3.max = vec3{sector_aabb.max.x, sector.floor_height, sector_aabb.max.y};
+
+    map.sector_bboxes.push_back(bbox3);
     map.sector_grid.insert(sector_aabb, sid);
   }
 }
@@ -1124,7 +1129,7 @@ int build_map(
   nc_assert(output.sectors.size() == sectors.size());
 
   // and finally, build the grid
-  build_sector_grid(output);
+  build_sector_grid_and_bboxes(output);
 
   compute_portal_render_data(output);
 

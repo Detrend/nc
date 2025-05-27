@@ -1056,6 +1056,38 @@ bool ray_exp_wall(
   return out_coeff != FLT_MAX;
 }
 
+//==============================================================================
+bool ray_exp_cylinder
+(
+  [[maybe_unused]] vec2  ray_start,
+  [[maybe_unused]] vec2  ray_end,
+  [[maybe_unused]] vec2  center,
+  [[maybe_unused]] f32   radius,
+  [[maybe_unused]] f32   expansion,
+  [[maybe_unused]] vec2& out_normal,
+  [[maybe_unused]] f32&  out_coeff
+)
+{
+  return false;
+}
+
+}
+
+namespace nc::dist
+{
+
+//==============================================================================
+template<typename TVec>
+f32 point_aabb(TVec pt, const aabb<f32, TVec::length()>& bbox)
+{
+  nc_assert(bbox.is_valid());
+  TVec clamped_pt = clamp(pt, bbox.min, bbox.max);
+  return length(clamped_pt - pt);
+}
+
+template f32 point_aabb<vec3>(vec3, const aabb3&);
+template f32 point_aabb<vec2>(vec2, const aabb2&);
+
 }
 
 #ifdef NC_TESTS

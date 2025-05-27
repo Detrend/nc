@@ -184,14 +184,37 @@ namespace nc::collide
 // vector of the intersection and a point of intersection are returned.
 // Point of intersection can be calculated as:
 // vec2 intersect_pt = start_a + (end_a - start_a) * out_coeff;
-bool ray_exp_wall(
+bool ray_exp_wall
+(
   vec2  ray_start,
   vec2  ray_end,
   vec2  wall_start,
   vec2  wall_end,
   f32   wall_exp,
   vec2& out_normal,
-  f32&  out_coeff);
+  f32&  out_coeff
+);
 
+bool ray_exp_cylinder
+(
+  vec2  ray_start,
+  vec2  ray_end,
+  vec2  center,
+  f32   radius,
+  f32   expansion,
+  vec2& out_normal,
+  f32&  out_coeff
+);
+
+}
+
+namespace nc::dist
+{
+
+// Calculates distance between bbox and a point.
+// Returns 0 if the point is inside the bbox
+template<typename TVec>
+f32 point_aabb(TVec pt, const aabb<f32, TVec::length()>& bbox);
+  
 }
 

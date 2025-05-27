@@ -92,6 +92,8 @@ private:
 
   void pre_terminate();
 
+  void on_cleanup();
+
 private:
   EntityID       player_id = INVALID_ENTITY_ID;
   MapPtr         map;

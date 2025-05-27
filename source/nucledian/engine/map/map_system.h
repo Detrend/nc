@@ -155,6 +155,7 @@ struct MapSectors
   column<SectorData>       sectors;
   column<WallData>         walls;
   column<PortalRenderData> portals_render_data;
+  column<aabb3>            sector_bboxes;
   StatGridAABB2<SectorID>  sector_grid;
 
   // TODO: replace these later once we can do sectors with varying height

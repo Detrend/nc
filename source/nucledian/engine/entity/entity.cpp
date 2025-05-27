@@ -2,6 +2,7 @@
 #include <common.h>
 
 #include <engine/entity/entity.h>
+#include <engine/entity/entity_type_definitions.h>
 #include <engine/entity/sector_mapping.h>
 #include <engine/core/engine.h>
 #include <engine/map/map_system.h>
@@ -10,6 +11,8 @@
 #include <engine/player/thing_system.h>
 
 #include <engine/player/player.h>
+#include <engine/enemies/enemy.h>
+#include <game/projectile.h>
 
 namespace nc
 {
@@ -103,6 +106,36 @@ void Entity::set_pos_rad_height(vec3 p, f32 r, f32 h)
   }
 }
 
+//==============================================================================
+Appearance* Entity::get_appearance()
+{
+  switch (this->get_type())
+  {
+    case EntityTypes::enemy:      return &this->as<Enemy>()->get_appearance();
+    case EntityTypes::projectile: return &this->as<Projectile>()->get_appearance();
+    default:                      return nullptr;
+  }
+}
+
+//==============================================================================
+const Appearance* Entity::get_appearance() const
+{
+  return const_cast<Entity*>(this)->get_appearance();
+}
+
+//==============================================================================
+Physics* Entity::get_physics()
+{
+  return nullptr;
+}
+
+//==============================================================================
+const Physics* Entity::get_physics() const
+{
+  return const_cast<Entity*>(this)->get_physics();
+}
+
+//==============================================================================
 Entity::Entity(vec3 position, f32 width, f32 height, bool collision)
   : Entity(position, width, height)
 {
@@ -110,7 +143,6 @@ Entity::Entity(vec3 position, f32 width, f32 height, bool collision)
 }
 
 // ===============================================================================
-
 bool Entity::did_collide(const Entity& collider)
 {
   // EACH OBJECT HAS AN AABB COLLISION HULL

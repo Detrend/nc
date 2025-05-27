@@ -19,9 +19,12 @@
 #include <engine/input/input_system.h>
 #include <engine/map/map_system.h>
 #include <engine/map/physics.h>
+
 #include <engine/entity/entity_system.h>
+#include <engine/entity/entity_type_definitions.h>
 #include <engine/player/thing_system.h>
 #include <engine/player/level_types.h>
+#include <game/projectile.h>
 
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
@@ -1206,16 +1209,17 @@ void GraphicsSystem::render_entities(const CameraData& camera_data) const
   std::unordered_map<u64, ModelGroup> model_groups;
 
   auto& es = ThingSystem::get().get_entities();
-  es.for_each<Enemy>([&](Enemy& enemy)
+  es.for_each(EntityTypeFlags::enemy | EntityTypeFlags::projectile, [&](Entity& entity)
   {
-    const Appearance& appearance = enemy.get_appearance();
+    const Appearance* appearance = entity.get_appearance();
+    nc_assert(appearance);
 
     // TODO: Use better unique identifier.
-    u64 id = (static_cast<u64>(appearance.model.material.m_shader_program) << 32)
-      + static_cast<u64>(appearance.model.mesh.get_vao());
+    u64 id = (static_cast<u64>(appearance->model.material.m_shader_program) << 32)
+      + static_cast<u64>(appearance->model.mesh.get_vao());
 
-    model_groups[id].model = appearance.model;
-    model_groups[id].entities.push_back(&enemy);
+    model_groups[id].model = appearance->model;
+    model_groups[id].entities.push_back(&entity);
   });
 
   // TODO: sort groups by: 1. program, 2. texture, 3. VAO
@@ -1236,9 +1240,14 @@ void GraphicsSystem::render_entities(const CameraData& camera_data) const
     // TODO: indirect rendering
     for (auto* entity : entities)
     {
-      auto* enemy = static_cast<Enemy*>(entity);
-      auto        transform  = enemy->calc_transform();
-      const auto& appearance = enemy->get_appearance();
+      const Appearance& appearance = *entity->get_appearance();
+
+      // TODO: this is a shitty way to do this, but I do not want to
+      //       Transform to be a component
+      const auto transform
+        = entity->get_type() == EntityTypes::enemy
+        ? static_cast<Enemy*>(entity)->calc_transform()
+        : static_cast<Projectile*>(entity)->calc_transform();
 
       const mat4 transform_matrix = transform.get_matrix() * appearance.transform.get_matrix();
 
