@@ -86,6 +86,16 @@ constexpr f32 quad_vertices[] =
 };
 
 //==============================================================================
+constexpr f32 texturable_quad_vertices[] =
+{
+  // Positions       // UVs
+  -0.5f,  0.5f, 0.0f, 1.0f, 0.0f, // top-left
+   0.5f,  0.5f, 0.0f, 0.0f, 0.0f, // top-right
+   0.5f, -0.5f, 0.0f, 0.0f, 1.0f, // bottom-right
+  -0.5f, -0.5f, 0.0f, 1.0f, 1.0f, // bottom-left
+};
+
+//==============================================================================
 GLuint MeshHandle::get_vao() const
 {
   return m_vao;
@@ -149,6 +159,14 @@ void MeshManager::init()
   m_cube_mesh = this->create(ResLifetime::Game, cube_vertices, sizeof(cube_vertices) / sizeof(f32));
   m_line_mesh = this->create(ResLifetime::Game, line_vertices, sizeof(line_vertices) / sizeof(f32), GL_LINES);
   m_quad_mesh = this->create(ResLifetime::Game, quad_vertices, sizeof(quad_vertices) / sizeof(f32));
+
+  m_texturable_quad_mesh = this->create_texturable
+  (
+    ResLifetime::Game,
+    texturable_quad_vertices,
+    sizeof(texturable_quad_vertices) / sizeof(f32),
+    GL_TRIANGLE_FAN
+  );
 }
 
 //==============================================================================
@@ -174,6 +192,40 @@ MeshHandle MeshManager::create(ResLifetime lifetime, const f32* data, u32 count,
   glEnableVertexAttribArray(0);
   // normal attribute
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(f32), reinterpret_cast<void*>(3 * sizeof(f32)));
+  glEnableVertexAttribArray(1);
+
+  glBindVertexArray(0);
+
+  // store created mesh
+  auto& storage = this->get_storage(lifetime);
+  storage.push_back(mesh);
+
+  return mesh;
+}
+
+//==============================================================================
+MeshHandle MeshManager::create_texturable(ResLifetime lifetime, const f32* data, u32 count, GLenum draw_mode)
+{
+  MeshHandle mesh;
+  mesh.m_lifetime = lifetime;
+  mesh.m_generation = MeshManager::m_generation;
+  mesh.m_draw_mode = draw_mode;
+  mesh.m_vertex_count = count / 5; // 3 floats per position + 2 floats per UVs
+
+  // generate buffers
+  glGenVertexArrays(1, &mesh.m_vao);
+  glGenBuffers(1, &mesh.m_vbo);
+
+  // setup vao
+  glBindVertexArray(mesh.m_vao);
+  // vertex buffer
+  glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vbo);
+  glBufferData(GL_ARRAY_BUFFER, count * sizeof(f32), data, GL_STATIC_DRAW);
+  //position attribute
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), reinterpret_cast<void*>(0));
+  glEnableVertexAttribArray(0);
+  // UVs attribute
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), reinterpret_cast<void*>(3 * sizeof(f32)));
   glEnableVertexAttribArray(1);
 
   glBindVertexArray(0);
@@ -233,6 +285,12 @@ MeshHandle MeshManager::get_line() const
 MeshHandle MeshManager::get_quad() const
 {
   return m_quad_mesh;
+}
+
+//==============================================================================
+MeshHandle MeshManager::get_texturable_quad() const
+{
+  return m_texturable_quad_mesh;
 }
 
 //==============================================================================

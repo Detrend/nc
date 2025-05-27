@@ -25,13 +25,10 @@ Projectile::Projectile(vec3 pos, vec3 dir, f32 size, bool player_projectile)
 , m_player_authored(player_projectile)
 , m_velocity(dir)
 {
-  auto& gfx = get_engine().get_module<GraphicsSystem>();
-
   m_appear = Appearance
   {
-    .color     = colors::BLUE,
-    .model     = gfx.get_cube_model(),
-    .transform = Transform{VEC3_ZERO, vec3{size}}
+    .texture = TextureManager::instance().get_test_plasma_texture(),
+    .scale = 20.0f,
   };
 }
 

@@ -77,8 +77,9 @@ private:
 
   // Material for rendering solid geometry.
   MaterialHandle m_solid_material;
-  Model          m_cube_model;
+  MaterialHandle m_billboard_material;
 
+  Model          m_cube_model;
   Model          m_gun_model;
   Transform      m_gun_transform;
 

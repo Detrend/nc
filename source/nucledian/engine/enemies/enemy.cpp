@@ -7,7 +7,7 @@
 #include <engine/map/physics.h>
 
 #include <math/lingebra.h>
-#include <engine/graphics/graphics_system.h>
+#include <engine/graphics/resources/texture.h>
 
 #include <engine/entity/entity_type_definitions.h>
 
@@ -35,13 +35,10 @@ namespace nc
 
   void Enemy::init()
   {
-    auto& gfx = get_engine().get_module<GraphicsSystem>();
-
     appear = Appearance
     {
-      .color     = colors::RED,
-      .model     = gfx.get_cube_model(),
-      .transform = Transform{VEC3_ZERO, vec3{0.3f, 0.7f, 0.3f}}
+      .texture = TextureManager::instance().get_test_enemy_texture(),
+      .scale = 1.0f,
     };
   }
 
