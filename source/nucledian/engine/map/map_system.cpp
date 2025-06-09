@@ -648,6 +648,10 @@ std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos) const
     {
       break;
     }
+
+    /*map_helpers::for_each_portal(*this, curID, [&](WallID wall1_ID) {
+      
+      });*/
   }
 
   PrevPoint prev_point;

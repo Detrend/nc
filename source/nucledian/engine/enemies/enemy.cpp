@@ -172,6 +172,7 @@ namespace nc
     case EnemyState::chase:
 
       target_dir = path[0] - get_position();
+      target_dir = normalize_or_zero(target_dir);
 
       timeRemaining -= delta_seconds;
 
