@@ -85,6 +85,12 @@ namespace nc
     std::vector<SectorID> fringe;
     std::map<SectorID, PrevPoint> visited;
 
+    visited.insert({ startID, {
+      INVALID_SECTOR_ID,
+      INVALID_WALL_ID,
+      vec3(0, 0, 0)
+      } });
+
     while (fringe.size())
     {
       // get sector from queue
@@ -127,12 +133,8 @@ namespace nc
     }
 
     vec3 target_pos = get_engine().get_module<ThingSystem>().get_player()->get_position();
-
-    const auto& map = get_engine().get_map();
-    std::vector<vec3> path = get_path(map, get_position(), target_pos);
-
     
-    vec3 target_dir = path[0] - this->get_position();
+    vec3 target_dir = target_pos - this->get_position();
     target_dir.y = 0;
     target_dir = normalize_or_zero(target_dir);
 
@@ -165,6 +167,12 @@ namespace nc
 
       break;
     case EnemyState::chase:
+
+      const auto& map = get_engine().get_map();
+      std::vector<vec3> path = get_path(map, get_position(), target_pos);
+
+      target_dir = path[0] - get_position();
+
       timeRemaining -= delta_seconds;
 
       velocity = target_dir * 1.0f * delta_seconds;
