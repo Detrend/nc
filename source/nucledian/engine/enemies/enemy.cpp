@@ -66,7 +66,7 @@ namespace nc
 
   //================================================================================
 
-  std::vector<vec3> Enemy::get_path(MapSectors& map, vec3 start_pos, vec3 end_pos)
+  std::vector<vec3> Enemy::get_path(const MapSectors& map, vec3 start_pos, vec3 end_pos)
   {
     std::vector<vec3> path;
     path.push_back(end_pos);
@@ -127,7 +127,12 @@ namespace nc
     }
 
     vec3 target_pos = get_engine().get_module<ThingSystem>().get_player()->get_position();
-    vec3 target_dir = target_pos - this->get_position();
+
+    const auto& map = get_engine().get_map();
+    std::vector<vec3> path = get_path(map, get_position(), target_pos);
+
+    
+    vec3 target_dir = path[0] - this->get_position();
     target_dir.y = 0;
     target_dir = normalize_or_zero(target_dir);
 
