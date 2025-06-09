@@ -610,6 +610,64 @@ bool MapSectors::is_point_in_sector(vec2 pt, SectorID sector_id) const
   return false;
 }
 
+//=============================================================================
+
+std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos) const
+{
+  std::vector<vec3> path;
+  path.push_back(end_pos);
+
+  struct PrevPoint
+  {
+    SectorID prev_sector; // previous sector
+    WallID wall_index; // portal we used to get to this sector
+    vec3 point; // way point
+  };
+
+  SectorID startID = get_sector_from_point(start_pos.xz);
+  SectorID endID = get_sector_from_point(end_pos.xz);
+  SectorID curID = startID;
+
+  std::vector<SectorID> fringe;
+  std::map<SectorID, PrevPoint> visited;
+
+  visited.insert({ startID, {
+    INVALID_SECTOR_ID,
+    INVALID_WALL_ID,
+    vec3(0, 0, 0)
+    } });
+
+  while (fringe.size())
+  {
+    // get sector from queue
+    curID = fringe.front();
+    fringe.erase(fringe.begin());
+
+    // found path, end search
+    if (curID == endID)
+    {
+      break;
+    }
+  }
+
+  PrevPoint prev_point;
+
+  // reconstruct the path in reverse order
+  while (curID != startID)
+  {
+    prev_point = visited[curID];
+
+    path.push_back(prev_point.point);
+
+    curID = prev_point.prev_sector;
+  }
+
+  // reverse the path
+  std::reverse(path.begin(), path.end());
+
+  return path;
+}
+
 //==============================================================================
 PortType WallData::get_portal_type() const
 {

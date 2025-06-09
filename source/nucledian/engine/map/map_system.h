@@ -194,6 +194,8 @@ struct MapSectors
     SectorID           sector_id,
     std::vector<vec3>& vertices_out) const;
 
+  std::vector<vec3> get_path(vec3 start_pos, vec3 end_pos) const;
+
   bool is_point_in_sector(vec2 pt, SectorID sector) const;
 
   bool is_valid_sector_id(SectorID id) const;

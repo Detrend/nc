@@ -135,7 +135,7 @@ namespace nc
     vec3 target_pos = get_engine().get_module<ThingSystem>().get_player()->get_position();
 
     const auto& map = get_engine().get_map();
-    std::vector<vec3> path = get_path(map, get_position(), target_pos);
+    std::vector<vec3> path = map.get_path(get_position(), target_pos);
     
     vec3 target_dir = target_pos - this->get_position();
     target_dir.y = 0;
