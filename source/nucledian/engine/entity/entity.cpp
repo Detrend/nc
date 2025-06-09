@@ -10,6 +10,8 @@
 #include <engine/player/thing_system.h>
 
 #include <engine/player/player.h>
+#include <set>
+#include <map>
 
 namespace nc
 {

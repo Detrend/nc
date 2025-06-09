@@ -1,6 +1,7 @@
 // Project Nucledian Source File
 #pragma once
 
+#include <engine/map/map_system.h>
 #include <engine/entity/entity_types.h>
 
 #include <types.h>       // f32

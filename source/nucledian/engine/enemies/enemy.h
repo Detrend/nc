@@ -26,6 +26,10 @@ namespace nc
     Enemy(vec3 position, vec3 facing);
     void init();
     void update();
+
+    // Returns points that create a path
+    virtual std::vector<vec3> get_path(MapSectors& map, vec3 start_pos, vec3 endPos);
+
     void calculate_wish_velocity(f32 delta_seconds);
     void apply_velocity();
     void damage(int damage);

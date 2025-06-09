@@ -11,6 +11,8 @@
 
 #include <engine/entity/entity_type_definitions.h>
 
+#include <map>
+
 namespace nc
 {
 
@@ -60,6 +62,58 @@ namespace nc
     this->set_position(this->get_position() + target_dir * 1.0f * 0.001f);
 
     //g_transform_components[m_entity_index].position() = this->get_position();
+  }
+
+  //================================================================================
+
+  std::vector<vec3> Enemy::get_path(MapSectors& map, vec3 start_pos, vec3 end_pos)
+  {
+    std::vector<vec3> path;
+    path.push_back(end_pos);
+
+    struct PrevPoint
+    {
+      SectorID prev_sector; // previous sector
+      WallID wall_index; // portal we used to get to this sector
+      vec3 point; // way point
+    };
+
+    SectorID startID = map.get_sector_from_point(start_pos.xz);
+    SectorID endID = map.get_sector_from_point(end_pos.xz);
+    SectorID curID = startID;
+
+    std::vector<SectorID> fringe;
+    std::map<SectorID, PrevPoint> visited;
+
+    while (fringe.size())
+    {
+      // get sector from queue
+      curID = fringe.front();
+      fringe.erase(fringe.begin());
+
+      // found path, end search
+      if (curID == endID)
+      {
+        break;
+      }
+    }
+
+    PrevPoint prev_point;
+
+    // reconstruct the path in reverse order
+    while (curID != startID)
+    {
+      prev_point = visited[curID];
+
+      path.push_back(prev_point.point);
+
+      curID = prev_point.prev_sector;
+    }
+
+    // reverse the path
+    std::reverse(path.begin(), path.end());
+
+    return path;
   }
 
   //==============================================================================
