@@ -670,7 +670,9 @@ std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos) const
 
           if (is_nuclidean)
           {
-
+            visited.insert({ next_sector,
+              {curID, wall1_idx, vec3(wall_center.x, 0, wall_center.y)} });
+            fringe.push_back(next_sector);
           }
           else
           {
