@@ -637,6 +637,8 @@ std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos) const
     vec3(0, 0, 0)
     } });
 
+  fringe.push_back(startID);
+
   while (fringe.size())
   {
     // get sector from queue
@@ -649,9 +651,35 @@ std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos) const
       break;
     }
 
-    /*map_helpers::for_each_portal(*this, curID, [&](WallID wall1_ID) {
+    map_helpers::for_each_portal(*this, curID, [&](WallID wall1_idx) 
+    {
+        const auto next_sector  = walls[wall1_idx].portal_sector_id;
+        nc_assert(next_sector != INVALID_SECTOR_ID);
+
+        if (!visited.contains(next_sector))
+        {
+          const auto wall2_idx = map_helpers::next_wall(*this, curID, wall1_idx);
       
-      });*/
+          const bool is_nuclidean = walls[wall1_idx].get_portal_type() == PortalType::non_euclidean;       
+
+          const auto p1 = walls[wall1_idx].pos;
+          const auto p2 = walls[wall2_idx].pos;
+
+          const auto p1_to_p2  = p2-p1;
+          const auto wall_center = p1 + p1_to_p2 / 2.0f;
+
+          if (is_nuclidean)
+          {
+
+          }
+          else
+          {
+            visited.insert({ next_sector, 
+              {curID, wall1_idx, vec3(wall_center.x, 0, wall_center.y)} });
+            fringe.push_back(next_sector);
+          }
+        }        
+    });
   }
 
   PrevPoint prev_point;
