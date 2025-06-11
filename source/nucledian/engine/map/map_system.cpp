@@ -668,6 +668,7 @@ std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos) const
           const auto p1_to_p2  = p2-p1;
           const auto wall_center = p1 + p1_to_p2 / 2.0f; // temporary, it would be better to find closest point
 
+          // TODO: THIS NEEDS TO BE MODIFIED TO "OVERSTEP" THE WALL
           if (is_nuclidean)
           {
             visited.insert({ next_sector,
