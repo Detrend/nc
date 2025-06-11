@@ -666,7 +666,7 @@ std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos) const
           const auto p2 = walls[wall2_idx].pos;
 
           const auto p1_to_p2  = p2-p1;
-          const auto wall_center = p1 + p1_to_p2 / 2.0f;
+          const auto wall_center = p1 + p1_to_p2 / 2.0f; // temporary, it would be better to find closest point
 
           if (is_nuclidean)
           {
