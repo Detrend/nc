@@ -48,7 +48,8 @@ public:
 
   void process_window_event(const SDL_Event& evnt);
 
-  f32  get_delta_time();
+  f32  get_delta_time() const;
+  f32  get_accumulated_time() const;
 
 private:
   bool should_quit()             const;
@@ -71,6 +72,7 @@ private:
   JournalSmart  m_journal;
   EventJournal* m_recorded_journal;
   f32           m_delta_time = 0.0f; // last frame time in seconds
+  f64           m_accumulated_time = 0.0f; // sum of all delta times since the start of the game
   bool          m_should_quit : 1 = false;
   bool          m_journal_installed : 1 = false;
   bool          m_journal_active : 1 = false;

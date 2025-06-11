@@ -62,6 +62,10 @@ private:
   int maxHealth = 100;
   int currentHealth;
 
+  float movement_sound_period = 0.4f;
+  float last_movement_sound_timestamp = 0.0f;
+  
+
   bool alive = true;
 
   DebugCamera camera;

@@ -181,13 +181,13 @@ namespace nc
         (void)delta_seconds;
         Helpers::cleanup_finished_channels(*this);
         
-        static float next_time = 0.0f, timer = 0.0f;
-        constexpr float step = 0.6f;
-        timer += delta_seconds;
-        if (timer > next_time) {
-            next_time = timer + step;
-            play(SoundResources::PlayerFootsteps);
-        }
+        //static float next_time = 0.0f, timer = 0.0f;
+        //constexpr float step = 0.6f;
+        //timer += delta_seconds;
+        //if (timer > next_time) {
+        //    next_time = timer + step;
+        //    play(SoundResources::PlayerFootsteps);
+        //}
     }
 
 

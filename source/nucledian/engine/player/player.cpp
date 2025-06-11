@@ -17,6 +17,9 @@
 #include <engine/entity/entity_type_definitions.h>
 #include <imgui/imgui.h>
 
+#include <engine/sound/sound_system.h>
+#include <engine/sound/sound_resources.h>
+
 namespace nc
 {
   //==========================================================================
@@ -150,6 +153,14 @@ namespace nc
     // recompute the angleYaw after moving through a portal
     const auto forward2 = normalize(with_y(m_forward, 0.0f));
     angleYaw = rem_euclid(std::atan2f(forward2.z, -forward2.x) + HALF_PI, PI * 2);
+
+    if (length(velocity) > (this->MAX_SPEED * 0.3f)) {
+        const f32 current_time = get_engine().get_accumulated_time();
+        if (current_time > (this->last_movement_sound_timestamp + this->movement_sound_period)) {
+            this->last_movement_sound_timestamp = current_time;
+            //get_engine().get_module<SoundSystem>().play_oneshot(SoundResources::PlayerFootsteps);
+        }
+    }
   }
 
   void Player::apply_acceleration(const nc::vec3& movement_direction, [[maybe_unused]] f32 delta_seconds)

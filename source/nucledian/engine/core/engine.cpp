@@ -320,6 +320,7 @@ void Engine::run()
 
     previous_time = current_time;
     m_delta_time  = frame_time;
+    m_accumulated_time += frame_time;
 
     // notify frame start
     this->send_event(ModuleEvent
@@ -494,9 +495,15 @@ void Engine::process_window_event(const SDL_Event& event)
 }
 
 //==============================================================================
-f32 Engine::get_delta_time()
+f32 Engine::get_delta_time() const
 {
   return m_delta_time;
+}
+
+//==============================================================================
+f32 Engine::get_accumulated_time() const
+{
+  return (f32)m_accumulated_time;
 }
 
 //==============================================================================
