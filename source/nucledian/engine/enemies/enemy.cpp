@@ -26,7 +26,7 @@ namespace nc
   //==============================================================================
 
   Enemy::Enemy(vec3 position, vec3 facing)
-  : Base(position, 0.15f, 0.35f, true)
+    : Base(position, 0.15f, 0.35f, true)
   {
     init();
 
@@ -46,8 +46,8 @@ namespace nc
 
     appear = Appearance
     {
-      .color     = colors::RED,
-      .model     = gfx.get_cube_model(),
+      .color = colors::RED,
+      .model = gfx.get_cube_model(),
       .transform = Transform{VEC3_ZERO, vec3{0.3f, 0.7f, 0.3f}}
     };
   }
@@ -134,9 +134,12 @@ namespace nc
 
     vec3 target_pos = get_engine().get_module<ThingSystem>().get_player()->get_position();
 
+    vec3 pos_2D = get_position();
+    pos_2D.y = 0;
+
     const auto& map = get_engine().get_map();
     std::vector<vec3> path = map.get_path(get_position(), target_pos);
-    
+
     vec3 target_dir = target_pos - this->get_position();
     target_dir.y = 0;
     target_dir = normalize_or_zero(target_dir);
@@ -171,13 +174,16 @@ namespace nc
       break;
     case EnemyState::chase:
 
-      target_dir = path[0] - get_position();
+      target_dir = path[0] - pos_2D;
       target_dir = normalize_or_zero(target_dir);
 
       timeRemaining -= delta_seconds;
 
       velocity = target_dir * 1.0f * delta_seconds;
       velocity.y -= GRAVITY * delta_seconds;
+
+
+
       break;
     case EnemyState::attack:
       break;
@@ -270,7 +276,7 @@ namespace nc
   //==============================================================================
   Transform Enemy::calc_transform() const
   {
-    return Transform{this->get_position()};
+    return Transform{ this->get_position() };
   }
 
 }

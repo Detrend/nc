@@ -634,7 +634,7 @@ std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos) const
   visited.insert({ startID, {
     INVALID_SECTOR_ID,
     INVALID_WALL_ID,
-    vec3(0, 0, 0)
+    start_pos
     } });
 
   fringe.push_back(startID);
@@ -667,6 +667,10 @@ std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos) const
 
           const auto p1_to_p2  = p2-p1;
           const auto wall_center = p1 + p1_to_p2 / 2.0f; // temporary, it would be better to find closest point
+
+          /*vec3 direction = normalize(vec3(wall_center.x, 0, wall_center.y) - visited[curID].point);
+
+          vec3 destination = vec3(wall_center.x, 0, wall_center.y) + direction * 0.1f;*/
 
           // TODO: THIS NEEDS TO BE MODIFIED TO "OVERSTEP" THE WALL
           if (is_nuclidean)
