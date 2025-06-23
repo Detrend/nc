@@ -612,7 +612,7 @@ bool MapSectors::is_point_in_sector(vec2 pt, SectorID sector_id) const
 
 //=============================================================================
 
-std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos, [[maybe_unused]] f32 width, [[maybe_unused]] f32 height) const
+std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos, [[maybe_unused]] f32 radius, [[maybe_unused]] f32 height) const
 {
   std::vector<vec3> path;
   path.push_back(end_pos);
@@ -657,36 +657,57 @@ std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos, [[maybe_unu
         nc_assert(next_sector != INVALID_SECTOR_ID);
 
         if (!visited.contains(next_sector) && 
-          abs(sectors[curID].floor_height - sectors[next_sector].floor_height) < 0.2f) // check for floor height dif
+          abs(sectors[curID].floor_height - sectors[next_sector].floor_height) <= 0.2f) // check for floor height dif
         {
 
           const auto wall2_idx = map_helpers::next_wall(*this, curID, wall1_idx);
       
           const bool is_nuclidean = walls[wall1_idx].get_portal_type() == PortalType::non_euclidean;       
 
-          const auto p1 = walls[wall1_idx].pos;
-          const auto p2 = walls[wall2_idx].pos;
+          auto p1 = walls[wall1_idx].pos;
+          auto p2 = walls[wall2_idx].pos;
 
-          const auto p1_to_p2  = p2-p1;
-          const auto wall_center = p1 + p1_to_p2 / 2.0f; // temporary, it would be better to find closest point
+          auto p1_to_p2  = p2-p1;
 
-          /*vec3 direction = normalize(vec3(wall_center.x, 0, wall_center.y) - visited[curID].point);
-
-          vec3 destination = vec3(wall_center.x, 0, wall_center.y) + direction * 0.1f;*/
-
-          // TODO: THIS NEEDS TO BE MODIFIED TO "OVERSTEP" THE WALL
-          if (is_nuclidean)
+          if (abs(p1_to_p2.x) > 2 * radius || abs(p1_to_p2.y) > 2 * radius) // side to side clearance
           {
-            visited.insert({ next_sector,
-              {curID, wall1_idx, vec3(wall_center.x, 0, wall_center.y)} });
-            fringe.push_back(next_sector);
-          }
-          else
-          {
-            visited.insert({ next_sector, 
-              {curID, wall1_idx, vec3(wall_center.x, 0, wall_center.y)} });
-            fringe.push_back(next_sector);
-          }
+            vec2 wall_dir;
+            wall_dir = normalize_or_zero(p1_to_p2);
+
+            if (abs(p1_to_p2.x) > abs(p1_to_p2.y))
+            {           
+              wall_dir = wall_dir / abs(wall_dir.x);
+            }
+            else
+            {
+              wall_dir = wall_dir / abs(wall_dir.y);
+            }
+          
+            p1 += wall_dir * radius;
+            p2 -= wall_dir * radius;
+
+            p1_to_p2 = p2 - p1;
+
+            const auto wall_center = p1 + p1_to_p2 / 2.0f; // temporary, it would be better to find closest point
+
+            /*vec3 direction = normalize(vec3(wall_center.x, 0, wall_center.y) - visited[curID].point);
+
+            vec3 destination = vec3(wall_center.x, 0, wall_center.y) + direction * 0.1f;*/
+
+            // TODO: THIS NEEDS TO BE MODIFIED TO "OVERSTEP" THE WALL
+            if (is_nuclidean)
+            {
+              visited.insert({ next_sector,
+                {curID, wall1_idx, vec3(wall_center.x, 0, wall_center.y)} });
+              fringe.push_back(next_sector);
+            }
+            else
+            {
+              visited.insert({ next_sector, 
+                {curID, wall1_idx, vec3(wall_center.x, 0, wall_center.y)} });
+              fringe.push_back(next_sector);
+            }
+          }         
         }        
     });
   }
