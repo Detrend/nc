@@ -662,7 +662,7 @@ std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos, [[maybe_unu
 
           const auto wall2_idx = map_helpers::next_wall(*this, curID, wall1_idx);
       
-          const bool is_nuclidean = walls[wall1_idx].get_portal_type() == PortalType::non_euclidean;       
+          // const bool is_nuclidean = walls[wall1_idx].get_portal_type() == PortalType::non_euclidean;       
 
           auto p1 = walls[wall1_idx].pos;
           auto p2 = walls[wall2_idx].pos;
@@ -688,25 +688,29 @@ std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos, [[maybe_unu
 
             p1_to_p2 = p2 - p1;
 
-            const auto wall_center = p1 + p1_to_p2 / 2.0f; // temporary, it would be better to find closest point
+            // get a previous position, but also with portal transformation
 
-            /*vec3 direction = normalize(vec3(wall_center.x, 0, wall_center.y) - visited[curID].point);
+            vec3 prev_post = visited[curID].point;
+            WallID prev_wall = visited[curID].wall_index;
+            SectorID prev_sector = visited[curID].prev_sector;
 
-            vec3 destination = vec3(wall_center.x, 0, wall_center.y) + direction * 0.1f;*/
-
-            // TODO: THIS NEEDS TO BE MODIFIED TO "OVERSTEP" THE WALL
-            if (is_nuclidean)
+            if (prev_wall != INVALID_WALL_ID && walls[prev_wall].get_portal_type() == PortalType::non_euclidean)
             {
-              visited.insert({ next_sector,
-                {curID, wall1_idx, vec3(wall_center.x, 0, wall_center.y)} });
-              fringe.push_back(next_sector);
+              mat4 transformation = calculate_portal_to_portal_projection(prev_sector, prev_wall);
+              prev_post = (transformation * vec4{ prev_post, 1.0f }).xyz();
             }
-            else
-            {
-              visited.insert({ next_sector, 
-                {curID, wall1_idx, vec3(wall_center.x, 0, wall_center.y)} });
-              fringe.push_back(next_sector);
-            }
+
+            // calculate closest point on p1_to_p2 line
+            f32 l2 = length(p1_to_p2);
+            l2 *= l2;
+
+            const float t = max(0.0f, min(1.0f, dot(prev_post.xz - p1, p1_to_p2) / l2));
+            const vec2 projection = p1 + t * (p1_to_p2);
+
+            // insert closest point to queue
+            visited.insert({ next_sector,
+              {curID, wall1_idx, vec3(projection.x, 0, projection.y)} });
+            fringe.push_back(next_sector);
           }         
         }        
     });
