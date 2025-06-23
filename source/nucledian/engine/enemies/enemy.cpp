@@ -138,7 +138,7 @@ namespace nc
     pos_2D.y = 0;
 
     const auto& map = get_engine().get_map();
-    std::vector<vec3> path = map.get_path(get_position(), target_pos);
+    std::vector<vec3> path = map.get_path(get_position(), target_pos, get_radius(), get_height());
 
     vec3 target_dir = target_pos - this->get_position();
     target_dir.y = 0;

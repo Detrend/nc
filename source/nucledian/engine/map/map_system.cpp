@@ -612,7 +612,7 @@ bool MapSectors::is_point_in_sector(vec2 pt, SectorID sector_id) const
 
 //=============================================================================
 
-std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos) const
+std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos, [[maybe_unused]] f32 width, [[maybe_unused]] f32 height) const
 {
   std::vector<vec3> path;
   path.push_back(end_pos);
@@ -656,8 +656,10 @@ std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos) const
         const auto next_sector  = walls[wall1_idx].portal_sector_id;
         nc_assert(next_sector != INVALID_SECTOR_ID);
 
-        if (!visited.contains(next_sector))
+        if (!visited.contains(next_sector) && 
+          abs(sectors[curID].floor_height - sectors[next_sector].floor_height) < 0.2f) // check for floor height dif
         {
+
           const auto wall2_idx = map_helpers::next_wall(*this, curID, wall1_idx);
       
           const bool is_nuclidean = walls[wall1_idx].get_portal_type() == PortalType::non_euclidean;       
