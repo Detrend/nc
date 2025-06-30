@@ -7,23 +7,25 @@
 #include <math/utils.h>
 #include <math/lingebra.h>
 
-#include <engine/graphics/graphics_system.h>
-
 #include <engine/core/engine.h>
 #include <engine/core/engine_module_types.h>
 #include <engine/core/module_event.h>
 
 #include <engine/graphics/gizmo.h>
+#include <engine/graphics/graphics_system.h>
 #include <engine/graphics/resources/res_lifetime.h>
 
-#include <engine/input/input_system.h>
 #include <engine/map/map_system.h>
 #include <engine/map/physics.h>
 
 #include <engine/entity/entity_system.h>
 #include <engine/entity/entity_type_definitions.h>
+#include <engine/entity/sector_mapping.h>
+
+#include <engine/input/input_system.h>
 #include <engine/player/thing_system.h>
 #include <engine/player/level_types.h>
+
 #include <game/projectile.h>
 
 #include <glad/glad.h>
@@ -42,6 +44,7 @@
 #include <set>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <variant>
 #include <format>
@@ -1196,19 +1199,22 @@ void GraphicsSystem::render_entities(const CameraData& camera_data) const
 {
   constexpr f32 billboard_texture_scale = 1.0f / 2048.0f;
 
-  std::unordered_map<u32, std::vector<Entity*>> groups;
-  // TODO: get only visible netities
-  EntityRegistry& entities = ThingSystem::get().get_entities();
-  // TODO: get_appearance should probably be directly on MapObject so we can render everything and not just enemies.
-  entities.for_each(EntityTypeFlags::enemy | EntityTypeFlags::projectile,
-  [&groups](Entity& entity)
+  const auto& mapping = ThingSystem::get().get_sector_mapping().sectors_to_entities.entities;
+  const EntityRegistry& registry = ThingSystem::get().get_entities();
+
+  std::unordered_map<u32, std::unordered_set<const Entity*>> groups;
+  for (const auto& frustum : camera_data.vis_tree.sectors)
   {
-    if (Appearance* appearance = entity.get_appearance())
+    for (const auto& entity_id : mapping[frustum.sector])
     {
-      const u32 id = static_cast<u32>(appearance->texture.get_gl_handle());
-      groups[id].push_back(&entity);
+      const Entity* entity = registry.get_entity(entity_id);
+      if (const Appearance* appearance = entity->get_appearance())
+      {
+        const u32 id = static_cast<u32>(appearance->texture.get_gl_handle());
+        groups[id].insert(entity);
+      }
     }
-  });
+  }
 
   m_billboard_material.use();
   m_billboard_material.set_uniform(shaders::billboard::PROJECTION, camera_data.projection);
@@ -1224,7 +1230,7 @@ void GraphicsSystem::render_entities(const CameraData& camera_data) const
 
   for (const auto& [_, group] : groups)
   {
-    const TextureHandle& texture = group[0]->get_appearance()->texture;
+    const TextureHandle& texture = (*group.begin())->get_appearance()->texture;
     const vec3 pivot_offset(0.0f, texture.get_height() * billboard_texture_scale / 2.0f, 0.0f);
 
     glBindTexture(GL_TEXTURE_2D, texture.get_gl_handle());
