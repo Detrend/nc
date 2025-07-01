@@ -195,7 +195,8 @@ struct MapSectors
     SectorID           sector_id,
     std::vector<vec3>& vertices_out) const;
 
-  bool is_point_in_sector(vec2 pt, SectorID sector) const;
+  bool is_point_in_sector(vec2 pt, SectorID sector)      const;
+  f32  distance_from_sector_2d(vec2 pt, SectorID sector) const;
 
   bool is_valid_sector_id(SectorID id) const;
   bool is_valid_wall_id(WallID id)     const;

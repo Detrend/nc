@@ -586,7 +586,7 @@ bool MapSectors::is_point_in_sector(vec2 pt, SectorID sector_id) const
 {
   nc_assert(this->is_valid_sector_id(sector_id));
 
-  const auto& sector = this->sectors[sector_id];
+  const SectorData& sector = this->sectors[sector_id];
 
   const auto first = sector.int_data.first_wall;
   const auto last  = sector.int_data.last_wall;
@@ -608,6 +608,39 @@ bool MapSectors::is_point_in_sector(vec2 pt, SectorID sector_id) const
   }
 
   return false;
+}
+
+//==============================================================================
+f32 MapSectors::distance_from_sector_2d(vec2 pt, SectorID sector_id) const
+{
+  nc_assert(this->is_valid_sector_id(sector_id));
+
+  const SectorData& sector = this->sectors[sector_id];
+
+  const auto first = sector.int_data.first_wall;
+  const auto last  = sector.int_data.last_wall;
+
+  nc_assert(this->is_valid_wall_id(first));
+
+  const auto p1 = this->walls[first].pos;
+
+  f32 min_dist = FLT_MAX;
+
+  for (WallID wall_index = first+1; wall_index < last-1; ++wall_index)
+  {
+    WallID next_index = wall_index+1;
+    const auto p2 = this->walls[wall_index].pos;
+    const auto p3 = this->walls[next_index].pos;
+
+    if (intersect::point_triangle(pt, p1, p2, p3))
+    {
+      return 0.0f;
+    }
+
+    min_dist = std::min(dist::point_line_2d(pt, p2, p3), min_dist);
+  }
+
+  return min_dist;
 }
 
 //==============================================================================

@@ -15,10 +15,21 @@ namespace nc
 struct MapSectors;
 struct SectorMapping;
 class  EntityRegistry;
+class  Entity;
 }
 
 namespace nc
 {
+
+// Physics component
+struct Physics
+{
+  vec3           velocity;
+  EntityTypeMask collide_with;  // types of entities we collide with
+  EntityTypeMask report_only;   // do not collide, but report the collisions
+  f32            max_step_height = 0.0f;
+  f32            bounce          = 0.0f;
+};
 
 // Return value of the raycast. Can be a sector hit or
 // entity hit.
@@ -127,7 +138,7 @@ struct PhysLevel
   (
     vec3&             position,          // the original position of the entity, will get changed
     vec3&             velocity,          // the velocity
-    vec3&             forward,           // forward direction, changes after nc portal traversal
+    vec3*             opt_forward,       // forward direction, changes after nc portal traversal
     f32               delta_time,        // frame time
     f32               radius,            // radius of the entity
     f32               height,            // height of the entity
@@ -137,6 +148,15 @@ struct PhysLevel
     f32               bounce   = 0.0f,   // 
     CollisionListener listener = nullptr // reaction to collisions
   ) const;
+
+  // Move helper for entities with physics component.
+  void move_and_collide
+  (
+    Entity&           ent,
+    vec3*             forward,
+    f32               frame_time,
+    CollisionListener listener = nullptr
+  );
 };
 
 }

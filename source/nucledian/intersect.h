@@ -195,6 +195,30 @@ bool ray_exp_wall
   f32&  out_coeff
 );
 
+bool ray_exp_wall3d_window
+(
+  vec3  ray_start,
+  vec3  ray_end,
+  vec2  wall_start,
+  vec2  wall_end,
+  f32   window_yfrom,
+  f32   window_yto,
+  f32   wall_exp_radius,
+  vec3& out_normal,
+  f32&  out_coeff
+);
+
+bool ray_exp_wall3d_nowindow
+(
+  vec3  ray_start,
+  vec3  ray_end,
+  vec2  wall_start,
+  vec2  wall_end,
+  f32   wall_exp_radius,
+  vec3& out_normal,
+  f32&  out_coeff
+);
+
 bool ray_exp_cylinder
 (
   vec2  ray_start,
@@ -206,6 +230,14 @@ bool ray_exp_cylinder
   f32&  out_coeff
 );
 
+bool ray_plane_xz
+(
+  vec3  ray_start,
+  vec3  ray_end,
+  f32   plane_y,
+  f32&  out_c
+);
+
 }
 
 namespace nc::dist
@@ -215,6 +247,9 @@ namespace nc::dist
 // Returns 0 if the point is inside the bbox
 template<typename TVec>
 f32 point_aabb(TVec pt, const aabb<f32, TVec::length()>& bbox);
-  
+
+// Calculates distance between point and a 2D segment
+f32 point_line_2d(vec2 pt, vec2 line_start, vec2 line_end);
+
 }
 

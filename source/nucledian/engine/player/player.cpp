@@ -142,12 +142,19 @@ namespace nc
     }
 
     vec3 position = this->get_position();
-    lvl.move_and_collide(position, velocity, m_forward, delta_seconds, 0.25f, 0.25f, 0.25f, 0, 0);
+    lvl.move_and_collide(position, velocity, &m_forward, delta_seconds, 0.25f, 0.25f, 0.25f, 0, 0);
     this->set_position(position);
 
     // recompute the angleYaw after moving through a portal
     const auto forward2 = normalize(with_y(m_forward, 0.0f));
     angleYaw = rem_euclid(std::atan2f(forward2.z, -forward2.x) + HALF_PI, PI * 2);
+
+    if (ImGui::Begin("Player"))
+    {
+      ImGui::Text("Position: [%.2f, %.2f, %.2f]", position.x, position.y, position.z);
+      ImGui::Text("Velocity: [%.2f, %.2f, %.2f]", velocity.x, velocity.y, velocity.z);
+    }
+    ImGui::End();
   }
 
   void Player::apply_acceleration(const nc::vec3& movement_direction, [[maybe_unused]] f32 delta_seconds)

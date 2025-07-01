@@ -45,7 +45,7 @@ void Projectile::update(f32 dt)
 
   lvl.move_and_collide
   (
-    position, m_velocity, forward, dt, this->get_radius(), this->get_height(),
+    position, m_velocity, nullptr, dt, this->get_radius(), this->get_height(),
     0.0f, PhysLevel::COLLIDE_EVERYTHING, 0, 0.0f,
     [&hit_something](const RayHit& /*hit*/)
     {

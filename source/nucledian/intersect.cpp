@@ -299,14 +299,16 @@ bool segment_circle(vec2 ray_start, vec2 ray_end, vec2 circle_center, f32 circle
 }
 
 //==============================================================================
-bool ray_wall_3d(
+bool ray_wall_3d
+(
   vec3  ray_start,
   vec3  ray_end,
   vec2  wall_a,
   vec2  wall_b,
   f32   wall_y1,
   f32   wall_y2,
-  f32&  out_coeff)
+  f32&  out_coeff
+)
 {
   nc_assert(wall_y1   != wall_y2, "Points of the wall are the same.");
   nc_assert(ray_start != ray_end, "Ray has a zero length.");
@@ -988,17 +990,19 @@ namespace nc::collide
 {
   
 //==============================================================================
-bool ray_exp_wall(
+bool ray_exp_wall
+(
   vec2  start_a,
   vec2  end_a,
   vec2  start_b,
   vec2  end_b,
   f32   wall_exp,
   vec2& out_normal,
-  f32&  out_coeff)
+  f32&  out_coeff
+)
 {
-  nc_assert(start_a != end_a);
-  nc_assert(start_b != end_b);
+  nc_assert(start_a  != end_a);
+  nc_assert(start_b  != end_b);
   nc_assert(wall_exp >= 0.0f); // use normal intersection if the parameter is 0
 
   if (wall_exp == 0.0f)
@@ -1071,6 +1075,134 @@ bool ray_exp_cylinder
   return false;
 }
 
+//==============================================================================
+bool ray_plane_xz
+(
+  vec3  ray_start,
+  vec3  ray_end,
+  f32   plane_y,
+  f32&  out_c
+)
+{
+  // Check the ray dir
+  vec3 ray_dir = ray_end - ray_start;
+
+  // Early exit if the y is 0
+  if (is_zero(ray_dir.y, 0.0001f))
+  {
+    return false;
+  }
+
+  // We know that there is a t such as
+  // ray_start.y + ray_dir.y * t           = plane_y
+  // ray_start.y - plane_y + ray_dir.y * t = 0.0f
+  // ray_dir.y * t                         = plane_y - ray_start.y
+  // t                                     = (plane_y - ray_start.y) / ray_dir.y
+  out_c = (plane_y - ray_start.y) / ray_dir.y;
+  return true;
+}
+
+//==============================================================================
+bool ray_exp_wall3d_window
+(
+  vec3  ray_start,
+  vec3  ray_end,
+  vec2  wall_start,
+  vec2  wall_end,
+  f32   window_y_from,
+  f32   window_y_to,
+  f32   wall_exp_radius,
+  vec3& out_normal,
+  f32&  out_coeff
+)
+{
+  nc_assert(wall_exp_radius >= 0.0f);
+  nc_assert(window_y_from   <= window_y_to);
+
+  // This is a stupid way to prevent an assert, but let it be
+  if (ray_start.xz() == ray_end.xz())
+  {
+    return false;
+  }
+
+  vec2 temp_n;
+  f32  temp_c;
+
+  // First let's check the collision in 2D
+  const bool hit2d = ray_exp_wall
+  (
+    ray_start.xz(), ray_end.xz(), wall_start,
+    wall_end, wall_exp_radius, temp_n, temp_c
+  );
+
+  if (!hit2d)
+  {
+    // We do not collide in 2D and therefore can't collide in 3D either..
+    return false;
+  }
+
+  // We definitely collide in the 2D space.. Now lets check if the collision
+  // also takes place in the 3D realm
+  vec3 collision_pt = ray_start + (ray_end - ray_start) * temp_c;
+  f32  col_y        = collision_pt.y;
+
+  const bool under_top    = col_y <= window_y_to;
+  const bool above_bottom = col_y >= window_y_from;
+  if (under_top && above_bottom)
+  {
+    // We hit one of the walls
+    out_normal = vec3(temp_n.x, 0.0f, temp_n.y);
+    out_coeff  = temp_c;
+    return true;
+  }
+
+  // TODO: There is still a chance that we hit the top part or the bottom part
+  // of the wall.
+
+  return false;
+}
+
+//==============================================================================
+bool ray_exp_wall3d_nowindow
+(
+  vec3  ray_start,
+  vec3  ray_end,
+  vec2  wall_start,
+  vec2  wall_end,
+  f32   wall_exp_radius,
+  vec3& out_normal,
+  f32&  out_coeff
+)
+{
+  nc_assert(wall_exp_radius >= 0.0f);
+
+  // This is a stupid way to prevent an assert, but let it be
+  if (ray_start == ray_end || ray_start.xz() == ray_end.xz())
+  {
+    return false;
+  }
+
+  vec2 temp_n;
+  f32  temp_c;
+
+  const bool hit2d = ray_exp_wall
+  (
+    ray_start.xz(), ray_end.xz(), wall_start,
+    wall_end, wall_exp_radius, temp_n, temp_c
+  );
+
+  if (!hit2d)
+  {
+    // We do not collide in 2D and therefore can't collide in 3D either..
+    return false;
+  }
+
+  // We hit one of the walls
+  out_normal = vec3(temp_n.x, 0.0f, temp_n.y);
+  out_coeff  = temp_c;
+  return true;
+}
+
 }
 
 namespace nc::dist
@@ -1087,6 +1219,18 @@ f32 point_aabb(TVec pt, const aabb<f32, TVec::length()>& bbox)
 
 template f32 point_aabb<vec3>(vec3, const aabb3&);
 template f32 point_aabb<vec2>(vec2, const aabb2&);
+
+//==============================================================================
+f32 point_line_2d(vec2 p, vec2 a, vec2 b)
+{
+  // Project on the line, clip and measure the distance
+  vec2 line_dir_n = normalize_or_zero(b - a);
+  f32  coeff      = dot(p - a, line_dir_n);
+  f32  bounded_c  = std::clamp(coeff, 0.0f, 1.0f);
+  vec2 reproj     = line_dir_n * bounded_c + a;
+
+  return distance(reproj, p);
+}
 
 }
 

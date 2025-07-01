@@ -174,16 +174,14 @@ RayHit raycast_basic
       const auto  next_wall_id = map_helpers::next_wall(world.map, sector_id, wall_id);
       const auto& wall_data    = world.map.walls[wall_id];
 
-      const auto portal_type = wall_data.get_portal_type();
+      const auto portal_type  = wall_data.get_portal_type();
+      const bool is_nc_portal = portal_type == PortalType::non_euclidean;
 
-      const bool is_normie_portal = portal_type == PortalType::classic;
-      const bool is_nc_portal     = portal_type == PortalType::non_euclidean;
-
-      if (is_normie_portal || wall_id == ignore_portal)
+      if (wall_id == ignore_portal)
       {
         // ignore this portal, because we got here either from a previous
         // iteration or this is a normal portal.
-        nc_assert(is_normie_portal || is_nc_portal);
+        nc_assert(is_nc_portal);
         continue;
       }
 
@@ -367,6 +365,12 @@ static bool intersect_wall_2d
   const auto& w1 = map.walls[w1id];
   const auto& w2 = map.walls[w2id];
 
+  if (w1.get_portal_type() == PortalType::classic)
+  {
+    // ignore normal portals in 2D
+    return false;
+  }
+
   vec2 n = vec2{0};
   const bool hit = collide::ray_exp_wall
   (
@@ -474,44 +478,78 @@ static bool intersect_wall_3d
 }
 
 //==============================================================================
-static bool intersect_sector_3d
+static bool intersect_sector_3d_height
 (
   const MapSectors& map,
   vec3              from,
   vec3              to,
-  f32               /*expand*/,
+  f32               expand,
+  f32               y_floor_add,
+  f32               y_ceil_sub,
   SectorID          sid,
   f32&              out_c,
   vec3&             out_n
 )
 {
+  nc_assert(y_floor_add >= 0.0f && y_ceil_sub >= 0.0f);
+
   if (from == to)
   {
     return false;
   }
 
-  const auto& sector = map.sectors[sid];
-  const f32 fy = sector.floor_height;
-  const f32 cy = sector.ceil_height;
+  const SectorData& sector = map.sectors[sid];
+  f32 fy = sector.floor_height + y_floor_add;
+  f32 cy = sector.ceil_height  - y_ceil_sub;
 
   out_c = FLT_MAX;
 
   for (auto[floor_y, normal] : {std::pair{fy, UP_DIR}, std::pair{cy, -UP_DIR}})
   {
-    if (f32 out; intersect::ray_infinite_plane_xz(from, to, floor_y, out))
+    if (f32 out; collide::ray_plane_xz(from, to, floor_y, out))
     {
-      if (map.is_point_in_sector(from + (to - from) * out, sid))
+      f32 min_c = -(y_floor_add + y_ceil_sub) / length(to - from);
+      f32 max_c = 1.0f;
+
+      if (out >= min_c && out <= max_c && out < out_c)
       {
-        if (out < out_c)
-        {
-          out_c = out;
-          out_n = normal;
-        }
+        out_c = out;
+        out_n = normal;
       }
     }
   }
 
-  return out_c != FLT_MAX;
+  if (out_c == FLT_MAX)
+  {
+    return false;
+  }
+
+  if (vec2 pt = from.xz() + (to - from).xz() * out_c; expand == 0.0f)
+  {
+    return map.is_point_in_sector(pt, sid);
+  }
+  else
+  {
+    return map.distance_from_sector_2d(pt, sid) <= expand;
+  }
+}
+
+//==============================================================================
+static bool intersect_sector_3d
+(
+  const MapSectors& map,
+  vec3              from,
+  vec3              to,
+  f32               expand,
+  SectorID          sid,
+  f32&              out_c,
+  vec3&             out_n
+)
+{
+  return intersect_sector_3d_height
+  (
+    map, from, to, expand, 0, 0, sid, out_c, out_n
+  );
 }
 
 //==============================================================================
@@ -535,18 +573,149 @@ void PhysLevel::move_and_collide
 (
   vec3&                          position,
   vec3&                          velocity_og,
-  vec3&                          forward,
+  vec3*                          forward,
   f32                            delta_time,
   f32                            radius,
-  [[maybe_unused]]f32            height,
-  [[maybe_unused]]f32            max_step_height,
+  f32                            height,
+  f32                            max_step_height,
   [[maybe_unused]]EntityTypeMask colliders,
   [[maybe_unused]]EntityTypeMask report_only,
   [[maybe_unused]]f32            bounce,
   PhysLevel::CollisionListener   listener
 ) const
 {
+  // We limit the amount of iterations.
+  // Note to self:
+  // I thing that this might cause problems around smooth corners, but
+  // it is questionable if such a case can happen in the game.
   constexpr u32 MAX_ITERATIONS = 4;
+
+  f32 ground_height = position.y;
+
+  auto wall_intersector = [max_step_height, height, &ground_height]
+  (
+    const MapSectors& map,
+    vec3              ray_from,
+    vec3              ray_to,
+    f32               expand,
+    WallID            wid1,
+    WallID            wid2,
+    SectorID          sid,
+    f32&              out_c,
+    vec3&             out_n
+  )
+  ->bool
+  {
+    if (ray_from.xz() == ray_to.xz())
+    {
+      return false;
+    }
+
+    const WallData&   w1 = map.walls[wid1];
+    const WallData&   w2 = map.walls[wid2];
+    const SectorData& sc = map.sectors[sid];
+
+    const f32 floor_y = sc.floor_height;
+    const f32 ceil_y  = sc.ceil_height;
+
+    // Do the collision checking either way
+    vec2 out_n_2d;
+    bool hit = collide::ray_exp_wall
+    (
+      ray_from.xz(), ray_to.xz(), w1.pos, w2.pos,
+      expand, out_n_2d, out_c
+    );
+
+    // Redirect the normal to 3D
+    out_n = vec3{out_n_2d.x, 0, out_n_2d.y};
+
+    // If there is not hit even in 2D then we exit either way
+    if (!hit)
+    {
+      return false;
+    }
+
+    // Now split the cases - it is either a full wall, or only a partial one.
+    // In both cases we can do 2D raycast and then transform it into the
+    // 3D world.
+    auto portal_type = w1.get_portal_type();
+
+    // Full - if the collision happens then it is over
+    if (portal_type == PortalType::none /*|| out_c <= 0.0f*/)
+    {
+      // out_n and out_c are already set up properly
+      // The second condition evaluates to true if we are already inside
+      // a wall slightly.
+      return true;
+    }
+
+    // Partial - have to check if there is a free window
+    nc_assert(map.is_valid_sector_id(w1.portal_sector_id));
+    const SectorData& neighbor = map.sectors[w1.portal_sector_id];
+
+    // Calculate the size of the window we can potentially fit into
+    f32 window_from_y     = std::max(neighbor.floor_height, floor_y);
+    f32 window_to_y       = std::min(neighbor.ceil_height,  ceil_y);
+    f32 window_height_abs = std::max(window_to_y - window_from_y, 0.0f);
+
+    // We did hit the wall.. Check if we can climb the stairs
+    f32 hit_y = ray_from.y + (ray_to.y - ray_from.y) * out_c;
+
+    // Compare our height to the window height - if the window is too
+    // small then we can't fit
+    bool can_fit = window_height_abs >= height;
+
+    // Check if we can make a step up into the sector
+    bool can_step_up    = hit_y + max_step_height >= window_from_y;
+    bool has_to_step_up = hit_y < window_from_y;
+
+    if (can_fit && can_step_up)
+    {
+      // We can fit into the sector and therefore report no hit.
+      if (has_to_step_up)
+      {
+        // However, we have to step up and therefore should increase
+        // the ground height
+        ground_height = std::max(ground_height, window_from_y);
+      }
+      return false;
+    }
+
+    return true;
+  };
+
+  auto sector_intersector = [height]
+  (
+    const MapSectors& map,
+    vec3              ray_from,
+    vec3              ray_to,
+    f32               expand,
+    SectorID          sid,
+    f32&              out_c,
+    vec3&             out_n
+  )
+  ->bool
+  {
+    // Note: this might be problematic if we accidentlly get just slightly under
+    // the floor. That can even happen due to f32 inaccuraccies.
+    return intersect_sector_3d_height(map, ray_from, ray_to, expand, 0, height, sid, out_c, out_n);
+  };
+
+  auto entity_intersector = [&]
+  (
+    [[maybe_unused]] const PhysLevel& lvl,
+    [[maybe_unused]] vec3             ray_from,
+    [[maybe_unused]] vec3             ray_to,
+    [[maybe_unused]] f32              expand,
+    [[maybe_unused]] const Entity&    entity,
+    [[maybe_unused]] f32&             out_c,
+    [[maybe_unused]] vec3&            out_n
+  )
+  ->bool
+  {
+    // Entity intersection not supported (for now)
+    return false;
+  };
 
   vec3 velocity = velocity_og * delta_time;
 
@@ -554,19 +723,24 @@ void PhysLevel::move_and_collide
   u32 iterations_left = MAX_ITERATIONS; 
   while(iterations_left-->0)
   {
-    if (auto hit = this->raycast2d_expanded(position.xz(), position.xz() + velocity.xz(), radius))
-    {
-      const auto remaining  = velocity.xz() * (1.0f - hit.coeff);
-      const auto projected  = hit.normal.xz() * dot(remaining, hit.normal.xz());
-      const auto projected3 = vec3{projected.x, 0.0f, projected.y};
-      velocity -= projected3;
+    auto hit = phys_helpers::raycast_basic
+    (
+      *this, position, position + velocity, radius, colliders | report_only,
+      nullptr, INVALID_WALL_ID, wall_intersector, sector_intersector, entity_intersector
+    );
 
-      if (listener && listener(hit) == CollisionReaction::stop_simulation)
-      {
-        break;
-      }
+    if (!hit)
+    {
+      break;
     }
-    else
+
+    nc_assert(is_normal(hit.normal), "Bad things can happen");
+    const auto remaining = velocity * (1.0f - hit.coeff);
+    const auto projected = hit.normal * dot(remaining, hit.normal);
+
+    velocity -= projected;
+
+    if (listener && listener(hit) == CollisionReaction::stop_simulation)
     {
       break;
     }
@@ -585,8 +759,8 @@ void PhysLevel::move_and_collide
   mat4 transformation = identity<mat4>();
   for (const auto&[wid, sid] : portals)
   {
-    const auto trans = map.calculate_portal_to_portal_projection(sid, wid);
-    transformation = trans * transformation;
+    const auto pp_trans = map.calculate_portal_to_portal_projection(sid, wid);
+    transformation = pp_trans * transformation;
   }
 
   if (should_transform)
@@ -594,42 +768,80 @@ void PhysLevel::move_and_collide
     velocity_og = (transformation * vec4{velocity_og, 0.0f}).xyz();
     position    = (transformation * vec4{position,    1.0f}).xyz();
     velocity    = (transformation * vec4{velocity,    0.0f}).xyz();
-    forward     = (transformation * vec4{forward,     0.0f}).xyz();
+    if (forward)
+    {
+      *forward = (transformation * vec4{*forward, 0.0f}).xyz();
+    }
   }
 
+  // Note: this is questionable.. Do we add the velocity now, or before 
+  // we transform it? This might be a source of a potential problem in
+  // the future, but for now it seems to be ok.
   position += velocity;
 
-  // Change the height as well so we can move up the stairs
-  auto sector_id = map.get_sector_from_point(position.xz());
-  if (sector_id != INVALID_SECTOR_ID)
+  if (position.y < ground_height)
   {
-    const f32 sector_floor_y = map.sectors[sector_id].floor_height;
-    const f32 sector_ceil_y  = map.sectors[sector_id].ceil_height;
-
-    RayHit hit = RayHit{};
-
-    if (position.y < sector_floor_y)
-    {
-      position.y = sector_floor_y;
-
-      hit                      = RayHit::build(0, UP_DIR);
-      hit.type                 = RayHit::sector_floor;
-      hit.sector_hit.sector_id = sector_id;
-    }
-    else if (position.y + height > sector_ceil_y)
-    {
-      position.y = sector_ceil_y - height;
-
-      hit                      = RayHit::build(0, -UP_DIR);
-      hit.type                 = RayHit::sector_ceil;
-      hit.sector_hit.sector_id = sector_id;
-    }
-
-    if (hit && listener)
-    {
-      listener(hit);
-    }
+    position.y = ground_height;
   }
+
+  // Change the height as well so we can move up the stairs
+  //auto sector_id = map.get_sector_from_point(position.xz());
+  //if (sector_id != INVALID_SECTOR_ID)
+  //{
+  //  const f32 sector_floor_y = map.sectors[sector_id].floor_height;
+  //  const f32 sector_ceil_y  = map.sectors[sector_id].ceil_height;
+
+  //  RayHit hit = RayHit{};
+
+  //  if (position.y < sector_floor_y)
+  //  {
+  //    position.y = sector_floor_y;
+
+  //    hit                      = RayHit::build(0, UP_DIR);
+  //    hit.type                 = RayHit::sector_floor;
+  //    hit.sector_hit.sector_id = sector_id;
+  //  }
+  //  else if (position.y + height > sector_ceil_y)
+  //  {
+  //    position.y = sector_ceil_y - height;
+
+  //    hit                      = RayHit::build(0, -UP_DIR);
+  //    hit.type                 = RayHit::sector_ceil;
+  //    hit.sector_hit.sector_id = sector_id;
+  //  }
+
+  //  if (hit && listener)
+  //  {
+  //    listener(hit);
+  //  }
+  //}
+}
+
+//==============================================================================
+void PhysLevel::move_and_collide
+(
+  Entity&           ent,
+  vec3*             forward,
+  f32               delta,
+  CollisionListener listener
+)
+{
+  nc_assert(ent.get_physics(), "Requires a physics component");
+
+  vec3 pos  = ent.get_position();
+  f32  step = ent.get_physics()->max_step_height;
+  f32  r    = ent.get_radius();
+  f32  h    = ent.get_height();
+  f32  b    = ent.get_physics()->bounce;
+
+  auto collide = ent.get_physics()->collide_with;
+  auto report  = ent.get_physics()->report_only;
+
+  this->move_and_collide
+  (
+    pos, ent.get_physics()->velocity, forward, delta,
+    r, h, step, collide, report, b, listener
+  );
 }
 
 }

@@ -11,15 +11,7 @@ namespace nc
 
 struct SectorMapping;
 struct Appearance;
-
-// TODO: Entity physics component
-struct Physics
-{
-  // TODO: this is an example how it might look like
-  f32 radius;
-  f32 height;
-  f32 neg_height;
-};
+struct Physics;
 
 }
 
