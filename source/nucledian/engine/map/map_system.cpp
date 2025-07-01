@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <array>
 #include <vector>
+#include <queue>
 #include <set>
 #include <map>
 #include <iterator>   // std::back_inserter
@@ -622,28 +623,41 @@ std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos, [[maybe_unu
     SectorID prev_sector; // previous sector
     WallID wall_index; // portal we used to get to this sector
     vec3 point; // way point
+    f32 dist;
   };
+
+  struct CurPoint
+  {
+    SectorID index;
+    f32 dist;
+  };
+
+  auto cmp = [](const CurPoint l, const CurPoint r) {return l.dist > r.dist; };
 
   SectorID startID = get_sector_from_point(start_pos.xz);
   SectorID endID = get_sector_from_point(end_pos.xz);
   SectorID curID = startID;
 
-  std::vector<SectorID> fringe;
+  // std::vector<SectorID> fringe;
+  std::priority_queue<CurPoint, std::vector<CurPoint>, decltype(cmp)> fringe;
   std::map<SectorID, PrevPoint> visited;
 
   visited.insert({ startID, {
     INVALID_SECTOR_ID,
     INVALID_WALL_ID,
-    start_pos
+    start_pos,
+    0
     } });
 
-  fringe.push_back(startID);
+  fringe.push({startID, 0});
 
   while (fringe.size())
   {
     // get sector from queue
-    curID = fringe.front();
-    fringe.erase(fringe.begin());
+    CurPoint cur = fringe.top();
+    curID = cur.index;
+    f32 cur_dist = cur.dist;
+    fringe.pop();
 
     // found path, end search
     if (curID == endID)
@@ -707,10 +721,12 @@ std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos, [[maybe_unu
             const float t = max(0.0f, min(1.0f, dot(prev_post.xz - p1, p1_to_p2) / l2));
             const vec2 projection = p1 + t * (p1_to_p2);
 
+            f32 segment_dist = distance(prev_post, vec3(projection.x, 0, projection.y));
+
             // insert closest point to queue
             visited.insert({ next_sector,
-              {curID, wall1_idx, vec3(projection.x, 0, projection.y)} });
-            fringe.push_back(next_sector);
+              {curID, wall1_idx, vec3(projection.x, 0, projection.y), cur_dist + segment_dist} });
+            fringe.push({ next_sector, cur_dist + segment_dist });
           }         
         }        
     });
