@@ -49,8 +49,8 @@ void EntityRegistry::cleanup()
 //==============================================================================
 void EntityRegistry::setup_entity(Entity& entity, EntityID id)
 {
-  entity.m_IdAndType = id;
-  entity.m_Mapping   = &m_Mapping;
+  entity.m_id_and_type = id;
+  entity.m_mapping   = &m_Mapping;
 
   m_Mapping.on_entity_create
   (

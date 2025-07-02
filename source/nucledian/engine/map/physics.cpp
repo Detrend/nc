@@ -171,8 +171,8 @@ RayHit raycast_basic
     // Once we hit one all other walls further away can be ignored.
     for (WallID wall_id = begin_wall; wall_id < end_wall; ++wall_id)
     {
-      const auto  next_wall_id = map_helpers::next_wall(world.map, sector_id, wall_id);
-      const auto& wall_data    = world.map.walls[wall_id];
+      const WallID    next_wall_id = map_helpers::next_wall(world.map, sector_id, wall_id);
+      const WallData& wall_data    = world.map.walls[wall_id];
 
       const auto portal_type  = wall_data.get_portal_type();
       const bool is_nc_portal = portal_type == PortalType::non_euclidean;
@@ -185,20 +185,19 @@ RayHit raycast_basic
         continue;
       }
 
-      // 0 for nuclidean portals because we do not want to check intersection
-      // with NC portals slightly behind us
-      const f32 col_exp = is_nc_portal ? 0.0f : expand; 
-
+      bool is_nc_hit = false;
       c = FLT_MAX;
       n = vec3{0};
+
       const bool does_intersect = wall_intersect
       (
-        world.map, ray_from, ray_to, col_exp, wall_id, next_wall_id, sector_id, c, n
+        world.map, ray_from, ray_to, expand, wall_id,
+        next_wall_id, sector_id, c, n, is_nc_hit
       );
 
       if (does_intersect)
       {
-        add_possible_hit(c, n, is_nc_portal, sector_id, wall_id);
+        add_possible_hit(c, n, is_nc_hit, sector_id, wall_id);
       }
     }
 
@@ -212,7 +211,7 @@ RayHit raycast_basic
       }
 
       // Broad phase - check the distance to bbox first
-      const auto* entity = world.entities.get_entity(entity_id);
+      const Entity* entity = world.entities.get_entity(entity_id);
       nc_assert(entity);
       f32  r = entity->get_radius();
       f32  h = entity->get_height();
@@ -354,7 +353,8 @@ static bool intersect_wall_2d
   WallID            w2id,
   SectorID          /*sid*/,
   f32&              out_c,
-  vec3&             out_n
+  vec3&             out_n,
+  bool&             nc_hit
 )
 {
   if (ray_from == ray_to)
@@ -362,19 +362,25 @@ static bool intersect_wall_2d
     return false;
   }
 
-  const auto& w1 = map.walls[w1id];
-  const auto& w2 = map.walls[w2id];
+  const WallData& w1 = map.walls[w1id];
+  const WallData& w2 = map.walls[w2id];
 
-  if (w1.get_portal_type() == PortalType::classic)
+  PortType portal_type = w1.get_portal_type();
+  if (portal_type == PortalType::classic)
   {
     // ignore normal portals in 2D
     return false;
   }
 
+  nc_hit = portal_type == PortalType::non_euclidean;
+
+  // Modify the expansion for non euclidean portals
+  f32 exp_modified = nc_hit ? 0.0f : expand;
+
   vec2 n = vec2{0};
   const bool hit = collide::ray_exp_wall
   (
-    ray_from, ray_to, w1.pos, w2.pos, expand, n, out_c
+    ray_from, ray_to, w1.pos, w2.pos, exp_modified, n, out_c
   );
 
   out_n = vec3{n.x, 0.0f, n.y};
@@ -453,7 +459,8 @@ static bool intersect_wall_3d
   WallID            w2id,
   SectorID          sid,
   f32&              out_c,
-  vec3&             out_n
+  vec3&             out_n,
+  bool&             nc_hit
 )
 {
   if (ray_from == ray_to)
@@ -461,14 +468,16 @@ static bool intersect_wall_3d
     return false;
   }
 
-  const auto& w1 = map.walls[w1id];
-  const auto& w2 = map.walls[w2id];
-  const auto& sd = map.sectors[sid];
+  const WallData&   w1 = map.walls[w1id];
+  const WallData&   w2 = map.walls[w2id];
+  const SectorData& sd = map.sectors[sid];
 
   const bool hit = intersect::ray_wall_3d
   (
     ray_from, ray_to, w1.pos, w2.pos, sd.floor_height, sd.ceil_height, out_c
   );
+
+  nc_hit = w1.get_portal_type() == PortalType::non_euclidean;
 
   nc_assert(w1.pos != w2.pos);
   auto n2 = flipped(normalize(w2.pos - w1.pos));
@@ -588,7 +597,7 @@ void PhysLevel::move_and_collide
   // Note to self:
   // I thing that this might cause problems around smooth corners, but
   // it is questionable if such a case can happen in the game.
-  constexpr u32 MAX_ITERATIONS = 4;
+  constexpr u32 MAX_ITERATIONS = 6;
 
   f32 ground_height = position.y;
 
@@ -602,7 +611,8 @@ void PhysLevel::move_and_collide
     WallID            wid2,
     SectorID          sid,
     f32&              out_c,
-    vec3&             out_n
+    vec3&             out_n,
+    bool&             nc_hit_out
   )
   ->bool
   {
@@ -654,33 +664,33 @@ void PhysLevel::move_and_collide
     const SectorData& neighbor = map.sectors[w1.portal_sector_id];
 
     // Calculate the size of the window we can potentially fit into
-    f32 window_from_y     = std::max(neighbor.floor_height, floor_y);
-    f32 window_to_y       = std::min(neighbor.ceil_height,  ceil_y);
-    f32 window_height_abs = std::max(window_to_y - window_from_y, 0.0f);
+    f32 window_from_y = std::max(neighbor.floor_height, floor_y);
+    f32 window_to_y   = std::min(neighbor.ceil_height,  ceil_y) - height;
 
     // We did hit the wall.. Check if we can climb the stairs
     f32 hit_y = ray_from.y + (ray_to.y - ray_from.y) * out_c;
 
-    // Compare our height to the window height - if the window is too
-    // small then we can't fit
-    bool can_fit = window_height_abs >= height;
-
-    // Check if we can make a step up into the sector
-    bool can_step_up    = hit_y + max_step_height >= window_from_y;
-    bool has_to_step_up = hit_y < window_from_y;
-
-    if (can_fit && can_step_up)
+    if (hit_y >= window_from_y && hit_y <= window_to_y)
     {
-      // We can fit into the sector and therefore report no hit.
-      if (has_to_step_up)
+      // We hit the window, continue in the path of the ray..
+      if (portal_type != PortalType::non_euclidean) [[likely]]
       {
-        // However, we have to step up and therefore should increase
-        // the ground height
-        ground_height = std::max(ground_height, window_from_y);
+        // No hit
+        return false;
       }
-      return false;
+
+      // Check for nc hit as well
+      nc_hit_out = collide::ray_exp_wall
+      (
+        ray_from.xz(), ray_to.xz(), w1.pos, w2.pos,
+        0.0f, out_n_2d, out_c
+      );
+      out_n = vec3{out_n_2d.x, 0, out_n_2d.y};
+
+      return nc_hit_out;
     }
 
+    // We hit the wall
     return true;
   };
 
@@ -717,6 +727,7 @@ void PhysLevel::move_and_collide
     return false;
   };
 
+  // Note: we currently do not modify the velocity and that is not good.
   vec3 velocity = velocity_og * delta_time;
 
   // First check collisions and adjust the velocity
@@ -783,38 +794,6 @@ void PhysLevel::move_and_collide
   {
     position.y = ground_height;
   }
-
-  // Change the height as well so we can move up the stairs
-  //auto sector_id = map.get_sector_from_point(position.xz());
-  //if (sector_id != INVALID_SECTOR_ID)
-  //{
-  //  const f32 sector_floor_y = map.sectors[sector_id].floor_height;
-  //  const f32 sector_ceil_y  = map.sectors[sector_id].ceil_height;
-
-  //  RayHit hit = RayHit{};
-
-  //  if (position.y < sector_floor_y)
-  //  {
-  //    position.y = sector_floor_y;
-
-  //    hit                      = RayHit::build(0, UP_DIR);
-  //    hit.type                 = RayHit::sector_floor;
-  //    hit.sector_hit.sector_id = sector_id;
-  //  }
-  //  else if (position.y + height > sector_ceil_y)
-  //  {
-  //    position.y = sector_ceil_y - height;
-
-  //    hit                      = RayHit::build(0, -UP_DIR);
-  //    hit.type                 = RayHit::sector_ceil;
-  //    hit.sector_hit.sector_id = sector_id;
-  //  }
-
-  //  if (hit && listener)
-  //  {
-  //    listener(hit);
-  //  }
-  //}
 }
 
 //==============================================================================

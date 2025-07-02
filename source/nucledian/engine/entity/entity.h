@@ -86,11 +86,11 @@ protected:
   bool  collision;
 
 private: friend class EntityRegistry;
-  SectorMapping* m_Mapping   = nullptr;
-  EntityID       m_IdAndType = INVALID_ENTITY_ID;
-  vec3           m_Position;
-  f32            m_Radius2D;
-  f32            m_Height;
+  SectorMapping* m_mapping     = nullptr;
+  EntityID       m_id_and_type = INVALID_ENTITY_ID;
+  vec3           m_position;
+  f32            m_radius2d;
+  f32            m_height;
 };
 
 }
