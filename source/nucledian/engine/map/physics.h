@@ -9,6 +9,7 @@
 
 #include <vector>
 #include <functional>
+#include <compare>    // <=>
 
 namespace nc
 {
@@ -33,15 +34,49 @@ struct Physics
 
 // Return value of the raycast. Can be a sector hit or
 // entity hit.
-struct RayHit
+struct CollisionHit
 {
   // Returns true if we hit something. Can be used in condition
   // to check if the RayHit contains some result.
   operator bool() const;
 
-  // Construction helpers
-  static RayHit no_hit();
-  static RayHit build(f32 coeff, vec3 n);
+  // Three way comparison that compares two hits based on their
+  // distance in the manner "shorter hit < longer hit"
+  f32 operator<=>(const CollisionHit& other) const;
+
+  struct SectorHit;
+  struct EntityHit;
+
+  // === Construction helpers ===
+
+  // Constructs empty hit
+  static CollisionHit no_hit();
+
+  // Constructs sector hit
+  static CollisionHit build(f32 coeff, vec3 n, SectorHit sh);
+
+  // Constructs entity hit
+  static CollisionHit build(f32 coeff, vec3 n, EntityHit eh);
+
+  // Internals
+  enum HitType : u8
+  {
+    sector = 0,
+    entity = 1,
+  };
+
+  enum SectorHitType : u8
+  {
+    // first 2 bits reserved for type
+    wall      =   0b0,
+    floor     =   0b1,
+    ceil      =  0b10,
+
+    // third bit for nuclidean/non-nuclidean
+    nuclidean = 0b100,
+
+    nuclidean_wall = wall | nuclidean,
+  };
 
   struct EntityHit
   {
@@ -50,30 +85,22 @@ struct RayHit
 
   struct SectorHit
   {
-    SectorID sector_id;       // always valid
-    WallID   wall_id;         // only valid if type == wall
-    u8       wall_segment_id; // only valid if type == wall
+    SectorID      sector_id;       // always valid
+    WallID        wall_id;         // only valid if type == wall
+    u8            wall_segment_id; // only valid if type == wall, unused for now
+    SectorHitType type;
   };
 
-  enum HitType : u8
+  union Hit
   {
-    sector = 1,
-    entity = 1 << 5,
-
-    sector_wall  = sector | 1 << 2,
-    sector_floor = sector | 1 << 3,
-    sector_ceil  = sector | 1 << 4,
-  };
-
-  union
-  {
-    EntityHit entity_hit; // valid only if type == entity
-    SectorHit sector_hit; // valid only if type == sector
+    EntityHit entity; // valid only if type == entity
+    SectorHit sector; // valid only if type == sector
   };
 
   f32     coeff = FLT_MAX; // coefficient to recalculate hit pos from
   vec3    normal;          // do .xz() for 2D raycast
-  HitType type  = HitType::sector_wall;
+  Hit     hit;
+  HitType type  = HitType::sector;
 };
 
 
@@ -100,7 +127,7 @@ struct PhysLevel
   // Also returns hit coefficient, which is <= 1, but might be negative
   // if the expand parameter is non-zero and we are stuck in a wall. This
   // is actually a feature as it allows us to get un-stuck
-  RayHit raycast2d_expanded
+  CollisionHit raycast2d_expanded
   (
     vec2           ray_start,                      // point to cast from
     vec2           ray_end,                        // cast to
@@ -109,7 +136,7 @@ struct PhysLevel
     Portals*       out_portals = nullptr           // list of portals the ray went through
   ) const;
 
-  RayHit raycast2d
+  CollisionHit raycast2d
   (
     vec2           ray_start,                      // point to cast from
     vec2           ray_end,                        // cast to
@@ -117,7 +144,7 @@ struct PhysLevel
     Portals*       out_portals = nullptr           // list of portals the ray went through
   ) const;
 
-  RayHit raycast3d
+  CollisionHit raycast3d
   (
     vec3           ray_start,                      // point to cast from
     vec3           ray_end,                        // cast to
@@ -130,7 +157,7 @@ struct PhysLevel
     continue_simulation, // continues the simulation of movement
     stop_simulation,     // stops simulating and exits the function
   };
-  using CollisionListener = std::function<CollisionReaction(const RayHit& hit)>;
+  using CollisionListener = std::function<CollisionReaction(const CollisionHit& hit)>;
   // Moves the "entity" with the given position, velocity and direction and checks
   // for collisions in the way and alters the values. If there is a nc portal in
   // the way then traverses it.

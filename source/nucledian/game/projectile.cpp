@@ -47,7 +47,7 @@ void Projectile::update(f32 dt)
   (
     position, m_velocity, nullptr, dt, this->get_radius(), this->get_height(),
     0.0f, PhysLevel::COLLIDE_EVERYTHING, 0, 0.0f,
-    [&hit_something](const RayHit& /*hit*/)
+    [&hit_something](const CollisionHit& /*hit*/)
     {
       // stop the simulation on hit
       hit_something = true;

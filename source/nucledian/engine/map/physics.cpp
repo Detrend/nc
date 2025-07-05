@@ -52,9 +52,27 @@ static f32 calc_dist_to_bbox(T pt, const aabb3& bbox)
 }
 
 //==============================================================================
+static vec2 vector_to_2d(vec2 v)
+{
+  return v;
+}
+
+//==============================================================================
+static vec2 vector_to_2d(vec3 v)
+{
+  return v.xz();
+}
+
+//==============================================================================
 // bool(TVec ray_from, TVec ray_to, f32 expand, const WallData& w1, const SectorData& sector, const WallData& w2, f32& c, f32& n)
-template<typename TVec, typename WallHitLambda, typename SectorHitLambda, typename EntityHitLambda>
-RayHit raycast_basic
+template
+<
+  typename TVec,
+  typename WallHitLambda,
+  typename SectorHitLambda,
+  typename EntityHitLambda
+>
+CollisionHit raycast_basic
 (
   const PhysLevel&    world,
   TVec                ray_from,
@@ -68,84 +86,57 @@ RayHit raycast_basic
   EntityHitLambda     entity_intersect
 )
 {
+  using SecHitType = CollisionHit::SectorHitType;
+  using HitType    = CollisionHit::HitType;
+
   nc_assert(expand >= 0.0f, "Radius can not be negative!");
 
   std::set<SectorID> overlap_sectors;
 
-  // If the ray is casted from and to the same spot.
-  const bool is_stationary = ray_from == ray_to;
-
-  if (is_stationary)
+  if (vector_to_2d(ray_from) == vector_to_2d(ray_to))
   {
+    // stationary
     aabb2 bbox = calc_stationary_bbox(ray_from, expand);
     world.map.sector_grid.query_aabb(bbox, [&](aabb2, SectorID sid)
     {
       overlap_sectors.insert(sid);
-      return false;
+      return false; // continue iteration
     });
   }
   else
   {
-    // TODO[perf]: Add a "query_ray" option
+    // moving
     world.map.sector_grid.query_ray(ray_from, ray_to, expand, [&](aabb2, SectorID sid)
     {
       overlap_sectors.insert(sid);
-      return false;
+      return false; // continue iteration
     });
   }
 
-  // Store these for nuclidean portal traversal
-  SectorID portal_sector  = INVALID_SECTOR_ID;
-  WallID   nc_portal_wall = INVALID_WALL_ID;
-
-  f32  final_coeff  = FLT_MAX;
-  vec3 final_normal = vec3{0};
-
-  auto add_possible_hit = [&]
-  (
-    f32 coeff, vec3 normal, bool is_nc_hit,
-    SectorID nc_sid = INVALID_SECTOR_ID, WallID nc_wid = INVALID_WALL_ID
-  )
+  CollisionHit best_hit = CollisionHit::no_hit();
+  auto add_possible_hit = [&best_hit](const CollisionHit& hit)
   {
-    if (coeff >= final_coeff)
+    if (hit < best_hit)
     {
-      return;
-    }
-
-    final_coeff  = coeff;
-    final_normal = normal;
-
-    if (is_nc_hit)
-    {
-      // store the information that this is a portal for later
-      nc_assert(nc_wid != INVALID_WALL_ID);
-      nc_assert(nc_sid != INVALID_SECTOR_ID);
-      portal_sector  = nc_sid;
-      nc_portal_wall = nc_wid;
-    }
-    else
-    {
-      // reset the portal info, the closest hit is not a nc portal
-      portal_sector  = INVALID_SECTOR_ID;
-      nc_portal_wall = INVALID_WALL_ID;
+      best_hit = hit;
     }
   };
 
   // Iterate all sectors that the ray might possibly intersect
-  for (auto sector_id : overlap_sectors)
+  for (const SectorID sector_id : overlap_sectors)
   {
     nc_assert(world.map.is_valid_sector_id(sector_id));
-    const auto& sector     = world.map.sectors[sector_id];
-    const auto  begin_wall = sector.int_data.first_wall;
-    const auto  end_wall   = sector.int_data.last_wall;
-    const auto& bbox3      = world.map.sector_bboxes[sector_id];
+    const SectorData& sector     = world.map.sectors[sector_id];
+    const auto        begin_wall = sector.int_data.first_wall;
+    const auto        end_wall   = sector.int_data.last_wall;
+    const auto&       bbox3      = world.map.sector_bboxes[sector_id];
 
     // Calculate approximate distance to the sector. If the closest
     // point of the sector bbox is further than the closest raycasted
     // point so far then we can skip this sector.
     const f32 distance_to_closest_pt  = calc_dist_to_bbox(ray_from, bbox3);
-    const f32 closest_hit_dist_so_far = length(ray_to - ray_from) * final_coeff;
-    if (final_coeff != FLT_MAX && distance_to_closest_pt > closest_hit_dist_so_far)
+    const f32 closest_hit_dist_so_far = length(ray_to - ray_from) * best_hit.coeff;
+    if (best_hit && distance_to_closest_pt > closest_hit_dist_so_far)
     {
       // We can safely ignore this sector as it is too far away
       continue;
@@ -163,7 +154,13 @@ RayHit raycast_basic
     if (sector_hit)
     {
       // Floor/ceiling can't be a nuclidean portal
-      add_possible_hit(c, n, false);
+      add_possible_hit(CollisionHit::build(c, n, CollisionHit::SectorHit
+      {
+        .sector_id       = sector_id,
+        .wall_id         = INVALID_WALL_ID,
+        .wall_segment_id = 0,
+        .type            = SecHitType::floor, // TODO: add option for ceiling
+      }));
     }
 
     // Check wall intersections
@@ -197,7 +194,14 @@ RayHit raycast_basic
 
       if (does_intersect)
       {
-        add_possible_hit(c, n, is_nc_hit, sector_id, wall_id);
+        SecHitType hit_type = is_nc_hit ? SecHitType::nuclidean_wall : SecHitType::wall;
+        add_possible_hit(CollisionHit::build(c, n, CollisionHit::SectorHit
+        {
+          .sector_id       = sector_id,
+          .wall_id         = wall_id,
+          .wall_segment_id = 0,
+          .type            = hit_type,
+        }));
       }
     }
 
@@ -223,8 +227,8 @@ RayHit raycast_basic
       };
 
       f32 closest_pt_on_bbox = calc_dist_to_bbox(ray_from, bbox);
-      f32 closest_pt_so_far  = length(ray_from - ray_to) * final_coeff;
-      if (final_coeff != FLT_MAX && closest_pt_so_far < closest_pt_on_bbox)
+      f32 closest_pt_so_far  = length(ray_from - ray_to) * best_hit.coeff;
+      if (best_hit && closest_pt_so_far < closest_pt_on_bbox)
       {
         // The point we hit is already closer, no need to check the entity
         continue;
@@ -237,31 +241,33 @@ RayHit raycast_basic
 
       if (does_intersect)
       {
-        add_possible_hit(c, n, false);
+        // TODO
+        // add_possible_hit(RayHit::build(c, n, false));
       }
     }
   }
 
   // Recurse into nuclidean portal if we have to
-  if (final_coeff != FLT_MAX && nc_portal_wall != INVALID_WALL_ID)
+  if (best_hit && best_hit.type == HitType::sector
+    && best_hit.hit.sector.type & SecHitType::nuclidean)
   {
-    nc_assert(final_coeff >= 0.0f && final_coeff <= 1.0f, "NC portal behind us?");
+    nc_assert(best_hit.coeff >= 0.0f && best_hit.coeff <= 1.0f, "NC portal behind us?");
 
     // Add this portal to the list if we collect them
     if (out_portals)
     {
       out_portals->push_back(PhysLevel::PortalSector
       {
-        .wall_id   = nc_portal_wall,
-        .sector_id = portal_sector,
+        .wall_id   = best_hit.hit.sector.wall_id,
+        .sector_id = best_hit.hit.sector.sector_id,
       });
     }
 
-    const auto hit_pt = ray_from + (ray_to - ray_from) * final_coeff;
+    const auto hit_pt = ray_from + (ray_to - ray_from) * best_hit.coeff;
     const auto proj = world.map.calculate_portal_to_portal_projection
     (
-      portal_sector,
-      nc_portal_wall
+      best_hit.hit.sector.sector_id,
+      best_hit.hit.sector.wall_id
     );
 
     // Calculate new from and to points for the next raycast
@@ -283,11 +289,11 @@ RayHit raycast_basic
     // the wall
     WallID wall_to_ignore = map_helpers::get_nc_opposing_wall
     (
-      world.map, portal_sector, nc_portal_wall
+      world.map, best_hit.hit.sector.sector_id, best_hit.hit.sector.wall_id
     );
 
     // And cast the ray recursively
-    const auto hit = raycast_basic<TVec>
+    const CollisionHit hit = raycast_basic<TVec>
     (
       world, new_from, new_to, expand, ent_types, out_portals, wall_to_ignore,
       wall_intersect, sector_intersect, entity_intersect
@@ -295,24 +301,27 @@ RayHit raycast_basic
 
     if (hit)
     {
-      // recalculate the out_coeff and out_normal
-      final_coeff += (1.0f - final_coeff) * hit.coeff;
-
       // out normal has to be projected to our space (not the other portal space)
       const auto transform_inv = inverse(proj);
       const auto reproject_norm = (transform_inv * vec4{hit.normal, 0.0f}).xyz();
 
-      final_normal = reproject_norm;
+      // recalculate the out_coeff and out_normal
+      f32  final_coeff  = (1.0f - best_hit.coeff) * hit.coeff;
+      vec3 final_normal = reproject_norm;
+
+      best_hit = hit;
+      best_hit.coeff  = final_coeff;
+      best_hit.normal = final_normal;
     }
     else
     {
       // we did not hit anything behind the portal
-      final_coeff = FLT_MAX;
+      best_hit = CollisionHit::no_hit();
     }
   }
 
   // Return true if we hit something
-  return RayHit::build(final_coeff, final_normal);
+  return best_hit;
 }
 
 }
@@ -321,24 +330,47 @@ namespace nc
 { 
   
 //==============================================================================
-RayHit::operator bool() const
+CollisionHit::operator bool() const
 {
   return coeff != FLT_MAX;
 }
 
 //==============================================================================
-RayHit RayHit::no_hit()
+f32 CollisionHit::operator<=>(const CollisionHit& other) const
 {
-  return RayHit{.coeff = FLT_MAX};
+  return this->coeff - other.coeff;
 }
 
 //==============================================================================
-RayHit RayHit::build(f32 c, vec3 n)
+CollisionHit CollisionHit::no_hit()
 {
-  return RayHit
+  return CollisionHit
+  {
+    .coeff = FLT_MAX
+  };
+}
+
+//==============================================================================
+CollisionHit CollisionHit::build(f32 c, vec3 n, SectorHit sh)
+{
+  return CollisionHit
   {
     .coeff  = c,
-    .normal = n
+    .normal = n,
+    .hit    = Hit{.sector = sh},
+    .type   = HitType::sector,
+  };
+}
+
+//==============================================================================
+CollisionHit CollisionHit::build(f32 c, vec3 n, EntityHit eh)
+{
+  return CollisionHit
+  {
+    .coeff  = c,
+    .normal = n,
+    .hit    = eh,
+    .type   = HitType::entity,
   };
 }
 
@@ -420,7 +452,7 @@ static bool intersect_entity_empty
 }
 
 //==============================================================================
-RayHit PhysLevel::raycast2d_expanded
+CollisionHit PhysLevel::raycast2d_expanded
 (
   vec2            from,
   vec2            to,
@@ -437,7 +469,7 @@ RayHit PhysLevel::raycast2d_expanded
 }
 
 //==============================================================================
-RayHit PhysLevel::raycast2d
+CollisionHit PhysLevel::raycast2d
 (
   vec2            from,
   vec2            to,
@@ -562,7 +594,7 @@ static bool intersect_sector_3d
 }
 
 //==============================================================================
-RayHit PhysLevel::raycast3d
+CollisionHit PhysLevel::raycast3d
 (
   vec3           ray_start,
   vec3           ray_end,
@@ -789,11 +821,6 @@ void PhysLevel::move_and_collide
   // we transform it? This might be a source of a potential problem in
   // the future, but for now it seems to be ok.
   position += velocity;
-
-  if (position.y < ground_height)
-  {
-    position.y = ground_height;
-  }
 }
 
 //==============================================================================
