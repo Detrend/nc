@@ -305,6 +305,7 @@ bool GraphicsSystem::init()
   glLineWidth(5.0f);
 
   MeshManager::instance().init();
+  TextureManager::instance().init();
 
   m_solid_material = MaterialHandle(shaders::solid::VERTEX_SOURCE, shaders::solid::FRAGMENT_SOURCE);
   m_solid_material.use();
