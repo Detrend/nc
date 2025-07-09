@@ -1,0 +1,115 @@
+[gd_scene load_steps=4 format=3 uid="uid://befdk2p7cnnba"]
+
+[ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/Level.gd" id="1_nqbmo"]
+[ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_l4525"]
+[ext_resource type="PackedScene" uid="uid://debkayvnumrqq" path="res://prefabs/SectorPoint.tscn" id="3_h15or"]
+
+[node name="TestLevel1" type="Node2D"]
+script = ExtResource("1_nqbmo")
+max_snapping_distance = 40.0
+export_scale = Vector2(0.3, 0.3)
+export_path = "./level_test1.json"
+
+[node name="Sector" parent="." instance=ExtResource("2_l4525")]
+ceiling_height = 5.0
+
+[node name="SectorPoint" parent="Sector" instance=ExtResource("3_h15or")]
+position = Vector2(5, 30)
+
+[node name="SectorPoint2" parent="Sector" instance=ExtResource("3_h15or")]
+position = Vector2(14, 12)
+is_wall = true
+
+[node name="SectorPoint3" parent="Sector" instance=ExtResource("3_h15or")]
+position = Vector2(-12, -5)
+
+[node name="SectorPoint4" parent="Sector" instance=ExtResource("3_h15or")]
+position = Vector2(-20, 19)
+
+[node name="SectorPoint6" parent="Sector" instance=ExtResource("3_h15or")]
+position = Vector2(-14, 30)
+
+[node name="Sector2" parent="." instance=ExtResource("2_l4525")]
+position = Vector2(101, -28)
+
+[node name="SectorPoint" parent="Sector2" instance=ExtResource("3_h15or")]
+position = Vector2(-44, 52)
+
+[node name="SectorPoint2" parent="Sector2" instance=ExtResource("3_h15or")]
+position = Vector2(-44, 28)
+
+[node name="SectorPoint3" parent="Sector2" instance=ExtResource("3_h15or")]
+position = Vector2(-71, 21)
+
+[node name="SectorPoint4" parent="Sector2" instance=ExtResource("3_h15or")]
+position = Vector2(-87, 40)
+
+[node name="SectorPoint5" parent="Sector2" instance=ExtResource("3_h15or")]
+position = Vector2(-75, 52)
+
+[node name="Sector3" parent="." instance=ExtResource("2_l4525")]
+position = Vector2(34, -57)
+ceiling_height = 5.0
+
+[node name="SectorPoint" parent="Sector3" instance=ExtResource("3_h15or")]
+position = Vector2(-4, 50)
+
+[node name="SectorPoint2" parent="Sector3" instance=ExtResource("3_h15or")]
+position = Vector2(-13, 37)
+
+[node name="SectorPoint3" parent="Sector3" instance=ExtResource("3_h15or")]
+position = Vector2(-40, 35)
+
+[node name="SectorPoint4" parent="Sector3" instance=ExtResource("3_h15or")]
+position = Vector2(-46, 52)
+
+[node name="SectorPoint5" parent="Sector3" instance=ExtResource("3_h15or")]
+position = Vector2(-20, 69)
+
+[node name="Sector4" parent="." instance=ExtResource("2_l4525")]
+position = Vector2(51, 4)
+ceiling_height = 5.0
+
+[node name="SectorPoint2" parent="Sector4" instance=ExtResource("3_h15or")]
+position = Vector2(-25, 20)
+
+[node name="SectorPoint3" parent="Sector4" instance=ExtResource("3_h15or")]
+position = Vector2(-46, 26)
+
+[node name="SectorPoint4" parent="Sector4" instance=ExtResource("3_h15or")]
+position = Vector2(-41, 39)
+
+[node name="SectorPoint5" parent="Sector4" instance=ExtResource("3_h15or")]
+position = Vector2(-18, 36)
+
+[node name="Sector5" parent="." instance=ExtResource("2_l4525")]
+position = Vector2(82, 7)
+ceiling_height = 5.0
+
+[node name="SectorPoint2" parent="Sector5" instance=ExtResource("3_h15or")]
+position = Vector2(-25, 17)
+
+[node name="SectorPoint3" parent="Sector5" instance=ExtResource("3_h15or")]
+position = Vector2(-56, 17)
+
+[node name="SectorPoint4" parent="Sector5" instance=ExtResource("3_h15or")]
+position = Vector2(-49, 33)
+
+[node name="SectorPoint5" parent="Sector5" instance=ExtResource("3_h15or")]
+position = Vector2(-25, 32)
+
+[node name="Sector6" parent="." instance=ExtResource("2_l4525")]
+position = Vector2(24, 12)
+ceiling_height = 5.0
+
+[node name="SectorPoint2" parent="Sector6" instance=ExtResource("3_h15or")]
+position = Vector2(-19, 18)
+
+[node name="SectorPoint3" parent="Sector6" instance=ExtResource("3_h15or")]
+position = Vector2(-38, 18)
+
+[node name="SectorPoint4" parent="Sector6" instance=ExtResource("3_h15or")]
+position = Vector2(-28, 28)
+
+[node name="SectorPoint5" parent="Sector6" instance=ExtResource("3_h15or")]
+position = Vector2(-14, 31)

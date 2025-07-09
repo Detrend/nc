@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://debkayvnumrqq"]
+
+[ext_resource type="Script" uid="uid://bhot6f3x5ukyi" path="res://scripts/SectorPoint.gd" id="1_mwxf8"]
+
+[node name="SectorPoint" type="Node2D"]
+script = ExtResource("1_mwxf8")
