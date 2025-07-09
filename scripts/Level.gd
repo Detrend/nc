@@ -11,7 +11,8 @@ var config : EditorConfig = preload("res://config.tres")
 @export var export_path : String = ""
 @export_tool_button("Export level") var export_level_tool_button = export_level
 
-
+func _ready() -> void:
+	if ! Engine.is_editor_hint(): export_level()
 
 func create_level_export_data() -> Dictionary:	
 	var level_export := Dictionary()
@@ -66,8 +67,8 @@ func create_level_export_data() -> Dictionary:
 			elif hosts.size() > 1: ErrorUtils.report_error("Sector {0} has {1} host portals - currently unsupported!".format([sector, hosts.size()]))
 			var host :Sector = hosts[0]
 			sector_export["portal_target"] = sectors_map[host]
-			sector_export["portal_wall"] = get_destination_portal_wall_idx.call(sector, host.portal_destination_wall)
-			sector_export["portal_destination_wall"] = get_destination_portal_wall_idx.call(sector, host.portal_wall)
+			sector_export["portal_wall"] = host.portal_destination_wall + 1
+			sector_export["portal_destination_wall"] = host.portal_wall
 		sectors_export.append(sector_export)
 	level_export["points"] = points_export
 	level_export["sectors"] = sectors_export

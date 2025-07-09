@@ -37,6 +37,10 @@ func _process(delta: float) -> void:
 		_visualizer_line.add_point(point.global_position - _visualizer_line.global_position)
 	
 	_visualize_portals()
+	
+	#self.color
+	#self.color = config.get_floor_color(floor_height)
+	self.color = EditorConfig.get_floor_color(config, floor_height)
 	#if Input.is_physical_key_pressed(KEY_S):
 	#	print("snapping...")
 
