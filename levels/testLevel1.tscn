@@ -2,114 +2,128 @@
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/Level.gd" id="1_nqbmo"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_l4525"]
-[ext_resource type="PackedScene" uid="uid://debkayvnumrqq" path="res://prefabs/SectorPoint.tscn" id="3_h15or"]
+[ext_resource type="PackedScene" uid="uid://2xarq0korji0" path="res://prefabs/PlayerPosition.tscn" id="3_nqbmo"]
 
 [node name="TestLevel1" type="Node2D"]
 script = ExtResource("1_nqbmo")
-max_snapping_distance = 40.0
-export_scale = Vector2(0.3, 0.3)
+max_snapping_distance = 5.0
+export_scale = Vector3(0.1, 0.1, 1)
 export_path = "./level_test1.json"
 
-[node name="Sector" parent="." instance=ExtResource("2_l4525")]
-ceiling_height = 5.0
+[node name="Sectors" type="Node2D" parent="."]
 
-[node name="SectorPoint" parent="Sector" instance=ExtResource("3_h15or")]
-position = Vector2(5, 30)
+[node name="Sector4" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
+polygon = PackedVector2Array(80, -24, 80, 40, 56, 40, 56, 32, 56, 8, 56, 0, 56, -24)
+ceiling_height = 1.5
+portal_destination = NodePath("../Sector8")
+portal_wall = 3
+portal_destination_wall = 2
+is_portal_bidirectional = true
+show_portal_arrow = true
 
-[node name="SectorPoint2" parent="Sector" instance=ExtResource("3_h15or")]
-position = Vector2(14, 12)
-is_wall = true
+[node name="Sector5" parent="Sectors" instance=ExtResource("2_l4525")]
+position = Vector2(104, 24)
+polygon = PackedVector2Array(-112, -48, -112, -24, -88, -24, -48, -24, -48, -48)
+uv = PackedVector2Array(-5.66675, -55.9995)
+ceiling_height = 1.5
+portal_wall = -1
+portal_destination_wall = 0
+is_portal_bidirectional = true
 
-[node name="SectorPoint3" parent="Sector" instance=ExtResource("3_h15or")]
-position = Vector2(-12, -5)
+[node name="Sector6" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
+position = Vector2(96, 48)
+polygon = PackedVector2Array(-80, -48, -80, -40, -80, -16, -80, -8, -104, 16, -104, -48)
+ceiling_height = 1.5
+portal_destination = NodePath("../Sector13")
+portal_wall = 1
+portal_destination_wall = 0
+is_portal_bidirectional = true
+show_portal_arrow = true
 
-[node name="SectorPoint4" parent="Sector" instance=ExtResource("3_h15or")]
-position = Vector2(-20, 19)
+[node name="Sector7" parent="Sectors" instance=ExtResource("2_l4525")]
+position = Vector2(104, 96)
+polygon = PackedVector2Array(-112, -32, -24, -32, -24, -56, -48, -56, -88, -56)
+uv = PackedVector2Array(-5.66675, -55.9995)
+ceiling_height = 1.5
+portal_wall = -1
+portal_destination_wall = 0
+is_portal_bidirectional = true
 
-[node name="SectorPoint6" parent="Sector" instance=ExtResource("3_h15or")]
-position = Vector2(-14, 30)
+[node name="Sector8" parent="Sectors" instance=ExtResource("2_l4525")]
+position = Vector2(329, 56)
+polygon = PackedVector2Array(-113, -56, -89, -32, -32, -32, -32, -56)
+uv = PackedVector2Array(-5.66675, -55.9995)
+ceiling_height = 1.5
+portal_wall = -1
+portal_destination_wall = 0
+is_portal_bidirectional = true
 
-[node name="Sector2" parent="." instance=ExtResource("2_l4525")]
-position = Vector2(101, -28)
+[node name="Sector9" parent="Sectors" instance=ExtResource("2_l4525")]
+position = Vector2(232, 104)
+polygon = PackedVector2Array(-56, -72, -56, -80, -32, -104, -32, -72)
+uv = PackedVector2Array(-5.66675, -55.9995)
+ceiling_height = 1.5
+portal_wall = -1
+portal_destination_wall = 0
+is_portal_bidirectional = true
 
-[node name="SectorPoint" parent="Sector2" instance=ExtResource("3_h15or")]
-position = Vector2(-44, 52)
+[node name="Sector10" parent="Sectors" instance=ExtResource("2_l4525")]
+position = Vector2(240, 104)
+polygon = PackedVector2Array(0, -8, -64, -8, -38, -35, -27, -35)
+uv = PackedVector2Array(-5.66675, -55.9995)
+floor_height = 0.1
+ceiling_height = 1.5
+portal_wall = -1
+portal_destination_wall = 0
+is_portal_bidirectional = true
 
-[node name="SectorPoint2" parent="Sector2" instance=ExtResource("3_h15or")]
-position = Vector2(-44, 28)
+[node name="Sector11" parent="Sectors" instance=ExtResource("2_l4525")]
+position = Vector2(240, 64)
+polygon = PackedVector2Array(-27, -4, -38, -4, -64, -32, -40, -32, -24, -32, 0, -32)
+uv = PackedVector2Array(-5.66675, -55.9995)
+floor_height = 0.1
+ceiling_height = 1.5
+portal_wall = -1
+portal_destination_wall = 0
+is_portal_bidirectional = true
 
-[node name="SectorPoint3" parent="Sector2" instance=ExtResource("3_h15or")]
-position = Vector2(-71, 21)
+[node name="Sector12" parent="Sectors" instance=ExtResource("2_l4525")]
+position = Vector2(273, 104)
+polygon = PackedVector2Array(-57, -72, -57, -104, -33, -80, -33, -72)
+uv = PackedVector2Array(-5.66675, -55.9995)
+ceiling_height = 1.5
+portal_wall = -1
+portal_destination_wall = 0
+is_portal_bidirectional = true
 
-[node name="SectorPoint4" parent="Sector2" instance=ExtResource("3_h15or")]
-position = Vector2(-87, 40)
+[node name="Sector13" parent="Sectors" instance=ExtResource("2_l4525")]
+position = Vector2(232, 56)
+polygon = PackedVector2Array(-112, -56, -112, -32, -56, -32, -32, -56)
+uv = PackedVector2Array(-5.66675, -55.9995)
+ceiling_height = 1.5
+portal_wall = -1
+portal_destination_wall = 0
+is_portal_bidirectional = true
 
-[node name="SectorPoint5" parent="Sector2" instance=ExtResource("3_h15or")]
-position = Vector2(-75, 52)
+[node name="Sector14" parent="Sectors" instance=ExtResource("2_l4525")]
+position = Vector2(201, 64)
+polygon = PackedVector2Array(1, 5, -25, 32, -25, -32, 1, -4)
+uv = PackedVector2Array(-5.66675, -55.9995)
+floor_height = 0.1
+ceiling_height = 1.5
+portal_wall = -1
+portal_destination_wall = 0
+is_portal_bidirectional = true
 
-[node name="Sector3" parent="." instance=ExtResource("2_l4525")]
-position = Vector2(34, -57)
-ceiling_height = 5.0
+[node name="Sector15" parent="Sectors" instance=ExtResource("2_l4525")]
+position = Vector2(288, 88)
+polygon = PackedVector2Array(-75, -19, -75, -28, -48, -56, -48, 8)
+uv = PackedVector2Array(-5.66675, -55.9995)
+floor_height = 0.1
+ceiling_height = 1.5
+portal_wall = -1
+portal_destination_wall = 0
+is_portal_bidirectional = true
 
-[node name="SectorPoint" parent="Sector3" instance=ExtResource("3_h15or")]
-position = Vector2(-4, 50)
-
-[node name="SectorPoint2" parent="Sector3" instance=ExtResource("3_h15or")]
-position = Vector2(-13, 37)
-
-[node name="SectorPoint3" parent="Sector3" instance=ExtResource("3_h15or")]
-position = Vector2(-40, 35)
-
-[node name="SectorPoint4" parent="Sector3" instance=ExtResource("3_h15or")]
-position = Vector2(-46, 52)
-
-[node name="SectorPoint5" parent="Sector3" instance=ExtResource("3_h15or")]
-position = Vector2(-20, 69)
-
-[node name="Sector4" parent="." instance=ExtResource("2_l4525")]
-position = Vector2(51, 4)
-ceiling_height = 5.0
-
-[node name="SectorPoint2" parent="Sector4" instance=ExtResource("3_h15or")]
-position = Vector2(-25, 20)
-
-[node name="SectorPoint3" parent="Sector4" instance=ExtResource("3_h15or")]
-position = Vector2(-46, 26)
-
-[node name="SectorPoint4" parent="Sector4" instance=ExtResource("3_h15or")]
-position = Vector2(-41, 39)
-
-[node name="SectorPoint5" parent="Sector4" instance=ExtResource("3_h15or")]
-position = Vector2(-18, 36)
-
-[node name="Sector5" parent="." instance=ExtResource("2_l4525")]
-position = Vector2(82, 7)
-ceiling_height = 5.0
-
-[node name="SectorPoint2" parent="Sector5" instance=ExtResource("3_h15or")]
-position = Vector2(-25, 17)
-
-[node name="SectorPoint3" parent="Sector5" instance=ExtResource("3_h15or")]
-position = Vector2(-56, 17)
-
-[node name="SectorPoint4" parent="Sector5" instance=ExtResource("3_h15or")]
-position = Vector2(-49, 33)
-
-[node name="SectorPoint5" parent="Sector5" instance=ExtResource("3_h15or")]
-position = Vector2(-25, 32)
-
-[node name="Sector6" parent="." instance=ExtResource("2_l4525")]
-position = Vector2(24, 12)
-ceiling_height = 5.0
-
-[node name="SectorPoint2" parent="Sector6" instance=ExtResource("3_h15or")]
-position = Vector2(-19, 18)
-
-[node name="SectorPoint3" parent="Sector6" instance=ExtResource("3_h15or")]
-position = Vector2(-38, 18)
-
-[node name="SectorPoint4" parent="Sector6" instance=ExtResource("3_h15or")]
-position = Vector2(-28, 28)
-
-[node name="SectorPoint5" parent="Sector6" instance=ExtResource("3_h15or")]
-position = Vector2(-14, 31)
+[node name="PlayerPosition" parent="." instance=ExtResource("3_nqbmo")]
+position = Vector2(5, 52)

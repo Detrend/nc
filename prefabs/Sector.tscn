@@ -1,12 +1,32 @@
-[gd_scene load_steps=2 format=3 uid="uid://byfpnxkb3xc6c"]
+[gd_scene load_steps=3 format=3 uid="uid://byfpnxkb3xc6c"]
 
 [ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/Sector.gd" id="1_8a3ec"]
+[ext_resource type="Resource" uid="uid://dppwe11x5k3v7" path="res://config.tres" id="2_8a3ec"]
 
-[node name="Sector" type="Node2D"]
+[node name="Sector" type="Polygon2D"]
 script = ExtResource("1_8a3ec")
+portal_destination_wall = null
+is_portal_bidirectional = null
+config = ExtResource("2_8a3ec")
 
 [node name="VisualizerLine" type="Line2D" parent="."]
-width = 2.5
+closed = true
+width = 1.0
 default_color = Color(0, 0, 0, 1)
+joint_mode = 2
 
-[node name="VisualizerPoly" type="Polygon2D" parent="."]
+[node name="PortalVisualizerLine" type="Line2D" parent="."]
+z_index = 1
+width = 2.0
+default_color = Color(0, 0.513002, 1.92523e-07, 1)
+
+[node name="PortalDestinationVisualizerLine" type="Line2D" parent="."]
+z_index = 1
+width = 2.0
+default_color = Color(0.54214, 0.104039, 0.127324, 1)
+
+[node name="PortalArrowLine" type="Line2D" parent="."]
+z_index = 2
+closed = true
+width = 0.5
+default_color = Color(0.829578, 0.3964, 0.199373, 0.67451)

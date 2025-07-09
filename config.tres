@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="EditorConfig" load_steps=2 format=3 uid="uid://dppwe11x5k3v7"]
+
+[ext_resource type="Script" uid="uid://bcqqujkyuiq7b" path="res://scripts/EditorConfig.gd" id="1_x30i3"]
+
+[resource]
+script = ExtResource("1_x30i3")
+portal_entry_color = Color(0, 0.392157, 0, 0.74902)
+portal_exit_color_single = Color(0.545098, 0, 0, 0.721569)
+portal_exit_color_bidirectional = Color(0.23509, 0.474821, 0.809821, 0.854902)
+metadata/_custom_type_script = "uid://bcqqujkyuiq7b"
