@@ -53,6 +53,22 @@ static func get_ancestor_component_of_type(node: Node, component_type, flags := 
 static func get_descendants_of_type(node: Node, child_type, list: Array = [], flags := LOOKUP_FLAGS.RECURSIVE):
 		return get_children_of_type(node, child_type, list, flags | LOOKUP_FLAGS.RECURSIVE)
 
+static func get_children_by_predicate(node: Node, predicate: Callable, list: Array = [], flags := LOOKUP_FLAGS.NONE):
+	if !node: return [];
+	
+	for i in range(node.get_child_count()):
+		var child = node.get_child(i)
+		if predicate.call(child):
+			list.append(child)
+		if flags & LOOKUP_FLAGS.RECURSIVE:
+			list = get_children_by_predicate(child, predicate,list, flags & ~LOOKUP_FLAGS.REQUIRED)
+			
+	if list.is_empty() && flags & LOOKUP_FLAGS.REQUIRED:
+		ErrorUtils.report_error("Did not find required component on node '{0}'"
+			.format([node.get_path()]));
+	return list
+	
+
 static func get_children_of_type(node: Node, child_type, list :Array = [], flags := LOOKUP_FLAGS.NONE):
 	if !node: return [];
 	
