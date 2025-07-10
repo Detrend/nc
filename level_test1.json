@@ -267,13 +267,25 @@
 		[
 			-23.2000007629395,
 			4.0
+		],
+		[
+			-16.8000011444092,
+			0.0
+		],
+		[
+			-16.0,
+			0.0
+		],
+		[
+			-16.0,
+			2.40000009536743
 		]
 	],
 	"sectors": [
 		{
 			"ceiling": 1.5,
 			"debug_name": "Sector4",
-			"floor": 0.100000000005821,
+			"floor": 0.1,
 			"id": 0,
 			"points": [
 				0,
@@ -288,9 +300,9 @@
 			"portal_wall": 3
 		},
 		{
-			"ceiling": 2.5,
+			"ceiling": 1.5,
 			"debug_name": "Sector5",
-			"floor": 0.0,
+			"floor": 0.1,
 			"id": 1,
 			"points": [
 				0,
@@ -301,14 +313,14 @@
 				9,
 				10
 			],
-			"portal_destination_wall": 1,
-			"portal_target": 6,
-			"portal_wall": 5
+			"portal_destination_wall": 0,
+			"portal_target": 26,
+			"portal_wall": 3
 		},
 		{
 			"ceiling": 1.5,
 			"debug_name": "Sector6",
-			"floor": 0.100000000005821,
+			"floor": 0.1,
 			"id": 2,
 			"points": [
 				6,
@@ -382,9 +394,9 @@
 				29,
 				30
 			],
-			"portal_destination_wall": 5,
-			"portal_target": 1,
-			"portal_wall": 1
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
 		},
 		{
 			"ceiling": 2.5,
@@ -671,6 +683,7 @@
 			"id": 25,
 			"points": [
 				35,
+				67,
 				50,
 				49,
 				23
@@ -678,6 +691,21 @@
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1
+		},
+		{
+			"ceiling": 1.5,
+			"debug_name": "Sector30",
+			"floor": 0.1,
+			"id": 26,
+			"points": [
+				68,
+				69,
+				50,
+				67
+			],
+			"portal_destination_wall": 2,
+			"portal_target": 3,
+			"portal_wall": 0
 		}
 	]
 }

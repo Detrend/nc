@@ -3,7 +3,7 @@ class_name Sector
 extends Polygon2D
 
 @export var floor_height : float = 0.0
-@export var ceiling_height : float = 10.0
+@export var ceiling_height : float = 1.5
 
 @export var portal_destination : Sector = null
 @export var portal_wall : int:

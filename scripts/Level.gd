@@ -14,6 +14,10 @@ var config : EditorConfig = preload("res://config.tres")
 func _ready() -> void:
 	if ! Engine.is_editor_hint(): export_level()
 
+func _process(delta: float) -> void:
+	#if ! Engine.is_editor_hint(): return
+	_handle_new_sector_creation()
+
 func create_level_export_data() -> Dictionary:	
 	var level_export := Dictionary()
 	var points_export : Array[PackedFloat32Array]
@@ -116,3 +120,18 @@ func _snap_points()->void:
 				print("snap {0} -> {1} (distance: {2})".format([p, to_snap, p.global_position.distance_to(to_snap.global_position)]))
 				p.global_position = to_snap.global_position
 	pass
+
+var sector_creation_request : bool = false
+func _handle_new_sector_creation()->void:
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):# and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+		if (!sector_creation_request) and Input.is_physical_key_pressed(KEY_SHIFT) and Input.is_physical_key_pressed(KEY_CTRL):
+			sector_creation_request = true
+			var sector_parent : Node2D = $Sectors if $Sectors else self
+			var new_sector :Sector = preload("res://prefabs/Sector.tscn").instantiate()
+			sector_parent.add_child(new_sector)
+			new_sector.owner = get_tree().edited_scene_root
+			new_sector.global_position = get_global_mouse_position()
+			new_sector.polygon = [Vector2(0, 0), Vector2(10, 0), Vector2(0, 10)]
+			print("new sector: {0}".format([new_sector]))
+	else:
+		sector_creation_request = false
