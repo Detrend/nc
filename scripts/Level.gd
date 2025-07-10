@@ -30,7 +30,8 @@ func create_level_export_data() -> Dictionary:
 		return ret as int
 		
 	var get_destination_portal_wall_idx: Callable = func(s: Sector, destination : int)->int:
-		return s.polygon.size() - 2 - destination
+		return destination
+		return s.get_points_count() - 2 - destination
 		var destination_portal_points := s.portal_destination.get_points()
 		var first_idx :int = get_point_idx.call(destination_portal_points[0].global_position)
 		var this_idx: int = get_point_idx.call(destination_portal_points[destination].global_position)
@@ -68,7 +69,7 @@ func create_level_export_data() -> Dictionary:
 			elif hosts.size() > 1: ErrorUtils.report_error("Sector {0} has {1} host portals - currently unsupported!".format([sector, hosts.size()]))
 			var host :Sector = hosts[0]
 			sector_export["portal_target"] = sectors_map[host]
-			sector_export["portal_wall"] = host.portal_destination_wall + 1
+			sector_export["portal_wall"] = host.portal_destination_wall
 			sector_export["portal_destination_wall"] = host.portal_wall
 		sectors_export.append(sector_export)
 	level_export["points"] = points_export
@@ -92,6 +93,7 @@ func get_sectors() -> Array[Sector]:
 	var ret : Array[Sector] = []
 	ret = NodeUtils.get_children_by_predicate(self, func(ch:Node)->bool: return is_instance_of(ch, Sector) and ch.visible , ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)
 	return ret
+
 
 func _get_export_coords(p : Vector2)-> Vector2:
 	p -= _get_player_position()

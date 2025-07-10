@@ -11,7 +11,7 @@ extends Polygon2D
 	set(value): portal_wall = value if polygon.size() <= 0 else (value % polygon.size())
 @export var portal_destination_wall: int:
 	get: return portal_destination_wall
-	set(value): portal_destination_wall = value if !(portal_destination and portal_destination.polygon.size()>0) else (value % portal_destination.polygon.size())
+	set(value): portal_destination_wall = value if !(portal_destination and portal_destination.get_points_count()>0) else (value % portal_destination.get_points_count())
 @export var is_portal_bidirectional : bool = true
 @export var show_portal_arrow : bool = false
 
@@ -31,11 +31,10 @@ func _process(delta: float) -> void:
 	
 	self.scale = Vector2.ONE
 	self.rotation = 0.0
-	var polygon : PackedVector2Array = []
-	_visualizer_line.clear_points()
-	for point in get_points():
-		_visualizer_line.add_point(point.global_position - _visualizer_line.global_position)
+	self.remove_duplicit_points()
+	self.ensure_points_clockwise()
 	
+	_visualize_border()
 	_visualize_portals()
 	
 	#self.color
@@ -50,7 +49,14 @@ func get_points() -> Array[SectorPoint]:
 	for i in range(self.polygon.size()):
 		ret.append(SectorPoint.new(self, i))
 	return ret
-		
+
+func get_points_count() -> int:
+	return self.polygon.size() 
+	
+func _visualize_border()->void:
+	_visualizer_line.clear_points()
+	for point in get_points():
+		_visualizer_line.add_point(point.global_position - _visualizer_line.global_position)
 
 func _visualize_portals()->void:
 	$PortalVisualizerLine.clear_points()
@@ -70,6 +76,26 @@ func _visualize_portals()->void:
 	
 	$PortalVisualizerLine.default_color = config.portal_entry_color
 	$PortalDestinationVisualizerLine.default_color = config.portal_exit_color_bidirectional if self.is_portal_bidirectional else config.portal_exit_color_single
+
+
+
+func remove_duplicit_points()->void:
+	var did_remove : bool = false
+	var t:int = 1
+	var points := self.polygon
+	while t < points.size():
+		if points[t] == points[t-1]:
+			points.remove_at(t)
+			did_remove = true
+		else: t += 1
+	if did_remove: self.polygon = points
+
+func ensure_points_clockwise()->void:
+	var points := self.polygon
+	if GeometryUtils.is_clockwise_convex_polygon(points) < 0:
+		points.reverse()
+		self.polygon = points
+
 
 func snap_to_nearest() -> void:
 	var level := _level
