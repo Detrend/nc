@@ -124,7 +124,7 @@ func _snap_points()->void:
 var sector_creation_request : bool = false
 func _handle_new_sector_creation()->void:
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):# and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-		if (!sector_creation_request) and Input.is_physical_key_pressed(KEY_SHIFT) and Input.is_physical_key_pressed(KEY_CTRL):
+		if (!sector_creation_request) and Input.is_physical_key_pressed(KEY_ALT) and Input.is_physical_key_pressed(KEY_CTRL):
 			sector_creation_request = true
 			var sector_parent : Node2D = $Sectors if $Sectors else self
 			var new_sector :Sector = preload("res://prefabs/Sector.tscn").instantiate()

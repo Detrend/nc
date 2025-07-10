@@ -31,8 +31,14 @@ func _process(delta: float) -> void:
 	
 	self.scale = Vector2.ONE
 	self.rotation = 0.0
-	self.remove_duplicit_points()
-	self.ensure_points_clockwise()
+	var points := self.polygon
+	self._handle_alt_mode_snapping(points)
+	var did_change :bool = false
+	did_change = did_change or self._remove_duplicit_points (points)
+	did_change = did_change or self._ensure_points_clockwise(points)
+	if did_change:
+		self.polygon = points
+		
 	
 	_visualize_border()
 	_visualize_portals()
@@ -52,6 +58,11 @@ func get_points() -> Array[SectorPoint]:
 
 func get_points_count() -> int:
 	return self.polygon.size() 
+	
+func point_pos_relative_to_absolute(point: Vector2)-> Vector2:
+	return point + self.global_position
+func point_pos_absolute_to_relative(point: Vector2)->Vector2:
+	return point - self.global_position
 	
 func _visualize_border()->void:
 	_visualizer_line.clear_points()
@@ -79,44 +90,43 @@ func _visualize_portals()->void:
 
 
 
-func remove_duplicit_points()->void:
+func _remove_duplicit_points(points: PackedVector2Array)->bool:
 	var did_remove : bool = false
 	var t:int = 1
-	var points := self.polygon
 	while t < points.size():
 		if points[t] == points[t-1]:
 			points.remove_at(t)
 			did_remove = true
 		else: t += 1
-	if did_remove: self.polygon = points
+	return did_remove
 
-func ensure_points_clockwise()->void:
-	var points := self.polygon
+func _ensure_points_clockwise(points: PackedVector2Array)->bool:
 	if GeometryUtils.is_clockwise_convex_polygon(points) < 0:
 		points.reverse()
-		self.polygon = points
+		return true
+	return false
 
 
-func snap_to_nearest() -> void:
-	var level := _level
-	var max_snapping_distance_sqr := level.max_snapping_distance * level.max_snapping_distance
-	
-	var snapping_point := find_nearest_point(get_global_mouse_position(), get_points(), 5)
-	
-	var nearest_point : SectorPoint = null
-	var nearest_point_distance_sqr : float = INF
-	for sector in level.get_sectors():
-		if sector == self: continue
-		var p := find_nearest_point(snapping_point.global_position, sector.get_points(), level.max_snapping_distance)
-		var distance_sqr := p.global_position.distance_squared_to(snapping_point.global_position)
-		if distance_sqr < nearest_point_distance_sqr:
-			nearest_point = p
-			nearest_point_distance_sqr = distance_sqr
-	if nearest_point:
-		self.global_position = nearest_point.global_position
-		print("snapped {0} to {1}".format([self, nearest_point]))
-	else:
-		print("cannot snap {0}".format([self]))
+var last_points : PackedVector2Array = []
+func _handle_alt_mode_snapping(points: PackedVector2Array)->void:
+	if Input.is_physical_key_pressed(KEY_Q):
+		var selection := EditorInterface.get_selection().get_selected_nodes()
+		if selection.size() == 1 and selection[0] == self:
+			if points.size() == last_points.size():
+				var t :int = 0
+				while t < points.size():
+					if points[t] != last_points[t]:
+						var previous_absolute := point_pos_relative_to_absolute(last_points[t])
+						var current_absolute := point_pos_relative_to_absolute(points[t])
+						for s in _level.get_sectors():
+							if s == self: continue
+							for p in s.get_points():
+								if p.global_position == previous_absolute:
+									p.global_position = current_absolute
+						pass
+					t += 1
+			#print("Alt mode: {0}".format([self]))
+	last_points = points
 
 
 static func find_nearest_point(v: Vector2, others: Array[SectorPoint], tolerance: float)-> SectorPoint:
