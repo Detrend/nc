@@ -6,6 +6,7 @@ extends Polygon2D
 @export var ceiling_height : float = 1.5
 
 @export var portal_destination : Sector = null
+@export var enable_portal : bool = true
 @export var portal_wall : int:
 	get: return portal_wall
 	set(value): portal_wall = value if polygon.size() <= 0 else (value % polygon.size())
@@ -17,7 +18,7 @@ extends Polygon2D
 
 var config : EditorConfig = preload("res://config.tres")
 
-func has_portal()-> bool: return portal_destination != null
+func has_portal()-> bool: return enable_portal and portal_destination != null
 
 var _level : Level:
 	get: return NodeUtils.get_ancestor_component_of_type(self, Level)
@@ -49,7 +50,7 @@ func _process(delta: float) -> void:
 	
 	#self.color
 	#self.color = config.get_floor_color(floor_height)
-	self.color = EditorConfig.get_floor_color(config, floor_height)
+	self.color = EditorConfig.get_sector_color(config, self)
 	#if Input.is_physical_key_pressed(KEY_S):
 	#	print("snapping...")
 
@@ -77,7 +78,7 @@ func _visualize_portals()->void:
 	$PortalVisualizerLine.clear_points()
 	$PortalDestinationVisualizerLine.clear_points()
 	$PortalArrowLine.clear_points()
-	if ! portal_destination: 
+	if ! has_portal(): 
 		return
 	var these_points := get_points()
 	$PortalVisualizerLine.add_point(these_points[portal_wall].global_position - self.global_position)

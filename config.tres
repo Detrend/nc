@@ -1,15 +1,29 @@
-[gd_resource type="Resource" script_class="EditorConfig" load_steps=2 format=3 uid="uid://dppwe11x5k3v7"]
+[gd_resource type="Resource" script_class="EditorConfig" load_steps=4 format=3 uid="uid://dppwe11x5k3v7"]
 
 [ext_resource type="Script" uid="uid://bcqqujkyuiq7b" path="res://scripts/EditorConfig.gd" id="1_x30i3"]
+
+[sub_resource type="Curve" id="Curve_x30i3"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.279743, 0.525208), 1.78334, 1.78334, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_2lgy8"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.279743, 0.525208), 1.78334, 1.78334, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 3
 
 [resource]
 script = ExtResource("1_x30i3")
 portal_entry_color = Color(0, 0.392157, 0, 0.666667)
 portal_exit_color_single = Color(0.670588, 0, 0, 0.815686)
 portal_exit_color_bidirectional = Color(0.209964, 0.444104, 0.772898, 0.85098)
-sector_min_height = 0.0
-sector_min_height_color = Color(1, 1, 1, 1)
-sector_max_height = 0.5
-sector_max_height_color = Color(0.607171, 0.0125925, 0.228489, 1)
+floor_min_height = 0.0
+floor_min_height_color = Color(1, 1, 1, 1)
+floor_max_height = 2.0
+floor_max_height_color = Color(0.501961, 0, 0.196078, 1)
+floor_color_curve = SubResource("Curve_2lgy8")
+ceiling_min_height = 1.0
+ceiling_min_height_color = Color(1, 1, 1, 1)
+ceiling_max_height = 10.0
+ceiling_max_height_color = Color(0.662745, 0.662745, 0.662745, 1)
+ceiling_color_curve = SubResource("Curve_x30i3")
 shared_continuous_movement_max_step = 50.0
 metadata/_custom_type_script = "uid://bcqqujkyuiq7b"

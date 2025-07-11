@@ -3,6 +3,7 @@ class_name Level
 extends Node2D
 
 var config : EditorConfig = preload("res://config.tres")
+@export var coloring_mode: EditorConfig.SectorColoringMode = EditorConfig.SectorColoringMode.Floor
 @export var max_snapping_distance : float = 1.0
 @export_tool_button("Snap points") var snap_points_tool_button = _snap_points
 
@@ -91,6 +92,7 @@ func export_level():
 		return
 	file.store_string(json)
 	file.close()
+	print("export completed")
 	
 
 func get_sectors() -> Array[Sector]:

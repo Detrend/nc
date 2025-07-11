@@ -1,14 +1,13 @@
-[gd_scene load_steps=7 format=3 uid="uid://befdk2p7cnnba"]
+[gd_scene load_steps=5 format=3 uid="uid://befdk2p7cnnba"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/Level.gd" id="1_nqbmo"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_l4525"]
-[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/Sector.gd" id="3_bjjgi"]
+[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/Sector.gd" id="3_l4525"]
 [ext_resource type="PackedScene" uid="uid://2xarq0korji0" path="res://prefabs/PlayerPosition.tscn" id="3_nqbmo"]
-[ext_resource type="Script" uid="uid://cqev0w1largrc" path="res://scripts/clockwise_test.gd" id="4_h15or"]
-[ext_resource type="Texture2D" uid="uid://c6fxl8yses7sc" path="res://icon.svg" id="4_l4525"]
 
 [node name="TestLevel1" type="Node2D"]
 script = ExtResource("1_nqbmo")
+coloring_mode = 1
 max_snapping_distance = 5.0
 export_scale = Vector3(0.1, 0.1, 1)
 export_path = "./level_test1.json"
@@ -16,7 +15,7 @@ export_path = "./level_test1.json"
 [node name="Sectors" type="Node2D" parent="."]
 
 [node name="Sector4" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
-color = Color(0.921434, 0.802518, 0.845698, 1)
+color = Color(0.987135, 0.987135, 0.987135, 1)
 polygon = PackedVector2Array(80, -24, 80, 40, 56, 40, 56, 31.7314, 56, 8, 56, 0)
 floor_height = 0.1
 portal_destination = NodePath("../Sector8")
@@ -25,17 +24,16 @@ portal_destination_wall = 1
 
 [node name="Sector5" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(104, 24)
-color = Color(0.921434, 0.802518, 0.845698, 1)
-polygon = PackedVector2Array(-24, -48, -48, -24, -88, -24, -112, -24, -112, -48, -80, -48)
+color = Color(0.987135, 0.987135, 0.987135, 1)
+polygon = PackedVector2Array(-24, -48, -48, -24, -88, -24, -112, -24, -112, -32, -112, -48)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.1
 portal_destination = NodePath("../Sector30")
 portal_wall = 3
-is_portal_bidirectional = false
 
 [node name="Sector6" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(96, 48)
-color = Color(0.921434, 0.802518, 0.845698, 1)
+color = Color(0.987135, 0.987135, 0.987135, 1)
 polygon = PackedVector2Array(-80, -48, -80, -40, -80, -16, -80, -8, -104, 16, -104, -48)
 floor_height = 0.1
 portal_destination = NodePath("../Sector13")
@@ -44,15 +42,16 @@ portal_destination_wall = 3
 
 [node name="Sector7" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(104, 96)
-color = Color(0.842868, 0.605037, 0.691396, 1)
-polygon = PackedVector2Array(-88, -56, -48, -56, -24, -56, -24, -32, -112, -32)
+color = Color(0.987135, 0.987135, 0.987135, 1)
+polygon = PackedVector2Array(-88, -56, -48, -56, -24, -56, -24, -32, -72, -32, -80, -32, -112, -32)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.2
-portal_wall = -1
+portal_wall = 4
+portal_destination_wall = 3
 
 [node name="Sector8" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(329, 56)
-color = Color(0.921434, 0.802518, 0.845698, 1)
+color = Color(0.79273, 0.79273, 0.79273, 1)
 polygon = PackedVector2Array(-89, -56, -33, -56, -33, -32, -89, -32, -113, -56)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.1
@@ -61,7 +60,7 @@ portal_wall = -1
 
 [node name="Sector9" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(232, 104)
-color = Color(0.921434, 0.802518, 0.845698, 1)
+color = Color(0.79273, 0.79273, 0.79273, 1)
 polygon = PackedVector2Array(-56, -72, -56, -80, -32, -104, -32, -72)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.1
@@ -70,6 +69,7 @@ portal_wall = -1
 
 [node name="Sector10" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(240, 104)
+color = Color(0.910437, 0.910437, 0.910437, 1)
 polygon = PackedVector2Array(0, -8, -16, -8, -39.7639, -8, -64, -8, -34, -36, -30, -36)
 uv = PackedVector2Array(-5.66675, -55.9995)
 ceiling_height = 2.5
@@ -77,7 +77,7 @@ portal_wall = -1
 
 [node name="Sector11" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(240, 64)
-color = Color(0.842868, 0.605037, 0.691396, 1)
+color = Color(0.662745, 0.662745, 0.662745, 1)
 polygon = PackedVector2Array(-30, -3, -34, -3, -64, -32, -40, -32, -24, -32, 0, -32)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.2
@@ -86,7 +86,7 @@ portal_wall = -1
 
 [node name="Sector12" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(273, 104)
-color = Color(0.921434, 0.802518, 0.845698, 1)
+color = Color(0.79273, 0.79273, 0.79273, 1)
 polygon = PackedVector2Array(-57, -72, -57, -104, -33, -80, -33, -72)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.1
@@ -95,7 +95,7 @@ portal_wall = -1
 
 [node name="Sector13" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(232, 56)
-color = Color(0.921434, 0.802518, 0.845698, 1)
+color = Color(0.79273, 0.79273, 0.79273, 1)
 polygon = PackedVector2Array(-56, -56, -32, -56, -56, -32, -112, -32, -112, -56)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.1
@@ -103,7 +103,7 @@ ceiling_height = 4.0
 
 [node name="Sector14" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(201, 64)
-color = Color(0.921434, 0.802518, 0.845698, 1)
+color = Color(0.910437, 0.910437, 0.910437, 1)
 polygon = PackedVector2Array(3, 2, -25, 16, -25, -8, 3, -1)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.1
@@ -112,7 +112,7 @@ portal_wall = -1
 
 [node name="Sector15" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(288, 88)
-color = Color(0.921434, 0.802518, 0.845698, 1)
+color = Color(0.910437, 0.910437, 0.910437, 1)
 polygon = PackedVector2Array(-76, -22, -76, -25, -48, -32, -48, -8)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.1
@@ -121,6 +121,7 @@ portal_wall = -1
 
 [node name="Sector16" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(291, 104)
+color = Color(0.910437, 0.910437, 0.910437, 1)
 polygon = PackedVector2Array(-81, -36, -79, -38, -51, -24, -51, -8)
 uv = PackedVector2Array(-5.66675, -55.9995)
 ceiling_height = 2.5
@@ -128,7 +129,7 @@ portal_wall = -1
 
 [node name="Sector17" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(291, 85)
-color = Color(0.842868, 0.605037, 0.691396, 1)
+color = Color(0.662745, 0.662745, 0.662745, 1)
 polygon = PackedVector2Array(-79, -22, -81, -24, -51, -53, -51, -29)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.2
@@ -137,6 +138,7 @@ portal_wall = -1
 
 [node name="Sector18" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(264, 107)
+color = Color(0.910437, 0.910437, 0.910437, 1)
 polygon = PackedVector2Array(-60, -41, -58, -39, -88, -11, -88, -27)
 uv = PackedVector2Array(-5.66675, -55.9995)
 ceiling_height = 2.5
@@ -144,7 +146,7 @@ portal_wall = -1
 
 [node name="Sector19" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(252, 87)
-color = Color(0.842868, 0.605037, 0.691396, 1)
+color = Color(0.662745, 0.662745, 0.662745, 1)
 polygon = PackedVector2Array(-46, -26, -48, -24, -76, -31, -76, -55)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.2
@@ -153,7 +155,7 @@ portal_wall = -1
 
 [node name="Sector21" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(272, 72)
-color = Color(0.921434, 0.802518, 0.845698, 1)
+color = Color(0.79273, 0.79273, 0.79273, 1)
 polygon = PackedVector2Array(-56, -72, -56, -104, -32, -104, -32, -72)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.1
@@ -162,6 +164,7 @@ portal_wall = -1
 
 [node name="Sector22" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(240, -24)
+color = Color(0.910437, 0.910437, 0.910437, 1)
 polygon = PackedVector2Array(0, -8, -24, -8, -40, -8, -64, -8, -34, -36, -30, -36)
 uv = PackedVector2Array(-5.66675, -55.9995)
 ceiling_height = 2.5
@@ -169,7 +172,7 @@ portal_wall = -1
 
 [node name="Sector23" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(240, -64)
-color = Color(0.842868, 0.605037, 0.691396, 1)
+color = Color(0.910437, 0.910437, 0.910437, 1)
 polygon = PackedVector2Array(-30, -3, -34, -3, -64, -32, -40, -32, -24, -32, 0, -32)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.2
@@ -178,7 +181,7 @@ portal_wall = -1
 
 [node name="Sector24" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(201, -64)
-color = Color(0.921434, 0.802518, 0.845698, 1)
+color = Color(0.910437, 0.910437, 0.910437, 1)
 polygon = PackedVector2Array(3, 2, -25, 16, -25, -24, 3, -1)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.1
@@ -187,7 +190,7 @@ portal_wall = -1
 
 [node name="Sector25" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(288, -40)
-color = Color(0.921434, 0.802518, 0.845698, 1)
+color = Color(0.910437, 0.910437, 0.910437, 1)
 polygon = PackedVector2Array(-76, -22, -76, -25, -48, -48, -48, -8)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.1
@@ -196,6 +199,7 @@ portal_wall = -1
 
 [node name="Sector26" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(291, -24)
+color = Color(0.910437, 0.910437, 0.910437, 1)
 polygon = PackedVector2Array(-81, -36, -79, -38, -51, -24, -51, -8)
 uv = PackedVector2Array(-5.66675, -55.9995)
 ceiling_height = 2.5
@@ -203,7 +207,7 @@ portal_wall = -1
 
 [node name="Sector27" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(291, -43)
-color = Color(0.842868, 0.605037, 0.691396, 1)
+color = Color(0.910437, 0.910437, 0.910437, 1)
 polygon = PackedVector2Array(-79, -22, -81, -24, -51, -53, -51, -45)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.2
@@ -212,6 +216,7 @@ portal_wall = -1
 
 [node name="Sector28" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(264, -21)
+color = Color(0.910437, 0.910437, 0.910437, 1)
 polygon = PackedVector2Array(-60, -41, -58, -39, -88, -11, -88, -27)
 uv = PackedVector2Array(-5.66675, -55.9995)
 ceiling_height = 2.5
@@ -219,7 +224,7 @@ portal_wall = -1
 
 [node name="Sector29" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(252, -41)
-color = Color(0.842868, 0.605037, 0.691396, 1)
+color = Color(0.910437, 0.910437, 0.910437, 1)
 polygon = PackedVector2Array(-46, -26, -48, -24, -76, -47, -76, -55)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.2
@@ -228,74 +233,120 @@ portal_wall = -1
 
 [node name="Sector20" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(232, 72)
-color = Color(0.921434, 0.802518, 0.845698, 1)
-polygon = PackedVector2Array(-56, -72, -56, -80, -56, -104, -32, -104, -32, -72)
+color = Color(0.79273, 0.79273, 0.79273, 1)
+polygon = PackedVector2Array(-56, -72, -56, -88, -56, -96, -56, -104, -32, -104, -32, -72)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.1
 ceiling_height = 4.0
 portal_wall = -1
 
-[node name="Sector30" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
-position = Vector2(208, 72)
-color = Color(0.921434, 0.802518, 0.845698, 1)
-polygon = PackedVector2Array(-40, -80, -40, -104, -32, -104, -32, -80)
+[node name="Sector30" parent="Sectors" instance=ExtResource("2_l4525")]
+position = Vector2(208, 80)
+color = Color(0.987135, 0.987135, 0.987135, 1)
+polygon = PackedVector2Array(-40, -96, -40, -104, -32, -104, -32, -96)
 uv = PackedVector2Array(-5.66675, -55.9995)
-floor_height = 0.1
-portal_destination = NodePath("../Sector7")
+floor_height = 0.3
 portal_destination_wall = 2
 is_portal_bidirectional = false
 
-[node name="Sector" parent="Sectors" instance=ExtResource("2_l4525")]
-position = Vector2(254.534, 49.9894)
-polygon = PackedVector2Array(-14.5337, -17.9894, 25.4663, -17.9894, 25.4663, 14.0106, -14.5337, 6.01056)
-
-[node name="@Polygon2D@34022" parent="Sectors" instance=ExtResource("2_l4525")]
-position = Vector2(288.697, 42.5367)
-polygon = PackedVector2Array(-8.69748, -10.5367, 7.30252, -2.53666, 15.3025, 53.4633, -8.69748, 21.4633)
-
-[node name="@Polygon2D@34367" parent="Sectors" instance=ExtResource("2_l4525")]
-position = Vector2(277.123, 77.4192)
-polygon = PackedVector2Array(2.87732, -13.4192, 26.8773, 18.5808, -13.1227, 26.5808)
-
-[node name="@Polygon2D@34939" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
-position = Vector2(286.949, 103.604)
-polygon = PackedVector2Array(17.0515, 16.3962, 41.0515, 16.3962, 41.0515, 24.3962, 17.0515, 24.3962)
-portal_destination = NodePath("../@Polygon2D@36231")
-portal_wall = -2
-portal_destination_wall = 3
-
 [node name="@Polygon2D@36231" parent="Sectors" instance=ExtResource("2_l4525")]
 position = Vector2(156.966, 42.109)
-color = Color(0.607171, 0.0125925, 0.228489, 1)
-polygon = PackedVector2Array(-4.96637, -10.109, 19.0336, -10.109, 19.0336, 13.891, -4.96637, 13.891)
+color = Color(0.662745, 0.662745, 0.662745, 1)
+polygon = PackedVector2Array(-4.96637, -10.109, 19.034, -10.109, 19.034, 13.891, -4.96637, 13.891)
 floor_height = 8.5
 ceiling_height = 10.0
 
-[node name="@Polygon2D@53437" type="Polygon2D" parent="Sectors" instance=ExtResource("2_l4525")]
+[node name="@Polygon2D@53437" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(291, 107)
-polygon = PackedVector2Array(-27, -3, 13, -11, 37, 13, 13, 13)
-script = ExtResource("3_bjjgi")
+color = Color(0.987135, 0.987135, 0.987135, 1)
+polygon = PackedVector2Array(-26.9998, -3, 13.0002, -11, 37, 13, 13, 13)
+portal_destination = NodePath("../@Polygon2D@36231")
+portal_wall = 2
+portal_destination_wall = 3
+
+[node name="Sector" parent="Sectors" instance=ExtResource("2_l4525")]
+position = Vector2(256.36, 44.5798)
+color = Color(0.987135, 0.987135, 0.987135, 1)
+polygon = PackedVector2Array(-16.36, -12.5798, 23.6395, -12.5798, 23.6402, 19.4202, -16.36, 11.4202)
+
+[node name="@Polygon2D@33690" parent="Sectors" instance=ExtResource("2_l4525")]
+position = Vector2(293.821, 49.6559)
+color = Color(0.987135, 0.987135, 0.987135, 1)
+polygon = PackedVector2Array(-13.8215, -17.6559, 18.1792, 6.3441, -13.8208, 14.3441)
+
+[node name="@Polygon2D@34035" parent="Sectors" instance=ExtResource("2_l4525")]
+position = Vector2(292.661, 71.1286)
+color = Color(0.987135, 0.987135, 0.987135, 1)
+polygon = PackedVector2Array(-12.6608, -7.1286, 19.3392, -15.1286, 11.3392, 24.8714, -28.6608, 32.8714)
+
+[node name="@Polygon2D@33441" parent="Sectors" instance=ExtResource("2_l4525")]
+position = Vector2(27, 127)
+color = Color(0.79273, 0.79273, 0.79273, 1)
+polygon = PackedVector2Array(-11, 1, -3, -15, 5, -15, 13, 1, 5, 17, -3, 17)
+ceiling_height = 4.0
+portal_wall = 1
+portal_destination_wall = 3
+
+[node name="@Polygon2D@41759" parent="Sectors" instance=ExtResource("2_l4525")]
+position = Vector2(29.0752, 148.656)
+color = Color(0.79273, 0.79273, 0.79273, 1)
+polygon = PackedVector2Array(-5.07516, -4.65584, 2.92484, -4.65584, 2.92484, 3.34416, 2.92484, 11.3442, -5.07516, 11.3442, -5.07516, 3.34416)
+ceiling_height = 4.0
+
+[node name="@Polygon2D@42784" parent="Sectors" instance=ExtResource("2_l4525")]
+position = Vector2(36.2015, 153.28)
+color = Color(0.987135, 0.987135, 0.987135, 1)
+polygon = PackedVector2Array(-4.20152, -1.28004, 3.79848, -1.28004, 3.79848, 6.71996, -4.20152, 6.71996)
+
+[node name="@Polygon2D@43129" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
+position = Vector2(19.5826, 154.467)
+color = Color(0.987135, 0.987135, 0.987135, 1)
+polygon = PackedVector2Array(-3.58258, -2.46712, 4.41742, -2.46712, 4.41742, 5.53288, -3.58258, 5.53288)
+portal_destination = NodePath("../@Polygon2D@67463")
+portal_wall = 3
+portal_destination_wall = 1
+
+[node name="@Polygon2D@59398" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
+position = Vector2(30.1038, 99.7451)
+color = Color(0.742647, 0.742647, 0.742647, 1)
+polygon = PackedVector2Array(-6.10384, -3.74506, 1.89616, -3.74506, 1.89616, 4.25494, 1.89616, 12.2549, -6.10384, 12.2549, -6.10384, 4.25494)
+ceiling_height = 5.0
+portal_destination = NodePath("../@Polygon2D@41759")
+enable_portal = false
+portal_destination_wall = 3
+
+[node name="@Polygon2D@67463" type="Polygon2D" parent="Sectors" instance=ExtResource("2_l4525")]
+position = Vector2(36.8465, 99.7157)
+color = Color(0.987135, 0.987135, 0.987135, 1)
+polygon = PackedVector2Array(-4.84653, -3.71573, 3.15347, -3.71573, 3.15347, 4.28427, -4.84653, 4.28427)
+script = ExtResource("3_l4525")
+show_portal_arrow = true
+
+[node name="@Polygon2D@67810" type="Polygon2D" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
+position = Vector2(18.0846, 99.4924)
+color = Color(0.987135, 0.987135, 0.987135, 1)
+polygon = PackedVector2Array(-2.0846, -3.49237, 5.9154, -3.49237, 5.9154, 4.50763, -2.0846, 4.50763)
+script = ExtResource("3_l4525")
+portal_destination = NodePath("../@Polygon2D@42784")
+portal_wall = 3
+portal_destination_wall = 1
+show_portal_arrow = true
+
+[node name="@Polygon2D@76073" type="Polygon2D" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
+position = Vector2(27.5498, 86.4973)
+color = Color(0.987135, 0.987135, 0.987135, 1)
+polygon = PackedVector2Array(-3.54977, 1.50273, 4.45023, 1.50273, 4.45023, 9.50273, -3.54977, 9.50273)
+script = ExtResource("3_l4525")
+portal_destination = NodePath("../@Polygon2D@76420")
+portal_destination_wall = 2
+show_portal_arrow = true
+
+[node name="@Polygon2D@76420" type="Polygon2D" parent="Sectors" instance=ExtResource("2_l4525")]
+position = Vector2(25.8651, 164.783)
+color = Color(0.987135, 0.987135, 0.987135, 1)
+polygon = PackedVector2Array(-1.86514, -4.78288, 6.13486, -4.78288, 6.13486, 3.21712, -1.86514, 3.21712)
+script = ExtResource("3_l4525")
 show_portal_arrow = true
 
 [node name="PlayerPosition" parent="." instance=ExtResource("3_nqbmo")]
-position = Vector2(192, 48)
-
-[node name="clockwise_test" type="Node2D" parent="."]
-visible = false
-position = Vector2(81, -64)
-script = ExtResource("4_h15or")
-
-[node name="A" type="Sprite2D" parent="clockwise_test"]
-position = Vector2(7, -8)
-scale = Vector2(0.065, 0.065)
-texture = ExtResource("4_l4525")
-
-[node name="B" type="Sprite2D" parent="clockwise_test"]
-position = Vector2(31, 23)
-scale = Vector2(0.065, 0.065)
-texture = ExtResource("4_l4525")
-
-[node name="C" type="Sprite2D" parent="clockwise_test"]
-position = Vector2(-29, 8)
-scale = Vector2(0.065, 0.065)
-texture = ExtResource("4_l4525")
+position = Vector2(0, 25)
