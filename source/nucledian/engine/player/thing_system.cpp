@@ -202,6 +202,7 @@ static void test_make_sector
 }
 
 
+//==============================================================================
 [[maybe_unused]] static void load_json_map(MapSectors& map) 
 {
     std::ifstream f(JSON_LEVEL_PATH);
@@ -215,11 +216,11 @@ static void test_make_sector
 
     std::vector<map_building::SectorBuildData> sectors;
     for (auto&& js_sector : data["sectors"]) {
-        float floor = js_sector["floor"];
-        float ceil = js_sector["ceiling"];
-        SectorID portal_sector = js_sector["portal_target"];
-        int portal_wall = js_sector["portal_wall"];
-        WallRelID portal_destination_wall = js_sector["portal_destination_wall"];
+        const float floor = js_sector["floor"];
+        const float ceil = js_sector["ceiling"];
+        const SectorID portal_sector = js_sector["portal_target"];
+        const int portal_wall = js_sector["portal_wall"];
+        const WallRelID portal_destination_wall = js_sector["portal_destination_wall"];
         std::vector<u16> point_idxs;
         for (auto&& js_point : js_sector["points"]) {
             point_idxs.emplace_back((u16)(int)js_point);
