@@ -113,15 +113,20 @@ func _get_player_position() -> Vector2:
 func _snap_points()->void:
 	for s in get_sectors():
 		for p in s.get_points():
-			var other_points : Array[SectorPoint] = []
-			for other_sector in get_sectors():
-				if other_sector == s: continue
-				other_points.append_array(other_sector.get_points())
-			var to_snap = Sector.find_nearest_point(p.global_position, other_points, max_snapping_distance)
+			var to_snap = find_nearest_point(p.global_position, max_snapping_distance, s)
 			if to_snap and (p.global_position != to_snap.global_position):
 				print("snap {0} -> {1} (distance: {2})".format([p, to_snap, p.global_position.distance_to(to_snap.global_position)]))
 				p.global_position = to_snap.global_position
-	pass
+	
+
+func find_nearest_point(pos: Vector2, max_snapping_distance: float, to_skip: Sector)->SectorPoint:
+	var other_points : Array[SectorPoint] = []
+	for other_sector in get_sectors():
+		if other_sector == to_skip: continue
+		other_points.append_array(other_sector.get_points())
+	#print("finding nearest among {0} points".format([other_points.size()]))
+	var ret: SectorPoint= Sector.find_nearest_point(pos, other_points, max_snapping_distance)
+	return ret
 
 var sector_creation_request : bool = false
 func _handle_new_sector_creation()->void:
@@ -133,8 +138,31 @@ func _handle_new_sector_creation()->void:
 	else:
 		sector_creation_request = false
 
+func find_sector_parent(position: Vector2)->Node2D:
+	var sector_parent : Node2D = null
+	if sector_parent == null:
+		print("according to selected")
+		var selection := EditorInterface.get_selection().get_selected_nodes()
+		for s in selection:
+			if s is not Sector: continue
+			if sector_parent == null or sector_parent == s.get_parent():
+				sector_parent = s.get_parent()
+			else:
+				sector_parent = null
+				break
+	if sector_parent == null:
+		var nearest_point := find_nearest_point(position, INF, null)
+		sector_parent = nearest_point._sector.get_parent() if (nearest_point != null) else null
+		print("nearest point: {0}".format([nearest_point]))
+	if sector_parent == null: sector_parent = $Sectors
+	if sector_parent == null: sector_parent = self
+	return sector_parent
+
+
 func add_sector(position: Vector2, points: PackedVector2Array, name: String = "")->Sector:
-			var sector_parent : Node2D = $Sectors if $Sectors else self
+			var nearest_point := find_nearest_point(position, INF, null)
+			var sector_parent : Node2D = find_sector_parent(position)
+			
 			var new_sector :Sector = preload("res://prefabs/Sector.tscn").instantiate()
 			sector_parent.add_child(new_sector)
 			new_sector.owner = get_tree().edited_scene_root

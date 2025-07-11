@@ -172,6 +172,7 @@ static func find_nearest_point(v: Vector2, others: Array[SectorPoint], tolerance
 		var distance : float = p.global_position.distance_squared_to(v)
 		if distance >= toleranceSqr: continue
 		if distance < ret_distance:
+			print("({4}) better: {0} < {1} ({2} < {3})".format([distance, ret_distance, p, ret, v]))
 			ret = p
 			ret_distance = distance
 	return ret	
