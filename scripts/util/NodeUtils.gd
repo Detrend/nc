@@ -92,6 +92,11 @@ static func get_siblings_of_type(node: Node, child_type, list :Array = [], flags
 	if(!node): return [];
 	return get_children_of_type(node.get_parent(), list, child_type, flags);
 	
+	
+static func is_the_only_selected_node(node: Node)->bool:
+	var selection := EditorInterface.get_selection().get_selected_nodes()
+	return selection.size() == 1 and selection[0] == node
+	
 
 static var _counter: int = 0;
 static func get_unique_id()->int: 

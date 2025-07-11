@@ -26,6 +26,8 @@ var _visualizer_line : Line2D:
 	get: return $VisualizerLine
 
 
+var last_snapping_frame : int = -1 
+
 func _process(delta: float) -> void:
 	if ! Engine.is_editor_hint(): return
 	
@@ -33,11 +35,13 @@ func _process(delta: float) -> void:
 	self.rotation = 0.0
 	var points := self.polygon
 	self._handle_alt_mode_snapping(points)
-	var did_change :bool = false
-	did_change = did_change or self._remove_duplicit_points (points)
-	did_change = did_change or self._ensure_points_clockwise(points)
-	if did_change:
-		self.polygon = points
+	
+	if ! self._handle_alt_mode_snapping(points):
+		var did_change :bool = false
+		did_change = did_change or self._remove_duplicit_points (points)
+		did_change = did_change or self._ensure_points_clockwise(points)
+		if did_change:
+			self.polygon = points
 		
 	
 	_visualize_border()
@@ -91,6 +95,7 @@ func _visualize_portals()->void:
 
 
 func _remove_duplicit_points(points: PackedVector2Array)->bool:
+	if ! NodeUtils.is_the_only_selected_node(self): return false
 	var did_remove : bool = false
 	var t:int = 1
 	while t < points.size():
@@ -101,32 +106,61 @@ func _remove_duplicit_points(points: PackedVector2Array)->bool:
 	return did_remove
 
 func _ensure_points_clockwise(points: PackedVector2Array)->bool:
+	if NodeUtils.is_the_only_selected_node(self): return false
 	if GeometryUtils.is_clockwise_convex_polygon(points) < 0:
 		points.reverse()
 		return true
 	return false
 
 
+
+
 var last_points : PackedVector2Array = []
-func _handle_alt_mode_snapping(points: PackedVector2Array)->void:
-	if Input.is_physical_key_pressed(KEY_Q):
-		var selection := EditorInterface.get_selection().get_selected_nodes()
-		if selection.size() == 1 and selection[0] == self:
-			if points.size() == last_points.size():
-				var t :int = 0
-				while t < points.size():
-					if points[t] != last_points[t]:
-						var previous_absolute := point_pos_relative_to_absolute(last_points[t])
-						var current_absolute := point_pos_relative_to_absolute(points[t])
-						for s in _level.get_sectors():
-							if s == self: continue
-							for p in s.get_points():
-								if p.global_position == previous_absolute:
-									p.global_position = current_absolute
-						pass
-					t += 1
-			#print("Alt mode: {0}".format([self]))
+var affected_points : Array[SectorPoint] = []
+var selected_idx : int = -1
+var last_sector_pos : Vector2 = Vector2.ZERO
+func _alt_mode_snap(current_points: PackedVector2Array)->int:
+	var last_pos := self.last_sector_pos
+	self.last_sector_pos = self.global_position
+	if last_sector_pos != self.global_position: return -1 # reset if the whole sector was moved
+	if ! Input.is_physical_key_pressed(KEY_Q): return -1 # reset if Q is not pressed
+	if current_points.size() != last_points.size(): return -1 # reset if point count changed
+	if ! NodeUtils.is_the_only_selected_node(self): return -1 # reset if this is not the single selected node
+	
+	var max_distance_sqr = config.shared_continuous_movement_max_step * config.shared_continuous_movement_max_step
+	var t: int = 0
+	var selected :int = -1
+	while t < current_points.size():
+		if current_points[t] != last_points[t]:
+			if selected != -1: return -1 # reset if it's more than one point that changed
+			selected = t
+		t += 1
+		
+	var current_absolute := point_pos_relative_to_absolute(current_points[selected])
+	if selected != self.selected_idx:
+		self.selected_idx = selected
+		self.affected_points.clear()
+		var previous_absolute := point_pos_relative_to_absolute(last_points[selected])
+		for s in _level.get_sectors():
+			if s == self: continue
+			for p in s.get_points():
+				if p.global_position == previous_absolute and (p.global_position.distance_squared_to(current_absolute) < max_distance_sqr):
+					self.affected_points.append(p)
+	for p in self.affected_points: 
+		p.global_position = current_absolute
+
+	return selected
+
+func _handle_alt_mode_snapping(points: PackedVector2Array)->bool:
+	self.selected_idx = _alt_mode_snap(points)
+	if self.selected_idx == -1:
+		affected_points.clear()
 	last_points = points
+	return self.selected_idx != -1
+
+
+
+
 
 
 static func find_nearest_point(v: Vector2, others: Array[SectorPoint], tolerance: float)-> SectorPoint:

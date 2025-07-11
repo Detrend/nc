@@ -4,6 +4,7 @@
 
 [node name="Sector" type="Polygon2D"]
 script = ExtResource("1_8a3ec")
+show_portal_arrow = true
 
 [node name="VisualizerLine" type="Line2D" parent="."]
 closed = true

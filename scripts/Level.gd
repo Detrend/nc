@@ -124,14 +124,19 @@ func _snap_points()->void:
 var sector_creation_request : bool = false
 func _handle_new_sector_creation()->void:
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):# and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-		if (!sector_creation_request) and Input.is_physical_key_pressed(KEY_ALT) and Input.is_physical_key_pressed(KEY_CTRL):
+		if (!sector_creation_request) and Input.is_physical_key_pressed(KEY_SHIFT) and Input.is_physical_key_pressed(KEY_CTRL):
 			sector_creation_request = true
+			var new_sector := add_sector(get_global_mouse_position(), [Vector2(0, 0), Vector2(10, 0), Vector2(0, 10)])
+			print("new sector: {0}".format([new_sector]))
+	else:
+		sector_creation_request = false
+
+func add_sector(position: Vector2, points: PackedVector2Array, name: String = "")->Sector:
 			var sector_parent : Node2D = $Sectors if $Sectors else self
 			var new_sector :Sector = preload("res://prefabs/Sector.tscn").instantiate()
 			sector_parent.add_child(new_sector)
 			new_sector.owner = get_tree().edited_scene_root
-			new_sector.global_position = get_global_mouse_position()
-			new_sector.polygon = [Vector2(0, 0), Vector2(10, 0), Vector2(0, 10)]
-			print("new sector: {0}".format([new_sector]))
-	else:
-		sector_creation_request = false
+			new_sector.global_position = position
+			new_sector.polygon = points
+			if ! name.is_empty(): new_sector.name = name
+			return new_sector

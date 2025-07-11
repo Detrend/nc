@@ -4,11 +4,12 @@
 
 [resource]
 script = ExtResource("1_x30i3")
-portal_entry_color = Color(0, 0.392157, 0, 0.74902)
-portal_exit_color_single = Color(0.545098, 0, 0, 0.721569)
-portal_exit_color_bidirectional = Color(0.23509, 0.474821, 0.809821, 0.854902)
+portal_entry_color = Color(0, 0.392157, 0, 0.666667)
+portal_exit_color_single = Color(0.670588, 0, 0, 0.815686)
+portal_exit_color_bidirectional = Color(0.209964, 0.444104, 0.772898, 0.85098)
 sector_min_height = 0.0
 sector_min_height_color = Color(1, 1, 1, 1)
 sector_max_height = 0.5
 sector_max_height_color = Color(0.607171, 0.0125925, 0.228489, 1)
+shared_continuous_movement_max_step = 50.0
 metadata/_custom_type_script = "uid://bcqqujkyuiq7b"
