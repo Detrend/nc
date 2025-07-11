@@ -21,7 +21,8 @@ namespace Levels
 {
   enum evalue : LevelID
   {
-    demo_map = 0,
+    json_map = 0,
+    demo_map,
     cool_map,
     portal_test,
     square_map,
@@ -38,6 +39,7 @@ struct LevelData
 
 constexpr cstr LEVEL_NAMES[]
 {
+  "json map",
   "demo map",
   "cool map",
   "portal test",
