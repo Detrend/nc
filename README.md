@@ -26,5 +26,6 @@ To export the level, set appropriate output path and other parameters and press 
 - Editor makes automatically sure that the points are ordered clockwise and that there are not multiple points at the exactly same position.
 - It seems as a really good idea to enable Godot's grid-snap while configuring the sector points.
 - If multiple sectors share a point - hold `Q` while moving that point to move the same point of the other sectors as well.
+- `Hide` a sector to exclude it from level export
 - Placing portals... should be intuitive, only one portal per sector is currently permitted. _One-sided portals are available for experimentation, but they assert-crash the game._
 - `floor`, `ceiling`... visualized by sector's color - see related properties in `config.tres`, switch between `floor`/`ceiling` visualization via `Level`'s `coloring_mode` property 
