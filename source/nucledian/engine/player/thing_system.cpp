@@ -736,7 +736,7 @@ void ThingSystem::check_player_attack
   if (didAttack)
   {
     [[maybe_unused]] vec3 rayStart = this->get_player()->get_position() + vec3(0, this->get_player()->get_view_height(), 0);
-    [[maybe_unused]] vec3 rayEnd = rayStart + get_engine().get_module<GraphicsSystem>().get_camera()->get_forward() * 50.0f;
+    [[maybe_unused]] vec3 rayEnd = rayStart + Camera::get()->get_forward() * 50.0f;
 
     [[maybe_unused]] f32 hitDistance = 999999;
     EntityID index = INVALID_ENTITY_ID;

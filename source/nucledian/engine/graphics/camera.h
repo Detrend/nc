@@ -8,10 +8,10 @@
 namespace nc
 {
 
-class DebugCamera
+class Camera
 {
 public:
-  DebugCamera();
+  static Camera* get();
 
   void handle_input(f32 delta_seconds);
   void update_transform(vec3 position, f32 yaw, f32 pitch);

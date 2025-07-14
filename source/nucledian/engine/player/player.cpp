@@ -210,7 +210,7 @@ namespace nc
     alive = false;
   }
 
-  DebugCamera* Player::get_camera()
+  Camera* Player::get_camera()
   {
     return &camera;
   }

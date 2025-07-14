@@ -15,6 +15,7 @@ struct MaterialHandle
 public:
   friend class GizmoManager;
   friend class GraphicsSystem;
+  friend class Renderer;
 
   MaterialHandle(const char* vertex_source, const char* fragment_source);
 

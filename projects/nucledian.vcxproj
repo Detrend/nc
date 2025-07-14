@@ -122,6 +122,7 @@
     <ClCompile Include="..\source\nucledian\engine\core\engine.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\entity.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\sector_mapping.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\graphics\renderer.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\physics.cpp" />
     <ClCompile Include="..\source\nucledian\game\projectile.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\texture.cpp" />
@@ -131,7 +132,7 @@
     <ClCompile Include="..\source\nucledian\math\lingebra.cpp" />
     <ClCompile Include="..\source\nucledian\math\utils.cpp" />
     <ClCompile Include="..\source\nucledian\engine\enemies\enemy.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\graphics\debug_camera.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\graphics\camera.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\gizmo.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\graphics_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\material.cpp" />
@@ -243,6 +244,7 @@
     <ClInclude Include="..\source\nucledian\engine\entity\entity_types.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\entity_type_definitions.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\sector_mapping.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\renderer.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\texture.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
     <ClInclude Include="..\source\nucledian\engine\map\physics.h" />
@@ -260,7 +262,7 @@
     <ClInclude Include="..\source\nucledian\engine\core\module_event.h" />
     <ClInclude Include="..\source\nucledian\engine\core\resources.h" />
     <ClInclude Include="..\source\nucledian\engine\enemies\enemy.h" />
-    <ClInclude Include="..\source\nucledian\engine\graphics\debug_camera.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\camera.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\gizmo.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\gl_types.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\graphics_system.h" />

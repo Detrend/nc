@@ -6,7 +6,7 @@
 #include <engine/input/game_input.h>
 #include <engine/player/map_object.h>
 #include <engine/entity/entity.h>
-#include <engine/graphics/debug_camera.h>
+#include <engine/graphics/camera.h>
 
 #include <math/vector.h>
 
@@ -33,7 +33,7 @@ public:
   void Damage(int damage);
   void Die();
 
-  DebugCamera* get_camera();
+  Camera* get_camera();
 
   vec3 get_look_direction();
   f32 get_view_height();
@@ -64,7 +64,7 @@ private:
 
   bool alive = true;
 
-  DebugCamera camera;
+  Camera camera;
 };
 
 }
