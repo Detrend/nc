@@ -43,6 +43,9 @@ func create_level_export_data() -> Dictionary:
 		return this_idx - first_idx
 		
 	var all_sectors := get_sectors();
+	
+	for s in all_sectors: s.sanity_check()
+	
 	for t in range(all_sectors.size()):
 		sectors_map[all_sectors[t]] = t
 	

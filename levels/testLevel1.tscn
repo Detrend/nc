@@ -306,7 +306,7 @@ portal_wall = -1
 
 [node name="Sector30" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
 position = Vector2(208, 80)
-color = Color(0.888163, 0.775446, 0.819476, 1)
+color = Color(0.888164, 0.775447, 0.819477, 1)
 polygon = PackedVector2Array(-40, -96, -40, -104, -32, -104, -32, -96)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.3

@@ -28,6 +28,7 @@ var _visualizer_line : Line2D:
 
 
 var last_snapping_frame : int = -1 
+var last_points : PackedVector2Array = []
 
 func _process(delta: float) -> void:
 	if ! Engine.is_editor_hint(): return
@@ -37,22 +38,21 @@ func _process(delta: float) -> void:
 	var points := self.polygon
 	self._handle_alt_mode_snapping(points)
 	
-	if ! self._handle_alt_mode_snapping(points):
+	if !is_just_being_edited() :
 		var did_change :bool = false
 		did_change = did_change or self._remove_duplicit_points (points)
 		did_change = did_change or self._ensure_points_clockwise(points)
 		if did_change:
+			print("before: {0}".format([points]))
 			self.polygon = points
+			print("after:  {0}".format([self.polygon]))
 		
 	
 	_visualize_border()
 	_visualize_portals()
 	
-	#self.color
-	#self.color = config.get_floor_color(floor_height)
 	self.color = EditorConfig.get_sector_color(config, self)
-	#if Input.is_physical_key_pressed(KEY_S):
-	#	print("snapping...")
+	last_points = points
 
 
 func get_points() -> Array[SectorPoint]:
@@ -96,18 +96,35 @@ func _visualize_portals()->void:
 
 
 func _remove_duplicit_points(points: PackedVector2Array)->bool:
-	if ! NodeUtils.is_the_only_selected_node(self): return false
+	#if ! NodeUtils.is_the_only_selected_node(self): return false
+	#if points != last_points: return false
+	
 	var did_remove : bool = false
+	var previous : PackedVector2Array = []
+	previous.append_array(points)
 	var t:int = 1
 	while t < points.size():
 		if points[t] == points[t-1]:
-			points.remove_at(t)
+			print("removing idx: {0} : {1} (same as {2}) - size: {3}".format([t, points[t], points[t-1], points.size()]))
+			
+			#print("{0}".format([previous]))
+			#print("{0}".format([points]))
+			
+			points.remove_at(t-1)
+			#t += 1
 			did_remove = true
 		else: t += 1
+	if did_remove: 
+		var temp = [points[points.size()-1]]
+		temp.append_array(points.slice(0, points.size()-1))
+		points = temp
+		print("{0}".format([previous]))
+		print("{0}".format([points]))
+		print("---------[{0}]".format([Engine.get_frames_drawn()]))
 	return did_remove
 
 func _ensure_points_clockwise(points: PackedVector2Array)->bool:
-	if NodeUtils.is_the_only_selected_node(self): return false
+	#if NodeUtils.is_the_only_selected_node(self): return false
 	if GeometryUtils.is_clockwise_convex_polygon(points) < 0:
 		points.reverse()
 		return true
@@ -115,11 +132,11 @@ func _ensure_points_clockwise(points: PackedVector2Array)->bool:
 
 
 
-
-var last_points : PackedVector2Array = []
+var is_target_of_alt_mode_snapping : bool = false
 var affected_points : Array[SectorPoint] = []
 var selected_idx : int = -1
 var last_sector_pos : Vector2 = Vector2.ZERO
+
 func _alt_mode_snap(current_points: PackedVector2Array)->int:
 	var last_pos := self.last_sector_pos
 	self.last_sector_pos = self.global_position
@@ -136,16 +153,21 @@ func _alt_mode_snap(current_points: PackedVector2Array)->int:
 			if selected != -1: return -1 # reset if it's more than one point that changed
 			selected = t
 		t += 1
+	if selected == -1 and is_just_being_edited():
+		selected = self.selected_idx
 		
 	var current_absolute := point_pos_relative_to_absolute(current_points[selected])
 	if selected != self.selected_idx:
+		#print("!!!!! {0} > {1}".format([selected, self.selected_idx]))
 		self.selected_idx = selected
+		for p in self.affected_points: p._sector.is_target_of_alt_mode_snapping = false
 		self.affected_points.clear()
 		var previous_absolute := point_pos_relative_to_absolute(last_points[selected])
 		for s in _level.get_sectors():
 			if s == self: continue
 			for p in s.get_points():
 				if p.global_position == previous_absolute and (p.global_position.distance_squared_to(current_absolute) < max_distance_sqr):
+					p._sector.is_target_of_alt_mode_snapping = true
 					self.affected_points.append(p)
 	for p in self.affected_points: 
 		p.global_position = current_absolute
@@ -155,14 +177,23 @@ func _alt_mode_snap(current_points: PackedVector2Array)->int:
 func _handle_alt_mode_snapping(points: PackedVector2Array)->bool:
 	self.selected_idx = _alt_mode_snap(points)
 	if self.selected_idx == -1:
+		for p in self.affected_points: p._sector.is_target_of_alt_mode_snapping = false
 		affected_points.clear()
-	last_points = points
+	if self.selected_idx != -1: 
+		print("{1}: {0}".format([self.selected_idx, name]))
 	return self.selected_idx != -1
 
 
 
+func sanity_check()->void:
+	if self.polygon.size() < 3:
+		ErrorUtils.report_error("{0} - only {1} vertices".format([get_full_name(), self.polygon.size()]))
+		return
 
-
+func is_just_being_edited()->bool:
+	return	( is_target_of_alt_mode_snapping 
+				or (Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) && NodeUtils.is_the_only_selected_node(self))
+			)
 
 static func find_nearest_point(v: Vector2, others: Array[SectorPoint], tolerance: float)-> SectorPoint:
 	var toleranceSqr : float = tolerance *tolerance
@@ -176,3 +207,12 @@ static func find_nearest_point(v: Vector2, others: Array[SectorPoint], tolerance
 			ret = p
 			ret_distance = distance
 	return ret	
+
+func get_full_name()->String:
+	var ret : Array[String] = []
+	var node : Node= self
+	while (node != null) and (node is not Level):
+		ret.append(node.name)
+		node = node.get_parent()
+	ret.reverse()
+	return DatastructUtils.string_concat(ret, "::")

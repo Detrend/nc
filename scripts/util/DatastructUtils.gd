@@ -34,7 +34,12 @@ class Wrapper:
 		self.value = value
 
 
-static func to_dictionary(obj) -> Dictionary:
-	if obj is Object: return obj
-	if obj is float: return obj
-	return obj
+static func string_concat(list, separator = ", ")->String:
+	var ret := ""
+	var is_first_iteration := true
+	for e in list:
+		if ! is_first_iteration:
+			ret += separator
+		is_first_iteration = false
+		ret += e
+	return ret
