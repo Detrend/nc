@@ -58,6 +58,14 @@ static f32 duration_to_seconds(auto t1, auto t2)
 }
 
 //==============================================================================
+static void limit_min_frametime(f32& frame_time)
+{
+  // 20 FPS at least
+  constexpr f32 max_frametime = 1.0f / 20.0f;
+  frame_time = std::min(frame_time, max_frametime);
+}
+
+//==============================================================================
 #ifdef NC_BENCHMARK
 static bool execute_benchmarks_if_required(const std::vector<std::string>& args)
 {
@@ -304,6 +312,7 @@ void Engine::run()
   {
     auto current_time = std::chrono::high_resolution_clock::now();
     f32 frame_time = eu::duration_to_seconds(previous_time, current_time);
+    eu::limit_min_frametime(frame_time);
 
     // Limit the FPS if desired
     const f32 min_frame_time = CVars::has_fps_limit ? 1.0f / CVars::fps_limit : 0.0f;
@@ -391,6 +400,8 @@ void Engine::run()
       nc_assert(m_journal);
       m_journal->frames.pop_back();
     }
+
+    m_frame_idx += 1;
   }
 }
 

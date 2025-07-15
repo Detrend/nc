@@ -115,7 +115,7 @@ namespace nc
     auto world = ThingSystem::get().get_level();
 
     vec3 position = this->get_position();
-    world.move_and_collide(position, velocity, &facing, 1.0f, 0.25f, 0.5f, 0.0f, 0, 0);
+    world.move_character(position, velocity, &facing, 1.0f, 0.25f, 0.5f, 0.0f, 0, 0);
     this->set_position(position);
     //g_transform_components[m_entity_index].position() = position;
   }

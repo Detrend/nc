@@ -68,14 +68,15 @@ struct CollisionHit
   enum SectorHitType : u8
   {
     // first 2 bits reserved for type
-    wall      =   0b0,
-    floor     =   0b1,
-    ceil      =  0b10,
+    wall      =  0b001,
+    floor     =  0b010,
+    ceil      =  0b100,
 
     // third bit for nuclidean/non-nuclidean
-    nuclidean = 0b100,
+    nuclidean = 0b1000,
 
     nuclidean_wall = wall | nuclidean,
+    ceil_or_floor  = ceil | floor
   };
 
   struct EntityHit
@@ -152,6 +153,16 @@ struct PhysLevel
     Portals*       out_portals = nullptr           // list of portals the ray went through
   ) const;
 
+  CollisionHit raycast3d_expanded
+  (
+    vec3           ray_start,                      // point to cast from
+    vec3           ray_end,                        // cast to
+    f32            expand,                         // 0 for ray, radius for circle
+    f32            height,                         // height of the cylinder
+    EntityTypeMask ent_types = ~EntityTypeMask{0}, // which entity types should be hit and which ignored
+    Portals*       out_portals = nullptr           // list of portals the ray went through
+  ) const;
+
   enum CollisionReaction : u8
   {
     continue_simulation, // continues the simulation of movement
@@ -161,7 +172,7 @@ struct PhysLevel
   // Moves the "entity" with the given position, velocity and direction and checks
   // for collisions in the way and alters the values. If there is a nc portal in
   // the way then traverses it.
-  void move_and_collide
+  void move_character
   (
     vec3&             position,          // the original position of the entity, will get changed
     vec3&             velocity,          // the velocity
@@ -177,7 +188,7 @@ struct PhysLevel
   ) const;
 
   // Move helper for entities with physics component.
-  void move_and_collide
+  void move_character
   (
     Entity&           ent,
     vec3*             forward,

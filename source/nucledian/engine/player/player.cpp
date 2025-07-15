@@ -98,7 +98,7 @@ namespace nc
 
     // Did jump
     vec3 jumpForce = vec3(0, 0, 0);
-    if (input.player_inputs.keys & (1 << PlayerKeyInputs::jump) && this->get_position().y > floor - 0.0001f && this->get_position().y < floor + 0.0001f)
+    if (input.player_inputs.keys & (1 << PlayerKeyInputs::jump) && velocity.y <= 0.0f /*&& this->get_position().y > floor - 0.0001f && this->get_position().y < floor + 0.0001f*/)
     {
       jumpForce += vec3(0, 1, 0);
     }
@@ -107,7 +107,7 @@ namespace nc
 
     apply_acceleration(movement_direction, delta_seconds);
 
-    velocity += jumpForce * 3.0f;
+    velocity += jumpForce * 5.0f;
     velocity.y -= GRAVITY * delta_seconds;
 
     camera.update_transform(this->get_position(), angleYaw, anglePitch, viewHeight);
@@ -125,24 +125,30 @@ namespace nc
 
   void Player::apply_velocity(f32 delta_seconds)
   {
-    const auto& map = get_engine().get_map();
-    const auto  lvl = ThingSystem::get().get_level();
-    f32 floor = 0;
-    auto sector_id = map.get_sector_from_point(this->get_position().xz());
-    if (sector_id != INVALID_SECTOR_ID)
-    {
-      const f32 sector_floor_y = map.sectors[sector_id].floor_height;
-      floor = sector_floor_y;
-    }
-
-    if (this->get_position().y + velocity.y * delta_seconds < floor)
-    {
-      //velocity.y = floor - this->get_position().y;
-      velocity.y = 0;
-    }
+    const auto lvl = ThingSystem::get().get_level();
 
     vec3 position = this->get_position();
-    lvl.move_and_collide(position, velocity, &m_forward, delta_seconds, 0.25f, 0.25f, 0.25f, 0, 0);
+
+    // Check the floor and reset the y-velocity if we hit it
+    // {
+    //   vec3 from = position;
+    //   vec3 dir  = velocity * vec3{0, 1.5f, 0} * std::max(delta_seconds, 0.05f);
+    //   CollisionHit hit = lvl.raycast3d_expanded(from, from + dir, 0.25f, 1.0f);
+    //   if (hit && hit.coeff < 1.0f && hit.coeff >= 0.0f)
+    //   {
+    //     f32 reconstruct_y = from.y + dir.y * hit.coeff;
+    //     if (abs(reconstruct_y - position.y) < 0.1f)
+    //     {
+    //       velocity.y = 0.0f;
+    //       position.y = reconstruct_y;
+    //     }
+    //   }
+    // }
+
+    lvl.move_character
+    (
+      position, velocity, &m_forward, delta_seconds, 0.25f, 1.0f, 0.25f, 0, 0
+    );
     this->set_position(position);
 
     // recompute the angleYaw after moving through a portal

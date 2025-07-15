@@ -1224,9 +1224,11 @@ template f32 point_aabb<vec2>(vec2, const aabb2&);
 f32 point_line_2d(vec2 p, vec2 a, vec2 b)
 {
   // Project on the line, clip and measure the distance
+  f32  ab_len     = length(b - a);
   vec2 line_dir_n = normalize_or_zero(b - a);
-  f32  coeff      = dot(p - a, line_dir_n);
-  f32  bounded_c  = std::clamp(coeff, 0.0f, 1.0f);
+  vec2 to_pt_dir  = p - a;
+  f32  coeff      = dot(to_pt_dir, line_dir_n);
+  f32  bounded_c  = std::clamp(coeff, 0.0f, ab_len);
   vec2 reproj     = line_dir_n * bounded_c + a;
 
   return distance(reproj, p);

@@ -72,7 +72,7 @@ template
   typename SectorHitLambda,
   typename EntityHitLambda
 >
-CollisionHit raycast_basic
+CollisionHit raycast_generic
 (
   const PhysLevel&    world,
   TVec                ray_from,
@@ -86,8 +86,8 @@ CollisionHit raycast_basic
   EntityHitLambda     entity_intersect
 )
 {
-  using SecHitType = CollisionHit::SectorHitType;
-  using HitType    = CollisionHit::HitType;
+  using SectorHitType = CollisionHit::SectorHitType;
+  using HitType       = CollisionHit::HitType;
 
   nc_assert(expand >= 0.0f, "Radius can not be negative!");
 
@@ -159,7 +159,7 @@ CollisionHit raycast_basic
         .sector_id       = sector_id,
         .wall_id         = INVALID_WALL_ID,
         .wall_segment_id = 0,
-        .type            = SecHitType::floor, // TODO: add option for ceiling
+        .type            = SectorHitType::floor, // TODO: add option for ceiling
       }));
     }
 
@@ -194,7 +194,7 @@ CollisionHit raycast_basic
 
       if (does_intersect)
       {
-        SecHitType hit_type = is_nc_hit ? SecHitType::nuclidean_wall : SecHitType::wall;
+        SectorHitType hit_type = is_nc_hit ? SectorHitType::nuclidean_wall : SectorHitType::wall;
         add_possible_hit(CollisionHit::build(c, n, CollisionHit::SectorHit
         {
           .sector_id       = sector_id,
@@ -249,7 +249,7 @@ CollisionHit raycast_basic
 
   // Recurse into nuclidean portal if we have to
   if (best_hit && best_hit.type == HitType::sector
-    && best_hit.hit.sector.type & SecHitType::nuclidean)
+    && best_hit.hit.sector.type & SectorHitType::nuclidean)
   {
     nc_assert(best_hit.coeff >= 0.0f && best_hit.coeff <= 1.0f, "NC portal behind us?");
 
@@ -293,7 +293,7 @@ CollisionHit raycast_basic
     );
 
     // And cast the ray recursively
-    const CollisionHit hit = raycast_basic<TVec>
+    const CollisionHit hit = raycast_generic<TVec>
     (
       world, new_from, new_to, expand, ent_types, out_portals, wall_to_ignore,
       wall_intersect, sector_intersect, entity_intersect
@@ -461,7 +461,7 @@ CollisionHit PhysLevel::raycast2d_expanded
   PhysLevel::Portals* out_portals
 ) const
 {
-  return phys_helpers::raycast_basic<vec2>
+  return phys_helpers::raycast_generic<vec2>
   (
     *this, from, to, expand, ent_types, out_portals, INVALID_WALL_ID,
     &intersect_wall_2d, &intersect_sector_2d, &intersect_entity_empty<vec2>
@@ -540,13 +540,24 @@ static bool intersect_sector_3d_height
   }
 
   const SectorData& sector = map.sectors[sid];
-  f32 fy = sector.floor_height + y_floor_add;
-  f32 cy = sector.ceil_height  - y_ceil_sub;
+  const f32  fy  = sector.floor_height + y_floor_add;
+  const f32  cy  = sector.ceil_height  - y_ceil_sub;
+  const vec3 dir = to - from;
 
   out_c = FLT_MAX;
 
   for (auto[floor_y, normal] : {std::pair{fy, UP_DIR}, std::pair{cy, -UP_DIR}})
   {
+    if (dot(dir, normal) > 0.0f)
+    {
+      // The ray points in direction out, ignore.
+      // This handles also the cases when we stand on a floor and try to jump - 
+      // in such cases we still collide with the ground (coeff == 0.0f), even though
+      // we want to move away from it.
+      // This handles such exceptions.
+      continue;
+    }
+
     if (f32 out; collide::ray_plane_xz(from, to, floor_y, out))
     {
       f32 min_c = -(y_floor_add + y_ceil_sub) / length(to - from);
@@ -600,9 +611,10 @@ CollisionHit PhysLevel::raycast3d
   vec3           ray_end,
   EntityTypeMask ent_types,
   Portals*       out_portals
-) const
+)
+const
 {
-  return phys_helpers::raycast_basic<vec3>
+  return phys_helpers::raycast_generic<vec3>
   (
     *this, ray_start, ray_end, 0.0f, ent_types, out_portals, INVALID_WALL_ID,
     &intersect_wall_3d, &intersect_sector_3d, &intersect_entity_empty<vec3>
@@ -610,30 +622,18 @@ CollisionHit PhysLevel::raycast3d
 }
 
 //==============================================================================
-void PhysLevel::move_and_collide
+CollisionHit PhysLevel::raycast3d_expanded
 (
-  vec3&                          position,
-  vec3&                          velocity_og,
-  vec3*                          forward,
-  f32                            delta_time,
-  f32                            radius,
-  f32                            height,
-  f32                            max_step_height,
-  [[maybe_unused]]EntityTypeMask colliders,
-  [[maybe_unused]]EntityTypeMask report_only,
-  [[maybe_unused]]f32            bounce,
-  PhysLevel::CollisionListener   listener
-) const
+  vec3           ray_start,
+  vec3           ray_end,
+  f32            expand,
+  f32            height,
+  EntityTypeMask ent_types   /*= ~EntityTypeMask{0}*/,
+  Portals*       out_portals /*= nullptr*/
+)
+const
 {
-  // We limit the amount of iterations.
-  // Note to self:
-  // I thing that this might cause problems around smooth corners, but
-  // it is questionable if such a case can happen in the game.
-  constexpr u32 MAX_ITERATIONS = 6;
-
-  f32 ground_height = position.y;
-
-  auto wall_intersector = [max_step_height, height, &ground_height]
+  auto wall_intersector = [height]
   (
     const MapSectors& map,
     vec3              ray_from,
@@ -743,7 +743,7 @@ void PhysLevel::move_and_collide
     return intersect_sector_3d_height(map, ray_from, ray_to, expand, 0, height, sid, out_c, out_n);
   };
 
-  auto entity_intersector = [&]
+  auto entity_intersector = []
   (
     [[maybe_unused]] const PhysLevel& lvl,
     [[maybe_unused]] vec3             ray_from,
@@ -759,6 +759,162 @@ void PhysLevel::move_and_collide
     return false;
   };
 
+  return phys_helpers::raycast_generic<vec3>
+  (
+    *this, ray_start, ray_end, expand, ent_types, out_portals, INVALID_WALL_ID,
+    wall_intersector, sector_intersector, entity_intersector
+  );
+}
+
+//==============================================================================
+void PhysLevel::move_character
+(
+  vec3&                          position,
+  vec3&                          velocity_og,
+  vec3*                          forward,
+  f32                            delta_time,
+  f32                            radius,
+  f32                            height,
+  f32                            max_step_height,
+  [[maybe_unused]]EntityTypeMask colliders,
+  [[maybe_unused]]EntityTypeMask report_only,
+  [[maybe_unused]]f32            bounce,
+  PhysLevel::CollisionListener   listener
+)
+const
+{
+  auto wall_intersector = [height, max_step_height]
+  (
+    const MapSectors& map,
+    vec3              ray_from,
+    vec3              ray_to,
+    f32               expand,
+    WallID            wid1,
+    WallID            wid2,
+    SectorID          sid,
+    f32&              out_c,
+    vec3&             out_n,
+    bool&             nc_hit_out
+  )
+  ->bool
+  {
+    if (ray_from.xz() == ray_to.xz())
+    {
+      return false;
+    }
+
+    const WallData&   w1 = map.walls[wid1];
+    const WallData&   w2 = map.walls[wid2];
+    const SectorData& sc = map.sectors[sid];
+
+    const f32 floor_y = sc.floor_height;
+    const f32 ceil_y  = sc.ceil_height;
+
+    // Do the collision checking either way
+    vec2 out_n_2d;
+    bool hit = collide::ray_exp_wall
+    (
+      ray_from.xz(), ray_to.xz(), w1.pos, w2.pos,
+      expand, out_n_2d, out_c
+    );
+
+    // Redirect the normal to 3D
+    out_n = vec3{out_n_2d.x, 0, out_n_2d.y};
+
+    // If there is not hit even in 2D then we exit either way
+    if (!hit)
+    {
+      return false;
+    }
+
+    // Now split the cases - it is either a full wall, or only a partial one.
+    // In both cases we can do 2D raycast and then transform it into the
+    // 3D world.
+    auto portal_type = w1.get_portal_type();
+
+    // Full - if the collision happens then it is over
+    if (portal_type == PortalType::none /*|| out_c <= 0.0f*/)
+    {
+      // out_n and out_c are already set up properly
+      // The second condition evaluates to true if we are already inside
+      // a wall slightly.
+      return true;
+    }
+
+    // Partial - have to check if there is a free window
+    nc_assert(map.is_valid_sector_id(w1.portal_sector_id));
+    const SectorData& neighbor = map.sectors[w1.portal_sector_id];
+
+    // Calculate the size of the window we can potentially fit into
+    f32  win_y1   = std::max(neighbor.floor_height, floor_y);
+    f32  win_y2   = std::min(neighbor.ceil_height,  ceil_y) - height;
+    f32  step     = max_step_height;
+
+    // We did hit the wall.. Check if we can climb the stairs
+    f32 hit_y = ray_from.y + (ray_to.y - ray_from.y) * out_c;
+
+    if (hit_y + step >= win_y1 && hit_y <= win_y2)
+    {
+      // We hit the window, continue in the path of the ray..
+      if (portal_type != PortalType::non_euclidean) [[likely]]
+      {
+        // No hit
+        return false;
+      }
+
+      // Check for nc hit as well
+      nc_hit_out = collide::ray_exp_wall
+      (
+        ray_from.xz(), ray_to.xz(), w1.pos, w2.pos,
+        0.0f, out_n_2d, out_c
+      );
+      out_n = vec3{out_n_2d.x, 0, out_n_2d.y};
+
+      return nc_hit_out;
+    }
+
+    // We hit the wall
+    return true;
+  };
+
+  auto sector_intersector = [height]
+  (
+    const MapSectors& map,
+    vec3              ray_from,
+    vec3              ray_to,
+    f32               expand,
+    SectorID          sid,
+    f32&              out_c,
+    vec3&             out_n
+  )
+  ->bool
+  {
+    // Note: this might be problematic if we accidentlly get just slightly under
+    // the floor. That can even happen due to f32 inaccuraccies.
+    return intersect_sector_3d_height(map, ray_from, ray_to, expand, 0, height, sid, out_c, out_n);
+  };
+
+  auto entity_intersector = []
+  (
+    [[maybe_unused]] const PhysLevel& lvl,
+    [[maybe_unused]] vec3             ray_from,
+    [[maybe_unused]] vec3             ray_to,
+    [[maybe_unused]] f32              expand,
+    [[maybe_unused]] const Entity&    entity,
+    [[maybe_unused]] f32&             out_c,
+    [[maybe_unused]] vec3&            out_n
+  )
+  ->bool
+  {
+    // Entity intersection not supported (for now)
+    return false;
+  };
+  // We limit the amount of iterations.
+  // Note to self:
+  // I thing that this might cause problems around smooth corners, but
+  // it is questionable if such a case can happen in the game.
+  constexpr u32 MAX_ITERATIONS = 6;
+
   // Note: we currently do not modify the velocity and that is not good.
   vec3 velocity = velocity_og * delta_time;
 
@@ -766,15 +922,106 @@ void PhysLevel::move_and_collide
   u32 iterations_left = MAX_ITERATIONS; 
   while(iterations_left-->0)
   {
-    auto hit = phys_helpers::raycast_basic
+    using SectorHitType = CollisionHit::SectorHitType;
+
+    const vec3 ray_from = position;
+    const vec3 ray_to   = position + velocity;
+    const vec3 ray_dir  = ray_to - ray_from;
+    const auto e_types  = colliders | report_only;
+
+    CollisionHit hit = phys_helpers::raycast_generic<vec3>
     (
-      *this, position, position + velocity, radius, colliders | report_only,
-      nullptr, INVALID_WALL_ID, wall_intersector, sector_intersector, entity_intersector
+      *this, ray_from, ray_to, radius, e_types, nullptr,
+      INVALID_WALL_ID, wall_intersector, sector_intersector, entity_intersector
     );
+
+    // CollisionHit hit = raycast3d_expanded
+    // (
+    //   ray_from, ray_to, radius, height, e_types
+    // );
 
     if (!hit)
     {
+      // No hit, go on!
       break;
+    }
+
+    // We hit the wall, maybe we can step up?
+    const bool  can_step_up   = max_step_height > 0.0f;
+    const bool  is_sector_hit = hit.type == CollisionHit::sector;
+    const auto& sector_hit    = hit.hit.sector;
+
+    if (can_step_up && is_sector_hit && sector_hit.type & SectorHitType::wall && false)
+    {
+      WallID wid = sector_hit.wall_id;
+
+      // Check the hit height and the height of the window
+      nc_assert(map.is_valid_wall_id(wid));
+      const WallData& wd = map.walls[wid];
+
+      if (wd.get_portal_type() != PortalType::none)
+      {
+        // There is a window here! Maybe we can slide inside?
+        const SectorID sid  = sector_hit.sector_id;
+        const SectorID nsid = wd.portal_sector_id;
+
+        nc_assert(map.is_valid_sector_id(sid));
+        nc_assert(map.is_valid_sector_id(nsid));
+
+        const SectorData& s1 = map.sectors[sid];
+        const SectorData& s2 = map.sectors[nsid];
+
+        // Acquire window position
+        const f32 window_y1 = std::max(s1.floor_height, s2.floor_height);
+        const f32 window_y2 = std::min(s1.ceil_height,  s2.ceil_height);
+        const f32 window_h  = std::max(0.0f, window_y2 - window_y1);
+
+        const bool can_fit = window_h >= height;
+
+        // Ray hit height
+        const vec3 hit_point     = ray_from + ray_dir * hit.coeff;
+        const f32  dist_from_win = window_y1 - hit_point.y;
+
+        // Note: Negative distance from window means that it is below us..
+        //       In such a case we just ignore it.
+        if (can_fit && dist_from_win <= max_step_height && dist_from_win >= 0.0f)
+        {
+          constexpr f32 STEP_UP_COEFF = 1.0f;
+
+          // Try stepping up
+          vec3 step_from = position;
+          vec3 step_to   = position + vec3{0, dist_from_win * STEP_UP_COEFF, 0};
+
+          CollisionHit up_hit = this->raycast3d_expanded
+          (
+            step_from, step_to, radius, height, e_types
+          );
+
+          if (!up_hit)
+          {
+            // no hit up, try to cast again
+            CollisionHit forward_hit = this->raycast3d_expanded
+            (
+              step_to, step_to + velocity, radius, height, e_types
+            );
+
+            if (!forward_hit || forward_hit.coeff > hit.coeff)
+            {
+              // we can step up, good thing.. lets do it
+              position.y += dist_from_win * STEP_UP_COEFF;
+              hit = forward_hit;
+
+              if (!hit)
+              {
+                // This happens if the path is fully free..
+                // In such a case we want to exit the loop and just move the
+                // object forward
+                break;
+              }
+            }
+          }
+        }
+      }
     }
 
     nc_assert(is_normal(hit.normal), "Bad things can happen");
@@ -783,9 +1030,9 @@ void PhysLevel::move_and_collide
 
     velocity -= projected;
 
-    if (listener && listener(hit) == CollisionReaction::stop_simulation)
+    if (hit.type == CollisionHit::sector && hit.hit.sector.type & SectorHitType::ceil_or_floor)
     {
-      break;
+      velocity_og.y = 0.0f;
     }
   }
 
@@ -817,14 +1064,57 @@ void PhysLevel::move_and_collide
     }
   }
 
-  // Note: this is questionable.. Do we add the velocity now, or before 
-  // we transform it? This might be a source of a potential problem in
-  // the future, but for now it seems to be ok.
+  // Note: this is questionable.. Do we add the velocity now, or before we
+  // transform it? This might be a source of a potential problem in the future,
+  // but for now it seems to be ok.
+  // Answer: this is actually ok, as we modify the velocity with the portal
+  // transform matrix. Unless?
   position += velocity;
+
+  // Now handle the height and y-velocity.
+  // We find the maximal height of the floor and minimal height of the ceiling
+  vec2  bbox_offset = vec2{radius, radius};
+  vec2  pos2        = position.xz();
+  aabb2 bbox        = aabb2{pos2 + bbox_offset, pos2 - bbox_offset};
+  std::set<SectorID> nearby_sectors;
+  map.sector_grid.query_aabb(bbox, [&](aabb2, SectorID sid)
+  {
+    nearby_sectors.insert(sid);
+    return false;
+  });
+
+  // Iterate the sectors and check if we touch them
+  f32 floor_h = -FLT_MAX;
+  f32 ceil_h  =  FLT_MAX;
+  for (const SectorID sid : nearby_sectors)
+  {
+    nc_assert(map.is_valid_sector_id(sid));
+    if (map.distance_from_sector_2d(pos2, sid) < radius)
+    {
+      const SectorData& sd = map.sectors[sid];
+      floor_h = std::max(floor_h, sd.floor_height);
+      ceil_h  = std::min(ceil_h,  sd.ceil_height);
+    }
+  }
+
+  // Now adjust the height
+  // Hit ceil
+  if (ceil_h != FLT_MAX && position.y >= ceil_h - height)
+  {
+    position.y    = ceil_h - height;
+    velocity_og.y = std::min(0.0f, velocity_og.y);
+  }
+
+  // Hit floor
+  if (floor_h != FLT_MIN && position.y <= floor_h)
+  {
+    position.y    = floor_h;
+    velocity_og.y = std::max(0.0f, velocity_og.y);
+  }
 }
 
 //==============================================================================
-void PhysLevel::move_and_collide
+void PhysLevel::move_character
 (
   Entity&           ent,
   vec3*             forward,
@@ -843,7 +1133,7 @@ void PhysLevel::move_and_collide
   auto collide = ent.get_physics()->collide_with;
   auto report  = ent.get_physics()->report_only;
 
-  this->move_and_collide
+  this->move_character
   (
     pos, ent.get_physics()->velocity, forward, delta,
     r, h, step, collide, report, b, listener

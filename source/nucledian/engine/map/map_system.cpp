@@ -620,24 +620,34 @@ f32 MapSectors::distance_from_sector_2d(vec2 pt, SectorID sector_id) const
   const auto first = sector.int_data.first_wall;
   const auto last  = sector.int_data.last_wall;
 
-  nc_assert(this->is_valid_wall_id(first));
-
-  const auto p1 = this->walls[first].pos;
-
-  f32 min_dist = FLT_MAX;
-
-  for (WallID wall_index = first+1; wall_index < last-1; ++wall_index)
+  // First, lets check for a direct intersection with all the triangles this
+  // sector is composed of..
+  // TODO: can be optimized
+  for (WallID wall_index = first + 1; wall_index < last - 1; ++wall_index)
   {
-    WallID next_index = wall_index+1;
+    WallID next_index = map_helpers::next_wall(*this, sector_id, wall_index);
+
+    const auto p1 = this->walls[first].pos;
     const auto p2 = this->walls[wall_index].pos;
     const auto p3 = this->walls[next_index].pos;
 
     if (intersect::point_triangle(pt, p1, p2, p3))
     {
+      // The point is inside the sector.. Return distance 0
       return 0.0f;
     }
+  }
 
-    min_dist = std::min(dist::point_line_2d(pt, p2, p3), min_dist);
+  // No direct triangle intersection? Then measure the distance from all the
+  // edges and take the minimal one.. This will be always more than 0
+  f32 min_dist = FLT_MAX;
+  for (WallID wall_index = first; wall_index < last; ++wall_index)
+  {
+    WallID next_index = map_helpers::next_wall(*this, sector_id, wall_index);
+
+    const auto p_a = this->walls[wall_index].pos;
+    const auto p_b = this->walls[next_index].pos;
+    min_dist = std::min(dist::point_line_2d(pt, p_a, p_b), min_dist);
   }
 
   return min_dist;
