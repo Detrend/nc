@@ -3,6 +3,7 @@
 
 #include <types.h>
 #include <math/vector.h>
+#include <math/matrix.h>
 
 #include <engine/map/map_types.h>
 #include <engine/entity/entity_types.h>
@@ -183,6 +184,20 @@ struct PhysLevel
     f32               step,              // max step height the entity can do
     EntityTypeMask    colliders,         // types of entities to collide with
     CollisionListener listener = nullptr // reaction to collisions
+  ) const;
+
+  void move_particle
+  (
+    vec3&             position,
+    vec3&             velocity,
+    mat4&             transform,
+    f32&              delta_time,
+    f32               radius,
+    f32               height,
+    f32               neg_height,
+    f32               bounce,
+    EntityTypeMask    colliders,
+    CollisionListener listener = nullptr
   ) const;
 };
 
