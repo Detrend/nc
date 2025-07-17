@@ -5,23 +5,34 @@ enum SectorColoringMode{
 	Floor, Ceiling
 }
 
+@export_group("Node editing")
+## When holding Q, how much a node can max move in single frame without interrupting the multimove
+@export var shared_continuous_movement_max_step : float = 10
+## Max distance at which points can snap into each other
+@export var max_snapping_distance : float = 1.0
+## How pressing '+' or '-' alters the floor/ceiling height (chosen by current level's coloring mode)
+@export var floor_height_increment : float = 0.1
+@export var ceiling_height_increment : float = 0.5
+
+@export_group("Portal visuals")
 @export var portal_entry_color : Color = Color.DARK_GREEN
 @export var portal_exit_color_single : Color = Color.DARK_RED
 @export var portal_exit_color_bidirectional : Color = Color.BLUE
 
+@export_group("Floor visuals")
 @export var floor_min_height : float = 0.0
 @export var floor_min_height_color : Color = Color.WHITE
 @export var floor_max_height : float = 5.0
 @export var floor_max_height_color : Color = Color.DARK_GRAY
 @export var floor_color_curve : Curve
 
+@export_group("Ceiling visuals")
 @export var ceiling_min_height : float = 1.0
 @export var ceiling_min_height_color : Color = Color.WHITE
 @export var ceiling_max_height : float = 10.0
 @export var ceiling_max_height_color : Color = Color.DARK_GRAY
 @export var ceiling_color_curve : Curve
 
-@export var shared_continuous_movement_max_step : float = 10
 
 
 static func get_sector_color(this: EditorConfig, sector: Sector)->Color:

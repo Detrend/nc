@@ -15,10 +15,11 @@ extends Polygon2D
 	set(value): portal_destination_wall = value if !(portal_destination and portal_destination.get_points_count()>0) else (value % portal_destination.get_points_count())
 @export var is_portal_bidirectional : bool = true
 @export var show_portal_arrow : bool = false
+@export_tool_button("Snap points") var snap_points_tool_button = _snap_points
 
 var config : EditorConfig = preload("res://config.tres")
 
-func has_portal()-> bool: return enable_portal and portal_destination != null
+func has_portal()-> bool: return enable_portal and portal_destination != null and portal_destination.is_visible_in_tree()
 
 var _level : Level:
 	get: return NodeUtils.get_ancestor_component_of_type(self, Level)
@@ -207,6 +208,14 @@ static func find_nearest_point(v: Vector2, others: Array[SectorPoint], tolerance
 			ret = p
 			ret_distance = distance
 	return ret	
+
+
+func _snap_points()->void:
+		for p in self.get_points():
+			var to_snap = _level.find_nearest_point(p.global_position, _level.max_snapping_distance, self)
+			if to_snap and (p.global_position != to_snap.global_position):
+				print("snap {0} -> {1} (distance: {2})".format([p, to_snap, p.global_position.distance_to(to_snap.global_position)]))
+				p.global_position = to_snap.global_position
 
 func get_full_name()->String:
 	var ret : Array[String] = []

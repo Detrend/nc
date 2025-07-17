@@ -4,9 +4,10 @@ extends Node2D
 
 var config : EditorConfig = preload("res://config.tres")
 @export var coloring_mode: EditorConfig.SectorColoringMode = EditorConfig.SectorColoringMode.Floor
-@export var max_snapping_distance : float = 1.0
-@export_tool_button("Snap points") var snap_points_tool_button = _snap_points
-
+var max_snapping_distance : float:
+	get: return config.max_snapping_distance
+#@export_tool_button("Snap points") var snap_points_tool_button = _snap_points
+@export var auto_heights:bool = true
 
 @export var export_scale : Vector3 = Vector3(1.0, 1.0, 1.0)
 @export var export_path : String = ""
@@ -18,6 +19,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	#if ! Engine.is_editor_hint(): return
 	_handle_new_sector_creation()
+	_handle_input()
 
 func create_level_export_data() -> Dictionary:	
 	var level_export := Dictionary()
@@ -100,7 +102,7 @@ func export_level():
 
 func get_sectors() -> Array[Sector]:
 	var ret : Array[Sector] = []
-	ret = NodeUtils.get_children_by_predicate(self, func(ch:Node)->bool: return is_instance_of(ch, Sector) and ch.visible , ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)
+	ret = NodeUtils.get_children_by_predicate(self, func(ch:Node)->bool: return is_instance_of(ch, Sector) and ch.is_visible_in_tree() , ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)
 	return ret
 
 
@@ -141,7 +143,7 @@ func _handle_new_sector_creation()->void:
 	else:
 		sector_creation_request = false
 
-func find_sector_parent(position: Vector2)->Node2D:
+func find_sector_parent(position: Vector2, nearest_point : SectorPoint)->Node2D:
 	var sector_parent : Node2D = null
 	if sector_parent == null:
 		print("according to selected")
@@ -154,9 +156,10 @@ func find_sector_parent(position: Vector2)->Node2D:
 				sector_parent = null
 				break
 	if sector_parent == null:
-		var nearest_point := find_nearest_point(position, INF, null)
-		sector_parent = nearest_point._sector.get_parent() if (nearest_point != null) else null
-		print("nearest point: {0}".format([nearest_point]))
+		#var nearest_point := find_nearest_point(position, INF, null)
+		if nearest_point != null:
+			sector_parent = nearest_point._sector.get_parent() if (nearest_point != null) else null
+			print("nearest point: {0}".format([nearest_point]))
 	if sector_parent == null: sector_parent = $Sectors
 	if sector_parent == null: sector_parent = self
 	return sector_parent
@@ -164,12 +167,46 @@ func find_sector_parent(position: Vector2)->Node2D:
 
 func add_sector(position: Vector2, points: PackedVector2Array, name: String = "")->Sector:
 			var nearest_point := find_nearest_point(position, INF, null)
-			var sector_parent : Node2D = find_sector_parent(position)
+			var sector_parent : Node2D = find_sector_parent(position, nearest_point)
 			
 			var new_sector :Sector = preload("res://prefabs/Sector.tscn").instantiate()
 			sector_parent.add_child(new_sector)
 			new_sector.owner = get_tree().edited_scene_root
 			new_sector.global_position = position
 			new_sector.polygon = points
-			if ! name.is_empty(): new_sector.name = name
+			if ! name.is_empty(): 
+				new_sector.name = name
+			if self.auto_heights and nearest_point:
+				new_sector.floor_height = nearest_point._sector.floor_height
+				new_sector.ceiling_height = nearest_point._sector.ceiling_height
 			return new_sector
+
+
+var keypress_states : Dictionary[Key, bool]
+func _is_key_down(key: Key)->bool:
+	if keypress_states == null: 
+		keypress_states = {}
+	var last : bool = keypress_states.get(key, false)
+	var current := Input.is_key_pressed(key)
+	if current != last: keypress_states[key] = current
+	return (last == false) and (current == true)
+
+func _change_sector_height(node: Sector, delta: float, mode: EditorConfig.SectorColoringMode)->void:
+	if   mode == EditorConfig.SectorColoringMode.Floor:
+		node.floor_height += delta * config.floor_height_increment
+	elif mode == EditorConfig.SectorColoringMode.Ceiling:
+		node.ceiling_height += delta * config.ceiling_height_increment
+
+func _handle_input()->void:
+	#return
+	var increment := 0
+	var is_alt_pressed = Input.is_key_pressed(KEY_ALT)
+	if _is_key_down(KEY_P): 
+		print("+")
+		increment += 1
+	if _is_key_down(KEY_L): 
+		print("-")
+		increment -= 1
+	if increment != 0.0:
+		for sector in NodeUtils.get_selected_nodes_of_type(Sector):
+			_change_sector_height(sector, increment, coloring_mode)

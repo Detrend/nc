@@ -1,12 +1,12 @@
-[gd_scene load_steps=4 format=3 uid="uid://befdk2p7cnnba"]
+[gd_scene load_steps=5 format=3 uid="uid://befdk2p7cnnba"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/Level.gd" id="1_nqbmo"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_l4525"]
+[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/Sector.gd" id="3_l4525"]
 [ext_resource type="PackedScene" uid="uid://2xarq0korji0" path="res://prefabs/PlayerPosition.tscn" id="3_nqbmo"]
 
 [node name="TestLevel1" type="Node2D"]
 script = ExtResource("1_nqbmo")
-max_snapping_distance = 5.0
 export_scale = Vector3(0.1, 0.1, 1)
 export_path = "../nc/content/levels/level_test1.json"
 
@@ -17,26 +17,26 @@ export_path = "../nc/content/levels/level_test1.json"
 [node name="@Polygon2D@33441" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
 position = Vector2(27, 127)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(-11, 1, -3, -15, 5, -15, 13, 1, 5, 17, -3, 17)
+polygon = PackedVector2Array(-19, 1, -12, -8, -3, -15, 5, -15, 14, -8, 21, 1, 14, 10, 5, 17, -3, 17, -12, 10)
 ceiling_height = 4.0
 portal_wall = 1
 portal_destination_wall = 3
 
 [node name="@Polygon2D@41759" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
-position = Vector2(29.0752, 148.656)
+position = Vector2(30, 151)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(-5.07516, -4.65584, 2.92484, -4.65584, 2.92484, 3.34416, 2.92484, 11.3442, -5.07516, 11.3442, -5.07516, 3.34416)
+polygon = PackedVector2Array(-6, -7, 2, -7, 2, 1, 2, 9, -6, 9, -6, 1)
 ceiling_height = 4.0
 
 [node name="@Polygon2D@42784" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
 position = Vector2(36.2015, 153.28)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(-4.20152, -1.28004, 3.79848, -1.28004, 3.79848, 6.71996, -4.20152, 6.71996)
+polygon = PackedVector2Array(-4.2015, -1.28, 3.79848, -1.28004, 3.79848, 6.71996, -4.2015, 6.72)
 
 [node name="@Polygon2D@43129" parent="Sectors/InfinitePassage" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(19.5826, 154.467)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(-3.58258, -2.46712, 4.41742, -2.46712, 4.41742, 5.53288, -3.58258, 5.53288)
+polygon = PackedVector2Array(-3.58258, -2.46712, 4.4174, -2.467, 4.4174, 5.533, -3.58258, 5.53288)
 portal_destination = NodePath("../@Polygon2D@67463")
 portal_wall = 3
 portal_destination_wall = 1
@@ -44,7 +44,8 @@ portal_destination_wall = 1
 [node name="@Polygon2D@59398" parent="Sectors/InfinitePassage" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(30.1038, 99.7451)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(-6.10384, -3.74506, 1.89616, -3.74506, 1.89616, 4.25494, 1.89616, 12.2549, -6.10384, 12.2549, -6.10384, 4.25494)
+polygon = PackedVector2Array(-6.1038, -3.7451, 1.8962, -3.7451, 1.8962, 4.2549, 1.8962, 12.2549, -6.1038, 12.2549, -6.1038, 4.2549)
+floor_height = -0.1
 ceiling_height = 5.0
 portal_destination = NodePath("../@Polygon2D@41759")
 enable_portal = false
@@ -53,12 +54,12 @@ portal_destination_wall = 3
 [node name="@Polygon2D@67463" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
 position = Vector2(36.8465, 99.7157)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(-4.84653, -3.71573, 3.15347, -3.71573, 3.15347, 4.28427, -4.84653, 4.28427)
+polygon = PackedVector2Array(-4.8465, -3.7157, 3.15347, -3.71573, 3.15347, 4.28427, -4.8465, 4.2843)
 
 [node name="@Polygon2D@67810" parent="Sectors/InfinitePassage" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(18.0846, 99.4924)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(-2.0846, -3.49237, 5.9154, -3.49237, 5.9154, 4.50763, -2.0846, 4.50763)
+polygon = PackedVector2Array(-2.0846, -3.49237, 5.9154, -3.4924, 5.9154, 4.5076, -2.0846, 4.50763)
 portal_destination = NodePath("../@Polygon2D@42784")
 portal_wall = 3
 portal_destination_wall = 1
@@ -66,14 +67,56 @@ portal_destination_wall = 1
 [node name="@Polygon2D@76073" parent="Sectors/InfinitePassage" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(27.5498, 86.4973)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(-3.54977, 1.50273, 4.45023, 1.50273, 4.45023, 9.50273, -3.54977, 9.50273)
+polygon = PackedVector2Array(-3.5498, -6.4973, 4.4502, -6.4973, 4.4502, 0.502701, -3.5498, 0.502701)
 portal_destination = NodePath("../@Polygon2D@76420")
 portal_destination_wall = 2
 
 [node name="@Polygon2D@76420" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
 position = Vector2(25.8651, 164.783)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(-1.86514, -4.78288, 6.13486, -4.78288, 6.13486, 3.21712, -1.86514, 3.21712)
+polygon = PackedVector2Array(-1.8651, -4.783, 6.1349, -4.783, 6.13486, 3.21712, -1.86514, 3.21712)
+
+[node name="Sector" type="Polygon2D" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
+position = Vector2(35.7049, 82.4507)
+polygon = PackedVector2Array(-11.7049, 4.5493, -3.70494, 4.5493, -3.70494, 12.5493, -3.70494, 13.5493, -11.7049, 13.5493)
+script = ExtResource("3_l4525")
+show_portal_arrow = true
+
+[node name="@Polygon2D@191806" type="Polygon2D" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
+position = Vector2(45.3709, 119.094)
+color = Color(0.720881, 0.439565, 0.549454, 1)
+polygon = PackedVector2Array(-4.37088, -0.0943832, 2.62912, -7.09438, 10.6291, 8.90562, 2.62912, 8.90562)
+script = ExtResource("3_l4525")
+floor_height = 0.6
+ceiling_height = 2.1
+show_portal_arrow = true
+
+[node name="@Polygon2D@192154" type="Polygon2D" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
+position = Vector2(45, 134)
+color = Color(0.720881, 0.439565, 0.549454, 1)
+polygon = PackedVector2Array(3, -6, 11, -6, 3, 10, -4, 3)
+script = ExtResource("3_l4525")
+floor_height = 0.6
+ceiling_height = 2.1
+show_portal_arrow = true
+
+[node name="@Polygon2D@193900" type="Polygon2D" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
+position = Vector2(1.30878, 119.23)
+color = Color(0.720881, 0.439565, 0.549454, 1)
+polygon = PackedVector2Array(6.69122, -7.22975, 13.6912, -0.229752, 6.69122, 8.77025, -1.30878, 8.77025)
+script = ExtResource("3_l4525")
+floor_height = 0.6
+ceiling_height = 2.1
+show_portal_arrow = true
+
+[node name="@Polygon2D@194248" type="Polygon2D" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
+position = Vector2(2.86552, 135.542)
+color = Color(0.720881, 0.439565, 0.549454, 1)
+polygon = PackedVector2Array(-2.86552, -7.54152, 5.13448, -7.54152, 12.1345, 1.45848, 5.13448, 8.45848)
+script = ExtResource("3_l4525")
+floor_height = 0.6
+ceiling_height = 2.1
+show_portal_arrow = true
 
 [node name="Square" type="Node2D" parent="Sectors"]
 
@@ -83,14 +126,13 @@ polygon = PackedVector2Array(80, -24, 80, 40, 56, 40, 56, 31.7314, 56, 8, 56, 0)
 floor_height = 0.1
 portal_destination = NodePath("../../TopPart/Sector8")
 portal_wall = 3
-portal_destination_wall = 1
+portal_destination_wall = 3
 
 [node name="Sector5" parent="Sectors/Square" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(104, 24)
-color = Color(0.984437, 0.968751, 0.974878, 1)
+color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(-24, -48, -48, -24, -88, -24, -112, -24, -112, -32, -112, -48)
 uv = PackedVector2Array(-5.66675, -55.9995)
-floor_height = 0.1
 portal_destination = NodePath("../../TopPart/Sector30")
 portal_wall = 3
 
@@ -106,7 +148,7 @@ portal_destination_wall = 3
 [node name="Sector7" parent="Sectors/Square" instance=ExtResource("2_l4525")]
 position = Vector2(104, 96)
 color = Color(0.944021, 0.887601, 0.90964, 1)
-polygon = PackedVector2Array(-88, -56, -48, -56, -24, -56, -24, -32, -72, -32, -80, -32, -112, -32)
+polygon = PackedVector2Array(-88, -56, -48, -56, -24, -56, -24, -32, -112, -32)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.2
 portal_wall = 4
@@ -218,7 +260,7 @@ polygon = PackedVector2Array(-12.6608, -7.1286, 19.3392, -15.1286, 11.3392, 24.8
 [node name="Sector8" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
 position = Vector2(329, 56)
 color = Color(0.984437, 0.968751, 0.974878, 1)
-polygon = PackedVector2Array(-89, -56, -33, -56, -33, -32, -89, -32, -113, -56)
+polygon = PackedVector2Array(-89, -56, -49, -56, -41, -56, -33, -56, -33, -32, -89, -32, -113, -56)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.1
 ceiling_height = 4.0
@@ -289,29 +331,283 @@ portal_wall = -1
 [node name="Sector25" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
 position = Vector2(288, -40)
 color = Color(0.984437, 0.968751, 0.974878, 1)
-polygon = PackedVector2Array(-76, -20, -80, -27, -48, -56, -40, -32, -48, 8)
+polygon = PackedVector2Array(-76, -20, -80, -27, -48, -56, -40, -32, -42, -17, -48, 8)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.1
 ceiling_height = 2.5
 portal_wall = -1
 
-[node name="Sector20" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
+[node name="Sector20" parent="Sectors/TopPart" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(232, 72)
 color = Color(0.984437, 0.968751, 0.974878, 1)
-polygon = PackedVector2Array(-56, -72, -56, -88, -56, -96, -56, -104, -32, -104, -32, -72)
+polygon = PackedVector2Array(-56, -72, -56, -73, -56, -81, -56, -88, -56, -96, -56, -104, -32, -104, -32, -72)
 uv = PackedVector2Array(-5.66675, -55.9995)
 floor_height = 0.1
 ceiling_height = 4.0
-portal_wall = -1
+portal_destination = NodePath("../../InfinitePassage/Sector")
+portal_wall = 1
+portal_destination_wall = 1
 
 [node name="Sector30" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
 position = Vector2(208, 80)
-color = Color(0.888164, 0.775447, 0.819477, 1)
-polygon = PackedVector2Array(-40, -96, -40, -104, -32, -104, -32, -96)
+color = Color(0.984437, 0.968751, 0.974878, 1)
+polygon = PackedVector2Array(-40, -96, -40, -104, -39, -104, -39, -96)
 uv = PackedVector2Array(-5.66675, -55.9995)
-floor_height = 0.3
+floor_height = 0.1
 portal_destination_wall = 2
 is_portal_bidirectional = false
 
+[node name="Sector" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
+position = Vector2(172, -20)
+color = Color(0.888164, 0.775447, 0.819477, 1)
+polygon = PackedVector2Array(-3, -4, 4, -4, 4, 4, -3, 4)
+floor_height = 0.3
+
+[node name="Stairs" type="Node2D" parent="Sectors"]
+position = Vector2(264, -45)
+
+[node name="@Polygon2D@35078" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(-6, -13)
+color = Color(0.944021, 0.887601, 0.90964, 1)
+polygon = PackedVector2Array(-12, 1, -10, -14, -4, -14)
+floor_height = 0.2
+ceiling_height = 6.0
+
+[node name="@Polygon2D@24469" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(-7.707, -16.2711)
+color = Color(0.826275, 0.651182, 0.719578, 1)
+polygon = PackedVector2Array(-2.293, -10.7289, 2.70718, -7.72894, -10.293, 4.2711)
+floor_height = 0.4
+ceiling_height = 6.0
+
+[node name="@Polygon2D@24817" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(-8.53999, -17.452)
+color = Color(0.720881, 0.439565, 0.549454, 1)
+polygon = PackedVector2Array(3.54019, -6.54804, 6.54019, -2.54804, -9.46001, 5.452)
+floor_height = 0.6
+ceiling_height = 6.0
+
+[node name="@Polygon2D@30042" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(-2.32599, -12.7891)
+color = Color(0.646731, 0.290681, 0.429763, 1)
+polygon = PackedVector2Array(-15.674, 0.789101, 0.326172, -7.21094, 1.32599, -2.2109)
+floor_height = 0.8
+ceiling_height = 6.0
+
+[node name="@Polygon2D@30390" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(-4, -6)
+color = Color(0.591337, 0.179456, 0.340346, 1)
+polygon = PackedVector2Array(-14, -6, 3, -9, 3, -2, -14, -2)
+floor_height = 1.0
+ceiling_height = 6.0
+
+[node name="@Polygon2D@30738" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(-6, 0)
+color = Color(0.55202, 0.100512, 0.276882, 1)
+polygon = PackedVector2Array(-12, -8, 5, -8, 5, -2, -13.0003, -2)
+floor_height = 1.2
+ceiling_height = 6.0
+
+[node name="@Polygon2D@31086" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(22.948, 8.7383)
+color = Color(0.526102, 0.0484717, 0.235045, 1)
+polygon = PackedVector2Array(-41.9483, -10.7383, -23.948, -10.7383, -23.948, -4.7383, -41.948, -4.7383)
+floor_height = 1.4
+ceiling_height = 6.0
+
+[node name="@Polygon2D@44213" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(31.918, 7.3907)
+color = Color(0.510905, 0.017958, 0.210515, 1)
+polygon = PackedVector2Array(-32.918, -3.3907, -32.918, 2.6093, -50.918, 2.6093, -50.918, -3.3907)
+floor_height = 1.6
+ceiling_height = 6.0
+
+[node name="@Polygon2D@25686" type="Polygon2D" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(-17.5599, 13.2923)
+color = Color(0.503751, 0.00359327, 0.198967, 1)
+polygon = PackedVector2Array(-1.44009, -3.29233, 16.5599, -3.29233, 16.5599, 2.70767, -1.44009, 2.70767)
+script = ExtResource("3_l4525")
+floor_height = 1.8
+ceiling_height = 6.0
+show_portal_arrow = true
+
+[node name="@Polygon2D@26386" type="Polygon2D" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(-15.8494, 19.7644)
+color = Color(0.501961, 0, 0.196078, 1)
+polygon = PackedVector2Array(-3.15057, -3.76437, 14.8494, -3.76437, 18.8494, -3.76437, 35.8494, -3.76437, 35.8494, 4.23563, 23.8494, 12.2356, 8.84943, 12.2356, -3.15057, 5.23563)
+script = ExtResource("3_l4525")
+floor_height = 2.0
+ceiling_height = 6.0
+show_portal_arrow = true
+
+[node name="@Polygon2D@29862" type="Polygon2D" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(9.59964, 9.88879)
+color = Color(0.501961, 0, 0.196078, 1)
+polygon = PackedVector2Array(-6.59964, 6.11121, -6.59964, 0.111206, 10.4004, 0.111206, 10.4004, 6.11121)
+script = ExtResource("3_l4525")
+floor_height = 2.2
+ceiling_height = 6.0
+show_portal_arrow = true
+
+[node name="@Polygon2D@31604" type="Polygon2D" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(4.55652, 4.00512)
+color = Color(0.501961, 0, 0.196078, 1)
+polygon = PackedVector2Array(-1.55652, -0.00511932, 15.4435, -0.00511932, 15.4435, 5.99488, -1.55652, 5.99488)
+script = ExtResource("3_l4525")
+floor_height = 2.4
+ceiling_height = 6.0
+show_portal_arrow = true
+
+[node name="@Polygon2D@32646" type="Polygon2D" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(7.62445, 0.685043)
+color = Color(0.501961, 0, 0.196078, 1)
+polygon = PackedVector2Array(-4.62445, -2.68504, 12.3755, -2.68504, 12.3755, 3.31496, -4.62445, 3.31496)
+script = ExtResource("3_l4525")
+floor_height = 2.6
+ceiling_height = 6.0
+show_portal_arrow = true
+
+[node name="@Polygon2D@34040" type="Polygon2D" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(7.16217, -3.76973)
+color = Color(0.501961, 0, 0.196078, 1)
+polygon = PackedVector2Array(-4.16217, -4.23027, 12.8378, -4.23027, 12.8378, 1.76973, -4.16217, 1.76973)
+script = ExtResource("3_l4525")
+floor_height = 2.8
+ceiling_height = 6.0
+show_portal_arrow = true
+
+[node name="@Polygon2D@37536" type="Polygon2D" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(6.34171, -9.99689)
+color = Color(0.501961, 0, 0.196078, 1)
+polygon = PackedVector2Array(-3.34171, -5.00311, 13.6583, -2.00311, 13.6583, 1.99689, -3.34171, 1.99689)
+script = ExtResource("3_l4525")
+floor_height = 3.0
+ceiling_height = 6.0
+show_portal_arrow = true
+
+[node name="@Polygon2D@38925" type="Polygon2D" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(12.9409, -16.6276)
+color = Color(0.501961, 0, 0.196078, 1)
+polygon = PackedVector2Array(-6.94086, -5.37238, 7.05914, 4.62762, -9.94086, 1.62762)
+script = ExtResource("3_l4525")
+floor_height = 3.2
+ceiling_height = 6.0
+show_portal_arrow = true
+
+[node name="@Polygon2D@40329" type="Polygon2D" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(13.679, -19.9062)
+color = Color(0.501961, 0, 0.196078, 1)
+polygon = PackedVector2Array(-1.67896, -6.09385, 6.32104, 7.90615, -7.67896, -2.09385)
+script = ExtResource("3_l4525")
+floor_height = 3.4
+ceiling_height = 6.0
+show_portal_arrow = true
+
+[node name="@Polygon2D@41376" type="Polygon2D" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(17.5515, -20.1922)
+color = Color(0.501961, 0, 0.196078, 1)
+polygon = PackedVector2Array(2.44849, -8.80782, 2.44849, 8.19218, -5.55151, -5.80782)
+script = ExtResource("3_l4525")
+floor_height = 3.6
+ceiling_height = 6.2
+show_portal_arrow = true
+
+[node name="@Polygon2D@45551" type="Polygon2D" parent="Sectors/Stairs" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
+position = Vector2(21.1135, -25.4765)
+color = Color(0.501961, 0, 0.196078, 1)
+polygon = PackedVector2Array(10.8865, -5.52348, 26.8865, -9.52348, 26.8865, 14.4765, 10.8865, 13.4765)
+script = ExtResource("3_l4525")
+floor_height = 3.8
+ceiling_height = 7.0
+portal_destination = NodePath("../../Square/Sector7")
+enable_portal = false
+portal_wall = 1
+portal_destination_wall = 2
+show_portal_arrow = true
+
+[node name="Sector" type="Polygon2D" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(27.4031, -7.27373)
+color = Color(0.501961, 0, 0.196078, 1)
+polygon = PackedVector2Array(-7.40314, -21.7263, 4.59686, -23.7263, 4.59686, -4.72627, -7.40314, -4.72627)
+script = ExtResource("3_l4525")
+floor_height = 3.8
+ceiling_height = 7.0
+show_portal_arrow = true
+
+[node name="@Polygon2D@119216" type="Polygon2D" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(53.9344, -29.677)
+color = Color(0.501961, 0, 0.196078, 1)
+polygon = PackedVector2Array(-5.93442, -5.32304, 10.0656, -5.32304, 10.0656, 18.677, -5.93442, 18.677)
+script = ExtResource("3_l4525")
+floor_height = 3.8
+ceiling_height = 7.0
+show_portal_arrow = true
+
+[node name="@Polygon2D@120857" type="Polygon2D" parent="Sectors/Stairs" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
+position = Vector2(96, -26)
+color = Color(0.501961, 0, 0.196078, 1)
+polygon = PackedVector2Array(8, -9, 40, -9, 40, 15, 8, 15)
+script = ExtResource("3_l4525")
+floor_height = 3.8
+ceiling_height = 7.0
+portal_destination = NodePath("../../Square/Sector7")
+portal_wall = 1
+portal_destination_wall = 2
+show_portal_arrow = true
+
+[node name="@Polygon2D@121205" type="Polygon2D" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(70.2951, -27.324)
+color = Color(0.591337, 0.179456, 0.340346, 1)
+polygon = PackedVector2Array(-6.2951, -7.67603, 9.7049, -15.676, 17.7049, -15.676, 33.7049, -7.67603, 33.7049, 16.324, 17.7049, 24.324, 9.7049, 24.324, -6.2951, 16.324)
+script = ExtResource("3_l4525")
+floor_height = 1.0
+ceiling_height = 7.0
+show_portal_arrow = true
+
+[node name="@Polygon2D@122971" type="Polygon2D" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(74.3508, 6.95854)
+color = Color(0.591337, 0.179456, 0.340346, 1)
+polygon = PackedVector2Array(5.64917, -9.95854, 13.6492, -9.95854, 13.6492, 6.04146, 5.64917, 6.04146)
+script = ExtResource("3_l4525")
+floor_height = 1.0
+ceiling_height = 3.0
+show_portal_arrow = true
+
+[node name="@Polygon2D@123686" type="Polygon2D" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(73.7202, 19.5707)
+color = Color(0.55202, 0.100512, 0.276882, 1)
+polygon = PackedVector2Array(6.27979, -6.57072, 14.2798, -6.57072, 17.2798, 10.4293, 10.2798, 19.4293, 3.27979, 5.42928)
+script = ExtResource("3_l4525")
+floor_height = 1.2
+ceiling_height = 3.5
+show_portal_arrow = true
+
+[node name="@Polygon2D@124034" type="Polygon2D" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(66.5132, 29.3902)
+color = Color(0.526102, 0.0484717, 0.235045, 1)
+polygon = PackedVector2Array(-10.5132, 5.60979, -10.5132, -4.39021, 10.4868, -4.39021, 17.4868, 9.60979)
+script = ExtResource("3_l4525")
+floor_height = 1.4
+ceiling_height = 4.0
+show_portal_arrow = true
+
+[node name="@Polygon2D@127510" type="Polygon2D" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(40, 30)
+color = Color(0.510905, 0.017958, 0.210515, 1)
+polygon = PackedVector2Array(-16, -1, 16, -5, 16, 5, -8, 7)
+script = ExtResource("3_l4525")
+floor_height = 1.6
+ceiling_height = 4.0
+show_portal_arrow = true
+
+[node name="@Polygon2D@129925" type="Polygon2D" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
+position = Vector2(27.0432, 33.9583)
+color = Color(0.503751, 0.00359327, 0.198967, 1)
+polygon = PackedVector2Array(-3.04315, -4.95827, 4.95685, 3.04173, -3.04315, 11.0417, -11.0432, 11.0417)
+script = ExtResource("3_l4525")
+floor_height = 1.8
+ceiling_height = 4.0
+show_portal_arrow = true
+
 [node name="PlayerPosition" parent="." instance=ExtResource("3_nqbmo")]
-position = Vector2(0, 16)
+position = Vector2(205, 45)

@@ -12,6 +12,9 @@ point_count = 3
 
 [resource]
 script = ExtResource("1_x30i3")
+shared_continuous_movement_max_step = 50.0
+max_snapping_distance = 1.0
+height_increment = 0.1
 portal_entry_color = Color(0, 0.392157, 0, 0.666667)
 portal_exit_color_single = Color(0.670588, 0, 0, 0.815686)
 portal_exit_color_bidirectional = Color(0.209964, 0.444104, 0.772898, 0.85098)
@@ -25,5 +28,4 @@ ceiling_min_height_color = Color(1, 1, 1, 1)
 ceiling_max_height = 10.0
 ceiling_max_height_color = Color(0.662745, 0.662745, 0.662745, 1)
 ceiling_color_curve = SubResource("Curve_x30i3")
-shared_continuous_movement_max_step = 50.0
 metadata/_custom_type_script = "uid://bcqqujkyuiq7b"

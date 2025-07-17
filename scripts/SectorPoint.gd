@@ -15,4 +15,4 @@ var global_position : Vector2:
 		_sector.polygon = points
 
 func _to_string():
-	return "{0}[{1}]".format([_sector.name, _idx])
+	return "{0}[{1}]".format([_sector.get_full_name(), _idx])
