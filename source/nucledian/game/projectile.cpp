@@ -46,7 +46,7 @@ void Projectile::update(f32 dt)
   lvl.move_character
   (
     position, m_velocity, nullptr, dt, this->get_radius(), this->get_height(),
-    0.0f, PhysLevel::COLLIDE_EVERYTHING, 0, 0.0f,
+    0.0f, PhysLevel::COLLIDE_EVERYTHING,
     [&hit_something](const CollisionHit& /*hit*/)
     {
       // stop the simulation on hit

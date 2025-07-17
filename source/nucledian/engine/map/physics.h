@@ -180,21 +180,10 @@ struct PhysLevel
     f32               delta_time,        // frame time
     f32               radius,            // radius of the entity
     f32               height,            // height of the entity
-    f32               max_step,          // max step height the entity can do
+    f32               step,              // max step height the entity can do
     EntityTypeMask    colliders,         // types of entities to collide with
-    EntityTypeMask    report_only,       // do not collide with these, but only report collisions
-    f32               bounce   = 0.0f,   // 
     CollisionListener listener = nullptr // reaction to collisions
   ) const;
-
-  // Move helper for entities with physics component.
-  void move_character
-  (
-    Entity&           ent,
-    vec3*             forward,
-    f32               frame_time,
-    CollisionListener listener = nullptr
-  );
 };
 
 }

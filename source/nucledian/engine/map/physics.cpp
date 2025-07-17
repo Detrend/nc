@@ -769,17 +769,15 @@ const
 //==============================================================================
 void PhysLevel::move_character
 (
-  vec3&                          position,
-  vec3&                          velocity_og,
-  vec3*                          forward,
-  f32                            delta_time,
-  f32                            radius,
-  f32                            height,
-  f32                            max_step_height,
-  [[maybe_unused]]EntityTypeMask colliders,
-  [[maybe_unused]]EntityTypeMask report_only,
-  [[maybe_unused]]f32            bounce,
-  PhysLevel::CollisionListener   listener
+  vec3&                        position,
+  vec3&                        velocity_og,
+  vec3*                        forward,
+  f32                          delta_time,
+  f32                          radius,
+  f32                          height,
+  f32                          max_step_height,
+  EntityTypeMask               colliders,
+  PhysLevel::CollisionListener listener
 )
 const
 {
@@ -833,12 +831,18 @@ const
     auto portal_type = w1.get_portal_type();
 
     // Full - if the collision happens then it is over
-    if (portal_type == PortalType::none /*|| out_c <= 0.0f*/)
+    if (portal_type == PortalType::none)
     {
       // out_n and out_c are already set up properly
       // The second condition evaluates to true if we are already inside
       // a wall slightly.
       return true;
+    }
+
+    if (out_c < 0.0f)
+    {
+      // This helps when traversing portals..
+      return false;
     }
 
     // Partial - have to check if there is a free window
@@ -927,18 +931,12 @@ const
     const vec3 ray_from = position;
     const vec3 ray_to   = position + velocity;
     const vec3 ray_dir  = ray_to - ray_from;
-    const auto e_types  = colliders | report_only;
 
     CollisionHit hit = phys_helpers::raycast_generic<vec3>
     (
-      *this, ray_from, ray_to, radius, e_types, nullptr,
+      *this, ray_from, ray_to, radius, colliders, nullptr,
       INVALID_WALL_ID, wall_intersector, sector_intersector, entity_intersector
     );
-
-    // CollisionHit hit = raycast3d_expanded
-    // (
-    //   ray_from, ray_to, radius, height, e_types
-    // );
 
     if (!hit)
     {
@@ -946,94 +944,11 @@ const
       break;
     }
 
-    // We hit the wall, maybe we can step up?
-    const bool  can_step_up   = max_step_height > 0.0f;
-    const bool  is_sector_hit = hit.type == CollisionHit::sector;
-    const auto& sector_hit    = hit.hit.sector;
-
-    if (can_step_up && is_sector_hit && sector_hit.type & SectorHitType::wall && false)
-    {
-      WallID wid = sector_hit.wall_id;
-
-      // Check the hit height and the height of the window
-      nc_assert(map.is_valid_wall_id(wid));
-      const WallData& wd = map.walls[wid];
-
-      if (wd.get_portal_type() != PortalType::none)
-      {
-        // There is a window here! Maybe we can slide inside?
-        const SectorID sid  = sector_hit.sector_id;
-        const SectorID nsid = wd.portal_sector_id;
-
-        nc_assert(map.is_valid_sector_id(sid));
-        nc_assert(map.is_valid_sector_id(nsid));
-
-        const SectorData& s1 = map.sectors[sid];
-        const SectorData& s2 = map.sectors[nsid];
-
-        // Acquire window position
-        const f32 window_y1 = std::max(s1.floor_height, s2.floor_height);
-        const f32 window_y2 = std::min(s1.ceil_height,  s2.ceil_height);
-        const f32 window_h  = std::max(0.0f, window_y2 - window_y1);
-
-        const bool can_fit = window_h >= height;
-
-        // Ray hit height
-        const vec3 hit_point     = ray_from + ray_dir * hit.coeff;
-        const f32  dist_from_win = window_y1 - hit_point.y;
-
-        // Note: Negative distance from window means that it is below us..
-        //       In such a case we just ignore it.
-        if (can_fit && dist_from_win <= max_step_height && dist_from_win >= 0.0f)
-        {
-          constexpr f32 STEP_UP_COEFF = 1.0f;
-
-          // Try stepping up
-          vec3 step_from = position;
-          vec3 step_to   = position + vec3{0, dist_from_win * STEP_UP_COEFF, 0};
-
-          CollisionHit up_hit = this->raycast3d_expanded
-          (
-            step_from, step_to, radius, height, e_types
-          );
-
-          if (!up_hit)
-          {
-            // no hit up, try to cast again
-            CollisionHit forward_hit = this->raycast3d_expanded
-            (
-              step_to, step_to + velocity, radius, height, e_types
-            );
-
-            if (!forward_hit || forward_hit.coeff > hit.coeff)
-            {
-              // we can step up, good thing.. lets do it
-              position.y += dist_from_win * STEP_UP_COEFF;
-              hit = forward_hit;
-
-              if (!hit)
-              {
-                // This happens if the path is fully free..
-                // In such a case we want to exit the loop and just move the
-                // object forward
-                break;
-              }
-            }
-          }
-        }
-      }
-    }
-
     nc_assert(is_normal(hit.normal), "Bad things can happen");
     const auto remaining = velocity * (1.0f - hit.coeff);
     const auto projected = hit.normal * dot(remaining, hit.normal);
 
     velocity -= projected;
-
-    if (hit.type == CollisionHit::sector && hit.hit.sector.type & SectorHitType::ceil_or_floor)
-    {
-      velocity_og.y = 0.0f;
-    }
   }
 
   // Then handle nuclidean portal transitions - check which portals
@@ -1113,32 +1028,4 @@ const
   }
 }
 
-//==============================================================================
-void PhysLevel::move_character
-(
-  Entity&           ent,
-  vec3*             forward,
-  f32               delta,
-  CollisionListener listener
-)
-{
-  nc_assert(ent.get_physics(), "Requires a physics component");
-
-  vec3 pos  = ent.get_position();
-  f32  step = ent.get_physics()->max_step_height;
-  f32  r    = ent.get_radius();
-  f32  h    = ent.get_height();
-  f32  b    = ent.get_physics()->bounce;
-
-  auto collide = ent.get_physics()->collide_with;
-  auto report  = ent.get_physics()->report_only;
-
-  this->move_character
-  (
-    pos, ent.get_physics()->velocity, forward, delta,
-    r, h, step, collide, report, b, listener
-  );
 }
-
-}
-
