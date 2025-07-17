@@ -149,9 +149,9 @@ func find_sector_parent(position: Vector2, nearest_point : SectorPoint)->Node2D:
 		print("according to selected")
 		var selection := EditorInterface.get_selection().get_selected_nodes()
 		for s in selection:
-			if s is not Sector: continue
-			if sector_parent == null or sector_parent == s.get_parent():
-				sector_parent = s.get_parent()
+			var current : Node2D = s.get_parent() if s is Sector else s
+			if sector_parent == null or sector_parent == current:
+				sector_parent = current
 			else:
 				sector_parent = null
 				break
