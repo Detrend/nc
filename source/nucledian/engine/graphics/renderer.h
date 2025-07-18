@@ -1,6 +1,7 @@
 // Project Nucledian Source File
 #pragma once
 
+#include <engine/graphics/gl_types.h>
 #include <engine/graphics/resources/material.h>
 
 #include <math/vector.h>
@@ -27,6 +28,15 @@ private:
 
   const MaterialHandle& m_solid_material;
   const MaterialHandle& m_billboard_material;
+  // Used for lighting pass.
+  const MaterialHandle  m_light_material;
+
+  GLuint m_g_buffer, m_g_position, m_g_normal, m_g_albedo;
+
+  GLuint create_g_buffer(GLint internal_format, GLenum attachment) const;
+
+  void do_geometry_pass(const CameraData& camera) const;
+  void do_lighting_pass(const vec3& view_position) const;
 
   void render_sectors(const CameraData& camera)  const;
   void render_entities(const CameraData& camera) const;

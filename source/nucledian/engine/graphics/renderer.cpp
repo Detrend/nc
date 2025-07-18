@@ -2,6 +2,7 @@
 #include <engine/graphics/renderer.h>
 
 #include <common.h>
+#include <logging.h>
 
 #include <math/utils.h>
 #include <math/lingebra.h>
@@ -26,8 +27,41 @@ namespace nc
 Renderer::Renderer(const GraphicsSystem& graphics_system)
 :
   m_solid_material(graphics_system.get_solid_material()),
-  m_billboard_material(graphics_system.get_billboard_material())
-{}
+  m_billboard_material(graphics_system.get_billboard_material()),
+  m_light_material(shaders::light::VERTEX_SOURCE, shaders::light::FRAGMENT_SOURCE)
+{
+  glGenFramebuffers(1, &m_g_buffer);
+  glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
+
+  // create g buffers
+  const GLenum attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+  m_g_position = create_g_buffer(GL_RGBA16F, attachments[0]);
+  m_g_normal   = create_g_buffer(GL_RGBA16F, attachments[1]);
+  m_g_albedo   = create_g_buffer(GL_RGBA, attachments[2]);
+  glDrawBuffers(3, attachments);
+
+  // create depth-stencil buffer
+  GLuint depth_stencil_buffer;
+  glGenRenderbuffers(1, &depth_stencil_buffer);
+  glBindRenderbuffer(GL_RENDERBUFFER, depth_stencil_buffer);
+  glRenderbufferStorage(
+    GL_RENDERBUFFER,
+    GL_DEPTH24_STENCIL8,
+    static_cast<GLsizei>(GraphicsSystem::WINDOW_WIDTH),
+    static_cast<GLsizei>(GraphicsSystem::WINDOW_HEIGHT)
+  );
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depth_stencil_buffer);
+
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    nc_warn("G-buffer not complete.");
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  m_light_material.use();
+  m_light_material.set_uniform(shaders::light::G_POSITION, 0);
+  m_light_material.set_uniform(shaders::light::G_NORMAL, 1);
+  m_light_material.set_uniform(shaders::light::G_ALBEDO, 2);
+}
 
 //==============================================================================
 void Renderer::render(const VisibilityTree& visibility_tree) const
@@ -43,11 +77,67 @@ void Renderer::render(const VisibilityTree& visibility_tree) const
     .vis_tree = visibility_tree,
   };
 
+  do_geometry_pass(camera_data);
+  do_lighting_pass(camera_data.position);
+}
+
+GLuint Renderer::create_g_buffer(GLint internal_format, GLenum attachment) const
+{
+  GLuint g_handle;
+  glGenTextures(1, &g_handle);
+  glBindTexture(GL_TEXTURE_2D, g_handle);
+  glTexImage2D(
+    GL_TEXTURE_2D,
+    0,
+    internal_format,
+    static_cast<GLsizei>(GraphicsSystem::WINDOW_WIDTH),
+    static_cast<GLsizei>(GraphicsSystem::WINDOW_HEIGHT),
+    0,
+    GL_RGBA,
+    GL_FLOAT,
+    nullptr
+  );
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, g_handle, 0);
+
+  return g_handle;
+}
+
+//==============================================================================
+void Renderer::do_geometry_pass(const CameraData& camera) const
+{
+  glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
   GizmoManager::instance().draw_gizmos();
-  render_sectors(camera_data);
-  render_entities(camera_data);
-  render_portals(camera_data);
+  render_sectors(camera);
+  render_entities(camera);
+  render_portals(camera);
   render_gun();
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+//==============================================================================
+void Renderer::do_lighting_pass(const vec3& view_position) const
+{
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, m_g_position);
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, m_g_normal);
+  glActiveTexture(GL_TEXTURE2);
+  glBindTexture(GL_TEXTURE_2D, m_g_albedo);
+
+  m_light_material.use();
+  m_light_material.set_uniform(shaders::light::VIEW_POSITION, view_position);
+
+  const MeshHandle screen_quad = MeshManager::instance().get_screen_quad();
+  glBindVertexArray(screen_quad.get_vao());
+  glDrawArrays(screen_quad.get_draw_mode(), 0, screen_quad.get_vertex_count());
+  glBindVertexArray(0);
 }
 
 //==============================================================================
@@ -79,7 +169,6 @@ void Renderer::render_sectors(const CameraData& camera) const
   m_solid_material.use();
   m_solid_material.set_uniform(shaders::solid::UNLIT, false);
   m_solid_material.set_uniform(shaders::solid::VIEW, camera.view);
-  m_solid_material.set_uniform(shaders::solid::VIEW_POSITION, camera.position);
 
   for (const auto& [sector_id, _] : sectors_to_render)
   {
@@ -126,6 +215,7 @@ void Renderer::render_entities(const CameraData& camera) const
 
   const MeshHandle& texturable_quad = MeshManager::instance().get_texturable_quad();
   glBindVertexArray(texturable_quad.get_vao());
+  glActiveTexture(GL_TEXTURE0);
 
   const mat3 camera_rotation = transpose(mat3(camera.view));
   // Extracting X and Y components from the forward vector.

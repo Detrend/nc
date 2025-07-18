@@ -320,6 +320,7 @@ bool GraphicsSystem::init()
   m_billboard_material = MaterialHandle(shaders::billboard::VERTEX_SOURCE, shaders::billboard::FRAGMENT_SOURCE);
   m_billboard_material.use();
   m_billboard_material.set_uniform(shaders::billboard::PROJECTION, m_default_projection);
+  m_billboard_material.set_uniform(shaders::billboard::TEXTURE, 0);
 
 #ifdef NC_DEBUG_DRAW
   debug_helpers::g_top_down_material = MaterialHandle

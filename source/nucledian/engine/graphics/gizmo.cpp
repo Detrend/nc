@@ -156,7 +156,6 @@ void GizmoManager::draw_gizmos() const
   const MaterialHandle& solid_material = graphics_system.get_solid_material();
   solid_material.use();
   solid_material.set_uniform(shaders::solid::VIEW, camera->get_view());
-  solid_material.set_uniform(shaders::solid::VIEW_POSITION, camera->get_position());
 
   auto combined_view = std::ranges::views::join
   (

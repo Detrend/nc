@@ -26,6 +26,12 @@ struct Portal;
 class GraphicsSystem : public IEngineModule
 {
 public:
+  static constexpr f32 WINDOW_WIDTH  = 1024.0f;
+  static constexpr f32 WINDOW_HEIGHT = 576.0f;
+  // TODO: MacSectors::query_visible don't work correctly with other aspect ratios
+  static constexpr f32 ASPECT_RATIO  = 800.0f / 600.0f;
+  static constexpr f32 FOV = 70.0f * (1.0f / 180.0f) * PI; // 70 degrees
+
   static EngineModuleId  get_module_id();
   static GraphicsSystem& get();
 
@@ -38,8 +44,6 @@ public:
   const mat4& get_default_projection() const;
 
 private:
-  struct CameraData;
-
   void update(f32 delta_seconds);
   void render();
   void terminate();
@@ -53,12 +57,6 @@ private:
   #endif
 
 private:
-  static constexpr f32 WINDOW_WIDTH  = 1024.0f;
-  static constexpr f32 WINDOW_HEIGHT = 576.0f;
-  // TODO: MacSectors::query_visible don't work correctly with other aspect ratios
-  static constexpr f32 ASPECT_RATIO  = 800.0f / 600.0f;
-  static constexpr f32 FOV = 70.0f * (1.0f / 180.0f) * PI; // 70 degrees
-
   SDL_Window* m_window     = nullptr;
   void*       m_gl_context = nullptr;
 

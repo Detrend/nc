@@ -73,6 +73,7 @@ public:
   MeshHandle get_line() const;
   MeshHandle get_quad() const;
   MeshHandle get_texturable_quad() const;
+  MeshHandle get_screen_quad() const;
 
 private:
   inline static std::unique_ptr<MeshManager> m_instance = nullptr;
@@ -88,6 +89,7 @@ private:
   MeshHandle              m_line_mesh;
   MeshHandle              m_quad_mesh;
   MeshHandle              m_texturable_quad_mesh;
+  MeshHandle              m_screen_quad_mesh;
 };
 
 }
