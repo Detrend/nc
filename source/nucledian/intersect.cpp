@@ -31,7 +31,7 @@ bool segment_segment(
   f32& t_out,
   f32& u_out)
 {
-  constexpr f32 TOLERANCE = 0.0001f;   // 0.1mm
+  constexpr f32 TOLERANCE = 0.00001f;   // 0.1mm
 
   t_out = FLT_MAX;
   u_out = FLT_MAX;
@@ -374,12 +374,13 @@ bool ray_wall_3d
   nc_assert(wall_y1   != wall_y2, "Points of the wall are the same.");
   nc_assert(ray_start != ray_end, "Ray has a zero length.");
 
+  out_coeff = FLT_MAX;
+
   const vec2 start2d = ray_start.xz;
   const vec2 end2d   = ray_end.xz;
   const vec3 ray_dir = ray_end - ray_start;
 
-  f32 _;
-  if (!segment_segment(start2d, end2d, wall_a, wall_b, out_coeff, _))
+  if (f32 _; !segment_segment(start2d, end2d, wall_a, wall_b, out_coeff, _))
   {
     // not intersecting even in 2D, can't intersect in 3D
     return false;

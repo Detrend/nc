@@ -50,7 +50,7 @@ void Projectile::update(f32 dt)
   lvl.move_particle
   (
     position, m_velocity, transform, dt, r, h, 0.0f,
-    1.0f, PhysLevel::COLLIDE_EVERYTHING,
+    1.0f, PhysLevel::COLLIDE_ALL,
     [&](const CollisionHit& /*hit*/)
     {
 			m_hit_cnt_remaining = std::min(m_hit_cnt_remaining, m_hit_cnt_remaining - 1);

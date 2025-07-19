@@ -452,7 +452,7 @@ static bool intersect_entity_empty
 }
 
 //==============================================================================
-CollisionHit PhysLevel::raycast2d_expanded
+CollisionHit PhysLevel::circlecast2d
 (
   vec2            from,
   vec2            to,
@@ -477,7 +477,7 @@ CollisionHit PhysLevel::raycast2d
   PhysLevel::Portals* out_portals
 ) const
 {
-  return this->raycast2d_expanded(from, to, 0.0f, ent_types, out_portals);
+  return this->circlecast2d(from, to, 0.0f, ent_types, out_portals);
 }
 
 //==============================================================================
@@ -519,6 +519,7 @@ static bool intersect_wall_3d
 }
 
 //==============================================================================
+template<bool allow_negative_c = true>
 static bool intersect_sector_3d_height
 (
   const MapSectors& map,
@@ -534,6 +535,9 @@ static bool intersect_sector_3d_height
 {
   nc_assert(y_floor_add >= 0.0f && y_ceil_sub >= 0.0f);
 
+  out_n = VEC3_ZERO;
+  out_c = FLT_MAX;
+
   if (from == to)
   {
     return false;
@@ -544,7 +548,17 @@ static bool intersect_sector_3d_height
   const f32  cy  = sector.ceil_height  - y_ceil_sub;
   const vec3 dir = to - from;
 
-  out_c = FLT_MAX;
+  f32 min_c, max_c;
+  if constexpr (allow_negative_c)
+  {
+    min_c = -(y_floor_add + y_ceil_sub) / length(to - from);
+    max_c = 1.0f;
+  }
+  else
+  {
+    min_c = 0.0f;
+    max_c = 1.0f;
+  }
 
   for (auto[floor_y, normal] : {std::pair{fy, UP_DIR}, std::pair{cy, -UP_DIR}})
   {
@@ -560,9 +574,6 @@ static bool intersect_sector_3d_height
 
     if (f32 out; collide::ray_plane_xz(from, to, floor_y, out))
     {
-      f32 min_c = -(y_floor_add + y_ceil_sub) / length(to - from);
-      f32 max_c = 1.0f;
-
       if (out >= min_c && out <= max_c && out < out_c)
       {
         out_c = out;
@@ -598,7 +609,7 @@ static bool intersect_sector_3d
   vec3&             out_n
 )
 {
-  return intersect_sector_3d_height
+  return intersect_sector_3d_height<false>
   (
     map, from, to, expand, 0, 0, sid, out_c, out_n
   );
@@ -622,7 +633,7 @@ const
 }
 
 //==============================================================================
-CollisionHit PhysLevel::raycast3d_expanded
+CollisionHit PhysLevel::cylindercast3d
 (
   vec3           ray_start,
   vec3           ray_end,
@@ -644,10 +655,16 @@ const
     SectorID          sid,
     f32&              out_c,
     vec3&             out_n,
-    bool&             nc_hit_out
+    bool&             out_nc_hit
   )
   ->bool
   {
+    // Reset to default state EVERY TIME
+    out_n      = VEC3_ZERO;
+    out_c      = FLT_MAX;
+    out_nc_hit = false;
+
+    // No need to check anything if we do not move horizontally
     if (ray_from.xz() == ray_to.xz())
     {
       return false;
@@ -660,70 +677,86 @@ const
     const f32 floor_y = sc.floor_height;
     const f32 ceil_y  = sc.ceil_height;
 
-    // Do the collision checking either way
-    vec2 out_n_2d;
-    bool hit = collide::ray_exp_wall
-    (
-      ray_from.xz(), ray_to.xz(), w1.pos, w2.pos,
-      expand, out_n_2d, out_c
-    );
-
-    // Redirect the normal to 3D
-    out_n = vec3{out_n_2d.x, 0, out_n_2d.y};
-
-    // If there is not hit even in 2D then we exit either way
-    if (!hit)
-    {
-      return false;
-    }
-
     // Now split the cases - it is either a full wall, or only a partial one.
     // In both cases we can do 2D raycast and then transform it into the
     // 3D world.
     auto portal_type = w1.get_portal_type();
 
-    // Full - if the collision happens then it is over
-    if (portal_type == PortalType::none)
+    // Do the collision checking either way
+    vec2 out_n_2d;
+    f32  out_c_2d;
+    bool hit = collide::ray_exp_wall
+    (
+      ray_from.xz(), ray_to.xz(), w1.pos, w2.pos,
+      expand, out_n_2d, out_c_2d
+    );
+
+    // We do not support negative c here
+    if (out_c_2d < 0.0f)
     {
-      // out_n and out_c are already set up properly
-      // The second condition evaluates to true if we are already inside
-      // a wall slightly.
+      hit = false;
+    }
+
+    // Fill out these just in case
+    out_n      = vec3{out_n_2d.x, 0, out_n_2d.y};
+    out_c      = out_c_2d;
+    out_nc_hit = false;
+
+    // We hit the normal wall
+    if (hit && portal_type == PortalType::none)
+    {
+      // No need to check anything else, this is a guaranteed hit
       return true;
     }
 
-    // Partial - have to check if there is a free window
-    nc_assert(map.is_valid_sector_id(w1.portal_sector_id));
-    const SectorData& neighbor = map.sectors[w1.portal_sector_id];
-
-    // Calculate the size of the window we can potentially fit into
-    f32 window_from_y = std::max(neighbor.floor_height, floor_y);
-    f32 window_to_y   = std::min(neighbor.ceil_height,  ceil_y) - height;
-
-    // We did hit the wall.. Check if we can climb the stairs
-    f32 hit_y = ray_from.y + (ray_to.y - ray_from.y) * out_c;
-
-    if (hit_y >= window_from_y && hit_y <= window_to_y)
+    // We might still have hit the window, lets check
+    if (hit)
     {
-      // We hit the window, continue in the path of the ray..
-      if (portal_type != PortalType::non_euclidean) [[likely]]
+      // Partial - have to check if there is a free window
+      nc_assert(map.is_valid_sector_id(w1.portal_sector_id));
+      const SectorData& neighbor = map.sectors[w1.portal_sector_id];
+
+      // Calculate the size of the window we can potentially fit into
+      f32 window_from_y = std::max(neighbor.floor_height, floor_y);
+      f32 window_to_y   = std::min(neighbor.ceil_height,  ceil_y) - height;
+
+      // Check if we can pass through the free window to the other sector
+      f32 hit_y = ray_from.y + (ray_to.y - ray_from.y) * out_c;
+      if (hit_y < window_from_y || hit_y > window_to_y)
       {
-        // No hit
-        return false;
+        // We hit the solid wall, not the window.. exit
+        return true;
       }
-
-      // Check for nc hit as well
-      nc_hit_out = collide::ray_exp_wall
-      (
-        ray_from.xz(), ray_to.xz(), w1.pos, w2.pos,
-        0.0f, out_n_2d, out_c
-      );
-      out_n = vec3{out_n_2d.x, 0, out_n_2d.y};
-
-      return nc_hit_out;
     }
 
-    // We hit the wall
-    return true;
+    // If we got here then we either did not hit anything or we hit a
+    // window..
+    if (portal_type == PortalType::non_euclidean)
+    {
+      // Check for nc hit as well.. We traverse the NC portal only if our
+      // center of mass goes through it. Therefore, no expansion is happening
+      // here.
+      bool nc_hit = collide::ray_exp_wall
+      (
+        ray_from.xz(), ray_to.xz(), w1.pos, w2.pos,
+        0.0f, out_n_2d, out_c_2d
+      );
+
+      // We hit NC portal
+      if (nc_hit)
+      {
+        out_c      = out_c_2d;
+        out_n      = vec3{out_n_2d.x, 0, out_n_2d.y};
+        out_nc_hit = true;
+        return true;
+      }
+    }
+
+    // Did not hit anything
+    out_c      = FLT_MAX;
+    out_n      = VEC3_ZERO;
+    out_nc_hit = false;
+    return false;
   };
 
   auto sector_intersector = [height]
@@ -740,7 +773,10 @@ const
   {
     // Note: this might be problematic if we accidentlly get just slightly under
     // the floor. That can even happen due to f32 inaccuraccies.
-    return intersect_sector_3d_height(map, ray_from, ray_to, expand, 0, height, sid, out_c, out_n);
+    return intersect_sector_3d_height<false>
+    (
+      map, ray_from, ray_to, expand, 0, height, sid, out_c, out_n
+    );
   };
 
   auto entity_intersector = []
@@ -895,7 +931,10 @@ const
   {
     // Note: this might be problematic if we accidentlly get just slightly under
     // the floor. That can even happen due to f32 inaccuraccies.
-    return intersect_sector_3d_height(map, ray_from, ray_to, expand, 0, height, sid, out_c, out_n);
+    return intersect_sector_3d_height<true>
+    (
+      map, ray_from, ray_to, expand, 0, height, sid, out_c, out_n
+    );
   };
 
   auto entity_intersector = []
@@ -1064,16 +1103,10 @@ const
     Portals portals_traversed;
 
     // Cast a ray in a direction of our movement
-    CollisionHit hit = this->raycast3d_expanded
+    CollisionHit hit = this->cylindercast3d
     (
       ray_from, ray_to, radius, height, colliders, &portals_traversed
     );
-
-    // Reset the hit if negative distance
-    if (hit && hit.coeff < 0.0f)
-    {
-      hit = CollisionHit::no_hit();
-    }
 
     // Move. Full distance if we did not hit anything, partial distance if we did
     f32  move_coeff = hit ? hit.coeff  : 1.0f;

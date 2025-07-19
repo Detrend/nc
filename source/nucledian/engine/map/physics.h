@@ -114,8 +114,8 @@ struct PhysLevel
   const MapSectors&     map;
   const SectorMapping&  mapping;
 
-  static constexpr EntityTypeMask COLLIDE_EVERYTHING = static_cast<EntityTypeMask>(-1);
-  static constexpr EntityTypeMask COLLIDE_NOTHING    = EntityTypeMask{0};
+  static constexpr EntityTypeMask COLLIDE_ALL  = static_cast<EntityTypeMask>(-1);
+  static constexpr EntityTypeMask COLLIDE_NONE = EntityTypeMask{0};
 
   struct PortalSector
   {
@@ -129,39 +129,42 @@ struct PhysLevel
   // Also returns hit coefficient, which is <= 1, but might be negative
   // if the expand parameter is non-zero and we are stuck in a wall. This
   // is actually a feature as it allows us to get un-stuck
-  CollisionHit raycast2d_expanded
+  CollisionHit circlecast2d
   (
-    vec2           ray_start,                      // point to cast from
-    vec2           ray_end,                        // cast to
-    f32            expand,                         // 0 for ray, radius for circle
-    EntityTypeMask ent_types = ~EntityTypeMask{0}, // which entity types should be hit and which ignored
-    Portals*       out_portals = nullptr           // list of portals the ray went through
+    vec2           ray_start,                 // point to cast from
+    vec2           ray_end,                   // cast to
+    f32            expand,                    // 0 for ray, radius for circle
+    EntityTypeMask ent_types   = COLLIDE_ALL, // which entity types should be hit and which ignored
+    Portals*       out_portals = nullptr      // list of portals the ray went through
   ) const;
 
   CollisionHit raycast2d
   (
-    vec2           ray_start,                      // point to cast from
-    vec2           ray_end,                        // cast to
-    EntityTypeMask ent_types = ~EntityTypeMask{0}, // which entity types should be hit and which ignored
-    Portals*       out_portals = nullptr           // list of portals the ray went through
+    vec2           ray_start,                 // point to cast from
+    vec2           ray_end,                   // cast to
+    EntityTypeMask ent_types   = COLLIDE_ALL, // which entity types should be hit and which ignored
+    Portals*       out_portals = nullptr      // list of portals the ray went through
   ) const;
 
+	// Casts a 3D ray and reports the first thing it hits
   CollisionHit raycast3d
   (
-    vec3           ray_start,                      // point to cast from
-    vec3           ray_end,                        // cast to
-    EntityTypeMask ent_types = ~EntityTypeMask{0}, // which entities should be hit and which ignored
-    Portals*       out_portals = nullptr           // list of portals the ray went through
+    vec3           ray_start,                 // point to cast from
+    vec3           ray_end,                   // cast to
+    EntityTypeMask ent_types   = COLLIDE_ALL, // which entities should be hit and which ignored
+    Portals*       out_portals = nullptr      // list of portals the ray went through
   ) const;
 
-  CollisionHit raycast3d_expanded
+	// Casts a cylinder shape between two points and checks if it intersects something
+	// in the world.
+  CollisionHit cylindercast3d
   (
-    vec3           ray_start,                      // point to cast from
-    vec3           ray_end,                        // cast to
-    f32            expand,                         // 0 for ray, radius for circle
-    f32            height,                         // height of the cylinder
-    EntityTypeMask ent_types = ~EntityTypeMask{0}, // which entity types should be hit and which ignored
-    Portals*       out_portals = nullptr           // list of portals the ray went through
+    vec3           ray_start,                 // point to cast from
+    vec3           ray_end,                   // point to cast to
+    f32            expand,                    // radius of the cylinder
+    f32            height,                    // height of the cylinder
+    EntityTypeMask ent_types   = COLLIDE_ALL, // which entity types should be hit and which ignored
+    Portals*       out_portals = nullptr      // list of portals the ray went through
   ) const;
 
   enum CollisionReaction : u8
