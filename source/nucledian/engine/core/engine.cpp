@@ -60,9 +60,13 @@ static f32 duration_to_seconds(auto t1, auto t2)
 //==============================================================================
 static void limit_min_frametime(f32& frame_time)
 {
-  // 20 FPS at least
-  constexpr f32 max_frametime = 1.0f / 20.0f;
-  frame_time = std::min(frame_time, max_frametime);
+  // 20 FPS at least during debugging
+	constexpr f32 DEFAULT_MIN = 20.0f;
+
+	f32 min_fps  = CVars::has_min_fps ? CVars::fps_min : DEFAULT_MIN;
+  f32 min_time = 1.0f / min_fps;
+
+  frame_time = std::min(frame_time, min_time);
 }
 
 //==============================================================================

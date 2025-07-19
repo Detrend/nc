@@ -187,7 +187,7 @@ struct MapSectors
   // returned.
   SectorID get_sector_from_point(vec2 point) const;
 
-  mat4 calculate_portal_to_portal_projection(
+  mat4 calc_portal_to_portal_projection(
     SectorID from_sector,
     WallID   from_portal) const;
 

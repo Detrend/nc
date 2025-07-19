@@ -92,6 +92,67 @@ bool segment_segment(
 }
 
 //==============================================================================
+bool line_line
+(
+	vec2  start_a,
+	vec2  end_a,
+	vec2  start_b,
+	vec2  end_b,
+	f32&  t_coeff_out,
+	f32&  u_coeff_out,
+	bool& parallel_out
+)
+{
+  nc_assert(start_a != end_a);
+  nc_assert(start_b != end_b);
+
+  constexpr f32 TOLERANCE = 0.00001f;   // 0.1mm
+
+  t_coeff_out = FLT_MAX;
+  u_coeff_out = FLT_MAX;
+
+  const vec2 dir_a  = end_a - start_a;
+  const vec2 dir_b  = end_b - start_b;
+  const f32  top    = cross(dir_b, start_b - start_a);
+  const f32  bottom = cross(dir_b, dir_a);
+
+  const bool tp_zero = is_zero(top,    TOLERANCE);
+  const bool bt_zero = is_zero(bottom, TOLERANCE);
+
+  if (tp_zero && bt_zero)
+  {
+		// parallel and intersecting
+		parallel_out = true;
+		return true;
+  }
+  else if (bt_zero)
+  {
+    // parallel and non-intersecting
+		parallel_out = true;
+    return false;
+  }
+  else
+  {
+		// non-parallel, intersecting
+    const f32 t = top / bottom;
+
+    // might be intersecting, check for u as well
+    const f32 utop    = cross(dir_a, start_a - start_b);
+    const f32 ubottom = -bottom;
+
+    // This should not happen AFAIK
+    nc_assert(!is_zero(ubottom, TOLERANCE));
+
+    const f32 u = utop / ubottom;
+
+		parallel_out = false;
+    t_coeff_out  = t;
+    u_coeff_out  = u;
+		return true;
+  }
+}
+
+//==============================================================================
 bool aabb_aabb_2d(const aabb2& a, const aabb2& b)
 {
   vec2 mn = max(a.min, b.min);
@@ -1023,21 +1084,28 @@ bool ray_exp_wall
 
   const vec2 ray_dir = end_a - start_a;
 
-  f32  cs_coeff = 0, ce_coeff = 0;
-  f32 ll_coeff = 0;
+  f32 cs_coeff = 0, ce_coeff = 0, ll_coeff = 0;
   vec2 cs_n, ce_n;
 
-  const vec2 b_norm = flipped(normalize(end_b - start_b));
+  const vec2 b_norm   = flipped(normalize(end_b - start_b));
   const vec2 b_offset = b_norm * wall_exp;
 
   const bool cs_intersect = intersect::segment_circle(start_a, end_a, start_b, wall_exp, cs_coeff, cs_n);
   const bool ce_intersect = intersect::segment_circle(start_a, end_a, end_b,   wall_exp, ce_coeff, ce_n);
 
   bool ll_intersect = false;
-
   if (dot(ray_dir, b_norm) < 0)
   {
     ll_intersect = intersect::ray_segment(start_a, end_a, start_b + b_offset, end_b + b_offset, ll_coeff);
+
+    // If we are too far away and the hit is behind us then just ignore it
+    if (ll_intersect && ll_coeff < 0.0f)
+    {
+      if (dist::segment_segment_2d(start_a, end_a, start_b, end_b) > wall_exp)
+      {
+        ll_intersect = false;
+      }
+    }
   }
 
   out_normal = vec2{ 0 };
@@ -1045,8 +1113,7 @@ bool ray_exp_wall
 
   auto take_best = [&](bool intersection, f32 coeff, vec2 norm)
   {
-    const f32 min_coeff = -wall_exp / length(ray_dir);
-    if (intersection && coeff < out_coeff && coeff >= min_coeff && coeff <= 1.0f)
+    if (intersection && coeff < out_coeff && coeff <= 1.0f)
     {
       out_coeff  = coeff;
       out_normal = norm;
@@ -1232,6 +1299,28 @@ f32 point_line_2d(vec2 p, vec2 a, vec2 b)
   vec2 reproj     = line_dir_n * bounded_c + a;
 
   return distance(reproj, p);
+}
+
+//==============================================================================
+f32 segment_segment_2d
+(
+  vec2 l1_a,
+  vec2 l1_b,
+  vec2 l2_a,
+  vec2 l2_b
+)
+{
+  if (f32 _, __; intersect::segment_segment(l1_a, l1_b, l2_a, l2_b, _, __))
+  {
+    return 0.0f;
+  }
+
+  f32 d1 = point_line_2d(l1_a, l2_a, l2_b);
+  f32 d2 = point_line_2d(l1_b, l2_a, l2_b);
+  f32 d3 = point_line_2d(l2_a, l1_a, l1_b);
+  f32 d4 = point_line_2d(l2_b, l1_a, l1_b);
+
+  return std::min({d1, d2, d3, d4});
 }
 
 }

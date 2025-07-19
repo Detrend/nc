@@ -22,6 +22,14 @@ struct VisibilityTree;
 struct ModuleEvent;
 struct PortalRenderData;
 
+struct CameraData
+{
+	const vec3& position;
+	const mat4& view;
+	const mat4& projection;
+	const VisibilityTree& vis_tree;
+};
+
 class GraphicsSystem : public IEngineModule
 {
 public:
@@ -38,8 +46,6 @@ public:
   const mat4 get_default_projection() const;
 
 private:
-  struct CameraData;
-
   void update(f32 delta_seconds);
   void render();
   void terminate();
@@ -82,14 +88,6 @@ private:
   Model          m_cube_model;
   Model          m_gun_model;
   Transform      m_gun_transform;
-
-  struct CameraData
-  {
-    const vec3& position;
-    const mat4& view;
-    const mat4& projection;
-    const VisibilityTree& vis_tree;
-  };
 };
 
 }

@@ -44,8 +44,6 @@ void Projectile::update(f32 dt)
   vec3 forward   = m_velocity;
   mat4 transform = identity<mat4>();
 
-  bool hit_something = false;
-
   f32 r = this->get_radius();
   f32 h = this->get_height();
 
@@ -53,18 +51,16 @@ void Projectile::update(f32 dt)
   (
     position, m_velocity, transform, dt, r, h, 0.0f,
     1.0f, PhysLevel::COLLIDE_EVERYTHING,
-    [&hit_something](const CollisionHit& /*hit*/)
+    [&](const CollisionHit& /*hit*/)
     {
-      // stop the simulation on hit
-      // hit_something = true;
-      // return PhysLevel::CollisionReaction::stop_simulation;
+			m_hit_cnt_remaining = std::min(m_hit_cnt_remaining, m_hit_cnt_remaining - 1);
       return PhysLevel::CollisionReaction::continue_simulation;
     }
   );
 
   this->set_position(position);
 
-  if (hit_something)
+  if (!m_hit_cnt_remaining)
   {
     // Kill ourselves
     game.get_entities().destroy_entity(this->get_id());

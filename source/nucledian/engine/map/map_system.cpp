@@ -144,7 +144,7 @@ void modify_nuclidean_frustum(
   WallID            in_portal,
   SectorID          in_sector)
 {
-  const auto transform = map.calculate_portal_to_portal_projection(in_sector, in_portal);
+  const auto transform = map.calc_portal_to_portal_projection(in_sector, in_portal);
   const auto new_pos   = (transform * vec4{frustum.center.x, 0.0f, frustum.center.y, 1.0f}).xz();
   const auto new_dir   = (transform * vec4{frustum.direction.x, 0.0f, frustum.direction.y, 0.0f}).xz();
   nc_assert(is_normal(new_dir));
@@ -386,7 +386,7 @@ SectorID MapSectors::get_sector_from_point(vec2 point) const
 }
 
 //==============================================================================
-mat4 MapSectors::calculate_portal_to_portal_projection(
+mat4 MapSectors::calc_portal_to_portal_projection(
   SectorID sector_from,
   WallID   wall_from1) const
 {

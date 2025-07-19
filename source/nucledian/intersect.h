@@ -105,6 +105,17 @@ bool segment_segment(
   f32& t_out,
   f32& u_out);
 
+bool line_line
+(
+	vec2  start_a,
+	vec2  end_a,
+	vec2  start_b,
+	vec2  end_b,
+	f32&  t_out,
+	f32&  u_out,
+	bool& parallel
+);
+
 // Returns true if the infinite ray collides with a finite wall segment.
 // If so, then the ray_c_out contains coeff for intersection pt reconstruction
 bool ray_segment(
@@ -250,6 +261,15 @@ f32 point_aabb(TVec pt, const aabb<f32, TVec::length()>& bbox);
 
 // Calculates distance between point and a 2D segment
 f32 point_line_2d(vec2 pt, vec2 line_start, vec2 line_end);
+
+// Calculates distance between 2 2D segments
+f32 segment_segment_2d
+(
+  vec2 l1_start,
+  vec2 l1_end,
+  vec2 l2_start,
+  vec2 l2_end
+);
 
 }
 

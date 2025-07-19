@@ -733,49 +733,49 @@ void ThingSystem::check_player_attack
   auto* player        = this->get_player();
   bool  didAttack     = player->get_attack_state(curr_inputs, prev_inputs, event.update.dt);
 
-  if (didAttack)
-  {
-    [[maybe_unused]] vec3 rayStart = this->get_player()->get_position() + vec3(0, this->get_player()->get_view_height(), 0);
-    [[maybe_unused]] vec3 rayEnd = rayStart + get_engine().get_module<GraphicsSystem>().get_camera()->get_forward() * 50.0f;
+  //if (didAttack)
+  //{
+  //  [[maybe_unused]] vec3 rayStart = this->get_player()->get_position() + vec3(0, this->get_player()->get_view_height(), 0);
+  //  [[maybe_unused]] vec3 rayEnd = rayStart + get_engine().get_module<GraphicsSystem>().get_camera()->get_forward() * 50.0f;
 
-    [[maybe_unused]] f32 hitDistance = 999999;
-    EntityID index = INVALID_ENTITY_ID;
+  //  [[maybe_unused]] f32 hitDistance = 999999;
+  //  EntityID index = INVALID_ENTITY_ID;
 
-    const auto wallHit = this->get_level().raycast3d(rayStart, rayEnd);
-    f32 wallDist = wallHit ? wallHit.coeff : FLT_MAX;
+  //  const auto wallHit = this->get_level().raycast3d(rayStart, rayEnd);
+  //  f32 wallDist = wallHit ? wallHit.coeff : FLT_MAX;
 
-    entity_system.for_each<Enemy>([&](Enemy& enemy)
-    {
-      const f32   width    = enemy.get_width();
-      const f32   height   = enemy.get_height() * 2.0f;
-      const vec3  position = enemy.get_position();
+  //  entity_system.for_each<Enemy>([&](Enemy& enemy)
+  //  {
+  //    const f32   width    = enemy.get_width();
+  //    const f32   height   = enemy.get_height() * 2.0f;
+  //    const vec3  position = enemy.get_position();
 
-      const aabb3 bbox = aabb3
-      {
-        position - vec3{width, 0.0f,   width},
-        position + vec3{width, height, width}
-      };
+  //    const aabb3 bbox = aabb3
+  //    {
+  //      position - vec3{width, 0.0f,   width},
+  //      position + vec3{width, height, width}
+  //    };
 
-      f32 out;
-      vec3 normal;
-      if (intersect::ray_aabb3(rayStart, rayEnd, bbox, out, normal))
-      {
-        if (hitDistance > out)
-        {
-          hitDistance = out;
-          index = enemy.get_id();
-        }
-      }
-    });
+  //    f32 out;
+  //    vec3 normal;
+  //    if (intersect::ray_aabb3(rayStart, rayEnd, bbox, out, normal))
+  //    {
+  //      if (hitDistance > out)
+  //      {
+  //        hitDistance = out;
+  //        index = enemy.get_id();
+  //      }
+  //    }
+  //  });
 
-    if (index != INVALID_ENTITY_ID)
-    {
-      if (hitDistance < wallDist || !wallHit)
-      {
-        entity_system.get_entity<Enemy>(index)->damage(100);
-      }
-    }
-  }
+  //  if (index != INVALID_ENTITY_ID)
+  //  {
+  //    if (hitDistance < wallDist || !wallHit)
+  //    {
+  //      entity_system.get_entity<Enemy>(index)->damage(100);
+  //    }
+  //  }
+  //}
 
   if (didAttack)
   {

@@ -264,7 +264,7 @@ CollisionHit raycast_generic
     }
 
     const auto hit_pt = ray_from + (ray_to - ray_from) * best_hit.coeff;
-    const auto proj = world.map.calculate_portal_to_portal_projection
+    const auto proj = world.map.calc_portal_to_portal_projection
     (
       best_hit.hit.sector.sector_id,
       best_hit.hit.sector.wall_id
@@ -276,7 +276,7 @@ CollisionHit raycast_generic
     if constexpr (std::is_same_v<TVec, vec3>)
     {
       new_from = (proj * vec4{hit_pt, 1}).xyz();
-      new_to   = (proj * vec4{hit_pt, 1}).xyz();
+      new_to   = (proj * vec4{ray_to, 1}).xyz();
     }
     else
     {
@@ -683,7 +683,7 @@ const
     auto portal_type = w1.get_portal_type();
 
     // Full - if the collision happens then it is over
-    if (portal_type == PortalType::none /*|| out_c <= 0.0f*/)
+    if (portal_type == PortalType::none)
     {
       // out_n and out_c are already set up properly
       // The second condition evaluates to true if we are already inside
@@ -964,7 +964,7 @@ const
   mat4 transformation = identity<mat4>();
   for (const auto&[wid, sid] : portals)
   {
-    const auto pp_trans = map.calculate_portal_to_portal_projection(sid, wid);
+    const auto pp_trans = map.calc_portal_to_portal_projection(sid, wid);
     transformation = pp_trans * transformation;
   }
 
@@ -1044,73 +1044,80 @@ void PhysLevel::move_particle
 )
 const
 {
-  nc_assert(bounce >= 0.0f);
+  nc_assert(bounce >= 0.0f, "Invalid range.");
 
-  constexpr u32 MAX_ITERATIONS = 6;
+	const vec3 h_offset = -UP_DIR  * neg_height;
 
-  vec3 velocity = velocity_og * delta_time;
+  f32 total_distance     = length(velocity_og) * delta_time;
+	f32 remaining_distance = total_distance;
 
-  u32 iterations_left = MAX_ITERATIONS; 
-  while(iterations_left-->0)
+  while(remaining_distance > 0.0f)
   {
     using SectorHitType = CollisionHit::SectorHitType;
 
-    const vec3 h_offset = -UP_DIR  * neg_height;
-    const vec3 ray_from = position + h_offset;
-    const vec3 ray_to   = position + velocity;
-    const vec3 ray_dir  = ray_to   - ray_from;
+    vec3 velocity = normalize_or_zero(velocity_og) * remaining_distance;
+    vec3 ray_from = position + h_offset;
+    vec3 ray_to   = position + velocity;
+    vec3 ray_dir  = ray_to   - ray_from;
 
+    // Collect the portals along the way we move
+    Portals portals_traversed;
+
+    // Cast a ray in a direction of our movement
     CollisionHit hit = this->raycast3d_expanded
     (
-      ray_from, ray_to, radius, height, colliders
+      ray_from, ray_to, radius, height, colliders, &portals_traversed
     );
+
+    // Reset the hit if negative distance
+    if (hit && hit.coeff < 0.0f)
+    {
+      hit = CollisionHit::no_hit();
+    }
+
+    // Move. Full distance if we did not hit anything, partial distance if we did
+    f32  move_coeff = hit ? hit.coeff  : 1.0f;
+    vec3 off_n      = hit ? hit.normal : vec3{0.0f};
+    position += ray_dir * move_coeff + off_n * 0.01f;
+
+    // Shorten the distance we want to travel
+    remaining_distance -= length(ray_dir) * move_coeff;
+
+    // Now that we have the portals stored we iterate them and transform our
+    // position/direction with the portals
+    mat4 transform_this_iteration = identity<mat4>();
+    for (const auto&[wid, sid] : portals_traversed)
+    {
+      mat4 portal_transform = map.calc_portal_to_portal_projection(sid, wid);
+      transform_this_iteration = portal_transform * transform_this_iteration;
+    }
+
+    // Do the actual transformations only if it has an effect
+    if (portals_traversed.size())
+    {
+      velocity_og = transform_this_iteration * vec4{velocity_og, 0.0f};
+      position    = transform_this_iteration * vec4{position,    1.0f};
+      transform   = transform_this_iteration * transform;
+    }
 
     if (!hit)
     {
-      // No hit, go on!
+      // No hit? Then just end
       break;
     }
 
-    // Let the listener know
-    if (listener && listener(hit) == CollisionReaction::stop_simulation)
+    // Let the listener know that we hit something
+    if (listener)
     {
-      break;
+      listener(hit);
     }
 
     nc_assert(is_normal(hit.normal), "Bad things can happen");
-    const vec3 remaining = velocity * (1.0f - hit.coeff);
-    const vec3 projected = hit.normal * dot(remaining,   hit.normal);
     const vec3 reproject = hit.normal * dot(velocity_og, hit.normal);
 
-    velocity    -= projected;
+    // Bounce in the other direction
     velocity_og -= reproject * bounce * 2.0f;
   }
-
-  // Then handle nuclidean portal transitions - check which portals
-  // we have traversed through and store them.
-  Portals portals;
-  const auto ray_from = position.xz();
-  const auto ray_to   = (position + velocity).xz();
-  this->raycast2d(ray_from, ray_to, 0, &portals);
-
-  // Now that we have the portals stored we iterate them and transform our
-  // position/direction with the portals
-  const bool should_transform = portals.size();
-  transform = identity<mat4>();
-  for (const auto&[wid, sid] : portals)
-  {
-    const auto pp_trans = map.calculate_portal_to_portal_projection(sid, wid);
-    transform = pp_trans * transform;
-  }
-
-  if (should_transform)
-  {
-    velocity_og = (transform * vec4{velocity_og, 0.0f}).xyz();
-    position    = (transform * vec4{position,    1.0f}).xyz();
-    velocity    = (transform * vec4{velocity,    0.0f}).xyz();
-  }
-
-  position += velocity;
 }
 
 }
