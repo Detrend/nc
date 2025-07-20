@@ -1,0 +1,979 @@
+{
+	"points": [
+		[
+			13.6000003814697,
+			7.20000028610229
+		],
+		[
+			13.6000003814697,
+			0.800000011920929
+		],
+		[
+			16.0,
+			0.800000011920929
+		],
+		[
+			16.0,
+			1.62686002254486
+		],
+		[
+			16.0,
+			4.0
+		],
+		[
+			16.0,
+			4.80000019073486
+		],
+		[
+			20.0,
+			4.80000019073486
+		],
+		[
+			22.3999996185303,
+			4.80000019073486
+		],
+		[
+			22.3999996185303,
+			5.59999990463257
+		],
+		[
+			22.3999996185303,
+			7.20000028610229
+		],
+		[
+			20.0,
+			4.0
+		],
+		[
+			20.0,
+			1.60000002384186
+		],
+		[
+			20.0,
+			0.800000011920929
+		],
+		[
+			22.3999996185303,
+			-1.60000002384186
+		],
+		[
+			13.6000003814697,
+			-1.60000002384186
+		],
+		[
+			18.3999996185303,
+			-1.60000002384186
+		],
+		[
+			19.2000007629395,
+			-1.60000002384186
+		],
+		[
+			-2.40000009536743,
+			4.80000019073486
+		],
+		[
+			-8.0,
+			4.80000019073486
+		],
+		[
+			-8.0,
+			2.40000009536743
+		],
+		[
+			-2.40000009536743,
+			2.40000009536743
+		],
+		[
+			0.0,
+			4.80000019073486
+		],
+		[
+			4.0,
+			1.60000002384186
+		],
+		[
+			4.0,
+			2.40000009536743
+		],
+		[
+			1.60000002384186,
+			4.80000019073486
+		],
+		[
+			1.60000002384186,
+			1.60000002384186
+		],
+		[
+			-2.40000009536743,
+			-4.80000019073486
+		],
+		[
+			-0.800000011920929,
+			-4.80000019073486
+		],
+		[
+			1.57639014720917,
+			-4.80000019073486
+		],
+		[
+			4.0,
+			-4.80000019073486
+		],
+		[
+			1.0,
+			-2.0
+		],
+		[
+			0.600000023841858,
+			-2.0
+		],
+		[
+			0.600000023841858,
+			-1.30000007152557
+		],
+		[
+			1.0,
+			-1.30000007152557
+		],
+		[
+			0.0,
+			1.60000002384186
+		],
+		[
+			-2.40000009536743,
+			1.60000002384186
+		],
+		[
+			4.0,
+			4.80000019073486
+		],
+		[
+			9.60000038146973,
+			2.40000009536743
+		],
+		[
+			9.60000038146973,
+			4.80000019073486
+		],
+		[
+			1.20000004768372,
+			-1.80000007152557
+		],
+		[
+			4.0,
+			-3.20000004768372
+		],
+		[
+			4.0,
+			-0.800000011920929
+		],
+		[
+			1.20000004768372,
+			-1.5
+		],
+		[
+			0.400000005960464,
+			-1.80000007152557
+		],
+		[
+			0.400000005960464,
+			-1.5
+		],
+		[
+			-2.40000009536743,
+			-0.800000011920929
+		],
+		[
+			-2.40000009536743,
+			-3.20000004768372
+		],
+		[
+			0.0,
+			8.0
+		],
+		[
+			-2.40000009536743,
+			8.0
+		],
+		[
+			1.60000002384186,
+			8.0
+		],
+		[
+			4.0,
+			8.0
+		],
+		[
+			1.30000007152557,
+			10.8000001907349
+		],
+		[
+			0.400000005960464,
+			10.8000001907349
+		],
+		[
+			0.800000011920929,
+			11.5
+		],
+		[
+			4.0,
+			14.4000005722046
+		],
+		[
+			0.800000011920929,
+			16.0
+		],
+		[
+			-2.40000009536743,
+			14.4000005722046
+		],
+		[
+			4.80000019073486,
+			12.0
+		],
+		[
+			-3.20000004768372,
+			12.0
+		],
+		[
+			4.0,
+			6.40000009536743
+		],
+		[
+			4.0,
+			7.20000028610229
+		],
+		[
+			4.80000019073486,
+			6.40000009536743
+		],
+		[
+			4.80000019073486,
+			7.20000028610229
+		],
+		[
+			6.40003681182861,
+			1.60000002384186
+		],
+		[
+			6.40003681182861,
+			-0.800000011920929
+		],
+		[
+			-4.80002164840698,
+			-5.59999990463257
+		],
+		[
+			-8.80002117156982,
+			-4.80000019073486
+		],
+		[
+			-11.1999998092651,
+			-7.20000028610229
+		],
+		[
+			-8.80000019073486,
+			-7.20000028610229
+		],
+		[
+			-6.39995145797729,
+			1.60000002384186
+		],
+		[
+			-6.40002155303955,
+			-1.60000002384186
+		],
+		[
+			-9.60002136230469,
+			-0.800000011920929
+		],
+		[
+			20.0,
+			-8.0
+		],
+		[
+			19.2000007629395,
+			-6.40000009536743
+		],
+		[
+			18.3999996185303,
+			-6.40000009536743
+		],
+		[
+			17.6000003814697,
+			-8.0
+		],
+		[
+			18.3999996185303,
+			-9.60000038146973
+		],
+		[
+			19.2000007629395,
+			-9.60000038146973
+		],
+		[
+			18.3999996185303,
+			-10.4000005722046
+		],
+		[
+			18.3999996185303,
+			-11.1999998092651
+		],
+		[
+			19.2000007629395,
+			-11.1999998092651
+		],
+		[
+			19.2000007629395,
+			-10.4000005722046
+		],
+		[
+			17.6000003814697,
+			-10.4000005722046
+		],
+		[
+			17.6000003814697,
+			-11.1999998092651
+		],
+		[
+			20.0,
+			-10.4000005722046
+		],
+		[
+			20.0,
+			-11.1999998092651
+		],
+		[
+			19.2000007629395,
+			-4.80000019073486
+		],
+		[
+			18.3999996185303,
+			-4.80000019073486
+		],
+		[
+			18.3999996185303,
+			-5.59999990463257
+		],
+		[
+			19.2000007629395,
+			-5.59999990463257
+		],
+		[
+			17.6000003814697,
+			-4.80000019073486
+		],
+		[
+			17.6000003814697,
+			-5.59999990463257
+		],
+		[
+			20.0,
+			-4.80000019073486
+		],
+		[
+			20.0,
+			-5.59999990463257
+		],
+		[
+			19.2000007629395,
+			-4.0
+		],
+		[
+			18.3999996185303,
+			-4.0
+		],
+		[
+			18.3999996185303,
+			-12.0
+		],
+		[
+			19.2000007629395,
+			-12.0
+		]
+	],
+	"sectors": [
+		{
+			"ceiling": 1.5,
+			"debug_name": "Sector4",
+			"floor": 0.1,
+			"id": 0,
+			"points": [
+				0,
+				1,
+				2,
+				3,
+				4,
+				5
+			],
+			"portal_destination_wall": 1,
+			"portal_target": 4,
+			"portal_wall": 3
+		},
+		{
+			"ceiling": 1.5,
+			"debug_name": "Sector5",
+			"floor": 0.1,
+			"id": 1,
+			"points": [
+				0,
+				5,
+				6,
+				7,
+				8,
+				9
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 22,
+			"portal_wall": 3
+		},
+		{
+			"ceiling": 1.5,
+			"debug_name": "Sector6",
+			"floor": 0.1,
+			"id": 2,
+			"points": [
+				6,
+				10,
+				11,
+				12,
+				13,
+				7
+			],
+			"portal_destination_wall": 3,
+			"portal_target": 9,
+			"portal_wall": 1
+		},
+		{
+			"ceiling": 1.5,
+			"debug_name": "Sector7",
+			"floor": 0.2,
+			"id": 3,
+			"points": [
+				12,
+				2,
+				1,
+				14,
+				15,
+				16,
+				13
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 4.0,
+			"debug_name": "Sector8",
+			"floor": 0.1,
+			"id": 4,
+			"points": [
+				17,
+				18,
+				19,
+				20,
+				21
+			],
+			"portal_destination_wall": 3,
+			"portal_target": 0,
+			"portal_wall": 1
+		},
+		{
+			"ceiling": 4.0,
+			"debug_name": "Sector9",
+			"floor": 0.1,
+			"id": 5,
+			"points": [
+				22,
+				23,
+				24,
+				25
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 2.5,
+			"debug_name": "Sector10",
+			"floor": 0.0,
+			"id": 6,
+			"points": [
+				26,
+				27,
+				28,
+				29,
+				30,
+				31
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 10.0,
+			"debug_name": "Sector11",
+			"floor": 0.19999999999709,
+			"id": 7,
+			"points": [
+				32,
+				33,
+				22,
+				25,
+				34,
+				35
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 4.0,
+			"debug_name": "Sector12",
+			"floor": 0.1,
+			"id": 8,
+			"points": [
+				34,
+				21,
+				20,
+				35
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 4.0,
+			"debug_name": "Sector13",
+			"floor": 0.1,
+			"id": 9,
+			"points": [
+				36,
+				24,
+				23,
+				37,
+				38
+			],
+			"portal_destination_wall": 1,
+			"portal_target": 2,
+			"portal_wall": 3
+		},
+		{
+			"ceiling": 2.5,
+			"debug_name": "Sector14",
+			"floor": 0.1,
+			"id": 10,
+			"points": [
+				39,
+				40,
+				41,
+				42
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 2.5,
+			"debug_name": "Sector15",
+			"floor": 0.1,
+			"id": 11,
+			"points": [
+				43,
+				44,
+				45,
+				46
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 2.5,
+			"debug_name": "Sector16",
+			"floor": 0.0,
+			"id": 12,
+			"points": [
+				31,
+				43,
+				46,
+				26
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 10.0,
+			"debug_name": "Sector17",
+			"floor": 0.2,
+			"id": 13,
+			"points": [
+				44,
+				32,
+				35,
+				45
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 2.5,
+			"debug_name": "Sector18",
+			"floor": 0.0,
+			"id": 14,
+			"points": [
+				39,
+				30,
+				29,
+				40
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 10.0,
+			"debug_name": "Sector19",
+			"floor": 0.2,
+			"id": 15,
+			"points": [
+				33,
+				42,
+				41,
+				22
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 4.0,
+			"debug_name": "Sector21",
+			"floor": 0.1,
+			"id": 16,
+			"points": [
+				21,
+				47,
+				48,
+				17
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 2.5,
+			"debug_name": "Sector22",
+			"floor": 0.100000000005821,
+			"id": 17,
+			"points": [
+				48,
+				47,
+				49,
+				50,
+				51,
+				52
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 2.5,
+			"debug_name": "Sector23",
+			"floor": 0.2,
+			"id": 18,
+			"points": [
+				53,
+				54,
+				55,
+				56
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 2.5,
+			"debug_name": "Sector24",
+			"floor": 0.1,
+			"id": 19,
+			"points": [
+				51,
+				50,
+				57,
+				54,
+				53
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 2.5,
+			"debug_name": "Sector25",
+			"floor": 0.1,
+			"id": 20,
+			"points": [
+				52,
+				53,
+				56,
+				58,
+				48
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 4.0,
+			"debug_name": "Sector20",
+			"floor": 0.1,
+			"id": 21,
+			"points": [
+				36,
+				59,
+				60,
+				50,
+				49,
+				24
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 1.5,
+			"debug_name": "Sector30",
+			"floor": 0.30000000000291,
+			"id": 22,
+			"points": [
+				61,
+				62,
+				60,
+				59
+			],
+			"portal_destination_wall": 3,
+			"portal_target": 1,
+			"portal_wall": 0
+		},
+		{
+			"ceiling": 10.0,
+			"debug_name": "@Polygon2D@36231",
+			"floor": 8.5,
+			"id": 23,
+			"points": [
+				63,
+				22,
+				41,
+				64
+			],
+			"portal_destination_wall": 2,
+			"portal_target": 24,
+			"portal_wall": 3
+		},
+		{
+			"ceiling": 1.5,
+			"debug_name": "@Polygon2D@53437",
+			"floor": 0.0,
+			"id": 24,
+			"points": [
+				65,
+				66,
+				67,
+				68
+			],
+			"portal_destination_wall": 3,
+			"portal_target": 23,
+			"portal_wall": 2
+		},
+		{
+			"ceiling": 1.5,
+			"debug_name": "Sector",
+			"floor": 0.0,
+			"id": 25,
+			"points": [
+				35,
+				69,
+				70,
+				45
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 1.5,
+			"debug_name": "@Polygon2D@33690",
+			"floor": 0.0,
+			"id": 26,
+			"points": [
+				69,
+				71,
+				70
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 1.5,
+			"debug_name": "@Polygon2D@34035",
+			"floor": 0.0,
+			"id": 27,
+			"points": [
+				70,
+				71,
+				66,
+				65
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 4.0,
+			"debug_name": "@Polygon2D@33441",
+			"floor": 0.0,
+			"id": 28,
+			"points": [
+				72,
+				73,
+				74,
+				75,
+				76,
+				77
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 4.0,
+			"debug_name": "@Polygon2D@41759",
+			"floor": 0.0,
+			"id": 29,
+			"points": [
+				77,
+				76,
+				78,
+				79,
+				80,
+				81
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 1.5,
+			"debug_name": "@Polygon2D@42784",
+			"floor": 0.0,
+			"id": 30,
+			"points": [
+				78,
+				82,
+				83,
+				79
+			],
+			"portal_destination_wall": 3,
+			"portal_target": 34,
+			"portal_wall": 1
+		},
+		{
+			"ceiling": 1.5,
+			"debug_name": "@Polygon2D@43129",
+			"floor": 0.0,
+			"id": 31,
+			"points": [
+				84,
+				81,
+				80,
+				85
+			],
+			"portal_destination_wall": 1,
+			"portal_target": 33,
+			"portal_wall": 3
+		},
+		{
+			"ceiling": 5.0,
+			"debug_name": "@Polygon2D@59398",
+			"floor": 0.0,
+			"id": 32,
+			"points": [
+				86,
+				87,
+				88,
+				74,
+				73,
+				89
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1
+		},
+		{
+			"ceiling": 1.5,
+			"debug_name": "@Polygon2D@67463",
+			"floor": 0.0,
+			"id": 33,
+			"points": [
+				87,
+				90,
+				91,
+				88
+			],
+			"portal_destination_wall": 3,
+			"portal_target": 31,
+			"portal_wall": 1
+		},
+		{
+			"ceiling": 1.5,
+			"debug_name": "@Polygon2D@67810",
+			"floor": 0.0,
+			"id": 34,
+			"points": [
+				92,
+				86,
+				89,
+				93
+			],
+			"portal_destination_wall": 1,
+			"portal_target": 30,
+			"portal_wall": 3
+		},
+		{
+			"ceiling": 1.5,
+			"debug_name": "@Polygon2D@76073",
+			"floor": 0.0,
+			"id": 35,
+			"points": [
+				94,
+				95,
+				87,
+				86
+			],
+			"portal_destination_wall": 2,
+			"portal_target": 36,
+			"portal_wall": 0
+		},
+		{
+			"ceiling": 1.5,
+			"debug_name": "@Polygon2D@76420",
+			"floor": 0.0,
+			"id": 36,
+			"points": [
+				80,
+				79,
+				96,
+				97
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 35,
+			"portal_wall": 2
+		}
+	]
+}
