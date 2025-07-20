@@ -114,11 +114,24 @@ CollisionHit raycast_generic
   }
 
   CollisionHit best_hit = CollisionHit::no_hit();
-  auto add_possible_hit = [&best_hit](const CollisionHit& hit)
+  u32  num_hits    = 1;
+  vec3 sum_normals = VEC3_ZERO;
+
+  auto add_possible_hit = [&](const CollisionHit& hit)
   {
     if (hit < best_hit)
     {
-      best_hit = hit;
+      // this hit is just better
+      best_hit    = hit;
+      num_hits    = 1;
+      sum_normals = hit.normal;
+    }
+    // This causes retardation.. Not sure why
+    else if (hit == best_hit && hit.hit.sector.type == best_hit.hit.sector.type)
+    {
+      // they are the same, average them out
+      num_hits    += 1;
+      sum_normals += hit.normal;
     }
   };
 
@@ -245,6 +258,11 @@ CollisionHit raycast_generic
         // add_possible_hit(RayHit::build(c, n, false));
       }
     }
+  }
+
+  if (best_hit)
+  {
+    best_hit.normal = normalize(sum_normals);
   }
 
   // Recurse into nuclidean portal if we have to
@@ -926,7 +944,7 @@ const
 
     const vec3 ray_from = position;
     const vec3 ray_to   = position + velocity;
-    const vec3 ray_dir  = ray_to - ray_from;
+    const vec3 ray_dir  = ray_to   - ray_from;
 
     CollisionHit hit = phys_helpers::raycast_generic<vec3>
     (
@@ -947,13 +965,17 @@ const
       break;
     }
 
+    [[maybe_unused]] CollisionHit hit2 = phys_helpers::raycast_generic<vec3>
+    (
+      *this, ray_from, ray_to, radius, colliders, nullptr,
+      INVALID_WALL_ID, wall_intersector2, sector_intersector, entity_intersector
+    );
+
     nc_assert(is_normal(hit.normal), "Bad things can happen");
     const auto remaining = velocity * (1.0f - hit.coeff);
     const auto projected = hit.normal * dot(remaining, hit.normal);
 
     velocity -= projected;
-
-    [[maybe_unused]]vec3 anticipated_position = position + velocity;
 
     // Let the listener know
     if (listener)

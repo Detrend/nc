@@ -23,6 +23,73 @@ namespace nc::intersect
 {
 
 //==============================================================================
+bool ray_segment
+(
+  vec2 start_a,
+  vec2 end_a,
+  vec2 start_b,
+  vec2 end_b,
+  f32& t_out,
+  f32& u_out
+)
+{
+  // This wouldn't be a problem, but lets just for safety check the args
+  nc_assert(start_a != end_a);
+  nc_assert(start_b != end_b);
+
+  t_out = FLT_MAX;
+  u_out = FLT_MAX;
+
+  const vec2 dir_a  = end_a - start_a;
+  const vec2 dir_b  = end_b - start_b;
+  const f32  top    = cross(dir_b, start_b - start_a);
+  const f32  bottom = cross(dir_b, dir_a);
+
+  if (top == 0.0f && bottom == 0.0f)
+  {
+    // parallel and lines are intersecting, check for segment
+    // intersection by projecting onto an interval
+    // TODO: can be probably done faster
+    // TODO: maybe no need to normalize?
+    const vec2 projection_plane = /*normalize(*/dir_a/*)*/;
+
+    const f32 a1 = dot(start_a, projection_plane);
+    const f32 a2 = dot(end_a, projection_plane);
+    const f32 b1 = dot(start_b, projection_plane);
+    const f32 b2 = dot(end_b, projection_plane);
+
+    const f32 imin = std::max(std::min(a1, a2), std::min(b1, b2));
+    const f32 imax = std::min(std::max(a1, a2), std::max(b1, b2));
+
+    return imax >= imin;
+  }
+  else if (bottom == 0.0f)
+  {
+    // parallel and non-intersecting
+    return false;
+  }
+  else
+  {
+    const f32 t = top / bottom;
+
+    // might be intersecting, check for u as well
+    const f32 utop = cross(dir_a, start_a - start_b);
+    const f32 ubottom = -bottom;
+
+    // This should not happen AFAIK
+    nc_assert(ubottom != 0.0f);
+
+    const f32 u = utop / ubottom;
+
+    t_out = t;
+    u_out = u;
+
+    // lines intersect, but segments do not
+    return u >= 0.0f && u <= 1.0f;
+  }
+}
+
+//==============================================================================
 bool segment_segment
 (
   vec2 start_a,
@@ -86,67 +153,6 @@ bool segment_segment
 
     // lines intersect, but segments do not
     return t >= 0.0f && t <= 1.0f && u >= 0.0f && u <= 1.0f;
-  }
-}
-
-//==============================================================================
-bool line_line
-(
-	vec2  start_a,
-	vec2  end_a,
-	vec2  start_b,
-	vec2  end_b,
-	f32&  t_coeff_out,
-	f32&  u_coeff_out,
-	bool& parallel_out
-)
-{
-  nc_assert(start_a != end_a);
-  nc_assert(start_b != end_b);
-
-  constexpr f32 TOLERANCE = 0.00001f;   // 0.1mm
-
-  t_coeff_out = FLT_MAX;
-  u_coeff_out = FLT_MAX;
-
-  const vec2 dir_a  = end_a - start_a;
-  const vec2 dir_b  = end_b - start_b;
-  const f32  top    = cross(dir_b, start_b - start_a);
-  const f32  bottom = cross(dir_b, dir_a);
-
-  const bool tp_zero = is_zero(top,    TOLERANCE);
-  const bool bt_zero = is_zero(bottom, TOLERANCE);
-
-  if (tp_zero && bt_zero)
-  {
-		// parallel and intersecting
-		parallel_out = true;
-		return true;
-  }
-  else if (bt_zero)
-  {
-    // parallel and non-intersecting
-		parallel_out = true;
-    return false;
-  }
-  else
-  {
-		// non-parallel, intersecting
-    const f32 t = top / bottom;
-
-    // might be intersecting, check for u as well
-    const f32 utop    = cross(dir_a, start_a - start_b);
-    const f32 ubottom = -bottom;
-
-    // This should not happen AFAIK
-    nc_assert(!is_zero(ubottom, TOLERANCE));
-
-    const f32 u = utop / ubottom;
-
-		parallel_out = false;
-    t_coeff_out  = t;
-    u_coeff_out  = u;
-		return true;
   }
 }
 
@@ -1001,7 +1007,7 @@ bool ray_exp_wall
 )
 {
   using intersect::segment_circle;
-  using intersect::segment_segment;
+  using intersect::ray_segment;
 
   nc_assert(start_a  != end_a);
   nc_assert(start_b  != end_b);
@@ -1034,10 +1040,18 @@ bool ray_exp_wall
   if (dot(ray_dir, b_norm) < 0.0f)
   {
     f32 _;
-    ll_coll = segment_segment
+    ll_coll = ray_segment
     (
       start_a, end_a, start_b + b_offset, end_b + b_offset, ll_coeff, _
     );
+
+    f32 max_coeff = 1.0f;
+    f32 min_coeff = - wall_exp / length(ray_dir);
+    //f32 min_coeff = 0;
+    if (ll_coll && (ll_coeff < min_coeff || ll_coeff > max_coeff))
+    {
+      ll_coll = false;
+    }
   }
 
   auto take_best = [&out_coeff, &out_normal]

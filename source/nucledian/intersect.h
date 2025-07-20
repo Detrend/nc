@@ -107,6 +107,16 @@ bool segment_segment
   f32& u_out
 );
 
+bool ray_segment
+(
+  vec2 start_a,
+  vec2 end_a,
+  vec2 start_b,
+  vec2 end_b,
+  f32& t_out,
+  f32& u_out
+);
+
 // Performs a segment-circle intersection.
 // Returns true if the segment and the circle intersect.
 // Returns negative t if the start point is inside the circle.
