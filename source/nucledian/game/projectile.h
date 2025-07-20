@@ -25,6 +25,7 @@ public:
 private:
   bool m_player_authored = false;
   vec3 m_velocity;
+	u32  m_hit_cnt_remaining = 5;
 
   Appearance m_appear;
 };

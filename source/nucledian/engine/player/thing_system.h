@@ -1,6 +1,8 @@
 // Project Nucledian Source File
 #pragma once
 
+#include <config.h> // NC_DEBUG_DRAW
+
 #include <engine/core/engine_module_id.h>
 #include <engine/core/engine_module.h>
 
@@ -93,6 +95,10 @@ private:
   void pre_terminate();
 
   void on_cleanup();
+
+#ifdef NC_DEBUG_DRAW
+  void do_raycast_debug();
+#endif
 
 private:
   EntityID       player_id = INVALID_ENTITY_ID;

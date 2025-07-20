@@ -97,35 +97,39 @@ namespace nc::intersect
 // u_out parameters.
 // If the function returns true but both u_out and t_out are FLT_MAX then
 // the segments are parallel and intersecting.
-bool segment_segment(
+bool segment_segment
+(
   vec2 start_a,
   vec2 end_a,
   vec2 start_b,
   vec2 end_b,
   f32& t_out,
-  f32& u_out);
-
-// Returns true if the infinite ray collides with a finite wall segment.
-// If so, then the ray_c_out contains coeff for intersection pt reconstruction
-bool ray_segment(
-  vec2 ray_start,
-  vec2 ray_end,
-  vec2 seg_a,
-  vec2 seg_b,
-  f32& ray_c_out);
+  f32& u_out
+);
 
 // Performs a segment-circle intersection.
 // Returns true if the segment and the circle intersect.
-bool segment_circle(vec2 start, vec2 end, vec2 og_center, f32 r, f32& t_out, vec2& n_out);
+// Returns negative t if the start point is inside the circle.
+bool segment_circle
+(
+  vec2  start,
+  vec2  end,
+  vec2  center,
+  f32   r,
+  f32&  t_out,
+  vec2& n_out
+);
 
-bool ray_wall_3d(
+bool ray_wall_3d
+(
   vec3 ray_start,
   vec3 ray_end,
   vec2 wall_a,
   vec2 wall_b,
   f32  wall_y1,
   f32  wall_y2,
-  f32& out_coeff);
+  f32& out_coeff
+);
 
 // Checks for intersection between segmented ray (has start and end) and infinite
 // horizontal plane with normal vector (0, 1, 0) and height plane_y.
@@ -195,6 +199,17 @@ bool ray_exp_wall
   f32&  out_coeff
 );
 
+// Collision of flat (non-expanded wall) with a ray
+bool ray_wall
+(
+  vec2  ray_start,
+  vec2  ray_end,
+  vec2  wall_start,
+  vec2  wall_end,
+  vec2& out_normal,
+  f32&  out_coeff
+);
+
 bool ray_exp_cylinder
 (
   vec2  ray_start,
@@ -206,6 +221,14 @@ bool ray_exp_cylinder
   f32&  out_coeff
 );
 
+bool ray_plane_xz
+(
+  vec3  ray_start,
+  vec3  ray_end,
+  f32   plane_y,
+  f32&  out_c
+);
+
 }
 
 namespace nc::dist
@@ -215,6 +238,18 @@ namespace nc::dist
 // Returns 0 if the point is inside the bbox
 template<typename TVec>
 f32 point_aabb(TVec pt, const aabb<f32, TVec::length()>& bbox);
-  
+
+// Calculates distance between point and a 2D segment
+f32 point_line_2d(vec2 pt, vec2 line_start, vec2 line_end);
+
+// Calculates distance between 2 2D segments
+f32 segment_segment_2d
+(
+  vec2 l1_start,
+  vec2 l1_end,
+  vec2 l2_start,
+  vec2 l2_end
+);
+
 }
 

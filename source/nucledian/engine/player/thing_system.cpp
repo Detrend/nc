@@ -15,10 +15,12 @@
 #include <engine/map/physics.h>
 
 #include <engine/graphics/graphics_system.h>
+#include <engine/graphics/gizmo.h>
 
 #include <game/projectile.h>
 
 #include <common.h>
+#include <cvars.h>
 
 #include <intersect.h>
 
@@ -513,6 +515,10 @@ void ThingSystem::on_event(ModuleEvent& event)
 
     case ModuleEventType::game_update:
     {
+#ifdef NC_DEBUG_DRAW
+      this->do_raycast_debug();
+#endif
+
       auto& entity_system = this->get_entities();
 
       //INPUT PHASE
@@ -735,50 +741,6 @@ void ThingSystem::check_player_attack
 
   if (didAttack)
   {
-    [[maybe_unused]] vec3 rayStart = this->get_player()->get_position() + vec3(0, this->get_player()->get_view_height(), 0);
-    [[maybe_unused]] vec3 rayEnd = rayStart + get_engine().get_module<GraphicsSystem>().get_camera()->get_forward() * 50.0f;
-
-    [[maybe_unused]] f32 hitDistance = 999999;
-    EntityID index = INVALID_ENTITY_ID;
-
-    const auto wallHit = this->get_level().raycast3d(rayStart, rayEnd);
-    f32 wallDist = wallHit ? wallHit.coeff : FLT_MAX;
-
-    entity_system.for_each<Enemy>([&](Enemy& enemy)
-    {
-      const f32   width    = enemy.get_width();
-      const f32   height   = enemy.get_height() * 2.0f;
-      const vec3  position = enemy.get_position();
-
-      const aabb3 bbox = aabb3
-      {
-        position - vec3{width, 0.0f,   width},
-        position + vec3{width, height, width}
-      };
-
-      f32 out;
-      vec3 normal;
-      if (intersect::ray_aabb3(rayStart, rayEnd, bbox, out, normal))
-      {
-        if (hitDistance > out)
-        {
-          hitDistance = out;
-          index = enemy.get_id();
-        }
-      }
-    });
-
-    if (index != INVALID_ENTITY_ID)
-    {
-      if (hitDistance < wallDist || !wallHit)
-      {
-        entity_system.get_entity<Enemy>(index)->damage(100);
-      }
-    }
-  }
-
-  if (didAttack)
-  {
     auto dir = player->get_look_direction();
 
     // spawn projectile
@@ -802,7 +764,7 @@ void ThingSystem::check_enemy_attack([[maybe_unused]] const ModuleEvent& event)
       [[maybe_unused]] vec3 rayStart = enemy.get_position() + vec3(0, 0.5f, 0);
       [[maybe_unused]] vec3 rayEnd = this->get_player()->get_position() + vec3(0, this->get_player()->get_view_height(), 0);
 
-      const auto wallHit = this->get_level().raycast3d(rayStart, rayEnd);
+      const auto wallHit = this->get_level().ray_cast_3d(rayStart, rayEnd);
 
       if (wallHit) 
       {
@@ -813,6 +775,49 @@ void ThingSystem::check_enemy_attack([[maybe_unused]] const ModuleEvent& event)
     }
   });
 }
+
+//==============================================================================
+#ifdef NC_DEBUG_DRAW
+void ThingSystem::do_raycast_debug()
+{
+  Player* player = this->get_player();
+  if (player && player->get_camera() && CVars::debug_player_raycasts)
+  {
+    const DebugCamera* camera = player->get_camera();
+    const auto& lvl = ThingSystem::get().get_level();
+
+    constexpr f32 RAY_LEN = 10.0f;
+	
+    const vec3 eye_pos  = camera->get_position();
+    const vec3 look_dir = camera->get_forward();
+	
+    const vec3 ray_start = eye_pos;
+    const vec3 ray_end   = eye_pos + look_dir * RAY_LEN;
+
+    PhysLevel::Portals portals;
+	
+    CollisionHit hit = lvl.cylinder_cast_3d
+    (
+      ray_start, ray_end, 0.25f, 0.25f, 0, &portals
+    );
+
+    if (hit)
+    {
+      vec3 hit_point  = ray_start + (ray_end - ray_start) * hit.coeff;
+      vec3 out_normal = hit.normal;
+      
+      for (const auto&[wid, sid] : portals)
+      {
+        mat4 transform = lvl.map.calc_portal_to_portal_projection(sid, wid);
+        hit_point  = transform * vec4{hit_point,  1.0f};
+        out_normal = transform * vec4{out_normal, 0.0f};
+      }
+
+      Gizmo::create_line(1.0f, hit_point, hit_point + out_normal, colors::RED);
+    }
+  }
+}
+#endif
 
 }
 

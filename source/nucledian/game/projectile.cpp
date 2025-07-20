@@ -10,6 +10,8 @@
 #include <engine/core/engine.h>
 #include <engine/graphics/graphics_system.h>
 
+#include <math/lingebra.h>
+
 namespace nc
 {
 
@@ -38,28 +40,28 @@ void Projectile::update(f32 dt)
   auto& game = ThingSystem::get();
   auto  lvl  = game.get_level();
 
-  vec3 position = this->get_position();
-  vec3 forward  = m_velocity;
+  vec3 position  = this->get_position();
+  vec3 forward   = m_velocity;
+  mat4 transform = identity<mat4>();
 
-  bool hit_something = false;
+  f32 r = this->get_radius();
+  f32 h = this->get_height();
 
-  lvl.move_and_collide
+  lvl.move_particle
   (
-    position, m_velocity, forward, dt, this->get_radius(), this->get_height(),
-    0.0f, PhysLevel::COLLIDE_EVERYTHING, 0, 0.0f,
-    [&hit_something](const RayHit& /*hit*/)
+    position, m_velocity, transform, dt, r, h, 0.0f,
+    1.0f, PhysLevel::COLLIDE_ALL,
+    [&](const CollisionHit& /*hit*/)
     {
-      // stop the simulation on hit
-      hit_something = true;
-      return PhysLevel::CollisionReaction::stop_simulation;
+			m_hit_cnt_remaining = std::min(m_hit_cnt_remaining, m_hit_cnt_remaining - 1);
     }
   );
 
   this->set_position(position);
 
-  if (hit_something)
+  if (!m_hit_cnt_remaining)
   {
-    // kill ourselves
+    // Kill ourselves
     game.get_entities().destroy_entity(this->get_id());
   }
 }

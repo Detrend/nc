@@ -19,9 +19,9 @@ namespace nc
 
 //==============================================================================
 Entity::Entity(vec3 position, f32 radius, f32 height)
-: m_Position(position)
-, m_Radius2D(radius)
-, m_Height(height)
+: m_position(position)
+, m_radius2d(radius)
+, m_height(height)
 {
 
 }
@@ -35,74 +35,74 @@ Entity::~Entity()
 //==============================================================================
 EntityID Entity::get_id() const
 {
-  return m_IdAndType;
+  return m_id_and_type;
 }
 
 //==============================================================================
 EntityType Entity::get_type() const
 {
-  return m_IdAndType.type;
+  return m_id_and_type.type;
 }
 
 //==============================================================================
 vec3 Entity::get_position() const
 {
-  return m_Position;
+  return m_position;
 }
 
 //==============================================================================
 void Entity::set_position(vec3 np)
 {
-  if (m_Position != np)
+  if (m_position != np)
   {
-    m_Position = np;
-    m_Mapping->on_entity_move(m_IdAndType, m_Position, m_Radius2D, m_Height);
+    m_position = np;
+    m_mapping->on_entity_move(m_id_and_type, m_position, m_radius2d, m_height);
   }
 }
 
 //==============================================================================
 f32 Entity::get_radius() const
 {
-  return m_Radius2D;
+  return m_radius2d;
 }
 
 //==============================================================================
 void Entity::set_radius(f32 r)
 {
   nc_assert(r >= 0.0f);
-  if (m_Radius2D != r)
+  if (m_radius2d != r)
   {
-    m_Radius2D = r;
-    m_Mapping->on_entity_move(m_IdAndType, m_Position, m_Radius2D, m_Height);
+    m_radius2d = r;
+    m_mapping->on_entity_move(m_id_and_type, m_position, m_radius2d, m_height);
   }
 }
 
 //==============================================================================
 f32 Entity::get_height() const
 {
-  return m_Height;
+  return m_height;
 }
 
 //==============================================================================
 void Entity::set_height(f32 nh)
 {
   nc_assert(nh >= 0.0f);
-  if (m_Height != nh)
+  if (m_height != nh)
   {
-    m_Height = nh;
-    m_Mapping->on_entity_move(m_IdAndType, m_Position, m_Radius2D, m_Height);
+    m_height = nh;
+    m_mapping->on_entity_move(m_id_and_type, m_position, m_radius2d, m_height);
   }
 }
 
 //==============================================================================
 void Entity::set_pos_rad_height(vec3 p, f32 r, f32 h)
 {
-  if (p != m_Position || r != m_Radius2D || h != m_Height)
+  if (p != m_position || r != m_radius2d || h != m_height)
   {
-    m_Position = p;
-    m_Radius2D = r;
-    m_Height   = h;
-    m_Mapping->on_entity_move(m_IdAndType, m_Position, m_Radius2D, m_Height);
+    m_position = p;
+    m_radius2d = r;
+    m_height   = h;
+    m_mapping->on_entity_move(m_id_and_type, m_position, m_radius2d, m_height);
   }
 }
 

@@ -485,14 +485,14 @@ void GraphicsSystem::render()
   VisibilityTree visible_sectors;
   query_visibility(visible_sectors);
 
+#ifdef NC_DEBUG_DRAW
   if (CVars::enable_top_down_debug)
   {
     // Top down rendering for easier debugging
-#ifdef NC_DEBUG_DRAW
     render_map_top_down(visible_sectors);
-#endif
   }
   else
+#endif
   {
     const DebugCamera* camera = get_camera();
     if (camera)
@@ -505,7 +505,7 @@ void GraphicsSystem::render()
         .vis_tree = visible_sectors,
       };
 
-      GizmoManager::instance().draw_gizmos();
+      GizmoManager::instance().draw_gizmos(camera_data);
       render_sectors(camera_data);
       render_entities(camera_data);
       render_portals(camera_data);
@@ -784,7 +784,7 @@ void GraphicsSystem::render_map_top_down(const VisibilityTree& visible_sectors)
       colors::WHITE
     );
 
-    if (auto hit = thing.get_level().raycast2d_expanded(start_pt, end_pt, std::max(raycast_expand, 0.0001f)))
+    if (auto hit = thing.get_level().circle_cast_2d(start_pt, end_pt, std::max(raycast_expand, 0.0001f)))
     {
       const vec2 contact_pt = start_pt + (end_pt - raycast_pt1) * hit.coeff;
       const vec2 out_n = hit.normal.xz();
@@ -1291,6 +1291,8 @@ void GraphicsSystem::render_portal_to_color(const CameraData& camera_data, const
   glStencilFunc(GL_LEQUAL, recursion_depth + 1, 0xFF);
   glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
+  // Draw gizmos recursively so they are visible behind a portal as well
+  GizmoManager::instance().draw_gizmos(camera_data);
   render_sectors(camera_data);
   render_entities(camera_data);
 }

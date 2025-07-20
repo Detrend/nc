@@ -23,31 +23,29 @@ namespace nc::intersect
 {
 
 //==============================================================================
-bool segment_segment(
+bool segment_segment
+(
   vec2 start_a,
   vec2 end_a,
   vec2 start_b,
   vec2 end_b,
   f32& t_out,
-  f32& u_out)
+  f32& u_out
+)
 {
-  constexpr f32 TOLERANCE = 0.0001f;   // 0.1mm
+  // This wouldn't be a problem, but lets just for safety check the args
+  nc_assert(start_a != end_a);
+  nc_assert(start_b != end_b);
 
   t_out = FLT_MAX;
   u_out = FLT_MAX;
 
-  nc_assert(start_a != end_a);
-  nc_assert(start_b != end_b);
-
-  const vec2 dir_a = end_a - start_a;
-  const vec2 dir_b = end_b - start_b;
-  const f32  top = cross(dir_b, start_b - start_a);
+  const vec2 dir_a  = end_a - start_a;
+  const vec2 dir_b  = end_b - start_b;
+  const f32  top    = cross(dir_b, start_b - start_a);
   const f32  bottom = cross(dir_b, dir_a);
 
-  const bool tp_zero = is_zero(top, TOLERANCE);
-  const bool bt_zero = is_zero(bottom, TOLERANCE);
-
-  if (tp_zero && bt_zero)
+  if (top == 0.0f && bottom == 0.0f)
   {
     // parallel and lines are intersecting, check for segment
     // intersection by projecting onto an interval
@@ -65,7 +63,7 @@ bool segment_segment(
 
     return imax >= imin;
   }
-  else if (bt_zero)
+  else if (bottom == 0.0f)
   {
     // parallel and non-intersecting
     return false;
@@ -79,7 +77,7 @@ bool segment_segment(
     const f32 ubottom = -bottom;
 
     // This should not happen AFAIK
-    nc_assert(!is_zero(ubottom, TOLERANCE));
+    nc_assert(ubottom != 0.0f);
 
     const f32 u = utop / ubottom;
 
@@ -88,6 +86,67 @@ bool segment_segment(
 
     // lines intersect, but segments do not
     return t >= 0.0f && t <= 1.0f && u >= 0.0f && u <= 1.0f;
+  }
+}
+
+//==============================================================================
+bool line_line
+(
+	vec2  start_a,
+	vec2  end_a,
+	vec2  start_b,
+	vec2  end_b,
+	f32&  t_coeff_out,
+	f32&  u_coeff_out,
+	bool& parallel_out
+)
+{
+  nc_assert(start_a != end_a);
+  nc_assert(start_b != end_b);
+
+  constexpr f32 TOLERANCE = 0.00001f;   // 0.1mm
+
+  t_coeff_out = FLT_MAX;
+  u_coeff_out = FLT_MAX;
+
+  const vec2 dir_a  = end_a - start_a;
+  const vec2 dir_b  = end_b - start_b;
+  const f32  top    = cross(dir_b, start_b - start_a);
+  const f32  bottom = cross(dir_b, dir_a);
+
+  const bool tp_zero = is_zero(top,    TOLERANCE);
+  const bool bt_zero = is_zero(bottom, TOLERANCE);
+
+  if (tp_zero && bt_zero)
+  {
+		// parallel and intersecting
+		parallel_out = true;
+		return true;
+  }
+  else if (bt_zero)
+  {
+    // parallel and non-intersecting
+		parallel_out = true;
+    return false;
+  }
+  else
+  {
+		// non-parallel, intersecting
+    const f32 t = top / bottom;
+
+    // might be intersecting, check for u as well
+    const f32 utop    = cross(dir_a, start_a - start_b);
+    const f32 ubottom = -bottom;
+
+    // This should not happen AFAIK
+    nc_assert(!is_zero(ubottom, TOLERANCE));
+
+    const f32 u = utop / ubottom;
+
+		parallel_out = false;
+    t_coeff_out  = t;
+    u_coeff_out  = u;
+		return true;
   }
 }
 
@@ -215,12 +274,21 @@ bool convex_convex(std::span<vec2> a, std::span<vec2> b, f32 threshold)
 }
 
 //==============================================================================
-bool segment_circle(vec2 ray_start, vec2 ray_end, vec2 circle_center, f32 circle_radius, f32& t_out, vec2& n_out)
+bool segment_circle
+(
+  vec2  ray_start,
+  vec2  ray_end,
+  vec2  circle_center,
+  f32   circle_radius,
+  f32&  t_out,
+  vec2& n_out
+)
 {
-  NC_TODO("Circle collision might not work properly if the raycasted point is inside the circle.");
-
   nc_assert(ray_start != ray_end);
   nc_assert(circle_radius > 0.0f);
+
+  t_out = FLT_MAX;
+  n_out = VEC2_ZERO;
 
   // First handle the case when the ray starts inside the circle
   const vec2 center_to_start    = ray_start - circle_center;
@@ -258,65 +326,55 @@ bool segment_circle(vec2 ray_start, vec2 ray_end, vec2 circle_center, f32 circle
   }
 
   const f32 a2 = 2 * a;
-  const f32 D = std::sqrtf(D2);
+  const f32 D  = std::sqrtf(D2);
 
   const f32 t1 = (-b + D) / a2;
   const f32 t2 = (-b - D) / a2;
 
-  constexpr f32 MIN_COEFF = 0.0f;
-  constexpr f32 MAX_COEFF = 1.0f;
+  const bool t1_legit = t1 == std::clamp(t1, 0.0f, 1.0f);
+  const bool t2_legit = t2 == std::clamp(t2, 0.0f, 1.0f);
 
-  const bool t1_legit = t1 == std::clamp(t1, MIN_COEFF, MAX_COEFF);
-  const bool t2_legit = t2 == std::clamp(t2, MIN_COEFF, MAX_COEFF);
+  f32 t = std::min(t1_legit ? t1 : FLT_MAX, t2_legit ? t2 : FLT_MAX);
 
-  if (!t1_legit && !t2_legit)
+  if (t != FLT_MAX)
   {
-    // the circle is too far away or not intersected
-    return false;
-  }
+    const vec2 col_point = ray_dir * t;
+    nc_assert(col_point != center);
 
-  f32 t;
-  if (t1_legit && t2_legit)
-  {
-    t = std::min(t1, t2);
-  }
-  else if (t1_legit)
-  {
-    t = t1;
+    const vec2 center_to_col = col_point - center;
+
+    t_out = t;
+    n_out = normalize(center_to_col);
+    return true;
   }
   else
   {
-    t = t2;
+    return false;
   }
-
-  const vec2 col_point = ray_dir * t;
-  nc_assert(col_point != center);
-  const vec2 center_to_col = col_point - center;
-
-  t_out = t;
-  n_out = normalize(center_to_col);
-  return true;
 }
 
 //==============================================================================
-bool ray_wall_3d(
+bool ray_wall_3d
+(
   vec3  ray_start,
   vec3  ray_end,
   vec2  wall_a,
   vec2  wall_b,
   f32   wall_y1,
   f32   wall_y2,
-  f32&  out_coeff)
+  f32&  out_coeff
+)
 {
   nc_assert(wall_y1   != wall_y2, "Points of the wall are the same.");
   nc_assert(ray_start != ray_end, "Ray has a zero length.");
+
+  out_coeff = FLT_MAX;
 
   const vec2 start2d = ray_start.xz;
   const vec2 end2d   = ray_end.xz;
   const vec3 ray_dir = ray_end - ray_start;
 
-  f32 _;
-  if (!segment_segment(start2d, end2d, wall_a, wall_b, out_coeff, _))
+  if (f32 _; !segment_segment(start2d, end2d, wall_a, wall_b, out_coeff, _))
   {
     // not intersecting even in 2D, can't intersect in 3D
     return false;
@@ -497,63 +555,6 @@ bool ray_aabb3(
   }
 }
 
-//==============================================================================
-bool ray_segment(
-  vec2 ray_start,
-  vec2 ray_end,
-  vec2 seg_start,
-  vec2 seg_end,
-  f32& ray_t_out)
-{
-  constexpr f32 TOLERANCE = 0.0001f;   // 0.1mm
-
-  ray_t_out = FLT_MAX;
-
-  nc_assert(ray_start != ray_end);
-  nc_assert(seg_start != seg_end);
-
-  const vec2 ray_dir = ray_end - ray_start;
-  const vec2 seg_dir = seg_end - seg_start;
-  const f32  top    = cross(seg_dir, seg_start - ray_start);
-  const f32  bottom = cross(seg_dir, ray_dir);
-
-  const bool tp_zero = is_zero(top, TOLERANCE);
-  const bool bt_zero = is_zero(bottom, TOLERANCE);
-
-  if (tp_zero && bt_zero)
-  {
-    // parallel and lines are intersecting, check for segment
-    // intersection by projecting onto an interval
-    const f32 b1 = dot(seg_start - ray_start, ray_dir);
-    const f32 b2 = dot(seg_end   - ray_start, ray_dir);
-
-    ray_t_out = std::min(b1, b2);
-    return true;
-  }
-  else if (bt_zero)
-  {
-    // parallel and non-intersecting
-    return false;
-  }
-  else
-  {
-    const f32 t = top / bottom;
-
-    // might be intersecting, check for u as well
-    const f32 utop = cross(ray_dir, ray_start - seg_start);
-    const f32 ubottom = -bottom;
-
-    // This should not happen AFAIK
-    nc_assert(!is_zero(ubottom, TOLERANCE));
-
-    const f32 seg_t = utop / ubottom;
-
-    ray_t_out = t; // might be negative
-
-    // lines intersect, but segments do not
-    return seg_t >= 0.0f && seg_t <= 1.0f;
-  }
-}
 }
 
 namespace nc
@@ -988,72 +989,99 @@ namespace nc::collide
 {
   
 //==============================================================================
-bool ray_exp_wall(
+bool ray_exp_wall
+(
   vec2  start_a,
   vec2  end_a,
   vec2  start_b,
   vec2  end_b,
   f32   wall_exp,
   vec2& out_normal,
-  f32&  out_coeff)
+  f32&  out_coeff
+)
 {
-  nc_assert(start_a != end_a);
-  nc_assert(start_b != end_b);
-  nc_assert(wall_exp >= 0.0f); // use normal intersection if the parameter is 0
+  using intersect::segment_circle;
+  using intersect::segment_segment;
 
-  if (wall_exp == 0.0f)
-  {
-    f32 _;
-    const bool intersects = intersect::segment_segment(start_a, end_a, start_b, end_b, out_coeff, _);
+  nc_assert(start_a  != end_a);
+  nc_assert(start_b  != end_b);
+  nc_assert(wall_exp > 0.0f); // Use ray_wall for non-expanded collisions
 
-    const vec2 dir = end_a - start_a;
-
-    out_normal = flipped(normalize(end_b - start_b));
-    if (dot(dir, out_normal) > 0.0f)
-    {
-      out_normal = -out_normal;
-    }
-
-    return intersects && out_coeff >= 0.0f && out_coeff <= 1.0f;
-  }
+  // Reset by default
+  out_normal = VEC2_ZERO;
+  out_coeff  = FLT_MAX;
 
   const vec2 ray_dir = end_a - start_a;
 
-  f32  cs_coeff = 0, ce_coeff = 0;
-  f32 ll_coeff = 0;
-  vec2 cs_n, ce_n;
-
-  const vec2 b_norm = flipped(normalize(end_b - start_b));
+  const vec2 b_norm   = flipped(normalize(end_b - start_b));
   const vec2 b_offset = b_norm * wall_exp;
 
-  const bool cs_intersect = intersect::segment_circle(start_a, end_a, start_b, wall_exp, cs_coeff, cs_n);
-  const bool ce_intersect = intersect::segment_circle(start_a, end_a, end_b,   wall_exp, ce_coeff, ce_n);
+  bool ll_coll = false;
+  bool cs_coll = false; 
+  bool ce_coll = false; 
 
-  bool ll_intersect = false;
+  vec2 cs_n, ce_n;
+  f32 cs_coeff = 0, ce_coeff = 0, ll_coeff = 0;
 
-  if (dot(ray_dir, b_norm) < 0)
+  // Check the circles first
+  cs_coll = segment_circle(start_a, end_a, start_b, wall_exp, cs_coeff, cs_n);
+  ce_coll = segment_circle(start_a, end_a, end_b,   wall_exp, ce_coeff, ce_n);
+
+  // And now check the wall itself. We only need to check the part of the wall facing us.
+  // Also, we can (and should) do the checking only if the wall is in our direction
+  // of movement. Otherwise, we could collide with it even if moving away from it
+  // in the opposite direction. Thats what the dot(...) < 0 is for
+  if (dot(ray_dir, b_norm) < 0.0f)
   {
-    ll_intersect = intersect::ray_segment(start_a, end_a, start_b + b_offset, end_b + b_offset, ll_coeff);
+    f32 _;
+    ll_coll = segment_segment
+    (
+      start_a, end_a, start_b + b_offset, end_b + b_offset, ll_coeff, _
+    );
   }
 
-  out_normal = vec2{ 0 };
-  out_coeff  = FLT_MAX;
-
-  auto take_best = [&](bool intersection, f32 coeff, vec2 norm)
+  auto take_best = [&out_coeff, &out_normal]
+  (
+    bool intersection, f32 coeff, vec2 norm
+  )
   {
-    const f32 min_coeff = -wall_exp / length(ray_dir);
-    if (intersection && coeff < out_coeff && coeff >= min_coeff && coeff <= 1.0f)
+    if (intersection && coeff < out_coeff)
     {
       out_coeff  = coeff;
       out_normal = norm;
     }
   };
 
-  take_best(cs_intersect, cs_coeff, cs_n);
-  take_best(ce_intersect, ce_coeff, ce_n);
-  take_best(ll_intersect, ll_coeff, b_norm);
+  take_best(cs_coll, cs_coeff, cs_n);
+  take_best(ce_coll, ce_coeff, ce_n);
+  take_best(ll_coll, ll_coeff, b_norm);
 
   return out_coeff != FLT_MAX;
+}
+
+//==============================================================================
+bool ray_wall
+(
+  vec2  start_a,
+  vec2  end_a,
+  vec2  start_b,
+  vec2  end_b,
+  vec2& out_normal,
+  f32&  out_coeff
+)
+{
+  f32 _;
+  const bool intersects = intersect::segment_segment(start_a, end_a, start_b, end_b, out_coeff, _);
+
+  const vec2 dir = end_a - start_a;
+
+  out_normal = flipped(normalize(end_b - start_b));
+  if (dot(dir, out_normal) > 0.0f)
+  {
+    out_normal = -out_normal;
+  }
+
+  return intersects && out_coeff >= 0.0f && out_coeff <= 1.0f;
 }
 
 //==============================================================================
@@ -1069,6 +1097,33 @@ bool ray_exp_cylinder
 )
 {
   return false;
+}
+
+//==============================================================================
+bool ray_plane_xz
+(
+  vec3  ray_start,
+  vec3  ray_end,
+  f32   plane_y,
+  f32&  out_c
+)
+{
+  // Check the ray dir
+  vec3 ray_dir = ray_end - ray_start;
+
+  // Early exit if the y is 0
+  if (ray_dir.y == 0.0f)
+  {
+    return false;
+  }
+
+  // We know that there is a t such as
+  // ray_start.y + ray_dir.y * t           = plane_y
+  // ray_start.y - plane_y + ray_dir.y * t = 0.0f
+  // ray_dir.y * t                         = plane_y - ray_start.y
+  // t                                     = (plane_y - ray_start.y) / ray_dir.y
+  out_c = (plane_y - ray_start.y) / ray_dir.y;
+  return true;
 }
 
 }
@@ -1087,6 +1142,42 @@ f32 point_aabb(TVec pt, const aabb<f32, TVec::length()>& bbox)
 
 template f32 point_aabb<vec3>(vec3, const aabb3&);
 template f32 point_aabb<vec2>(vec2, const aabb2&);
+
+//==============================================================================
+f32 point_line_2d(vec2 p, vec2 a, vec2 b)
+{
+  // Project on the line, clip and measure the distance
+  f32  ab_len     = length(b - a);
+  vec2 line_dir_n = normalize_or_zero(b - a);
+  vec2 to_pt_dir  = p - a;
+  f32  coeff      = dot(to_pt_dir, line_dir_n);
+  f32  bounded_c  = std::clamp(coeff, 0.0f, ab_len);
+  vec2 reproj     = line_dir_n * bounded_c + a;
+
+  return distance(reproj, p);
+}
+
+//==============================================================================
+f32 segment_segment_2d
+(
+  vec2 l1_a,
+  vec2 l1_b,
+  vec2 l2_a,
+  vec2 l2_b
+)
+{
+  if (f32 _, __; intersect::segment_segment(l1_a, l1_b, l2_a, l2_b, _, __))
+  {
+    return 0.0f;
+  }
+
+  f32 d1 = point_line_2d(l1_a, l2_a, l2_b);
+  f32 d2 = point_line_2d(l1_b, l2_a, l2_b);
+  f32 d3 = point_line_2d(l2_a, l1_a, l1_b);
+  f32 d4 = point_line_2d(l2_b, l1_a, l1_b);
+
+  return std::min({d1, d2, d3, d4});
+}
 
 }
 

@@ -96,8 +96,11 @@ struct CVars
   NC_REGISTER_CVAR(bool, debug_player_raycasts, false, "Debug raycast from player's eyes.");
   NC_REGISTER_CVAR(bool, lock_camera_pitch,     false, "Restricts camera from looking up/down.");
   NC_REGISTER_CVAR(bool, has_fps_limit,         false, "Is the FPS limited?");
+  NC_REGISTER_CVAR(bool, has_min_fps,           false, "Min FPS");
 
   NC_REGISTER_CVAR_RANGED(f32, fps_limit, 60.0f, 1.0f, 512.0f,
+    "FPS limit if the \"has_fps_limit\" is turned on");
+  NC_REGISTER_CVAR_RANGED(f32, fps_min, 30.0f, 1.0f, 2048.0f,
     "FPS limit if the \"has_fps_limit\" is turned on");
   NC_REGISTER_CVAR_RANGED(s32, opengl_debug_severity, 1, 0, 3,
     "0 = everything, 1 = low and higher, 2 = medium and higher, 3 = critical only");
