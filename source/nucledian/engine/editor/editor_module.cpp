@@ -100,7 +100,7 @@ namespace nc
 
     gladLoadGLLoader(SDL_GL_GetProcAddress);
 
-    SDL_SetWindowFullscreen(window, 0);
+    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 
     int width;
     int height;
