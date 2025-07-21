@@ -223,9 +223,11 @@ namespace nc
     void cleanup();
     ~WallDef();  
 
-  private:
     MapPoint* start;
     MapPoint* end;
+
+  private:
+    
 
     void init_gl();
 

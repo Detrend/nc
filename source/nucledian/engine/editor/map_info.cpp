@@ -129,6 +129,18 @@ void nc::Map::add_point(vertex_2d position)
 
 void nc::Map::remove_point(size_t index)
 {
+  MapPoint* point = mapPoints[index].get();
+
+  for (size_t i = 0; i < walls.size(); i++)
+  {
+    if (walls[i].start == point || walls[i].end == point)
+    {
+      walls[i].cleanup();
+      walls.erase(walls.begin() + i);
+      i--;
+    }
+  }
+
   mapPoints[index].get()->cleanup();
   mapPoints.erase(mapPoints.begin() + index);
 }
