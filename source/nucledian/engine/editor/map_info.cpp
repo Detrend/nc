@@ -64,6 +64,11 @@ void nc::MapPoint::cleanup()
   glDeleteVertexArrays(1, &vertexArrayBuffer);
 }
 
+nc::vertex_3d nc::MapPoint::get_pos()
+{
+  return position[0];
+}
+
 //============================================================
 
 nc::MapPoint::~MapPoint()
@@ -146,4 +151,41 @@ size_t nc::Map::get_closest_point_index(vertex_2d position)
   }
 
   return candidate;
+}
+
+void nc::WallDef::cleanup()
+{
+  glDeleteBuffers(1, &vertexBuffer);
+  glDeleteVertexArrays(1, &vertexArrayBuffer);
+}
+
+nc::WallDef::~WallDef()
+{
+
+}
+
+void nc::WallDef::init_gl()
+{
+  // bind to VBO
+  glGenBuffers(1, &vertexBuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 12, &position, GL_DYNAMIC_DRAW);
+
+  //bind to VAO
+  glGenVertexArrays(1, &vertexArrayBuffer);
+
+  glBindVertexArray(vertexArrayBuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+  glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), &position, GL_DYNAMIC_DRAW);
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)0);
+  glEnableVertexAttribArray(0);
+
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 12 * sizeof(float), (void*)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
+
+  glDisableVertexAttribArray(0);
+  glDisableVertexAttribArray(1);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindVertexArray(0);
 }

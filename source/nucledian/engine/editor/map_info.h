@@ -101,6 +101,7 @@ namespace nc
     void update();
     void draw();
     void cleanup();
+    vertex_3d get_pos();
     ~MapPoint();
 
   private:
@@ -115,48 +116,77 @@ namespace nc
 
   class WallDef;
 
-  class Sector
-  {
-    double floorHeight;
-    double ceilingHeight;
+  //class Sector
+  //{
+  //  double floorHeight;
+  //  double ceilingHeight;
 
-    // topTexture
-    // bottomTexture
+  //  // topTexture
+  //  // bottomTexture
 
-    std::vector<WallDef> walls;
-  };
+  //  std::vector<WallDef> walls;
+  //};
 
-  class SideDef
-  {
-    // UV coordinates for the wall drawing are the size of the plane
-    // texture shall be tiled (repeated) given a offset
+  //class SideDef
+  //{
+  //  // UV coordinates for the wall drawing are the size of the plane
+  //  // texture shall be tiled (repeated) given a offset
 
-    //topTexture
-    //midTexture
-    //bottomTexture
+  //  //topTexture
+  //  //midTexture
+  //  //bottomTexture
 
-    double offsetX;
-    double offsetY;
+  //  double offsetX;
+  //  double offsetY;
 
-    Sector& sector; // sector we are pointing to, can be NULL
-  };
+  //  Sector& sector; // sector we are pointing to, can be NULL
+  //};
 
-  // Definition of a wall, a line in a editor
+  // Definition of a wall, a line in the editor
   class WallDef
   {
-    vertex_2d start;
-    vertex_2d end;
-    double height;
+  public:
+    WallDef(MapPoint* start, MapPoint* end)
+    {
+      this->start = start;
+      this->end = end;
 
-    SideDef& frontSideDef;
-    SideDef& backSideDef;
+      position[0] = start->get_pos();
+      position[1] = vertex_3d(1, 1, 0);
+      position[2] = end->get_pos();
+      position[3] = vertex_3d(1, 1, 0);
+
+      init_gl();
+    }
+
+
+    //void move(f32 x, f32 y);
+    //void move_to(f32 x, f32 y);
+    //void update();
+    //void draw();
+    void cleanup();
+    ~WallDef();  
+
+  private:
+    MapPoint* start;
+    MapPoint* end;
+
+    void init_gl();
+
+    vertex_3d position[4];
+
+    //OpenGL Stuff
+    GLuint vertexBuffer;
+    GLuint vertexArrayBuffer;
+    //SideDef& frontSideDef;
+    //SideDef& backSideDef;
 
   };
 
   class Map
   {
     std::vector<std::shared_ptr<MapPoint>> mapPoints;
-    std::vector<Sector> sectors;
+   //std::vector<Sector> sectors;
     std::vector<WallDef> walls;
 
     //entities
