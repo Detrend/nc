@@ -28,6 +28,26 @@ namespace nc
       this->y = y;
       this->z = z;
     }
+
+    f32 dot(vertex_3d other)
+    {
+      return x * other.x + y * other.y + z * other.z;
+    }
+
+    vertex_3d operator+(vertex_3d other)
+    {
+      return vertex_3d(x + other.x, y + other.y, z + other.z);
+    }
+
+    vertex_3d operator-(vertex_3d other)
+    {
+      return vertex_3d(x - other.x, y - other.y, z - other.z);
+    }
+
+    vertex_3d operator*(float const& other)
+    {
+      return vertex_3d(x * other, y * other, z * other);
+    }
   };
 
   struct vertex_2d {
@@ -42,6 +62,11 @@ namespace nc
     vertex_2d(f32 x, f32 y) {
       this->x = x;
       this->y = y;
+    }
+
+    f32 dot(vertex_2d other)
+    {
+      return x * other.x + y * other.y;
     }
 
     vertex_2d operator+(vertex_2d other)
@@ -76,6 +101,13 @@ namespace nc
       x -= other.x;
       y -= other.y;
       return *this;
+    }
+
+    f32 distance(vertex_2d other)
+    {
+      f32 difX = x - other.x;
+      f32 difY = y - other.y;
+      return sqrt(difX * difX + difY * difY);
     }
   };
 
@@ -159,6 +191,31 @@ namespace nc
       init_gl();
     }
 
+    f32 get_distance(vertex_2d point)
+    {
+      f32 difX = start->get_pos().x - start->get_pos().x;
+      f32 difY = start->get_pos().y - start->get_pos().y;
+
+      const f32 l2 = difX * difX + difY * difY;
+
+      if (l2 == 0.0f)
+      {
+        return start->get_distance(point); // yes, this is manhattan
+      }
+
+      vertex_2d v = vertex_2d(start->get_pos().x, start->get_pos().y);
+      vertex_2d w = vertex_2d(end->get_pos().x, end->get_pos().y);
+
+      vertex_2d p_v = point - v;
+      vertex_2d w_v = w - v;
+
+      f32 t = std::max(0.0f, std::min(1.0f, (p_v.dot(w_v) / l2)));
+
+      vertex_2d projection = v + w_v * t;
+
+      return point.distance(projection);
+      
+    }
 
     void move(f32 x, f32 y);
     void update();
