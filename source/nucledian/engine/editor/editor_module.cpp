@@ -236,23 +236,6 @@ namespace nc
 
   void EditorSystem::get_closest_point()
   {
-    /*f32 minDist = 666;
-    int candidate = -1;
-
-    for (size_t i = 0; i < mapPoints.size(); i++)
-    {
-      f32 dist = mapPoints[i].get()->get_distance(curGridMousePos);
-      if (dist > 0.125)
-      {
-        continue;
-      }
-
-      if (dist < minDist)
-      {
-        minDist = dist;
-        candidate = i;
-      }
-    }*/
 
     closest = map.get_closest_point_index(curGridMousePos);
   }
@@ -268,42 +251,12 @@ namespace nc
         map.remove_point(closest);
       }
     }
-
-    /*SDL_Event event;
-    while (SDL_PollEvent(&event)) {
-      if (event.type == SDL_KEYDOWN) {
-        if (event.key.keysym.sym == SDLK_DELETE) {
-          if (closest > -1) {
-            mapPoints[closest].get()->cleanup();
-            mapPoints.erase(mapPoints.begin() + closest);
-          }
-        }
-      }
-    }*/
   }
 
   //================================================================================
 
   void EditorSystem::select_point(vertex_2d mousePos)
   {
-    /*f32 minDist = 666;
-    int candidate = -1;
-
-    for (size_t i = 0; i < mapPoints.size(); i++)
-    {
-      f32 dist = mapPoints[i].get()->get_distance(mousePos);
-      if (dist > 0.1)
-      {
-        continue;
-      }
-
-      if (dist < minDist)
-      {
-        minDist = dist;
-        candidate = i;
-      }
-    }*/
-
     selected = map.get_closest_point_index(mousePos);
   }
 
