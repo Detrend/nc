@@ -160,10 +160,9 @@ namespace nc
     }
 
 
-    //void move(f32 x, f32 y);
-    //void move_to(f32 x, f32 y);
-    //void update();
-    //void draw();
+    void move(f32 x, f32 y);
+    void update();
+    void draw();
     void cleanup();
     ~WallDef();  
 

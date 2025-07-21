@@ -58,11 +58,15 @@ void nc::MapPoint::draw()
   glBindVertexArray(0);
 }
 
+// ======================================================================================
+
 void nc::MapPoint::cleanup()
 {
   glDeleteBuffers(1, &vertexBuffer);
   glDeleteVertexArrays(1, &vertexArrayBuffer);
 }
+
+// ======================================================================================
 
 nc::vertex_3d nc::MapPoint::get_pos()
 {
@@ -114,10 +118,14 @@ void nc::Map::draw()
   }
 }
 
+// ======================================================================================
+
 void nc::Map::add_point(vertex_2d position)
 {
   mapPoints.push_back(std::make_shared<MapPoint>(MapPoint(position)));
 }
+
+// ======================================================================================
 
 void nc::Map::remove_point(size_t index)
 {
@@ -125,10 +133,14 @@ void nc::Map::remove_point(size_t index)
   mapPoints.erase(mapPoints.begin() + index);
 }
 
+// ======================================================================================
+
 void nc::Map::move_vertex(vertex_2d positionTo, size_t index)
 {
   mapPoints[index].get()->move_to(positionTo.x, positionTo.y);
 }
+
+// ======================================================================================
 
 size_t nc::Map::get_closest_point_index(vertex_2d position)
 {
@@ -153,16 +165,80 @@ size_t nc::Map::get_closest_point_index(vertex_2d position)
   return candidate;
 }
 
+// ======================================================================================
+
+void nc::WallDef::move(f32 x, f32 y)
+{
+  start->move(x, y);
+  end->move(x, y);
+
+  position[0] = start->get_pos();
+  position[1] = vertex_3d(1, 1, 0);
+  position[2] = end->get_pos();
+  position[3] = vertex_3d(1, 1, 0);
+
+  glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 12, &position, GL_DYNAMIC_DRAW);
+
+  //bind to VAO
+  glBindVertexArray(vertexArrayBuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+  glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), &position, GL_DYNAMIC_DRAW);
+
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindVertexArray(0);
+}
+
+// ======================================================================================
+
+void nc::WallDef::update()
+{
+  position[0] = start->get_pos();
+  position[1] = vertex_3d(1, 1, 0);
+  position[2] = end->get_pos();
+  position[3] = vertex_3d(1, 1, 0);
+
+  glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 12, &position, GL_DYNAMIC_DRAW);
+
+  //bind to VAO
+  glBindVertexArray(vertexArrayBuffer);
+  glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+  glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), &position, GL_DYNAMIC_DRAW);
+
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindVertexArray(0);
+}
+
+// ======================================================================================
+
+void nc::WallDef::draw()
+{
+  glBindVertexArray(vertexArrayBuffer);
+  glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
+  glDrawArrays(GL_LINES, 0, 1);
+  glDisableVertexAttribArray(0);
+  glDisableVertexAttribArray(1);
+  glBindVertexArray(0);
+}
+
+// ======================================================================================
+
 void nc::WallDef::cleanup()
 {
   glDeleteBuffers(1, &vertexBuffer);
   glDeleteVertexArrays(1, &vertexArrayBuffer);
 }
 
+// ======================================================================================
+
 nc::WallDef::~WallDef()
 {
 
 }
+
+// ======================================================================================
 
 void nc::WallDef::init_gl()
 {
