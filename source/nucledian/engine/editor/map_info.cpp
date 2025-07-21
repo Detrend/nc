@@ -116,6 +116,11 @@ void nc::Map::draw()
   {
     mapPoints[i].get()->draw();
   }
+
+  for (size_t i = 0; i < walls.size(); i++)
+  {
+    walls[i].get()->draw();
+  }
 }
 
 // ======================================================================================
@@ -133,9 +138,9 @@ void nc::Map::remove_point(size_t index)
 
   for (size_t i = 0; i < walls.size(); i++)
   {
-    if (walls[i].start == point || walls[i].end == point)
+    if (walls[i].get()->start == point || walls[i].get()->end == point)
     {
-      walls[i].cleanup();
+      walls[i].get()->cleanup();
       walls.erase(walls.begin() + i);
       i--;
     }
@@ -143,6 +148,12 @@ void nc::Map::remove_point(size_t index)
 
   mapPoints[index].get()->cleanup();
   mapPoints.erase(mapPoints.begin() + index);
+}
+
+void nc::Map::remove_wall(size_t index)
+{
+  walls[index].get()->cleanup();
+  walls.erase(walls.begin() + index);
 }
 
 // ======================================================================================
@@ -162,6 +173,29 @@ size_t nc::Map::get_closest_point_index(vertex_2d position)
   for (size_t i = 0; i < mapPoints.size(); i++)
   {
     f32 dist = mapPoints[i].get()->get_distance(position);
+    if (dist > 0.125)
+    {
+      continue;
+    }
+
+    if (dist < minDist)
+    {
+      minDist = dist;
+      candidate = i;
+    }
+  }
+
+  return candidate;
+}
+
+size_t nc::Map::get_closest_wall_index(vertex_2d position)
+{
+  f32 minDist = 666;
+  int candidate = -1;
+
+  for (size_t i = 0; i < walls.size(); i++)
+  {
+    f32 dist = walls[i].get()->get_distance(position);
     if (dist > 0.125)
     {
       continue;
