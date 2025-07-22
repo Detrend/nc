@@ -77,7 +77,7 @@ nc::vertex_3d nc::MapPoint::get_pos()
 
 nc::MapPoint::~MapPoint()
 {
-  
+
 }
 
 //============================================================
@@ -167,6 +167,11 @@ void nc::Map::remove_wall(size_t index)
 void nc::Map::move_vertex(vertex_2d positionTo, size_t index)
 {
   mapPoints[index].get()->move_to(positionTo.x, positionTo.y);
+
+  for (size_t i = 0; i < walls.size(); i++)
+  {
+    walls[i].get()->update();
+  }
 }
 
 // ======================================================================================
@@ -230,12 +235,12 @@ void nc::WallDef::move(f32 x, f32 y)
   position[3] = vertex_3d(1, 0, 0);
 
   glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6, &position, GL_DYNAMIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 12, &position, GL_DYNAMIC_DRAW);
 
   //bind to VAO
   glBindVertexArray(vertexArrayBuffer);
   glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-  glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), &position, GL_DYNAMIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), &position, GL_DYNAMIC_DRAW);
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
@@ -251,12 +256,12 @@ void nc::WallDef::update()
   position[3] = vertex_3d(1, 0, 0);
 
   glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6, &position, GL_DYNAMIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 12, &position, GL_DYNAMIC_DRAW);
 
   //bind to VAO
   glBindVertexArray(vertexArrayBuffer);
   glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-  glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), &position, GL_DYNAMIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), &position, GL_DYNAMIC_DRAW);
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
   glBindVertexArray(0);
@@ -269,7 +274,7 @@ void nc::WallDef::draw()
   glBindVertexArray(vertexArrayBuffer);
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
-  glDrawArrays(GL_LINES, 0, 4);
+  glDrawArrays(GL_LINES, 0, 2);
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
   glBindVertexArray(0);
