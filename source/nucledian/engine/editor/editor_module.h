@@ -133,6 +133,9 @@ namespace nc
 
     int selected = -1;
     int closest = -1;
+
+    bool drawingLine = false;
+    std::shared_ptr<MapPoint> firstPoint;
   };
 
   

@@ -178,15 +178,15 @@ namespace nc
   class WallDef
   {
   public:
-    WallDef(MapPoint* start, MapPoint* end)
+    WallDef(std::shared_ptr<MapPoint> start, std::shared_ptr<MapPoint> end)
     {
       this->start = start;
       this->end = end;
 
-      position[0] = start->get_pos();
-      position[1] = vertex_3d(1, 1, 0);
-      position[2] = end->get_pos();
-      position[3] = vertex_3d(1, 1, 0);
+      position[0] = start.get()->get_pos();
+      position[1] = vertex_3d(1, 0, 0);
+      position[2] = end.get()->get_pos();
+      position[3] = vertex_3d(1, 0, 0);
 
       init_gl();
     }
@@ -223,8 +223,8 @@ namespace nc
     void cleanup();
     ~WallDef();  
 
-    MapPoint* start;
-    MapPoint* end;
+    std::shared_ptr<MapPoint> start;
+    std::shared_ptr<MapPoint> end;
 
   private:
     
@@ -251,7 +251,8 @@ namespace nc
 
   public:
     void draw();
-    void add_point(vertex_2d position);
+    std::shared_ptr<MapPoint> add_point(vertex_2d position);
+    void add_line(std::shared_ptr<MapPoint> start, std::shared_ptr<MapPoint> end);
     void remove_point(size_t index);
     void remove_wall(size_t index);
     void move_vertex(vertex_2d positionTo, size_t index);
