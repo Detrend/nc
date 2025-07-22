@@ -125,6 +125,7 @@
     <ClCompile Include="..\source\nucledian\engine\map\physics.cpp" />
     <ClCompile Include="..\source\nucledian\game\projectile.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\texture.cpp" />
+    <ClCompile Include="..\source\nucledian\game\weapons.cpp" />
     <ClCompile Include="..\source\nucledian\logging.cpp" />
     <ClCompile Include="..\source\nucledian\main.cpp" />
     <ClCompile Include="..\source\nucledian\transform.cpp" />
@@ -250,6 +251,7 @@
     <ClInclude Include="..\source\nucledian\engine\map\physics.h" />
     <ClInclude Include="..\source\nucledian\engine\player\level_types.h" />
     <ClInclude Include="..\source\nucledian\game\projectile.h" />
+    <ClInclude Include="..\source\nucledian\game\weapons_types.h" />
     <ClInclude Include="..\source\nucledian\logging.h" />
     <ClInclude Include="..\source\nucledian\metaprogramming.h" />
     <ClInclude Include="..\source\nucledian\transform.h" />
@@ -290,6 +292,7 @@
     <ClInclude Include="..\source\nucledian\engine\entity\entity_system.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\entity.h" />
     <ClInclude Include="..\source\nucledian\engine\player\save_types.h" />
+    <ClInclude Include="..\source\nucledian\game\weapons.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />

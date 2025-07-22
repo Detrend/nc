@@ -10,6 +10,8 @@
 #include <engine/core/engine.h>
 #include <engine/graphics/graphics_system.h>
 
+#include <game/weapons.h>
+
 #include <math/lingebra.h>
 
 namespace nc
@@ -22,11 +24,17 @@ EntityType Projectile::get_type_static()
 }
 
 //==============================================================================
-Projectile::Projectile(vec3 pos, vec3 dir, f32 size, bool player_projectile)
-: Entity(pos, size, size)
-, m_player_authored(player_projectile)
-, m_velocity(dir)
+Projectile::Projectile
+(
+  vec3 pos, vec3 dir, bool player_projectile, WeaponType type
+)
+: Entity            (pos, PROJECTILE_STATS[type].radius, PROJECTILE_STATS[type].radius * 2.0f)
+, m_player_authored (player_projectile)
+, m_velocity        (normalize(dir) * PROJECTILE_STATS[type].speed)
+, m_type            (type)
 {
+  m_hit_cnt_remaining = PROJECTILE_STATS[type].bounce_cnt + 1;
+
   m_appear = Appearance
   {
     .texture = TextureManager::instance().get_test_plasma_texture(),

@@ -18,6 +18,7 @@
 #include <engine/graphics/gizmo.h>
 
 #include <game/projectile.h>
+#include <game/weapons.h>
 
 #include <common.h>
 #include <cvars.h>
@@ -795,8 +796,8 @@ void ThingSystem::check_player_attack
     (
       player->get_position() + UP_DIR * player->get_height() + dir * 0.3f,
       dir * 10.0f,
-      0.15f,
-      true
+      true,
+      WeaponTypes::plasma_rifle
     );
   }
 }

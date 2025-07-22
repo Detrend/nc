@@ -42,6 +42,7 @@
     <ClCompile Include="..\source\nucledian\game\projectile.cpp" />
     <ClCompile Include="..\source\libs\stb_image\stb_image.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\texture.cpp" />
+    <ClCompile Include="..\source\nucledian\game\weapons.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -136,6 +137,8 @@
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\texture.h" />
     <ClInclude Include="..\source\libs\json\json.hpp" />
     <ClInclude Include="..\source\libs\json\json_fwd.hpp" />
+    <ClInclude Include="..\source\nucledian\game\weapons.h" />
+    <ClInclude Include="..\source\nucledian\game\weapons_types.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />

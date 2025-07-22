@@ -37,52 +37,90 @@ namespace nc
 
 #ifndef NC_BAKED_CVARS
 
-#define NC_REGISTER_CVAR(_type, _name, _default_value, _desc)    \
-static inline _type _name{_default_value};                       \
-static inline bool NC_TOKENJOIN(_cvar_definition, _name) = []()  \
-{                                                                \
-  nc_assert(!get_cvar_list().contains(#_name));                  \
-  get_cvar_list().insert({#_name, CVar{&_name, _desc}});         \
-  return true;                                                   \
-}();                                                             \
+// Defined as empty if cvars are not constexpr
+#define NC_CVARS_CONSTEXPR
 
+// Default cvar registration inside some struct/class
+#define NC_REGISTER_CVAR(_type, _name, _default_value, _desc)               \
+static inline _type _name{_default_value};                                  \
+static inline bool NC_TOKENJOIN(_cvar_definition, _name) = []()             \
+{                                                                           \
+  nc_assert(!::nc::CVars::get_cvar_list().contains(#_name));                \
+  ::nc::CVars::get_cvar_list().insert({#_name, ::nc::CVar{&_name, _desc}}); \
+  return true;                                                              \
+}();
+
+// External cvar registration, has to be done inside of a .cpp
+#define NC_REGISTER_CVAR_EXTERNAL_CPP(_name, _desc) \
+NC_REGISTER_CVAR_EXTERNAL_CPP_IMPL(_name, _desc, __LINE__)
+
+// Ranged cvar registration, same as normal cvar registration but also adds a min/max range
 #define NC_REGISTER_CVAR_RANGED(_type, _name, _default_value, _range_min, _range_max, _desc) \
 static inline bool NC_TOKENJOIN(_cvar_range_definition, _name) = []()                        \
 {                                                                                            \
   nc_assert(_range_min <= _range_max);                                                       \
-  get_cvar_ranges().insert({#_name, CVarRange{_range_min, _range_max}});                     \
+  ::nc::CVars::get_cvar_ranges().insert({#_name, ::nc::CVarRange{_range_min, _range_max}});  \
   return true;                                                                               \
 }();                                                                                         \
 NC_REGISTER_CVAR(_type, _name, _default_value, _desc)
 
+// Ranged external cvar registration
+#define NC_REGISTER_CVAR_EXTERNAL_CPP_RANGED(_name, _range_min, _range_max, _desc) \
+NC_REGISTER_CVAR_EXTERNAL_CPP_RANGED(_name, _range_min, _range_max, _desc, __LINE__)
+
+#define NC_REGISTER_CVAR_EXTERNAL_CPP_IMPL(_name, _desc, _line)             \
+static inline bool NC_TOKENJOIN(_cvar_definition, _line) = []()          \
+{                                                                           \
+  nc_assert(!::nc::CVars::get_cvar_list().contains(#_name));                \
+  ::nc::CVars::get_cvar_list().insert({#_name, ::nc::CVar{&_name, _desc}}); \
+  return true;                                                              \
+}();
+
+#define NC_REGISTER_CVAR_EXTERNAL_CPP_RANGED_IMPL(_name, _range_min, _range_max, _desc, _line) \
+static inline bool NC_TOKENJOIN(_cvar_range_definition, _line) = []()                          \
+{                                                                                              \
+  nc_assert(_range_min <= _range_max);                                                         \
+  ::nc::CVars::get_cvar_ranges().insert({#_name, ::nc::CVarRange{_range_min, _range_max}});    \
+  return true;                                                                                 \
+}();                                                                                           \
+NC_REGISTER_CVAR_EXTERNAL_CPP_IMPL(_name, _desc, _line)
+
 #else
+
+#define NC_CVARS_CONSTEXPR constexpr
 
 #define NC_REGISTER_CVAR(_type, _name, _default_value, _desc) \
 static constexpr _type _name{_default_value};
 
+#define NC_REGISTER_CVAR_EXTERNAL_CPP(...)
+#define NC_REGISTER_CVAR_EXTERNAL_CPP_IMPL(...)
+
 #define NC_REGISTER_CVAR_RANGED(_type, _name, _default_value, _range_min, _range_max, _desc) \
 NC_REGISTER_CVAR(_type, _name, _default_value, _desc)
 
+NC_REGISTER_CVAR_EXTERNAL_CPP_RANGED(...)
+NC_REGISTER_CVAR_EXTERNAL_CPP_RANGED_IMPL(...)
+
 #endif
 
+struct CVar
+{
+  using VariantPtr = std::variant<s32*, f32*, bool*, std::string*>;
+  VariantPtr ptr;
+  cstr       desc;
+  cstr       category;
+};
+using CVarList = std::map<std::string, CVar>;
+
+struct CVarRange
+{
+  f32 min = 0.0f;
+  f32 max = 0.0f;
+};
+using CVarRanges = std::map<std::string, CVarRange>;
 
 struct CVars
 {
-  struct CVar
-  {
-    using VariantPtr = std::variant<s32*, f32*, bool*, std::string*>;
-    VariantPtr ptr;
-    cstr       desc;
-  };
-  using CVarList = std::map<std::string, CVar>;
-
-  struct CVarRange
-  {
-    f32 min = 0.0f;
-    f32 max = 0.0f;
-  };
-  using CVarRanges = std::map<std::string, CVarRange>;
-
   static constexpr CVarRange DEFAULT_RANGE = CVarRange{-100.0f, 100.0f};
 
   static CVars&      get();

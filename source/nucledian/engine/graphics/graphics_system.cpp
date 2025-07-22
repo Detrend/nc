@@ -820,7 +820,7 @@ void GraphicsSystem::render_map_top_down(const VisibilityTree& visible_sectors)
 
 //==============================================================================
 #ifdef NC_DEBUG_DRAW
-static void draw_cvar_type_and_input(f32* flt, const CVars::CVarRange& range)
+static void draw_cvar_type_and_input(f32* flt, const CVarRange& range)
 {
   ImGui::TableNextColumn();
   ImGui::Text("f32");
@@ -832,7 +832,7 @@ static void draw_cvar_type_and_input(f32* flt, const CVars::CVarRange& range)
 }
 
 //==============================================================================
-static void draw_cvar_type_and_input(s32* num, const CVars::CVarRange& rn)
+static void draw_cvar_type_and_input(s32* num, const CVarRange& rn)
 {
   ImGui::TableNextColumn();
   ImGui::Text("s32");
@@ -844,7 +844,7 @@ static void draw_cvar_type_and_input(s32* num, const CVars::CVarRange& rn)
 }
 
 //==============================================================================
-static void draw_cvar_type_and_input(std::string* str, const CVars::CVarRange&)
+static void draw_cvar_type_and_input(std::string* str, const CVarRange&)
 {
   ImGui::TableNextColumn();
   ImGui::Text("string");
@@ -856,7 +856,7 @@ static void draw_cvar_type_and_input(std::string* str, const CVars::CVarRange&)
 }
 
 //==============================================================================
-static void draw_cvar_type_and_input(bool* bl, const CVars::CVarRange&)
+static void draw_cvar_type_and_input(bool* bl, const CVarRange&)
 {
   ImGui::TableNextColumn();
   ImGui::Text("bool");
@@ -868,7 +868,7 @@ static void draw_cvar_type_and_input(bool* bl, const CVars::CVarRange&)
 }
 
 //==============================================================================
-static void draw_cvar_row(const std::string& name, const CVars::CVar& cvar)
+static void draw_cvar_row(const std::string& name, const CVar& cvar)
 {
 #ifdef NC_COMPILER_CLANG
 #pragma clang diagnostic push
