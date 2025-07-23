@@ -63,61 +63,61 @@ namespace nc
 
   //================================================================================
 
-  std::vector<vec3> Enemy::get_path(const MapSectors& map, vec3 start_pos, vec3 end_pos)
-  {
-    std::vector<vec3> path;
-    path.push_back(end_pos);
+  //std::vector<vec3> Enemy::get_path(const MapSectors& map, vec3 start_pos, vec3 end_pos)
+  //{
+  //  std::vector<vec3> path;
+  //  path.push_back(end_pos);
 
-    struct PrevPoint
-    {
-      SectorID prev_sector; // previous sector
-      WallID wall_index; // portal we used to get to this sector
-      vec3 point; // way point
-    };
+  //  struct PrevPoint
+  //  {
+  //    SectorID prev_sector; // previous sector
+  //    WallID wall_index; // portal we used to get to this sector
+  //    vec3 point; // way point
+  //  };
 
-    SectorID startID = map.get_sector_from_point(start_pos.xz);
-    SectorID endID = map.get_sector_from_point(end_pos.xz);
-    SectorID curID = startID;
+  //  SectorID startID = map.get_sector_from_point(start_pos.xz);
+  //  SectorID endID = map.get_sector_from_point(end_pos.xz);
+  //  SectorID curID = startID;
 
-    std::vector<SectorID> fringe;
-    std::map<SectorID, PrevPoint> visited;
+  //  std::vector<SectorID> fringe;
+  //  std::map<SectorID, PrevPoint> visited;
 
-    visited.insert({ startID, {
-      INVALID_SECTOR_ID,
-      INVALID_WALL_ID,
-      vec3(0, 0, 0)
-      } });
+  //  visited.insert({ startID, {
+  //    INVALID_SECTOR_ID,
+  //    INVALID_WALL_ID,
+  //    vec3(0, 0, 0)
+  //    } });
 
-    while (fringe.size())
-    {
-      // get sector from queue
-      curID = fringe.front();
-      fringe.erase(fringe.begin());
+  //  while (fringe.size())
+  //  {
+  //    // get sector from queue
+  //    curID = fringe.front();
+  //    fringe.erase(fringe.begin());
 
-      // found path, end search
-      if (curID == endID)
-      {
-        break;
-      }
-    }
+  //    // found path, end search
+  //    if (curID == endID)
+  //    {
+  //      break;
+  //    }
+  //  }
 
-    PrevPoint prev_point;
+  //  PrevPoint prev_point;
 
-    // reconstruct the path in reverse order
-    while (curID != startID)
-    {
-      prev_point = visited[curID];
+  //  // reconstruct the path in reverse order
+  //  while (curID != startID)
+  //  {
+  //    prev_point = visited[curID];
 
-      path.push_back(prev_point.point);
+  //    path.push_back(prev_point.point);
 
-      curID = prev_point.prev_sector;
-    }
+  //    curID = prev_point.prev_sector;
+  //  }
 
-    // reverse the path
-    std::reverse(path.begin(), path.end());
+  //  // reverse the path
+  //  std::reverse(path.begin(), path.end());
 
-    return path;
-  }
+  //  return path;
+  //}
 
   //==============================================================================
 

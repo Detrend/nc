@@ -21,7 +21,7 @@ namespace nc
 {
   //==========================================================================
   Player::Player(vec3 position)
-    : Base(position, 0.25f, viewHeight, true)
+    : Base(position, 0.25f, view_height, true)
   {
     currentHealth = maxHealth;
     camera.update_transform(position, angle_yaw, angle_pitch, view_height);

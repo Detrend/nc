@@ -688,7 +688,7 @@ mat4 MapSectors::calc_portal_to_portal_projection(
               SectorID prev_sector = visited[curID].prev_sector;
               if (prev_wall != INVALID_WALL_ID && walls[prev_wall].get_portal_type() == PortalType::non_euclidean)
               {
-                mat4 transformation = calculate_portal_to_portal_projection(prev_sector, prev_wall);
+                mat4 transformation = calc_portal_to_portal_projection(prev_sector, prev_wall);
                 prev_post = (transformation * vec4{ prev_post, 1.0f }).xyz();
               }
               // calculate closest point on p1_to_p2 line

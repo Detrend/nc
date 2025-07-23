@@ -1002,7 +1002,7 @@ const
 
   vec3 prev_position = position;
   vec3 prev_velocity = velocity;
-  vec3 prev_forward = forward;
+  vec3 prev_forward = *forward;
 
   if (should_transform)
   {

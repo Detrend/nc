@@ -29,7 +29,7 @@ namespace nc
     void update();
 
     // Returns points that create a path
-    virtual std::vector<vec3> get_path(const MapSectors& map, vec3 start_pos, vec3 endPos);
+    // virtual std::vector<vec3> get_path(const MapSectors& map, vec3 start_pos, vec3 endPos);
 
     void calculate_wish_velocity(f32 delta_seconds);
     void apply_velocity();
