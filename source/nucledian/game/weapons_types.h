@@ -7,6 +7,9 @@
 
 namespace nc
 {
-using WeaponType = u8;
-using AmmoType   = u8;
+using WeaponType  = u8;
+using WeaponFlags = u32;
+using AmmoType    = u8;
+
+constexpr WeaponType INVALID_WEAPON_TYPE = static_cast<WeaponType>(-1);
 };

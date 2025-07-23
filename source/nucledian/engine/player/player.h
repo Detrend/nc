@@ -8,6 +8,8 @@
 #include <engine/entity/entity.h>
 #include <engine/graphics/debug_camera.h>
 
+#include <game/weapons_types.h>
+
 #include <math/vector.h>
 
 #include <engine/entity/entity_types.h>
@@ -27,6 +29,7 @@ public:
   //PlayerSpecificInputs get_inputs();
   //void load_inputs(PlayerSpecificInputs inputs);
   void get_wish_velocity(GameInputs input, f32 delta_seconds);
+  void handle_inputs(GameInputs input, GameInputs prev_input);
   bool get_attack_state(GameInputs curInput, GameInputs prevInput, f32 delta_seconds);
  // void check_collision(const MapObject& collider, f32 delta_seconds);
   void apply_velocity(f32 delta_seconds);
@@ -38,6 +41,9 @@ public:
   vec3 get_look_direction();
   f32 get_view_height();
   vec3& get_velocity();
+
+  WeaponType get_equipped_weapon()         const;
+  bool       has_weapon(WeaponType weapon) const;
 
 private:
   void apply_acceleration(const nc::vec3& movement_direction, f32 delta_seconds);
@@ -61,6 +67,10 @@ private:
 
   int maxHealth = 100;
   int currentHealth;
+
+  // Bit flags for the weapons owned
+  WeaponFlags owned_weapons  = 0;
+  WeaponType  current_weapon = 0;
 
   bool alive = true;
 

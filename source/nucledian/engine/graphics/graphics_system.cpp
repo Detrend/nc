@@ -27,6 +27,7 @@
 #include <engine/player/level_types.h>
 
 #include <game/projectile.h>
+#include <game/weapons.h>
 
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
@@ -462,6 +463,24 @@ void GraphicsSystem::update(f32 delta_seconds)
 }
 
 //==============================================================================
+static void grab_render_gun_props(RenderGunProperties& props)
+{
+  ThingSystem& game = ThingSystem::get();
+  const Player* player = game.get_player();
+
+  if (player)
+  {
+    props.weapon = player->get_equipped_weapon();
+    props.sway   = VEC2_ZERO;
+  }
+  else
+  {
+    props.weapon = INVALID_WEAPON_TYPE;
+    props.sway   = VEC2_ZERO;
+  }
+}
+
+//==============================================================================
 void GraphicsSystem::render()
 {
   int width = 0, height = 0;
@@ -505,11 +524,14 @@ void GraphicsSystem::render()
         .vis_tree = visible_sectors,
       };
 
+      RenderGunProperties gun_props;
+      grab_render_gun_props(gun_props);
+
       GizmoManager::instance().draw_gizmos(camera_data);
       render_sectors(camera_data);
       render_entities(camera_data);
       render_portals(camera_data);
-      render_gun(camera_data);
+      render_gun(camera_data, gun_props);
     }
   }
 
@@ -1235,9 +1257,34 @@ void GraphicsSystem::render_portals(const CameraData& camera_data) const
 }
 
 //==============================================================================
-void GraphicsSystem::render_gun(const CameraData&) const
+void GraphicsSystem::render_gun(const CameraData&, const RenderGunProperties& props) const
 {
-  const TextureHandle& texture = TextureManager::instance().get_test_gun_texture();
+  // MR says: this is a quick way to determine a sprite of which gun we should hold.
+  // This connects the game-specific weapon system with the rendering, which might
+  // be ok for now, but maybe we should get rid of it later?
+  TextureHandle texture = TextureHandle::invalid();
+  switch (props.weapon)
+  {
+    case WeaponTypes::plasma_rifle:
+    {
+      texture = TextureManager::instance().get_test_gun2_texture();
+      break;
+    }
+
+    case WeaponTypes::nail_gun:
+    {
+      texture = TextureManager::instance().get_test_gun_texture();
+      break;
+    }
+  }
+
+  // Is this the only way how to check if a texture handle is not invalid?
+  // MeshHandle has the "is_valid" method, but I did not want to add a new
+  // function so I am using this for now.
+  if (texture.get_lifetime() == ResLifetime::None)
+  {
+    return;
+  }
 
   GLint viewport[4];
   glGetIntegerv(GL_VIEWPORT, viewport);

@@ -569,6 +569,9 @@ void ThingSystem::on_event(ModuleEvent& event)
       GameInputs curInputs = get_engine().get_module<InputSystem>().get_inputs();
       GameInputs prevInputs = get_engine().get_module<InputSystem>().get_prev_inputs();
 
+      // Handle gun changing
+      this->get_player()->handle_inputs(curInputs, prevInputs);
+
       this->get_player()->get_wish_velocity(curInputs, event.update.dt);
 
       entity_system.for_each<Enemy>([&](Enemy& enemy)
@@ -783,21 +786,20 @@ void ThingSystem::check_player_attack
   const GameInputs&  prev_inputs,
   const ModuleEvent& event)
 {
-  auto& entity_system = this->get_entities();
-  auto* player        = this->get_player();
-  bool  didAttack     = player->get_attack_state(curr_inputs, prev_inputs, event.update.dt);
+  EntityRegistry& entity_system = this->get_entities();
+
+  auto* player    = this->get_player();
+  bool  didAttack = player->get_attack_state(curr_inputs, prev_inputs, event.update.dt);
 
   if (didAttack)
   {
-    auto dir = player->get_look_direction();
+    vec3 dir  = player->get_look_direction();
+    vec3 from = player->get_position() + UP_DIR * player->get_height() + dir * 0.3f;
 
-    // spawn projectile
+    // Spawn projectile
     entity_system.create_entity<Projectile>
     (
-      player->get_position() + UP_DIR * player->get_height() + dir * 0.3f,
-      dir * 10.0f,
-      true,
-      WeaponTypes::plasma_rifle
+      from, dir, true, player->get_equipped_weapon()
     );
   }
 }
