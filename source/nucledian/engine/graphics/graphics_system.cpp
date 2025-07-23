@@ -918,21 +918,58 @@ static void draw_cvar_bar()
 {
   auto& cvar_list = CVars::get_cvar_list();
 
-  if (ImGui::BeginTable("Cvar List", 3, ImGuiTableFlags_Borders))
-  {
-    ImGui::TableSetupColumn("Name");
-    ImGui::TableSetupColumn("Type");
-    ImGui::TableSetupColumn("Value");
-    ImGui::TableHeadersRow();
+  // First build up the categories
+  using CVarPair    = std::pair<std::string, CVar>;
+  using CategoryMap = std::map<std::string, std::vector<CVarPair>>;
 
-    for (const auto& [name, cvar] : cvar_list)
+  CategoryMap cvar_categories;
+  for (const auto& [name, cvar] : cvar_list)
+  {
+    // find the first "." in the name and decide it's category based on that
+    if (u64 idx = name.find('.'); idx != std::string::npos && idx >= 1)
     {
-      ImGui::TableNextRow();
-      draw_cvar_row(name, cvar);
+      std::string category_name = std::string{name.begin(), name.begin() + idx - 1};
+      std::string stripped_name = std::string{name.begin() + idx + 1, name.end()};
+      cvar_categories[category_name].push_back({stripped_name, cvar});
+    }
+    else
+    {
+      // "default" category for cvars without one
+      cvar_categories["default"].push_back({name, cvar});
+    }
+  }
+
+  // And now render all the categories as items in the list..
+  // Only one of them will actually render all of the cvars inside
+  if (ImGui::BeginTabBar("CVar Types"))
+  {
+    for (const auto& [category, list] : cvar_categories)
+    {
+      if (ImGui::BeginTabItem(category.c_str()))
+      {
+        if (ImGui::BeginTable("Cvar List", 3, ImGuiTableFlags_Borders))
+        {
+          ImGui::TableSetupColumn("Name");
+          ImGui::TableSetupColumn("Type");
+          ImGui::TableSetupColumn("Value");
+          ImGui::TableHeadersRow();
+
+          for (const auto& [name, cvar] : list)
+          {
+            ImGui::TableNextRow();
+            draw_cvar_row(name, cvar);
+          }
+
+          ImGui::EndTable();
+        }
+
+        ImGui::EndTabItem();
+      }
     }
 
-    ImGui::EndTable();
+    ImGui::EndTabBar();
   }
+
 }
 
 //==============================================================================
