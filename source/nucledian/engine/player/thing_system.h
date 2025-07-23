@@ -38,6 +38,7 @@ public:
   };
 
   using Enemies       = std::vector<EntityID>;
+  using PickUps       = std::vector<PickUp>;
   using MappingPtr    = std::unique_ptr<SectorMapping>;
   using MapPtr        = std::unique_ptr<MapSectors>;
   using RegistryPtr   = std::unique_ptr<EntityRegistry>;
@@ -105,7 +106,7 @@ private:
   MapPtr         map;
   MappingPtr     mapping;
   Enemies        enemies;
-  // PickUps        pickups;
+  PickUps        pickups;
   RegistryPtr    entities;
   LevelID        level_id           = INVALID_LEVEL_ID;
   LevelID        scheduled_level_id = INVALID_LEVEL_ID;
