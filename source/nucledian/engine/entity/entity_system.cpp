@@ -28,14 +28,7 @@ EntityRegistry::~EntityRegistry()
 void EntityRegistry::destroy_entity(EntityID id)
 {
   nc_assert(id.type < EntityTypes::count);
-
-  Pool& pool = m_Pools[id.type];
-  auto it = pool.find(id.idx);
-  if (it != pool.end())
-  {
-    // destroys the entity
-    pool.erase(it);
-  }
+  m_pending_for_destruction.push_back(id);
 }
 
 //==============================================================================
@@ -45,15 +38,40 @@ const SectorMapping& EntityRegistry::get_mapping()
 }
 
 //==============================================================================
+void EntityRegistry::cleanup()
+{
+  for (auto to_destroy : m_pending_for_destruction)
+  {
+    this->destroy_entity_internal(to_destroy);
+  }
+}
+
+//==============================================================================
 void EntityRegistry::setup_entity(Entity& entity, EntityID id)
 {
-  entity.m_IdAndType = id;
-  entity.m_Mapping   = &m_Mapping;
+  entity.m_id_and_type = id;
+  entity.m_mapping   = &m_Mapping;
 
   m_Mapping.on_entity_create
   (
     id, entity.get_position(), entity.get_radius(), entity.get_height()
   );
+}
+
+//==============================================================================
+void EntityRegistry::destroy_entity_internal(EntityID id)
+{
+  nc_assert(id.type < EntityTypes::count);
+
+  Pool& pool = m_Pools[id.type];
+  auto it = pool.find(id.idx);
+  if (it != pool.end())
+  {
+    m_Mapping.on_entity_destroy(id);
+
+    // destroys the entity
+    pool.erase(it);
+  }
 }
 
 //==============================================================================
@@ -73,6 +91,12 @@ Entity* EntityRegistry::get_entity(EntityID id)
   }
 
   return nullptr;
+}
+
+//==============================================================================
+const Entity* EntityRegistry::get_entity(EntityID id) const
+{
+  return const_cast<EntityRegistry*>(this)->get_entity(id);
 }
 
 }

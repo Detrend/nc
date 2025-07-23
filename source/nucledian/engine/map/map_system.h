@@ -155,6 +155,7 @@ struct MapSectors
   column<SectorData>       sectors;
   column<WallData>         walls;
   column<PortalRenderData> portals_render_data;
+  column<aabb3>            sector_bboxes;
   StatGridAABB2<SectorID>  sector_grid;
 
   // TODO: replace these later once we can do sectors with varying height
@@ -186,7 +187,7 @@ struct MapSectors
   // returned.
   SectorID get_sector_from_point(vec2 point) const;
 
-  mat4 calculate_portal_to_portal_projection(
+  mat4 calc_portal_to_portal_projection(
     SectorID from_sector,
     WallID   from_portal) const;
 
@@ -195,7 +196,8 @@ struct MapSectors
     std::vector<vec3>& vertices_out) const;
 
   std::vector<vec3> get_path(vec3 start_pos, vec3 end_pos, f32 width, f32 height) const;
-  bool is_point_in_sector(vec2 pt, SectorID sector) const;
+  bool is_point_in_sector(vec2 pt, SectorID sector)      const;
+  f32  distance_from_sector_2d(vec2 pt, SectorID sector) const;
 
   bool is_valid_sector_id(SectorID id) const;
   bool is_valid_wall_id(WallID id)     const;

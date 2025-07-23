@@ -25,6 +25,7 @@ namespace EntityTypes
     player = 0,
     enemy,
     pickup,
+    projectile,
     // - //
     count  // <- total number of entity types, do not put any type
            //    after this one
@@ -35,9 +36,10 @@ namespace EntityTypeFlags
 {
   enum evalue : EntityTypeMask
   {
-    player  = 1 << EntityTypes::player,
-    enemy   = 1 << EntityTypes::enemy,
-    pickup  = 1 << EntityTypes::pickup,
+    player     = 1 << EntityTypes::player,
+    enemy      = 1 << EntityTypes::enemy,
+    pickup     = 1 << EntityTypes::pickup,
+    projectile = 1 << EntityTypes::projectile,
   };
 }
 

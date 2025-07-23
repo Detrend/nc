@@ -7,7 +7,7 @@
 #include <engine/map/physics.h>
 
 #include <math/lingebra.h>
-#include <engine/graphics/graphics_system.h>
+#include <engine/graphics/resources/texture.h>
 
 #include <engine/entity/entity_type_definitions.h>
 
@@ -42,13 +42,10 @@ namespace nc
 
   void Enemy::init()
   {
-    auto& gfx = get_engine().get_module<GraphicsSystem>();
-
     appear = Appearance
     {
-      .color = colors::RED,
-      .model = gfx.get_cube_model(),
-      .transform = Transform{VEC3_ZERO, vec3{0.3f, 0.7f, 0.3f}}
+      .texture = TextureManager::instance().get_test_enemy_texture(),
+      .scale = 1.0f,
     };
   }
 
@@ -160,7 +157,7 @@ namespace nc
         [[maybe_unused]] vec3 rayStart = this->get_position() + vec3(0, 0.5f, 0);
         [[maybe_unused]] vec3 rayEnd = target_pos + vec3(0, 0.5f, 0);
 
-        auto wallHit = ThingSystem::get().get_level().raycast3d(rayStart, rayEnd);
+        auto wallHit = ThingSystem::get().get_level().ray_cast_3d(rayStart, rayEnd);
 
         if (wallHit)
         {
@@ -218,7 +215,7 @@ namespace nc
     }
 
     vec3 position = this->get_position();
-    world.move_and_collide(position, velocity, facing, 0.25f, 0.5f, 0.0f, 0);
+    world.move_character(position, velocity, &facing, 1.0f, 0.25f, 0.5f, 0.0f, 0, 0);
     this->set_position(position);
     //g_transform_components[m_entity_index].position() = position;
   }
@@ -267,6 +264,12 @@ namespace nc
   //==============================================================================
 
   const Appearance& Enemy::get_appearance() const
+  {
+    return appear;
+  }
+
+  //==============================================================================
+  Appearance& Enemy::get_appearance()
   {
     return appear;
   }

@@ -71,6 +71,7 @@ private:
   JournalSmart  m_journal;
   EventJournal* m_recorded_journal;
   f32           m_delta_time = 0.0f; // last frame time in seconds
+  u64           m_frame_idx = 0;     // index of a frame, currently only for debug
   bool          m_should_quit : 1 = false;
   bool          m_journal_installed : 1 = false;
   bool          m_journal_active : 1 = false;

@@ -9,7 +9,11 @@
 
 namespace nc
 {
+
 struct SectorMapping;
+struct Appearance;
+struct Physics;
+
 }
 
 namespace nc
@@ -54,16 +58,41 @@ public:
 
   void       set_pos_rad_height(vec3 p, f32 r, f32 h);
 
+  // =============================================
+  //             Components
+  // =============================================
+  Appearance*       get_appearance();
+  const Appearance* get_appearance() const;
+
+  Physics*          get_physics();
+  const Physics*    get_physics() const;
+
+  // =============================================
+  //              Utility
+  // =============================================
+  // Cast the base entity to other type of entity.
+  // Returns Pointer to the other type or nullptr
+  // if the conversion is not possible.
+  template<typename T>
+  T* as()
+  {
+    if (T::get_type_static() == this->get_type())
+    {
+      return static_cast<T*>(this);
+    }
+    return nullptr;
+  }
+
 protected:
   bool  collision;
   f32 GRAVITY = 6.0f;
 
 private: friend class EntityRegistry;
-  SectorMapping* m_Mapping   = nullptr;
-  EntityID       m_IdAndType = INVALID_ENTITY_ID;
-  vec3           m_Position;
-  f32            m_Radius2D;
-  f32            m_Height;
+  SectorMapping* m_mapping     = nullptr;
+  EntityID       m_id_and_type = INVALID_ENTITY_ID;
+  vec3           m_position;
+  f32            m_radius2d;
+  f32            m_height;
 };
 
 }

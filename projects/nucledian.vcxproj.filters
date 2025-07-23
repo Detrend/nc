@@ -39,6 +39,9 @@
     <ClCompile Include="..\source\nucledian\engine\map\physics.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\item.cpp" />
     <ClCompile Include="..\source\nucledian\engine\player\save_types.cpp" />
+    <ClCompile Include="..\source\nucledian\game\projectile.cpp" />
+    <ClCompile Include="..\source\libs\stb_image\stb_image.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\graphics\resources\texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -128,6 +131,11 @@
     <ClInclude Include="..\source\nucledian\engine\player\level_types.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\item.h" />
     <ClInclude Include="..\source\nucledian\engine\player\save_types.h" />
+    <ClInclude Include="..\source\nucledian\game\projectile.h" />
+    <ClInclude Include="..\source\libs\stb_image\stb_image.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\resources\texture.h" />
+    <ClInclude Include="..\source\libs\json\json.hpp" />
+    <ClInclude Include="..\source\libs\json\json_fwd.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
@@ -139,6 +147,8 @@
     <None Include="..\source\nucledian\math\lingebra.inl" />
     <None Include="..\source\nucledian\engine\entity\entity_system.inl" />
     <None Include="..\source\nucledian\engine\entity\entity_tests.inl" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\billboard.frag" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\billboard.vert" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\source\libs\glm\CMakeLists.txt" />

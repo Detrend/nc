@@ -7,21 +7,26 @@
 #include <math/utils.h>
 #include <math/lingebra.h>
 
-#include <engine/graphics/graphics_system.h>
-
 #include <engine/core/engine.h>
 #include <engine/core/engine_module_types.h>
 #include <engine/core/module_event.h>
 
 #include <engine/graphics/gizmo.h>
+#include <engine/graphics/graphics_system.h>
 #include <engine/graphics/resources/res_lifetime.h>
 
-#include <engine/input/input_system.h>
 #include <engine/map/map_system.h>
 #include <engine/map/physics.h>
+
 #include <engine/entity/entity_system.h>
+#include <engine/entity/entity_type_definitions.h>
+#include <engine/entity/sector_mapping.h>
+
+#include <engine/input/input_system.h>
 #include <engine/player/thing_system.h>
 #include <engine/player/level_types.h>
+
+#include <game/projectile.h>
 
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
@@ -39,6 +44,7 @@
 #include <set>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <variant>
 #include <format>
@@ -263,9 +269,8 @@ bool GraphicsSystem::init()
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
-  // create window
-  m_window = SDL_CreateWindow(
-    WINDOW_NAME, WIN_POS, WIN_POS, 800, 600, SDL_WIN_FLAGS);
+  // create window (resolution 16:9)
+  m_window = SDL_CreateWindow(WINDOW_NAME, WIN_POS, WIN_POS, 1024, 576, SDL_WIN_FLAGS);
   if (!m_window)
   {
     [[maybe_unused]] cstr error = SDL_GetError();
@@ -300,12 +305,17 @@ bool GraphicsSystem::init()
   glLineWidth(5.0f);
 
   MeshManager::instance().init();
+  TextureManager::instance().init();
 
   m_solid_material = MaterialHandle(shaders::solid::VERTEX_SOURCE, shaders::solid::FRAGMENT_SOURCE);
-  m_cube_model = Model(MeshManager::instance().get_cube(), m_solid_material);
-
   m_solid_material.use();
   m_solid_material.set_uniform(shaders::solid::PROJECTION, m_default_projection);
+  
+  m_billboard_material = MaterialHandle(shaders::billboard::VERTEX_SOURCE, shaders::billboard::FRAGMENT_SOURCE);
+  m_billboard_material.use();
+  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, m_default_projection);
+
+  m_cube_model = Model(MeshManager::instance().get_cube(), m_solid_material);
 
 #ifdef NC_DEBUG_DRAW
   debug_helpers::g_top_down_material = MaterialHandle
@@ -453,65 +463,6 @@ const mat4 GraphicsSystem::get_default_projection() const
 //==============================================================================
 void GraphicsSystem::update(f32 delta_seconds)
 {
-  // TODO: only temporary for debug camera
-  //m_debug_camera.handle_input(delta_seconds);
-  //if (auto* camera = this->get_camera(); camera && CVars::debug_player_raycasts)
-  //{
-  //  const auto& map = get_engine().get_map();
-
-  //  constexpr f32 RAY_LEN = 10.0f;
-
-  //  const vec3 eye_pos  = camera->get_position();
-  //  const vec3 look_dir = camera->get_forward();
-
-  //  const vec3 ray_start = eye_pos;
-  //  const vec3 ray_end   = eye_pos + look_dir * RAY_LEN;
-
-  //  // first intersect the map
-  //  color4 col = colors::RED;
-
-  //  vec3 out_normal;
-  //  f32  out_coeff = FLT_MAX;
-  //  if (!map.raycast3d(ray_start, ray_end, out_normal, out_coeff))
-  //  {
-  //    out_coeff = FLT_MAX;
-  //  }
-
-  //  // then intersect enemies
-  //  const auto& thing_system = ThingSystem::get();
-  //  for (const auto& enemy : thing_system.get_enemies())
-  //  {
-  //    const f32   width    = enemy.get_width();
-  //    const f32   height   = enemy.get_height() * 2.0f;
-  //    const vec3  position = enemy.get_position();
-
-  //    const aabb3 bbox = aabb3
-  //    {
-  //      position - vec3{width, 0.0f,   width},
-  //      position + vec3{width, height, width}
-  //    };
-
-  //    f32  out;
-  //    vec3 normal;
-  //    if (intersect::ray_aabb3(ray_start, ray_end, bbox, out, normal) && out < out_coeff)
-  //    {
-  //      out_coeff  = out;
-  //      out_normal = normal;
-  //      col        = colors::GREEN;
-  //    }
-
-  //    f32  dummy;
-  //    vec3 dummy_n;
-  //    intersect::ray_aabb3(ray_start, ray_end, bbox, dummy, dummy_n);
-
-  //    if (out_coeff != FLT_MAX)
-  //    {
-  //      const vec3 hit_pt = eye_pos + look_dir * RAY_LEN * out_coeff;
-  //      Gizmo::create_line(0.25f, hit_pt, hit_pt + out_normal, col);
-  //    }
-  //  }
-  //}
-
   GizmoManager::instance().update_ttls(delta_seconds);
 }
 
@@ -539,14 +490,14 @@ void GraphicsSystem::render()
   VisibilityTree visible_sectors;
   query_visibility(visible_sectors);
 
+#ifdef NC_DEBUG_DRAW
   if (CVars::enable_top_down_debug)
   {
     // Top down rendering for easier debugging
-#ifdef NC_DEBUG_DRAW
     render_map_top_down(visible_sectors);
-#endif
   }
   else
+#endif
   {
     const DebugCamera* camera = get_camera();
     if (camera)
@@ -559,7 +510,7 @@ void GraphicsSystem::render()
         .vis_tree = visible_sectors,
       };
 
-      GizmoManager::instance().draw_gizmos();
+      GizmoManager::instance().draw_gizmos(camera_data);
       render_sectors(camera_data);
       render_entities(camera_data);
       render_portals(camera_data);
@@ -838,7 +789,7 @@ void GraphicsSystem::render_map_top_down(const VisibilityTree& visible_sectors)
       colors::WHITE
     );
 
-    if (auto hit = thing.get_level().raycast2d_expanded(start_pt, end_pt, std::max(raycast_expand, 0.0001f)))
+    if (auto hit = thing.get_level().circle_cast_2d(start_pt, end_pt, std::max(raycast_expand, 0.0001f)))
     {
       const vec2 contact_pt = start_pt + (end_pt - raycast_pt1) * hit.coeff;
       const vec2 out_n = hit.normal.xz();
@@ -1193,68 +1144,66 @@ void GraphicsSystem::render_sectors(const CameraData& camera_data) const
 //==============================================================================
 void GraphicsSystem::render_entities(const CameraData& camera_data) const
 {
-  /*
-   * 1. obtain visible_sectors visible_sectors from sector system (TODO)
-   * 2. get RenderComponents from entities within visible_sectors visible_sectors (TODO)
-   * 3. filer visible_sectors entities (TODO)
-   * 4. group by ModelHandle
-   * 5. sort groups by: 1. program, 2. texture, 3. VAO (TODO)
-   * 5. issue render command for each group (TODO)
-   */
+  constexpr f32 billboard_texture_scale = 1.0f / 2048.0f;
 
-  struct ModelGroup
+  const auto& mapping = ThingSystem::get().get_sector_mapping().sectors_to_entities.entities;
+  const EntityRegistry& registry = ThingSystem::get().get_entities();
+
+  std::unordered_map<u32, std::unordered_set<const Entity*>> groups;
+  for (const auto& frustum : camera_data.vis_tree.sectors)
   {
-    Model                model;
-    std::vector<Entity*> entities; // for now, we keep only enemies here
-  };
-
-  std::unordered_map<u64, ModelGroup> model_groups;
-
-  auto& es = ThingSystem::get().get_entities();
-  es.for_each<Enemy>([&](Enemy& enemy)
-  {
-    const Appearance& appearance = enemy.get_appearance();
-
-    // TODO: Use better unique identifier.
-    u64 id = (static_cast<u64>(appearance.model.material.m_shader_program) << 32)
-      + static_cast<u64>(appearance.model.mesh.get_vao());
-
-    model_groups[id].model = appearance.model;
-    model_groups[id].entities.push_back(&enemy);
-  });
-
-  // TODO: sort groups by: 1. program, 2. texture, 3. VAO
-  for (const auto& [_, group] : model_groups)
-  {
-    const auto& [model, entities] = group;
-
-    // TODO: switch program & VAO only when necessary
-    model.material.use();
-    glBindVertexArray(model.mesh.get_vao());
-
-    // TODO: some uniform locations should be shader independent
-    model.material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
-    model.material.set_uniform(shaders::solid::UNLIT, false);
-    model.material.set_uniform(shaders::solid::VIEW, camera_data.view);
-    model.material.set_uniform(shaders::solid::VIEW_POSITION, camera_data.position);
-
-    // TODO: indirect rendering
-    for (auto* entity : entities)
+    for (const auto& entity_id : mapping[frustum.sector])
     {
-      auto* enemy = static_cast<Enemy*>(entity);
-      auto        transform  = enemy->calc_transform();
-      const auto& appearance = enemy->get_appearance();
-
-      const mat4 transform_matrix = transform.get_matrix() * appearance.transform.get_matrix();
-
-      // TODO: should be set only when these changes and probably not here
-      model.material.set_uniform(shaders::solid::COLOR, appearance.color);
-      model.material.set_uniform(shaders::solid::TRANSFORM, transform_matrix);
-
-      glDrawArrays(model.mesh.get_draw_mode(), 0, model.mesh.get_vertex_count());
+      const Entity* entity = registry.get_entity(entity_id);
+      if (const Appearance* appearance = entity->get_appearance())
+      {
+        const u32 id = static_cast<u32>(appearance->texture.get_gl_handle());
+        groups[id].insert(entity);
+      }
     }
   }
 
+  m_billboard_material.use();
+  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, camera_data.projection);
+  m_billboard_material.set_uniform(shaders::billboard::VIEW, camera_data.view);
+
+  const MeshHandle& texturable_quad = MeshManager::instance().get_texturable_quad();
+  glBindVertexArray(texturable_quad.get_vao());
+
+  const mat3 camera_rotation = transpose(mat3(camera_data.view));
+  // Extracting X and Y components from the forward vector.
+  const float yaw = atan2(-camera_rotation[2][0], -camera_rotation[2][2]);
+  const mat4 rotation = eulerAngleY(yaw);
+
+  for (const auto& [_, group] : groups)
+  {
+    const TextureHandle& texture = (*group.begin())->get_appearance()->texture;
+    const vec3 pivot_offset(0.0f, texture.get_height() * billboard_texture_scale / 2.0f, 0.0f);
+
+    glBindTexture(GL_TEXTURE_2D, texture.get_gl_handle());
+
+    for (const auto* entity : group)
+    {
+      nc_assert(entity->get_appearance(), "At this point entity must have appearance.");
+
+      const Appearance& appearance = *entity->get_appearance();
+      const vec3 position = entity->get_position();
+
+      const vec3 scale(
+        texture.get_width() * appearance.scale * billboard_texture_scale,
+        texture.get_height() * appearance.scale * billboard_texture_scale,
+        1.0f
+      );
+      const mat4 transform = translate(mat4(1.0f), position + pivot_offset)
+        * rotation
+        * nc::scale(mat4(1.0f), scale);
+      m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, transform);
+      
+      glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
+    }
+  }
+
+  glBindTexture(GL_TEXTURE_2D, 0);
   glBindVertexArray(0);
 }
 
@@ -1291,22 +1240,31 @@ void GraphicsSystem::render_portals(const CameraData& camera_data) const
 }
 
 //==============================================================================
-void GraphicsSystem::render_gun(const CameraData& camera_data) const
+void GraphicsSystem::render_gun(const CameraData&) const
 {
-  const mat4 transform = inverse(camera_data.view) * m_gun_transform.get_matrix();
+  const TextureHandle& texture = TextureManager::instance().get_test_gun_texture();
 
-  m_gun_model.material.use();
-  m_gun_model.material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
-  m_gun_model.material.set_uniform(shaders::solid::UNLIT, false);
-  m_gun_model.material.set_uniform(shaders::solid::VIEW, camera_data.view);
-  m_gun_model.material.set_uniform(shaders::solid::VIEW_POSITION, camera_data.position);
-  m_gun_model.material.set_uniform(shaders::solid::COLOR, colors::BROWN);
-  m_gun_model.material.set_uniform(shaders::solid::TRANSFORM, transform);
+  GLint viewport[4];
+  glGetIntegerv(GL_VIEWPORT, viewport);
+  const float screen_width = static_cast<float>(viewport[2]);
+  const float screen_height = static_cast<float>(viewport[3]);
 
-  glClear(GL_DEPTH_BUFFER_BIT);
+  const mat4 projection = ortho(0.0f, screen_width, screen_height, 0.0f, -1.0f, 1.0f);
+  const mat4 transform = translate(mat4(1.0f), vec3(screen_width / 2.0f, screen_height / 2.0f, 0.0f))
+     * scale(mat4(1.0f), -vec3(screen_width, screen_height, 1.0f));
 
-  glBindVertexArray(m_gun_model.mesh.get_vao());
-  glDrawArrays(m_gun_model.mesh.get_draw_mode(), 0, m_gun_model.mesh.get_vertex_count());
+  const MeshHandle& texturable_quad = MeshManager::instance().get_texturable_quad();
+  glBindVertexArray(texturable_quad.get_vao());
+
+  m_billboard_material.use();
+  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, projection);
+  m_billboard_material.set_uniform(shaders::billboard::VIEW, mat4(1.0f));
+  m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, transform);
+
+  glBindTexture(GL_TEXTURE_2D, texture.get_gl_handle());
+  glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
+
+  glBindTexture(GL_TEXTURE_2D, 0);
   glBindVertexArray(0);
 }
 
@@ -1338,6 +1296,8 @@ void GraphicsSystem::render_portal_to_color(const CameraData& camera_data, const
   glStencilFunc(GL_LEQUAL, recursion_depth + 1, 0xFF);
   glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
+  // Draw gizmos recursively so they are visible behind a portal as well
+  GizmoManager::instance().draw_gizmos(camera_data);
   render_sectors(camera_data);
   render_entities(camera_data);
 }

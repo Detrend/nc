@@ -7,7 +7,7 @@
 #include <engine/map/physics.h>
 
 #include <math/lingebra.h>
-#include <engine/graphics/graphics_system.h>
+#include <engine/graphics/resources/texture.h>
 
 #include <engine/entity/entity_type_definitions.h>
 
@@ -42,13 +42,16 @@ namespace nc
 
   void Enemy::init()
   {
-    auto& gfx = get_engine().get_module<GraphicsSystem>();
-
     appear = Appearance
     {
+<<<<<<< HEAD
       .color = colors::RED,
       .model = gfx.get_cube_model(),
       .transform = Transform{VEC3_ZERO, vec3{0.3f, 0.7f, 0.3f}}
+=======
+      .texture = TextureManager::instance().get_test_enemy_texture(),
+      .scale = 1.0f,
+>>>>>>> 21a46f058f06f6f4888f5a76ebb9692690720a8e
     };
   }
 
@@ -160,7 +163,7 @@ namespace nc
         [[maybe_unused]] vec3 rayStart = this->get_position() + vec3(0, 0.5f, 0);
         [[maybe_unused]] vec3 rayEnd = target_pos + vec3(0, 0.5f, 0);
 
-        auto wallHit = ThingSystem::get().get_level().raycast3d(rayStart, rayEnd);
+        auto wallHit = ThingSystem::get().get_level().ray_cast_3d(rayStart, rayEnd);
 
         if (wallHit)
         {
@@ -199,13 +202,7 @@ namespace nc
 
   }
 
-<<<<<<< HEAD
-  void Enemy::apply_velocity()
-  {
-    auto world = ThingSystem::get().get_level();
-=======
   //==============================================================================
-
   void Enemy::apply_velocity()
   {
     auto world = ThingSystem::get().get_level();
@@ -216,17 +213,15 @@ namespace nc
     {
       const f32 sector_floor_y = map.sectors[sector_id].floor_height;
       floor = sector_floor_y;
+      if (this->get_position().y + velocity.y < floor)
+      {
+        //velocity.y = floor - this->get_position().y;
+        velocity.y = 0;
+      }
     }
-
-    if (this->get_position().y + velocity.y < floor)
-    {
-      //velocity.y = floor - this->get_position().y;
-      velocity.y = 0;
-    }
->>>>>>> gameplay
 
     vec3 position = this->get_position();
-    world.move_and_collide(position, velocity, facing, 0.25f, 0.5f, 0.0f, 0);
+    world.move_character(position, velocity, &facing, 1.0f, 0.25f, 0.5f, 0.0f, 0, 0);
     this->set_position(position);
     //g_transform_components[m_entity_index].position() = position;
   }
@@ -265,15 +260,7 @@ namespace nc
     return false;
   }
 
-<<<<<<< HEAD
-  vec3& Enemy::get_velocity()
-  {
-    return velocity;
-  }
-
-=======
   //==============================================================================
->>>>>>> gameplay
 
   vec3& Enemy::get_velocity()
   {
@@ -283,6 +270,12 @@ namespace nc
   //==============================================================================
 
   const Appearance& Enemy::get_appearance() const
+  {
+    return appear;
+  }
+
+  //==============================================================================
+  Appearance& Enemy::get_appearance()
   {
     return appear;
   }

@@ -14,6 +14,10 @@
 namespace nc
 {
 
+// Forward declare so we do not need to include graphics system
+// into this header.
+struct CameraData;
+
 /**
   * Temporary visual marker for debugging. Gizmos are light-weight render objects that can be created and destroyed at
   * runtime.
@@ -87,7 +91,7 @@ public:
 
   // Update time to live (TTL) of active gizmos.
   void update_ttls(f32 delta_seconds);
-  void draw_gizmos() const;
+  void draw_gizmos(const CameraData& camera) const;
 
 private:
   GizmoManager() {}

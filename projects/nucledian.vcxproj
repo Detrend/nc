@@ -116,6 +116,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\source\libs\stb_image\stb_image.cpp" />
     <ClCompile Include="..\source\nucledian\aabb.cpp" />
     <ClCompile Include="..\source\nucledian\cvars.cpp" />
     <ClCompile Include="..\source\nucledian\engine\core\engine.cpp" />
@@ -123,6 +124,8 @@
     <ClCompile Include="..\source\nucledian\engine\entity\item.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\sector_mapping.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\physics.cpp" />
+    <ClCompile Include="..\source\nucledian\game\projectile.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\graphics\resources\texture.cpp" />
     <ClCompile Include="..\source\nucledian\logging.cpp" />
     <ClCompile Include="..\source\nucledian\main.cpp" />
     <ClCompile Include="..\source\nucledian\transform.cpp" />
@@ -231,6 +234,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\source\libs\json\json.hpp" />
+    <ClInclude Include="..\source\libs\json\json_fwd.hpp" />
+    <ClInclude Include="..\source\libs\stb_image\stb_image.h" />
     <ClInclude Include="..\source\nucledian\aabb.h" />
     <ClInclude Include="..\source\nucledian\common.h" />
     <ClInclude Include="..\source\nucledian\config.h" />
@@ -240,9 +246,11 @@
     <ClInclude Include="..\source\nucledian\engine\entity\entity_type_definitions.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\item.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\sector_mapping.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\resources\texture.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
     <ClInclude Include="..\source\nucledian\engine\map\physics.h" />
     <ClInclude Include="..\source\nucledian\engine\player\level_types.h" />
+    <ClInclude Include="..\source\nucledian\game\projectile.h" />
     <ClInclude Include="..\source\nucledian\logging.h" />
     <ClInclude Include="..\source\nucledian\metaprogramming.h" />
     <ClInclude Include="..\source\nucledian\transform.h" />
@@ -289,6 +297,8 @@
     <None Include="..\source\nucledian\engine\graphics\resources\mesh.inl" />
     <None Include="..\source\nucledian\engine\graphics\resources\model.inl" />
     <None Include="..\source\nucledian\engine\graphics\resources\material.inl" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\billboard.frag" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\billboard.vert" />
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.frag" />
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.vert" />
     <None Include="..\source\nucledian\math\lingebra.inl" />
@@ -368,6 +378,12 @@
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent />
+    <PreBuildEvent>
+      <Command>xcopy "$(SolutionDir)content\*.*" "$(SolutionDir)bin\$(Configuration)\content\" /E /I /Y /D</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>Copy content folder to bin.</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">
     <ClCompile>

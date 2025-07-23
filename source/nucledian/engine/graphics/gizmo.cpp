@@ -145,18 +145,15 @@ void GizmoManager::update_ttls(f32 delta_seconds)
 }
 
 //==============================================================================
-void GizmoManager::draw_gizmos() const
+void GizmoManager::draw_gizmos(const CameraData& camera) const
 {
-  auto& graphics_system = get_engine().get_module<GraphicsSystem>();
-  const DebugCamera* camera = graphics_system.get_camera();
-  if (camera == nullptr)
-    return;
+  GraphicsSystem& graphics_system = get_engine().get_module<GraphicsSystem>();
 
   const MaterialHandle& solid_material = graphics_system.get_solid_material();
   solid_material.use();
   solid_material.set_uniform(shaders::solid::PROJECTION, graphics_system.get_default_projection());
-  solid_material.set_uniform(shaders::solid::VIEW, camera->get_view());
-  solid_material.set_uniform(shaders::solid::VIEW_POSITION, camera->get_position());
+  solid_material.set_uniform(shaders::solid::VIEW, camera.view);
+  solid_material.set_uniform(shaders::solid::VIEW_POSITION, camera.position);
 
   auto combined_view = std::ranges::views::join
   (

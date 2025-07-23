@@ -2,7 +2,11 @@
 #pragma once
 
 #include <types.h>
+<<<<<<< HEAD
+#include <vector>
+=======
 #include <vector> // required for std::hash specialization
+>>>>>>> 21a46f058f06f6f4888f5a76ebb9692690720a8e
 
 namespace nc
 {
