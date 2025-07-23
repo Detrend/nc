@@ -42,10 +42,13 @@
 #include <utility>
 #include <variant>
 #include <format>
+<<<<<<< HEAD
 
 #ifdef NC_DEBUG_DRAW
 #include <chrono>
 #endif
+=======
+>>>>>>> gameplay
 
 // Remove this after logging is added!
 #include <iostream>
@@ -397,11 +400,14 @@ void GraphicsSystem::terminate()
 //==============================================================================
 void GraphicsSystem::on_frame_start()
 {
+<<<<<<< HEAD
+=======
 #ifdef NC_IMGUI
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplSDL2_NewFrame();
   ImGui::NewFrame();
 #endif
+>>>>>>> gameplay
 }
 
 //==============================================================================

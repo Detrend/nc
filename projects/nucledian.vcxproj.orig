@@ -242,7 +242,10 @@
     <ClInclude Include="..\source\nucledian\engine\entity\sector_mapping.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
     <ClInclude Include="..\source\nucledian\engine\map\physics.h" />
+<<<<<<< HEAD
     <ClInclude Include="..\source\nucledian\engine\player\level_types.h" />
+=======
+>>>>>>> gameplay
     <ClInclude Include="..\source\nucledian\logging.h" />
     <ClInclude Include="..\source\nucledian\metaprogramming.h" />
     <ClInclude Include="..\source\nucledian\transform.h" />

@@ -29,6 +29,7 @@ class  Player;
 class ThingSystem : public IEngineModule
 {
 public:
+<<<<<<< HEAD
   struct SaveDbEntry
   {
     SaveGameData data;
@@ -41,6 +42,13 @@ public:
   using RegistryPtr   = std::unique_ptr<EntityRegistry>;
   using LevelDatabase = std::vector<LevelData>;
   using SaveDatabase  = std::vector<SaveDbEntry>;
+=======
+  using PickUps     = std::vector<PickUp>;
+  using Enemies     = std::vector<EntityID>;
+  using MappingPtr  = std::unique_ptr<SectorMapping>;
+  using MapPtr      = std::unique_ptr<MapSectors>;
+  using RegistryPtr = std::unique_ptr<EntityRegistry>;
+>>>>>>> gameplay
 
 public:
   static EngineModuleId get_module_id();
@@ -49,11 +57,20 @@ public:
   bool init();
   void on_event(ModuleEvent& event) override;
 
+<<<<<<< HEAD
   // Saving and loading the game. 
   SaveGameData save_game() const;
   void         load_game(const SaveGameData& save);
 
   SaveDatabase& get_save_game_db();
+=======
+  Player*               get_player();
+  EntityRegistry&       get_entities();
+  const EntityRegistry& get_entities()       const;
+  const MapSectors&     get_map()            const;
+  const SectorMapping&  get_sector_mapping() const;
+  PhysLevel             get_level()          const;
+>>>>>>> gameplay
 
   // Level transition
   LevelID get_level_id() const;
@@ -62,7 +79,7 @@ public:
 
   Player*               get_player();
   EntityRegistry&       get_entities();
-  const EntityRegistry& get_entities()       const;
+
   const EntityRegistry& get_entities()       const;
   const MapSectors&     get_map()            const;
   const SectorMapping&  get_sector_mapping() const;
@@ -94,17 +111,25 @@ private:
   void pre_terminate();
 
 private:
+<<<<<<< HEAD
   EntityID       player_id = INVALID_ENTITY_ID;
   MapPtr         map;
   MappingPtr     mapping;
   Enemies        enemies;
-  PickUps     pickups;
   RegistryPtr    entities;
   LevelID        level_id           = INVALID_LEVEL_ID;
   LevelID        scheduled_level_id = INVALID_LEVEL_ID;
   LevelDatabase  levels_db;
   SaveDatabase   save_db;
   mutable SaveID last_save_id = 0;
+=======
+  EntityID    player_id = INVALID_ENTITY_ID;
+  MapPtr      map;
+  MappingPtr  mapping;
+  Enemies     enemies;
+  PickUps     pickups;
+  RegistryPtr entities;
+>>>>>>> gameplay
 };
 
 }

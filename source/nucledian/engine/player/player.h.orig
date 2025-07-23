@@ -4,7 +4,10 @@
 #include <SDL.h>
 #include <types.h>
 #include <engine/input/game_input.h>
-#include <engine/entity/entity.h>
+<<<<<<< HEAD
+#include <engine/player/map_object.h>
+=======
+>>>>>>> gameplay
 #include <engine/entity/entity.h>
 #include <engine/graphics/debug_camera.h>
 
@@ -26,9 +29,16 @@ public:
 
   void get_wish_velocity(GameInputs input, f32 delta_seconds);
   bool get_attack_state(GameInputs curInput, GameInputs prevInput, f32 delta_seconds);
+<<<<<<< HEAD
+ // void check_collision(const MapObject& collider, f32 delta_seconds);
+  void apply_velocity(f32 delta_seconds);
+  void Damage(int damage);
+  void Die();
+=======
   void apply_velocity(f32 delta_seconds);
   void damage(int damage);
   void die();
+>>>>>>> gameplay
 
   DebugCamera* get_camera();
 
@@ -47,7 +57,10 @@ private:
   f32 MAX_SPEED = 5.0f;
   f32 ACCELERATION = 25.0f;
   f32 DECELERATION = 14.0f;
+<<<<<<< HEAD
   f32 GRAVITY = 6.0f;
+=======
+>>>>>>> gameplay
 
   vec3 m_forward = VEC3_ZERO;
   f32 angle_pitch = 0; //UP-DOWN

@@ -1,6 +1,7 @@
 // Project Nucledian Source File
 #pragma once
 
+#include <engine/map/map_system.h>
 #include <engine/entity/entity_types.h>
 
 #include <types.h>       // f32
@@ -29,7 +30,7 @@ public:
   // member variable containing it's type! Like this:
   // static EntityType get_type_static();
 
-  Entity(vec3 position, f32 width, f32 height, bool collision);
+  Entity(vec3 position, f32 radius, f32 height, bool collision);
 
   virtual bool did_collide(const Entity& collider);
   virtual void check_collision(const Entity& collider, vec3& velocity, f32 delta_seconds);
@@ -55,6 +56,7 @@ public:
 
 protected:
   bool  collision;
+  f32 GRAVITY = 6.0f;
 
 private: friend class EntityRegistry;
   SectorMapping* m_Mapping   = nullptr;

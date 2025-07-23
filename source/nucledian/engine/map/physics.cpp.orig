@@ -381,7 +381,11 @@ RayHit PhysLevel::raycast3d
 void PhysLevel::move_and_collide
 (
   vec3&                          position,
+<<<<<<< HEAD
+  vec3&                          velocity_og,
+=======
   vec3                           velocity,
+>>>>>>> gameplay
   vec3&                          forward,
   f32                            radius,
   [[maybe_unused]]f32            height,
@@ -390,9 +394,12 @@ void PhysLevel::move_and_collide
 ) const
 {
   constexpr u32 MAX_ITERATIONS = 4;
-  constexpr f32 MAX_STEP_SIZE = 0.2f;
+<<<<<<< HEAD
 
   vec3 velocity = velocity_og;
+=======
+  constexpr f32 MAX_STEP_SIZE = 0.2f;
+>>>>>>> gameplay
 
   // First check collisions and adjust the velocity
   u32 iterations_left = MAX_ITERATIONS; 
@@ -405,10 +412,13 @@ void PhysLevel::move_and_collide
       const auto projected3 = vec3{projected.x, 0.0f, projected.y};
       velocity -= projected3;
     }
+<<<<<<< HEAD
     else
     {
       break;
     }
+=======
+>>>>>>> gameplay
   }
 
   // Then handle nuclidean portal transitions - check which portals
@@ -428,10 +438,7 @@ void PhysLevel::move_and_collide
     transformation = trans * transformation;
   }
 
-  vec3 prev_position = position;
-  vec3 prev_velocity = velocity;
-  vec3 prev_forward = forward;
-
+<<<<<<< HEAD
   if (should_transform)
   {
     velocity_og = (transformation * vec4{velocity_og, 0.0f}).xyz();
@@ -439,6 +446,17 @@ void PhysLevel::move_and_collide
     velocity    = (transformation * vec4{velocity,    0.0f}).xyz();
     forward     = (transformation * vec4{forward,     0.0f}).xyz();
     position += velocity;
+=======
+  vec3 prev_position = position;
+  vec3 prev_velocity = velocity;
+  vec3 prev_forward = forward;
+
+  if (should_transform)
+  {
+    position = (transformation * vec4{position + velocity, 1.0f}).xyz();
+    velocity = (transformation * vec4{velocity, 0.0f}).xyz();
+    forward  = (transformation * vec4{forward, 0.0f}).xyz();
+>>>>>>> gameplay
   }
   else
   {
@@ -452,6 +470,8 @@ void PhysLevel::move_and_collide
     const f32 sector_floor_y = map.sectors[sector_id].floor_height;
     if (position.y < sector_floor_y)
     {
+<<<<<<< HEAD
+=======
       if (position.y + MAX_STEP_SIZE < sector_floor_y)
       {
         position = prev_position;
@@ -460,6 +480,7 @@ void PhysLevel::move_and_collide
         return;
       }
 
+>>>>>>> gameplay
       position.y = sector_floor_y;
     }
   }

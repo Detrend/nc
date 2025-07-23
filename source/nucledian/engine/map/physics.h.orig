@@ -120,7 +120,11 @@ struct PhysLevel
   void move_and_collide
   (
     vec3&          position, // the original position of the entity, will get changed
+<<<<<<< HEAD
+    vec3&          velocity, // the velocity, does not change
+=======
     vec3           velocity, // the velocity, does not change
+>>>>>>> gameplay
     vec3&          forward,  // forward direction, changes after nc portal traversal
     f32            radius,   // radius of the entity
     f32            height,   // height of the entity

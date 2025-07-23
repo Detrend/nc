@@ -459,6 +459,7 @@ void ThingSystem::on_event(ModuleEvent& event)
   {
     case ModuleEventType::post_init:
     {
+<<<<<<< HEAD
       this->post_init();
       break;
     }
@@ -493,6 +494,17 @@ void ThingSystem::on_event(ModuleEvent& event)
           ModuleEvent{.type = ModuleEventType::after_map_rebuild}
         );
       }
+=======
+      this->build_map();
+      auto* player = entities->create_entity<Player>(vec3{1, 0, 1});
+      player_id = player->get_id();
+
+      //entity_system.create_entity<Enemy>(vec3{4, 0.0, 1}, FRONT_DIR);
+      //entity_system.create_entity<Enemy>(vec3{5, 0.0, 1}, FRONT_DIR);
+      entity_system.create_entity<Enemy>(vec3{ 3, 0.0, 1 }, FRONT_DIR);
+
+      entity_system.create_entity<PickUp>(vec3{ 2, 0.0, 1 });
+>>>>>>> gameplay
       break;
     }
 
@@ -524,6 +536,17 @@ void ThingSystem::on_event(ModuleEvent& event)
       {
         enemy.check_collision(*this->get_player(), enemy.get_velocity(), event.update.dt);
 
+<<<<<<< HEAD
+        entity_system.for_each<Enemy>([&](Enemy& enemy2)
+        {
+          if (enemy.get_id() != enemy2.get_id()) // a wrong way to check equality
+          {
+            enemy.check_collision(enemy2, enemy.get_velocity(), event.update.dt);
+          }         
+        });
+      });
+
+=======
         const auto& map = get_engine().get_map();
         auto sector_id = map.get_sector_from_point(enemy.get_position().xz());
 
@@ -557,6 +580,7 @@ void ThingSystem::on_event(ModuleEvent& event)
 
           }
         });
+>>>>>>> gameplay
       
 
       //FINAL VELOCITY CHANGE
@@ -591,6 +615,7 @@ const EntityRegistry& ThingSystem::get_entities() const
   return const_cast<ThingSystem*>(this)->get_entities();
 }
 
+<<<<<<< HEAD
 //==============================================================================
 SaveGameData ThingSystem::save_game() const
 {
@@ -642,6 +667,9 @@ void ThingSystem::request_next_level()
 }
 
 //==============================================================================
+=======
+//==========================================================
+>>>>>>> gameplay
 const MapSectors& ThingSystem::get_map() const
 {
   nc_assert(map);
@@ -656,12 +684,15 @@ const SectorMapping& ThingSystem::get_sector_mapping() const
 }
 
 //==============================================================================
+<<<<<<< HEAD
 const ThingSystem::LevelDatabase& ThingSystem::get_level_db() const
 {
   return this->levels_db;
 }
 
 //==============================================================================
+=======
+>>>>>>> gameplay
 PhysLevel ThingSystem::get_level() const
 {
   return PhysLevel
@@ -672,6 +703,7 @@ PhysLevel ThingSystem::get_level() const
   };
 }
 
+<<<<<<< HEAD
 //==============================================================================
 void ThingSystem::cleanup_map()
 {
@@ -682,6 +714,8 @@ void ThingSystem::cleanup_map()
   player_id = INVALID_ENTITY_ID;
 }
 
+=======
+>>>>>>> gameplay
 //==========================================================
 const ThingSystem::Enemies& ThingSystem::get_enemies() const
 {

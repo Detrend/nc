@@ -1,5 +1,9 @@
 #pragma once
-#include <engine/entity/entity.h>
+<<<<<<< HEAD
+#include <engine/player/map_object.h>
+
+=======
+>>>>>>> gameplay
 #include <engine/entity/entity.h>
 #include <engine/entity/entity_types.h>
 #include <engine/appearance.h>
@@ -27,17 +31,20 @@ namespace nc
     Enemy(vec3 position, vec3 facing);
     void init();
     void update();
+<<<<<<< HEAD
+    void get_wish_velocity(f32 delta_seconds);
+//    void check_for_collision(const MapObject& collider);
+=======
 
     // Returns points that create a path
     virtual std::vector<vec3> get_path(const MapSectors& map, vec3 start_pos, vec3 endPos);
 
     void calculate_wish_velocity(f32 delta_seconds);
+>>>>>>> gameplay
     void apply_velocity();
     void damage(int damage);
     void die();
     bool can_attack();
-
-    vec3& get_velocity();
 
     vec3& get_velocity();
 

@@ -586,26 +586,40 @@ void MapSectors::sector_to_vertices(
 bool MapSectors::is_point_in_sector(vec2 pt, SectorID sector_id) const
 {
   nc_assert(this->is_valid_sector_id(sector_id));
+
   const auto& sector = this->sectors[sector_id];
+
   const auto first = sector.int_data.first_wall;
   const auto last  = sector.int_data.last_wall;
+
   nc_assert(this->is_valid_wall_id(first));
+
   const auto p1 = this->walls[first].pos;
+
   for (WallID wall_index = first+1; wall_index < last-1; ++wall_index)
+  {
     WallID next_index = wall_index+1;
     const auto p2 = this->walls[wall_index].pos;
     const auto p3 = this->walls[next_index].pos;
+
     if (intersect::point_triangle(pt, p1, p2, p3))
+    {
       return true;
     }
   }
+
   return false;
+<<<<<<< HEAD
+=======
 }
+
 //=============================================================================
+
 std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos, [[maybe_unused]] f32 radius, [[maybe_unused]] f32 height) const
 {
   std::vector<vec3> path;
   path.push_back(end_pos);
+
   struct PrevPoint
   {
     SectorID prev_sector; // previous sector
@@ -613,16 +627,19 @@ std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos, [[maybe_unu
     vec3 point; // way point
     f32 dist;
   };
+
   struct CurPoint
   {
     SectorID index;
     f32 dist;
   };
+
   auto cmp = [](const CurPoint l, const CurPoint r) {return l.dist > r.dist; };
 
   SectorID startID = get_sector_from_point(start_pos.xz);
   SectorID endID = get_sector_from_point(end_pos.xz);
   SectorID curID = startID;
+
   // std::vector<SectorID> fringe;
   std::priority_queue<CurPoint, std::vector<CurPoint>, decltype(cmp)> fringe;
   std::map<SectorID, PrevPoint> visited;
@@ -648,21 +665,26 @@ std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos, [[maybe_unu
     if (curID == endID)
     {
       break;
+    }
 
     map_helpers::for_each_portal(*this, curID, [&](WallID wall1_idx) 
-  {
+    {
         const auto next_sector  = walls[wall1_idx].portal_sector_id;
         nc_assert(next_sector != INVALID_SECTOR_ID);
 
         if (!visited.contains(next_sector) && 
           abs(sectors[curID].floor_height - sectors[next_sector].floor_height) <= 0.2f) // check for floor height dif
         {
+
           const auto wall2_idx = map_helpers::next_wall(*this, curID, wall1_idx);
       
           // const bool is_nuclidean = walls[wall1_idx].get_portal_type() == PortalType::non_euclidean;       
+
           auto p1 = walls[wall1_idx].pos;
           auto p2 = walls[wall2_idx].pos;
+
           auto p1_to_p2  = p2-p1;
+
           if (abs(p1_to_p2.x) > 2 * radius || abs(p1_to_p2.y) > 2 * radius) // side to side clearance
           {
             vec2 wall_dir;
@@ -679,19 +701,25 @@ std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos, [[maybe_unu
           
             p1 += wall_dir * radius;
             p2 -= wall_dir * radius;
+
             p1_to_p2 = p2 - p1;
+
             // get a previous position, but also with portal transformation
+
             vec3 prev_post = visited[curID].point;
             WallID prev_wall = visited[curID].wall_index;
             SectorID prev_sector = visited[curID].prev_sector;
+
             if (prev_wall != INVALID_WALL_ID && walls[prev_wall].get_portal_type() == PortalType::non_euclidean)
             {
               mat4 transformation = calculate_portal_to_portal_projection(prev_sector, prev_wall);
               prev_post = (transformation * vec4{ prev_post, 1.0f }).xyz();
             }
+
             // calculate closest point on p1_to_p2 line
             f32 l2 = length(p1_to_p2);
             l2 *= l2;
+
             const float t = max(0.0f, min(1.0f, dot(prev_post.xz - p1, p1_to_p2) / l2));
             const vec2 projection = p1 + t * (p1_to_p2);
 
@@ -704,7 +732,10 @@ std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos, [[maybe_unu
           }         
         }        
     });
+  }
+
   PrevPoint prev_point;
+
   // reconstruct the path in reverse order
   while (curID != startID)
   {
@@ -719,6 +750,7 @@ std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos, [[maybe_unu
   std::reverse(path.begin(), path.end());
 
   return path;
+>>>>>>> gameplay
 }
 
 //==============================================================================
