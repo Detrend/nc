@@ -39,7 +39,6 @@
     <ClCompile Include="..\source\nucledian\engine\map\physics.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\item.cpp" />
     <ClCompile Include="..\source\nucledian\engine\player\save_types.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\map\physics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />

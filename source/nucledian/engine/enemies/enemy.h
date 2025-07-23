@@ -39,8 +39,6 @@ namespace nc
 
     vec3& get_velocity();
 
-    vec3& get_velocity();
-
     const Appearance& get_appearance() const;
     Transform         calc_transform() const;
 

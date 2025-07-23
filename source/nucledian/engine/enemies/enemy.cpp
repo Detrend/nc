@@ -210,12 +210,12 @@ namespace nc
     {
       const f32 sector_floor_y = map.sectors[sector_id].floor_height;
       floor = sector_floor_y;
-    if (this->get_position().y + velocity.y < floor)
-    {
-      //velocity.y = floor - this->get_position().y;
-      velocity.y = 0;
+      if (this->get_position().y + velocity.y < floor)
+      {
+        //velocity.y = floor - this->get_position().y;
+        velocity.y = 0;
+      }
     }
-    auto world = ThingSystem::get().get_level();
 
     vec3 position = this->get_position();
     world.move_and_collide(position, velocity, facing, 0.25f, 0.5f, 0.0f, 0);
@@ -255,11 +255,6 @@ namespace nc
       return true;
     }
     return false;
-  }
-
-  vec3& Enemy::get_velocity()
-  {
-    return velocity;
   }
 
   //==============================================================================

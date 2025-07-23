@@ -392,8 +392,6 @@ void PhysLevel::move_and_collide
   constexpr u32 MAX_ITERATIONS = 4;
   constexpr f32 MAX_STEP_SIZE = 0.2f;
 
-  vec3 velocity = velocity_og;
-
   // First check collisions and adjust the velocity
   u32 iterations_left = MAX_ITERATIONS; 
   while(iterations_left-->0)
@@ -434,7 +432,6 @@ void PhysLevel::move_and_collide
 
   if (should_transform)
   {
-    velocity_og = (transformation * vec4{velocity_og, 0.0f}).xyz();
     position    = (transformation * vec4{position,    1.0f}).xyz();
     velocity    = (transformation * vec4{velocity,    0.0f}).xyz();
     forward     = (transformation * vec4{forward,     0.0f}).xyz();

@@ -63,7 +63,6 @@ public:
   Player*               get_player();
   EntityRegistry&       get_entities();
   const EntityRegistry& get_entities()       const;
-  const EntityRegistry& get_entities()       const;
   const MapSectors&     get_map()            const;
   const SectorMapping&  get_sector_mapping() const;
   const LevelDatabase&  get_level_db()       const;
@@ -98,7 +97,7 @@ private:
   MapPtr         map;
   MappingPtr     mapping;
   Enemies        enemies;
-  PickUps     pickups;
+  // PickUps        pickups;
   RegistryPtr    entities;
   LevelID        level_id           = INVALID_LEVEL_ID;
   LevelID        scheduled_level_id = INVALID_LEVEL_ID;

@@ -110,20 +110,6 @@ namespace nc
     velocity += jumpForce * 3.0f;
     velocity.y -= GRAVITY * delta_seconds;
 
-    // Did jump
-    vec3 jumpForce = vec3(0, 0, 0);
-    if (input.player_inputs.keys & (1 << PlayerKeyInputs::jump) && this->get_position().y > floor - 0.0001f && this->get_position().y < floor + 0.0001f)
-    {
-      jumpForce += vec3(0, 1, 0);
-    }
-
-    apply_deceleration(movement_direction, delta_seconds);
-
-    apply_acceleration(movement_direction, delta_seconds);
-
-    velocity += jumpForce * 3.0f;
-    velocity.y -= GRAVITY * delta_seconds;
-
     camera.update_transform(this->get_position(), angle_yaw, angle_pitch, view_height);
   }
 
