@@ -2,6 +2,8 @@
 #include <common.h>
 #include <config.h>
 
+#include <cvars.h>
+
 #include <engine/core/engine.h>
 #include <engine/core/engine_module.h>
 #include <engine/core/module_event.h>
@@ -9,14 +11,15 @@
 #include <engine/core/engine_module_types.h>
 #include <engine/core/event_journal.h>
 
-#include <cvars.h>
-
-#include <engine/graphics/graphics_system.h>
-#include <engine/input/input_system.h>
-#include <engine/player/thing_system.h>
 #include <engine/map/map_system.h>
 #include <engine/entity/entity_system.h>
 #include <engine/entity/sector_mapping.h>
+
+// The engine subsystems
+#include <engine/graphics/graphics_system.h>
+#include <engine/input/input_system.h>
+#include <engine/player/thing_system.h>
+#include <engine/sound/sound_system.h>
 
 #ifdef NC_PROFILING
 #include <benchmark/benchmark.h>
@@ -33,7 +36,6 @@
 #include <ranges>  // std::views::reverse
 #include <chrono>  // std::chrono::high_resolution_clock
 #include <cstdlib> // std::rand
-
 
 namespace nc
 {
@@ -292,6 +294,7 @@ bool Engine::init()
   INIT_MODULE(GraphicsSystem);
   INIT_MODULE(InputSystem);
   INIT_MODULE(ThingSystem);
+  INIT_MODULE(SoundSystem);
 
   #undef INIT_MODULE
 
@@ -568,4 +571,3 @@ void Engine::handle_journal_state_during_update()
 }
 
 }
-

@@ -17,6 +17,9 @@
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/gizmo.h>
 
+#include <engine/sound/sound_system.h>
+#include <engine/sound/sound_resources.h>
+
 #include <game/projectile.h>
 
 #include <common.h>
@@ -807,10 +810,11 @@ void ThingSystem::check_player_attack
   const ModuleEvent& event)
 {
   auto& entity_system = this->get_entities();
+  auto& sound_system  = SoundSystem::get();
   auto* player        = this->get_player();
-  bool  didAttack     = player->get_attack_state(curr_inputs, prev_inputs, event.update.dt);
+  bool  did_attack    = player->get_attack_state(curr_inputs, prev_inputs, event.update.dt);
 
-  if (didAttack)
+  if (did_attack)
   {
     auto dir = player->get_look_direction();
 
@@ -822,6 +826,9 @@ void ThingSystem::check_player_attack
       0.15f,
       true
     );
+
+    // play a sound
+    sound_system.play(Sounds::plasma_rifle, 0.5f);
   }
 }
 
