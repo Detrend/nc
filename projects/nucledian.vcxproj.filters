@@ -39,7 +39,7 @@
     <ClCompile Include="..\source\nucledian\engine\player\save_types.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\physics.cpp" />
     <ClCompile Include="..\source\nucledian\game\projectile.cpp" />
-    <ClCompile Include="..\source\libs\stb_image\stb_image.cpp" />
+    <ClCompile Include="..\source\libs\stb\stb.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\texture.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\renderer.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\camera.cpp" />
@@ -132,10 +132,12 @@
     <ClInclude Include="..\source\nucledian\engine\player\level_types.h" />
     <ClInclude Include="..\source\nucledian\engine\player\save_types.h" />
     <ClInclude Include="..\source\nucledian\game\projectile.h" />
-    <ClInclude Include="..\source\libs\stb_image\stb_image.h" />
+    <ClInclude Include="..\source\libs\stb\stb_image.h" />
+    <ClInclude Include="..\source\libs\stb\stb_rect_pack.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\texture.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\renderer.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\camera.h" />
+    <ClInclude Include="..\source\nucledian\engine\lights\light.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />

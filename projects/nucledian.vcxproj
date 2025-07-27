@@ -116,7 +116,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\source\libs\stb_image\stb_image.cpp" />
+    <ClCompile Include="..\source\libs\stb\stb.cpp" />
     <ClCompile Include="..\source\nucledian\aabb.cpp" />
     <ClCompile Include="..\source\nucledian\cvars.cpp" />
     <ClCompile Include="..\source\nucledian\engine\core\engine.cpp" />
@@ -235,7 +235,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\source\libs\stb_image\stb_image.h" />
+    <ClInclude Include="..\source\libs\stb\stb_image.h" />
+    <ClInclude Include="..\source\libs\stb\stb_rect_pack.h" />
     <ClInclude Include="..\source\nucledian\aabb.h" />
     <ClInclude Include="..\source\nucledian\common.h" />
     <ClInclude Include="..\source\nucledian\config.h" />
@@ -246,6 +247,7 @@
     <ClInclude Include="..\source\nucledian\engine\entity\sector_mapping.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\renderer.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\texture.h" />
+    <ClInclude Include="..\source\nucledian\engine\lights\light.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
     <ClInclude Include="..\source\nucledian\engine\map\physics.h" />
     <ClInclude Include="..\source\nucledian\engine\player\level_types.h" />
