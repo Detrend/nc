@@ -8,6 +8,8 @@
 #include <engine/entity/entity.h>
 #include <engine/graphics/debug_camera.h>
 
+#include <game/weapons_types.h>
+
 #include <math/vector.h>
 
 #include <engine/entity/entity_types.h>
@@ -25,6 +27,7 @@ public:
   static EntityType get_type_static();
 
   void get_wish_velocity(GameInputs input, f32 delta_seconds);
+  void handle_inputs(GameInputs input, GameInputs prev_input);
   bool get_attack_state(GameInputs curInput, GameInputs prevInput, f32 delta_seconds);
   void apply_velocity(f32 delta_seconds);
   void damage(int damage);
@@ -36,12 +39,15 @@ public:
   f32 get_view_height();
   vec3& get_velocity();
 
+  WeaponType get_equipped_weapon()         const;
+  bool       has_weapon(WeaponType weapon) const;
+
 private:
   void apply_acceleration(const nc::vec3& movement_direction, f32 delta_seconds);
   void apply_deceleration(const nc::vec3& movement_direction, f32 delta_seconds);
 
   //vec3 position;
-  vec3 velocity; // forward/back - left/right velocity
+  vec3 velocity = VEC3_ZERO; // forward/back - left/right velocity
   static inline f32 view_height = 0.5f;
 
   f32 MAX_SPEED = 5.0f;
@@ -58,6 +64,10 @@ private:
 
   int maxHealth = 100;
   int currentHealth;
+
+  // Bit flags for the weapons owned
+  WeaponFlags owned_weapons  = 0;
+  WeaponType  current_weapon = 0;
 
   bool alive = true;
 

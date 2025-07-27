@@ -70,6 +70,7 @@ public:
   const TextureHandle& get_error_texture() const;
   const TextureHandle& get_test_enemy_texture() const;
   const TextureHandle& get_test_gun_texture() const;
+  const TextureHandle& get_test_gun2_texture() const;
   const TextureHandle& get_test_plasma_texture() const;
 
 private:
@@ -84,6 +85,7 @@ private:
   TextureHandle m_error_texture = TextureHandle::invalid();
   TextureHandle m_test_enemy_texture = TextureHandle::invalid();
   TextureHandle m_test_gun_texture = TextureHandle::invalid();
+  TextureHandle m_test_gun2_texture = TextureHandle::invalid();
   TextureHandle m_test_plasma_texture = TextureHandle::invalid();
 
   std::vector<TextureHandle>& get_storage(ResLifetime lifetime);

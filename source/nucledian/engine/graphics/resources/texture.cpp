@@ -151,6 +151,12 @@ const TextureHandle& TextureManager::get_test_gun_texture() const
 }
 
 //==============================================================================
+const TextureHandle& TextureManager::get_test_gun2_texture() const
+{
+  return m_test_gun2_texture;
+}
+
+//==============================================================================
 const TextureHandle& TextureManager::get_test_plasma_texture() const
 {
   return m_test_plasma_texture;
@@ -167,6 +173,7 @@ void TextureManager::init()
 {
   m_test_enemy_texture = create(ResLifetime::Game, "content/textures/mff_pepe_walk.png");
   m_test_gun_texture = create(ResLifetime::Game, "content/textures/math_gun.png");
+  m_test_gun2_texture = create(ResLifetime::Game, "content/textures/mage_gun.png");
   m_test_plasma_texture = create(ResLifetime::Game, "content/textures/plasma_ball.png");
 }
 

@@ -11,6 +11,8 @@
 #include <engine/graphics/resources/model.h>
 #include <engine/graphics/debug_camera.h>
 
+#include <game/weapons_types.h>
+
 #include <vector>
 
 struct SDL_Window;
@@ -28,6 +30,13 @@ struct CameraData
 	const mat4& view;
 	const mat4& projection;
 	const VisibilityTree& vis_tree;
+};
+
+struct RenderGunProperties
+{
+  // Invalid if we do not want to render anything
+  WeaponType weapon = INVALID_WEAPON_TYPE; 
+  vec2       sway   = VEC2_ZERO;
 };
 
 class GraphicsSystem : public IEngineModule
@@ -56,7 +65,7 @@ private:
   void render_sectors(const CameraData& camera_data)  const;
   void render_entities(const CameraData& camera_data) const;
   void render_portals(const CameraData& camera_data) const;
-  void render_gun(const CameraData& camera_data) const;
+  void render_gun(const CameraData& camera_data, const RenderGunProperties& how) const;
 
   void render_portal_to_stencil(const CameraData& camera_data, const PortalRenderData& portal, u8 recursion_depth) const;
   void render_portal_to_color(const CameraData& camera_data, const PortalRenderData& portal, u8 recursion_depth) const;

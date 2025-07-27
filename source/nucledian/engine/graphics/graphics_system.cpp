@@ -27,6 +27,7 @@
 #include <engine/player/level_types.h>
 
 #include <game/projectile.h>
+#include <game/weapons.h>
 
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
@@ -462,6 +463,24 @@ void GraphicsSystem::update(f32 delta_seconds)
 }
 
 //==============================================================================
+static void grab_render_gun_props(RenderGunProperties& props)
+{
+  ThingSystem& game = ThingSystem::get();
+  const Player* player = game.get_player();
+
+  if (player)
+  {
+    props.weapon = player->get_equipped_weapon();
+    props.sway   = VEC2_ZERO;
+  }
+  else
+  {
+    props.weapon = INVALID_WEAPON_TYPE;
+    props.sway   = VEC2_ZERO;
+  }
+}
+
+//==============================================================================
 void GraphicsSystem::render()
 {
   int width = 0, height = 0;
@@ -505,11 +524,14 @@ void GraphicsSystem::render()
         .vis_tree = visible_sectors,
       };
 
+      RenderGunProperties gun_props;
+      grab_render_gun_props(gun_props);
+
       GizmoManager::instance().draw_gizmos(camera_data);
       render_sectors(camera_data);
       render_entities(camera_data);
       render_portals(camera_data);
-      render_gun(camera_data);
+      render_gun(camera_data, gun_props);
     }
   }
 
@@ -820,7 +842,7 @@ void GraphicsSystem::render_map_top_down(const VisibilityTree& visible_sectors)
 
 //==============================================================================
 #ifdef NC_DEBUG_DRAW
-static void draw_cvar_type_and_input(f32* flt, const CVars::CVarRange& range)
+static void draw_cvar_type_and_input(f32* flt, const CVarRange& range)
 {
   ImGui::TableNextColumn();
   ImGui::Text("f32");
@@ -832,7 +854,7 @@ static void draw_cvar_type_and_input(f32* flt, const CVars::CVarRange& range)
 }
 
 //==============================================================================
-static void draw_cvar_type_and_input(s32* num, const CVars::CVarRange& rn)
+static void draw_cvar_type_and_input(s32* num, const CVarRange& rn)
 {
   ImGui::TableNextColumn();
   ImGui::Text("s32");
@@ -844,7 +866,7 @@ static void draw_cvar_type_and_input(s32* num, const CVars::CVarRange& rn)
 }
 
 //==============================================================================
-static void draw_cvar_type_and_input(std::string* str, const CVars::CVarRange&)
+static void draw_cvar_type_and_input(std::string* str, const CVarRange&)
 {
   ImGui::TableNextColumn();
   ImGui::Text("string");
@@ -856,7 +878,7 @@ static void draw_cvar_type_and_input(std::string* str, const CVars::CVarRange&)
 }
 
 //==============================================================================
-static void draw_cvar_type_and_input(bool* bl, const CVars::CVarRange&)
+static void draw_cvar_type_and_input(bool* bl, const CVarRange&)
 {
   ImGui::TableNextColumn();
   ImGui::Text("bool");
@@ -868,7 +890,7 @@ static void draw_cvar_type_and_input(bool* bl, const CVars::CVarRange&)
 }
 
 //==============================================================================
-static void draw_cvar_row(const std::string& name, const CVars::CVar& cvar)
+static void draw_cvar_row(const std::string& name, const CVar& cvar)
 {
 #ifdef NC_COMPILER_CLANG
 #pragma clang diagnostic push
@@ -896,21 +918,58 @@ static void draw_cvar_bar()
 {
   auto& cvar_list = CVars::get_cvar_list();
 
-  if (ImGui::BeginTable("Cvar List", 3, ImGuiTableFlags_Borders))
-  {
-    ImGui::TableSetupColumn("Name");
-    ImGui::TableSetupColumn("Type");
-    ImGui::TableSetupColumn("Value");
-    ImGui::TableHeadersRow();
+  // First build up the categories
+  using CVarPair    = std::pair<std::string, CVar>;
+  using CategoryMap = std::map<std::string, std::vector<CVarPair>>;
 
-    for (const auto& [name, cvar] : cvar_list)
+  CategoryMap cvar_categories;
+  for (const auto& [name, cvar] : cvar_list)
+  {
+    // find the first "." in the name and decide it's category based on that
+    if (u64 idx = name.find('.'); idx != std::string::npos && idx >= 1)
     {
-      ImGui::TableNextRow();
-      draw_cvar_row(name, cvar);
+      std::string category_name = std::string{name.begin(), name.begin() + idx - 1};
+      std::string stripped_name = std::string{name.begin() + idx + 1, name.end()};
+      cvar_categories[category_name].push_back({stripped_name, cvar});
+    }
+    else
+    {
+      // "default" category for cvars without one
+      cvar_categories["default"].push_back({name, cvar});
+    }
+  }
+
+  // And now render all the categories as items in the list..
+  // Only one of them will actually render all of the cvars inside
+  if (ImGui::BeginTabBar("CVar Types"))
+  {
+    for (const auto& [category, list] : cvar_categories)
+    {
+      if (ImGui::BeginTabItem(category.c_str()))
+      {
+        if (ImGui::BeginTable("Cvar List", 3, ImGuiTableFlags_Borders))
+        {
+          ImGui::TableSetupColumn("Name");
+          ImGui::TableSetupColumn("Type");
+          ImGui::TableSetupColumn("Value");
+          ImGui::TableHeadersRow();
+
+          for (const auto& [name, cvar] : list)
+          {
+            ImGui::TableNextRow();
+            draw_cvar_row(name, cvar);
+          }
+
+          ImGui::EndTable();
+        }
+
+        ImGui::EndTabItem();
+      }
     }
 
-    ImGui::EndTable();
+    ImGui::EndTabBar();
   }
+
 }
 
 //==============================================================================
@@ -1235,9 +1294,34 @@ void GraphicsSystem::render_portals(const CameraData& camera_data) const
 }
 
 //==============================================================================
-void GraphicsSystem::render_gun(const CameraData&) const
+void GraphicsSystem::render_gun(const CameraData&, const RenderGunProperties& props) const
 {
-  const TextureHandle& texture = TextureManager::instance().get_test_gun_texture();
+  // MR says: this is a quick way to determine a sprite of which gun we should hold.
+  // This connects the game-specific weapon system with the rendering, which might
+  // be ok for now, but maybe we should get rid of it later?
+  TextureHandle texture = TextureHandle::invalid();
+  switch (props.weapon)
+  {
+    case WeaponTypes::plasma_rifle:
+    {
+      texture = TextureManager::instance().get_test_gun2_texture();
+      break;
+    }
+
+    case WeaponTypes::nail_gun:
+    {
+      texture = TextureManager::instance().get_test_gun_texture();
+      break;
+    }
+  }
+
+  // Is this the only way how to check if a texture handle is not invalid?
+  // MeshHandle has the "is_valid" method, but I did not want to add a new
+  // function so I am using this for now.
+  if (texture.get_lifetime() == ResLifetime::None)
+  {
+    return;
+  }
 
   GLint viewport[4];
   glGetIntegerv(GL_VIEWPORT, viewport);

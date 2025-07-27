@@ -9,6 +9,8 @@
 #include <engine/map/physics.h>
 #include <engine/player/thing_system.h>
 
+#include <game/weapons.h>
+
 #include <engine/core/engine.h>
 
 #include <math/utils.h>
@@ -21,7 +23,9 @@ namespace nc
 {
   //==========================================================================
   Player::Player(vec3 position)
-    : Base(position, 0.25f, view_height, true)
+    : Base(position, 0.25f, 0.5f)
+    , owned_weapons((1 << WeaponTypes::plasma_rifle) | (1 << WeaponTypes::nail_gun))
+    , current_weapon(WeaponTypes::plasma_rifle)
   {
     currentHealth = maxHealth;
     camera.update_transform(position, angle_yaw, angle_pitch, view_height);
@@ -113,7 +117,25 @@ namespace nc
     camera.update_transform(this->get_position(), angle_yaw, angle_pitch, view_height);
   }
 
-  //==============================================================================
+//==========================================================================
+void Player::handle_inputs(GameInputs input, GameInputs /*prev_input*/)
+{
+  for (WeaponType i = 0; i < WeaponTypes::count; ++i)
+  {
+    PlayerKeyFlags weapon_flag = 1 << (PlayerKeyInputs::weapon_0 + i);
+
+    const bool owns_weapon  = this->has_weapon(i);
+    const bool wants_weapon = input.player_inputs.keys & weapon_flag;
+
+    if (owns_weapon && wants_weapon)
+    {
+      current_weapon = i;
+
+      // Accept only the first one if multiple keys are pressed
+      break; 
+    }
+  }
+}
 
   bool Player::get_attack_state(GameInputs curInput, GameInputs prevInput, [[maybe_unused]] f32 delta_seconds)
   {
@@ -262,6 +284,18 @@ namespace nc
   {
     return velocity;
   }
+
+//==============================================================================
+WeaponType Player::get_equipped_weapon() const
+{
+  return current_weapon;
+}
+
+//==============================================================================
+bool Player::has_weapon(WeaponType weapon) const
+{
+  return owned_weapons & (1 << weapon);
+}
 
   //==============================================================================
   EntityType Player::get_type_static()

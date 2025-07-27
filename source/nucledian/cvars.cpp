@@ -12,14 +12,14 @@ CVars& CVars::get()
 }
 
 //==============================================================================
-CVars::CVarList& CVars::get_cvar_list()
+CVarList& CVars::get_cvar_list()
 {
   static CVarList list;
   return list;
 }
 
 //==============================================================================
-CVars::CVarRanges& CVars::get_cvar_ranges()
+CVarRanges& CVars::get_cvar_ranges()
 {
   static CVarRanges ranges;
   return ranges;
