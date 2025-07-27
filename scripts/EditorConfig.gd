@@ -7,12 +7,16 @@ enum SectorColoringMode{
 
 @export_group("Node editing")
 ## When holding Q, how much a node can max move in single frame without interrupting the multimove
-@export var shared_continuous_movement_max_step : float = 10
+@export var shared_continuous_movement_max_step : float = 999
 ## Max distance at which points can snap into each other
 @export var max_snapping_distance : float = 1.0
+@export var gridsnap_step : float = 1.0/16.0
 ## How pressing '+' or '-' alters the floor/ceiling height (chosen by current level's coloring mode)
 @export var floor_height_increment : float = 0.1
 @export var ceiling_height_increment : float = 0.5
+
+@export_group("Level export")
+@export var sanity_check_snapping : bool = true
 
 @export_group("Portal visuals")
 @export var portal_entry_color : Color = Color.DARK_GREEN

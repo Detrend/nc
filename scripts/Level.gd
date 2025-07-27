@@ -2,11 +2,11 @@
 class_name Level
 extends Node2D
 
-var config : EditorConfig = preload("res://config.tres")
+var config : EditorConfig = preload("res://config.tres") as EditorConfig
 @export var coloring_mode: EditorConfig.SectorColoringMode = EditorConfig.SectorColoringMode.Floor
 var max_snapping_distance : float:
 	get: return config.max_snapping_distance
-#@export_tool_button("Snap points") var snap_points_tool_button = _snap_points
+@export_tool_button("Snap points") var snap_points_tool_button = _snap_points
 @export var auto_heights:bool = true
 
 @export var export_scale : Vector3 = Vector3(1.0, 1.0, 1.0)
@@ -117,11 +117,7 @@ func _get_player_position() -> Vector2:
 
 func _snap_points()->void:
 	for s in get_sectors():
-		for p in s.get_points():
-			var to_snap = find_nearest_point(p.global_position, max_snapping_distance, s)
-			if to_snap and (p.global_position != to_snap.global_position):
-				print("snap {0} -> {1} (distance: {2})".format([p, to_snap, p.global_position.distance_to(to_snap.global_position)]))
-				p.global_position = to_snap.global_position
+		s._snap_points()
 	
 
 func find_nearest_point(pos: Vector2, max_snapping_distance: float, to_skip: Sector)->SectorPoint:

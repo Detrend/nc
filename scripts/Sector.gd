@@ -17,7 +17,7 @@ extends Polygon2D
 @export var show_portal_arrow : bool = false
 @export_tool_button("Snap points") var snap_points_tool_button = _snap_points
 
-var config : EditorConfig = preload("res://config.tres")
+var config : EditorConfig = preload("res://config.tres") as EditorConfig
 
 func has_portal()-> bool: return enable_portal and portal_destination != null and portal_destination.is_visible_in_tree()
 
@@ -32,11 +32,17 @@ var last_snapping_frame : int = -1
 var last_points : PackedVector2Array = []
 
 func _process(delta: float) -> void:
+	return
 	if ! Engine.is_editor_hint(): return
 	
 	self.scale = Vector2.ONE
 	self.rotation = 0.0
+	if self.global_position != Vector2.ZERO:
+		var global_positions : PackedVector2Array = []
+		for p in get_points(): global_positions.append(p.global_position)
+		self.polygon = global_positions
 	var points := self.polygon
+	
 	self._handle_alt_mode_snapping(points)
 	
 	if !is_just_being_edited() :
@@ -44,6 +50,7 @@ func _process(delta: float) -> void:
 		did_change = did_change or self._remove_duplicit_points (points)
 		did_change = did_change or self._ensure_points_clockwise(points)
 		if did_change:
+			print(get_full_name())
 			print("before: {0}".format([points]))
 			self.polygon = points
 			print("after:  {0}".format([self.polygon]))
@@ -189,7 +196,29 @@ func _handle_alt_mode_snapping(points: PackedVector2Array)->bool:
 func sanity_check()->void:
 	if self.polygon.size() < 3:
 		ErrorUtils.report_error("{0} - only {1} vertices".format([get_full_name(), self.polygon.size()]))
-		return
+	_check_unsnapped_points()
+
+func _check_unsnapped_points()->void:
+	if not config.sanity_check_snapping: return
+	var unsnapped = null
+	for this_point in get_points():
+		var distance_sqr := _check_is_unsnapped_point(this_point)
+		if distance_sqr > 0.0:
+			if unsnapped == null: unsnapped = []
+			unsnapped.append("{0}({1})".format([this_point._idx, sqrt(distance_sqr)]))
+	if unsnapped:
+		ErrorUtils.report_warning("Unsnapped: {0} [{1}]".format([get_full_name(), DatastructUtils.string_concat(unsnapped)]))
+
+func _check_is_unsnapped_point(this_point: SectorPoint)->float:
+	var snapping_distance_sqr := config.max_snapping_distance * config.max_snapping_distance
+	for s in _level.get_sectors():
+		if s == self: continue
+		for other_point in s.get_points():
+			var distance_sqr : float = this_point.global_position.distance_squared_to(other_point.global_position)
+			if 0 < distance_sqr and distance_sqr <= snapping_distance_sqr:
+				return distance_sqr
+	return 0.0
+					
 
 func is_just_being_edited()->bool:
 	return	( is_target_of_alt_mode_snapping 
@@ -204,18 +233,22 @@ static func find_nearest_point(v: Vector2, others: Array[SectorPoint], tolerance
 		var distance : float = p.global_position.distance_squared_to(v)
 		if distance >= toleranceSqr: continue
 		if distance < ret_distance:
-			print("({4}) better: {0} < {1} ({2} < {3})".format([distance, ret_distance, p, ret, v]))
+			#print("({4}) better: {0} < {1} ({2} < {3})".format([distance, ret_distance, p, ret, v]))
 			ret = p
 			ret_distance = distance
 	return ret	
 
 
 func _snap_points()->void:
-		for p in self.get_points():
-			var to_snap = _level.find_nearest_point(p.global_position, _level.max_snapping_distance, self)
-			if to_snap and (p.global_position != to_snap.global_position):
-				print("snap {0} -> {1} (distance: {2})".format([p, to_snap, p.global_position.distance_to(to_snap.global_position)]))
-				p.global_position = to_snap.global_position
+	for p in self.get_points():
+		var to_snap = _level.find_nearest_point(p.global_position, _level.max_snapping_distance, self)
+		if to_snap and (p.global_position != to_snap.global_position):
+			print("snap {0} -> {1} (distance: {2})".format([p, to_snap, p.global_position.distance_to(to_snap.global_position)]))
+			p.global_position = to_snap.global_position
+
+func _snap_points_to_grid()->void:
+	for p in self.get_points():
+		var pos := p.global_position
 
 func get_full_name()->String:
 	var ret : Array[String] = []

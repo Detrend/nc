@@ -8,4 +8,4 @@ static func report_error(message: String)-> void:
 
 static func report_warning(message: String)->void:
 	push_warning(message)
-	printerr("warning: {0}".format([message]))
+	#printerr("warning: {0}".format([message]))

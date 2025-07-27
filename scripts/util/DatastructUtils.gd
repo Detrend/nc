@@ -41,5 +41,5 @@ static func string_concat(list, separator = ", ")->String:
 		if ! is_first_iteration:
 			ret += separator
 		is_first_iteration = false
-		ret += e
+		ret += str(e)
 	return ret
