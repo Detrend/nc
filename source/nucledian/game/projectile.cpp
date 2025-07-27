@@ -10,6 +10,9 @@
 #include <engine/core/engine.h>
 #include <engine/graphics/graphics_system.h>
 
+#include <engine/sound/sound_system.h>
+#include <engine/sound/sound_resources.h>
+
 #include <math/lingebra.h>
 
 namespace nc
@@ -54,6 +57,11 @@ void Projectile::update(f32 dt)
     [&](const CollisionHit& /*hit*/)
     {
 			m_hit_cnt_remaining = std::min(m_hit_cnt_remaining, m_hit_cnt_remaining - 1);
+      if (m_hit_cnt_remaining)
+      {
+        // play the ricochet snd
+        SoundSystem::get().play(Sounds::ricochet);
+      }
     }
   );
 

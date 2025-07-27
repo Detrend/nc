@@ -13,14 +13,17 @@ namespace EngineModule
     graphics_system = 0,
     input_system,
     entity_system,
-    resource_system,
+    sound_system,
     // -- //
     count
   };
 }
-static_assert(EngineModule::count <= 16,
+static_assert
+(
+  EngineModule::count <= 16,
   "Number of bits in module bitmask exceeded, "
-  "increase the size of engine_module_mask");
+  "increase the size of engine_module_mask"
+);
 
 }
 

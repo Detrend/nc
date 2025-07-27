@@ -1,6 +1,11 @@
 // Project Nucledian Source File
 #pragma once
 
+// MR says: Try to not include anything here as the engine is included by
+// pretty much everything and therefore would make the include chain too deep
+// and cause longer builds.
+// Instead forward declare everything and do the includes in the .cpp file.
+
 #include <engine/core/is_engine_module.h>
 
 #include <array>
