@@ -407,11 +407,6 @@ void GraphicsSystem::terminate()
 //==============================================================================
 void GraphicsSystem::on_frame_start()
 {
-#ifdef NC_IMGUI
-  ImGui_ImplOpenGL3_NewFrame();
-  ImGui_ImplSDL2_NewFrame();
-  ImGui::NewFrame();
-#endif
 }
 
 //==============================================================================
