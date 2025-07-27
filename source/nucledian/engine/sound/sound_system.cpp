@@ -4,9 +4,6 @@
 #include <cvars.h>
 #include <intersect.h>
 
-#include <math/utils.h>
-#include <math/lingebra.h>
-
 #include <engine/sound/sound_system.h>
 
 #include <engine/core/engine.h>
@@ -27,22 +24,33 @@
 
 #include <engine/sound/sound_resources.h>
 
-#include <algorithm>
-#include <chrono>
-#include <cmath>
-#include <map>
-#include <numbers>
-#include <set>
-#include <string>
-#include <unordered_map>
-#include <utility>
-#include <variant>
+namespace nc::sound_helpers
+{
+
+//==============================================================================
+static int volume_from01(f32 volume01)
+{
+  return static_cast<int>(clamp(volume01, 0.0f, 1.0f) * MIX_MAX_VOLUME); 
+}
+
+//==============================================================================
+static f32 volume_to01(int mixer_volume)
+{
+  return clamp(static_cast<f32>(mixer_volume) / MIX_MAX_VOLUME, 0.0f, 1.0f);
+}
+
+}
 
 namespace nc
 {
 
 //==============================================================================
-Mix_Chunk* SoundSystem::loaded_chunks[TOTAL_SOUND_CNT]{};
+// Maps to sound IDs from the Sounds::evalue enum to SDL_mixer chunks, which
+// store the actual sound data uncompressed.
+// This is used internally only by the sound system and no one else. Since I did
+// not want to unnecessarily forward declare the "Mix_Chunk" in the header file,
+// it ended up here.
+static Mix_Chunk* g_loaded_sound_chunks[TOTAL_SOUND_CNT]{};
 
 //==============================================================================
 EngineModuleId SoundSystem::get_module_id()
@@ -57,7 +65,7 @@ EngineModuleId SoundSystem::get_module_id()
 }
 
 //==============================================================================
-bool SoundSystem::is_valid(const SoundHandle& handle) const
+bool SoundSystem::is_handle_valid(const SoundHandle& handle) const
 {
   if (handle.channel < 0)
   {
@@ -65,7 +73,7 @@ bool SoundSystem::is_valid(const SoundHandle& handle) const
   }
 
   bool free  = channels[handle.channel].is_free;
-  bool okgen = channels[handle.channel].generation == handle.version;
+  bool okgen = channels[handle.channel].generation == handle.generation;
 
   return !free && okgen;
 }
@@ -103,7 +111,7 @@ bool SoundSystem::init()
     return false;
   }
 
-  // Set up the defaults
+  // Set up the defaults for the freeing tracks
   channels_to_free[0].fill(SoundHandle::INVALID_CHANNEL);
   channels_to_free[1].fill(SoundHandle::INVALID_CHANNEL);
 
@@ -120,13 +128,8 @@ bool SoundSystem::init()
       nc_warn("Failed to load sound \"{}\"", path);
     }
 
-    loaded_chunks[id] = chunk;
+    g_loaded_sound_chunks[id] = chunk;
   }
-
-  //background_music = Mix_LoadMUS("..\\art\\sounds\\166508__yoyodaman234__concrete-footstep-2.wav");
-  //nc_expect(background_music, "Failed to load music file! '{}'", Mix_GetError());
-  //
-  //Mix_PlayMusic(background_music, -1);
 
   return true;
 }
@@ -134,20 +137,20 @@ bool SoundSystem::init()
 //==============================================================================
 void SoundSystem::on_event(ModuleEvent& event)
 {
-    switch (event.type)
-    {
+  switch (event.type)
+  {
     case ModuleEventType::game_update:
     {
-        this->update(event.update.dt);
-        break;
+      this->update(event.update.dt);
+      break;
     }
 
     case ModuleEventType::terminate:
     {
-        this->terminate();
-        break;
+      this->terminate();
+      break;
     }
-    }
+  }
 }
 
 //==============================================================================
@@ -157,13 +160,13 @@ void SoundSystem::play_oneshot(SoundID sound)
 }
 
 //==============================================================================
-SoundHandle SoundSystem::play(SoundID sound)
+SoundHandle SoundSystem::play(SoundID sound, f32 volume /*= 1.0f*/)
 {
   using Channel = SoundHandle::Channel;
 
   nc_assert(sound < TOTAL_SOUND_CNT);
 
-  Mix_Chunk* chunk = loaded_chunks[sound];
+  Mix_Chunk* chunk = g_loaded_sound_chunks[sound];
   if (!chunk)
   {
     // Do not assert here, this is a file problem and not a code problem.
@@ -196,7 +199,13 @@ SoundHandle SoundSystem::play(SoundID sound)
   [[maybe_unused]] int chosen = Mix_PlayChannel(free_channel_idx, chunk, 0);
   nc_assert(static_cast<Channel>(chosen) == free_channel_idx);
 
-  return SoundHandle{free_channel_idx, channels[free_channel_idx].generation};
+  SoundHandle handle{free_channel_idx, channels[free_channel_idx].generation};
+
+  // We have to set the volume each time explicitly because we do not want the
+  // sound to have the old volume of the channel.
+  handle.set_volume(volume); 
+
+  return handle;
 }
 
 //==============================================================================
@@ -209,7 +218,7 @@ void SoundSystem::terminate()
 void SoundSystem::update([[maybe_unused]] f32 delta_seconds)
 {
   bool expected = false;
-  while (some_channel_was_just_stopped.compare_exchange_strong(expected, true) == false)
+  while (!some_channel_was_just_stopped.compare_exchange_strong(expected, true))
   {
     // Spin and wait until the audio thread does not stop freeing the channels
   }
@@ -227,7 +236,9 @@ void SoundSystem::update([[maybe_unused]] f32 delta_seconds)
   for (u64 i = 0; i < channels_to_free_cnt[free_track]; ++i)
   {
     channels[channels_to_free[free_track][i]].is_free = true;
-    channels_to_free[free_track][i] = SoundHandle::INVALID_CHANNEL; // set an invalid value for a check
+
+    // Set an invalid value for a check
+    channels_to_free[free_track][i] = SoundHandle::INVALID_CHANNEL; 
   }
   channels_to_free_cnt[free_track] = 0; // reset
 }
@@ -238,7 +249,7 @@ void SoundSystem::on_channel_finished(int channel)
   nc_assert(channel >= 0 && channel < CHANNEL_COUNT);
 
   bool expected = false;
-  while (some_channel_was_just_stopped.compare_exchange_strong(expected, true) == false)
+  while (!some_channel_was_just_stopped.compare_exchange_strong(expected, true))
   {
     // Spin and wait until it is not true
   }
@@ -257,9 +268,15 @@ void SoundSystem::on_channel_finished(int channel)
 }
 
 //==============================================================================
+SoundHandle::SoundHandle(SoundHandle::Channel ch, u16 gen)
+: channel(ch)
+, generation(gen)
+{}
+
+//==============================================================================
 void SoundHandle::set_paused(bool should_be_paused)
 {
-  nc_assert(check_is_valid());
+  nc_assert(is_valid());
 
   if(should_be_paused)
   {
@@ -274,24 +291,19 @@ void SoundHandle::set_paused(bool should_be_paused)
 //==============================================================================
 void SoundHandle::kill()
 {
-  nc_assert(check_is_valid());
+  nc_assert(is_valid());
   Mix_HaltChannel(this->channel);
 }
 
 //==============================================================================
-static int volume_from01(float volume01) {
-    return static_cast<int>(clamp(volume01, 0.0f, 1.0f) * MIX_MAX_VOLUME); 
-}
-static float volume_to01(int mixer_volume) {
-    return clamp(static_cast<float>(mixer_volume) / MIX_MAX_VOLUME, 0.0f, 1.0f);
-}
-
-//==============================================================================
-void SoundHandle::set_volume(float volume01)
+void SoundHandle::set_volume(f32 volume01)
 {
-  if (check_is_valid())
+  if (is_valid())
   {
-    [[maybe_unused]] int ret = Mix_Volume(channel, volume_from01(volume01));
+    [[maybe_unused]] int ret = Mix_Volume
+    (
+      channel, sound_helpers::volume_from01(volume01)
+    );
     nc_assert(ret >= 0);
   }
 }
@@ -299,7 +311,7 @@ void SoundHandle::set_volume(float volume01)
 //==============================================================================
 bool SoundHandle::is_paused() const
 {
-    nc_assert(check_is_valid());
+    nc_assert(is_valid());
     const int ret = Mix_Paused(this->channel);
     if (ret == 1) return true;
     if (ret == 0) return false;
@@ -308,32 +320,25 @@ bool SoundHandle::is_paused() const
 }
 
 //==============================================================================
-bool SoundHandle::is_playing() const
+float SoundHandle::get_volume() const
 {
-  nc_assert(check_is_valid());
-  return Mix_Playing(this->channel);
-}
+  nc_assert(is_valid());
 
-//==============================================================================
-float SoundHandle::get_volume()
-{
-  nc_assert(check_is_valid());
-
-  if (check_is_valid())
+  if (is_valid())
   {
     const int ret = Mix_Volume(this->channel, -1);
     nc_assert(ret >= 0);
-    return volume_to01(ret);
+    return sound_helpers::volume_to01(ret);
   }
 
   return 0.0f;
 }
 
 //==============================================================================
-bool SoundHandle::check_is_valid() const
+bool SoundHandle::is_valid() const
 {
   SoundSystem& ss = get_engine().get_module<SoundSystem>();
-  return ss.is_valid(*this);
+  return ss.is_handle_valid(*this);
 }
 
 }

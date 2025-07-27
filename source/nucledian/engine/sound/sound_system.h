@@ -3,59 +3,57 @@
 
 #include <types.h>
 #include <config.h>
-#include <transform.h>
-#include <math/vector.h>
 
 #include <engine/core/engine.h>
 
 #include <engine/core/engine_module.h>
 #include <engine/core/engine_module_id.h>
-#include <engine/graphics/resources/model.h>
 #include <engine/sound/sound_types.h>
 
 #include <array>
-#include <unordered_set>
-#include <tuple>
 #include <atomic>
 
-struct Mix_Music;
-struct Mix_Chunk;
 
 namespace nc
 {
-
-using SoundResource = cstr;
 
 struct SoundHandle
 {
 public:
   SoundHandle() = default;
 
-  void set_paused(const bool should_be_paused);
+  // Pauses/unpauses the sound
+  void set_paused(bool should_be_paused);
+
+  // Stops the sound
   void kill();
-  void set_volume(float volume01);
 
+  // Changes the volume. Valid values are from 0.0f to 1.0f
+  void set_volume(f32 volume01);
+
+  // Checks if the sound is paused
   bool is_paused() const;
-  bool is_playing() const;
-  f32  get_volume();
 
-  bool check_is_valid(void) const;
+  // Returns the volume
+  f32  get_volume() const;
+
+  // Checks if the sound handle is valid
+  bool is_valid() const;
 
 private:
-  friend class SoundSystem;
   using Channel = u8;
   static constexpr Channel INVALID_CHANNEL = static_cast<Channel>(-1);
 
-  SoundHandle(Channel the_channel, u16 the_version)
-    : channel(the_channel)
-    , version(the_version)
-  {
-  }
+  friend class SoundSystem;
+  SoundHandle(Channel the_channel, u16 the_version);
 
-  Channel channel = INVALID_CHANNEL;
-  u16     version = 0;
+  Channel channel    = INVALID_CHANNEL;
+  u16     generation = 0;
 };
 
+// ************************************************************************** //
+//                              SOUND SYSTEM                                  //
+// ************************************************************************** //
 class SoundSystem : public IEngineModule
 {
 public:
@@ -64,11 +62,10 @@ public:
 
   bool init();
 
-
   // Sound interface
   void        play_oneshot(SoundID sound);
-  SoundHandle play(SoundID sound);
-  bool        is_valid(const SoundHandle& handle) const;
+  SoundHandle play(SoundID sound, f32 volume = 1.0f);
+  bool        is_handle_valid(const SoundHandle& handle) const;
 
   // IEngineModule
   void on_event(ModuleEvent& event) override;
@@ -81,9 +78,6 @@ private:
 private:
   struct Helper;
   static constexpr u64 CHANNEL_COUNT = 64;
-
-  // Maps to sound IDs from the Sounds::evalue enum
-  static Mix_Chunk* loaded_chunks[];
 
   using ChannelArray = std::array<u8, CHANNEL_COUNT>;
 

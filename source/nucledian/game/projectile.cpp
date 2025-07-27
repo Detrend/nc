@@ -60,7 +60,7 @@ void Projectile::update(f32 dt)
       if (m_hit_cnt_remaining)
       {
         // play the ricochet snd
-        SoundSystem::get().play(Sounds::ricochet);
+        SoundSystem::get().play(Sounds::ricochet, 0.3f);
       }
     }
   );
@@ -93,4 +93,3 @@ Transform Projectile::calc_transform() const
 }
 
 }
-

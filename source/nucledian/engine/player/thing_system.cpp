@@ -804,7 +804,7 @@ void ThingSystem::check_player_attack
     );
 
     // play a sound
-    sound_system.play_oneshot(Sounds::plasma_rifle);
+    sound_system.play(Sounds::plasma_rifle, 0.5f);
   }
 }
 

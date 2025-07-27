@@ -6,8 +6,12 @@
 
 #include <engine/sound/sound_types.h>
 
-// Register your sounds here.
-// xx(sound name in enum and in file, max pitch change)
+// Register your sounds here. The sound files with the same name will be loaded.
+// The syntax for new sound registration is xx(name, pitch variance), where the
+// first parameter is obvious and the second one is the maximum pitch change the
+// sound can have (0 for none). This is not implemented for now, but will later
+// allow us to randomly change a pitch of certain sounds within some bounds.
+// For now we support only the .wav sound format.
 #define NC_SOUNDS(xx)        \
   xx(nail_gun,     0.1f)     \
   xx(plasma_rifle, 0.1f)     \
