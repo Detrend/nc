@@ -1000,12 +1000,9 @@ const
     transformation = pp_trans * transformation;
   }
 
-  vec3 prev_position = position;
-  vec3 prev_velocity = velocity;
-  vec3 prev_forward = *forward;
-
   if (should_transform)
   {
+    velocity_og = (transformation * vec4{velocity_og, 0.0f}).xyz();
     position    = (transformation * vec4{position,    1.0f}).xyz();
     velocity    = (transformation * vec4{velocity,    0.0f}).xyz();
 
