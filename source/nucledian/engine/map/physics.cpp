@@ -1066,13 +1066,16 @@ const
     return false;
   });
 
+  // Can't be 1 because then we were sometimes able to climb extra high stairs.
+  constexpr f32 DIST_COEFF = 0.99f;
+
   // Iterate the sectors and check if we touch them
   f32 floor_h = -FLT_MAX;
   f32 ceil_h  =  FLT_MAX;
   for (const SectorID sid : nearby_sectors)
   {
     nc_assert(map.is_valid_sector_id(sid));
-    if (map.distance_from_sector_2d(pos2, sid) < radius)
+    if (map.distance_from_sector_2d(pos2, sid) < radius * DIST_COEFF)
     {
       const SectorData& sd = map.sectors[sid];
       floor_h = std::max(floor_h, sd.floor_height);
