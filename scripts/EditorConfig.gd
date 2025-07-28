@@ -37,6 +37,7 @@ var _gridsnap_step_inv_impl : float
 @export_group("Level export")
 @export var sanity_check_snapping : bool = true
 @export var sanity_check_intersecting : bool = true
+@export var sanity_check_convex : bool = true
 
 @export_group("Portal visuals")
 @export var portal_entry_color : Color = Color.DARK_GREEN

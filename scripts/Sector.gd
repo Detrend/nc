@@ -5,6 +5,9 @@ extends Polygon2D
 @export var floor_height : float = 0.0
 @export var ceiling_height : float = 1.5
 
+@export_tool_button("Snap points") var snap_points_tool_button = _snap_points
+
+@export_group("Portal")
 @export var portal_destination : Sector = null
 @export var enable_portal : bool = true
 @export var portal_wall : int:
@@ -15,11 +18,12 @@ extends Polygon2D
 	set(value): portal_destination_wall = value if !(portal_destination and portal_destination.get_points_count()>0) else (value % portal_destination.get_points_count())
 @export var is_portal_bidirectional : bool = true
 @export var show_portal_arrow : bool = false
-@export_tool_button("Snap points") var snap_points_tool_button = _snap_points
+
+func has_portal()-> bool: return enable_portal and portal_destination != null and portal_destination.is_visible_in_tree()
+
 
 var config : EditorConfig = preload("res://config.tres") as EditorConfig
 
-func has_portal()-> bool: return enable_portal and portal_destination != null and portal_destination.is_visible_in_tree()
 
 var _level : Level:
 	get: return NodeUtils.get_ancestor_component_of_type(self, Level)
@@ -28,12 +32,31 @@ var _visualizer_line : Line2D:
 	get: return $VisualizerLine
 
 
-var last_snapping_frame : int = -1 
+func _selected_update(selected_list: Array[Node])->void:
+	if selected_list.size() == 1:
+		pass
+	pass
+
+func _on_sole_selected()->void:
+	pass
+
+func _on_sole_unselected()->void:
+	pass
+
+func _on_sole_selected_press_down(_key: InputEventKey)->void:
+	pass
+
+func _on_sole_selected_press_up(_key: InputEventKey)->void:
+	pass
+
+
 var last_points : PackedVector2Array = []
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if ! Engine.is_editor_hint(): return
-	
+	if ! self.is_visible_in_tree(): return
+
+
 	self.scale = Vector2.ONE
 	self.rotation = 0.0
 	#if self.global_position != Vector2.ZERO:
@@ -74,6 +97,7 @@ func get_points_count() -> int:
 	
 func get_point_position(idx: int)->Vector2:
 	return point_pos_relative_to_absolute(self.polygon[idx])
+	
 func set_point_position(idx: int, absolute: Vector2)->void:
 	var points := self.polygon
 	points[idx] = self.point_pos_absolute_to_relative(absolute)
@@ -208,10 +232,12 @@ func _handle_alt_mode_snapping(points: PackedVector2Array)->bool:
 	return self.selected_idx != -1
 
 
+#region SANITY_CHECKS
 
 func sanity_check()->void:
 	if self.polygon.size() < 3:
 		ErrorUtils.report_error("{0} - only {1} vertices".format([get_full_name(), self.polygon.size()]))
+	_check_is_convex()
 	_check_unsnapped_points()
 	_check_intersecting_sectors()
 
@@ -228,7 +254,6 @@ func _check_unsnapped_points()->void:
 
 func _check_intersecting_sectors()->void:
 	if not config.sanity_check_intersecting: return
-	var intersecting = null
 	for this_point in get_points():
 		for s in _level.get_sectors():
 			if s.contains_point(this_point.global_position, false):
@@ -244,7 +269,30 @@ func _check_is_unsnapped_point(this_point: SectorPoint)->float:
 			if 0 < distance_sqr and distance_sqr <= snapping_distance_sqr:
 				return distance_sqr
 	return 0.0
-					
+	
+func _check_is_convex()->void:
+	if not config.sanity_check_convex: return
+	if not is_convex():
+		ErrorUtils.report_error("Non-convex: {0}".format([self.get_full_name()]))
+
+func is_convex()->bool:
+	# algorithm copypasted from: https://www.geeksforgeeks.org/dsa/check-if-given-polygon-is-a-convex-polygon-or-not/
+	var previous_sign : float = 0
+	var points_count := get_points_count()
+	var i: int = 1
+	while i <= get_walls_count():
+		var origin := get_point_position(i-1)
+		var a := get_point_position(i % points_count)
+		var b := get_point_position((i + 1) % points_count)
+		var current_sign := (a-origin).cross(b-origin)
+		if current_sign != 0.0:
+			if current_sign * previous_sign < 0.0:
+				return false
+			previous_sign = current_sign
+		i += 1
+	return true
+
+#endregion				
 
 func is_just_being_edited()->bool:
 	return	( is_target_of_alt_mode_snapping 
