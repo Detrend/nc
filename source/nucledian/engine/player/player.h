@@ -33,6 +33,8 @@ public:
   void damage(int damage);
   void die();
 
+  int get_health();
+
   DebugCamera* get_camera();
 
   vec3 get_look_direction();
