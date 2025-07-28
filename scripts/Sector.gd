@@ -32,15 +32,15 @@ var last_snapping_frame : int = -1
 var last_points : PackedVector2Array = []
 
 func _process(delta: float) -> void:
-	return
 	if ! Engine.is_editor_hint(): return
 	
 	self.scale = Vector2.ONE
 	self.rotation = 0.0
-	if self.global_position != Vector2.ZERO:
-		var global_positions : PackedVector2Array = []
-		for p in get_points(): global_positions.append(p.global_position)
-		self.polygon = global_positions
+	#if self.global_position != Vector2.ZERO:
+	#	var global_positions : PackedVector2Array = []
+	#	for p in get_points(): global_positions.append(p.global_position)
+	#	self.global_position = Vector2.ZERO
+	#	self.polygon = global_positions
 	var points := self.polygon
 	
 	self._handle_alt_mode_snapping(points)
@@ -72,10 +72,26 @@ func get_points() -> Array[SectorPoint]:
 func get_points_count() -> int:
 	return self.polygon.size() 
 	
+func get_point_position(idx: int)->Vector2:
+	return point_pos_relative_to_absolute(self.polygon[idx])
+func set_point_position(idx: int, absolute: Vector2)->void:
+	var points := self.polygon
+	points[idx] = self.point_pos_absolute_to_relative(absolute)
+	self.polygon = points
+	
+func get_wall_begin(idx: int)->Vector2:
+	return get_point_position(idx)
+func get_wall_end(idx: int)->Vector2:
+	var point_idx := idx + 1
+	if point_idx >= get_points_count(): point_idx = 0
+	return get_point_position(point_idx)
+func get_walls_count()->int:
+	return get_points_count()
+	
 func point_pos_relative_to_absolute(point: Vector2)-> Vector2:
-	return point + self.global_position
+	return _get_snapped_to_grid(point + self.global_position)
 func point_pos_absolute_to_relative(point: Vector2)->Vector2:
-	return point - self.global_position
+	return _get_snapped_to_grid(point) - self.global_position
 	
 func _visualize_border()->void:
 	_visualizer_line.clear_points()
@@ -197,6 +213,7 @@ func sanity_check()->void:
 	if self.polygon.size() < 3:
 		ErrorUtils.report_error("{0} - only {1} vertices".format([get_full_name(), self.polygon.size()]))
 	_check_unsnapped_points()
+	_check_intersecting_sectors()
 
 func _check_unsnapped_points()->void:
 	if not config.sanity_check_snapping: return
@@ -208,6 +225,15 @@ func _check_unsnapped_points()->void:
 			unsnapped.append("{0}({1})".format([this_point._idx, sqrt(distance_sqr)]))
 	if unsnapped:
 		ErrorUtils.report_warning("Unsnapped: {0} [{1}]".format([get_full_name(), DatastructUtils.string_concat(unsnapped)]))
+
+func _check_intersecting_sectors()->void:
+	if not config.sanity_check_intersecting: return
+	var intersecting = null
+	for this_point in get_points():
+		for s in _level.get_sectors():
+			if s.contains_point(this_point.global_position, false):
+				ErrorUtils.report_warning("{0} intersects {1}".format([this_point, s.get_full_name()]))
+			
 
 func _check_is_unsnapped_point(this_point: SectorPoint)->float:
 	var snapping_distance_sqr := config.max_snapping_distance * config.max_snapping_distance
@@ -240,6 +266,8 @@ static func find_nearest_point(v: Vector2, others: Array[SectorPoint], tolerance
 
 
 func _snap_points()->void:
+	_snap_points_to_grid()
+	return
 	for p in self.get_points():
 		var to_snap = _level.find_nearest_point(p.global_position, _level.max_snapping_distance, self)
 		if to_snap and (p.global_position != to_snap.global_position):
@@ -248,7 +276,32 @@ func _snap_points()->void:
 
 func _snap_points_to_grid()->void:
 	for p in self.get_points():
-		var pos := p.global_position
+		p.global_position = _get_snapped_to_grid(p.global_position)
+
+func _get_snapped_to_grid(pos: Vector2)->Vector2:
+		# compute as much as possible with float vars because floats use 64-bit precision unlike Vector2's x,y fields
+		var multiplier_x :float = round(pos.x * config.gridsnap_step_inv)
+		var multiplier_y :float = round(pos.y * config.gridsnap_step_inv)
+		var snapped : Vector2 = Vector2(multiplier_x * config.gridsnap_step, multiplier_y * config.gridsnap_step)
+		return snapped
+
+
+func contains_point(p: Vector2, inclusive: bool = true)->bool:
+	var sgn :float= sign(GeometryUtils.line_vs_point(get_wall_begin(0), get_wall_end(0) - get_wall_begin(0), p))
+	if sgn == 0 and !inclusive: return false
+	var i: int = 1
+	while i < get_walls_count():
+		var current_sign :float= sign(GeometryUtils.line_vs_point(get_wall_begin(i), get_wall_end(i) - get_wall_begin(i), p))
+		if current_sign == 0:
+			if ! inclusive: return false
+		else:
+			if sgn == 0:
+				sgn == current_sign
+			if sgn != current_sign:
+				return false
+		i += 1
+	return true
+
 
 func get_full_name()->String:
 	var ret : Array[String] = []

@@ -22,3 +22,6 @@ static func is_clockwise_convex_polygon(a: PackedVector2Array)->int:
 		if cl != 0: return cl
 		t += 1
 	return 0	
+
+static func line_vs_point(line_origin: Vector2, line_direction: Vector2, point: Vector2)->float:
+	return (line_direction).cross(point-line_origin)

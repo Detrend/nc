@@ -1,3 +1,4 @@
+@tool
 extends Resource
 class_name EditorConfig
 
@@ -10,13 +11,32 @@ enum SectorColoringMode{
 @export var shared_continuous_movement_max_step : float = 999
 ## Max distance at which points can snap into each other
 @export var max_snapping_distance : float = 1.0
-@export var gridsnap_step : float = 1.0/16.0
+var _gridsnap_step_impl : float
+@export var gridsnap_step : float:
+	get:
+		if _gridsnap_step_impl <= 0.0:
+			_gridsnap_step_impl = 1.0/_gridsnap_step_inv_impl
+		return _gridsnap_step_impl
+	set(val):
+		_gridsnap_step_impl = val
+		_gridsnap_step_inv_impl = 1.0/val
+var _gridsnap_step_inv_impl : float
+@export var gridsnap_step_inv : float = 16:
+	get:
+		if _gridsnap_step_inv_impl <= 0.0:
+			_gridsnap_step_inv_impl = 1.0/_gridsnap_step_impl
+		return _gridsnap_step_inv_impl
+	set(val):
+		_gridsnap_step_inv_impl = val
+		_gridsnap_step_impl = 1.0/val
+		
 ## How pressing '+' or '-' alters the floor/ceiling height (chosen by current level's coloring mode)
 @export var floor_height_increment : float = 0.1
 @export var ceiling_height_increment : float = 0.5
 
 @export_group("Level export")
 @export var sanity_check_snapping : bool = true
+@export var sanity_check_intersecting : bool = true
 
 @export_group("Portal visuals")
 @export var portal_entry_color : Color = Color.DARK_GREEN

@@ -8,11 +8,9 @@ func _init(sector : Sector, idx : int) -> void:
 	_idx = idx
 
 var global_position : Vector2:
-	get: return _sector.point_pos_relative_to_absolute(_sector.polygon[_idx])
+	get: return _sector.get_point_position(_idx)
 	set(value): 
-		var points := _sector.polygon
-		points[_idx] = _sector.point_pos_absolute_to_relative(value)
-		_sector.polygon = points
+		_sector.set_point_position(_idx, value)
 
 func _to_string():
 	return "{0}[{1}]".format([_sector.get_full_name(), _idx])

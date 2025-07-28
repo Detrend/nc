@@ -13,11 +13,13 @@ point_count = 2
 [resource]
 script = ExtResource("1_x30i3")
 shared_continuous_movement_max_step = 999.0
-max_snapping_distance = 1.0
-gridsnap_step = 0.0
+max_snapping_distance = 0.1
+gridsnap_step = 0.125
+gridsnap_step_inv = 8.0
 floor_height_increment = 0.1
 ceiling_height_increment = 0.5
 sanity_check_snapping = true
+sanity_check_intersecting = true
 portal_entry_color = Color(0, 0.392157, 0, 0.666667)
 portal_exit_color_single = Color(0.670588, 0, 0, 0.815686)
 portal_exit_color_bidirectional = Color(0.209964, 0.444104, 0.772898, 0.85098)
