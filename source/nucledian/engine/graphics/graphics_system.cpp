@@ -309,7 +309,6 @@ bool GraphicsSystem::init()
   glLineWidth(5.0f);
 
   MeshManager::instance().init();
-  TextureManager::instance().init();
 
   m_default_projection = perspective(FOV, ASPECT_RATIO, 0.0001f, 100.0f);
 

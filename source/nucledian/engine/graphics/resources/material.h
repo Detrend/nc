@@ -38,6 +38,7 @@ private:
   void set_uniform(Uniform<location, T> uniform, const T& value) const;
 
   void set_uniform(GLint location, const mat4& value) const;
+  void set_uniform(GLint location, const vec2& value) const;
   void set_uniform(GLint location, const vec3& value) const;
   void set_uniform(GLint location, const vec4& value) const;
   void set_uniform(GLint location, s32 value)         const;

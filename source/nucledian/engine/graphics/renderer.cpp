@@ -192,11 +192,11 @@ void Renderer::render_entities(const CameraData& camera) const
 {
   constexpr f32 BILLBOARD_TEXTURE_SCALE = 1.0f / 2048.0f;
 
-  // group entities by texture
+  // group entities by texture atlas
   const auto& mapping = ThingSystem::get().get_sector_mapping().sectors_to_entities.entities;
   const EntityRegistry& registry = ThingSystem::get().get_entities();
 
-  std::unordered_map<u32, std::unordered_set<const Entity*>> groups;
+  std::unordered_map<ResLifetime, std::unordered_set<const Entity*>> groups;
   for (const auto& frustum : camera.vis_tree.sectors)
   {
     for (const auto& entity_id : mapping[frustum.sector])
@@ -204,8 +204,8 @@ void Renderer::render_entities(const CameraData& camera) const
       const Entity* entity = registry.get_entity(entity_id);
       if (const Appearance* appearance = entity->get_appearance())
       {
-        const u32 id = static_cast<u32>(appearance->texture.get_gl_handle());
-        groups[id].insert(entity);
+        const ResLifetime lifetime = appearance->texture.get_lifetime();
+        groups[lifetime].insert(entity);
       }
     }
   }
@@ -222,12 +222,11 @@ void Renderer::render_entities(const CameraData& camera) const
   const float yaw = atan2(-camera_rotation[2][0], -camera_rotation[2][2]);
   const mat4 rotation = eulerAngleY(yaw);
 
-  for (const auto& [_, group] : groups)
+  for (const auto& [lifetime, group] : groups)
   {
-    const TextureHandle& texture = (*group.begin())->get_appearance()->texture;
-    const vec3 pivot_offset(0.0f, texture.get_height() * BILLBOARD_TEXTURE_SCALE / 2.0f, 0.0f);
-
-    glBindTexture(GL_TEXTURE_2D, texture.get_gl_handle());
+    const TextureAtlas& atlas = TextureManager::get().get_atlas(lifetime);
+    glBindTexture(GL_TEXTURE_2D, atlas.handle);
+    m_billboard_material.set_uniform(shaders::billboard::ATLAS_SIZE, atlas.get_size());
 
     for (const auto* entity : group)
     {
@@ -236,6 +235,11 @@ void Renderer::render_entities(const CameraData& camera) const
       const Appearance& appearance = *entity->get_appearance();
       const vec3 position = entity->get_position();
 
+      const TextureHandle& texture = appearance.texture;
+      m_billboard_material.set_uniform(shaders::billboard::TEXTURE_POS, texture.get_pos());
+      m_billboard_material.set_uniform(shaders::billboard::TEXTURE_SIZE, texture.get_size());
+
+      const vec3 pivot_offset(0.0f, texture.get_height() * BILLBOARD_TEXTURE_SCALE / 2.0f, 0.0f);
       const vec3 scale(
         texture.get_width() * appearance.scale * BILLBOARD_TEXTURE_SCALE,
         texture.get_height() * appearance.scale * BILLBOARD_TEXTURE_SCALE,
@@ -288,7 +292,7 @@ void Renderer::render_portals(const CameraData& camera) const
 //==============================================================================
 void Renderer::render_gun() const
 {
-  const TextureHandle& texture = TextureManager::instance().get_test_gun_texture();
+  const TextureHandle& texture = TextureManager::get()["math_gun"];
 
   GLint viewport[4];
   glGetIntegerv(GL_VIEWPORT, viewport);
@@ -303,11 +307,14 @@ void Renderer::render_gun() const
   glBindVertexArray(texturable_quad.get_vao());
 
   m_billboard_material.use();
-  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, projection);
-  m_billboard_material.set_uniform(shaders::billboard::VIEW, mat4(1.0f));
   m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, transform);
+  m_billboard_material.set_uniform(shaders::billboard::VIEW, mat4(1.0f));
+  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, projection);
+  m_billboard_material.set_uniform(shaders::billboard::ATLAS_SIZE, texture.get_atlas().get_size());
+  m_billboard_material.set_uniform(shaders::billboard::TEXTURE_POS, texture.get_pos());
+  m_billboard_material.set_uniform(shaders::billboard::TEXTURE_SIZE, texture.get_size());
 
-  glBindTexture(GL_TEXTURE_2D, texture.get_gl_handle());
+  glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
   glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
 
   glBindTexture(GL_TEXTURE_2D, 0);

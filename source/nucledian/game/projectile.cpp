@@ -27,7 +27,7 @@ Projectile::Projectile(vec3 pos, vec3 dir, f32 size, bool player_projectile)
 {
   m_appear = Appearance
   {
-    .texture = TextureManager::instance().get_test_plasma_texture(),
+    .texture = TextureManager::get()["plasma_ball"],
     .scale = 20.0f,
   };
 }
