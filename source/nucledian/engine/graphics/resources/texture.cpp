@@ -163,6 +163,12 @@ const TextureHandle& TextureManager::get_test_plasma_texture() const
 }
 
 //==============================================================================
+const TextureHandle& TextureManager::get_medkit_texture() const
+{
+  return m_medkit_texture;
+}
+
+//==============================================================================
 TextureManager::TextureManager()
 :
   m_error_texture(create_error_texture())
@@ -175,6 +181,7 @@ void TextureManager::init()
   m_test_gun_texture = create(ResLifetime::Game, "content/textures/math_gun.png");
   m_test_gun2_texture = create(ResLifetime::Game, "content/textures/mage_gun.png");
   m_test_plasma_texture = create(ResLifetime::Game, "content/textures/plasma_ball.png");
+  m_medkit_texture = create(ResLifetime::Game, "content/textures/medkit.png");
 }
 
 //==============================================================================

@@ -172,7 +172,8 @@ void Player::handle_inputs(GameInputs input, GameInputs /*prev_input*/)
 
     lvl.move_character
     (
-      position, velocity, &m_forward, delta_seconds, 0.25f, 1.0f, 0.25f, 0, 0
+      position, velocity, &m_forward, delta_seconds,
+      0.25f, 1.0f, 0.25f, PhysLevel::COLLIDE_ALL, 0
     );
     this->set_position(position);
 

@@ -72,6 +72,7 @@ public:
   const TextureHandle& get_test_gun_texture() const;
   const TextureHandle& get_test_gun2_texture() const;
   const TextureHandle& get_test_plasma_texture() const;
+  const TextureHandle& get_medkit_texture() const;
 
 private:
   inline static std::unique_ptr<TextureManager> m_instance = nullptr;
@@ -87,6 +88,7 @@ private:
   TextureHandle m_test_gun_texture = TextureHandle::invalid();
   TextureHandle m_test_gun2_texture = TextureHandle::invalid();
   TextureHandle m_test_plasma_texture = TextureHandle::invalid();
+  TextureHandle m_medkit_texture = TextureHandle::invalid();
 
   std::vector<TextureHandle>& get_storage(ResLifetime lifetime);
   TextureHandle create_error_texture();

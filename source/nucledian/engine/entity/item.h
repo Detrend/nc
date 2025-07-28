@@ -1,23 +1,31 @@
-#include <engine/entity/entity.h>
-#include <engine/player/player.h>
-#include <engine/appearance.h>
+// Project Nucledian Source File
+#pragma once
 
 #include <types.h>       // f32
 #include <math/vector.h> // vec3
 
+#include <engine/entity/entity.h>
+#include <engine/appearance.h>
+
 namespace nc
 {
-  class PickUp : public Entity
-  {
-  public:
-    PickUp(vec3 position);
 
-    static EntityType get_type_static();
+class Player;
 
-    virtual void on_pickup(Player player);
+class PickUp : public Entity
+{
+public:
+  PickUp(vec3 position);
 
-    const Appearance& get_appearance() const;
-  private:
-    Appearance appear;
-  };
+  static EntityType get_type_static();
+
+  virtual void on_pickup(const Player& player);
+
+  Appearance&       get_appearance();
+  const Appearance& get_appearance() const;
+
+private:
+  Appearance appear;
+};
+
 }

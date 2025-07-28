@@ -1,4 +1,5 @@
 // Project Nucledian Source File
+#pragma once
 
 #include <types.h>
 #include <engine/entity/entity.h>

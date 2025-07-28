@@ -11,10 +11,12 @@
 #include <engine/player/thing_system.h>
 
 #include <engine/player/player.h>
+#include <engine/enemies/enemy.h>
+#include <engine/entity/item.h>
+#include <game/projectile.h>
+
 #include <set>
 #include <map>
-#include <engine/enemies/enemy.h>
-#include <game/projectile.h>
 
 namespace nc
 {
@@ -115,6 +117,7 @@ Appearance* Entity::get_appearance()
   {
     case EntityTypes::enemy:      return &this->as<Enemy>()->get_appearance();
     case EntityTypes::projectile: return &this->as<Projectile>()->get_appearance();
+    case EntityTypes::pickup:     return &this->as<PickUp>()->get_appearance();
     default:                      return nullptr;
   }
 }

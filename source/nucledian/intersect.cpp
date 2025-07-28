@@ -296,22 +296,30 @@ bool segment_circle
   t_out = FLT_MAX;
   n_out = VEC2_ZERO;
 
-  // First handle the case when the ray starts inside the circle
-  const vec2 center_to_start    = ray_start - circle_center;
-  const f32  distance_to_center = length(center_to_start);
+  // First check if we are not pointing away.. In such a case do not collide
+  // at all
+  const vec2 center_to_start = ray_start - circle_center;
+  const vec2 ray_dir         = ray_end - ray_start;
+  if (dot(ray_dir, center_to_start) >= 0.0f)
+  {
+    // We are heading in the direction away from the circle
+    return false;
+  }
+
+  // Then handle the case when the ray starts inside the circle
+  const f32 distance_to_center = length(center_to_start);
   if (distance_to_center < circle_radius)
   {
     const f32 dist_to_r  = circle_radius - distance_to_center;
     const f32 ray_length = length(ray_end - ray_start);
 
-    t_out = std::min(dist_to_r / ray_length, 1.0f);
+    t_out = std::min(dist_to_r / ray_length, 1.0f) - 1.0f;
     n_out = is_zero(center_to_start) ? vec2{1, 0} : normalize(center_to_start);
 
     return true;
   }
 
-  const vec2 center  = circle_center - ray_start;
-  const vec2 ray_dir = ray_end - ray_start;
+  const vec2 center = circle_center - ray_start;
 
   const f32 dx = ray_dir.x;
   const f32 dy = ray_dir.y;
@@ -1101,16 +1109,41 @@ bool ray_wall
 //==============================================================================
 bool ray_exp_cylinder
 (
-  [[maybe_unused]] vec2  ray_start,
-  [[maybe_unused]] vec2  ray_end,
-  [[maybe_unused]] vec2  center,
-  [[maybe_unused]] f32   radius,
-  [[maybe_unused]] f32   expansion,
-  [[maybe_unused]] vec2& out_normal,
-  [[maybe_unused]] f32&  out_coeff
+  vec2  ray_start,
+  vec2  ray_end,
+  vec2  center,
+  f32   radius,
+  f32   expansion,
+  vec2& out_normal,
+  f32&  out_coeff
 )
 {
-  return false;
+  nc_assert(expansion >= 0.0f);
+  nc_assert(radius >= 0.0f);
+
+  out_normal = VEC2_ZERO;
+  out_coeff  = FLT_MAX;
+
+  if (ray_start == ray_end)
+  {
+    if (vec2 dir = center - ray_start; length(dir) <= expansion + radius)
+    {
+      out_coeff  = 0.0f;
+      out_normal = dir == VEC2_ZERO ? VEC2_X : normalize(dir);
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  else
+  {
+    return intersect::segment_circle
+    (
+      ray_start, ray_end, center, radius + expansion, out_coeff, out_normal
+    );
+  }
 }
 
 //==============================================================================

@@ -255,7 +255,10 @@ CollisionHit raycast_generic
       if (does_intersect)
       {
         // TODO
-        // add_possible_hit(RayHit::build(c, n, false));
+        add_possible_hit(CollisionHit::build(c, n, CollisionHit::EntityHit
+        {
+          .entity_id = entity_id
+        }));
       }
     }
   }
@@ -688,6 +691,7 @@ struct CylCastWallIntersector
     vec3&             out_n,
     bool&             out_nc_hit
   )
+  const
   {
     return this->check
     (
@@ -813,6 +817,59 @@ struct CylCastWallIntersector
 };
 
 //==============================================================================
+// Does only the 2D check for now
+struct CylCastEntityIntersector
+{
+  bool operator()
+  (
+    const PhysLevel& lvl,
+    vec3             ray_from,
+    vec3             ray_to,
+    f32              expand,
+    const Entity&    entity,
+    f32&             out_c,
+    vec3&            out_n
+  )
+  const
+  {
+    return this->check(lvl, ray_from, ray_to, expand, entity, out_c, out_n);
+  }
+
+  bool check
+  (
+    const PhysLevel& /*lvl*/,
+    vec3             ray_from,
+    vec3             ray_to,
+    f32              expand,
+    const Entity&    entity,
+    f32&             out_c,
+    vec3&            out_n
+  )
+  const
+  {
+    vec3 pos = entity.get_position();
+    f32  rad = entity.get_radius();
+    // f32  h   = entity.get_height();
+
+    vec2 n_int = VEC2_ZERO;
+    f32  c_int = FLT_MAX;
+    bool hit2d = collide::ray_exp_cylinder
+    (
+      ray_from.xz(), ray_to.xz(), pos.xz(), rad, expand, n_int, c_int
+    );
+
+    if (!hit2d)
+    {
+      return false;
+    }
+    
+    out_c = c_int;
+    out_n = vec3{n_int.x, 0.0f, n_int.y};
+    return true;
+  }
+};
+
+//==============================================================================
 CollisionHit PhysLevel::cylinder_cast_3d
 (
   vec3           ray_start,
@@ -844,23 +901,8 @@ const
     );
   };
 
-  auto entity_intersector = []
-  (
-    [[maybe_unused]] const PhysLevel& lvl,
-    [[maybe_unused]] vec3             ray_from,
-    [[maybe_unused]] vec3             ray_to,
-    [[maybe_unused]] f32              expand,
-    [[maybe_unused]] const Entity&    entity,
-    [[maybe_unused]] f32&             out_c,
-    [[maybe_unused]] vec3&            out_n
-  )
-  ->bool
-  {
-    // Entity intersection not supported (for now)
-    return false;
-  };
-
   CylCastWallIntersector<StairWalkSettings::Disabled> wall_intersector(height);
+  CylCastEntityIntersector entity_intersector;
 
   return phys_helpers::raycast_generic<vec3>
   (
@@ -884,6 +926,8 @@ void PhysLevel::move_character
 )
 const
 {
+  // #define NC_PHYS_DBG
+
   auto sector_intersector = [height]
   (
     const MapSectors& map,
@@ -903,21 +947,6 @@ const
       map, ray_from, ray_to, expand, 0, height, sid, out_c, out_n
     );
   };
-  auto entity_intersector = []
-  (
-    [[maybe_unused]] const PhysLevel& lvl,
-    [[maybe_unused]] vec3             ray_from,
-    [[maybe_unused]] vec3             ray_to,
-    [[maybe_unused]] f32              expand,
-    [[maybe_unused]] const Entity&    entity,
-    [[maybe_unused]] f32&             out_c,
-    [[maybe_unused]] vec3&            out_n
-  )
-  ->bool
-  {
-    // Entity intersection not supported (for now)
-    return false;
-  };
 
   // We limit the amount of iterations.
   // Note to self:
@@ -928,10 +957,12 @@ const
   // Note: we currently do not modify the velocity and that is not good.
   vec3 velocity = velocity_og * delta_time;
 
-  CylCastWallIntersector<StairWalkSettings::Enabled> wall_intersector2
+  CylCastWallIntersector<StairWalkSettings::Enabled> wall_intersector
   (
     height, max_step_height
   );
+
+  CylCastEntityIntersector entity_intersector;
 
   CollisionHit last_hit = CollisionHit::no_hit();
 
@@ -948,27 +979,31 @@ const
     CollisionHit hit = phys_helpers::raycast_generic<vec3>
     (
       *this, ray_from, ray_to, radius, colliders, nullptr,
-      INVALID_WALL_ID, wall_intersector2, sector_intersector, entity_intersector
+      INVALID_WALL_ID, wall_intersector, sector_intersector, entity_intersector
     );
     last_hit = hit;
 
     if (!hit)
     {
       // No hit, go on!
+#ifdef NC_PHYS_DBG
       [[maybe_unused]] CollisionHit hit2 = phys_helpers::raycast_generic<vec3>
       (
         *this, ray_from, ray_to, radius, colliders, nullptr,
-        INVALID_WALL_ID, wall_intersector2, sector_intersector, entity_intersector
+        INVALID_WALL_ID, wall_intersector, sector_intersector, entity_intersector
       );
+#endif
 
       break;
     }
 
+#ifdef NC_PHYS_DBG
     [[maybe_unused]] CollisionHit hit2 = phys_helpers::raycast_generic<vec3>
     (
       *this, ray_from, ray_to, radius, colliders, nullptr,
-      INVALID_WALL_ID, wall_intersector2, sector_intersector, entity_intersector
+      INVALID_WALL_ID, wall_intersector, sector_intersector, entity_intersector
     );
+#endif
 
     nc_assert(is_normal(hit.normal), "Bad things can happen");
     const auto remaining = velocity * (1.0f - hit.coeff);
