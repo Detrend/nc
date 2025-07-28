@@ -15,5 +15,10 @@ namespace nc
     bool init();
 
   private:
+    void gather_player_info();
+    void draw();
+
+    int display_health = 0;
+
   };
 }

@@ -22,18 +22,26 @@ namespace nc
     return true;
   }
 
+  void UserInterfaceSystem::gather_player_info()
+  {
+    display_health = get_engine().get_module<ThingSystem>().get_player()->get_health();
+  }
+
+  void UserInterfaceSystem::draw()
+  {
+  }
+
   void UserInterfaceSystem::on_event(ModuleEvent& event)
   {
-    int display_health = 0;
-
     switch (event.type)
     {
     case ModuleEventType::post_init:
       break;
     case ModuleEventType::game_update:
-      display_health = get_engine().get_module<ThingSystem>().get_player()->get_health();
+      gather_player_info();
       break;
     case ModuleEventType::render:
+      draw();
       break;
     case ModuleEventType::cleanup:
       break;
