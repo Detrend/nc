@@ -622,6 +622,13 @@ mat4 MapSectors::calc_portal_to_portal_projection(
     auto cmp = [](const CurPoint l, const CurPoint r) {return l.dist > r.dist; };
 
     SectorID startID = get_sector_from_point(start_pos.xz);
+    if (startID == INVALID_SECTOR_ID)
+    {
+      // MR says: Hotfix for the case when the enemy spawns outside of the map
+      // and therefore "get_sector_from_point" returns invalid sector ID.
+      return std::vector<vec3>{start_pos};
+    }
+
     SectorID endID = get_sector_from_point(end_pos.xz);
     SectorID curID = startID;
     // std::vector<SectorID> fringe;
