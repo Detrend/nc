@@ -34,4 +34,5 @@ ceiling_min_height_color = Color(1, 1, 1, 1)
 ceiling_max_height = 10.0
 ceiling_max_height_color = Color(0.662745, 0.662745, 0.662745, 1)
 ceiling_color_curve = SubResource("Curve_x30i3")
+excluded_sector_color = Color(0, 0, 1, 0.145098)
 metadata/_custom_type_script = "uid://bcqqujkyuiq7b"

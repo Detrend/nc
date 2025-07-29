@@ -58,9 +58,13 @@ var _gridsnap_step_inv_impl : float
 @export var ceiling_max_height_color : Color = Color.DARK_GRAY
 @export var ceiling_color_curve : Curve
 
+@export_group("Misc visuals")
+@export var excluded_sector_color : Color = Color(1, 1, 1, 0.3)
 
 
 static func get_sector_color(this: EditorConfig, sector: Sector)->Color:
+	if sector.exclude_from_export:
+		return this.excluded_sector_color
 	var mode:= sector._level.coloring_mode
 	if mode == SectorColoringMode.Floor:
 		return get_floor_color(this, sector.floor_height)

@@ -27,24 +27,25 @@ static func line_vs_point(line_origin: Vector2, line_direction: Vector2, point: 
 	return (line_direction).cross(point-line_origin)
 
 
-static func find_closest_point(v: Vector2, points: PackedVector2Array)->int:
+static func find_closest_point(v: Vector2, points: PackedVector2Array, blacklist: Dictionary[Vector2, bool] = {})->int:
 	var best_distance_sqr := INF
 	var best_idx := -1
 	var i := 0
 	while i < points.size():
-		var distance_sqr := v.distance_squared_to(points[i])
-		if distance_sqr < best_distance_sqr:
-			best_distance_sqr = distance_sqr
-			best_idx = i
+		if blacklist.is_empty() or !blacklist.get(points[i], false):
+			var distance_sqr := v.distance_squared_to(points[i])
+			if distance_sqr < best_distance_sqr:
+				best_distance_sqr = distance_sqr
+				best_idx = i
 		i+= 1
 	return best_idx
 
-static func find_closest_points(a: PackedVector2Array, b: PackedVector2Array)->Vector2i:
+static func find_closest_points(a: PackedVector2Array, b: PackedVector2Array, blacklist: Dictionary[Vector2, bool] = {})->Vector2i:
 	var ret : Vector2i = Vector2i(-1, -1)
 	var best_distance_sqr := INF
 	var i := 0
 	while i < a.size():
-		var closest_idx := find_closest_point(a[i], b)
+		var closest_idx := find_closest_point(a[i], b, blacklist)
 		var distance_sqr := a[i].distance_squared_to(b[closest_idx])
 		if distance_sqr < best_distance_sqr:
 			best_distance_sqr = distance_sqr
@@ -52,7 +53,7 @@ static func find_closest_points(a: PackedVector2Array, b: PackedVector2Array)->V
 		i+= 1
 	return ret
 
-static func polygon_to_convex_segments(polygon: PackedVector2Array, holes: Array[PackedVector2Array])->Array[PackedVector2Array]:
+static func polygon_to_convex_segments(polygon: PackedVector2Array, holes: Array[PackedVector2Array], debug: bool = false)->Array[PackedVector2Array]:
 	var segments : Array[PackedVector2Array] = [polygon]
 	for hole in holes:
 		var new_segments : Array[PackedVector2Array] = []
@@ -60,15 +61,18 @@ static func polygon_to_convex_segments(polygon: PackedVector2Array, holes: Array
 			var divided := Geometry2D.clip_polygons(current_segment, hole)
 			print("division: {0}".format([divided.size()]))
 			for g in divided: print("\tcl: {0}".format([Geometry2D.is_polygon_clockwise(g)]))
+			var blacklist : Dictionary[Vector2, bool] = {}
 			if divided.size() >= 2 and !Geometry2D.is_polygon_clockwise(divided[0]) and divided.slice(1).all(Geometry2D.is_polygon_clockwise):
 				# the function returned just the original polygon and a hole
 				var main := divided[0]
 				for hole_in_appropriate_direction in divided.slice(1):
-					var closest_point_indices := find_closest_points(hole_in_appropriate_direction, main)
+					var closest_point_indices := find_closest_points(hole_in_appropriate_direction, main, blacklist)
 					var loop :PackedVector2Array = hole_in_appropriate_direction.slice(closest_point_indices.x) + hole_in_appropriate_direction.slice(0, closest_point_indices.x)
 					var connection_point := main[closest_point_indices.y]
 					loop.append(loop[0])
 					loop.append(connection_point)
+					blacklist[connection_point] = true
+					blacklist[loop[0]] = true
 
 					main = main.slice(0, closest_point_indices.y + 1) + loop + main.slice(closest_point_indices.y + 1)
 				new_segments.append(main)
@@ -78,7 +82,8 @@ static func polygon_to_convex_segments(polygon: PackedVector2Array, holes: Array
 				new_segments.append_array(divided)
 		segments = new_segments
 
-	#return segments
+	if debug: return segments
+	
 	var ret : Array[PackedVector2Array] = []
 	for segment in segments:
 		var decomposition := Geometry2D.decompose_polygon_in_convex(segment)

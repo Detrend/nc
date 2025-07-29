@@ -1,9 +1,9 @@
 class_name SectorPoint
 
-var _sector : Sector
+var _sector : EditablePolygon
 var _idx : int
 
-func _init(sector : Sector, idx : int) -> void:
+func _init(sector : EditablePolygon, idx : int) -> void:
 	_sector = sector
 	_idx = idx
 

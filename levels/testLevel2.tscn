@@ -1,10 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://cta47u4q0nac4"]
+[gd_scene load_steps=5 format=3 uid="uid://cta47u4q0nac4"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/Level.gd" id="1_tdhj0"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_a102k"]
-[ext_resource type="Script" uid="uid://dcajw5otfoo2a" path="res://scripts/sector/HoleSector.gd" id="3_a102k"]
+[ext_resource type="PackedScene" uid="uid://cmy30fxadpjn2" path="res://prefabs/TriangulatedMultisector.tscn" id="3_a102k"]
 [ext_resource type="PackedScene" uid="uid://2xarq0korji0" path="res://prefabs/PlayerPosition.tscn" id="3_hw0gl"]
-[ext_resource type="Script" uid="uid://0kbske84jb5g" path="res://scripts/sector/TriangulatedMultisector.gd" id="4_hw0gl"]
 
 [node name="TestLevel1" type="Node2D"]
 script = ExtResource("1_tdhj0")
@@ -18,7 +17,7 @@ export_path = "../nc/content/levels/level_test1.json"
 [node name="@Polygon2D@223595" parent="Sectors/Parcour" instance=ExtResource("2_a102k")]
 position = Vector2(-389, -71)
 color = Color(0.501961, 0, 0.196078, 1)
-polygon = PackedVector2Array(355, 105, 340, 71, 340, 40, 355, 14, 373, -1, 373, 103)
+polygon = PackedVector2Array(355, 105, 340, 71, 340, 39, 355, 14, 373, -1, 373, 119)
 floor_height = 6.0
 
 [node name="@Polygon2D@227918" parent="Sectors/Parcour" instance=ExtResource("2_a102k")]
@@ -31,144 +30,36 @@ floor_height = 5.0
 [node name="@Polygon2D@256985" parent="Sectors/Parcour" instance=ExtResource("2_a102k")]
 position = Vector2(-389, -71)
 color = Color(0.501961, 0, 0.196078, 1)
-polygon = PackedVector2Array(328, 48, 340, 40, 340, 71, 328, 64)
+polygon = PackedVector2Array(328, 48, 340, 39, 340, 71, 328, 64)
 floor_height = 9.0
 
-[node name="Multisector" type="Polygon2D" parent="Sectors/Parcour"]
-color = Color(0.188235, 0.227451, 0.517647, 0.780392)
-polygon = PackedVector2Array(-16, -72, 48, -48, 152, -72, 128, -80, 104, -72, 72, -88, 40, -72, 9, -111, 46, -116, 128, -104, 168, -104, 296, 32, -16, 32)
-script = ExtResource("4_hw0gl")
+[node name="Triangulator" parent="Sectors/Parcour" instance=ExtResource("3_a102k")]
+z_index = 0
+polygon = PackedVector2Array(224, 48, 224, -72, -16, -72, -16, 48)
+floor_height = 0.1
+ceiling_height = 10.0
 
-[node name="Hole6" parent="Sectors/Parcour/Multisector" instance=ExtResource("2_a102k")]
+[node name="@Polygon2D@24150" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_a102k")]
+position = Vector2(71, -3)
 color = Color(0.501961, 0, 0.196078, 1)
-polygon = PackedVector2Array(148, -38, 168, -40, 176, -16, 160, -16)
-script = ExtResource("3_a102k")
+polygon = PackedVector2Array(1, -2, 8, -2, 12, 2, 12, 8, 8, 12, 0, 12, -3, 8, -3, 2)
 floor_height = 5.0
+ceiling_height = 10.0
 
-[node name="Hole4" parent="Sectors/Parcour/Multisector" instance=ExtResource("2_a102k")]
-position = Vector2(-50, -64)
+[node name="Sector" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_a102k")]
+position = Vector2(12, -56)
 color = Color(0.501961, 0, 0.196078, 1)
-polygon = PackedVector2Array(154, -35, 180, -33, 184, -23, 162, -21)
-script = ExtResource("3_a102k")
+polygon = PackedVector2Array(-9, 15, 10, 0, 12, 27, -10, 33)
 floor_height = 5.0
+ceiling_height = 10.0
 
-[node name="Hole2" parent="Sectors/Parcour/Multisector" instance=ExtResource("2_a102k")]
-visible = false
-position = Vector2(0, 1)
-color = Color(0.501961, 0, 0.196078, 1)
-polygon = PackedVector2Array(68, -85, 109, -99, 156, -95, 174, -70, 136, -41, 136, -65, 145, -61, 142, -71, 124, -81, 128, -65, 136, -65, 136, -41, 128, -32, 104, -16, 72, -16, 88, -65, 104, -65, 104, -73, 88, -73, 88, -65, 72, -16)
-script = ExtResource("3_a102k")
+[node name="@Polygon2D@58944" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_a102k")]
+position = Vector2(109, -36)
+color = Color(0, 0, 1, 0.145098)
+polygon = PackedVector2Array(-8, 2, 3, -4, 13, 5, 11, 15, -14, 16)
 floor_height = 5.0
-
-[node name="Hole3" parent="Sectors/Parcour/Multisector" instance=ExtResource("2_a102k")]
-visible = false
-color = Color(0.501961, 0, 0.196078, 1)
-polygon = PackedVector2Array(72, 16, 131, -7, 151, 1, 143, 17, 120, 24, 112, 24, 112, 16, 120, 16, 120, 8, 112, 8, 112, 16, 112, 24, 104, 24, 103, 15)
-script = ExtResource("3_a102k")
-floor_height = 5.0
-
-[node name="Hole1" parent="Sectors/Parcour/Multisector" instance=ExtResource("2_a102k")]
-position = Vector2(8, -8)
-color = Color(0.501961, 0, 0.196078, 1)
-polygon = PackedVector2Array(42, -18, 64, -8, 60, 12, 52, 25, 26, 22, 9, 3, 3, -9)
-script = ExtResource("3_a102k")
-floor_height = 5.6
-
-[node name="Hole5" parent="Sectors/Parcour/Multisector" instance=ExtResource("2_a102k")]
-color = Color(0.501961, 0, 0.196078, 1)
-polygon = PackedVector2Array(93, -15, 104, -8, 104, 8, 96, 16, 88, 16, 88, 8, 86, -3)
-script = ExtResource("3_a102k")
-floor_height = 5.6
-
-[node name="Generated" type="Node2D" parent="Sectors/Parcour/Multisector"]
-
-[node name="Sector" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(86, -3, 68, 4, 72, -16, 93, -15)
-
-[node name="@Polygon2D@44283" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(40, -72, 9, -111, 46, -116, 72, -88)
-
-[node name="@Polygon2D@44284" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(130, -97, 104, -99, 128, -104, 168, -104)
-
-[node name="@Polygon2D@44285" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(46, -116, 128, -104, 104, -99)
-
-[node name="@Polygon2D@44286" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(104, -72, 72, -88, 46, -116, 104, -99, 112, -85)
-
-[node name="@Polygon2D@44287" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(128, -80, 104, -72, 112, -85, 134, -87)
-
-[node name="@Polygon2D@44288" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(152, -72, 128, -80, 134, -87, 168, -104)
-
-[node name="@Polygon2D@44289" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(148, -38, 48, -48, 152, -72, 168, -40)
-
-[node name="@Polygon2D@44290" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(134, -87, 130, -97, 168, -104)
-
-[node name="@Polygon2D@44291" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(152, -72, 168, -104, 296, 32, 168, -40)
-
-[node name="@Polygon2D@44292" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(176, -16, 168, -40, 296, 32)
-
-[node name="@Polygon2D@44293" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(68, 4, 86, -3, 88, 8, 88, 16, 60, 17)
-
-[node name="@Polygon2D@44294" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(72, -16, 50, -26, 48, -48, 148, -38, 93, -15)
-
-[node name="@Polygon2D@44295" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(104, -8, 93, -15, 148, -38, 160, -16)
-
-[node name="@Polygon2D@44296" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(48, -48, 50, -26, 11, -17, -16, -72)
-
-[node name="@Polygon2D@44297" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(-16, 32, -16, -72, 11, -17)
-
-[node name="@Polygon2D@44298" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(-16, 32, 11, -17, 17, -5)
-
-[node name="@Polygon2D@44299" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(-16, 32, 17, -5, 34, 14)
-
-[node name="@Polygon2D@44300" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(104, 8, 104, -8, 160, -16)
-
-[node name="@Polygon2D@44301" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(-16, 32, 34, 14, 60, 17)
-
-[node name="@Polygon2D@44302" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(296, 32, -16, 32, 60, 17, 88, 16, 96, 16)
-
-[node name="@Polygon2D@44303" parent="Sectors/Parcour/Multisector/Generated" instance=ExtResource("2_a102k")]
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(160, -16, 176, -16, 296, 32, 96, 16, 104, 8)
+ceiling_height = 10.0
+exclude_from_export = true
 
 [node name="PlayerPosition" parent="." instance=ExtResource("3_hw0gl")]
 position = Vector2(-32, -24)

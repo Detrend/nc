@@ -26,6 +26,17 @@ static func get_child_of_type(node: Node, child_type, flags := LOOKUP_FLAGS.NONE
 			.format([child_type.get_path(),node.get_path()]));
 	return null
 
+static func get_ancestor_by_predicate(node: Node, predicate: Callable, flags := LOOKUP_FLAGS.NONE):
+	while node:
+		if predicate.call(node):
+			return node;
+		node = node.get_parent()
+		
+	if flags & LOOKUP_FLAGS.REQUIRED:
+		ErrorUtils.report_error("Did not find required ancestor of predicate '{0}' of node '{1}'"
+			.format([predicate, node.get_path()]));
+	return null;
+		
 
 static func get_ancestor_of_type(node: Node, parent_type, flags := LOOKUP_FLAGS.NONE):
 	while node:

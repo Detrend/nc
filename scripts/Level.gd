@@ -36,15 +36,7 @@ func create_level_export_data() -> Dictionary:
 			points_map[vec] = ret
 		return ret as int
 		
-	var get_destination_portal_wall_idx: Callable = func(s: Sector, destination : int)->int:
-		return destination
-		return s.get_points_count() - 2 - destination
-		var destination_portal_points := s.portal_destination.get_points()
-		var first_idx :int = get_point_idx.call(destination_portal_points[0].global_position)
-		var this_idx: int = get_point_idx.call(destination_portal_points[destination].global_position)
-		return this_idx - first_idx
-		
-	var all_sectors := get_sectors();
+	var all_sectors := get_sectors(true);
 	
 	for s in all_sectors: s.sanity_check()
 	
@@ -72,7 +64,7 @@ func create_level_export_data() -> Dictionary:
 		sector_export["points"] = sector_points
 		sector_export["portal_target"] = sectors_map[sector.portal_destination] if sector.has_portal() else 65535
 		sector_export["portal_wall"] = sector.portal_wall if sector.has_portal() else -1
-		sector_export["portal_destination_wall"] = get_destination_portal_wall_idx.call(sector.portal_destination, sector.portal_destination_wall) if sector.has_portal() else 0
+		sector_export["portal_destination_wall"] = sector.portal_destination_wall if sector.has_portal() else 0
 		var hosts = host_portals.get(sector)
 		if hosts != null and ! hosts.is_empty():
 			if sector.has_portal(): ErrorUtils.report_error("Sector {0} already has its own portal, but also has host portal from {1}".format([sector, hosts]))
@@ -100,9 +92,15 @@ func export_level():
 	print("export completed")
 	
 
-func get_sectors() -> Array[Sector]:
+func get_sectors(for_export_only:bool = true) -> Array[Sector]:
 	var ret : Array[Sector] = []
-	ret = NodeUtils.get_children_by_predicate(self, func(ch:Node)->bool: return is_instance_of(ch, Sector) and ch.is_visible_in_tree() , ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)
+	ret = NodeUtils.get_children_by_predicate(self, func(ch:Node)->bool: return ch is Sector and ch.is_visible_in_tree() and (!for_export_only or !ch.exclude_from_export) , ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)
+	return ret
+
+
+func get_editable_polygons() -> Array[EditablePolygon]:
+	var ret : Array[EditablePolygon] = []
+	ret = NodeUtils.get_children_by_predicate(self, func(ch:Node)->bool: return ch is EditablePolygon and ch.is_visible_in_tree and ch.is_editable, ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)
 	return ret
 
 
@@ -116,13 +114,14 @@ func _get_player_position() -> Vector2:
 	return Vector2.ZERO
 
 func _snap_points()->void:
-	for s in get_sectors():
+	for s in get_editable_polygons():
 		s._snap_points()
 	
 
 func find_nearest_point(pos: Vector2, max_snapping_distance: float, to_skip: Sector)->SectorPoint:
 	var other_points : Array[SectorPoint] = []
 	for other_sector in get_sectors():
+		if !other_sector.is_editable: continue
 		if other_sector == to_skip: continue
 		other_points.append_array(other_sector.get_points())
 	#print("finding nearest among {0} points".format([other_points.size()]))
@@ -149,7 +148,6 @@ func find_sector_parent(position: Vector2, nearest_point : SectorPoint)->Node2D:
 				sector_parent = null
 				break
 	if sector_parent == null:
-		#var nearest_point := find_nearest_point(position, INF, null)
 		if nearest_point != null:
 			sector_parent = nearest_point._sector.get_parent() if (nearest_point != null) else null
 			print("nearest point: {0}".format([nearest_point]))
@@ -176,7 +174,7 @@ func add_sector(position: Vector2, points: PackedVector2Array, name: String = ""
 enum KeypressState{
 	NONE = 0, UP, DOWN, PRESSED
 }
-static var KEYS_TO_TRACK : Array[Key] = [KEY_ALT, KEY_SHIFT, KEY_CTRL, KEY_Q, KEY_P, KEY_L]
+static var KEYS_TO_TRACK : Array[Key] = [KEY_ALT, KEY_SHIFT, KEY_CTRL, KEY_Q, KEY_P, KEY_L, KEY_T]
 static var MOUSE_BUTTONS_TO_TRACK : Array[MouseButton] = [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT]
 
 var keypress_states : Dictionary[int, KeypressState]
@@ -221,12 +219,14 @@ func _handle_input()->void:
 	var did_change: bool = false
 	for key in KEYS_TO_TRACK:  if _update_key_state(key, true): did_change = true
 	for key in MOUSE_BUTTONS_TO_TRACK:  if _update_key_state(key, false): did_change = true
-	if did_change:
-		#print("Did change: {0}".format([keypress_states]))
-		var selected :Array[Sector] = []
-		selected = NodeUtils.get_selected_nodes_of_type(Sector, selected)
-		if selected.size() == 1: 
-			selected[0]._on_sole_selected_input()
+	if not did_change:
+		return
+	#print("Did change: {0}".format([keypress_states]))
+	var selected :Array[Node] = []
+	selected = NodeUtils.get_selected_nodes_of_type(Node, selected)
+	for node in selected: 
+		if node is EditablePolygon:
+			node._on_selected_input(selected)
 
 
 	# handle Level-specific input actions
@@ -241,3 +241,12 @@ func _handle_input()->void:
 	if increment != 0.0:
 		for sector in NodeUtils.get_selected_nodes_of_type(Sector):
 			_change_sector_height(sector, increment, coloring_mode)
+			
+	if is_alt_pressed and is_key_down(KEY_T):
+		var selected_multisectors : Dictionary[TriangulatedMultisector, bool] = {}
+		for sel in selected:
+			var multipolygon := NodeUtils.get_ancestor_of_type(sel, TriangulatedMultisector) as TriangulatedMultisector
+			if multipolygon != null:
+				selected_multisectors[multipolygon] = true
+		for sel in selected_multisectors.keys():
+			sel.do_triangulate()
