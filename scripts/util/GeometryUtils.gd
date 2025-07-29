@@ -59,8 +59,9 @@ static func polygon_to_convex_segments(polygon: PackedVector2Array, holes: Array
 		var new_segments : Array[PackedVector2Array] = []
 		for current_segment in segments:
 			var divided := Geometry2D.clip_polygons(current_segment, hole)
-			print("division: {0}".format([divided.size()]))
-			for g in divided: print("\tcl: {0}".format([Geometry2D.is_polygon_clockwise(g)]))
+			if debug: 
+				print("division: {0}".format([divided.size()]))
+				for g in divided: print("\tcl: {0}".format([Geometry2D.is_polygon_clockwise(g)]))
 			var blacklist : Dictionary[Vector2, bool] = {}
 			if divided.size() >= 2 and !Geometry2D.is_polygon_clockwise(divided[0]) and divided.slice(1).all(Geometry2D.is_polygon_clockwise):
 				# the function returned just the original polygon and a hole

@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://befdk2p7cnnba"]
+[gd_scene load_steps=6 format=3 uid="uid://befdk2p7cnnba"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/Level.gd" id="1_nqbmo"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_l4525"]
+[ext_resource type="PackedScene" uid="uid://cmy30fxadpjn2" path="res://prefabs/TriangulatedMultisector.tscn" id="3_l4525"]
 [ext_resource type="PackedScene" uid="uid://2xarq0korji0" path="res://prefabs/PlayerPosition.tscn" id="3_nqbmo"]
+[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/sector/Sector.gd" id="4_h15or"]
 
 [node name="TestLevel1" type="Node2D"]
 script = ExtResource("1_nqbmo")
@@ -569,145 +571,75 @@ ceiling_height = 7.0
 [node name="Parcour" type="Node2D" parent="Sectors"]
 position = Vector2(389, 71)
 
-[node name="@Polygon2D@201968" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
+[node name="Triangulator" parent="Sectors/Parcour" instance=ExtResource("3_l4525")]
+position = Vector2(61, -68)
+polygon = PackedVector2Array(-78, 11, -78, 102, -66, 93, -34, 93, -34, 102, 13, 94, 118, 104, 126, 78, 126, 37, 119, 8, 30, 21)
+ceiling_height = 10.0
+
+[node name="_Polygon2D_201968" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
+position = Vector2(-450, -3)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(402, 63, 414, 63, 418, 72, 413, 81, 402, 81, 398, 72)
 floor_height = 5.6
 ceiling_height = 10.0
 
-[node name="Sector" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
+[node name="Sector" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
+position = Vector2(-450, -3)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(484, 58, 501, 63, 498, 80, 479, 76)
 floor_height = 5.0
 ceiling_height = 10.0
 
-[node name="@Polygon2D@205304" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
+[node name="@Polygon2D@205304" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
+position = Vector2(-450, -3)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(441, 40, 451, 34, 461, 41, 457, 53, 443, 53)
 floor_height = 5.0
 ceiling_height = 10.0
 
-[node name="@Polygon2D@206706" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
+[node name="@Polygon2D@206706" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
+position = Vector2(-450, -3)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(527, 51, 537, 53, 540, 75, 530, 80)
 floor_height = 5.0
 ceiling_height = 10.0
 
-[node name="@Polygon2D@208678" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(372, 14, 406, 14, 402, 63, 398, 72, 372, 105)
-floor_height = -0.2
+[node name="@Polygon2D@58391" type="Polygon2D" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
+position = Vector2(-38.4659, 22.8789)
+color = Color(0, 0, 1, 0.145098)
+polygon = PackedVector2Array(0, 0, 7.46585, 1.12111, 7.46585, 7.12111, 0, 10)
+script = ExtResource("4_h15or")
+floor_height = 5.0
 ceiling_height = 10.0
+exclude_from_export = true
+show_portal_arrow = true
 
-[node name="@Polygon2D@211178" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(398, 72, 402, 81, 372, 105)
+[node name="@Polygon2D@58763" type="Polygon2D" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
+position = Vector2(0, 70)
+color = Color(0, 0, 1, 0.145098)
+polygon = PackedVector2Array(3.13205, 0.192413, 8.13205, 0.192413, 7.13205, 6.19241, 1.13205, 6.19241)
+script = ExtResource("4_h15or")
+floor_height = 5.0
 ceiling_height = 10.0
+exclude_from_export = true
+show_portal_arrow = true
 
-[node name="@Polygon2D@212920" parent="Sectors/Parcour" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(372, 105, 402, 81, 413, 81, 440, 105, 424, 105)
+[node name="@Polygon2D@59148" type="Polygon2D" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
+position = Vector2(61.1594, 31.3757)
+color = Color(0, 0, 1, 0.145098)
+polygon = PackedVector2Array(1.84061, -3.37572, 6.84061, -1.37572, 7.84061, 4.62428, 1.84061, 4.62428)
+script = ExtResource("4_h15or")
+floor_height = 5.0
 ceiling_height = 10.0
-portal_destination = NodePath("../@Polygon2D@256985")
-portal_wall = 3
-portal_destination_wall = 3
+exclude_from_export = true
+show_portal_arrow = true
 
-[node name="@Polygon2D@213967" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(406, 14, 420, 14, 414, 63, 402, 63)
+[node name="Sector" type="Polygon2D" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
+position = Vector2(9.04636, 37.5945)
+polygon = PackedVector2Array(-26.0464, -3.59453, -14.0464, -12.5945, 17.9536, -12.5945, 17.9536, -3.59453, 1.95364, -3.59453)
+script = ExtResource("4_h15or")
 ceiling_height = 10.0
-
-[node name="@Polygon2D@214673" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(420, 14, 478, 14, 451, 34, 441, 40)
-ceiling_height = 10.0
-
-[node name="@Polygon2D@215021" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(420, 14, 441, 40, 414, 63)
-ceiling_height = 10.0
-
-[node name="@Polygon2D@215722" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(414, 63, 441, 40, 443, 53, 418, 72)
-ceiling_height = 10.0
-
-[node name="@Polygon2D@216070" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(413, 81, 418, 72, 443, 53, 464, 105, 440, 105)
-ceiling_height = 10.0
-
-[node name="@Polygon2D@217127" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(479, 76, 498, 80, 519, 105, 464, 105)
-ceiling_height = 10.0
-
-[node name="@Polygon2D@217822" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(443, 53, 457, 53, 479, 76, 464, 105)
-ceiling_height = 10.0
-
-[node name="@Polygon2D@218537" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(451, 34, 478, 14, 502, 14, 461, 41)
-ceiling_height = 10.0
-
-[node name="@Polygon2D@218890" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(461, 41, 484, 58, 479, 76, 457, 53)
-ceiling_height = 10.0
-
-[node name="@Polygon2D@219595" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(502, 14, 526, 14, 501, 63, 484, 58, 461, 41)
-ceiling_height = 10.0
-
-[node name="@Polygon2D@220305" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(498, 80, 501, 63, 527, 51, 530, 80, 519, 105)
-ceiling_height = 10.0
-
-[node name="@Polygon2D@220658" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(526, 14, 544, 14, 527, 51, 501, 63)
-ceiling_height = 10.0
-
-[node name="@Polygon2D@221011" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(530, 80, 540, 75, 572, 104, 519, 105)
-ceiling_height = 10.0
-
-[node name="@Polygon2D@221364" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(544, 14, 572, 14, 537, 53, 527, 51)
-ceiling_height = 10.0
-
-[node name="@Polygon2D@222069" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
-position = Vector2(-389, -71)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(537, 53, 572, 14, 576, 40, 576, 81, 572, 104, 540, 75)
-ceiling_height = 10.0
+show_portal_arrow = true
 
 [node name="@Polygon2D@223595" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
 position = Vector2(-389, -71)
@@ -723,12 +655,15 @@ polygon = PackedVector2Array(576, 40, 600, 48, 600, 72, 576, 81)
 floor_height = 5.0
 ceiling_height = 10.0
 
-[node name="@Polygon2D@256985" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
+[node name="@Polygon2D@256985" parent="Sectors/Parcour" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(-389, -71)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(328, 48, 340, 40, 340, 71, 328, 64)
-floor_height = 9.0
+floor_height = 8.2
 ceiling_height = 10.0
+portal_destination = NodePath("../Sector")
+portal_wall = 3
+portal_destination_wall = 3
 
 [node name="PlayerPosition" parent="." instance=ExtResource("3_nqbmo")]
 position = Vector2(356, 52)
