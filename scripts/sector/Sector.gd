@@ -2,8 +2,15 @@
 class_name Sector
 extends EditablePolygon
 
-@export var floor_height : float = 0.0
-@export var ceiling_height : float = 1.5
+@export var data : SectorProperties = SectorProperties.new()
+@export var floor_height : float:
+	get: return data.floor_height
+	set(val): data.floor_height = val
+@export var ceiling_height : float:
+	get: return data.ceiling_height
+	set(val): data.ceiling_height = val
+
+
 @export var exclude_from_export : bool = false
 
 @export_group("Portal")

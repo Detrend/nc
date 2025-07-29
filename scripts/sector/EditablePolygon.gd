@@ -196,7 +196,7 @@ func _handle_alt_mode_snapping(points: PackedVector2Array)->bool:
 		for p in self.affected_points: p._sector.is_target_of_alt_mode_snapping = false
 		affected_points.clear()
 	if self.selected_idx != -1: 
-		print("{1}: {0}".format([self.selected_idx, name]))
+		pass#print("{1}: {0}".format([self.selected_idx, name]))
 	return self.selected_idx != -1
 
 

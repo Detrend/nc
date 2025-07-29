@@ -59,8 +59,8 @@ func create_level_export_data() -> Dictionary:
 			
 		sector_export["debug_name"] = sector.name
 		sector_export["id"] = sectors_map[sector]
-		sector_export["floor"] = sector.floor_height * export_scale.z
-		sector_export["ceiling"] = sector.ceiling_height * export_scale.z
+		sector_export["floor"] = sector.data.floor_height * export_scale.z
+		sector_export["ceiling"] = sector.data.ceiling_height * export_scale.z
 		sector_export["points"] = sector_points
 		sector_export["portal_target"] = sectors_map[sector.portal_destination] if sector.has_portal() else 65535
 		sector_export["portal_wall"] = sector.portal_wall if sector.has_portal() else -1
@@ -166,8 +166,7 @@ func add_sector(position: Vector2, points: PackedVector2Array, name: String = ""
 			if ! name.is_empty(): 
 				new_sector.name = name
 			if self.auto_heights and nearest_point:
-				new_sector.floor_height = nearest_point._sector.floor_height
-				new_sector.ceiling_height = nearest_point._sector.ceiling_height
+				new_sector.data = nearest_point._sector.data.duplicate()
 			return new_sector
 
 
@@ -208,10 +207,11 @@ func is_mouse_pressed(key: MouseButton)->bool:
 
 
 func _change_sector_height(node: Sector, delta: float, mode: EditorConfig.SectorColoringMode)->void:
+	node.data = node.data.duplicate()
 	if   mode == EditorConfig.SectorColoringMode.Floor:
-		node.floor_height += delta * config.floor_height_increment
+		node.data.floor_height += delta * config.floor_height_increment
 	elif mode == EditorConfig.SectorColoringMode.Ceiling:
-		node.ceiling_height += delta * config.ceiling_height_increment
+		node.data.ceiling_height += delta * config.ceiling_height_increment
 
 
 func _handle_input()->void:

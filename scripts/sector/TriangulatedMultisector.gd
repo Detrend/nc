@@ -2,13 +2,13 @@
 class_name TriangulatedMultisector
 extends EditablePolygon
 
+## Perform the triangulation (Alt+T)
 @export_tool_button("Triangulate") var triangulate_tool_button = do_triangulate
 
+## Do debug stuff
 @export var debug : bool = false
 
-@export_group("Sector")
-@export var floor_height : float = 0.0
-@export var ceiling_height : float = 1.5
+@export var sector_data : SectorProperties = SectorProperties.new()
 
 func _ready() -> void:
 	do_triangulate()
@@ -29,7 +29,6 @@ func do_triangulate()->void:
 		added.global_position = Vector2.ZERO
 		added.polygon = segment
 		added.is_editable = false
-		added.floor_height = self.floor_height
-		added.ceiling_height = self.ceiling_height
+		added.data = self.sector_data
 		added.z_index = -10
 		 

@@ -67,9 +67,9 @@ static func get_sector_color(this: EditorConfig, sector: Sector)->Color:
 		return this.excluded_sector_color
 	var mode:= sector._level.coloring_mode
 	if mode == SectorColoringMode.Floor:
-		return get_floor_color(this, sector.floor_height)
+		return get_floor_color(this, sector.data.floor_height)
 	if mode == SectorColoringMode.Ceiling:
-		return get_ceiling_color(this, sector.ceiling_height)
+		return get_ceiling_color(this, sector.data.ceiling_height)
 	ErrorUtils.report_error("this shouldn't happen!")
 	return Color.TRANSPARENT
 
@@ -78,7 +78,7 @@ static func get_floor_color(this: EditorConfig, floor: float)->Color:
 	if this.floor_color_curve: t = this.floor_color_curve.sample(t)
 	return lerp(this.floor_min_height_color, this.floor_max_height_color, t)
 
-static func get_ceiling_color(this: EditorConfig, floor: float)->Color:
-	var t = clampf((floor - this.ceiling_min_height)/(this.ceiling_max_height - this.ceiling_min_height), 0.0, 1.0)
+static func get_ceiling_color(this: EditorConfig, ceiling: float)->Color:
+	var t = clampf((ceiling - this.ceiling_min_height)/(this.ceiling_max_height - this.ceiling_min_height), 0.0, 1.0)
 	if this.ceiling_color_curve: t = this.ceiling_color_curve.sample(t)
 	return lerp(this.ceiling_min_height_color, this.ceiling_max_height_color, t)
