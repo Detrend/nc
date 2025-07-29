@@ -34,6 +34,14 @@ class Wrapper:
 		self.value = value
 
 
+static func modify_in_place(list, modificator : Callable):
+	var i : int = 0
+	while i < list.size():
+		list[i] = modificator.call(list[i])
+		i += 1
+	return list
+
+
 static func string_concat(list, separator = ", ")->String:
 	var ret := ""
 	var is_first_iteration := true
@@ -43,3 +51,9 @@ static func string_concat(list, separator = ", ")->String:
 		is_first_iteration = false
 		ret += str(e)
 	return ret
+
+static func insert_array(target:Array, idx: int, to_insert : Array)->Array:
+	for elem in to_insert:
+		target.insert(idx, elem)
+		idx += 1
+	return target

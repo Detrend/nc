@@ -108,3 +108,9 @@ static var _counter: int = 0;
 static func get_unique_id()->int: 
 	_counter += 1;
 	return _counter;
+
+static func instantiate_child(parent: Node, prefab: Resource)->Node:
+	var ret :Node = prefab.instantiate()
+	parent.add_child(ret)
+	ret.owner = parent.get_tree().edited_scene_root
+	return ret

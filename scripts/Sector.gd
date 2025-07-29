@@ -43,10 +43,12 @@ func _on_sole_selected()->void:
 func _on_sole_unselected()->void:
 	pass
 
-func _on_sole_selected_press_down(_key: InputEventKey)->void:
+func _on_sole_selected_input()->void:
+	if _level.is_key_down(KEY_Q):
+		pass
 	pass
 
-func _on_sole_selected_press_up(_key: InputEventKey)->void:
+func _on_config_change()->void:
 	pass
 
 
@@ -73,10 +75,10 @@ func _process(_delta: float) -> void:
 		did_change = did_change or self._remove_duplicit_points (points)
 		did_change = did_change or self._ensure_points_clockwise(points)
 		if did_change:
-			print(get_full_name())
-			print("before: {0}".format([points]))
+			#print(get_full_name())
+			#print("before: {0}".format([points]))
 			self.polygon = points
-			print("after:  {0}".format([self.polygon]))
+			#print("after:  {0}".format([self.polygon]))
 		
 	
 	_visualize_border()
@@ -102,6 +104,12 @@ func set_point_position(idx: int, absolute: Vector2)->void:
 	var points := self.polygon
 	points[idx] = self.point_pos_absolute_to_relative(absolute)
 	self.polygon = points
+	
+func get_point_positions()->PackedVector2Array:
+	return DatastructUtils.modify_in_place(self.polygon, point_pos_relative_to_absolute)
+	
+func set_point_positions(positions_gets_consumed: PackedVector2Array)->void:
+	self.polygon = DatastructUtils.modify_in_place(positions_gets_consumed, point_pos_relative_to_absolute)
 	
 func get_wall_begin(idx: int)->Vector2:
 	return get_point_position(idx)

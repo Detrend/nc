@@ -477,9 +477,9 @@ portal_destination_wall = 2
 
 [node name="@Polygon2D@121205" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.874606, 0.748225, 0.797592, 1)
+color = Color(0.86222, 0.723355, 0.777599, 1)
 polygon = PackedVector2Array(328, -80, 344, -88, 352, -88, 368, -80, 368, -56, 352, -48, 344, -48, 328, -56)
-floor_height = 1.0
+floor_height = 1.1
 ceiling_height = 7.0
 
 [node name="@Polygon2D@122971" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
@@ -586,7 +586,7 @@ ceiling_height = 10.0
 [node name="@Polygon2D@205304" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
 position = Vector2(-389, -71)
 color = Color(0.501961, 0, 0.196078, 1)
-polygon = PackedVector2Array(440, 40, 451, 34, 461, 41, 457, 53, 443, 53)
+polygon = PackedVector2Array(441, 40, 451, 34, 461, 41, 457, 53, 443, 53)
 floor_height = 5.0
 ceiling_height = 10.0
 
@@ -622,25 +622,25 @@ portal_destination_wall = 3
 [node name="@Polygon2D@213967" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
 position = Vector2(-389, -71)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(406, 14, 419, 14, 414, 63, 402, 63)
+polygon = PackedVector2Array(406, 14, 420, 14, 414, 63, 402, 63)
 ceiling_height = 10.0
 
 [node name="@Polygon2D@214673" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
 position = Vector2(-389, -71)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(419, 14, 478, 14, 451, 34, 440, 40)
+polygon = PackedVector2Array(420, 14, 478, 14, 451, 34, 441, 40)
 ceiling_height = 10.0
 
 [node name="@Polygon2D@215021" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
 position = Vector2(-389, -71)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(419, 14, 440, 40, 414, 63)
+polygon = PackedVector2Array(420, 14, 441, 40, 414, 63)
 ceiling_height = 10.0
 
 [node name="@Polygon2D@215722" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
 position = Vector2(-389, -71)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(414, 63, 440, 40, 443, 53, 418, 72)
+polygon = PackedVector2Array(414, 63, 441, 40, 443, 53, 418, 72)
 ceiling_height = 10.0
 
 [node name="@Polygon2D@216070" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]

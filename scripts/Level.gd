@@ -18,8 +18,8 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	#if ! Engine.is_editor_hint(): return
-	_handle_new_sector_creation()
 	_handle_input()
+	_handle_new_sector_creation()
 
 func create_level_export_data() -> Dictionary:	
 	var level_export := Dictionary()
@@ -129,15 +129,12 @@ func find_nearest_point(pos: Vector2, max_snapping_distance: float, to_skip: Sec
 	var ret: SectorPoint= Sector.find_nearest_point(pos, other_points, max_snapping_distance)
 	return ret
 
-var sector_creation_request : bool = false
 func _handle_new_sector_creation()->void:
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):# and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-		if (!sector_creation_request) and Input.is_physical_key_pressed(KEY_SHIFT) and Input.is_physical_key_pressed(KEY_CTRL):
-			sector_creation_request = true
+		if is_mouse_down(MOUSE_BUTTON_LEFT)  and is_key_pressed(KEY_SHIFT) and is_key_pressed(KEY_CTRL):
 			var new_sector := add_sector(get_global_mouse_position(), [Vector2(0, 0), Vector2(10, 0), Vector2(0, 10)])
 			print("new sector: {0}".format([new_sector]))
-	else:
-		sector_creation_request = false
+			
 
 func find_sector_parent(position: Vector2, nearest_point : SectorPoint)->Node2D:
 	var sector_parent : Node2D = null
@@ -165,9 +162,7 @@ func add_sector(position: Vector2, points: PackedVector2Array, name: String = ""
 			var nearest_point := find_nearest_point(position, INF, null)
 			var sector_parent : Node2D = find_sector_parent(position, nearest_point)
 			
-			var new_sector :Sector = preload("res://prefabs/Sector.tscn").instantiate()
-			sector_parent.add_child(new_sector)
-			new_sector.owner = get_tree().edited_scene_root
+			var new_sector :Sector = NodeUtils.instantiate_child(sector_parent, preload("res://prefabs/Sector.tscn")) as Sector
 			new_sector.global_position = position
 			new_sector.polygon = points
 			if ! name.is_empty(): 
@@ -178,14 +173,41 @@ func add_sector(position: Vector2, points: PackedVector2Array, name: String = ""
 			return new_sector
 
 
-var keypress_states : Dictionary[Key, bool]
-func _is_key_down(key: Key)->bool:
+enum KeypressState{
+	NONE = 0, UP, DOWN, PRESSED
+}
+static var KEYS_TO_TRACK : Array[Key] = [KEY_ALT, KEY_SHIFT, KEY_CTRL, KEY_Q, KEY_P, KEY_L]
+static var MOUSE_BUTTONS_TO_TRACK : Array[MouseButton] = [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT]
+
+var keypress_states : Dictionary[int, KeypressState]
+
+func _update_key_state(key:int, is_keyboard_button : bool)->bool:
 	if keypress_states == null: 
 		keypress_states = {}
-	var last : bool = keypress_states.get(key, false)
-	var current := Input.is_key_pressed(key)
-	if current != last: keypress_states[key] = current
-	return (last == false) and (current == true)
+	var last_state : KeypressState = keypress_states.get(key, KeypressState.NONE)
+	var last : bool = (last_state != KeypressState.NONE) and (last_state != KeypressState.UP)
+	var current : bool = Input.is_key_pressed(key as Key) if is_keyboard_button else Input.is_mouse_button_pressed(key as MouseButton)
+	if current != last: 
+		keypress_states[key] = KeypressState.DOWN if current else KeypressState.UP
+		return true
+	else:
+		keypress_states[key] = KeypressState.PRESSED if current else KeypressState.NONE
+		return false
+
+func is_key_down(key: Key)->bool:
+	return keypress_states.get(key, KeypressState.NONE) == KeypressState.DOWN
+func is_key_up(key: Key)->bool:
+	return keypress_states.get(key, KeypressState.NONE) == KeypressState.UP
+func is_key_pressed(key: Key)->bool:
+	return Input.is_key_pressed(key)
+
+func is_mouse_down(key: MouseButton)->bool:
+	return keypress_states.get(key, KeypressState.NONE) == KeypressState.DOWN
+func is_mouse_up(key: MouseButton)->bool:
+	return keypress_states.get(key, KeypressState.NONE) == KeypressState.UP
+func is_mouse_pressed(key: MouseButton)->bool:
+	return Input.is_mouse_button_pressed(key)
+
 
 func _change_sector_height(node: Sector, delta: float, mode: EditorConfig.SectorColoringMode)->void:
 	if   mode == EditorConfig.SectorColoringMode.Floor:
@@ -193,14 +215,27 @@ func _change_sector_height(node: Sector, delta: float, mode: EditorConfig.Sector
 	elif mode == EditorConfig.SectorColoringMode.Ceiling:
 		node.ceiling_height += delta * config.ceiling_height_increment
 
+
 func _handle_input()->void:
-	#return
+	# update general input
+	var did_change: bool = false
+	for key in KEYS_TO_TRACK:  if _update_key_state(key, true): did_change = true
+	for key in MOUSE_BUTTONS_TO_TRACK:  if _update_key_state(key, false): did_change = true
+	if did_change:
+		#print("Did change: {0}".format([keypress_states]))
+		var selected :Array[Sector] = []
+		selected = NodeUtils.get_selected_nodes_of_type(Sector, selected)
+		if selected.size() == 1: 
+			selected[0]._on_sole_selected_input()
+
+
+	# handle Level-specific input actions
 	var increment := 0
-	var is_alt_pressed = Input.is_key_pressed(KEY_ALT)
-	if _is_key_down(KEY_P): 
+	var is_alt_pressed = is_key_pressed(KEY_ALT)
+	if is_alt_pressed and is_key_down(KEY_P): 
 		print("+")
 		increment += 1
-	if _is_key_down(KEY_L): 
+	if is_alt_pressed and is_key_down(KEY_L): 
 		print("-")
 		increment -= 1
 	if increment != 0.0:
