@@ -32,6 +32,7 @@ func do_triangulate()->void:
 		if hole_node.is_visible_in_tree() and hole_node.is_editable:
 			holes.append(hole_node.get_point_positions())
 	var computed_segments := GeometryUtils.polygon_to_convex_segments(self.get_point_positions(), holes, debug)
+	var counter : int = 0
 	for segment in computed_segments:
 		#print("clockwise: {0}".format([Geometry2D.is_polygon_clockwise(segment)]))
 		var added :Sector = NodeUtils.instantiate_child(generated_parent, preload("res://prefabs/Sector.tscn")) as Sector
@@ -40,6 +41,8 @@ func do_triangulate()->void:
 		added.is_editable = false
 		added.data = self.data
 		added.z_index = -10
+		added.name = "_" + str(counter)
+		counter += 1
 		 
 func do_clear()->void:
 	var generated_parent : Node2D = $Generated
