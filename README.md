@@ -29,3 +29,18 @@ To export the level, set appropriate output path and other parameters and press 
 - `Hide` a sector to exclude it from level export
 - Placing portals... should be intuitive, only one portal per sector is currently permitted. _One-sided portals are available for experimentation, but they assert-crash the game._
 - `floor`, `ceiling`... visualized by sector's color - see related properties in `config.tres`, switch between `floor`/`ceiling` visualization via `Level`'s `coloring_mode` property 
+
+#### `TriangulatedMultisector`
+- Smarter editable polygon that can be arbitrarily non-convex. It automatically triangulates its area with sectors
+- Add ordinary `Sector`s inside the shape as its children - they will act as "holes" in the triangulated polygon
+- Create a new multisector by holding `Ctrl+Shift+T` while left-mouse-clicking on empty place in the scene
+
+
+---------------------------------
+
+#### Cheat Sheet
+- `Alt + P`, `Alt + L`... increment/decrement selected sector's floor/ceiling (depending on current `coloring_mode`) height, useful when creating stairs
+- `Ctrl + Shift + LMB`... create new `Sector`
+- `Ctrl + Shift + T + LMB`... create new `TriangulatedMultisector`
+- `Alt + T`... triangulate current multisector (only when a `TriangulatedMultisector` or its child is selected)
+- `Q`... hold to perform multi point movement
