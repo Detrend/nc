@@ -60,8 +60,8 @@ std::shared_ptr<Gizmo> Gizmo::create_cube_impl(f32 ttl, const vec3& position, f3
 {
   const mat4 transform = translate(mat4(1.0f), position) * scale(mat4(1.0f), vec3(size));
 
-  GizmoManager& gizmo_manager = GizmoManager::instance();
-  return gizmo_manager.add_gizmo(Gizmo(MeshManager::instance().get_cube(), transform, color, ttl), ttl > 0.0f);
+  GizmoManager& gizmo_manager = GizmoManager::get();
+  return gizmo_manager.add_gizmo(Gizmo(MeshManager::get().get_cube(), transform, color, ttl), ttl > 0.0f);
 }
 
 //==============================================================================
@@ -73,8 +73,8 @@ std::shared_ptr<Gizmo> Gizmo::create_ray_impl(f32 ttl, const vec3& start, const 
     * scale(mat4(1.0f), vec3(1e6f))
     * rotate(mat4(1.0f), angle, axis);
   
-  GizmoManager& gizmo_manager = GizmoManager::instance();
-  return gizmo_manager.add_gizmo(Gizmo(MeshManager::instance().get_line(), transform, color, ttl), ttl > 0.0f);
+  GizmoManager& gizmo_manager = GizmoManager::get();
+  return gizmo_manager.add_gizmo(Gizmo(MeshManager::get().get_line(), transform, color, ttl), ttl > 0.0f);
 }
 
 //==============================================================================
@@ -90,8 +90,8 @@ std::shared_ptr<Gizmo> Gizmo::create_line_impl(f32 ttl, const vec3& start, const
   [[maybe_unused]] const vec3 recomp_start = transform * vec4{0, 0, 0, 1};
   [[maybe_unused]] const vec3 recomp_end   = transform * vec4{1, 0, 0, 1};
 
-  GizmoManager& gizmo_manager = GizmoManager::instance();
-  return gizmo_manager.add_gizmo(Gizmo(MeshManager::instance().get_line(), transform, color, ttl), ttl > 0.0f);
+  GizmoManager& gizmo_manager = GizmoManager::get();
+  return gizmo_manager.add_gizmo(Gizmo(MeshManager::get().get_line(), transform, color, ttl), ttl > 0.0f);
 }
 
 //==============================================================================
@@ -115,7 +115,7 @@ std::pair<vec3, f32> Gizmo::compute_rotation_angle_axis(const vec3& direction)
 }
 
 //==============================================================================
-GizmoManager& GizmoManager::instance()
+GizmoManager& GizmoManager::get()
 {
   if (m_instance == nullptr)
   {

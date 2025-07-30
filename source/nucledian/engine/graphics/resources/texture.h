@@ -66,18 +66,10 @@ public:
 
   static TextureManager& get();
 
-  // Begin loading of multiple textures of a specified lifetime.
-  void begin_load(ResLifetime lifetime);
-  /**
-   * Loads texture from the file. You must call TextureManager::begin_load before loading any texture of a specified
-   * lifetime. After loading all texture of a specified lifetime, you must call TextureManager::finih_load. Mixing of
-   * lifetimes is not allowed, i.e. you cannot load textures of different lifetimes in the same begin_load/finish_load.
-   */
-  void load(ResLifetime lifetime, const std::string& path);
-  // Finishes loading of multiple textures of a specified lifetime.
-  void finish_load(ResLifetime lifetime);
+  
+  // Load all textures from a directory. They will be loaded into texture atlas of specified lifetime.
   void load_directory(ResLifetime lifetime, const std::string& path);
-  // Unloads all textures with specified lifetime.
+  // Unloads all textures with specified lifetime. This will unload the texture atlas of specified lifetime.
   void unload(ResLifetime lifetime);
 
   const TextureAtlas& get_atlas(ResLifetime lifetime) const;
@@ -99,34 +91,40 @@ private:
   TextureAtlas& get_atlas_mut(ResLifetime lifetime);
   void create_error_texture();
 
+  /**
+   * Loads texture from the file. After loading all textures of a specified lifetime, you must call
+   * TextureManager::finih_load which will actually load the textures.
+   */
+  void load(const std::string& path);
+  // Finishes loading of multiple textures of a specified lifetime. Creates a texture atlas.
+  void finish_load(ResLifetime lifetime);
+
   TextureAtlas m_game_atlas;
   TextureAtlas m_level_atlas;
 
   GLuint m_error_texture = 0;
 
-  // Lifetime of the current batch load operation, or ResLifetime::None if no load is active.
-  ResLifetime m_load_lifetime = ResLifetime::None;
   /**
    * During a load operation, each loaded texture's width and height are added here to be processed by stb_rect_pack
    * in TextureManager::finish_load.
    */
   std::vector<stbrp_rect> m_load_rects;
   // Stores pixel data and metadata for textures which are currently being loaded.
-  std::vector<LoadData> m_load_data;
+  std::vector<LoadData>   m_load_data;
 
   // Holds the pixel data and properties of a single image which is currently being loaded from disk.
   struct LoadData
   {
     // The width of the image in pixels.
-    int                  width  = 0;
+    int            width  = 0;
     // The height of the image in pixels.
-    int                  height = 0;
+    int            height = 0;
     // The OpenGL texture format (e.g., GL_RGB, GL_RGBA).
-    GLenum               format = GL_RGB;
+    GLenum         format = GL_RGB;
     // A pointer to the pixel data.
-    unsigned char*       data   = nullptr;
+    unsigned char* data   = nullptr;
     // Name of the texture.
-    std::string          name   = "";
+    std::string    name   = "";
   };
 };
 

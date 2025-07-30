@@ -53,7 +53,7 @@ class MeshManager
 public:
   friend class MeshHandle;
 
-  static MeshManager& instance();
+  static MeshManager& get();
 
   void init();
   /**

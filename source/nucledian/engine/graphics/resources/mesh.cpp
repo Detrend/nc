@@ -153,7 +153,7 @@ MeshHandle MeshHandle::invalid()
 }
 
 //==============================================================================
-MeshManager& MeshManager::instance()
+MeshManager& MeshManager::get()
 {
   if (m_instance == nullptr)
   {

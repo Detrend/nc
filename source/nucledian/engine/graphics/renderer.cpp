@@ -110,7 +110,7 @@ void Renderer::do_geometry_pass(const CameraData& camera) const
   glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-  GizmoManager::instance().draw_gizmos();
+  GizmoManager::get().draw_gizmos();
   render_sectors(camera);
   render_entities(camera);
   render_portals(camera);
@@ -134,7 +134,7 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   m_light_material.use();
   m_light_material.set_uniform(shaders::light::VIEW_POSITION, view_position);
 
-  const MeshHandle screen_quad = MeshManager::instance().get_screen_quad();
+  const MeshHandle screen_quad = MeshManager::get().get_screen_quad();
   glBindVertexArray(screen_quad.get_vao());
   glDrawArrays(screen_quad.get_draw_mode(), 0, screen_quad.get_vertex_count());
   glBindVertexArray(0);
@@ -213,7 +213,7 @@ void Renderer::render_entities(const CameraData& camera) const
   m_billboard_material.use();
   m_billboard_material.set_uniform(shaders::billboard::VIEW, camera.view);
 
-  const MeshHandle& texturable_quad = MeshManager::instance().get_texturable_quad();
+  const MeshHandle& texturable_quad = MeshManager::get().get_texturable_quad();
   glBindVertexArray(texturable_quad.get_vao());
   glActiveTexture(GL_TEXTURE0);
 
@@ -303,7 +303,7 @@ void Renderer::render_gun() const
   const mat4 transform = translate(mat4(1.0f), vec3(screen_width / 2.0f, screen_height / 2.0f, 0.0f))
     * scale(mat4(1.0f), -vec3(screen_width, screen_height, 1.0f));
 
-  const MeshHandle& texturable_quad = MeshManager::instance().get_texturable_quad();
+  const MeshHandle& texturable_quad = MeshManager::get().get_texturable_quad();
   glBindVertexArray(texturable_quad.get_vao());
 
   m_billboard_material.use();
@@ -336,7 +336,7 @@ void Renderer::render_portal_to_stencil(const CameraData& camera, const Portal& 
   glStencilFunc(GL_LEQUAL, recursion, 0xFF);
   glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
 
-  const MeshHandle& quad = MeshManager::instance().get_quad();
+  const MeshHandle& quad = MeshManager::get().get_quad();
   glBindVertexArray(quad.get_vao());
   glDrawArrays(quad.get_draw_mode(), 0, quad.get_vertex_count());
   glBindVertexArray(0);
@@ -394,7 +394,7 @@ void Renderer::render_portal_to_depth(
     glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
   }
 
-  const MeshHandle& quad = MeshManager::instance().get_quad();
+  const MeshHandle& quad = MeshManager::get().get_quad();
   glBindVertexArray(quad.get_vao());
   glDrawArrays(quad.get_draw_mode(), 0, quad.get_vertex_count());
   glBindVertexArray(0);

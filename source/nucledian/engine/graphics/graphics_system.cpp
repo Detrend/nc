@@ -308,7 +308,8 @@ bool GraphicsSystem::init()
 
   glLineWidth(5.0f);
 
-  MeshManager::instance().init();
+  MeshManager::get().init();
+  TextureManager::get().load_directory(ResLifetime::Game, "content/textures");
 
   m_default_projection = perspective(FOV, ASPECT_RATIO, 0.0001f, 100.0f);
 
@@ -384,7 +385,7 @@ void GraphicsSystem::terminate()
   ImGui::DestroyContext();
 #endif
 
-  MeshManager::instance().unload(ResLifetime::Game);
+  MeshManager::get().unload(ResLifetime::Game);
 
   SDL_GL_DeleteContext(m_gl_context);
   m_gl_context = nullptr;
@@ -439,7 +440,7 @@ const mat4& GraphicsSystem::get_default_projection() const
 //==============================================================================
 void GraphicsSystem::update(f32 delta_seconds)
 {
-  GizmoManager::instance().update_ttls(delta_seconds);
+  GizmoManager::get().update_ttls(delta_seconds);
 }
 
 //==============================================================================
@@ -1058,7 +1059,7 @@ void GraphicsSystem::draw_debug_window()
 void GraphicsSystem::create_sector_meshes()
 {
   const auto& map = ThingSystem::get().get_map();
-  MeshManager& mesh_manager = MeshManager::instance();
+  MeshManager& mesh_manager = MeshManager::get();
 
   m_sector_meshes.clear();
 

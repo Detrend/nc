@@ -93,22 +93,120 @@ TextureManager& TextureManager::get()
 }
 
 //==============================================================================
-void TextureManager::begin_load(ResLifetime lifetime)
+void TextureManager::load_directory(ResLifetime lifetime, const std::string& path)
 {
-  nc_assert
-  (
-    m_load_lifetime == ResLifetime::None,
-    "Cannot begin loading textures when another loading is in progress."
-  );
+  for (const auto& entry : std::filesystem::directory_iterator(path))
+  {
+    if (!entry.is_regular_file())
+      continue;
 
-  m_load_lifetime = lifetime;
+    load(entry.path().string());
+  }
+
+  finish_load(lifetime);
 }
 
 //==============================================================================
-void nc::TextureManager::load(ResLifetime lifetime, const std::string& path)
+void TextureManager::unload(ResLifetime lifetime)
 {
-  nc_assert(m_load_lifetime == lifetime, "Specified lifetime does not match the one used in begin_load.");
+  nc_assert(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
 
+  auto& atlas = get_atlas_mut(lifetime);
+
+  glDeleteTextures(1, &atlas.handle);
+  atlas.handle = 0;
+  atlas.textures.clear();
+
+  m_generation++;
+}
+
+//==============================================================================
+const TextureAtlas& TextureManager::get_atlas(ResLifetime lifetime) const
+{
+  nc_assert(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
+
+  if (lifetime == ResLifetime::Game)
+    return m_game_atlas;
+  else
+    return m_level_atlas;
+}
+
+//==============================================================================
+GLuint TextureManager::get_error_texture_handle() const
+{
+  return m_error_texture;
+}
+
+//==============================================================================
+const TextureHandle& TextureManager::operator[](const std::pair<const std::string&, ResLifetime> pair)
+{
+  return get_atlas(pair.second).textures.at(pair.first);
+}
+
+//==============================================================================
+const TextureHandle& TextureManager::operator[](const std::string& name)
+{
+  return operator[](std::make_pair(name, ResLifetime::Game));
+}
+
+//==============================================================================
+TextureManager::TextureManager()
+{
+  create_error_texture();
+}
+
+//==============================================================================
+TextureAtlas& TextureManager::get_atlas_mut(ResLifetime lifetime)
+{
+  nc_assert(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
+
+  if (lifetime == ResLifetime::Game)
+    return m_game_atlas;
+  else
+    return m_level_atlas;
+}
+
+//==============================================================================
+void TextureManager::create_error_texture()
+{
+  constexpr u32 channels = 3;
+
+  std::vector<unsigned char> data(ERROR_TEXTURE_SIZE * ERROR_TEXTURE_SIZE * channels);
+  // black-magenta checkerboard pattern
+  for (u32 y = 0; y < ERROR_TEXTURE_SIZE; ++y)
+  {
+    for (u32 x = 0; x < ERROR_TEXTURE_SIZE; ++x)
+    {
+      u32 index = (y * ERROR_TEXTURE_SIZE + x) * channels;
+      if ((y / 64 + x / 64) % 2 == 0)
+      {
+        // black
+        data[index]     = 0; // R
+        data[index + 1] = 0; // G
+        data[index + 2] = 0; // B
+      }
+      else
+      {
+        // magenta
+        data[index]     = 255; // R
+        data[index + 1] = 0;   // G
+        data[index + 2] = 255; // B
+      }
+    }
+  }
+
+  glGenTextures(1, &m_error_texture);
+  glBindTexture(GL_TEXTURE_2D, m_error_texture);
+
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ERROR_TEXTURE_SIZE, ERROR_TEXTURE_SIZE, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data());
+  glGenerateMipmap(GL_TEXTURE_2D);
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+//==============================================================================
+void nc::TextureManager::load(const std::string& path)
+{
   int width, height, channels;
   unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
   if (data == nullptr)
@@ -132,24 +230,24 @@ void nc::TextureManager::load(ResLifetime lifetime, const std::string& path)
   const std::string filename = (last_separator_pos != std::string::npos) ? path.substr(last_separator_pos + 1) : path;
   const size_t first_dot_pos = filename.find('.');
   const std::string name = (first_dot_pos != std::string::npos) ? filename.substr(0, first_dot_pos) : filename;
-  
+
   m_load_rects.push_back(stbrp_rect
-  {
-    .id = static_cast<int>(m_load_rects.size()),
-    .w = width,
-    .h = height,
-    .x = 0,
-    .y = 0,
-    .was_packed = 0,
-  });
+    {
+      .id = static_cast<int>(m_load_rects.size()),
+      .w = width,
+      .h = height,
+      .x = 0,
+      .y = 0,
+      .was_packed = 0,
+    });
   m_load_data.push_back(LoadData
-  {
-    .width = width,
-    .height = height,
-    .format = format,
-    .data = data,
-    .name = name,
-  });
+    {
+      .width = width,
+      .height = height,
+      .format = format,
+      .data = data,
+      .name = name,
+    });
 }
 
 //==============================================================================
@@ -157,7 +255,6 @@ void TextureManager::finish_load(ResLifetime lifetime)
 {
   static constexpr u16 DEFAULT_LOAD_TARGET_SIZE = 256;
 
-  nc_assert(m_load_lifetime == lifetime, "Specified lifetime does not match the one used in begin_load.");
   nc_assert(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
 
   int target_width = DEFAULT_LOAD_TARGET_SIZE;
@@ -232,125 +329,9 @@ void TextureManager::finish_load(ResLifetime lifetime)
       )
     );
   }
-  
-  m_load_lifetime = ResLifetime::None;
+
   m_load_rects.clear();
   m_load_data.clear();
-}
-
-//==============================================================================
-void TextureManager::load_directory(ResLifetime lifetime, const std::string& path)
-{
-  begin_load(lifetime);
-
-  for (const auto& entry : std::filesystem::directory_iterator(path))
-  {
-    if (!entry.is_regular_file())
-      continue;
-
-    load(lifetime, entry.path().string());
-  }
-
-  finish_load(lifetime);
-}
-
-//==============================================================================
-void TextureManager::unload(ResLifetime lifetime)
-{
-  nc_assert(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
-
-  auto& atlas = get_atlas_mut(lifetime);
-
-  glDeleteTextures(1, &atlas.handle);
-  atlas.handle = 0;
-  atlas.textures.clear();
-
-  m_generation++;
-}
-
-//==============================================================================
-const TextureAtlas& TextureManager::get_atlas(ResLifetime lifetime) const
-{
-  nc_assert(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
-
-  if (lifetime == ResLifetime::Game)
-    return m_game_atlas;
-  else
-    return m_level_atlas;
-}
-
-//==============================================================================
-GLuint TextureManager::get_error_texture_handle() const
-{
-  return m_error_texture;
-}
-
-//==============================================================================
-const TextureHandle& TextureManager::operator[](const std::pair<const std::string&, ResLifetime> pair)
-{
-  return get_atlas(pair.second).textures.at(pair.first);
-}
-
-//==============================================================================
-const TextureHandle& TextureManager::operator[](const std::string& name)
-{
-  return operator[](std::make_pair(name, ResLifetime::Game));
-}
-
-//==============================================================================
-TextureManager::TextureManager()
-{
-  create_error_texture();
-  load_directory(ResLifetime::Game, "content/textures");
-}
-
-//==============================================================================
-TextureAtlas& TextureManager::get_atlas_mut(ResLifetime lifetime)
-{
-  nc_assert(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
-
-  if (lifetime == ResLifetime::Game)
-    return m_game_atlas;
-  else
-    return m_level_atlas;
-}
-
-//==============================================================================
-void TextureManager::create_error_texture()
-{
-  constexpr u32 channels = 3;
-
-  std::vector<unsigned char> data(ERROR_TEXTURE_SIZE * ERROR_TEXTURE_SIZE * channels);
-  // black-magenta checkerboard pattern
-  for (u32 y = 0; y < ERROR_TEXTURE_SIZE; ++y)
-  {
-    for (u32 x = 0; x < ERROR_TEXTURE_SIZE; ++x)
-    {
-      u32 index = (y * ERROR_TEXTURE_SIZE + x) * channels;
-      if ((y / 64 + x / 64) % 2 == 0)
-      {
-        // black
-        data[index]     = 0; // R
-        data[index + 1] = 0; // G
-        data[index + 2] = 0; // B
-      }
-      else
-      {
-        // magenta
-        data[index]     = 255; // R
-        data[index + 1] = 0;   // G
-        data[index + 2] = 255; // B
-      }
-    }
-  }
-
-  glGenTextures(1, &m_error_texture);
-  glBindTexture(GL_TEXTURE_2D, m_error_texture);
-
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ERROR_TEXTURE_SIZE, ERROR_TEXTURE_SIZE, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data());
-  glGenerateMipmap(GL_TEXTURE_2D);
-
-  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 }

@@ -83,7 +83,7 @@ class GizmoManager
 public:
   friend class Gizmo;
 
-  static GizmoManager& instance();
+  static GizmoManager& get();
 
   // Update time to live (TTL) of active gizmos.
   void update_ttls(f32 delta_seconds);
