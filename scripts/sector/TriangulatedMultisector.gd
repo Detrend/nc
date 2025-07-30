@@ -8,14 +8,23 @@ extends EditablePolygon
 ## Do debug stuff
 @export var debug : bool = false
 
-@export var sector_data : SectorProperties = SectorProperties.new()
+@export var data : SectorProperties = SectorProperties.new()
+
+
+func _on_selected_input(selected_list: Array[Node])->void:
+	super._on_selected_input(selected_list)
+	if selected_list.size() == 1:
+		if _level.is_mouse_down(MOUSE_BUTTON_LEFT):
+			do_clear()
+		elif _level.is_mouse_up(MOUSE_BUTTON_LEFT) || _level.is_mouse_up(MOUSE_BUTTON_RIGHT):
+			do_triangulate()
 
 func _ready() -> void:
 	do_triangulate()
 
 func do_triangulate()->void:
+	do_clear()
 	var generated_parent : Node2D = $Generated
-	for ch in generated_parent.get_children(): generated_parent.remove_child(ch)
 	var hole_nodes : Array[EditablePolygon] = []
 	hole_nodes = NodeUtils.get_children_of_type(self, Sector, hole_nodes)
 	var holes : Array[PackedVector2Array] = []
@@ -29,6 +38,9 @@ func do_triangulate()->void:
 		added.global_position = Vector2.ZERO
 		added.polygon = segment
 		added.is_editable = false
-		added.data = self.sector_data
+		added.data = self.data
 		added.z_index = -10
 		 
+func do_clear()->void:
+	var generated_parent : Node2D = $Generated
+	for ch in generated_parent.get_children(): generated_parent.remove_child(ch)

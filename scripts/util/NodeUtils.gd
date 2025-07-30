@@ -109,8 +109,7 @@ static func is_the_only_selected_node(node: Node)->bool:
 	return selection.size() == 1 and selection[0] == node
 	
 static func get_selected_nodes_of_type(type: Variant, ret : Array = [])->Array:
-	var selection := EditorInterface.get_selection().get_selected_nodes()
-	for n in selection:
+	for n in EditorInterface.get_selection().get_selected_nodes():
 		if is_instance_of(n, type):
 			ret.append(n)
 	return ret

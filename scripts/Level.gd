@@ -18,6 +18,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	#if ! Engine.is_editor_hint(): return
+	_handle_selections()
 	_handle_input()
 	_handle_new_sector_creation()
 
@@ -128,11 +129,17 @@ func find_nearest_point(pos: Vector2, max_snapping_distance: float, to_skip: Sec
 	var ret: SectorPoint= Sector.find_nearest_point(pos, other_points, max_snapping_distance)
 	return ret
 
+
 func _handle_new_sector_creation()->void:
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):# and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-		if is_mouse_down(MOUSE_BUTTON_LEFT)  and is_key_pressed(KEY_SHIFT) and is_key_pressed(KEY_CTRL):
-			var new_sector := add_sector(get_global_mouse_position(), [Vector2(0, 0), Vector2(10, 0), Vector2(0, 10)])
-			print("new sector: {0}".format([new_sector]))
+		if is_key_pressed(KEY_SHIFT) and is_key_pressed(KEY_CTRL) and is_mouse_down(MOUSE_BUTTON_LEFT):
+			if is_key_pressed(KEY_T):
+				var new_multisector := add_sector(preload("res://prefabs/TriangulatedMultisector.tscn"), get_global_mouse_position(), [Vector2(0, 0), Vector2(10, 0), Vector2(0, 10)])
+				print("new multisector: {0}".format([new_multisector]))
+			else:
+				var new_sector := add_sector(preload("res://prefabs/Sector.tscn"), get_global_mouse_position(), [Vector2(0, 0), Vector2(10, 0), Vector2(0, 10)])
+				print("new sector: {0}".format([new_sector]))
+
 			
 
 func find_sector_parent(position: Vector2, nearest_point : SectorPoint)->Node2D:
@@ -156,15 +163,19 @@ func find_sector_parent(position: Vector2, nearest_point : SectorPoint)->Node2D:
 	return sector_parent
 
 
-func add_sector(position: Vector2, points: PackedVector2Array, name: String = "")->Sector:
+func generate_random_name(prefab: Resource)->String:
+	var resource_name :String = TextUtils.substring(prefab.resource_path, prefab.resource_path.rfind("/") + 1, prefab.resource_path.rfind(".tscn"))
+	print("{0}  |  {1} ({2})".format([prefab.resource_path, resource_name, prefab.resource_path.rfind(".tscn")]))
+	return resource_name + "-" + str(randi_range(0, 9999))
+
+func add_sector(prefab: Resource, position: Vector2, points: PackedVector2Array, name: String = "")->EditablePolygon:
 			var nearest_point := find_nearest_point(position, INF, null)
 			var sector_parent : Node2D = find_sector_parent(position, nearest_point)
 			
-			var new_sector :Sector = NodeUtils.instantiate_child(sector_parent, preload("res://prefabs/Sector.tscn")) as Sector
+			var new_sector :EditablePolygon = NodeUtils.instantiate_child(sector_parent, prefab) as EditablePolygon
 			new_sector.global_position = position
 			new_sector.polygon = points
-			if ! name.is_empty(): 
-				new_sector.name = name
+			new_sector.name = name if not name.is_empty() else generate_random_name(prefab)
 			if self.auto_heights and nearest_point:
 				new_sector.data = nearest_point._sector.data.duplicate()
 			return new_sector
@@ -174,7 +185,7 @@ enum KeypressState{
 	NONE = 0, UP, DOWN, PRESSED
 }
 static var KEYS_TO_TRACK : Array[Key] = [KEY_ALT, KEY_SHIFT, KEY_CTRL, KEY_Q, KEY_P, KEY_L, KEY_T]
-static var MOUSE_BUTTONS_TO_TRACK : Array[MouseButton] = [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT]
+static var MOUSE_BUTTONS_TO_TRACK : Array[MouseButton] = [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]
 
 var keypress_states : Dictionary[int, KeypressState]
 
@@ -250,3 +261,22 @@ func _handle_input()->void:
 				selected_multisectors[multipolygon] = true
 		for sel in selected_multisectors.keys():
 			sel.do_triangulate()
+
+
+var last_selection : Array[Node]
+func _handle_selections()->void:
+	if last_selection == null: last_selection = []
+	var current_selection : Array[Node] = []
+	NodeUtils.get_selected_nodes_of_type(Node, current_selection)
+	if last_selection.size() == 1 and ( current_selection.size() != 1 or current_selection[0] != last_selection[0]) and last_selection[0] is EditablePolygon:
+		(last_selection[0] as EditablePolygon)._on_sole_unselected()
+	if current_selection.size() == 1 and ( last_selection.size() != 1 or last_selection[0] != current_selection[0]) and current_selection[0] is EditablePolygon:
+		(current_selection[0] as EditablePolygon)._on_sole_selected()
+	for last in last_selection:
+		if last is EditablePolygon and current_selection.find(last) < 0:
+			(last as EditablePolygon)._selected_update(current_selection)
+	for current in current_selection:
+		if current is EditablePolygon:
+			(current as EditablePolygon)._selected_update(current_selection)
+	last_selection = current_selection
+	

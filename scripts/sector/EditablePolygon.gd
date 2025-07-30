@@ -21,8 +21,8 @@ func _selected_update(selected_list: Array[Node])->void:
 
 func _on_sole_selected()->void:
 	if not is_editable:
-		print("Selected a non-editable node")
-		var editable_ancestor : Node = NodeUtils.get_ancestor_by_predicate(self, func(n:Node): return !(n is EditablePolygon) or n.is_editable)
+		var editable_ancestor : Node = NodeUtils.get_ancestor_by_predicate(self, func(n:Node): return (n is EditablePolygon) and n.is_editable)
+		print("Selected a non-editable node (ancestor: {0})".format([editable_ancestor]))
 		if editable_ancestor: 
 			var selection := EditorInterface.get_selection()
 			selection.clear()
