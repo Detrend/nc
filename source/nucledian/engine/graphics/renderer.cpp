@@ -1,0 +1,450 @@
+// Project Nucledian Source File
+#include <engine/graphics/renderer.h>
+
+#include <common.h>
+#include <logging.h>
+
+#include <math/utils.h>
+#include <math/lingebra.h>
+
+#include <engine/core/engine.h>
+#include <engine/entity/entity_system.h>
+#include <engine/entity/sector_mapping.h>
+#include <engine/graphics/camera.h>
+#include <engine/graphics/gizmo.h>
+#include <engine/graphics/graphics_system.h>
+#include <engine/map/map_system.h>
+#include <engine/player/player.h>
+#include <engine/player/thing_system.h>
+
+#include <array>
+#include <unordered_set>
+
+namespace nc
+{
+
+//==============================================================================
+Renderer::Renderer(const GraphicsSystem& graphics_system)
+:
+  m_solid_material(graphics_system.get_solid_material()),
+  m_billboard_material(graphics_system.get_billboard_material()),
+  m_light_material(shaders::light::VERTEX_SOURCE, shaders::light::FRAGMENT_SOURCE)
+{
+  glGenFramebuffers(1, &m_g_buffer);
+  glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
+
+  // create g buffers
+  const GLenum attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+  m_g_position = create_g_buffer(GL_RGBA16F, attachments[0]);
+  m_g_normal   = create_g_buffer(GL_RGBA16F, attachments[1]);
+  m_g_albedo   = create_g_buffer(GL_RGBA, attachments[2]);
+  glDrawBuffers(3, attachments);
+
+  // create depth-stencil buffer
+  GLuint depth_stencil_buffer;
+  glGenRenderbuffers(1, &depth_stencil_buffer);
+  glBindRenderbuffer(GL_RENDERBUFFER, depth_stencil_buffer);
+  glRenderbufferStorage(
+    GL_RENDERBUFFER,
+    GL_DEPTH24_STENCIL8,
+    static_cast<GLsizei>(GraphicsSystem::WINDOW_WIDTH),
+    static_cast<GLsizei>(GraphicsSystem::WINDOW_HEIGHT)
+  );
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depth_stencil_buffer);
+
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    nc_warn("G-buffer not complete.");
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  m_light_material.use();
+  m_light_material.set_uniform(shaders::light::G_POSITION, 0);
+  m_light_material.set_uniform(shaders::light::G_NORMAL, 1);
+  m_light_material.set_uniform(shaders::light::G_ALBEDO, 2);
+}
+
+//==============================================================================
+void Renderer::render(const VisibilityTree& visibility_tree) const
+{
+  const Camera* camera = Camera::get();
+  if (!camera)
+    return;
+
+  const CameraData camera_data = CameraData
+  {
+    .position = camera->get_position(),
+    .view = camera->get_view(),
+    .vis_tree = visibility_tree,
+  };
+
+  do_geometry_pass(camera_data);
+  do_lighting_pass(camera_data.position);
+}
+
+GLuint Renderer::create_g_buffer(GLint internal_format, GLenum attachment) const
+{
+  GLuint g_handle;
+  glGenTextures(1, &g_handle);
+  glBindTexture(GL_TEXTURE_2D, g_handle);
+  glTexImage2D(
+    GL_TEXTURE_2D,
+    0,
+    internal_format,
+    static_cast<GLsizei>(GraphicsSystem::WINDOW_WIDTH),
+    static_cast<GLsizei>(GraphicsSystem::WINDOW_HEIGHT),
+    0,
+    GL_RGBA,
+    GL_FLOAT,
+    nullptr
+  );
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, g_handle, 0);
+
+  return g_handle;
+}
+
+//==============================================================================
+void Renderer::do_geometry_pass(const CameraData& camera) const
+{
+  glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+  GizmoManager::get().draw_gizmos();
+  render_sectors(camera);
+  render_entities(camera);
+  render_portals(camera);
+  render_gun();
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+//==============================================================================
+void Renderer::do_lighting_pass(const vec3& view_position) const
+{
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, m_g_position);
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, m_g_normal);
+  glActiveTexture(GL_TEXTURE2);
+  glBindTexture(GL_TEXTURE_2D, m_g_albedo);
+
+  m_light_material.use();
+  m_light_material.set_uniform(shaders::light::VIEW_POSITION, view_position);
+
+  const MeshHandle screen_quad = MeshManager::get().get_screen_quad();
+  glBindVertexArray(screen_quad.get_vao());
+  glDrawArrays(screen_quad.get_draw_mode(), 0, screen_quad.get_vertex_count());
+  glBindVertexArray(0);
+}
+
+//==============================================================================
+void Renderer::render_sectors(const CameraData& camera) const
+{
+  #pragma region sector colors
+  constexpr auto SECTOR_COLORS = std::array
+  {
+    colors::YELLOW ,
+    colors::CYAN   ,
+    colors::MAGENTA,
+    colors::ORANGE ,
+    colors::PURPLE ,
+    colors::PINK   ,
+    colors::GRAY   ,
+    colors::BROWN  ,
+    colors::LIME   ,
+    colors::TEAL   ,
+    colors::NAVY   ,
+    colors::MAROON ,
+    colors::OLIVE  ,
+    colors::SILVER ,
+    colors::GOLD   ,
+  };
+  #pragma endregion
+  const auto& sectors_to_render = camera.vis_tree.sectors;
+  const std::vector<MeshHandle>& sector_meshes = GraphicsSystem::get().get_sector_meshes();
+
+  m_solid_material.use();
+  m_solid_material.set_uniform(shaders::solid::UNLIT, false);
+  m_solid_material.set_uniform(shaders::solid::VIEW, camera.view);
+
+  for (const auto& [sector_id, _] : sectors_to_render)
+  {
+    nc_assert(sector_id < sector_meshes.size());
+    const MeshHandle& mesh = sector_meshes[sector_id];
+
+    glBindVertexArray(mesh.get_vao());
+
+    const color4& color = SECTOR_COLORS[sector_id % SECTOR_COLORS.size()];
+    m_solid_material.set_uniform(shaders::solid::COLOR, color);
+    m_solid_material.set_uniform(shaders::solid::TRANSFORM, mat4(1.0f));
+
+    glDrawArrays(mesh.get_draw_mode(), 0, mesh.get_vertex_count());
+  }
+
+  glBindVertexArray(0);
+}
+
+//==============================================================================
+void Renderer::render_entities(const CameraData& camera) const
+{
+  constexpr f32 BILLBOARD_TEXTURE_SCALE = 1.0f / 2048.0f;
+
+  // group entities by texture atlas
+  const auto& mapping = ThingSystem::get().get_sector_mapping().sectors_to_entities.entities;
+  const EntityRegistry& registry = ThingSystem::get().get_entities();
+
+  std::unordered_map<ResLifetime, std::unordered_set<const Entity*>> groups;
+  for (const auto& frustum : camera.vis_tree.sectors)
+  {
+    for (const auto& entity_id : mapping[frustum.sector])
+    {
+      const Entity* entity = registry.get_entity(entity_id);
+      if (const Appearance* appearance = entity->get_appearance())
+      {
+        const ResLifetime lifetime = appearance->texture.get_lifetime();
+        groups[lifetime].insert(entity);
+      }
+    }
+  }
+
+  m_billboard_material.use();
+  m_billboard_material.set_uniform(shaders::billboard::VIEW, camera.view);
+
+  const MeshHandle& texturable_quad = MeshManager::get().get_texturable_quad();
+  glBindVertexArray(texturable_quad.get_vao());
+  glActiveTexture(GL_TEXTURE0);
+
+  const mat3 camera_rotation = transpose(mat3(camera.view));
+  // Extracting X and Y components from the forward vector.
+  const float yaw = atan2(-camera_rotation[2][0], -camera_rotation[2][2]);
+  const mat4 rotation = eulerAngleY(yaw);
+
+  for (const auto& [lifetime, group] : groups)
+  {
+    const TextureAtlas& atlas = TextureManager::get().get_atlas(lifetime);
+    glBindTexture(GL_TEXTURE_2D, atlas.handle);
+    m_billboard_material.set_uniform(shaders::billboard::ATLAS_SIZE, atlas.get_size());
+
+    for (const auto* entity : group)
+    {
+      nc_assert(entity->get_appearance(), "At this point entity must have appearance.");
+
+      const Appearance& appearance = *entity->get_appearance();
+      const vec3 position = entity->get_position();
+
+      const TextureHandle& texture = appearance.texture;
+      m_billboard_material.set_uniform(shaders::billboard::TEXTURE_POS, texture.get_pos());
+      m_billboard_material.set_uniform(shaders::billboard::TEXTURE_SIZE, texture.get_size());
+
+      const vec3 pivot_offset(0.0f, texture.get_height() * BILLBOARD_TEXTURE_SCALE / 2.0f, 0.0f);
+      const vec3 scale(
+        texture.get_width() * appearance.scale * BILLBOARD_TEXTURE_SCALE,
+        texture.get_height() * appearance.scale * BILLBOARD_TEXTURE_SCALE,
+        1.0f
+      );
+      const mat4 transform = translate(mat4(1.0f), position + pivot_offset)
+        * rotation
+        * nc::scale(mat4(1.0f), scale);
+      m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, transform);
+
+      glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
+    }
+  }
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindVertexArray(0);
+}
+
+//==============================================================================
+void Renderer::render_portals(const CameraData& camera) const
+{
+  const MapSectors& map = get_engine().get_map();
+
+  glEnable(GL_STENCIL_TEST);
+
+  for (const auto& subtree : camera.vis_tree.children)
+  {
+    const auto portal_id = subtree.portal_wall;
+    const auto& wall = map.walls[portal_id];
+    nc_assert(wall.get_portal_type() == PortalType::non_euclidean);
+    nc_assert(wall.render_data_index != INVALID_PORTAL_RENDER_ID);
+    const Portal& render_data = map.portals_render_data[wall.render_data_index];
+
+    const CameraData new_camera
+    {
+      .position   = camera.position,
+      .view       = camera.view,
+      .vis_tree   = subtree,
+    };
+
+    render_portal(new_camera, render_data, 0);
+  }
+
+  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+  glStencilFunc(GL_ALWAYS, 0, 0xFF);
+  glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+  glDisable(GL_STENCIL_TEST);
+}
+
+//==============================================================================
+void Renderer::render_gun() const
+{
+  const TextureHandle& texture = TextureManager::get()["math_gun"];
+
+  GLint viewport[4];
+  glGetIntegerv(GL_VIEWPORT, viewport);
+  const float screen_width = static_cast<float>(viewport[2]);
+  const float screen_height = static_cast<float>(viewport[3]);
+
+  const mat4 projection = ortho(0.0f, screen_width, screen_height, 0.0f, -1.0f, 1.0f);
+  const mat4 transform = translate(mat4(1.0f), vec3(screen_width / 2.0f, screen_height / 2.0f, 0.0f))
+    * scale(mat4(1.0f), -vec3(screen_width, screen_height, 1.0f));
+
+  const MeshHandle& texturable_quad = MeshManager::get().get_texturable_quad();
+  glBindVertexArray(texturable_quad.get_vao());
+
+  m_billboard_material.use();
+  m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, transform);
+  m_billboard_material.set_uniform(shaders::billboard::VIEW, mat4(1.0f));
+  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, projection);
+  m_billboard_material.set_uniform(shaders::billboard::ATLAS_SIZE, texture.get_atlas().get_size());
+  m_billboard_material.set_uniform(shaders::billboard::TEXTURE_POS, texture.get_pos());
+  m_billboard_material.set_uniform(shaders::billboard::TEXTURE_SIZE, texture.get_size());
+
+  glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+  glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindVertexArray(0);
+  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, GraphicsSystem::get().get_default_projection());
+}
+
+#pragma region portals rendering
+//==============================================================================
+void Renderer::render_portal_to_stencil(const CameraData& camera, const Portal& portal, u8 recursion) const
+{
+  m_solid_material.use();
+  m_solid_material.set_uniform(shaders::solid::UNLIT, true);
+  m_solid_material.set_uniform(shaders::solid::VIEW, camera.view);
+  m_solid_material.set_uniform(shaders::solid::TRANSFORM, portal.transform);
+
+  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+  glDepthMask(GL_FALSE);
+  glStencilFunc(GL_LEQUAL, recursion, 0xFF);
+  glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
+
+  const MeshHandle& quad = MeshManager::get().get_quad();
+  glBindVertexArray(quad.get_vao());
+  glDrawArrays(quad.get_draw_mode(), 0, quad.get_vertex_count());
+  glBindVertexArray(0);
+}
+
+//==============================================================================
+void Renderer::render_portal_to_color(const CameraData& camera, u8 recursion) const
+{
+  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+  glDepthMask(GL_TRUE);
+  glStencilFunc(GL_LEQUAL, recursion + 1, 0xFF);
+  glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+  render_sectors(camera);
+  render_entities(camera);
+}
+
+//==============================================================================
+void Renderer::render_portal_to_depth(
+  const CameraData& camera,
+  const Portal&     portal,
+  bool              depth_write,
+  u8                recursion
+) const
+{
+  m_solid_material.use();
+  m_solid_material.set_uniform(shaders::solid::UNLIT, true);
+  m_solid_material.set_uniform(shaders::solid::VIEW, camera.view);
+  m_solid_material.set_uniform(shaders::solid::TRANSFORM, portal.transform);
+  m_solid_material.set_uniform(shaders::solid::COLOR, colors::LIME);
+
+  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+  glDepthFunc(GL_ALWAYS);
+
+  if (depth_write)
+  {
+    // MR says: Here, we render the portal into the depth buffer, but
+    //          set all pixel depths to 1.0 (maximum one) - this resets
+    //          the depth so that recurisive rendering of the portal
+    //          does not produce artifacts.
+    // Overwrite the depth value to maximum one
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    // This makes sure that the final depth will be 1.0 everywhere
+    glDepthRange(1.0, 1.0);
+    // No need to reset this later, a it will be changed by the
+    // "render_portal_to_color_function"
+    glDepthMask(GL_TRUE);
+    // This makes sure that we write depth 1.0 on the whole surface
+    // of the portal
+    glStencilFunc(GL_LEQUAL, recursion + 1, 0xFF);
+  }
+  else
+  {
+    // Render the portal in a normal way
+    glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
+  }
+
+  const MeshHandle& quad = MeshManager::get().get_quad();
+  glBindVertexArray(quad.get_vao());
+  glDrawArrays(quad.get_draw_mode(), 0, quad.get_vertex_count());
+  glBindVertexArray(0);
+
+  // Reset the depth function back
+  glDepthFunc(GL_LESS);
+
+  if (depth_write)
+  {
+    glDepthRange(0.0, 1.0); // Back to normal
+  }
+}
+
+//==============================================================================
+void Renderer::render_portal(const CameraData& camera, const Portal& portal, u8 recursion) const
+{
+  const MapSectors& map = get_engine().get_map();
+  const mat4 virtual_view = camera.view * portal.dest_to_src;
+  [[maybe_unused]] const vec3 virtual_view_pos = vec3(inverse(virtual_view) * vec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+  const CameraData virtual_camera_data = CameraData
+  {
+    .position = camera.position,
+    .view = virtual_view,
+    .vis_tree = camera.vis_tree,
+  };
+
+  render_portal_to_stencil(camera, portal, recursion);
+  render_portal_to_depth(camera, portal, true, recursion);
+  render_portal_to_color(virtual_camera_data, recursion);
+
+  for (const auto& subtree : camera.vis_tree.children)
+  {
+    const WallData& wall = map.walls[subtree.portal_wall];
+    nc_assert(wall.get_portal_type() == PortalType::non_euclidean);
+
+    const Portal& render_data = map.portals_render_data[wall.render_data_index];
+    const CameraData new_cam_data
+    {
+      .position   = virtual_camera_data.position,
+      .view       = virtual_camera_data.view,
+      .vis_tree   = subtree,
+    };
+
+    render_portal(new_cam_data, render_data, recursion + 1);
+  }
+  glStencilFunc(GL_LEQUAL, recursion + 1, 0xFF);
+
+  render_portal_to_depth(camera, portal, false, recursion);
+}
+#pragma endregion
+
+}

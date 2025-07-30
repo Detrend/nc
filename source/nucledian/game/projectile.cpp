@@ -40,7 +40,7 @@ Projectile::Projectile
 
   m_appear = Appearance
   {
-    .texture = TextureManager::instance().get_test_plasma_texture(),
+    .texture = TextureManager::get()["plasma_ball"],
     .scale = 20.0f,
   };
 }

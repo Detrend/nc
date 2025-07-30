@@ -11,6 +11,7 @@
 #include <engine/core/engine_module_types.h>
 #include <engine/core/module_event.h>
 
+#include <engine/graphics/camera.h>
 #include <engine/graphics/gizmo.h>
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/resources/res_lifetime.h>
@@ -53,9 +54,6 @@
 #ifdef NC_DEBUG_DRAW
 #include <chrono>
 #endif
-
-// Remove this after logging is added!
-#include <iostream>
 
 #ifdef NC_DEBUG_DRAW
 namespace nc::debug_helpers
@@ -206,17 +204,16 @@ static void imgui_start_frame()
 }
 #endif
 
-// Temporary solution
-std::vector<MeshHandle> g_sector_meshes;
-
-//==============================================================================
-GraphicsSystem::GraphicsSystem()
-  : m_default_projection(perspective(radians(70.0f), 800.0f / 600.0f, 0.0001f, 100.0f)) {}
-
 //==============================================================================
 EngineModuleId GraphicsSystem::get_module_id()
 {
   return EngineModule::graphics_system;
+}
+
+//==============================================================================
+GraphicsSystem& GraphicsSystem::get()
+{
+  return get_engine().get_module<GraphicsSystem>();
 }
 
 //==============================================================================
@@ -250,7 +247,7 @@ bool GraphicsSystem::init()
 
   // init SDL
   constexpr auto SDL_INIT_FLAGS = SDL_INIT_VIDEO | SDL_INIT_EVENTS;
-  constexpr u32  SDL_WIN_FLAGS = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
+  constexpr u32  SDL_WIN_FLAGS = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
   constexpr cstr WINDOW_NAME = "Nucledian";
   constexpr auto WIN_POS = SDL_WINDOWPOS_UNDEFINED;
 
@@ -271,7 +268,14 @@ bool GraphicsSystem::init()
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
   // create window (resolution 16:9)
-  m_window = SDL_CreateWindow(WINDOW_NAME, WIN_POS, WIN_POS, 1024, 576, SDL_WIN_FLAGS);
+  m_window = SDL_CreateWindow(
+    WINDOW_NAME, 
+    WIN_POS, 
+    WIN_POS, 
+    static_cast<int>(WINDOW_WIDTH), 
+    static_cast<int>(WINDOW_HEIGHT), 
+    SDL_WIN_FLAGS
+  );
   if (!m_window)
   {
     [[maybe_unused]] cstr error = SDL_GetError();
@@ -305,8 +309,10 @@ bool GraphicsSystem::init()
 
   glLineWidth(5.0f);
 
-  MeshManager::instance().init();
-  TextureManager::instance().init();
+  MeshManager::get().init();
+  TextureManager::get().load_directory(ResLifetime::Game, "content/textures");
+
+  m_default_projection = perspective(FOV, ASPECT_RATIO, 0.0001f, 100.0f);
 
   m_solid_material = MaterialHandle(shaders::solid::VERTEX_SOURCE, shaders::solid::FRAGMENT_SOURCE);
   m_solid_material.use();
@@ -315,8 +321,7 @@ bool GraphicsSystem::init()
   m_billboard_material = MaterialHandle(shaders::billboard::VERTEX_SOURCE, shaders::billboard::FRAGMENT_SOURCE);
   m_billboard_material.use();
   m_billboard_material.set_uniform(shaders::billboard::PROJECTION, m_default_projection);
-
-  m_cube_model = Model(MeshManager::instance().get_cube(), m_solid_material);
+  m_billboard_material.set_uniform(shaders::billboard::TEXTURE, 0);
 
 #ifdef NC_DEBUG_DRAW
   debug_helpers::g_top_down_material = MaterialHandle
@@ -336,6 +341,8 @@ bool GraphicsSystem::init()
   imgui_start_frame();
 #endif
 
+  m_renderer = std::make_unique<Renderer>(*this);
+
   return true;
 }
 
@@ -344,12 +351,6 @@ void GraphicsSystem::on_event(ModuleEvent& event)
 {
   switch (event.type)
   {
-    case ModuleEventType::frame_start:
-    {
-      this->on_frame_start();
-      break;
-    }
-
     case ModuleEventType::game_update:
     {
       this->update(event.update.dt);
@@ -358,18 +359,7 @@ void GraphicsSystem::on_event(ModuleEvent& event)
 
     case ModuleEventType::after_map_rebuild:
     {
-      build_map_gfx();
-      break;
-    }
-
-    case ModuleEventType::post_init:
-    {
-      m_gun_model = m_cube_model;
-      m_gun_transform = Transform(
-        vec3(0.5f, -0.3f, -1.0f),
-        vec3(0.2f, 0.2f, 0.5f),
-        vec3(10.0f, 0.0f, 0.0f)
-      );
+      create_sector_meshes();
       break;
     }
 
@@ -396,18 +386,13 @@ void GraphicsSystem::terminate()
   ImGui::DestroyContext();
 #endif
 
-  MeshManager::instance().unload(ResLifetime::Game);
+  MeshManager::get().unload(ResLifetime::Game);
 
   SDL_GL_DeleteContext(m_gl_context);
   m_gl_context = nullptr;
 
   SDL_DestroyWindow(m_window);
   m_window = nullptr;
-}
-
-//==============================================================================
-void GraphicsSystem::on_frame_start()
-{
 }
 
 //==============================================================================
@@ -419,16 +404,15 @@ void GraphicsSystem::query_visibility(VisibilityTree& tree) const
 
   const auto& map = get_engine().get_map();
 
-  auto* camera = this->get_camera();
+  const Camera* camera = Camera::get();
   if (!camera)
-  {
     return;
-  }
 
   const vec3 pos = camera->get_position();
   const vec3 dir = camera->get_forward();
 
-  map.query_visible(pos, dir, HALF_PI, HALF_PI, tree, DEFAULT_RECURSION_DEPTH);
+  const f32 horizontal_fov = 2.0f * atan(tan(FOV / 2.0f) * ASPECT_RATIO);
+  map.query_visible(pos, dir, horizontal_fov, FOV, tree, DEFAULT_RECURSION_DEPTH);
 }
 
 //==============================================================================
@@ -438,20 +422,18 @@ const MaterialHandle& GraphicsSystem::get_solid_material() const
 }
 
 //==============================================================================
-const Model& GraphicsSystem::get_cube_model() const
+const MaterialHandle& GraphicsSystem::get_billboard_material() const
 {
-  return m_cube_model;
+  return m_billboard_material;
 }
 
 //==============================================================================
-const DebugCamera* GraphicsSystem::get_camera() const
+const std::vector<MeshHandle>& GraphicsSystem::get_sector_meshes() const
 {
-  auto& things = get_engine().get_module<ThingSystem>();
-  return things.get_player()->get_camera();
+  return m_sector_meshes;
 }
 
-//==============================================================================
-const mat4 GraphicsSystem::get_default_projection() const
+const mat4& GraphicsSystem::get_default_projection() const
 {
   return m_default_projection;
 }
@@ -459,26 +441,26 @@ const mat4 GraphicsSystem::get_default_projection() const
 //==============================================================================
 void GraphicsSystem::update(f32 delta_seconds)
 {
-  GizmoManager::instance().update_ttls(delta_seconds);
+  GizmoManager::get().update_ttls(delta_seconds);
 }
 
-//==============================================================================
-static void grab_render_gun_props(RenderGunProperties& props)
-{
-  ThingSystem& game = ThingSystem::get();
-  const Player* player = game.get_player();
-
-  if (player)
-  {
-    props.weapon = player->get_equipped_weapon();
-    props.sway   = VEC2_ZERO;
-  }
-  else
-  {
-    props.weapon = INVALID_WEAPON_TYPE;
-    props.sway   = VEC2_ZERO;
-  }
-}
+////==============================================================================
+//static void grab_render_gun_props(RenderGunProperties& props)
+//{
+//  ThingSystem& game = ThingSystem::get();
+//  const Player* player = game.get_player();
+//
+//  if (player)
+//  {
+//    props.weapon = player->get_equipped_weapon();
+//    props.sway   = VEC2_ZERO;
+//  }
+//  else
+//  {
+//    props.weapon = INVALID_WEAPON_TYPE;
+//    props.sway   = VEC2_ZERO;
+//  }
+//}
 
 //==============================================================================
 void GraphicsSystem::render()
@@ -513,26 +495,7 @@ void GraphicsSystem::render()
   else
 #endif
   {
-    const DebugCamera* camera = get_camera();
-    if (camera)
-    {
-      const CameraData camera_data = CameraData
-      {
-        .position = camera->get_position(),
-        .view = camera->get_view(),
-        .projection = m_default_projection,
-        .vis_tree = visible_sectors,
-      };
-
-      RenderGunProperties gun_props;
-      grab_render_gun_props(gun_props);
-
-      GizmoManager::instance().draw_gizmos(camera_data);
-      render_sectors(camera_data);
-      render_entities(camera_data);
-      render_portals(camera_data);
-      render_gun(camera_data, gun_props);
-    }
+    m_renderer->render(visible_sectors);
   }
 
 #ifdef NC_IMGUI
@@ -568,7 +531,7 @@ void GraphicsSystem::render_map_top_down(const VisibilityTree& visible_sectors)
 
   static f32 zoom = 0.04f;
 
-  if (auto* camera = this->get_camera())
+  if (auto* camera = Camera::get())
   {
     pointed_position = vec2{ camera->get_position().x, camera->get_position().z };
     const auto frwd = vec2{ camera->get_forward().x,  camera->get_forward().z };
@@ -1149,361 +1112,12 @@ void GraphicsSystem::draw_debug_window()
 #endif
 
 //==============================================================================
-void GraphicsSystem::render_sectors(const CameraData& camera_data) const
-{
-  constexpr auto SECTOR_COLORS = std::array
-  {
-    colors::YELLOW ,
-    colors::CYAN   ,
-    colors::MAGENTA,
-    colors::ORANGE ,
-    colors::PURPLE ,
-    colors::PINK   ,
-    colors::GRAY   ,
-    colors::BROWN  ,
-    colors::LIME   ,
-    colors::TEAL   ,
-    colors::NAVY   ,
-    colors::MAROON ,
-    colors::OLIVE  ,
-    colors::SILVER ,
-    colors::GOLD   ,
-  };
-
-  const auto& sectors_to_render = camera_data.vis_tree.sectors;
-
-  m_solid_material.use();
-  m_solid_material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
-  m_solid_material.set_uniform(shaders::solid::UNLIT, false);
-  m_solid_material.set_uniform(shaders::solid::VIEW, camera_data.view);
-  m_solid_material.set_uniform(shaders::solid::VIEW_POSITION, camera_data.position);
-
-  for (const auto& [sector_id, _] : sectors_to_render)
-  {
-    nc_assert(sector_id < g_sector_meshes.size());
-    const MeshHandle& mesh = g_sector_meshes[sector_id];
-
-    glBindVertexArray(mesh.get_vao());
-
-    const color4& color = SECTOR_COLORS[sector_id % SECTOR_COLORS.size()];
-    m_solid_material.set_uniform(shaders::solid::COLOR, color);
-    m_solid_material.set_uniform(shaders::solid::TRANSFORM, mat4(1.0f));
-
-    glDrawArrays(mesh.get_draw_mode(), 0, mesh.get_vertex_count());
-  }
-
-  glBindVertexArray(0);
-}
-
-//==============================================================================
-void GraphicsSystem::render_entities(const CameraData& camera_data) const
-{
-  constexpr f32 billboard_texture_scale = 1.0f / 2048.0f;
-
-  const auto& mapping = ThingSystem::get().get_sector_mapping().sectors_to_entities.entities;
-  const EntityRegistry& registry = ThingSystem::get().get_entities();
-
-  std::unordered_map<u32, std::unordered_set<const Entity*>> groups;
-  for (const auto& frustum : camera_data.vis_tree.sectors)
-  {
-    for (const auto& entity_id : mapping[frustum.sector])
-    {
-      const Entity* entity = registry.get_entity(entity_id);
-      if (const Appearance* appearance = entity->get_appearance())
-      {
-        const u32 id = static_cast<u32>(appearance->texture.get_gl_handle());
-        groups[id].insert(entity);
-      }
-    }
-  }
-
-  m_billboard_material.use();
-  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, camera_data.projection);
-  m_billboard_material.set_uniform(shaders::billboard::VIEW, camera_data.view);
-
-  const MeshHandle& texturable_quad = MeshManager::instance().get_texturable_quad();
-  glBindVertexArray(texturable_quad.get_vao());
-
-  const mat3 camera_rotation = transpose(mat3(camera_data.view));
-  // Extracting X and Y components from the forward vector.
-  const float yaw = atan2(-camera_rotation[2][0], -camera_rotation[2][2]);
-  const mat4 rotation = eulerAngleY(yaw);
-
-  for (const auto& [_, group] : groups)
-  {
-    const TextureHandle& texture = (*group.begin())->get_appearance()->texture;
-    const vec3 pivot_offset(0.0f, texture.get_height() * billboard_texture_scale / 2.0f, 0.0f);
-
-    glBindTexture(GL_TEXTURE_2D, texture.get_gl_handle());
-
-    for (const auto* entity : group)
-    {
-      nc_assert(entity->get_appearance(), "At this point entity must have appearance.");
-
-      const Appearance& appearance = *entity->get_appearance();
-      const vec3 position = entity->get_position();
-
-      const vec3 scale(
-        texture.get_width() * appearance.scale * billboard_texture_scale,
-        texture.get_height() * appearance.scale * billboard_texture_scale,
-        1.0f
-      );
-      const mat4 transform = translate(mat4(1.0f), position + pivot_offset)
-        * rotation
-        * nc::scale(mat4(1.0f), scale);
-      m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, transform);
-      
-      glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
-    }
-  }
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glBindVertexArray(0);
-}
-
-//==============================================================================
-void GraphicsSystem::render_portals(const CameraData& camera_data) const
-{
-  const MapSectors& map = get_engine().get_map();
-
-  glEnable(GL_STENCIL_TEST);
-
-  for (const auto& subtree : camera_data.vis_tree.children)
-  {
-    const auto portal_id = subtree.portal_wall;
-    const auto& wall = map.walls[portal_id];
-    nc_assert(wall.get_portal_type() == PortalType::non_euclidean);
-    nc_assert(wall.render_data_index != INVALID_PORTAL_RENDER_ID);
-    const PortalRenderData& render_data = map.portals_render_data[wall.render_data_index];
-
-    const CameraData new_cam_data
-    {
-      .position   = camera_data.position,
-      .view       = camera_data.view,
-      .projection = camera_data.projection,
-      .vis_tree   = subtree,
-    };
-
-    render_portal(new_cam_data, render_data, 0);
-  }
-  
-  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-  glStencilFunc(GL_ALWAYS, 0, 0xFF);
-  glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-  glDisable(GL_STENCIL_TEST);
-}
-
-//==============================================================================
-void GraphicsSystem::render_gun(const CameraData&, const RenderGunProperties& props) const
-{
-  // MR says: this is a quick way to determine a sprite of which gun we should hold.
-  // This connects the game-specific weapon system with the rendering, which might
-  // be ok for now, but maybe we should get rid of it later?
-  TextureHandle texture = TextureHandle::invalid();
-  switch (props.weapon)
-  {
-    case WeaponTypes::plasma_rifle:
-    {
-      texture = TextureManager::instance().get_test_gun2_texture();
-      break;
-    }
-
-    case WeaponTypes::nail_gun:
-    {
-      texture = TextureManager::instance().get_test_gun_texture();
-      break;
-    }
-  }
-
-  // Is this the only way how to check if a texture handle is not invalid?
-  // MeshHandle has the "is_valid" method, but I did not want to add a new
-  // function so I am using this for now.
-  if (texture.get_lifetime() == ResLifetime::None)
-  {
-    return;
-  }
-
-  GLint viewport[4];
-  glGetIntegerv(GL_VIEWPORT, viewport);
-  const float screen_width = static_cast<float>(viewport[2]);
-  const float screen_height = static_cast<float>(viewport[3]);
-
-  const mat4 projection = ortho(0.0f, screen_width, screen_height, 0.0f, -1.0f, 1.0f);
-  const mat4 transform = translate(mat4(1.0f), vec3(screen_width / 2.0f, screen_height / 2.0f, 0.0f))
-     * scale(mat4(1.0f), -vec3(screen_width, screen_height, 1.0f));
-
-  const MeshHandle& texturable_quad = MeshManager::instance().get_texturable_quad();
-  glBindVertexArray(texturable_quad.get_vao());
-
-  m_billboard_material.use();
-  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, projection);
-  m_billboard_material.set_uniform(shaders::billboard::VIEW, mat4(1.0f));
-  m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, transform);
-
-  glBindTexture(GL_TEXTURE_2D, texture.get_gl_handle());
-  glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glBindVertexArray(0);
-}
-
-//==============================================================================
-void GraphicsSystem::render_portal_to_stencil(const CameraData& camera_data, const PortalRenderData& portal, u8 recursion_depth) const
-{
-  m_solid_material.use();
-  m_solid_material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
-  m_solid_material.set_uniform(shaders::solid::UNLIT, true);
-  m_solid_material.set_uniform(shaders::solid::VIEW, camera_data.view);
-  m_solid_material.set_uniform(shaders::solid::TRANSFORM, portal.transform);
-
-  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-  glDepthMask(GL_FALSE);
-  glStencilFunc(GL_LEQUAL, recursion_depth, 0xFF);
-  glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
-
-  const MeshHandle& quad = MeshManager::instance().get_quad();
-  glBindVertexArray(quad.get_vao());
-  glDrawArrays(quad.get_draw_mode(), 0, quad.get_vertex_count());
-  glBindVertexArray(0);
-}
-
-//==============================================================================
-void GraphicsSystem::render_portal_to_color(const CameraData& camera_data, const PortalRenderData&, u8 recursion_depth) const
-{
-  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-  glDepthMask(GL_TRUE);
-  glStencilFunc(GL_LEQUAL, recursion_depth + 1, 0xFF);
-  glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
-  // Draw gizmos recursively so they are visible behind a portal as well
-  GizmoManager::instance().draw_gizmos(camera_data);
-  render_sectors(camera_data);
-  render_entities(camera_data);
-}
-
-//==============================================================================
-void GraphicsSystem::render_portal_to_depth
-(
-  const CameraData&       camera_data,
-  const PortalRenderData& portal,
-  bool                    overwrite_to_max,
-  u8                      recursion_depth
-) const
-{
-  m_solid_material.use();
-  m_solid_material.set_uniform(shaders::solid::PROJECTION, camera_data.projection);
-  m_solid_material.set_uniform(shaders::solid::UNLIT, true);
-  m_solid_material.set_uniform(shaders::solid::VIEW, camera_data.view);
-  m_solid_material.set_uniform(shaders::solid::TRANSFORM, portal.transform);
-  m_solid_material.set_uniform(shaders::solid::COLOR, colors::LIME);
-
-  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-  glDepthFunc(GL_ALWAYS);
-
-  if (overwrite_to_max)
-  {
-    // MR says: Here, we render the portal into the depth buffer, but
-    //          set all pixel depths to 1.0 (maximum one) - this resets
-    //          the depth so that recurisive rendering of the portal
-    //          does not produce artifacts.
-    // Overwrite the depth value to maximum one
-    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-    // This makes sure that the final depth will be 1.0 everywhere
-    glDepthRange(1.0, 1.0); 
-    // No need to reset this later, a it will be changed by the
-    // "render_portal_to_color_function"
-    glDepthMask(GL_TRUE);
-    // This makes sure that we write depth 1.0 on the whole surface
-    // of the portal
-    glStencilFunc(GL_LEQUAL, recursion_depth + 1, 0xFF);
-  }
-  else
-  {
-    // Render the portal in a normal way
-    glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
-  }
-
-  const MeshHandle& quad = MeshManager::instance().get_quad();
-  glBindVertexArray(quad.get_vao());
-  glDrawArrays(quad.get_draw_mode(), 0, quad.get_vertex_count());
-  glBindVertexArray(0);
-
-  // Reset the depth function back
-  glDepthFunc(GL_LESS);
-
-  if (overwrite_to_max)
-  {
-    glDepthRange(0.0, 1.0); // Back to normal
-  }
-}
-
-//==============================================================================
-void GraphicsSystem::render_portal(const CameraData& camera_data, const PortalRenderData& portal, u8 recursion_depth) const
-{
-  const MapSectors& map = get_engine().get_map();
-  const mat4 virtual_view = camera_data.view * portal.dest_to_src;
-  [[maybe_unused]]const vec3 virtual_view_pos = vec3(inverse(virtual_view) * vec4(0.0f, 0.0f, 0.0f, 1.0f));
-
-  const CameraData virtual_camera_data = CameraData
-  {
-    .position = camera_data.position,
-    .view = virtual_view,
-    .projection = camera_data.projection,
-    .vis_tree = camera_data.vis_tree,
-  };
-
-  render_portal_to_stencil(camera_data, portal, recursion_depth);
-  render_portal_to_depth(camera_data, portal, true, recursion_depth);
-  render_portal_to_color(virtual_camera_data, portal, recursion_depth);
-
-  for (const auto& subtree : camera_data.vis_tree.children)
-  {
-    const WallData& wall = map.walls[subtree.portal_wall];
-    nc_assert(wall.get_portal_type() == PortalType::non_euclidean);
-
-    const PortalRenderData& render_data = map.portals_render_data[wall.render_data_index];
-    const CameraData new_cam_data
-    {
-      .position   = virtual_camera_data.position,
-      .view       = virtual_camera_data.view,
-      .projection = virtual_camera_data.projection,
-      .vis_tree   = subtree,
-    };
-
-    render_portal(new_cam_data, render_data, recursion_depth + 1);
-  }
-  glStencilFunc(GL_LEQUAL, recursion_depth + 1, 0xFF);
-
-  render_portal_to_depth(camera_data, portal, false, recursion_depth);
-}
-
-//==============================================================================
-mat4 GraphicsSystem::clip_projection(const CameraData& camera_data, const PortalRenderData& portal) const
-{
-  // following code was copied from:
-  // https://github.com/ThomasRinsma/opengl-game-test/blob/8363bbfcce30acc458b8faacc54c199279092f81/src/sceneobject/portal.cc
-  // referenced by following article:
-  // https://th0mas.nl/2013/05/19/rendering-recursive-portals-with-opengl/
-
-  const vec3 normal = angleAxis(portal.rotation, VEC3_Y) * -VEC3_Z;
-  const vec4 clip_plane = inverse(transpose(camera_data.view)) * vec4(normal, length(portal.position));
-
-  if (clip_plane.w > 0.0f)
-    return camera_data.projection;
-
-  const vec4 q = inverse(camera_data.projection) * vec4(sign(clip_plane.x), sign(clip_plane.y), 1.0f, 1.0f);
-  const vec4 c = clip_plane * (2.0f / (dot(clip_plane, q)));
-
-  return row(camera_data.projection, 2, c - row(camera_data.projection, 3));
-}
-
-//==============================================================================
-void GraphicsSystem::build_map_gfx() const
+void GraphicsSystem::create_sector_meshes()
 {
   const auto& map = ThingSystem::get().get_map();
-  MeshManager& mesh_manager = MeshManager::instance();
+  MeshManager& mesh_manager = MeshManager::get();
 
-  g_sector_meshes.clear();
+  m_sector_meshes.clear();
 
   for (SectorID sid = 0; sid < map.sectors.size(); ++sid)
   {
@@ -1514,7 +1128,7 @@ void GraphicsSystem::build_map_gfx() const
     const u32  values_cnt = static_cast<u32>(vertices.size() * 3);
 
     const auto mesh = mesh_manager.create(ResLifetime::Game, vertex_data, values_cnt);
-    g_sector_meshes.push_back(mesh);
+    m_sector_meshes.push_back(mesh);
   }
 }
 

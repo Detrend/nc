@@ -87,11 +87,11 @@ class GizmoManager
 public:
   friend class Gizmo;
 
-  static GizmoManager& instance();
+  static GizmoManager& get();
 
   // Update time to live (TTL) of active gizmos.
   void update_ttls(f32 delta_seconds);
-  void draw_gizmos(const CameraData& camera) const;
+  void draw_gizmos() const;
 
 private:
   GizmoManager() {}

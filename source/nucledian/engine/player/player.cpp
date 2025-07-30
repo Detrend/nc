@@ -257,9 +257,7 @@ void Player::handle_inputs(GameInputs input, GameInputs /*prev_input*/)
     alive = false;
   }
 
-  //==============================================================================
-
-  DebugCamera* Player::get_camera()
+  Camera* Player::get_camera()
   {
     return &camera;
   }

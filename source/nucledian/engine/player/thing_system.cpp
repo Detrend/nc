@@ -865,7 +865,7 @@ void ThingSystem::do_raycast_debug()
   Player* player = this->get_player();
   if (player && player->get_camera() && CVars::debug_player_raycasts)
   {
-    const DebugCamera* camera = player->get_camera();
+    const Camera* camera = player->get_camera();
     const auto& lvl = ThingSystem::get().get_level();
 
     constexpr f32 RAY_LEN = 10.0f;

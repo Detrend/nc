@@ -116,13 +116,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\source\libs\stb_image\stb_image.cpp" />
+    <ClCompile Include="..\source\libs\stb\stb.cpp" />
     <ClCompile Include="..\source\nucledian\aabb.cpp" />
     <ClCompile Include="..\source\nucledian\cvars.cpp" />
     <ClCompile Include="..\source\nucledian\engine\core\engine.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\entity.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\item.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\sector_mapping.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\graphics\renderer.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\physics.cpp" />
     <ClCompile Include="..\source\nucledian\engine\sound\sound_system.cpp" />
     <ClCompile Include="..\source\nucledian\game\projectile.cpp" />
@@ -134,7 +135,7 @@
     <ClCompile Include="..\source\nucledian\math\lingebra.cpp" />
     <ClCompile Include="..\source\nucledian\math\utils.cpp" />
     <ClCompile Include="..\source\nucledian\engine\enemies\enemy.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\graphics\debug_camera.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\graphics\camera.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\gizmo.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\graphics_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\material.cpp" />
@@ -238,7 +239,8 @@
     </ClInclude>
     <ClInclude Include="..\source\libs\json\json.hpp" />
     <ClInclude Include="..\source\libs\json\json_fwd.hpp" />
-    <ClInclude Include="..\source\libs\stb_image\stb_image.h" />
+    <ClInclude Include="..\source\libs\stb\stb_image.h" />
+    <ClInclude Include="..\source\libs\stb\stb_rect_pack.h" />
     <ClInclude Include="..\source\nucledian\aabb.h" />
     <ClInclude Include="..\source\nucledian\common.h" />
     <ClInclude Include="..\source\nucledian\config.h" />
@@ -248,7 +250,9 @@
     <ClInclude Include="..\source\nucledian\engine\entity\entity_type_definitions.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\item.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\sector_mapping.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\renderer.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\texture.h" />
+    <ClInclude Include="..\source\nucledian\engine\lights\light.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
     <ClInclude Include="..\source\nucledian\engine\map\physics.h" />
     <ClInclude Include="..\source\nucledian\engine\player\level_types.h" />
@@ -269,7 +273,7 @@
     <ClInclude Include="..\source\nucledian\engine\core\module_event.h" />
     <ClInclude Include="..\source\nucledian\engine\core\resources.h" />
     <ClInclude Include="..\source\nucledian\engine\enemies\enemy.h" />
-    <ClInclude Include="..\source\nucledian\engine\graphics\debug_camera.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\camera.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\gizmo.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\gl_types.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\graphics_system.h" />
@@ -306,6 +310,8 @@
     <None Include="..\source\nucledian\engine\graphics\resources\material.inl" />
     <None Include="..\source\nucledian\engine\graphics\shaders\billboard.frag" />
     <None Include="..\source\nucledian\engine\graphics\shaders\billboard.vert" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\light.frag" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\light.vert" />
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.frag" />
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.vert" />
     <None Include="..\source\nucledian\math\lingebra.inl" />

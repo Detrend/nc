@@ -44,7 +44,7 @@ namespace nc
   {
     appear = Appearance
     {
-      .texture = TextureManager::instance().get_test_enemy_texture(),
+      .texture = TextureManager::get()["mff_pepe_walk"],
       .scale = 1.0f,
     };
   }

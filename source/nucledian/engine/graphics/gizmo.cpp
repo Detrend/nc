@@ -3,10 +3,11 @@
 #ifdef NC_DEBUG_DRAW
 
 #include <math/lingebra.h>
+
 #include <engine/core/engine.h>
+#include <engine/graphics/camera.h>
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/graphics_system.h>
-
 
 #include <ranges>
 #include <array>
@@ -59,8 +60,8 @@ std::shared_ptr<Gizmo> Gizmo::create_cube_impl(f32 ttl, const vec3& position, f3
 {
   const mat4 transform = translate(mat4(1.0f), position) * scale(mat4(1.0f), vec3(size));
 
-  GizmoManager& gizmo_manager = GizmoManager::instance();
-  return gizmo_manager.add_gizmo(Gizmo(MeshManager::instance().get_cube(), transform, color, ttl), ttl > 0.0f);
+  GizmoManager& gizmo_manager = GizmoManager::get();
+  return gizmo_manager.add_gizmo(Gizmo(MeshManager::get().get_cube(), transform, color, ttl), ttl > 0.0f);
 }
 
 //==============================================================================
@@ -72,8 +73,8 @@ std::shared_ptr<Gizmo> Gizmo::create_ray_impl(f32 ttl, const vec3& start, const 
     * scale(mat4(1.0f), vec3(1e6f))
     * rotate(mat4(1.0f), angle, axis);
   
-  GizmoManager& gizmo_manager = GizmoManager::instance();
-  return gizmo_manager.add_gizmo(Gizmo(MeshManager::instance().get_line(), transform, color, ttl), ttl > 0.0f);
+  GizmoManager& gizmo_manager = GizmoManager::get();
+  return gizmo_manager.add_gizmo(Gizmo(MeshManager::get().get_line(), transform, color, ttl), ttl > 0.0f);
 }
 
 //==============================================================================
@@ -89,8 +90,8 @@ std::shared_ptr<Gizmo> Gizmo::create_line_impl(f32 ttl, const vec3& start, const
   [[maybe_unused]] const vec3 recomp_start = transform * vec4{0, 0, 0, 1};
   [[maybe_unused]] const vec3 recomp_end   = transform * vec4{1, 0, 0, 1};
 
-  GizmoManager& gizmo_manager = GizmoManager::instance();
-  return gizmo_manager.add_gizmo(Gizmo(MeshManager::instance().get_line(), transform, color, ttl), ttl > 0.0f);
+  GizmoManager& gizmo_manager = GizmoManager::get();
+  return gizmo_manager.add_gizmo(Gizmo(MeshManager::get().get_line(), transform, color, ttl), ttl > 0.0f);
 }
 
 //==============================================================================
@@ -114,7 +115,7 @@ std::pair<vec3, f32> Gizmo::compute_rotation_angle_axis(const vec3& direction)
 }
 
 //==============================================================================
-GizmoManager& GizmoManager::instance()
+GizmoManager& GizmoManager::get()
 {
   if (m_instance == nullptr)
   {
@@ -145,15 +146,16 @@ void GizmoManager::update_ttls(f32 delta_seconds)
 }
 
 //==============================================================================
-void GizmoManager::draw_gizmos(const CameraData& camera) const
+void GizmoManager::draw_gizmos() const
 {
-  GraphicsSystem& graphics_system = get_engine().get_module<GraphicsSystem>();
+  auto& graphics_system = get_engine().get_module<GraphicsSystem>();
+  const Camera* camera = Camera::get();
+  if (camera == nullptr)
+    return;
 
   const MaterialHandle& solid_material = graphics_system.get_solid_material();
   solid_material.use();
-  solid_material.set_uniform(shaders::solid::PROJECTION, graphics_system.get_default_projection());
-  solid_material.set_uniform(shaders::solid::VIEW, camera.view);
-  solid_material.set_uniform(shaders::solid::VIEW_POSITION, camera.position);
+  solid_material.set_uniform(shaders::solid::VIEW, camera->get_view());
 
   auto combined_view = std::ranges::views::join
   (

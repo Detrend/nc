@@ -96,6 +96,16 @@ constexpr f32 texturable_quad_vertices[] =
 };
 
 //==============================================================================
+constexpr f32 screen_quad_vertices[] =
+{
+  // positions        // UVs
+  -1.0f,  1.0f, 0.0f, 0.0f, 1.0f, // top-left
+  -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, // bottom-left
+   1.0f, -1.0f, 0.0f, 1.0f, 0.0f, // bottom-right
+   1.0f,  1.0f, 0.0f, 1.0f, 1.0f, // top-right
+};
+
+//==============================================================================
 GLuint MeshHandle::get_vao() const
 {
   return m_vao;
@@ -143,7 +153,7 @@ MeshHandle MeshHandle::invalid()
 }
 
 //==============================================================================
-MeshManager& MeshManager::instance()
+MeshManager& MeshManager::get()
 {
   if (m_instance == nullptr)
   {
@@ -165,6 +175,12 @@ void MeshManager::init()
     ResLifetime::Game,
     texturable_quad_vertices,
     sizeof(texturable_quad_vertices) / sizeof(f32),
+    GL_TRIANGLE_FAN
+  );
+  m_screen_quad_mesh = this->create_texturable(
+    ResLifetime::Game,
+    screen_quad_vertices,
+    sizeof(screen_quad_vertices) / sizeof(f32),
     GL_TRIANGLE_FAN
   );
 }
@@ -291,6 +307,12 @@ MeshHandle MeshManager::get_quad() const
 MeshHandle MeshManager::get_texturable_quad() const
 {
   return m_texturable_quad_mesh;
+}
+
+//==============================================================================
+MeshHandle MeshManager::get_screen_quad() const
+{
+  return m_screen_quad_mesh;
 }
 
 //==============================================================================

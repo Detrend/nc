@@ -1,25 +1,27 @@
 // Project Nucledian Source File
-#include <engine/graphics/debug_camera.h>
+#include <engine/graphics/camera.h>
 
-#include <SDL2/include/SDL.h>
+#include <engine/player/player.h>
+#include <engine/player/thing_system.h>
 
 #include <math/utils.h>
 #include <math/lingebra.h>
+
+#include <SDL2/include/SDL.h>
 
 #include <numbers>
 #include <bit>
 
 namespace nc
 {
-
 //==============================================================================
-DebugCamera::DebugCamera()
+Camera* Camera::get()
 {
-  //SDL_SetRelativeMouseMode(SDL_TRUE);
+  return ThingSystem::get().get_player()->get_camera();
 }
 
 //==============================================================================
-void DebugCamera::handle_input(float delta_seconds)
+void Camera::handle_input(float delta_seconds)
 {
   this->handle_movement(delta_seconds);
   this->handle_rotation();
@@ -29,7 +31,7 @@ void DebugCamera::handle_input(float delta_seconds)
 
 //==============================================================================
 
-void DebugCamera::update_transform(vec3 position, f32 yaw, f32 pitch)
+void Camera::update_transform(vec3 position, f32 yaw, f32 pitch)
 {
   m_position = position;
   m_yaw = yaw;
@@ -44,7 +46,7 @@ void DebugCamera::update_transform(vec3 position, f32 yaw, f32 pitch)
 
 //==============================================================================
 
-void DebugCamera::update_transform(vec3 position, f32 yaw, f32 pitch, f32 y_offset)
+void Camera::update_transform(vec3 position, f32 yaw, f32 pitch, f32 y_offset)
 {
   m_position = position;
   m_position.y += y_offset;
@@ -59,25 +61,25 @@ void DebugCamera::update_transform(vec3 position, f32 yaw, f32 pitch, f32 y_offs
 }
 
 //==============================================================================
-mat4 DebugCamera::get_view() const
+mat4 Camera::get_view() const
 {
   return lookAt(m_position, m_position + m_forward, VEC3_Y);
 }
 
 //==============================================================================
-vec3 DebugCamera::get_forward() const
+vec3 Camera::get_forward() const
 {
   return m_forward;
 }
 
 //==============================================================================
-vec3 DebugCamera::get_position() const
+vec3 Camera::get_position() const
 {
   return m_position;
 }
 
 //==============================================================================
-void DebugCamera::handle_movement(float delta_seconds)
+void Camera::handle_movement(float delta_seconds)
 {
   const u8* keyboard_state = SDL_GetKeyboardState(nullptr);
 
@@ -108,16 +110,11 @@ void DebugCamera::handle_movement(float delta_seconds)
 }
 
 //==============================================================================
-void DebugCamera::handle_rotation()
+void Camera::handle_rotation()
 {
   int delta_x, delta_y;
   SDL_GetRelativeMouseState(&delta_x, &delta_y);
   const vec2 mouse_pos_delta(static_cast<f32>(delta_x), static_cast<f32>(delta_y));
-
-  /*if (!m_first_frame && length2(mouse_pos_delta) < 2.0f)
-  {
-    return;
-  }*/
 
   m_yaw -= mouse_pos_delta.x * SENSITIVITY;
   m_pitch -= mouse_pos_delta.y * SENSITIVITY;

@@ -5,11 +5,12 @@
 #include <config.h>
 #include <transform.h>
 #include <math/vector.h>
+#include <math/utils.h>
 
 #include <engine/core/engine_module.h>
 #include <engine/core/engine_module_id.h>
+#include <engine/graphics/renderer.h>
 #include <engine/graphics/resources/model.h>
-#include <engine/graphics/debug_camera.h>
 
 #include <game/weapons_types.h>
 
@@ -22,7 +23,7 @@ namespace nc
 
 struct VisibilityTree;
 struct ModuleEvent;
-struct PortalRenderData;
+struct Portal;
 
 struct CameraData
 {
@@ -42,40 +43,30 @@ struct RenderGunProperties
 class GraphicsSystem : public IEngineModule
 {
 public:
-  static EngineModuleId get_module_id();
+  static constexpr f32 WINDOW_WIDTH  = 1024.0f;
+  static constexpr f32 WINDOW_HEIGHT = 576.0f;
+  // TODO: MacSectors::query_visible don't work correctly with other aspect ratios
+  static constexpr f32 ASPECT_RATIO  = 800.0f / 600.0f;
+  static constexpr f32 FOV = 70.0f * (1.0f / 180.0f) * PI; // 70 degrees
 
-  GraphicsSystem();
+  static EngineModuleId  get_module_id();
+  static GraphicsSystem& get();
 
   bool init();
   void on_event(ModuleEvent& event) override;
 
   const MaterialHandle& get_solid_material() const;
-  const Model& get_cube_model() const;
-  const DebugCamera* get_camera() const;
-  const mat4 get_default_projection() const;
+  const MaterialHandle& get_billboard_material() const;
+  const std::vector<MeshHandle>& get_sector_meshes() const;
+  const mat4& get_default_projection() const;
 
 private:
   void update(f32 delta_seconds);
   void render();
   void terminate();
-  void on_frame_start();
 
   void query_visibility(VisibilityTree& out) const;
-
-  void render_sectors(const CameraData& camera_data)  const;
-  void render_entities(const CameraData& camera_data) const;
-  void render_portals(const CameraData& camera_data) const;
-  void render_gun(const CameraData& camera_data, const RenderGunProperties& how) const;
-
-  void render_portal_to_stencil(const CameraData& camera_data, const PortalRenderData& portal, u8 recursion_depth) const;
-  void render_portal_to_color(const CameraData& camera_data, const PortalRenderData& portal, u8 recursion_depth) const;
-  void render_portal_to_depth(const CameraData& camera_data, const PortalRenderData& portal, bool overwrite_to_max, u8 recursion_depth) const;
-
-  void render_portal(const CameraData& camera_data, const PortalRenderData& portal, u8 recursion_depth) const;
-
-  mat4 clip_projection(const CameraData& camera_data, const PortalRenderData& portal) const;
-
-  void build_map_gfx() const;
+  void create_sector_meshes();
 
   #ifdef NC_DEBUG_DRAW
   void render_map_top_down(const VisibilityTree& visible);
@@ -83,20 +74,15 @@ private:
   #endif
 
 private:
-  inline static constexpr u8 m_max_recursion_depth = 3;
+  SDL_Window* m_window     = nullptr;
+  void*       m_gl_context = nullptr;
 
-  const mat4     m_default_projection;
+  RendererPtr             m_renderer           = nullptr;
+  std::vector<MeshHandle> m_sector_meshes;
+  mat4                    m_default_projection;
 
-  SDL_Window*    m_window        = nullptr;
-  void*          m_gl_context    = nullptr;
-
-  // Material for rendering solid geometry.
   MaterialHandle m_solid_material;
   MaterialHandle m_billboard_material;
-
-  Model          m_cube_model;
-  Model          m_gun_model;
-  Transform      m_gun_transform;
 };
 
 }

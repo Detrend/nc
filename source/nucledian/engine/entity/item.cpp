@@ -15,7 +15,7 @@ PickUp::PickUp(vec3 position) : Entity(position, 0.15f, 0.2f, true)
 {
   appear = Appearance
   {
-    .texture = TextureManager::instance().get_medkit_texture(),
+    .texture = TextureManager::get()["medkit"],
     .scale   = 1.0f,
   };
 }

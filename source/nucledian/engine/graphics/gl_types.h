@@ -11,3 +11,4 @@ inline constexpr GLboolean GL_TRUE = 1;
 inline constexpr GLboolean GL_FALSE = 0;
 
 inline constexpr GLenum GL_TRIANGLES = 0x0004;
+inline constexpr GLenum GL_RGB       = 0x1907;

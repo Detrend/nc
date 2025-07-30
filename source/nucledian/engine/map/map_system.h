@@ -116,7 +116,7 @@ struct WallData
   PortType get_portal_type() const;
 };
 
-struct PortalRenderData
+struct Portal
 {
   // Rotation along the Y-axis.
   const f32  rotation    = 0.0f;
@@ -154,7 +154,7 @@ struct MapSectors
 
   column<SectorData>       sectors;
   column<WallData>         walls;
-  column<PortalRenderData> portals_render_data;
+  column<Portal> portals_render_data;
   column<aabb3>            sector_bboxes;
   StatGridAABB2<SectorID>  sector_grid;
 
