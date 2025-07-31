@@ -62,6 +62,9 @@ namespace nc
     case ModuleEventType::cleanup:
       break;
     default:
+      // cleanup
+      glDeleteBuffers(1, &VAO);
+      glDeleteBuffers(1, &VBO);
       break;
     }
   }
