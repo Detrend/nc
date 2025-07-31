@@ -19,6 +19,20 @@ namespace nc
 
   bool UserInterfaceSystem::init()
   {
+    vec2 vertices[] = { vec2(-1, 1), vec2(1, 1), vec2(-1, -1), vec2(1, -1)};
+
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 2, &vertices, GL_STATIC_DRAW);
+
+    glGenVertexArrays(1, &VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VAO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 2, &vertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+    glEnableVertexAttribArray(0);
+    
+    glBindVertexArray(0);
+
     return true;
   }
 

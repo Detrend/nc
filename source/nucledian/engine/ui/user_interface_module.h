@@ -2,6 +2,7 @@
 #include <engine/core/engine_module_id.h>
 #include <engine/core/module_event.h>
 
+
 namespace nc
 {
   struct ModuleEvent;
@@ -19,6 +20,11 @@ namespace nc
     void draw();
 
     int display_health = 0;
+
+    unsigned int VBO;
+    unsigned int VAO;
+
+    unsigned int shader_program;
 
   };
 }
