@@ -26,7 +26,10 @@ namespace nc
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 2, &vertices, GL_STATIC_DRAW);
 
     glGenVertexArrays(1, &VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VAO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 2, &vertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
     glEnableVertexAttribArray(0);
@@ -62,9 +65,9 @@ namespace nc
     case ModuleEventType::cleanup:
       break;
     default:
-      // cleanup
-      glDeleteBuffers(1, &VAO);
-      glDeleteBuffers(1, &VBO);
+      //// cleanup
+      //glDeleteBuffers(1, &VAO);
+      //glDeleteBuffers(1, &VBO);
       break;
     }
   }
