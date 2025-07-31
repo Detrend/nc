@@ -19,7 +19,7 @@ namespace nc
 
   bool UserInterfaceSystem::init()
   {
-    vec2 vertices[] = { vec2(-1, 1), vec2(1, 1), vec2(-1, -1), vec2(1, -1)};
+    vec2 vertices[] = { vec2(-1, 1), vec2(-1, -1), vec2(1, 1), vec2(1, -1)};
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
