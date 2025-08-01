@@ -20,6 +20,8 @@ var _editor_plugin : EditorPlugin:
 		return _editor_plugin
 
 
+signal every_frame_signal()
+
 func _ready() -> void:
 	if ! Engine.is_editor_hint(): export_level()
 
@@ -28,6 +30,7 @@ func _process(delta: float) -> void:
 	_handle_selections()
 	_handle_input()
 	_handle_new_sector_creation()
+	every_frame_signal.emit()
 
 func create_level_export_data() -> Dictionary:	
 	var level_export := Dictionary()

@@ -5,45 +5,92 @@ extends EditablePolygon
 @export var data : SectorProperties = SectorProperties.new()
 @export var floor_height : float:
 	get: return data.floor_height
-	set(val): data.floor_height = val
+	set(val): 
+		data.floor_height = val
+		_update_visuals()
+		
 @export var ceiling_height : float:
 	get: return data.ceiling_height
-	set(val): data.ceiling_height = val
+	set(val): 
+		data.ceiling_height = val
+		_update_visuals()
 
 
-@export var exclude_from_export : bool = false
+@export var exclude_from_export : bool = false:
+	get: return exclude_from_export
+	set(val): 
+		exclude_from_export = val
+		_update_visuals()
+
 
 @export_group("Portal")
-@export var portal_destination : Sector = null
-@export var enable_portal : bool = true
+
+@export var portal_destination : Sector = null:
+	get: return portal_destination
+	set(value):
+		portal_destination = value
+		_update_visuals()
+		
+@export var enable_portal : bool = true:
+	get: return enable_portal
+	set(value):
+		enable_portal = value
+		_update_visuals()
+		
 @export var portal_wall : int:
 	get: return portal_wall
-	set(value): portal_wall = value if polygon.size() <= 0 else (value % polygon.size())
+	set(value): 
+		portal_wall = value if polygon.size() <= 0 else (value % polygon.size())
+		_update_visuals()
+		
 @export var portal_destination_wall: int:
 	get: return portal_destination_wall
-	set(value): portal_destination_wall = value if !(portal_destination and portal_destination.get_points_count()>0) else (value % portal_destination.get_points_count())
-@export var is_portal_bidirectional : bool = true
-@export var show_portal_arrow : bool = false
+	set(value): 
+		portal_destination_wall = value if !(portal_destination and portal_destination.get_points_count()>0) else (value % portal_destination.get_points_count())
+		_update_visuals()
+		
+@export var is_portal_bidirectional : bool = true:
+	get: return is_portal_bidirectional
+	set(value):
+		is_portal_bidirectional = value
+		_update_visuals()
+		
+@export var show_portal_arrow : bool = false:
+	get: return show_portal_arrow
+	set(value):
+		show_portal_arrow = value
+		_update_visuals()
 
 func has_portal()-> bool: return enable_portal and portal_destination != null and portal_destination.is_visible_in_tree()
 
 
 var _visualizer_line : Line2D:
-	get: return $VisualizerLine
+	get: return get_node_or_null("VisualizerLine")
 
 
+	
 
-func _process(_delta: float) -> void:
-	super._process(_delta)
+func _ready() -> void:
+	_update_visuals()
 
-	if ! Engine.is_editor_hint(): return
-	if ! self.is_visible_in_tree(): return
-
+func _update_visuals() -> void:
+	if not _visualizer_line: return
 	_visualize_border()
 	_visualize_portals()
-	
 	self.color = EditorConfig.get_sector_color(config, self)
 
+func _enter_tree() -> void:
+	config.on_cosmetics_changed.connect(_update_visuals)
+func _exit_tree() -> void:
+	config.on_cosmetics_changed.disconnect(_update_visuals)
+
+func _selected_update(_selected_list: Array[Node])->void:
+	super._selected_update(_selected_list)
+	_update_visuals()
+
+func _alt_mode_drag_update()->void:
+	super._alt_mode_drag_update()
+	_update_visuals()
 
 func do_postprocess(points: PackedVector2Array)->bool:
 	var did_change :bool = false
@@ -56,9 +103,9 @@ func _visualize_border()->void:
 	for point in get_points():
 		_visualizer_line.add_point(point.global_position - _visualizer_line.global_position)
 
-func _visualize_portals()->void:
+func _visualize_portals()->void:			
 	$PortalVisualizerLine.clear_points()
-	$PortalDestinationVisualizerLine.clear_points()
+	if $PortalDestinationVisualizerLine: $PortalDestinationVisualizerLine.clear_points()
 	$PortalArrowLine.clear_points()
 	if ! has_portal(): 
 		return
@@ -66,21 +113,19 @@ func _visualize_portals()->void:
 	$PortalVisualizerLine.add_point(these_points[portal_wall].global_position - self.global_position)
 	$PortalVisualizerLine.add_point(these_points[(portal_wall + 1)%these_points.size()].global_position  - self.global_position)
 	var target_points := portal_destination.get_points()
-	$PortalDestinationVisualizerLine.add_point(target_points[portal_destination_wall].global_position - self.global_position)
-	$PortalDestinationVisualizerLine.add_point(target_points[(portal_destination_wall + 1) % target_points.size()].global_position - self.global_position)
+	if $PortalDestinationVisualizerLine: 
+		$PortalDestinationVisualizerLine.add_point(target_points[portal_destination_wall].global_position - self.global_position)
+		$PortalDestinationVisualizerLine.add_point(target_points[(portal_destination_wall + 1) % target_points.size()].global_position - self.global_position)
 	if show_portal_arrow:
 		$PortalArrowLine.add_point((these_points[portal_wall].global_position + these_points[(portal_wall + 1)%these_points.size()].global_position)*0.5  - self.global_position)
 		$PortalArrowLine.add_point((target_points[portal_destination_wall].global_position + target_points[(portal_destination_wall + 1)%target_points.size()].global_position)*0.5  - self.global_position)
 	
 	$PortalVisualizerLine.default_color = config.portal_entry_color
-	$PortalDestinationVisualizerLine.default_color = config.portal_exit_color_bidirectional if self.is_portal_bidirectional else config.portal_exit_color_single
+	if $PortalDestinationVisualizerLine: $PortalDestinationVisualizerLine.default_color = config.portal_exit_color_bidirectional if self.is_portal_bidirectional else config.portal_exit_color_single
 
 
 
 func _remove_duplicit_points(points: PackedVector2Array)->bool:
-	#if ! NodeUtils.is_the_only_selected_node(self): return false
-	#if points != last_points: return false
-	
 	var did_remove : bool = false
 	var previous : PackedVector2Array = []
 	previous.append_array(points)
@@ -88,27 +133,17 @@ func _remove_duplicit_points(points: PackedVector2Array)->bool:
 	while t < points.size():
 		if points[t] == points[t-1]:
 			print("removing idx: {0} : {1} (same as {2}) - size: {3}".format([t, points[t], points[t-1], points.size()]))
-			
-			#print("{0}".format([previous]))
-			#print("{0}".format([points]))
-			
 			points.remove_at(t-1)
-			#t += 1
 			did_remove = true
 		else: t += 1
-	if did_remove: 
-		var temp = [points[points.size()-1]]
-		temp.append_array(points.slice(0, points.size()-1))
-		points = temp
-		print("{0}".format([previous]))
-		print("{0}".format([points]))
-		print("---------[{0}]".format([Engine.get_frames_drawn()]))
+	if points[points.size() - 1] == points[0]:
+		print("removing idx: {0} : {1} (same as {2}) - size: {3}".format([points.size() - 1, points[points.size() - 1], points[0], points.size()]))
+		points.remove_at(points.size() - 1)
+		did_remove = true
 	return did_remove
 
 func _ensure_points_clockwise(points: PackedVector2Array)->bool:
-	#if NodeUtils.is_the_only_selected_node(self): return false
 	if Geometry2D.is_polygon_clockwise(points):
-	#if GeometryUtils.is_clockwise_convex_polygon(points) < 0:
 		print("reverting {0}".format([get_full_name()]))
 		points.reverse()
 		return true

@@ -14,10 +14,11 @@ var _level : Level:
 	get: return NodeUtils.get_ancestor_component_of_type(self, Level)
 
 
-func _selected_update(selected_list: Array[Node])->void:
-	if selected_list.size() == 1:
-		pass
-	pass
+func _selected_update(_selected_list: Array[Node])->void:
+	self._manage_points()
+	
+func _alt_mode_drag_update()->void:
+	self._manage_points()
 
 func _on_sole_selected()->void:
 	if not is_editable:
@@ -61,11 +62,9 @@ func _on_config_change()->void:
 
 
 var last_points : PackedVector2Array = []
-
-func _process(_delta: float) -> void:
-	if ! Engine.is_editor_hint(): return
-	if ! self.is_visible_in_tree(): return
 	
+
+func _manage_points()->void:
 	self.scale = Vector2.ONE
 	self.rotation = 0.0
 	
@@ -82,7 +81,7 @@ func _process(_delta: float) -> void:
 			#print("after:  {0}".format([self.polygon]))
 		
 	last_points = points
-
+	
 
 func do_postprocess(_points: PackedVector2Array)->bool:
 	return false
@@ -266,6 +265,9 @@ func _alt_mode_snap(current_points: PackedVector2Array)->void:
 		else:
 			for p in alt_mode_affected_points:
 				p.global_position = self.get_point_position(alt_mode_selected_idx)
+			for s in alt_mode_saved_configurations.keys():
+				if s != self:
+					s._alt_mode_drag_update()
 	
 	
 
@@ -282,6 +284,7 @@ func is_just_being_edited()->bool:
 	return	( (alt_mode_state_is_none(alt_mode_state) && is_target_of_alt_mode_snapping) 
 				or (Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) && NodeUtils.is_the_only_selected_node(self))
 			)
+
 
 static func find_nearest_point(v: Vector2, others: Array[SectorPoint], tolerance: float)-> SectorPoint:
 	var toleranceSqr : float = tolerance *tolerance

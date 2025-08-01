@@ -12,7 +12,6 @@ point_count = 2
 
 [resource]
 script = ExtResource("1_x30i3")
-shared_continuous_movement_max_step = 999.0
 max_snapping_distance = 0.1
 gridsnap_step = 0.0625
 gridsnap_step_inv = 16.0

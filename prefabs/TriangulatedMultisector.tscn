@@ -1,11 +1,18 @@
-[gd_scene load_steps=2 format=3 uid="uid://cmy30fxadpjn2"]
+[gd_scene load_steps=4 format=3 uid="uid://cmy30fxadpjn2"]
 
 [ext_resource type="Script" uid="uid://0kbske84jb5g" path="res://scripts/sector/TriangulatedMultisector.gd" id="1_dyq21"]
+[ext_resource type="Script" uid="uid://cft80p5qydrwt" path="res://scripts/sector/SectorProperties.gd" id="2_jf8ge"]
+
+[sub_resource type="Resource" id="Resource_tjxab"]
+script = ExtResource("2_jf8ge")
+floor_height = 0.0
+ceiling_height = 1.5
 
 [node name="Triangulator" type="Polygon2D"]
 z_index = 11
 z_as_relative = false
-color = Color(0.243137, 0.254902, 0.623529, 0.635294)
+color = Color(0.243137, 0.254902, 0.623529, 0.454902)
 script = ExtResource("1_dyq21")
+data = SubResource("Resource_tjxab")
 
 [node name="Generated" type="Node2D" parent="."]

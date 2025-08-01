@@ -1,10 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://cta47u4q0nac4"]
+[gd_scene load_steps=12 format=3 uid="uid://cta47u4q0nac4"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/Level.gd" id="1_tdhj0"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_a102k"]
 [ext_resource type="PackedScene" uid="uid://cmy30fxadpjn2" path="res://prefabs/TriangulatedMultisector.tscn" id="3_a102k"]
 [ext_resource type="PackedScene" uid="uid://2xarq0korji0" path="res://prefabs/PlayerPosition.tscn" id="3_hw0gl"]
 [ext_resource type="Script" uid="uid://cft80p5qydrwt" path="res://scripts/sector/SectorProperties.gd" id="4_hw0gl"]
+[ext_resource type="Script" uid="uid://0kbske84jb5g" path="res://scripts/sector/TriangulatedMultisector.gd" id="5_3gf4c"]
 
 [sub_resource type="Resource" id="Resource_3gf4c"]
 script = ExtResource("4_hw0gl")
@@ -30,6 +31,12 @@ floor_height = 0.0
 ceiling_height = 1.5
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
+[sub_resource type="Resource" id="Resource_tiek8"]
+script = ExtResource("4_hw0gl")
+floor_height = 0.0
+ceiling_height = 1.5
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
 [node name="TestLevel1" type="Node2D"]
 script = ExtResource("1_tdhj0")
 export_scale = Vector3(0.1, 0.1, 1)
@@ -42,48 +49,52 @@ export_path = "../nc/content/levels/level_test1.json"
 [node name="@Polygon2D@223595" parent="Sectors/Parcour" instance=ExtResource("2_a102k")]
 position = Vector2(-389, -71)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(355, 105, 340, 71, 340, 39, 345, 6, 373, -21, 373, 119)
+polygon = PackedVector2Array(355, 105, 340, 71, 340, 39, 345, 6, 370, -16, 369, 114)
 data = SubResource("Resource_3gf4c")
-ceiling_height = 1.5
 
 [node name="@Polygon2D@227918" parent="Sectors/Parcour" instance=ExtResource("2_a102k")]
 visible = false
 position = Vector2(-389, -71)
-color = Color(0.501961, 0, 0.196078, 1)
+color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(576, 40, 600, 48, 600, 72, 576, 81)
-ceiling_height = 1.5
 
 [node name="_Polygon2D_256985" parent="Sectors/Parcour" instance=ExtResource("2_a102k")]
 position = Vector2(-389, -71)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(328, 48, 340, 39, 340, 71, 328, 64)
 data = SubResource("Resource_p88uy")
-ceiling_height = 1.5
 
 [node name="Triangulator" parent="Sectors/Parcour" instance=ExtResource("3_a102k")]
 z_index = 0
-polygon = PackedVector2Array(224, 48, 223, -77, -16, -92, -16, 48, -16, 48, -16, 48)
+polygon = PackedVector2Array(224, 48, 217, -58, 55, -69, -19, -87, -20, 43, -20, 43, -20, 43)
 data = SubResource("Resource_hw0gl")
+children_are_selectable = null
 
 [node name="@Polygon2D@24150" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_a102k")]
 position = Vector2(98, 10)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(1, -2, 8, -2, 12, 2, 12, 8, 8, 12, 0, 12, -3, 8, -3, 2)
-ceiling_height = 1.5
 
 [node name="Sector" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_a102k")]
 position = Vector2(49, -49)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(-14, 9, 10, 0, 12, 27, -10, 33)
+polygon = PackedVector2Array(-14, 9, 13, 8, 12, 27, -10, 33)
 data = SubResource("Resource_v5xnj")
-ceiling_height = 1.5
 
 [node name="@Polygon2D@58944" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_a102k")]
 position = Vector2(187, -17)
 color = Color(0, 0, 1, 0.145098)
 polygon = PackedVector2Array(-8, 2, 3, -4, 13, 5, 11, 15, -14, 16)
-ceiling_height = 1.5
 exclude_from_export = true
+
+[node name="TriangulatedMultisector-6159" type="Polygon2D" parent="Sectors/Parcour" instance=ExtResource("3_a102k")]
+z_index = 11
+z_as_relative = false
+position = Vector2(57.3832, -137.228)
+color = Color(0.243137, 0.254902, 0.623529, 0.635294)
+polygon = PackedVector2Array(-47.3832, -10.7721, 4.61676, -16.7721, 0.61676, 6.22786, 32.6168, -1.77214, 15.6168, 10.2279, 20.6168, 32.2279, 4.61676, 17.2279, -30.3832, 2.22786, -42.3832, 7.22786, -49.3832, 23.2279, -90.3832, 2.22786)
+script = ExtResource("5_3gf4c")
+data = SubResource("Resource_tiek8")
 
 [node name="PlayerPosition" parent="." instance=ExtResource("3_hw0gl")]
 position = Vector2(-32, -24)

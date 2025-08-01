@@ -13,6 +13,7 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 color = Color(0, 0, 0, 1)
 script = ExtResource("1_8a3ec")
 data = SubResource("Resource_ctoo8")
+ceiling_height = 1.5
 show_portal_arrow = true
 
 [node name="VisualizerLine" type="Line2D" parent="."]

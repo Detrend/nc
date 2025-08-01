@@ -7,8 +7,6 @@ enum SectorColoringMode{
 }
 
 @export_group("Node editing")
-## When holding Q, how much a node can max move in single frame without interrupting the multimove
-@export var shared_continuous_movement_max_step : float = 999
 ## Max distance at which points can snap into each other
 @export var max_snapping_distance : float = 1.0
 var _gridsnap_step_impl : float
@@ -45,22 +43,45 @@ var _gridsnap_step_inv_impl : float
 @export var portal_exit_color_bidirectional : Color = Color.BLUE
 
 @export_group("Floor visuals")
-@export var floor_min_height : float = 0.0
-@export var floor_min_height_color : Color = Color.WHITE
-@export var floor_max_height : float = 5.0
-@export var floor_max_height_color : Color = Color.DARK_GRAY
-@export var floor_color_curve : Curve
+@export var floor_min_height : float = 0.0:
+	get: return floor_min_height
+	set(val): floor_min_height = val; on_cosmetics_changed.emit()
+@export var floor_min_height_color : Color = Color.WHITE:
+	get: return floor_min_height_color
+	set(val): floor_min_height_color = val; on_cosmetics_changed.emit()
+@export var floor_max_height : float = 5.0:
+	get: return floor_max_height
+	set(val): floor_max_height = val; on_cosmetics_changed.emit()
+@export var floor_max_height_color : Color = Color.DARK_GRAY:
+	get: return floor_max_height_color
+	set(val): floor_max_height_color = val; on_cosmetics_changed.emit()
+@export var floor_color_curve : Curve:
+	get: return floor_color_curve
+	set(val): floor_color_curve = val; on_cosmetics_changed.emit()
 
 @export_group("Ceiling visuals")
-@export var ceiling_min_height : float = 1.0
-@export var ceiling_min_height_color : Color = Color.WHITE
-@export var ceiling_max_height : float = 10.0
-@export var ceiling_max_height_color : Color = Color.DARK_GRAY
-@export var ceiling_color_curve : Curve
+@export var ceiling_min_height : float = 1.0:
+	get: return ceiling_min_height
+	set(val): ceiling_min_height = val; on_cosmetics_changed.emit()
+@export var ceiling_min_height_color : Color = Color.WHITE:
+	get: return ceiling_min_height_color
+	set(val): ceiling_min_height_color = val; on_cosmetics_changed.emit()
+@export var ceiling_max_height : float = 10.0:
+	get: return ceiling_max_height
+	set(val): ceiling_max_height = val; on_cosmetics_changed.emit()
+@export var ceiling_max_height_color : Color = Color.DARK_GRAY:
+	get: return ceiling_max_height_color
+	set(val): ceiling_max_height_color = val; on_cosmetics_changed.emit()
+@export var ceiling_color_curve : Curve:
+	get: return ceiling_color_curve
+	set(val): ceiling_color_curve = val; on_cosmetics_changed.emit()
 
 @export_group("Misc visuals")
-@export var excluded_sector_color : Color = Color(1, 1, 1, 0.3)
+@export var excluded_sector_color : Color = Color(1, 1, 1, 0.3):
+	get: return excluded_sector_color
+	set(val): excluded_sector_color = val; on_cosmetics_changed.emit()
 
+signal on_cosmetics_changed()
 
 static func get_sector_color(this: EditorConfig, sector: Sector)->Color:
 	if sector.exclude_from_export:
