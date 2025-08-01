@@ -33,9 +33,28 @@ func _on_sole_unselected()->void:
 	pass
 
 func _on_selected_input(selected_list: Array[Node])->void:
-	if selected_list.size() == 1 and _level.is_key_down(KEY_Q):
-		pass
-	pass
+	if selected_list.size() == 1:
+		if _level.is_mouse_down(MOUSE_BUTTON_LEFT):
+			on_editing_start()
+		elif _level.is_mouse_up(MOUSE_BUTTON_LEFT):
+			on_editing_finish(true)
+		elif _level.is_mouse_up(MOUSE_BUTTON_RIGHT):
+			on_editing_finish(false)
+
+
+func on_editing_start()->void:
+	NodeUtils.try_send_message_to_ancestor(self, EditablePolygon, 'on_descendant_editing_start', [self])
+
+func on_editing_finish(_start_was_called_first : bool)->void:
+	NodeUtils.try_send_message_to_ancestor(self, EditablePolygon, 'on_descendant_editing_finish', [self, _start_was_called_first])
+
+
+func on_descendant_editing_start(_ancestor: EditablePolygon)->void:
+	NodeUtils.try_send_message_to_ancestor(self, EditablePolygon, 'on_descendant_editing_start', [self])
+
+func on_descendant_editing_finish(_ancestor: EditablePolygon, _start_was_called_first: bool):
+	NodeUtils.try_send_message_to_ancestor(self, EditablePolygon, 'on_descendant_editing_finish', [self, _start_was_called_first])
+
 
 func _on_config_change()->void:
 	pass
@@ -146,10 +165,25 @@ func contains_point(p: Vector2, inclusive: bool = true)->bool:
 		i += 1
 	return true
 
+var _last_alt_mode_snapping_change_framestamp : int = 0
+
+var is_target_of_alt_mode_snapping : bool = false:
+	get: return is_target_of_alt_mode_snapping
+	set(val):
+		if val == is_target_of_alt_mode_snapping: return
+		is_target_of_alt_mode_snapping = val
+		var current_time := Engine.get_frames_drawn()
+		if _last_alt_mode_snapping_change_framestamp < current_time:
+			if val: on_editing_start()
+			if !val: on_editing_finish(true)
+		_last_alt_mode_snapping_change_framestamp = current_time
 
 enum AltModeState{
 	NONE = 0, WAITING_FOR_MOVEMENT, ACTIVE
 }
+func alt_mode_state_is_none(state: AltModeState)->bool:
+	return state != AltModeState.WAITING_FOR_MOVEMENT && state != AltModeState.ACTIVE
+
 var alt_mode_state: AltModeState = AltModeState.NONE
 var alt_mode_selected_idx : int = -1
 var alt_mode_affected_points : Array[SectorPoint]
@@ -177,22 +211,32 @@ func find_points_to_alt_mode_snap(this_point_idx: int)->Array[SectorPoint]:
 	return ret
 
 func do_alt_mode_retire(_current_points: PackedVector2Array)->void:
-	print("retire")
-	var unre := _level._editor_plugin.get_undo_redo()
-	unre.create_action("Multimove ({0} points / {1} sectors)".format([alt_mode_affected_points.size(), alt_mode_saved_configurations.size()]))
+	var unre : EditorUndoRedoManager= _level._editor_plugin.get_undo_redo()
+
+	# first pop the edit-polygon action that was added to history just before this
+	unre.get_history_undo_redo(unre.get_object_history_id(self)).undo()
+	self.polygon = _current_points # make sure this sector has the new polygon and not the old one resulting from the undo
+
+	unre.create_action("Multimove ({0} points / {1} sectors)".format([alt_mode_affected_points.size() + 1, alt_mode_saved_configurations.size()]))
 	for sector in alt_mode_saved_configurations.keys():
-		print("adding redo for {0}: {1}".format([sector.get_full_name(), sector.polygon]))
+		#print("adding redo for {0}: {1}".format([sector.get_full_name(), sector.polygon]))
 		unre.add_do_property(sector, 'polygon', sector.polygon)
-		print("adding undo for {0}: {1}".format([sector.get_full_name(), alt_mode_saved_configurations[sector]]))
+		unre.add_do_method(sector, 'on_editing_finish', false)
+		#print("adding undo for {0}: {1}".format([sector.get_full_name(), alt_mode_saved_configurations[sector]]))
 		unre.add_undo_property(sector, 'polygon', alt_mode_saved_configurations[sector])
+		unre.add_undo_method(sector, 'on_editing_finish', false)
+		sector.is_target_of_alt_mode_snapping = false
+	self.is_target_of_alt_mode_snapping = false
 	unre.commit_action()
+	
 	alt_mode_selected_idx = -1
 	alt_mode_affected_points.clear()
 	alt_mode_saved_configurations.clear()
 	pass
 
-func _alt_mode_snap2(current_points: PackedVector2Array)->void:
-	if alt_mode_state == AltModeState.NONE:
+func _alt_mode_snap(current_points: PackedVector2Array)->void:
+	
+	if alt_mode_state_is_none(alt_mode_state):
 		if is_just_being_edited() and _level.is_key_pressed(KEY_Q):
 			alt_mode_state = AltModeState.WAITING_FOR_MOVEMENT
 			# no return
@@ -226,84 +270,16 @@ func _alt_mode_snap2(current_points: PackedVector2Array)->void:
 	
 
 
-var is_target_of_alt_mode_snapping : bool = false
-var affected_points : Array[SectorPoint] = []
-var selected_idx : int = -1
-var last_sector_pos : Vector2 = Vector2.ZERO
-var remembered_sector_configurations : Dictionary[EditablePolygon, PackedVector2Array] = {}
-
-func _alt_mode_snap(current_points: PackedVector2Array)->int:
-	var last_pos := self.last_sector_pos
-	self.last_sector_pos = self.global_position
-	if last_sector_pos != self.global_position: return -1 # reset if the whole sector was moved
-	if ! Input.is_physical_key_pressed(KEY_Q): return -1 # reset if Q is not pressed
-	if current_points.size() != last_points.size(): return -1 # reset if point count changed
-	if ! NodeUtils.is_the_only_selected_node(self): return -1 # reset if this is not the single selected node
-	
-	var max_distance_sqr = config.shared_continuous_movement_max_step * config.shared_continuous_movement_max_step
-	var t: int = 0
-	var selected :int = -1
-	while t < current_points.size():
-		if current_points[t] != last_points[t]:
-			if selected != -1: return -1 # reset if it's more than one point that changed
-			selected = t
-		t += 1
-	if selected == -1 and is_just_being_edited():
-		selected = self.selected_idx
-	#if _level.is_mouse_up(MOUSE_BUTTON_LEFT): selected = -1
-		
-	var current_absolute := point_pos_relative_to_absolute(current_points[selected])
-	if selected != self.selected_idx:
-		self.selected_idx = selected
-		for p in self.affected_points: p._sector.is_target_of_alt_mode_snapping = false
-		if true ||  selected != -1:
-			self.affected_points.clear()
-			var previous_absolute := point_pos_relative_to_absolute(last_points[selected])
-			self.remembered_sector_configurations.clear()
-			for s in _level.get_editable_polygons():
-				if s == self: continue
-				for p in s.get_points():
-					if p.global_position == previous_absolute and (p.global_position.distance_squared_to(current_absolute) < max_distance_sqr):
-						p._sector.is_target_of_alt_mode_snapping = true
-						self.affected_points.append(p)
-						self.remembered_sector_configurations[p._sector] = p._sector.polygon
-						print("remembering polygon for {0}: {1}".format([p, p._sector.polygon]))
-			# this must be AFTER all the snapped points. if it were before, it would break when snapping other point from this same polygon
-			self.remembered_sector_configurations[self] = last_points
-			print("remembering polygon for {0}: {1}".format([self.get_full_name(), last_points]))
-	for p in self.affected_points: 
-		p.global_position = current_absolute
-
-	return selected
 
 func _handle_alt_mode_snapping(points: PackedVector2Array)->bool:
-	_alt_mode_snap2(points)
+	_alt_mode_snap(points)
 	return alt_mode_state == AltModeState.ACTIVE
-
-	var last_selected_idx := self.selected_idx
-	self.selected_idx = _alt_mode_snap(points)
-	if self.selected_idx == -1:
-		if last_selected_idx != -1:
-			var unre := _level._editor_plugin.get_undo_redo()
-			unre.create_action("Multimove ({0} points / {1} sectors)".format([affected_points.size(), remembered_sector_configurations.size()]))
-			for sector in remembered_sector_configurations.keys():
-				print("adding redo for {0}: {1}".format([sector.get_full_name(), sector.polygon]))
-				#unre.add_do_property(sector, 'polygon', sector.polygon)
-				print("adding undo for {0}: {1}".format([sector.get_full_name(), remembered_sector_configurations[sector]]))
-				#unre.add_undo_property(sector, 'polygon', remembered_sector_configurations[sector])
-			unre.commit_action()
-			for p in self.affected_points: p._sector.is_target_of_alt_mode_snapping = false
-			affected_points.clear()
-		
-	if self.selected_idx != -1: 
-		pass#print("{1}: {0}".format([self.selected_idx, name]))
-	return self.selected_idx != -1
 
 
 
 
 func is_just_being_edited()->bool:
-	return	( (alt_mode_state == AltModeState.NONE && is_target_of_alt_mode_snapping) 
+	return	( (alt_mode_state_is_none(alt_mode_state) && is_target_of_alt_mode_snapping) 
 				or (Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) && NodeUtils.is_the_only_selected_node(self))
 			)
 

@@ -42,7 +42,7 @@ export_path = "../nc/content/levels/level_test1.json"
 [node name="@Polygon2D@223595" parent="Sectors/Parcour" instance=ExtResource("2_a102k")]
 position = Vector2(-389, -71)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(355, 105, 340, 71, 340, 39, 345, 6, 382, -13, 373, 119)
+polygon = PackedVector2Array(355, 105, 340, 71, 340, 39, 345, 6, 373, -21, 373, 119)
 data = SubResource("Resource_3gf4c")
 ceiling_height = 1.5
 
@@ -62,24 +62,24 @@ ceiling_height = 1.5
 
 [node name="Triangulator" parent="Sectors/Parcour" instance=ExtResource("3_a102k")]
 z_index = 0
-polygon = PackedVector2Array(224, 48, 224, -72, -7, -84, -16, 48, -16, 48, -16, 48)
+polygon = PackedVector2Array(224, 48, 223, -77, -16, -92, -16, 48, -16, 48, -16, 48)
 data = SubResource("Resource_hw0gl")
 
 [node name="@Polygon2D@24150" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_a102k")]
-position = Vector2(84, 10)
+position = Vector2(98, 10)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(1, -2, 8, -2, 12, 2, 12, 8, 8, 12, 0, 12, -3, 8, -3, 2)
 ceiling_height = 1.5
 
 [node name="Sector" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_a102k")]
-position = Vector2(27, -32)
+position = Vector2(49, -49)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(-9, 15, 10, 0, 12, 27, -10, 33)
+polygon = PackedVector2Array(-14, 9, 10, 0, 12, 27, -10, 33)
 data = SubResource("Resource_v5xnj")
 ceiling_height = 1.5
 
 [node name="@Polygon2D@58944" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_a102k")]
-position = Vector2(170, -28)
+position = Vector2(187, -17)
 color = Color(0, 0, 1, 0.145098)
 polygon = PackedVector2Array(-8, 2, 3, -4, 13, 5, 11, 15, -14, 16)
 ceiling_height = 1.5

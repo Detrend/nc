@@ -13,11 +13,24 @@ extends EditablePolygon
 
 func _on_selected_input(selected_list: Array[Node])->void:
 	super._on_selected_input(selected_list)
-	if selected_list.size() == 1:
-		if _level.is_mouse_down(MOUSE_BUTTON_LEFT):
-			do_clear()
-		elif _level.is_mouse_up(MOUSE_BUTTON_LEFT) || _level.is_mouse_up(MOUSE_BUTTON_RIGHT):
-			do_triangulate()
+
+
+func on_editing_start()->void:
+	super.on_editing_start()
+	do_clear()
+
+func on_editing_finish(_start_was_called_first : bool)->void:
+	super.on_editing_finish(_start_was_called_first)
+	do_triangulate()
+
+
+func on_descendant_editing_start(_ancestor: EditablePolygon)->void:
+	super.on_descendant_editing_start(_ancestor)
+	do_clear()
+
+func on_descendant_editing_finish(_ancestor: EditablePolygon, _start_was_called_first: bool):
+	super.on_descendant_editing_finish(_ancestor, _start_was_called_first)
+	do_triangulate()
 
 func _ready() -> void:
 	do_triangulate()

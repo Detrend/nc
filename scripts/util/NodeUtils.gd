@@ -124,3 +124,9 @@ static func instantiate_child(parent: Node, prefab: Resource)->Node:
 	parent.add_child(ret)
 	ret.owner = parent.get_tree().edited_scene_root
 	return ret
+
+
+static func try_send_message_to_ancestor(this: Node, ancestor_type, message_name: String, arguments: Array):
+	var parent:Node = NodeUtils.get_ancestor_of_type(this.get_parent(), ancestor_type)
+	if ! parent: return null
+	return parent.callv(message_name, arguments) 
