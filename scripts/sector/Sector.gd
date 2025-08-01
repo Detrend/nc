@@ -107,7 +107,9 @@ func _remove_duplicit_points(points: PackedVector2Array)->bool:
 
 func _ensure_points_clockwise(points: PackedVector2Array)->bool:
 	#if NodeUtils.is_the_only_selected_node(self): return false
-	if GeometryUtils.is_clockwise_convex_polygon(points) < 0:
+	if Geometry2D.is_polygon_clockwise(points):
+	#if GeometryUtils.is_clockwise_convex_polygon(points) < 0:
+		print("reverting {0}".format([get_full_name()]))
 		points.reverse()
 		return true
 	return false
@@ -119,9 +121,12 @@ func _ensure_points_clockwise(points: PackedVector2Array)->bool:
 func sanity_check()->void:
 	if self.polygon.size() < 3:
 		ErrorUtils.report_error("{0} - only {1} vertices".format([get_full_name(), self.polygon.size()]))
-	_check_is_convex()
-	_check_unsnapped_points()
+		
+	if not self.exclude_from_export:
+		# convexity only matters for actual sectors, not for holes
+		_check_is_convex()
 	_check_intersecting_sectors()
+	_check_unsnapped_points()
 
 func _check_unsnapped_points()->void:
 	if not config.sanity_check_snapping: return
@@ -136,10 +141,12 @@ func _check_unsnapped_points()->void:
 
 func _check_intersecting_sectors()->void:
 	if not config.sanity_check_intersecting: return
-	for this_point in get_points():
-		for s in _level.get_sectors():
-			if s.contains_point(this_point.global_position, false):
-				ErrorUtils.report_warning("{0} intersects {1}".format([this_point, s.get_full_name()]))
+	var this_polygon_worldspace := self.get_point_positions() 
+	for s in _level.get_sectors():
+		if s == self: continue
+		var intersection := Geometry2D.intersect_polygons(this_polygon_worldspace, s.get_point_positions())
+		if intersection.size() > 0:
+			ErrorUtils.report_warning("{0} intersects {1}".format([get_full_name(), s.get_full_name()]))
 			
 
 func _check_is_unsnapped_point(this_point: SectorPoint)->float:
@@ -158,6 +165,8 @@ func _check_is_convex()->void:
 		ErrorUtils.report_error("Non-convex: {0}".format([self.get_full_name()]))
 
 func is_convex()->bool:
+	return Geometry2D.decompose_polygon_in_convex(self.polygon).size() == 1
+	
 	# algorithm copypasted from: https://www.geeksforgeeks.org/dsa/check-if-given-polygon-is-a-convex-polygon-or-not/
 	var previous_sign : float = 0
 	var points_count := get_points_count()

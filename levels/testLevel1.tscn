@@ -5,7 +5,6 @@
 [ext_resource type="PackedScene" uid="uid://cmy30fxadpjn2" path="res://prefabs/TriangulatedMultisector.tscn" id="3_l4525"]
 [ext_resource type="PackedScene" uid="uid://2xarq0korji0" path="res://prefabs/PlayerPosition.tscn" id="3_nqbmo"]
 [ext_resource type="Script" uid="uid://cft80p5qydrwt" path="res://scripts/sector/SectorProperties.gd" id="4_h15or"]
-[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/sector/Sector.gd" id="5_bjjgi"]
 
 [sub_resource type="Resource" id="Resource_h15or"]
 script = ExtResource("4_h15or")
@@ -435,6 +434,11 @@ ceiling_height = 7.0
 [sub_resource type="Resource" id="Resource_y4auh"]
 script = ExtResource("4_h15or")
 floor_height = 5.0
+ceiling_height = 7.0
+
+[sub_resource type="Resource" id="Resource_r8b0k"]
+script = ExtResource("4_h15or")
+floor_height = 1.1
 ceiling_height = 7.0
 
 [sub_resource type="Resource" id="Resource_bjjgi"]
@@ -927,7 +931,7 @@ portal_wall = -1
 
 [node name="Sector23" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
 color = Color(0.974643, 0.949087, 0.95907, 1)
-polygon = PackedVector2Array(208, -67, 176, -96, 208, -112, 240, -96)
+polygon = PackedVector2Array(208, -67, 176, -96, 208, -112, 218, -108, 230, -102, 240, -96)
 uv = PackedVector2Array(-5.66675, -55.9995)
 data = SubResource("Resource_xqdbr")
 floor_height = 0.2
@@ -1265,17 +1269,22 @@ ceiling_height = 7.0
 [node name="_Polygon2D_238032" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
 color = Color(0.501961, 0, 0.196078, 1)
-polygon = PackedVector2Array(364, -7, 384, -2, 372, 14, 355, 14)
+polygon = PackedVector2Array(364, -7, 384, -2, 373, 14, 356, 14)
 data = SubResource("Resource_y4auh")
 floor_height = 5.0
 ceiling_height = 7.0
+
+[node name="TriangulatedMultisector-1760" parent="Sectors/Stairs" instance=ExtResource("3_l4525")]
+position = Vector2(63.209, -74.5978)
+polygon = PackedVector2Array(0, 0, 10, 0, 24.791, 31.5978, 16.791, 31.5978, 0, 10, -29.209, 11.5978, -65.209, -13.4022, -78.209, -5.40219, -97.209, 17.5978, -109.209, 11.5978, -96.209, -7.40219, -102.209, -28.4022, -73.209, -31.4022, -62.209, -27.4022, -43.209, -26.4022, -31.209, -20.4022, -18.209, -1.40219)
+data = SubResource("Resource_r8b0k")
 
 [node name="Parcour" type="Node2D" parent="Sectors"]
 position = Vector2(389, 71)
 
 [node name="Triangulator" parent="Sectors/Parcour" instance=ExtResource("3_l4525")]
 position = Vector2(61, -68)
-polygon = PackedVector2Array(-78, 11, -78, 102, -34, 102, 24, 94, 70, 103, 118, 104, 126, 78, 126, 37, 119, 8, 98, -27, 54, -31, 19, -24, 30, -3, 52, 5, 64, -4, 69, -18, 86, -11, 96.2454, 11.2507, 35, 20)
+polygon = PackedVector2Array(-77, 11, -78, 102, -34, 102, 24, 94, 70, 103, 118, 104, 126, 78, 126, 37, 119, 8, 98, -27, 54, -31, 19, -24, 30, -3, 52, 5, 64, -4, 69, -18, 86, -11, 96.2454, 11.2507, 35, 20)
 data = SubResource("Resource_bjjgi")
 
 [node name="Sector2" parent="Sectors/Parcour/Triangulator" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
@@ -1313,7 +1322,7 @@ floor_height = 5.0
 ceiling_height = 10.0
 
 [node name="_Polygon2D_206706" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
-position = Vector2(-450, -3)
+position = Vector2(-437, -2)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(527, 51, 537, 53, 540, 75, 530, 80)
 data = SubResource("Resource_70bq8")
@@ -1347,30 +1356,26 @@ floor_height = 5.0
 ceiling_height = 10.0
 exclude_from_export = true
 
-[node name="Sector-5147" type="Polygon2D" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
+[node name="Sector-5147" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(92, -21)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(-2, 0, 6, 1, 11, 16, 0, 10)
-script = ExtResource("5_bjjgi")
 data = SubResource("Resource_1xb40")
 floor_height = 5.0
 ceiling_height = 10.0
-show_portal_arrow = true
 
-[node name="Sector-3182" type="Polygon2D" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
+[node name="Sector-3182" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(50, -25)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(-31, 1, -6, -1, 5, 0, 9, 5, 14, 21, 2, 30, -20, 22)
-script = ExtResource("5_bjjgi")
 data = SubResource("Resource_8gvvu")
 floor_height = 5.0
 ceiling_height = 10.0
-show_portal_arrow = true
 
 [node name="@Polygon2D@223595" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
 position = Vector2(-389, -71)
 color = Color(0.501961, 0, 0.196078, 1)
-polygon = PackedVector2Array(355, 105, 340, 71, 340, 40, 355, 14, 372, 14, 372, 105)
+polygon = PackedVector2Array(355, 105, 340, 71, 340, 40, 356, 14, 373, 14, 372, 105)
 data = SubResource("Resource_kc2um")
 floor_height = 5.0
 ceiling_height = 10.0
