@@ -84,6 +84,15 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	config.on_cosmetics_changed.disconnect(_update_visuals)
 
+
+func on_editing_start()->void:
+	super.on_editing_start()
+	_update_visuals()
+
+func on_editing_finish(_start_was_called_first : bool)->void:
+	super.on_editing_finish(_start_was_called_first)
+	_update_visuals()
+
 func _selected_update(_selected_list: Array[Node])->void:
 	super._selected_update(_selected_list)
 	_update_visuals()
@@ -153,51 +162,50 @@ func _ensure_points_clockwise(points: PackedVector2Array)->bool:
 
 #region SANITY_CHECKS
 
-func sanity_check()->void:
-	if self.polygon.size() < 3:
-		ErrorUtils.report_error("{0} - only {1} vertices".format([get_full_name(), self.polygon.size()]))
-		
-	if not self.exclude_from_export:
-		# convexity only matters for actual sectors, not for holes
-		_check_is_convex()
-	_check_intersecting_sectors()
-	_check_unsnapped_points()
-
-func _check_unsnapped_points()->void:
-	if not config.sanity_check_snapping: return
-	var unsnapped = null
-	for this_point in get_points():
-		var distance_sqr := _check_is_unsnapped_point(this_point)
-		if distance_sqr > 0.0:
-			if unsnapped == null: unsnapped = []
-			unsnapped.append("{0}({1})".format([this_point._idx, sqrt(distance_sqr)]))
-	if unsnapped:
-		ErrorUtils.report_warning("Unsnapped: {0} [{1}]".format([get_full_name(), DatastructUtils.string_concat(unsnapped)]))
-
-func _check_intersecting_sectors()->void:
-	if not config.sanity_check_intersecting: return
-	var this_polygon_worldspace := self.get_point_positions() 
-	for s in _level.get_sectors():
-		if s == self: continue
-		var intersection := Geometry2D.intersect_polygons(this_polygon_worldspace, s.get_point_positions())
-		if intersection.size() > 0:
-			ErrorUtils.report_warning("{0} intersects {1}".format([get_full_name(), s.get_full_name()]))
+static func sanity_check_all(level: Level, all_sectors: Array[Sector])->void:
+	print("\tCheck - polygon has points")
+	for s in all_sectors:
+		if s.get_points_count() < 3:
+			ErrorUtils.report_error("{0} - only {1} vertices".format([s.get_full_name(), s.get_points_count()]))
 			
-
-func _check_is_unsnapped_point(this_point: SectorPoint)->float:
-	var snapping_distance_sqr := config.max_snapping_distance * config.max_snapping_distance
-	for s in _level.get_sectors():
-		if s == self: continue
-		for other_point in s.get_points():
-			var distance_sqr : float = this_point.global_position.distance_squared_to(other_point.global_position)
-			if 0 < distance_sqr and distance_sqr <= snapping_distance_sqr:
-				return distance_sqr
-	return 0.0
+	if level.config.sanity_check_convex:
+		print("\tCheck - convexity...")
+		for s in all_sectors:
+			if not s.exclude_from_export:
+				if not s.is_convex():
+					ErrorUtils.report_error("Non-convex: {0}".format([s.get_full_name()]))
+		
+	if level.config.sanity_check_intersecting:
+		print("\tCheck - intersections...")
+		var i: int = 0
+		while i < all_sectors.size():
+			var sector_a := all_sectors[i].get_point_positions()
+			var j: int = 0
+			while j < i:
+				var intersection := Geometry2D.intersect_polygons(sector_a, all_sectors[j].get_point_positions())
+				if intersection.size() > 0:
+					ErrorUtils.report_error("{0} intersects {1}".format([all_sectors[i].get_full_name(), all_sectors[j].get_full_name()]))
+				j += 1
+			i += 1
 	
-func _check_is_convex()->void:
-	if not config.sanity_check_convex: return
-	if not is_convex():
-		ErrorUtils.report_error("Non-convex: {0}".format([self.get_full_name()]))
+	if level.config.sanity_check_snapping:
+		print("\tCheck - unsnapped...")
+		var snapping_distance_sqr := level.config.max_snapping_distance * level.config.max_snapping_distance
+		var i: int = 0
+		while i < all_sectors.size():
+			var sector_a := all_sectors[i].get_points()
+			var j: int = 0
+			while j < i:
+				var sector_b := all_sectors[j].get_points()
+				for a in sector_a:
+					for b in sector_b:
+						var distance_sqr : float = a.global_position.distance_squared_to(b.global_position)
+						if 0 < distance_sqr and distance_sqr <= snapping_distance_sqr:
+							ErrorUtils.report_warning("Unsnapped points: {0} <-> {1}".format([a, b]))
+				j += 1
+			i += 1
+	
+
 
 func is_convex()->bool:
 	return Geometry2D.decompose_polygon_in_convex(self.polygon).size() == 1

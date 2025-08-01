@@ -49,7 +49,7 @@ func create_level_export_data() -> Dictionary:
 		
 	var all_sectors := get_sectors(true);
 	
-	for s in all_sectors: s.sanity_check()
+	Sector.sanity_check_all(self, all_sectors)
 	
 	for t in range(all_sectors.size()):
 		sectors_map[all_sectors[t]] = t

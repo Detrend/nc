@@ -1240,7 +1240,7 @@ ceiling_height = 7.0
 [node name="@Polygon2D@236637" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
 color = Color(0.501961, 0, 0.196078, 1)
-polygon = PackedVector2Array(376, -24, 392, -24, 392, -15, 376, -16)
+polygon = PackedVector2Array(376, -24, 392, -24, 392, -14, 376, -16)
 data = SubResource("Resource_kxlo1")
 floor_height = 4.8
 ceiling_height = 7.0
@@ -1248,7 +1248,7 @@ ceiling_height = 7.0
 [node name="@Polygon2D@236990" parent="Sectors/Stairs" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
 color = Color(0.501961, 0, 0.196078, 1)
-polygon = PackedVector2Array(376, -16, 392, -15, 383, -2, 364, -7)
+polygon = PackedVector2Array(376, -16, 392, -14, 383, -2, 364, -7)
 data = SubResource("Resource_0uj8m")
 floor_height = 5.0
 ceiling_height = 7.0
