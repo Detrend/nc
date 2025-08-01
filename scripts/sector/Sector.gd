@@ -68,21 +68,29 @@ var _visualizer_line : Line2D:
 	get: return get_node_or_null("VisualizerLine")
 
 
-	
-
+# to make sure update_visuals() isn't called from some setter at the very beginning before config and scene is even set up 
+var _did_start : bool = false
 func _ready() -> void:
+	_did_start = true
 	_update_visuals()
 
 func _update_visuals() -> void:
-	if not _visualizer_line: return
+	if not _did_start: return
 	_visualize_border()
 	_visualize_portals()
 	self.color = EditorConfig.get_sector_color(config, self)
 
 func _enter_tree() -> void:
 	config.on_cosmetics_changed.connect(_update_visuals)
+	#var unre := get_undo_redo_raw()
+	#if unre and unre.version_changed.get_connections().find(_update_visuals) == -1:
+	#	unre.version_changed.connect(_update_visuals)
+		
 func _exit_tree() -> void:
 	config.on_cosmetics_changed.disconnect(_update_visuals)
+	#var unre := get_undo_redo_raw()
+	#if unre and unre.version_changed.get_connections().find(_update_visuals) != -1:
+	#	unre.version_changed.disconnect(_update_visuals)
 
 
 func on_editing_start()->void:
@@ -95,7 +103,8 @@ func on_editing_finish(_start_was_called_first : bool)->void:
 
 func _selected_update(_selected_list: Array[Node])->void:
 	super._selected_update(_selected_list)
-	_update_visuals()
+	if is_editable:
+		_update_visuals()
 
 func _alt_mode_drag_update()->void:
 	super._alt_mode_drag_update()
@@ -163,10 +172,13 @@ func _ensure_points_clockwise(points: PackedVector2Array)->bool:
 #region SANITY_CHECKS
 
 static func sanity_check_all(level: Level, all_sectors: Array[Sector])->void:
-	print("\tCheck - polygon has points")
+	print("\tCheck - trivial")
 	for s in all_sectors:
 		if s.get_points_count() < 3:
 			ErrorUtils.report_error("{0} - only {1} vertices".format([s.get_full_name(), s.get_points_count()]))
+	for s in all_sectors:
+		if s.ceiling_height <= s.floor_height:
+			ErrorUtils.report_error("{0} - ceiling <= floor ({1} <= {2})".format([s.get_full_name(), s.ceiling_height, s.floor_height])) 
 			
 	if level.config.sanity_check_convex:
 		print("\tCheck - convexity...")

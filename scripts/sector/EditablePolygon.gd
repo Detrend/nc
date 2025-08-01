@@ -11,8 +11,18 @@ var config : EditorConfig = preload("res://config.tres") as EditorConfig
 
 
 var _level : Level:
-	get: return NodeUtils.get_ancestor_component_of_type(self, Level)
+	get: 
+		if not _level: _level = NodeUtils.get_ancestor_component_of_type(self, Level) as Level
+		return _level
+	set(val):
+		_level = val
 
+func get_undo_redo()->EditorUndoRedoManager: 
+	return _level._editor_plugin.get_undo_redo()
+func get_undo_redo_raw()->UndoRedo: 
+	var unre := get_undo_redo()
+	return unre.get_history_undo_redo(unre.get_object_history_id(self))
+	
 
 func _selected_update(_selected_list: Array[Node])->void:
 	self._manage_points()
@@ -23,7 +33,7 @@ func _alt_mode_drag_update()->void:
 func _on_sole_selected()->void:
 	if not is_editable:
 		var editable_ancestor : Node = NodeUtils.get_ancestor_by_predicate(self, func(n:Node): return (n is EditablePolygon) and n.is_editable)
-		print("Selected a non-editable node (ancestor: {0})".format([editable_ancestor]))
+		#print("Selected a non-editable node (ancestor: {0})".format([editable_ancestor]))
 		if editable_ancestor: 
 			var selection := EditorInterface.get_selection()
 			selection.clear()
@@ -189,12 +199,15 @@ var alt_mode_affected_points : Array[SectorPoint]
 var alt_mode_saved_configurations : Dictionary[EditablePolygon, PackedVector2Array]
 
 func find_changed_point_index(current_points: PackedVector2Array)->int:
+		if current_points.size() != last_points.size():
+			return -1
 		var t: int = 0
 		var selected :int = -1
 		while t < current_points.size():
 			if current_points[t] != last_points[t]:
 				if selected != -1: 
 					ErrorUtils.report_error("Alt edit mode: more than one point changed {2}[{0}] as well as [{1}]".format([t, selected, get_full_name()]))
+					return -1
 				selected = t
 			t += 1
 		return selected
@@ -209,11 +222,12 @@ func find_points_to_alt_mode_snap(this_point_idx: int)->Array[SectorPoint]:
 					ret.append(p)
 	return ret
 
+
 func do_alt_mode_retire(_current_points: PackedVector2Array)->void:
-	var unre : EditorUndoRedoManager= _level._editor_plugin.get_undo_redo()
+	var unre : EditorUndoRedoManager= self.get_undo_redo()
 
 	# first pop the edit-polygon action that was added to history just before this
-	unre.get_history_undo_redo(unre.get_object_history_id(self)).undo()
+	self.get_undo_redo_raw().undo()
 	self.polygon = _current_points # make sure this sector has the new polygon and not the old one resulting from the undo
 
 	unre.create_action("Multimove ({0} points / {1} sectors)".format([alt_mode_affected_points.size() + 1, alt_mode_saved_configurations.size()]))
