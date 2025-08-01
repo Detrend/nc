@@ -1,6 +1,6 @@
 class_name SectorPoint
 
-var _sector : EditablePolygon
+var _sector: EditablePolygon
 var _idx : int
 
 func _init(sector : EditablePolygon, idx : int) -> void:
@@ -14,3 +14,6 @@ var global_position : Vector2:
 
 func _to_string():
 	return "{0}[{1}]".format([_sector.get_full_name(), _idx])
+
+func _equals(other: SectorPoint)->bool:
+	return (_sector == other._sector) and (_idx == other._idx)

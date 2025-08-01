@@ -147,11 +147,90 @@ func contains_point(p: Vector2, inclusive: bool = true)->bool:
 	return true
 
 
+enum AltModeState{
+	NONE = 0, WAITING_FOR_MOVEMENT, ACTIVE
+}
+var alt_mode_state: AltModeState = AltModeState.NONE
+var alt_mode_selected_idx : int = -1
+var alt_mode_affected_points : Array[SectorPoint]
+var alt_mode_saved_configurations : Dictionary[EditablePolygon, PackedVector2Array]
+
+func find_changed_point_index(current_points: PackedVector2Array)->int:
+		var t: int = 0
+		var selected :int = -1
+		while t < current_points.size():
+			if current_points[t] != last_points[t]:
+				if selected != -1: 
+					ErrorUtils.report_error("Alt edit mode: more than one point changed {2}[{0}] as well as [{1}]".format([t, selected, get_full_name()]))
+				selected = t
+			t += 1
+		return selected
+
+func find_points_to_alt_mode_snap(this_point_idx: int)->Array[SectorPoint]:
+	var ret : Array[SectorPoint] = []
+	var previous_absolute := self.point_pos_relative_to_absolute(last_points[this_point_idx])
+	for s in _level.get_editable_polygons():
+			for p in s.get_points():
+				if p._sector == self and p._idx == this_point_idx: continue
+				if p.global_position == previous_absolute:
+					ret.append(p)
+	return ret
+
+func do_alt_mode_retire(_current_points: PackedVector2Array)->void:
+	print("retire")
+	var unre := _level._editor_plugin.get_undo_redo()
+	unre.create_action("Multimove ({0} points / {1} sectors)".format([alt_mode_affected_points.size(), alt_mode_saved_configurations.size()]))
+	for sector in alt_mode_saved_configurations.keys():
+		print("adding redo for {0}: {1}".format([sector.get_full_name(), sector.polygon]))
+		unre.add_do_property(sector, 'polygon', sector.polygon)
+		print("adding undo for {0}: {1}".format([sector.get_full_name(), alt_mode_saved_configurations[sector]]))
+		unre.add_undo_property(sector, 'polygon', alt_mode_saved_configurations[sector])
+	unre.commit_action()
+	alt_mode_selected_idx = -1
+	alt_mode_affected_points.clear()
+	alt_mode_saved_configurations.clear()
+	pass
+
+func _alt_mode_snap2(current_points: PackedVector2Array)->void:
+	if alt_mode_state == AltModeState.NONE:
+		if is_just_being_edited() and _level.is_key_pressed(KEY_Q):
+			alt_mode_state = AltModeState.WAITING_FOR_MOVEMENT
+			# no return
+	if alt_mode_state == AltModeState.WAITING_FOR_MOVEMENT:
+		if ! is_just_being_edited():
+			alt_mode_state = AltModeState.NONE
+			return
+
+		self.alt_mode_selected_idx = find_changed_point_index(current_points)
+		if self.alt_mode_selected_idx == -1:
+			return
+		self.alt_mode_affected_points = find_points_to_alt_mode_snap(self.alt_mode_selected_idx)
+		alt_mode_saved_configurations.clear()
+		self.is_target_of_alt_mode_snapping = true
+		alt_mode_saved_configurations[self] = last_points
+		for p in self.alt_mode_affected_points:
+			p._sector.is_target_of_alt_mode_snapping = true
+			alt_mode_saved_configurations[p._sector] = p._sector.polygon
+		alt_mode_state = AltModeState.ACTIVE
+	
+	if alt_mode_state == AltModeState.ACTIVE:
+		#print("Active: {0}".format([get_full_name()]))
+		if ! is_just_being_edited():
+			do_alt_mode_retire(current_points)
+			alt_mode_state = AltModeState.NONE
+			return
+		else:
+			for p in alt_mode_affected_points:
+				p.global_position = self.get_point_position(alt_mode_selected_idx)
+	
+	
+
 
 var is_target_of_alt_mode_snapping : bool = false
 var affected_points : Array[SectorPoint] = []
 var selected_idx : int = -1
 var last_sector_pos : Vector2 = Vector2.ZERO
+var remembered_sector_configurations : Dictionary[EditablePolygon, PackedVector2Array] = {}
 
 func _alt_mode_snap(current_points: PackedVector2Array)->int:
 	var last_pos := self.last_sector_pos
@@ -171,30 +250,51 @@ func _alt_mode_snap(current_points: PackedVector2Array)->int:
 		t += 1
 	if selected == -1 and is_just_being_edited():
 		selected = self.selected_idx
+	#if _level.is_mouse_up(MOUSE_BUTTON_LEFT): selected = -1
 		
 	var current_absolute := point_pos_relative_to_absolute(current_points[selected])
 	if selected != self.selected_idx:
-		#print("!!!!! {0} > {1}".format([selected, self.selected_idx]))
 		self.selected_idx = selected
 		for p in self.affected_points: p._sector.is_target_of_alt_mode_snapping = false
-		self.affected_points.clear()
-		var previous_absolute := point_pos_relative_to_absolute(last_points[selected])
-		for s in _level.get_editable_polygons():
-			if s == self: continue
-			for p in s.get_points():
-				if p.global_position == previous_absolute and (p.global_position.distance_squared_to(current_absolute) < max_distance_sqr):
-					p._sector.is_target_of_alt_mode_snapping = true
-					self.affected_points.append(p)
+		if true ||  selected != -1:
+			self.affected_points.clear()
+			var previous_absolute := point_pos_relative_to_absolute(last_points[selected])
+			self.remembered_sector_configurations.clear()
+			for s in _level.get_editable_polygons():
+				if s == self: continue
+				for p in s.get_points():
+					if p.global_position == previous_absolute and (p.global_position.distance_squared_to(current_absolute) < max_distance_sqr):
+						p._sector.is_target_of_alt_mode_snapping = true
+						self.affected_points.append(p)
+						self.remembered_sector_configurations[p._sector] = p._sector.polygon
+						print("remembering polygon for {0}: {1}".format([p, p._sector.polygon]))
+			# this must be AFTER all the snapped points. if it were before, it would break when snapping other point from this same polygon
+			self.remembered_sector_configurations[self] = last_points
+			print("remembering polygon for {0}: {1}".format([self.get_full_name(), last_points]))
 	for p in self.affected_points: 
 		p.global_position = current_absolute
 
 	return selected
 
 func _handle_alt_mode_snapping(points: PackedVector2Array)->bool:
+	_alt_mode_snap2(points)
+	return alt_mode_state == AltModeState.ACTIVE
+
+	var last_selected_idx := self.selected_idx
 	self.selected_idx = _alt_mode_snap(points)
 	if self.selected_idx == -1:
-		for p in self.affected_points: p._sector.is_target_of_alt_mode_snapping = false
-		affected_points.clear()
+		if last_selected_idx != -1:
+			var unre := _level._editor_plugin.get_undo_redo()
+			unre.create_action("Multimove ({0} points / {1} sectors)".format([affected_points.size(), remembered_sector_configurations.size()]))
+			for sector in remembered_sector_configurations.keys():
+				print("adding redo for {0}: {1}".format([sector.get_full_name(), sector.polygon]))
+				#unre.add_do_property(sector, 'polygon', sector.polygon)
+				print("adding undo for {0}: {1}".format([sector.get_full_name(), remembered_sector_configurations[sector]]))
+				#unre.add_undo_property(sector, 'polygon', remembered_sector_configurations[sector])
+			unre.commit_action()
+			for p in self.affected_points: p._sector.is_target_of_alt_mode_snapping = false
+			affected_points.clear()
+		
 	if self.selected_idx != -1: 
 		pass#print("{1}: {0}".format([self.selected_idx, name]))
 	return self.selected_idx != -1
@@ -203,7 +303,7 @@ func _handle_alt_mode_snapping(points: PackedVector2Array)->bool:
 
 
 func is_just_being_edited()->bool:
-	return	( is_target_of_alt_mode_snapping 
+	return	( (alt_mode_state == AltModeState.NONE && is_target_of_alt_mode_snapping) 
 				or (Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) && NodeUtils.is_the_only_selected_node(self))
 			)
 

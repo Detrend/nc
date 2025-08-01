@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://cta47u4q0nac4"]
+[gd_scene load_steps=10 format=3 uid="uid://cta47u4q0nac4"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/Level.gd" id="1_tdhj0"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_a102k"]
@@ -6,10 +6,28 @@
 [ext_resource type="PackedScene" uid="uid://2xarq0korji0" path="res://prefabs/PlayerPosition.tscn" id="3_hw0gl"]
 [ext_resource type="Script" uid="uid://cft80p5qydrwt" path="res://scripts/sector/SectorProperties.gd" id="4_hw0gl"]
 
+[sub_resource type="Resource" id="Resource_3gf4c"]
+script = ExtResource("4_hw0gl")
+floor_height = 0.0
+ceiling_height = 1.5
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_p88uy"]
+script = ExtResource("4_hw0gl")
+floor_height = 0.0
+ceiling_height = 1.5
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
 [sub_resource type="Resource" id="Resource_hw0gl"]
 script = ExtResource("4_hw0gl")
 floor_height = 0.0
 ceiling_height = 10.0
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_v5xnj"]
+script = ExtResource("4_hw0gl")
+floor_height = 0.0
+ceiling_height = 1.5
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [node name="TestLevel1" type="Node2D"]
@@ -24,7 +42,8 @@ export_path = "../nc/content/levels/level_test1.json"
 [node name="@Polygon2D@223595" parent="Sectors/Parcour" instance=ExtResource("2_a102k")]
 position = Vector2(-389, -71)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(355, 105, 340, 71, 340, 39, 355, 14, 373, -1, 373, 119)
+polygon = PackedVector2Array(355, 105, 340, 71, 340, 39, 345, 6, 382, -13, 373, 119)
+data = SubResource("Resource_3gf4c")
 ceiling_height = 1.5
 
 [node name="@Polygon2D@227918" parent="Sectors/Parcour" instance=ExtResource("2_a102k")]
@@ -38,27 +57,29 @@ ceiling_height = 1.5
 position = Vector2(-389, -71)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(328, 48, 340, 39, 340, 71, 328, 64)
+data = SubResource("Resource_p88uy")
 ceiling_height = 1.5
 
 [node name="Triangulator" parent="Sectors/Parcour" instance=ExtResource("3_a102k")]
 z_index = 0
-polygon = PackedVector2Array(224, 48, 224, -72, -16, -72, -16, 48)
+polygon = PackedVector2Array(224, 48, 224, -72, -7, -84, -16, 48, -16, 48, -16, 48)
 data = SubResource("Resource_hw0gl")
 
 [node name="@Polygon2D@24150" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_a102k")]
-position = Vector2(71, -3)
+position = Vector2(84, 10)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(1, -2, 8, -2, 12, 2, 12, 8, 8, 12, 0, 12, -3, 8, -3, 2)
 ceiling_height = 1.5
 
 [node name="Sector" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_a102k")]
-position = Vector2(12, -56)
+position = Vector2(27, -32)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(-9, 15, 10, 0, 12, 27, -10, 33)
+data = SubResource("Resource_v5xnj")
 ceiling_height = 1.5
 
 [node name="@Polygon2D@58944" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_a102k")]
-position = Vector2(109, -36)
+position = Vector2(170, -28)
 color = Color(0, 0, 1, 0.145098)
 polygon = PackedVector2Array(-8, 2, 3, -4, 13, 5, 11, 15, -14, 16)
 ceiling_height = 1.5

@@ -13,6 +13,13 @@ var max_snapping_distance : float:
 @export var export_path : String = ""
 @export_tool_button("Export level") var export_level_tool_button = export_level
 
+
+var _editor_plugin : EditorPlugin:
+	get:
+		if !_editor_plugin: _editor_plugin = EditorPlugin.new()
+		return _editor_plugin
+
+
 func _ready() -> void:
 	if ! Engine.is_editor_hint(): export_level()
 
@@ -217,12 +224,14 @@ func is_mouse_pressed(key: MouseButton)->bool:
 	return Input.is_mouse_button_pressed(key)
 
 
-func _change_sector_height(node: Sector, delta: float, mode: EditorConfig.SectorColoringMode)->void:
+func _change_sector_height(unre: EditorUndoRedoManager, node: Sector, delta: float, mode: EditorConfig.SectorColoringMode)->void:
 	node.data = node.data.duplicate()
 	if   mode == EditorConfig.SectorColoringMode.Floor:
-		node.data.floor_height += delta * config.floor_height_increment
+		unre.add_do_property(node, 'floor_height', node.floor_height + delta * config.floor_height_increment)
+		unre.add_undo_property(node, 'floor_height', node.floor_height)
 	elif mode == EditorConfig.SectorColoringMode.Ceiling:
-		node.data.ceiling_height += delta * config.ceiling_height_increment
+		unre.add_do_property(node, 'ceiling_height', node.ceiling_height + delta * config.ceiling_height_increment)
+		unre.add_undo_property(node, 'floor_height', node.ceiling_height)
 
 
 func _handle_input()->void:
@@ -239,20 +248,29 @@ func _handle_input()->void:
 		if node is EditablePolygon:
 			node._on_selected_input(selected)
 
+	_handle_stairs_increment()
+	_handle_triangulation_command(selected)
+			
 
+func _handle_stairs_increment()->void:
 	# handle Level-specific input actions
 	var increment := 0
 	var is_alt_pressed = is_key_pressed(KEY_ALT)
 	if is_alt_pressed and is_key_down(KEY_P): 
-		print("+")
 		increment += 1
 	if is_alt_pressed and is_key_down(KEY_L): 
-		print("-")
 		increment -= 1
 	if increment != 0.0:
-		for sector in NodeUtils.get_selected_nodes_of_type(Sector):
-			_change_sector_height(sector, increment, coloring_mode)
-			
+		var affected_sectors : Array[Sector] = []
+		affected_sectors = NodeUtils.get_selected_nodes_of_type(Sector, affected_sectors)
+		var unre := _editor_plugin.get_undo_redo()
+		unre.create_action("{0} {1} height ({2})".format(["Increment" if increment > 0 else "Decrement", "floor" if coloring_mode == EditorConfig.SectorColoringMode.Floor else "ceiling", affected_sectors.size()]))
+		for sector in affected_sectors:
+			_change_sector_height(unre, sector, increment, coloring_mode)
+		unre.commit_action()
+
+func _handle_triangulation_command(selected: Array[Node])->void:
+	var is_alt_pressed = is_key_pressed(KEY_ALT)
 	if is_alt_pressed and is_key_down(KEY_T):
 		var selected_multisectors : Dictionary[TriangulatedMultisector, bool] = {}
 		for sel in selected:
