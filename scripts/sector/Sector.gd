@@ -80,18 +80,6 @@ func _update_visuals() -> void:
 	_visualize_portals()
 	self.color = EditorConfig.get_sector_color(config, self)
 
-func _enter_tree() -> void:
-	config.on_cosmetics_changed.connect(_update_visuals)
-	#var unre := get_undo_redo_raw()
-	#if unre and unre.version_changed.get_connections().find(_update_visuals) == -1:
-	#	unre.version_changed.connect(_update_visuals)
-		
-func _exit_tree() -> void:
-	config.on_cosmetics_changed.disconnect(_update_visuals)
-	#var unre := get_undo_redo_raw()
-	#if unre and unre.version_changed.get_connections().find(_update_visuals) != -1:
-	#	unre.version_changed.disconnect(_update_visuals)
-
 
 func on_editing_start()->void:
 	super.on_editing_start()
@@ -239,3 +227,11 @@ func is_convex()->bool:
 	return true
 
 #endregion				
+
+#region GETTERS
+
+static func get_sectors(this: Node, ret : Array[Sector] = [], include_uneditable: bool = false, lookup_flags: NodeUtils.LOOKUP_FLAGS = NodeUtils.LOOKUP_FLAGS.RECURSIVE):
+	ret = NodeUtils.get_children_by_predicate(this, func(n:Node)->bool: return n is Sector and (include_uneditable || n.is_editable), ret, lookup_flags)
+	return ret
+
+#endregion

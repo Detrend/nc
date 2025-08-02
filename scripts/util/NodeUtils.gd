@@ -126,7 +126,12 @@ static func instantiate_child(parent: Node, prefab: Resource)->Node:
 	return ret
 
 
-static func try_send_message_to_ancestor(this: Node, ancestor_type, message_name: String, arguments: Array):
+static func try_send_message_to_typed_ancestor(this: Node, ancestor_type, message_name: String, arguments: Array):
 	var parent:Node = NodeUtils.get_ancestor_of_type(this.get_parent(), ancestor_type)
+	if ! parent: return null
+	return parent.callv(message_name, arguments) 
+
+static func try_send_message_to_ancestor(this: Node, message_name: String, arguments: Array):
+	var parent:Node = NodeUtils.get_ancestor_by_predicate(this.get_parent(), func(an:Node)->bool: return an.has_method(message_name))
 	if ! parent: return null
 	return parent.callv(message_name, arguments) 

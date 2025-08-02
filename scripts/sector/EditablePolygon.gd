@@ -12,6 +12,7 @@ var config : EditorConfig = preload("res://config.tres") as EditorConfig
 
 var _level : Level:
 	get: 
+		if not _level: _level = get_tree().edited_scene_root as Level
 		if not _level: _level = NodeUtils.get_ancestor_component_of_type(self, Level) as Level
 		return _level
 	set(val):
@@ -54,17 +55,21 @@ func _on_selected_input(selected_list: Array[Node])->void:
 
 
 func on_editing_start()->void:
-	NodeUtils.try_send_message_to_ancestor(self, EditablePolygon, 'on_descendant_editing_start', [self])
+	NodeUtils.try_send_message_to_ancestor(self, 'on_descendant_editing_start', [self])
 
 func on_editing_finish(_start_was_called_first : bool)->void:
-	NodeUtils.try_send_message_to_ancestor(self, EditablePolygon, 'on_descendant_editing_finish', [self, _start_was_called_first])
+	NodeUtils.try_send_message_to_ancestor(self, 'on_descendant_editing_finish', [self, _start_was_called_first])
 
 
+static func on_descendant_editing_start_base(this: Node, _ancestor: EditablePolygon)->void:
+	NodeUtils.try_send_message_to_ancestor(this, 'on_descendant_editing_start', [this])
 func on_descendant_editing_start(_ancestor: EditablePolygon)->void:
-	NodeUtils.try_send_message_to_ancestor(self, EditablePolygon, 'on_descendant_editing_start', [self])
+	on_descendant_editing_start_base(self, _ancestor)
 
+static func on_descendant_editing_finish_base(this: Node, _ancestor: EditablePolygon, _start_was_called_first: bool)->void:
+	NodeUtils.try_send_message_to_ancestor(this, 'on_descendant_editing_finish', [this, _start_was_called_first])
 func on_descendant_editing_finish(_ancestor: EditablePolygon, _start_was_called_first: bool):
-	NodeUtils.try_send_message_to_ancestor(self, EditablePolygon, 'on_descendant_editing_finish', [self, _start_was_called_first])
+	on_descendant_editing_finish_base(self, _ancestor, _start_was_called_first)
 
 
 func _on_config_change()->void:
@@ -80,7 +85,7 @@ func _manage_points()->void:
 	
 	var points := self.polygon
 	
-	self._handle_alt_mode_snapping(points)
+	self._alt_mode_snap(points)
 	
 	if !is_just_being_edited() :
 		var did_change :bool = do_postprocess(points)
@@ -284,14 +289,6 @@ func _alt_mode_snap(current_points: PackedVector2Array)->void:
 					s._alt_mode_drag_update()
 	
 	
-
-
-
-func _handle_alt_mode_snapping(points: PackedVector2Array)->bool:
-	_alt_mode_snap(points)
-	return alt_mode_state == AltModeState.ACTIVE
-
-
 
 
 func is_just_being_edited()->bool:

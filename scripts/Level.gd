@@ -19,6 +19,13 @@ var _editor_plugin : EditorPlugin:
 		if !_editor_plugin: _editor_plugin = EditorPlugin.new()
 		return _editor_plugin
 
+func get_undo_redo()->EditorUndoRedoManager: 
+	return _editor_plugin.get_undo_redo()
+func get_undo_redo_raw()->UndoRedo: 
+	var unre := get_undo_redo()
+	var ret := unre.get_history_undo_redo(unre.get_object_history_id(self))
+	if not ret: print("no unre: {0}".format([unre.get_object_history_id(self)]))
+	return ret
 
 signal every_frame_signal()
 
@@ -31,6 +38,34 @@ func _process(delta: float) -> void:
 	_handle_input()
 	_handle_new_sector_creation()
 	every_frame_signal.emit()
+
+
+func _find_connection(connections: Array, c: Callable)->int:
+	var i:int = 0
+	while i < connections.size():
+		var other: Callable = connections[i]["callback"]
+		if other.get_method() == c.get_method() and other.get_object() == c.get_object():
+			return i
+		i += 1
+	return -1
+	
+func _enter_tree() -> void:
+	config.on_cosmetics_changed.connect(_update_sector_visuals)
+	var to_register : Callable = _update_sector_visuals
+	var unre := get_undo_redo_raw()
+	if unre and not unre.version_changed.is_connected(_update_sector_visuals):
+		unre.version_changed.connect(_update_sector_visuals, )
+		
+func _exit_tree() -> void:
+	config.on_cosmetics_changed.disconnect(_update_sector_visuals)
+	var unre := get_undo_redo_raw()
+	if unre and unre.version_changed.is_connected(_update_sector_visuals):
+		unre.version_changed.disconnect(_update_sector_visuals)
+
+func _update_sector_visuals()->void:
+	for s in get_sectors(false):
+		if s.is_editable: s._update_visuals()
+
 
 func create_level_export_data() -> Dictionary:	
 	var level_export := Dictionary()
