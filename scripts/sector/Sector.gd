@@ -67,6 +67,8 @@ func has_portal()-> bool: return enable_portal and portal_destination != null an
 var _visualizer_line : Line2D:
 	get: return get_node_or_null("VisualizerLine")
 
+func get_own_prefab()->Resource:
+	return Level.SECTOR_PREFAB
 
 # to make sure update_visuals() isn't called from some setter at the very beginning before config and scene is even set up 
 var _did_start : bool = false

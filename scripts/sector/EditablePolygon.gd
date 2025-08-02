@@ -18,6 +18,9 @@ var _level : Level:
 	set(val):
 		_level = val
 
+func get_own_prefab()->Resource:
+	return null
+
 func get_undo_redo()->EditorUndoRedoManager: 
 	return _level._editor_plugin.get_undo_redo()
 func get_undo_redo_raw()->UndoRedo: 
@@ -86,6 +89,7 @@ func _manage_points()->void:
 	var points := self.polygon
 	
 	self._alt_mode_snap(points)
+	self._handle_loop_cut(points, _level.current_selection)
 	
 	if !is_just_being_edited() :
 		var did_change :bool = do_postprocess(points)
@@ -288,7 +292,63 @@ func _alt_mode_snap(current_points: PackedVector2Array)->void:
 				if s != self:
 					s._alt_mode_drag_update()
 	
+
+func _find_the_single_added_point(current_points: PackedVector2Array, last_points: PackedVector2Array)->int:
+	var i : int = 0
+	while i < last_points.size():
+		if current_points[i] != last_points[i]:
+			var ret := i
+			while i < last_points.size():
+				if current_points[i + 1] != last_points[i]:
+					if ret > -1: ErrorUtils.report_warning("Loop cut: more points changed than just the one that was added! (also [{0}]: {1} -> {2})".format([ret, last_points[ret], current_points[ret]]))
+					ErrorUtils.report_warning("Loop cut: more points changed than just the one that was added! (also [{0}]: {1} -> {2})".format([i, last_points[i], current_points[i + 1]]))
+					ret = -1
+				i += 1
+			return ret
+		i += 1
+	return last_points.size()
+
+func _perform_loop_cut(a: int, b: int, points: PackedVector2Array)->void:
 	
+	print("loop cut: {0} - {1}".format([a, b]))
+	var points_to_give := points.slice(a, b + 1)
+	var points_to_keep := points.slice(0, a + 1) + points.slice(b)
+	var new_sector := _level.add_sector(get_own_prefab(), self.global_position, points_to_give, name + "b", get_parent())
+	self.name += "a"
+	new_sector.get_parent().move_child(new_sector, self.get_index() + 1)
+	new_sector.global_position = self.global_position
+	new_sector.data = self.data.duplicate()
+	self.polygon = points_to_keep
+	points.clear()
+	points.append_array(points_to_keep)
+
+var _loop_cut_first_idx : int = -1
+
+func _handle_loop_cut(points: PackedVector2Array, selection: Array[Node])->void:
+	if _loop_cut_first_idx == -2 or not ((selection.size() == 1 and selection[0] == self) and _level.is_key_pressed(KEY_C) and get_own_prefab()):
+		self._loop_cut_first_idx = -1
+		return
+	if points.size() > last_points.size():
+		if points.size() != (last_points.size() + 1):
+			ErrorUtils.report_warning("Loop cut: points count increased by {0} during single frame (required exactly 1)".format([points.size() - last_points.size()]))
+			self._loop_cut_first_idx = -1
+			return
+		var added_idx := _find_the_single_added_point(points, last_points)
+		if added_idx < 0:
+			return
+		if _loop_cut_first_idx >= 0:
+			if added_idx <= _loop_cut_first_idx: _loop_cut_first_idx += 1
+			var a :int = min(_loop_cut_first_idx, added_idx)
+			var b :int = max(_loop_cut_first_idx, added_idx)
+			if b == a + 1:
+				ErrorUtils.report_warning("Loop cut: too short loop {0} -> {1}".format([a, b]))
+				_loop_cut_first_idx = -1
+				return
+			_perform_loop_cut(a,b, points)
+			_loop_cut_first_idx = -2
+		else:
+			_loop_cut_first_idx = added_idx
+
 
 
 func is_just_being_edited()->bool:

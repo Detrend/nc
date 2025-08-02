@@ -14,6 +14,11 @@ var max_snapping_distance : float:
 @export_tool_button("Export level") var export_level_tool_button = export_level
 
 
+static var SECTOR_PREFAB : Resource = preload("res://prefabs/Sector.tscn")
+static var TRIANGULATED_MULTISECTOR_PREFAB : Resource = preload("res://prefabs/TriangulatedMultisector.tscn")
+static var STAIR_MAKER_PREFAB : Resource = preload("res://prefabs/StairMaker.tscn")
+
+
 var _editor_plugin : EditorPlugin:
 	get:
 		if !_editor_plugin: _editor_plugin = EditorPlugin.new()
@@ -179,10 +184,10 @@ func _handle_new_sector_creation()->void:
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):# and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 		if is_key_pressed(KEY_SHIFT) and is_key_pressed(KEY_CTRL) and is_mouse_down(MOUSE_BUTTON_LEFT):
 			if is_key_pressed(KEY_T):
-				var new_multisector := add_sector(preload("res://prefabs/TriangulatedMultisector.tscn"), get_global_mouse_position(), [Vector2(0, 0), Vector2(10, 0), Vector2(0, 10)])
+				var new_multisector := add_sector(TRIANGULATED_MULTISECTOR_PREFAB, get_global_mouse_position(), [Vector2(0, 0), Vector2(10, 0), Vector2(0, 10)])
 				print("new multisector: {0}".format([new_multisector]))
 			else:
-				var new_sector := add_sector(preload("res://prefabs/Sector.tscn"), get_global_mouse_position(), [Vector2(0, 0), Vector2(10, 0), Vector2(0, 10)])
+				var new_sector := add_sector(SECTOR_PREFAB, get_global_mouse_position(), [Vector2(0, 0), Vector2(10, 0), Vector2(0, 10)])
 				print("new sector: {0}".format([new_sector]))
 
 			
@@ -213,9 +218,9 @@ func generate_random_name(prefab: Resource)->String:
 	print("{0}  |  {1} ({2})".format([prefab.resource_path, resource_name, prefab.resource_path.rfind(".tscn")]))
 	return resource_name + "-" + str(randi_range(0, 9999))
 
-func add_sector(prefab: Resource, position: Vector2, points: PackedVector2Array, name: String = "")->EditablePolygon:
+func add_sector(prefab: Resource, position: Vector2, points: PackedVector2Array, name: String = "", parent: Node2D = null)->EditablePolygon:
 			var nearest_point := find_nearest_point(position, INF, null)
-			var sector_parent : Node2D = find_sector_parent(position, nearest_point)
+			var sector_parent : Node2D = parent if parent else find_sector_parent(position, nearest_point)
 			
 			var new_sector :EditablePolygon = NodeUtils.instantiate_child(sector_parent, prefab) as EditablePolygon
 			new_sector.global_position = position
@@ -320,10 +325,12 @@ func _handle_triangulation_command(selected: Array[Node])->void:
 
 
 var last_selection : Array[Node]
+var current_selection : Array[Node]
 func _handle_selections()->void:
 	if last_selection == null: last_selection = []
 	var current_selection : Array[Node] = []
 	NodeUtils.get_selected_nodes_of_type(Node, current_selection)
+	self.current_selection = current_selection
 	if last_selection.size() == 1 and ( current_selection.size() != 1 or current_selection[0] != last_selection[0]) and last_selection[0] is EditablePolygon:
 		(last_selection[0] as EditablePolygon)._on_sole_unselected()
 	if current_selection.size() == 1 and ( last_selection.size() != 1 or last_selection[0] != current_selection[0]) and current_selection[0] is EditablePolygon:

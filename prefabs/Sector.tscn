@@ -19,8 +19,10 @@ show_portal_arrow = true
 [node name="VisualizerLine" type="Line2D" parent="."]
 closed = true
 width = 1.0
-default_color = Color(0, 0, 0, 1)
+default_color = Color(0, 0, 0, 0.796078)
 joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2
 
 [node name="PortalVisualizerLine" type="Line2D" parent="."]
 z_index = 1
