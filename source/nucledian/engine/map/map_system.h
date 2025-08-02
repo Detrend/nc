@@ -4,17 +4,17 @@
 // MR says:
 // This is a primary data representation of the map during runtime
 // of the game. It is supposed to be fully static (no adding/removing
-// of visible_sectors during runtime).
-// The map is composed of visible_sectors, where each sector is a convex 2D
+// of sectors during runtime).
+// The map is composed of sectors, where each sector is a convex 2D
 // shape surrounded by walls. The ordering of the walls is in
 // counter-clockwise order.
-// Two visible_sectors can be connected together by so-called "portal",
+// Two sectors can be connected together by so-called "portal",
 // which acts as an edge on the graph whose vertices are the
-// individual visible_sectors.
+// individual sectors.
 // The purpose of this data representation is a fast traversal and
 // visibility culling. Therefore, the main use is in rendering and
 // enemy-player visibility checking.
-// The data of walls and visible_sectors is tightly packed together in an
+// The data of walls and sectors is tightly packed together in an
 // array for cache-friendly traversal.
 // It should be possible to fully derive the level geometry from
 // this data representation.
@@ -24,7 +24,7 @@
 // data.
 // Internal data is a set of data generated during building of the
 // map from other type of data. Do not touch internal data.
-// External data is a set of data associated with walls/visible_sectors
+// External data is a set of data associated with walls/sectors
 // that can be shared with other map representation (editor for
 // example). These are never changed during building of the sector.
 // If you want to associate some data with each sector/wall, then
@@ -74,6 +74,12 @@ struct VisibilityTree
   bool is_visible(SectorID id) const;
 };
 
+struct SectorSet
+{
+  std::vector<SectorID> sectors;
+  std::vector<mat4>     transforms;
+};
+
 // Internal data of this map representation.
 struct SectorIntData
 {
@@ -114,6 +120,10 @@ struct WallData
   PortalRenderID render_data_index = INVALID_PORTAL_RENDER_ID;
 
   PortType get_portal_type() const;
+
+  // Returns true if this is a normal portal or nuclidean portal.
+  // Returns false if this is a wall
+  bool is_portal() const;
 };
 
 struct PortalRenderData
@@ -178,12 +188,26 @@ struct MapSectors
     u8              recursion_depth  // depth 0 means only the current "dimension" without any traversal of portals
   ) const;
 
+  // Queries a sectors nearby a point. This includes sectors behind nuclidean
+  // portals. Implemented as a floodfill.
+  // Returns a set of sectors and their transforms relative to the point.
+  // Optimized for small ranges.
+  // This is a very specific function for very specific cases and not for a
+  // general use.
+  void query_nearby_sectors_short_distance
+  (
+    vec2       position,
+    f32        range,
+    SectorSet& sectors_out
+  )
+  const;
+
   // Iterates all portals of this sector
   bool for_each_portal_of_sector(SectorID sector, WallVisitor visitor) const;
 
   // Returns an id of a sector that lies on this position. If there is
   // no such sector then returns INVALID_SECTOR_ID. If there are multiple
-  // visible_sectors covering this point (on sector edges) then one of them is
+  // sectors covering this point (on sector edges) then one of them is
   // returned.
   SectorID get_sector_from_point(vec2 point) const;
 

@@ -28,709 +28,807 @@
 namespace nc
 {
 
-  namespace map_helpers
+namespace map_helpers
+{
+
+//==============================================================================
+WallID next_wall(const MapSectors& map, SectorID sector, WallID wall)
+{
+  nc_assert(sector < map.sectors.size());
+  nc_assert(wall < map.sectors[sector].int_data.last_wall);
+  WallID next = wall + 1;
+
+  if (next == map.sectors[sector].int_data.last_wall)
   {
+    next = map.sectors[sector].int_data.first_wall;
+  }
 
-    //==============================================================================
-    WallID next_wall(const MapSectors& map, SectorID sector, WallID wall)
+  return next;
+}
+
+//==============================================================================
+WallID get_wall_id(const MapSectors& map, SectorID sector_id, WallRelID relative_wall_id)
+{
+  nc_assert(sector_id < map.sectors.size());
+  const SectorIntData& sector_data = map.sectors[sector_id].int_data;
+
+  nc_assert(relative_wall_id < (sector_data.last_wall - sector_data.first_wall));
+  const WallID wall_id = sector_data.first_wall + relative_wall_id;
+
+  nc_assert(wall_id < sector_data.last_wall);
+  return wall_id;
+}
+
+//==============================================================================
+WallID get_nc_opposing_wall(const MapSectors& map, SectorID sid, WallID wid)
+{
+  nc_assert(sid < map.sectors.size());
+  nc_assert(wid < map.walls.size());
+  nc_assert(map.walls[wid].get_portal_type() == PortalType::non_euclidean);
+
+  WallRelID rel_wall = map.walls[wid].nc_portal_wall_id;
+  SectorID  portal_sector = map.walls[wid].portal_sector_id;
+
+  nc_assert(portal_sector != INVALID_SECTOR_ID);
+
+  return map.sectors[portal_sector].int_data.first_wall + rel_wall;
+}
+
+//==============================================================================
+// calls lambda(PortalID portal_id, WallID wall_index)
+template<typename F>
+bool for_each_portal(const MapSectors& map, SectorID sector_id, F&& lambda)
+{
+  nc_assert(sector_id < map.sectors.size());
+  const auto& repr = map.sectors[sector_id].int_data;
+
+  bool at_least_one = false;
+  for (auto wid = repr.first_wall; wid < repr.last_wall; ++wid)
+  {
+    nc_assert(wid < map.walls.size());
+
+    if (map.walls[wid].get_portal_type() != PortalType::none)
     {
-      nc_assert(sector < map.sectors.size());
-      nc_assert(wall < map.sectors[sector].int_data.last_wall);
-      WallID next = wall + 1;
+      at_least_one = true;
+      lambda(wid);
+    }
+  }
 
-      if (next == map.sectors[sector].int_data.last_wall)
+  return at_least_one;
+}
+
+//==============================================================================
+template<typename F>
+void for_each_wall(const MapSectors& map, SectorID sector_id, F&& lambda)
+{
+  nc_assert(sector_id < map.sectors.size());
+  const auto& repr = map.sectors[sector_id].int_data;
+
+  for (auto wid = repr.first_wall; wid < repr.last_wall; ++wid)
+  {
+    nc_assert(wid < map.walls.size());
+
+    const auto nextid = next_wall(map, sector_id, wid); // id of the next wall
+
+    lambda(wid, nextid);
+  }
+}
+
+//==============================================================================
+u32 get_sectors_from_point(const MapSectors& map, vec2 point, SectorID* sectors_out, u32 max_sectors_out)
+{
+  nc_assert(sectors_out && max_sectors_out);
+  u32 counter = 0;
+
+  map.sector_grid.query_point(point, [&](aabb2, SectorID id)->bool
+    {
+      if (map.is_point_in_sector(point, id))
       {
-        next = map.sectors[sector].int_data.first_wall;
-      }
-
-      return next;
-    }
-
-    //==============================================================================
-    WallID get_wall_id(const MapSectors& map, SectorID sector_id, WallRelID relative_wall_id)
-    {
-      nc_assert(sector_id < map.sectors.size());
-      const SectorIntData& sector_data = map.sectors[sector_id].int_data;
-
-      nc_assert(relative_wall_id < (sector_data.last_wall - sector_data.first_wall));
-      const WallID wall_id = sector_data.first_wall + relative_wall_id;
-
-      nc_assert(wall_id < sector_data.last_wall);
-      return wall_id;
-    }
-
-    //==============================================================================
-    WallID get_nc_opposing_wall(const MapSectors& map, SectorID sid, WallID wid)
-    {
-      nc_assert(sid < map.sectors.size());
-      nc_assert(wid < map.walls.size());
-      nc_assert(map.walls[wid].get_portal_type() == PortalType::non_euclidean);
-
-      WallRelID rel_wall = map.walls[wid].nc_portal_wall_id;
-      SectorID  portal_sector = map.walls[wid].portal_sector_id;
-
-      nc_assert(portal_sector != INVALID_SECTOR_ID);
-
-      return map.sectors[portal_sector].int_data.first_wall + rel_wall;
-    }
-
-    //==============================================================================
-    // calls lambda(PortalID portal_id, WallID wall_index)
-    template<typename F>
-    bool for_each_portal(const MapSectors& map, SectorID sector_id, F&& lambda)
-    {
-      nc_assert(sector_id < map.sectors.size());
-      const auto& repr = map.sectors[sector_id].int_data;
-
-      bool at_least_one = false;
-      for (auto wid = repr.first_wall; wid < repr.last_wall; ++wid)
-      {
-        nc_assert(wid < map.walls.size());
-
-        if (map.walls[wid].get_portal_type() != PortalType::none)
+        if (counter < max_sectors_out)
         {
-          at_least_one = true;
-          lambda(wid);
+          sectors_out[counter] = id;
         }
+
+        counter += 1;
       }
 
-      return at_least_one;
-    }
+      return false;
+    });
 
-    //==============================================================================
-    template<typename F>
-    void for_each_wall(const MapSectors& map, SectorID sector_id, F&& lambda)
+  return counter;
+}
+
+//==============================================================================
+void modify_nuclidean_frustum(
+  const MapSectors& map,
+  Frustum2& frustum,
+  WallID            in_portal,
+  SectorID          in_sector)
+{
+const auto transform = map.calc_portal_to_portal_projection(in_sector, in_portal);
+  const auto new_pos = (transform * vec4{ frustum.center.x, 0.0f, frustum.center.y, 1.0f }).xz();
+  const auto new_dir = (transform * vec4{ frustum.direction.x, 0.0f, frustum.direction.y, 0.0f }).xz();
+  nc_assert(is_normal(new_dir));
+
+  frustum.center = new_pos;
+  frustum.direction = new_dir;
+}
+
+}
+
+//==============================================================================
+void MapSectors::query_visible(
+  vec3            position,
+  vec3            view_dir,
+  f32             hor_fov,
+  f32             /*ver_fov*/,
+  VisibilityTree& visible,
+  u8              recursion_depth) const
+{
+  nc_assert(is_normal(view_dir));
+
+  const auto angle = hor_fov >= 180.0f
+    ? Frustum2::FULL_ANGLE
+    : std::cosf(hor_fov * 0.5f);
+
+  const auto frustum = Frustum2
+  {
+    .center = position.xz(),
+    .direction = normalize(view_dir.xz()),
+    .angle = angle
+  };
+
+  visible.portal_sector = INVALID_SECTOR_ID;
+  visible.portal_wall = INVALID_WALL_ID;
+
+  constexpr u64 MAX_CAMERA_SECTORS = 8; // bump this up if the assert ever fires
+  std::array<SectorID, MAX_CAMERA_SECTORS> sectors_out;
+
+  const u32 sec_count = map_helpers::get_sectors_from_point
+  (
+    *this,
+    position.xz(),
+    sectors_out.data(),
+    MAX_CAMERA_SECTORS
+  );
+
+  nc_assert(sec_count <= MAX_CAMERA_SECTORS);
+  if (sec_count == 0)
+  {
+    return;
+  }
+
+  const auto slots_temp = FrustumBuffer{ frustum };
+  this->query_visible_sectors_impl
+  (
+    sectors_out.data(), sec_count, slots_temp, visible, recursion_depth
+  );
+}
+
+//==============================================================================
+void MapSectors::query_nearby_sectors_short_distance
+(
+  vec2       pos,
+  f32        range,
+  SectorSet& sectors_out
+)
+const
+{
+  nc_assert(sectors_out.sectors.empty());
+  nc_assert(sectors_out.transforms.empty());
+
+  using Pair = std::pair<SectorID, mat4>;
+
+  // Perform a floodfill from the given point
+  // NOTE: this algorithm assumes that we do not visit the same sectors through
+  // different NC portals twice. In such case it might not work properly.
+  SectorSet        visited;
+  std::queue<Pair> to_visit;
+
+  constexpr u64 MAX_START_SECTORS = 8;
+  SectorID start_sectors[MAX_START_SECTORS]{};
+
+  u64 start_cnt = map_helpers::get_sectors_from_point
+  (
+    *this, pos, start_sectors, MAX_START_SECTORS
+  );
+
+  if (!start_cnt)
+  {
+    // We are outside all sectors..
+    return;
+  }
+
+  // Insert the starting sectors
+  for (u64 i = 0; i < std::min(MAX_START_SECTORS, start_cnt); ++i)
+  {
+    mat4     trans = identity<mat4>();
+    SectorID sid   = start_sectors[i];
+
+    to_visit.push({sid, trans});
+    visited.sectors.push_back(sid);
+    visited.transforms.push_back(trans);
+  }
+
+  // Then go on
+  while (!to_visit.empty())
+  {
+    auto[sid, trans] = to_visit.front();
+    to_visit.pop();
+
+    map_helpers::for_each_portal(*this, sid, [&](WallID wid)
     {
-      nc_assert(sector_id < map.sectors.size());
-      const auto& repr = map.sectors[sector_id].int_data;
-
-      for (auto wid = repr.first_wall; wid < repr.last_wall; ++wid)
+      const WallData& wd = this->walls[wid];
+      if (!wd.is_portal())
       {
-        nc_assert(wid < map.walls.size());
-
-        const auto nextid = next_wall(map, sector_id, wid); // id of the next wall
-
-        lambda(wid, nextid);
+        // It is not a portal
+        return;
       }
-    }
 
-    //==============================================================================
-    u32 get_sectors_from_point(const MapSectors& map, vec2 point, SectorID* sectors_out, u32 max_sectors_out)
-    {
-      nc_assert(sectors_out && max_sectors_out);
-      u32 counter = 0;
-
-      map.sector_grid.query_point(point, [&](aabb2, SectorID id)->bool
-        {
-          if (map.is_point_in_sector(point, id))
-          {
-            if (counter < max_sectors_out)
-            {
-              sectors_out[counter] = id;
-            }
-
-            counter += 1;
-          }
-
-          return false;
-        });
-
-      return counter;
-    }
-
-    //==============================================================================
-    void modify_nuclidean_frustum(
-      const MapSectors& map,
-      Frustum2& frustum,
-      WallID            in_portal,
-      SectorID          in_sector)
-    {
-  const auto transform = map.calc_portal_to_portal_projection(in_sector, in_portal);
-      const auto new_pos = (transform * vec4{ frustum.center.x, 0.0f, frustum.center.y, 1.0f }).xz();
-      const auto new_dir = (transform * vec4{ frustum.direction.x, 0.0f, frustum.direction.y, 0.0f }).xz();
-      nc_assert(is_normal(new_dir));
-
-      frustum.center = new_pos;
-      frustum.direction = new_dir;
-    }
-
-  }
-
-  //==============================================================================
-  void MapSectors::query_visible(
-    vec3            position,
-    vec3            view_dir,
-    f32             hor_fov,
-    f32             /*ver_fov*/,
-    VisibilityTree& visible,
-    u8              recursion_depth) const
-  {
-    nc_assert(is_normal(view_dir));
-
-    const auto angle = hor_fov >= 180.0f
-      ? Frustum2::FULL_ANGLE
-      : std::cosf(hor_fov * 0.5f);
-
-    const auto frustum = Frustum2
-    {
-      .center = position.xz(),
-      .direction = normalize(view_dir.xz()),
-      .angle = angle
-    };
-
-    visible.portal_sector = INVALID_SECTOR_ID;
-    visible.portal_wall = INVALID_WALL_ID;
-
-    constexpr u64 MAX_CAMERA_SECTORS = 8; // bump this up if the assert ever fires
-    std::array<SectorID, MAX_CAMERA_SECTORS> sectors_out;
-
-    const u32 sec_count = map_helpers::get_sectors_from_point
-    (
-      *this,
-      position.xz(),
-      sectors_out.data(),
-      MAX_CAMERA_SECTORS
-    );
-
-    nc_assert(sec_count <= MAX_CAMERA_SECTORS);
-    if (sec_count == 0)
-    {
-      return;
-    }
-
-    const auto slots_temp = FrustumBuffer{ frustum };
-    this->query_visible_sectors_impl
-    (
-      sectors_out.data(), sec_count, slots_temp, visible, recursion_depth
-    );
-  }
-
-  //==============================================================================
-  void MapSectors::query_visible_sectors_impl(
-    const SectorID* start_sector,
-    u32                  start_sector_cnt,
-    const FrustumBuffer& input_frustums,
-    VisibilityTree& visible,
-    u8                   recursion_depth) const
-  {
-    nc_assert(input_frustums.frustum_slots[0] != INVALID_FRUSTUM);
-    nc_assert(start_sector_cnt > 0);
-    nc_assert(start_sector != nullptr);
-
-    // [Performance] According to a benchmark, the std::map here is actually
-    // faster than using std::unordered_map. Maybe due to poor cache locality?
-    // Did not investigate further.
-    std::map<SectorID, FrustumBuffer> curr_iteration;
-    std::map<SectorID, FrustumBuffer> next_iteration;
-
-    struct NucPortalStruct
-    {
-      SectorID      sector_out;
-      SectorID      sector_in;
-      FrustumBuffer buffer;
-    };
-    std::map<WallID, NucPortalStruct> nuclidean_portals;
-
-    const auto* begin_sector = start_sector;
-    const auto* end_sector = begin_sector + start_sector_cnt;
-
-    for (u32 i = 0; i < start_sector_cnt; ++i)
-    {
-      next_iteration.insert({ start_sector[i], input_frustums });
-    }
-
-    // Now do a BFS in our dimension
-    while (next_iteration.size())
-    {
-      //swap the buffers
-      curr_iteration = std::move(next_iteration);
-      next_iteration.clear();
-
-      for (const auto& [id, content] : curr_iteration)
+      SectorID neighbor = wd.portal_sector_id;
+      auto vis_b = visited.sectors.begin();
+      auto vis_e = visited.sectors.end();
+      if (std::find(vis_b, vis_e, neighbor) != vis_e)
       {
-        nc_assert(id < sectors.size());
-
-        // Save it to the tree
-        visible.sectors.push_back({ id, content });
-
-        // Iterate all frustums in this dir
-        for (const auto& frustum : content.frustum_slots)
-        {
-          if (frustum == INVALID_FRUSTUM)
-          {
-            // this frustum was not filled in
-            continue;
-          }
-
-          // now traverse all portals of the sector and check if we can slide
-          // into a neighbor sector
-          map_helpers::for_each_portal(*this, id, [&](WallID wall1_idx)
-            {
-              const auto wall2_idx = map_helpers::next_wall(*this, id, wall1_idx);
-              const auto next_sector = walls[wall1_idx].portal_sector_id;
-              const bool is_nuclidean = walls[wall1_idx].get_portal_type() == PortalType::non_euclidean;
-              nc_assert(next_sector != INVALID_SECTOR_ID);
-
-              const auto p1 = walls[wall1_idx].pos;
-              const auto p2 = walls[wall2_idx].pos;
-
-              const auto p1_to_p2 = p2 - p1;
-              const auto p1_to_cam = frustum.center - p1;
-
-              if (!is_nuclidean && std::find(begin_sector, end_sector, next_sector) != end_sector)
-              {
-                // If the camera is positioned EXACTLY over the border of 2 visible_sectors
-                // then we would jump back and forth between these two, because
-                // each one would be visible from the second one.
-                // These visible_sectors have been visited in the first iteration and we will
-                // not return to them.
-                // [Performance]: the list can be kept sorted, but usually there
-                // will be only 1-4 visible_sectors
-                return;
-              }
-
-              if (cross(p1_to_cam, p1_to_p2) > 0.0f)
-              {
-                // early exit, the wall is turned away from the camera
-                // The comparison has to be > instead of >=, because that would
-                // report the sector we are on a border of as invisible.
-                return;
-              }
-
-              if (!frustum.intersects_segment(p1, p2))
-              {
-                // early exit, we do not see the portal
-                return;
-              }
-
-              auto new_frustum = frustum.modified_with_portal(p1, p2);
-              if (new_frustum.is_empty())
-              {
-                // not sure how the hell this can happen..
-                return;
-              }
-
-              // rotate the nucledean frustum and shift it relatively to the portal's view
-              if (is_nuclidean && recursion_depth > 0) [[unlikely]]
-                {
-                  const SectorID out_sector = next_sector;
-                  const SectorID in_sector = id;
-
-                  // weird non-euclidean portal, store for later
-                  map_helpers::modify_nuclidean_frustum(*this, new_frustum, wall1_idx, in_sector);
-
-                  // either creates and inserts or just merges in
-                  if (nuclidean_portals.contains(wall1_idx))
-                  {
-                    nc_assert(nuclidean_portals[wall1_idx].sector_out == out_sector);
-                  }
-
-                  nuclidean_portals[wall1_idx].buffer.insert_frustum(new_frustum);
-                  nuclidean_portals[wall1_idx].sector_out = out_sector;
-                  nuclidean_portals[wall1_idx].sector_in = in_sector;
-                }
-              else if (!is_nuclidean)
-              {
-                // either creates and inserts or just merges in
-                next_iteration[next_sector].insert_frustum(new_frustum);
-              }
-            });
-        }
+        // This sector was already visited
+        return;
       }
-    }
 
-    // If the recursion depth is 0 then there should be NO requests
-    // to recursively continue
-    nc_assert(recursion_depth > 0 || nuclidean_portals.empty());
-
-    // Now lets go to other dimensions in DFS manner recursively if we
-    // did not run out of recursion limit
-    for (const auto& [portal_id, data] : nuclidean_portals)
-    {
-      auto& child = visible.children.emplace_back();
-      child.portal_wall = portal_id;
-      child.portal_sector = data.sector_in;
-
-      this->query_visible_sectors_impl
-      (
-        &data.sector_out, 1, data.buffer, child, recursion_depth - 1
-      );
-    }
-  }
-
-  //==============================================================================
-  bool MapSectors::is_valid_sector_id(SectorID id) const
-  {
-    return id < this->sectors.size();
-  }
-
-  //==============================================================================
-  bool MapSectors::is_valid_wall_id(WallID id) const
-  {
-    return id < this->walls.size();
-  }
-
-  //==============================================================================
-  bool MapSectors::for_each_portal_of_sector(
-    SectorID      sector,
-    WallVisitor visitor) const
-  {
-    return map_helpers::for_each_portal(*this, sector, visitor);
-  }
-
-  //==============================================================================
-  SectorID MapSectors::get_sector_from_point(vec2 point) const
-  {
-    SectorID sector = INVALID_SECTOR_ID;
-    map_helpers::get_sectors_from_point(*this, point, &sector, 1);
-    return sector;
-  }
-
-  //==============================================================================
-mat4 MapSectors::calc_portal_to_portal_projection(
-    SectorID sector_from,
-    WallID   wall_from1) const
-  {
-    nc_assert(sector_from < this->sectors.size());
-    nc_assert(wall_from1 < this->walls.size());
-
-    const auto& wall = this->walls[wall_from1];
-    SectorID sector_to = wall.portal_sector_id;
-
-    nc_assert(sector_to != INVALID_SECTOR_ID);
-    nc_assert(wall.get_portal_type() == PortalType::non_euclidean);
-
-    const auto wall_from2 = map_helpers::next_wall(*this, sector_from, wall_from1);
-
-    const WallID wall_to1 = this->sectors[sector_to].int_data.first_wall + wall.nc_portal_wall_id;
-    const WallID wall_to2 = map_helpers::next_wall(*this, sector_to, wall_to1);
-
-    const auto from_p1 = this->walls[wall_from1].pos;
-    const auto from_p2 = this->walls[wall_from2].pos;
-    const auto to_p1 = this->walls[wall_to1].pos;
-    const auto to_p2 = this->walls[wall_to2].pos;
-
-    nc_assert(from_p1 != from_p2);
-    nc_assert(to_p1 != to_p2);
-
-    auto calc_wall_space_2_world_space = [](vec2 p1, vec2 p2, f32 h) -> mat4
+      // Not visited? Then let's visit it.
+      // Calculate the absolute transform of the sector relative to us.
+      mat4 final_trans = trans;
+      if (wd.get_portal_type() == PortalType::non_euclidean) [[unlikely]]
       {
-        const vec3 pos3 = vec3{ p1.x, h, p1.y };
-        const vec2 dir2 = normalize(p2 - p1);
-        const vec2 nor2 = -flipped(dir2);
+        mat4 relative = this->calc_portal_to_portal_projection(sid, wid);
+        final_trans = relative * final_trans;
+      }
 
-        return mat4
+      // Position relative to the sector
+      vec2 pos_relative = (final_trans * vec4{pos.x, 0.0f, pos.y, 1.0f}).xz();
+
+      // Ignore this sector if we are too far away
+      f32 dist_from_sector = this->distance_from_sector_2d(pos_relative, neighbor);
+      if (dist_from_sector > range)
+      {
+        return;
+      }
+
+      // Insert it
+      to_visit.push({neighbor, final_trans});
+      visited.sectors.push_back(neighbor);
+      visited.transforms.push_back(final_trans);
+    });
+  }
+
+  // Move it from the visited list to output
+  sectors_out = std::move(visited);
+}
+
+//==============================================================================
+void MapSectors::query_visible_sectors_impl(
+  const SectorID* start_sector,
+  u32                  start_sector_cnt,
+  const FrustumBuffer& input_frustums,
+  VisibilityTree& visible,
+  u8                   recursion_depth) const
+{
+  nc_assert(input_frustums.frustum_slots[0] != INVALID_FRUSTUM);
+  nc_assert(start_sector_cnt > 0);
+  nc_assert(start_sector != nullptr);
+
+  // [Performance] According to a benchmark, the std::map here is actually
+  // faster than using std::unordered_map. Maybe due to poor cache locality?
+  // Did not investigate further.
+  std::map<SectorID, FrustumBuffer> curr_iteration;
+  std::map<SectorID, FrustumBuffer> next_iteration;
+
+  struct NucPortalStruct
+  {
+    SectorID      sector_out;
+    SectorID      sector_in;
+    FrustumBuffer buffer;
+  };
+  std::map<WallID, NucPortalStruct> nuclidean_portals;
+
+  const auto* begin_sector = start_sector;
+  const auto* end_sector = begin_sector + start_sector_cnt;
+
+  for (u32 i = 0; i < start_sector_cnt; ++i)
+  {
+    next_iteration.insert({ start_sector[i], input_frustums });
+  }
+
+  // Now do a BFS in our dimension
+  while (next_iteration.size())
+  {
+    //swap the buffers
+    curr_iteration = std::move(next_iteration);
+    next_iteration.clear();
+
+    for (const auto& [id, content] : curr_iteration)
+    {
+      nc_assert(id < sectors.size());
+
+      // Save it to the tree
+      visible.sectors.push_back({ id, content });
+
+      // Iterate all frustums in this dir
+      for (const auto& frustum : content.frustum_slots)
+      {
+        if (frustum == INVALID_FRUSTUM)
         {
-          vec4{dir2.x, 0.0f, dir2.y, 0.0f},
-          vec4{0.0f,   1.0f, 0.0f,   0.0f},
-          vec4{nor2.x, 0.0f, nor2.y, 0.0f},
-          vec4{pos3,                 1.0f},
-        };
-      };
-
-    const mat4 wall_from_space_2_world_space
-      = calc_wall_space_2_world_space(from_p1, from_p2, SECTOR_CEILING_Y);
-
-    const mat4 world_space_2_wall_from_space =
-      inverse(wall_from_space_2_world_space);
-
-    const mat4 wall_to_space_2_world_space
-      = calc_wall_space_2_world_space(to_p2, to_p1, SECTOR_CEILING_Y);
-
-    const mat4 transition_matrix
-      = wall_to_space_2_world_space * world_space_2_wall_from_space;
-    return transition_matrix;
-  }
-
-  //==============================================================================
-  void MapSectors::sector_to_vertices(
-    SectorID           sector_id,
-    std::vector<vec3>& vertices_out) const
-  {
-    nc_assert(sector_id < this->sectors.size());
-
-    const auto& sector_data = this->sectors[sector_id].int_data;
-
-    const f32 floor_y = this->sectors[sector_id].floor_height;
-    const f32 ceil_y = this->sectors[sector_id].ceil_height;
-
-    // build the floor first from the first point
-    const auto first_wall_idx = sector_data.first_wall;
-    const auto last_wall_idx = sector_data.last_wall;
-    const auto first_wall_pos = this->walls[first_wall_idx].pos;
-    const auto first_pt = vec3{ first_wall_pos.x, 0.0f, first_wall_pos.y };
-    nc_assert(first_wall_idx < last_wall_idx);
-
-    for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
-    {
-      const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
-      const auto w1pos = this->walls[idx].pos;
-      const auto w2pos = this->walls[next_idx].pos;
-      const auto pt1 = vec3{ w1pos.x, floor_y, w1pos.y };
-      const auto pt2 = vec3{ w2pos.x, floor_y, w2pos.y };
-
-      // build floor triangle from the first point and 2 others
-      vertices_out.push_back(with_y(first_pt, floor_y));
-      vertices_out.push_back(VEC3_Y);
-      vertices_out.push_back(pt2);
-      vertices_out.push_back(VEC3_Y);
-      vertices_out.push_back(pt1);
-      vertices_out.push_back(VEC3_Y);
-    }
-
-    // then build ceiling
-    for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
-    {
-      const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
-      const auto w1pos = this->walls[idx].pos;
-      const auto w2pos = this->walls[next_idx].pos;
-      const auto pt1 = vec3{ w1pos.x, ceil_y, w1pos.y };
-      const auto pt2 = vec3{ w2pos.x, ceil_y, w2pos.y };
-
-      // build floor triangle from the first point and 2 others
-      vertices_out.push_back(with_y(first_pt, ceil_y));
-      vertices_out.push_back(-VEC3_Y);
-      vertices_out.push_back(pt1);
-      vertices_out.push_back(-VEC3_Y);
-      vertices_out.push_back(pt2);
-      vertices_out.push_back(-VEC3_Y);
-    }
-
-    // build walls
-    for (WallID idx = first_wall_idx; idx < last_wall_idx; ++idx)
-    {
-      struct WallSegmentHeights
-      {
-        f32 y1 = 0.0f;
-        f32 y2 = 0.0f;
-      };
-
-      u32                num_wall_segments = 1;
-      WallSegmentHeights segment_heights[2]
-      {
-        {floor_y, ceil_y}, {}
-      };
-
-      const auto& wall = this->walls[idx];
-      if (wall.portal_sector_id != INVALID_SECTOR_ID)
-      {
-        nc_assert(wall.portal_sector_id < this->sectors.size());
-        const auto& neighbor = this->sectors[wall.portal_sector_id];
-
-        if (neighbor.floor_height >= ceil_y || neighbor.ceil_height <= floor_y)
-        {
-          // no overlap, draw the full wall
-          num_wall_segments = 1;
-          segment_heights[0] = { floor_y, ceil_y };
-        }
-        else if (neighbor.ceil_height >= ceil_y && neighbor.floor_height <= floor_y)
-        {
-          // no need to draw any wall
+          // this frustum was not filled in
           continue;
         }
-        else if (neighbor.ceil_height >= ceil_y && neighbor.floor_height > floor_y)
-        {
-          // draw only bottom segment
-          num_wall_segments = 1;
-          segment_heights[0] = { floor_y, neighbor.floor_height };
-        }
-        else if (neighbor.ceil_height < ceil_y && neighbor.floor_height <= floor_y)
-        {
-          // draw only top segment
-          num_wall_segments = 1;
-          segment_heights[0] = { neighbor.ceil_height, ceil_y };
-        }
-        else
-        {
-          // draw both top and bottom
-          num_wall_segments = 2;
-          segment_heights[0] = { floor_y, neighbor.floor_height };
-          segment_heights[1] = { neighbor.ceil_height, ceil_y };
-        }
-      }
 
-      const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
-
-      const auto w1pos = this->walls[idx].pos;
-      const auto w2pos = this->walls[next_idx].pos;
-
-      const auto p1_to_p2 = w1pos != w2pos ? normalize(w2pos - w1pos) : vec2{ 1, 0 };
-      const auto flp = flipped(p1_to_p2);
-      const auto wall_normal = vec3{ flp.x, 0.0f, flp.y };
-
-      for (u32 wall_i = 0; wall_i < num_wall_segments; ++wall_i)
-      {
-        const auto f1 = vec3{ w1pos.x, segment_heights[wall_i].y1, w1pos.y };
-        const auto f2 = vec3{ w2pos.x, segment_heights[wall_i].y1, w2pos.y };
-        const auto c1 = vec3{ w1pos.x, segment_heights[wall_i].y2, w1pos.y };
-        const auto c2 = vec3{ w2pos.x, segment_heights[wall_i].y2, w2pos.y };
-
-        vertices_out.push_back(f1);
-        vertices_out.push_back(wall_normal);
-        vertices_out.push_back(f2);
-        vertices_out.push_back(wall_normal);
-        vertices_out.push_back(c1);
-        vertices_out.push_back(wall_normal);
-
-        vertices_out.push_back(c1);
-        vertices_out.push_back(wall_normal);
-        vertices_out.push_back(f2);
-        vertices_out.push_back(wall_normal);
-        vertices_out.push_back(c2);
-        vertices_out.push_back(wall_normal);
-      }
-    }
-  }
-
-  //==============================================================================
-  bool MapSectors::is_point_in_sector(vec2 pt, SectorID sector_id) const
-  {
-    nc_assert(this->is_valid_sector_id(sector_id));
-  const SectorData& sector = this->sectors[sector_id];
-    const auto first = sector.int_data.first_wall;
-    const auto last = sector.int_data.last_wall;
-    nc_assert(this->is_valid_wall_id(first));
-    const auto p1 = this->walls[first].pos;
-    for (WallID wall_index = first + 1; wall_index < last - 1; ++wall_index)
-    {
-      WallID next_index = wall_index + 1;
-      const auto p2 = this->walls[wall_index].pos;
-      const auto p3 = this->walls[next_index].pos;
-      if (intersect::point_triangle(pt, p1, p2, p3))
-        return true;
-    }
-    return false;
-  }
-
-  //=============================================================================
-  std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos, [[maybe_unused]] f32 radius, [[maybe_unused]] f32 height) const
-  {
-    std::vector<vec3> path;
-    path.push_back(end_pos);
-    struct PrevPoint
-    {
-      SectorID prev_sector; // previous sector
-      WallID wall_index; // portal we used to get to this sector
-      vec3 point; // way point
-      f32 dist;
-    };
-    struct CurPoint
-    {
-      SectorID index;
-      f32 dist;
-    };
-    auto cmp = [](const CurPoint l, const CurPoint r) {return l.dist > r.dist; };
-
-    SectorID startID = get_sector_from_point(start_pos.xz);
-    if (startID == INVALID_SECTOR_ID)
-    {
-      // MR says: Hotfix for the case when the enemy spawns outside of the map
-      // and therefore "get_sector_from_point" returns invalid sector ID.
-      return std::vector<vec3>{start_pos};
-    }
-
-    SectorID endID = get_sector_from_point(end_pos.xz);
-    SectorID curID = startID;
-    // std::vector<SectorID> fringe;
-    std::priority_queue<CurPoint, std::vector<CurPoint>, decltype(cmp)> fringe;
-    std::map<SectorID, PrevPoint> visited;
-
-    visited.insert({ startID, {
-      INVALID_SECTOR_ID,
-      INVALID_WALL_ID,
-      start_pos,
-      0
-      } });
-
-    fringe.push({ startID, 0 });
-
-    while (fringe.size())
-    {
-      // get sector from queue
-      CurPoint cur = fringe.top();
-      curID = cur.index;
-      f32 cur_dist = cur.dist;
-      fringe.pop();
-
-      // found path, end search
-      if (curID == endID)
-      {
-        break;
-      }
-
-      map_helpers::for_each_portal(*this, curID, [&](WallID wall1_idx)
-        {
-          const auto next_sector = walls[wall1_idx].portal_sector_id;
-          nc_assert(next_sector != INVALID_SECTOR_ID);
-
-          if (!visited.contains(next_sector) &&
-            abs(sectors[curID].floor_height - sectors[next_sector].floor_height) <= 0.2f) // check for floor height dif
+        // now traverse all portals of the sector and check if we can slide
+        // into a neighbor sector
+        map_helpers::for_each_portal(*this, id, [&](WallID wall1_idx)
           {
-            const auto wall2_idx = map_helpers::next_wall(*this, curID, wall1_idx);
+            const auto wall2_idx = map_helpers::next_wall(*this, id, wall1_idx);
+            const auto next_sector = walls[wall1_idx].portal_sector_id;
+            const bool is_nuclidean = walls[wall1_idx].get_portal_type() == PortalType::non_euclidean;
+            nc_assert(next_sector != INVALID_SECTOR_ID);
 
-            // const bool is_nuclidean = walls[wall1_idx].get_portal_type() == PortalType::non_euclidean;       
-            auto p1 = walls[wall1_idx].pos;
-            auto p2 = walls[wall2_idx].pos;
-            auto p1_to_p2 = p2 - p1;
-            if (abs(p1_to_p2.x) > 2 * radius || abs(p1_to_p2.y) > 2 * radius) // side to side clearance
+            const auto p1 = walls[wall1_idx].pos;
+            const auto p2 = walls[wall2_idx].pos;
+
+            const auto p1_to_p2 = p2 - p1;
+            const auto p1_to_cam = frustum.center - p1;
+
+            if (!is_nuclidean && std::find(begin_sector, end_sector, next_sector) != end_sector)
             {
-              vec2 wall_dir;
-              wall_dir = normalize_or_zero(p1_to_p2);
-
-              if (abs(p1_to_p2.x) > abs(p1_to_p2.y))
-              {
-                wall_dir = wall_dir / abs(wall_dir.x);
-              }
-              else
-              {
-                wall_dir = wall_dir / abs(wall_dir.y);
-              }
-
-              p1 += wall_dir * radius;
-              p2 -= wall_dir * radius;
-              p1_to_p2 = p2 - p1;
-              // get a previous position, but also with portal transformation
-              vec3 prev_post = visited[curID].point;
-              WallID prev_wall = visited[curID].wall_index;
-              SectorID prev_sector = visited[curID].prev_sector;
-              if (prev_wall != INVALID_WALL_ID && walls[prev_wall].get_portal_type() == PortalType::non_euclidean)
-              {
-                mat4 transformation = calc_portal_to_portal_projection(prev_sector, prev_wall);
-                prev_post = (transformation * vec4{ prev_post, 1.0f }).xyz();
-              }
-              // calculate closest point on p1_to_p2 line
-              f32 l2 = length(p1_to_p2);
-              l2 *= l2;
-              const float t = max(0.0f, min(1.0f, dot(prev_post.xz - p1, p1_to_p2) / l2));
-              const vec2 projection = p1 + t * (p1_to_p2);
-
-              f32 segment_dist = distance(prev_post, vec3(projection.x, 0, projection.y));
-
-              // insert closest point to queue
-              visited.insert({ next_sector,
-                {curID, wall1_idx, vec3(projection.x, 0, projection.y), cur_dist + segment_dist} });
-              fringe.push({ next_sector, cur_dist + segment_dist });
+              // If the camera is positioned EXACTLY over the border of 2 visible_sectors
+              // then we would jump back and forth between these two, because
+              // each one would be visible from the second one.
+              // These visible_sectors have been visited in the first iteration and we will
+              // not return to them.
+              // [Performance]: the list can be kept sorted, but usually there
+              // will be only 1-4 visible_sectors
+              return;
             }
-          }
-        });
+
+            if (cross(p1_to_cam, p1_to_p2) > 0.0f)
+            {
+              // early exit, the wall is turned away from the camera
+              // The comparison has to be > instead of >=, because that would
+              // report the sector we are on a border of as invisible.
+              return;
+            }
+
+            if (!frustum.intersects_segment(p1, p2))
+            {
+              // early exit, we do not see the portal
+              return;
+            }
+
+            auto new_frustum = frustum.modified_with_portal(p1, p2);
+            if (new_frustum.is_empty())
+            {
+              // not sure how the hell this can happen..
+              return;
+            }
+
+            // rotate the nucledean frustum and shift it relatively to the portal's view
+            if (is_nuclidean && recursion_depth > 0) [[unlikely]]
+              {
+                const SectorID out_sector = next_sector;
+                const SectorID in_sector = id;
+
+                // weird non-euclidean portal, store for later
+                map_helpers::modify_nuclidean_frustum(*this, new_frustum, wall1_idx, in_sector);
+
+                // either creates and inserts or just merges in
+                if (nuclidean_portals.contains(wall1_idx))
+                {
+                  nc_assert(nuclidean_portals[wall1_idx].sector_out == out_sector);
+                }
+
+                nuclidean_portals[wall1_idx].buffer.insert_frustum(new_frustum);
+                nuclidean_portals[wall1_idx].sector_out = out_sector;
+                nuclidean_portals[wall1_idx].sector_in = in_sector;
+              }
+            else if (!is_nuclidean)
+            {
+              // either creates and inserts or just merges in
+              next_iteration[next_sector].insert_frustum(new_frustum);
+            }
+          });
+      }
     }
-    PrevPoint prev_point;
-    // reconstruct the path in reverse order
-    while (curID != startID)
-    {
-      prev_point = visited[curID];
-
-      path.push_back(prev_point.point);
-
-      curID = prev_point.prev_sector;
-    }
-
-    // reverse the path
-    std::reverse(path.begin(), path.end());
-
-    return path;
   }
 
+  // If the recursion depth is 0 then there should be NO requests
+  // to recursively continue
+  nc_assert(recursion_depth > 0 || nuclidean_portals.empty());
+
+  // Now lets go to other dimensions in DFS manner recursively if we
+  // did not run out of recursion limit
+  for (const auto& [portal_id, data] : nuclidean_portals)
+  {
+    auto& child = visible.children.emplace_back();
+    child.portal_wall = portal_id;
+    child.portal_sector = data.sector_in;
+
+    this->query_visible_sectors_impl
+    (
+      &data.sector_out, 1, data.buffer, child, recursion_depth - 1
+    );
+  }
+}
+
+//==============================================================================
+bool MapSectors::is_valid_sector_id(SectorID id) const
+{
+  return id < this->sectors.size();
+}
+
+//==============================================================================
+bool MapSectors::is_valid_wall_id(WallID id) const
+{
+  return id < this->walls.size();
+}
+
+//==============================================================================
+bool MapSectors::for_each_portal_of_sector(
+  SectorID      sector,
+  WallVisitor visitor) const
+{
+  return map_helpers::for_each_portal(*this, sector, visitor);
+}
+
+//==============================================================================
+SectorID MapSectors::get_sector_from_point(vec2 point) const
+{
+  SectorID sector = INVALID_SECTOR_ID;
+  map_helpers::get_sectors_from_point(*this, point, &sector, 1);
+  return sector;
+}
+
+//==============================================================================
+mat4 MapSectors::calc_portal_to_portal_projection(
+  SectorID sector_from,
+  WallID   wall_from1) const
+{
+  nc_assert(sector_from < this->sectors.size());
+  nc_assert(wall_from1 < this->walls.size());
+
+  const auto& wall = this->walls[wall_from1];
+  SectorID sector_to = wall.portal_sector_id;
+
+  nc_assert(sector_to != INVALID_SECTOR_ID);
+  nc_assert(wall.get_portal_type() == PortalType::non_euclidean);
+
+  const auto wall_from2 = map_helpers::next_wall(*this, sector_from, wall_from1);
+
+  const WallID wall_to1 = this->sectors[sector_to].int_data.first_wall + wall.nc_portal_wall_id;
+  const WallID wall_to2 = map_helpers::next_wall(*this, sector_to, wall_to1);
+
+  const auto from_p1 = this->walls[wall_from1].pos;
+  const auto from_p2 = this->walls[wall_from2].pos;
+  const auto to_p1 = this->walls[wall_to1].pos;
+  const auto to_p2 = this->walls[wall_to2].pos;
+
+  nc_assert(from_p1 != from_p2);
+  nc_assert(to_p1 != to_p2);
+
+  auto calc_wall_space_2_world_space = [](vec2 p1, vec2 p2, f32 h) -> mat4
+    {
+      const vec3 pos3 = vec3{ p1.x, h, p1.y };
+      const vec2 dir2 = normalize(p2 - p1);
+      const vec2 nor2 = -flipped(dir2);
+
+      return mat4
+      {
+        vec4{dir2.x, 0.0f, dir2.y, 0.0f},
+        vec4{0.0f,   1.0f, 0.0f,   0.0f},
+        vec4{nor2.x, 0.0f, nor2.y, 0.0f},
+        vec4{pos3,                 1.0f},
+      };
+    };
+
+  const mat4 wall_from_space_2_world_space
+    = calc_wall_space_2_world_space(from_p1, from_p2, SECTOR_CEILING_Y);
+
+  const mat4 world_space_2_wall_from_space =
+    inverse(wall_from_space_2_world_space);
+
+  const mat4 wall_to_space_2_world_space
+    = calc_wall_space_2_world_space(to_p2, to_p1, SECTOR_CEILING_Y);
+
+  const mat4 transition_matrix
+    = wall_to_space_2_world_space * world_space_2_wall_from_space;
+  return transition_matrix;
+}
+
+//==============================================================================
+void MapSectors::sector_to_vertices(
+  SectorID           sector_id,
+  std::vector<vec3>& vertices_out) const
+{
+  nc_assert(sector_id < this->sectors.size());
+
+  const auto& sector_data = this->sectors[sector_id].int_data;
+
+  const f32 floor_y = this->sectors[sector_id].floor_height;
+  const f32 ceil_y = this->sectors[sector_id].ceil_height;
+
+  // build the floor first from the first point
+  const auto first_wall_idx = sector_data.first_wall;
+  const auto last_wall_idx = sector_data.last_wall;
+  const auto first_wall_pos = this->walls[first_wall_idx].pos;
+  const auto first_pt = vec3{ first_wall_pos.x, 0.0f, first_wall_pos.y };
+  nc_assert(first_wall_idx < last_wall_idx);
+
+  for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
+  {
+    const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
+    const auto w1pos = this->walls[idx].pos;
+    const auto w2pos = this->walls[next_idx].pos;
+    const auto pt1 = vec3{ w1pos.x, floor_y, w1pos.y };
+    const auto pt2 = vec3{ w2pos.x, floor_y, w2pos.y };
+
+    // build floor triangle from the first point and 2 others
+    vertices_out.push_back(with_y(first_pt, floor_y));
+    vertices_out.push_back(VEC3_Y);
+    vertices_out.push_back(pt2);
+    vertices_out.push_back(VEC3_Y);
+    vertices_out.push_back(pt1);
+    vertices_out.push_back(VEC3_Y);
+  }
+
+  // then build ceiling
+  for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
+  {
+    const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
+    const auto w1pos = this->walls[idx].pos;
+    const auto w2pos = this->walls[next_idx].pos;
+    const auto pt1 = vec3{ w1pos.x, ceil_y, w1pos.y };
+    const auto pt2 = vec3{ w2pos.x, ceil_y, w2pos.y };
+
+    // build floor triangle from the first point and 2 others
+    vertices_out.push_back(with_y(first_pt, ceil_y));
+    vertices_out.push_back(-VEC3_Y);
+    vertices_out.push_back(pt1);
+    vertices_out.push_back(-VEC3_Y);
+    vertices_out.push_back(pt2);
+    vertices_out.push_back(-VEC3_Y);
+  }
+
+  // build walls
+  for (WallID idx = first_wall_idx; idx < last_wall_idx; ++idx)
+  {
+    struct WallSegmentHeights
+    {
+      f32 y1 = 0.0f;
+      f32 y2 = 0.0f;
+    };
+
+    u32                num_wall_segments = 1;
+    WallSegmentHeights segment_heights[2]
+    {
+      {floor_y, ceil_y}, {}
+    };
+
+    const auto& wall = this->walls[idx];
+    if (wall.portal_sector_id != INVALID_SECTOR_ID)
+    {
+      nc_assert(wall.portal_sector_id < this->sectors.size());
+      const auto& neighbor = this->sectors[wall.portal_sector_id];
+
+      if (neighbor.floor_height >= ceil_y || neighbor.ceil_height <= floor_y)
+      {
+        // no overlap, draw the full wall
+        num_wall_segments = 1;
+        segment_heights[0] = { floor_y, ceil_y };
+      }
+      else if (neighbor.ceil_height >= ceil_y && neighbor.floor_height <= floor_y)
+      {
+        // no need to draw any wall
+        continue;
+      }
+      else if (neighbor.ceil_height >= ceil_y && neighbor.floor_height > floor_y)
+      {
+        // draw only bottom segment
+        num_wall_segments = 1;
+        segment_heights[0] = { floor_y, neighbor.floor_height };
+      }
+      else if (neighbor.ceil_height < ceil_y && neighbor.floor_height <= floor_y)
+      {
+        // draw only top segment
+        num_wall_segments = 1;
+        segment_heights[0] = { neighbor.ceil_height, ceil_y };
+      }
+      else
+      {
+        // draw both top and bottom
+        num_wall_segments = 2;
+        segment_heights[0] = { floor_y, neighbor.floor_height };
+        segment_heights[1] = { neighbor.ceil_height, ceil_y };
+      }
+    }
+
+    const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
+
+    const auto w1pos = this->walls[idx].pos;
+    const auto w2pos = this->walls[next_idx].pos;
+
+    const auto p1_to_p2 = w1pos != w2pos ? normalize(w2pos - w1pos) : vec2{ 1, 0 };
+    const auto flp = flipped(p1_to_p2);
+    const auto wall_normal = vec3{ flp.x, 0.0f, flp.y };
+
+    for (u32 wall_i = 0; wall_i < num_wall_segments; ++wall_i)
+    {
+      const auto f1 = vec3{ w1pos.x, segment_heights[wall_i].y1, w1pos.y };
+      const auto f2 = vec3{ w2pos.x, segment_heights[wall_i].y1, w2pos.y };
+      const auto c1 = vec3{ w1pos.x, segment_heights[wall_i].y2, w1pos.y };
+      const auto c2 = vec3{ w2pos.x, segment_heights[wall_i].y2, w2pos.y };
+
+      vertices_out.push_back(f1);
+      vertices_out.push_back(wall_normal);
+      vertices_out.push_back(f2);
+      vertices_out.push_back(wall_normal);
+      vertices_out.push_back(c1);
+      vertices_out.push_back(wall_normal);
+
+      vertices_out.push_back(c1);
+      vertices_out.push_back(wall_normal);
+      vertices_out.push_back(f2);
+      vertices_out.push_back(wall_normal);
+      vertices_out.push_back(c2);
+      vertices_out.push_back(wall_normal);
+    }
+  }
+}
+
+//==============================================================================
+bool MapSectors::is_point_in_sector(vec2 pt, SectorID sector_id) const
+{
+  nc_assert(this->is_valid_sector_id(sector_id));
+const SectorData& sector = this->sectors[sector_id];
+  const auto first = sector.int_data.first_wall;
+  const auto last = sector.int_data.last_wall;
+  nc_assert(this->is_valid_wall_id(first));
+  const auto p1 = this->walls[first].pos;
+  for (WallID wall_index = first + 1; wall_index < last - 1; ++wall_index)
+  {
+    WallID next_index = wall_index + 1;
+    const auto p2 = this->walls[wall_index].pos;
+    const auto p3 = this->walls[next_index].pos;
+    if (intersect::point_triangle(pt, p1, p2, p3))
+      return true;
+  }
+  return false;
+}
+
+//=============================================================================
+std::vector<vec3> MapSectors::get_path(vec3 start_pos, vec3 end_pos, [[maybe_unused]] f32 radius, [[maybe_unused]] f32 height) const
+{
+  std::vector<vec3> path;
+  path.push_back(end_pos);
+  struct PrevPoint
+  {
+    SectorID prev_sector; // previous sector
+    WallID wall_index; // portal we used to get to this sector
+    vec3 point; // way point
+    f32 dist;
+  };
+  struct CurPoint
+  {
+    SectorID index;
+    f32 dist;
+  };
+  auto cmp = [](const CurPoint l, const CurPoint r) {return l.dist > r.dist; };
+
+  SectorID startID = get_sector_from_point(start_pos.xz);
+  if (startID == INVALID_SECTOR_ID)
+  {
+    // MR says: Hotfix for the case when the enemy spawns outside of the map
+    // and therefore "get_sector_from_point" returns invalid sector ID.
+    return std::vector<vec3>{start_pos};
+  }
+
+  SectorID endID = get_sector_from_point(end_pos.xz);
+  SectorID curID = startID;
+  // std::vector<SectorID> fringe;
+  std::priority_queue<CurPoint, std::vector<CurPoint>, decltype(cmp)> fringe;
+  std::map<SectorID, PrevPoint> visited;
+
+  visited.insert({ startID, {
+    INVALID_SECTOR_ID,
+    INVALID_WALL_ID,
+    start_pos,
+    0
+    } });
+
+  fringe.push({ startID, 0 });
+
+  while (fringe.size())
+  {
+    // get sector from queue
+    CurPoint cur = fringe.top();
+    curID = cur.index;
+    f32 cur_dist = cur.dist;
+    fringe.pop();
+
+    // found path, end search
+    if (curID == endID)
+    {
+      break;
+    }
+
+    map_helpers::for_each_portal(*this, curID, [&](WallID wall1_idx)
+      {
+        const auto next_sector = walls[wall1_idx].portal_sector_id;
+        nc_assert(next_sector != INVALID_SECTOR_ID);
+
+        if (!visited.contains(next_sector) &&
+          abs(sectors[curID].floor_height - sectors[next_sector].floor_height) <= 0.2f) // check for floor height dif
+        {
+          const auto wall2_idx = map_helpers::next_wall(*this, curID, wall1_idx);
+
+          // const bool is_nuclidean = walls[wall1_idx].get_portal_type() == PortalType::non_euclidean;       
+          auto p1 = walls[wall1_idx].pos;
+          auto p2 = walls[wall2_idx].pos;
+          auto p1_to_p2 = p2 - p1;
+          if (abs(p1_to_p2.x) > 2 * radius || abs(p1_to_p2.y) > 2 * radius) // side to side clearance
+          {
+            vec2 wall_dir;
+            wall_dir = normalize_or_zero(p1_to_p2);
+
+            if (abs(p1_to_p2.x) > abs(p1_to_p2.y))
+            {
+              wall_dir = wall_dir / abs(wall_dir.x);
+            }
+            else
+            {
+              wall_dir = wall_dir / abs(wall_dir.y);
+            }
+
+            p1 += wall_dir * radius;
+            p2 -= wall_dir * radius;
+            p1_to_p2 = p2 - p1;
+            // get a previous position, but also with portal transformation
+            vec3 prev_post = visited[curID].point;
+            WallID prev_wall = visited[curID].wall_index;
+            SectorID prev_sector = visited[curID].prev_sector;
+            if (prev_wall != INVALID_WALL_ID && walls[prev_wall].get_portal_type() == PortalType::non_euclidean)
+            {
+              mat4 transformation = calc_portal_to_portal_projection(prev_sector, prev_wall);
+              prev_post = (transformation * vec4{ prev_post, 1.0f }).xyz();
+            }
+            // calculate closest point on p1_to_p2 line
+            f32 l2 = length(p1_to_p2);
+            l2 *= l2;
+            const float t = max(0.0f, min(1.0f, dot(prev_post.xz - p1, p1_to_p2) / l2));
+            const vec2 projection = p1 + t * (p1_to_p2);
+
+            f32 segment_dist = distance(prev_post, vec3(projection.x, 0, projection.y));
+
+            // insert closest point to queue
+            visited.insert({ next_sector,
+              {curID, wall1_idx, vec3(projection.x, 0, projection.y), cur_dist + segment_dist} });
+            fringe.push({ next_sector, cur_dist + segment_dist });
+          }
+        }
+      });
+  }
+  PrevPoint prev_point;
+  // reconstruct the path in reverse order
+  while (curID != startID)
+  {
+    prev_point = visited[curID];
+
+    path.push_back(prev_point.point);
+
+    curID = prev_point.prev_sector;
+  }
+
+  // reverse the path
+  std::reverse(path.begin(), path.end());
+
+  return path;
+}
 
 //==============================================================================
 f32 MapSectors::distance_from_sector_2d(vec2 pt, SectorID sector_id) const
@@ -793,6 +891,12 @@ PortType WallData::get_portal_type() const
     // nuclidean portal
     return PortalType::non_euclidean;
   }
+}
+
+//==============================================================================
+bool WallData::is_portal() const
+{
+  return this->get_portal_type() != PortalType::none;
 }
 
 //==============================================================================
