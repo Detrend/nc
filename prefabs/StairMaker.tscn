@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://cyihcpnjneypy"]
+
+[ext_resource type="Script" uid="uid://d3f0i3y2s53si" path="res://scripts/sector/StairMaker.gd" id="1_w3dkx"]
+
+[node name="StairMaker" type="Node2D"]
+script = ExtResource("1_w3dkx")
+ceiling_end = 1.5
