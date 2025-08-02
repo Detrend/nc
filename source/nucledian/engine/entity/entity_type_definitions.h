@@ -36,10 +36,10 @@ namespace EntityTypeFlags
 {
   enum evalue : EntityTypeMask
   {
-    player     = 1 << EntityTypes::player,
-    enemy      = 1 << EntityTypes::enemy,
-    pickup     = 1 << EntityTypes::pickup,
-    projectile = 1 << EntityTypes::projectile,
+    player     = EntityTypeToMask(EntityTypes::player),
+    enemy      = EntityTypeToMask(EntityTypes::enemy),
+    pickup     = EntityTypeToMask(EntityTypes::pickup),
+    projectile = EntityTypeToMask(EntityTypes::projectile),
   };
 }
 

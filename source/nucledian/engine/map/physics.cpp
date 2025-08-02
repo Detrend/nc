@@ -221,7 +221,7 @@ CollisionHit raycast_generic
     // Check entity intersections
     for (auto entity_id : world.mapping.sectors_to_entities.entities[sector_id])
     {
-      if (!(entity_id.type & ent_types))
+      if (!(EntityTypeToMask(entity_id.type) & ent_types))
       {
         // skip this entity, we do not check it
         continue;
@@ -748,6 +748,15 @@ struct CylCastWallIntersector
       expand, out_n_2d, out_c_2d
     );
 
+    // Reset the hit if too far behind us
+    f32 min_coeff = -0.25f * expand / length(ray_to - ray_from);
+    if (hit && out_c_2d < min_coeff)
+    {
+      hit      = false;
+      out_c_2d = FLT_MAX;
+      out_n_2d = VEC2_ZERO;
+    }
+
     // Fill out these just in case
     out_n      = vec3{out_n_2d.x, 0, out_n_2d.y};
     out_c      = out_c_2d;
@@ -1054,45 +1063,59 @@ const
   // transform matrix. Unless?
   position += velocity;
 
-  // Now handle the height and y-velocity.
-  // We find the maximal height of the floor and minimal height of the ceiling
-  vec2  bbox_offset = vec2{radius, radius};
-  vec2  pos2        = position.xz();
-  aabb2 bbox        = aabb2{pos2 + bbox_offset, pos2 - bbox_offset};
-  std::set<SectorID> nearby_sectors;
-  map.sector_grid.query_aabb(bbox, [&](aabb2, SectorID sid)
-  {
-    nearby_sectors.insert(sid);
-    return false;
-  });
+  // Can't be 1 because then we were sometimes able to climb extra high stairs.
+  constexpr f32 DIST_COEFF = 0.9999f;
 
   // Iterate the sectors and check if we touch them
-  f32 floor_h = -FLT_MAX;
-  f32 ceil_h  =  FLT_MAX;
-  for (const SectorID sid : nearby_sectors)
+  SectorSet nearby_sectors;
+  map.query_nearby_sectors_short_distance
+  (
+    position.xz(), radius * DIST_COEFF, nearby_sectors
+  );
+
+  // highest floor relative to our y (how much y we need to add)
+  f32 highest_floor = -FLT_MAX;
+
+  // lowest ceiling relative to our y (how much y we need to subtract)
+  f32 lowest_ceil = FLT_MAX;
+
+  nc_assert(nearby_sectors.sectors.size() == nearby_sectors.transforms.size());
+  for (u64 i = 0; i < nearby_sectors.sectors.size(); ++i)
   {
+    const SectorID sid   = nearby_sectors.sectors[i];
+    const mat4     trans = nearby_sectors.transforms[i];
+
     nc_assert(map.is_valid_sector_id(sid));
-    if (map.distance_from_sector_2d(pos2, sid) < radius)
+    const SectorData& sd = map.sectors[sid];
+
+    vec3 pos_rel = (trans * vec4{position, 1.0f}).xyz();
+
+    f32 step_up = sd.floor_height - pos_rel.y;
+    if (step_up <= max_step_height && step_up > highest_floor)
     {
-      const SectorData& sd = map.sectors[sid];
-      floor_h = std::max(floor_h, sd.floor_height);
-      ceil_h  = std::min(ceil_h,  sd.ceil_height);
+      highest_floor = step_up;
     }
+    lowest_ceil   = std::min(lowest_ceil, (sd.ceil_height - height) - pos_rel.y);
   }
 
   // Now adjust the height
-  // Hit ceil
-  if (ceil_h != FLT_MAX && position.y >= ceil_h - height)
+  if (highest_floor >= 0.0f)
   {
-    position.y    = ceil_h - height;
+    // Hit floor
+    position.y   += highest_floor;
+    velocity_og.y = std::max(0.0f, velocity_og.y);
+  }
+  else if (lowest_ceil <= 0.0f)
+  {
+    // Hit ceil
+    position.y   += lowest_ceil;
     velocity_og.y = std::min(0.0f, velocity_og.y);
   }
 
-  // Hit floor
-  if (floor_h != FLT_MIN && position.y <= floor_h)
+  // Not sure what to do if we hit both..
+  if (lowest_ceil < 0.0f && highest_floor > 0.0f)
   {
-    position.y    = floor_h;
-    velocity_og.y = std::max(0.0f, velocity_og.y);
+    nc_warn("We are stuck between floor and ceil. This is not ok");
   }
 }
 
@@ -1112,6 +1135,8 @@ void PhysLevel::move_particle
 )
 const
 {
+//#define NC_VALIDATE
+
   nc_assert(bounce >= 0.0f, "Invalid range.");
 
 	const vec3 h_offset = -UP_DIR * neg_height;
@@ -1119,8 +1144,26 @@ const
   f32 total_distance     = length(velocity_og) * delta_time;
 	f32 remaining_distance = total_distance;
 
+  u32 max_iterations = 12;
+
   while(remaining_distance > 0.0f)
   {
+    max_iterations -= 1;
+#ifdef NC_VALIDATE
+    nc_assert(max_iterations > 0, "More than 12 iterations?");
+#endif
+    if (!max_iterations)
+    {
+      // Avoid endless loop, assert it above
+      nc_warn("Possible endless loop in physical code ended after 12 "
+              "iterations. Position and velocity of the given particle are "
+              "[{}, {}, {}] and [{}, {}, {}], dt is {}, bounce is {}",
+              position.x, position.y, position.z,
+              velocity_og.x, velocity_og.y, velocity_og.z,
+              delta_time, bounce);
+      return;
+    }
+
     using SectorHitType = CollisionHit::SectorHitType;
 
     vec3 velocity = normalize_or_zero(velocity_og) * remaining_distance;

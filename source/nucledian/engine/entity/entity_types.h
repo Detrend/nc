@@ -20,6 +20,11 @@ struct EntityID
 
 constexpr EntityID INVALID_ENTITY_ID = EntityID{.type = ~0ul, .idx = ~0ul};
 
+constexpr EntityTypeMask EntityTypeToMask(EntityType type)
+{
+  return EntityTypeMask{1} << type;
+}
+
 }
 
 // Specialize the standard hash function so we can use EntityID in
