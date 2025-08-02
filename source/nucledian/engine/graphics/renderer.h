@@ -14,13 +14,18 @@ namespace nc {
 
 struct Portal;
 struct VisibilityTree;
+struct RenderGunProperties;
 
 class Renderer
 {
 public:
   Renderer(const GraphicsSystem& graphics_system);
 
-  void render(const VisibilityTree& visibility_tree) const;
+  void render
+  (
+    const VisibilityTree& visibility_tree,
+    const RenderGunProperties& gun
+  ) const;
 
 private:
   using Portal = Portal;
@@ -35,13 +40,13 @@ private:
 
   GLuint create_g_buffer(GLint internal_format, GLenum attachment) const;
 
-  void do_geometry_pass(const CameraData& camera) const;
+  void do_geometry_pass(const CameraData& camera, const RenderGunProperties& gun) const;
   void do_lighting_pass(const vec3& view_position) const;
 
   void render_sectors(const CameraData& camera)  const;
   void render_entities(const CameraData& camera) const;
   void render_portals(const CameraData& camera) const;
-  void render_gun() const;
+  void render_gun(const RenderGunProperties& gun) const;
 
   #pragma region portals rendering
   void render_portal_to_stencil(const CameraData& camera, const Portal& portal, u8 recursion) const;

@@ -444,23 +444,23 @@ void GraphicsSystem::update(f32 delta_seconds)
   GizmoManager::get().update_ttls(delta_seconds);
 }
 
-////==============================================================================
-//static void grab_render_gun_props(RenderGunProperties& props)
-//{
-//  ThingSystem& game = ThingSystem::get();
-//  const Player* player = game.get_player();
-//
-//  if (player)
-//  {
-//    props.weapon = player->get_equipped_weapon();
-//    props.sway   = VEC2_ZERO;
-//  }
-//  else
-//  {
-//    props.weapon = INVALID_WEAPON_TYPE;
-//    props.sway   = VEC2_ZERO;
-//  }
-//}
+//==============================================================================
+static void grab_render_gun_props(RenderGunProperties& props)
+{
+  ThingSystem& game = ThingSystem::get();
+  const Player* player = game.get_player();
+
+  if (player)
+  {
+    props.weapon = player->get_equipped_weapon();
+    props.sway   = VEC2_ZERO;
+  }
+  else
+  {
+    props.weapon = INVALID_WEAPON_TYPE;
+    props.sway   = VEC2_ZERO;
+  }
+}
 
 //==============================================================================
 void GraphicsSystem::render()
@@ -486,6 +486,9 @@ void GraphicsSystem::render()
   VisibilityTree visible_sectors;
   query_visibility(visible_sectors);
 
+  RenderGunProperties gun_props;
+  grab_render_gun_props(gun_props);
+
 #ifdef NC_DEBUG_DRAW
   if (CVars::enable_top_down_debug)
   {
@@ -495,7 +498,7 @@ void GraphicsSystem::render()
   else
 #endif
   {
-    m_renderer->render(visible_sectors);
+    m_renderer->render(visible_sectors, gun_props);
   }
 
 #ifdef NC_IMGUI

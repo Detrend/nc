@@ -17,6 +17,8 @@
 #include <engine/player/player.h>
 #include <engine/player/thing_system.h>
 
+#include <game/weapons.h>
+
 #include <array>
 #include <unordered_set>
 
@@ -64,7 +66,12 @@ Renderer::Renderer(const GraphicsSystem& graphics_system)
 }
 
 //==============================================================================
-void Renderer::render(const VisibilityTree& visibility_tree) const
+void Renderer::render
+(
+  const VisibilityTree& visibility_tree,
+  const RenderGunProperties& gun_data
+)
+const
 {
   const Camera* camera = Camera::get();
   if (!camera)
@@ -77,7 +84,7 @@ void Renderer::render(const VisibilityTree& visibility_tree) const
     .vis_tree = visibility_tree,
   };
 
-  do_geometry_pass(camera_data);
+  do_geometry_pass(camera_data, gun_data);
   do_lighting_pass(camera_data.position);
 }
 
@@ -105,7 +112,11 @@ GLuint Renderer::create_g_buffer(GLint internal_format, GLenum attachment) const
 }
 
 //==============================================================================
-void Renderer::do_geometry_pass(const CameraData& camera) const
+void Renderer::do_geometry_pass
+(
+  const CameraData& camera, const RenderGunProperties& gun
+)
+const
 {
   glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -114,7 +125,7 @@ void Renderer::do_geometry_pass(const CameraData& camera) const
   render_sectors(camera);
   render_entities(camera);
   render_portals(camera);
-  render_gun();
+  render_gun(gun);
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -290,10 +301,27 @@ void Renderer::render_portals(const CameraData& camera) const
 }
 
 //==============================================================================
-void Renderer::render_gun() const
+void Renderer::render_gun(const RenderGunProperties& gun) const
 {
-  const TextureHandle& texture = TextureManager::get()["math_gun"];
+  if (gun.weapon == INVALID_WEAPON_TYPE)
+  {
+    // Early exit if no gun should be rendered
+    return;
+  }
 
+  // Workaround until we haven't solved the animation of textures
+  const TextureHandle& texture = [&gun]()
+  {
+    switch (gun.weapon)
+    {
+      case WeaponTypes::wrench:       return TextureManager::get()["math_gun"];
+      case WeaponTypes::shotgun:      return TextureManager::get()["math_gun"];
+      case WeaponTypes::plasma_rifle: return TextureManager::get()["mage_gun"];
+      case WeaponTypes::nail_gun:     return TextureManager::get()["math_gun"];
+      default:                        return TextureHandle::invalid();
+    }
+  }();
+    
   GLint viewport[4];
   glGetIntegerv(GL_VIEWPORT, viewport);
   const float screen_width = static_cast<float>(viewport[2]);
