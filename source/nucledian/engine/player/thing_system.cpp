@@ -808,7 +808,7 @@ void ThingSystem::build_map(LevelID level)
   // entities->create_entity<Enemy>(vec3{1, 0.0, 1}, FRONT_DIR);
   // entities->create_entity<Enemy>(vec3{2, 0.0, 1}, FRONT_DIR);
   // entities->create_entity<Enemy>(vec3{3, 0.0, 1}, FRONT_DIR);
-  entities->create_entity<PickUp>(vec3{4, 0.5f, 1});
+  entities->create_entity<PickUp>(vec3{0.25f, 5, 0.5});
 }
 
 //==========================================================

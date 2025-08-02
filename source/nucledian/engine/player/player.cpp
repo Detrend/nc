@@ -154,26 +154,13 @@ void Player::handle_inputs(GameInputs input, GameInputs /*prev_input*/)
 
     vec3 position = this->get_position();
 
-    // Check the floor and reset the y-velocity if we hit it
-    // {
-    //   vec3 from = position;
-    //   vec3 dir  = velocity * vec3{0, 1.5f, 0} * std::max(delta_seconds, 0.05f);
-    //   CollisionHit hit = lvl.raycast3d_expanded(from, from + dir, 0.25f, 1.0f);
-    //   if (hit && hit.coeff < 1.0f && hit.coeff >= 0.0f)
-    //   {
-    //     f32 reconstruct_y = from.y + dir.y * hit.coeff;
-    //     if (abs(reconstruct_y - position.y) < 0.1f)
-    //     {
-    //       velocity.y = 0.0f;
-    //       position.y = reconstruct_y;
-    //     }
-    //   }
-    // }
+    EntityTypeMask all_colliders = PhysLevel::COLLIDE_ALL;
+    EntityTypeMask ok_colliders  = all_colliders & ~EntityTypeFlags::player;
 
     lvl.move_character
     (
       position, velocity, &m_forward, delta_seconds,
-      0.25f, 1.0f, 0.25f, PhysLevel::COLLIDE_ALL, 0
+      0.25f, 1.0f, 0.25f, ok_colliders, 0
     );
     this->set_position(position);
 
