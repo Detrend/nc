@@ -26,43 +26,38 @@ namespace nc
 {
 
 //==============================================================================
-Renderer::Renderer(const GraphicsSystem& graphics_system)
-:
-  m_solid_material(graphics_system.get_solid_material()),
-  m_billboard_material(graphics_system.get_billboard_material()),
-  m_light_material(shaders::light::VERTEX_SOURCE, shaders::light::FRAGMENT_SOURCE)
+Renderer::Renderer(const GraphicsSystem& /*gfx*/, u32 win_w, u32 win_h)
+: m_solid_material(shaders::solid::VERTEX_SOURCE, shaders::solid::FRAGMENT_SOURCE)
+, m_billboard_material(shaders::billboard::VERTEX_SOURCE, shaders::billboard::FRAGMENT_SOURCE)
+, m_light_material(shaders::light::VERTEX_SOURCE, shaders::light::FRAGMENT_SOURCE)
 {
-  glGenFramebuffers(1, &m_g_buffer);
-  glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
+  this->create_g_buffers(win_w, win_h);
+  this->recompute_projection(win_w, win_h, GraphicsSystem::FOV);
 
-  // create g buffers
-  const GLenum attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-  m_g_position = create_g_buffer(GL_RGBA16F, attachments[0]);
-  m_g_normal   = create_g_buffer(GL_RGBA16F, attachments[1]);
-  m_g_albedo   = create_g_buffer(GL_RGBA, attachments[2]);
-  glDrawBuffers(3, attachments);
-
-  // create depth-stencil buffer
-  GLuint depth_stencil_buffer;
-  glGenRenderbuffers(1, &depth_stencil_buffer);
-  glBindRenderbuffer(GL_RENDERBUFFER, depth_stencil_buffer);
-  glRenderbufferStorage(
-    GL_RENDERBUFFER,
-    GL_DEPTH24_STENCIL8,
-    static_cast<GLsizei>(GraphicsSystem::WINDOW_WIDTH),
-    static_cast<GLsizei>(GraphicsSystem::WINDOW_HEIGHT)
-  );
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depth_stencil_buffer);
-
-  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    nc_warn("G-buffer not complete.");
-
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  m_solid_material.use();
+  m_solid_material.set_uniform(shaders::solid::PROJECTION, m_default_projection);
+  
+  m_billboard_material.use();
+  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, m_default_projection);
+  m_billboard_material.set_uniform(shaders::billboard::TEXTURE, 0);
 
   m_light_material.use();
   m_light_material.set_uniform(shaders::light::G_POSITION, 0);
   m_light_material.set_uniform(shaders::light::G_NORMAL, 1);
   m_light_material.set_uniform(shaders::light::G_ALBEDO, 2);
+}
+
+//==============================================================================
+void Renderer::on_window_resized(u32 w, u32 h)
+{
+  // clean them up first before recreating
+  this->destroy_g_buffers();
+
+  // and recreate with the new size
+  this->create_g_buffers(w, h);
+
+  // and recompute projection matrix for this aspect ratio
+  this->recompute_projection(w, h, GraphicsSystem::FOV);
 }
 
 //==============================================================================
@@ -88,7 +83,17 @@ const
   do_lighting_pass(camera_data.position);
 }
 
-GLuint Renderer::create_g_buffer(GLint internal_format, GLenum attachment) const
+//==============================================================================
+const MaterialHandle& Renderer::get_solid_material() const
+{
+  return m_solid_material;
+}
+
+//==============================================================================
+/*static*/ GLuint Renderer::create_g_buffer
+(
+  GLint internal_format, GLenum attachment, u32 w, u32 h
+)
 {
   GLuint g_handle;
   glGenTextures(1, &g_handle);
@@ -97,8 +102,8 @@ GLuint Renderer::create_g_buffer(GLint internal_format, GLenum attachment) const
     GL_TEXTURE_2D,
     0,
     internal_format,
-    static_cast<GLsizei>(GraphicsSystem::WINDOW_WIDTH),
-    static_cast<GLsizei>(GraphicsSystem::WINDOW_HEIGHT),
+    static_cast<GLsizei>(w),
+    static_cast<GLsizei>(h),
     0,
     GL_RGBA,
     GL_FLOAT,
@@ -109,6 +114,76 @@ GLuint Renderer::create_g_buffer(GLint internal_format, GLenum attachment) const
   glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, g_handle, 0);
 
   return g_handle;
+}
+
+//==============================================================================
+void Renderer::destroy_g_buffers()
+{
+  if (m_g_buffer)
+  {
+    nc_assert(glIsFramebuffer(m_g_buffer));
+    glDeleteFramebuffers(1, &m_g_buffer);
+
+    m_g_buffer = 0;
+  }
+
+  if (m_g_position)
+  {
+    // These must be valid always
+    nc_assert(m_g_normal);
+    nc_assert(m_g_albedo);
+    nc_assert(glIsTexture(m_g_position));
+    nc_assert(glIsTexture(m_g_normal));
+    nc_assert(glIsTexture(m_g_albedo));
+
+    GLuint textures[3]{m_g_position, m_g_normal, m_g_albedo};
+    glDeleteTextures(3, textures);
+
+    m_g_position = 0;
+    m_g_normal   = 0;
+    m_g_albedo   = 0;
+  }
+}
+
+//==============================================================================
+void Renderer::create_g_buffers(u32 width, u32 height)
+{
+  glGenFramebuffers(1, &m_g_buffer);
+  glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
+
+  // create g buffers
+  const GLenum attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+  m_g_position = create_g_buffer(GL_RGBA16F, attachments[0], width, height);
+  m_g_normal   = create_g_buffer(GL_RGBA16F, attachments[1], width, height);
+  m_g_albedo   = create_g_buffer(GL_RGBA,    attachments[2], width, height);
+  glDrawBuffers(3, attachments);
+
+  // create depth-stencil buffer
+  GLuint depth_stencil_buffer;
+  glGenRenderbuffers(1, &depth_stencil_buffer);
+  glBindRenderbuffer(GL_RENDERBUFFER, depth_stencil_buffer);
+  glRenderbufferStorage(
+    GL_RENDERBUFFER,
+    GL_DEPTH24_STENCIL8,
+    static_cast<GLsizei>(width),
+    static_cast<GLsizei>(height)
+  );
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depth_stencil_buffer);
+
+  if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    nc_warn("G-buffer not complete.");
+
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+//==============================================================================
+void Renderer::recompute_projection(u32 width, u32 height, f32 fov)
+{
+  f32 aspect = static_cast<f32>(width) / height;
+  m_default_projection = perspective
+  (
+    fov, aspect, 0.0001f, 100.0f
+  );
 }
 
 //==============================================================================
@@ -347,7 +422,7 @@ void Renderer::render_gun(const RenderGunProperties& gun) const
 
   glBindTexture(GL_TEXTURE_2D, 0);
   glBindVertexArray(0);
-  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, GraphicsSystem::get().get_default_projection());
+  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, m_default_projection);
 }
 
 #pragma region portals rendering

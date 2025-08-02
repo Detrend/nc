@@ -802,9 +802,12 @@ void ThingSystem::build_map(LevelID level)
   auto* player = entities->create_entity<Player>(vec3{0.5, 6, 0.5});
   player_id = player->get_id();
 
-  entities->create_entity<Enemy>(vec3{1, 0.0, 1}, FRONT_DIR);
-  entities->create_entity<Enemy>(vec3{2, 0.0, 1}, FRONT_DIR);
-  entities->create_entity<Enemy>(vec3{3, 0.0, 1}, FRONT_DIR);
+  // Beware that these fuckers can shoot you even if you do not see them and
+  // therefore kill you during the normal level testing. Therefore, I commented
+  // them out.
+  // entities->create_entity<Enemy>(vec3{1, 0.0, 1}, FRONT_DIR);
+  // entities->create_entity<Enemy>(vec3{2, 0.0, 1}, FRONT_DIR);
+  // entities->create_entity<Enemy>(vec3{3, 0.0, 1}, FRONT_DIR);
   entities->create_entity<PickUp>(vec3{4, 0.5f, 1});
 }
 

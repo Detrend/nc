@@ -11,6 +11,7 @@
 #include <engine/core/engine_module_types.h>
 #include <engine/core/module_event.h>
 
+#include <engine/graphics/renderer.h>
 #include <engine/graphics/camera.h>
 #include <engine/graphics/gizmo.h>
 #include <engine/graphics/graphics_system.h>
@@ -205,6 +206,12 @@ static void imgui_start_frame()
 #endif
 
 //==============================================================================
+// Default ctor and dtor in .cpp instead of the .h as we would get a compile
+// time error because the Renderer is not included in .h (but is in .cpp)
+GraphicsSystem::GraphicsSystem()  = default;
+GraphicsSystem::~GraphicsSystem() = default;
+
+//==============================================================================
 EngineModuleId GraphicsSystem::get_module_id()
 {
   return EngineModule::graphics_system;
@@ -247,7 +254,7 @@ bool GraphicsSystem::init()
 
   // init SDL
   constexpr auto SDL_INIT_FLAGS = SDL_INIT_VIDEO | SDL_INIT_EVENTS;
-  constexpr u32  SDL_WIN_FLAGS = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
+  constexpr u32  SDL_WIN_FLAGS = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
   constexpr cstr WINDOW_NAME = "Nucledian";
   constexpr auto WIN_POS = SDL_WINDOWPOS_UNDEFINED;
 
@@ -267,13 +274,13 @@ bool GraphicsSystem::init()
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
-  // create window (resolution 16:9)
+  // create window
   m_window = SDL_CreateWindow(
     WINDOW_NAME, 
     WIN_POS, 
     WIN_POS, 
-    static_cast<int>(WINDOW_WIDTH), 
-    static_cast<int>(WINDOW_HEIGHT), 
+    m_window_width,
+    m_window_height,
     SDL_WIN_FLAGS
   );
   if (!m_window)
@@ -312,17 +319,6 @@ bool GraphicsSystem::init()
   MeshManager::get().init();
   TextureManager::get().load_directory(ResLifetime::Game, "content/textures");
 
-  m_default_projection = perspective(FOV, ASPECT_RATIO, 0.0001f, 100.0f);
-
-  m_solid_material = MaterialHandle(shaders::solid::VERTEX_SOURCE, shaders::solid::FRAGMENT_SOURCE);
-  m_solid_material.use();
-  m_solid_material.set_uniform(shaders::solid::PROJECTION, m_default_projection);
-  
-  m_billboard_material = MaterialHandle(shaders::billboard::VERTEX_SOURCE, shaders::billboard::FRAGMENT_SOURCE);
-  m_billboard_material.use();
-  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, m_default_projection);
-  m_billboard_material.set_uniform(shaders::billboard::TEXTURE, 0);
-
 #ifdef NC_DEBUG_DRAW
   debug_helpers::g_top_down_material = MaterialHandle
   (
@@ -341,7 +337,10 @@ bool GraphicsSystem::init()
   imgui_start_frame();
 #endif
 
-  m_renderer = std::make_unique<Renderer>(*this);
+  m_renderer = std::make_unique<Renderer>
+  (
+    *this, m_window_width, m_window_height
+  );
 
   return true;
 }
@@ -416,26 +415,15 @@ void GraphicsSystem::query_visibility(VisibilityTree& tree) const
 }
 
 //==============================================================================
-const MaterialHandle& GraphicsSystem::get_solid_material() const
-{
-  return m_solid_material;
-}
-
-//==============================================================================
-const MaterialHandle& GraphicsSystem::get_billboard_material() const
-{
-  return m_billboard_material;
-}
-
-//==============================================================================
 const std::vector<MeshHandle>& GraphicsSystem::get_sector_meshes() const
 {
   return m_sector_meshes;
 }
 
-const mat4& GraphicsSystem::get_default_projection() const
+//==============================================================================
+const MaterialHandle& GraphicsSystem::get_solid_material() const
 {
-  return m_default_projection;
+  return m_renderer->get_solid_material();
 }
 
 //==============================================================================
@@ -467,6 +455,18 @@ void GraphicsSystem::render()
 {
   int width = 0, height = 0;
   SDL_GetWindowSize(m_window, &width, &height);
+
+  nc_assert(width >= 0 && height >= 0, "WTF?");
+
+  u32 u_width  = static_cast<u32>(width);
+  u32 u_height = static_cast<u32>(height);
+
+  if (u_width != m_window_width || u_height != m_window_height)
+  {
+    m_window_width  = u_width;
+    m_window_height = u_height;
+    m_renderer->on_window_resized(m_window_width, m_window_height);
+  }
 
 #ifdef NC_DEBUG_DRAW
   debug_helpers::display_fps_as_title(m_window);

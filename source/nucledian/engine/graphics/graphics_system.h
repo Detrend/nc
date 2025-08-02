@@ -9,7 +9,6 @@
 
 #include <engine/core/engine_module.h>
 #include <engine/core/engine_module_id.h>
-#include <engine/graphics/renderer.h>
 #include <engine/graphics/resources/model.h>
 
 #include <game/weapons_types.h>
@@ -52,13 +51,18 @@ public:
   static EngineModuleId  get_module_id();
   static GraphicsSystem& get();
 
+  GraphicsSystem();
+  ~GraphicsSystem();
+
+  GraphicsSystem(const GraphicsSystem&)            = delete;
+  GraphicsSystem& operator=(const GraphicsSystem&) = delete;
+
   bool init();
   void on_event(ModuleEvent& event) override;
 
-  const MaterialHandle& get_solid_material() const;
-  const MaterialHandle& get_billboard_material() const;
   const std::vector<MeshHandle>& get_sector_meshes() const;
-  const mat4& get_default_projection() const;
+
+  const MaterialHandle& get_solid_material() const;
 
 private:
   void update(f32 delta_seconds);
@@ -74,15 +78,17 @@ private:
   #endif
 
 private:
+  // Because we do not want to include the whole renderer with this header
+  using RendererPtr = std::unique_ptr<class Renderer>;
+
   SDL_Window* m_window     = nullptr;
   void*       m_gl_context = nullptr;
 
-  RendererPtr             m_renderer           = nullptr;
+  RendererPtr             m_renderer = nullptr;
   std::vector<MeshHandle> m_sector_meshes;
-  mat4                    m_default_projection;
 
-  MaterialHandle m_solid_material;
-  MaterialHandle m_billboard_material;
+  u32 m_window_width  = static_cast<u32>(WINDOW_WIDTH);
+  u32 m_window_height = static_cast<u32>(WINDOW_HEIGHT);
 };
 
 }
