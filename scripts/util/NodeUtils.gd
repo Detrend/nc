@@ -141,6 +141,37 @@ static func add_do_undo_child(unre: EditorUndoRedoManager, parent: Node, child: 
 	unre.add_undo_method(parent, 'remove_child', child)
 	return child
 
+static func remove_do_undo_node(unre: EditorUndoRedoManager, node: Node)->Node:
+	var idx := node.get_index()
+	var parent := node.get_parent()
+
+	unre.add_do_method(parent, 'remove_child', node)
+
+	unre.add_undo_reference(node)
+	unre.add_undo_method(parent, 'add_child', node, true)
+	unre.add_undo_method(node, 'set_owner', parent.get_tree().edited_scene_root)
+	unre.add_undo_method(parent, 'move_child', node, idx)
+	return node
+
+static func relink_do_undo_node(unre: EditorUndoRedoManager, node: Node, new_parent: Node, new_idx: int = -1, new_edited_scene_root : Node=null)->Node:
+	var old_idx := node.get_index()
+	var old_parent := node.get_parent()
+
+	unre.add_do_reference(node)
+	unre.add_do_method(old_parent, 'remove_child', node)
+	unre.add_do_method(new_parent, 'add_child', node, true)
+	if !new_edited_scene_root: new_edited_scene_root = new_parent.get_tree().edited_scene_roo
+	unre.add_do_method(node, 'set_owner', new_edited_scene_root)
+	if new_idx >= 0:
+		unre.add_do_method(new_parent, 'move_child', node, new_idx)
+	
+	unre.add_undo_reference(node)
+	unre.add_undo_method(new_parent, 'remove_child', node)
+	unre.add_undo_method(old_parent, 'add_child', node, true)
+	unre.add_undo_method(node, 'set_owner', old_parent.get_tree().edited_scene_root)
+	unre.add_undo_method(old_parent, 'move_child', node, old_idx)
+
+	return node
 
 
 static func try_send_message_to_typed_ancestor(this: Node, ancestor_type, message_name: String, arguments: Array):

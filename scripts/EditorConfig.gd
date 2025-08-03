@@ -27,6 +27,8 @@ var _gridsnap_step_inv_impl : float
 	set(val):
 		_gridsnap_step_inv_impl = val
 		_gridsnap_step_impl = 1.0/val
+
+@export var dissolve_removes_self : bool = false
 		
 ## How pressing '+' or '-' alters the floor/ceiling height (chosen by current level's coloring mode)
 @export var floor_height_increment : float = 0.1
