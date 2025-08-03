@@ -114,6 +114,12 @@ static func get_selected_nodes_of_type(type: Variant, ret : Array = []):
 			ret.append(n)
 	return ret
 
+static func set_selection(nodes: Array[Node])->void:
+	var selection := EditorInterface.get_selection()
+	selection.clear()
+	for n in nodes:
+		selection.add_node(n)
+
 static var _counter: int = 0;
 static func get_unique_id()->int: 
 	_counter += 1;

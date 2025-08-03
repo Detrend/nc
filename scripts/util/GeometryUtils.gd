@@ -90,3 +90,25 @@ static func polygon_to_convex_segments(polygon: PackedVector2Array, holes: Array
 		var decomposition := Geometry2D.decompose_polygon_in_convex(segment)
 		ret.append_array(decomposition)
 	return ret
+
+static func get_orthogonal(v: Vector2)->Vector2:
+	return Vector2(v.y, -v.x)
+
+static func extrude_along_normals(point_stripe: PackedVector2Array)->PackedVector2Array:
+	if point_stripe.size() <= 1:
+		ErrorUtils.report_error("Point stripe too small (only {0} points)".format([point_stripe.size()]))
+		return point_stripe
+
+	var end :int = point_stripe.size()
+	var last_normal := get_orthogonal(point_stripe[end - 1] - point_stripe[end - 2])
+
+	var t: int = end - 1
+	while t >= 1:
+		var current_normal := get_orthogonal(point_stripe[t] - point_stripe[t - 1])
+		var interpolated_normal := (last_normal + current_normal)*0.5
+		point_stripe.append(point_stripe[t] + interpolated_normal)
+		last_normal = current_normal
+		t -= 1	
+	point_stripe.append(point_stripe[0] + get_orthogonal(point_stripe[1] - point_stripe[0]))
+
+	return point_stripe

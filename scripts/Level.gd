@@ -259,7 +259,7 @@ func add_sector(command: AddSectorCommand, unre: EditorUndoRedoManager = null)->
 enum KeypressState{
 	NONE = 0, UP, DOWN, PRESSED
 }
-static var KEYS_TO_TRACK : Array[Key] = [KEY_ALT, KEY_SHIFT, KEY_CTRL, KEY_Q, KEY_P, KEY_L, KEY_T, KEY_R]
+static var KEYS_TO_TRACK : Array[Key] = [KEY_ALT, KEY_SHIFT, KEY_CTRL, KEY_Q, KEY_P, KEY_L, KEY_T, KEY_R, KEY_X]
 static var MOUSE_BUTTONS_TO_TRACK : Array[MouseButton] = [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]
 
 var keypress_states : Dictionary[int, KeypressState]

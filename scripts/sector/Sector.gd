@@ -111,25 +111,32 @@ func _visualize_border()->void:
 	for point in get_points():
 		_visualizer_line.add_point(point.global_position - _visualizer_line.global_position)
 
-func _visualize_portals()->void:			
-	$PortalVisualizerLine.clear_points()
-	if $PortalDestinationVisualizerLine: $PortalDestinationVisualizerLine.clear_points()
-	$PortalArrowLine.clear_points()
+func _visualize_portals()->void:		
+	var portal_visualizer_line : Line2D = $PortalVisualizerLine
+	var portal_destination_visualizer_line : Line2D = $PortalDestinationVisualizerLine
+	var portal_arrow_line : Line2D = $PortalArrowLine
+
+	portal_visualizer_line.clear_points()
+	portal_destination_visualizer_line.clear_points()
+	portal_arrow_line.clear_points()
+
 	if ! has_portal(): 
 		return
+
 	var these_points := get_points()
-	$PortalVisualizerLine.add_point(these_points[portal_wall].global_position - self.global_position)
-	$PortalVisualizerLine.add_point(these_points[(portal_wall + 1)%these_points.size()].global_position  - self.global_position)
-	var target_points := portal_destination.get_points()
-	if $PortalDestinationVisualizerLine: 
-		$PortalDestinationVisualizerLine.add_point(target_points[portal_destination_wall].global_position - self.global_position)
-		$PortalDestinationVisualizerLine.add_point(target_points[(portal_destination_wall + 1) % target_points.size()].global_position - self.global_position)
-	if show_portal_arrow:
-		$PortalArrowLine.add_point((these_points[portal_wall].global_position + these_points[(portal_wall + 1)%these_points.size()].global_position)*0.5  - self.global_position)
-		$PortalArrowLine.add_point((target_points[portal_destination_wall].global_position + target_points[(portal_destination_wall + 1)%target_points.size()].global_position)*0.5  - self.global_position)
+	portal_visualizer_line.add_point(these_points[portal_wall].global_position - self.global_position)
+	portal_visualizer_line.add_point(these_points[(portal_wall + 1)%these_points.size()].global_position  - self.global_position)
 	
-	$PortalVisualizerLine.default_color = config.portal_entry_color
-	if $PortalDestinationVisualizerLine: $PortalDestinationVisualizerLine.default_color = config.portal_exit_color_bidirectional if self.is_portal_bidirectional else config.portal_exit_color_single
+	var target_points := portal_destination.get_points()
+	portal_destination_visualizer_line.add_point(target_points[portal_destination_wall].global_position - self.global_position)
+	portal_destination_visualizer_line.add_point(target_points[(portal_destination_wall + 1) % target_points.size()].global_position - self.global_position)
+	
+	if show_portal_arrow:
+		portal_arrow_line.add_point((these_points[portal_wall].global_position + these_points[(portal_wall + 1)%these_points.size()].global_position)*0.5  - self.global_position)
+		portal_arrow_line.add_point((target_points[portal_destination_wall].global_position + target_points[(portal_destination_wall + 1)%target_points.size()].global_position)*0.5  - self.global_position)
+	
+	portal_visualizer_line.default_color = config.portal_entry_color
+	portal_destination_visualizer_line.default_color = config.portal_exit_color_bidirectional if self.is_portal_bidirectional else config.portal_exit_color_single
 
 
 

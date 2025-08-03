@@ -39,9 +39,7 @@ func _on_sole_selected()->void:
 		var editable_ancestor : Node = NodeUtils.get_ancestor_by_predicate(self, func(n:Node): return (n is EditablePolygon) and n.is_editable)
 		#print("Selected a non-editable node (ancestor: {0})".format([editable_ancestor]))
 		if editable_ancestor: 
-			var selection := EditorInterface.get_selection()
-			selection.clear()
-			selection.add_node(editable_ancestor)
+			NodeUtils.set_selection([editable_ancestor])
 	pass
 
 func _on_sole_unselected()->void:
@@ -328,7 +326,10 @@ func get_loop_cut_product_name(original_name: String)->String:
 
 	return original_name
 
-func _perform_loop_cut(a: int, b: int, points: PackedVector2Array)->void:
+func _perform_loop_cut(first_entered_point: int, second_entered_point: int, points: PackedVector2Array)->void:
+	var a :int = min(first_entered_point, second_entered_point)
+	var b :int = max(first_entered_point, second_entered_point)
+	
 	var unre := get_undo_redo()
 	var original_points := points.duplicate()
 	var original_name := self.name
@@ -339,7 +340,6 @@ func _perform_loop_cut(a: int, b: int, points: PackedVector2Array)->void:
 		var point_to_add := (points_to_give[1] + points_to_give[0]) * 0.5 + (Vector2(edge_direction.y, -edge_direction.x) * 0.7)
 		points_to_give.append(point_to_add)
 		pass
-	var new_name := original_name
 	unre.create_action("Loop cut ({0}[{1}][{2}])".format([get_full_name(), a, b]))
 	var new_sector_command := _level.make_add_sector_command(get_own_prefab(), self.global_position, points_to_give, get_loop_cut_product_name(original_name), get_parent())
 	new_sector_command.child_idx = self.get_index() + 1
@@ -348,13 +348,48 @@ func _perform_loop_cut(a: int, b: int, points: PackedVector2Array)->void:
 	new_sector.data = self.data.duplicate()
 	unre.add_do_property(self, 'polygon', points_to_keep)
 	unre.add_undo_property(self, 'polygon', original_points)
-	unre.add_do_property(self, 'name', new_name)
-	unre.add_undo_property(self, 'name', original_name)
 	unre.add_do_method(self, 'on_editing_finish', false)
 	unre.add_do_method(new_sector, 'on_editing_finish', false)
 	unre.commit_action()
 	points.clear()
 	points.append_array(points_to_keep)
+
+func _perform_extrusion(first_entered_point: int, second_entered_point: int, points: PackedVector2Array)->void:
+	var a :int = min(first_entered_point, second_entered_point)
+	var b :int = max(first_entered_point, second_entered_point)
+	
+	var original_points := points.duplicate()
+	
+	print("removing: {0} | {1} | {2}".format([b, points[b], points]))
+	points.remove_at(b)
+	print("removing: {0} | {1} | {2}".format([a, points[a], points]))
+	points.remove_at(a)
+	print("removed: {0}".format([points]))
+	a -= 1
+	b -= 1
+
+	var original_name := self.name
+	var points_to_give := points.slice(a, min(b + 1, points.size()))
+	if b == points.size():
+		points_to_give.append(points[0])
+	print("to give: {0}".format([points_to_give]))
+	points_to_give = GeometryUtils.extrude_along_normals(points_to_give)
+
+	var points_to_keep := points.duplicate()
+		
+	var unre := get_undo_redo()
+	unre.create_action("Extrude ({0}[{1}][{2}])".format([get_full_name(), a, b]))
+	var new_sector_command := _level.make_add_sector_command(get_own_prefab(), self.global_position, points_to_give, get_loop_cut_product_name(original_name), get_parent())
+	new_sector_command.child_idx = self.get_index() + 1
+	var new_sector := _level.add_sector(new_sector_command, unre)
+	new_sector.global_position = self.global_position
+	new_sector.data = self.data.duplicate()
+	unre.add_do_property(self, 'polygon', points_to_keep)
+	unre.add_undo_property(self, 'polygon', original_points)
+	unre.add_do_method(self, 'on_editing_finish', false)
+	unre.add_do_method(new_sector, 'on_editing_finish', false)
+	unre.commit_action()
+	NodeUtils.set_selection([new_sector])
 
 var _loop_cut_first_idx : int = -1
 
@@ -370,15 +405,10 @@ func _handle_loop_cut(points: PackedVector2Array, selection: Array[Node])->void:
 		var added_idx := _find_the_single_added_point(points, last_points)
 		if added_idx < 0:
 			return
+		print("Loop_cut: {0} | {1} | {2}".format([added_idx, points[added_idx], points]))
 		if _loop_cut_first_idx >= 0:
 			if added_idx <= _loop_cut_first_idx: _loop_cut_first_idx += 1
-			var a :int = min(_loop_cut_first_idx, added_idx)
-			var b :int = max(_loop_cut_first_idx, added_idx)
-			#if b == a + 1:
-			#	ErrorUtils.report_warning("Loop cut: too short loop {0} -> {1}".format([a, b]))
-			#	_loop_cut_first_idx = -1
-			#	return
-			_perform_loop_cut(a,b, points)
+			_perform_loop_cut(_loop_cut_first_idx,added_idx, points)
 			_loop_cut_first_idx = -2
 		else:
 			_loop_cut_first_idx = added_idx
