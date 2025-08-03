@@ -334,7 +334,12 @@ func _perform_loop_cut(a: int, b: int, points: PackedVector2Array)->void:
 	var original_name := self.name
 	var points_to_give := points.slice(a, b + 1)
 	var points_to_keep := points.slice(0, a + 1) + points.slice(b)
-	var new_name := original_name #+ "a"
+	if points_to_give.size() == 2:
+		var edge_direction := points_to_give[1] - points_to_give[0]
+		var point_to_add := (points_to_give[1] + points_to_give[0]) * 0.5 + (Vector2(edge_direction.y, -edge_direction.x) * 0.7)
+		points_to_give.append(point_to_add)
+		pass
+	var new_name := original_name
 	unre.create_action("Loop cut ({0}[{1}][{2}])".format([get_full_name(), a, b]))
 	var new_sector_command := _level.make_add_sector_command(get_own_prefab(), self.global_position, points_to_give, get_loop_cut_product_name(original_name), get_parent())
 	new_sector_command.child_idx = self.get_index() + 1
@@ -369,10 +374,10 @@ func _handle_loop_cut(points: PackedVector2Array, selection: Array[Node])->void:
 			if added_idx <= _loop_cut_first_idx: _loop_cut_first_idx += 1
 			var a :int = min(_loop_cut_first_idx, added_idx)
 			var b :int = max(_loop_cut_first_idx, added_idx)
-			if b == a + 1:
-				ErrorUtils.report_warning("Loop cut: too short loop {0} -> {1}".format([a, b]))
-				_loop_cut_first_idx = -1
-				return
+			#if b == a + 1:
+			#	ErrorUtils.report_warning("Loop cut: too short loop {0} -> {1}".format([a, b]))
+			#	_loop_cut_first_idx = -1
+			#	return
 			_perform_loop_cut(a,b, points)
 			_loop_cut_first_idx = -2
 		else:
