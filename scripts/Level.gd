@@ -183,14 +183,27 @@ func find_nearest_point(pos: Vector2, max_snapping_distance: float, to_skip: Sec
 func _handle_new_sector_creation()->void:
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):# and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 		if is_key_pressed(KEY_SHIFT) and is_key_pressed(KEY_CTRL) and is_mouse_down(MOUSE_BUTTON_LEFT):
-			if is_key_pressed(KEY_T):
-				var new_multisector := add_sector(TRIANGULATED_MULTISECTOR_PREFAB, get_global_mouse_position(), [Vector2(0, 0), Vector2(10, 0), Vector2(0, 10)])
-				print("new multisector: {0}".format([new_multisector]))
+			var prefab_to_use := TRIANGULATED_MULTISECTOR_PREFAB if is_key_pressed(KEY_T) else SECTOR_PREFAB
+			var command := make_add_sector_command(prefab_to_use, get_global_mouse_position(), [Vector2(0, 0), Vector2(10, 0), Vector2(0, 10)])
+			if false:
+				add_sector(command)
 			else:
-				var new_sector := add_sector(SECTOR_PREFAB, get_global_mouse_position(), [Vector2(0, 0), Vector2(10, 0), Vector2(0, 10)])
-				print("new sector: {0}".format([new_sector]))
+				var wrapper := DatastructUtils.Wrapper.new(null)
+				var unre := get_undo_redo()
+				unre.create_action("Create " + "Sector" if prefab_to_use == SECTOR_PREFAB else "Multisector")
+				unre.add_do_method(self, '_add_sector_internal_do', command, wrapper)
+				unre.add_undo_method(self, '_add_sector_internal_undo', wrapper)
+				unre.commit_action()
 
-			
+func _add_sector_internal_do(command: AddSectorCommand, wrapper : DatastructUtils.Wrapper)->void:
+	wrapper.value = self.add_sector(command).get_path()
+func _add_sector_internal_undo(wrapper: DatastructUtils.Wrapper)->void:
+	var path_to_remove := wrapper.value as NodePath
+	if ! path_to_remove: return
+	var sector_to_remove := get_node_or_null(path_to_remove)
+	if ! sector_to_remove: return
+	sector_to_remove.queue_free()
+	wrapper.value = null
 
 func find_sector_parent(position: Vector2, nearest_point : SectorPoint)->Node2D:
 	var sector_parent : Node2D = null
@@ -215,20 +228,40 @@ func find_sector_parent(position: Vector2, nearest_point : SectorPoint)->Node2D:
 
 func generate_random_name(prefab: Resource)->String:
 	var resource_name :String = TextUtils.substring(prefab.resource_path, prefab.resource_path.rfind("/") + 1, prefab.resource_path.rfind(".tscn"))
-	print("{0}  |  {1} ({2})".format([prefab.resource_path, resource_name, prefab.resource_path.rfind(".tscn")]))
 	return resource_name + "-" + str(randi_range(0, 9999))
 
-func add_sector(prefab: Resource, position: Vector2, points: PackedVector2Array, name: String = "", parent: Node2D = null)->EditablePolygon:
-			var nearest_point := find_nearest_point(position, INF, null)
-			var sector_parent : Node2D = parent if parent else find_sector_parent(position, nearest_point)
-			
-			var new_sector :EditablePolygon = NodeUtils.instantiate_child(sector_parent, prefab) as EditablePolygon
-			new_sector.global_position = position
-			new_sector.polygon = points
-			new_sector.name = name if not name.is_empty() else generate_random_name(prefab)
-			if self.auto_heights and nearest_point:
-				new_sector.data = nearest_point._sector.data.duplicate()
-			return new_sector
+class AddSectorCommand:
+	var parent : NodePath
+	var sibling : NodePath
+	var prefab : Resource
+	var name: String
+	var position: Vector2
+	var points: PackedVector2Array
+	var data: SectorProperties
+
+func make_add_sector_command(prefab: Resource, position: Vector2, points: PackedVector2Array, name: String = "", parent: Node2D = null)->AddSectorCommand:
+	var ret := AddSectorCommand.new()
+	var nearest_point := find_nearest_point(position, INF, null)
+	ret.parent = (parent if parent else find_sector_parent(position, nearest_point)).get_path()
+	ret.prefab = prefab
+	ret.name = name if not name.is_empty() else generate_random_name(prefab)
+	ret.position = position
+	ret.points = points
+	ret.data = nearest_point._sector.data.duplicate() if (self.auto_heights and nearest_point) else null
+	return ret
+
+func add_sector(command: AddSectorCommand)->EditablePolygon:	
+	var parent :Node = get_node_or_null(command.parent)
+	var new_sector :EditablePolygon = NodeUtils.instantiate_child(parent, command.prefab) as EditablePolygon
+	var sibling :Node= get_node_or_null(command.sibling)
+	if sibling and sibling.get_parent() == parent:
+		parent.move_child(new_sector, sibling.get_index() + 1)
+	new_sector.name = command.name
+	new_sector.global_position = command.position
+	new_sector.polygon = command.points
+	if command.data != null:
+		new_sector.data = command.data
+	return new_sector
 
 
 enum KeypressState{
@@ -331,15 +364,15 @@ func _handle_selections()->void:
 	var current_selection : Array[Node] = []
 	NodeUtils.get_selected_nodes_of_type(Node, current_selection)
 	self.current_selection = current_selection
-	if last_selection.size() == 1 and ( current_selection.size() != 1 or current_selection[0] != last_selection[0]) and last_selection[0] is EditablePolygon:
+	if last_selection.size() == 1 and ( current_selection.size() != 1 or current_selection[0] != last_selection[0]) and last_selection[0] and last_selection[0] is EditablePolygon:
 		(last_selection[0] as EditablePolygon)._on_sole_unselected()
-	if current_selection.size() == 1 and ( last_selection.size() != 1 or last_selection[0] != current_selection[0]) and current_selection[0] is EditablePolygon:
+	if current_selection.size() == 1 and ( last_selection.size() != 1 or last_selection[0] != current_selection[0]) and current_selection[0] and current_selection[0] is EditablePolygon:
 		(current_selection[0] as EditablePolygon)._on_sole_selected()
 	for last in last_selection:
-		if last is EditablePolygon and current_selection.find(last) < 0:
+		if last and last is EditablePolygon and current_selection.find(last) < 0:
 			(last as EditablePolygon)._selected_update(current_selection)
 	for current in current_selection:
-		if current is EditablePolygon:
+		if current and current is EditablePolygon:
 			(current as EditablePolygon)._selected_update(current_selection)
 	last_selection = current_selection
 	

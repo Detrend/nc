@@ -144,7 +144,7 @@ func _remove_duplicit_points(points: PackedVector2Array)->bool:
 			points.remove_at(t-1)
 			did_remove = true
 		else: t += 1
-	if points[points.size() - 1] == points[0]:
+	if points.size() > 1 and points[points.size() - 1] == points[0]:
 		print("removing idx: {0} : {1} (same as {2}) - size: {3}".format([points.size() - 1, points[points.size() - 1], points[0], points.size()]))
 		points.remove_at(points.size() - 1)
 		did_remove = true
