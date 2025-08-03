@@ -125,6 +125,16 @@ static func instantiate_child(parent: Node, prefab: Resource)->Node:
 	ret.owner = parent.get_tree().edited_scene_root
 	return ret
 
+static func add_do_undo_child(unre: EditorUndoRedoManager, parent: Node, child: Node, idx:int = -1)->Node:
+	unre.add_do_method(parent, 'add_child', child, true)
+	unre.add_do_method(child, 'set_owner', parent.get_tree().edited_scene_root)
+	if idx >= 0:
+		unre.add_do_method(parent, 'move_child', child, idx)
+	unre.add_do_reference(child)
+	unre.add_undo_method(parent, 'remove_child', child)
+	return child
+
+
 
 static func try_send_message_to_typed_ancestor(this: Node, ancestor_type, message_name: String, arguments: Array):
 	var parent:Node = NodeUtils.get_ancestor_of_type(this.get_parent(), ancestor_type)

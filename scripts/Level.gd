@@ -175,35 +175,23 @@ func find_nearest_point(pos: Vector2, max_snapping_distance: float, to_skip: Sec
 		if !other_sector.is_editable: continue
 		if other_sector == to_skip: continue
 		other_points.append_array(other_sector.get_points())
-	#print("finding nearest among {0} points".format([other_points.size()]))
-	var ret: SectorPoint= Sector.find_nearest_point(pos, other_points, max_snapping_distance)
+	var ret: SectorPoint = Sector.find_nearest_point(pos, other_points, max_snapping_distance)
 	return ret
 
 
 func _handle_new_sector_creation()->void:
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):# and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 		if is_key_pressed(KEY_SHIFT) and is_key_pressed(KEY_CTRL) and is_mouse_down(MOUSE_BUTTON_LEFT):
-			var prefab_to_use := TRIANGULATED_MULTISECTOR_PREFAB if is_key_pressed(KEY_T) else SECTOR_PREFAB
+			var prefab_to_use := TRIANGULATED_MULTISECTOR_PREFAB if is_key_pressed(KEY_R) else SECTOR_PREFAB
 			var command := make_add_sector_command(prefab_to_use, get_global_mouse_position(), [Vector2(0, 0), Vector2(10, 0), Vector2(0, 10)])
 			if false:
 				add_sector(command)
 			else:
-				var wrapper := DatastructUtils.Wrapper.new(null)
 				var unre := get_undo_redo()
 				unre.create_action("Create " + "Sector" if prefab_to_use == SECTOR_PREFAB else "Multisector")
-				unre.add_do_method(self, '_add_sector_internal_do', command, wrapper)
-				unre.add_undo_method(self, '_add_sector_internal_undo', wrapper)
+				add_sector(command, unre)
 				unre.commit_action()
 
-func _add_sector_internal_do(command: AddSectorCommand, wrapper : DatastructUtils.Wrapper)->void:
-	wrapper.value = self.add_sector(command).get_path()
-func _add_sector_internal_undo(wrapper: DatastructUtils.Wrapper)->void:
-	var path_to_remove := wrapper.value as NodePath
-	if ! path_to_remove: return
-	var sector_to_remove := get_node_or_null(path_to_remove)
-	if ! sector_to_remove: return
-	sector_to_remove.queue_free()
-	wrapper.value = null
 
 func find_sector_parent(position: Vector2, nearest_point : SectorPoint)->Node2D:
 	var sector_parent : Node2D = null
@@ -231,8 +219,8 @@ func generate_random_name(prefab: Resource)->String:
 	return resource_name + "-" + str(randi_range(0, 9999))
 
 class AddSectorCommand:
-	var parent : NodePath
-	var sibling : NodePath
+	var parent : Node
+	var child_idx : int = -1
 	var prefab : Resource
 	var name: String
 	var position: Vector2
@@ -242,7 +230,7 @@ class AddSectorCommand:
 func make_add_sector_command(prefab: Resource, position: Vector2, points: PackedVector2Array, name: String = "", parent: Node2D = null)->AddSectorCommand:
 	var ret := AddSectorCommand.new()
 	var nearest_point := find_nearest_point(position, INF, null)
-	ret.parent = (parent if parent else find_sector_parent(position, nearest_point)).get_path()
+	ret.parent = (parent if parent else find_sector_parent(position, nearest_point))
 	ret.prefab = prefab
 	ret.name = name if not name.is_empty() else generate_random_name(prefab)
 	ret.position = position
@@ -250,12 +238,16 @@ func make_add_sector_command(prefab: Resource, position: Vector2, points: Packed
 	ret.data = nearest_point._sector.data.duplicate() if (self.auto_heights and nearest_point) else null
 	return ret
 
-func add_sector(command: AddSectorCommand)->EditablePolygon:	
-	var parent :Node = get_node_or_null(command.parent)
-	var new_sector :EditablePolygon = NodeUtils.instantiate_child(parent, command.prefab) as EditablePolygon
-	var sibling :Node= get_node_or_null(command.sibling)
-	if sibling and sibling.get_parent() == parent:
-		parent.move_child(new_sector, sibling.get_index() + 1)
+func add_sector(command: AddSectorCommand, unre: EditorUndoRedoManager = null)->EditablePolygon:	
+	var parent :Node = command.parent
+	var new_sector :EditablePolygon 
+	if unre == null:
+		new_sector = NodeUtils.instantiate_child(parent, command.prefab) as EditablePolygon
+		if command.child_idx >= 0:
+			parent.move_child(new_sector, command.child_idx)
+	else:
+		new_sector = command.prefab.instantiate() as EditablePolygon
+		NodeUtils.add_do_undo_child(unre, parent, new_sector, command.child_idx)
 	new_sector.name = command.name
 	new_sector.global_position = command.position
 	new_sector.polygon = command.points
@@ -267,7 +259,7 @@ func add_sector(command: AddSectorCommand)->EditablePolygon:
 enum KeypressState{
 	NONE = 0, UP, DOWN, PRESSED
 }
-static var KEYS_TO_TRACK : Array[Key] = [KEY_ALT, KEY_SHIFT, KEY_CTRL, KEY_Q, KEY_P, KEY_L, KEY_T]
+static var KEYS_TO_TRACK : Array[Key] = [KEY_ALT, KEY_SHIFT, KEY_CTRL, KEY_Q, KEY_P, KEY_L, KEY_T, KEY_R]
 static var MOUSE_BUTTONS_TO_TRACK : Array[MouseButton] = [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]
 
 var keypress_states : Dictionary[int, KeypressState]

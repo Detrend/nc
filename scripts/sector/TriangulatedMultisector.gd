@@ -10,6 +10,8 @@ extends EditablePolygon
 
 @export var data : SectorProperties = SectorProperties.new()
 
+func get_own_prefab()->Resource:
+	return Level.TRIANGULATED_MULTISECTOR_PREFAB
 
 #func _selected_update(_selected_list: Array[Node])->void:
 #	super._selected_update(_selected_list)

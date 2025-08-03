@@ -309,8 +309,6 @@ func _find_the_single_added_point(current_points: PackedVector2Array, last_point
 	return last_points.size()
 
 func _perform_loop_cut(a: int, b: int, points: PackedVector2Array)->void:
-	
-	print("loop cut: {0} - {1}".format([a, b]))
 	var unre := get_undo_redo()
 	var original_points := points.duplicate()
 	var original_name := self.name
@@ -318,15 +316,17 @@ func _perform_loop_cut(a: int, b: int, points: PackedVector2Array)->void:
 	var points_to_keep := points.slice(0, a + 1) + points.slice(b)
 	var new_name := original_name + "a"
 	unre.create_action("Loop cut ({0}[{1}][{2}])".format([get_full_name(), a, b]))
-	var new_sector := _level.add_sector(_level.make_add_sector_command(get_own_prefab(), self.global_position, points_to_give, original_name + "b", get_parent()))
-	new_sector.get_parent().move_child(new_sector, self.get_index() + 1)
+	var new_sector_command := _level.make_add_sector_command(get_own_prefab(), self.global_position, points_to_give, original_name + "b", get_parent())
+	new_sector_command.child_idx = self.get_index() + 1
+	var new_sector := _level.add_sector(new_sector_command, unre)
 	new_sector.global_position = self.global_position
 	new_sector.data = self.data.duplicate()
-	unre.add_do_reference(new_sector)
 	unre.add_do_property(self, 'polygon', points_to_keep)
 	unre.add_undo_property(self, 'polygon', original_points)
 	unre.add_do_property(self, 'name', new_name)
 	unre.add_undo_property(self, 'name', original_name)
+	unre.add_do_method(self, 'on_editing_finish', false)
+	unre.add_do_method(new_sector, 'on_editing_finish', false)
 	unre.commit_action()
 	points.clear()
 	points.append_array(points_to_keep)
