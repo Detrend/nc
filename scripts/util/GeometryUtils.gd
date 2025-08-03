@@ -91,6 +91,9 @@ static func polygon_to_convex_segments(polygon: PackedVector2Array, holes: Array
 		ret.append_array(decomposition)
 	return ret
 
+static func is_convex_polygon(polygon: PackedVector2Array)->bool:
+	return Geometry2D.decompose_polygon_in_convex(polygon).size() <= 1
+
 static func get_orthogonal(v: Vector2)->Vector2:
 	return Vector2(v.y, -v.x)
 

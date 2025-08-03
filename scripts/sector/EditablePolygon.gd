@@ -87,7 +87,7 @@ func _manage_points()->void:
 	var points := self.polygon
 	
 	self._alt_mode_snap(points)
-	self._handle_loop_cut(points, _level.current_selection)
+	self._handle_loop_cut_and_extrude(points, _level.current_selection)
 	
 	if !is_just_being_edited() :
 		var did_change :bool = do_postprocess(points)
@@ -353,6 +353,7 @@ func _perform_loop_cut(first_entered_point: int, second_entered_point: int, poin
 	unre.commit_action()
 	points.clear()
 	points.append_array(points_to_keep)
+	NodeUtils.set_selection([new_sector])
 
 func _perform_extrusion(first_entered_point: int, second_entered_point: int, points: PackedVector2Array)->void:
 	var a :int = min(first_entered_point, second_entered_point)
@@ -376,10 +377,13 @@ func _perform_extrusion(first_entered_point: int, second_entered_point: int, poi
 	points_to_give = GeometryUtils.extrude_along_normals(points_to_give)
 
 	var points_to_keep := points.duplicate()
+
+	var prefab_to_use: Resource = get_own_prefab() if GeometryUtils.is_convex_polygon(points_to_give) else Level.TRIANGULATED_MULTISECTOR_PREFAB
+	print("convex: {0}".format([GeometryUtils.is_convex_polygon(points_to_give)]))
 		
 	var unre := get_undo_redo()
 	unre.create_action("Extrude ({0}[{1}][{2}])".format([get_full_name(), a, b]))
-	var new_sector_command := _level.make_add_sector_command(get_own_prefab(), self.global_position, points_to_give, get_loop_cut_product_name(original_name), get_parent())
+	var new_sector_command := _level.make_add_sector_command(prefab_to_use, self.global_position, points_to_give, get_loop_cut_product_name(original_name), get_parent())
 	new_sector_command.child_idx = self.get_index() + 1
 	var new_sector := _level.add_sector(new_sector_command, unre)
 	new_sector.global_position = self.global_position
@@ -393,8 +397,8 @@ func _perform_extrusion(first_entered_point: int, second_entered_point: int, poi
 
 var _loop_cut_first_idx : int = -1
 
-func _handle_loop_cut(points: PackedVector2Array, selection: Array[Node])->void:
-	if _loop_cut_first_idx == -2 or not ((selection.size() == 1 and selection[0] == self) and _level.is_key_pressed(KEY_C) and get_own_prefab()):
+func _handle_loop_cut_and_extrude(points: PackedVector2Array, selection: Array[Node])->void:
+	if _loop_cut_first_idx == -2 or not ((selection.size() == 1 and selection[0] == self) and (_level.is_key_pressed(KEY_C) or _level.is_key_pressed(KEY_X)) and get_own_prefab()):
 		self._loop_cut_first_idx = -1
 		return
 	if points.size() > last_points.size():
@@ -408,7 +412,10 @@ func _handle_loop_cut(points: PackedVector2Array, selection: Array[Node])->void:
 		print("Loop_cut: {0} | {1} | {2}".format([added_idx, points[added_idx], points]))
 		if _loop_cut_first_idx >= 0:
 			if added_idx <= _loop_cut_first_idx: _loop_cut_first_idx += 1
-			_perform_loop_cut(_loop_cut_first_idx,added_idx, points)
+			if _level.is_key_pressed(KEY_X):
+				_perform_extrusion(_loop_cut_first_idx, added_idx, points)
+			else:
+				_perform_loop_cut(_loop_cut_first_idx, added_idx, points)
 			_loop_cut_first_idx = -2
 		else:
 			_loop_cut_first_idx = added_idx
