@@ -308,15 +308,35 @@ func _find_the_single_added_point(current_points: PackedVector2Array, last_point
 		i += 1
 	return last_points.size()
 
+func get_loop_cut_product_name(original_name: String)->String:
+	var last_letter := original_name.unicode_at(original_name.length() - 1)
+	var a_ord := "a".unicode_at(0)
+	var z_ord := "z".unicode_at(0)
+	var name_base : String 
+	if a_ord <= last_letter and last_letter < z_ord:
+		name_base = original_name.substr(0, original_name.length() - 1)
+		last_letter += 1
+	else:
+		name_base = original_name
+		last_letter = a_ord
+	
+	while last_letter <= z_ord:
+		var new_name := name_base + char(last_letter)
+		if get_parent().find_child(new_name, false) == null:
+			return new_name
+		last_letter += 1
+
+	return original_name
+
 func _perform_loop_cut(a: int, b: int, points: PackedVector2Array)->void:
 	var unre := get_undo_redo()
 	var original_points := points.duplicate()
 	var original_name := self.name
 	var points_to_give := points.slice(a, b + 1)
 	var points_to_keep := points.slice(0, a + 1) + points.slice(b)
-	var new_name := original_name + "a"
+	var new_name := original_name #+ "a"
 	unre.create_action("Loop cut ({0}[{1}][{2}])".format([get_full_name(), a, b]))
-	var new_sector_command := _level.make_add_sector_command(get_own_prefab(), self.global_position, points_to_give, original_name + "b", get_parent())
+	var new_sector_command := _level.make_add_sector_command(get_own_prefab(), self.global_position, points_to_give, get_loop_cut_product_name(original_name), get_parent())
 	new_sector_command.child_idx = self.get_index() + 1
 	var new_sector := _level.add_sector(new_sector_command, unre)
 	new_sector.global_position = self.global_position

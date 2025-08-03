@@ -126,6 +126,7 @@ static func instantiate_child(parent: Node, prefab: Resource)->Node:
 	return ret
 
 static func add_do_undo_child(unre: EditorUndoRedoManager, parent: Node, child: Node, idx:int = -1)->Node:
+	# see: https://forum.godotengine.org/t/undoredomanager-add-and-remove-nodes-for-plugin/111380
 	unre.add_do_method(parent, 'add_child', child, true)
 	unre.add_do_method(child, 'set_owner', parent.get_tree().edited_scene_root)
 	if idx >= 0:
