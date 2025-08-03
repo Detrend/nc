@@ -85,22 +85,29 @@ func do_clear()->void:
 	for ch in generated_parent.get_children(): generated_parent.remove_child(ch)
 
 func do_dissolve()->void:
+	return
 	do_triangulate()
 	
 	var generated_parent := _generated_parent
 
-	var sectors : Array[Sector] 
-	sectors = NodeUtils.get_children_of_type(generated_parent, Sector, sectors)
+	var generated_sectors : Array[Sector] 
+	generated_sectors = NodeUtils.get_children_of_type(generated_parent, Sector, generated_sectors)
+	var manual_children : Array[Node]
+	manual_children = NodeUtils.get_children_by_predicate(self, func(n: Node): return n != generated_parent, manual_children, NodeUtils.LOOKUP_FLAGS.NONE)
 
 	var new_name := self.name + "-Gen"
 	var unre:= get_undo_redo()
 
 	unre.create_action("Multisector Dissolve")
 	var new_parent := NodeUtils.add_do_undo_child(unre, self.get_parent(), Node2D.new(), self.get_index()) as Node2D
+	unre.add_undo_reference(new_parent)
 	new_parent.position = self.position
 	new_parent.name = new_name
-	for s in sectors:
-		NodeUtils.relink_do_undo_node(unre, s, new_parent, -1, get_tree().edited_scene_root)
+	for ch in manual_children:
+		NodeUtils.relink_do_undo_node(unre, ch, new_parent, -1, get_tree().edited_scene_root) 
+	for s in generated_sectors:
+		generated_parent.remove_child(s)
+		NodeUtils.add_do_undo_child(unre, new_parent, s, -1, get_tree().edited_scene_root)
 		unre.add_do_property(s, 'is_editable', true)
 		unre.add_undo_property(s, 'is_editable', false)
 	if config.dissolve_removes_self:

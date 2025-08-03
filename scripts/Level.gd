@@ -15,7 +15,8 @@ var max_snapping_distance : float:
 
 
 static var SECTOR_PREFAB : Resource = preload("res://prefabs/Sector.tscn")
-static var TRIANGULATED_MULTISECTOR_PREFAB : Resource = preload("res://prefabs/TriangulatedMultisector.tscn")
+static var TRIANGULATED_MULTISECTOR_PREFAB : Resource:
+	get: return load("res://prefabs/TriangulatedMultisector.tscn")
 static var STAIR_MAKER_PREFAB : Resource = preload("res://prefabs/StairMaker.tscn")
 
 
@@ -249,6 +250,7 @@ func add_sector(command: AddSectorCommand, unre: EditorUndoRedoManager = null)->
 		new_sector = command.prefab.instantiate() as EditablePolygon
 		NodeUtils.add_do_undo_child(unre, parent, new_sector, command.child_idx)
 	new_sector.name = command.name
+	unre.add_do_property(new_sector, 'global_position', command.position)
 	new_sector.global_position = command.position
 	new_sector.polygon = command.points
 	if command.data != null:

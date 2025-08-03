@@ -97,7 +97,7 @@ static func is_convex_polygon(polygon: PackedVector2Array)->bool:
 static func get_orthogonal(v: Vector2)->Vector2:
 	return Vector2(v.y, -v.x)
 
-static func extrude_along_normals(point_stripe: PackedVector2Array)->PackedVector2Array:
+static func extrude_along_normals(point_stripe: PackedVector2Array, extrusion_factor : float = 0.2)->PackedVector2Array:
 	if point_stripe.size() <= 1:
 		ErrorUtils.report_error("Point stripe too small (only {0} points)".format([point_stripe.size()]))
 		return point_stripe
@@ -109,9 +109,9 @@ static func extrude_along_normals(point_stripe: PackedVector2Array)->PackedVecto
 	while t >= 1:
 		var current_normal := get_orthogonal(point_stripe[t] - point_stripe[t - 1])
 		var interpolated_normal := (last_normal + current_normal)*0.5
-		point_stripe.append(point_stripe[t] + interpolated_normal)
+		point_stripe.append(point_stripe[t] + interpolated_normal * extrusion_factor)
 		last_normal = current_normal
 		t -= 1	
-	point_stripe.append(point_stripe[0] + get_orthogonal(point_stripe[1] - point_stripe[0]))
+	point_stripe.append(point_stripe[0] + get_orthogonal(point_stripe[1] - point_stripe[0])*extrusion_factor)
 
 	return point_stripe
