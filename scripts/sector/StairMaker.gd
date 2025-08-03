@@ -77,7 +77,7 @@ func _do_apply()->void:
 			s.floor_height = current
 			current += floor_increment
 	if set_ceiling:
-		var current := floor_begin
+		var current := ceiling_begin
 		for s in _stair_segments:
-			s.floor_height = current
-			current += floor_increment
+			s.ceiling_height = current
+			current += ceiling_increment
