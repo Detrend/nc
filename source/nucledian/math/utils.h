@@ -36,6 +36,7 @@ f32 rad2deg(f32 radians);
 constexpr f32 PI         = std::numbers::pi_v<f32>;
 constexpr f32 HALF_PI    = PI * 0.5f;
 constexpr f32 QUARTER_PI = PI * 0.25f;
+constexpr f32 PI2        = PI * 2.0f;
 
 }
 

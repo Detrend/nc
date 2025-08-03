@@ -693,6 +693,94 @@ static auto get_edges(const Frustum2& f)
 }
 
 //==============================================================================
+static bool interval_intersection
+(
+  f32 a_l, f32 a_r, f32 b_l, f32 b_r, f32& out_l, f32& out_r
+)
+{
+  // We assume that all of them are in [0, PI] interval
+  nc_assert(a_l >= 0.0f && a_l <= PI2);
+  nc_assert(a_r >= 0.0f && a_r <= PI2);
+  nc_assert(b_l >= 0.0f && b_l <= PI2);
+  nc_assert(b_r >= 0.0f && b_r <= PI2);
+
+  // Reset
+  out_l = 0.0f;
+  out_r = 0.0f;
+
+  // 4 cases
+  bool a_split = a_r > a_l;
+  bool b_split = b_r > b_l;
+
+  if (!a_split && !b_split)
+  {
+    // ezz
+    out_l = std::min(a_l, b_l);
+    out_r = std::max(a_r, b_r);
+    return out_l > out_r;
+  }
+  else if (a_split && b_split)
+  {
+    // must have intersection at 0
+    out_l = std::min(a_l, b_l);
+    out_r = std::max(a_r, b_r);
+    return out_l != 0.0f && out_r != PI2;
+  }
+  else
+  {
+    if (b_split)
+    {
+      // swap the intervals so that a is always the split one
+      std::swap(a_l, b_l);
+      std::swap(a_r, b_r);
+    }
+
+    // now B will be either fully on one side or on another, but never
+    // in between
+    if (b_r < a_l)
+    {
+      out_l = b_r;
+      out_r = a_l;
+      return true;
+    }
+    else if (b_l > a_r)
+    {
+      out_l = a_r;
+      out_r = b_l;
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+}
+
+//==============================================================================
+f32 to_0_pi(f32 in)
+{
+  if (in < 0.0f)
+  {
+    return in + PI2;
+  }
+  else
+  {
+    return in;
+  }
+}
+
+//==============================================================================
+// 0    = right
+// PI/2 = up
+// PI   = left
+static vec2 dir_from_angle(f32 angle)
+{
+  f32 x = std::cos(angle);
+  f32 y = std::sin(angle);
+  return vec2{x, y};
+}
+
+//==============================================================================
 Frustum2 Frustum2::modified_with_portal(vec2 p1, vec2 p2) const
 {
   nc_assert(is_normal(this->direction));
@@ -709,98 +797,31 @@ Frustum2 Frustum2::modified_with_portal(vec2 p1, vec2 p2) const
     return Frustum2::from_point_and_portal(this->center, p1, p2);
   }
 
-  // val is from 1 to -1
-  // 1  = in front of us
-  // -1 = right behind us
-  // 0  = left/right from us 90deg
-  // remaps to range [-1, 1] where -1 is fully left, 1 is fully right and 0 is in front of us
-  auto remap_interval = [](f32 val, bool on_left)->f32
+  vec2 d_l, d_r;
+  this->get_frustum_edges(d_l, d_r);
+
+  vec2 to_p1 = p1 - this->center;
+  vec2 to_p2 = p2 - this->center;
+
+  f32 a_l = to_0_pi(std::atan2f(d_l.y,   d_l.x));
+  f32 a_r = to_0_pi(std::atan2f(d_r.y,   d_r.x));
+  f32 b_l = to_0_pi(std::atan2f(to_p2.y, to_p2.x));
+  f32 b_r = to_0_pi(std::atan2f(to_p1.y, to_p1.x));
+
+  if (f32 i1 = 0, i2 = 0; interval_intersection(a_l, a_r, b_l, b_r, i1, i2))
   {
-    val = std::clamp<f32>(val, -1, 1);
-    const f32 sign = on_left ? -1.0f : 1.0f;
-    return (1.0f - (val + 1.0f) * 0.5f) * sign;
-  };
+    vec2 d1 = dir_from_angle(i1);
+    vec2 d2 = dir_from_angle(i2);
+    nc_assert(d1 + d2 != VEC2_ZERO);
 
-  auto inverse_remap = [](f32 val)
-  {
-    nc_assert(val == std::clamp<f32>(val, -1, 1));
-
-    const bool on_left = val < 0.0f;
-    const auto remapped = (1.0f - std::abs(val)) * 2.0f - 1.0f;
-
-    return std::make_pair(on_left, remapped);
-  };
-
-  // interval 1
-  const f32 e_left = remap_interval(this->angle, true);
-  const f32 e_right = remap_interval(this->angle, false);
-  nc_assert(e_left <= e_right);
-
-  // interval 2
-  auto dt_p1 = dot(normalize(p1 - this->center), this->direction);
-  auto dt_p2 = dot(normalize(p2 - this->center), this->direction);
-
-  const auto p1_to_p2 = normalize(p2 - p1);
-  const auto p2_to_p1 = -p1_to_p2;
-
-  if (dt_p1 < 0.0f)
-  {
-    // it is in back
-    const auto p2_to_center = this->center - p2;
-    p1 = p2 + p2_to_p1 * dot(p2_to_center, p2_to_p1);
-    dt_p1 = dot(normalize(p1 - this->center), this->direction);
+    vec2 new_dir   = normalize(d1 + d2);
+    f32  new_angle = dot(d1, new_dir);
+    return Frustum2::from_point_angle_and_dir(this->center, new_dir, new_angle);
   }
-
-  if (dt_p2 < 0.0f)
+  else
   {
-    // it is in back
-    const auto p1_to_center = this->center - p1;
-    p2 = p1 + p1_to_p2 * dot(p1_to_center, p1_to_p2);
-    dt_p2 = dot(normalize(p2 - this->center), this->direction);
-  }
-
-  const auto to_p1 = p1 - this->center;
-  const auto to_p2 = p2 - this->center;
-
-  // if the point is right in front of us then we treat it as if right
-  const auto p1_left = cross(this->direction, to_p1) >= 0;
-  const auto p2_left = cross(this->direction, to_p2) >= 0;
-
-  const f32 e_p1 = remap_interval(dt_p1, p1_left);
-  const f32 e_p2 = remap_interval(dt_p2, p2_left);
-
-  const auto i1_l = e_left;
-  const auto i1_r = e_right;
-  const auto i2_l = std::min(e_p1, e_p2);
-  const auto i2_r = std::max(e_p1, e_p2);
-
-  const auto overlap_l = std::max(i1_l, i2_l);
-  const auto overlap_r = std::min(i1_r, i2_r);
-
-  // this is unlikely as we probably will not get here due to some
-  // other check in the map system BFS code
-  if (overlap_l > overlap_r) [[unlikely]]
-  {
-    // intervals do not intersect and therefore the result is empty
     return Frustum2::empty_frustum_from_point(this->center);
   }
-
-  // remap the intervals back onto the dot-space
-  const auto [i1_left, i1_remap] = inverse_remap(overlap_l);
-  const auto [i2_left, i2_remap] = inverse_remap(overlap_r);
-
-  // and calculate the directions
-  const auto dir1 = get_edge(this->direction, i1_remap, i1_left);
-  const auto dir2 = get_edge(this->direction, i2_remap, i2_left);
-
-  // and now calculate the new frustum from the directions above
-  const auto new_dir = normalize(dir1 + dir2); // the sum should not be a zero..
-  const auto new_angle = dot(dir1, new_dir);
-
-  // the new FOV should be smaller than the previous one
-  //nc_assert(new_angle >= this->angle);
-
-  return Frustum2::from_point_angle_and_dir(this->center, new_dir, new_angle);
 }
 
 //==============================================================================
