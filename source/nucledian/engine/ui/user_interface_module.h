@@ -1,6 +1,7 @@
 #include <engine/core/engine_module.h>
 #include <engine/core/engine_module_id.h>
 #include <engine/core/module_event.h>
+#include <engine/ui/ui_texture.h>
 
 
 namespace nc
@@ -20,6 +21,8 @@ namespace nc
     void init_shaders();
     void gather_player_info();
     void draw();
+
+    std::vector<GuiTexture> ui_elements;
 
     int display_health = 0;
 
