@@ -17,6 +17,7 @@ namespace nc
     ~UserInterfaceSystem();
 
   private:
+    void init_shaders();
     void gather_player_info();
     void draw();
 
