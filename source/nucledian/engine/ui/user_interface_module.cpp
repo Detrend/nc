@@ -61,7 +61,7 @@ namespace nc
   void UserInterfaceSystem::init_shaders()
   {
     const char* vertex_shader_source =
-      "#version 330 \n"
+      "#version 430 core\n"
       "in vec2 position;\n"
       "out vec2 textureCoords;\n"
       "uniform mat4 transformationMatrix;\n"
@@ -72,12 +72,12 @@ namespace nc
 
 
     const char* fragment_shader_source = 
-      "#version 330 \n"
+      "#version 430 core\n"
       "in vec2 textureCoords; \n"
-      "out vec4 out_Color; \n"
+      "out vec4 FragColor; \n"
       "uniform sampler2D guiTexture; \n"
       "void main(void) {\n" 
-      "   out_Color = texture(guiTexture, textureCoords);\n" 
+      "   FragColor = texture(guiTexture, textureCoords);\n" 
       "}\0";
 
     vertex_shader = glCreateShader(GL_VERTEX_SHADER);
@@ -105,7 +105,7 @@ namespace nc
     if (!success)
     {
       glGetShaderInfoLog(fragment_shader, 512, NULL, infoLog);
-      std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+      std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
 
     shader_program = glCreateProgram();
@@ -122,16 +122,18 @@ namespace nc
   void UserInterfaceSystem::draw()
   {
     glUseProgram(shader_program);
+    //glUniform1i(glGetUniformLocation(shader_program, "guiTexture"), 0);
     glBindVertexArray(VAO);
     glEnableVertexAttribArray(0);
 
     for (size_t i = 0; i < ui_elements.size(); i++)
     {
-      glActiveTexture(GL_TEXTURE0);
+      //glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, ui_elements[i].get_texture());
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
     
+    glBindTexture(GL_TEXTURE_2D, 0);
     glDisableVertexAttribArray(0);
     glBindVertexArray(0);
   }
@@ -152,8 +154,10 @@ namespace nc
 
     if (data)
     {
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
       glGenerateMipmap(GL_TEXTURE_2D);
+
+      glBindTexture(GL_TEXTURE_2D, 0);
     }
 
     GuiTexture element = GuiTexture(texture, vec2(0, 0), vec2(1, 1));
