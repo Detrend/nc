@@ -161,7 +161,7 @@ static func relink_do_undo_node(unre: EditorUndoRedoManager, node: Node, new_par
 	unre.add_do_reference(node)
 	unre.add_do_method(old_parent, 'remove_child', node)
 	unre.add_do_method(new_parent, 'add_child', node, true)
-	if !new_edited_scene_root: new_edited_scene_root = new_parent.get_tree().edited_scene_roo
+	if !new_edited_scene_root: new_edited_scene_root = new_parent.get_tree().edited_scene_root
 	unre.add_do_method(node, 'set_owner', new_edited_scene_root)
 	if new_idx >= 0:
 		unre.add_do_method(new_parent, 'move_child', node, new_idx)

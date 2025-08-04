@@ -10,7 +10,7 @@ extends EditablePolygon
 
 @export var data : SectorProperties = SectorProperties.new()
 
-@export_tool_button("Dissolve") var dissolve_tool_button = do_dissolve
+@export_tool_button("Bake") var dissolve_tool_button = do_dissolve
 
 func get_own_prefab()->Resource:
 	return Level.TRIANGULATED_MULTISECTOR_PREFAB
@@ -85,7 +85,6 @@ func do_clear()->void:
 	for ch in generated_parent.get_children(): generated_parent.remove_child(ch)
 
 func do_dissolve()->void:
-	return
 	do_triangulate()
 	
 	var generated_parent := _generated_parent
@@ -96,22 +95,24 @@ func do_dissolve()->void:
 	manual_children = NodeUtils.get_children_by_predicate(self, func(n: Node): return n != generated_parent, manual_children, NodeUtils.LOOKUP_FLAGS.NONE)
 
 	var new_name := self.name + "-Gen"
-	var unre:= get_undo_redo()
+	var unre:EditorUndoRedoManager= get_undo_redo()
 
 	unre.create_action("Multisector Dissolve")
 	var new_parent := NodeUtils.add_do_undo_child(unre, self.get_parent(), Node2D.new(), self.get_index()) as Node2D
-	unre.add_undo_reference(new_parent)
 	new_parent.position = self.position
 	new_parent.name = new_name
-	for ch in manual_children:
-		NodeUtils.relink_do_undo_node(unre, ch, new_parent, -1, get_tree().edited_scene_root) 
+	unre.add_do_method(new_parent, 'set_owner', get_tree().edited_scene_root)
 	for s in generated_sectors:
 		generated_parent.remove_child(s)
-		NodeUtils.add_do_undo_child(unre, new_parent, s, -1, get_tree().edited_scene_root)
-		unre.add_do_property(s, 'is_editable', true)
-		unre.add_undo_property(s, 'is_editable', false)
+		new_parent.add_child(s)
+		unre.add_do_method(s, 'set_owner', get_tree().edited_scene_root)
+		s.is_editable = true
+	#for ch in manual_children:
+	#	NodeUtils.relink_do_undo_node(unre, ch, new_parent, -1, get_tree().edited_scene_root) 
 	if config.dissolve_removes_self:
-		NodeUtils.remove_do_undo_node(unre, self)
+		pass#NodeUtils.remove_do_undo_node(unre, self)
+
+	print("root: {0}".format([get_tree().edited_scene_root]))
 
 	unre.commit_action()
-	NodeUtils.set_selection([new_parent])
+	#NodeUtils.set_selection([new_parent])
