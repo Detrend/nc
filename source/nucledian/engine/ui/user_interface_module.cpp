@@ -5,6 +5,8 @@
 #include <engine/player/player.h>
 #include <engine/player/thing_system.h>
 
+#include <stb_image/stb_image.h>
+
 namespace nc
 {
   EngineModuleId nc::UserInterfaceSystem::get_module_id()
@@ -19,6 +21,8 @@ namespace nc
 
   bool UserInterfaceSystem::init()
   {
+    ui_elements.clear();
+
     init_shaders();
 
     vec2 vertices[] = { vec2(-1, 1), vec2(-1, -1), vec2(1, 1), vec2(1, -1)};
@@ -33,12 +37,14 @@ namespace nc
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 2, &vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
     glEnableVertexAttribArray(0);
     
     glDisableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    load_texture();
 
     return true;
   }
@@ -47,6 +53,8 @@ namespace nc
   {
     glDeleteBuffers(1, &VAO);
     glDeleteBuffers(1, &VBO);
+    glDeleteShader(vertex_shader);
+    glDeleteShader(fragment_shader);
     glDeleteProgram(shader_program);
   }
 
@@ -72,7 +80,6 @@ namespace nc
       "   out_Color = texture(guiTexture, textureCoords);\n" 
       "}\0";
 
-    unsigned int vertex_shader;
     vertex_shader = glCreateShader(GL_VERTEX_SHADER);
 
     glShaderSource(vertex_shader, 1, &vertex_shader_source, NULL);
@@ -88,7 +95,6 @@ namespace nc
       std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
 
-    unsigned int fragment_shader;
     fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
 
     glShaderSource(fragment_shader, 1, &fragment_shader_source, NULL);
@@ -106,10 +112,6 @@ namespace nc
     glAttachShader(shader_program, vertex_shader);
     glAttachShader(shader_program, fragment_shader);
     glLinkProgram(shader_program);
-
-    // deleting shaders as they are linked
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
   }
 
   void UserInterfaceSystem::gather_player_info()
@@ -119,6 +121,45 @@ namespace nc
 
   void UserInterfaceSystem::draw()
   {
+    glUseProgram(shader_program);
+    glBindVertexArray(VAO);
+    glEnableVertexAttribArray(0);
+
+    for (size_t i = 0; i < ui_elements.size(); i++)
+    {
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, ui_elements[i].get_texture());
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    }
+    
+    glDisableVertexAttribArray(0);
+    glBindVertexArray(0);
+  }
+
+  void UserInterfaceSystem::load_texture()
+  {
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    int width, height, nr_channels;
+    unsigned char* data = stbi_load("content/ui/font.png", &width, &height, &nr_channels, 0);
+
+    if (data)
+    {
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+      glGenerateMipmap(GL_TEXTURE_2D);
+    }
+
+    GuiTexture element = GuiTexture(texture, vec2(0, 0), vec2(1, 1));
+    ui_elements.push_back(element);
+
+    stbi_image_free(data);
   }
 
   void UserInterfaceSystem::on_event(ModuleEvent& event)

@@ -3,6 +3,8 @@
 #include <engine/core/module_event.h>
 #include <engine/ui/ui_texture.h>
 
+#include <vector>
+
 
 namespace nc
 {
@@ -21,6 +23,7 @@ namespace nc
     void init_shaders();
     void gather_player_info();
     void draw();
+    void load_texture();
 
     std::vector<GuiTexture> ui_elements;
 
@@ -29,6 +32,8 @@ namespace nc
     unsigned int VBO;
     unsigned int VAO;
 
+    unsigned int vertex_shader;
+    unsigned int fragment_shader;
     unsigned int shader_program;
 
   };
