@@ -41,6 +41,12 @@ namespace nc
     return true;
   }
 
+  UserInterfaceSystem::~UserInterfaceSystem()
+  {
+    glDeleteBuffers(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+  }
+
   void UserInterfaceSystem::gather_player_info()
   {
     display_health = get_engine().get_module<ThingSystem>().get_player()->get_health();
@@ -65,9 +71,6 @@ namespace nc
     case ModuleEventType::cleanup:
       break;
     default:
-      //// cleanup
-      //glDeleteBuffers(1, &VAO);
-      //glDeleteBuffers(1, &VBO);
       break;
     }
   }

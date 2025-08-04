@@ -14,6 +14,7 @@ namespace nc
     static UserInterfaceSystem& get();
     void on_event(ModuleEvent& event) override;
     bool init();
+    ~UserInterfaceSystem();
 
   private:
     void gather_player_info();
