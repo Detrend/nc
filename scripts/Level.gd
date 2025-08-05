@@ -58,6 +58,8 @@ func _ready() -> void:
 		export_level()
 		return
 	config.on_cosmetics_changed.connect(_update_sector_visuals)
+	await self.every_frame_signal
+	await self.every_frame_signal
 	var to_register : Callable = _update_sector_visuals
 	var unre := get_undo_redo_raw()
 	if unre and not unre.version_changed.is_connected(_update_sector_visuals):
