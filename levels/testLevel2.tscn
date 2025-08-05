@@ -1,4 +1,4 @@
-[gd_scene load_steps=72 format=3 uid="uid://cta47u4q0nac4"]
+[gd_scene load_steps=74 format=3 uid="uid://cta47u4q0nac4"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/Level.gd" id="1_tdhj0"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_a102k"]
@@ -391,6 +391,18 @@ floor_height = 7.6
 ceiling_height = 7.97059
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
+[sub_resource type="Resource" id="Resource_1rnkb"]
+script = ExtResource("4_hw0gl")
+floor_height = 12.2
+ceiling_height = 10.0
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_yr7rp"]
+script = ExtResource("4_hw0gl")
+floor_height = 12.2
+ceiling_height = 10.0
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
 [sub_resource type="Resource" id="Resource_fh6m7"]
 script = ExtResource("4_hw0gl")
 floor_height = 2.0
@@ -466,10 +478,10 @@ data = SubResource("Resource_b1rou")
 script = ExtResource("5_p88uy")
 set_floor = true
 floor_begin = 2.0
-floor_end = 12.0
+floor_end = 12.2
 set_ceiling = true
 ceiling_begin = 5.5
-ceiling_end = 10.0
+ceiling_end = 10.0882
 ceiling_increment = 0.0882353
 
 [node name="Sector-2780a" parent="Sectors/Stairs" instance=ExtResource("2_a102k")]
@@ -909,6 +921,19 @@ data = SubResource("Resource_jya6t")
 position = Vector2(1267, -49)
 polygon = PackedVector2Array(-20, 13, 5, 0, 17, 21, 7, 35)
 data = SubResource("Resource_ilqaq")
+
+[node name="Sector-1706" parent="Sectors/Stairs" instance=ExtResource("2_a102k")]
+position = Vector2(194.819, -316.814)
+color = Color(0.501961, 0, 0.196078, 1)
+polygon = PackedVector2Array(0, 0, 35.181, 2.81384, 35.181, 40.8138, -0.819, 39.8138)
+data = SubResource("Resource_1rnkb")
+floor_height = 12.2
+ceiling_height = 10.0
+
+[node name="Sector-1706a" parent="Sectors/Stairs" instance=ExtResource("3_a102k")]
+position = Vector2(194.819, -316.814)
+polygon = PackedVector2Array(35.181, 40.8138, -0.819, 39.8138, 0, 0, -7.96277, -0.1638, -4.90038, 43.3319, 34.981, 48.0138)
+data = SubResource("Resource_yr7rp")
 
 [node name="Node2D" type="Node2D" parent="Sectors"]
 

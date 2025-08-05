@@ -57,8 +57,7 @@ func do_triangulate()->void:
 	do_clear()
 
 	var generated_parent := _generated_parent
-	var hole_nodes : Array[EditablePolygon] = []
-	hole_nodes = NodeUtils.get_children_of_type(self, Sector, hole_nodes)
+	var hole_nodes : Array[EditablePolygon] = EditablePolygon.get_all_editable(self)
 	var holes : Array[PackedVector2Array] = []
 	for hole_node in hole_nodes:
 		if hole_node.is_visible_in_tree() and hole_node.is_editable:

@@ -193,7 +193,7 @@ static func sanity_check_all(level: Level, all_sectors: Array[Sector])->void:
 			while j < i:
 				var intersection := Geometry2D.intersect_polygons(sector_a, all_sectors[j].get_point_positions())
 				if intersection.size() > 0:
-					ErrorUtils.report_error("{0} intersects {1}".format([all_sectors[i].get_full_name(), all_sectors[j].get_full_name()]))
+					ErrorUtils.report_error("{0} intersects {1}  (intersection: {2})".format([all_sectors[i].get_full_name(), all_sectors[j].get_full_name(), TextUtils.recursive_array_tostring(intersection)]))
 				j += 1
 			i += 1
 	

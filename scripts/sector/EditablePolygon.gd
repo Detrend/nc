@@ -291,7 +291,7 @@ func _alt_mode_snap(current_points: PackedVector2Array)->void:
 					s._alt_mode_drag_update()
 	
 
-func _find_the_single_added_point(current_points: PackedVector2Array, last_points: PackedVector2Array)->int:
+static func _find_the_single_added_point(current_points: PackedVector2Array, last_points: PackedVector2Array)->int:
 	var i : int = 0
 	while i < last_points.size():
 		if current_points[i] != last_points[i]:
@@ -361,25 +361,26 @@ func _perform_extrusion(first_entered_point: int, second_entered_point: int, poi
 	
 	var original_points := points.duplicate()
 	
-	print("removing: {0} | {1} | {2}".format([b, points[b], points]))
 	points.remove_at(b)
-	print("removing: {0} | {1} | {2}".format([a, points[a], points]))
 	points.remove_at(a)
-	print("removed: {0}".format([points]))
 	a -= 1
 	b -= 1
 
+	print("extrude [{0} - {1}] : [{2} - {3}] of {4}".format([first_entered_point - 1, second_entered_point - 1, a, b, points.size()]))
+
 	var original_name := self.name
-	var points_to_give := points.slice(a, min(b + 1, points.size()))
-	if b == points.size():
-		points_to_give.append(points[0])
-	print("to give: {0}".format([points_to_give]))
+	var points_to_give :PackedVector2Array 
+	if first_entered_point < second_entered_point:
+		points_to_give = points.slice(a, min(b + 1, points.size()))
+		if b == points.size():
+			points_to_give.append(points[0])
+	else:
+		points_to_give = points.slice(b) + points.slice(0, a + 1)
 	points_to_give = GeometryUtils.extrude_along_normals(points_to_give)
 
 	var points_to_keep := points.duplicate()
 
 	var prefab_to_use: Resource = get_own_prefab() if GeometryUtils.is_convex_polygon(points_to_give) else Level.TRIANGULATED_MULTISECTOR_PREFAB
-	print("convex: {0}".format([GeometryUtils.is_convex_polygon(points_to_give)]))
 		
 	var unre := get_undo_redo()
 	unre.create_action("Extrude ({0}[{1}][{2}])".format([get_full_name(), a, b]))
@@ -409,7 +410,6 @@ func _handle_loop_cut_and_extrude(points: PackedVector2Array, selection: Array[N
 		var added_idx := _find_the_single_added_point(points, last_points)
 		if added_idx < 0:
 			return
-		print("Loop_cut: {0} | {1} | {2}".format([added_idx, points[added_idx], points]))
 		if _loop_cut_first_idx >= 0:
 			if added_idx <= _loop_cut_first_idx: _loop_cut_first_idx += 1
 			if _level.is_key_pressed(KEY_X):
@@ -451,3 +451,7 @@ func get_full_name()->String:
 		node = node.get_parent()
 	ret.reverse()
 	return DatastructUtils.string_concat(ret, "::")
+
+static func get_all_editable(parent: Node, ret : Array[EditablePolygon] = [], flags: NodeUtils.LOOKUP_FLAGS = NodeUtils.LOOKUP_FLAGS.RECURSIVE)->Array[EditablePolygon]:
+	ret = NodeUtils.get_children_by_predicate(parent, func(n: Node): return n is EditablePolygon and (n as EditablePolygon).is_editable, ret, flags)
+	return ret

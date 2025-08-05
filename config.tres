@@ -13,8 +13,8 @@ point_count = 2
 [resource]
 script = ExtResource("1_x30i3")
 max_snapping_distance = 0.1
-gridsnap_step = 0.0625
-gridsnap_step_inv = 16.0
+gridsnap_step = 1.0
+gridsnap_step_inv = 1.0
 dissolve_removes_self = true
 floor_height_increment = 0.1
 ceiling_height_increment = 0.5
