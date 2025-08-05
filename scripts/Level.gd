@@ -30,13 +30,11 @@ func get_undo_redo()->EditorUndoRedoManager:
 func get_undo_redo_raw()->UndoRedo: 
 	var unre := get_undo_redo()
 	var ret := unre.get_history_undo_redo(unre.get_object_history_id(self))
-	if not ret: print("no unre: {0}".format([unre.get_object_history_id(self)]))
+	if not ret: print("Level::get_undo_redo_raw()... no unre: {0}".format([unre.get_object_history_id(self)]))
 	return ret
 
 signal every_frame_signal()
 
-func _ready() -> void:
-	if ! Engine.is_editor_hint(): export_level()
 
 func _process(delta: float) -> void:
 	#if ! Engine.is_editor_hint(): return
@@ -55,7 +53,10 @@ func _find_connection(connections: Array, c: Callable)->int:
 		i += 1
 	return -1
 	
-func _enter_tree() -> void:
+func _ready() -> void:
+	if ! Engine.is_editor_hint(): 
+		export_level()
+		return
 	config.on_cosmetics_changed.connect(_update_sector_visuals)
 	var to_register : Callable = _update_sector_visuals
 	var unre := get_undo_redo_raw()

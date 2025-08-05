@@ -7,6 +7,7 @@ extends EditablePolygon
 
 ## Do debug stuff
 @export var debug : bool = false
+@export var aggressive : bool = false
 
 @export var data : SectorProperties = SectorProperties.new()
 
@@ -32,11 +33,11 @@ func on_editing_finish(_start_was_called_first : bool)->void:
 	triangulate_on_next_frame()
 
 
-func on_descendant_editing_start(_ancestor: EditablePolygon)->void:
+func on_descendant_editing_start(_ancestor: Node)->void:
 	super.on_descendant_editing_start(_ancestor)
 	do_clear()
 
-func on_descendant_editing_finish(_ancestor: EditablePolygon, _start_was_called_first: bool):
+func on_descendant_editing_finish(_ancestor: Node, _start_was_called_first: bool):
 	super.on_descendant_editing_finish(_ancestor, _start_was_called_first)
 	triangulate_on_next_frame()
 
@@ -62,7 +63,7 @@ func do_triangulate()->void:
 	for hole_node in hole_nodes:
 		if hole_node.is_visible_in_tree() and hole_node.is_editable:
 			holes.append(hole_node.get_point_positions())
-	var computed_segments := GeometryUtils.polygon_to_convex_segments(self.get_point_positions(), holes, debug)
+	var computed_segments := GeometryUtils.polygon_to_convex_segments(self.get_point_positions(), holes, debug, aggressive)
 	var counter : int = 0
 	for segment in computed_segments:
 		#print("clockwise: {0}".format([Geometry2D.is_polygon_clockwise(segment)]))

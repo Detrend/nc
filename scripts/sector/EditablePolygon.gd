@@ -62,14 +62,14 @@ func on_editing_finish(_start_was_called_first : bool)->void:
 	NodeUtils.try_send_message_to_ancestor(self, 'on_descendant_editing_finish', [self, _start_was_called_first])
 
 
-static func on_descendant_editing_start_base(this: Node, _ancestor: EditablePolygon)->void:
+static func on_descendant_editing_start_base(this: Node, _ancestor: Node)->void:
 	NodeUtils.try_send_message_to_ancestor(this, 'on_descendant_editing_start', [this])
-func on_descendant_editing_start(_ancestor: EditablePolygon)->void:
+func on_descendant_editing_start(_ancestor: Node)->void:
 	on_descendant_editing_start_base(self, _ancestor)
 
-static func on_descendant_editing_finish_base(this: Node, _ancestor: EditablePolygon, _start_was_called_first: bool)->void:
+static func on_descendant_editing_finish_base(this: Node, _ancestor: Node, _start_was_called_first: bool)->void:
 	NodeUtils.try_send_message_to_ancestor(this, 'on_descendant_editing_finish', [this, _start_was_called_first])
-func on_descendant_editing_finish(_ancestor: EditablePolygon, _start_was_called_first: bool):
+func on_descendant_editing_finish(_ancestor: Node, _start_was_called_first: bool):
 	on_descendant_editing_finish_base(self, _ancestor, _start_was_called_first)
 
 

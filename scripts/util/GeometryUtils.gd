@@ -53,7 +53,7 @@ static func find_closest_points(a: PackedVector2Array, b: PackedVector2Array, bl
 		i+= 1
 	return ret
 
-static func polygon_to_convex_segments(polygon: PackedVector2Array, holes: Array[PackedVector2Array], debug: bool = false)->Array[PackedVector2Array]:
+static func polygon_to_convex_segments(polygon: PackedVector2Array, holes: Array[PackedVector2Array], debug: bool = false, aggressive: bool = false)->Array[PackedVector2Array]:
 	var segments : Array[PackedVector2Array] = [polygon]
 	for hole in holes:
 		var new_segments : Array[PackedVector2Array] = []
@@ -77,8 +77,9 @@ static func polygon_to_convex_segments(polygon: PackedVector2Array, holes: Array
 
 					main = main.slice(0, closest_point_indices.y + 1) + loop + main.slice(closest_point_indices.y + 1)
 				new_segments.append(main)
-				#var decomposition := Geometry2D.decompose_polygon_in_convex(main)
-				#new_segments.append_array(decomposition)
+				if aggressive:
+					var decomposition := Geometry2D.decompose_polygon_in_convex(main)
+					new_segments.append_array(decomposition)
 			else:
 				new_segments.append_array(divided)
 		segments = new_segments
