@@ -89,8 +89,12 @@ struct SectorIntData
 struct SectorData
 {
   SectorIntData int_data;
-  f32           floor_height = 0.0f;
-  f32           ceil_height  = 0.0f;
+  f32           floor_height        = 0.0f;
+  f32           ceil_height         = 0.0f;
+  f32           floor_texture_scale = 3.0f;
+  f32           ceil_texture_scale  = 3.0f;
+  u16           floor_texture_id    = 7;
+  u16           ceil_texture_id     = 6;
 };
 
 using PortType = u8;
@@ -108,10 +112,13 @@ struct WallData
 {
   // The wall starts here and ends in the same point as the next
   // wall begins
-  vec2      pos = vec2{0};
-  SectorID  portal_sector_id       = INVALID_SECTOR_ID; // if is portal
-  WallRelID nc_portal_wall_id      = INVALID_WALL_REL_ID;
+  
+  vec2           pos               = vec2{0};
+  SectorID       portal_sector_id  = INVALID_SECTOR_ID; // if is portal
+  WallRelID      nc_portal_wall_id = INVALID_WALL_REL_ID;
   PortalRenderID render_data_index = INVALID_PORTAL_RENDER_ID;
+  f32            texture_scale = 3.0f;
+  u16            texture_id = 8;
 
   PortType get_portal_type() const;
 };
@@ -120,7 +127,7 @@ struct Portal
 {
   // Rotation along the Y-axis.
   const f32  rotation    = 0.0f;
-  const vec3 position         = VEC3_ZERO;
+  const vec3 position    = VEC3_ZERO;
   // Local to world.
   const mat4 transform   = mat4(1.0f);
   /*
@@ -154,7 +161,7 @@ struct MapSectors
 
   column<SectorData>       sectors;
   column<WallData>         walls;
-  column<Portal> portals_render_data;
+  column<Portal>           portals_render_data;
   column<aabb3>            sector_bboxes;
   StatGridAABB2<SectorID>  sector_grid;
 
@@ -193,7 +200,7 @@ struct MapSectors
 
   void sector_to_vertices(
     SectorID           sector_id,
-    std::vector<vec3>& vertices_out) const;
+    std::vector<f32>& vertices_out) const;
 
   std::vector<vec3> get_path(vec3 start_pos, vec3 end_pos, f32 width, f32 height) const;
   bool is_point_in_sector(vec2 pt, SectorID sector)      const;

@@ -28,7 +28,8 @@ Renderer::Renderer(const GraphicsSystem& graphics_system)
 :
   m_solid_material(graphics_system.get_solid_material()),
   m_billboard_material(graphics_system.get_billboard_material()),
-  m_light_material(shaders::light::VERTEX_SOURCE, shaders::light::FRAGMENT_SOURCE)
+  m_light_material(shaders::light::VERTEX_SOURCE, shaders::light::FRAGMENT_SOURCE),
+  m_sector_material(shaders::sector::VERTEX_SOURCE, shaders::sector::FRAGMENT_SOURCE)
 {
   glGenFramebuffers(1, &m_g_buffer);
   glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
@@ -57,10 +58,42 @@ Renderer::Renderer(const GraphicsSystem& graphics_system)
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+  // setup texture data ssbo
+  // TODO: this should be done every time new texture atlas is created
+  struct TextureData
+  {
+    vec2 pos;
+    vec2 size;
+    f32  in_game_atlas;
+    f32  _padding;
+  };
+  glGenBuffers(1, &m_texture_data_ssbo);
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_texture_data_ssbo);
+  const std::vector<TextureHandle> textures = TextureManager::get().get_textures();
+  std::vector<TextureData> data(textures.size());
+  for (std::size_t i = 0; i < data.size(); ++i)
+  {
+    data[i].pos = textures[i].get_pos();
+    data[i].size = textures[i].get_size();
+    data[i].in_game_atlas = (textures[i].get_lifetime() == ResLifetime::Game ? 1.0f : 0.0f);
+  }
+  glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(TextureData), data.data(), GL_STATIC_DRAW);
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
   m_light_material.use();
   m_light_material.set_uniform(shaders::light::G_POSITION, 0);
   m_light_material.set_uniform(shaders::light::G_NORMAL, 1);
   m_light_material.set_uniform(shaders::light::G_ALBEDO, 2);
+
+  const vec2 game_atlas_size = TextureManager::get().get_atlas(ResLifetime::Game).get_size();
+  const vec2 level_atlas_size = TextureManager::get().get_atlas(ResLifetime::Level).get_size();
+
+  m_sector_material.use();
+  m_sector_material.set_uniform(shaders::sector::PROJECTION, GraphicsSystem::get().get_default_projection());
+  m_sector_material.set_uniform(shaders::sector::GAME_ATLAS_SIZE, game_atlas_size);
+  m_sector_material.set_uniform(shaders::sector::LEVEL_ATLAS_SIZE, level_atlas_size);
+  m_sector_material.set_uniform(shaders::sector::GAME_TEXTURE_ATLAS, 3);
+  m_sector_material.set_uniform(shaders::sector::LEVEL_TEXTURE_ATLAS, 4);
 }
 
 //==============================================================================
@@ -143,32 +176,20 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
 //==============================================================================
 void Renderer::render_sectors(const CameraData& camera) const
 {
-  #pragma region sector colors
-  constexpr auto SECTOR_COLORS = std::array
-  {
-    colors::YELLOW ,
-    colors::CYAN   ,
-    colors::MAGENTA,
-    colors::ORANGE ,
-    colors::PURPLE ,
-    colors::PINK   ,
-    colors::GRAY   ,
-    colors::BROWN  ,
-    colors::LIME   ,
-    colors::TEAL   ,
-    colors::NAVY   ,
-    colors::MAROON ,
-    colors::OLIVE  ,
-    colors::SILVER ,
-    colors::GOLD   ,
-  };
-  #pragma endregion
   const auto& sectors_to_render = camera.vis_tree.sectors;
   const std::vector<MeshHandle>& sector_meshes = GraphicsSystem::get().get_sector_meshes();
 
-  m_solid_material.use();
-  m_solid_material.set_uniform(shaders::solid::UNLIT, false);
-  m_solid_material.set_uniform(shaders::solid::VIEW, camera.view);
+  const auto& game_atlas = TextureManager::get().get_atlas(ResLifetime::Game);
+  const auto& level_atlas = TextureManager::get().get_atlas(ResLifetime::Level);
+
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_texture_data_ssbo);
+  glActiveTexture(GL_TEXTURE3);
+  glBindTexture(GL_TEXTURE_2D, game_atlas.handle);
+  glActiveTexture(GL_TEXTURE4);
+  glBindTexture(GL_TEXTURE_2D, level_atlas.handle);
+
+  m_sector_material.use();
+  m_sector_material.set_uniform(shaders::sector::VIEW, camera.view);
 
   for (const auto& [sector_id, _] : sectors_to_render)
   {
@@ -176,11 +197,6 @@ void Renderer::render_sectors(const CameraData& camera) const
     const MeshHandle& mesh = sector_meshes[sector_id];
 
     glBindVertexArray(mesh.get_vao());
-
-    const color4& color = SECTOR_COLORS[sector_id % SECTOR_COLORS.size()];
-    m_solid_material.set_uniform(shaders::solid::COLOR, color);
-    m_solid_material.set_uniform(shaders::solid::TRANSFORM, mat4(1.0f));
-
     glDrawArrays(mesh.get_draw_mode(), 0, mesh.get_vertex_count());
   }
 

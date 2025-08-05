@@ -341,8 +341,6 @@ bool GraphicsSystem::init()
   imgui_start_frame();
 #endif
 
-  m_renderer = std::make_unique<Renderer>(*this);
-
   return true;
 }
 
@@ -351,6 +349,12 @@ void GraphicsSystem::on_event(ModuleEvent& event)
 {
   switch (event.type)
   {
+    case ModuleEventType::post_init:
+    {
+      m_renderer = std::make_unique<Renderer>(*this);
+      break;
+    }
+
     case ModuleEventType::game_update:
     {
       this->update(event.update.dt);
@@ -1114,20 +1118,24 @@ void GraphicsSystem::draw_debug_window()
 //==============================================================================
 void GraphicsSystem::create_sector_meshes()
 {
-  const auto& map = ThingSystem::get().get_map();
-  MeshManager& mesh_manager = MeshManager::get();
+  const MapSectors& map          = ThingSystem::get().get_map();
+  MeshManager&      mesh_manager = MeshManager::get();
+  std::vector<f32>  vertices;
 
   m_sector_meshes.clear();
+  m_sector_meshes.reserve(map.sectors.size());
 
-  for (SectorID sid = 0; sid < map.sectors.size(); ++sid)
+  for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)
   {
-    std::vector<vec3> vertices;
-    map.sector_to_vertices(sid, vertices);
+    vertices.clear();
+    map.sector_to_vertices(sector_id, vertices);
 
-    const f32* vertex_data = &vertices[0].x;
-    const u32  values_cnt = static_cast<u32>(vertices.size() * 3);
-
-    const auto mesh = mesh_manager.create(ResLifetime::Game, vertex_data, values_cnt);
+    const auto mesh = mesh_manager.create_sector
+    (
+      ResLifetime::Level,
+      vertices.data(),
+      static_cast<u32>(vertices.size())
+    );
     m_sector_meshes.push_back(mesh);
   }
 }

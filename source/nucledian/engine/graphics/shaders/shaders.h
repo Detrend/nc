@@ -66,6 +66,20 @@ namespace nc
       inline constexpr Uniform<2, s32>  G_ALBEDO;
       inline constexpr Uniform<3, vec3> VIEW_POSITION;
     }
+
+    // Sector rendering.
+    namespace sector
+    {
+      #include <engine/graphics/shaders/sector.vert>
+      #include <engine/graphics/shaders/sector.frag>
+
+      inline constexpr Uniform<0, mat4> VIEW;
+      inline constexpr Uniform<1, mat4> PROJECTION;
+      inline constexpr Uniform<2, vec2> GAME_ATLAS_SIZE;
+      inline constexpr Uniform<3, vec2> LEVEL_ATLAS_SIZE;
+      inline constexpr Uniform<4, s32>  GAME_TEXTURE_ATLAS;
+      inline constexpr Uniform<5, s32>  LEVEL_TEXTURE_ATLAS;
+    }
   }
 
 }

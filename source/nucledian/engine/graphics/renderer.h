@@ -30,8 +30,14 @@ private:
   const MaterialHandle& m_billboard_material;
   // Used for lighting pass.
   const MaterialHandle  m_light_material;
+  const MaterialHandle  m_sector_material;
 
-  GLuint m_g_buffer, m_g_position, m_g_normal, m_g_albedo;
+  GLuint m_texture_data_ssbo = 0;
+
+  GLuint m_g_buffer = 0;
+  GLuint m_g_position = 0;
+  GLuint m_g_normal = 0;
+  GLuint m_g_albedo = 0;
 
   GLuint create_g_buffer(GLint internal_format, GLenum attachment) const;
 
@@ -49,7 +55,7 @@ private:
   void render_portal_to_depth(const CameraData& camera, const Portal& portal, bool depth_write, u8 recursion) const;
 
   void render_portal(const CameraData& camera, const Portal& portal, u8 recursion) const;
-#pragma endregion
+  #pragma endregion
 
   struct CameraData
   {

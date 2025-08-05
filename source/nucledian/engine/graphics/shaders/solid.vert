@@ -4,8 +4,8 @@ constexpr const char* VERTEX_SOURCE = R"(
 layout(location = 0) in vec3 a_position;
 layout(location = 1) in vec3 a_normal;
 
-out vec3 normal;
 out vec3 position;
+out vec3 normal;
 
 layout(location = 0) uniform mat4 transform;
 layout(location = 1) uniform mat4 view;

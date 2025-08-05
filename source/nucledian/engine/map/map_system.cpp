@@ -445,14 +445,25 @@ mat4 MapSectors::calc_portal_to_portal_projection(
   //==============================================================================
   void MapSectors::sector_to_vertices(
     SectorID           sector_id,
-    std::vector<vec3>& vertices_out) const
+    std::vector<f32>& vertices_out) const
   {
     nc_assert(sector_id < this->sectors.size());
+
+    const auto append_vec3 = [&vertices_out](const vec3& v)
+    {
+      vertices_out.push_back(v.x);
+      vertices_out.push_back(v.y);
+      vertices_out.push_back(v.z);
+    };
 
     const auto& sector_data = this->sectors[sector_id].int_data;
 
     const f32 floor_y = this->sectors[sector_id].floor_height;
     const f32 ceil_y = this->sectors[sector_id].ceil_height;
+    const f32 floor_texture_scale = this->sectors[sector_id].floor_texture_scale;
+    const f32 ceil_texture_scale = this->sectors[sector_id].ceil_texture_scale;
+    const u16 floor_texture_id = this->sectors[sector_id].floor_texture_id;
+    const u16 ceil_texture_id = this->sectors[sector_id].ceil_texture_id;
 
     // build the floor first from the first point
     const auto first_wall_idx = sector_data.first_wall;
@@ -460,6 +471,8 @@ mat4 MapSectors::calc_portal_to_portal_projection(
     const auto first_wall_pos = this->walls[first_wall_idx].pos;
     const auto first_pt = vec3{ first_wall_pos.x, 0.0f, first_wall_pos.y };
     nc_assert(first_wall_idx < last_wall_idx);
+
+    const auto pt0 = with_y(first_pt, floor_y);
 
     for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
     {
@@ -470,13 +483,24 @@ mat4 MapSectors::calc_portal_to_portal_projection(
       const auto pt2 = vec3{ w2pos.x, floor_y, w2pos.y };
 
       // build floor triangle from the first point and 2 others
-      vertices_out.push_back(with_y(first_pt, floor_y));
-      vertices_out.push_back(VEC3_Y);
-      vertices_out.push_back(pt2);
-      vertices_out.push_back(VEC3_Y);
-      vertices_out.push_back(pt1);
-      vertices_out.push_back(VEC3_Y);
+      append_vec3(pt0);
+      append_vec3(VEC3_Y);
+      vertices_out.push_back(0.0f);
+      vertices_out.push_back(floor_texture_id);
+      vertices_out.push_back(floor_texture_scale);
+      append_vec3(pt2);
+      append_vec3(VEC3_Y);
+      vertices_out.push_back(0.0f);
+      vertices_out.push_back(floor_texture_id);
+      vertices_out.push_back(floor_texture_scale);
+      append_vec3(pt1);
+      append_vec3(VEC3_Y);
+      vertices_out.push_back(0.0f);
+      vertices_out.push_back(floor_texture_id);
+      vertices_out.push_back(floor_texture_scale);
     }
+
+    const auto pt0_pos_ceil = with_y(first_pt, ceil_y);
 
     // then build ceiling
     for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
@@ -488,15 +512,25 @@ mat4 MapSectors::calc_portal_to_portal_projection(
       const auto pt2 = vec3{ w2pos.x, ceil_y, w2pos.y };
 
       // build floor triangle from the first point and 2 others
-      vertices_out.push_back(with_y(first_pt, ceil_y));
-      vertices_out.push_back(-VEC3_Y);
-      vertices_out.push_back(pt1);
-      vertices_out.push_back(-VEC3_Y);
-      vertices_out.push_back(pt2);
-      vertices_out.push_back(-VEC3_Y);
+      append_vec3(pt0_pos_ceil);
+      append_vec3(-VEC3_Y);
+      vertices_out.push_back(0.0f);
+      vertices_out.push_back(ceil_texture_id);
+      vertices_out.push_back(ceil_texture_scale);
+      append_vec3(pt1);
+      append_vec3(-VEC3_Y);
+      vertices_out.push_back(0.0f);
+      vertices_out.push_back(ceil_texture_id);
+      vertices_out.push_back(ceil_texture_scale);
+      append_vec3(pt2);
+      append_vec3(-VEC3_Y);
+      vertices_out.push_back(0.0f);
+      vertices_out.push_back(ceil_texture_id);
+      vertices_out.push_back(ceil_texture_scale);
     }
 
     // build walls
+    f32 cumulative_wall_length = 0.0f;
     for (WallID idx = first_wall_idx; idx < last_wall_idx; ++idx)
     {
       struct WallSegmentHeights
@@ -558,6 +592,9 @@ mat4 MapSectors::calc_portal_to_portal_projection(
       const auto flp = flipped(p1_to_p2);
       const auto wall_normal = vec3{ flp.x, 0.0f, flp.y };
 
+      const f32 wall_texture_id = static_cast<float>(wall.texture_id);
+      const f32 end_wall_length = cumulative_wall_length + distance(w1pos, w2pos);
+
       for (u32 wall_i = 0; wall_i < num_wall_segments; ++wall_i)
       {
         const auto f1 = vec3{ w1pos.x, segment_heights[wall_i].y1, w1pos.y };
@@ -565,20 +602,40 @@ mat4 MapSectors::calc_portal_to_portal_projection(
         const auto c1 = vec3{ w1pos.x, segment_heights[wall_i].y2, w1pos.y };
         const auto c2 = vec3{ w2pos.x, segment_heights[wall_i].y2, w2pos.y };
 
-        vertices_out.push_back(f1);
-        vertices_out.push_back(wall_normal);
-        vertices_out.push_back(f2);
-        vertices_out.push_back(wall_normal);
-        vertices_out.push_back(c1);
-        vertices_out.push_back(wall_normal);
+        append_vec3(f1);
+        append_vec3(wall_normal);
+        vertices_out.push_back(cumulative_wall_length);
+        vertices_out.push_back(wall_texture_id);
+        vertices_out.push_back(wall.texture_scale);
+        append_vec3(f2);
+        append_vec3(wall_normal);
+        vertices_out.push_back(end_wall_length);
+        vertices_out.push_back(wall_texture_id);
+        vertices_out.push_back(wall.texture_scale);
+        append_vec3(c1);
+        append_vec3(wall_normal);
+        vertices_out.push_back(cumulative_wall_length);
+        vertices_out.push_back(wall_texture_id);
+        vertices_out.push_back(wall.texture_scale);
 
-        vertices_out.push_back(c1);
-        vertices_out.push_back(wall_normal);
-        vertices_out.push_back(f2);
-        vertices_out.push_back(wall_normal);
-        vertices_out.push_back(c2);
-        vertices_out.push_back(wall_normal);
+        append_vec3(c1);
+        append_vec3(wall_normal);
+        vertices_out.push_back(cumulative_wall_length);
+        vertices_out.push_back(wall_texture_id);
+        vertices_out.push_back(wall.texture_scale);
+        append_vec3(f2);
+        append_vec3(wall_normal);
+        vertices_out.push_back(end_wall_length);
+        vertices_out.push_back(wall_texture_id);
+        vertices_out.push_back(wall.texture_scale);
+        append_vec3(c2);
+        append_vec3(wall_normal);
+        vertices_out.push_back(end_wall_length);
+        vertices_out.push_back(wall_texture_id);
+        vertices_out.push_back(wall.texture_scale);
       }
+
+      cumulative_wall_length = end_wall_length;
     }
   }
 

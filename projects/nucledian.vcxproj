@@ -312,6 +312,8 @@
     <None Include="..\source\nucledian\engine\graphics\shaders\billboard.vert" />
     <None Include="..\source\nucledian\engine\graphics\shaders\light.frag" />
     <None Include="..\source\nucledian\engine\graphics\shaders\light.vert" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\sector.frag" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\sector.vert" />
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.frag" />
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.vert" />
     <None Include="..\source\nucledian\math\lingebra.inl" />

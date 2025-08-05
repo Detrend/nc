@@ -31,16 +31,18 @@ public:
   u32 get_width() const;
   u32 get_height() const;
   const TextureAtlas& get_atlas() const;
+  u16 get_texture_id() const;
 
   vec2 get_pos() const;
   vec2 get_size() const;
 
 private:
   TextureHandle() {}
-  TextureHandle(ResLifetime lifetime, u32 x, u32 y, u32 width, u32 height);
+  TextureHandle(ResLifetime lifetime, u32 x, u32 y, u32 width, u32 height, u16 generation, u16 texture_id);
 
   ResLifetime m_lifetime   = ResLifetime::None;
   u16         m_generation = 0;
+  u16         m_texture_id = 0;
   u32         m_x          = 0;
   u32         m_y          = 0;
   u32         m_width      = 0;
@@ -74,9 +76,11 @@ public:
 
   const TextureAtlas& get_atlas(ResLifetime lifetime) const;
   GLuint get_error_texture_handle() const;
+  const std::vector<TextureHandle>& get_textures() const;
 
-  const TextureHandle& operator[](const std::pair<const std::string&, ResLifetime> pair);
-  const TextureHandle& operator[](const std::string& name);
+  const TextureHandle& operator[](const std::pair<const std::string&, ResLifetime> pair) const;
+  const TextureHandle& operator[](const std::string& name) const;
+  const TextureHandle& operator[](u16 texture_id) const;
 
   constexpr static u32 ERROR_TEXTURE_SIZE = 1024;
 
@@ -101,8 +105,9 @@ private:
 
   TextureAtlas m_game_atlas;
   TextureAtlas m_level_atlas;
+  std::vector<TextureHandle> m_textures;
 
-  GLuint m_error_texture = 0;
+  GLuint m_error_texture   = 0;
 
   /**
    * During a load operation, each loaded texture's width and height are added here to be processed by stb_rect_pack
