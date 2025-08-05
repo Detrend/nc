@@ -16,6 +16,7 @@ max_snapping_distance = 0.1
 gridsnap_step = 1.0
 gridsnap_step_inv = 1.0
 dissolve_removes_self = true
+extrude_factor = 0.2
 floor_height_increment = 0.1
 ceiling_height_increment = 0.5
 sanity_check_snapping = true

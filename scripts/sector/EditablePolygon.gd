@@ -364,7 +364,7 @@ func _perform_extrusion(idx: int, points: PackedVector2Array)->void:
 	var a:int = idx - 1
 	var b:int = idx if idx < points.size() else 0
 	var points_to_give :PackedVector2Array = [points[a], points[b]]
-	points_to_give = GeometryUtils.extrude_along_normals(points_to_give)
+	points_to_give = GeometryUtils.extrude_along_normals(points_to_give, config.extrude_factor)
 
 	var points_to_keep := points.duplicate()
 
