@@ -25,6 +25,7 @@
 #include <engine/input/input_system.h>
 #include <engine/player/thing_system.h>
 #include <engine/player/level_types.h>
+#include <engine/ui/user_interface_module.h>
 
 #include <game/projectile.h>
 #include <game/weapons.h>
@@ -532,6 +533,8 @@ void GraphicsSystem::render()
       render_entities(camera_data);
       render_portals(camera_data);
       render_gun(camera_data, gun_props);
+
+      get_engine().get_module<UserInterfaceSystem>().draw();
     }
   }
 

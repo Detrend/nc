@@ -176,7 +176,7 @@ namespace nc
       gather_player_info();
       break;
     case ModuleEventType::render:
-      draw();
+      //draw();
       break;
     case ModuleEventType::cleanup:
       break;

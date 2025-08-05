@@ -19,10 +19,12 @@ namespace nc
     bool init();
     ~UserInterfaceSystem();
 
+  void draw();
+
   private:
     void init_shaders();
     void gather_player_info();
-    void draw();
+    
     void load_texture();
 
     std::vector<GuiTexture> ui_elements;
