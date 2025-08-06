@@ -175,7 +175,11 @@ namespace nc
     }
 
     GuiTexture element = GuiTexture(texture, vec2(-0.8f, -0.8f), vec2(0.075f, 0.1f));
+    GuiTexture element_2 = GuiTexture(texture, vec2(-0.725f, -0.8f), vec2(0.075f, 0.1f));
+    GuiTexture element_3 = GuiTexture(texture, vec2(-0.65f, -0.8f), vec2(0.075f, 0.1f));
     ui_elements.push_back(element);
+    ui_elements.push_back(element_2);
+    ui_elements.push_back(element_3);
 
     stbi_image_free(data);
   }
