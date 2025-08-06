@@ -410,8 +410,14 @@ void GraphicsSystem::query_visibility(VisibilityTree& tree) const
   const vec3 pos = camera->get_position();
   const vec3 dir = camera->get_forward();
 
-  const f32 horizontal_fov = 2.0f * atan(tan(FOV / 2.0f) * ASPECT_RATIO);
-  map.query_visible(pos, dir, horizontal_fov, FOV, tree, DEFAULT_RECURSION_DEPTH);
+  f32 aspect = static_cast<f32>(m_window_width) / m_window_height;
+
+  const f32 horizontal_fov = 2.0f * atan(tan(FOV / 2.0f) * aspect);
+  const f32 vertical_fov   = FOV;
+  map.query_visible
+  (
+    pos, dir, horizontal_fov, vertical_fov, tree, DEFAULT_RECURSION_DEPTH
+  );
 }
 
 //==============================================================================

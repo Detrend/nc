@@ -157,29 +157,52 @@ const auto transform = map.calc_portal_to_portal_projection(in_sector, in_portal
 }
 
 //==============================================================================
-void MapSectors::query_visible(
+void MapSectors::query_visible
+(
   vec3            position,
   vec3            view_dir,
   f32             hor_fov,
-  f32             /*ver_fov*/,
+  f32             ver_fov,
   VisibilityTree& visible,
-  u8              recursion_depth) const
+  u8              recursion_depth
+)
+const
 {
   nc_assert(is_normal(view_dir));
+  nc_assert(ver_fov < HALF_PI, "Fix this elsewhere");
 
-  const auto angle = hor_fov >= 180.0f
+  // The angle of looking up/down
+  f32 angle_ver = std::atan2f(std::abs(view_dir.y), length(view_dir.xz()));
+  f32 threshold = HALF_PI - ver_fov * 0.5f;
+
+  // This interpolates the horizontal fov lineary between the original value
+  // and 360 degrees based on our vertical view angle (because if we are looking
+  // up/down then effectively we have 360 FOV, as we can see sectors behind us).
+  // Note that linear interpolation here is not 100% accurate to how FOV should
+  // be transformed, but it looks ok so let's keep it that way for now.
+  if (angle_ver >= threshold)
+  {
+    hor_fov = PI;
+  }
+  else
+  {
+    f32 coeff = angle_ver / threshold; // 0 to 1
+    hor_fov = PI * coeff + hor_fov * (1.0f - coeff);
+  }
+
+  const auto final_angle = hor_fov >= PI
     ? Frustum2::FULL_ANGLE
     : std::cosf(hor_fov * 0.5f);
 
   const auto frustum = Frustum2
   {
-    .center = position.xz(),
+    .center    = position.xz(),
     .direction = normalize(view_dir.xz()),
-    .angle = angle
+    .angle     = final_angle
   };
 
   visible.portal_sector = INVALID_SECTOR_ID;
-  visible.portal_wall = INVALID_WALL_ID;
+  visible.portal_wall   = INVALID_WALL_ID;
 
   constexpr u64 MAX_CAMERA_SECTORS = 8; // bump this up if the assert ever fires
   std::array<SectorID, MAX_CAMERA_SECTORS> sectors_out;
@@ -198,7 +221,7 @@ void MapSectors::query_visible(
     return;
   }
 
-  const auto slots_temp = FrustumBuffer{ frustum };
+  const auto slots_temp = FrustumBuffer{frustum};
   this->query_visible_sectors_impl
   (
     sectors_out.data(), sec_count, slots_temp, visible, recursion_depth
@@ -305,12 +328,15 @@ const
 }
 
 //==============================================================================
-void MapSectors::query_visible_sectors_impl(
-  const SectorID* start_sector,
+void MapSectors::query_visible_sectors_impl
+(
+  const SectorID*      start_sector,
   u32                  start_sector_cnt,
   const FrustumBuffer& input_frustums,
-  VisibilityTree& visible,
-  u8                   recursion_depth) const
+  VisibilityTree&      visible,
+  u8                   recursion_depth
+)
+const
 {
   nc_assert(input_frustums.frustum_slots[0] != INVALID_FRUSTUM);
   nc_assert(start_sector_cnt > 0);
@@ -331,11 +357,11 @@ void MapSectors::query_visible_sectors_impl(
   std::map<WallID, NucPortalStruct> nuclidean_portals;
 
   const auto* begin_sector = start_sector;
-  const auto* end_sector = begin_sector + start_sector_cnt;
+  const auto* end_sector   = begin_sector + start_sector_cnt;
 
   for (u32 i = 0; i < start_sector_cnt; ++i)
   {
-    next_iteration.insert({ start_sector[i], input_frustums });
+    next_iteration.insert({start_sector[i], input_frustums});
   }
 
   // Now do a BFS in our dimension
@@ -345,12 +371,12 @@ void MapSectors::query_visible_sectors_impl(
     curr_iteration = std::move(next_iteration);
     next_iteration.clear();
 
-    for (const auto& [id, content] : curr_iteration)
+    for (const auto&[id, content] : curr_iteration)
     {
       nc_assert(id < sectors.size());
 
       // Save it to the tree
-      visible.sectors.push_back({ id, content });
+      visible.sectors.push_back({id, content});
 
       // Iterate all frustums in this dir
       for (const auto& frustum : content.frustum_slots)
@@ -364,76 +390,82 @@ void MapSectors::query_visible_sectors_impl(
         // now traverse all portals of the sector and check if we can slide
         // into a neighbor sector
         map_helpers::for_each_portal(*this, id, [&](WallID wall1_idx)
+        {
+          const auto wall2_idx = map_helpers::next_wall(*this, id, wall1_idx);
+          const auto next_sector = walls[wall1_idx].portal_sector_id;
+          const bool is_nuclidean = walls[wall1_idx].get_portal_type() == PortalType::non_euclidean;
+          nc_assert(next_sector != INVALID_SECTOR_ID);
+
+          const auto p1 = walls[wall1_idx].pos;
+          const auto p2 = walls[wall2_idx].pos;
+
+          const auto p1_to_p2 = p2 - p1;
+          const auto p1_to_cam = frustum.center - p1;
+
+          // do not go to a sector that we started in (we can start in multiple
+          // sectors)
+          const bool visible_from_start
+            = std::find(begin_sector, end_sector, next_sector) != end_sector;
+
+          if (!is_nuclidean && visible_from_start)
           {
-            const auto wall2_idx = map_helpers::next_wall(*this, id, wall1_idx);
-            const auto next_sector = walls[wall1_idx].portal_sector_id;
-            const bool is_nuclidean = walls[wall1_idx].get_portal_type() == PortalType::non_euclidean;
-            nc_assert(next_sector != INVALID_SECTOR_ID);
+            // If the camera is positioned EXACTLY over the border of 2 visible_sectors
+            // then we would jump back and forth between these two, because
+            // each one would be visible from the second one.
+            // These visible_sectors have been visited in the first iteration and we will
+            // not return to them.
+            return;
+          }
 
-            const auto p1 = walls[wall1_idx].pos;
-            const auto p2 = walls[wall2_idx].pos;
+          if (cross(p1_to_cam, p1_to_p2) > 0.0f)
+          {
+            // Early exit, the wall is turned away from the camera.
+            // The comparison has to be > instead of >=, because that would
+            // report the sector we are on a border of as invisible.
+            return;
+          }
 
-            const auto p1_to_p2 = p2 - p1;
-            const auto p1_to_cam = frustum.center - p1;
+          if (!frustum.intersects_segment(p1, p2))
+          {
+            // early exit, we do not see the portal
+            return;
+          }
 
-            if (!is_nuclidean && std::find(begin_sector, end_sector, next_sector) != end_sector)
+          auto new_frustum = frustum.modified_with_portal(p1, p2);
+          if (new_frustum.is_empty())
+          {
+            // not sure how the hell this can happen..
+            return;
+          }
+
+          // rotate the nucledean frustum and shift it relatively to the portal's view
+          if (is_nuclidean && recursion_depth > 0) [[unlikely]]
+          {
+            const SectorID out_sector = next_sector;
+            const SectorID in_sector  = id;
+
+            // weird non-euclidean portal, store for later
+            map_helpers::modify_nuclidean_frustum
+            (
+              *this, new_frustum, wall1_idx, in_sector
+            );
+
+            // either creates and inserts or just merges in
+            if (nuclidean_portals.contains(wall1_idx))
             {
-              // If the camera is positioned EXACTLY over the border of 2 visible_sectors
-              // then we would jump back and forth between these two, because
-              // each one would be visible from the second one.
-              // These visible_sectors have been visited in the first iteration and we will
-              // not return to them.
-              // [Performance]: the list can be kept sorted, but usually there
-              // will be only 1-4 visible_sectors
-              return;
+              nc_assert(nuclidean_portals[wall1_idx].sector_out == out_sector);
             }
 
-            if (cross(p1_to_cam, p1_to_p2) > 0.0f)
-            {
-              // early exit, the wall is turned away from the camera
-              // The comparison has to be > instead of >=, because that would
-              // report the sector we are on a border of as invisible.
-              return;
-            }
-
-            if (!frustum.intersects_segment(p1, p2))
-            {
-              // early exit, we do not see the portal
-              return;
-            }
-
-            auto new_frustum = frustum.modified_with_portal(p1, p2);
-            if (new_frustum.is_empty())
-            {
-              // not sure how the hell this can happen..
-              return;
-            }
-
-            // rotate the nucledean frustum and shift it relatively to the portal's view
-            if (is_nuclidean && recursion_depth > 0) [[unlikely]]
-              {
-                const SectorID out_sector = next_sector;
-                const SectorID in_sector = id;
-
-                // weird non-euclidean portal, store for later
-                map_helpers::modify_nuclidean_frustum(*this, new_frustum, wall1_idx, in_sector);
-
-                // either creates and inserts or just merges in
-                if (nuclidean_portals.contains(wall1_idx))
-                {
-                  nc_assert(nuclidean_portals[wall1_idx].sector_out == out_sector);
-                }
-
-                nuclidean_portals[wall1_idx].buffer.insert_frustum(new_frustum);
-                nuclidean_portals[wall1_idx].sector_out = out_sector;
-                nuclidean_portals[wall1_idx].sector_in = in_sector;
-              }
-            else if (!is_nuclidean)
-            {
-              // either creates and inserts or just merges in
-              next_iteration[next_sector].insert_frustum(new_frustum);
-            }
-          });
+            nuclidean_portals[wall1_idx].buffer.insert_frustum(new_frustum);
+            nuclidean_portals[wall1_idx].sector_out = out_sector;
+            nuclidean_portals[wall1_idx].sector_in = in_sector;
+          }
+          else if (!is_nuclidean)
+          {
+            // either creates and inserts or just merges in
+            next_iteration[next_sector].insert_frustum(new_frustum);
+          }
+        });
       }
     }
   }
@@ -444,7 +476,7 @@ void MapSectors::query_visible_sectors_impl(
 
   // Now lets go to other dimensions in DFS manner recursively if we
   // did not run out of recursion limit
-  for (const auto& [portal_id, data] : nuclidean_portals)
+  for (const auto&[portal_id, data] : nuclidean_portals)
   {
     auto& child = visible.children.emplace_back();
     child.portal_wall = portal_id;
