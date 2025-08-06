@@ -128,10 +128,15 @@ namespace nc
     display_health = get_engine().get_module<ThingSystem>().get_player()->get_health();
   }
 
-  void UserInterfaceSystem::draw()
+  void UserInterfaceSystem::draw_hud()
   {
     int health = display_health;
     bool first = true;
+
+    if (health < 0)
+    {
+      health = 0;
+    }
 
     glUseProgram(shader_program);
     //glUniform1i(glGetUniformLocation(shader_program, "guiTexture"), 0);

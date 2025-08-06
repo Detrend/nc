@@ -534,7 +534,7 @@ void GraphicsSystem::render()
       render_portals(camera_data);
       render_gun(camera_data, gun_props);
 
-      get_engine().get_module<UserInterfaceSystem>().draw();
+      get_engine().get_module<UserInterfaceSystem>().draw_hud();
     }
   }
 
