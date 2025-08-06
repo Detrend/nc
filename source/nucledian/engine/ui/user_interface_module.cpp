@@ -66,14 +66,17 @@ namespace nc
   {
     const char* vertex_shader_source =
       "#version 430 core\n"
-      "in vec2 position;\n"
+      "in vec2 position;\n"     
       "out vec2 textureCoords;\n"
       "uniform mat4 transformationMatrix;\n"
+      "uniform int digit;\n"
       "void main(void) {\n"
       "  gl_Position = transformationMatrix * vec4(position, 0.0, 1.0);\n"
       "  textureCoords = vec2((position.x + 1.0) / 2.0, 1 - (position.y + 1.0) / 2.0);\n"
-      "  textureCoords.x = textureCoords.x / 8.0 + 1.0 / 8.0; \n"
-      "  textureCoords.y = textureCoords.y / 16.0 + 6.0 / 16.0; \n"
+      "  float texX = mod(digit, 8);\n"
+      "  float texY = digit / 8;\n"
+      "  textureCoords.x = textureCoords.x / 8.0 + texX / 8.0; \n"
+      "  textureCoords.y = textureCoords.y / 16.0 + texY / 16.0; \n"
       "}\0";
 
 
@@ -148,6 +151,9 @@ namespace nc
 
       unsigned int transformLoc = glGetUniformLocation(shader_program, "transformationMatrix");
       glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans_mat));
+
+      unsigned int digitLoc = glGetUniformLocation(shader_program, "digit");
+      glUniform1i(digitLoc, 49);
 
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
