@@ -130,6 +130,9 @@ namespace nc
 
   void UserInterfaceSystem::draw()
   {
+    int health = display_health;
+    bool first = true;
+
     glUseProgram(shader_program);
     //glUniform1i(glGetUniformLocation(shader_program, "guiTexture"), 0);
     glBindVertexArray(VAO);
@@ -152,10 +155,22 @@ namespace nc
       unsigned int transformLoc = glGetUniformLocation(shader_program, "transformationMatrix");
       glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans_mat));
 
+      int digit = health % 10;
+      digit += 48;
+
+      if (!first && health == 0)
+      {
+        digit = 0;
+      }
+
+      health = health / 10;
+
       unsigned int digitLoc = glGetUniformLocation(shader_program, "digit");
-      glUniform1i(digitLoc, 49);
+      glUniform1i(digitLoc, digit);
 
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+      first = false;
     }
 
     glDisable(GL_BLEND);
@@ -191,9 +206,9 @@ namespace nc
     GuiTexture element = GuiTexture(texture, vec2(-0.8f, -0.8f), vec2(0.075f, 0.1f));
     GuiTexture element_2 = GuiTexture(texture, vec2(-0.65f, -0.8f), vec2(0.075f, 0.1f));
     GuiTexture element_3 = GuiTexture(texture, vec2(-0.5f, -0.8f), vec2(0.075f, 0.1f));
-    ui_elements.push_back(element);
-    ui_elements.push_back(element_2);
     ui_elements.push_back(element_3);
+    ui_elements.push_back(element_2);
+    ui_elements.push_back(element);
 
     stbi_image_free(data);
   }
