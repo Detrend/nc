@@ -7,6 +7,10 @@
 
 #include <stb_image/stb_image.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 namespace nc
 {
   EngineModuleId nc::UserInterfaceSystem::get_module_id()
@@ -51,11 +55,11 @@ namespace nc
 
   UserInterfaceSystem::~UserInterfaceSystem()
   {
-    glDeleteBuffers(1, &VAO);
+    /*glDeleteBuffers(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
-    glDeleteProgram(shader_program);
+    glDeleteProgram(shader_program);*/
   }
 
   void UserInterfaceSystem::init_shaders()
@@ -66,7 +70,7 @@ namespace nc
       "out vec2 textureCoords;\n"
       "uniform mat4 transformationMatrix;\n"
       "void main(void) {\n"
-      "  gl_Position = vec4(position, 0.0, 1.0);\n"
+      "  gl_Position = transformationMatrix * vec4(position, 0.0, 1.0);\n"
       "  textureCoords = vec2((position.x + 1.0) / 2.0, 1 - (position.y + 1.0) / 2.0);\n"
       "}\0";
 
@@ -128,8 +132,18 @@ namespace nc
 
     for (size_t i = 0; i < ui_elements.size(); i++)
     {
-      //glActiveTexture(GL_TEXTURE0);
+      glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, ui_elements[i].get_texture());
+
+      glm::mat4 trans_mat = glm::mat4(1.0f);
+      vec2 translate = ui_elements[i].get_position();
+      trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+      vec2 scale = ui_elements[i].get_scale();
+      trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));     
+
+      unsigned int transformLoc = glGetUniformLocation(shader_program, "transformationMatrix");
+      glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans_mat));
+
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
     
@@ -160,7 +174,7 @@ namespace nc
       glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    GuiTexture element = GuiTexture(texture, vec2(0, 0), vec2(1, 1));
+    GuiTexture element = GuiTexture(texture, vec2(-0.8f, -0.8f), vec2(0.075f, 0.1f));
     ui_elements.push_back(element);
 
     stbi_image_free(data);
@@ -179,6 +193,13 @@ namespace nc
       //draw();
       break;
     case ModuleEventType::cleanup:
+      break;
+    case ModuleEventType::terminate:
+      glDeleteBuffers(1, &VAO);
+      glDeleteBuffers(1, &VBO);
+      glDeleteShader(vertex_shader);
+      glDeleteShader(fragment_shader);
+      glDeleteProgram(shader_program);
       break;
     default:
       break;
