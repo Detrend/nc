@@ -1251,7 +1251,7 @@ static void build_sector_grid_and_bboxes(MapSectors& map)
     const vec3 center = vec3(center_2d.x, FLOOR_Y + (CEIL_Y - FLOOR_Y) / 2.0f, center_2d.y);
 
     const vec2 direction = normalize(position2 - position1);
-    const f32  angle = atan2(direction.y, direction.x);
+    const f32  angle = atan2(direction.y, -direction.x);
 
     const f32 width = length(position2 - position1);
     const f32 height = CEIL_Y - FLOOR_Y;
