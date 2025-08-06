@@ -16,6 +16,7 @@
 #include <engine/map/map_system.h>
 #include <engine/player/player.h>
 #include <engine/player/thing_system.h>
+#include <engine/appearance.h>
 
 #include <game/weapons.h>
 

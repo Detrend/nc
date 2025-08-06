@@ -12,8 +12,9 @@
 
 #include <engine/player/player.h>
 #include <engine/enemies/enemy.h>
-#include <engine/entity/item.h>
+
 #include <game/projectile.h>
+#include <game/item.h>
 
 #include <set>
 #include <map>

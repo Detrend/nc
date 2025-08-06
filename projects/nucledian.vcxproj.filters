@@ -17,7 +17,6 @@
     <ClCompile Include="..\source\nucledian\cvars.cpp" />
     <ClCompile Include="..\source\nucledian\engine\core\engine.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\entity.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\entity\item.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\sector_mapping.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\renderer.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\physics.cpp" />
@@ -45,6 +44,8 @@
     <ClCompile Include="..\source\nucledian\unit_test.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\entity_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\player\save_types.cpp" />
+    <ClCompile Include="..\source\nucledian\game\item.cpp" />
+    <ClCompile Include="..\source\nucledian\game\item_resources.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -94,7 +95,6 @@
     <ClInclude Include="..\source\nucledian\engine\appearance.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\entity_types.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\entity_type_definitions.h" />
-    <ClInclude Include="..\source\nucledian\engine\entity\item.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\sector_mapping.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\renderer.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\texture.h" />
@@ -149,6 +149,9 @@
     <ClInclude Include="..\source\nucledian\game\weapons.h" />
     <ClInclude Include="..\source\nucledian\stack_vector.h" />
     <ClInclude Include="..\source\nucledian\stack_allocator.h" />
+    <ClInclude Include="..\source\nucledian\game\item.h" />
+    <ClInclude Include="..\source\nucledian\game\item_types.h" />
+    <ClInclude Include="..\source\nucledian\game\item_resources.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />

@@ -11,6 +11,7 @@
 #include <engine/entity/entity_system.h>
 
 #include <game/weapons.h>
+#include <game/item.h>
 
 #include <engine/core/engine.h>
 
@@ -186,8 +187,12 @@ void Player::handle_inputs(GameInputs input, GameInputs /*prev_input*/)
         {
           PickUp* pickup = ecs.get_entity<PickUp>(report_id);
           nc_assert(pickup);
-          pickup->on_pickup(*this);
-          ecs.destroy_entity(report_id);
+
+          if (pickup->pickup(*this))
+          {
+            // Destroy if picked up sucessfully.
+            ecs.destroy_entity(report_id);
+          }
           break;
         }
 

@@ -15,7 +15,9 @@
 #define NC_SOUNDS(xx)        \
   xx(nail_gun,     0.1f)     \
   xx(plasma_rifle, 0.1f)     \
-  xx(ricochet,     0.1f)
+  xx(ricochet,     0.1f)     \
+  xx(pickup,       0.1f)     \
+  xx(hurt,         0.1f)
 
 #define NC_SOUND_DIRECTORY_CSTR "content/sound/"
 #define NC_SOUND_TYPE           ".wav"

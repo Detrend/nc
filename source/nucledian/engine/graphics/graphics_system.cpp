@@ -54,6 +54,11 @@
 
 #ifdef NC_DEBUG_DRAW
 #include <chrono>
+
+// Only for "draw_export_menu"
+#include <game/item_resources.h>
+#include <fstream>
+
 #endif
 
 #ifdef NC_DEBUG_DRAW
@@ -1078,6 +1083,34 @@ static void draw_saves_menu()
 }
 
 //==============================================================================
+static void export_pickups(cstr file_path)
+{
+  // open the file
+  std::ofstream output(file_path);
+  if (!output.is_open())
+  {
+    nc_warn("Could not export pickups to file \"{}\"", file_path);
+    return;
+  }
+
+  for (u64 i = 0; i < PickupTypes::count; ++i)
+  {
+    output << PICKUP_NAMES[i] << '\n';
+  }
+
+  output.close();
+}
+
+//==============================================================================
+static void draw_export_menu()
+{
+  if (ImGui::Button("Export Pickups"))
+  {
+    export_pickups("nc_pickups_export.txt");
+  }
+}
+
+//==============================================================================
 void GraphicsSystem::draw_debug_window()
 {
   if (CVars::display_imgui_demo)
@@ -1110,6 +1143,12 @@ void GraphicsSystem::draw_debug_window()
       if (ImGui::BeginTabItem("Saves"))
       {
         draw_saves_menu();
+        ImGui::EndTabItem();
+      }
+
+      if (ImGui::BeginTabItem("Export"))
+      {
+        draw_export_menu();
         ImGui::EndTabItem();
       }
 

@@ -20,9 +20,11 @@
 #include <engine/sound/sound_system.h>
 #include <engine/sound/sound_resources.h>
 
+#include <engine/enemies/enemy.h>
 #include <game/projectile.h>
 #include <game/weapons.h>
-#include <engine/entity/item.h>
+#include <game/item.h>
+#include <game/item_resources.h> // PickupTypes::...
 
 #include <common.h>
 #include <cvars.h>
@@ -751,17 +753,10 @@ PhysLevel ThingSystem::get_level() const
 //==============================================================================
 void ThingSystem::cleanup_map()
 {
-  enemies.clear();
   entities.reset();
   mapping.reset();
   map.reset();
   player_id = INVALID_ENTITY_ID;
-}
-
-//==========================================================
-const ThingSystem::Enemies& ThingSystem::get_enemies() const
-{
-  return enemies;
 }
 
 //==========================================================
@@ -808,7 +803,7 @@ void ThingSystem::build_map(LevelID level)
   // entities->create_entity<Enemy>(vec3{1, 0.0, 1}, FRONT_DIR);
   // entities->create_entity<Enemy>(vec3{2, 0.0, 1}, FRONT_DIR);
   // entities->create_entity<Enemy>(vec3{3, 0.0, 1}, FRONT_DIR);
-  entities->create_entity<PickUp>(vec3{-0.5f, 0.0f, 0.5f});
+  entities->create_entity<PickUp>(vec3{-0.5f, 0.0f, 0.5f}, PickupTypes::hp_small);
 }
 
 //==========================================================

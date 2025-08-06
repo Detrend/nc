@@ -6,16 +6,11 @@
 #include <engine/core/engine_module_id.h>
 #include <engine/core/engine_module.h>
 
-// MR says: remove this include once the entity system works properly. We
-// do not want to include more than is necessary!!!
-#include <engine/enemies/enemy.h>
-
 #include <engine/entity/entity_types.h>
 #include <engine/player/level_types.h>
 #include <engine/player/save_types.h>
 
 #include <memory> // std::unique_ptr
-#include <engine/entity/item.h>
 
 namespace nc
 {
@@ -37,8 +32,6 @@ public:
     bool         dirty = false;
   };
 
-  using Enemies       = std::vector<EntityID>;
-  using PickUps       = std::vector<PickUp>;
   using MappingPtr    = std::unique_ptr<SectorMapping>;
   using MapPtr        = std::unique_ptr<MapSectors>;
   using RegistryPtr   = std::unique_ptr<EntityRegistry>;
@@ -72,7 +65,6 @@ public:
   PhysLevel             get_level()          const;
 
 private:
-  const Enemies&    get_enemies() const;
   void check_player_attack
   (
     const GameInputs&  curr_inputs,
@@ -105,8 +97,6 @@ private:
   EntityID       player_id = INVALID_ENTITY_ID;
   MapPtr         map;
   MappingPtr     mapping;
-  Enemies        enemies;
-  PickUps        pickups;
   RegistryPtr    entities;
   LevelID        level_id           = INVALID_LEVEL_ID;
   LevelID        scheduled_level_id = INVALID_LEVEL_ID;
