@@ -130,6 +130,9 @@ namespace nc
     glBindVertexArray(VAO);
     glEnableVertexAttribArray(0);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     for (size_t i = 0; i < ui_elements.size(); i++)
     {
       glActiveTexture(GL_TEXTURE0);
@@ -146,7 +149,9 @@ namespace nc
 
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
-    
+
+    glDisable(GL_BLEND);
+     
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisableVertexAttribArray(0);
     glBindVertexArray(0);
