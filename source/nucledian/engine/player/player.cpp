@@ -141,40 +141,63 @@ void Player::handle_inputs(GameInputs input, GameInputs /*prev_input*/)
   //==============================================================================
   void Player::apply_velocity(f32 delta_seconds)
   {
+    // Collide with everything but us and projectiles for now. Later, we will have
+    // to enable collisions with projectiles once again.
+    constexpr EntityTypeMask PLAYER_COLLIDERS
+      = PhysLevel::COLLIDE_ALL
+      & ~(EntityTypeFlags::player | EntityTypeFlags::projectile);
+
+    // Report only pickups
+    constexpr EntityTypeMask PLAYER_REPORTING
+      = EntityTypeFlags::pickup | EntityTypeFlags::projectile;
+
     PhysLevel       lvl = ThingSystem::get().get_level();
     EntityRegistry& ecs = ThingSystem::get().get_entities();
 
+    // Store the position here, change it, and then set it again later
     vec3 position = this->get_position();
 
-    EntityTypeMask all_colliders = PhysLevel::COLLIDE_ALL;
-
-    EntityTypeMask ok_colliders  = all_colliders & ~EntityTypeFlags::player;
-    EntityTypeMask report_only   = EntityTypeFlags::pickup;
-
-    PhysLevel::CharacterCollisions collisions;
+    PhysLevel::CharacterCollisions collected_collisions;
     lvl.move_character
     (
-      position, velocity, &m_forward, delta_seconds,
-      0.25f, 1.0f, 0.25f, ok_colliders, report_only, &collisions
+      position, velocity, &m_forward, delta_seconds, 0.25f, 1.0f,
+      0.25f, PLAYER_COLLIDERS, PLAYER_REPORTING, &collected_collisions
     );
+
+    // Change the position
     this->set_position(position);
 
-    // Set on ground if touching floor
-    this->on_ground = !collisions.floors.empty();
-
-    // Process pickups
-    for (EntityID pickup_id : collisions.report_entities)
-    {
-      if (PickUp* pickup = ecs.get_entity<PickUp>(pickup_id))
-      {
-        pickup->on_pickup(*this);
-      }
-      ecs.destroy_entity(pickup_id);
-    }
-
-    // recompute the angleYaw after moving through a portal
+    // Recompute the angleYaw after moving through a portal
     const auto forward2 = normalize(with_y(m_forward, 0.0f));
-    angle_yaw = rem_euclid(std::atan2f(forward2.z, -forward2.x) + HALF_PI, PI * 2);
+    this->angle_yaw = rem_euclid
+    (
+      std::atan2f(forward2.z, -forward2.x) + HALF_PI, PI * 2
+    );
+
+    // Set on ground if touching floor
+    this->on_ground = !collected_collisions.floors.empty();
+
+    // Process report only collisions
+    for (EntityID report_id : collected_collisions.report_entities)
+    {
+      switch (report_id.type)
+      {
+        case EntityTypes::pickup:
+        {
+          PickUp* pickup = ecs.get_entity<PickUp>(report_id);
+          nc_assert(pickup);
+          pickup->on_pickup(*this);
+          ecs.destroy_entity(report_id);
+          break;
+        }
+
+        case EntityTypes::projectile:
+        {
+          // TODO: later
+          break;
+        }
+      }
+    }
   }
 
   //==============================================================================
