@@ -10,6 +10,7 @@ var max_snapping_distance : float:
 @export var auto_heights:bool = true
 
 @export var export_scale : Vector3 = Vector3(1.0, 1.0, 1.0)
+@export var export_offset : Vector2 = Vector2.ZERO
 @export var export_path : String = ""
 @export_tool_button("Export level") var export_level_tool_button = export_level
 
@@ -92,8 +93,15 @@ func create_level_export_data() -> Dictionary:
 		return ret as int
 		
 	var all_sectors := get_sectors(true);
+	var all_pickups := get_pickups()
+	var all_entities := get_entities()
+
+	var pickups_export : Array[Dictionary] = []
+	var entities_export : Array[Dictionary] = []
+
 	
 	Sector.sanity_check_all(self, all_sectors)
+	self.level_sanity_checks()
 	
 	for t in range(all_sectors.size()):
 		sectors_map[all_sectors[t]] = t
@@ -107,11 +115,19 @@ func create_level_export_data() -> Dictionary:
 	for sector in all_sectors:
 		var sector_export := Dictionary()
 		var sector_points : PackedInt32Array = []
-		for p in sector.get_points():
-			var coords := p.global_position
+		for coords in sector.get_point_positions():
 			var coords_idx : int = get_point_idx.call(coords)
 			sector_points.append(coords_idx)
-			
+
+		process_things_in_sector(all_pickups, sector, pickups_export, 
+			func(p: PickUp, _s: Sector, d: Dictionary): 
+				d["type"] = p.type_id
+		)
+		process_things_in_sector(all_entities, sector, entities_export, 
+			func(p: Entity, _s: Sector, d: Dictionary): 
+				d["is_player"] = true if p is PlayerPosition else false
+		)
+
 		sector_export["debug_name"] = sector.name
 		sector_export["id"] = sectors_map[sector]
 		sector_export["floor"] = sector.data.floor_height * export_scale.z
@@ -131,6 +147,9 @@ func create_level_export_data() -> Dictionary:
 		sectors_export.append(sector_export)
 	level_export["points"] = points_export
 	level_export["sectors"] = sectors_export
+	level_export["pickups"] = pickups_export
+	level_export["entities"] = entities_export
+
 	return level_export
 
 func export_level():
@@ -149,24 +168,52 @@ func export_level():
 
 func get_sectors(for_export_only:bool = true) -> Array[Sector]:
 	var ret : Array[Sector] = []
-	ret = NodeUtils.get_children_by_predicate(self, func(ch:Node)->bool: return ch is Sector and ch.is_visible_in_tree() and (!for_export_only or !ch.exclude_from_export) , ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)
+	ret = NodeUtils.get_children_by_predicate(self, func(n:Node)->bool: return n is Sector and (n as Node2D).is_visible_in_tree() and (!for_export_only or !n.exclude_from_export) , ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)
 	return ret
 
+func get_pickups(pickup_type = PickUp, ret: Array[PickUp] = [])->Array[PickUp]:
+	ret = NodeUtils.get_children_by_predicate(self, func(n:Node)->bool: return is_instance_of(n, pickup_type) and (n as Node2D).is_visible_in_tree(), ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)
+	return ret
+
+func get_entities(entity_type = Entity, ret: Array[Entity] = [])->Array[Entity]:
+	ret = NodeUtils.get_children_by_predicate(self, func(n:Node)->bool: return is_instance_of(n, entity_type) and (n as Node2D).is_visible_in_tree(), ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)
+	return ret
 
 func get_editable_polygons() -> Array[EditablePolygon]:
 	var ret : Array[EditablePolygon] = []
-	ret = NodeUtils.get_children_by_predicate(self, func(ch:Node)->bool: return ch is EditablePolygon and ch.is_visible_in_tree and ch.is_editable, ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)
+	ret = NodeUtils.get_children_by_predicate(self, func(n:Node)->bool: return n is EditablePolygon and n.is_visible_in_tree and n.is_editable, ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)
 	return ret
 
+func process_things_in_sector(all_things: Array, sector: Sector, export_things: Array[Dictionary], custom_exporter: Callable)->void:
+	var i:= 0
+	while i < all_things.size():
+		var current :Thing = all_things[i]
+		var pos := current.global_position
+		if sector.contains_point(pos):
+			var current_export : Dictionary = {}
+			var export_coords_2d = _get_export_coords(pos)
+			var height :float
+			if current.placement_mode == Things.PlacementMode.Floor: height = sector.floor_height + current.height_offset
+			elif current.placement_mode == Things.PlacementMode.Ceiling: height = sector.floor_height - current.height_offset
+			elif current.placement_mode == Things.PlacementMode.Absolute: height = current.height_offset
+			else: ErrorUtils.report_error("Invalid placement_mode '{0}' for thing {1}".format([current.placement_mode, current]))
+			current_export['position'] = [export_coords_2d.x, export_coords_2d.y, height * export_scale.z]
+			if custom_exporter: custom_exporter.call(current, sector, current_export)
+			export_things.append(current_export)
+			all_things.remove_at(i)
+		else:
+			i += 1
 
 func _get_export_coords(p : Vector2)-> Vector2:
-	p -= _get_player_position()
+	p += self.export_offset
 	return Vector2(-p.x * export_scale.x, -p.y * export_scale.y)
 
 func _get_player_position() -> Vector2:
 	var ret : PlayerPosition = NodeUtils.get_descendant_of_type(self, PlayerPosition)
 	if ret: return ret.global_position
 	return Vector2.ZERO
+
+
 
 func _snap_points()->void:
 	for s in get_editable_polygons():
@@ -182,6 +229,13 @@ func find_nearest_point(pos: Vector2, max_snapping_distance: float, to_skip: Sec
 	var ret: SectorPoint = Sector.find_nearest_point(pos, other_points, max_snapping_distance)
 	return ret
 
+
+func level_sanity_checks()->void:
+	var all_players := get_entities(PlayerPosition)
+	if all_players.size() != 1: ErrorUtils.report_error("Invalid number of Player Positions: {0}".format([all_players.size()]))
+
+
+#region INPUT_MANAGEMENT
 
 func _handle_new_sector_creation()->void:
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):# and Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
@@ -259,6 +313,9 @@ func add_sector(command: AddSectorCommand, unre: EditorUndoRedoManager = null)->
 	if command.data != null:
 		new_sector.data = command.data
 	return new_sector
+
+
+
 
 
 enum KeypressState{
@@ -373,3 +430,5 @@ func _handle_selections()->void:
 			(current as EditablePolygon)._selected_update(current_selection)
 	last_selection = current_selection
 	
+
+#endregion

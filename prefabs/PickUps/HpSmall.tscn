@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://cm0wgegxiipjw"]
+
+[ext_resource type="Script" uid="uid://8su8gwb3cmui" path="res://scripts/things/PickUp.gd" id="1_v1438"]
+[ext_resource type="Texture2D" uid="uid://drtkj0a072ih3" path="res://textures/hp_small.png" id="3_cal4k"]
+
+[node name="HpSmall" type="Node2D"]
+z_index = 999
+scale = Vector2(0.617411, 0.617411)
+script = ExtResource("1_v1438")
+
+[node name="Icon" type="Sprite2D" parent="."]
+scale = Vector2(0.0092898, 0.0092898)
+texture = ExtResource("3_cal4k")

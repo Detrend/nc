@@ -1,10 +1,10 @@
 [gd_scene load_steps=22 format=3 uid="uid://yd2uhyci8as0"]
 
-[ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/Level.gd" id="1_ra606"]
+[ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_ra606"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_t44y3"]
 [ext_resource type="Script" uid="uid://cft80p5qydrwt" path="res://scripts/sector/SectorProperties.gd" id="3_adkka"]
 [ext_resource type="PackedScene" uid="uid://cmy30fxadpjn2" path="res://prefabs/TriangulatedMultisector.tscn" id="4_c2b3r"]
-[ext_resource type="PackedScene" uid="uid://2xarq0korji0" path="res://prefabs/PlayerPosition.tscn" id="8_188j7"]
+[ext_resource type="PackedScene" uid="uid://2xarq0korji0" path="res://prefabs/Entities/PlayerPosition.tscn" id="8_188j7"]
 
 [sub_resource type="Resource" id="Resource_u338k"]
 script = ExtResource("3_adkka")

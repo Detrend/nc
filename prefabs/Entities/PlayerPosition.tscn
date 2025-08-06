@@ -5,7 +5,10 @@
 
 [node name="PlayerPosition" type="Node2D"]
 script = ExtResource("1_138pb")
+placement_mode = null
+height_offset = null
 
 [node name="Icon" type="Sprite2D" parent="."]
+z_index = 999
 scale = Vector2(0.065, 0.065)
 texture = ExtResource("1_27hcq")
