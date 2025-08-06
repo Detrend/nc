@@ -72,6 +72,8 @@ namespace nc
       "void main(void) {\n"
       "  gl_Position = transformationMatrix * vec4(position, 0.0, 1.0);\n"
       "  textureCoords = vec2((position.x + 1.0) / 2.0, 1 - (position.y + 1.0) / 2.0);\n"
+      "  textureCoords.x = textureCoords.x / 8.0 + 1.0 / 8.0; \n"
+      "  textureCoords.y = textureCoords.y / 16.0 + 6.0 / 16.0; \n"
       "}\0";
 
 
@@ -179,9 +181,10 @@ namespace nc
       glBindTexture(GL_TEXTURE_2D, 0);
     }
 
+    //GuiTexture element = GuiTexture(texture, vec2(0.0f, 0.0f), vec2(1.0f, 1.0f));
     GuiTexture element = GuiTexture(texture, vec2(-0.8f, -0.8f), vec2(0.075f, 0.1f));
-    GuiTexture element_2 = GuiTexture(texture, vec2(-0.725f, -0.8f), vec2(0.075f, 0.1f));
-    GuiTexture element_3 = GuiTexture(texture, vec2(-0.65f, -0.8f), vec2(0.075f, 0.1f));
+    GuiTexture element_2 = GuiTexture(texture, vec2(-0.65f, -0.8f), vec2(0.075f, 0.1f));
+    GuiTexture element_3 = GuiTexture(texture, vec2(-0.5f, -0.8f), vec2(0.075f, 0.1f));
     ui_elements.push_back(element);
     ui_elements.push_back(element_2);
     ui_elements.push_back(element_3);
