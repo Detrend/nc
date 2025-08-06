@@ -263,6 +263,8 @@
     <ClInclude Include="..\source\nucledian\game\weapons_types.h" />
     <ClInclude Include="..\source\nucledian\logging.h" />
     <ClInclude Include="..\source\nucledian\metaprogramming.h" />
+    <ClInclude Include="..\source\nucledian\stack_allocator.h" />
+    <ClInclude Include="..\source\nucledian\stack_vector.h" />
     <ClInclude Include="..\source\nucledian\transform.h" />
     <ClInclude Include="..\source\nucledian\engine\core\engine.h" />
     <ClInclude Include="..\source\nucledian\engine\core\engine_module.h" />
@@ -316,6 +318,7 @@
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.vert" />
     <None Include="..\source\nucledian\math\lingebra.inl" />
     <None Include="..\source\nucledian\engine\entity\entity_system.inl" />
+    <None Include="..\source\nucledian\stack_allocator.inl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\source\libs\glm\CMakeLists.txt" />

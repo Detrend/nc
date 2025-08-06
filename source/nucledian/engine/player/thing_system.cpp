@@ -799,7 +799,7 @@ void ThingSystem::build_map(LevelID level)
 
   mapping->on_map_rebuild();
 
-  auto* player = entities->create_entity<Player>(vec3{0.5, 6, 0.5});
+  auto* player = entities->create_entity<Player>(vec3{0.5f, 0.0f, 0.5f});
   player_id = player->get_id();
 
   // Beware that these fuckers can shoot you even if you do not see them and
@@ -808,7 +808,7 @@ void ThingSystem::build_map(LevelID level)
   // entities->create_entity<Enemy>(vec3{1, 0.0, 1}, FRONT_DIR);
   // entities->create_entity<Enemy>(vec3{2, 0.0, 1}, FRONT_DIR);
   // entities->create_entity<Enemy>(vec3{3, 0.0, 1}, FRONT_DIR);
-  entities->create_entity<PickUp>(vec3{0.25f, 5, 0.5});
+  entities->create_entity<PickUp>(vec3{-0.5f, 0.0f, 0.5f});
 }
 
 //==========================================================

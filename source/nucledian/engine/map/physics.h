@@ -8,6 +8,8 @@
 #include <engine/map/map_types.h>
 #include <engine/entity/entity_types.h>
 
+#include <stack_vector.h>
+
 #include <vector>
 #include <functional>
 #include <compare>    // <=>
@@ -169,6 +171,25 @@ struct PhysLevel
   // For recording simulation hits
   using CollisionListener = std::function<void(const CollisionHit& /*hit*/)>;
 
+  struct CharacterCollisions
+  {
+    static constexpr u64 STACK_COLLISIONS = 8;
+    struct WallCollision
+    {
+      WallID   wall;
+      SectorID sector;
+    };
+
+    template<typename T>
+    using SmallVector = StackVector<T, STACK_COLLISIONS>;
+
+    SmallVector<EntityID>      report_entities;
+    SmallVector<EntityID>      entities;
+    SmallVector<WallCollision> walls;
+    SmallVector<SectorID>      floors;
+    SmallVector<SectorID>      ceilings;
+  };
+
   // Moves the "entity" with the given position, velocity and direction and checks
   // for collisions in the way and alters the values. If there is a nc portal in
   // the way then traverses it.
@@ -182,7 +203,8 @@ struct PhysLevel
     f32               height,            // height of the entity
     f32               step,              // max step height the entity can do
     EntityTypeMask    colliders,         // types of entities to collide with
-    CollisionListener listener = nullptr // reaction to collisions
+    EntityTypeMask    report_only,       // types of entities to only report the collision, but do not collide with them
+    CharacterCollisions* collisions_opt = nullptr
   ) const;
 
 	// Moves a non-character physics object in the level. The object bounces around

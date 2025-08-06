@@ -390,8 +390,8 @@ void Renderer::render_gun(const RenderGunProperties& gun) const
     switch (gun.weapon)
     {
       case WeaponTypes::wrench:       return TextureManager::get()["math_gun"];
-      case WeaponTypes::shotgun:      return TextureManager::get()["math_gun"];
-      case WeaponTypes::plasma_rifle: return TextureManager::get()["mage_gun"];
+      case WeaponTypes::shotgun:      return TextureManager::get()["mage_gun"];
+      case WeaponTypes::plasma_rifle: return TextureManager::get()["plasma_gun"];
       case WeaponTypes::nail_gun:     return TextureManager::get()["math_gun"];
       default:                        return TextureHandle::invalid();
     }

@@ -8,6 +8,7 @@
 #include <engine/map/map_system.h>
 #include <engine/map/physics.h>
 #include <engine/player/thing_system.h>
+#include <engine/entity/entity_system.h>
 
 #include <game/weapons.h>
 
@@ -86,32 +87,22 @@ namespace nc
       + inputVector.z * forward
     );
 
-    //NC_MESSAGE("{} {}", velocity.x, velocity.z);
-    //position += velocity * 0.001f;
+    // JUMPING
+    vec3 jump_force = vec3(0, 0, 0);
+    bool wants_jump = input.player_inputs.keys & (1 << PlayerKeyInputs::jump);
+    bool can_jump   = this->on_ground;
 
-    //NC_MESSAGE("{} {} {}", position.x, position.y, position.z);
-    // GET FLOOR HEIGHT
-    const auto& map = get_engine().get_map();
-    f32 floor = 0;
-    auto sector_id = map.get_sector_from_point(this->get_position().xz());
-    if (sector_id != INVALID_SECTOR_ID)
+    if (wants_jump && can_jump)
     {
-      const f32 sector_floor_y = map.sectors[sector_id].floor_height;
-      floor = sector_floor_y;
-    }
-
-    // Did jump
-    vec3 jumpForce = vec3(0, 0, 0);
-    if (input.player_inputs.keys & (1 << PlayerKeyInputs::jump) && velocity.y <= 0.0f /*&& this->get_position().y > floor - 0.0001f && this->get_position().y < floor + 0.0001f*/)
-    {
-      jumpForce += vec3(0, 1, 0);
+      // Jump!
+      jump_force = vec3(0, 1, 0);
     }
 
     apply_deceleration(movement_direction, delta_seconds);
 
     apply_acceleration(movement_direction, delta_seconds);
 
-    velocity += jumpForce * 5.0f;
+    velocity += jump_force * 5.0f;
     velocity.y -= GRAVITY * delta_seconds;
 
     camera.update_transform(this->get_position(), angle_yaw, angle_pitch, view_height);
@@ -150,30 +141,40 @@ void Player::handle_inputs(GameInputs input, GameInputs /*prev_input*/)
   //==============================================================================
   void Player::apply_velocity(f32 delta_seconds)
   {
-    const auto lvl = ThingSystem::get().get_level();
+    PhysLevel       lvl = ThingSystem::get().get_level();
+    EntityRegistry& ecs = ThingSystem::get().get_entities();
 
     vec3 position = this->get_position();
 
     EntityTypeMask all_colliders = PhysLevel::COLLIDE_ALL;
-    EntityTypeMask ok_colliders  = all_colliders & ~EntityTypeFlags::player;
 
+    EntityTypeMask ok_colliders  = all_colliders & ~EntityTypeFlags::player;
+    EntityTypeMask report_only   = EntityTypeFlags::pickup;
+
+    PhysLevel::CharacterCollisions collisions;
     lvl.move_character
     (
       position, velocity, &m_forward, delta_seconds,
-      0.25f, 1.0f, 0.25f, ok_colliders, 0
+      0.25f, 1.0f, 0.25f, ok_colliders, report_only, &collisions
     );
     this->set_position(position);
+
+    // Set on ground if touching floor
+    this->on_ground = !collisions.floors.empty();
+
+    // Process pickups
+    for (EntityID pickup_id : collisions.report_entities)
+    {
+      if (PickUp* pickup = ecs.get_entity<PickUp>(pickup_id))
+      {
+        pickup->on_pickup(*this);
+      }
+      ecs.destroy_entity(pickup_id);
+    }
 
     // recompute the angleYaw after moving through a portal
     const auto forward2 = normalize(with_y(m_forward, 0.0f));
     angle_yaw = rem_euclid(std::atan2f(forward2.z, -forward2.x) + HALF_PI, PI * 2);
-
-    if (ImGui::Begin("Player"))
-    {
-      ImGui::Text("Position: [%.2f, %.2f, %.2f]", position.x, position.y, position.z);
-      ImGui::Text("Velocity: [%.2f, %.2f, %.2f]", velocity.x, velocity.y, velocity.z);
-    }
-    ImGui::End();
   }
 
   //==============================================================================

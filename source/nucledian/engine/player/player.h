@@ -69,7 +69,8 @@ private:
   WeaponFlags owned_weapons  = 0;
   WeaponType  current_weapon = 0;
 
-  bool alive = true;
+  bool alive     : 1 = true;
+  bool on_ground : 1 = true;
 
   Camera camera;
 };

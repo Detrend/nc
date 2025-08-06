@@ -827,8 +827,26 @@ struct CylCastWallIntersector
 
 //==============================================================================
 // Does only the 2D check for now
+enum class CollectReportOnly
+{
+  No,
+  Yes,
+};
+
+//==============================================================================
+struct EntityIdAndCoeff
+{
+  EntityID id;
+  f32      coeff;
+};
+
+//==============================================================================
+template<CollectReportOnly Collect = CollectReportOnly::No>
 struct CylCastEntityIntersector
 {
+  EntityTypeMask                    report_only = 0;
+  StackVector<EntityIdAndCoeff, 8>* collector   = nullptr;
+
   bool operator()
   (
     const PhysLevel& lvl,
@@ -872,6 +890,16 @@ struct CylCastEntityIntersector
       return false;
     }
     
+    if constexpr (Collect == CollectReportOnly::Yes)
+    {
+      if (report_only & EntityTypeToMask(entity.get_type()))
+      {
+        nc_assert(collector); // Must be present if collecting is on
+        collector->push_back(EntityIdAndCoeff{entity.get_id(), c_int});
+        return false;
+      }
+    }
+
     out_c = c_int;
     out_n = vec3{n_int.x, 0.0f, n_int.y};
     return true;
@@ -923,19 +951,23 @@ const
 //==============================================================================
 void PhysLevel::move_character
 (
-  vec3&                        position,
-  vec3&                        velocity_og,
-  vec3*                        forward,
-  f32                          delta_time,
-  f32                          radius,
-  f32                          height,
-  f32                          max_step_height,
-  EntityTypeMask               colliders,
-  PhysLevel::CollisionListener listener
+  vec3&                           position,
+  vec3&                           velocity_og,
+  vec3*                           forward,
+  f32                             delta_time,
+  f32                             radius,
+  f32                             height,
+  f32                             max_step_height,
+  EntityTypeMask                  colliders,
+  EntityTypeMask                  report_types,
+  PhysLevel::CharacterCollisions* colls_opt
 )
 const
 {
   // #define NC_PHYS_DBG
+
+  StackVector<u64, 4> test;
+  test.push_back(8);
 
   auto sector_intersector = [height]
   (
@@ -971,10 +1003,6 @@ const
     height, max_step_height
   );
 
-  CylCastEntityIntersector entity_intersector;
-
-  CollisionHit last_hit = CollisionHit::no_hit();
-
   // First check collisions and adjust the velocity
   u32 iterations_left = MAX_ITERATIONS; 
   while(iterations_left-->0)
@@ -985,46 +1013,48 @@ const
     const vec3 ray_to   = position + velocity;
     const vec3 ray_dir  = ray_to   - ray_from;
 
+    StackVector<EntityIdAndCoeff, 8> report_only;
+    CylCastEntityIntersector<CollectReportOnly::Yes> entity_intersector
+    (
+      report_types,
+      &report_only
+    );
+
     CollisionHit hit = phys_helpers::raycast_generic<vec3>
     (
       *this, ray_from, ray_to, radius, colliders, nullptr,
       INVALID_WALL_ID, wall_intersector, sector_intersector, entity_intersector
     );
-    last_hit = hit;
+
+    // Filter out the report only hits
+    if (colls_opt)
+    {
+      for (auto[id, coeff] : report_only)
+      {
+        auto beg = colls_opt->report_entities.begin();
+        auto end = colls_opt->report_entities.end();
+
+        // We only report the entities closer to us than the first collide object
+        f32 before_coeff = hit ? hit.coeff : 1.0f;
+
+        // Push it only if not present already
+        if (coeff <= before_coeff && std::find(beg, end, id) == end)
+        {
+          colls_opt->report_entities.push_back(id);
+        }
+      }
+    }
 
     if (!hit)
     {
-      // No hit, go on!
-#ifdef NC_PHYS_DBG
-      [[maybe_unused]] CollisionHit hit2 = phys_helpers::raycast_generic<vec3>
-      (
-        *this, ray_from, ray_to, radius, colliders, nullptr,
-        INVALID_WALL_ID, wall_intersector, sector_intersector, entity_intersector
-      );
-#endif
-
       break;
     }
-
-#ifdef NC_PHYS_DBG
-    [[maybe_unused]] CollisionHit hit2 = phys_helpers::raycast_generic<vec3>
-    (
-      *this, ray_from, ray_to, radius, colliders, nullptr,
-      INVALID_WALL_ID, wall_intersector, sector_intersector, entity_intersector
-    );
-#endif
 
     nc_assert(is_normal(hit.normal), "Bad things can happen");
     const auto remaining = velocity * (1.0f - hit.coeff);
     const auto projected = hit.normal * dot(remaining, hit.normal);
 
     velocity -= projected;
-
-    // Let the listener know
-    if (listener)
-    {
-      listener(hit);
-    }
   }
 
   // Then handle nuclidean portal transitions - check which portals
@@ -1079,6 +1109,10 @@ const
   // lowest ceiling relative to our y (how much y we need to subtract)
   f32 lowest_ceil = FLT_MAX;
 
+  // store the ceils, floors here
+  StackVector<SectorID, 8> touching_floors;
+  StackVector<SectorID, 8> touching_ceils;
+
   nc_assert(nearby_sectors.sectors.size() == nearby_sectors.transforms.size());
   for (u64 i = 0; i < nearby_sectors.sectors.size(); ++i)
   {
@@ -1090,12 +1124,31 @@ const
 
     vec3 pos_rel = (trans * vec4{position, 1.0f}).xyz();
 
+    // Process floors
     f32 step_up = sd.floor_height - pos_rel.y;
-    if (step_up <= max_step_height && step_up > highest_floor)
+    if (step_up <= max_step_height && step_up >= highest_floor)
     {
-      highest_floor = step_up;
+      if (step_up > highest_floor)
+      {
+        touching_floors.clear();
+        highest_floor = step_up;
+      }
+
+      touching_floors.push_back(sid);
     }
-    lowest_ceil   = std::min(lowest_ceil, (sd.ceil_height - height) - pos_rel.y);
+
+    // Process ceils
+    f32 from_ceil = (sd.ceil_height - height) - pos_rel.y;
+    if (from_ceil <= lowest_ceil)
+    {
+      if (from_ceil < lowest_ceil)
+      {
+        touching_ceils.clear();
+        lowest_ceil = from_ceil;
+      }
+
+      touching_ceils.push_back(sid);
+    }
   }
 
   // Now adjust the height
@@ -1104,12 +1157,22 @@ const
     // Hit floor
     position.y   += highest_floor;
     velocity_og.y = std::max(0.0f, velocity_og.y);
+
+    if (colls_opt)
+    {
+      colls_opt->floors.assign(touching_floors.begin(), touching_floors.end());
+    }
   }
   else if (lowest_ceil <= 0.0f)
   {
     // Hit ceil
     position.y   += lowest_ceil;
     velocity_og.y = std::min(0.0f, velocity_og.y);
+
+    if (colls_opt)
+    {
+      colls_opt->ceilings.assign(touching_ceils.begin(), touching_ceils.end());
+    }
   }
 
   // Not sure what to do if we hit both..
