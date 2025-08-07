@@ -63,7 +63,13 @@ static void test_make_sector_height(
       .point_index            = p,
       .nc_portal_point_index  = is_portal ? portal_wall_id_to : INVALID_WALL_REL_ID,
       .nc_portal_sector_index = is_portal ? portal_sector     : INVALID_SECTOR_ID,
-      .surface                = SurfaceData{ 8, 3.0f, 0.0f, VEC2_ZERO },
+      .surface                = SurfaceData
+      {
+        .texture_id = TextureManager::get()["test_wall"].get_texture_id(),
+        .scale      = 3.0f,
+        .rotation   = 0.0f,
+        .offset     = VEC2_ZERO,
+      },
     });
   }
 
@@ -72,8 +78,20 @@ static void test_make_sector_height(
     .points        = std::move(walls),
     .floor_y       = in_floor_y,
     .ceil_y        = in_ceil_y,
-    .floor_surface = SurfaceData{ 7, 3.0f, 0.0f, vec2(0.5f, 0.5f)},
-    .ceil_surface  = SurfaceData{ 6, 3.0f, PI / 4.0f, VEC2_ZERO },
+    .floor_surface = SurfaceData
+    {
+      .texture_id = TextureManager::get()["test_floor"].get_texture_id(),
+      .scale      = 3.0f,
+      .rotation   = 0.0f,
+      .offset     = vec2(0.5f, 0.5f),
+    },
+    .ceil_surface  = SurfaceData
+    {
+      .texture_id = TextureManager::get()["test_ceil"].get_texture_id(),
+      .scale      = 3.0f,
+      .rotation   = PI / 4.0f,
+      .offset     = VEC2_ZERO,
+    },
   });
 }
 

@@ -86,11 +86,14 @@ struct SectorIntData
   WallID last_wall  = INVALID_WALL_ID; // [first_wall..total_wall_count]
 };
 
+// Describes how a surface should be rendered.
 struct SurfaceData
 {
   TextureID texture_id = INVALID_TEXTURE_ID;
   f32       scale      = 1.0f;
+  // Rotation in radians, counter-clockwise.
   f32       rotation   = 0.0f;
+  // Offset in texture coordinates [0-1].
   vec2      offset     = VEC2_ZERO;
 };
 
