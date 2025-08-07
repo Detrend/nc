@@ -1303,7 +1303,7 @@ ceiling_height = 6.0
 
 [node name="@Polygon2D@31086" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.857379, 0.713634, 0.769784, 1)
+color = Color(0.857379, 0.713635, 0.769785, 1)
 polygon = PackedVector2Array(245, -47, 263, -47, 263, -41, 245, -41)
 data = SubResource("Resource_0m6xw")
 floor_height = 1.13913
@@ -1311,7 +1311,7 @@ ceiling_height = 6.0
 
 [node name="@Polygon2D@44213" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.838039, 0.674803, 0.738567, 1)
+color = Color(0.83804, 0.674804, 0.738567, 1)
 polygon = PackedVector2Array(263, -41, 263, -35, 245, -35, 245, -41)
 data = SubResource("Resource_c6a8k")
 floor_height = 1.29565
@@ -1319,7 +1319,7 @@ ceiling_height = 6.0
 
 [node name="@Polygon2D@25686" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.818735, 0.636042, 0.707406, 1)
+color = Color(0.818734, 0.636041, 0.707405, 1)
 polygon = PackedVector2Array(245, -35, 263, -35, 263, -29, 245, -28)
 data = SubResource("Resource_sdn6o")
 floor_height = 1.45218
@@ -1327,7 +1327,7 @@ ceiling_height = 6.0
 
 [node name="_Polygon2D_26386aa" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.799456, 0.597334, 0.676288, 1)
+color = Color(0.799456, 0.597333, 0.676287, 1)
 polygon = PackedVector2Array(245, -28, 263, -29, 264.091, -27.9093, 247, -17, 245, -20)
 data = SubResource("Resource_1dcth")
 floor_height = 1.6087
@@ -1351,7 +1351,7 @@ ceiling_height = 6.0
 
 [node name="_Polygon2D_26386bab" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.741693, 0.481352, 0.583048, 1)
+color = Color(0.741694, 0.481353, 0.583049, 1)
 polygon = PackedVector2Array(265, -27, 273, -12, 265, -10)
 data = SubResource("Resource_7i31c")
 floor_height = 2.07826
@@ -1359,7 +1359,7 @@ ceiling_height = 6.0
 
 [node name="_Polygon2D_26386bba" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.722434, 0.442681, 0.551959, 1)
+color = Color(0.722433, 0.44268, 0.551958, 1)
 polygon = PackedVector2Array(265, -27, 266.024, -28.024, 282, -18, 273, -12)
 data = SubResource("Resource_xumdc")
 floor_height = 2.23479
@@ -1367,7 +1367,7 @@ ceiling_height = 6.0
 
 [node name="_Polygon2D_26386bbb" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.703156, 0.403975, 0.520843, 1)
+color = Color(0.703156, 0.403975, 0.520842, 1)
 polygon = PackedVector2Array(266.024, -28.024, 267, -29, 284, -28, 284, -21, 282, -18)
 data = SubResource("Resource_750p3")
 floor_height = 2.39131
@@ -1383,7 +1383,7 @@ ceiling_height = 6.0
 
 [node name="@Polygon2D@31604" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.664516, 0.326389, 0.45847, 1)
+color = Color(0.664516, 0.32639, 0.45847, 1)
 polygon = PackedVector2Array(267, -41, 284, -41, 284, -35, 267, -35)
 data = SubResource("Resource_our03")
 floor_height = 2.70435
@@ -1391,7 +1391,7 @@ ceiling_height = 6.0
 
 [node name="@Polygon2D@32646" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.645134, 0.287474, 0.427185, 1)
+color = Color(0.645135, 0.287475, 0.427186, 1)
 polygon = PackedVector2Array(267, -47, 284, -47, 284, -41, 267, -41)
 data = SubResource("Resource_glucu")
 floor_height = 2.86087
@@ -1399,7 +1399,7 @@ ceiling_height = 6.0
 
 [node name="@Polygon2D@34040" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.625701, 0.248455, 0.395816, 1)
+color = Color(0.625701, 0.248454, 0.395815, 1)
 polygon = PackedVector2Array(267, -53, 284, -53, 284, -47, 267, -47)
 data = SubResource("Resource_8d65h")
 floor_height = 3.0174
@@ -1407,7 +1407,7 @@ ceiling_height = 6.0
 
 [node name="@Polygon2D@37536" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.606207, 0.209313, 0.364349, 1)
+color = Color(0.606207, 0.209312, 0.364349, 1)
 polygon = PackedVector2Array(267, -60, 284, -57, 284, -53, 267, -53)
 data = SubResource("Resource_8jvu6")
 floor_height = 3.17392
@@ -1423,7 +1423,7 @@ ceiling_height = 6.0
 
 [node name="@Polygon2D@40329" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.567001, 0.130591, 0.301063, 1)
+color = Color(0.567001, 0.130592, 0.301064, 1)
 polygon = PackedVector2Array(276, -71, 284, -57, 270, -67)
 data = SubResource("Resource_mk60v")
 floor_height = 3.48696
@@ -1431,7 +1431,7 @@ ceiling_height = 6.0
 
 [node name="@Polygon2D@41376" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.547271, 0.090977, 0.269216, 1)
+color = Color(0.547272, 0.090978, 0.269217, 1)
 polygon = PackedVector2Array(284, -74, 284, -57, 276, -71)
 data = SubResource("Resource_5kxvq")
 floor_height = 3.64348
@@ -1439,7 +1439,7 @@ ceiling_height = 6.2
 
 [node name="Sector" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.527446, 0.0511703, 0.237215, 1)
+color = Color(0.527445, 0.0511693, 0.237214, 1)
 polygon = PackedVector2Array(284, -74, 296, -76, 296, -57, 284, -57)
 data = SubResource("Resource_xrb3f")
 floor_height = 3.80001
@@ -1993,39 +1993,6 @@ position = Vector2(22, 54)
 [node name="HpBig2" parent="PickUps" instance=ExtResource("7_hqisf")]
 position = Vector2(284, -65)
 
-[node name="HpBig5" parent="PickUps" instance=ExtResource("7_hqisf")]
-position = Vector2(-5070, -5315)
-
-[node name="HpBig12" parent="PickUps" instance=ExtResource("7_hqisf")]
-position = Vector2(-5077, -5307)
-
-[node name="HpBig6" parent="PickUps" instance=ExtResource("7_hqisf")]
-position = Vector2(-5048, -5341)
-
-[node name="HpBig7" parent="PickUps" instance=ExtResource("7_hqisf")]
-position = Vector2(-5056, -5333)
-
-[node name="HpBig8" parent="PickUps" instance=ExtResource("7_hqisf")]
-position = Vector2(-5063, -5322)
-
-[node name="HpBig9" parent="PickUps" instance=ExtResource("7_hqisf")]
-position = Vector2(-5048, -5313)
-
-[node name="HpBig10" parent="PickUps" instance=ExtResource("7_hqisf")]
-position = Vector2(-5055, -5319)
-
-[node name="HpBig11" parent="PickUps" instance=ExtResource("7_hqisf")]
-position = Vector2(-5042, -5307)
-
-[node name="HpBig13" parent="PickUps" instance=ExtResource("7_hqisf")]
-position = Vector2(-5070, -5329)
-
-[node name="HpBig14" parent="PickUps" instance=ExtResource("7_hqisf")]
-position = Vector2(-5077, -5335)
-
-[node name="HpBig15" parent="PickUps" instance=ExtResource("7_hqisf")]
-position = Vector2(-5084, -5344)
-
 [node name="HpBig3" parent="PickUps" instance=ExtResource("7_hqisf")]
 position = Vector2(349, -19)
 
@@ -2041,6 +2008,12 @@ position = Vector2(500, -3)
 [node name="HpSmall5" parent="PickUps" instance=ExtResource("8_rrxkl")]
 position = Vector2(440, 50)
 
+[node name="HpSmall7" parent="PickUps" instance=ExtResource("8_rrxkl")]
+position = Vector2(435, 44)
+
+[node name="HpSmall8" parent="PickUps" instance=ExtResource("8_rrxkl")]
+position = Vector2(437, 41)
+
 [node name="HpSmall6" parent="PickUps" instance=ExtResource("8_rrxkl")]
 position = Vector2(592, 59)
 
@@ -2049,6 +2022,42 @@ position = Vector2(547, 69)
 
 [node name="HpSmall4" parent="PickUps" instance=ExtResource("8_rrxkl")]
 position = Vector2(494, 65)
+
+[node name="RedCross" type="Node2D" parent="PickUps"]
+position = Vector2(-5063, -5325)
+
+[node name="HpBig5" parent="PickUps/RedCross" instance=ExtResource("7_hqisf")]
+position = Vector2(-7, 10)
+
+[node name="HpBig12" parent="PickUps/RedCross" instance=ExtResource("7_hqisf")]
+position = Vector2(-14, 18)
+
+[node name="HpBig6" parent="PickUps/RedCross" instance=ExtResource("7_hqisf")]
+position = Vector2(15, -16)
+
+[node name="HpBig7" parent="PickUps/RedCross" instance=ExtResource("7_hqisf")]
+position = Vector2(7, -8)
+
+[node name="HpBig8" parent="PickUps/RedCross" instance=ExtResource("7_hqisf")]
+position = Vector2(0, 3)
+
+[node name="HpBig9" parent="PickUps/RedCross" instance=ExtResource("7_hqisf")]
+position = Vector2(15, 12)
+
+[node name="HpBig10" parent="PickUps/RedCross" instance=ExtResource("7_hqisf")]
+position = Vector2(8, 6)
+
+[node name="HpBig11" parent="PickUps/RedCross" instance=ExtResource("7_hqisf")]
+position = Vector2(21, 18)
+
+[node name="HpBig13" parent="PickUps/RedCross" instance=ExtResource("7_hqisf")]
+position = Vector2(-7, -4)
+
+[node name="HpBig14" parent="PickUps/RedCross" instance=ExtResource("7_hqisf")]
+position = Vector2(-14, -10)
+
+[node name="HpBig15" parent="PickUps/RedCross" instance=ExtResource("7_hqisf")]
+position = Vector2(-21, -19)
 
 [node name="Enemies" type="Node2D" parent="."]
 
@@ -2065,26 +2074,29 @@ position = Vector2(247, -138)
 [node name="Pepe4" parent="Enemies" instance=ExtResource("9_rrxkl")]
 position = Vector2(482, -19)
 
-[node name="Pepe5" parent="Enemies" instance=ExtResource("9_rrxkl")]
-position = Vector2(-5074, -5029)
+[node name="PepeArmy" type="Node2D" parent="Enemies"]
+position = Vector2(-5074, -5028)
 
-[node name="Pepe6" parent="Enemies" instance=ExtResource("9_rrxkl")]
-position = Vector2(-5064, -5030)
+[node name="Pepe5" parent="Enemies/PepeArmy" instance=ExtResource("9_rrxkl")]
+position = Vector2(0, -1)
 
-[node name="Pepe7" parent="Enemies" instance=ExtResource("9_rrxkl")]
-position = Vector2(-5068, -5039)
+[node name="Pepe6" parent="Enemies/PepeArmy" instance=ExtResource("9_rrxkl")]
+position = Vector2(10, -2)
 
-[node name="Pepe8" parent="Enemies" instance=ExtResource("9_rrxkl")]
-position = Vector2(-5078, -5039)
+[node name="Pepe7" parent="Enemies/PepeArmy" instance=ExtResource("9_rrxkl")]
+position = Vector2(6, -11)
 
-[node name="Pepe9" parent="Enemies" instance=ExtResource("9_rrxkl")]
-position = Vector2(-5084, -5029)
+[node name="Pepe8" parent="Enemies/PepeArmy" instance=ExtResource("9_rrxkl")]
+position = Vector2(-4, -11)
 
-[node name="Pepe10" parent="Enemies" instance=ExtResource("9_rrxkl")]
-position = Vector2(-5078, -5021)
+[node name="Pepe9" parent="Enemies/PepeArmy" instance=ExtResource("9_rrxkl")]
+position = Vector2(-10, -1)
 
-[node name="Pepe11" parent="Enemies" instance=ExtResource("9_rrxkl")]
-position = Vector2(-5068, -5021)
+[node name="Pepe10" parent="Enemies/PepeArmy" instance=ExtResource("9_rrxkl")]
+position = Vector2(-4, 7)
 
-[node name="Pepe12" parent="Enemies" instance=ExtResource("9_rrxkl")]
-position = Vector2(-5060, -5018)
+[node name="Pepe11" parent="Enemies/PepeArmy" instance=ExtResource("9_rrxkl")]
+position = Vector2(6, 7)
+
+[node name="Pepe12" parent="Enemies/PepeArmy" instance=ExtResource("9_rrxkl")]
+position = Vector2(14, 10)

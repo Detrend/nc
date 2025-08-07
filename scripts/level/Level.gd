@@ -119,14 +119,8 @@ func create_level_export_data() -> Dictionary:
 			var coords_idx : int = get_point_idx.call(coords)
 			sector_points.append(coords_idx)
 
-		process_things_in_sector(all_pickups, sector, pickups_export, 
-			func(p: PickUp, _s: Sector, d: Dictionary): 
-				d["type"] = p.type_id
-		)
-		process_things_in_sector(all_entities, sector, entities_export, 
-			func(p: Entity, _s: Sector, d: Dictionary): 
-				d["is_player"] = true if p is PlayerPosition else false
-		)
+		process_things_in_sector(all_pickups, sector, pickups_export)
+		process_things_in_sector(all_entities, sector, entities_export)
 
 		sector_export["debug_name"] = sector.name
 		sector_export["id"] = sectors_map[sector]
@@ -184,7 +178,7 @@ func get_editable_polygons() -> Array[EditablePolygon]:
 	ret = NodeUtils.get_children_by_predicate(self, func(n:Node)->bool: return n is EditablePolygon and n.is_visible_in_tree and n.is_editable, ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)
 	return ret
 
-func process_things_in_sector(all_things: Array, sector: Sector, export_things: Array[Dictionary], custom_exporter: Callable)->void:
+func process_things_in_sector(all_things: Array, sector: Sector, export_things: Array[Dictionary])->void:
 	var i:= 0
 	while i < all_things.size():
 		var current :Thing = all_things[i]
@@ -198,7 +192,7 @@ func process_things_in_sector(all_things: Array, sector: Sector, export_things: 
 			elif current.placement_mode == Things.PlacementMode.Absolute: height = current.height_offset
 			else: ErrorUtils.report_error("Invalid placement_mode '{0}' for thing {1}".format([current.placement_mode, current]))
 			current_export['position'] = [export_coords_2d.x, export_coords_2d.y, height * export_scale.z]
-			if custom_exporter: custom_exporter.call(current, sector, current_export)
+			current.custom_export(sector, current_export)
 			export_things.append(current_export)
 			all_things.remove_at(i)
 		else:
