@@ -5,7 +5,8 @@
 #include <engine/player/player.h>
 #include <engine/player/thing_system.h>
 
-#include <stb_image/stb_image.h>
+#include <stb/stb_image.h>
+#include <glad/glad.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

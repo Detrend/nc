@@ -273,14 +273,14 @@ void Player::handle_inputs(GameInputs input, GameInputs /*prev_input*/)
     alive = false;
   }
 
-  Camera* Player::get_camera()
+  
   int Player::get_health()
   {
       return currentHealth;
   }
 
   //==============================================================================
-
+  Camera* Player::get_camera()
   {
     return &camera;
   }
