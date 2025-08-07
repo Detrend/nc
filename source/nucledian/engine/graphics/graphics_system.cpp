@@ -27,6 +27,7 @@
 #include <engine/input/input_system.h>
 #include <engine/player/thing_system.h>
 #include <engine/player/level_types.h>
+#include <engine/ui/user_interface_module.h>
 
 #include <game/projectile.h>
 #include <game/weapons.h>
@@ -510,6 +511,8 @@ void GraphicsSystem::render()
 #endif
   {
     m_renderer->render(visible_sectors, gun_props);
+
+      get_engine().get_module<UserInterfaceSystem>().draw_hud();
   }
 
 #ifdef NC_IMGUI

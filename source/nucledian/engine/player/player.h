@@ -36,6 +36,8 @@ public:
   void update(GameInputs input, GameInputs prev_input, f32 delta_seconds);
 
   Camera* get_camera();
+  int get_health();
+
 
   vec3 get_look_direction();
   f32 get_view_height();

@@ -212,7 +212,7 @@ static void test_make_sector
 
 
 //==============================================================================
-[[maybe_unused]] static void load_json_map(MapSectors& map) 
+[[maybe_unused]] static void load_json_map(MapSectors& map, SectorMapping& mapping, EntityRegistry& entities, EntityID &player_id)
 {
     std::ifstream f(JSON_LEVEL_PATH);
     nc_assert(f.is_open());
@@ -245,7 +245,33 @@ static void test_make_sector
         //omit_convexity_clockwise_check |
         //omit_sector_overlap_check      |
         //omit_wall_overlap_check        |
-        assert_on_fail);
+        assert_on_fail
+    );
+
+    mapping.on_map_rebuild();
+
+    
+    for (auto&& js_entity : data["entities"]) {
+        auto& js_position = js_entity["position"];
+        const vec3 position(js_position[0], js_position[2], js_position[1]);
+        if (js_entity["is_player"] == true) {
+            auto* player = entities.create_entity<Player>(position);
+            player_id = player->get_id();
+        }
+        else {
+            // Beware that these fuckers can shoot you even if you do not see them and therefore kill you during the normal level testing.
+            entities.create_entity<Enemy>(position, FRONT_DIR);
+        }
+    }
+
+    for (auto&& js_pickup : data["pickups"]) {
+        auto& js_position = js_pickup["position"];
+        const vec3 position(js_position[0], js_position[2], js_position[1]);
+        const PickupTypes::evalue pickup_type = static_cast<PickupTypes::evalue>(js_pickup["type"]);
+        entities.create_entity<PickUp>(position, pickup_type);
+    }
+
+
 }
 
 
@@ -758,7 +784,7 @@ void ThingSystem::build_map(LevelID level)
   switch (level)
   {
     case Levels::json_map:
-      map_helpers::load_json_map(*map);
+      map_helpers::load_json_map(*map, *mapping, *entities, player_id);
       break;
 
     case Levels::demo_map:
@@ -780,18 +806,20 @@ void ThingSystem::build_map(LevelID level)
     default: nc_assert(false); break;
   }
 
-  mapping->on_map_rebuild();
+  if (level != Levels::json_map) { // json map does entity spawning on its own
+      mapping->on_map_rebuild();
 
-  auto* player = entities->create_entity<Player>(vec3{0.5f, 0.0f, 0.5f});
-  player_id = player->get_id();
+      auto* player = entities->create_entity<Player>(vec3{ 0.5f, 0.0f, 0.5f });
+      player_id = player->get_id();
 
-  // Beware that these fuckers can shoot you even if you do not see them and
-  // therefore kill you during the normal level testing. Therefore, I commented
-  // them out.
-  // entities->create_entity<Enemy>(vec3{1, 0.0, 1}, FRONT_DIR);
-  // entities->create_entity<Enemy>(vec3{2, 0.0, 1}, FRONT_DIR);
-  // entities->create_entity<Enemy>(vec3{3, 0.0, 1}, FRONT_DIR);
-  entities->create_entity<PickUp>(vec3{-0.5f, 0.0f, 0.5f}, PickupTypes::hp_small);
+      // Beware that these fuckers can shoot you even if you do not see them and
+      // therefore kill you during the normal level testing. Therefore, I commented
+      // them out.
+      // entities->create_entity<Enemy>(vec3{1, 0.0, 1}, FRONT_DIR);
+      // entities->create_entity<Enemy>(vec3{2, 0.0, 1}, FRONT_DIR);
+      // entities->create_entity<Enemy>(vec3{3, 0.0, 1}, FRONT_DIR);
+      entities->create_entity<PickUp>(vec3{ -0.5f, 0.0f, 0.5f }, PickupTypes::hp_small);
+  }
 }
 
 //==========================================================

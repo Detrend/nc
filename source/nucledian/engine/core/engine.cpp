@@ -20,6 +20,7 @@
 #include <engine/input/input_system.h>
 #include <engine/player/thing_system.h>
 #include <engine/sound/sound_system.h>
+#include <engine/ui/user_interface_module.h>
 
 #ifdef NC_PROFILING
 #include <benchmark/benchmark.h>
@@ -297,6 +298,7 @@ bool Engine::init()
   INIT_MODULE(InputSystem);
   INIT_MODULE(ThingSystem);
   INIT_MODULE(SoundSystem);
+  INIT_MODULE(UserInterfaceSystem);
 
   #undef INIT_MODULE
 
