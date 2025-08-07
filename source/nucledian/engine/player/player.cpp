@@ -274,6 +274,13 @@ void Player::handle_inputs(GameInputs input, GameInputs /*prev_input*/)
   }
 
   Camera* Player::get_camera()
+  int Player::get_health()
+  {
+      return currentHealth;
+  }
+
+  //==============================================================================
+
   {
     return &camera;
   }

@@ -46,6 +46,9 @@
     <ClCompile Include="..\source\nucledian\engine\player\save_types.cpp" />
     <ClCompile Include="..\source\nucledian\game\item.cpp" />
     <ClCompile Include="..\source\nucledian\game\item_resources.cpp" />
+    <ClCompile Include="..\source\nucledian\game\weapons.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\ui\user_interface_module.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\ui\ui_texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -152,6 +155,10 @@
     <ClInclude Include="..\source\nucledian\game\item.h" />
     <ClInclude Include="..\source\nucledian\game\item_types.h" />
     <ClInclude Include="..\source\nucledian\game\item_resources.h" />
+    <ClInclude Include="..\source\nucledian\game\weapons_types.h" />
+    <ClInclude Include="..\source\nucledian\game\weapons.h" />
+    <ClInclude Include="..\source\nucledian\engine\ui\user_interface_module.h" />
+    <ClInclude Include="..\source\nucledian\engine\ui\ui_texture.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />

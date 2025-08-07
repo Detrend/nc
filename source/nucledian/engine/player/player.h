@@ -34,6 +34,8 @@ public:
   void die();
 
   Camera* get_camera();
+  int get_health();
+
 
   vec3 get_look_direction();
   f32 get_view_height();
