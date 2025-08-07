@@ -143,6 +143,8 @@ namespace nc
     glBindVertexArray(VAO);
     glEnableVertexAttribArray(0);
 
+    glDisable(GL_DEPTH_TEST);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -179,6 +181,7 @@ namespace nc
     }
 
     glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
      
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisableVertexAttribArray(0);
