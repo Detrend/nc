@@ -65,6 +65,10 @@ public:
    */
   MeshHandle create_texturable(ResLifetime lifetime, const f32* data, u32 count, GLenum draw_mode = GL_TRIANGLES);
   /**
+   * Creates mesh, for a sector, from vertex data and stores it in GPU memory.
+   */
+  MeshHandle create_sector(ResLifetime lifetime, const f32* data, u32 count, GLenum draw_mode = GL_TRIANGLES);
+  /**
    * Unloads all meshes with specified lifetime. 
    */
   void unload(ResLifetime lifetime);

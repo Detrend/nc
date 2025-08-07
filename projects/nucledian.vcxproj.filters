@@ -149,6 +149,7 @@
     <ClInclude Include="..\source\nucledian\engine\entity\entity_system.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\entity.h" />
     <ClInclude Include="..\source\nucledian\engine\player\save_types.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\texture_id.h" />
     <ClInclude Include="..\source\nucledian\game\weapons.h" />
     <ClInclude Include="..\source\nucledian\stack_vector.h" />
     <ClInclude Include="..\source\nucledian\stack_allocator.h" />
@@ -159,6 +160,13 @@
     <ClInclude Include="..\source\nucledian\game\weapons.h" />
     <ClInclude Include="..\source\nucledian\engine\ui\user_interface_module.h" />
     <ClInclude Include="..\source\nucledian\engine\ui\ui_texture.h" />
+    <ClInclude Include="..\source\libs\stb\stb_image.h" />
+    <ClInclude Include="..\source\libs\stb\stb_rect_pack.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\resources\texture.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\renderer.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\camera.h" />
+    <ClInclude Include="..\source\nucledian\engine\lights\light.h" />
+>>>>>>> origin/deffered-rendering-and-textures
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
@@ -167,14 +175,16 @@
     <None Include="..\source\nucledian\engine\graphics\resources\model.inl" />
     <None Include="..\source\nucledian\engine\graphics\resources\material.inl" />
     <None Include="..\source\nucledian\engine\graphics\shaders\billboard.frag" />
-    <None Include="..\source\nucledian\engine\graphics\shaders\billboard.vert" />
-    <None Include="..\source\nucledian\engine\graphics\shaders\light.frag" />
-    <None Include="..\source\nucledian\engine\graphics\shaders\light.vert" />
-    <None Include="..\source\nucledian\engine\graphics\shaders\solid.frag" />
-    <None Include="..\source\nucledian\engine\graphics\shaders\solid.vert" />
-    <None Include="..\source\nucledian\math\lingebra.inl" />
-    <None Include="..\source\nucledian\engine\entity\entity_system.inl" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\sector.frag" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\sector.vert" />
     <None Include="..\source\nucledian\stack_allocator.inl" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\billboard.frag" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\billboard.vert" />
+<<<<<<< HEAD
+=======
+    <None Include="..\source\nucledian\engine\graphics\shaders\light.vert" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\light.frag" />
+>>>>>>> origin/deffered-rendering-and-textures
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\source\libs\glm\CMakeLists.txt" />

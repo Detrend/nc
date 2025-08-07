@@ -37,6 +37,7 @@
 #include <math/matrix.h>
 #include <intersect.h>
 #include <grid.h>
+#include <engine/graphics/texture_id.h>
 
 #include <vector>
 #include <functional>
@@ -91,12 +92,25 @@ struct SectorIntData
   WallID last_wall  = INVALID_WALL_ID; // [first_wall..total_wall_count]
 };
 
+// Describes how a surface should be rendered.
+struct SurfaceData
+{
+  TextureID texture_id = INVALID_TEXTURE_ID;
+  f32       scale      = 1.0f;
+  // Rotation in radians, counter-clockwise.
+  f32       rotation   = 0.0f;
+  // Offset in texture coordinates [0-1].
+  vec2      offset     = VEC2_ZERO;
+};
+
 // Each sector is comprised of internal data
 struct SectorData
 {
   SectorIntData int_data;
-  f32           floor_height = 0.0f;
-  f32           ceil_height  = 0.0f;
+  f32           floor_height  = 0.0f;
+  f32           ceil_height   = 0.0f;
+  SurfaceData   floor_surface;
+  SurfaceData   ceil_surface;
 };
 
 using PortType = u8;
@@ -114,10 +128,12 @@ struct WallData
 {
   // The wall starts here and ends in the same point as the next
   // wall begins
-  vec2      pos = vec2{0};
-  SectorID  portal_sector_id       = INVALID_SECTOR_ID; // if is portal
-  WallRelID nc_portal_wall_id      = INVALID_WALL_REL_ID;
+  
+  vec2           pos               = vec2{0};
+  SectorID       portal_sector_id  = INVALID_SECTOR_ID; // if is portal
+  WallRelID      nc_portal_wall_id = INVALID_WALL_REL_ID;
   PortalRenderID render_data_index = INVALID_PORTAL_RENDER_ID;
+  SurfaceData    surface;
 
   PortType get_portal_type() const;
 
@@ -130,7 +146,7 @@ struct Portal
 {
   // Rotation along the Y-axis.
   const f32  rotation    = 0.0f;
-  const vec3 position         = VEC3_ZERO;
+  const vec3 position    = VEC3_ZERO;
   // Local to world.
   const mat4 transform   = mat4(1.0f);
   /*
@@ -164,7 +180,7 @@ struct MapSectors
 
   column<SectorData>       sectors;
   column<WallData>         walls;
-  column<Portal> portals_render_data;
+  column<Portal>           portals_render_data;
   column<aabb3>            sector_bboxes;
   StatGridAABB2<SectorID>  sector_grid;
 
@@ -217,7 +233,7 @@ struct MapSectors
 
   void sector_to_vertices(
     SectorID           sector_id,
-    std::vector<vec3>& vertices_out) const;
+    std::vector<f32>& vertices_out) const;
 
   std::vector<vec3> get_path(vec3 start_pos, vec3 end_pos, f32 width, f32 height) const;
   bool is_point_in_sector(vec2 pt, SectorID sector)      const;
@@ -240,9 +256,10 @@ namespace map_building
 
 struct WallBuildData
 {
-  WallID    point_index = 0;
-  WallRelID nc_portal_point_index  = 0;
-  SectorID  nc_portal_sector_index = INVALID_SECTOR_ID;
+  WallID      point_index = 0;
+  WallRelID   nc_portal_point_index  = 0;
+  SectorID    nc_portal_sector_index = INVALID_SECTOR_ID;
+  SurfaceData surface;
 };
 
 struct SectorBuildData
@@ -250,6 +267,8 @@ struct SectorBuildData
   std::vector<WallBuildData> points;
   f32                        floor_y;
   f32                        ceil_y;
+  SurfaceData                floor_surface;
+  SurfaceData                ceil_surface;
 };
 
 struct OverlapInfo
@@ -281,11 +300,13 @@ namespace MapBuildFlag
   };
 }
 
-int build_map(
+int build_map
+(
   const std::vector<vec2>&            points,
   const std::vector<SectorBuildData>& sectors,
   MapSectors&                         output,
-  MapBuildFlags                       flags = 0);
+  MapBuildFlags                       flags = 0
+);
 
 }
 

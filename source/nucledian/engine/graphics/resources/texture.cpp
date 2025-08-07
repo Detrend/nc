@@ -47,6 +47,12 @@ const TextureAtlas& TextureHandle::get_atlas() const
 }
 
 //==============================================================================
+u16 TextureHandle::get_texture_id() const
+{
+  return m_texture_id;
+}
+
+//==============================================================================
 vec2 TextureHandle::get_pos() const
 {
   return vec2(m_x, m_y);
@@ -65,14 +71,24 @@ TextureHandle TextureHandle::invalid()
 }
 
 //==============================================================================
-TextureHandle::TextureHandle(ResLifetime lifetime, u32 x, u32 y, u32 width, u32 height)
+TextureHandle::TextureHandle
+(
+  ResLifetime lifetime, 
+  u32 x, 
+  u32 y, 
+  u32 width, 
+  u32 height, 
+  u16 generation, 
+  TextureID texture_id
+)
 :
   m_lifetime(lifetime),
+  m_generation(generation),
+  m_texture_id(texture_id),
   m_x(x),
   m_y(y),
   m_width(width),
-  m_height(height),
-  m_generation(TextureManager::m_generation)
+  m_height(height)
 {}
 
 //==============================================================================
@@ -138,15 +154,27 @@ GLuint TextureManager::get_error_texture_handle() const
 }
 
 //==============================================================================
-const TextureHandle& TextureManager::operator[](const std::pair<const std::string&, ResLifetime> pair)
+const std::vector<TextureHandle>& TextureManager::get_textures() const
+{
+  return m_textures;
+}
+
+//==============================================================================
+const TextureHandle& TextureManager::operator[](const std::pair<const std::string&, ResLifetime> pair) const
 {
   return get_atlas(pair.second).textures.at(pair.first);
 }
 
 //==============================================================================
-const TextureHandle& TextureManager::operator[](const std::string& name)
+const TextureHandle& TextureManager::operator[](const std::string& name) const
 {
   return operator[](std::make_pair(name, ResLifetime::Game));
+}
+
+const TextureHandle& TextureManager::operator[](u16 texture_id) const
+{
+  nc_assert(texture_id < m_textures.size(), "Texture ID is out of range.");
+  return m_textures[texture_id];
 }
 
 //==============================================================================
@@ -318,16 +346,18 @@ void TextureManager::finish_load(ResLifetime lifetime)
     );
     stbi_image_free(load_data.data);
 
-    atlas.textures.emplace(
-      load_data.name,
-      TextureHandle(
-        lifetime,
-        rect.x,
-        rect.y,
-        rect.w,
-        rect.h
-      )
+    const TextureHandle handle(
+      lifetime,
+      rect.x,
+      rect.y,
+      rect.w,
+      rect.h,
+      m_generation,
+      static_cast<TextureID>(m_textures.size())
     );
+
+    atlas.textures.emplace(load_data.name, handle);
+    m_textures.push_back(handle);
   }
 
   m_load_rects.clear();

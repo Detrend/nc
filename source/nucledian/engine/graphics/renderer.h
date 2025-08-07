@@ -21,7 +21,7 @@ struct RenderGunProperties;
 class Renderer
 {
 public:
-  Renderer(const GraphicsSystem& graphics_system, u32 window_w, u32 window_h);
+  Renderer(u32 window_w, u32 window_h);
 
   void on_window_resized(u32 new_width, u32 new_height);
   void render
@@ -36,13 +36,19 @@ private:
   using Portal = Portal;
   struct CameraData;
 
-  GLuint m_g_buffer = 0, m_g_position = 0, m_g_normal = 0, m_g_albedo = 0;
   mat4           m_default_projection;
-  MaterialHandle m_solid_material;
-  MaterialHandle m_billboard_material;
-  MaterialHandle m_light_material;
+  const MaterialHandle m_solid_material;
+  const MaterialHandle m_billboard_material;
+  const MaterialHandle m_light_material;
+  // Used for lighting pass.
+  const MaterialHandle  m_sector_material;
 
-  static GLuint create_g_buffer(GLint internal_format, GLenum attachment, u32 w, u32 h);
+  GLuint m_texture_data_ssbo = 0;
+
+  GLuint m_g_buffer = 0;
+  GLuint m_g_position = 0;
+  GLuint m_g_normal = 0;
+  GLuint m_g_albedo = 0;
 
   void destroy_g_buffers();
   void create_g_buffers(u32 w, u32 h);
@@ -62,7 +68,7 @@ private:
   void render_portal_to_depth(const CameraData& camera, const Portal& portal, bool depth_write, u8 recursion) const;
 
   void render_portal(const CameraData& camera, const Portal& portal, u8 recursion) const;
-#pragma endregion
+  #pragma endregion
 
   struct CameraData
   {

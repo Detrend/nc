@@ -254,6 +254,7 @@
     <ClInclude Include="..\source\nucledian\engine\entity\sector_mapping.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\renderer.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\texture.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\texture_id.h" />
     <ClInclude Include="..\source\nucledian\engine\lights\light.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
     <ClInclude Include="..\source\nucledian\engine\map\physics.h" />
@@ -321,6 +322,8 @@
     <None Include="..\source\nucledian\engine\graphics\shaders\billboard.vert" />
     <None Include="..\source\nucledian\engine\graphics\shaders\light.frag" />
     <None Include="..\source\nucledian\engine\graphics\shaders\light.vert" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\sector.frag" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\sector.vert" />
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.frag" />
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.vert" />
     <None Include="..\source\nucledian\math\lingebra.inl" />

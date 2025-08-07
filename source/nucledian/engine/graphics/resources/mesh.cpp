@@ -254,6 +254,68 @@ MeshHandle MeshManager::create_texturable(ResLifetime lifetime, const f32* data,
 }
 
 //==============================================================================
+MeshHandle MeshManager::create_sector(ResLifetime lifetime, const f32* data, u32 count, GLenum draw_mode)
+{
+  MeshHandle mesh;
+  mesh.m_lifetime = lifetime;
+  mesh.m_generation = MeshManager::m_generation;
+  mesh.m_draw_mode = draw_mode;
+  /**
+   *  3 floats per position
+   *  3 floats per normal
+   *  1 float  per cumulative wall length
+   *  1 float  per texture id
+   *  1 float  per texture scale
+   *  1 float  per texture rotation
+   *  2 floats per texture offset
+   * -------------------------------------
+   * 12 floats total
+   */
+  constexpr u32 VERTEX_SIZE = 12;
+
+  mesh.m_vertex_count = count / VERTEX_SIZE;
+
+  // generate buffers
+  glGenVertexArrays(1, &mesh.m_vao);
+  glGenBuffers(1, &mesh.m_vbo);
+
+  // setup vao
+  glBindVertexArray(mesh.m_vao);
+  // vertex buffer
+  glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vbo);
+  glBufferData(GL_ARRAY_BUFFER, count * sizeof(f32), data, GL_STATIC_DRAW);
+  //position attribute
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(0));
+  glEnableVertexAttribArray(0);
+  // normal attribute
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(3 * sizeof(f32)));
+  glEnableVertexAttribArray(1);
+  // cumulative wall length attribute
+  glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(6 * sizeof(f32)));
+  glEnableVertexAttribArray(2);
+  // texture id attribute
+  glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(7 * sizeof(f32)));
+  glEnableVertexAttribArray(3);
+  // texture scale attribute
+  glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(8 * sizeof(f32)));
+  glEnableVertexAttribArray(4);
+  // texture rotation attribute
+  glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(9 * sizeof(f32)));
+  glEnableVertexAttribArray(5);
+  // texture offset attribute
+  glVertexAttribPointer(6, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(10 * sizeof(f32)));
+  glEnableVertexAttribArray(6);
+
+  glBindVertexArray(0);
+
+  // store created mesh
+  auto& storage = this->get_storage(lifetime);
+  storage.push_back(mesh);
+
+  return mesh;
+}
+
+//==============================================================================
 void MeshManager::unload(ResLifetime lifetime)
 {
   auto& storage = this->get_storage(lifetime);
