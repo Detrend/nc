@@ -572,20 +572,18 @@ void ThingSystem::on_event(ModuleEvent& event)
       auto& entity_system = this->get_entities();
 
       //INPUT PHASE
-      GameInputs curInputs = get_engine().get_module<InputSystem>().get_inputs();
-      GameInputs prevInputs = get_engine().get_module<InputSystem>().get_prev_inputs();
+      GameInputs curr_input = InputSystem::get().get_inputs();
+      GameInputs prev_input = InputSystem::get().get_prev_inputs();
 
-      // Handle gun changing
-      this->get_player()->handle_inputs(curInputs, prevInputs);
+      // Handle the player first
+      this->get_player()->update(curr_input, prev_input, event.update.dt);
 
-      this->get_player()->get_wish_velocity(curInputs, event.update.dt);
-
+      // Handle enemies
       entity_system.for_each<Enemy>([&](Enemy& enemy)
       {
         enemy.calculate_wish_velocity(event.update.dt);
       });
 
-      check_player_attack(curInputs, prevInputs, event);
       check_enemy_attack(event);
 
       //CHECK FOR COLLISIONS
@@ -623,16 +621,6 @@ void ThingSystem::on_event(ModuleEvent& event)
           }
         }        
       });
-
-      entity_system.for_each<PickUp>([&](PickUp& pickup)
-        {
-          if (pickup.did_collide(*this->get_player()))
-          {
-
-          }
-        });
-      //FINAL VELOCITY CHANGE
-      this->get_player()->apply_velocity(event.update.dt);
 
       entity_system.for_each<Enemy>([&](Enemy& enemy)
       {
@@ -807,33 +795,6 @@ void ThingSystem::build_map(LevelID level)
 }
 
 //==========================================================
-void ThingSystem::check_player_attack
-(
-  const GameInputs&  curr_inputs,
-  const GameInputs&  prev_inputs,
-  const ModuleEvent& event)
-{
-  auto& entity_system = this->get_entities();
-  auto& sound_system  = SoundSystem::get();
-  auto* player        = this->get_player();
-  bool  did_attack    = player->get_attack_state(curr_inputs, prev_inputs, event.update.dt);
-
-  if (did_attack)
-  {
-    vec3 dir  = player->get_look_direction();
-    vec3 from = player->get_position() + UP_DIR * player->get_height() + dir * 0.3f;
-
-    // Spawn projectile
-    entity_system.create_entity<Projectile>
-    (
-      from, dir, true, player->get_equipped_weapon()
-    );
-
-    // play a sound
-    sound_system.play(Sounds::plasma_rifle, 0.5f);
-  }
-}
-
 void ThingSystem::check_enemy_attack([[maybe_unused]] const ModuleEvent& event)
 {
   auto& entity_system = this->get_entities();

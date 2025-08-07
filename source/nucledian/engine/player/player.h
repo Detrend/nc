@@ -1,18 +1,22 @@
 // Project Nucledian Source File
 #pragma once
 
-#include <SDL.h>
 #include <types.h>
-#include <engine/input/game_input.h>
-#include <engine/entity/entity.h>
+
 #include <engine/entity/entity.h>
 #include <engine/graphics/camera.h>
 
 #include <game/weapons_types.h>
+#include <engine/entity/entity_types.h>
 
 #include <math/vector.h>
 
-#include <engine/entity/entity_types.h>
+
+namespace nc
+{
+// Forward declare, we do not want to include
+struct GameInputs;
+}
 
 namespace nc
 {
@@ -26,12 +30,10 @@ public:
 
   static EntityType get_type_static();
 
-  void get_wish_velocity(GameInputs input, f32 delta_seconds);
-  void handle_inputs(GameInputs input, GameInputs prev_input);
-  bool get_attack_state(GameInputs curInput, GameInputs prevInput, f32 delta_seconds);
-  void apply_velocity(f32 delta_seconds);
   void damage(int damage);
   void die();
+
+  void update(GameInputs input, GameInputs prev_input, f32 delta_seconds);
 
   Camera* get_camera();
 
@@ -39,12 +41,19 @@ public:
   f32 get_view_height();
   vec3& get_velocity();
 
+  vec2       get_gun_sway()                const;
   WeaponType get_equipped_weapon()         const;
   bool       has_weapon(WeaponType weapon) const;
 
 private:
-  void apply_acceleration(const nc::vec3& movement_direction, f32 delta_seconds);
-  void apply_deceleration(const nc::vec3& movement_direction, f32 delta_seconds);
+  void apply_velocity(f32 delta_seconds);
+  void handle_attack(GameInputs input, GameInputs prev_input, f32 delta_seconds);
+  void handle_weapon_change(GameInputs input, GameInputs prev_input);
+  void calculate_wish_velocity(GameInputs input, f32 delta_seconds);
+  bool get_attack_state(GameInputs curInput, GameInputs prevInput, f32 delta_seconds);
+  void apply_acceleration(vec3 movement_direction, f32 delta_seconds);
+  void apply_deceleration(vec3 movement_direction, f32 delta_seconds);
+  void update_gun_sway(f32 delta);
 
   //vec3 position;
   vec3 velocity = VEC3_ZERO; // forward/back - left/right velocity
@@ -64,6 +73,13 @@ private:
 
   int maxHealth = 100;
   int currentHealth;
+
+  // Gun sway
+  f32 moving_time           = 0.0f; // for how long we were moving
+  f32 time_since_gun_change = 0.0f;
+  f32 time_since_shoot      = 0.0f;
+  f32 time_since_start      = 0.0f;
+  f32 air_time              = 0.0f;
 
   // Bit flags for the weapons owned
   WeaponFlags owned_weapons  = 0;

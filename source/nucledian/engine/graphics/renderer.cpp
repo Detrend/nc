@@ -3,6 +3,7 @@
 
 #include <common.h>
 #include <logging.h>
+#include <cvars.h>
 
 #include <math/utils.h>
 #include <math/lingebra.h>
@@ -403,9 +404,15 @@ void Renderer::render_gun(const RenderGunProperties& gun) const
   const float screen_width = static_cast<float>(viewport[2]);
   const float screen_height = static_cast<float>(viewport[3]);
 
+  f32 gun_zoom = CVars::gun_zoom;
+
+  vec3 scaling = -vec3{screen_width * gun_zoom, screen_height * gun_zoom, 1.0f};
+  f32  trans_x = 0.5f + gun.sway.x * 0.5f;
+  f32  trans_y = 0.5f + gun.sway.y * 0.5f;
+  vec3 trans   = vec3{trans_x * screen_width, trans_y * screen_height, 0.0f};
+
   const mat4 projection = ortho(0.0f, screen_width, screen_height, 0.0f, -1.0f, 1.0f);
-  const mat4 transform = translate(mat4(1.0f), vec3(screen_width / 2.0f, screen_height / 2.0f, 0.0f))
-    * scale(mat4(1.0f), -vec3(screen_width, screen_height, 1.0f));
+  const mat4 transform  = translate(mat4{1.0f}, trans) * scale(mat4{1.0f}, scaling);
 
   const MeshHandle& texturable_quad = MeshManager::get().get_texturable_quad();
   glBindVertexArray(texturable_quad.get_vao());

@@ -143,6 +143,13 @@ struct CVars
   NC_REGISTER_CVAR_RANGED(s32, opengl_debug_severity, 1, 0, 3,
     "0 = everything, 1 = low and higher, 2 = medium and higher, 3 = critical only");
   NC_REGISTER_CVAR_RANGED(f32, time_speed, 1.0f, 0.0f, 10.0f, "Changes the update speed.");
+
+  NC_REGISTER_CVAR_RANGED(f32, gun_sway_amount,           0.05f, 0.0f, 1.0f, "");
+  NC_REGISTER_CVAR_RANGED(f32, gun_sway_speed,            5.5f,  0.0f, 8.0f, "");
+  NC_REGISTER_CVAR_RANGED(f32, gun_change_time,           0.4f,  0.0f, 5.0f, "");
+  NC_REGISTER_CVAR_RANGED(f32, gun_sway_move_fadein_time, 0.2f,  0.0f, 5.0f, "");
+  NC_REGISTER_CVAR_RANGED(f32, gun_sway_air_time,         0.6f,  0.0f, 3.0f, "");
+  NC_REGISTER_CVAR_RANGED(f32, gun_zoom,                  1.2f,  0.5f, 3.0f, "");
 };
 
 }

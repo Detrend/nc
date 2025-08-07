@@ -33,6 +33,8 @@
 #include <regex>
 #endif
 
+#include <SDL.h>   // SDL_Event
+
 #include <ranges>  // std::views::reverse
 #include <chrono>  // std::chrono::high_resolution_clock
 #include <cstdlib> // std::rand

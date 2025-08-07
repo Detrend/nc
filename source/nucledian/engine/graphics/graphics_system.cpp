@@ -452,7 +452,7 @@ static void grab_render_gun_props(RenderGunProperties& props)
   if (player)
   {
     props.weapon = player->get_equipped_weapon();
-    props.sway   = VEC2_ZERO;
+    props.sway   = player->get_gun_sway();
   }
   else
   {
