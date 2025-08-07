@@ -147,6 +147,7 @@
     <ClInclude Include="..\source\nucledian\engine\entity\entity.h" />
     <ClInclude Include="..\source\nucledian\engine\player\save_types.h" />
     <ClInclude Include="..\source\nucledian\game\weapons.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\texture_id.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />

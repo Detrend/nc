@@ -460,10 +460,10 @@ mat4 MapSectors::calc_portal_to_portal_projection(
 
     const f32 floor_y = this->sectors[sector_id].floor_height;
     const f32 ceil_y = this->sectors[sector_id].ceil_height;
-    const f32 floor_texture_scale = this->sectors[sector_id].floor_texture_scale;
-    const f32 ceil_texture_scale = this->sectors[sector_id].ceil_texture_scale;
-    const u16 floor_texture_id = this->sectors[sector_id].floor_texture_id;
-    const u16 ceil_texture_id = this->sectors[sector_id].ceil_texture_id;
+    const f32 floor_texture_scale = this->sectors[sector_id].floor_surface.scale;
+    const f32 ceil_texture_scale = this->sectors[sector_id].ceil_surface.scale;
+    const u16 floor_texture_id = this->sectors[sector_id].floor_surface.texture_id;
+    const u16 ceil_texture_id = this->sectors[sector_id].ceil_surface.texture_id;
 
     // build the floor first from the first point
     const auto first_wall_idx = sector_data.first_wall;
@@ -591,9 +591,7 @@ mat4 MapSectors::calc_portal_to_portal_projection(
       const auto p1_to_p2 = w1pos != w2pos ? normalize(w2pos - w1pos) : vec2{ 1, 0 };
       const auto flp = flipped(p1_to_p2);
       const auto wall_normal = vec3{ flp.x, 0.0f, flp.y };
-
-      const f32 wall_texture_id = static_cast<float>(wall.texture_id);
-      const f32 end_wall_length = cumulative_wall_length + distance(w1pos, w2pos);
+      const f32  end_wall_length = cumulative_wall_length + distance(w1pos, w2pos);
 
       for (u32 wall_i = 0; wall_i < num_wall_segments; ++wall_i)
       {
@@ -605,34 +603,34 @@ mat4 MapSectors::calc_portal_to_portal_projection(
         append_vec3(f1);
         append_vec3(wall_normal);
         vertices_out.push_back(cumulative_wall_length);
-        vertices_out.push_back(wall_texture_id);
-        vertices_out.push_back(wall.texture_scale);
+        vertices_out.push_back(wall.surface.texture_id);
+        vertices_out.push_back(wall.surface.scale);
         append_vec3(f2);
         append_vec3(wall_normal);
         vertices_out.push_back(end_wall_length);
-        vertices_out.push_back(wall_texture_id);
-        vertices_out.push_back(wall.texture_scale);
+        vertices_out.push_back(wall.surface.texture_id);
+        vertices_out.push_back(wall.surface.scale);
         append_vec3(c1);
         append_vec3(wall_normal);
         vertices_out.push_back(cumulative_wall_length);
-        vertices_out.push_back(wall_texture_id);
-        vertices_out.push_back(wall.texture_scale);
+        vertices_out.push_back(wall.surface.texture_id);
+        vertices_out.push_back(wall.surface.scale);
 
         append_vec3(c1);
         append_vec3(wall_normal);
         vertices_out.push_back(cumulative_wall_length);
-        vertices_out.push_back(wall_texture_id);
-        vertices_out.push_back(wall.texture_scale);
+        vertices_out.push_back(wall.surface.texture_id);
+        vertices_out.push_back(wall.surface.scale);
         append_vec3(f2);
         append_vec3(wall_normal);
         vertices_out.push_back(end_wall_length);
-        vertices_out.push_back(wall_texture_id);
-        vertices_out.push_back(wall.texture_scale);
+        vertices_out.push_back(wall.surface.texture_id);
+        vertices_out.push_back(wall.surface.scale);
         append_vec3(c2);
         append_vec3(wall_normal);
         vertices_out.push_back(end_wall_length);
-        vertices_out.push_back(wall_texture_id);
-        vertices_out.push_back(wall.texture_scale);
+        vertices_out.push_back(wall.surface.texture_id);
+        vertices_out.push_back(wall.surface.scale);
       }
 
       cumulative_wall_length = end_wall_length;
@@ -1280,6 +1278,8 @@ static void build_sector_grid_and_bboxes(MapSectors& map)
       auto& output_sector = output.sectors.emplace_back();
       output_sector.floor_height = sector.floor_y;
       output_sector.ceil_height = sector.ceil_y;
+      output_sector.floor_surface = sector.floor_surface;
+      output_sector.ceil_surface = sector.ceil_surface;
 
       const u32 total_wall_count = static_cast<u32>(sector.points.size());
 
@@ -1343,6 +1343,7 @@ static void build_sector_grid_and_bboxes(MapSectors& map)
             .pos = points[point_index],
             .portal_sector_id = portal_with,
             .nc_portal_wall_id = nuclidean_wall_rel_idx,
+            .surface = sector.points[wall_index].surface,
           });
       }
     }

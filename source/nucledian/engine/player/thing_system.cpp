@@ -63,14 +63,17 @@ static void test_make_sector_height(
       .point_index            = p,
       .nc_portal_point_index  = is_portal ? portal_wall_id_to : INVALID_WALL_REL_ID,
       .nc_portal_sector_index = is_portal ? portal_sector     : INVALID_SECTOR_ID,
+      .surface                = SurfaceData{ 8, 3.0f },
     });
   }
 
   out.push_back(map_building::SectorBuildData
   {
-    .points  = std::move(walls),
-    .floor_y = in_floor_y,
-    .ceil_y  = in_ceil_y,
+    .points        = std::move(walls),
+    .floor_y       = in_floor_y,
+    .ceil_y        = in_ceil_y,
+    .floor_surface = SurfaceData{ 7, 3.0f },
+    .ceil_surface  = SurfaceData{ 6, 3.0f },
   });
 }
 

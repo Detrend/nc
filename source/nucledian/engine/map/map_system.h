@@ -37,6 +37,7 @@
 #include <math/matrix.h>
 #include <intersect.h>
 #include <grid.h>
+#include <engine/graphics/texture_id.h>
 
 #include <vector>
 #include <functional>
@@ -85,16 +86,22 @@ struct SectorIntData
   WallID last_wall  = INVALID_WALL_ID; // [first_wall..total_wall_count]
 };
 
+struct SurfaceData
+{
+  TextureID texture_id = INVALID_TEXTURE_ID;
+  f32       scale      = 1.0f;
+  //f32       rotation   = 0.0f;
+  //vec2      offset     = VEC2_ZERO;
+};
+
 // Each sector is comprised of internal data
 struct SectorData
 {
   SectorIntData int_data;
-  f32           floor_height        = 0.0f;
-  f32           ceil_height         = 0.0f;
-  f32           floor_texture_scale = 3.0f;
-  f32           ceil_texture_scale  = 3.0f;
-  u16           floor_texture_id    = 7;
-  u16           ceil_texture_id     = 6;
+  f32           floor_height  = 0.0f;
+  f32           ceil_height   = 0.0f;
+  SurfaceData   floor_surface;
+  SurfaceData   ceil_surface;
 };
 
 using PortType = u8;
@@ -117,8 +124,7 @@ struct WallData
   SectorID       portal_sector_id  = INVALID_SECTOR_ID; // if is portal
   WallRelID      nc_portal_wall_id = INVALID_WALL_REL_ID;
   PortalRenderID render_data_index = INVALID_PORTAL_RENDER_ID;
-  f32            texture_scale = 3.0f;
-  u16            texture_id = 8;
+  SurfaceData    surface;
 
   PortType get_portal_type() const;
 };
@@ -223,9 +229,10 @@ namespace map_building
 
 struct WallBuildData
 {
-  WallID    point_index = 0;
-  WallRelID nc_portal_point_index  = 0;
-  SectorID  nc_portal_sector_index = INVALID_SECTOR_ID;
+  WallID      point_index = 0;
+  WallRelID   nc_portal_point_index  = 0;
+  SectorID    nc_portal_sector_index = INVALID_SECTOR_ID;
+  SurfaceData surface;
 };
 
 struct SectorBuildData
@@ -233,6 +240,8 @@ struct SectorBuildData
   std::vector<WallBuildData> points;
   f32                        floor_y;
   f32                        ceil_y;
+  SurfaceData                floor_surface;
+  SurfaceData                ceil_surface;
 };
 
 struct OverlapInfo

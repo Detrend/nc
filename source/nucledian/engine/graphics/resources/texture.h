@@ -5,6 +5,7 @@
 
 #include <engine/graphics/gl_types.h>
 #include <engine/graphics/resources/res_lifetime.h>
+#include <engine/graphics/texture_id.h>
 
 #include <stb/stb_rect_pack.h>
 
@@ -31,18 +32,18 @@ public:
   u32 get_width() const;
   u32 get_height() const;
   const TextureAtlas& get_atlas() const;
-  u16 get_texture_id() const;
+  TextureID get_texture_id() const;
 
   vec2 get_pos() const;
   vec2 get_size() const;
 
 private:
   TextureHandle() {}
-  TextureHandle(ResLifetime lifetime, u32 x, u32 y, u32 width, u32 height, u16 generation, u16 texture_id);
+  TextureHandle(ResLifetime lifetime, u32 x, u32 y, u32 width, u32 height, u16 generation, TextureID texture_id);
 
   ResLifetime m_lifetime   = ResLifetime::None;
   u16         m_generation = 0;
-  u16         m_texture_id = 0;
+  TextureID   m_texture_id = INVALID_TEXTURE_ID;
   u32         m_x          = 0;
   u32         m_y          = 0;
   u32         m_width      = 0;

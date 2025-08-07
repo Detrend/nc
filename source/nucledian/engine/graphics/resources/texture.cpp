@@ -71,7 +71,16 @@ TextureHandle TextureHandle::invalid()
 }
 
 //==============================================================================
-TextureHandle::TextureHandle(ResLifetime lifetime, u32 x, u32 y, u32 width, u32 height, u16 generation, u16 texture_id)
+TextureHandle::TextureHandle
+(
+  ResLifetime lifetime, 
+  u32 x, 
+  u32 y, 
+  u32 width, 
+  u32 height, 
+  u16 generation, 
+  TextureID texture_id
+)
 :
   m_lifetime(lifetime),
   m_generation(generation),
@@ -344,7 +353,7 @@ void TextureManager::finish_load(ResLifetime lifetime)
       rect.w,
       rect.h,
       m_generation,
-      static_cast<u16>(m_textures.size())
+      static_cast<TextureID>(m_textures.size())
     );
 
     atlas.textures.emplace(load_data.name, handle);
