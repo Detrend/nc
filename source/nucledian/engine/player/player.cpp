@@ -129,7 +129,9 @@ void Player::calculate_wish_velocity(GameInputs input, f32 delta_seconds)
   velocity += jump_force * 5.0f;
   velocity.y -= GRAVITY * delta_seconds;
 
-  camera.update_transform(this->get_position(), angle_yaw, angle_pitch, view_height);
+  vec3 spring_offset   = vec3{0.0f, this->vertical_camera_offset, 0.0f};
+  vec3 real_camera_pos = this->get_position() + spring_offset;
+  camera.update_transform(real_camera_pos, angle_yaw, angle_pitch, view_height);
 }
 
 //==========================================================================
@@ -182,6 +184,7 @@ void Player::apply_velocity(f32 delta_seconds)
 
   // Store the position here, change it, and then set it again later
   vec3 position = this->get_position();
+  vec3 prev_pos = position;
 
   PhysLevel::CharacterCollisions collected_collisions;
   lvl.move_character
@@ -192,6 +195,14 @@ void Player::apply_velocity(f32 delta_seconds)
 
   // Change the position
   this->set_position(position);
+
+  // Spring - makes sure that the camera moves smoothly on the stairs
+  f32 height_diff = position.y - prev_pos.y;
+  f32 max_offset  = CVars::camera_spring_height;
+  this->vertical_camera_offset = std::clamp
+  (
+    this->vertical_camera_offset - height_diff, -max_offset, max_offset
+  );
 
   // Recompute the angleYaw after moving through a portal
   const auto forward2 = normalize(with_y(m_forward, 0.0f));
@@ -321,6 +332,13 @@ void Player::update_gun_sway(f32 delta)
 }
 
 //==============================================================================
+void Player::update_camera_spring(f32 delta)
+{
+  f32 spd = CVars::camera_spring_update_speed;
+  smooth_towards(this->vertical_camera_offset, 0.0f, delta * spd);
+}
+
+//==============================================================================
 void Player::damage(int damage)
 {
   currentHealth -= damage;
@@ -357,6 +375,7 @@ void Player::update(GameInputs curr_input, GameInputs prev_input, f32 delta)
   this->handle_weapon_change(curr_input, prev_input);
   this->handle_attack(curr_input, prev_input, delta);
   this->apply_velocity(delta);
+  this->update_camera_spring(delta); // should be after "apply_velocity"
 }
 
 //==============================================================================

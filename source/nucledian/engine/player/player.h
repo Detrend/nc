@@ -56,6 +56,7 @@ private:
   void apply_acceleration(vec3 movement_direction, f32 delta_seconds);
   void apply_deceleration(vec3 movement_direction, f32 delta_seconds);
   void update_gun_sway(f32 delta);
+  void update_camera_spring(f32 delta);
 
   //vec3 position;
   vec3 velocity = VEC3_ZERO; // forward/back - left/right velocity
@@ -75,6 +76,9 @@ private:
 
   int maxHealth = 100;
   int currentHealth;
+
+  // Camera spring
+  f32 vertical_camera_offset = 0.0f;
 
   // Gun sway
   f32 moving_time           = 0.0f; // for how long we were moving
