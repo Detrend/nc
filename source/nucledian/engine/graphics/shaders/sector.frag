@@ -13,6 +13,8 @@ in vec3 normal;
 in float cumulative_wall_len;
 flat in int texture_id;
 flat in float texture_scale;
+flat in float texture_rotation;
+flat in vec2 texture_offset;
 
 layout(location = 0) out vec4 g_position;
 layout(location = 1) out vec4 g_normal;
@@ -33,11 +35,19 @@ void main()
   bool use_game_atlas = texture_data.in_game_atlas == 1.0f;
   vec2 atlas_size = (use_game_atlas ? game_atlas_size : level_atlas_size);
 
-  // TODO: floor have flipped x
+  // uv based on world position
   vec2 uv = abs(normal.y) > 0.99f ? position.xz : vec2(cumulative_wall_len, position.y);
-  uv /= texture_scale;
+  // floor uv is mirrored
+  if (normal.y > 0.0f) uv.x *= -1.0f;
+  // apply rotation, scale, and offset
+  float c = cos(texture_rotation);
+  float s = sin(texture_rotation);
+  uv = (mat2(c, s, -s, c) * uv) / texture_scale + texture_offset;
+  // tile texture
   uv = fract(uv);
+  // flip y axis
   uv.y = 1.0f - uv.y;
+  // compute atlas uv
   uv = (uv * texture_data.size + texture_data.pos) / atlas_size;
 
   vec4 color = texture(use_game_atlas ? game_atlas_sampler : level_atlas_sampler, uv);

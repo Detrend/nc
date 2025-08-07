@@ -90,8 +90,8 @@ struct SurfaceData
 {
   TextureID texture_id = INVALID_TEXTURE_ID;
   f32       scale      = 1.0f;
-  //f32       rotation   = 0.0f;
-  //vec2      offset     = VEC2_ZERO;
+  f32       rotation   = 0.0f;
+  vec2      offset     = VEC2_ZERO;
 };
 
 // Each sector is comprised of internal data
@@ -273,11 +273,13 @@ namespace MapBuildFlag
   };
 }
 
-int build_map(
+int build_map
+(
   const std::vector<vec2>&            points,
   const std::vector<SectorBuildData>& sectors,
   MapSectors&                         output,
-  MapBuildFlags                       flags = 0);
+  MapBuildFlags                       flags = 0
+);
 
 }
 
