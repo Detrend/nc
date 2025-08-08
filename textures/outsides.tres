@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="TextureConfig" load_steps=3 format=3 uid="uid://dru3antcr08im"]
+
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/TextureConfig.gd" id="1_n8a10"]
+[ext_resource type="Texture2D" uid="uid://hosfsoru1xho" path="res://imgs/VegetationDark2.png" id="1_ooviw"]
+
+[resource]
+script = ExtResource("1_n8a10")
+preview = ExtResource("1_ooviw")
+preview_scale = 0.1
+show_wall = true
+wall_texture = "wall4"
+wall_scale = 0.5
+show_floor = true
+floor_texture = "VegetationDark2"
+floor_scale = 2.0
+show_ceiling = false
+ceiling_texture = "floor2"
+ceiling_scale = 0.5
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"

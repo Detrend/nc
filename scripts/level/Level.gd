@@ -4,6 +4,7 @@ extends Node2D
 
 var config : EditorConfig = preload("res://config.tres") as EditorConfig
 @export var coloring_mode: EditorConfig.SectorColoringMode = EditorConfig.SectorColoringMode.Floor
+
 var max_snapping_distance : float:
 	get: return config.max_snapping_distance
 @export_tool_button("Snap points") var snap_points_tool_button = _snap_points
@@ -73,7 +74,7 @@ func _exit_tree() -> void:
 		unre.version_changed.disconnect(_update_sector_visuals)
 
 func _update_sector_visuals()->void:
-	for s in get_sectors(false):
+	for s in get_editable_polygons():
 		if s.is_editable: s._update_visuals()
 
 
@@ -127,6 +128,11 @@ func create_level_export_data() -> Dictionary:
 		sector_export["floor"] = sector.data.floor_height * export_scale.z
 		sector_export["ceiling"] = sector.data.ceiling_height * export_scale.z
 		sector_export["points"] = sector_points
+
+		sector_export["floor_surface"] = get_texture_config(sector.data, 'floor')
+		sector_export["ceiling_surface"] = get_texture_config(sector.data, 'ceiling')
+		sector_export["wall_surface"] = get_texture_config(sector.data, 'wall')
+
 		sector_export["portal_target"] = sectors_map[sector.portal_destination] if sector.has_portal() else 65535
 		sector_export["portal_wall"] = sector.portal_wall if sector.has_portal() else -1
 		sector_export["portal_destination_wall"] = sector.portal_destination_wall if sector.has_portal() else 0
@@ -159,10 +165,20 @@ func export_level():
 	file.close()
 	print("export completed")
 	
+func get_texture_config(sector_data: SectorProperties, texture_name: String)->Dictionary:
+	var texture : TextureConfig= sector_data.texture_config if sector_data.texture_config else (load("res://textures/default_texture.tres") as TextureConfig)
+	var ret : Dictionary = {}
+	ret["id"] = texture.get(texture_name + "_texture")
+	ret["scale"] = texture.get(texture_name + "_scale")
+	ret["show"] = texture.get("show_" + texture_name)
+	ret["rotation"] = 0.0
+	ret["offset"] = [0.0, 0.0]
+	return ret
 
 func get_sectors(for_export_only:bool = true) -> Array[Sector]:
+	var flags := NodeUtils.LOOKUP_FLAGS.RECURSIVE | NodeUtils.LOOKUP_FLAGS.INCLUDE_INTERNAL
 	var ret : Array[Sector] = []
-	ret = NodeUtils.get_children_by_predicate(self, func(n:Node)->bool: return n is Sector and (n as Node2D).is_visible_in_tree() and (!for_export_only or !n.exclude_from_export) , ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)
+	ret = NodeUtils.get_children_by_predicate(self, func(n:Node)->bool: return n is Sector and (n as Node2D).is_visible_in_tree() and (!for_export_only or !n.exclude_from_export) , ret, flags)
 	return ret
 
 func get_pickups(pickup_type = PickUp, ret: Array[PickUp] = [])->Array[PickUp]:

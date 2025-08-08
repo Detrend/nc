@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://b8tr8d62bd5s2"]
 
 [ext_resource type="Script" uid="uid://8su8gwb3cmui" path="res://scripts/things/PickUp.gd" id="1_ayiak"]
-[ext_resource type="Texture2D" uid="uid://dn778ncamyfvh" path="res://textures/hp_big.png" id="2_ayiak"]
+[ext_resource type="Texture2D" uid="uid://dn778ncamyfvh" path="res://imgs/hp_big.png" id="2_ayiak"]
 
 [node name="HpBig" type="Node2D"]
 script = ExtResource("1_ayiak")

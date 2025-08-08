@@ -78,7 +78,12 @@ func do_triangulate()->void:
 	await _level.every_frame_signal	
 	for child in generated_parent.get_children():
 		(child as Sector)._update_visuals() 	
-	
+
+func _update_visuals() -> void:
+	if _generated_parent.get_child_count() > 0:
+		for s in _generated_parent.get_children(): (s as Sector)._update_visuals()
+	else:
+		do_triangulate()
 		 
 func do_clear()->void:
 	var generated_parent : Node2D = $Generated

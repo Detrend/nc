@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://hg6kt5ju3l3a"]
 
 [ext_resource type="Script" uid="uid://cs4fi7b04r2ix" path="res://scripts/things/Entity.gd" id="1_ago1j"]
-[ext_resource type="Texture2D" uid="uid://d3hp0jxagww6j" path="res://textures/mff_pepe.png" id="2_pm862"]
+[ext_resource type="Texture2D" uid="uid://d3hp0jxagww6j" path="res://imgs/mff_pepe.png" id="2_pm862"]
 
 [node name="Pepe" type="Node2D"]
 z_index = 999

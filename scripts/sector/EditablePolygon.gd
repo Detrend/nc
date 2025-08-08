@@ -103,6 +103,8 @@ func _manage_points()->void:
 func do_postprocess(_points: PackedVector2Array)->bool:
 	return false
 	
+func _update_visuals() -> void:
+	pass
 
 func get_points() -> Array[SectorPoint]:
 	var ret : Array[SectorPoint] = []

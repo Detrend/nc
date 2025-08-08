@@ -2,20 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://drtkj0a072ih3"
-path="res://.godot/imported/hp_small.png-07c89ba8af397dc4618579e9711b393c.ctex"
+uid="uid://hosfsoru1xho"
+path="res://.godot/imported/VegetationDark2.png-e121e914ec9058b898036245e77a51c1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://textures/hp_small.png"
-dest_files=["res://.godot/imported/hp_small.png-07c89ba8af397dc4618579e9711b393c.ctex"]
+source_file="res://imgs/VegetationDark2.png"
+dest_files=["res://.godot/imported/VegetationDark2.png-e121e914ec9058b898036245e77a51c1.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/hdr_compression=1

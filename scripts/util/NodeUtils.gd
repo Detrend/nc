@@ -4,7 +4,8 @@ class_name NodeUtils
 enum LOOKUP_FLAGS{
 	NONE=0,
 	RECURSIVE=1,
-	REQUIRED=2
+	REQUIRED=2,
+	INCLUDE_INTERNAL=4
 }
 	
 static func get_descendant_of_type(node: Node, child_type, flags := LOOKUP_FLAGS.RECURSIVE):
@@ -12,9 +13,10 @@ static func get_descendant_of_type(node: Node, child_type, flags := LOOKUP_FLAGS
 
 
 static func get_child_of_type(node: Node, child_type, flags := LOOKUP_FLAGS.NONE):
+	var include_internal :bool = flags | LOOKUP_FLAGS.INCLUDE_INTERNAL
 	if node:
-		for i in range(node.get_child_count()):
-			var child = node.get_child(i)
+		for i in range(node.get_child_count(include_internal)):
+			var child = node.get_child(i, include_internal)
 			if is_instance_of(child, child_type):
 				return child
 			if flags & LOOKUP_FLAGS.RECURSIVE:
@@ -66,9 +68,10 @@ static func get_descendants_of_type(node: Node, child_type, list: Array = [], fl
 
 static func get_children_by_predicate(node: Node, predicate: Callable, list: Array = [], flags := LOOKUP_FLAGS.NONE):
 	if !node: return [];
+	var include_internal :bool = flags | LOOKUP_FLAGS.INCLUDE_INTERNAL
 	
-	for i in range(node.get_child_count()):
-		var child = node.get_child(i)
+	for i in range(node.get_child_count(include_internal)):
+		var child = node.get_child(i, include_internal)
 		if predicate.call(child):
 			list.append(child)
 		if flags & LOOKUP_FLAGS.RECURSIVE:
@@ -82,9 +85,10 @@ static func get_children_by_predicate(node: Node, predicate: Callable, list: Arr
 
 static func get_children_of_type(node: Node, child_type, list :Array = [], flags := LOOKUP_FLAGS.NONE):
 	if !node: return [];
+	var include_internal :bool = flags | LOOKUP_FLAGS.INCLUDE_INTERNAL
 	
-	for i in range(node.get_child_count()):
-		var child = node.get_child(i)
+	for i in range(node.get_child_count(include_internal)):
+		var child = node.get_child(i, include_internal)
 		if is_instance_of(child, child_type):
 			list.append(child)
 		if flags & LOOKUP_FLAGS.RECURSIVE:

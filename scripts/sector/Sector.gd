@@ -15,13 +15,18 @@ extends EditablePolygon
 		data.ceiling_height = val
 		_update_visuals()
 
+@export var texture_config : TextureConfig:
+	get: return data.texture_config
+	set(val):
+		data.texture_config = val
+		_update_visuals()
+
 
 @export var exclude_from_export : bool = false:
 	get: return exclude_from_export
 	set(val): 
 		exclude_from_export = val
 		_update_visuals()
-
 
 @export_group("Portal")
 
@@ -80,7 +85,7 @@ func _update_visuals() -> void:
 	if not _did_start: return
 	_visualize_border()
 	_visualize_portals()
-	self.color = EditorConfig.get_sector_color(config, self)
+	_visualize_polygon()
 
 
 func on_editing_start()->void:
@@ -105,6 +110,15 @@ func do_postprocess(points: PackedVector2Array)->bool:
 	did_change = did_change or self._remove_duplicit_points (points)
 	did_change = did_change or self._ensure_points_clockwise(points)
 	return did_change
+
+func _visualize_polygon()->void:
+	if _level.coloring_mode == EditorConfig.SectorColoringMode.Texturing and (! self.exclude_from_export):
+		self.color = Color.WHITE
+		self.texture = texture_config.preview
+		self.texture_scale = Vector2(1/(texture_config.wall_scale * _level.export_scale.x), 1/(texture_config.wall_scale * _level.export_scale.y)) * texture_config.preview_scale
+	else:
+		self.color = EditorConfig.get_sector_color(config, self)
+		self.texture = null
 
 func _visualize_border()->void:
 	_visualizer_line.clear_points()

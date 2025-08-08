@@ -3,7 +3,7 @@ extends Resource
 class_name EditorConfig
 
 enum SectorColoringMode{
-	Floor, Ceiling
+	Floor, Ceiling, Texturing
 }
 
 @export_group("Node editing")
