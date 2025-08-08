@@ -255,6 +255,7 @@
     <ClInclude Include="..\source\nucledian\engine\graphics\renderer.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\texture.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\texture_id.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\uniform.h" />
     <ClInclude Include="..\source\nucledian\engine\lights\light.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
     <ClInclude Include="..\source\nucledian\engine\map\physics.h" />

@@ -19,6 +19,8 @@
 #include <engine/player/thing_system.h>
 #include <engine/appearance.h>
 
+#include <engine/graphics/shaders/shaders.h>
+
 #include <game/weapons.h>
 
 #include <array>

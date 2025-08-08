@@ -12,19 +12,6 @@
 
 namespace nc
 {
-
-  /**
-   * Compile-time type-safe uniform identificator. Global constants for uniform are predefined in
-   * shaders::<shader_name>::<uniform_name>..
-   */
-  template<GLint location, typename T>
-  struct Uniform
-  {
-    using UniformType = T;
-
-    inline static constexpr GLint LOCATION = location;
-  };
-
   namespace shaders
   {
     // Solid geometry.

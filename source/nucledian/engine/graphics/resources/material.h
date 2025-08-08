@@ -1,8 +1,11 @@
 #pragma once
 
 #include <math/vector.h>
-#include <engine/graphics/shaders/shaders.h>
+#include <engine/graphics/uniform.h>
 #include <engine/graphics/gl_types.h>
+
+#include <math/vector.h>
+#include <math/matrix.h>
 
 #include <optional>
 

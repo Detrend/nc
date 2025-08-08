@@ -2,6 +2,8 @@
 #include <math/lingebra.h>
 #include <engine/graphics/resources/material.h>
 
+#include <glad/glad.h>
+
 #include <iostream>
 
 namespace nc
