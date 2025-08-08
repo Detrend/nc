@@ -615,76 +615,80 @@ mat4 MapSectors::calc_portal_to_portal_projection(
     const auto first_pt       = vec3{ first_wall_pos.x, 0.0f, first_wall_pos.y };
     nc_assert(first_wall_idx < last_wall_idx);
 
-    for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
-    {
-      const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
-      const auto w1pos    = this->walls[idx].pos;
-      const auto w2pos    = this->walls[next_idx].pos;
-      const auto pt1      = vec3{ w1pos.x, sector.floor_height, w1pos.y };
-      const auto pt2      = vec3{ w2pos.x, sector.floor_height, w2pos.y };
+    if (sector.floor_surface.should_show) {
+        for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
+        {
+            const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
+            const auto w1pos = this->walls[idx].pos;
+            const auto w2pos = this->walls[next_idx].pos;
+            const auto pt1 = vec3{ w1pos.x, sector.floor_height, w1pos.y };
+            const auto pt2 = vec3{ w2pos.x, sector.floor_height, w2pos.y };
 
-      // build floor triangle from the first point and 2 others
-      Vertex
-      {
-        .position            = with_y(first_pt, sector.floor_height),
-        .normal              = VEC3_Y,
-        .cumulative_wall_len = 0.0f,
-        .surface             = sector.floor_surface,
-      }
-      .push_to(vertices_out);
-      Vertex
-      {
-        .position            = pt2,
-        .normal              = VEC3_Y,
-        .cumulative_wall_len = 0.0f,
-        .surface             = sector.floor_surface,
-      }
-      .push_to(vertices_out);
-      Vertex
-      {
-        .position            = pt1,
-        .normal              = VEC3_Y,
-        .cumulative_wall_len = 0.0f,
-        .surface             = sector.floor_surface,
-      }
-      .push_to(vertices_out);
+            // build floor triangle from the first point and 2 others
+            Vertex
+            {
+              .position = with_y(first_pt, sector.floor_height),
+              .normal = VEC3_Y,
+              .cumulative_wall_len = 0.0f,
+              .surface = sector.floor_surface,
+            }
+            .push_to(vertices_out);
+            Vertex
+            {
+              .position = pt2,
+              .normal = VEC3_Y,
+              .cumulative_wall_len = 0.0f,
+              .surface = sector.floor_surface,
+            }
+            .push_to(vertices_out);
+            Vertex
+            {
+              .position = pt1,
+              .normal = VEC3_Y,
+              .cumulative_wall_len = 0.0f,
+              .surface = sector.floor_surface,
+            }
+            .push_to(vertices_out);
+        }
     }
 
 
-    // then build ceiling
-    for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
-    {
-      const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
-      const auto w1pos    = this->walls[idx].pos;
-      const auto w2pos    = this->walls[next_idx].pos;
-      const auto pt1      = vec3{ w1pos.x, sector.ceil_height, w1pos.y };
-      const auto pt2      = vec3{ w2pos.x, sector.ceil_height, w2pos.y };
+    if (sector.ceil_surface.should_show) {
+        // then build ceiling
+        for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
+        {
+            const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
+            const auto w1pos = this->walls[idx].pos;
+            const auto w2pos = this->walls[next_idx].pos;
+            const auto pt1 = vec3{ w1pos.x, sector.ceil_height, w1pos.y };
+            const auto pt2 = vec3{ w2pos.x, sector.ceil_height, w2pos.y };
 
-      // build floor triangle from the first point and 2 others
-      Vertex
-      {
-        .position            = with_y(first_pt, sector.ceil_height),
-        .normal              = -VEC3_Y,
-        .cumulative_wall_len = 0.0f,
-        .surface             = sector.ceil_surface,
-      }
-      .push_to(vertices_out);
-      Vertex
-      {
-        .position            = pt1,
-        .normal              = -VEC3_Y,
-        .cumulative_wall_len = 0.0f,
-        .surface             = sector.ceil_surface,
-      }
-      .push_to(vertices_out);
-      Vertex
-      {
-        .position            = pt2,
-        .normal              = -VEC3_Y,
-        .cumulative_wall_len = 0.0f,
-        .surface             = sector.ceil_surface,
-      }
-      .push_to(vertices_out);
+            // build floor triangle from the first point and 2 others
+            Vertex
+            {
+              .position = with_y(first_pt, sector.ceil_height),
+              .normal = -VEC3_Y,
+              .cumulative_wall_len = 0.0f,
+              .surface = sector.ceil_surface,
+            }
+            .push_to(vertices_out);
+            Vertex
+            {
+              .position = pt1,
+              .normal = -VEC3_Y,
+              .cumulative_wall_len = 0.0f,
+              .surface = sector.ceil_surface,
+            }
+            .push_to(vertices_out);
+            Vertex
+            {
+              .position = pt2,
+              .normal = -VEC3_Y,
+              .cumulative_wall_len = 0.0f,
+              .surface = sector.ceil_surface,
+            }
+            .push_to(vertices_out);
+        }
     }
 
     // build walls
@@ -703,117 +707,121 @@ mat4 MapSectors::calc_portal_to_portal_projection(
         {sector.floor_height, sector.ceil_height}, {}
       };
 
-    const auto& wall = this->walls[idx];
-    if (wall.portal_sector_id != INVALID_SECTOR_ID)
-    {
-      nc_assert(wall.portal_sector_id < this->sectors.size());
-      const auto& neighbor = this->sectors[wall.portal_sector_id];
+      const auto& wall = this->walls[idx];
+      if (! wall.surface.should_show) {
+          continue;
+      }
 
+      if (wall.portal_sector_id != INVALID_SECTOR_ID)
+      {
+        nc_assert(wall.portal_sector_id < this->sectors.size());
+        const auto& neighbor = this->sectors[wall.portal_sector_id];
+      
         if (neighbor.floor_height >= sector.ceil_height || neighbor.ceil_height <= sector.floor_height)
         {
-          // no overlap, draw the full wall
-          num_wall_segments = 1;
-          segment_heights[0] = { sector.floor_height, sector.ceil_height };
+        // no overlap, draw the full wall
+        num_wall_segments = 1;
+        segment_heights[0] = { sector.floor_height, sector.ceil_height };
         }
         else if (neighbor.ceil_height >= sector.ceil_height && neighbor.floor_height <= sector.floor_height)
         {
-          // no need to draw any wall
-          continue;
+        // no need to draw any wall
+        continue;
         }
         else if (neighbor.ceil_height >= sector.ceil_height && neighbor.floor_height > sector.floor_height)
         {
-          // draw only bottom segment
-          num_wall_segments = 1;
-          segment_heights[0] = { sector.floor_height, neighbor.floor_height };
+        // draw only bottom segment
+        num_wall_segments = 1;
+        segment_heights[0] = { sector.floor_height, neighbor.floor_height };
         }
         else if (neighbor.ceil_height < sector.ceil_height && neighbor.floor_height <= sector.floor_height)
         {
-          // draw only top segment
-          num_wall_segments = 1;
-          segment_heights[0] = { neighbor.ceil_height, sector.ceil_height };
+        // draw only top segment
+        num_wall_segments = 1;
+        segment_heights[0] = { neighbor.ceil_height, sector.ceil_height };
         }
         else
         {
-          // draw both top and bottom
-          num_wall_segments = 2;
-          segment_heights[0] = { sector.floor_height, neighbor.floor_height };
-          segment_heights[1] = { neighbor.ceil_height, sector.ceil_height };
+        // draw both top and bottom
+        num_wall_segments = 2;
+        segment_heights[0] = { sector.floor_height, neighbor.floor_height };
+        segment_heights[1] = { neighbor.ceil_height, sector.ceil_height };
         }
       }
-
-    const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
-
-    const auto w1pos = this->walls[idx].pos;
-    const auto w2pos = this->walls[next_idx].pos;
-
-      const auto p1_to_p2        = w1pos != w2pos ? normalize(w2pos - w1pos) : vec2{ 1, 0 };
-      const auto flp             = flipped(p1_to_p2);
-      const auto wall_normal     = vec3{ flp.x, 0.0f, flp.y };
-      const f32  end_wall_length = cumulative_wall_length + distance(w1pos, w2pos);
-
-    for (u32 wall_i = 0; wall_i < num_wall_segments; ++wall_i)
-    {
-      const auto f1 = vec3{ w1pos.x, segment_heights[wall_i].y1, w1pos.y };
-      const auto f2 = vec3{ w2pos.x, segment_heights[wall_i].y1, w2pos.y };
-      const auto c1 = vec3{ w1pos.x, segment_heights[wall_i].y2, w1pos.y };
-      const auto c2 = vec3{ w2pos.x, segment_heights[wall_i].y2, w2pos.y };
-
-        // first triangle
-        Vertex
-        {
-          .position = f1,
-          .normal = wall_normal,
-          .cumulative_wall_len = cumulative_wall_length,
-          .surface = wall.surface,
+      
+      const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
+      
+      const auto w1pos = this->walls[idx].pos;
+      const auto w2pos = this->walls[next_idx].pos;
+      
+        const auto p1_to_p2        = w1pos != w2pos ? normalize(w2pos - w1pos) : vec2{ 1, 0 };
+        const auto flp             = flipped(p1_to_p2);
+        const auto wall_normal     = vec3{ flp.x, 0.0f, flp.y };
+        const f32  end_wall_length = cumulative_wall_length + distance(w1pos, w2pos);
+      
+      for (u32 wall_i = 0; wall_i < num_wall_segments; ++wall_i)
+      {
+        const auto f1 = vec3{ w1pos.x, segment_heights[wall_i].y1, w1pos.y };
+        const auto f2 = vec3{ w2pos.x, segment_heights[wall_i].y1, w2pos.y };
+        const auto c1 = vec3{ w1pos.x, segment_heights[wall_i].y2, w1pos.y };
+        const auto c2 = vec3{ w2pos.x, segment_heights[wall_i].y2, w2pos.y };
+      
+          // first triangle
+          Vertex
+          {
+            .position = f1,
+            .normal = wall_normal,
+            .cumulative_wall_len = cumulative_wall_length,
+            .surface = wall.surface,
+          }
+          .push_to(vertices_out);
+          Vertex
+          {
+            .position = f2,
+            .normal = wall_normal,
+            .cumulative_wall_len = end_wall_length,
+            .surface = wall.surface,
+          }
+          .push_to(vertices_out);
+          Vertex
+          {
+            .position = c1,
+            .normal = wall_normal,
+            .cumulative_wall_len = cumulative_wall_length,
+            .surface = wall.surface,
+          }
+          .push_to(vertices_out);
+      
+      
+          // second triangle
+          Vertex
+          {
+            .position = c1,
+            .normal = wall_normal,
+            .cumulative_wall_len = cumulative_wall_length,
+            .surface = wall.surface,
+          }
+          .push_to(vertices_out);
+          Vertex
+          {
+            .position = f2,
+            .normal = wall_normal,
+            .cumulative_wall_len = end_wall_length,
+            .surface = wall.surface,
+          }
+          .push_to(vertices_out);
+          Vertex
+          {
+            .position = c2,
+            .normal = wall_normal,
+            .cumulative_wall_len = end_wall_length,
+            .surface = wall.surface,
+          }
+          .push_to(vertices_out);
         }
-        .push_to(vertices_out);
-        Vertex
-        {
-          .position = f2,
-          .normal = wall_normal,
-          .cumulative_wall_len = end_wall_length,
-          .surface = wall.surface,
-        }
-        .push_to(vertices_out);
-        Vertex
-        {
-          .position = c1,
-          .normal = wall_normal,
-          .cumulative_wall_len = cumulative_wall_length,
-          .surface = wall.surface,
-        }
-        .push_to(vertices_out);
-
-
-        // second triangle
-        Vertex
-        {
-          .position = c1,
-          .normal = wall_normal,
-          .cumulative_wall_len = cumulative_wall_length,
-          .surface = wall.surface,
-        }
-        .push_to(vertices_out);
-        Vertex
-        {
-          .position = f2,
-          .normal = wall_normal,
-          .cumulative_wall_len = end_wall_length,
-          .surface = wall.surface,
-        }
-        .push_to(vertices_out);
-        Vertex
-        {
-          .position = c2,
-          .normal = wall_normal,
-          .cumulative_wall_len = end_wall_length,
-          .surface = wall.surface,
-        }
-        .push_to(vertices_out);
+      
+        cumulative_wall_length = end_wall_length;
       }
-
-      cumulative_wall_length = end_wall_length;
-    }
   }
 
 //==============================================================================

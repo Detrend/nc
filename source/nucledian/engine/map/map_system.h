@@ -101,6 +101,8 @@ struct SurfaceData
   f32       rotation   = 0.0f;
   // Offset in texture coordinates [0-1].
   vec2      offset     = VEC2_ZERO;
+  // If false, skip generating the mesh entirely
+  bool      should_show = true;
 };
 
 // Each sector is comprised of internal data
