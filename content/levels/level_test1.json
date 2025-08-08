@@ -3,9 +3,9 @@
 		{
 			"is_player": true,
 			"position": [
-				-0.400000005960464,
-				-2.10000014305115,
-				0.6
+				-0.699999988079071,
+				1.10000002384186,
+				0.5
 			]
 		},
 		{
@@ -29,7 +29,7 @@
 			"position": [
 				-48.2000007629395,
 				1.89999997615814,
-				5.1
+				4.1
 			]
 		},
 		{
@@ -140,8 +140,24 @@
 		},
 		{
 			"position": [
-				-49.4000015258789,
-				-6.5,
+				-43.7000007629395,
+				-4.09999990463257,
+				0.1
+			],
+			"type": 0
+		},
+		{
+			"position": [
+				-54.7000007629395,
+				-6.90000009536743,
+				0.1
+			],
+			"type": 0
+		},
+		{
+			"position": [
+				-48.6000022888184,
+				-6.0,
 				5.1
 			],
 			"type": 0
@@ -156,8 +172,8 @@
 		},
 		{
 			"position": [
-				-54.7000007629395,
-				-6.90000009536743,
+				-43.5,
+				-4.40000009536743,
 				5.1
 			],
 			"type": 0
@@ -166,7 +182,7 @@
 			"position": [
 				-50.0,
 				0.300000011920929,
-				5.1
+				4.1
 			],
 			"type": 0
 		},
@@ -773,19 +789,19 @@
 			-2.40000009536743
 		],
 		[
-			-21.6000003814697,
-			0.0
+			-17.6000003814697,
+			-2.40000009536743
 		],
 		[
 			-17.6000003814697,
-			-2.40000009536743
+			0.0
 		],
 		[
 			-20.0,
 			0.0
 		],
 		[
-			-17.6000003814697,
+			-21.6000003814697,
 			0.0
 		],
 		[
@@ -1081,7 +1097,7 @@
 			5.59999990463257
 		],
 		[
-			-36.7999992370605,
+			-35.7999992370605,
 			8.10000038146973
 		],
 		[
@@ -1101,79 +1117,79 @@
 			5.5
 		],
 		[
-			-36.7999992370605,
-			5.59999990463257
-		],
-		[
-			-33.4000015258789,
-			8.30000019073486
-		],
-		[
-			-33.9000015258789,
-			8.60000038146973
-		],
-		[
-			-34.4000015258789,
-			8.80000019073486
-		],
-		[
-			-35.2999992370605,
-			8.80000019073486
-		],
-		[
-			-35.2000007629395,
-			4.80000019073486
-		],
-		[
-			-34.4000015258789,
-			4.80000019073486
-		],
-		[
-			-33.6000022888184,
-			9.60000038146973
-		],
-		[
-			-33.7999992370605,
-			9.0
-		],
-		[
-			-33.2999992370605,
-			8.60000038146973
-		],
-		[
-			-33.2999992370605,
-			8.80000019073486
-		],
-		[
-			-32.6000022888184,
-			8.80000019073486
-		],
-		[
-			-32.6000022888184,
-			9.69999980926514
+			-35.7999992370605,
+			5.5
 		],
 		[
 			-33.1000022888184,
-			9.69999980926514
+			8.40000057220459
+		],
+		[
+			-33.6000022888184,
+			8.80000019073486
+		],
+		[
+			-34.2000007629395,
+			8.80000019073486
+		],
+		[
+			-34.9000015258789,
+			8.80000019073486
+		],
+		[
+			-34.7000007629395,
+			4.80000019073486
+		],
+		[
+			-33.9000015258789,
+			4.80000019073486
 		],
 		[
 			-33.0,
-			8.80000019073486
-		],
-		[
-			-32.0,
-			8.80000019073486
-		],
-		[
-			-32.0,
 			9.60000038146973
 		],
 		[
-			-35.2000007629395,
+			-33.5,
+			9.19999980926514
+		],
+		[
+			-32.9000015258789,
+			8.60000038146973
+		],
+		[
+			-32.7000007629395,
+			8.80000019073486
+		],
+		[
+			-32.0,
+			8.80000019073486
+		],
+		[
+			-32.0,
+			9.69999980926514
+		],
+		[
+			-32.5,
+			9.69999980926514
+		],
+		[
+			-32.4000015258789,
+			8.80000019073486
+		],
+		[
+			-31.3999996185303,
+			8.80000019073486
+		],
+		[
+			-31.3999996185303,
+			9.60000038146973
+		],
+		[
+			-35.0,
 			3.20000004768372
 		],
 		[
-			-34.4000015258789,
+			-34.1000022888184,
 			3.20000004768372
 		],
 		[
@@ -1253,12 +1269,12 @@
 			11.9000005722046
 		],
 		[
-			-35.2999992370605,
-			9.60000038146973
+			-34.7000007629395,
+			9.90000057220459
 		],
 		[
-			-34.4000015258789,
-			9.60000038146973
+			-33.7999992370605,
+			9.90000057220459
 		],
 		[
 			-32.7000007629395,
@@ -1317,6 +1333,22 @@
 			15.1000003814697
 		],
 		[
+			-34.1000022888184,
+			9.5
+		],
+		[
+			-34.7999992370605,
+			9.60000038146973
+		],
+		[
+			-34.7999992370605,
+			9.19999980926514
+		],
+		[
+			-34.2000007629395,
+			9.10000038146973
+		],
+		[
 			-38.9000015258789,
 			4.80000019073486
 		],
@@ -1369,8 +1401,8 @@
 			3.5
 		],
 		[
-			-51.2000007629395,
-			3.40000009536743
+			-51.4000015258789,
+			3.29999995231628
 		],
 		[
 			-55.7000007629395,
@@ -1379,6 +1411,18 @@
 		[
 			-53.7000007629395,
 			1.39999997615814
+		],
+		[
+			-51.2000007629395,
+			-9.0
+		],
+		[
+			-52.0,
+			-10.6000003814697
+		],
+		[
+			-47.4000015258789,
+			-9.69999980926514
 		],
 		[
 			-55.2000007629395,
@@ -1397,7 +1441,7 @@
 			-0.100000001490116
 		],
 		[
-			-56.6000022888184,
+			-56.7000007629395,
 			-1.20000004768372
 		],
 		[
@@ -1405,8 +1449,20 @@
 			0.100000001490116
 		],
 		[
-			-47.4000015258789,
-			-9.69999980926514
+			-54.2000007629395,
+			-5.5
+		],
+		[
+			-55.2000007629395,
+			-4.70000028610229
+		],
+		[
+			-55.2000007629395,
+			-6.0
+		],
+		[
+			-54.0,
+			-6.30000019073486
 		],
 		[
 			-41.6000022888184,
@@ -1417,88 +1473,52 @@
 			-7.90000009536743
 		],
 		[
-			-48.2999992370605,
-			-7.30000019073486
-		],
-		[
-			-40.7000007629395,
-			-10.1999998092651
-		],
-		[
-			-41.2999992370605,
-			-8.10000038146973
+			-49.1000022888184,
+			-7.09999990463257
 		],
 		[
 			-45.7000007629395,
 			-7.90000009536743
 		],
 		[
-			-40.7999992370605,
-			-10.5
+			-52.2000007629395,
+			-3.90000009536743
 		],
 		[
-			-55.2999992370605,
-			-7.59999990463257
+			-53.2000007629395,
+			-5.5
 		],
 		[
-			-57.9000015258789,
-			-4.09999990463257
+			-53.2000007629395,
+			-6.5
 		],
 		[
-			-57.9000015258789,
-			-7.70000028610229
+			-52.2000007629395,
+			-8.5
 		],
 		[
-			-56.9000015258789,
-			-10.6999998092651
+			-51.9000015258789,
+			-6.30000019073486
 		],
 		[
-			-55.2000007629395,
-			-10.6999998092651
+			-51.6000022888184,
+			-3.90000009536743
 		],
 		[
-			-54.2999992370605,
-			-8.10000038146973
-		],
-		[
-			-52.0,
-			-10.6000003814697
-		],
-		[
-			-40.2000007629395,
-			-8.10000038146973
+			-40.7000007629395,
+			-10.1999998092651
 		],
 		[
 			-39.2000007629395,
 			-10.1999998092651
 		],
 		[
-			-41.9000015258789,
-			-3.29999995231628
+			-39.2999992370605,
+			-7.59999990463257
 		],
 		[
-			-43.0,
-			-4.59999990463257
-		],
-		[
-			-43.2000007629395,
-			-5.90000009536743
-		],
-		[
-			-41.7999992370605,
-			-7.20000028610229
-		],
-		[
-			-41.4000015258789,
-			-6.30000019073486
-		],
-		[
-			-41.2000007629395,
-			-3.60000014305115
-		],
-		[
-			-55.0,
-			-5.40000009536743
+			-40.4000015258789,
+			-7.59999990463257
 		],
 		[
 			-39.2000007629395,
@@ -1509,56 +1529,76 @@
 			-10.5
 		],
 		[
-			-40.2000007629395,
-			-6.30000019073486
+			-38.9000015258789,
+			-6.70000028610229
+		],
+		[
+			-46.9000015258789,
+			-3.20000004768372
+		],
+		[
+			-50.9000015258789,
+			-6.09999990463257
+		],
+		[
+			-49.4000015258789,
+			-5.40000009536743
+		],
+		[
+			-55.2000007629395,
+			-10.6999998092651
+		],
+		[
+			-41.2000007629395,
+			-3.60000014305115
+		],
+		[
+			-41.9000015258789,
+			-3.29999995231628
 		],
 		[
 			-44.0,
 			-4.0
 		],
 		[
-			-41.9000015258789,
-			-2.70000004768372
+			-43.0,
+			-4.59999990463257
 		],
 		[
-			-46.4000015258789,
-			-7.30000019073486
+			-40.5,
+			-5.80000019073486
 		],
 		[
-			-48.7999992370605,
-			-5.5
+			-39.2999992370605,
+			-5.80000019073486
 		],
 		[
-			-50.2000007629395,
+			-56.9000015258789,
+			-10.6999998092651
+		],
+		[
+			-56.1000022888184,
+			-6.20000028610229
+		],
+		[
+			-57.9000015258789,
 			-7.70000028610229
 		],
 		[
-			-52.2000007629395,
-			-3.90000009536743
+			-57.6000022888184,
+			-3.20000004768372
 		],
 		[
-			-54.0,
-			-5.20000028610229
+			-57.9000015258789,
+			-4.09999990463257
 		],
 		[
-			-50.5,
-			-6.0
+			-56.2000007629395,
+			-4.70000028610229
 		],
 		[
-			-51.6000022888184,
-			-3.90000009536743
-		],
-		[
-			-52.1000022888184,
-			-3.29999995231628
-		],
-		[
-			-51.6000022888184,
-			-3.10000014305115
-		],
-		[
-			-46.9000015258789,
-			-3.10000014305115
+			-57.4000015258789,
+			-3.20000004768372
 		],
 		[
 			-55.0,
@@ -1569,6 +1609,14 @@
 			0.600000023841858
 		],
 		[
+			-52.1000022888184,
+			-3.29999995231628
+		],
+		[
+			-41.9000015258789,
+			-2.70000004768372
+		],
+		[
 			-44.6000022888184,
 			-5.90000009536743
 		],
@@ -1577,12 +1625,36 @@
 			-7.30000019073486
 		],
 		[
+			-40.7999992370605,
+			-10.5
+		],
+		[
+			-40.9000015258789,
+			-6.70000028610229
+		],
+		[
+			-43.2000007629395,
+			-5.90000009536743
+		],
+		[
+			-47.7000007629395,
+			-4.90000009536743
+		],
+		[
+			-47.2000007629395,
+			-6.70000028610229
+		],
+		[
+			-46.4000015258789,
+			-7.30000019073486
+		],
+		[
 			-45.0,
 			-4.70000028610229
 		],
 		[
-			-39.7999992370605,
-			-7.20000028610229
+			-51.6000022888184,
+			-3.10000014305115
 		],
 		[
 			-41.2999992370605,
@@ -1637,6 +1709,14 @@
 			-13.1000003814697
 		],
 		[
+			-56.9000015258789,
+			-1.20000004768372
+		],
+		[
+			-57.7000007629395,
+			-3.0
+		],
+		[
 			-35.5,
 			-10.5
 		],
@@ -1665,6 +1745,14 @@
 			-6.40000009536743
 		],
 		[
+			494.700012207031,
+			543.400024414063
+		],
+		[
+			516.100036621094,
+			544.400024414063
+		],
+		[
 			862.200012207031,
 			891.799987792969
 		],
@@ -1673,20 +1761,8 @@
 			890.200012207031
 		],
 		[
-			516.100036621094,
-			544.400024414063
-		],
-		[
-			1052.59997558594,
-			126.200004577637
-		],
-		[
-			494.700012207031,
-			543.400024414063
-		],
-		[
-			473.399993896484,
-			545.5
+			473.200012207031,
+			544.200012207031
 		],
 		[
 			476.300018310547,
@@ -1703,6 +1779,10 @@
 		[
 			493.5,
 			502.800018310547
+		],
+		[
+			1052.59997558594,
+			126.200004577637
 		],
 		[
 			510.200012207031,
@@ -1884,8 +1964,28 @@
 	"sectors": [
 		{
 			"ceiling": 4.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@33441",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 0,
 			"points": [
 				0,
@@ -1901,12 +2001,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 4.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@41759",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 1,
 			"points": [
 				8,
@@ -1918,12 +2048,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@42784",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 2,
 			"points": [
 				10,
@@ -1933,12 +2093,42 @@
 			],
 			"portal_destination_wall": 3,
 			"portal_target": 6,
-			"portal_wall": 1
+			"portal_wall": 1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@43129",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 3,
 			"points": [
 				16,
@@ -1948,12 +2138,42 @@
 			],
 			"portal_destination_wall": 1,
 			"portal_target": 5,
-			"portal_wall": 3
+			"portal_wall": 3,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 5.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@59398",
-			"floor": -0.1,
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 4,
 			"points": [
 				18,
@@ -1965,12 +2185,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@67463",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 5,
 			"points": [
 				19,
@@ -1980,12 +2230,42 @@
 			],
 			"portal_destination_wall": 3,
 			"portal_target": 3,
-			"portal_wall": 1
+			"portal_wall": 1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@67810",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 6,
 			"points": [
 				24,
@@ -1995,12 +2275,42 @@
 			],
 			"portal_destination_wall": 1,
 			"portal_target": 2,
-			"portal_wall": 3
+			"portal_wall": 3,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@76073",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 7,
 			"points": [
 				26,
@@ -2010,12 +2320,42 @@
 			],
 			"portal_destination_wall": 2,
 			"portal_target": 8,
-			"portal_wall": 0
+			"portal_wall": 0,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@76420",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 8,
 			"points": [
 				12,
@@ -2025,12 +2365,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 7,
-			"portal_wall": 2
+			"portal_wall": 2,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 9,
 			"points": [
 				29,
@@ -2041,12 +2411,42 @@
 			],
 			"portal_destination_wall": 1,
 			"portal_target": 58,
-			"portal_wall": 1
+			"portal_wall": 1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 2.1,
+			"ceiling_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@191806",
 			"floor": 0.6,
+			"floor_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 10,
 			"points": [
 				4,
@@ -2056,12 +2456,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 2.1,
+			"ceiling_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@192154",
 			"floor": 0.6,
+			"floor_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 11,
 			"points": [
 				5,
@@ -2071,12 +2501,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 2.1,
+			"ceiling_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@193900",
 			"floor": 0.6,
+			"floor_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 12,
 			"points": [
 				36,
@@ -2086,12 +2546,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 2.1,
+			"ceiling_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@194248",
 			"floor": 0.6,
+			"floor_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 13,
 			"points": [
 				37,
@@ -2101,12 +2591,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector4",
 			"floor": 0.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 14,
 			"points": [
 				39,
@@ -2118,12 +2638,42 @@
 			],
 			"portal_destination_wall": 3,
 			"portal_target": 49,
-			"portal_wall": 3
+			"portal_wall": 3,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector5",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 15,
 			"points": [
 				39,
@@ -2136,12 +2686,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 59,
-			"portal_wall": 3
+			"portal_wall": 3,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector5a",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 16,
 			"points": [
 				50,
@@ -2150,13 +2730,43 @@
 				48
 			],
 			"portal_destination_wall": 2,
-			"portal_target": 193,
-			"portal_wall": 0
+			"portal_target": 202,
+			"portal_wall": 0,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector6",
 			"floor": 0.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 17,
 			"points": [
 				45,
@@ -2166,14 +2776,44 @@
 				55,
 				46
 			],
-			"portal_destination_wall": 3,
+			"portal_destination_wall": 2,
 			"portal_target": 52,
-			"portal_wall": 1
+			"portal_wall": 1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector7",
 			"floor": 0.2,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 18,
 			"points": [
 				54,
@@ -2184,12 +2824,42 @@
 			],
 			"portal_destination_wall": 1,
 			"portal_target": 87,
-			"portal_wall": 2
+			"portal_wall": 2,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 2.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector10",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 19,
 			"points": [
 				57,
@@ -2201,12 +2871,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector11",
 			"floor": 0.2,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 20,
 			"points": [
 				63,
@@ -2218,12 +2918,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 2.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector14",
 			"floor": 0.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 21,
 			"points": [
 				69,
@@ -2233,12 +2963,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 2.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector15",
 			"floor": 0.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 22,
 			"points": [
 				73,
@@ -2248,12 +3008,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 2.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector16",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 23,
 			"points": [
 				62,
@@ -2263,12 +3053,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector17",
 			"floor": 0.2,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 24,
 			"points": [
 				74,
@@ -2278,12 +3098,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 2.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector18",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 25,
 			"points": [
 				69,
@@ -2294,12 +3144,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector18a",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 26,
 			"points": [
 				78,
@@ -2309,12 +3189,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 39,
-			"portal_wall": 3
+			"portal_wall": 3,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector19",
 			"floor": 0.2,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 27,
 			"points": [
 				64,
@@ -2324,12 +3234,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@36231",
 			"floor": 8.5,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 28,
 			"points": [
 				80,
@@ -2339,12 +3279,42 @@
 			],
 			"portal_destination_wall": 2,
 			"portal_target": 29,
-			"portal_wall": 3
+			"portal_wall": 3,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@53437",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 29,
 			"points": [
 				82,
@@ -2354,12 +3324,42 @@
 			],
 			"portal_destination_wall": 3,
 			"portal_target": 28,
-			"portal_wall": 2
+			"portal_wall": 2,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 30,
 			"points": [
 				68,
@@ -2369,12 +3369,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@33690",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 31,
 			"points": [
 				86,
@@ -2383,12 +3413,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@34035",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 32,
 			"points": [
 				87,
@@ -2398,12 +3458,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector-9156",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 33,
 			"points": [
 				89,
@@ -2414,12 +3504,42 @@
 			],
 			"portal_destination_wall": 2,
 			"portal_target": 36,
-			"portal_wall": 0
+			"portal_wall": 0,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector-2449",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 34,
 			"points": [
 				92,
@@ -2430,12 +3550,42 @@
 			],
 			"portal_destination_wall": 2,
 			"portal_target": 35,
-			"portal_wall": 2
+			"portal_wall": 2,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector-7845",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 35,
 			"points": [
 				98,
@@ -2445,12 +3595,42 @@
 			],
 			"portal_destination_wall": 2,
 			"portal_target": 34,
-			"portal_wall": 2
+			"portal_wall": 2,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector-438",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 36,
 			"points": [
 				93,
@@ -2460,12 +3640,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 33,
-			"portal_wall": 2
+			"portal_wall": 2,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector-36",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 37,
 			"points": [
 				92,
@@ -2475,12 +3685,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector-2521",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 38,
 			"points": [
 				103,
@@ -2491,12 +3731,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector-2521b",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 39,
 			"points": [
 				105,
@@ -2508,12 +3778,42 @@
 			],
 			"portal_destination_wall": 3,
 			"portal_target": 26,
-			"portal_wall": 0
+			"portal_wall": 0,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 2.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector10a",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 40,
 			"points": [
 				109,
@@ -2523,12 +3823,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 42,
-			"portal_wall": 0
+			"portal_wall": 0,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector-4300",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 41,
 			"points": [
 				111,
@@ -2537,12 +3867,42 @@
 			],
 			"portal_destination_wall": 1,
 			"portal_target": 46,
-			"portal_wall": 2
+			"portal_wall": 2,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector-6355",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 42,
 			"points": [
 				111,
@@ -2551,12 +3911,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 40,
-			"portal_wall": 0
+			"portal_wall": 0,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector-9244",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 43,
 			"points": [
 				114,
@@ -2565,12 +3955,42 @@
 			],
 			"portal_destination_wall": 2,
 			"portal_target": 47,
-			"portal_wall": 0
+			"portal_wall": 0,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector-987",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 44,
 			"points": [
 				112,
@@ -2579,12 +3999,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector-3721",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 45,
 			"points": [
 				113,
@@ -2593,12 +4043,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector-8582",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 46,
 			"points": [
 				112,
@@ -2607,12 +4087,42 @@
 			],
 			"portal_destination_wall": 2,
 			"portal_target": 41,
-			"portal_wall": 1
+			"portal_wall": 1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector-1877",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 47,
 			"points": [
 				117,
@@ -2621,12 +4131,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 43,
-			"portal_wall": 2
+			"portal_wall": 2,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector-7816",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 48,
 			"points": [
 				119,
@@ -2635,12 +4175,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 4.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector8",
 			"floor": 0.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 49,
 			"points": [
 				120,
@@ -2648,78 +4218,228 @@
 				122,
 				123,
 				124,
-				125,
-				126
+				125
 			],
 			"portal_destination_wall": 3,
 			"portal_target": 14,
-			"portal_wall": 3
+			"portal_wall": 3,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 4.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector9",
 			"floor": 0.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 50,
 			"points": [
 				65,
+				126,
 				127,
 				128,
 				66
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 4.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector12",
 			"floor": 0.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 51,
 			"points": [
 				67,
-				126,
+				129,
+				120,
 				125,
 				68
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 4.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector13",
 			"floor": 0.0000000000000000277556,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 52,
 			"points": [
-				129,
-				128,
 				127,
+				126,
 				130,
 				131
 			],
 			"portal_destination_wall": 1,
 			"portal_target": 17,
-			"portal_wall": 3
+			"portal_wall": 2,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 4.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector21",
 			"floor": 0.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 53,
 			"points": [
-				126,
+				129,
 				132,
 				133,
 				120
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 2.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector22",
 			"floor": 0.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 54,
 			"points": [
 				133,
@@ -2732,12 +4452,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 5.8,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector23",
 			"floor": 0.2,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 55,
 			"points": [
 				139,
@@ -2751,12 +4501,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 3.6,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector24",
 			"floor": 0.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 56,
 			"points": [
 				137,
@@ -2767,12 +4547,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 3.6,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector25",
 			"floor": 0.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 57,
 			"points": [
 				138,
@@ -2784,15 +4594,45 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 4.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector20",
 			"floor": 0.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 58,
 			"points": [
-				129,
+				127,
 				150,
 				151,
 				152,
@@ -2803,12 +4643,42 @@
 			],
 			"portal_destination_wall": 1,
 			"portal_target": 9,
-			"portal_wall": 1
+			"portal_wall": 1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector30",
 			"floor": 0.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 59,
 			"points": [
 				154,
@@ -2818,12 +4688,42 @@
 			],
 			"portal_destination_wall": 3,
 			"portal_target": 15,
-			"portal_wall": 0
+			"portal_wall": 0,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector",
 			"floor": 0.3,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 60,
 			"points": [
 				156,
@@ -2833,12 +4733,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_Polygon2D_35078",
 			"floor": 0.2,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 61,
 			"points": [
 				149,
@@ -2847,12 +4777,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@24469",
 			"floor": 0.356522,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 62,
 			"points": [
 				158,
@@ -2861,12 +4821,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@24817",
 			"floor": 0.513044,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 63,
 			"points": [
 				159,
@@ -2875,12 +4865,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@30042",
 			"floor": 0.669566,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 64,
 			"points": [
 				149,
@@ -2889,12 +4909,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@30390",
 			"floor": 0.826088,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 65,
 			"points": [
 				149,
@@ -2904,12 +4954,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@30738",
 			"floor": 0.98261,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 66,
 			"points": [
 				163,
@@ -2919,12 +4999,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@31086",
 			"floor": 1.139132,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 67,
 			"points": [
 				165,
@@ -2934,12 +5044,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@44213",
 			"floor": 1.295654,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 68,
 			"points": [
 				166,
@@ -2949,12 +5089,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@25686",
 			"floor": 1.452176,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 69,
 			"points": [
 				169,
@@ -2964,12 +5134,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_Polygon2D_26386aa",
 			"floor": 1.608698,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 70,
 			"points": [
 				171,
@@ -2980,12 +5180,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_Polygon2D_26386ab",
 			"floor": 1.76522,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 71,
 			"points": [
 				172,
@@ -2995,12 +5225,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_Polygon2D_26386baa",
 			"floor": 1.921742,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 72,
 			"points": [
 				175,
@@ -3009,12 +5269,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_Polygon2D_26386bab",
 			"floor": 2.078264,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 73,
 			"points": [
 				175,
@@ -3023,12 +5313,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_Polygon2D_26386bba",
 			"floor": 2.234786,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 74,
 			"points": [
 				175,
@@ -3038,12 +5358,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_Polygon2D_26386bbb",
 			"floor": 2.391308,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 75,
 			"points": [
 				179,
@@ -3054,12 +5404,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@29862",
 			"floor": 2.54783,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 76,
 			"points": [
 				181,
@@ -3069,12 +5449,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@31604",
 			"floor": 2.704352,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 77,
 			"points": [
 				186,
@@ -3084,12 +5494,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@32646",
 			"floor": 2.860874,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 78,
 			"points": [
 				188,
@@ -3099,12 +5539,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@34040",
 			"floor": 3.017396,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 79,
 			"points": [
 				190,
@@ -3114,12 +5584,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@37536",
 			"floor": 3.173918,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 80,
 			"points": [
 				192,
@@ -3129,12 +5629,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@38925",
 			"floor": 3.33044,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 81,
 			"points": [
 				194,
@@ -3143,12 +5673,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@40329",
 			"floor": 3.486962,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 82,
 			"points": [
 				195,
@@ -3157,12 +5717,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 6.2,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@41376",
 			"floor": 3.643484,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 83,
 			"points": [
 				196,
@@ -3171,12 +5761,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 7.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector",
 			"floor": 3.800006,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 84,
 			"points": [
 				196,
@@ -3186,12 +5806,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 7.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@45551",
 			"floor": 3.8,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 85,
 			"points": [
 				197,
@@ -3201,12 +5851,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 7.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@119216",
 			"floor": 3.8,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 86,
 			"points": [
 				199,
@@ -3216,12 +5896,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 7.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@120857",
-			"floor": 3.8,
+			"floor": 3.6,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 87,
 			"points": [
 				203,
@@ -3233,12 +5943,42 @@
 			],
 			"portal_destination_wall": 2,
 			"portal_target": 18,
-			"portal_wall": 1
+			"portal_wall": 1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 7.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@121205",
 			"floor": 1.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 88,
 			"points": [
 				201,
@@ -3254,12 +5994,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 2.1,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_Polygon2D_121205a",
 			"floor": 0.5,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 89,
 			"points": [
 				215,
@@ -3269,12 +6039,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 2.2,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_Polygon2D_121205e",
 			"floor": 0.75,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 90,
 			"points": [
 				216,
@@ -3284,12 +6084,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 2.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_Polygon2D_121205b",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 91,
 			"points": [
 				219,
@@ -3299,12 +6129,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 2.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_Polygon2D_121205d",
 			"floor": 0.25,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 92,
 			"points": [
 				221,
@@ -3314,12 +6174,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_Polygon2D_121205c",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 93,
 			"points": [
 				223,
@@ -3328,13 +6218,43 @@
 				219
 			],
 			"portal_destination_wall": 2,
-			"portal_target": 201,
-			"portal_wall": 0
+			"portal_target": 210,
+			"portal_wall": 0,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 3.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@122971",
 			"floor": 1.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 94,
 			"points": [
 				214,
@@ -3344,12 +6264,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 3.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@123686",
 			"floor": 1.2,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 95,
 			"points": [
 				226,
@@ -3360,12 +6310,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 4.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@124034",
 			"floor": 1.4,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 96,
 			"points": [
 				230,
@@ -3375,12 +6355,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 4.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "@Polygon2D@127510",
 			"floor": 1.6,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 97,
 			"points": [
 				232,
@@ -3390,12 +6400,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 4.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_Polygon2D_129925",
 			"floor": 1.8,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 98,
 			"points": [
 				232,
@@ -3405,12 +6445,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 7.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_Polygon2D_238032",
 			"floor": 5.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 99,
 			"points": [
 				234,
@@ -3420,12 +6490,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 5.6,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_0",
 			"floor": 4.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 100,
 			"points": [
 				145,
@@ -3435,12 +6535,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 5.6,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_1",
 			"floor": 4.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 101,
 			"points": [
 				240,
@@ -3450,12 +6580,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 5.6,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_2",
 			"floor": 4.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 102,
 			"points": [
 				240,
@@ -3466,12 +6626,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 5.6,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_3",
 			"floor": 4.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 103,
 			"points": [
 				245,
@@ -3482,12 +6672,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 5.6,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_4",
 			"floor": 4.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 104,
 			"points": [
 				244,
@@ -3497,12 +6717,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 5.6,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_5",
 			"floor": 4.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 105,
 			"points": [
 				252,
@@ -3512,12 +6762,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 5.6,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_6",
 			"floor": 4.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 106,
 			"points": [
 				254,
@@ -3527,12 +6807,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 5.6,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_7",
 			"floor": 4.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 107,
 			"points": [
 				256,
@@ -3544,12 +6854,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 5.6,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_8",
 			"floor": 4.1,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 108,
 			"points": [
 				260,
@@ -3563,72 +6903,222 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 5.6,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "Sector-8508",
 			"floor": 2.6,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 109,
 			"points": [
-				247,
-				246,
-				212,
-				211
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 7.0,
-			"debug_name": "@Polygon2D@231066",
-			"floor": 4.0,
-			"id": 110,
-			"points": [
-				207,
-				206,
 				262,
-				263
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 7.0,
-			"debug_name": "@Polygon2D@232108",
-			"floor": 4.2,
-			"id": 111,
-			"points": [
 				263,
-				262,
 				264,
 				265
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 5.6,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "Sector-8508b",
+			"floor": 3.5,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 110,
+			"points": [
+				247,
+				246,
+				263,
+				262
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 5.6,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "Sector-8508a",
+			"floor": 1.8,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 111,
+			"points": [
+				264,
+				212,
+				211,
+				265
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 7.0,
-			"debug_name": "@Polygon2D@233155",
-			"floor": 4.4,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "@Polygon2D@231066",
+			"floor": 3.8,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 112,
 			"points": [
-				265,
-				264,
+				207,
+				206,
 				266,
 				267
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 7.0,
-			"debug_name": "@Polygon2D@233503",
-			"floor": 4.6,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "@Polygon2D@232108",
+			"floor": 4.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 113,
 			"points": [
 				267,
@@ -3638,12 +7128,42 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 7.0,
-			"debug_name": "@Polygon2D@236637",
-			"floor": 4.8,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "@Polygon2D@233155",
+			"floor": 4.2,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 114,
 			"points": [
 				269,
@@ -3653,1353 +7173,4415 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 7.0,
-			"debug_name": "@Polygon2D@236990",
-			"floor": 5.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "@Polygon2D@233503",
+			"floor": 4.4,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 115,
 			"points": [
 				271,
 				270,
+				272,
+				273
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 7.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "@Polygon2D@236637",
+			"floor": 4.6,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 116,
+			"points": [
+				273,
+				272,
+				274,
+				275
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 7.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "@Polygon2D@236990",
+			"floor": 4.8,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 117,
+			"points": [
+				275,
+				274,
 				235,
 				234
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_0",
 			"floor": 0.0,
-			"id": 116,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 118,
 			"points": [
-				272,
-				273,
-				274,
-				275,
 				276,
+				277,
+				278,
+				279,
+				280,
+				281
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_1",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 119,
+			"points": [
+				282,
+				283,
+				284
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_2",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 120,
+			"points": [
+				285,
+				286,
+				276,
+				287,
+				288,
+				289
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_3",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 121,
+			"points": [
+				276,
+				290,
 				277
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 10.0,
-			"debug_name": "_1",
-			"floor": 0.0,
-			"id": 117,
-			"points": [
-				278,
-				279,
-				272,
-				280,
-				281,
-				282
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_2",
-			"floor": 0.0,
-			"id": 118,
-			"points": [
-				272,
-				283,
-				273
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_3",
-			"floor": 0.0,
-			"id": 119,
-			"points": [
-				284,
-				285,
-				286,
-				287
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_4",
 			"floor": 0.0,
-			"id": 120,
-			"points": [
-				288,
-				289,
-				290,
-				286,
-				285,
-				291
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_5",
-			"floor": 0.0,
-			"id": 121,
-			"points": [
-				292,
-				293,
-				294,
-				295,
-				296
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_6",
-			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 122,
 			"points": [
-				297,
+				291,
 				292,
-				296,
-				298
+				293,
+				294
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 10.0,
-			"debug_name": "_7",
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_5",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 123,
 			"points": [
-				299,
-				289,
-				288,
-				300
+				284,
+				295,
+				296,
+				297
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 10.0,
-			"debug_name": "_8",
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_6",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 124,
 			"points": [
+				298,
+				296,
+				295
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_7",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 125,
+			"points": [
+				299,
+				300,
 				301,
 				302,
 				303,
-				304,
-				305,
-				306
+				304
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 10.0,
-			"debug_name": "_9",
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_8",
 			"floor": 0.0,
-			"id": 125,
-			"points": [
-				293,
-				292,
-				307,
-				282
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_10",
-			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 126,
 			"points": [
-				308,
-				309,
-				236,
-				300
+				305,
+				306,
+				307,
+				308
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 10.0,
-			"debug_name": "_11",
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_9",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 127,
 			"points": [
 				306,
-				305,
+				309,
 				310,
-				236
+				236,
+				311
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 10.0,
-			"debug_name": "_12",
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_10",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 128,
 			"points": [
-				311,
-				302,
-				301,
-				312
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_13",
-			"floor": 0.0,
-			"id": 129,
-			"points": [
-				287,
-				286,
+				312,
+				304,
+				303,
 				313,
 				314
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 10.0,
-			"debug_name": "_14",
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_11",
 			"floor": 0.0,
-			"id": 130,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 129,
 			"points": [
-				298,
-				284,
-				287,
+				283,
+				282,
+				302,
 				315
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 10.0,
-			"debug_name": "_15",
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_12",
 			"floor": 0.0,
-			"id": 131,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 130,
 			"points": [
-				316,
-				317,
-				297,
-				298,
-				315,
-				318,
-				319
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_16",
-			"floor": 0.0,
-			"id": 132,
-			"points": [
-				282,
-				307,
-				317,
-				316,
-				320,
-				278
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_17",
-			"floor": 0.0,
-			"id": 133,
-			"points": [
-				321,
-				319,
-				318,
-				314,
-				322
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_18",
-			"floor": 0.0,
-			"id": 134,
-			"points": [
-				277,
-				280,
-				272
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_19",
-			"floor": 0.0,
-			"id": 135,
-			"points": [
-				323,
-				277,
-				276
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_20",
-			"floor": 0.0,
-			"id": 136,
-			"points": [
-				324,
-				323,
-				276
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_21",
-			"floor": 0.0,
-			"id": 137,
-			"points": [
-				324,
-				276,
-				282
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_22",
-			"floor": 0.0,
-			"id": 138,
-			"points": [
-				281,
-				324,
-				282
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_23",
-			"floor": 0.0,
-			"id": 139,
-			"points": [
-				290,
-				289,
-				304,
-				303,
-				325,
-				326
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_24",
-			"floor": 0.0,
-			"id": 140,
-			"points": [
-				314,
 				313,
-				326,
-				325,
-				327,
-				322
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_25",
-			"floor": 0.0,
-			"id": 141,
-			"points": [
-				278,
-				320,
-				321
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_26",
-			"floor": 0.0,
-			"id": 142,
-			"points": [
-				322,
-				278,
-				321
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_27",
-			"floor": 0.0,
-			"id": 143,
-			"points": [
-				322,
-				327,
-				311
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_28",
-			"floor": 0.0,
-			"id": 144,
-			"points": [
-				328,
-				299,
-				300
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_29",
-			"floor": 0.0,
-			"id": 145,
-			"points": [
-				328,
-				300,
-				236
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_30",
-			"floor": 0.0,
-			"id": 146,
-			"points": [
-				310,
-				328,
-				236
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_31",
-			"floor": 0.0,
-			"id": 147,
-			"points": [
-				329,
-				306,
-				236
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_32",
-			"floor": 0.0,
-			"id": 148,
-			"points": [
-				322,
-				311,
-				312
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_33",
-			"floor": 0.0,
-			"id": 149,
-			"points": [
-				236,
-				322,
-				312
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_34",
-			"floor": 0.0,
-			"id": 150,
-			"points": [
-				236,
-				312,
-				329
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "Sector2",
-			"floor": 0.0,
-			"id": 151,
-			"points": [
-				300,
-				288,
-				291,
-				308
-			],
-			"portal_destination_wall": 3,
-			"portal_target": 164,
-			"portal_wall": 2
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_Polygon2D_201968",
-			"floor": 5.6,
-			"id": 152,
-			"points": [
-				310,
-				305,
-				304,
-				289,
-				299,
-				328
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "Sector",
-			"floor": 5.0,
-			"id": 153,
-			"points": [
-				314,
-				318,
-				315,
-				287
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "@Polygon2D@205304",
-			"floor": 5.0,
-			"id": 154,
-			"points": [
-				302,
-				311,
-				327,
-				325,
-				303
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "_Polygon2D_206706",
-			"floor": 5.0,
-			"id": 155,
-			"points": [
-				317,
-				307,
-				292,
+				282,
+				284,
 				297
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 10.0,
-			"debug_name": "Sector-5147",
-			"floor": 5.0,
-			"id": 156,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_13",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 131,
 			"points": [
-				277,
+				316,
+				317,
+				318,
+				319,
+				320,
+				321
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_14",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 132,
+			"points": [
+				315,
+				302,
+				301,
+				294
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_15",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 133,
+			"points": [
+				322,
+				315,
+				294,
+				293,
 				323,
+				324
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_16",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 134,
+			"points": [
+				325,
+				326,
 				324,
+				323,
+				327,
+				328
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_17",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 135,
+			"points": [
+				281,
+				287,
+				276
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_18",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 136,
+			"points": [
+				329,
 				281,
 				280
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 10.0,
-			"debug_name": "Sector-3182",
-			"floor": 5.0,
-			"id": 157,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_19",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 137,
 			"points": [
-				274,
-				273,
-				283,
 				330,
+				329,
+				280
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_20",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 138,
+			"points": [
+				330,
+				280,
+				289
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_21",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 139,
+			"points": [
+				288,
+				330,
+				289
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_22",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 140,
+			"points": [
+				285,
+				289,
+				328,
+				327,
+				292,
+				299,
+				331
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_23",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 141,
+			"points": [
+				318,
+				317,
+				332,
+				312
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_24",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 142,
+			"points": [
+				333,
+				334,
+				298,
+				295,
+				335,
+				305,
+				308,
+				336,
+				337
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_25",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 143,
+			"points": [
+				337,
+				336,
+				320,
+				319
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_26",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 144,
+			"points": [
+				338,
+				339,
+				340,
+				334,
+				333,
+				341,
+				312
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_27",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 145,
+			"points": [
+				291,
+				300,
+				299,
+				292
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_28",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 146,
+			"points": [
+				285,
 				331,
+				342
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_29",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 147,
+			"points": [
+				312,
+				285,
+				342
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_30",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 148,
+			"points": [
+				312,
+				342,
+				304
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_31",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 149,
+			"points": [
+				340,
+				339,
+				297,
+				296
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_32",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 150,
+			"points": [
+				313,
+				297,
+				314
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_33",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 151,
+			"points": [
+				312,
+				314,
+				338
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_34",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 152,
+			"points": [
+				312,
+				341,
+				318
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_35",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 153,
+			"points": [
+				236,
+				312,
 				332
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
-			"ceiling": 2.5,
-			"debug_name": "_0",
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_36",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 154,
+			"points": [
+				236,
+				332,
+				343
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_37",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 155,
+			"points": [
+				236,
+				343,
+				316,
+				321
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_38",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 156,
+			"points": [
+				236,
+				321,
+				311
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_39",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 157,
+			"points": [
+				306,
+				311,
+				307
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "Sector2",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 158,
 			"points": [
-				296,
-				295,
-				333,
-				334
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 2.5,
-			"debug_name": "_0a",
-			"floor": 0.0,
-			"id": 159,
-			"points": [
+				306,
+				305,
 				335,
-				336,
-				334,
-				333
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 1.5,
-			"debug_name": "_0b",
-			"floor": 0.0,
-			"id": 160,
-			"points": [
-				337,
-				338,
-				339,
-				340
-			],
-			"portal_destination_wall": 2,
-			"portal_target": 197,
-			"portal_wall": 0
-		},
-		{
-			"ceiling": 2.5,
-			"debug_name": "_0c",
-			"floor": 0.0,
-			"id": 161,
-			"points": [
-				339,
-				336,
-				335,
-				341,
-				340
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 10.0,
-			"debug_name": "@Polygon2D@223595",
-			"floor": 5.0,
-			"id": 162,
-			"points": [
-				342,
-				343,
-				344,
-				237,
-				236,
 				309
 			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_destination_wall": 3,
+			"portal_target": 174,
+			"portal_wall": 2,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 10.0,
-			"debug_name": "@Polygon2D@227918",
+			"ceiling_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_Polygon2D_201968",
+			"floor": 5.6,
+			"floor_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 159,
+			"points": [
+				321,
+				320,
+				336,
+				308,
+				307,
+				311
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "Sector",
 			"floor": 5.0,
+			"floor_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 160,
+			"points": [
+				338,
+				314,
+				297,
+				339
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "@Polygon2D@205304",
+			"floor": 5.0,
+			"floor_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 161,
+			"points": [
+				319,
+				318,
+				341,
+				333,
+				337
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_Polygon2D_206706",
+			"floor": 4.0,
+			"floor_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 162,
+			"points": [
+				313,
+				303,
+				302,
+				282
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "Sector-5147",
+			"floor": 4.4,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 163,
 			"points": [
-				293,
-				345,
-				346,
-				294
+				281,
+				329,
+				330,
+				288,
+				287
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
 			"ceiling": 10.0,
-			"debug_name": "@Polygon2D@256985",
-			"floor": 8.2,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "Sector-3182",
+			"floor": 4.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 164,
 			"points": [
-				347,
+				278,
+				277,
+				290,
 				344,
-				343,
-				348
+				345,
+				346
 			],
-			"portal_destination_wall": 2,
-			"portal_target": 151,
-			"portal_wall": 3
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
-			"ceiling": 500.0,
+			"ceiling": 2.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"debug_name": "_0",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 165,
+			"points": [
+				315,
+				322,
+				347,
+				348
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 2.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_0a",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 166,
 			"points": [
 				349,
 				350,
-				351,
-				352
+				348,
+				347
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
-			"ceiling": 500.0,
-			"debug_name": "_1",
+			"ceiling": 1.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_0b",
 			"floor": 0.0,
-			"id": 166,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 167,
+			"points": [
+				351,
+				352,
+				353,
+				354
+			],
+			"portal_destination_wall": 2,
+			"portal_target": 206,
+			"portal_wall": 0,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 2.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_0c",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 168,
 			"points": [
 				353,
-				351,
 				350,
+				349,
+				355,
 				354
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
-			"ceiling": 500.0,
-			"debug_name": "_2",
-			"floor": 0.0,
-			"id": 167,
-			"points": [
-				355,
-				354,
-				350,
-				356,
-				357
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "_3",
-			"floor": 0.0,
-			"id": 168,
-			"points": [
-				358,
-				357,
-				356,
-				352,
-				359
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "_4",
-			"floor": 0.0,
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "Sector-8068",
+			"floor": 4.3,
+			"floor_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 169,
 			"points": [
-				359,
-				352,
-				351,
-				360
+				300,
+				291,
+				294,
+				301
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
-			"ceiling": 500.0,
-			"debug_name": "_0",
-			"floor": 0.0,
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "Sector-7594",
+			"floor": 4.7,
+			"floor_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 170,
 			"points": [
-				361,
-				362,
-				363,
-				364
+				292,
+				327,
+				323,
+				293
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "floor3",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
-			"ceiling": 500.0,
-			"debug_name": "_1",
-			"floor": 0.0,
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "Sector-5121",
+			"floor": 5.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 171,
 			"points": [
-				365,
-				364,
-				363
+				289,
+				356,
+				357,
+				325,
+				328
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
-			"ceiling": 500.0,
-			"debug_name": "_2",
-			"floor": 0.0,
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "@Polygon2D@223595",
+			"floor": 5.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
 			"id": 172,
 			"points": [
+				358,
+				359,
+				360,
+				237,
+				236,
+				310
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "@Polygon2D@227918",
+			"floor": 5.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 173,
+			"points": [
+				326,
+				361,
+				362,
+				324
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 10.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "@Polygon2D@256985",
+			"floor": 8.2,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 174,
+			"points": [
+				363,
+				360,
+				359,
+				364
+			],
+			"portal_destination_wall": 2,
+			"portal_target": 158,
+			"portal_wall": 3,
+			"wall_surface": {
+				"id": "bricks",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_0",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 175,
+			"points": [
+				365,
 				366,
 				367,
 				368,
-				369,
-				370
+				369
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
-			"ceiling": 500.0,
-			"debug_name": "_3",
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_1",
 			"floor": 0.0,
-			"id": 173,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 176,
 			"points": [
-				366,
 				370,
-				371
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "_4",
-			"floor": 0.0,
-			"id": 174,
-			"points": [
-				353,
-				354,
-				355,
+				369,
+				368,
+				371,
 				372
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
-			"ceiling": 500.0,
-			"debug_name": "_5",
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_2",
 			"floor": 0.0,
-			"id": 175,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 177,
 			"points": [
 				373,
+				372,
+				371,
 				374,
-				357,
-				358,
 				375
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
-			"ceiling": 500.0,
-			"debug_name": "_6",
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_3",
 			"floor": 0.0,
-			"id": 176,
-			"points": [
-				355,
-				357,
-				374,
-				369,
-				368
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "_7",
-			"floor": 0.0,
-			"id": 177,
-			"points": [
-				375,
-				358,
-				359
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "_8",
-			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
 			"id": 178,
 			"points": [
 				375,
-				359,
-				360,
+				374,
+				367,
+				366,
 				376
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
-			"ceiling": 500.0,
-			"debug_name": "_9",
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_0",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
 			"id": 179,
 			"points": [
 				377,
-				376,
-				360
+				378,
+				379,
+				380
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
-			"ceiling": 500.0,
-			"debug_name": "_10",
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_1",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
 			"id": 180,
 			"points": [
-				371,
-				377,
-				360
+				381,
+				380,
+				379
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
-			"ceiling": 500.0,
-			"debug_name": "_11",
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_2",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
 			"id": 181,
 			"points": [
-				365,
-				363,
-				378,
-				360
+				382,
+				383,
+				384,
+				385,
+				386
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
-			"ceiling": 500.0,
-			"debug_name": "_12",
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_3",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
 			"id": 182,
 			"points": [
-				379,
-				366,
-				371,
-				360
+				382,
+				386,
+				387
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
-			"ceiling": 500.0,
-			"debug_name": "_13",
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_4",
 			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
 			"id": 183,
 			"points": [
-				378,
-				379,
-				360
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "_14",
-			"floor": 0.0,
-			"id": 184,
-			"points": [
 				365,
-				360,
-				351,
-				380
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "_15",
-			"floor": 0.0,
-			"id": 185,
-			"points": [
-				381,
-				380,
-				351,
-				382
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "_16",
-			"floor": 0.0,
-			"id": 186,
-			"points": [
-				382,
-				351,
-				353,
-				383
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "_17",
-			"floor": 0.0,
-			"id": 187,
-			"points": [
-				372,
-				383,
-				353
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "_18",
-			"floor": 0.0,
-			"id": 188,
-			"points": [
-				361,
-				372,
-				355,
-				384
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "_19",
-			"floor": 0.0,
-			"id": 189,
-			"points": [
-				355,
-				368,
-				384
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "_20",
-			"floor": 0.0,
-			"id": 190,
-			"points": [
-				361,
-				384,
-				362
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "Sector-9012a",
-			"floor": 0.0,
-			"id": 191,
-			"points": [
-				372,
-				361,
-				364,
-				385,
-				386,
-				383
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "Sector-9012c",
-			"floor": 0.0,
-			"id": 192,
-			"points": [
-				365,
-				380,
-				387,
-				385,
-				364
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "Sector-9012d",
-			"floor": 0.0,
-			"id": 193,
-			"points": [
-				381,
-				388,
-				389,
-				390,
-				387,
-				380
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 16,
-			"portal_wall": 2
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "Sector-9012b",
-			"floor": 0.0,
-			"id": 194,
-			"points": [
-				381,
-				382,
-				383,
-				386,
+				369,
+				370,
 				388
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
-			"ceiling": 500.0,
-			"debug_name": "Sector-9012a",
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_5",
 			"floor": 0.0,
-			"id": 195,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 184,
 			"points": [
-				384,
-				368,
-				367,
-				391,
-				392,
-				362
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "Sector-9012c",
-			"floor": 0.0,
-			"id": 196,
-			"points": [
-				366,
-				379,
-				393,
-				391,
-				367
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "Sector-9012d",
-			"floor": 0.0,
-			"id": 197,
-			"points": [
-				378,
-				394,
-				395,
-				396,
-				393,
-				379
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 160,
-			"portal_wall": 2
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "Sector-9012b",
-			"floor": 0.0,
-			"id": 198,
-			"points": [
-				378,
-				363,
-				362,
-				392,
-				394
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1
-		},
-		{
-			"ceiling": 500.0,
-			"debug_name": "Sector-9012a",
-			"floor": 0.0,
-			"id": 199,
-			"points": [
-				369,
-				374,
+				389,
+				390,
+				372,
 				373,
-				397,
-				398,
-				370
+				391
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
-			"ceiling": 500.0,
-			"debug_name": "Sector-9012c",
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_6",
 			"floor": 0.0,
-			"id": 200,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 185,
 			"points": [
+				370,
+				372,
+				390,
+				385,
+				384
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_7",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 186,
+			"points": [
+				391,
+				373,
+				375
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_8",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 187,
+			"points": [
+				391,
 				375,
 				376,
-				399,
-				397,
-				373
+				392
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
-			"ceiling": 500.0,
-			"debug_name": "Sector-9012d",
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_9",
 			"floor": 0.0,
-			"id": 201,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 188,
 			"points": [
-				377,
-				400,
-				401,
-				402,
-				399,
+				393,
+				392,
 				376
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 93,
-			"portal_wall": 2
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		},
 		{
-			"ceiling": 500.0,
-			"debug_name": "Sector-9012b",
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_10",
 			"floor": 0.0,
-			"id": 202,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 189,
+			"points": [
+				387,
+				393,
+				376
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_11",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 190,
+			"points": [
+				381,
+				379,
+				394,
+				376
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_12",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 191,
+			"points": [
+				395,
+				382,
+				387,
+				376
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_13",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 192,
+			"points": [
+				394,
+				395,
+				376
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_14",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 193,
+			"points": [
+				381,
+				376,
+				366,
+				396
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_15",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 194,
+			"points": [
+				397,
+				396,
+				366,
+				398
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_16",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 195,
+			"points": [
+				398,
+				366,
+				365,
+				399
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_17",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 196,
+			"points": [
+				388,
+				399,
+				365
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_18",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 197,
 			"points": [
 				377,
-				371,
+				388,
 				370,
-				398,
 				400
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
-			"portal_wall": -1
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_19",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 198,
+			"points": [
+				370,
+				384,
+				400
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_20",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 199,
+			"points": [
+				377,
+				400,
+				378
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "Sector-9012a",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 200,
+			"points": [
+				388,
+				377,
+				380,
+				401,
+				402,
+				399
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "Sector-9012c",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 201,
+			"points": [
+				381,
+				396,
+				403,
+				401,
+				380
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "Sector-9012d",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 202,
+			"points": [
+				397,
+				404,
+				405,
+				406,
+				403,
+				396
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 16,
+			"portal_wall": 2,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "Sector-9012b",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 203,
+			"points": [
+				397,
+				398,
+				399,
+				402,
+				404
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "Sector-9012a",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 204,
+			"points": [
+				400,
+				384,
+				383,
+				407,
+				408,
+				378
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "Sector-9012c",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 205,
+			"points": [
+				382,
+				395,
+				409,
+				407,
+				383
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "Sector-9012d",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 206,
+			"points": [
+				394,
+				410,
+				411,
+				412,
+				409,
+				395
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 167,
+			"portal_wall": 2,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "Sector-9012b",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 207,
+			"points": [
+				394,
+				379,
+				378,
+				408,
+				410
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "Sector-9012a",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 208,
+			"points": [
+				385,
+				390,
+				389,
+				413,
+				414,
+				386
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "Sector-9012c",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 209,
+			"points": [
+				391,
+				392,
+				415,
+				413,
+				389
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "Sector-9012d",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 210,
+			"points": [
+				393,
+				416,
+				417,
+				418,
+				415,
+				392
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 93,
+			"portal_wall": 2,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "Sector-9012b",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 211,
+			"points": [
+				393,
+				387,
+				386,
+				414,
+				416
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surface": {
+				"id": "wall4",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			}
 		}
 	]
 }

@@ -52,7 +52,11 @@ static void test_make_sector_height(
   std::vector<map_building::SectorBuildData>& out,
   int                                         portal_wall_id    = -1,
   WallRelID                                   portal_wall_id_to = 0,
-  SectorID                                    portal_sector     = INVALID_SECTOR_ID)
+  SectorID                                    portal_sector     = INVALID_SECTOR_ID,
+  const SurfaceData                           &floor_surface    = SurfaceData{},
+  const SurfaceData                           &ceiling_surface  = SurfaceData{},
+  const SurfaceData                           &wall_surface     = SurfaceData{}
+)
 {
   std::vector<map_building::WallBuildData> walls;
 
@@ -65,13 +69,7 @@ static void test_make_sector_height(
       .point_index            = p,
       .nc_portal_point_index  = is_portal ? portal_wall_id_to : INVALID_WALL_REL_ID,
       .nc_portal_sector_index = is_portal ? portal_sector     : INVALID_SECTOR_ID,
-      .surface                = SurfaceData
-      {
-        .texture_id = TextureManager::get()["test_wall"].get_texture_id(),
-        .scale      = 3.0f,
-        .rotation   = 0.0f,
-        .offset     = VEC2_ZERO,
-      },
+      .surface                = wall_surface
     });
   }
 
@@ -80,20 +78,8 @@ static void test_make_sector_height(
     .points        = std::move(walls),
     .floor_y       = in_floor_y,
     .ceil_y        = in_ceil_y,
-    .floor_surface = SurfaceData
-    {
-      .texture_id = TextureManager::get()["test_floor"].get_texture_id(),
-      .scale      = 3.0f,
-      .rotation   = 0.0f,
-      .offset     = vec2(0.5f, 0.5f),
-    },
-    .ceil_surface  = SurfaceData
-    {
-      .texture_id = TextureManager::get()["test_ceil"].get_texture_id(),
-      .scale      = 3.0f,
-      .rotation   = PI / 4.0f,
-      .offset     = VEC2_ZERO,
-    },
+    .floor_surface = floor_surface,
+    .ceil_surface  = ceiling_surface,
   });
 }
 
@@ -104,14 +90,17 @@ static void test_make_sector
   std::vector<map_building::SectorBuildData>& out,
   int                                         portal_wall_id    = -1,
   WallRelID                                   portal_wall_id_to = 0,
-  SectorID                                    portal_sector     = INVALID_SECTOR_ID)
+  SectorID                                    portal_sector     = INVALID_SECTOR_ID,
+  const SurfaceData&                          surface = SurfaceData()
+ )
 {
   test_make_sector_height
   (
     MapSectors::SECTOR_FLOOR_Y,
     MapSectors::SECTOR_CEILING_Y,
     points, out, portal_wall_id,
-    portal_wall_id_to, portal_sector
+    portal_wall_id_to, portal_sector,
+      surface, surface, surface
   );
 }
 
@@ -232,6 +221,22 @@ static void test_make_sector
 }
 
 
+
+//==============================================================================
+static SurfaceData load_json_surface(const nlohmann::json &js) 
+{
+    auto offset = js["offset"];
+    std::string texture_name = js["id"];
+    return SurfaceData
+    {
+      .texture_id = TextureManager::get()[texture_name].get_texture_id(),
+      .scale = js["scale"],
+      .rotation = js["rotation"],
+      .offset = vec2(offset[0], offset[1]),
+      .should_show = js["show"]
+    };
+}
+
 //==============================================================================
 [[maybe_unused]] static void load_json_map(MapSectors& map, SectorMapping& mapping, EntityRegistry& entities, EntityID &player_id)
 {
@@ -255,8 +260,11 @@ static void test_make_sector
         for (auto&& js_point : js_sector["points"]) {
             point_idxs.emplace_back((u16)(int)js_point);
         }
+        auto floor_surface = load_json_surface(js_sector["floor_surface"]);
+        auto ceiling_surface = load_json_surface(js_sector["ceiling_surface"]);
+        auto wall_surface = load_json_surface(js_sector["wall_surface"]);
 
-        test_make_sector_height(floor, ceil, point_idxs, sectors, portal_wall, portal_destination_wall, portal_sector);
+        test_make_sector_height(floor, ceil, point_idxs, sectors, portal_wall, portal_destination_wall, portal_sector, floor_surface, ceiling_surface, wall_surface);
     }
 
     using namespace map_building::MapBuildFlag;
