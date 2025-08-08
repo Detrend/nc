@@ -56,20 +56,15 @@ private:
   void apply_acceleration(vec3 movement_direction, f32 delta_seconds);
   void apply_deceleration(vec3 movement_direction, f32 delta_seconds);
   void update_gun_sway(f32 delta);
-  void update_camera_spring(f32 delta);
+  void update_camera(f32 delta);
 
   //vec3 position;
   vec3 velocity = VEC3_ZERO; // forward/back - left/right velocity
   static inline f32 view_height = 0.5f;
 
-  f32 MAX_SPEED = 5.0f;
-  f32 ACCELERATION = 25.0f;
-  f32 DECELERATION = 14.0f;
-  f32 GRAVITY = 6.0f;
-
-  vec3 m_forward = VEC3_ZERO;
-  f32 angle_pitch = 0; //UP-DOWN
-  f32 angle_yaw = 0; //LET-RIGHT
+  vec3 forward     = VEC3_ZERO;
+  f32  angle_pitch = 0.0f; //UP-DOWN
+  f32  angle_yaw   = 0.0f; //LET-RIGHT
 
   /*PlayerSpecificInputs lastInputs;
   PlayerSpecificInputs currentInputs;*/

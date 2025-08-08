@@ -60,38 +60,32 @@ Player::Player(vec3 position)
 //==========================================================================
 void Player::calculate_wish_velocity(GameInputs input, f32 delta_seconds)
 {
-  // INPUT HANDELING
-
-  vec3 inputVector = vec3(0, 0, 0);
-
-  if (!alive)
-  {
-    return;
-  }
+  // INPUT HANDLING
+  vec3 input_vector = vec3(0, 0, 0);
 
   // movement keys
   if (input.player_inputs.keys & (1 << PlayerKeyInputs::forward))
   {
-    inputVector += vec3(0, 0, 1);
+    input_vector += vec3(0, 0, 1);
   }
   if (input.player_inputs.keys & (1 << PlayerKeyInputs::backward))
   {
-    inputVector += vec3(0, 0, -1);
+    input_vector += vec3(0, 0, -1);
   }
   if (input.player_inputs.keys & (1 << PlayerKeyInputs::left))
   {
-    inputVector += vec3(-1, 0, 0);
+    input_vector += vec3(-1, 0, 0);
   }
   if (input.player_inputs.keys & (1 << PlayerKeyInputs::right))
   {
-    inputVector += vec3(1, 0, 0);
+    input_vector += vec3(1, 0, 0);
   }
 
-  angle_pitch += input.player_inputs.analog[PlayerAnalogInputs::look_vertical];
-  angle_yaw += input.player_inputs.analog[PlayerAnalogInputs::look_horizontal];
+  this->angle_pitch += input.player_inputs.analog[PlayerAnalogInputs::look_vertical];
+  this->angle_yaw   += input.player_inputs.analog[PlayerAnalogInputs::look_horizontal];
 
-  angle_yaw = rem_euclid(angle_yaw, 2.0f * PI);
-  angle_pitch = clamp(angle_pitch, -HALF_PI + 0.001f, HALF_PI - 0.001f);
+  this->angle_yaw   = rem_euclid(this->angle_yaw, 2.0f * PI);
+  this->angle_pitch = clamp(this->angle_pitch, -HALF_PI + 0.001f, HALF_PI - 0.001f);
 
   if (CVars::lock_camera_pitch)
   {
@@ -99,39 +93,33 @@ void Player::calculate_wish_velocity(GameInputs input, f32 delta_seconds)
     angle_pitch = 0.0f;
   }
 
-  m_forward = angleAxis(angle_yaw, VEC3_Y) * angleAxis(angle_pitch, VEC3_X) * -VEC3_Z;
+  quat y_transform = angleAxis(this->angle_yaw,   VEC3_Y);
+  quat x_transform = angleAxis(this->angle_pitch, VEC3_X);
+  this->forward = y_transform * x_transform * FRONT_DIR;
 
   // APLICATION OF VELOCITY
-  const vec3 forward = with_y(m_forward, 0);
-  const vec3 right = cross(forward, VEC3_Y);
+  const vec3 forward_dir = with_y(this->forward, 0);
+  const vec3 right_dir   = cross(this->forward, VEC3_Y);
   const vec3 movement_direction = normalize_or_zero
   (
-    inputVector.x * right
-    + inputVector.y * VEC3_Y
-    + inputVector.z * forward
+    input_vector.x * right_dir
+    + input_vector.y * VEC3_Y
+    + input_vector.z * forward_dir
   );
 
+  this->apply_deceleration(movement_direction, delta_seconds);
+  this->apply_acceleration(movement_direction, delta_seconds);
+
   // JUMPING
-  vec3 jump_force = vec3(0, 0, 0);
   bool wants_jump = input.player_inputs.keys & (1 << PlayerKeyInputs::jump);
   bool can_jump   = this->on_ground;
 
   if (wants_jump && can_jump)
   {
-    // Jump!
-    jump_force = vec3(0, 1, 0);
+    velocity.y = CVars::player_jump_force;
   }
 
-  apply_deceleration(movement_direction, delta_seconds);
-
-  apply_acceleration(movement_direction, delta_seconds);
-
-  velocity += jump_force * 5.0f;
-  velocity.y -= GRAVITY * delta_seconds;
-
-  vec3 spring_offset   = vec3{0.0f, this->vertical_camera_offset, 0.0f};
-  vec3 real_camera_pos = this->get_position() + spring_offset;
-  camera.update_transform(real_camera_pos, angle_yaw, angle_pitch, view_height);
+  velocity.y -= CVars::player_gravity * delta_seconds;
 }
 
 //==========================================================================
@@ -189,7 +177,7 @@ void Player::apply_velocity(f32 delta_seconds)
   PhysLevel::CharacterCollisions collected_collisions;
   lvl.move_character
   (
-    position, velocity, &m_forward, delta_seconds, 0.25f, 1.0f,
+    position, velocity, &forward, delta_seconds, 0.25f, 1.0f,
     0.25f, PLAYER_COLLIDERS, PLAYER_REPORTING, &collected_collisions
   );
 
@@ -205,7 +193,7 @@ void Player::apply_velocity(f32 delta_seconds)
   );
 
   // Recompute the angleYaw after moving through a portal
-  const auto forward2 = normalize(with_y(m_forward, 0.0f));
+  const auto forward2 = normalize(with_y(forward, 0.0f));
   this->angle_yaw = rem_euclid
   (
     std::atan2f(forward2.z, -forward2.x) + HALF_PI, PI * 2
@@ -268,50 +256,46 @@ void Player::handle_attack(GameInputs curr_input, GameInputs prev_input, f32 dt)
 }
 
 //==============================================================================
-void Player::apply_acceleration(vec3 movement_direction, [[maybe_unused]] f32 delta_seconds)
+void Player::apply_acceleration(vec3 movement_direction, f32 delta)
 {
-  velocity += movement_direction * ACCELERATION * delta_seconds;
+  f32 coeff = this->on_ground ? 1.0f : CVars::player_air_acc_coeff;
+  velocity += movement_direction * CVars::player_acceleration * delta * coeff;
 
-  //speed cap
-  //if (sqrtf(velocity.x * velocity.x + velocity.z * velocity.z) > MAX_SPEED)
-  if (length(vec2(velocity.x, velocity.z)) > MAX_SPEED)
+  // Speed cap
+  if (length(vec2{velocity.x, velocity.z}) > CVars::player_max_speed)
   {
-    float y = velocity.y;
+    f32 y = velocity.y;
     velocity.y = 0;
-    velocity = normalize_or_zero(velocity) * MAX_SPEED;
+    velocity = normalize(velocity) * CVars::player_max_speed;
     velocity.y = y;
   }
-    
-  //minimal non-zero velocity
-  if (velocity.x >= -0.01f && velocity.x <= 0.01f) velocity.x = 0;
-  if (velocity.z >= -0.01f && velocity.z <= 0.01f) velocity.z = 0;
 }
 
 //==============================================================================
-void Player::apply_deceleration(vec3 movement_direction, [[maybe_unused]] f32 delta_seconds)
+void Player::apply_deceleration(vec3 /*movement_direction*/, f32 delta_seconds)
 {
-  // If we are still -> return
-  if (velocity.x == 0 && velocity.z == 0)
-  {
-    return;
-  }
+  // NOTE: Not sure what this is supposed to do, but it does not look ok.
+  // vec3 reverse_velocity = -normalize_or_zero(with_y(velocity, 0.0f));
+  // 
+  // //apply deceleration if reverse key is pressed or if directional/axis key is not pressed
+  // if (movement_direction.x == 0 || signbit(movement_direction.x) != signbit(velocity.x))
+  // {
+  //   velocity.x = velocity.x + (reverse_velocity.x * DECELERATION * delta_seconds);
+  // }
+  // 
+  // if (movement_direction.z == 0 || signbit(movement_direction.z) != signbit(velocity.z))
+  // {
+  //   velocity.z = velocity.z + (reverse_velocity.z * DECELERATION * delta_seconds);
+  // }
 
-  vec3 reverseVelocity = vec3 (- velocity.x, 0, -velocity.z);
-  reverseVelocity = normalize_or_zero(reverseVelocity);
+  // Apply general deceleration
+  f32 coeff = this->on_ground ? 1.0f : CVars::player_air_dec_coeff;
+  f32 reverse_len   = CVars::player_deceleration * delta_seconds * coeff;
+  f32 velocity2_len = length(velocity.xz());
 
-  //apply deceleration if reverse key is pressed or if directional/axis key is not pressed
-  if (movement_direction.x == 0 || signbit(movement_direction.x) != signbit(velocity.x))
-  {
-    velocity.x = velocity.x + (reverseVelocity.x * DECELERATION * delta_seconds);
-  }
-
-  if (movement_direction.z == 0 || signbit(movement_direction.z) != signbit(velocity.z))
-  {
-    velocity.z = velocity.z + (reverseVelocity.z * DECELERATION * delta_seconds);
-  }
-
-  //apply general deceleration
-  velocity = velocity + (reverseVelocity * DECELERATION * delta_seconds);
+  f32  new_len = std::max(velocity2_len - reverse_len, 0.0f);
+  vec3 new_hor = normalize_or_zero(with_y(velocity, 0.0f)) * new_len;
+  velocity = with_y(new_hor, velocity.y);
 }
 
 //==============================================================================
@@ -320,25 +304,37 @@ void Player::update_gun_sway(f32 delta)
   const f32 move_fadein = CVars::gun_sway_move_fadein_time;
   const f32 air_fadein  = CVars::gun_sway_air_time;
 
+  f32 velocity2_len    = length(this->velocity.xz());
+  f32 max_velocity_len = CVars::player_max_speed;
+  f32 velocity_amount  = velocity2_len / max_velocity_len;
+
   time_since_shoot      += delta;
-  time_since_start      += delta;
+  time_since_start      += std::sqrtf(velocity_amount) * delta;
   time_since_gun_change += delta;
 
-  const bool is_moving = length(this->velocity) > 0.1f;
+  const bool is_moving = length(this->velocity.xz()) > 0.01f;
   const bool in_air    = !on_ground;
 
-  smooth_towards(moving_time, is_moving ? move_fadein : 0.0f, delta);
-  smooth_towards(air_time,    in_air    ? air_fadein  : 0.0f, delta);
+  smooth_towards(this->moving_time, is_moving ? move_fadein : 0.0f, delta);
+  smooth_towards(this->air_time,    in_air    ? air_fadein  : 0.0f, delta);
 }
 
 //==============================================================================
-void Player::update_camera_spring(f32 delta)
+void Player::update_camera(f32 delta)
 {
+  // Update the spring
   f32 spd = CVars::camera_spring_update_speed;
   smooth_towards(this->vertical_camera_offset, 0.0f, delta * spd);
-}
 
-//==============================================================================
+  // And then the camera position
+  vec3 spring_offset   = vec3{0.0f, this->vertical_camera_offset, 0.0f};
+  vec3 real_camera_pos = this->get_position() + spring_offset;
+  camera.update_transform
+  (
+    real_camera_pos, this->angle_yaw, this->angle_pitch, view_height
+  );
+}
+ //=============================================================================
 void Player::damage(int damage)
 {
   currentHealth -= damage;
@@ -370,12 +366,18 @@ Camera* Player::get_camera()
 //==============================================================================
 void Player::update(GameInputs curr_input, GameInputs prev_input, f32 delta)
 {
+  if (!this->alive)
+  {
+    // Do nothing
+    return;
+  }
+
   this->update_gun_sway(delta);
   this->calculate_wish_velocity(curr_input, delta);
   this->handle_weapon_change(curr_input, prev_input);
   this->handle_attack(curr_input, prev_input, delta);
   this->apply_velocity(delta);
-  this->update_camera_spring(delta); // should be after "apply_velocity"
+  this->update_camera(delta); // should be after "apply_velocity"
 }
 
 //==============================================================================
