@@ -1,4 +1,4 @@
-[gd_scene load_steps=161 format=3 uid="uid://befdk2p7cnnba"]
+[gd_scene load_steps=166 format=3 uid="uid://befdk2p7cnnba"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_nqbmo"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_l4525"]
@@ -14,6 +14,10 @@
 [ext_resource type="Resource" uid="uid://dru3antcr08im" path="res://materials/outsides.tres" id="7_phr4w"]
 [ext_resource type="PackedScene" uid="uid://cm0wgegxiipjw" path="res://prefabs/PickUps/HpSmall.tscn" id="8_rrxkl"]
 [ext_resource type="PackedScene" uid="uid://hg6kt5ju3l3a" path="res://prefabs/Entities/Pepe.tscn" id="9_rrxkl"]
+[ext_resource type="Resource" uid="uid://ckwlq2hdguk10" path="res://materials/maintenance_shaft.tres" id="10_k8xne"]
+[ext_resource type="Resource" uid="uid://8mtk0xgkh1sd" path="res://materials/parkour_pillar.tres" id="10_n7tfj"]
+[ext_resource type="Texture2D" uid="uid://dtu5fh5ewxna6" path="res://imgs/floor3.png" id="10_odj2k"]
+[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/sector/Sector.gd" id="11_2dkgu"]
 [ext_resource type="Texture2D" uid="uid://hosfsoru1xho" path="res://imgs/VegetationDark2.png" id="11_8ruhk"]
 
 [sub_resource type="Resource" id="Resource_h15or"]
@@ -620,7 +624,7 @@ material = ExtResource("4_xf0ey")
 script = ExtResource("4_h15or")
 floor_height = 4.1
 ceiling_height = 5.6
-material = ExtResource("4_xf0ey")
+material = ExtResource("10_k8xne")
 
 [sub_resource type="Resource" id="Resource_4pt8e"]
 script = ExtResource("4_h15or")
@@ -631,6 +635,12 @@ material = ExtResource("4_xf0ey")
 [sub_resource type="Resource" id="Resource_m0rkl"]
 script = ExtResource("4_h15or")
 floor_height = 3.5
+ceiling_height = 5.6
+material = ExtResource("4_xf0ey")
+
+[sub_resource type="Resource" id="Resource_tccgo"]
+script = ExtResource("4_h15or")
+floor_height = 4.1
 ceiling_height = 5.6
 material = ExtResource("4_xf0ey")
 
@@ -693,25 +703,25 @@ material = ExtResource("4_xf0ey")
 script = ExtResource("4_h15or")
 floor_height = 5.6
 ceiling_height = 10.0
-material = ExtResource("5_g43pp")
+material = ExtResource("10_n7tfj")
 
 [sub_resource type="Resource" id="Resource_68j02"]
 script = ExtResource("4_h15or")
 floor_height = 5.0
 ceiling_height = 10.0
-material = ExtResource("5_g43pp")
+material = ExtResource("10_n7tfj")
 
 [sub_resource type="Resource" id="Resource_dmiho"]
 script = ExtResource("4_h15or")
 floor_height = 5.0
 ceiling_height = 10.0
-material = ExtResource("5_g43pp")
+material = ExtResource("10_n7tfj")
 
 [sub_resource type="Resource" id="Resource_70bq8"]
 script = ExtResource("4_h15or")
 floor_height = 4.0
 ceiling_height = 10.0
-material = ExtResource("5_g43pp")
+material = ExtResource("10_n7tfj")
 
 [sub_resource type="Resource" id="Resource_peld1"]
 script = ExtResource("4_h15or")
@@ -735,13 +745,13 @@ material = ExtResource("5_g43pp")
 script = ExtResource("4_h15or")
 floor_height = 4.4
 ceiling_height = 10.0
-material = ExtResource("5_g43pp")
+material = ExtResource("10_n7tfj")
 
 [sub_resource type="Resource" id="Resource_8gvvu"]
 script = ExtResource("4_h15or")
 floor_height = 4.0
 ceiling_height = 10.0
-material = ExtResource("5_g43pp")
+material = ExtResource("10_n7tfj")
 
 [sub_resource type="Resource" id="Resource_am7sh"]
 script = ExtResource("4_h15or")
@@ -775,13 +785,13 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 script = ExtResource("4_h15or")
 floor_height = 4.3
 ceiling_height = 10.0
-material = ExtResource("5_g43pp")
+material = ExtResource("10_n7tfj")
 
 [sub_resource type="Resource" id="Resource_846pd"]
 script = ExtResource("4_h15or")
 floor_height = 4.7
 ceiling_height = 10.0
-material = ExtResource("5_g43pp")
+material = ExtResource("10_n7tfj")
 
 [sub_resource type="Resource" id="Resource_vfeb0"]
 script = ExtResource("4_h15or")
@@ -2059,7 +2069,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="TriangulatedMultisector-1760" parent="Sectors/StairSequence" instance=ExtResource("3_l4525")]
 position = Vector2(63.209, -74.5978)
-polygon = PackedVector2Array(0, 0, 12.791, 0.597801, 19.791, 20.5978, 10.791, 20.5978, 0, 10, -29.209, 11.5978, -65.209, -13.4022, -78.209, -5.40219, -92.209, 8.5978, -108.209, 11.5978, -116.209, 8.5978, -98.209, 2.5978, -94.209, -6.4022, -110.209, -12.4022, -129.209, -7.4022, -135.209, 2.5978, -122.209, 8.5978, -129.209, 11.5978, -145.209, 8.5978, -145.209, -2.4022, -139.209, -13.4022, -113.209, -22.4022, -102.209, -28.4022, -73.209, -31.4022, -62.209, -27.4022, -43.209, -26.4022, -31.209, -20.4022, -18.209, -1.40219)
+polygon = PackedVector2Array(0, 0, 12.791, 0.597801, 18.791, 18.5978, 9.79102, 18.5978, 0, 10, -29.209, 11.5978, -65.209, -13.4022, -78.209, -5.40219, -92.209, 8.5978, -108.209, 11.5978, -116.209, 8.5978, -98.209, 2.5978, -94.209, -6.4022, -110.209, -12.4022, -129.209, -7.4022, -135.209, 2.5978, -122.209, 8.5978, -129.209, 11.5978, -145.209, 8.5978, -145.209, -2.4022, -139.209, -13.4022, -113.209, -22.4022, -102.209, -28.4022, -73.209, -31.4022, -62.209, -27.4022, -43.209, -26.4022, -31.209, -20.4022, -18.209, -1.40219)
 data = SubResource("Resource_r8b0k")
 
 [node name="Sector-8508" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
@@ -2083,6 +2093,20 @@ data = SubResource("Resource_m0rkl")
 floor_height = 3.5
 ceiling_height = 5.6
 sector_material = ExtResource("4_xf0ey")
+
+[node name="Sector-8508c" type="Polygon2D" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(83.5367, -50.2036)
+texture = ExtResource("3_maegb")
+texture_scale = Vector2(20, 20)
+polygon = PackedVector2Array(-10.5367, -5.7964, -1.53668, -5.7964, -0.536682, -3.7964, -9.53668, -3.7964)
+script = ExtResource("11_2dkgu")
+data = SubResource("Resource_tccgo")
+floor_height = 4.1
+ceiling_height = 5.6
+sector_material = ExtResource("4_xf0ey")
+show_portal_arrow = true
 
 [node name="Sector-8508a" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(83.5367, -50.2036)
@@ -2192,46 +2216,46 @@ portal_destination_wall = 3
 [node name="_Polygon2D_201968" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(-459, -8)
 color = Color(1, 1, 1, 1)
-texture = ExtResource("6_8ruhk")
+texture = ExtResource("10_odj2k")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(402, 63, 414, 63, 418, 72, 413, 81, 402, 81, 398, 72)
 data = SubResource("Resource_0x1ab")
 floor_height = 5.6
 ceiling_height = 10.0
-sector_material = ExtResource("5_g43pp")
+sector_material = ExtResource("10_n7tfj")
 
 [node name="Sector" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(-457, -12)
 color = Color(1, 1, 1, 1)
-texture = ExtResource("6_8ruhk")
+texture = ExtResource("10_odj2k")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(484, 58, 501, 63, 498, 80, 479, 76)
 data = SubResource("Resource_68j02")
 floor_height = 5.0
 ceiling_height = 10.0
-sector_material = ExtResource("5_g43pp")
+sector_material = ExtResource("10_n7tfj")
 
 [node name="@Polygon2D@205304" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(-461, 3)
 color = Color(1, 1, 1, 1)
-texture = ExtResource("6_8ruhk")
+texture = ExtResource("10_odj2k")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(441, 40, 451, 34, 461, 41, 457, 53, 443, 53)
 data = SubResource("Resource_dmiho")
 floor_height = 5.0
 ceiling_height = 10.0
-sector_material = ExtResource("5_g43pp")
+sector_material = ExtResource("10_n7tfj")
 
 [node name="_Polygon2D_206706" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(-468, 7)
 color = Color(1, 1, 1, 1)
-texture = ExtResource("6_8ruhk")
+texture = ExtResource("10_odj2k")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(527, 51, 537, 53, 540, 75, 530, 80)
 data = SubResource("Resource_70bq8")
 floor_height = 4.0
 ceiling_height = 10.0
-sector_material = ExtResource("5_g43pp")
+sector_material = ExtResource("10_n7tfj")
 
 [node name="@Polygon2D@58391" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(-38.4659, 22.8789)
@@ -2269,24 +2293,24 @@ exclude_from_export = true
 [node name="Sector-5147" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(87, -18)
 color = Color(1, 1, 1, 1)
-texture = ExtResource("6_8ruhk")
+texture = ExtResource("10_odj2k")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(0, 1, 13, -3, 21, 9, 11, 16, 1, 11)
 data = SubResource("Resource_1xb40")
 floor_height = 4.4
 ceiling_height = 10.0
-sector_material = ExtResource("5_g43pp")
+sector_material = ExtResource("10_n7tfj")
 
 [node name="Sector-3182" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(50, -25)
 color = Color(1, 1, 1, 1)
-texture = ExtResource("6_8ruhk")
+texture = ExtResource("10_odj2k")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-6, -13, 11, 6, 13, 21, -1, 32, -21, 23, -29, 3)
 data = SubResource("Resource_8gvvu")
 floor_height = 4.0
 ceiling_height = 10.0
-sector_material = ExtResource("5_g43pp")
+sector_material = ExtResource("10_n7tfj")
 
 [node name="_0" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 z_index = -10
@@ -2331,24 +2355,24 @@ sector_material = ExtResource("4_xf0ey")
 [node name="Sector-8068" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(82, 52)
 color = Color(1, 1, 1, 1)
-texture = ExtResource("6_8ruhk")
+texture = ExtResource("10_odj2k")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(0, 0, 10, 0, 8, 8, 0, 10)
 data = SubResource("Resource_mofyh")
 floor_height = 4.3
 ceiling_height = 10.0
-sector_material = ExtResource("5_g43pp")
+sector_material = ExtResource("10_n7tfj")
 
 [node name="Sector-7594" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(102, 44)
 color = Color(1, 1, 1, 1)
-texture = ExtResource("6_8ruhk")
+texture = ExtResource("10_odj2k")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(0, 0, 10, 0, 9, 15, 0, 13)
 data = SubResource("Resource_846pd")
 floor_height = 4.7
 ceiling_height = 10.0
-sector_material = ExtResource("5_g43pp")
+sector_material = ExtResource("10_n7tfj")
 
 [node name="Sector-5121" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(118, 30)
@@ -2656,7 +2680,7 @@ ceiling_height = 500.0
 sector_material = ExtResource("4_xf0ey")
 
 [node name="PlayerPosition" parent="." instance=ExtResource("3_nqbmo")]
-position = Vector2(363, 55)
+position = Vector2(336, -111)
 placement_mode = 0
 height_offset = 0.5
 

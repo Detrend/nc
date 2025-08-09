@@ -1,7 +1,17 @@
-[gd_resource type="Resource" script_class="TextureConfig" load_steps=3 format=3 uid="uid://b0ot7qa5l7k8d"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=5 format=3 uid="uid://b0ot7qa5l7k8d"]
 
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="1_23jo0"]
 [ext_resource type="Texture2D" uid="uid://jt3ssm48lqjc" path="res://imgs/floor1.png" id="1_37rwi"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="3_55itm"]
+
+[sub_resource type="Resource" id="Resource_a6q66"]
+script = ExtResource("3_55itm")
+wall_length_range = Vector2(0, 0.5)
+_placement_type = 1
+show_wall = true
+wall_texture = "floor1"
+wall_scale = 0.5
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [resource]
 script = ExtResource("1_23jo0")
@@ -10,6 +20,8 @@ preview_scale = 1.0
 show_wall = true
 wall_texture = "bricks"
 wall_scale = 0.5
+wall_priority = 0
+wall_rules = Array[ExtResource("3_55itm")]([SubResource("Resource_a6q66")])
 show_floor = true
 floor_texture = "floor1"
 floor_scale = 0.5

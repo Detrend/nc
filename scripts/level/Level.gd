@@ -79,6 +79,41 @@ func _update_sector_visuals()->void:
 
 class WallExportData:
 	var material : SectorMaterial
+	var sectors : Array[Sector] = []
+	var holes_count : int = 0
+
+	func register_sector(s: Sector)->void:
+		if not s.exclude_from_export:
+			sectors.append(s)
+		else: holes_count += 1
+		if self.material == null || self.material.wall_priority < s.data.material.wall_priority:
+			self.material = s.data.material
+
+	func compute_wall_height(this_sector : Sector)->float:
+		if sectors.size() == 1:
+			return sectors[0].ceiling_height - sectors[0].floor_height
+		if sectors.size() != 2:
+			ErrorUtils.report_error("Wall has invalid number of sectors: [{0}]".format([TextUtils.recursive_array_tostring(sectors,", ", func(s: Sector): return s.get_full_name() )]))
+			if sectors.size() == 0: return 0
+		var other_sector = sectors[1 if sectors[0] == this_sector else 0]
+		var floor_delta :float = other_sector.floor_height - this_sector.floor_height
+		var ceiling_delta :float = this_sector.ceiling_height - other_sector.ceiling_height
+		return max(floor_delta, ceiling_delta)
+
+	func export_wall_data(this_sector : Sector)->Dictionary:
+		var height := compute_wall_height(this_sector)
+		for rule in material.wall_rules:
+			var height_check := (rule.wall_length_range.x < 0) or (rule.wall_length_range[0] <= height and height <= rule.wall_length_range[1])
+			var surface_type_check := ((rule._placement_type & WallRule.PlacementType.Any == WallRule.PlacementType.Any)
+									   or ((rule._placement_type & WallRule.PlacementType.Border) and sectors.size() == 2)
+									   or ((rule._placement_type & WallRule.PlacementType.HoleBorder) and sectors.size() >= 1 and holes_count >= 1)
+									   or ((rule._placement_type & WallRule.PlacementType.Wall) and sectors.size() == 1)
+			)
+			if height_check and surface_type_check:
+				return Level.get_texture_config(rule, 'wall')
+
+		return Level.get_texture_config(material, 'wall')
+
 
 static func _get_wall_idx(wall_begin: Vector2, wall_end: Vector2)->Vector4:
 	if wall_begin < wall_end: return Vector4(wall_begin.x, wall_begin.y, wall_end.x, wall_end.y)
@@ -127,15 +162,11 @@ func create_level_export_data() -> Dictionary:
 			host_portals.get_or_add(s.portal_destination, []).append(s)
 	
 	for s in get_sectors(false):
-		var current_material := s.data.material
-		if s.data.material == null:
-			ErrorUtils.report_error("no material for sector: {0}".format([s.get_full_name()]))
 		var i:= 0
 		var walls_count := s.get_walls_count()
 		while i < walls_count:
 			var wall_data :WallExportData = get_wall_data.call(s.get_wall_begin(i), s.get_wall_end(i))
-			if wall_data.material == null || wall_data.material.wall_priority < current_material.wall_priority:
-				wall_data.material = current_material
+			wall_data.register_sector(s)
 			i += 1
 	
 	var sectors_export : Array[Dictionary]
@@ -162,8 +193,7 @@ func create_level_export_data() -> Dictionary:
 		var walls_count = sector.get_walls_count()
 		while wall_idx < walls_count:
 			var wall_data : WallExportData = get_wall_data.call(sector.get_wall_begin(wall_idx), sector.get_wall_end(wall_idx))
-			var sector_material : SectorMaterial = sector.data.material if sector.data.material.wall_priority >= wall_data.material.wall_priority else wall_data.material
-			walls_export.append(get_texture_config(sector_material, 'wall'))
+			walls_export.append(wall_data.export_wall_data(sector))
 			wall_idx += 1
 		sector_export["wall_surfaces"] = walls_export
 
@@ -199,7 +229,7 @@ func export_level():
 	file.close()
 	print("export completed")
 	
-func get_texture_config(sector_material: SectorMaterial, texture_name: String)->Dictionary:
+static func get_texture_config(sector_material: Variant, texture_name: String)->Dictionary:
 	if sector_material == null: sector_material = (load("res://textures/default_texture.tres") as SectorMaterial)
 	var ret : Dictionary = {}
 	ret["id"] = sector_material.get(texture_name + "_texture")

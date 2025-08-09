@@ -1,7 +1,8 @@
-[gd_resource type="Resource" script_class="SectorMaterial" load_steps=3 format=3 uid="uid://dru3antcr08im"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=4 format=3 uid="uid://dru3antcr08im"]
 
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="1_n8a10"]
 [ext_resource type="Texture2D" uid="uid://hosfsoru1xho" path="res://imgs/VegetationDark2.png" id="1_ooviw"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="3_fr723"]
 
 [resource]
 script = ExtResource("1_n8a10")
@@ -11,6 +12,7 @@ show_wall = true
 wall_texture = "wall4"
 wall_scale = 0.5
 wall_priority = 0
+wall_rules = Array[ExtResource("3_fr723")]([])
 show_floor = true
 floor_texture = "VegetationDark2"
 floor_scale = 2.0
