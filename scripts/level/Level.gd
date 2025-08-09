@@ -240,9 +240,9 @@ static func get_texture_config(sector_material: Variant, texture_name: String, s
 	ret["scale"] = sector_material.get(texture_name + "_scale")
 	ret["show"] = sector_material.get("show_" + texture_name)
 	var base_rotation_deg :float = sector_material.get(texture_name + "_rotation")
-	var custom_rotation_deg :float = sector.wall_texturing_rotation if (texture_name == 'wall') else sector.texturing_rotation
+	var custom_rotation_deg :float = sector.data.wall_texturing_rotation if (texture_name == 'wall') else sector.data.texturing_rotation
 	ret["rotation"] = deg_to_rad(base_rotation_deg + custom_rotation_deg)
-	var offset := sector.wall_texturing_offset if (texture_name == 'wall') else sector.texturing_offset
+	var offset := sector.data.wall_texturing_offset if (texture_name == 'wall') else sector.data.texturing_offset
 	ret["offset"] = [offset.x, offset.y]
 	return ret
 
