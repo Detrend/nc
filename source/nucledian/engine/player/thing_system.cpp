@@ -55,7 +55,7 @@ static void test_make_sector_height(
   SectorID                                    portal_sector     = INVALID_SECTOR_ID,
   const SurfaceData                           &floor_surface    = SurfaceData{},
   const SurfaceData                           &ceiling_surface  = SurfaceData{},
-  const SurfaceData                           &wall_surface     = SurfaceData{}
+  const std::vector<SurfaceData>              &wall_surfaces    = {}
 )
 {
   std::vector<map_building::WallBuildData> walls;
@@ -69,7 +69,7 @@ static void test_make_sector_height(
       .point_index            = p,
       .nc_portal_point_index  = is_portal ? portal_wall_id_to : INVALID_WALL_REL_ID,
       .nc_portal_sector_index = is_portal ? portal_sector     : INVALID_SECTOR_ID,
-      .surface                = wall_surface
+      .surface                = wall_surfaces[i]
     });
   }
 
@@ -100,7 +100,7 @@ static void test_make_sector
     MapSectors::SECTOR_CEILING_Y,
     points, out, portal_wall_id,
     portal_wall_id_to, portal_sector,
-      surface, surface, surface
+      surface, surface, {}
   );
 }
 
@@ -262,9 +262,12 @@ static SurfaceData load_json_surface(const nlohmann::json &js)
         }
         auto floor_surface = load_json_surface(js_sector["floor_surface"]);
         auto ceiling_surface = load_json_surface(js_sector["ceiling_surface"]);
-        auto wall_surface = load_json_surface(js_sector["wall_surface"]);
-
-        test_make_sector_height(floor, ceil, point_idxs, sectors, portal_wall, portal_destination_wall, portal_sector, floor_surface, ceiling_surface, wall_surface);
+        std::vector<SurfaceData> wall_surfaces;
+        for (auto&& js_wall_surface : js_sector["wall_surfaces"]) {
+            wall_surfaces.emplace_back(load_json_surface(js_wall_surface));
+        }
+        
+        test_make_sector_height(floor, ceil, point_idxs, sectors, portal_wall, portal_destination_wall, portal_sector, floor_surface, ceiling_surface, wall_surfaces);
     }
 
     using namespace map_building::MapBuildFlag;
