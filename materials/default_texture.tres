@@ -6,26 +6,31 @@
 
 [sub_resource type="Resource" id="Resource_a6q66"]
 script = ExtResource("3_55itm")
-wall_length_range = Vector2(0, 0.5)
 _placement_type = 1
+wall_length_range = Vector2(0, 0.5)
 show_wall = true
 wall_texture = "floor1"
 wall_scale = 0.5
+wall_rotation = 0.0
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [resource]
 script = ExtResource("1_23jo0")
 preview = ExtResource("1_37rwi")
 preview_scale = 1.0
+preview_rotation = 0.0
 show_wall = true
 wall_texture = "bricks"
 wall_scale = 0.5
+wall_rotation = 0.0
 wall_priority = 0
 wall_rules = Array[ExtResource("3_55itm")]([SubResource("Resource_a6q66")])
 show_floor = true
 floor_texture = "floor1"
 floor_scale = 0.5
+floor_rotation = 0.0
 show_ceiling = true
 ceiling_texture = "floor2"
 ceiling_scale = 0.5
+ceiling_rotation = 0.0
 metadata/_custom_type_script = "uid://bd7os02w6f4ou"

@@ -78,8 +78,11 @@ func _update_sector_visuals()->void:
 		if s.is_editable: s._update_visuals()
 
 class WallExportData:
+	# Material with the highest priority so far
 	var material : SectorMaterial
+	# Full export-enabled sectors participating in the wall, expected to have 1 or 2 elements
 	var sectors : Array[Sector] = []
+	# Number of holes participating in the wall, can be arbitrary number
 	var holes_count : int = 0
 
 	func register_sector(s: Sector)->void:
@@ -102,7 +105,8 @@ class WallExportData:
 
 	func export_wall_data(this_sector : Sector)->Dictionary:
 		var height := compute_wall_height(this_sector)
-		for rule in material.wall_rules:
+		var chosen_material :SectorMaterial = material if (material.wall_priority > this_sector.data.material.wall_priority) else this_sector.data.material
+		for rule in chosen_material.wall_rules:
 			var height_check := (rule.wall_length_range.x < 0) or (rule.wall_length_range[0] <= height and height <= rule.wall_length_range[1])
 			var surface_type_check := ((rule._placement_type & WallRule.PlacementType.Any == WallRule.PlacementType.Any)
 									   or ((rule._placement_type & WallRule.PlacementType.Border) and sectors.size() == 2)
@@ -110,9 +114,9 @@ class WallExportData:
 									   or ((rule._placement_type & WallRule.PlacementType.Wall) and sectors.size() == 1)
 			)
 			if height_check and surface_type_check:
-				return Level.get_texture_config(rule, 'wall')
+				return Level.get_texture_config(rule, 'wall', this_sector)
 
-		return Level.get_texture_config(material, 'wall')
+		return Level.get_texture_config(chosen_material, 'wall', this_sector)
 
 
 static func _get_wall_idx(wall_begin: Vector2, wall_end: Vector2)->Vector4:
@@ -186,8 +190,8 @@ func create_level_export_data() -> Dictionary:
 		sector_export["ceiling"] = sector.data.ceiling_height * export_scale.z
 		sector_export["points"] = sector_points
 
-		sector_export["floor_surface"] = get_texture_config(sector.data.material, 'floor')
-		sector_export["ceiling_surface"] = get_texture_config(sector.data.material, 'ceiling')
+		sector_export["floor_surface"] = get_texture_config(sector.data.material, 'floor', sector)
+		sector_export["ceiling_surface"] = get_texture_config(sector.data.material, 'ceiling', sector)
 		var walls_export : Array[Dictionary] = []
 		var wall_idx := 0
 		var walls_count = sector.get_walls_count()
@@ -229,15 +233,19 @@ func export_level():
 	file.close()
 	print("export completed")
 	
-static func get_texture_config(sector_material: Variant, texture_name: String)->Dictionary:
+static func get_texture_config(sector_material: Variant, texture_name: String, sector : Sector)->Dictionary:
 	if sector_material == null: sector_material = (load("res://textures/default_texture.tres") as SectorMaterial)
 	var ret : Dictionary = {}
 	ret["id"] = sector_material.get(texture_name + "_texture")
 	ret["scale"] = sector_material.get(texture_name + "_scale")
 	ret["show"] = sector_material.get("show_" + texture_name)
-	ret["rotation"] = 0.0
-	ret["offset"] = [0.0, 0.0]
+	var base_rotation_deg :float = sector_material.get(texture_name + "_rotation")
+	var custom_rotation_deg :float = sector.wall_texturing_rotation if (texture_name == 'wall') else sector.texturing_rotation
+	ret["rotation"] = deg_to_rad(base_rotation_deg + custom_rotation_deg)
+	var offset := sector.wall_texturing_offset if (texture_name == 'wall') else sector.texturing_offset
+	ret["offset"] = [offset.x, offset.y]
 	return ret
+
 
 func get_sectors(for_export_only:bool = true) -> Array[Sector]:
 	var flags := NodeUtils.LOOKUP_FLAGS.RECURSIVE | NodeUtils.LOOKUP_FLAGS.INCLUDE_INTERNAL

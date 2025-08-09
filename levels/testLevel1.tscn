@@ -1,4 +1,4 @@
-[gd_scene load_steps=166 format=3 uid="uid://befdk2p7cnnba"]
+[gd_scene load_steps=168 format=3 uid="uid://befdk2p7cnnba"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_nqbmo"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_l4525"]
@@ -356,6 +356,18 @@ floor_height = 0.2
 ceiling_height = 5.8
 material = ExtResource("4_xf0ey")
 
+[sub_resource type="Resource" id="Resource_8tf6c"]
+script = ExtResource("4_h15or")
+floor_height = 4.12
+ceiling_height = 5.6
+material = ExtResource("4_xf0ey")
+
+[sub_resource type="Resource" id="Resource_eyhek"]
+script = ExtResource("4_h15or")
+floor_height = 4.12
+ceiling_height = 5.6
+material = ExtResource("4_xf0ey")
+
 [sub_resource type="Resource" id="Resource_iyvop"]
 script = ExtResource("4_h15or")
 floor_height = 0.1
@@ -640,7 +652,7 @@ material = ExtResource("4_xf0ey")
 
 [sub_resource type="Resource" id="Resource_tccgo"]
 script = ExtResource("4_h15or")
-floor_height = 4.1
+floor_height = 4.12
 ceiling_height = 5.6
 material = ExtResource("4_xf0ey")
 
@@ -1564,6 +1576,32 @@ ceiling_height = 5.8
 sector_material = ExtResource("4_xf0ey")
 portal_wall = -1
 
+[node name="Sector23b" type="Polygon2D" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
+texture_filter = 1
+texture_repeat = 2
+texture = ExtResource("3_maegb")
+texture_scale = Vector2(20, 20)
+polygon = PackedVector2Array(196, -109, 203, -112, 205, -111, 198, -108)
+script = ExtResource("11_2dkgu")
+data = SubResource("Resource_8tf6c")
+floor_height = 4.12
+ceiling_height = 5.6
+sector_material = ExtResource("4_xf0ey")
+show_portal_arrow = true
+
+[node name="Sector23a" type="Polygon2D" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
+texture_filter = 1
+texture_repeat = 2
+texture = ExtResource("3_maegb")
+texture_scale = Vector2(20, 20)
+polygon = PackedVector2Array(213, -112, 221, -109, 219, -108, 211, -111)
+script = ExtResource("11_2dkgu")
+data = SubResource("Resource_eyhek")
+floor_height = 4.12
+ceiling_height = 5.6
+sector_material = ExtResource("4_xf0ey")
+show_portal_arrow = true
+
 [node name="Sector24" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
 color = Color(1, 1, 1, 1)
 texture = ExtResource("3_maegb")
@@ -2069,7 +2107,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="TriangulatedMultisector-1760" parent="Sectors/StairSequence" instance=ExtResource("3_l4525")]
 position = Vector2(63.209, -74.5978)
-polygon = PackedVector2Array(0, 0, 12.791, 0.597801, 18.791, 18.5978, 9.79102, 18.5978, 0, 10, -29.209, 11.5978, -65.209, -13.4022, -78.209, -5.40219, -92.209, 8.5978, -108.209, 11.5978, -116.209, 8.5978, -98.209, 2.5978, -94.209, -6.4022, -110.209, -12.4022, -129.209, -7.4022, -135.209, 2.5978, -122.209, 8.5978, -129.209, 11.5978, -145.209, 8.5978, -145.209, -2.4022, -139.209, -13.4022, -113.209, -22.4022, -102.209, -28.4022, -73.209, -31.4022, -62.209, -27.4022, -43.209, -26.4022, -31.209, -20.4022, -18.209, -1.40219)
+polygon = PackedVector2Array(0, 0, 12.791, 0.597801, 18.791, 18.5978, 9.79102, 18.5978, 0, 10, -29.209, 11.5978, -65.209, -13.4022, -78.209, -5.40219, -92.209, 8.5978, -106.209, 10.5978, -114.209, 7.5978, -98.209, 2.5978, -94.209, -6.4022, -110.209, -12.4022, -129.209, -7.4022, -135.209, 2.5978, -124.209, 7.5978, -131.209, 10.5978, -145.209, 8.5978, -145.209, -2.4022, -139.209, -13.4022, -113.209, -22.4022, -102.209, -28.4022, -73.209, -31.4022, -62.209, -27.4022, -43.209, -26.4022, -31.209, -20.4022, -18.209, -1.40219)
 data = SubResource("Resource_r8b0k")
 
 [node name="Sector-8508" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
@@ -2094,19 +2132,16 @@ floor_height = 3.5
 ceiling_height = 5.6
 sector_material = ExtResource("4_xf0ey")
 
-[node name="Sector-8508c" type="Polygon2D" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-8508c" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(83.5367, -50.2036)
+color = Color(1, 1, 1, 1)
 texture = ExtResource("3_maegb")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-10.5367, -5.7964, -1.53668, -5.7964, -0.536682, -3.7964, -9.53668, -3.7964)
-script = ExtResource("11_2dkgu")
 data = SubResource("Resource_tccgo")
-floor_height = 4.1
+floor_height = 4.12
 ceiling_height = 5.6
 sector_material = ExtResource("4_xf0ey")
-show_portal_arrow = true
 
 [node name="Sector-8508a" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(83.5367, -50.2036)
@@ -2680,7 +2715,7 @@ ceiling_height = 500.0
 sector_material = ExtResource("4_xf0ey")
 
 [node name="PlayerPosition" parent="." instance=ExtResource("3_nqbmo")]
-position = Vector2(336, -111)
+position = Vector2(8, -12)
 placement_mode = 0
 height_offset = 0.5
 

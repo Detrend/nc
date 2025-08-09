@@ -6,35 +6,41 @@
 
 [sub_resource type="Resource" id="Resource_cr5p4"]
 script = ExtResource("3_qxi2i")
-wall_length_range = Vector2(0, 2)
 _placement_type = 1
+wall_length_range = Vector2(0, 2)
 show_wall = true
 wall_texture = "bricks"
 wall_scale = 0.5
+wall_rotation = 0.0
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [sub_resource type="Resource" id="Resource_caupq"]
 script = ExtResource("3_qxi2i")
-wall_length_range = Vector2(2, 9999)
 _placement_type = 3
+wall_length_range = Vector2(2, 9999)
 show_wall = true
 wall_texture = "wall5"
 wall_scale = 0.5
+wall_rotation = 0.0
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [resource]
 script = ExtResource("2_caupq")
 preview = ExtResource("1_cr5p4")
 preview_scale = 1.0
+preview_rotation = 0.0
 show_wall = true
 wall_texture = "bricks"
 wall_scale = 0.5
+wall_rotation = 0.0
 wall_priority = 1
 wall_rules = Array[ExtResource("3_qxi2i")]([SubResource("Resource_cr5p4"), SubResource("Resource_caupq")])
 show_floor = true
 floor_texture = "floor3"
 floor_scale = 0.5
+floor_rotation = 0.0
 show_ceiling = true
 ceiling_texture = "floor2"
 ceiling_scale = 0.5
+ceiling_rotation = 0.0
 metadata/_custom_type_script = "uid://bd7os02w6f4ou"

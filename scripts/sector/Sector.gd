@@ -28,6 +28,23 @@ extends EditablePolygon
 		exclude_from_export = val
 		_update_visuals()
 
+@export_group("Texturing")
+
+@export var texturing_offset : Vector2 = Vector2.ZERO:
+	get: return texturing_offset
+	set(val):
+		texturing_offset = val
+		_update_visuals()
+@export_range(0.0, 360.0) var texturing_rotation : float = 0.0:
+	get: return texturing_rotation
+	set(val):
+		texturing_rotation = val
+		_update_visuals()
+
+@export var wall_texturing_offset : Vector2 = Vector2.ZERO
+@export_range(0.0, 360.0) var wall_texturing_rotation : float = 0.0
+
+
 @export_group("Portal")
 
 @export var portal_destination : Sector = null:
@@ -116,6 +133,8 @@ func _visualize_polygon()->void:
 		self.color = Color.WHITE
 		self.texture = sector_material.preview
 		self.texture_scale = Vector2(1/(sector_material.wall_scale * _level.export_scale.x), 1/(sector_material.wall_scale * _level.export_scale.y)) * sector_material.preview_scale
+		self.texture_offset = -texturing_offset
+		self.texture_rotation = deg_to_rad(-texturing_rotation - sector_material.preview_rotation)
 	else:
 		self.color = EditorConfig.get_sector_color(config, self)
 		self.texture = null
