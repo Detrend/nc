@@ -77,12 +77,19 @@ func _update_sector_visuals()->void:
 	for s in get_editable_polygons():
 		if s.is_editable: s._update_visuals()
 
+class WallExportData:
+	var material : SectorMaterial
+
+static func _get_wall_idx(wall_begin: Vector2, wall_end: Vector2)->Vector4:
+	if wall_begin < wall_end: return Vector4(wall_begin.x, wall_begin.y, wall_end.x, wall_end.y)
+	else: return Vector4(wall_end.x, wall_end.y, wall_begin.x, wall_begin.y)
 
 func create_level_export_data() -> Dictionary:	
 	var level_export := Dictionary()
 	var points_export : Array[PackedFloat32Array]
 	var points_map : Dictionary[Vector2, int] = {}
 	var sectors_map : Dictionary[Sector, int] = {}
+	var walls_map : Dictionary[Vector4, WallExportData] = {}
 	var get_point_idx : Callable = func(vec: Vector2)->int:
 		var ret = points_map.get(vec)
 		if ret == null:
@@ -92,7 +99,14 @@ func create_level_export_data() -> Dictionary:
 			points_export.append(point_export)
 			points_map[vec] = ret
 		return ret as int
-		
+	var get_wall_data : Callable = func(a: Vector2, b: Vector2)->WallExportData:
+		var idx:= _get_wall_idx(a, b)
+		var ret = walls_map.get(idx)
+		if ret == null:
+			ret = WallExportData.new()
+			walls_map[idx] = ret
+		return ret as WallExportData
+
 	var all_sectors := get_sectors(true);
 	var all_pickups := get_pickups()
 	var all_entities := get_entities()
@@ -112,6 +126,18 @@ func create_level_export_data() -> Dictionary:
 		if s.has_portal() and s.is_portal_bidirectional:
 			host_portals.get_or_add(s.portal_destination, []).append(s)
 	
+	for s in get_sectors(false):
+		var current_material := s.data.material
+		if s.data.material == null:
+			ErrorUtils.report_error("no material for sector: {0}".format([s.get_full_name()]))
+		var i:= 0
+		var walls_count := s.get_walls_count()
+		while i < walls_count:
+			var wall_data :WallExportData = get_wall_data.call(s.get_wall_begin(i), s.get_wall_end(i))
+			if wall_data.material == null || wall_data.material.wall_priority < current_material.wall_priority:
+				wall_data.material = current_material
+			i += 1
+	
 	var sectors_export : Array[Dictionary]
 	for sector in all_sectors:
 		var sector_export := Dictionary()
@@ -129,9 +155,17 @@ func create_level_export_data() -> Dictionary:
 		sector_export["ceiling"] = sector.data.ceiling_height * export_scale.z
 		sector_export["points"] = sector_points
 
-		sector_export["floor_surface"] = get_texture_config(sector.data, 'floor')
-		sector_export["ceiling_surface"] = get_texture_config(sector.data, 'ceiling')
-		sector_export["wall_surface"] = get_texture_config(sector.data, 'wall')
+		sector_export["floor_surface"] = get_texture_config(sector.data.material, 'floor')
+		sector_export["ceiling_surface"] = get_texture_config(sector.data.material, 'ceiling')
+		var walls_export : Array[Dictionary] = []
+		var wall_idx := 0
+		var walls_count = sector.get_walls_count()
+		while wall_idx < walls_count:
+			var wall_data : WallExportData = get_wall_data.call(sector.get_wall_begin(wall_idx), sector.get_wall_end(wall_idx))
+			var sector_material : SectorMaterial = sector.data.material if sector.data.material.wall_priority >= wall_data.material.wall_priority else wall_data.material
+			walls_export.append(get_texture_config(sector_material, 'wall'))
+			wall_idx += 1
+		sector_export["wall_surfaces"] = walls_export
 
 		sector_export["portal_target"] = sectors_map[sector.portal_destination] if sector.has_portal() else 65535
 		sector_export["portal_wall"] = sector.portal_wall if sector.has_portal() else -1
@@ -165,12 +199,12 @@ func export_level():
 	file.close()
 	print("export completed")
 	
-func get_texture_config(sector_data: SectorProperties, texture_name: String)->Dictionary:
-	var texture : TextureConfig= sector_data.texture_config if sector_data.texture_config else (load("res://textures/default_texture.tres") as TextureConfig)
+func get_texture_config(sector_material: SectorMaterial, texture_name: String)->Dictionary:
+	if sector_material == null: sector_material = (load("res://textures/default_texture.tres") as SectorMaterial)
 	var ret : Dictionary = {}
-	ret["id"] = texture.get(texture_name + "_texture")
-	ret["scale"] = texture.get(texture_name + "_scale")
-	ret["show"] = texture.get("show_" + texture_name)
+	ret["id"] = sector_material.get(texture_name + "_texture")
+	ret["scale"] = sector_material.get(texture_name + "_scale")
+	ret["show"] = sector_material.get("show_" + texture_name)
 	ret["rotation"] = 0.0
 	ret["offset"] = [0.0, 0.0]
 	return ret

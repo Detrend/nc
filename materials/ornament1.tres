@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="TextureConfig" load_steps=3 format=3 uid="uid://cyf8yonewu52f"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=3 format=3 uid="uid://cyf8yonewu52f"]
 
-[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/TextureConfig.gd" id="1_3ubeq"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="1_3ubeq"]
 [ext_resource type="Texture2D" uid="uid://cwoite1spn28e" path="res://imgs/wall7.png" id="1_82owt"]
 
 [resource]
@@ -10,6 +10,7 @@ preview_scale = 1.0
 show_wall = true
 wall_texture = "floor3"
 wall_scale = 0.5
+wall_priority = 1
 show_floor = true
 floor_texture = "floor3"
 floor_scale = 0.5

@@ -26,6 +26,25 @@ static func is_clockwise_convex_polygon(a: PackedVector2Array)->int:
 static func line_vs_point(line_origin: Vector2, line_direction: Vector2, point: Vector2)->float:
 	return (line_direction).cross(point-line_origin)
 
+static func distance_sqr_from_line_segment(line_begin: Vector2, line_end: Vector2, point: Vector2)->float:
+	if line_begin == line_end: 
+		return line_begin.distance_squared_to(point)
+
+	var line_length = line_end.distance_to(line_begin)
+	var line_direction :Vector2 = (line_end - line_begin) * (1/line_length)
+	var point_rebased := point - line_begin
+	var projection_t := line_direction.dot(point_rebased)
+	if projection_t < 0:
+		return point.distance_squared_to(line_begin)
+	if projection_t >= 1.0:
+		return point.distance_squared_to(line_end)
+	var projection := line_begin + (projection_t * line_direction)
+	return projection.distance_squared_to(point)
+	
+
+static func distance_from_line_segment(line_begin: Vector2, line_end : Vector2, point: Vector2)->float:
+	return sqrt(distance_sqr_from_line_segment(line_begin, line_end, point))
+
 
 static func find_closest_point(v: Vector2, points: PackedVector2Array, blacklist: Dictionary[Vector2, bool] = {})->int:
 	var best_distance_sqr := INF

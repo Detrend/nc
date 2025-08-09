@@ -15,10 +15,10 @@ extends EditablePolygon
 		data.ceiling_height = val
 		_update_visuals()
 
-@export var texture_config : TextureConfig:
-	get: return data.texture_config
+@export var sector_material : SectorMaterial:
+	get: return data.material
 	set(val):
-		data.texture_config = val
+		data.material = val
 		_update_visuals()
 
 
@@ -114,8 +114,8 @@ func do_postprocess(points: PackedVector2Array)->bool:
 func _visualize_polygon()->void:
 	if _level.coloring_mode == EditorConfig.SectorColoringMode.Texturing and (! self.exclude_from_export):
 		self.color = Color.WHITE
-		self.texture = texture_config.preview
-		self.texture_scale = Vector2(1/(texture_config.wall_scale * _level.export_scale.x), 1/(texture_config.wall_scale * _level.export_scale.y)) * texture_config.preview_scale
+		self.texture = sector_material.preview
+		self.texture_scale = Vector2(1/(sector_material.wall_scale * _level.export_scale.x), 1/(sector_material.wall_scale * _level.export_scale.y)) * sector_material.preview_scale
 	else:
 		self.color = EditorConfig.get_sector_color(config, self)
 		self.texture = null

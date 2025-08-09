@@ -1,5 +1,5 @@
 extends Resource
-class_name TextureConfig
+class_name SectorMaterial
 
 @export var preview : Texture2D
 @export var preview_scale : float = 1.0
@@ -8,6 +8,7 @@ class_name TextureConfig
 @export var show_wall : bool = true
 @export var wall_texture : String
 @export var wall_scale : float = 1.0
+@export var wall_priority : int = 0
 
 @export_group("Floor")
 @export var show_floor : bool = true

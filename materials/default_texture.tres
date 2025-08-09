@@ -1,11 +1,12 @@
 [gd_resource type="Resource" script_class="TextureConfig" load_steps=3 format=3 uid="uid://b0ot7qa5l7k8d"]
 
-[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/TextureConfig.gd" id="1_23jo0"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="1_23jo0"]
 [ext_resource type="Texture2D" uid="uid://jt3ssm48lqjc" path="res://imgs/floor1.png" id="1_37rwi"]
 
 [resource]
 script = ExtResource("1_23jo0")
 preview = ExtResource("1_37rwi")
+preview_scale = 1.0
 show_wall = true
 wall_texture = "bricks"
 wall_scale = 0.5

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://0kbske84jb5g" path="res://scripts/sector/TriangulatedMultisector.gd" id="1_dyq21"]
 [ext_resource type="Script" uid="uid://cft80p5qydrwt" path="res://scripts/sector/SectorProperties.gd" id="2_jf8ge"]
-[ext_resource type="Resource" uid="uid://b0ot7qa5l7k8d" path="res://textures/default_texture.tres" id="3_tjxab"]
+[ext_resource type="Resource" uid="uid://b0ot7qa5l7k8d" path="res://materials/default_texture.tres" id="3_tjxab"]
 
 [sub_resource type="Resource" id="Resource_tjxab"]
 script = ExtResource("2_jf8ge")
