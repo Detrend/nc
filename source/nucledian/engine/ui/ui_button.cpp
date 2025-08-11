@@ -2,7 +2,7 @@
 
 namespace nc
 {
-  UiButton::UiButton(GuiTexture* texture, std::function<void> func)
+  UiButton::UiButton(GuiTexture* texture, std::function<void(void)> func)
   {
     this->texture = texture;
     this->func = func;

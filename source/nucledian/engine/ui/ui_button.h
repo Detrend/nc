@@ -8,14 +8,14 @@ namespace nc
   class UiButton
   {
   public:
-    UiButton(GuiTexture* texture, std::function<void> func);
+    UiButton(GuiTexture* texture, std::function<void(void)> func);
     bool is_point_in_rec(vec2 point);
 
 
   private:
     GuiTexture* texture;
     bool isHover = false;
-    std::function<void> func;
+    std::function<void(void)> func;
   };
 
   class UiButtonManager
