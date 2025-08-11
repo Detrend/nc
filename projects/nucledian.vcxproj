@@ -125,6 +125,7 @@
     <ClCompile Include="..\source\nucledian\engine\graphics\renderer.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\physics.cpp" />
     <ClCompile Include="..\source\nucledian\engine\sound\sound_system.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\ui\ui_button.cpp" />
     <ClCompile Include="..\source\nucledian\game\item.cpp" />
     <ClCompile Include="..\source\nucledian\game\item_resources.cpp" />
     <ClCompile Include="..\source\nucledian\engine\ui\ui_texture.cpp" />
@@ -263,6 +264,7 @@
     <ClInclude Include="..\source\nucledian\engine\sound\sound_resources.h" />
     <ClInclude Include="..\source\nucledian\engine\sound\sound_system.h" />
     <ClInclude Include="..\source\nucledian\engine\sound\sound_types.h" />
+    <ClInclude Include="..\source\nucledian\engine\ui\ui_button.h" />
     <ClInclude Include="..\source\nucledian\game\item.h" />
     <ClInclude Include="..\source\nucledian\game\item_resources.h" />
     <ClInclude Include="..\source\nucledian\engine\ui\ui_texture.h" />
