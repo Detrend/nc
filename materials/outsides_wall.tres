@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=4 format=3 uid="uid://p738ciwykkty"]
+
+[ext_resource type="Texture2D" uid="uid://5ju12ycw81g4" path="res://imgs/bricks.png" id="1_qr651"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="2_r0utu"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="3_1qqi1"]
+
+[resource]
+script = ExtResource("2_r0utu")
+preview = ExtResource("1_qr651")
+preview_scale = 1.0
+preview_rotation = 0.0
+show_wall = true
+wall_texture = "bricks"
+wall_scale = 0.5
+wall_rotation = 0.0
+wall_priority = 3
+wall_rules = Array[ExtResource("3_1qqi1")]([])
+show_floor = true
+floor_texture = "floor1"
+floor_scale = 0.5
+floor_rotation = 0.0
+show_ceiling = true
+ceiling_texture = "floor2"
+ceiling_scale = 0.5
+ceiling_rotation = 0.0
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"

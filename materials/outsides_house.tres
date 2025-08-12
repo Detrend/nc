@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=4 format=3 uid="uid://byw7ktlk5iaok"]
+
+[ext_resource type="Texture2D" uid="uid://dtu5fh5ewxna6" path="res://imgs/floor3.png" id="1_w87yy"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="2_nswn4"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="3_ni0fv"]
+
+[resource]
+script = ExtResource("2_nswn4")
+preview = ExtResource("1_w87yy")
+preview_scale = 1.0
+preview_rotation = 0.0
+show_wall = true
+wall_texture = "wall4"
+wall_scale = 0.5
+wall_rotation = 0.0
+wall_priority = 0
+wall_rules = Array[ExtResource("3_ni0fv")]([])
+show_floor = true
+floor_texture = "VegetationDark2"
+floor_scale = 2.0
+floor_rotation = 0.0
+show_ceiling = false
+ceiling_texture = "floor2"
+ceiling_scale = 0.5
+ceiling_rotation = 0.0
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"

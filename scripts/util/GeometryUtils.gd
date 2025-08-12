@@ -72,18 +72,104 @@ static func find_closest_points(a: PackedVector2Array, b: PackedVector2Array, bl
 		i+= 1
 	return ret
 
+static func polygon_is_hole(polygon: PackedVector2Array)->bool:
+	return Geometry2D.is_polygon_clockwise(polygon) 
+
+static func delta_equals(a: Vector2, b: Vector2)->bool:
+	return a.distance_squared_to(b) < 0.01
+
+static func ensure_points_are_preserved(new_polygon: PackedVector2Array, old_polygon: PackedVector2Array)->void:
+	var i: int = 0
+	while i < new_polygon.size():
+		var line_begin := new_polygon[i]
+		var line_end := new_polygon[i + 1 if i < new_polygon.size() - 1 else 0]
+		var did_find : bool = false
+		for old_point in old_polygon:
+			var closest := Geometry2D.get_closest_point_to_segment(old_point, line_begin, line_end)
+			if delta_equals(closest, old_point) and (closest != line_begin and closest != line_end):
+				new_polygon.insert(i + 1, closest)
+				did_find = true
+				break
+		if !did_find:
+			i += 1
+	
+
+static func merge_polygons(polygons: Array[PackedVector2Array], out_outer : Array[PackedVector2Array], out_holes: Array[PackedVector2Array])->void:
+	out_outer.clear()
+	out_holes.clear()
+	if polygons.is_empty(): return
+	
+	var outer_temp : PackedInt32Array = []
+	var holes_temp : PackedInt32Array = []
+
+	out_outer.append_array(polygons)
+	
+	var iterations_count : int = 0
+	var did_merge : bool = true
+	while did_merge and iterations_count < 10:
+		iterations_count += 1
+		did_merge = false
+		var i:int = 0
+		while i < out_outer.size():
+			var j:int = i + 1
+			while j < out_outer.size():
+				if j == i: 
+					j += 1
+					continue
+				var merge := Geometry2D.merge_polygons(out_outer[i], out_outer[j])
+				if merge.size() == 2 and ! polygon_is_hole(merge[0]) and ! polygon_is_hole(merge[1]):
+					#merge returned the original polygons				
+					j += 1
+					continue
+				did_merge = true
+				outer_temp.clear()
+				holes_temp.clear()
+				var merge_idx :int = 0
+				while merge_idx < merge.size():
+					if polygon_is_hole(merge[merge_idx]):
+						holes_temp.append(merge_idx)
+					else:
+						outer_temp.append(merge_idx)
+					merge_idx += 1
+				#print("merge[{0}, {1}]: {2} polygons, {3} holes".format([i, j, outer_temp.size(), holes_temp.size()]))
+				if outer_temp.size() == 0:
+					ErrorUtils.report_warning("Merge produced 0 non-hole polygons (and {0} holes)".format([holes_temp.size()]))
+				if outer_temp.size() >= 2:
+					ErrorUtils.report_warning("merge produced more than 1 non-hole polygon ({0} in total + {1} holes)".format([outer_temp.size(), holes_temp.size()]))
+				
+				ensure_points_are_preserved(merge[outer_temp[0]], out_outer[i]) 
+				ensure_points_are_preserved(merge[outer_temp[0]], out_outer[j]) 
+				for hole_idx in holes_temp: 
+					ensure_points_are_preserved(merge[hole_idx], out_outer[i]) 
+					ensure_points_are_preserved(merge[hole_idx], out_outer[j]) 
+					out_holes.append(merge[hole_idx])
+				out_outer[i] = merge[outer_temp[0]]
+				out_outer.remove_at(j)
+				break
+
+			i += 1
+
+
 static func polygon_to_convex_segments(polygon: PackedVector2Array, holes: Array[PackedVector2Array], debug: bool = false, aggressive: bool = false)->Array[PackedVector2Array]:
+	
+	var holes_merged : Array[PackedVector2Array] = []
+	var hole_holes : Array[PackedVector2Array] = []
+	merge_polygons(holes, holes_merged, hole_holes)
+
 	var segments : Array[PackedVector2Array] = [polygon]
-	for hole in holes:
+	for hole in holes_merged:
 		var new_segments : Array[PackedVector2Array] = []
 		for current_segment in segments:
 			var divided := Geometry2D.clip_polygons(current_segment, hole)
+			for d in divided:
+				ensure_points_are_preserved(d, current_segment)
+				ensure_points_are_preserved(d, hole)
 			if debug: 
 				print("division: {0}".format([divided.size()]))
 				for g in divided: print("\tcl: {0}".format([Geometry2D.is_polygon_clockwise(g)]))
 			var blacklist : Dictionary[Vector2, bool] = {}
-			if divided.size() >= 2 and !Geometry2D.is_polygon_clockwise(divided[0]) and divided.slice(1).all(Geometry2D.is_polygon_clockwise):
-				# the function returned just the original polygon and a hole
+			if divided.size() >= 2 and !polygon_is_hole(divided[0]) and divided.slice(1).all(polygon_is_hole):
+				# the function returned just the original polygon and some holes
 				var main := divided[0]
 				for hole_in_appropriate_direction in divided.slice(1):
 					var closest_point_indices := find_closest_points(hole_in_appropriate_direction, main, blacklist)
@@ -102,6 +188,8 @@ static func polygon_to_convex_segments(polygon: PackedVector2Array, holes: Array
 			else:
 				new_segments.append_array(divided)
 		segments = new_segments
+
+	segments.append_array(hole_holes)
 
 	if debug: return segments
 	

@@ -9,6 +9,8 @@ extends EditablePolygon
 @export var debug : bool = false
 @export var aggressive : bool = false
 
+@export var only_manual_triangulation : bool = false
+
 @export var data : SectorProperties = SectorProperties.new()
 
 @export_tool_button("Bake") var dissolve_tool_button = do_dissolve
@@ -26,6 +28,7 @@ var _generated_parent : Node2D:
 
 func on_editing_start()->void:
 	super.on_editing_start()
+	if only_manual_triangulation: return
 	do_clear()
 
 func on_editing_finish(_start_was_called_first : bool)->void:
@@ -35,6 +38,7 @@ func on_editing_finish(_start_was_called_first : bool)->void:
 
 func on_descendant_editing_start(_ancestor: Node)->void:
 	super.on_descendant_editing_start(_ancestor)
+	if only_manual_triangulation: return
 	do_clear()
 
 func on_descendant_editing_finish(_ancestor: Node, _start_was_called_first: bool):
@@ -46,6 +50,7 @@ func _ready() -> void:
 
 var has_triangulation_request: bool = false
 func triangulate_on_next_frame()->void:
+	if only_manual_triangulation: return
 	if has_triangulation_request: return
 	has_triangulation_request = true
 	await _level.every_frame_signal
@@ -63,6 +68,13 @@ func do_triangulate()->void:
 	for hole_node in hole_nodes:
 		if hole_node.is_visible_in_tree() and hole_node.is_editable:
 			holes.append(hole_node.get_point_positions())
+
+	#var merged_holes : Array[PackedVector2Array]
+	#var merged_hole_holes : Array[PackedVector2Array]
+	#GeometryUtils.merge_polygons(holes, merged_holes, merged_hole_holes)
+	#var hole_holes_begin = merged_holes.size()
+	#merged_holes.append_array(merged_hole_holes)
+
 	var computed_segments := GeometryUtils.polygon_to_convex_segments(self.get_point_positions(), holes, debug, aggressive)
 	var counter : int = 0
 	for segment in computed_segments:
@@ -70,11 +82,15 @@ func do_triangulate()->void:
 		var added :Sector = NodeUtils.instantiate_child(generated_parent, preload("res://prefabs/Sector.tscn")) as Sector
 		added.global_position = Vector2.ZERO
 		added.polygon = segment
-		added.is_editable = false
+		added.is_editable = only_manual_triangulation#false
 		added.data = self.data
+		#if counter >= hole_holes_begin:
+		#	added.data = added.data.duplicate()
+		#	added.data.floor_height = 42.24
 		added.z_index = -10
 		added.name = "_" + str(counter)
 		counter += 1
+
 	await _level.every_frame_signal	
 	for child in generated_parent.get_children():
 		(child as Sector)._update_visuals() 	
