@@ -2,6 +2,8 @@
 extends Node2D
 
 
+@export var is_recursive : bool = false
+
 @export_group("Floor")
 @export var set_floor : bool = false:
 	get: return set_floor
@@ -53,8 +55,11 @@ extends Node2D
 
 
 
-var _stair_segments : Array[Sector]:
-	get: return Sector.get_sectors(self, [], false, NodeUtils.LOOKUP_FLAGS.NONE)
+var _stair_segments : Array[EditablePolygon]:
+	get:
+		var flags := NodeUtils.LOOKUP_FLAGS.NONE
+		if is_recursive: flags |= NodeUtils.LOOKUP_FLAGS.RECURSIVE
+		return EditablePolygon.get_all_editable(self, [], flags)
 
 
 func _ready() -> void: 
@@ -74,10 +79,16 @@ func _do_apply()->void:
 	if set_floor:
 		var current := floor_begin
 		for s in _stair_segments:
-			s.floor_height = current
+			if s is Sector:
+				s.floor_height = current
+			else:
+				s.data.floor_height = current
 			current += floor_increment
 	if set_ceiling:
 		var current := ceiling_begin
 		for s in _stair_segments:
-			s.ceiling_height = current
+			if s is Sector:
+				s.ceiling_height = current
+			else:
+				s.data.ceiling_height = current
 			current += ceiling_increment
