@@ -9,6 +9,10 @@ extends EditablePolygon
 @export var debug : bool = false
 @export var aggressive : bool = false
 
+@export var merge_holes : bool = false
+
+@export var additional_holes : Array[Node]
+
 @export var only_manual_triangulation : bool = false
 
 @export var data : SectorProperties = SectorProperties.new()
@@ -68,6 +72,12 @@ func do_triangulate()->void:
 	for hole_node in hole_nodes:
 		if hole_node.is_visible_in_tree() and hole_node.is_editable:
 			holes.append(hole_node.get_point_positions())
+	if additional_holes and !additional_holes.is_empty():
+		for hole_root in additional_holes:
+			if hole_root == null: continue
+			for hole_node in EditablePolygon.get_all_editable(hole_root):
+				if hole_node.is_visible_in_tree() and hole_node.is_editable:
+					holes.append(hole_node.get_point_positions())
 
 	#var merged_holes : Array[PackedVector2Array]
 	#var merged_hole_holes : Array[PackedVector2Array]
@@ -75,7 +85,7 @@ func do_triangulate()->void:
 	#var hole_holes_begin = merged_holes.size()
 	#merged_holes.append_array(merged_hole_holes)
 
-	var computed_segments := GeometryUtils.polygon_to_convex_segments(self.get_point_positions(), holes, debug, aggressive)
+	var computed_segments := GeometryUtils.polygon_to_convex_segments(self.get_point_positions(), holes, debug, aggressive, merge_holes)
 	var counter : int = 0
 	for segment in computed_segments:
 		#print("clockwise: {0}".format([Geometry2D.is_polygon_clockwise(segment)]))

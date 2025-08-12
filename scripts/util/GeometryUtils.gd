@@ -150,14 +150,16 @@ static func merge_polygons(polygons: Array[PackedVector2Array], out_outer : Arra
 			i += 1
 
 
-static func polygon_to_convex_segments(polygon: PackedVector2Array, holes: Array[PackedVector2Array], debug: bool = false, aggressive: bool = false)->Array[PackedVector2Array]:
+static func polygon_to_convex_segments(polygon: PackedVector2Array, holes: Array[PackedVector2Array], debug: bool = false, aggressive: bool = false, should_merge_holes : bool = true)->Array[PackedVector2Array]:
 	
 	var holes_merged : Array[PackedVector2Array] = []
 	var hole_holes : Array[PackedVector2Array] = []
-	merge_polygons(holes, holes_merged, hole_holes)
+	if should_merge_holes:
+		merge_polygons(holes, holes_merged, hole_holes)
+		holes = holes_merged
 
 	var segments : Array[PackedVector2Array] = [polygon]
-	for hole in holes_merged:
+	for hole in holes:
 		var new_segments : Array[PackedVector2Array] = []
 		for current_segment in segments:
 			var divided := Geometry2D.clip_polygons(current_segment, hole)
@@ -189,7 +191,7 @@ static func polygon_to_convex_segments(polygon: PackedVector2Array, holes: Array
 				new_segments.append_array(divided)
 		segments = new_segments
 
-	segments.append_array(hole_holes)
+	#segments.append_array(hole_holes)
 
 	if debug: return segments
 	
