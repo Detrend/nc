@@ -105,6 +105,25 @@ struct SurfaceData
   bool      should_show = true;
 };
 
+// Describes how a wall surface should be rendered.
+// Wall can be divided into multiple height intervals, which each has a different texture
+struct WallSurfaceData {
+    struct Entry {
+        // Surface used in this wall interval
+        SurfaceData surface;
+        // Height in absolute world coords, where this segment ends. It begins at the end of the previous entry
+        f32         end_height = +INFINITY;
+    };
+
+    // Height intervals either for the floor-difference part of the wall (if this wall has a portal connecting two sectors), or for the whole wall (if there are no two neighbors)
+    std::vector<Entry> floor;
+    // Used only when this wall has a portal, describes the ceiling-difference part of the wall. If unfilled, the `floor` interval will be used instead.
+    std::vector<Entry> ceiling_opt;
+
+    //
+    const std::vector<Entry>& get_ceiling() const { return ceiling_opt.empty() ? floor : ceiling_opt; }
+};
+
 // Each sector is comprised of internal data
 struct SectorData
 {
@@ -135,7 +154,7 @@ struct WallData
   SectorID       portal_sector_id  = INVALID_SECTOR_ID; // if is portal
   WallRelID      nc_portal_wall_id = INVALID_WALL_REL_ID;
   PortalRenderID render_data_index = INVALID_PORTAL_RENDER_ID;
-  SurfaceData    surface;
+  WallSurfaceData surface;
 
   PortType get_portal_type() const;
 
@@ -261,7 +280,7 @@ struct WallBuildData
   WallID      point_index = 0;
   WallRelID   nc_portal_point_index  = 0;
   SectorID    nc_portal_sector_index = INVALID_SECTOR_ID;
-  SurfaceData surface;
+  WallSurfaceData surface;
 };
 
 struct SectorBuildData

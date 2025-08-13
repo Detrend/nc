@@ -699,54 +699,76 @@ mat4 MapSectors::calc_portal_to_portal_projection(
       {
         f32 y1 = 0.0f;
         f32 y2 = 0.0f;
-      };
-
-      u32                num_wall_segments = 1;
-      WallSegmentHeights segment_heights[2]
-      {
-        {sector.floor_height, sector.ceil_height}, {}
+        const SurfaceData* surface = nullptr;
       };
 
       const auto& wall = this->walls[idx];
-      if (! wall.surface.should_show) {
-          continue;
-      }
 
-      if (wall.portal_sector_id != INVALID_SECTOR_ID)
+      constexpr u32 MAX_SEGMENT_HEIGHTS = 32;
+      WallSegmentHeights segment_heights[MAX_SEGMENT_HEIGHTS];
+      u32 num_wall_segments = 0;
+
+      auto fill_segments_heights = [&](const f32 begin_height, const f32 end_height, const std::vector<WallSurfaceData::Entry>& entries)->void {
+
+          f32 last_end_height = begin_height;
+          for (const auto& entry : entries) {
+              if (entry.end_height < begin_height) {
+                  continue;
+              }
+              nc_assert(num_wall_segments < (MAX_SEGMENT_HEIGHTS));
+              if (last_end_height >= end_height) {
+                  nc_warn("More wall segments were specified than what fits on the wall");
+                  break;
+              }
+              auto& current(segment_heights[num_wall_segments]);
+              const f32 current_end_height = min(entry.end_height, end_height);
+
+              current.y1 = last_end_height;
+              current.y2 = current_end_height;
+              current.surface = &entry.surface;
+              
+              last_end_height = current_end_height;
+              ++num_wall_segments;
+          }
+
+      };
+
+
+
+      if (wall.portal_sector_id == INVALID_SECTOR_ID) {
+          fill_segments_heights(sector.floor_height, sector.ceil_height, wall.surface.floor);
+      }
+      else
       {
-        nc_assert(wall.portal_sector_id < this->sectors.size());
-        const auto& neighbor = this->sectors[wall.portal_sector_id];
-      
-        if (neighbor.floor_height >= sector.ceil_height || neighbor.ceil_height <= sector.floor_height)
-        {
-        // no overlap, draw the full wall
-        num_wall_segments = 1;
-        segment_heights[0] = { sector.floor_height, sector.ceil_height };
-        }
-        else if (neighbor.ceil_height >= sector.ceil_height && neighbor.floor_height <= sector.floor_height)
-        {
-        // no need to draw any wall
-        continue;
-        }
-        else if (neighbor.ceil_height >= sector.ceil_height && neighbor.floor_height > sector.floor_height)
-        {
-        // draw only bottom segment
-        num_wall_segments = 1;
-        segment_heights[0] = { sector.floor_height, neighbor.floor_height };
-        }
-        else if (neighbor.ceil_height < sector.ceil_height && neighbor.floor_height <= sector.floor_height)
-        {
-        // draw only top segment
-        num_wall_segments = 1;
-        segment_heights[0] = { neighbor.ceil_height, sector.ceil_height };
-        }
-        else
-        {
-        // draw both top and bottom
-        num_wall_segments = 2;
-        segment_heights[0] = { sector.floor_height, neighbor.floor_height };
-        segment_heights[1] = { neighbor.ceil_height, sector.ceil_height };
-        }
+            nc_assert(wall.portal_sector_id < this->sectors.size());
+            const auto& neighbor = this->sectors[wall.portal_sector_id];
+            
+            if (neighbor.floor_height >= sector.ceil_height || neighbor.ceil_height <= sector.floor_height)
+            {
+                // no overlap, draw the full wall
+                fill_segments_heights(sector.floor_height, sector.ceil_height, wall.surface.floor);
+            }
+            else if (neighbor.ceil_height >= sector.ceil_height && neighbor.floor_height <= sector.floor_height)
+            {
+                // no need to draw any wall
+                continue;
+            }
+            else if (neighbor.ceil_height >= sector.ceil_height && neighbor.floor_height > sector.floor_height)
+            {
+                // draw only bottom segment
+                fill_segments_heights(sector.floor_height, neighbor.floor_height, wall.surface.floor);
+            }
+            else if (neighbor.ceil_height < sector.ceil_height && neighbor.floor_height <= sector.floor_height)
+            {
+                // draw only top segment
+                fill_segments_heights(neighbor.ceil_height, sector.ceil_height, wall.surface.get_ceiling());
+            }
+            else
+            {
+                // draw both top and bottom
+                fill_segments_heights(sector.floor_height, neighbor.floor_height, wall.surface.floor);
+                fill_segments_heights(neighbor.ceil_height, sector.ceil_height, wall.surface.get_ceiling());
+            }
       }
       
       const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
@@ -761,66 +783,71 @@ mat4 MapSectors::calc_portal_to_portal_projection(
       
       for (u32 wall_i = 0; wall_i < num_wall_segments; ++wall_i)
       {
-        const auto f1 = vec3{ w1pos.x, segment_heights[wall_i].y1, w1pos.y };
-        const auto f2 = vec3{ w2pos.x, segment_heights[wall_i].y1, w2pos.y };
-        const auto c1 = vec3{ w1pos.x, segment_heights[wall_i].y2, w1pos.y };
-        const auto c2 = vec3{ w2pos.x, segment_heights[wall_i].y2, w2pos.y };
+            const WallSegmentHeights &current(segment_heights[wall_i]);
+            if (!current.surface->should_show) {
+                continue;
+            }
+
+            const auto f1 = vec3{ w1pos.x, current.y1, w1pos.y };
+            const auto f2 = vec3{ w2pos.x, current.y1, w2pos.y };
+            const auto c1 = vec3{ w1pos.x, current.y2, w1pos.y };
+            const auto c2 = vec3{ w2pos.x, current.y2, w2pos.y };
       
-          // first triangle
-          Vertex
-          {
+            // first triangle
+            Vertex
+            {
             .position = f1,
             .normal = wall_normal,
             .cumulative_wall_len = cumulative_wall_length,
-            .surface = wall.surface,
-          }
-          .push_to(vertices_out);
-          Vertex
-          {
+            .surface = *current.surface,
+            }
+            .push_to(vertices_out);
+            Vertex
+            {
             .position = f2,
             .normal = wall_normal,
             .cumulative_wall_len = end_wall_length,
-            .surface = wall.surface,
-          }
-          .push_to(vertices_out);
-          Vertex
-          {
+            .surface = *current.surface,
+            }
+            .push_to(vertices_out);
+            Vertex
+            {
             .position = c1,
             .normal = wall_normal,
             .cumulative_wall_len = cumulative_wall_length,
-            .surface = wall.surface,
-          }
-          .push_to(vertices_out);
+            .surface = *current.surface,
+            }
+            .push_to(vertices_out);
       
       
-          // second triangle
-          Vertex
-          {
+            // second triangle
+            Vertex
+            {
             .position = c1,
             .normal = wall_normal,
             .cumulative_wall_len = cumulative_wall_length,
-            .surface = wall.surface,
-          }
-          .push_to(vertices_out);
-          Vertex
-          {
+            .surface = *current.surface,
+            }
+            .push_to(vertices_out);
+            Vertex
+            {
             .position = f2,
             .normal = wall_normal,
             .cumulative_wall_len = end_wall_length,
-            .surface = wall.surface,
-          }
-          .push_to(vertices_out);
-          Vertex
-          {
+            .surface = *current.surface,
+            }
+            .push_to(vertices_out);
+            Vertex
+            {
             .position = c2,
             .normal = wall_normal,
             .cumulative_wall_len = end_wall_length,
-            .surface = wall.surface,
-          }
-          .push_to(vertices_out);
-        }
+            .surface = *current.surface,
+            }
+            .push_to(vertices_out);
+      }
       
-        cumulative_wall_length = end_wall_length;
+      cumulative_wall_length = end_wall_length;
       }
   }
 
