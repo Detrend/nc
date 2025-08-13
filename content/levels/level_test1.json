@@ -2036,20 +2036,16 @@
 			513.200012207031
 		],
 		[
-			507.300018310547,
-			513.799987792969
+			506.600006103516,
+			513.700012207031
+		],
+		[
+			507.399993896484,
+			514.600036621094
 		],
 		[
 			507.300018310547,
 			521.299987792969
-		],
-		[
-			503.300018310547,
-			516.5
-		],
-		[
-			506.300018310547,
-			522.100036621094
 		],
 		[
 			501.899993896484,
@@ -2092,12 +2088,16 @@
 			510.0
 		],
 		[
-			477.100006103516,
-			530.900024414063
+			473.100006103516,
+			529.100036621094
 		],
 		[
-			475.200012207031,
-			536.400024414063
+			471.399993896484,
+			539.400024414063
+		],
+		[
+			478.5,
+			543.799987792969
 		],
 		[
 			509.200012207031,
@@ -2106,30 +2106,6 @@
 		[
 			508.100006103516,
 			539.600036621094
-		],
-		[
-			499.100006103516,
-			522.299987792969
-		],
-		[
-			498.800018310547,
-			519.700012207031
-		],
-		[
-			498.700012207031,
-			518.5
-		],
-		[
-			493.700012207031,
-			516.600036621094
-		],
-		[
-			489.100006103516,
-			518.700012207031
-		],
-		[
-			492.5,
-			516.5
 		],
 		[
 			509.600006103516,
@@ -2142,10 +2118,6 @@
 		[
 			506.300018310547,
 			540.900024414063
-		],
-		[
-			487.899993896484,
-			518.600036621094
 		],
 		[
 			506.300018310547,
@@ -2168,6 +2140,26 @@
 			531.700012207031
 		],
 		[
+			506.300018310547,
+			522.100036621094
+		],
+		[
+			499.100006103516,
+			522.299987792969
+		],
+		[
+			498.800018310547,
+			519.700012207031
+		],
+		[
+			498.700012207031,
+			518.5
+		],
+		[
+			503.300018310547,
+			516.5
+		],
+		[
 			498.700012207031,
 			526.200012207031
 		],
@@ -2188,28 +2180,40 @@
 			527.0
 		],
 		[
-			496.600006103516,
-			541.700012207031
+			492.300018310547,
+			536.900024414063
 		],
 		[
 			494.100006103516,
 			539.900024414063
 		],
 		[
-			495.300018310547,
-			538.799987792969
-		],
-		[
-			492.300018310547,
-			536.900024414063
+			482.700012207031,
+			540.400024414063
 		],
 		[
 			491.100006103516,
 			536.799987792969
 		],
 		[
-			479.700012207031,
-			537.5
+			493.700012207031,
+			516.600036621094
+		],
+		[
+			489.100006103516,
+			518.700012207031
+		],
+		[
+			492.5,
+			516.5
+		],
+		[
+			496.600006103516,
+			541.700012207031
+		],
+		[
+			495.300018310547,
+			538.799987792969
 		],
 		[
 			492.300018310547,
@@ -2228,7 +2232,7 @@
 			540.600036621094
 		],
 		[
-			481.899993896484,
+			483.800018310547,
 			531.5
 		],
 		[
@@ -2236,8 +2240,12 @@
 			526.200012207031
 		],
 		[
-			481.899993896484,
-			535.400024414063
+			487.899993896484,
+			518.600036621094
+		],
+		[
+			479.899993896484,
+			527.799987792969
 		],
 		[
 			503.300018310547,
@@ -2320,88 +2328,92 @@
 			512.400024414063
 		],
 		[
-			479.399993896484,
-			536.799987792969
-		],
-		[
-			476.200012207031,
-			535.900024414063
-		],
-		[
-			477.600006103516,
-			531.5
-		],
-		[
-			481.300018310547,
-			532.100036621094
-		],
-		[
-			481.0,
-			535.299987792969
-		],
-		[
-			479.300018310547,
-			536.100036621094
-		],
-		[
-			480.300018310547,
-			534.900024414063
-		],
-		[
-			480.800018310547,
-			532.700012207031
-		],
-		[
-			478.200012207031,
-			532.200012207031
-		],
-		[
-			477.200012207031,
-			535.5
-		],
-		[
-			479.700012207031,
-			534.600036621094
-		],
-		[
-			480.100006103516,
-			533.299987792969
-		],
-		[
-			478.600006103516,
-			532.799987792969
-		],
-		[
-			478.100006103516,
-			534.0
+			473.800018310547,
+			539.200012207031
 		],
 		[
 			477.899993896484,
-			535.200012207031
+			541.200012207031
 		],
 		[
-			479.200012207031,
-			535.200012207031
+			480.300018310547,
+			539.900024414063
 		],
 		[
-			479.300018310547,
-			534.400024414063
+			474.600006103516,
+			531.799987792969
 		],
 		[
-			479.5,
-			533.5
+			479.0,
+			530.700012207031
+		],
+		[
+			481.600006103516,
+			533.600036621094
+		],
+		[
+			478.100006103516,
+			540.400024414063
+		],
+		[
+			479.700012207031,
+			538.400024414063
+		],
+		[
+			480.0,
+			533.700012207031
+		],
+		[
+			476.399993896484,
+			532.799987792969
+		],
+		[
+			475.0,
+			538.700012207031
 		],
 		[
 			478.800018310547,
-			534.799987792969
+			538.200012207031
 		],
 		[
-			478.300018310547,
-			534.400024414063
+			478.0,
+			539.200012207031
 		],
 		[
-			478.800018310547,
-			533.400024414063
+			476.200012207031,
+			538.799987792969
+		],
+		[
+			478.399993896484,
+			534.299987792969
+		],
+		[
+			476.899993896484,
+			535.100036621094
+		],
+		[
+			476.300018310547,
+			537.5
+		],
+		[
+			477.300018310547,
+			536.100036621094
+		],
+		[
+			476.899993896484,
+			538.0
+		],
+		[
+			477.399993896484,
+			538.400024414063
+		],
+		[
+			477.899993896484,
+			538.0
+		],
+		[
+			478.0,
+			535.799987792969
 		]
 	],
 	"sectors": [
@@ -3845,7 +3857,7 @@
 				48
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 284,
+			"portal_target": 285,
 			"portal_wall": 0,
 			"wall_surfaces": [
 				{
@@ -10445,7 +10457,7 @@
 				228
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 296,
+			"portal_target": 297,
 			"portal_wall": 0,
 			"wall_surfaces": [
 				{
@@ -16462,7 +16474,7 @@
 				365
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 290,
+			"portal_target": 291,
 			"portal_wall": 0,
 			"wall_surfaces": [
 				{
@@ -19798,7 +19810,7 @@
 				"show": true
 			},
 			"debug_name": "_0",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -19875,7 +19887,7 @@
 				"show": true
 			},
 			"debug_name": "_1",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -19952,7 +19964,7 @@
 				"show": true
 			},
 			"debug_name": "_2",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -20029,7 +20041,7 @@
 				"show": true
 			},
 			"debug_name": "_3",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -20106,7 +20118,7 @@
 				"show": true
 			},
 			"debug_name": "_4",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -20194,7 +20206,7 @@
 				"show": true
 			},
 			"debug_name": "_5",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -20260,7 +20272,7 @@
 				"show": true
 			},
 			"debug_name": "_6",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -21030,7 +21042,7 @@
 				"show": true
 			},
 			"debug_name": "Sector-9443k",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -21151,7 +21163,7 @@
 				"show": true
 			},
 			"debug_name": "Sector-9443u",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -21228,7 +21240,7 @@
 				"show": true
 			},
 			"debug_name": "Sector-9443t",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -21305,7 +21317,7 @@
 				"show": true
 			},
 			"debug_name": "Sector-9443s",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -21382,7 +21394,7 @@
 				"show": true
 			},
 			"debug_name": "Sector-9443r",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -22443,7 +22455,8 @@
 				482,
 				483,
 				484,
-				485
+				485,
+				486
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -22460,7 +22473,7 @@
 					"show": false
 				},
 				{
-					"id": "bricks",
+					"id": "wall4",
 					"offset": [
 						0.0,
 						0.0
@@ -22470,7 +22483,17 @@
 					"show": false
 				},
 				{
-					"id": "bricks",
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
 					"offset": [
 						0.0,
 						0.0
@@ -22517,10 +22540,13 @@
 			},
 			"id": 247,
 			"points": [
-				486,
-				482,
-				485,
-				487
+				487,
+				488,
+				489,
+				490,
+				491,
+				492,
+				493
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -22547,7 +22573,37 @@
 					"show": false
 				},
 				{
-					"id": "bricks",
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
 					"offset": [
 						0.0,
 						0.0
@@ -22594,13 +22650,9 @@
 			},
 			"id": 248,
 			"points": [
-				488,
-				489,
-				490,
-				491,
-				492,
-				493,
-				494
+				494,
+				495,
+				496
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -22608,46 +22660,6 @@
 			"wall_surfaces": [
 				{
 					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "bricks",
 					"offset": [
 						0.0,
 						0.0
@@ -22704,77 +22716,11 @@
 			},
 			"id": 249,
 			"points": [
-				495,
-				496,
-				497
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				}
-			]
-		},
-		{
-			"ceiling": 999.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "_4",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 250,
-			"points": [
 				473,
 				472,
 				476,
-				498,
-				499
+				497,
+				498
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -22829,6 +22775,83 @@
 					"rotation": 0.0,
 					"scale": 0.5,
 					"show": false
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_4",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 250,
+			"points": [
+				473,
+				498,
+				499,
+				479
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "bricks",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": true
 				}
 			]
 		},
@@ -22920,7 +22943,7 @@
 					"show": false
 				},
 				{
-					"id": "bricks",
+					"id": "wall4",
 					"offset": [
 						0.0,
 						0.0
@@ -22957,11 +22980,13 @@
 			},
 			"id": 252,
 			"points": [
-				486,
-				487,
+				470,
+				453,
+				449,
+				448,
+				451,
 				502,
-				503,
-				504
+				494
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -22985,7 +23010,27 @@
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": false
+					"show": true
+				},
+				{
+					"id": "bricks",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": true
+				},
+				{
+					"id": "bricks",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": true
 				},
 				{
 					"id": "wall4",
@@ -23045,34 +23090,45 @@
 			},
 			"id": 253,
 			"points": [
-				505,
-				486,
-				504,
-				506
+				478,
+				468,
+				467,
+				471,
+				503
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "wall4",
+					"id": "bricks",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": false
+					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "bricks",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": false
+					"show": true
+				},
+				{
+					"id": "bricks",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": true
 				},
 				{
 					"id": "wall4",
@@ -23122,14 +23178,47 @@
 			},
 			"id": 254,
 			"points": [
-				507,
-				505,
-				506
+				455,
+				454,
+				456,
+				459,
+				504,
+				501
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
+				{
+					"id": "bricks",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": true
+				},
+				{
+					"id": "bricks",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": true
+				},
+				{
+					"id": "bricks",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": true
+				},
 				{
 					"id": "wall4",
 					"offset": [
@@ -23188,29 +23277,15 @@
 			},
 			"id": 255,
 			"points": [
-				470,
-				453,
-				449,
-				448,
-				451,
-				508,
-				495
+				475,
+				474,
+				477
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
 					"id": "bricks",
 					"offset": [
 						0.0,
@@ -23229,36 +23304,6 @@
 					"rotation": 0.0,
 					"scale": 0.5,
 					"show": true
-				},
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
 				},
 				{
 					"id": "wall4",
@@ -23298,10 +23343,10 @@
 			},
 			"id": 256,
 			"points": [
-				478,
-				468,
-				467,
-				471,
+				505,
+				506,
+				507,
+				508,
 				509
 			],
 			"portal_destination_wall": 0,
@@ -23309,34 +23354,34 @@
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "bricks",
+					"id": "wall4",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": true
+					"show": false
 				},
 				{
-					"id": "bricks",
+					"id": "wall4",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": true
+					"show": false
 				},
 				{
-					"id": "bricks",
+					"id": "wall4",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": true
+					"show": false
 				},
 				{
 					"id": "wall4",
@@ -23385,281 +23430,6 @@
 				"show": true
 			},
 			"id": 257,
-			"points": [
-				455,
-				454,
-				456,
-				459,
-				510,
-				501
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				}
-			]
-		},
-		{
-			"ceiling": 999.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "_12",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 258,
-			"points": [
-				511,
-				475,
-				474,
-				477,
-				478
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				}
-			]
-		},
-		{
-			"ceiling": 999.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "_13",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 259,
-			"points": [
-				512,
-				513,
-				514,
-				515,
-				516
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				}
-			]
-		},
-		{
-			"ceiling": 999.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "_14",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 260,
 			"points": [
 				470,
 				469,
@@ -23724,7 +23494,7 @@
 				"scale": 0.5,
 				"show": false
 			},
-			"debug_name": "_15",
+			"debug_name": "_12",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "VegetationDark2",
@@ -23736,12 +23506,13 @@
 				"scale": 2.0,
 				"show": true
 			},
-			"id": 261,
+			"id": 258,
 			"points": [
 				464,
 				481,
 				480,
-				479
+				479,
+				499
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -23776,6 +23547,324 @@
 					"rotation": 0.0,
 					"scale": 0.5,
 					"show": true
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_13",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 259,
+			"points": [
+				510,
+				511,
+				512,
+				513,
+				514,
+				486
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_14",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 260,
+			"points": [
+				515,
+				516,
+				517,
+				518,
+				508,
+				519
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_15",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 261,
+			"points": [
+				520,
+				521,
+				465,
+				464,
+				499,
+				522,
+				523
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "bricks",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": true
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
 				},
 				{
 					"id": "wall4",
@@ -23815,12 +23904,9 @@
 			},
 			"id": 262,
 			"points": [
-				517,
-				518,
-				519,
-				520,
-				515,
-				521
+				514,
+				482,
+				486
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -23828,36 +23914,6 @@
 			"wall_surfaces": [
 				{
 					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "bricks",
 					"offset": [
 						0.0,
 						0.0
@@ -23914,26 +23970,37 @@
 			},
 			"id": 263,
 			"points": [
-				466,
-				463,
-				522
+				524,
+				514,
+				513,
+				525
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "bricks",
+					"id": "wall4",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": true
+					"show": false
 				},
 				{
-					"id": "bricks",
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
 					"offset": [
 						0.0,
 						0.0
@@ -23980,16 +24047,16 @@
 			},
 			"id": 264,
 			"points": [
-				523,
-				462,
-				465
+				526,
+				524,
+				525
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "bricks",
+					"id": "wall4",
 					"offset": [
 						0.0,
 						0.0
@@ -23999,14 +24066,14 @@
 					"show": false
 				},
 				{
-					"id": "bricks",
+					"id": "wall4",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": true
+					"show": false
 				},
 				{
 					"id": "wall4",
@@ -24046,25 +24113,14 @@
 			},
 			"id": 265,
 			"points": [
-				494,
-				493,
-				524,
-				525
+				466,
+				463,
+				527
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
 				{
 					"id": "bricks",
 					"offset": [
@@ -24073,7 +24129,7 @@
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": false
+					"show": true
 				},
 				{
 					"id": "wall4",
@@ -24123,48 +24179,14 @@
 			},
 			"id": 266,
 			"points": [
-				526,
-				525,
-				524,
-				523,
-				479,
-				473,
-				527
+				521,
+				462,
+				465
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
 				{
 					"id": "wall4",
 					"offset": [
@@ -24184,16 +24206,6 @@
 					"rotation": 0.0,
 					"scale": 0.5,
 					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
 				},
 				{
 					"id": "wall4",
@@ -24233,14 +24245,25 @@
 			},
 			"id": 267,
 			"points": [
-				515,
-				514,
-				521
+				493,
+				492,
+				528,
+				520
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
 				{
 					"id": "wall4",
 					"offset": [
@@ -24299,25 +24322,14 @@
 			},
 			"id": 268,
 			"points": [
-				517,
-				521,
+				520,
 				528,
-				529
+				521
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
 				{
 					"id": "wall4",
 					"offset": [
@@ -24376,9 +24388,9 @@
 			},
 			"id": 269,
 			"points": [
-				529,
-				528,
-				530
+				508,
+				507,
+				519
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -24442,25 +24454,24 @@
 			},
 			"id": 270,
 			"points": [
-				459,
-				466,
-				522,
-				531,
-				510
+				515,
+				519,
+				529,
+				530
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "bricks",
+					"id": "wall4",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": true
+					"show": false
 				},
 				{
 					"id": "wall4",
@@ -24473,17 +24484,7 @@
 					"show": false
 				},
 				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "bricks",
+					"id": "wall4",
 					"offset": [
 						0.0,
 						0.0
@@ -24530,10 +24531,9 @@
 			},
 			"id": 271,
 			"points": [
-				450,
-				500,
-				508,
-				451
+				530,
+				529,
+				531
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -24550,7 +24550,7 @@
 					"show": false
 				},
 				{
-					"id": "bricks",
+					"id": "wall4",
 					"offset": [
 						0.0,
 						0.0
@@ -24568,16 +24568,6 @@
 					"rotation": 0.0,
 					"scale": 0.5,
 					"show": false
-				},
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
 				}
 			]
 		},
@@ -24607,15 +24597,26 @@
 			},
 			"id": 272,
 			"points": [
-				523,
-				465,
-				464,
-				479
+				459,
+				466,
+				527,
+				532,
+				504
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
+				{
+					"id": "bricks",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": true
+				},
 				{
 					"id": "wall4",
 					"offset": [
@@ -24627,14 +24628,14 @@
 					"show": false
 				},
 				{
-					"id": "bricks",
+					"id": "wall4",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": true
+					"show": false
 				},
 				{
 					"id": "wall4",
@@ -24684,12 +24685,10 @@
 			},
 			"id": 273,
 			"points": [
-				532,
-				533,
-				529,
-				530,
-				526,
-				534
+				450,
+				500,
+				502,
+				451
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -24715,6 +24714,65 @@
 					"scale": 0.5,
 					"show": false
 				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "bricks",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": true
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_28",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 274,
+			"points": [
+				530,
+				531,
+				523,
+				522,
+				533,
+				534
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
 				{
 					"id": "wall4",
 					"offset": [
@@ -24754,52 +24812,6 @@
 					"rotation": 0.0,
 					"scale": 2.0,
 					"show": true
-				}
-			]
-		},
-		{
-			"ceiling": 999.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "_28",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 274,
-			"points": [
-				495,
-				497,
-				535
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
 				},
 				{
 					"id": "wall4",
@@ -24849,9 +24861,12 @@
 			},
 			"id": 275,
 			"points": [
-				470,
-				495,
-				535
+				478,
+				535,
+				534,
+				533,
+				536,
+				477
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -24886,6 +24901,36 @@
 					"rotation": 0.0,
 					"scale": 0.5,
 					"show": false
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "bricks",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": true
 				}
 			]
 		},
@@ -24915,36 +24960,14 @@
 			},
 			"id": 276,
 			"points": [
-				471,
-				470,
-				535,
-				536,
-				509
+				494,
+				496,
+				537
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
 				{
 					"id": "wall4",
 					"offset": [
@@ -25003,36 +25026,14 @@
 			},
 			"id": 277,
 			"points": [
-				478,
-				509,
-				507,
-				506,
-				511
+				470,
+				494,
+				537
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
 				{
 					"id": "wall4",
 					"offset": [
@@ -25091,67 +25092,16 @@
 			},
 			"id": 278,
 			"points": [
-				475,
-				511,
-				533,
-				532,
-				498,
-				476
+				471,
+				470,
+				537,
+				538,
+				503
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
 				{
 					"id": "bricks",
 					"offset": [
@@ -25161,6 +25111,46 @@
 					"rotation": 0.0,
 					"scale": 0.5,
 					"show": true
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
 				}
 			]
 		},
@@ -25190,9 +25180,11 @@
 			},
 			"id": 279,
 			"points": [
-				473,
-				499,
-				527
+				478,
+				503,
+				526,
+				525,
+				535
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -25209,14 +25201,34 @@
 					"show": false
 				},
 				{
-					"id": "VegetationDark2",
+					"id": "wall4",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
 				},
 				{
 					"id": "wall4",
@@ -25256,9 +25268,10 @@
 			},
 			"id": 280,
 			"points": [
-				526,
-				527,
-				534
+				475,
+				477,
+				536,
+				497
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -25273,6 +25286,181 @@
 					"rotation": 0.0,
 					"scale": 0.5,
 					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_35",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 281,
+			"points": [
+				475,
+				497,
+				476
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "bricks",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": true
+				}
+			]
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "Sector-9012a",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 282,
+			"points": [
+				523,
+				531,
+				529,
+				539,
+				540,
+				520
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": true
 				},
 				{
 					"id": "VegetationDark2",
@@ -25308,105 +25496,6 @@
 				"scale": 0.5,
 				"show": false
 			},
-			"debug_name": "Sector-9012a",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 281,
-			"points": [
-				526,
-				530,
-				528,
-				537,
-				538,
-				525
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				}
-			]
-		},
-		{
-			"ceiling": 8.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
 			"debug_name": "Sector-9012c",
 			"floor": 0.0,
 			"floor_surface": {
@@ -25419,13 +25508,13 @@
 				"scale": 2.0,
 				"show": true
 			},
-			"id": 282,
+			"id": 283,
 			"points": [
-				521,
-				514,
+				519,
+				507,
+				541,
 				539,
-				537,
-				528
+				529
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -25439,6 +25528,16 @@
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
 					"show": true
 				},
 				{
@@ -25452,13 +25551,13 @@
 					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				},
 				{
@@ -25469,17 +25568,7 @@
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
+					"show": false
 				}
 			]
 		},
@@ -25507,25 +25596,25 @@
 				"scale": 2.0,
 				"show": true
 			},
-			"id": 283,
+			"id": 284,
 			"points": [
-				488,
-				540,
-				541,
-				489
+				487,
+				542,
+				543,
+				488
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				},
 				{
@@ -25539,13 +25628,13 @@
 					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				},
 				{
@@ -25556,7 +25645,7 @@
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": true
+					"show": false
 				}
 			]
 		},
@@ -25573,7 +25662,7 @@
 				"show": false
 			},
 			"debug_name": "Sector-9012e",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -25584,12 +25673,12 @@
 				"scale": 0.5,
 				"show": true
 			},
-			"id": 284,
+			"id": 285,
 			"points": [
-				541,
-				542,
-				513,
-				489
+				543,
+				544,
+				506,
+				488
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 16,
@@ -25606,33 +25695,33 @@
 					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				}
 			]
@@ -25661,276 +25750,11 @@
 				"scale": 2.0,
 				"show": true
 			},
-			"id": 285,
-			"points": [
-				542,
-				539,
-				514,
-				513
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				}
-			]
-		},
-		{
-			"ceiling": 8.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "Sector-9012b",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
 			"id": 286,
 			"points": [
-				488,
-				494,
-				525,
-				538,
-				540
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				}
-			]
-		},
-		{
-			"ceiling": 6.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "Sector-9012a",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 287,
-			"points": [
-				533,
-				511,
-				506,
-				543,
 				544,
-				529
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				}
-			]
-		},
-		{
-			"ceiling": 6.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "Sector-9012c",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 288,
-			"points": [
-				504,
-				503,
-				545,
-				543,
+				541,
+				507,
 				506
 			],
 			"portal_destination_wall": 0,
@@ -25948,6 +25772,16 @@
 					"show": true
 				},
 				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
 					"id": "wall4",
 					"offset": [
 						0.0,
@@ -25955,6 +25789,84 @@
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				}
+			]
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "Sector-9012b",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 287,
+			"points": [
+				487,
+				493,
+				520,
+				540,
+				542
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
 					"show": true
 				},
 				{
@@ -25968,6 +25880,55 @@
 					"show": true
 				},
 				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				}
+			]
+		},
+		{
+			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "Sector-9012a",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 288,
+			"points": [
+				534,
+				535,
+				525,
+				545,
+				546,
+				530
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
 					"id": "wall4",
 					"offset": [
 						0.0,
@@ -25975,6 +25936,26 @@
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
 					"show": true
 				},
 				{
@@ -25986,6 +25967,114 @@
 					"rotation": 0.0,
 					"scale": 0.5,
 					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				}
+			]
+		},
+		{
+			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "Sector-9012c",
+			"floor": 0.0,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 289,
+			"points": [
+				513,
+				512,
+				547,
+				545,
+				525
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
 				}
 			]
 		},
@@ -26013,25 +26102,25 @@
 				"scale": 2.0,
 				"show": true
 			},
-			"id": 289,
+			"id": 290,
 			"points": [
-				518,
-				546,
-				547,
-				519
+				516,
+				548,
+				549,
+				517
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				},
 				{
@@ -26045,13 +26134,13 @@
 					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				},
 				{
@@ -26062,7 +26151,7 @@
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": true
+					"show": false
 				}
 			]
 		},
@@ -26079,7 +26168,7 @@
 				"show": false
 			},
 			"debug_name": "Sector-9012e",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -26090,12 +26179,12 @@
 				"scale": 0.5,
 				"show": true
 			},
-			"id": 290,
+			"id": 291,
 			"points": [
-				547,
-				548,
-				502,
-				519
+				549,
+				550,
+				511,
+				517
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 174,
@@ -26112,33 +26201,33 @@
 					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				}
 			]
@@ -26167,12 +26256,12 @@
 				"scale": 2.0,
 				"show": true
 			},
-			"id": 291,
+			"id": 292,
 			"points": [
-				548,
-				545,
-				503,
-				502
+				550,
+				547,
+				512,
+				511
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -26189,13 +26278,13 @@
 					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				},
 				{
@@ -26206,16 +26295,16 @@
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": true
+					"show": false
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				}
 			]
@@ -26244,13 +26333,13 @@
 				"scale": 2.0,
 				"show": true
 			},
-			"id": 292,
+			"id": 293,
 			"points": [
-				518,
-				517,
-				529,
-				544,
-				546
+				516,
+				515,
+				530,
+				546,
+				548
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -26264,6 +26353,26 @@
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
 					"show": true
 				},
 				{
@@ -26277,33 +26386,13 @@
 					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				}
 			]
@@ -26332,14 +26421,14 @@
 				"scale": 2.0,
 				"show": true
 			},
-			"id": 293,
+			"id": 294,
 			"points": [
-				507,
-				509,
-				536,
-				549,
-				550,
-				505
+				526,
+				503,
+				538,
+				551,
+				552,
+				524
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -26353,6 +26442,26 @@
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
 					"show": true
 				},
 				{
@@ -26366,13 +26475,13 @@
 					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				},
 				{
@@ -26383,27 +26492,7 @@
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
+					"show": false
 				}
 			]
 		},
@@ -26431,13 +26520,13 @@
 				"scale": 2.0,
 				"show": true
 			},
-			"id": 294,
+			"id": 295,
 			"points": [
-				535,
-				497,
+				537,
+				496,
+				553,
 				551,
-				549,
-				536
+				538
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -26451,6 +26540,16 @@
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
 					"show": true
 				},
 				{
@@ -26464,13 +26563,13 @@
 					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				},
 				{
@@ -26481,17 +26580,7 @@
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
+					"show": false
 				}
 			]
 		},
@@ -26519,11 +26608,11 @@
 				"scale": 2.0,
 				"show": true
 			},
-			"id": 295,
+			"id": 296,
 			"points": [
 				482,
-				552,
-				553,
+				554,
+				555,
 				483
 			],
 			"portal_destination_wall": 0,
@@ -26531,13 +26620,13 @@
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				},
 				{
@@ -26551,13 +26640,13 @@
 					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				},
 				{
@@ -26568,7 +26657,7 @@
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": true
+					"show": false
 				}
 			]
 		},
@@ -26585,7 +26674,7 @@
 				"show": false
 			},
 			"debug_name": "Sector-9012e",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -26596,11 +26685,11 @@
 				"scale": 0.5,
 				"show": true
 			},
-			"id": 296,
+			"id": 297,
 			"points": [
-				553,
-				554,
-				496,
+				555,
+				556,
+				495,
 				483
 			],
 			"portal_destination_wall": 0,
@@ -26618,33 +26707,33 @@
 					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				}
 			]
@@ -26673,12 +26762,12 @@
 				"scale": 2.0,
 				"show": true
 			},
-			"id": 297,
+			"id": 298,
 			"points": [
-				554,
-				551,
-				497,
-				496
+				556,
+				553,
+				496,
+				495
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -26695,13 +26784,13 @@
 					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				},
 				{
@@ -26712,16 +26801,16 @@
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": true
+					"show": false
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				}
 			]
@@ -26750,13 +26839,13 @@
 				"scale": 2.0,
 				"show": true
 			},
-			"id": 298,
+			"id": 299,
 			"points": [
 				482,
-				486,
-				505,
-				550,
-				552
+				514,
+				524,
+				552,
+				554
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -26770,6 +26859,26 @@
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "wall4",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 0.5,
+					"show": false
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
 					"show": true
 				},
 				{
@@ -26783,33 +26892,13 @@
 					"show": true
 				},
 				{
-					"id": "wall4",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": true
-				},
-				{
-					"id": "wall4",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": true
 				}
 			]
@@ -26827,7 +26916,7 @@
 				"show": true
 			},
 			"debug_name": "_0",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -26838,27 +26927,27 @@
 				"scale": 0.5,
 				"show": true
 			},
-			"id": 299,
+			"id": 300,
 			"points": [
-				522,
+				527,
 				463,
 				462,
-				523,
-				524
+				521,
+				528
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
 					"id": "bricks",
@@ -26868,37 +26957,37 @@
 					],
 					"rotation": 0.0,
 					"scale": 0.5,
-					"show": false
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				}
 			]
 		},
@@ -26915,7 +27004,7 @@
 				"show": true
 			},
 			"debug_name": "_1",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -26926,45 +27015,45 @@
 				"scale": 0.5,
 				"show": true
 			},
-			"id": 300,
+			"id": 301,
 			"points": [
-				531,
-				522,
-				524
+				532,
+				527,
+				528
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				}
 			]
 		},
@@ -26981,7 +27070,7 @@
 				"show": true
 			},
 			"debug_name": "_2",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -26992,12 +27081,12 @@
 				"scale": 0.5,
 				"show": true
 			},
-			"id": 301,
+			"id": 302,
 			"points": [
-				510,
-				531,
-				524,
-				493,
+				504,
+				532,
+				528,
+				492,
 				501
 			],
 			"portal_destination_wall": 0,
@@ -27005,54 +27094,54 @@
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				}
 			]
 		},
@@ -27069,7 +27158,7 @@
 				"show": true
 			},
 			"debug_name": "_3",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -27080,11 +27169,11 @@
 				"scale": 0.5,
 				"show": true
 			},
-			"id": 302,
+			"id": 303,
 			"points": [
 				501,
-				493,
 				492,
+				491,
 				500
 			],
 			"portal_destination_wall": 0,
@@ -27092,44 +27181,44 @@
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				}
 			]
 		},
@@ -27146,7 +27235,7 @@
 				"show": true
 			},
 			"debug_name": "_4",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -27157,67 +27246,67 @@
 				"scale": 0.5,
 				"show": true
 			},
-			"id": 303,
+			"id": 304,
 			"points": [
-				508,
+				502,
 				500,
-				492,
 				491,
-				516
+				490,
+				509
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				}
 			]
 		},
@@ -27234,7 +27323,7 @@
 				"show": true
 			},
 			"debug_name": "_5",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -27245,56 +27334,56 @@
 				"scale": 0.5,
 				"show": true
 			},
-			"id": 304,
+			"id": 305,
 			"points": [
-				489,
-				513,
-				512,
-				490
+				488,
+				506,
+				505,
+				489
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": false
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				}
 			]
 		},
@@ -27311,7 +27400,7 @@
 				"show": true
 			},
 			"debug_name": "_6",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -27322,56 +27411,56 @@
 				"scale": 0.5,
 				"show": true
 			},
-			"id": 305,
+			"id": 306,
 			"points": [
-				519,
-				502,
-				487,
-				520
+				517,
+				511,
+				510,
+				518
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
 					"show": false
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				}
 			]
 		},
@@ -27388,7 +27477,7 @@
 				"show": true
 			},
 			"debug_name": "_7",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -27399,67 +27488,67 @@
 				"scale": 0.5,
 				"show": true
 			},
-			"id": 306,
+			"id": 307,
 			"points": [
 				484,
 				483,
-				496,
 				495,
-				508
+				494,
+				502
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
 					"show": false
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
-				},
-				{
-					"id": "bricks",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				}
 			]
 		},
@@ -27476,7 +27565,7 @@
 				"show": true
 			},
 			"debug_name": "_8",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -27487,45 +27576,45 @@
 				"scale": 0.5,
 				"show": true
 			},
-			"id": 307,
+			"id": 308,
 			"points": [
 				485,
 				484,
-				508
+				502
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				}
 			]
 		},
@@ -27542,7 +27631,7 @@
 				"show": true
 			},
 			"debug_name": "_9",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -27553,56 +27642,56 @@
 				"scale": 0.5,
 				"show": true
 			},
-			"id": 308,
+			"id": 309,
 			"points": [
-				490,
-				512,
-				516,
-				491
+				489,
+				505,
+				509,
+				490
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				}
 			]
 		},
@@ -27619,7 +27708,7 @@
 				"show": true
 			},
 			"debug_name": "_10",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -27630,56 +27719,56 @@
 				"scale": 0.5,
 				"show": true
 			},
-			"id": 309,
+			"id": 310,
 			"points": [
+				502,
+				509,
 				508,
-				516,
-				515,
-				485
+				486
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				}
 			]
 		},
@@ -27696,7 +27785,7 @@
 				"show": true
 			},
 			"debug_name": "_11",
-			"floor": -0.0200000000040745,
+			"floor": -0.03,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -27707,56 +27796,122 @@
 				"scale": 0.5,
 				"show": true
 			},
-			"id": 310,
+			"id": 311,
 			"points": [
+				486,
 				485,
-				515,
-				520,
-				487
+				502
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"debug_name": "_12",
+			"floor": -0.03,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": true
+			},
+			"id": 312,
+			"points": [
+				486,
+				508,
+				518,
+				510
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
 				},
 				{
-					"id": "bricks",
+					"id": "VegetationDark2",
 					"offset": [
 						0.0,
 						0.0
 					],
 					"rotation": 0.0,
-					"scale": 0.5,
-					"show": false
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
 				}
 			]
 		},
@@ -27773,161 +27928,7 @@
 				"show": false
 			},
 			"debug_name": "_0",
-			"floor": 0.19999999999709,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 311,
-			"points": [
-				555,
-				527,
-				499,
-				556
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				}
-			]
-		},
-		{
-			"ceiling": 999.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "_1",
-			"floor": 0.19999999999709,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 312,
-			"points": [
-				556,
-				499,
-				498,
-				557
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				}
-			]
-		},
-		{
-			"ceiling": 999.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "_2",
-			"floor": 0.19999999999709,
+			"floor": 0.6,
 			"floor_surface": {
 				"id": "VegetationDark2",
 				"offset": [
@@ -27940,9 +27941,9 @@
 			},
 			"id": 313,
 			"points": [
-				557,
+				499,
 				498,
-				532,
+				557,
 				558
 			],
 			"portal_destination_wall": 0,
@@ -28003,8 +28004,8 @@
 				"scale": 0.5,
 				"show": false
 			},
-			"debug_name": "_3",
-			"floor": 0.19999999999709,
+			"debug_name": "_1",
+			"floor": 0.6,
 			"floor_surface": {
 				"id": "VegetationDark2",
 				"offset": [
@@ -28017,9 +28018,9 @@
 			},
 			"id": 314,
 			"points": [
+				522,
+				499,
 				558,
-				532,
-				534,
 				559
 			],
 			"portal_destination_wall": 0,
@@ -28080,8 +28081,8 @@
 				"scale": 0.5,
 				"show": false
 			},
-			"debug_name": "_4",
-			"floor": 0.19999999999709,
+			"debug_name": "_2",
+			"floor": 0.6,
 			"floor_surface": {
 				"id": "VegetationDark2",
 				"offset": [
@@ -28094,241 +28095,10 @@
 			},
 			"id": 315,
 			"points": [
-				559,
-				534,
-				527,
-				555
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				}
-			]
-		},
-		{
-			"ceiling": 999.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "_0",
-			"floor": 1.19999999999709,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 316,
-			"points": [
-				559,
-				555,
-				560,
-				561
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				}
-			]
-		},
-		{
-			"ceiling": 999.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "_1",
-			"floor": 1.19999999999709,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 317,
-			"points": [
-				558,
-				559,
-				561,
-				562
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				}
-			]
-		},
-		{
-			"ceiling": 999.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "_2",
-			"floor": 1.19999999999709,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 318,
-			"points": [
 				557,
-				558,
-				562,
-				563
+				498,
+				497,
+				560
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -28389,7 +28159,238 @@
 				"show": false
 			},
 			"debug_name": "_3",
-			"floor": 1.19999999999709,
+			"floor": 0.6,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 316,
+			"points": [
+				560,
+				497,
+				536,
+				561
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_4",
+			"floor": 0.6,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 317,
+			"points": [
+				561,
+				536,
+				533,
+				562
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_5",
+			"floor": 0.6,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 318,
+			"points": [
+				562,
+				533,
+				522,
+				559
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_0",
+			"floor": 1.05574440956116,
 			"floor_surface": {
 				"id": "VegetationDark2",
 				"offset": [
@@ -28402,8 +28403,8 @@
 			},
 			"id": 319,
 			"points": [
-				556,
-				557,
+				559,
+				558,
 				563,
 				564
 			],
@@ -28465,8 +28466,8 @@
 				"scale": 0.5,
 				"show": false
 			},
-			"debug_name": "_4",
-			"floor": 1.19999999999709,
+			"debug_name": "_1",
+			"floor": 1.05574440956116,
 			"floor_surface": {
 				"id": "VegetationDark2",
 				"offset": [
@@ -28479,460 +28480,9 @@
 			},
 			"id": 320,
 			"points": [
-				555,
-				556,
-				564,
-				560
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				}
-			]
-		},
-		{
-			"ceiling": 999.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "_0",
-			"floor": 2.19999999999709,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 321,
-			"points": [
 				562,
-				561,
-				565,
-				566
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				}
-			]
-		},
-		{
-			"ceiling": 999.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "_1",
-			"floor": 2.19999999999709,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 322,
-			"points": [
-				563,
-				562,
-				566,
-				567
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				}
-			]
-		},
-		{
-			"ceiling": 999.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "_2",
-			"floor": 2.19999999999709,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 323,
-			"points": [
+				559,
 				564,
-				563,
-				567,
-				568
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				}
-			]
-		},
-		{
-			"ceiling": 999.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "_3",
-			"floor": 2.19999999999709,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 324,
-			"points": [
-				564,
-				568,
-				569
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				}
-			]
-		},
-		{
-			"ceiling": 999.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "_4",
-			"floor": 2.19999999999709,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 325,
-			"points": [
-				560,
-				564,
-				569,
-				570
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				}
-			]
-		},
-		{
-			"ceiling": 999.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "_5",
-			"floor": 2.19999999999709,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 326,
-			"points": [
-				561,
-				560,
-				570,
 				565
 			],
 			"portal_destination_wall": 0,
@@ -28993,8 +28543,481 @@
 				"scale": 0.5,
 				"show": false
 			},
+			"debug_name": "_2",
+			"floor": 1.05574440956116,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 321,
+			"points": [
+				561,
+				562,
+				565,
+				566,
+				560
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_3",
+			"floor": 1.05574440956116,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 322,
+			"points": [
+				557,
+				560,
+				566,
+				567
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_4",
+			"floor": 1.05574440956116,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 323,
+			"points": [
+				558,
+				557,
+				567,
+				563
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
 			"debug_name": "_0",
-			"floor": 3.19999999999709,
+			"floor": 1.59156374931335,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 324,
+			"points": [
+				568,
+				564,
+				563,
+				569
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_1",
+			"floor": 1.59156374931335,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 325,
+			"points": [
+				569,
+				563,
+				567,
+				570
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_2",
+			"floor": 1.59156374931335,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 326,
+			"points": [
+				565,
+				564,
+				568,
+				571
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_3",
+			"floor": 1.59156374931335,
 			"floor_surface": {
 				"id": "VegetationDark2",
 				"offset": [
@@ -29007,11 +29030,286 @@
 			},
 			"id": 327,
 			"points": [
+				566,
 				565,
-				570,
+				571
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_4",
+			"floor": 1.59156374931335,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 328,
+			"points": [
+				566,
 				571,
+				572
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_5",
+			"floor": 1.59156374931335,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 329,
+			"points": [
+				567,
+				566,
 				572,
-				566
+				573
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_6",
+			"floor": 1.59156374931335,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 330,
+			"points": [
+				570,
+				567,
+				573
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				}
+			]
+		},
+		{
+			"ceiling": 999.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 0.5,
+				"show": false
+			},
+			"debug_name": "_0",
+			"floor": 1.88675675392151,
+			"floor_surface": {
+				"id": "VegetationDark2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true
+			},
+			"id": 331,
+			"points": [
+				574,
+				575,
+				570,
+				573,
+				572
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -29082,7 +29380,7 @@
 				"show": false
 			},
 			"debug_name": "_1",
-			"floor": 3.19999999999709,
+			"floor": 1.88675675392151,
 			"floor_surface": {
 				"id": "VegetationDark2",
 				"offset": [
@@ -29093,16 +29391,27 @@
 				"scale": 2.0,
 				"show": true
 			},
-			"id": 328,
+			"id": 332,
 			"points": [
-				573,
-				571,
-				570
+				569,
+				570,
+				575,
+				576
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
 				{
 					"id": "VegetationDark2",
 					"offset": [
@@ -29148,7 +29457,7 @@
 				"show": false
 			},
 			"debug_name": "_2",
-			"floor": 3.19999999999709,
+			"floor": 1.88675675392151,
 			"floor_surface": {
 				"id": "VegetationDark2",
 				"offset": [
@@ -29159,12 +29468,12 @@
 				"scale": 2.0,
 				"show": true
 			},
-			"id": 329,
+			"id": 333,
 			"points": [
-				573,
-				570,
+				568,
 				569,
-				574
+				576,
+				577
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -29225,7 +29534,7 @@
 				"show": false
 			},
 			"debug_name": "_3",
-			"floor": 3.19999999999709,
+			"floor": 1.88675675392151,
 			"floor_surface": {
 				"id": "VegetationDark2",
 				"offset": [
@@ -29236,16 +29545,27 @@
 				"scale": 2.0,
 				"show": true
 			},
-			"id": 330,
+			"id": 334,
 			"points": [
-				574,
-				569,
-				568
+				571,
+				568,
+				577,
+				578
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
+				{
+					"id": "VegetationDark2",
+					"offset": [
+						0.0,
+						0.0
+					],
+					"rotation": 0.0,
+					"scale": 2.0,
+					"show": true
+				},
 				{
 					"id": "VegetationDark2",
 					"offset": [
@@ -29291,7 +29611,7 @@
 				"show": false
 			},
 			"debug_name": "_4",
-			"floor": 3.19999999999709,
+			"floor": 1.88675675392151,
 			"floor_surface": {
 				"id": "VegetationDark2",
 				"offset": [
@@ -29302,89 +29622,12 @@
 				"scale": 2.0,
 				"show": true
 			},
-			"id": 331,
+			"id": 335,
 			"points": [
-				575,
-				574,
-				568,
-				567
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				},
-				{
-					"id": "VegetationDark2",
-					"offset": [
-						0.0,
-						0.0
-					],
-					"rotation": 0.0,
-					"scale": 2.0,
-					"show": true
-				}
-			]
-		},
-		{
-			"ceiling": 999.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 0.5,
-				"show": false
-			},
-			"debug_name": "_5",
-			"floor": 3.19999999999709,
-			"floor_surface": {
-				"id": "VegetationDark2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true
-			},
-			"id": 332,
-			"points": [
-				575,
-				567,
-				566,
-				572
+				572,
+				571,
+				578,
+				574
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -29445,7 +29688,7 @@
 				"show": false
 			},
 			"debug_name": "Sector-7241",
-			"floor": 4.19999999999709,
+			"floor": 2.0,
 			"floor_surface": {
 				"id": "VegetationDark2",
 				"offset": [
@@ -29456,13 +29699,13 @@
 				"scale": 2.0,
 				"show": true
 			},
-			"id": 333,
+			"id": 336,
 			"points": [
-				571,
-				573,
-				574,
+				577,
+				576,
 				575,
-				572
+				574,
+				578
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,

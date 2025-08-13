@@ -38,6 +38,7 @@
 
 #include <json/json.hpp>
 
+
 //==============================================================================
 namespace nc::map_helpers
 { 
@@ -55,7 +56,7 @@ static void test_make_sector_height(
   SectorID                                    portal_sector     = INVALID_SECTOR_ID,
   const SurfaceData                           &floor_surface    = SurfaceData{},
   const SurfaceData                           &ceiling_surface  = SurfaceData{},
-  const std::vector<SurfaceData>              &wall_surfaces    = {}
+  const std::vector<WallSurfaceData>              &wall_surfaces    = {}
 )
 {
   std::vector<map_building::WallBuildData> walls;
@@ -222,6 +223,7 @@ static void test_make_sector
 
 
 
+
 //==============================================================================
 static SurfaceData load_json_surface(const nlohmann::json &js) 
 {
@@ -262,9 +264,10 @@ static SurfaceData load_json_surface(const nlohmann::json &js)
         }
         auto floor_surface = load_json_surface(js_sector["floor_surface"]);
         auto ceiling_surface = load_json_surface(js_sector["ceiling_surface"]);
-        std::vector<SurfaceData> wall_surfaces;
+        std::vector<WallSurfaceData> wall_surfaces;
         for (auto&& js_wall_surface : js_sector["wall_surfaces"]) {
-            wall_surfaces.emplace_back(load_json_surface(js_wall_surface));
+            auto &surface(wall_surfaces.emplace_back());
+            surface.floor.emplace_back().surface = load_json_surface(js_wall_surface);
         }
         
         test_make_sector_height(floor, ceil, point_idxs, sectors, portal_wall, portal_destination_wall, portal_sector, floor_surface, ceiling_surface, wall_surfaces);
