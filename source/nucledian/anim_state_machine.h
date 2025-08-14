@@ -53,10 +53,10 @@ public:
   // Returns the current state
   State get_state() const;
 
-  // Returns current time for a state in interval [0, state_len].
+  // Returns current time for a state in interval [0, state_len).
   f32 get_time() const;
 
-  // Returns a time relative to the length of a state in interval [0, 1].
+  // Returns a time relative to the length of a state in interval [0, 1).
   f32 get_time_relative() const;
 
   // Adds a new trigger onto the given state in the given time point.

@@ -75,7 +75,7 @@ void AnimFSM<NS, GOTO, ST, TT>::update(f32 delta, Functor&& func)
       // change the state.
       this->state = next_state;
 
-      func(AnimFSMEvents::goto_state, 0, curr_state);
+      func(AnimFSMEvents::goto_state, Trigger{}, curr_state);
       this->time = 0.0f;
     }
     else
