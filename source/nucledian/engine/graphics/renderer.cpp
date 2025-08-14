@@ -15,15 +15,11 @@
 #include <engine/graphics/gizmo.h>
 #include <engine/graphics/graphics_system.h>
 #include <engine/map/map_system.h>
-#include <engine/player/player.h>
 #include <engine/player/thing_system.h>
 #include <engine/appearance.h>
 
 #include <engine/graphics/shaders/shaders.h>
 
-#include <game/weapons.h>
-
-#include <array>
 #include <unordered_set>
 
 namespace nc
@@ -234,7 +230,9 @@ const
   glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+#ifdef NC_DEBUG_DRAW
   GizmoManager::get().draw_gizmos();
+#endif
   render_sectors(camera);
   render_entities(camera);
   render_portals(camera);
@@ -399,29 +397,18 @@ void Renderer::render_portals(const CameraData& camera) const
 //==============================================================================
 void Renderer::render_gun(const RenderGunProperties& gun) const
 {
-  if (gun.weapon == INVALID_WEAPON_TYPE)
+  if (gun.sprite.empty())
   {
     // Early exit if no gun should be rendered
     return;
   }
 
-  // Workaround until we haven't solved the animation of textures
-  const TextureHandle& texture = [&gun]()
-  {
-    switch (gun.weapon)
-    {
-      case WeaponTypes::wrench:       return TextureManager::get()["math_gun"];
-      case WeaponTypes::shotgun:      return TextureManager::get()["mage_gun"];
-      case WeaponTypes::plasma_rifle: return TextureManager::get()["plasma_gun"];
-      case WeaponTypes::nail_gun:     return TextureManager::get()["math_gun"];
-      default:                        return TextureHandle::invalid();
-    }
-  }();
-    
+  const TextureHandle& texture = TextureManager::get()[gun.sprite];
+
   GLint viewport[4];
   glGetIntegerv(GL_VIEWPORT, viewport);
-  const float screen_width = static_cast<float>(viewport[2]);
-  const float screen_height = static_cast<float>(viewport[3]);
+  const f32 screen_width = static_cast<f32>(viewport[2]);
+  const f32 screen_height = static_cast<f32>(viewport[3]);
 
   f32 gun_zoom = CVars::gun_zoom;
 

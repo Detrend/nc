@@ -1,5 +1,6 @@
 .vs
 /bin
+/asm
 /bin_temp
 **/x64
 *.vcxproj.user

@@ -14,6 +14,7 @@
 #include <game/weapons_types.h>
 
 #include <vector>
+#include <string>
 
 struct SDL_Window;
 
@@ -34,9 +35,8 @@ struct CameraData
 
 struct RenderGunProperties
 {
-  // Invalid if we do not want to render anything
-  WeaponType weapon = INVALID_WEAPON_TYPE; 
-  vec2       sway   = VEC2_ZERO;
+  vec2        sway   = VEC2_ZERO;
+  std::string sprite = "";
 };
 
 class GraphicsSystem : public IEngineModule

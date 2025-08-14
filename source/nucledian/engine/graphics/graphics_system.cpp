@@ -35,10 +35,12 @@
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
 
+#ifdef NC_IMGUI
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_sdl2.h>
 #include <imgui/imgui_stdlib.h>
+#endif
 
 #include <algorithm>
 #include <chrono>
@@ -440,9 +442,11 @@ const MaterialHandle& GraphicsSystem::get_solid_material() const
 }
 
 //==============================================================================
-void GraphicsSystem::update(f32 delta_seconds)
+void GraphicsSystem::update([[maybe_unused]]f32 delta_seconds)
 {
+#ifdef NC_DEBUG_DRAW
   GizmoManager::get().update_ttls(delta_seconds);
+#endif
 }
 
 //==============================================================================
@@ -453,12 +457,11 @@ static void grab_render_gun_props(RenderGunProperties& props)
 
   if (player)
   {
-    props.weapon = player->get_equipped_weapon();
-    props.sway   = player->get_gun_sway();
+    player->get_gun_props(props);
   }
   else
   {
-    props.weapon = INVALID_WEAPON_TYPE;
+    props.sprite = "";
     props.sway   = VEC2_ZERO;
   }
 }

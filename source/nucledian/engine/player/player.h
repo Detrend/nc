@@ -11,11 +11,15 @@
 
 #include <math/vector.h>
 
+#include <anim_state_machine.h>
+#include <array>
+
 
 namespace nc
 {
 // Forward declare, we do not want to include
 struct GameInputs;
+struct RenderGunProperties;
 }
 
 namespace nc
@@ -36,16 +40,17 @@ public:
   void update(GameInputs input, GameInputs prev_input, f32 delta_seconds);
 
   Camera* get_camera();
-  int get_health();
+  int     get_health();
 
 
-  vec3 get_look_direction();
-  f32 get_view_height();
+  vec3  get_look_direction();
+  f32   get_view_height();
   vec3& get_velocity();
 
-  vec2       get_gun_sway()                const;
   WeaponType get_equipped_weapon()         const;
   bool       has_weapon(WeaponType weapon) const;
+
+  void get_gun_props(RenderGunProperties& props) const;
 
 private:
   void apply_velocity(f32 delta_seconds);
@@ -57,6 +62,9 @@ private:
   void apply_deceleration(vec3 movement_direction, f32 delta_seconds);
   void update_gun_sway(f32 delta);
   void update_camera(f32 delta);
+  void update_gun_anim(f32 delta);
+  void do_attack();
+  void change_weapon(WeaponType new_weapon);
 
   //vec3 position;
   vec3 velocity = VEC3_ZERO; // forward/back - left/right velocity
@@ -69,8 +77,7 @@ private:
   /*PlayerSpecificInputs lastInputs;
   PlayerSpecificInputs currentInputs;*/
 
-  int maxHealth = 100;
-  int currentHealth;
+  s32 current_health;
 
   // Camera spring
   f32 vertical_camera_offset = 0.0f;
@@ -88,6 +95,24 @@ private:
 
   bool alive     : 1 = true;
   bool on_ground : 1 = true;
+
+  enum WeaponStates : u8
+  {
+    idle,
+    attack,
+    // - //
+    count
+  };
+
+  using GotoArray = std::array<WeaponStates, WeaponStates::count>;
+  static constexpr GotoArray WEAPON_TRANSITIONS
+  {
+    WeaponStates::idle, // idle->idle
+    WeaponStates::idle  // fire->idle
+  };
+
+  using WeaponAnimFSM = AnimFSM<WeaponStates::count, WEAPON_TRANSITIONS>;
+  WeaponAnimFSM weapon_fsm;
 
   Camera camera;
 };

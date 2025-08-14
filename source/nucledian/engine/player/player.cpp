@@ -1,5 +1,6 @@
 // Project Nucledian Source File
 #include <cvars.h>
+#include <common.h>
 
 #include <engine/core/engine.h>
 
@@ -11,6 +12,8 @@
 #include <engine/map/physics.h>
 #include <engine/player/thing_system.h>
 #include <engine/entity/entity_system.h>
+
+#include <engine/graphics/graphics_system.h> // RenderGunProperties
 
 // Sound
 #include <engine/sound/sound_system.h>
@@ -27,9 +30,17 @@
 #include <engine/entity/entity_type_definitions.h>
 
 #include <algorithm> // std::clamp
+#include <format>    // std::format
 
 namespace nc
 {
+
+//==============================================================================
+static constexpr cstr WEAPON_STATE_NAMES[] = 
+{
+  "idle",
+  "attack",
+};
 
 //==============================================================================
 static void smooth_towards(f32& value, f32 target, f32 delta)
@@ -47,17 +58,26 @@ static void smooth_towards(f32& value, f32 target, f32 delta)
   }
 }
 
-//==========================================================================
+//==============================================================================
+constexpr WeaponFlags DEFAULT_WEAPONS
+= (1 << WeaponTypes::plasma_rifle)
+| (1 << WeaponTypes::wrench);
+
+//==============================================================================
 Player::Player(vec3 position)
-  : Base(position, 0.25f, 0.5f)
-  , owned_weapons((1 << WeaponTypes::plasma_rifle) | (1 << WeaponTypes::nail_gun))
-  , current_weapon(WeaponTypes::plasma_rifle)
+: Base(position, 0.25f, 0.5f)
+, owned_weapons(DEFAULT_WEAPONS)
+, current_weapon(WeaponTypes::wrench)
+, weapon_fsm(0)
+, current_health(CVars::player_max_hp)
 {
-  currentHealth = maxHealth;
-  camera.update_transform(position, angle_yaw, angle_pitch, view_height);
+  this->camera.update_transform(position, angle_yaw, angle_pitch, view_height);
+
+  // Has to be called to set-up the FSM
+  this->change_weapon(this->get_equipped_weapon());
 }
 
-//==========================================================================
+//==============================================================================
 void Player::calculate_wish_velocity(GameInputs input, f32 delta_seconds)
 {
   // INPUT HANDLING
@@ -116,10 +136,10 @@ void Player::calculate_wish_velocity(GameInputs input, f32 delta_seconds)
 
   if (wants_jump && can_jump)
   {
-    velocity.y = CVars::player_jump_force;
+    this->velocity.y = CVars::player_jump_force;
   }
 
-  velocity.y -= CVars::player_gravity * delta_seconds;
+  this->velocity.y -= CVars::player_gravity * delta_seconds;
 }
 
 //==========================================================================
@@ -134,24 +154,30 @@ void Player::handle_weapon_change(GameInputs input, GameInputs /*prev_input*/)
 
     if (owns_weapon && wants_weapon && current_weapon != i)
     {
-      current_weapon = i;
-      time_since_gun_change = 0.0f;
-
       // Accept only the first one if multiple keys are pressed
+      this->change_weapon(i);
       break; 
     }
   }
 }
 
 //==============================================================================
-bool Player::get_attack_state(GameInputs curInput, GameInputs prevInput, [[maybe_unused]] f32 delta_seconds)
+bool Player::get_attack_state(GameInputs curr_input, GameInputs prev_input, f32)
 {
-  if (curInput.player_inputs.keys & (1 << PlayerKeyInputs::primary) &&
-    !(prevInput.player_inputs.keys & (1 << PlayerKeyInputs::primary)))
+  PlayerKeyFlags flag = (1 << PlayerKeyInputs::primary);
+  bool holding_now  = curr_input.player_inputs.keys & flag;
+  bool holding_prev = prev_input.player_inputs.keys & flag;
+
+  bool can_hold = WEAPON_STATS[this->get_equipped_weapon()].hold_to_fire;
+
+  if (holding_now && (can_hold || !holding_prev))
   {
     return true;
   }
-  return false;
+  else
+  {
+    return false;
+  }
 }
 
 //==============================================================================
@@ -232,26 +258,11 @@ void Player::apply_velocity(f32 delta_seconds)
 //==============================================================================
 void Player::handle_attack(GameInputs curr_input, GameInputs prev_input, f32 dt)
 {
-  auto& entity_system = ThingSystem::get().get_entities();
-  auto& sound_system  = SoundSystem::get();
-  bool  did_attack    = this->get_attack_state(curr_input, prev_input, dt);
+  bool did_attack = this->get_attack_state(curr_input, prev_input, dt);
 
-  if (did_attack)
+  if (did_attack && this->weapon_fsm.get_state() == WeaponStates::idle)
   {
-    vec3 dir  = this->get_look_direction();
-    vec3 from = this->get_position() + UP_DIR * this->get_height() + dir * 0.3f;
-
-    // Spawn projectile
-    entity_system.create_entity<Projectile>
-    (
-      from, dir, true, this->get_equipped_weapon()
-    );
-
-    // play a sound
-    // TODO: change the SFX
-    sound_system.play(Sounds::plasma_rifle, 0.5f);
-
-    time_since_shoot = 0.0f;
+    this->weapon_fsm.set_state(WeaponStates::attack);
   }
 }
 
@@ -334,14 +345,87 @@ void Player::update_camera(f32 delta)
     real_camera_pos, this->angle_yaw, this->angle_pitch, view_height
   );
 }
- //=============================================================================
+
+//==============================================================================
+void Player::update_gun_anim(f32 delta)
+{
+  if (this->current_weapon == INVALID_WEAPON_TYPE)
+  {
+    return;
+  }
+
+  using Trigger = WeaponAnimFSM::Trigger;
+  using State   = WeaponAnimFSM::State;
+
+  weapon_fsm.update(delta, [&](AnimFSMEvent event, Trigger, State)
+  {
+    if (event == AnimFSMEvents::trigger)
+    {
+      // Shoot
+      this->do_attack();
+    }
+  });
+}
+
+//==============================================================================
+void Player::do_attack()
+{
+  auto& entity_system = ThingSystem::get().get_entities();
+  auto& sound_system  = SoundSystem::get();
+
+  vec3 dir  = this->get_look_direction();
+  vec3 from = this->get_position() + UP_DIR * this->get_height() + dir * 0.3f;
+
+  WeaponType weapon = this->get_equipped_weapon();
+  bool is_melee = WEAPON_STATS[weapon].ammo == AmmoTypes::melee;
+
+  if (is_melee)
+  {
+    // TODO
+  }
+  else
+  {
+    // Spawn projectile
+    entity_system.create_entity<Projectile>
+    (
+      from, dir, true, weapon
+    );
+  }
+
+  sound_system.play(WEAPON_STATS[weapon].shoot_snd, 0.5f);
+  time_since_shoot = 0.0f;
+}
+
+//==============================================================================
+void Player::change_weapon(WeaponType new_weapon)
+{
+  this->current_weapon        = new_weapon;
+  this->time_since_gun_change = 0.0f;
+
+  this->weapon_fsm.set_state(WeaponStates::idle);
+  this->weapon_fsm.clear();
+
+  const WeaponAnims& anim_set = WEAPON_ANIMS[this->current_weapon];
+
+  for (u8 state : {WeaponStates::idle, WeaponStates::attack})
+  {
+    const WeaponAnim& anim = anim_set.anims[state];
+    f32 time_per_frame = anim.time / anim.frames_cnt;
+    f32 trigger_t      = anim.action_frame * time_per_frame;
+
+    this->weapon_fsm.set_state_length(state, anim.time);
+    this->weapon_fsm.add_trigger(state, trigger_t, 0);
+  }
+}
+
+//==============================================================================
 void Player::damage(int damage)
 {
-  currentHealth -= damage;
+  this->current_health -= damage;
 
-  if (currentHealth < 0)
+  if (this->current_health <= 0)
   {
-    die();
+    this->die();
   }
 }
 
@@ -354,13 +438,13 @@ void Player::die()
 //==============================================================================
 int Player::get_health()
 {
-  return currentHealth;
+  return this->current_health;
 }
 
 //==============================================================================
 Camera* Player::get_camera()
 {
-  return &camera;
+  return &this->camera;
 }
 
 //==============================================================================
@@ -375,6 +459,7 @@ void Player::update(GameInputs curr_input, GameInputs prev_input, f32 delta)
   this->update_gun_sway(delta);
   this->calculate_wish_velocity(curr_input, delta);
   this->handle_weapon_change(curr_input, prev_input);
+  this->update_gun_anim(delta);
   this->handle_attack(curr_input, prev_input, delta);
   this->apply_velocity(delta);
   this->update_camera(delta); // should be after "apply_velocity"
@@ -390,23 +475,23 @@ vec3 Player::get_look_direction()
 //==============================================================================
 f32 Player::get_view_height()
 {
-  return view_height;
+  return this->view_height;
 }
 
 //==============================================================================
 vec3& Player::get_velocity()
 {
-  return velocity;
+  return this->velocity;
 }
 
 //==============================================================================
 WeaponType Player::get_equipped_weapon() const
 {
-  return current_weapon;
+  return this->current_weapon;
 }
 
 //==============================================================================
-vec2 Player::get_gun_sway() const
+void Player::get_gun_props(RenderGunProperties& props_out) const
 {
   const f32 max_gun_change = CVars::gun_change_time;
   const f32 sway_speed     = CVars::gun_sway_speed;
@@ -435,7 +520,23 @@ vec2 Player::get_gun_sway() const
 
   f32 total_coeff = movement_coeff * air_coeff;
 
-  return vec2{max_x, max_y} * total_coeff * sway_amount + gun_change_offset;
+  vec2 sway = vec2{max_x, max_y} * total_coeff * sway_amount + gun_change_offset;
+
+  props_out.sway   = sway;
+
+  if (this->current_weapon != INVALID_WEAPON_TYPE)
+  {
+    const WeaponAnims& anims = WEAPON_ANIMS[this->current_weapon];
+    const WeaponStates state = cast<WeaponStates>(this->weapon_fsm.get_state());
+
+    f32 anim_time  = this->weapon_fsm.get_time_relative();
+
+    cstr set_name   = anims.set_name;
+    cstr state_name = WEAPON_STATE_NAMES[state];
+    u64  anim_frame = cast<u64>(anim_time * (anims.anims[state].frames_cnt));
+
+    props_out.sprite = std::format("{}_{}_{}", set_name, state_name, anim_frame);
+  }
 }
 
 //==============================================================================

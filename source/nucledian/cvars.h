@@ -98,8 +98,8 @@ static constexpr _type _name{_default_value};
 #define NC_REGISTER_CVAR_RANGED(_type, _name, _default_value, _range_min, _range_max, _desc) \
 NC_REGISTER_CVAR(_type, _name, _default_value, _desc)
 
-NC_REGISTER_CVAR_EXTERNAL_CPP_RANGED(...)
-NC_REGISTER_CVAR_EXTERNAL_CPP_RANGED_IMPL(...)
+#define NC_REGISTER_CVAR_EXTERNAL_CPP_RANGED(...)
+#define NC_REGISTER_CVAR_EXTERNAL_CPP_RANGED_IMPL(...)
 
 #endif
 
@@ -161,6 +161,7 @@ struct CVars
   NC_REGISTER_CVAR_RANGED(f32, player_gravity,       10.0f, 1.0f, 50.0f, "Gravity [m/s2]");
   NC_REGISTER_CVAR_RANGED(f32, player_air_acc_coeff, 0.5f,  0.0f, 01.0f, "Acceleration in air compared to ground.");
   NC_REGISTER_CVAR_RANGED(f32, player_air_dec_coeff, 0.5f,  0.0f, 01.0f, "Deceleration in air compared to ground.");
+  NC_REGISTER_CVAR_RANGED(s32, player_max_hp,        100,  50, 300,      "Max HP.");
 };
 
 }

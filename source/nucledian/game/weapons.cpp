@@ -1,28 +1,47 @@
 // Project Nucledian Source File
 #include <game/weapons.h>
 #include <metaprogramming.h>
+#include <engine/sound/sound_resources.h>
 
 #include <cvars.h>
 
 namespace nc
 {
 
-// ============================================================= //
-//                          Weapon Stats                         //
-// ============================================================= //
-extern WeaponStats WEAPON_STATS[] = 
+// ========================================================================== //
+//                          Weapon Stats                                      //
+// ========================================================================== //
+WeaponStats WEAPON_STATS[] = 
 {
   // Wrench
-  WeaponStats{.rate_of_fire = 1.0f, .ammo = AmmoTypes::melee, .projectile_cnt = 1, .hold_to_fire = false},
+  WeaponStats
+  {
+    .rate_of_fire = 1.0f, .ammo = AmmoTypes::melee,
+    .projectile_cnt = 1, .hold_to_fire = false,
+    .shoot_snd = Sounds::hurt,
+  },
 
   // Shotgun
-  WeaponStats{.rate_of_fire = 1.0f, .ammo = AmmoTypes::slugs, .projectile_cnt = 5, .hold_to_fire = false},
+  WeaponStats
+  {
+    .rate_of_fire = 1.0f, .ammo = AmmoTypes::slugs,
+    .projectile_cnt = 5, .hold_to_fire = false
+  },
 
   // Plasma rifle
-  WeaponStats{.rate_of_fire = 0.5f, .ammo = AmmoTypes::plasma, .projectile_cnt = 1, .hold_to_fire = false},
+  WeaponStats
+  {
+    .rate_of_fire = 0.5f, .ammo = AmmoTypes::plasma,
+    .projectile_cnt = 1, .hold_to_fire = true,
+    .shoot_snd = Sounds::plasma_rifle,
+  },
 
   // Nail gun
-  WeaponStats{.rate_of_fire = 8.0f, .ammo = AmmoTypes::nails, .projectile_cnt = 2, .hold_to_fire = true},
+  WeaponStats
+  {
+    .rate_of_fire = 8.0f, .ammo = AmmoTypes::nails,
+    .projectile_cnt = 2, .hold_to_fire = true
+  },
 };
 
 static_assert
@@ -32,9 +51,59 @@ static_assert
   "but did not define it's stats."
 );
 
-// ============================================================= //
-//                       Projectile Stats                        //
-// ============================================================= //
+// ========================================================================== //
+//                          Weapon Anims                                      //
+// ========================================================================== //
+WeaponAnims WEAPON_ANIMS[] =
+{
+  // Wrench
+  WeaponAnims
+  {
+    .set_name = "wrench",
+    .anims =
+    {
+      // Idle
+      WeaponAnim
+      {
+        .frames_cnt = 1, .time = 1.0f
+      },
+      // Attack
+      WeaponAnim
+      {
+        .frames_cnt = 19, .action_frame = 5, .time = 0.8f
+      },
+    },
+  },
+
+  // Shotgun
+  WeaponAnims{},
+
+  // Plasma rifle
+  WeaponAnims
+  {
+    .set_name = "plasma_gun",
+    .anims = 
+    {
+      // Idle
+      WeaponAnim
+      {
+        .frames_cnt = 1, .time = 1.0f
+      },
+      // Attack
+      WeaponAnim
+      {
+        .frames_cnt = 9, .action_frame = 1, .time = 0.4f
+      },
+    },
+  },
+
+  // Nail gun
+  WeaponAnims{},
+};
+
+// ========================================================================== //
+//                       Projectile Stats                                     //
+// ========================================================================== //
 ProjectileStats PROJECTILE_STATS[] = 
 {
   // Wrench

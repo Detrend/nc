@@ -158,6 +158,7 @@
     <ClInclude Include="..\source\nucledian\engine\player\save_types.h" />
     <ClInclude Include="..\source\nucledian\game\weapons.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\uniform.h" />
+    <ClInclude Include="..\source\nucledian\anim_state_machine.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
@@ -176,6 +177,7 @@
     <None Include="..\source\nucledian\math\lingebra.inl" />
     <None Include="..\source\nucledian\engine\entity\entity_system.inl" />
     <None Include="..\source\nucledian\stack_allocator.inl" />
+    <None Include="..\source\nucledian\anim_state_machine.inl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\source\libs\glm\CMakeLists.txt" />

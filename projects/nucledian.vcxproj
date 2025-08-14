@@ -103,7 +103,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\source\libs\imgui\imgui_stdlib.cpp" />
+    <ClCompile Include="..\source\libs\imgui\imgui_stdlib.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\source\libs\imgui\imgui_tables.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">true</ExcludedFromBuild>
@@ -221,7 +226,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\source\libs\imgui\imgui_stdlib.h" />
+    <ClInclude Include="..\source\libs\imgui\imgui_stdlib.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\source\libs\imgui\imstb_rectpack.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">true</ExcludedFromBuild>
@@ -245,6 +255,7 @@
     <ClInclude Include="..\source\libs\stb\stb_image.h" />
     <ClInclude Include="..\source\libs\stb\stb_rect_pack.h" />
     <ClInclude Include="..\source\nucledian\aabb.h" />
+    <ClInclude Include="..\source\nucledian\anim_state_machine.h" />
     <ClInclude Include="..\source\nucledian\common.h" />
     <ClInclude Include="..\source\nucledian\config.h" />
     <ClInclude Include="..\source\nucledian\cvars.h" />
@@ -314,6 +325,7 @@
     <ClInclude Include="..\source\nucledian\game\weapons.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\source\nucledian\anim_state_machine.inl" />
     <None Include="..\source\nucledian\engine\core\engine.inl" />
     <None Include="..\source\nucledian\engine\entity\entity_tests.inl" />
     <None Include="..\source\nucledian\engine\graphics\resources\mesh.inl" />
@@ -401,6 +413,10 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalOptions>/arch:AVX %(AdditionalOptions)</AdditionalOptions>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
+      <GenerateSourceDependencies>false</GenerateSourceDependencies>
+      <AssemblerListingLocation>$(SolutionDir)asm\</AssemblerListingLocation>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -428,6 +444,16 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <Optimization>MaxSpeed</Optimization>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
+      <GenerateSourceDependencies>false</GenerateSourceDependencies>
+      <AssemblerListingLocation>$(SolutionDir)asm\</AssemblerListingLocation>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <UseUnicodeForAssemblerListing>
+      </UseUnicodeForAssemblerListing>
+      <SupportJustMyCode>false</SupportJustMyCode>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -449,6 +475,12 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <AdditionalOptions>/arch:AVX</AdditionalOptions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
+      <GenerateSourceDependencies>false</GenerateSourceDependencies>
+      <AssemblerListingLocation>$(SolutionDir)asm\</AssemblerListingLocation>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <SupportJustMyCode>true</SupportJustMyCode>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -471,6 +503,12 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <AdditionalOptions>/arch:AVX</AdditionalOptions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
+      <GenerateSourceDependencies>false</GenerateSourceDependencies>
+      <AssemblerListingLocation>$(SolutionDir)asm\</AssemblerListingLocation>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

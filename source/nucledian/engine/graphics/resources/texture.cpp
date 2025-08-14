@@ -171,6 +171,7 @@ const TextureHandle& TextureManager::operator[](const std::string& name) const
   return operator[](std::make_pair(name, ResLifetime::Game));
 }
 
+//==============================================================================
 const TextureHandle& TextureManager::operator[](u16 texture_id) const
 {
   nc_assert(texture_id < m_textures.size(), "Texture ID is out of range.");
