@@ -1,3 +1,6 @@
+// Project Nucledian Source File
+#include <common.h>
+
 #include <engine/enemies/enemy.h>
 #include <engine/core/engine.h>
 #include <engine/player/thing_system.h>
@@ -12,6 +15,10 @@
 #include <engine/entity/entity_type_definitions.h>
 
 #include <map>
+
+#ifdef NC_DEBUG_DRAW
+#include <engine/graphics/gizmo.h>
+#endif
 
 namespace nc
 {
@@ -136,6 +143,16 @@ namespace nc
 
     const auto& map = get_engine().get_map();
     std::vector<vec3> path = map.get_path(get_position(), target_pos, get_radius(), get_height());
+
+#ifdef NC_DEBUG_DRAW
+    // Draw the path
+    for (u64 i = 0; i < path.size(); ++i)
+    {
+      vec2 p1 = i ? path[i-1].xz() : pos_2D.xz();
+      vec2 p2 = path[i].xz();
+      Gizmo::create_line_2d("Paths", p1, p2, colors::BLUE);
+    }
+#endif
 
     vec3 target_dir = target_pos - this->get_position();
     target_dir.y = 0;

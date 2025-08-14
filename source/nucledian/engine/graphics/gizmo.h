@@ -57,6 +57,10 @@ public:
   * Creates a new line gizmo. Gizmo will remain visible until time to live (TTL) reaches zero.
   */
   static void create_line(f32 ttl, const vec3& start, const vec3& end, const color4& color = colors::RED);
+  /**
+  * Creates a 2D line that will be rendered the next frame in the top-down view.
+  */
+  static void create_line_2d(cstr category, const vec2& start, const vec2& end, const color4& color = colors::RED);
 
 private:
   Gizmo(const MeshHandle& mesh, const mat4& transform, const color4& color, f32 ttl);

@@ -72,20 +72,27 @@ private:
   void query_visibility(VisibilityTree& out) const;
   void create_sector_meshes();
 
-  #ifdef NC_DEBUG_DRAW
+#ifdef NC_DEBUG_DRAW
   void render_map_top_down(const VisibilityTree& visible);
   void draw_debug_window();
-  #endif
+#endif
 
 private:
   // Because we do not want to include the whole renderer with this header
   using RendererPtr = std::unique_ptr<class Renderer>;
+#ifdef NC_DEBUG_DRAW
+  using DebugRendererPtr = std::unique_ptr<class TopDownDebugRenderer>;
+#endif
 
   SDL_Window* m_window     = nullptr;
   void*       m_gl_context = nullptr;
 
   RendererPtr             m_renderer = nullptr;
   std::vector<MeshHandle> m_sector_meshes;
+
+#ifdef NC_DEBUG_DRAW
+  DebugRendererPtr m_debug_renderer = nullptr;
+#endif
 
   u32 m_window_width  = static_cast<u32>(WINDOW_WIDTH);
   u32 m_window_height = static_cast<u32>(WINDOW_HEIGHT);

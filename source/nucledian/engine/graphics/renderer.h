@@ -12,7 +12,8 @@
 #include <memory>
 #include <vector>
 
-namespace nc {
+namespace nc
+{
 
 struct Portal;
 struct VisibilityTree;
@@ -79,3 +80,4 @@ private:
 };
 
 }
+

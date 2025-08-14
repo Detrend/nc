@@ -1,6 +1,7 @@
 // Project Nucledian Source File
 #pragma once
 
+#include <metaprogramming.h>
 #include <engine/entity/entity_types.h>
 
 // ================================================================
@@ -31,6 +32,15 @@ namespace EntityTypes
            //    after this one
   };
 }
+
+constexpr cstr ENTITY_TYPE_NAMES[]
+{
+  "player",
+  "enemy",
+  "pickup",
+  "projectile",
+};
+static_assert(ARRAY_LENGTH(ENTITY_TYPE_NAMES) == EntityTypes::count);
 
 namespace EntityTypeFlags
 {

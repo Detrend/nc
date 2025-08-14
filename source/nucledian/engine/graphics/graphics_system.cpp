@@ -43,7 +43,6 @@
 #endif
 
 #include <algorithm>
-#include <chrono>
 #include <cmath>
 #include <map>
 #include <numbers>
@@ -61,6 +60,9 @@
 // Only for "draw_export_menu"
 #include <game/item_resources.h>
 #include <fstream>
+
+// Debug top-down renderer
+#include <engine/graphics/top_down_debug.h>
 
 #endif
 
@@ -81,121 +83,28 @@ static void display_fps_as_title(SDL_Window* window)
   SDL_SetWindowTitle(window, title_str.c_str());
 }
 
-static MaterialHandle g_top_down_material = MaterialHandle::invalid();
-static GLuint   g_default_vao = 0;
-
 //==============================================================================
-constexpr cstr TOP_DOWN_FRAGMENT_SOURCE = R"ABC(
-#version 430 core
-out vec4 FragColor;
-
-layout(location = 0) uniform vec3 u_color;
-
-void main()
+static void APIENTRY gl_debug_message(
+  GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum severity,
+  GLsizei /*length*/, const GLchar* message, const void* /*userParam*/)
 {
-  FragColor = vec4(u_color, 1.0f);
-} 
-)ABC";
+  s32 numeric_severity = 0;
+  switch (severity)
+  {
+    case GL_DEBUG_SEVERITY_NOTIFICATION: numeric_severity = 0; break;
+    case GL_DEBUG_SEVERITY_LOW:          numeric_severity = 1; break;
+    case GL_DEBUG_SEVERITY_MEDIUM:       numeric_severity = 2; break;
+    case GL_DEBUG_SEVERITY_HIGH:         numeric_severity = 3; break;
+    default: nc_assert(false, "Unknown severity");                     break;
+  }
 
-//==============================================================================
-constexpr cstr TOP_DOWN_VERTEX_SOURCE = R"ABC(
-#version 430 core
-layout (location = 0) in vec3 aPos;
-
-void main()
-{
-  gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
-}
-)ABC";
-
-//==============================================================================
-static void draw_line(
-  const vec2& from, const vec2& to, const vec3& color = vec3{ 1 })
-{
-  g_top_down_material.use();
-
-  const auto  screen_bbox = aabb2{ vec2{-1}, vec2{1} };
-  const aabb2 bbox = aabb2{ from, to };
-
-  if (!intersect::aabb_aabb_2d(bbox, screen_bbox))
+  if (numeric_severity < CVars::opengl_debug_severity)
   {
     return;
   }
-
-  glBindVertexArray(g_default_vao);
-
-  GLuint vertex_buffer;
-  glGenBuffers(1, &vertex_buffer);
-  glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-
-  vec3 data[2] = { vec3(from, -0.5f), vec3(to, -0.5f) };
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * 2, data, GL_DYNAMIC_DRAW);
-
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0);
-
-  glUniform3f(0, color.x, color.y, color.z);
-
-  glDrawArrays(GL_LINES, 0, 2);
-
-  glDeleteBuffers(1, &vertex_buffer);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindVertexArray(0);
+    
+  nc_log("GL Debug Message: '{0}'", message);
 }
-
-//==============================================================================
-static void draw_triangle(
-  const vec2& a, const vec2& b, const vec2& c, const vec3& color)
-{
-  g_top_down_material.use();
-
-  const auto  screen_bbox = aabb2{ vec2{-1}, vec2{1} };
-  const aabb2 bbox = aabb2{ a, b, c };
-
-  if (!intersect::aabb_aabb_2d(bbox, screen_bbox))
-  {
-    return;
-  }
-
-  glBindVertexArray(g_default_vao);
-
-  GLuint vertex_buffer;
-  glGenBuffers(1, &vertex_buffer);
-  glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-
-  vec3 data[3] =
-  {
-    vec3(a, -0.5f),
-    vec3(b, -0.5f),
-    vec3(c, -0.5f),
-  };
-  glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_DYNAMIC_DRAW);
-
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0);
-
-  glUniform3f(0, color.x, color.y, color.z);
-
-  glDrawArrays(GL_TRIANGLES, 0, 3);
-
-  glDeleteBuffers(1, &vertex_buffer);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindVertexArray(0);
-}
-
-//==============================================================================
-static void draw_text(vec2 coords, cstr text, vec3 color)
-{
-  int x, y;
-  SDL_GetWindowSize(SDL_GL_GetCurrentWindow(), &x, &y);
-  const f32 width = static_cast<f32>(x);
-  const f32 height = static_cast<f32>(y);
-
-  const auto col = ImColor{ color.x, color.y, color.z, 1.0f };
-
-  coords = (coords * vec2{ 1.0f, -1.0f } + vec2{ 1 }) * vec2{ 0.5f } *vec2{ width, height };
-  ImGui::GetForegroundDrawList()->AddText(ImVec2{ coords.x, coords.y }, col, text);
-};
 
 }
 #endif
@@ -229,29 +138,6 @@ EngineModuleId GraphicsSystem::get_module_id()
 GraphicsSystem& GraphicsSystem::get()
 {
   return get_engine().get_module<GraphicsSystem>();
-}
-
-//==============================================================================
-static void APIENTRY gl_debug_message(
-  GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum severity,
-  GLsizei /*length*/, const GLchar* message, const void* /*userParam*/)
-{
-  s32 numeric_severity = 0;
-  switch (severity)
-  {
-    case GL_DEBUG_SEVERITY_NOTIFICATION: numeric_severity = 0; break;
-    case GL_DEBUG_SEVERITY_LOW:          numeric_severity = 1; break;
-    case GL_DEBUG_SEVERITY_MEDIUM:       numeric_severity = 2; break;
-    case GL_DEBUG_SEVERITY_HIGH:         numeric_severity = 3; break;
-    default: nc_assert(false, "Unknown severity");                     break;
-  }
-
-  if (numeric_severity < CVars::opengl_debug_severity)
-  {
-    return;
-  }
-    
-  nc_log("GL Debug Message: '{0}'", message);
 }
 
 //==============================================================================
@@ -311,9 +197,11 @@ bool GraphicsSystem::init()
     return false;
   }
 
+#ifdef NC_DEBUG_DRAW
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-  glDebugMessageCallback(&gl_debug_message, nullptr);
+  glDebugMessageCallback(&debug_helpers::gl_debug_message, nullptr);
+#endif
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
@@ -326,15 +214,6 @@ bool GraphicsSystem::init()
 
   MeshManager::get().init();
   TextureManager::get().load_directory(ResLifetime::Game, "content/textures");
-
-#ifdef NC_DEBUG_DRAW
-  debug_helpers::g_top_down_material = MaterialHandle
-  (
-    debug_helpers::TOP_DOWN_VERTEX_SOURCE,
-    debug_helpers::TOP_DOWN_FRAGMENT_SOURCE
-  );
-  glGenVertexArrays(1, &debug_helpers::g_default_vao);
-#endif
 
   // init imgui
 #ifdef NC_IMGUI
@@ -356,6 +235,10 @@ void GraphicsSystem::on_event(ModuleEvent& event)
     case ModuleEventType::post_init:
     {
       m_renderer = std::make_unique<Renderer>(m_window_width, m_window_height);
+
+#ifdef NC_DEBUG_DRAW
+      m_debug_renderer = std::make_unique<TopDownDebugRenderer>(m_window_width, m_window_height);
+#endif
       break;
     }
 
@@ -482,6 +365,9 @@ void GraphicsSystem::render()
     m_window_width  = u_width;
     m_window_height = u_height;
     m_renderer->on_window_resized(m_window_width, m_window_height);
+#ifdef NC_DEBUG_DRAW
+    m_debug_renderer->on_window_resized(m_window_width, m_window_height);
+#endif
   }
 
 #ifdef NC_DEBUG_DRAW
@@ -509,14 +395,14 @@ void GraphicsSystem::render()
   if (CVars::enable_top_down_debug)
   {
     // Top down rendering for easier debugging
-    render_map_top_down(visible_sectors);
+    m_debug_renderer->render(visible_sectors);
   }
   else
 #endif
   {
     m_renderer->render(visible_sectors, gun_props);
 
-      get_engine().get_module<UserInterfaceSystem>().draw_hud();
+    get_engine().get_module<UserInterfaceSystem>().draw_hud();
   }
 
 #ifdef NC_IMGUI
@@ -525,304 +411,12 @@ void GraphicsSystem::render()
   imgui_start_frame(); // start a new frame just after rendering the old one
 #endif
 
+#ifdef NC_DEBUG_DRAW
+  m_debug_renderer->post_render();
+#endif
+
   SDL_GL_SwapWindow(m_window);
 }
-
-//==============================================================================
-#ifdef NC_DEBUG_DRAW
-void GraphicsSystem::render_map_top_down(const VisibilityTree& visible_sectors)
-{
-  glClear(GL_STENCIL_BUFFER_BIT);
-  glDisable(GL_DEPTH_TEST);
-  glDisable(GL_CULL_FACE);
-
-  static vec2 pointed_position = vec2{ 0.0f };
-  static vec2 player_direction = vec2{ 1, 0 };
-
-  static bool show_sector_frustums = true;
-  static bool show_visible_sectors = true;
-  static bool show_sector_ids = false;
-  static bool raycast2d_debug = false;
-  static bool inspect_nucledian_portals = false;
-
-  static vec2 raycast_pt1 = vec2{ 0 };
-  static f32  raycast_rot = 0.0f;
-  static f32  raycast_len = 10.0f;
-  static f32  raycast_expand = 0.25f;
-
-  static f32 zoom = 0.04f;
-
-  if (auto* camera = Camera::get())
-  {
-    pointed_position = vec2{ camera->get_position().x, camera->get_position().z };
-    const auto frwd = vec2{ camera->get_forward().x,  camera->get_forward().z };
-    player_direction = is_zero(frwd) ? vec2{ 1, 0 } : normalize(frwd);
-  }
-
-  int width = 0, height = 0;
-  SDL_GetWindowSize(m_window, &width, &height);
-  const f32 aspect = (f32)width / height;
-
-  auto level_space_to_screen_space = [&](vec2 pos) -> vec2
-  {
-    return vec2{ -1.0f, aspect } *(pos - pointed_position) * zoom;
-  };
-
-  auto draw_player = [&](vec2 coords, vec2 dir, vec3 color1, vec3 color2, f32 scale)
-  {
-    const vec2 front = level_space_to_screen_space(coords + dir * scale);
-    const vec2 back = level_space_to_screen_space(coords - dir * 0.5f * scale);
-    const vec2 left = level_space_to_screen_space(coords + flipped(dir) * scale * 0.5f - dir * scale);
-    const vec2 right = level_space_to_screen_space(coords - flipped(dir) * scale * 0.5f - dir * scale);
-
-    debug_helpers::draw_triangle(front, back, left, color1);
-    debug_helpers::draw_triangle(front, back, right, color1);
-
-    debug_helpers::draw_line(front, left, color2);
-    debug_helpers::draw_line(left, back, color2);
-    debug_helpers::draw_line(back, right, color2);
-    debug_helpers::draw_line(right, front, color2);
-  };
-
-  if (ImGui::Begin("2D Top Down Debug"))
-  {
-    ImGui::SliderFloat("Zoom", &zoom, 0.01f, 1.0f);
-    ImGui::Separator();
-    ImGui::Checkbox("Show visible sectors", &show_visible_sectors);
-    ImGui::Checkbox("Show sector frustums", &show_sector_frustums);
-    ImGui::Checkbox("Show sector IDs",      &show_sector_ids);
-    ImGui::Separator();
-    ImGui::Checkbox("Raycast 2D Debug",          &raycast2d_debug);
-    ImGui::Checkbox("Inspect nuclidean portals", &inspect_nucledian_portals);
-
-    if (raycast2d_debug)
-    {
-      ImGui::SliderFloat2("Raycast Point", &raycast_pt1.x,  -40.0f, 40.0f);
-      ImGui::SliderFloat("Raycast Dir",    &raycast_rot,    0.0f,   2.0f * PI);
-      ImGui::SliderFloat("Raycast Len",    &raycast_len,    0.25f,  30.0f);
-      ImGui::SliderFloat("Raycast Expand", &raycast_expand, 0.001f, 3.0f);
-    }
-  }
-  ImGui::End();
-
-  auto& map = get_engine().get_map();
-
-  // Render the floors of the visible_sectors with black or gray if visible_sectors
-  for (SectorID i = 0; i < map.sectors.size(); ++i)
-  {
-    const auto& sector = map.sectors[i];
-    const auto& repr = sector.int_data;
-    const s32 wall_count = repr.last_wall - repr.first_wall;
-    nc_assert(wall_count >= 3);
-
-    const bool is_visible = visible_sectors.is_visible(i);
-    const vec3 color = (is_visible && show_visible_sectors) ? vec3{ 0.25f } : vec3{ colors::BLACK };
-
-    const auto& first_wall = map.walls[repr.first_wall];
-    vec2 avg_position = first_wall.pos;
-
-    for (WallID index = 1; index < wall_count; ++index)
-    {
-      WallID next_index = (index + 1) % wall_count;
-      WallID index_in_arr = repr.first_wall + index;
-      WallID next_in_arr = repr.first_wall + next_index;
-      nc_assert(index_in_arr < map.walls.size());
-      nc_assert(next_in_arr < map.walls.size());
-
-      const auto& wall1 = map.walls[index_in_arr];
-      const auto& wall2 = map.walls[next_in_arr];
-
-      avg_position = avg_position + wall1.pos;
-
-      debug_helpers::draw_triangle(
-        level_space_to_screen_space(first_wall.pos),
-        level_space_to_screen_space(wall1.pos),
-        level_space_to_screen_space(wall2.pos),
-        color
-      );
-    }
-
-    avg_position = avg_position / static_cast<f32>(wall_count);
-    if (show_sector_ids)
-    {
-      const auto sector_color = is_visible ? colors::WHITE : colors::PINK;
-      const auto sector_str = std::to_string(i);
-      debug_helpers::draw_text
-      (
-        level_space_to_screen_space(avg_position),
-        sector_str.c_str(),
-        sector_color
-      );
-    }
-  }
-
-  // Render frustums for all visible_sectors visible_sectors
-  if (show_sector_frustums)
-  {
-    glEnable(GL_STENCIL_TEST);
-
-    for (const auto& [sector_id, frustums] : visible_sectors.sectors)
-    {
-      glStencilMask(0xFF);
-      glStencilFunc(GL_ALWAYS, 1, 0xFF);
-      glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
-      glColorMask(false, false, false, false); // do not write into the color buffer
-
-      glClearStencil(0);
-      glClear(GL_STENCIL_BUFFER_BIT);
-
-      // render the sector shape into stencil buffer
-      {
-        const auto& sector = map.sectors[sector_id];
-        const auto& repr = sector.int_data;
-        const s32 wall_count = repr.last_wall - repr.first_wall;
-        nc_assert(wall_count >= 3);
-
-        const auto& first_wall = map.walls[repr.first_wall];
-
-        for (WallID index = 1; index < wall_count; ++index)
-        {
-          WallID next_index = (index + 1) % wall_count;
-          WallID index_in_arr = repr.first_wall + index;
-          WallID next_in_arr = repr.first_wall + next_index;
-          nc_assert(index_in_arr < map.walls.size());
-          nc_assert(next_in_arr < map.walls.size());
-
-          const auto& wall1 = map.walls[index_in_arr];
-          const auto& wall2 = map.walls[next_in_arr];
-          debug_helpers::draw_triangle(
-            level_space_to_screen_space(first_wall.pos),
-            level_space_to_screen_space(wall1.pos),
-            level_space_to_screen_space(wall2.pos),
-            vec3{ 1 }
-          );
-        }
-      }
-
-      // render the frustum only on parts where the stencil buffer is enabled
-      {
-        glColorMask(true, true, true, true);    // turn on the color back again
-        glStencilFunc(GL_EQUAL, 1, 0xFF);       // fail the test if the value is not 1
-        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // keep the value in stencil buffer even if we fail the test
-
-        // render the frustum, but with the stencil test, so only the pixels inside the sector pass
-        for (const auto& frustum : frustums.frustum_slots)
-        {
-          if (frustum == INVALID_FRUSTUM)
-          {
-            continue;
-          }
-
-          vec2 le, re;
-          frustum.get_frustum_edges(le, re);
-
-          const auto color = vec3{ 0.5f, 0.5f, 0.5f };
-          debug_helpers::draw_triangle(
-            level_space_to_screen_space(frustum.center),
-            level_space_to_screen_space(frustum.center + le * 3000.0f),
-            level_space_to_screen_space(frustum.center + re * 3000.0f),
-            color
-          );
-        }
-      }
-    }
-
-    // cleanup the stencil buffer after ourselves
-    {
-      glClear(GL_STENCIL_BUFFER_BIT);
-      glDisable(GL_STENCIL_TEST);
-    }
-  }
-
-  // then render the walls with white
-  for (auto&& sector : map.sectors)
-  {
-    constexpr color4 PORTAL_TYPES_COLORS[3] = {colors::WHITE, colors::RED, colors::GREEN};
-
-    auto& repr = sector.int_data;
-    const s32 wall_count = repr.last_wall - repr.first_wall;
-    nc_assert(wall_count >= 0);
-
-    for (WallRelID index = 0; index < wall_count; ++index)
-    {
-      WallRelID next_index   = (index + 1) % wall_count;
-      WallID    index_in_arr = repr.first_wall + index;
-      WallID    next_in_arr  = repr.first_wall + next_index;
-      nc_assert(index_in_arr < map.walls.size());
-      nc_assert(next_in_arr < map.walls.size());
-
-      const auto& wall1 = map.walls[index_in_arr];
-      const auto& wall2 = map.walls[next_in_arr];
-
-      const auto portal_type = wall1.get_portal_type();
-      const auto color = PORTAL_TYPES_COLORS[portal_type];
-
-      debug_helpers::draw_line(
-        level_space_to_screen_space(wall1.pos),
-        level_space_to_screen_space(wall2.pos),
-        color
-      );
-    }
-  }
-
-  // and render the player
-  draw_player
-  (
-    pointed_position,
-    player_direction,
-    colors::BLACK,
-    colors::ORANGE,
-    0.5f
-  );
-
-  // raycast 2D debug
-  if (raycast2d_debug)
-  {
-    auto& thing = ThingSystem::get();
-
-    vec2 start_pt = raycast_pt1;
-    vec2 end_pt = raycast_pt1 + vec2{ std::cos(raycast_rot), std::sin(raycast_rot) } *raycast_len;
-
-    debug_helpers::draw_line
-    (
-      level_space_to_screen_space(start_pt),
-      level_space_to_screen_space(end_pt),
-      colors::WHITE
-    );
-
-    if (auto hit = thing.get_level().circle_cast_2d(start_pt, end_pt, std::max(raycast_expand, 0.0001f)))
-    {
-      const vec2 contact_pt = start_pt + (end_pt - raycast_pt1) * hit.coeff;
-      const vec2 out_n = hit.normal.xz();
-      end_pt = contact_pt;
-
-      debug_helpers::draw_line
-      (
-        level_space_to_screen_space(contact_pt + flipped(out_n) * 2.0f),
-        level_space_to_screen_space(contact_pt - flipped(out_n) * 2.0f),
-        colors::LIME
-      );
-
-      debug_helpers::draw_line
-      (
-        level_space_to_screen_space(contact_pt),
-        level_space_to_screen_space(contact_pt + out_n * 1.5f),
-        colors::ORANGE
-      );
-    }
-
-    debug_helpers::draw_line
-    (
-      level_space_to_screen_space(start_pt),
-      level_space_to_screen_space(end_pt),
-      colors::GREEN
-    );
-  }
-
-  glEnable(GL_CULL_FACE);
-  glEnable(GL_DEPTH_TEST);
-}
-#endif
 
 //==============================================================================
 #ifdef NC_DEBUG_DRAW

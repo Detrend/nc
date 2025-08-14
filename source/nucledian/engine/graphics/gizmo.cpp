@@ -9,6 +9,8 @@
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/graphics_system.h>
 
+#include <engine/graphics/top_down_debug.h>
+
 #include <ranges>
 #include <array>
 
@@ -49,6 +51,12 @@ std::shared_ptr<Gizmo> Gizmo::create_line(const vec3& start, const vec3& end, co
 void Gizmo::create_line(f32 ttl, const vec3& start, const vec3& end, const color4& color)
 {
   create_line_impl(ttl, start, end, color);
+}
+
+//==============================================================================
+void Gizmo::create_line_2d(cstr category, const vec2& start, const vec2& end, const color4& color)
+{
+  TopDownDebugRenderer::push_line(category, start, end, color.xyz());
 }
 
 //==============================================================================
