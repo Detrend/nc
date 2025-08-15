@@ -20,6 +20,7 @@ var placement_type : PlacementType:
 	get: return _placement_type as PlacementType
 
 
+@export var texture : TextureDefinition
 @export var show_wall : bool = true
 @export var wall_texture : String
 @export var wall_scale : float = 1.0

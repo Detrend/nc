@@ -19,3 +19,9 @@ static func recursive_array_tostring(arr: Array, separator :String = ", ", strin
 		
 	return ret + "]"
 	
+
+static func extract_file_name_from_path(path: String)->String:
+	var dot_idx = path.rfind('.')
+	var slash_idx = path.rfind('/') + 1 # if not found, this gets us to 0
+	if dot_idx < slash_idx: dot_idx = path.length() - 1
+	return substring(path, slash_idx, dot_idx)

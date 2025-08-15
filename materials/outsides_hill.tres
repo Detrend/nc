@@ -1,6 +1,8 @@
-[gd_resource type="Resource" script_class="SectorMaterial" load_steps=4 format=3 uid="uid://cj2t3mf314rsj"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=6 format=3 uid="uid://cj2t3mf314rsj"]
 
 [ext_resource type="Texture2D" uid="uid://hosfsoru1xho" path="res://imgs/VegetationDark2.png" id="1_shv6e"]
+[ext_resource type="Resource" uid="uid://c0bfb1i38kqd" path="res://material_textures/_None.tres" id="1_w0eko"]
+[ext_resource type="Resource" uid="uid://vtqebik67rhe" path="res://material_textures/Vegetation.tres" id="2_efelk"]
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="2_styc6"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="3_w0eko"]
 
@@ -9,16 +11,19 @@ script = ExtResource("2_styc6")
 preview = ExtResource("1_shv6e")
 preview_scale = 0.1
 preview_rotation = 0.0
+wall = ExtResource("2_efelk")
 show_wall = true
 wall_texture = "VegetationDark2"
 wall_scale = 2.0
 wall_rotation = 0.0
 wall_priority = 10
 wall_rules = Array[ExtResource("3_w0eko")]([])
+floor = ExtResource("2_efelk")
 show_floor = true
 floor_texture = "VegetationDark2"
 floor_scale = 2.0
 floor_rotation = 0.0
+ceiling = ExtResource("1_w0eko")
 show_ceiling = false
 ceiling_texture = "floor2"
 ceiling_scale = 0.5

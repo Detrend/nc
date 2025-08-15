@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=2 format=3 uid="uid://0pn0s6pgyedy"]
+
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_ghb0a"]
+
+[resource]
+script = ExtResource("2_ghb0a")
+_id = "wall5"
+scale = 0.5
+rotation = 0.0
+should_show = true
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

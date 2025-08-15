@@ -1,13 +1,17 @@
-[gd_resource type="Resource" script_class="SectorMaterial" load_steps=6 format=3 uid="uid://cyf8yonewu52f"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=9 format=3 uid="uid://cyf8yonewu52f"]
 
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="1_3ubeq"]
 [ext_resource type="Texture2D" uid="uid://cwoite1spn28e" path="res://imgs/wall7.png" id="1_82owt"]
+[ext_resource type="Resource" uid="uid://hwlv04oo2a08" path="res://material_textures/Floor3.tres" id="3_c3wdf"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="3_u1lyt"]
+[ext_resource type="Resource" uid="uid://crtucqy2narq3" path="res://material_textures/Bricks.tres" id="5_6bagg"]
+[ext_resource type="Resource" uid="uid://0pn0s6pgyedy" path="res://material_textures/Wall5.tres" id="6_eei1o"]
 
 [sub_resource type="Resource" id="Resource_u1lyt"]
 script = ExtResource("3_u1lyt")
 _placement_type = 1
 wall_length_range = Vector2(0, 2)
+texture = ExtResource("5_6bagg")
 show_wall = true
 wall_texture = "bricks"
 wall_scale = 0.5
@@ -18,6 +22,7 @@ metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 script = ExtResource("3_u1lyt")
 _placement_type = 3
 wall_length_range = Vector2(2, 9999)
+texture = ExtResource("6_eei1o")
 show_wall = true
 wall_texture = "wall5"
 wall_scale = 0.5
@@ -29,16 +34,19 @@ script = ExtResource("1_3ubeq")
 preview = ExtResource("1_82owt")
 preview_scale = 1.0
 preview_rotation = 0.0
+wall = ExtResource("3_c3wdf")
 show_wall = true
 wall_texture = "floor3"
 wall_scale = 0.5
 wall_rotation = 0.0
 wall_priority = 1
 wall_rules = Array[ExtResource("3_u1lyt")]([SubResource("Resource_u1lyt"), SubResource("Resource_xfch1")])
+floor = ExtResource("3_c3wdf")
 show_floor = true
 floor_texture = "floor3"
 floor_scale = 0.5
 floor_rotation = 0.0
+ceiling = ExtResource("3_c3wdf")
 show_ceiling = true
 ceiling_texture = "floor3"
 ceiling_scale = 0.5

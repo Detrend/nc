@@ -114,9 +114,9 @@ class WallExportData:
 									   or ((rule._placement_type & WallRule.PlacementType.Wall) and sectors.size() == 1)
 			)
 			if height_check and surface_type_check:
-				return Level.get_texture_config(rule, 'wall', this_sector)
+				return Level.get_texture_config(rule.texture, true, this_sector)
 
-		return Level.get_texture_config(chosen_material, 'wall', this_sector)
+		return Level.get_texture_config(chosen_material.wall, true, this_sector)
 
 
 static func _get_wall_idx(wall_begin: Vector2, wall_end: Vector2)->Vector4:
@@ -190,8 +190,8 @@ func create_level_export_data() -> Dictionary:
 		sector_export["ceiling"] = sector.data.ceiling_height * export_scale.z
 		sector_export["points"] = sector_points
 
-		sector_export["floor_surface"] = get_texture_config(sector.data.material, 'floor', sector)
-		sector_export["ceiling_surface"] = get_texture_config(sector.data.material, 'ceiling', sector)
+		sector_export["floor_surface"] = get_texture_config(sector.data.material.floor, false, sector)
+		sector_export["ceiling_surface"] = get_texture_config(sector.data.material.ceiling, false, sector)
 		var walls_export : Array[Dictionary] = []
 		var wall_idx := 0
 		var walls_count = sector.get_walls_count()
@@ -233,16 +233,18 @@ func export_level():
 	file.close()
 	print("export completed")
 	
-static func get_texture_config(sector_material: Variant, texture_name: String, sector : Sector)->Dictionary:
-	if sector_material == null: sector_material = (load("res://textures/default_texture.tres") as SectorMaterial)
+static func get_texture_config(texture_def: TextureDefinition, is_wall: bool, sector : Sector)->Dictionary:
+	#if sector_material == null: sector_material = (load("res://textures/default_texture.tres") as SectorMaterial)
 	var ret : Dictionary = {}
-	ret["id"] = sector_material.get(texture_name + "_texture")
-	ret["scale"] = sector_material.get(texture_name + "_scale")
-	ret["show"] = sector_material.get("show_" + texture_name)
-	var base_rotation_deg :float = sector_material.get(texture_name + "_rotation")
-	var custom_rotation_deg :float = sector.data.wall_texturing_rotation if (texture_name == 'wall') else sector.data.texturing_rotation
+	if not texture_def:
+		ErrorUtils.report_warning("invalid texture def: {0}".format([sector.get_full_name()]))
+	ret["id"] = texture_def.id
+	ret["scale"] = texture_def.scale
+	ret["show"] = texture_def.should_show
+	var base_rotation_deg :float = texture_def.rotation
+	var custom_rotation_deg :float = sector.data.wall_texturing_rotation if is_wall else sector.data.texturing_rotation
 	ret["rotation"] = deg_to_rad(base_rotation_deg + custom_rotation_deg)
-	var offset := sector.data.wall_texturing_offset if (texture_name == 'wall') else sector.data.texturing_offset
+	var offset := sector.data.wall_texturing_offset if is_wall else sector.data.texturing_offset
 	ret["offset"] = [offset.x, offset.y]
 	return ret
 

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://vtqebik67rhe"]
+
+[ext_resource type="Texture2D" uid="uid://hosfsoru1xho" path="res://imgs/VegetationDark2.png" id="1_hgqtw"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_jws28"]
+
+[resource]
+script = ExtResource("2_jws28")
+preview = ExtResource("1_hgqtw")
+_id = ""
+scale = 2.5
+rotation = 0.0
+should_show = true
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

@@ -1,13 +1,18 @@
-[gd_resource type="Resource" script_class="SectorMaterial" load_steps=6 format=3 uid="uid://8mtk0xgkh1sd"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=10 format=3 uid="uid://8mtk0xgkh1sd"]
 
+[ext_resource type="Resource" uid="uid://lv2l2mulcl3e" path="res://material_textures/Floor2.tres" id="1_84kpv"]
 [ext_resource type="Texture2D" uid="uid://dtu5fh5ewxna6" path="res://imgs/floor3.png" id="1_cr5p4"]
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="2_caupq"]
+[ext_resource type="Resource" uid="uid://hwlv04oo2a08" path="res://material_textures/Floor3.tres" id="2_olw7g"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="3_qxi2i"]
+[ext_resource type="Resource" uid="uid://crtucqy2narq3" path="res://material_textures/Bricks.tres" id="5_yci1d"]
+[ext_resource type="Resource" uid="uid://0pn0s6pgyedy" path="res://material_textures/Wall5.tres" id="7_6r3lj"]
 
 [sub_resource type="Resource" id="Resource_cr5p4"]
 script = ExtResource("3_qxi2i")
 _placement_type = 1
 wall_length_range = Vector2(0, 2)
+texture = ExtResource("5_yci1d")
 show_wall = true
 wall_texture = "bricks"
 wall_scale = 0.5
@@ -18,6 +23,7 @@ metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 script = ExtResource("3_qxi2i")
 _placement_type = 3
 wall_length_range = Vector2(2, 9999)
+texture = ExtResource("7_6r3lj")
 show_wall = true
 wall_texture = "wall5"
 wall_scale = 0.5
@@ -29,16 +35,19 @@ script = ExtResource("2_caupq")
 preview = ExtResource("1_cr5p4")
 preview_scale = 1.0
 preview_rotation = 0.0
+wall = ExtResource("5_yci1d")
 show_wall = true
 wall_texture = "bricks"
 wall_scale = 0.5
 wall_rotation = 0.0
 wall_priority = 1
 wall_rules = Array[ExtResource("3_qxi2i")]([SubResource("Resource_cr5p4"), SubResource("Resource_caupq")])
+floor = ExtResource("2_olw7g")
 show_floor = true
 floor_texture = "floor3"
 floor_scale = 0.5
 floor_rotation = 0.0
+ceiling = ExtResource("1_84kpv")
 show_ceiling = true
 ceiling_texture = "floor2"
 ceiling_scale = 0.5

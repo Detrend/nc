@@ -1,4 +1,4 @@
-[gd_scene load_steps=216 format=3 uid="uid://befdk2p7cnnba"]
+[gd_scene load_steps=213 format=3 uid="uid://befdk2p7cnnba"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_nqbmo"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_l4525"]
@@ -14,9 +14,6 @@
 [ext_resource type="PackedScene" uid="uid://hg6kt5ju3l3a" path="res://prefabs/Entities/Pepe.tscn" id="9_rrxkl"]
 [ext_resource type="Resource" uid="uid://ckwlq2hdguk10" path="res://materials/maintenance_shaft.tres" id="10_k8xne"]
 [ext_resource type="Resource" uid="uid://8mtk0xgkh1sd" path="res://materials/parkour_pillar.tres" id="10_n7tfj"]
-[ext_resource type="Texture2D" uid="uid://dtu5fh5ewxna6" path="res://imgs/floor3.png" id="10_odj2k"]
-[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="13_k8xne"]
-[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="14_2dkgu"]
 [ext_resource type="Resource" uid="uid://ce5gk7qrr45r8" path="res://materials/outsides_road_house.tres" id="14_3ce7l"]
 [ext_resource type="Resource" uid="uid://byw7ktlk5iaok" path="res://materials/outsides_house.tres" id="14_k8xne"]
 [ext_resource type="Resource" uid="uid://p738ciwykkty" path="res://materials/outsides_wall.tres" id="16_xbdba"]
@@ -1708,32 +1705,11 @@ wall_texturing_offset = Vector2(0, 0)
 wall_texturing_rotation = 0.0
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
-[sub_resource type="Resource" id="Resource_wxxy7"]
-script = ExtResource("13_k8xne")
-preview = ExtResource("10_odj2k")
-preview_scale = 1.0
-preview_rotation = 0.0
-show_wall = true
-wall_texture = "wall4"
-wall_scale = 0.5
-wall_rotation = 0.0
-wall_priority = 0
-wall_rules = Array[ExtResource("14_2dkgu")]([])
-show_floor = true
-floor_texture = "VegetationDark2"
-floor_scale = 2.0
-floor_rotation = 0.0
-show_ceiling = false
-ceiling_texture = "floor2"
-ceiling_scale = 0.5
-ceiling_rotation = 0.0
-metadata/_custom_type_script = "uid://bd7os02w6f4ou"
-
 [sub_resource type="Resource" id="Resource_htu43"]
 script = ExtResource("4_h15or")
 floor_height = 0.0
 ceiling_height = 8.0
-material = SubResource("Resource_wxxy7")
+material = ExtResource("14_k8xne")
 texturing_offset = Vector2(0, 0)
 texturing_rotation = 0.0
 wall_texturing_offset = Vector2(0, 0)
@@ -1799,7 +1775,7 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 script = ExtResource("4_h15or")
 floor_height = 0.0
 ceiling_height = 6.0
-material = SubResource("Resource_wxxy7")
+material = ExtResource("14_k8xne")
 texturing_offset = Vector2(0, 0)
 texturing_rotation = 0.0
 wall_texturing_offset = Vector2(0, 0)
@@ -1971,6 +1947,10 @@ wall_texturing_offset = Vector2(0, 0)
 wall_texturing_rotation = 0.0
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
+[sub_resource type="Curve" id="Curve_au8ug"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.434783, 0.639842), 1.07755, 1.07755, 0, 0, Vector2(1, 1), -0.0220163, 0.0, 0, 0]
+point_count = 3
+
 [sub_resource type="Resource" id="Resource_06bi3"]
 script = ExtResource("4_h15or")
 floor_height = 0.6
@@ -1984,7 +1964,7 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_d0lu7"]
 script = ExtResource("4_h15or")
-floor_height = 1.6
+floor_height = 1.05574
 ceiling_height = 999.0
 material = ExtResource("20_sc5vv")
 texturing_offset = Vector2(0, 0)
@@ -1995,7 +1975,7 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_v4ly5"]
 script = ExtResource("4_h15or")
-floor_height = 2.6
+floor_height = 1.59156
 ceiling_height = 999.0
 material = ExtResource("20_sc5vv")
 texturing_offset = Vector2(0, 0)
@@ -2006,7 +1986,7 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_65hx1"]
 script = ExtResource("4_h15or")
-floor_height = 3.6
+floor_height = 1.88676
 ceiling_height = 999.0
 material = ExtResource("20_sc5vv")
 texturing_offset = Vector2(0, 0)
@@ -2017,7 +1997,7 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_5evw6"]
 script = ExtResource("4_h15or")
-floor_height = 4.6
+floor_height = 2.0
 ceiling_height = 999.0
 material = ExtResource("20_sc5vv")
 texturing_offset = Vector2(0, 0)
@@ -2028,7 +2008,6 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [node name="TestLevel1" type="Node2D"]
 script = ExtResource("1_nqbmo")
-coloring_mode = 1
 export_scale = Vector3(0.1, 0.1, 1)
 export_path = "../nc/content/levels/level_test1.json"
 
@@ -2037,7 +2016,7 @@ export_path = "../nc/content/levels/level_test1.json"
 [node name="InfinitePassage" type="Node2D" parent="Sectors"]
 
 [node name="@Polygon2D@33441" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
-color = Color(0.79273, 0.79273, 0.79273, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(8, 128, 15, 119, 24, 112, 32, 112, 41, 119, 48, 128, 41, 137, 32, 144, 24, 144, 15, 137)
 data = SubResource("Resource_h15or")
@@ -2047,7 +2026,7 @@ portal_wall = 1
 portal_destination_wall = 3
 
 [node name="@Polygon2D@41759" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
-color = Color(0.79273, 0.79273, 0.79273, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(24, 144, 32, 144, 32, 152, 32, 160, 24, 160, 24, 152)
 data = SubResource("Resource_l4xrs")
@@ -2055,14 +2034,14 @@ ceiling_height = 4.0
 sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@42784" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(32, 152, 40, 152, 40, 160, 32, 160)
 data = SubResource("Resource_hqisf")
 sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@43129" parent="Sectors/InfinitePassage" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(16, 152, 24, 152, 24, 160, 16, 160)
 data = SubResource("Resource_rrxkl")
@@ -2072,7 +2051,7 @@ portal_wall = 3
 portal_destination_wall = 1
 
 [node name="@Polygon2D@59398" parent="Sectors/InfinitePassage" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
-color = Color(0.742647, 0.742647, 0.742647, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(24, 96, 32, 96, 32, 104, 32, 112, 24, 112, 24, 104)
 data = SubResource("Resource_xf0ey")
@@ -2083,14 +2062,14 @@ enable_portal = false
 portal_destination_wall = 3
 
 [node name="@Polygon2D@67463" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(32, 96, 40, 96, 40, 104, 32, 104)
 data = SubResource("Resource_phr4w")
 sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@67810" parent="Sectors/InfinitePassage" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(16, 96, 24, 96, 24, 104, 16, 104)
 data = SubResource("Resource_g43pp")
@@ -2100,7 +2079,7 @@ portal_wall = 3
 portal_destination_wall = 1
 
 [node name="@Polygon2D@76073" parent="Sectors/InfinitePassage" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(24, 80, 32, 80, 32, 87, 24, 87)
 data = SubResource("Resource_a61hi")
@@ -2109,21 +2088,21 @@ portal_destination = NodePath("../@Polygon2D@76420")
 portal_destination_wall = 2
 
 [node name="@Polygon2D@76420" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(24, 160, 32, 160, 32, 168, 24, 168)
 data = SubResource("Resource_maegb")
 sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(24, 87, 32, 87, 32, 95, 32, 96, 24, 96)
 data = SubResource("Resource_8ruhk")
 sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@191806" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
-color = Color(0.946194, 0.946194, 0.946194, 1)
+color = Color(0.924383, 0.848171, 0.877941, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(41, 119, 48, 112, 56, 128, 48, 128)
 data = SubResource("Resource_n7tfj")
@@ -2132,7 +2111,7 @@ ceiling_height = 2.1
 sector_material = ExtResource("5_g43pp")
 
 [node name="@Polygon2D@192154" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
-color = Color(0.946194, 0.946194, 0.946194, 1)
+color = Color(0.924383, 0.848171, 0.877941, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(48, 128, 56, 128, 48, 144, 41, 137)
 data = SubResource("Resource_odj2k")
@@ -2141,7 +2120,7 @@ ceiling_height = 2.1
 sector_material = ExtResource("5_g43pp")
 
 [node name="@Polygon2D@193900" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
-color = Color(0.946194, 0.946194, 0.946194, 1)
+color = Color(0.924383, 0.848171, 0.877941, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(8, 112, 15, 119, 8, 128, 0, 128)
 data = SubResource("Resource_k8xne")
@@ -2150,7 +2129,7 @@ ceiling_height = 2.1
 sector_material = ExtResource("5_g43pp")
 
 [node name="@Polygon2D@194248" parent="Sectors/InfinitePassage" instance=ExtResource("2_l4525")]
-color = Color(0.946194, 0.946194, 0.946194, 1)
+color = Color(0.924383, 0.848171, 0.877941, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(0, 128, 8, 128, 15, 137, 8, 144)
 data = SubResource("Resource_2dkgu")
@@ -2161,7 +2140,7 @@ sector_material = ExtResource("5_g43pp")
 [node name="Square" type="Node2D" parent="Sectors"]
 
 [node name="Sector4" parent="Sectors/Square" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(0.987301, 0.974502, 0.979501, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(80, -24, 80, 40, 56, 40, 56, 31.75, 56, 8, 56, 0)
 data = SubResource("Resource_xbdba")
@@ -2172,7 +2151,7 @@ portal_wall = 3
 portal_destination_wall = 3
 
 [node name="Sector5" parent="Sectors/Square" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(80, -24, 56, 0, 16, 0, -8, 0, -8, -8, -8, -16, -8, -24)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2182,14 +2161,14 @@ portal_destination = NodePath("../../TopPart/Sector30")
 portal_wall = 3
 
 [node name="Sector5a" parent="Sectors/Square" instance=ExtResource("2_l4525")]
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-11, -16, -11, -24, -8, -24, -8, -16)
 data = SubResource("Resource_6kvb2")
 sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector6" parent="Sectors/Square" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(0.987301, 0.974502, 0.979501, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(16, 0, 16, 8, 16, 32, 16, 40, -8, 64, -8, 0)
 data = SubResource("Resource_3ce7l")
@@ -2200,7 +2179,7 @@ portal_wall = 1
 portal_destination_wall = 2
 
 [node name="Sector7" parent="Sectors/Square" instance=ExtResource("2_l4525")]
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(0.974643, 0.949087, 0.95907, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(16, 40, 56, 40, 80, 40, 80, 64, -8, 64)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2213,7 +2192,7 @@ portal_destination_wall = 3
 [node name="BottomPart" type="Node2D" parent="Sectors"]
 
 [node name="Sector10" parent="Sectors/BottomPart" instance=ExtResource("2_l4525")]
-color = Color(0.910438, 0.910438, 0.910438, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(240, 96, 216, 97, 200, 97, 176, 96, 206, 69, 210, 69)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2223,7 +2202,7 @@ sector_material = ExtResource("4_xf0ey")
 portal_wall = -1
 
 [node name="Sector11" parent="Sectors/BottomPart" instance=ExtResource("2_l4525")]
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.974643, 0.949087, 0.95907, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(210, 60, 206, 60, 176, 32, 200, 32, 216, 32, 240, 32)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2234,7 +2213,7 @@ sector_material = ExtResource("4_xf0ey")
 portal_wall = -1
 
 [node name="Sector14" parent="Sectors/BottomPart" instance=ExtResource("2_l4525")]
-color = Color(0.910438, 0.910438, 0.910438, 1)
+color = Color(0.987301, 0.974502, 0.979501, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(203, 66, 176, 80, 176, 56, 203, 63)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2245,7 +2224,7 @@ sector_material = ExtResource("4_xf0ey")
 portal_wall = -1
 
 [node name="Sector15" parent="Sectors/BottomPart" instance=ExtResource("2_l4525")]
-color = Color(0.910438, 0.910438, 0.910438, 1)
+color = Color(0.987301, 0.974502, 0.979501, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(213, 66, 213, 63, 240, 56, 240, 80)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2256,7 +2235,7 @@ sector_material = ExtResource("4_xf0ey")
 portal_wall = -1
 
 [node name="Sector16" parent="Sectors/BottomPart" instance=ExtResource("2_l4525")]
-color = Color(0.910438, 0.910438, 0.910438, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(210, 69, 213, 66, 240, 80, 240, 96)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2266,7 +2245,7 @@ sector_material = ExtResource("4_xf0ey")
 portal_wall = -1
 
 [node name="Sector17" parent="Sectors/BottomPart" instance=ExtResource("2_l4525")]
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.974643, 0.949087, 0.95907, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(213, 63, 210, 60, 240, 32, 240, 56)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2277,7 +2256,7 @@ sector_material = ExtResource("4_xf0ey")
 portal_wall = -1
 
 [node name="Sector18" parent="Sectors/BottomPart" instance=ExtResource("2_l4525")]
-color = Color(0.910438, 0.910438, 0.910438, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(203, 66, 206, 69, 176, 96, 176, 88, 176, 80)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2287,7 +2266,7 @@ sector_material = ExtResource("4_xf0ey")
 portal_wall = -1
 
 [node name="Sector18a" parent="Sectors/BottomPart" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(168, 88, 176, 88, 176, 96, 168, 96)
 data = SubResource("Resource_s7eyl")
@@ -2296,7 +2275,7 @@ portal_destination = NodePath("../../PortalStressTest/Sector-2521b")
 portal_wall = 3
 
 [node name="Sector19" parent="Sectors/BottomPart" instance=ExtResource("2_l4525")]
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.974643, 0.949087, 0.95907, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(206, 60, 203, 63, 176, 56, 176, 32)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2307,7 +2286,7 @@ sector_material = ExtResource("4_xf0ey")
 portal_wall = -1
 
 [node name="@Polygon2D@36231" parent="Sectors/BottomPart" instance=ExtResource("2_l4525")]
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(152, 32, 176, 32, 176, 56, 152, 56)
 data = SubResource("Resource_6pfxm")
@@ -2316,7 +2295,7 @@ ceiling_height = 10.0
 sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@53437" parent="Sectors/BottomPart" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(264, 104, 304, 95, 328, 120, 304, 120)
 data = SubResource("Resource_228ii")
@@ -2326,21 +2305,21 @@ portal_wall = 2
 portal_destination_wall = 3
 
 [node name="Sector" parent="Sectors/BottomPart" instance=ExtResource("2_l4525")]
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(240, 32, 281, 32, 280, 64, 240, 56)
 data = SubResource("Resource_ux4y7")
 sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@33690" parent="Sectors/BottomPart" instance=ExtResource("2_l4525")]
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(281, 32, 312, 56, 280, 64)
 data = SubResource("Resource_xonx6")
 sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@34035" parent="Sectors/BottomPart" instance=ExtResource("2_l4525")]
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(280, 64, 312, 56, 304, 95, 264, 104)
 data = SubResource("Resource_8mffk")
@@ -2351,7 +2330,7 @@ position = Vector2(120, 105)
 
 [node name="Sector-9156" parent="Sectors/PortalStressTest" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(28.0392, 33.0007)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(3.96075, 6.9993, 11.9608, -1.0007, 16.9608, 2.9993, 19.9608, 6.9993, 11.9608, 14.9993)
 data = SubResource("Resource_yh3hc")
@@ -2361,7 +2340,7 @@ portal_destination_wall = 2
 
 [node name="Sector-2449" parent="Sectors/PortalStressTest" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(53.5738, 38.1376)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-5.57379, 1.8624, -2.57379, -2.1376, 2.42622, -6.13765, 10.4262, 1.86235, 2.42622, 9.86235)
 data = SubResource("Resource_58awn")
@@ -2372,7 +2351,7 @@ portal_destination_wall = 2
 
 [node name="Sector-7845" parent="Sectors/PortalStressTest" instance=ExtResource("2_l4525")]
 position = Vector2(42.4931, 53.2723)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(5.50693, 2.72772, 13.5069, -5.27228, 21.5069, 2.72772, 13.5069, 10.7277)
 data = SubResource("Resource_t1m8r")
@@ -2380,7 +2359,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector-438" parent="Sectors/PortalStressTest" instance=ExtResource("2_l4525")]
 position = Vector2(39.2499, 52.3714)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(0.750061, -4.37141, 8.75006, 3.62859, 0.750061, 11.6286, -7.24994, 3.62859)
 data = SubResource("Resource_k2hxi")
@@ -2388,7 +2367,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector-36" parent="Sectors/PortalStressTest" instance=ExtResource("2_l4525")]
 position = Vector2(47.2677, 47.6869)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(0.7323, -7.6869, 8.73233, 0.31311, 0.73233, 8.31311, -7.26767, 0.31311)
 data = SubResource("Resource_puevo")
@@ -2396,7 +2375,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector-2521" parent="Sectors/PortalStressTest" instance=ExtResource("2_l4525")]
 position = Vector2(46, 24)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-2, 0, 8, 0, 5, 12, 2, 16, -1, 12)
 data = SubResource("Resource_pf7qd")
@@ -2404,7 +2383,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector-2521b" parent="Sectors/PortalStressTest" instance=ExtResource("2_l4525")]
 position = Vector2(46, 24)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-6, 0, -6, -8, -2, -9, 8, -10, 8, 0, -2, 0)
 data = SubResource("Resource_f2yjv")
@@ -2414,7 +2393,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector-987" parent="Sectors/PortalStressTest2" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(125, 186)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-8, 4, 7, -10, 7, 18)
 data = SubResource("Resource_8rja0")
@@ -2425,7 +2404,7 @@ portal_destination_wall = 2
 
 [node name="Sector-3721" parent="Sectors/PortalStressTest2" instance=ExtResource("2_l4525")]
 position = Vector2(103.521, 189.589)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-0.521378, -13.5891, 13.4786, 0.410919, -0.521378, 14.4109)
 data = SubResource("Resource_w3g3p")
@@ -2433,7 +2412,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector-6355" parent="Sectors/PortalStressTest2" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(118.161, 169.658)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-15.1612, 6.34183, 13.8388, 6.34183, -1.16122, 20.3418)
 data = SubResource("Resource_icrml")
@@ -2443,7 +2422,7 @@ portal_destination_wall = 2
 
 [node name="Sector-7816" parent="Sectors/PortalStressTest2" instance=ExtResource("2_l4525")]
 position = Vector2(118.121, 217.614)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-15.1209, -13.6135, -1.12094, -27.6135, 13.8791, -13.6135)
 data = SubResource("Resource_lcdlo")
@@ -2454,7 +2433,7 @@ position = Vector2(210, 145)
 
 [node name="Sector10a" parent="Sectors/PortalStressTest3" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(-210, -145)
-color = Color(0.910438, 0.910438, 0.910438, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(216, 104, 200, 104, 200, 97, 216, 97)
 data = SubResource("Resource_slcty")
@@ -2464,7 +2443,7 @@ portal_destination = NodePath("../Sector-6355")
 
 [node name="Sector-4300" parent="Sectors/PortalStressTest3" instance=ExtResource("2_l4525")]
 position = Vector2(-0.73097, -28.682)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(9.731, 5.682, 17.731, 22.682, 1.73097, 16.682)
 data = SubResource("Resource_2fk48")
@@ -2472,7 +2451,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector-6355" parent="Sectors/PortalStressTest3" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(18.1613, -26.3418)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-9.16122, 3.3418, 6.83878, 3.3418, -1.16122, 20.3418)
 data = SubResource("Resource_icrml")
@@ -2483,7 +2462,7 @@ portal_destination_wall = 2
 
 [node name="Sector-9244" parent="Sectors/PortalStressTest3" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(27.4624, -21.7936)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-2.46239, -1.20641, 5.53761, 9.79358, -10.4624, 15.7936)
 data = SubResource("Resource_smahr")
@@ -2493,7 +2472,7 @@ portal_destination_wall = 2
 
 [node name="Sector-987" parent="Sectors/PortalStressTest3" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(25, -9.99999)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-8, 4, 8, -2, 8, 11)
 data = SubResource("Resource_8rja0")
@@ -2505,7 +2484,7 @@ portal_destination_wall = 2
 
 [node name="Sector-3721" parent="Sectors/PortalStressTest3" instance=ExtResource("2_l4525")]
 position = Vector2(3.52143, -6.41091)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-2.52138, -5.58908, 13.4786, 0.410919, -1.52138, 8.41092)
 data = SubResource("Resource_w3g3p")
@@ -2513,7 +2492,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector-8582" parent="Sectors/PortalStressTest3" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(17.8972, 4.55271)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-0.897186, -10.5527, 15.1028, -3.55272, 6.10281, 5.44728)
 data = SubResource("Resource_ckcn5")
@@ -2524,7 +2503,7 @@ portal_destination_wall = 2
 
 [node name="Sector-1877" parent="Sectors/PortalStressTest3" instance=ExtResource("2_l4525")]
 position = Vector2(9.45074, 11.1533)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-7.45071, -9.15329, 7.54929, -17.1533, 0.549286, -1.15329)
 data = SubResource("Resource_1pswn")
@@ -2532,7 +2511,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector-7816" parent="Sectors/PortalStressTest3" instance=ExtResource("2_l4525")]
 position = Vector2(18.121, 21.6135)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-8.12094, -11.6135, -1.12094, -27.6135, 5.87906, -11.6135)
 data = SubResource("Resource_lcdlo")
@@ -2541,7 +2520,7 @@ sector_material = ExtResource("4_xf0ey")
 [node name="TopPart" type="Node2D" parent="Sectors"]
 
 [node name="Sector8" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
-color = Color(0.79273, 0.79273, 0.79273, 1)
+color = Color(0.987301, 0.974502, 0.979501, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(240, 0, 280, 0, 288, 0, 296, 0, 296, 24, 240, 24)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2552,7 +2531,7 @@ sector_material = ExtResource("4_xf0ey")
 portal_wall = -1
 
 [node name="Sector9" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
-color = Color(0.79273, 0.79273, 0.79273, 1)
+color = Color(0.987301, 0.974502, 0.979501, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(176, 32, 176, 24, 176, 0, 200, 0, 200, 32)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2563,7 +2542,7 @@ sector_material = ExtResource("4_xf0ey")
 portal_wall = -1
 
 [node name="Sector12" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
-color = Color(0.79273, 0.79273, 0.79273, 1)
+color = Color(0.987301, 0.974502, 0.979501, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(216, 32, 216, 0, 240, 0, 240, 24, 240, 32)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2574,7 +2553,7 @@ sector_material = ExtResource("4_xf0ey")
 portal_wall = -1
 
 [node name="Sector13" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
-color = Color(0.79273, 0.79273, 0.79273, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(176, 0, 176, 24, 120, 24, 120, 0)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2583,7 +2562,7 @@ ceiling_height = 4.0
 sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector21" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
-color = Color(0.79273, 0.79273, 0.79273, 1)
+color = Color(0.987301, 0.974502, 0.979501, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(216, 0, 216, -32, 240, -32, 240, 0)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2594,7 +2573,7 @@ sector_material = ExtResource("4_xf0ey")
 portal_wall = -1
 
 [node name="Sector22" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
-color = Color(0.910438, 0.910438, 0.910438, 1)
+color = Color(0.987301, 0.974502, 0.979501, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(240, -32, 216, -32, 207.641, -32, 200, -32, 176, -32, 203, -60, 212, -60)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2605,7 +2584,7 @@ sector_material = ExtResource("4_xf0ey")
 portal_wall = -1
 
 [node name="Sector23" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
-color = Color(0.713272, 0.713272, 0.713272, 1)
+color = Color(0.974643, 0.949087, 0.95907, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(208, -67, 176, -96, 198, -108, 205, -111, 208, -112, 211, -111, 219, -108, 240, -96)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2616,7 +2595,7 @@ sector_material = ExtResource("4_xf0ey")
 portal_wall = -1
 
 [node name="Sector23b" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
-color = Color(0.719805, 0.719805, 0.719805, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(196, -109, 203, -112, 205, -111, 198, -108)
 data = SubResource("Resource_8tf6c")
@@ -2625,7 +2604,7 @@ ceiling_height = 5.6
 sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector23a" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
-color = Color(0.719805, 0.719805, 0.719805, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(213, -112, 221, -109, 219, -108, 211, -111)
 data = SubResource("Resource_eyhek")
@@ -2634,7 +2613,7 @@ ceiling_height = 5.6
 sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector24" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
-color = Color(0.817432, 0.817432, 0.817432, 1)
+color = Color(0.987301, 0.974502, 0.979501, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(203, -60, 176, -32, 166, -73, 176, -96, 208, -67)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2645,7 +2624,7 @@ sector_material = ExtResource("4_xf0ey")
 portal_wall = -1
 
 [node name="Sector25" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
-color = Color(0.817432, 0.817432, 0.817432, 1)
+color = Color(0.987301, 0.974502, 0.979501, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(212, -60, 208, -67, 240, -96, 248, -74, 246, -60, 240, -32)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2656,7 +2635,7 @@ sector_material = ExtResource("4_xf0ey")
 portal_wall = -1
 
 [node name="Sector20" parent="Sectors/TopPart" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
-color = Color(0.79273, 0.79273, 0.79273, 1)
+color = Color(0.987301, 0.974502, 0.979501, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(176, 0, 176, -1, 176, -9, 176, -16, 176, -24, 176, -32, 200, -32, 200, 0)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2669,7 +2648,7 @@ portal_wall = 1
 portal_destination_wall = 1
 
 [node name="Sector30" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(0.987301, 0.974502, 0.979501, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(168, -16, 168, -24, 169, -24, 169, -16)
 uv = PackedVector2Array(-5.66675, -55.9995)
@@ -2680,7 +2659,7 @@ portal_destination_wall = 2
 is_portal_bidirectional = false
 
 [node name="Sector" parent="Sectors/TopPart" instance=ExtResource("2_l4525")]
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(0.962025, 0.923751, 0.938702, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(169, -24, 176, -24, 176, -16, 169, -16)
 data = SubResource("Resource_awnjm")
@@ -2700,7 +2679,7 @@ ceiling_increment = nan
 
 [node name="_Polygon2D_35078" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.974643, 0.949087, 0.95907, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(246, -60, 248, -74, 254, -72)
 data = SubResource("Resource_512ls")
@@ -2710,7 +2689,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@24469" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.95491, 0.909464, 0.927216, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(254, -72, 259, -69, 246, -60)
 data = SubResource("Resource_i6y5j")
@@ -2720,7 +2699,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@24817" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.935263, 0.870017, 0.895503, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(259, -69, 262, -65, 246, -60)
 data = SubResource("Resource_mo35u")
@@ -2730,7 +2709,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@30042" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.915696, 0.830728, 0.863918, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(246, -60, 262, -65, 263, -60)
 data = SubResource("Resource_x703p")
@@ -2740,7 +2719,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@30390" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.896198, 0.791579, 0.832446, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(246, -60, 263, -60, 263, -53, 245, -53)
 data = SubResource("Resource_bklt4")
@@ -2750,7 +2729,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@30738" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.876762, 0.752554, 0.801073, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(245, -53, 263, -53, 263, -47, 245, -47)
 data = SubResource("Resource_kd8mq")
@@ -2760,7 +2739,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@31086" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.857379, 0.713635, 0.769785, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(245, -47, 263, -47, 263, -41, 245, -41)
 data = SubResource("Resource_0m6xw")
@@ -2770,7 +2749,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@44213" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.83804, 0.674804, 0.738567, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(263, -41, 263, -35, 245, -35, 245, -41)
 data = SubResource("Resource_c6a8k")
@@ -2780,7 +2759,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@25686" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.818734, 0.636041, 0.707405, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(245, -35, 263, -35, 263, -29, 245, -28)
 data = SubResource("Resource_sdn6o")
@@ -2790,7 +2769,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_Polygon2D_26386aa" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.799456, 0.597333, 0.676287, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(245, -28, 263, -29, 264.091, -27.9093, 247, -17, 245, -20)
 data = SubResource("Resource_1dcth")
@@ -2800,7 +2779,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_Polygon2D_26386ab" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.780196, 0.558661, 0.645198, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(264.091, -27.9093, 265, -27, 256, -12, 247, -17)
 data = SubResource("Resource_2v1cl")
@@ -2810,7 +2789,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_Polygon2D_26386baa" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.760945, 0.520007, 0.614123, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(265, -27, 265, -10, 256, -12)
 data = SubResource("Resource_brq1o")
@@ -2820,7 +2799,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_Polygon2D_26386bab" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.741694, 0.481353, 0.583049, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(265, -27, 273, -12, 265, -10)
 data = SubResource("Resource_7i31c")
@@ -2830,7 +2809,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_Polygon2D_26386bba" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.722433, 0.44268, 0.551958, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(265, -27, 266.024, -28.024, 282, -18, 273, -12)
 data = SubResource("Resource_xumdc")
@@ -2840,7 +2819,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_Polygon2D_26386bbb" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.703156, 0.403975, 0.520842, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(266.024, -28.024, 267, -29, 284, -28, 284, -21, 282, -18)
 data = SubResource("Resource_750p3")
@@ -2850,7 +2829,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@29862" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.683853, 0.365217, 0.489684, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(267, -29, 267, -35, 284, -35, 284, -28)
 data = SubResource("Resource_6msd8")
@@ -2860,7 +2839,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@31604" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.664516, 0.32639, 0.45847, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(267, -41, 284, -41, 284, -35, 267, -35)
 data = SubResource("Resource_our03")
@@ -2870,7 +2849,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@32646" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.645135, 0.287475, 0.427186, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(267, -47, 284, -47, 284, -41, 267, -41)
 data = SubResource("Resource_glucu")
@@ -2880,7 +2859,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@34040" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.625701, 0.248454, 0.395815, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(267, -53, 284, -53, 284, -47, 267, -47)
 data = SubResource("Resource_8d65h")
@@ -2890,7 +2869,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@37536" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.606207, 0.209312, 0.364349, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(267, -60, 284, -57, 284, -53, 267, -53)
 data = SubResource("Resource_8jvu6")
@@ -2900,7 +2879,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@38925" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.586643, 0.170031, 0.332769, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(270, -67, 284, -57, 267, -60)
 data = SubResource("Resource_1ryfd")
@@ -2910,7 +2889,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@40329" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(0.567001, 0.130592, 0.301064, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(276, -71, 284, -57, 270, -67)
 data = SubResource("Resource_mk60v")
@@ -2920,7 +2899,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@41376" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.701712, 0.701712, 0.701712, 1)
+color = Color(0.547272, 0.090978, 0.269217, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(284, -74, 284, -57, 276, -71)
 data = SubResource("Resource_5kxvq")
@@ -2930,7 +2909,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.684046, 0.684046, 0.684046, 1)
+color = Color(0.527445, 0.0511693, 0.237214, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(284, -74, 296, -76, 296, -57, 284, -57)
 data = SubResource("Resource_xrb3f")
@@ -2940,7 +2919,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@45551" parent="Sectors/StairSequence" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.684046, 0.684046, 0.684046, 1)
+color = Color(0.527447, 0.0511719, 0.237216, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(296, -76, 312, -80, 312, -56, 296, -57)
 data = SubResource("Resource_6end0")
@@ -2954,7 +2933,7 @@ portal_destination_wall = 2
 
 [node name="@Polygon2D@119216" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.684046, 0.684046, 0.684046, 1)
+color = Color(0.527447, 0.0511719, 0.237216, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(312, -80, 329, -80, 329, -56, 312, -56)
 data = SubResource("Resource_qbtl4")
@@ -2964,7 +2943,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@120857" parent="Sectors/StairSequence" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.684046, 0.684046, 0.684046, 1)
+color = Color(0.552761, 0.102001, 0.278079, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(358, -81, 400, -80, 400, -56, 388, -55, 378, -55, 358, -55)
 data = SubResource("Resource_se42b")
@@ -2977,7 +2956,7 @@ portal_destination_wall = 2
 
 [node name="@Polygon2D@121205" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.684046, 0.684046, 0.684046, 1)
+color = Color(0.874606, 0.748225, 0.797592, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(329, -80, 331, -84, 336, -88, 342, -88, 349, -88, 358, -81, 358, -55, 347, -48, 339, -48, 329, -56)
 data = SubResource("Resource_3vs0o")
@@ -2987,7 +2966,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_Polygon2D_121205a" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.946194, 0.946194, 0.946194, 1)
+color = Color(0.936897, 0.873298, 0.898141, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(330, -96, 335, -92, 329, -86, 327, -88)
 data = SubResource("Resource_qdo7g")
@@ -2997,7 +2976,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_Polygon2D_121205e" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.937645, 0.937645, 0.937645, 1)
+color = Color(0.905668, 0.810593, 0.847732, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(335, -92, 336, -88, 331, -84, 329, -86)
 data = SubResource("Resource_vetsg")
@@ -3007,7 +2986,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_Polygon2D_121205b" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(-270, 45)
-color = Color(0.954367, 0.954367, 0.954367, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(326, -88, 326, -97, 330.511, -96.5489, 329.76, -87.9934)
 data = SubResource("Resource_e61pf")
@@ -3016,7 +2995,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_Polygon2D_121205d" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(-270, 45)
-color = Color(0.954367, 0.954367, 0.954367, 1)
+color = Color(0.968329, 0.936409, 0.948878, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(330.511, -96.5489, 336, -96, 333, -88, 329.76, -87.9934)
 data = SubResource("Resource_6v3ul")
@@ -3026,7 +3005,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_Polygon2D_121205c" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(-270, 45)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(320, -88, 320, -96, 326, -97, 326, -88)
 data = SubResource("Resource_x5wyx")
@@ -3034,7 +3013,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@122971" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.864089, 0.864089, 0.864089, 1)
+color = Color(0.874606, 0.748225, 0.797592, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(339, -48, 347, -48, 350, -32, 341, -32)
 data = SubResource("Resource_a0e78")
@@ -3044,7 +3023,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@123686" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.824062, 0.824062, 0.824062, 1)
+color = Color(0.849853, 0.698524, 0.757637, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(341, -32, 350, -32, 355, -15, 348, -6, 341, -20)
 data = SubResource("Resource_lxoh4")
@@ -3054,7 +3033,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@124034" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.79273, 0.79273, 0.79273, 1)
+color = Color(0.825166, 0.648956, 0.717788, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(320, -10, 320, -20, 341, -20, 348, -6)
 data = SubResource("Resource_vfvio")
@@ -3064,7 +3043,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@127510" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.79273, 0.79273, 0.79273, 1)
+color = Color(0.800527, 0.599483, 0.678016, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(288, -16, 320, -20, 320, -10, 296, -8)
 data = SubResource("Resource_m3tne")
@@ -3074,7 +3053,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_Polygon2D_129925" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.79273, 0.79273, 0.79273, 1)
+color = Color(0.775918, 0.550071, 0.638292, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(288, -16, 296, -8, 288, 0, 280, 0)
 data = SubResource("Resource_vcpr7")
@@ -3084,7 +3063,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_Polygon2D_238032" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.684046, 0.684046, 0.684046, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(364, -7, 383, -2, 374, 17, 356, 14)
 data = SubResource("Resource_y4auh")
@@ -3099,7 +3078,7 @@ data = SubResource("Resource_r8b0k")
 
 [node name="Sector-8508" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(83.5367, -50.2036)
-color = Color(0.719805, 0.719805, 0.719805, 1)
+color = Color(0.677412, 0.352284, 0.479287, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-6.53668, 0.203598, 0.463318, -0.796402, 0.463318, 3.2036, -5.53668, 4.2036)
 data = SubResource("Resource_4pt8e")
@@ -3109,7 +3088,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector-8508b" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(83.5367, -50.2036)
-color = Color(0.719805, 0.719805, 0.719805, 1)
+color = Color(0.565361, 0.127298, 0.298416, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-9.53668, -3.7964, -0.536682, -3.7964, 0.463318, -0.796402, -6.53668, 0.203598)
 data = SubResource("Resource_m0rkl")
@@ -3119,7 +3098,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector-8508c" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(83.5367, -50.2036)
-color = Color(0.719805, 0.719805, 0.719805, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-10.5367, -5.7964, -1.53668, -5.7964, -0.536682, -3.7964, -9.53668, -3.7964)
 data = SubResource("Resource_tccgo")
@@ -3129,7 +3108,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector-8508a" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(83.5367, -50.2036)
-color = Color(0.719805, 0.719805, 0.719805, 1)
+color = Color(0.775918, 0.550071, 0.638292, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(0.463318, 3.2036, 1.46332, 7.2036, -5.53668, 7.2036, -5.53668, 4.2036)
 data = SubResource("Resource_0tyx8")
@@ -3146,7 +3125,7 @@ ceiling_increment = nan
 
 [node name="@Polygon2D@231066" parent="Sectors/StairSequence/StairMaker2" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.684046, 0.684046, 0.684046, 1)
+color = Color(0.527447, 0.0511719, 0.237216, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(378, -55, 388, -55, 389, -48, 377, -48)
 data = SubResource("Resource_wci67")
@@ -3156,7 +3135,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@232108" parent="Sectors/StairSequence/StairMaker2" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.684046, 0.684046, 0.684046, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(377, -48, 389, -48, 390, -40, 376, -40)
 data = SubResource("Resource_rjnrj")
@@ -3166,7 +3145,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@233155" parent="Sectors/StairSequence/StairMaker2" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.684046, 0.684046, 0.684046, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(376, -40, 390, -40, 391, -32, 376, -32)
 data = SubResource("Resource_iem8e")
@@ -3176,7 +3155,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@233503" parent="Sectors/StairSequence/StairMaker2" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.684046, 0.684046, 0.684046, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(376, -32, 391, -32, 392, -24, 376, -24)
 data = SubResource("Resource_0v5ww")
@@ -3186,7 +3165,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@236637" parent="Sectors/StairSequence/StairMaker2" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.684046, 0.684046, 0.684046, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(376, -24, 392, -24, 392, -14, 376, -16)
 data = SubResource("Resource_kxlo1")
@@ -3196,7 +3175,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@236990" parent="Sectors/StairSequence/StairMaker2" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.684046, 0.684046, 0.684046, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(376, -16, 392, -14, 383, -2, 364, -7)
 data = SubResource("Resource_0uj8m")
@@ -3214,7 +3193,7 @@ data = SubResource("Resource_bjjgi")
 
 [node name="Sector2" parent="Sectors/Parcour/Triangulator" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(-51.9536, 105.595)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-6.04639, -6.595, 8.95361, -6.595, 9.95361, -3.595, -6.04639, -3.595)
 data = SubResource("Resource_46p5f")
@@ -3226,7 +3205,7 @@ portal_destination_wall = 3
 
 [node name="_Polygon2D_201968" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(-459, -8)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(402, 63, 414, 63, 418, 72, 413, 81, 402, 81, 398, 72)
 data = SubResource("Resource_0x1ab")
@@ -3236,7 +3215,7 @@ sector_material = ExtResource("10_n7tfj")
 
 [node name="Sector" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(-457, -12)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(484, 58, 501, 63, 498, 80, 479, 76)
 data = SubResource("Resource_68j02")
@@ -3246,7 +3225,7 @@ sector_material = ExtResource("10_n7tfj")
 
 [node name="@Polygon2D@205304" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(-461, 3)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(441, 40, 451, 34, 461, 41, 457, 53, 443, 53)
 data = SubResource("Resource_dmiho")
@@ -3256,7 +3235,7 @@ sector_material = ExtResource("10_n7tfj")
 
 [node name="_Polygon2D_206706" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(-468, 7)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(527, 51, 537, 53, 540, 75, 530, 80)
 data = SubResource("Resource_70bq8")
@@ -3299,7 +3278,7 @@ exclude_from_export = true
 
 [node name="Sector-5147" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(87, -18)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(0, 1, 13, -3, 21, 9, 11, 16, 1, 11)
 data = SubResource("Resource_1xb40")
@@ -3309,7 +3288,7 @@ sector_material = ExtResource("10_n7tfj")
 
 [node name="Sector-3182" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(50, -25)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-6, -13, 11, 6, 13, 21, -1, 32, -21, 23, -29, 3)
 data = SubResource("Resource_8gvvu")
@@ -3320,7 +3299,7 @@ sector_material = ExtResource("10_n7tfj")
 [node name="_0" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 z_index = -10
 position = Vector2(-450, -3)
-color = Color(0.910438, 0.910438, 0.910438, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(552, 107, 569, 107, 568, 113, 552, 113)
 data = SubResource("Resource_am7sh")
@@ -3329,7 +3308,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_0a" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(-450, -3)
-color = Color(0.910438, 0.910438, 0.910438, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(562, 126, 552, 116.2, 552, 113, 568, 113)
 data = SubResource("Resource_k3tsa")
@@ -3338,7 +3317,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_0b" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(-450, -3)
-color = Color(0.987135, 0.987135, 0.987135, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(544, 128, 544, 120, 549, 120, 549, 128)
 data = SubResource("Resource_tught")
@@ -3346,7 +3325,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_0c" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(-450, -3)
-color = Color(0.910438, 0.910438, 0.910438, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(549, 120, 552, 116.2, 562, 126, 554, 131, 549, 128)
 data = SubResource("Resource_ntcf1")
@@ -3355,7 +3334,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector-8068" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(82, 52)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(0, 0, 10, 0, 8, 8, 0, 10)
 data = SubResource("Resource_mofyh")
@@ -3365,7 +3344,7 @@ sector_material = ExtResource("10_n7tfj")
 
 [node name="Sector-7594" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(102, 44)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(0, 0, 10, 0, 9, 15, 0, 13)
 data = SubResource("Resource_846pd")
@@ -3375,7 +3354,7 @@ sector_material = ExtResource("10_n7tfj")
 
 [node name="Sector-5121" parent="Sectors/Parcour/Triangulator" instance=ExtResource("2_l4525")]
 position = Vector2(118, 30)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-1, -21, 1, -21, 9, -3, 8, -1, 6, -1)
 data = SubResource("Resource_vfeb0")
@@ -3385,7 +3364,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@223595" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
 position = Vector2(-389, -71)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(355, 105, 340, 71, 340, 40, 356, 14, 374, 17, 372, 105)
 data = SubResource("Resource_kc2um")
@@ -3395,7 +3374,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@227918" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
 position = Vector2(-389, -71)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(579, 41, 600, 48, 600, 72, 579, 77)
 data = SubResource("Resource_cwo5f")
@@ -3405,7 +3384,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@256985" parent="Sectors/Parcour" instance=ExtResource("2_l4525")]
 position = Vector2(-389, -71)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(328, 48, 340, 40, 340, 71, 328, 64)
 data = SubResource("Resource_mdken")
@@ -3431,7 +3410,8 @@ position = Vector2(104, -33)
 
 [node name="Sector-9443" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.565361, 0.127298, 0.298416, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-2, -125, 25, -122, 20, 86, 3, 86)
 data = SubResource("Resource_2chr6")
 floor_height = 3.5
@@ -3440,7 +3420,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443p" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.565361, 0.127298, 0.298416, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(20, 119, 24, 342, 0, 345, 3, 119)
 data = SubResource("Resource_qdyx2")
 floor_height = 3.5
@@ -3449,7 +3430,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443q" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-4, 119, -4, 86, 3, 86, 20, 86, 27, 86, 28, 119, 20, 119, 3, 119)
 data = SubResource("Resource_m4fd7")
 floor_height = 6.0
@@ -3458,7 +3440,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443h" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(44, 371, 36, 389, 15, 395, -6, 386, -11, 362, 0, 345, 24, 342, 40, 350)
 data = SubResource("Resource_18i51")
 floor_height = 17.0
@@ -3467,7 +3450,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443f" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-11, -138, -7, -163, 18, -168, 27, -161, 38, -146, 37, -133, 25, -122, -2, -125)
 data = SubResource("Resource_te80d")
 floor_height = 17.0
@@ -3476,7 +3460,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443d" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.565361, 0.127298, 0.298416, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(256, -160, 256, -148, 38, -146, 27, -161)
 data = SubResource("Resource_xriaj")
 floor_height = 3.5
@@ -3485,7 +3470,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443i" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(278, -164, 278, -142, 256, -142, 256, -148, 256, -160, 256, -164)
 data = SubResource("Resource_tpe4q")
 floor_height = 6.0
@@ -3494,7 +3480,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443k" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(304, -171, 304, -163, 304, -142, 304, -135, 278, -135, 278, -142, 278, -164, 278, -171)
 data = SubResource("Resource_hv2g8")
 floor_height = -0.03
@@ -3503,7 +3490,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443u" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(310, -170, 324, -163, 304, -163, 304, -171)
 data = SubResource("Resource_h8m7m")
 floor_height = -0.03
@@ -3512,7 +3500,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443t" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(256, -164, 272, -170, 278, -171, 278, -164)
 data = SubResource("Resource_usjts")
 floor_height = -0.03
@@ -3521,7 +3510,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443s" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(324, -142, 309, -136, 304, -135, 304, -142)
 data = SubResource("Resource_rd5ux")
 floor_height = -0.03
@@ -3530,7 +3520,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443r" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(273, -136, 256, -142, 278, -142, 278, -135)
 data = SubResource("Resource_qker3")
 floor_height = -0.03
@@ -3539,7 +3530,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443a" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.565361, 0.127298, 0.298416, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(540, 389, 315, 384, 315, 370, 535, 367)
 data = SubResource("Resource_6tidp")
 floor_height = 3.5
@@ -3548,7 +3540,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443o" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(315, 393, 278, 393, 278, 384, 278, 370, 278, 363, 315, 363, 315, 370, 315, 384)
 data = SubResource("Resource_i7plr")
 floor_height = 6.0
@@ -3557,7 +3550,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443n" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.565361, 0.127298, 0.298416, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(278, 384, 36, 389, 44, 371, 278, 370)
 data = SubResource("Resource_dkgad")
 floor_height = 3.5
@@ -3566,7 +3560,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443b" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.565361, 0.127298, 0.298416, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(562, -126, 564, 79, 552, 79, 546, -126)
 data = SubResource("Resource_8ivsq")
 floor_height = 3.5
@@ -3575,7 +3570,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443m" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -13)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(570, 89, 564, 89, 554, 89, 547, 89, 547, 64, 552, 64, 564, 64, 570, 64)
 data = SubResource("Resource_jm7fr")
 floor_height = 6.0
@@ -3584,7 +3580,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443l" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.565361, 0.127298, 0.298416, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(564, 104, 574, 345, 553, 344, 554, 104)
 data = SubResource("Resource_jk2po")
 floor_height = 3.5
@@ -3593,7 +3590,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443g" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(540, 389, 535, 367, 540, 352, 553, 344, 574, 345, 586, 359, 584, 383, 565, 394)
 data = SubResource("Resource_sbbom")
 floor_height = 17.0
@@ -3602,7 +3600,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443e" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(534, -135, 531, -149, 535, -161, 556, -167, 573, -159, 575, -139, 562, -126, 546, -126)
 data = SubResource("Resource_or0y8")
 floor_height = 17.0
@@ -3611,7 +3610,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443c" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.565361, 0.127298, 0.298416, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(324, -147, 324, -160, 535, -161, 531, -149)
 data = SubResource("Resource_304gk")
 floor_height = 3.5
@@ -3620,7 +3620,8 @@ sector_material = ExtResource("16_xbdba")
 
 [node name="Sector-9443j" parent="Sectors/Outsides/Wall" instance=ExtResource("2_l4525")]
 position = Vector2(-47, -28)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(0.501961, 0, 0.196078, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(304, -142, 304, -163, 324, -163, 324, -160, 324, -147, 324, -142)
 data = SubResource("Resource_2bb1c")
 floor_height = 6.0
@@ -3648,7 +3649,7 @@ exclude_from_export = true
 
 [node name="Sector-9012a" parent="Sectors/Outsides/TriangulatedMultisector-8559/Building2" instance=ExtResource("2_l4525")]
 position = Vector2(154.95, 26.4978)
-color = Color(0.670554, 0.670554, 0.670554, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(111.049, -35.4978, 111.049, 59.5022, 99.3319, 60.6381, 98.0495, 50.5022, 98.0495, -26.4978, 99.0495, -36.4978)
 data = SubResource("Resource_7oq51")
@@ -3657,7 +3658,7 @@ sector_material = ExtResource("14_k8xne")
 
 [node name="Sector-9012c" parent="Sectors/Outsides/TriangulatedMultisector-8559/Building2" instance=ExtResource("2_l4525")]
 position = Vector2(154.95, 26.4978)
-color = Color(0.670554, 0.670554, 0.670554, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(3.33188, 62.6381, 2.33188, 50.6381, 12.0495, 49.5022, 98.0495, 50.5022, 99.3319, 60.6381)
 data = SubResource("Resource_emqrb")
@@ -3666,7 +3667,7 @@ sector_material = ExtResource("14_k8xne")
 
 [node name="Sector-9012d" parent="Sectors/Outsides/TriangulatedMultisector-8559/Building2" instance=ExtResource("2_l4525")]
 position = Vector2(154.95, 26.4978)
-color = Color(0.670554, 0.670554, 0.670554, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(3.0495, -28.4978, 12.0495, -27.4978, 12.2744, 4.92969, 2.27441, 4.92969)
 data = SubResource("Resource_mpein")
@@ -3676,7 +3677,8 @@ portal_wall = 2
 
 [node name="Sector-9012e" parent="Sectors/Outsides/TriangulatedMultisector-8559/Building2" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(154.95, 26.4976)
-color = Color(0.670554, 0.670554, 0.670554, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(12.2744, 4.92969, 12.2744, 12.9297, 2.27441, 12.9297, 2.27441, 4.92969)
 data = SubResource("Resource_wxnxx")
 floor_height = -0.03
@@ -3686,7 +3688,8 @@ portal_destination = NodePath("../../../../Square/Sector5a")
 
 [node name="Sector-9012f" parent="Sectors/Outsides/TriangulatedMultisector-8559/Building2" instance=ExtResource("2_l4525")]
 position = Vector2(154.95, 26.4976)
-color = Color(0.670554, 0.670554, 0.670554, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(12.2744, 12.9297, 12.0495, 49.5022, 2.33188, 50.6381, 2.27441, 12.9297)
 data = SubResource("Resource_ih80o")
 ceiling_height = 8.0
@@ -3694,12 +3697,12 @@ sector_material = ExtResource("14_k8xne")
 
 [node name="Sector-9012b" parent="Sectors/Outsides/TriangulatedMultisector-8559/Building2" instance=ExtResource("2_l4525")]
 position = Vector2(154.95, 26.4978)
-color = Color(0.670554, 0.670554, 0.670554, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(3.0495, -28.4978, 3.0495, -37.4978, 99.0495, -36.4978, 98.0495, -26.4978, 12.0495, -27.4978)
 data = SubResource("Resource_htu43")
 ceiling_height = 8.0
-sector_material = SubResource("Resource_wxxy7")
+sector_material = ExtResource("14_k8xne")
 
 [node name="Building" type="Node2D" parent="Sectors/Outsides/TriangulatedMultisector-8559"]
 position = Vector2(51.5069, 0.56311)
@@ -3716,7 +3719,7 @@ exclude_from_export = true
 
 [node name="Sector-9012a" parent="Sectors/Outsides/TriangulatedMultisector-8559/Building" instance=ExtResource("2_l4525")]
 position = Vector2(154.95, 26.4978)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(111.332, -14.3619, 111.332, 61.6381, 99.3319, 60.6381, 99.3319, 50.6381, 99.3319, -5.36192, 99.3319, -15.3619)
 data = SubResource("Resource_wiw0f")
@@ -3725,7 +3728,7 @@ sector_material = ExtResource("14_k8xne")
 
 [node name="Sector-9012c" parent="Sectors/Outsides/TriangulatedMultisector-8559/Building" instance=ExtResource("2_l4525")]
 position = Vector2(154.95, 26.4978)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(3.33188, 62.6381, 2.33188, 50.6381, 12.0496, 50.5022, 99.3319, 50.6381, 99.3319, 60.6381)
 data = SubResource("Resource_f8eij")
@@ -3734,7 +3737,7 @@ sector_material = ExtResource("14_k8xne")
 
 [node name="Sector-9012d" parent="Sectors/Outsides/TriangulatedMultisector-8559/Building" instance=ExtResource("2_l4525")]
 position = Vector2(154.95, 26.4978)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(2.33188, -5.36192, 12.3319, -5.36192, 12.0498, 15.5024, -0.950195, 14.5024)
 data = SubResource("Resource_lb5jo")
@@ -3744,7 +3747,8 @@ portal_wall = 2
 
 [node name="Sector-9012e" parent="Sectors/Outsides/TriangulatedMultisector-8559/Building" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(154.95, 26.4976)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(12.0498, 15.5024, 12.0498, 23.5024, -0.950195, 24.5024, -0.950195, 14.5024)
 data = SubResource("Resource_hlg4i")
 floor_height = -0.03
@@ -3754,7 +3758,8 @@ portal_destination = NodePath("../../../../Parcour/Triangulator/_0b")
 
 [node name="Sector-9012f" parent="Sectors/Outsides/TriangulatedMultisector-8559/Building" instance=ExtResource("2_l4525")]
 position = Vector2(154.95, 26.4976)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(12.0498, 23.5024, 12.0496, 50.5022, 2.33188, 50.6381, -0.950195, 24.5024)
 data = SubResource("Resource_yxw18")
 ceiling_height = 6.0
@@ -3762,12 +3767,12 @@ sector_material = ExtResource("14_k8xne")
 
 [node name="Sector-9012b" parent="Sectors/Outsides/TriangulatedMultisector-8559/Building" instance=ExtResource("2_l4525")]
 position = Vector2(154.95, 26.4978)
-color = Color(0.707248, 0.707248, 0.707248, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(2.33188, -5.36192, 3.33188, -14.3619, 99.3319, -15.3619, 99.3319, -5.36192, 12.3319, -5.36192)
 data = SubResource("Resource_jn5st")
 ceiling_height = 6.0
-sector_material = SubResource("Resource_wxxy7")
+sector_material = ExtResource("14_k8xne")
 
 [node name="Building3" type="Node2D" parent="Sectors/Outsides/TriangulatedMultisector-8559"]
 position = Vector2(5.50691, 97.5631)
@@ -3784,7 +3789,7 @@ exclude_from_export = true
 
 [node name="Sector-9012a" parent="Sectors/Outsides/TriangulatedMultisector-8559/Building3" instance=ExtResource("2_l4525")]
 position = Vector2(154.95, 26.4978)
-color = Color(0.670554, 0.670554, 0.670554, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(111.332, -14.3619, 111.332, 61.6381, 99.3319, 60.6381, 99.3319, 50.6381, 99.3319, -5.36192, 99.3319, -15.3619)
 data = SubResource("Resource_7oq51")
@@ -3793,7 +3798,7 @@ sector_material = ExtResource("14_k8xne")
 
 [node name="Sector-9012c" parent="Sectors/Outsides/TriangulatedMultisector-8559/Building3" instance=ExtResource("2_l4525")]
 position = Vector2(154.95, 26.4978)
-color = Color(0.670554, 0.670554, 0.670554, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(3.33188, 62.6381, 2.33188, 50.6381, 12.0496, 50.5022, 99.3319, 50.6381, 99.3319, 60.6381)
 data = SubResource("Resource_emqrb")
@@ -3802,7 +3807,7 @@ sector_material = ExtResource("14_k8xne")
 
 [node name="Sector-9012d" parent="Sectors/Outsides/TriangulatedMultisector-8559/Building3" instance=ExtResource("2_l4525")]
 position = Vector2(154.95, 26.4978)
-color = Color(0.670554, 0.670554, 0.670554, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(2.33188, -5.36192, 12.3319, -5.36192, 12.0498, 19.5024, 2.0498, 18.5024)
 data = SubResource("Resource_mpein")
@@ -3812,7 +3817,8 @@ portal_wall = 2
 
 [node name="Sector-9012e" parent="Sectors/Outsides/TriangulatedMultisector-8559/Building3" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(154.95, 26.4976)
-color = Color(0.670554, 0.670554, 0.670554, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(12.0498, 19.5024, 12.0498, 26.5024, 2.0498, 27.5024, 2.0498, 18.5024)
 data = SubResource("Resource_ame6t")
 floor_height = -0.03
@@ -3822,7 +3828,8 @@ portal_destination = NodePath("../../../../StairSequence/_Polygon2D_121205c")
 
 [node name="Sector-9012f" parent="Sectors/Outsides/TriangulatedMultisector-8559/Building3" instance=ExtResource("2_l4525")]
 position = Vector2(154.95, 26.4976)
-color = Color(0.670554, 0.670554, 0.670554, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(12.0498, 26.5024, 12.0496, 50.5022, 2.33188, 50.6381, 2.0498, 27.5024)
 data = SubResource("Resource_oq2t7")
 ceiling_height = 8.0
@@ -3830,12 +3837,12 @@ sector_material = ExtResource("14_k8xne")
 
 [node name="Sector-9012b" parent="Sectors/Outsides/TriangulatedMultisector-8559/Building3" instance=ExtResource("2_l4525")]
 position = Vector2(154.95, 26.4978)
-color = Color(0.670554, 0.670554, 0.670554, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(2.33188, -5.36192, 3.33188, -14.3619, 99.3319, -15.3619, 99.3319, -5.36192, 12.3319, -5.36192)
 data = SubResource("Resource_htu43")
 ceiling_height = 8.0
-sector_material = SubResource("Resource_wxxy7")
+sector_material = ExtResource("14_k8xne")
 
 [node name="Road" type="Node2D" parent="Sectors/Outsides/TriangulatedMultisector-8559"]
 
@@ -3847,7 +3854,8 @@ data = SubResource("Resource_so1xo")
 [node name="Sector-9443w" parent="Sectors/Outsides/TriangulatedMultisector-8559/Road" instance=ExtResource("2_l4525")]
 visible = false
 position = Vector2(-47.4932, -62.437)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(5, 5)
 polygon = PackedVector2Array(279, -68, 278, -135, 304, -135, 302, -57)
 data = SubResource("Resource_6l7h7")
 floor_height = -0.02
@@ -3857,7 +3865,8 @@ sector_material = ExtResource("17_pxq2e")
 [node name="Sector-9443v" parent="Sectors/Outsides/TriangulatedMultisector-8559/Road" instance=ExtResource("2_l4525")]
 visible = false
 position = Vector2(-47.4932, -62.437)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(5, 5)
 polygon = PackedVector2Array(159, -51, 159, -62, 165.935, -67.0578, 183.173, -67.2015, 187, -49, 180, -43)
 data = SubResource("Resource_qfjpr")
 floor_height = -0.02
@@ -3867,7 +3876,8 @@ sector_material = ExtResource("17_pxq2e")
 [node name="Sector-9443v2" parent="Sectors/Outsides/TriangulatedMultisector-8559/Road" instance=ExtResource("2_l4525")]
 visible = false
 position = Vector2(-47.4932, -62.437)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(5, 5)
 polygon = PackedVector2Array(183.173, -67.2015, 279, -68, 302, -57, 293, -48, 187, -49)
 data = SubResource("Resource_x16sc")
 floor_height = -0.02
@@ -3877,7 +3887,8 @@ sector_material = ExtResource("17_pxq2e")
 [node name="Sector-9443x" parent="Sectors/Outsides/TriangulatedMultisector-8559/Road" instance=ExtResource("2_l4525")]
 visible = false
 position = Vector2(-47.4932, -62.437)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(5, 5)
 polygon = PackedVector2Array(178, 215, 167, 213, 161, 206, 179.103, 198.822, 183, 203)
 data = SubResource("Resource_expuh")
 floor_height = -0.02
@@ -3887,7 +3898,8 @@ sector_material = ExtResource("17_pxq2e")
 [node name="Sector-9443x4" parent="Sectors/Outsides/TriangulatedMultisector-8559/Road" instance=ExtResource("2_l4525")]
 visible = false
 position = Vector2(-47.4932, -62.437)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(5, 5)
 polygon = PackedVector2Array(161, 206, 160.168, 101.97, 180, 98, 180, 122, 179.103, 198.822)
 data = SubResource("Resource_oydp3")
 floor_height = -0.02
@@ -3897,7 +3909,8 @@ sector_material = ExtResource("17_pxq2e")
 [node name="Sector-9443x3" parent="Sectors/Outsides/TriangulatedMultisector-8559/Road" instance=ExtResource("2_l4525")]
 visible = false
 position = Vector2(-47.4932, -62.437)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(5, 5)
 polygon = PackedVector2Array(160.168, 101.97, 159.435, 4.02891, 180, 4, 180, 23, 180, 98)
 data = SubResource("Resource_h1qoa")
 floor_height = -0.02
@@ -3907,7 +3920,8 @@ sector_material = ExtResource("17_pxq2e")
 [node name="Sector-9443x3a" parent="Sectors/Outsides/TriangulatedMultisector-8559/Road" instance=ExtResource("2_l4525")]
 visible = false
 position = Vector2(-47.4932, -62.437)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(5, 5)
 polygon = PackedVector2Array(159.435, 4.02891, 159, -51, 180, -43, 180, 4)
 data = SubResource("Resource_jjuua")
 floor_height = -0.02
@@ -3917,7 +3931,8 @@ sector_material = ExtResource("17_pxq2e")
 [node name="Sector-9443x2" parent="Sectors/Outsides/TriangulatedMultisector-8559/Road" instance=ExtResource("2_l4525")]
 visible = false
 position = Vector2(-47.4932, -62.437)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(5, 5)
 polygon = PackedVector2Array(224, 9, 224, 17, 186, 19, 186, 7)
 data = SubResource("Resource_4vu3t")
 floor_height = -0.02
@@ -3927,7 +3942,8 @@ sector_material = ExtResource("17_pxq2e")
 [node name="Sector-9443x2a" parent="Sectors/Outsides/TriangulatedMultisector-8559/Road" instance=ExtResource("2_l4525")]
 visible = false
 position = Vector2(-47.4932, -62.437)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(5, 5)
 polygon = PackedVector2Array(186, 19, 180, 23, 180, 4, 186, 7)
 data = SubResource("Resource_1voe4")
 floor_height = -0.02
@@ -3937,7 +3953,8 @@ sector_material = ExtResource("17_pxq2e")
 [node name="Sector-9443z" parent="Sectors/Outsides/TriangulatedMultisector-8559/Road" instance=ExtResource("2_l4525")]
 visible = false
 position = Vector2(-47.4932, -62.437)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(5, 5)
 polygon = PackedVector2Array(253, 114, 187, 116, 187, 104, 253, 104)
 data = SubResource("Resource_mdwu7")
 floor_height = -0.02
@@ -3947,7 +3964,8 @@ sector_material = ExtResource("17_pxq2e")
 [node name="Sector-9443za" parent="Sectors/Outsides/TriangulatedMultisector-8559/Road" instance=ExtResource("2_l4525")]
 visible = false
 position = Vector2(-47.4932, -62.437)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(5, 5)
 polygon = PackedVector2Array(187, 116, 180, 122, 180, 98, 187, 104)
 data = SubResource("Resource_plv2r")
 floor_height = -0.02
@@ -3957,7 +3975,8 @@ sector_material = ExtResource("17_pxq2e")
 [node name="Sector-9443y" parent="Sectors/Outsides/TriangulatedMultisector-8559/Road" instance=ExtResource("2_l4525")]
 visible = false
 position = Vector2(-47.4932, -62.437)
-color = Color(0.662745, 0.662745, 0.662745, 1)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(5, 5)
 polygon = PackedVector2Array(210, 205, 210, 214, 178, 215, 183, 203)
 data = SubResource("Resource_qxix2")
 floor_height = -0.02
@@ -3969,46 +3988,44 @@ position = Vector2(390.507, -69.437)
 is_recursive = true
 set_floor = true
 floor_begin = 0.6
-floor_end = 4.6
-floor_increment = 1.0
+floor_end = 2.0
+floor_increment = 0.35
+floor_use_curve = true
+floor_curve = SubResource("Curve_au8ug")
 set_ceiling = true
 ceiling_begin = 999.0
 ceiling_end = 999.0
 ceiling_increment = 0.0
 
 [node name="TriangulatedMultisector-4438" parent="Sectors/Outsides/TriangulatedMultisector-8559/Hill" instance=ExtResource("3_l4525")]
-position = Vector2(-12.5649, -10.0723)
-polygon = PackedVector2Array(0, 0, 21.5649, -20.9277, 66.5649, -9.92773, 47.5649, 45.0723, -0.435059, 39.0723)
+position = Vector2(-2.99996, -53)
+polygon = PackedVector2Array(-18, -7, 24, -41, 95, 3, 78, 106, 10, 119, -29, 82)
 data = SubResource("Resource_06bi3")
 
 [node name="TriangulatedMultisector-4094" parent="Sectors/Outsides/TriangulatedMultisector-8559/Hill/TriangulatedMultisector-4438" instance=ExtResource("3_l4525")]
 position = Vector2(22.565, 2.07226)
-polygon = PackedVector2Array(-9.00781, -2.40381, 6.99219, -17.4038, 38.9922, -8.40381, 24.9922, 35.5962, -12.0078, 29.5962)
+polygon = PackedVector2Array(-16.5649, -4.07227, 6.99219, -17.4038, 48.4351, 2.92773, 40.4351, 76.9277, -3.56494, 87.9277, -29.5649, 58.9277)
 data = SubResource("Resource_d0lu7")
 
 [node name="TriangulatedMultisector-8207" parent="Sectors/Outsides/TriangulatedMultisector-8559/Hill/TriangulatedMultisector-4438/TriangulatedMultisector-4094" instance=ExtResource("3_l4525")]
 position = Vector2(14, 2)
-polygon = PackedVector2Array(-1.08398, -14.459, 19.916, -8.45898, 9.91602, 24.541, -16.084, 19.541, -11.084, -2.45898)
+polygon = PackedVector2Array(-8.56494, -11.0723, 22.4351, 5.92773, 8.43506, 64.9277, -27.5649, 55.9277, -24.5649, 8.92773)
 data = SubResource("Resource_v4ly5")
 
 [node name="TriangulatedMultisector-6665" parent="Sectors/Outsides/TriangulatedMultisector-8559/Hill/TriangulatedMultisector-4438/TriangulatedMultisector-4094/TriangulatedMultisector-8207" instance=ExtResource("3_l4525")]
 position = Vector2(-3, 2)
-polygon = PackedVector2Array(3.72266, -7.6123, 16.7227, -7.6123, 14.7227, 4.3877, 9.72266, 16.3877, -5.27734, 11.3877, -1.27734, -1.6123)
+polygon = PackedVector2Array(-4.56494, -1.07227, 13.4351, 2.92773, 12.4351, 15.9277, 6.43506, 39.9277, -8.56494, 47.9277, -12.5649, 8.92773)
 data = SubResource("Resource_65hx1")
 
 [node name="Sector-7241" parent="Sectors/Outsides/TriangulatedMultisector-8559/Hill/TriangulatedMultisector-4438/TriangulatedMultisector-4094/TriangulatedMultisector-8207/TriangulatedMultisector-6665" instance=ExtResource("2_l4525")]
-position = Vector2(2, -2.38419e-07)
-color = Color(0.662745, 0.662745, 0.662745, 1)
-polygon = PackedVector2Array(0, 0, 5, -4, 10, 0, 5, 10, -2, 9)
+position = Vector2(-3.56494, 10.9277)
+color = Color(0.75132, 0.500681, 0.598587, 1)
+texture_scale = Vector2(0.5, 0.5)
+polygon = PackedVector2Array(0, 0, 5, -4, 10, 0, 6, 19, -1, 22)
 data = SubResource("Resource_5evw6")
-floor_height = 4.6
+floor_height = 2.0
 ceiling_height = 999.0
 sector_material = ExtResource("20_sc5vv")
-
-[node name="PlayerPosition" parent="." instance=ExtResource("3_nqbmo")]
-position = Vector2(-5001, -5387)
-placement_mode = 0
-height_offset = 0.5
 
 [node name="PickUps" type="Node2D" parent="."]
 visible = false
@@ -4126,3 +4143,8 @@ position = Vector2(6, 7)
 
 [node name="Pepe12" parent="Enemies/PepeArmy" instance=ExtResource("9_rrxkl")]
 position = Vector2(14, 10)
+
+[node name="PlayerPosition" parent="." instance=ExtResource("3_nqbmo")]
+position = Vector2(-5034, -5309)
+placement_mode = 0
+height_offset = 0.5

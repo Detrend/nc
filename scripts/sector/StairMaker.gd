@@ -31,6 +31,9 @@ extends Node2D
 		floor_increment = val
 		_do_apply()
 
+@export var floor_use_curve : bool = false
+@export var floor_curve : Curve
+
 
 @export_group("Ceiling")
 @export var set_ceiling : bool = false:
@@ -53,6 +56,8 @@ extends Node2D
 		ceiling_increment = val
 		_do_apply()
 
+@export var ceiling_use_curve : bool = false
+@export var ceiling_curve : Curve
 
 
 var _stair_segments : Array[EditablePolygon]:
@@ -74,21 +79,30 @@ func on_descendant_editing_finish(_ancestor: EditablePolygon, _start_was_called_
 	EditablePolygon.on_descendant_editing_finish_base(self, _ancestor, _start_was_called_first)
 	_do_apply()
 
+func _do_apply_thing(should: bool, begin: float, increment: float, end: float, to_set : String, should_use_curve : bool, curve: Curve)->void:
+	if should:
+		if (! should_use_curve) || (curve == null):
+			var current := begin
+			for s in _stair_segments:
+				if s is Sector:
+					s.set(to_set, current)
+				else:
+					s.data.set(to_set, current)
+				current += increment
+		else:
+			var segments := _stair_segments
+			var segments_count_inv :float = 1.0/(segments.size() - 1)
+			var current := 0
+			for s in segments:
+				var t :float = curve.sample(current *segments_count_inv)
+				var value :float = lerp(begin, end, t)
+				if s is Sector:
+					s.set(to_set, value)
+				else:
+					s.data.set(to_set, value)
+				current += 1
+
 
 func _do_apply()->void:
-	if set_floor:
-		var current := floor_begin
-		for s in _stair_segments:
-			if s is Sector:
-				s.floor_height = current
-			else:
-				s.data.floor_height = current
-			current += floor_increment
-	if set_ceiling:
-		var current := ceiling_begin
-		for s in _stair_segments:
-			if s is Sector:
-				s.ceiling_height = current
-			else:
-				s.data.ceiling_height = current
-			current += ceiling_increment
+	_do_apply_thing(set_floor, floor_begin, floor_increment, floor_end, 'floor_height', floor_use_curve, floor_curve)
+	_do_apply_thing(set_ceiling, ceiling_begin, ceiling_increment, ceiling_end, 'ceiling_height', ceiling_use_curve, ceiling_curve)
