@@ -227,15 +227,21 @@ static void test_make_sector
 //==============================================================================
 static SurfaceData load_json_surface(const nlohmann::json &js) 
 {
-    auto offset = js["offset"];
-    std::string texture_name = js["id"];
+    if (const bool should_show = js["show"]) {
+        auto offset = js["offset"];
+        std::string texture_name = js["id"];
+        return SurfaceData
+        {
+          .texture_id = TextureManager::get()[texture_name].get_texture_id(),
+          .scale = js["scale"],
+          .rotation = js["rotation"],
+          .offset = vec2(offset[0], offset[1]),
+          .should_show = true
+        };
+    }
     return SurfaceData
     {
-      .texture_id = TextureManager::get()[texture_name].get_texture_id(),
-      .scale = js["scale"],
-      .rotation = js["rotation"],
-      .offset = vec2(offset[0], offset[1]),
-      .should_show = js["show"]
+      .should_show = false
     };
 }
 
@@ -267,7 +273,22 @@ static SurfaceData load_json_surface(const nlohmann::json &js)
         std::vector<WallSurfaceData> wall_surfaces;
         for (auto&& js_wall_surface : js_sector["wall_surfaces"]) {
             auto &surface(wall_surfaces.emplace_back());
-            surface.floor.emplace_back().surface = load_json_surface(js_wall_surface);
+            WallSurfaceData::Entry& surf1 = surface.surfaces.emplace_back();
+            surf1.surface = load_json_surface(js_wall_surface);
+            surf1.end_height = 0.5f;
+            surf1.end_down_tesselation  = vec3(-0.08f, +0.0f,  0.08f);
+            surf1.begin_down_tesselation = vec3(+0.08f, +0.0f,  0.08f);
+            surf1.end_up_tesselation    = vec3(-0.08f, -0.08f, 0.08f);
+            surf1.begin_up_tesselation   = vec3(+0.08f, -0.08f, 0.08f);
+            surf1.flags = (WallSurfaceData::Flags)(WallSurfaceData::Flags::generate_all_faces | WallSurfaceData::Flags::generate_down_face);
+            WallSurfaceData::Entry& surf2 = surface.surfaces.emplace_back();
+            surf2.surface = load_json_surface(js_wall_surface);
+            //surf2.surface.rotation = 1.5f;
+            surf2.end_height = 1.0f;
+            WallSurfaceData::Entry& surf3 = surface.surfaces.emplace_back();
+            surf3.surface = load_json_surface(js_wall_surface);
+            //surf3.surface.rotation = 2.0f;
+            surf3.end_height = INFINITY;
         }
         
         test_make_sector_height(floor, ceil, point_idxs, sectors, portal_wall, portal_destination_wall, portal_sector, floor_surface, ceiling_surface, wall_surfaces);

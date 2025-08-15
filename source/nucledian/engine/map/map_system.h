@@ -108,20 +108,29 @@ struct SurfaceData
 // Describes how a wall surface should be rendered.
 // Wall can be divided into multiple height intervals, which each has a different texture
 struct WallSurfaceData {
+    enum Flags : u32 {
+        none = 0,
+        generate_left_face = 1,
+        generate_right_face = 2,
+        generate_up_face = 4,
+        generate_down_face = 8,
+        generate_all_faces = 0xF,
+        flip_side_normals = 16
+    };
     struct Entry {
         // Surface used in this wall interval
         SurfaceData surface;
         // Height in absolute world coords, where this segment ends. It begins at the end of the previous entry
         f32         end_height = +INFINITY;
+        vec3        end_up_tesselation  = vec3(0.0f, 0.0f, 0.0f);
+        vec3        end_down_tesselation  = vec3(0.0f, 0.0f, 0.0f);
+        vec3        begin_up_tesselation = vec3(0.0f, 0.0f, 0.0f);
+        vec3        begin_down_tesselation = vec3(0.0f, 0.0f, 0.0f);
+        Flags       flags = Flags::generate_all_faces;
     };
 
     // Height intervals either for the floor-difference part of the wall (if this wall has a portal connecting two sectors), or for the whole wall (if there are no two neighbors)
-    std::vector<Entry> floor;
-    // Used only when this wall has a portal, describes the ceiling-difference part of the wall. If unfilled, the `floor` interval will be used instead.
-    std::vector<Entry> ceiling_opt;
-
-    //
-    const std::vector<Entry>& get_ceiling() const { return ceiling_opt.empty() ? floor : ceiling_opt; }
+    std::vector<Entry> surfaces;
 };
 
 // Each sector is comprised of internal data
