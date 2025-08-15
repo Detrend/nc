@@ -2739,7 +2739,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@31086" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.857379, 0.713635, 0.769785, 1)
+color = Color(0.857379, 0.713634, 0.769784, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(245, -47, 263, -47, 263, -41, 245, -41)
 data = SubResource("Resource_0m6xw")
@@ -2749,7 +2749,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@44213" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.83804, 0.674804, 0.738567, 1)
+color = Color(0.838039, 0.674803, 0.738567, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(263, -41, 263, -35, 245, -35, 245, -41)
 data = SubResource("Resource_c6a8k")
@@ -2759,7 +2759,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@25686" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.818734, 0.636041, 0.707405, 1)
+color = Color(0.818735, 0.636042, 0.707406, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(245, -35, 263, -35, 263, -29, 245, -28)
 data = SubResource("Resource_sdn6o")
@@ -2769,7 +2769,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_Polygon2D_26386aa" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.799456, 0.597333, 0.676287, 1)
+color = Color(0.799456, 0.597334, 0.676288, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(245, -28, 263, -29, 264.091, -27.9093, 247, -17, 245, -20)
 data = SubResource("Resource_1dcth")
@@ -2799,7 +2799,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_Polygon2D_26386bab" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.741694, 0.481353, 0.583049, 1)
+color = Color(0.741693, 0.481352, 0.583048, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(265, -27, 273, -12, 265, -10)
 data = SubResource("Resource_7i31c")
@@ -2809,7 +2809,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_Polygon2D_26386bba" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.722433, 0.44268, 0.551958, 1)
+color = Color(0.722434, 0.442681, 0.551959, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(265, -27, 266.024, -28.024, 282, -18, 273, -12)
 data = SubResource("Resource_xumdc")
@@ -2819,7 +2819,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="_Polygon2D_26386bbb" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.703156, 0.403975, 0.520842, 1)
+color = Color(0.703156, 0.403975, 0.520843, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(266.024, -28.024, 267, -29, 284, -28, 284, -21, 282, -18)
 data = SubResource("Resource_750p3")
@@ -2839,7 +2839,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@31604" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.664516, 0.32639, 0.45847, 1)
+color = Color(0.664516, 0.326389, 0.45847, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(267, -41, 284, -41, 284, -35, 267, -35)
 data = SubResource("Resource_our03")
@@ -2849,7 +2849,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@32646" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.645135, 0.287475, 0.427186, 1)
+color = Color(0.645134, 0.287474, 0.427185, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(267, -47, 284, -47, 284, -41, 267, -41)
 data = SubResource("Resource_glucu")
@@ -2859,7 +2859,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@34040" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.625701, 0.248454, 0.395815, 1)
+color = Color(0.625701, 0.248455, 0.395816, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(267, -53, 284, -53, 284, -47, 267, -47)
 data = SubResource("Resource_8d65h")
@@ -2869,7 +2869,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@37536" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.606207, 0.209312, 0.364349, 1)
+color = Color(0.606207, 0.209313, 0.364349, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(267, -60, 284, -57, 284, -53, 267, -53)
 data = SubResource("Resource_8jvu6")
@@ -2889,7 +2889,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@40329" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.567001, 0.130592, 0.301064, 1)
+color = Color(0.567001, 0.130591, 0.301063, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(276, -71, 284, -57, 270, -67)
 data = SubResource("Resource_mk60v")
@@ -2899,7 +2899,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="@Polygon2D@41376" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.547272, 0.090978, 0.269217, 1)
+color = Color(0.547271, 0.090977, 0.269216, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(284, -74, 284, -57, 276, -71)
 data = SubResource("Resource_5kxvq")
@@ -2909,7 +2909,7 @@ sector_material = ExtResource("4_xf0ey")
 
 [node name="Sector" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.527445, 0.0511693, 0.237214, 1)
+color = Color(0.527446, 0.0511703, 0.237215, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(284, -74, 296, -76, 296, -57, 284, -57)
 data = SubResource("Resource_xrb3f")
