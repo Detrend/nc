@@ -212,9 +212,9 @@ namespace nc
     }
 
     //GuiTexture element = GuiTexture(texture, vec2(0.0f, 0.0f), vec2(1.0f, 1.0f));
-    GuiTexture element = GuiTexture(texture, vec2(-0.8f, -0.8f), vec2(0.075f, 0.1f));
-    GuiTexture element_2 = GuiTexture(texture, vec2(-0.65f, -0.8f), vec2(0.075f, 0.1f));
-    GuiTexture element_3 = GuiTexture(texture, vec2(-0.5f, -0.8f), vec2(0.075f, 0.1f));
+    GuiTexture element = GuiTexture(texture, vec2(-0.8f, -0.8f), vec2(0.06f, 0.1f));
+    GuiTexture element_2 = GuiTexture(texture, vec2(-0.68f, -0.8f), vec2(0.06f, 0.1f));
+    GuiTexture element_3 = GuiTexture(texture, vec2(-0.56f, -0.8f), vec2(0.06f, 0.1f));
     ui_elements.push_back(element_3);
     ui_elements.push_back(element_2);
     ui_elements.push_back(element);
