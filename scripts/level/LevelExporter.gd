@@ -5,7 +5,17 @@ extends Object
 var _level : Level = null
 
 
+var level_export : Dictionary = {}
+var points_export : Array[PackedFloat32Array] = []
+var pickups_export : Array[Dictionary] = []
+var entities_export : Array[Dictionary] = []
+var points_map : Dictionary[Vector2, int] = {}
+var sectors_map : Dictionary[Sector, int] = {}
+var walls_map : Dictionary[Vector4, WallExportData] = {}
 
+var all_sectors : Array[Sector] 
+var all_pickups : Array[PickUp]
+var all_entities: Array[Entity]
 
 
 func do_export(level : Level)->void:
@@ -33,11 +43,38 @@ func do_export(level : Level)->void:
 
 
 
+func init_datastructs()->void:
+	level_export  = {}
+	points_export = []
+	pickups_export = []
+	entities_export = []
+	points_map = {}
+	sectors_map = {}
+	walls_map = {}
+	all_sectors = _level.get_sectors(true);
+	all_pickups = _level.get_pickups()
+	all_entities= _level.get_entities()
 
 
 
 
+func get_point_idx(vec: Vector2)->int:
+	var ret = points_map.get(vec)
+	if ret == null:
+		ret = points_export.size()
+		var v := _get_export_coords(vec)
+		var point_export : PackedFloat32Array = [v.x, v.y]
+		points_export.append(point_export)
+		points_map[vec] = ret
+	return ret as int
 
+func get_wall_data(a: Vector2, b: Vector2)->WallExportData:
+	var idx:= _get_wall_key(a, b)
+	var ret = walls_map.get(idx)
+	if ret == null:
+		ret = WallExportData.new()
+		walls_map[idx] = ret
+	return ret as WallExportData
 
 
 
@@ -83,41 +120,16 @@ class WallExportData:
 		return LevelExporter.get_texture_config(chosen_material.wall, true, this_sector)
 
 
-static func _get_wall_idx(wall_begin: Vector2, wall_end: Vector2)->Vector4:
+static func _get_wall_key(wall_begin: Vector2, wall_end: Vector2)->Vector4:
 	if wall_begin < wall_end: return Vector4(wall_begin.x, wall_begin.y, wall_end.x, wall_end.y)
 	else: return Vector4(wall_end.x, wall_end.y, wall_begin.x, wall_begin.y)
 
+
+
 func create_level_export_data() -> Dictionary:	
-	var level_export := Dictionary()
-	var points_export : Array[PackedFloat32Array]
-	var points_map : Dictionary[Vector2, int] = {}
-	var sectors_map : Dictionary[Sector, int] = {}
-	var walls_map : Dictionary[Vector4, WallExportData] = {}
-	var get_point_idx : Callable = func(vec: Vector2)->int:
-		var ret = points_map.get(vec)
-		if ret == null:
-			ret = points_export.size()
-			var v := _get_export_coords(vec)
-			var point_export : PackedFloat32Array = [v.x, v.y]
-			points_export.append(point_export)
-			points_map[vec] = ret
-		return ret as int
-	var get_wall_data : Callable = func(a: Vector2, b: Vector2)->WallExportData:
-		var idx:= _get_wall_idx(a, b)
-		var ret = walls_map.get(idx)
-		if ret == null:
-			ret = WallExportData.new()
-			walls_map[idx] = ret
-		return ret as WallExportData
 
-	var all_sectors := _level.get_sectors(true);
-	var all_pickups := _level.get_pickups()
-	var all_entities := _level.get_entities()
+	init_datastructs()
 
-	var pickups_export : Array[Dictionary] = []
-	var entities_export : Array[Dictionary] = []
-
-	
 	Sector.sanity_check_all(_level, all_sectors)
 	level_sanity_checks()
 	
@@ -133,7 +145,7 @@ func create_level_export_data() -> Dictionary:
 		var i:= 0
 		var walls_count := s.get_walls_count()
 		while i < walls_count:
-			var wall_data :WallExportData = get_wall_data.call(s.get_wall_begin(i), s.get_wall_end(i))
+			var wall_data :WallExportData = get_wall_data(s.get_wall_begin(i), s.get_wall_end(i))
 			wall_data.register_sector(s)
 			i += 1
 	
@@ -142,7 +154,7 @@ func create_level_export_data() -> Dictionary:
 		var sector_export := Dictionary()
 		var sector_points : PackedInt32Array = []
 		for coords in sector.get_point_positions():
-			var coords_idx : int = get_point_idx.call(coords)
+			var coords_idx : int = get_point_idx(coords)
 			sector_points.append(coords_idx)
 
 		process_things_in_sector(all_pickups, sector, pickups_export)
@@ -160,7 +172,7 @@ func create_level_export_data() -> Dictionary:
 		var wall_idx := 0
 		var walls_count = sector.get_walls_count()
 		while wall_idx < walls_count:
-			var wall_data : WallExportData = get_wall_data.call(sector.get_wall_begin(wall_idx), sector.get_wall_end(wall_idx))
+			var wall_data : WallExportData = get_wall_data(sector.get_wall_begin(wall_idx), sector.get_wall_end(wall_idx))
 			walls_export.append(wall_data.export_wall_data(sector))
 			wall_idx += 1
 		sector_export["wall_surfaces"] = walls_export
@@ -186,10 +198,9 @@ func create_level_export_data() -> Dictionary:
 
 
 static func get_texture_config(texture_def: TextureDefinition, is_wall: bool, sector : Sector)->Dictionary:
-	#if sector_material == null: sector_material = (load("res://textures/default_texture.tres") as SectorMaterial)
-	var ret : Dictionary = {}
 	if not texture_def:
-		ErrorUtils.report_warning("invalid texture def: {0}".format([sector.get_full_name()]))
+		ErrorUtils.report_error("invalid texture def: {0}".format([sector.get_full_name()]))
+	var ret : Dictionary = {}
 	ret["id"] = texture_def.id
 	ret["scale"] = texture_def.scale
 	ret["show"] = texture_def.should_show
@@ -220,6 +231,7 @@ func process_things_in_sector(all_things: Array, sector: Sector, export_things: 
 			all_things.remove_at(i)
 		else:
 			i += 1
+
 
 
 func _get_export_coords(p : Vector2)-> Vector2:

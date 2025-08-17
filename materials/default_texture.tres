@@ -12,10 +12,6 @@ script = ExtResource("3_55itm")
 _placement_type = 1
 wall_length_range = Vector2(0, 0.5)
 texture = ExtResource("5_jrn1d")
-show_wall = true
-wall_texture = "floor1"
-wall_scale = 0.5
-wall_rotation = 0.0
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [resource]

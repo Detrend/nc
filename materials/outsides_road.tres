@@ -13,10 +13,6 @@ script = ExtResource("3_fdxwp")
 _placement_type = 1
 wall_length_range = Vector2(0, 0.5)
 texture = ExtResource("7_lquyj")
-show_wall = true
-wall_texture = "VegetationDark2"
-wall_scale = 2.0
-wall_rotation = 0.0
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [resource]
