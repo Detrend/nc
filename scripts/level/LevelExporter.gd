@@ -141,7 +141,11 @@ class WallExportData:
 		if sectors_count() <= 1:
 			var wall_height :float = this_sector.ceiling_height - this_sector.floor_height
 			var chosen_rule := choose_wall_rule(this_sector, wall_height, WallRule.PlacementType.Wall)
-			chosen_rule.get_texture().append_info(ret, this_sector.floor_height, this_sector.ceiling_height, ctx)
+			var chosen_texture := chosen_rule.get_texture()
+			if not chosen_texture:
+				ErrorUtils.report_error("Chosen rule with no texture: '{0}'".format([this_sector.get_full_name()]))
+			else: chosen_texture.append_info(ret, this_sector.floor_height, this_sector.ceiling_height, ctx)
+
 			return ret
 		# sectors_count() == 2
 		var other_sector :Sector= get_other_sector(this_sector)
@@ -152,7 +156,10 @@ class WallExportData:
 			var other_floor_rule := choose_wall_rule(other_sector, floor_delta, WallRule.PlacementType.Floor)
 			var chosen_floor_rule := this_floor_rule if (this_floor_rule.get_priority() >= other_floor_rule.get_priority()) else other_floor_rule
 			
-			chosen_floor_rule.get_texture().append_info(ret, this_sector.floor_height, other_sector.floor_height, ctx)
+			var chosen_texture := chosen_floor_rule.get_texture()
+			if not chosen_texture:
+				ErrorUtils.report_error("Chosen rule with no texture: '{0}'".format([this_sector.get_full_name()]))
+			else: chosen_texture.append_info(ret, this_sector.floor_height, other_sector.floor_height, ctx)
 
 		var ceiling_delta :float = this_sector.ceiling_height - other_sector.ceiling_height
 		if ceiling_delta > 0:
@@ -160,7 +167,10 @@ class WallExportData:
 			var  other_ceiling_rule := choose_wall_rule(other_sector, ceiling_delta, WallRule.PlacementType.Ceiling)
 			var chosen_ceiling_rule := this_ceiling_rule if (this_ceiling_rule.get_priority() >= other_ceiling_rule.get_priority()) else other_ceiling_rule
 			
-			chosen_ceiling_rule.get_texture().append_info(ret, other_sector.ceiling_height, this_sector.ceiling_height, ctx)
+			var chosen_texture := chosen_ceiling_rule.get_texture()
+			if not chosen_texture:
+				ErrorUtils.report_error("Chosen rule with no texture: '{0}'".format([this_sector.get_full_name()]))
+			else: chosen_texture.append_info(ret, other_sector.ceiling_height, this_sector.ceiling_height, ctx)
 			
 		return ret
 
