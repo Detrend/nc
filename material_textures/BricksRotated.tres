@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://b8clp6n34cl38"]
+
+[ext_resource type="Texture2D" uid="uid://5ju12ycw81g4" path="res://imgs/bricks.png" id="1_h4dyo"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_dr55k"]
+
+[resource]
+script = ExtResource("2_dr55k")
+preview = ExtResource("1_h4dyo")
+_id = ""
+scale = 0.55
+rotation = 0.0
+tile_rotations_count = 2
+tile_rotation_increment = 90.0
+should_show = true
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

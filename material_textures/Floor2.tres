@@ -9,5 +9,7 @@ preview = ExtResource("1_n87to")
 _id = ""
 scale = 0.5
 rotation = 0.0
+tile_rotations_count = 2
+tile_rotation_increment = 180.0
 should_show = true
 metadata/_custom_type_script = "uid://chjmx3djsb6cj"

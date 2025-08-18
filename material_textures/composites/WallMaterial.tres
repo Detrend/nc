@@ -2,11 +2,11 @@
 
 [ext_resource type="Script" uid="uid://csukwu081bfv0" path="res://scripts/visuals/ILayeredTextureEntry.gd" id="1_xtk7s"]
 [ext_resource type="Script" uid="uid://ds4udf2uy0wpn" path="res://scripts/visuals/LT_Filler.gd" id="2_l1ppm"]
-[ext_resource type="Resource" uid="uid://crtucqy2narq3" path="res://material_textures/Bricks.tres" id="3_w3r6n"]
 [ext_resource type="Resource" uid="uid://b62b6owe57oqc" path="res://material_textures/Floor1.tres" id="4_l1ppm"]
 [ext_resource type="Script" uid="uid://b60vys5f055ei" path="res://scripts/visuals/LT_Entry.gd" id="4_tnmf3"]
 [ext_resource type="Script" uid="uid://dpohkvy6wk8m2" path="res://scripts/visuals/ExtrudedTexture.gd" id="5_kdler"]
 [ext_resource type="Resource" uid="uid://og8ff4s6kfso" path="res://material_textures/Wall3.tres" id="6_6m81s"]
+[ext_resource type="Resource" uid="uid://b8clp6n34cl38" path="res://material_textures/BricksRotated.tres" id="6_l1ppm"]
 [ext_resource type="Script" uid="uid://dt7r05hfelhgq" path="res://scripts/visuals/LayeredTexture.gd" id="7_pilsr"]
 
 [sub_resource type="Resource" id="Resource_w3r6n"]
@@ -26,11 +26,12 @@ anchor_point = 1.0
 height_mode = 5
 height_fixed = 0.5
 height_percent = 0.15
+percent_of = null
 metadata/_custom_type_script = "uid://b60vys5f055ei"
 
 [sub_resource type="Resource" id="Resource_nauyv"]
 script = ExtResource("2_l1ppm")
-texture = ExtResource("3_w3r6n")
+texture = ExtResource("6_l1ppm")
 metadata/_custom_type_script = "uid://ds4udf2uy0wpn"
 
 [sub_resource type="Resource" id="Resource_4hq5t"]
@@ -50,6 +51,7 @@ anchor_point = 0.0
 height_mode = 3
 height_fixed = 0.5
 height_percent = 0.5
+percent_of = null
 metadata/_custom_type_script = "uid://b60vys5f055ei"
 
 [resource]

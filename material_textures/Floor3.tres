@@ -9,5 +9,7 @@ preview = ExtResource("1_kmotu")
 _id = ""
 scale = 0.5
 rotation = 0.0
+rotation_randomizer_options = 1
+rotation_randomizer_increment = 90.0
 should_show = true
 metadata/_custom_type_script = "uid://chjmx3djsb6cj"
