@@ -25,3 +25,9 @@ static func extract_file_name_from_path(path: String)->String:
 	var slash_idx = path.rfind('/') + 1 # if not found, this gets us to 0
 	if dot_idx < slash_idx: dot_idx = path.length() - 1
 	return substring(path, slash_idx, dot_idx)
+
+static func vec2_to_array(v: Vector2)->PackedFloat32Array:
+	return [v.x, v.y]
+	
+static func vec3_to_array(v: Vector3)->PackedFloat32Array:
+	return [v.x, v.y, v.z]

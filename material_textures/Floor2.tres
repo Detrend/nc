@@ -1,10 +1,12 @@
-[gd_resource type="Resource" script_class="TextureDefinition" load_steps=2 format=3 uid="uid://lv2l2mulcl3e"]
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://lv2l2mulcl3e"]
 
+[ext_resource type="Texture2D" uid="uid://npstlle6qbrn" path="res://imgs/floor2.png" id="1_n87to"]
 [ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_lkqvk"]
 
 [resource]
 script = ExtResource("2_lkqvk")
-_id = "floor2"
+preview = ExtResource("1_n87to")
+_id = ""
 scale = 0.5
 rotation = 0.0
 should_show = true

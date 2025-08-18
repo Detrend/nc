@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ExtrudedTexture" load_steps=3 format=3 uid="uid://db0lfp4s34q08"]
+
+[ext_resource type="Script" uid="uid://dpohkvy6wk8m2" path="res://scripts/visuals/ExtrudedTexture.gd" id="1_ec7lo"]
+[ext_resource type="Resource" uid="uid://vtqebik67rhe" path="res://material_textures/Vegetation.tres" id="2_e12tw"]
+
+[resource]
+script = ExtResource("1_ec7lo")
+texture = ExtResource("2_e12tw")
+mode = 3
+begin_up_direction = Vector3(0, 0.2, -0.2)
+end_up_direction = Vector3(0, 0.2, -0.2)
+begin_down_direction = Vector3(0, 0.2, 0)
+end_down_direction = Vector3(0, 0.2, 0)
+metadata/_custom_type_script = "uid://dpohkvy6wk8m2"

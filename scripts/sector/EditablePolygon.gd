@@ -116,10 +116,18 @@ func get_points_count() -> int:
 	return self.polygon.size() 
 	
 func get_point_position(idx: int)->Vector2:
-	return point_pos_relative_to_absolute(self.polygon[idx])
+	var points := self.polygon
+	var og := idx
+	if idx < 0: idx += points.size()
+	elif idx >= points.size(): idx -= points.size()
+	if idx >= points.size():
+		ErrorUtils.report_warning("{0}: idx {1} of {2}".format([self.get_full_name(), og, points.size()]))
+	return point_pos_relative_to_absolute(points[idx])
 	
 func set_point_position(idx: int, absolute: Vector2)->void:
 	var points := self.polygon
+	if idx < 0: idx += points.size()
+	elif idx >= points.size(): idx -= points.size()
 	points[idx] = self.point_pos_absolute_to_relative(absolute)
 	self.polygon = points
 	
@@ -133,8 +141,11 @@ func get_wall_begin(idx: int)->Vector2:
 	return get_point_position(idx)
 func get_wall_end(idx: int)->Vector2:
 	var point_idx := idx + 1
-	if point_idx >= get_points_count(): point_idx = 0
 	return get_point_position(point_idx)
+
+func get_wall_direction(idx: int)->Vector2:
+	return get_wall_end(idx) - get_wall_begin(idx)
+
 func get_walls_count()->int:
 	return get_points_count()
 	

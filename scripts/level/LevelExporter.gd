@@ -98,7 +98,8 @@ class WallExportData:
 		return sector_a
 
 	func get_wall_idx(s: Sector)->int:
-		return wall_a if (s == sector_a) else wall_b
+		if s == sector_b: return wall_b
+		return wall_a
 
 	func register_sector(s: Sector, wall_idx : int)->void:
 		if s.exclude_from_export:

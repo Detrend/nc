@@ -16,8 +16,10 @@ enum CompositionOrder{
 
 
 func append_info(out: Array[Dictionary], begin_height: float, end_height: float, ctx: TexturingContext)->void:
-	var out_begin_idx := out.size()
-	out.resize(out_begin_idx + layers.size())
+	var layers : Array[ILayeredTextureEntry] = []
+	layers.append_array(self.layers)
+	layers.reverse()
+	
 	var total_size := end_height - begin_height
 
 	var sizes : PackedVector2Array = DatastructUtils.fill_array_with(PackedVector2Array(), Vector2(NAN, NAN), layers.size()) as PackedVector2Array

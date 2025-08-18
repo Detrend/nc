@@ -5,13 +5,13 @@
 [ext_resource type="Resource" uid="uid://b62b6owe57oqc" path="res://material_textures/Floor1.tres" id="2_hyndm"]
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="2_r0utu"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="3_1qqi1"]
-[ext_resource type="Resource" uid="uid://crtucqy2narq3" path="res://material_textures/Bricks.tres" id="5_hshd3"]
+[ext_resource type="Resource" uid="uid://bm1gb1rrqn1mq" path="res://material_textures/composites/WallMaterial.tres" id="6_hshd3"]
 [ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="6_hyndm"]
 
 [sub_resource type="Resource" id="Resource_hshd3"]
 script = ExtResource("6_hyndm")
 priority = 3
-texture = ExtResource("5_hshd3")
+texture = ExtResource("6_hshd3")
 metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 
 [resource]

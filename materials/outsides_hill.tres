@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="SectorMaterial" load_steps=9 format=3 uid="uid://cj2t3mf314rsj"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=10 format=3 uid="uid://cj2t3mf314rsj"]
 
 [ext_resource type="Texture2D" uid="uid://hosfsoru1xho" path="res://imgs/VegetationDark2.png" id="1_shv6e"]
 [ext_resource type="Resource" uid="uid://c0bfb1i38kqd" path="res://material_textures/_None.tres" id="1_w0eko"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="2_styc6"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="3_w0eko"]
 [ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="5_efelk"]
+[ext_resource type="Resource" uid="uid://db0lfp4s34q08" path="res://material_textures/composites/GrassHillMaterial.tres" id="7_xkrpa"]
 
 [sub_resource type="Resource" id="Resource_xkrpa"]
 script = ExtResource("5_efelk")
@@ -15,10 +16,10 @@ metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 
 [sub_resource type="Resource" id="Resource_efelk"]
 script = ExtResource("3_w0eko")
-priority = 1
+priority = 2
 _placement_type = 9
 wall_length_range = Vector2(inf_neg, inf)
-texture = ExtResource("2_efelk")
+texture = ExtResource("7_xkrpa")
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [resource]

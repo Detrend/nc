@@ -5,13 +5,13 @@
 [ext_resource type="Resource" uid="uid://vtqebik67rhe" path="res://material_textures/Vegetation.tres" id="2_hqytu"]
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="2_nswn4"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="3_ni0fv"]
-[ext_resource type="Resource" uid="uid://7i6ybyw6rpjt" path="res://material_textures/Wall4.tres" id="5_0uif0"]
+[ext_resource type="Resource" uid="uid://chyvakts44isu" path="res://material_textures/composites/HouseWallMaterial.tres" id="6_0uif0"]
 [ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="6_hqytu"]
 
 [sub_resource type="Resource" id="Resource_0uif0"]
 script = ExtResource("6_hqytu")
 priority = 0
-texture = ExtResource("5_0uif0")
+texture = ExtResource("6_0uif0")
 metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 
 [sub_resource type="Resource" id="Resource_w87yy"]
