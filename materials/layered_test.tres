@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="LayeredTexture" load_steps=10 format=3 uid="uid://dgxynesv3qrvb"]
+
+[ext_resource type="Script" uid="uid://csukwu081bfv0" path="res://scripts/visuals/ILayeredTextureEntry.gd" id="1_ejjwb"]
+[ext_resource type="Script" uid="uid://dt7r05hfelhgq" path="res://scripts/visuals/LayeredTexture.gd" id="1_issm8"]
+[ext_resource type="Script" uid="uid://b60vys5f055ei" path="res://scripts/visuals/LT_Entry.gd" id="2_ejjwb"]
+[ext_resource type="Script" uid="uid://ds4udf2uy0wpn" path="res://scripts/visuals/LT_Filler.gd" id="3_fpyp6"]
+[ext_resource type="Resource" uid="uid://0pn0s6pgyedy" path="res://material_textures/Wall5.tres" id="3_ymyod"]
+[ext_resource type="Resource" uid="uid://crtucqy2narq3" path="res://material_textures/Bricks.tres" id="5_j6br4"]
+
+[sub_resource type="Resource" id="Resource_ymyod"]
+script = ExtResource("2_ejjwb")
+texture = ExtResource("3_ymyod")
+anchor_point = 1.0
+height_mode = 3
+height_fixed = 0.4
+height_percent = 0.5
+metadata/_custom_type_script = "uid://b60vys5f055ei"
+
+[sub_resource type="Resource" id="Resource_j6br4"]
+script = ExtResource("3_fpyp6")
+texture = ExtResource("5_j6br4")
+metadata/_custom_type_script = "uid://ds4udf2uy0wpn"
+
+[sub_resource type="Resource" id="Resource_wv1t6"]
+script = ExtResource("2_ejjwb")
+texture = ExtResource("3_ymyod")
+anchor_point = 0.0
+height_mode = 3
+height_fixed = 0.4
+height_percent = 0.5
+metadata/_custom_type_script = "uid://b60vys5f055ei"
+
+[resource]
+script = ExtResource("1_issm8")
+composition_order = 0
+layers = Array[ExtResource("1_ejjwb")]([SubResource("Resource_ymyod"), SubResource("Resource_j6br4"), SubResource("Resource_wv1t6")])
+metadata/_custom_type_script = "uid://dt7r05hfelhgq"

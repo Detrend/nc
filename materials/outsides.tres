@@ -1,10 +1,17 @@
-[gd_resource type="Resource" script_class="SectorMaterial" load_steps=6 format=3 uid="uid://dru3antcr08im"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=8 format=3 uid="uid://dru3antcr08im"]
 
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="1_n8a10"]
 [ext_resource type="Texture2D" uid="uid://hosfsoru1xho" path="res://imgs/VegetationDark2.png" id="1_ooviw"]
 [ext_resource type="Resource" uid="uid://c0bfb1i38kqd" path="res://material_textures/_None.tres" id="1_vrfdo"]
 [ext_resource type="Resource" uid="uid://vtqebik67rhe" path="res://material_textures/Vegetation.tres" id="2_e42dy"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="3_fr723"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="5_e42dy"]
+
+[sub_resource type="Resource" id="Resource_a7s6x"]
+script = ExtResource("5_e42dy")
+priority = 6
+texture = ExtResource("1_vrfdo")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 
 [resource]
 script = ExtResource("1_n8a10")
@@ -13,6 +20,7 @@ preview_scale = 0.1
 preview_rotation = 0.0
 wall = ExtResource("1_vrfdo")
 wall_priority = 6
+wall_default = SubResource("Resource_a7s6x")
 wall_rules = Array[ExtResource("3_fr723")]([])
 floor = ExtResource("2_e42dy")
 ceiling = ExtResource("1_vrfdo")

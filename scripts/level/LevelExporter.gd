@@ -79,45 +79,93 @@ func get_wall_data(a: Vector2, b: Vector2)->WallExportData:
 
 
 class WallExportData:
-	# Material with the highest priority so far
-	var material : SectorMaterial
-	# Full export-enabled sectors participating in the wall, expected to have 1 or 2 elements
-	var sectors : Array[Sector] = []
 	# Number of holes participating in the wall, can be arbitrary number
 	var holes_count : int = 0
 
+	var sector_a : Sector = null
+	var sector_b : Sector = null
+	var wall_a : Vector2i
+	var wall_b : Vector2i
+
+
+	func sectors_count()->int:
+		return (1 if sector_a else 0) + (1 if sector_b else 0) 
+
+	func get_other_sector(s: Sector)->Sector:
+		if s == sector_a: return sector_b
+		return sector_a
+	func get_only_sector()->Sector:
+		return sector_a
+
 	func register_sector(s: Sector)->void:
-		if not s.exclude_from_export:
-			sectors.append(s)
-		else: holes_count += 1
-		if self.material == null || self.material.wall_priority < s.data.material.wall_priority:
-			self.material = s.data.material
+		if s.exclude_from_export:
+			holes_count += 1
+		else:
+			if sectors_count() == 0: sector_a = s
+			elif sectors_count() == 2:
+				ErrorUtils.report_error("Appending 3rd sector ({0}) to wall: [{1}, {2}]".format([s.get_full_name(), sector_a.get_full_name(), sector_b.get_full_name()]))
+			else: sector_b = s
 
 	func compute_wall_height(this_sector : Sector)->float:
-		if sectors.size() == 1:
-			return sectors[0].ceiling_height - sectors[0].floor_height
-		if sectors.size() != 2:
-			ErrorUtils.report_error("Wall has invalid number of sectors: [{0}]".format([TextUtils.recursive_array_tostring(sectors,", ", func(s: Sector): return s.get_full_name() )]))
-			if sectors.size() == 0: return 0
-		var other_sector = sectors[1 if sectors[0] == this_sector else 0]
+		if sectors_count() == 1:
+			return sector_a.ceiling_height - sector_a.floor_height
+		if sectors_count() == 0: return 0
+		var other_sector = get_other_sector(this_sector)
 		var floor_delta :float = other_sector.floor_height - this_sector.floor_height
 		var ceiling_delta :float = this_sector.ceiling_height - other_sector.ceiling_height
 		return max(floor_delta, ceiling_delta)
 
-	func export_wall_data(this_sector : Sector)->Dictionary:
-		var height := compute_wall_height(this_sector)
-		var chosen_material :SectorMaterial = material if (material.wall_priority > this_sector.data.material.wall_priority) else this_sector.data.material
-		for rule in chosen_material.wall_rules:
-			var height_check := (rule.wall_length_range.x < 0) or (rule.wall_length_range[0] <= height and height <= rule.wall_length_range[1])
+
+	func choose_wall_rule(this_sector: Sector, wall_height : float, wall_type : WallRule.PlacementType)->IWallRule:
+		for rule in this_sector.data.material.wall_rules:
+			var height_check := (rule.wall_length_range.x < 0) or (rule.wall_length_range[0] <= wall_height and wall_height <= rule.wall_length_range[1])
 			var surface_type_check := ((rule._placement_type & WallRule.PlacementType.Any == WallRule.PlacementType.Any)
-									   or ((rule._placement_type & WallRule.PlacementType.Border) and sectors.size() == 2)
-									   or ((rule._placement_type & WallRule.PlacementType.HoleBorder) and sectors.size() >= 1 and holes_count >= 1)
-									   or ((rule._placement_type & WallRule.PlacementType.Wall) and sectors.size() == 1)
+									   or ((rule._placement_type & wall_type) and sectors_count() == 2)
+									   or ((rule._placement_type & WallRule.PlacementType.HoleBorder) and sectors_count() >= 1 and holes_count >= 1)
+									   or ((rule._placement_type & WallRule.PlacementType.Wall) and sectors_count() == 1)
 			)
 			if height_check and surface_type_check:
-				return LevelExporter.get_texture_config(rule.texture, true, this_sector)
+				return rule
 
-		return LevelExporter.get_texture_config(chosen_material.wall, true, this_sector)
+		return this_sector.data.material.wall_default
+
+	func export_wall_data( this_sector : Sector)->Array[Dictionary]:
+		var ret: Array[Dictionary] = []
+
+		if not LevelExporter._temp_ctx: LevelExporter._temp_ctx = ITextureDefinition.TexturingContext.new()
+		var ctx := LevelExporter._temp_ctx
+		ctx.export_data = self
+		ctx.target_sector = this_sector
+		ctx.subject_type = ITextureDefinition.TexturingSubjectType.Wall
+
+		if sectors_count() <= 1:
+			var wall_height :float = this_sector.ceiling_height - this_sector.floor_height
+			var chosen_rule := choose_wall_rule(this_sector, wall_height, WallRule.PlacementType.Wall)
+			chosen_rule.get_texture().append_info(ret, this_sector.floor_height, this_sector.ceiling_height, ctx)
+			return ret
+		# sectors_count() == 2
+		var other_sector :Sector= get_other_sector(this_sector)
+
+		var floor_delta :float = other_sector.floor_height - this_sector.floor_height
+		if floor_delta > 0:
+			var this_floor_rule := choose_wall_rule(this_sector, floor_delta, WallRule.PlacementType.Floor)
+			var other_floor_rule := choose_wall_rule(other_sector, floor_delta, WallRule.PlacementType.Floor)
+			var chosen_floor_rule := this_floor_rule if (this_floor_rule.get_priority() >= other_floor_rule.get_priority()) else other_floor_rule
+			
+			chosen_floor_rule.get_texture().append_info(ret, this_sector.floor_height, other_sector.floor_height, ctx)
+
+		var ceiling_delta :float = this_sector.ceiling_height - other_sector.ceiling_height
+		if ceiling_delta > 0:
+			var   this_ceiling_rule := choose_wall_rule(this_sector, ceiling_delta, WallRule.PlacementType.Ceiling)
+			var  other_ceiling_rule := choose_wall_rule(other_sector, ceiling_delta, WallRule.PlacementType.Ceiling)
+			var chosen_ceiling_rule := this_ceiling_rule if (this_ceiling_rule.get_priority() >= other_ceiling_rule.get_priority()) else other_ceiling_rule
+			
+			chosen_ceiling_rule.get_texture().append_info(ret, other_sector.ceiling_height, this_sector.ceiling_height, ctx)
+			
+		return ret
+
+
+
 
 
 static func _get_wall_key(wall_begin: Vector2, wall_end: Vector2)->Vector4:
@@ -166,9 +214,11 @@ func create_level_export_data() -> Dictionary:
 		sector_export["ceiling"] = sector.data.ceiling_height * _level.export_scale.z
 		sector_export["points"] = sector_points
 
-		sector_export["floor_surface"] = get_texture_config(sector.data.material.floor, false, sector)
-		sector_export["ceiling_surface"] = get_texture_config(sector.data.material.ceiling, false, sector)
-		var walls_export : Array[Dictionary] = []
+		if not sector.data.material:
+			ErrorUtils.report_error("No material for sector '{0}'".format([sector.get_full_name()]))
+		sector_export["floor_surface"] = get_texture_config(sector.data.material.floor, ITextureDefinition.TexturingSubjectType.Floor, sector)
+		sector_export["ceiling_surface"] = get_texture_config(sector.data.material.ceiling, ITextureDefinition.TexturingSubjectType.Ceiling, sector)
+		var walls_export : Array[Array] = []
 		var wall_idx := 0
 		var walls_count = sector.get_walls_count()
 		while wall_idx < walls_count:
@@ -197,18 +247,20 @@ func create_level_export_data() -> Dictionary:
 	return level_export
 
 
-static func get_texture_config(texture_def: TextureDefinition, is_wall: bool, sector : Sector)->Dictionary:
+static var _temp_array_of_dict : Array[Dictionary] = []
+static var _temp_ctx : ITextureDefinition.TexturingContext
+static func get_texture_config(texture_def: TextureDefinition, texturing_type: ITextureDefinition.TexturingSubjectType, sector : Sector)->Dictionary:
 	if not texture_def:
 		ErrorUtils.report_error("invalid texture def: {0}".format([sector.get_full_name()]))
-	var ret : Dictionary = {}
-	ret["id"] = texture_def.id
-	ret["scale"] = texture_def.scale
-	ret["show"] = texture_def.should_show
-	var base_rotation_deg :float = texture_def.rotation
-	var custom_rotation_deg :float = sector.data.wall_texturing_rotation if is_wall else sector.data.texturing_rotation
-	ret["rotation"] = deg_to_rad(base_rotation_deg + custom_rotation_deg)
-	var offset := sector.data.wall_texturing_offset if is_wall else sector.data.texturing_offset
-	ret["offset"] = [offset.x, offset.y]
+	if not _temp_array_of_dict: _temp_array_of_dict = []
+	if not _temp_ctx: _temp_ctx = ITextureDefinition.TexturingContext.new()
+	_temp_ctx.export_data = null
+	_temp_ctx.subject_type = texturing_type
+	_temp_ctx.target_sector = sector
+	_temp_array_of_dict.clear()
+	texture_def.append_info(_temp_array_of_dict, NAN, NAN, _temp_ctx)
+	var ret :Dictionary = _temp_array_of_dict[0]
+	_temp_array_of_dict.clear()
 	return ret
 
 

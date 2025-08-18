@@ -1,3 +1,4 @@
+@tool
 class_name LT_Entry
 extends ILayeredTextureEntry
 

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="SectorMaterial" load_steps=9 format=3 uid="uid://cngafoh223j4c"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=11 format=3 uid="uid://cngafoh223j4c"]
 
 [ext_resource type="Texture2D" uid="uid://5ju12ycw81g4" path="res://imgs/bricks.png" id="1_hk1ql"]
 [ext_resource type="Resource" uid="uid://lv2l2mulcl3e" path="res://material_textures/Floor2.tres" id="1_y0ttn"]
@@ -6,12 +6,19 @@
 [ext_resource type="Resource" uid="uid://b62b6owe57oqc" path="res://material_textures/Floor1.tres" id="2_mygdj"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="3_fdxwp"]
 [ext_resource type="Resource" uid="uid://c0bfb1i38kqd" path="res://material_textures/_None.tres" id="5_ucnai"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="6_mygdj"]
 [ext_resource type="Resource" uid="uid://vtqebik67rhe" path="res://material_textures/Vegetation.tres" id="7_lquyj"]
+
+[sub_resource type="Resource" id="Resource_ucnai"]
+script = ExtResource("6_mygdj")
+priority = 6
+texture = ExtResource("5_ucnai")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 
 [sub_resource type="Resource" id="Resource_hk1ql"]
 script = ExtResource("3_fdxwp")
 priority = 0
-_placement_type = 1
+_placement_type = 25
 wall_length_range = Vector2(0, 0.5)
 texture = ExtResource("7_lquyj")
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
@@ -23,6 +30,7 @@ preview_scale = 1.0
 preview_rotation = 0.0
 wall = ExtResource("5_ucnai")
 wall_priority = 6
+wall_default = SubResource("Resource_ucnai")
 wall_rules = Array[ExtResource("3_fdxwp")]([SubResource("Resource_hk1ql")])
 floor = ExtResource("2_mygdj")
 ceiling = ExtResource("1_y0ttn")

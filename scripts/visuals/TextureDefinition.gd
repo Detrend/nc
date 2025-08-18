@@ -18,7 +18,7 @@ var id: String:
 
 func append_info(out: Array[Dictionary], begin_height: float, end_height: float, ctx: TexturingContext)->void:
 	var info : Dictionary = {}
-	info["should_show"] = should_show
+	info["show"] = should_show
 	if should_show:
 		info["id"] = id
 		info["scale"] = scale
