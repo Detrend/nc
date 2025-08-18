@@ -222,20 +222,48 @@ static void test_make_sector
 }
 
 
+//==============================================================================
+template<size_t TSize>
+static vec<float, TSize> load_json_vector(const nlohmann::json& js) 
+{
+    vec<float, TSize> ret;
+    for (u32 t = 0; t < TSize; ++t) {
+        ret[t] = js[t];
+    }
+    return ret;
+}
 
+
+//==============================================================================
+template<typename T, typename TSupplier>
+static void load_json_optional(T& out, const nlohmann::json& js, const std::string& key, const TSupplier& supplier) 
+{
+    if (js.contains(key)) {
+        out = supplier(js[key]);
+    }
+}
+
+
+//==============================================================================
+static bool load_json_flag(const nlohmann::json& js, const std::string& key) 
+{
+    if (js.contains(key)) {
+        return js[key];
+    }
+    return false;
+}
 
 //==============================================================================
 static SurfaceData load_json_surface(const nlohmann::json &js) 
 {
     if (const bool should_show = js["show"]) {
-        auto offset = js["offset"];
         std::string texture_name = js["id"];
         return SurfaceData
         {
           .texture_id = TextureManager::get()[texture_name].get_texture_id(),
           .scale = js["scale"],
           .rotation = js["rotation"],
-          .offset = vec2(offset[0], offset[1]),
+          .offset = load_json_vector<2>(js["offset"]),
           .should_show = true
         };
     }
@@ -246,52 +274,67 @@ static SurfaceData load_json_surface(const nlohmann::json &js)
 }
 
 //==============================================================================
+static WallSurfaceData load_json_wall_surface(const nlohmann::json& js) 
+{
+    WallSurfaceData ret;
+
+    for (auto&& js_entry : js) {
+        auto &entry = ret.surfaces.emplace_back();
+        entry.surface = load_json_surface(js_entry);
+        entry.end_height = js_entry["end_height"];
+        load_json_optional(entry.begin_up_tesselation,  js_entry, "begin_up_direction", load_json_vector<3>);
+        load_json_optional(entry.end_up_tesselation,    js_entry, "end_up_direction", load_json_vector<3>);
+        load_json_optional(entry.begin_down_tesselation,js_entry, "begin_down_direction", load_json_vector<3>);
+        load_json_optional(entry.end_down_tesselation,  js_entry, "end_down_direction", load_json_vector<3>);
+        if (load_json_flag(js_entry, "absolute_directions")) {
+            entry.flags = static_cast<WallSurfaceData::Flags>(entry.flags | WallSurfaceData::Flags::absolute_directions);
+        }
+        if (load_json_flag(js_entry, "flip_side_normals")) {
+            entry.flags = static_cast<WallSurfaceData::Flags>(entry.flags | WallSurfaceData::Flags::flip_side_normals);
+        }
+    }
+
+    return ret;
+}
+
+//==============================================================================
 [[maybe_unused]] static void load_json_map(MapSectors& map, SectorMapping& mapping, EntityRegistry& entities, EntityID &player_id)
 {
     std::ifstream f(JSON_LEVEL_PATH);
     nc_assert(f.is_open());
     auto data = nlohmann::json::parse(f);
     
-    std::vector<vec2> points;
-    for (auto&& js_point : data["points"]) {
-        points.emplace_back(vec2((float)js_point[0], (float)js_point[1]));
-    }
 
+
+    std::vector<vec2> points;
     std::vector<map_building::SectorBuildData> sectors;
-    for (auto&& js_sector : data["sectors"]) {
-        const float floor = js_sector["floor"];
-        const float ceil = js_sector["ceiling"];
-        const SectorID portal_sector = js_sector["portal_target"];
-        const int portal_wall = js_sector["portal_wall"];
-        const WallRelID portal_destination_wall = js_sector["portal_destination_wall"];
-        std::vector<u16> point_idxs;
-        for (auto&& js_point : js_sector["points"]) {
-            point_idxs.emplace_back((u16)(int)js_point);
+
+    try {
+        for (auto&& js_point : data["points"]) {
+            points.emplace_back(load_json_vector<2>(js_point));
         }
-        auto floor_surface = load_json_surface(js_sector["floor_surface"]);
-        auto ceiling_surface = load_json_surface(js_sector["ceiling_surface"]);
-        std::vector<WallSurfaceData> wall_surfaces;
-        for (auto&& js_wall_surface : js_sector["wall_surfaces"]) {
-            auto &surface(wall_surfaces.emplace_back());
-            WallSurfaceData::Entry& surf1 = surface.surfaces.emplace_back();
-            surf1.surface = load_json_surface(js_wall_surface);
-            surf1.end_height = 0.5f;
-            surf1.end_down_tesselation  = vec3(-0.08f, +0.0f,  0.08f);
-            surf1.begin_down_tesselation = vec3(+0.08f, +0.0f,  0.08f);
-            surf1.end_up_tesselation    = vec3(-0.08f, -0.08f, 0.08f);
-            surf1.begin_up_tesselation   = vec3(+0.08f, -0.08f, 0.08f);
-            surf1.flags = (WallSurfaceData::Flags)(WallSurfaceData::Flags::generate_all_faces | WallSurfaceData::Flags::generate_down_face);
-            WallSurfaceData::Entry& surf2 = surface.surfaces.emplace_back();
-            surf2.surface = load_json_surface(js_wall_surface);
-            //surf2.surface.rotation = 1.5f;
-            surf2.end_height = 1.0f;
-            WallSurfaceData::Entry& surf3 = surface.surfaces.emplace_back();
-            surf3.surface = load_json_surface(js_wall_surface);
-            //surf3.surface.rotation = 2.0f;
-            surf3.end_height = INFINITY;
-        }
+        for (auto&& js_sector : data["sectors"]) {
+            const float floor = js_sector["floor"];
+            const float ceil = js_sector["ceiling"];
+            const SectorID portal_sector = js_sector["portal_target"];
+            const int portal_wall = js_sector["portal_wall"];
+            const WallRelID portal_destination_wall = js_sector["portal_destination_wall"];
+            std::vector<u16> point_idxs;
+            for (auto&& js_point : js_sector["points"]) {
+                point_idxs.emplace_back((u16)(int)js_point);
+            }
+            auto floor_surface = load_json_surface(js_sector["floor_surface"]);
+            auto ceiling_surface = load_json_surface(js_sector["ceiling_surface"]);
+            std::vector<WallSurfaceData> wall_surfaces;
+            for (auto&& js_wall_surface : js_sector["wall_surfaces"]) {
+                wall_surfaces.emplace_back(load_json_wall_surface(js_wall_surface));
+            }
         
-        test_make_sector_height(floor, ceil, point_idxs, sectors, portal_wall, portal_destination_wall, portal_sector, floor_surface, ceiling_surface, wall_surfaces);
+            test_make_sector_height(floor, ceil, point_idxs, sectors, portal_wall, portal_destination_wall, portal_sector, floor_surface, ceiling_surface, wall_surfaces);
+        }
+    }
+    catch (nlohmann::json::type_error e) {
+        nc_crit("{0}", e.what());
     }
 
     using namespace map_building::MapBuildFlag;

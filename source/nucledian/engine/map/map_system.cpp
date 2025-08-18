@@ -772,10 +772,17 @@ mat4 MapSectors::calc_portal_to_portal_projection(
             if (!current.surface->surface.should_show) {
                 continue;
             }
-            const vec3 bu_shift  = current.surface->begin_up_tesselation * wall_rotation;
-            const vec3 bd_shift = current.surface->begin_down_tesselation * wall_rotation;
-            const vec3 eu_shift = current.surface->end_up_tesselation * wall_rotation;
-            const vec3 ed_shift = current.surface->end_down_tesselation * wall_rotation;
+            vec3 bu_shift = current.surface->begin_up_tesselation;
+            vec3 bd_shift = current.surface->begin_down_tesselation;
+            vec3 eu_shift = current.surface->end_up_tesselation;
+            vec3 ed_shift = current.surface->end_down_tesselation;
+            if (!(current.surface->flags & WallSurfaceData::Flags::absolute_directions)) {
+                bu_shift = bu_shift * wall_rotation;
+                bd_shift = bd_shift * wall_rotation;
+                eu_shift = eu_shift * wall_rotation;
+                ed_shift = ed_shift * wall_rotation;
+
+            }
 
 
             const auto bd = vec3{ w1pos.x, current.y1, w1pos.y };

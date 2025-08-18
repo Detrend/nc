@@ -115,7 +115,8 @@ struct WallSurfaceData {
         generate_up_face = 4,
         generate_down_face = 8,
         generate_all_faces = 0xF,
-        flip_side_normals = 16
+        flip_side_normals = 16,
+        absolute_directions = 32
     };
     struct Entry {
         // Surface used in this wall interval
