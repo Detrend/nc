@@ -9,6 +9,7 @@
 
 [sub_resource type="Resource" id="Resource_u1lyt"]
 script = ExtResource("3_u1lyt")
+priority = 0
 _placement_type = 1
 wall_length_range = Vector2(0, 2)
 texture = ExtResource("5_6bagg")
@@ -16,6 +17,7 @@ metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [sub_resource type="Resource" id="Resource_xfch1"]
 script = ExtResource("3_u1lyt")
+priority = 0
 _placement_type = 3
 wall_length_range = Vector2(2, 9999)
 texture = ExtResource("6_eei1o")

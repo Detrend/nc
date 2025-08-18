@@ -9,7 +9,7 @@ class _Private:
 		return ""+o.get_path();
 
 
-static func report_interface_instantiated_error(interface_instance: Node, interface_type):
+static func report_interface_instantiated_error(interface_instance: Object, interface_type):
 	if interface_instance.get_script() == interface_type:
 		ErrorUtils.report_error("ERROR: Direct instantiation of interface type node '{0}'".format([interface_type.get_path()]))
 

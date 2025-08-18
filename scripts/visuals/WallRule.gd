@@ -9,6 +9,7 @@ enum PlacementType {
 	Any = Border | Wall | HoleBorder
 }
 
+@export var priority : int = 0
 @export_flags("Border:1", "HoleBorder:2", "Wall:4", "All:7") var _placement_type : int = (PlacementType.Any as int)
 
 @export var wall_length_range : Vector2 = Vector2(-INF, INF):
@@ -18,6 +19,5 @@ enum PlacementType {
 
 var placement_type : PlacementType:
 	get: return _placement_type as PlacementType
-
 
 @export var texture : TextureDefinition

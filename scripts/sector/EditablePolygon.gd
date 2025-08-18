@@ -7,7 +7,7 @@ class_name EditablePolygon
 
 var is_editable : bool = true
 
-var config : EditorConfig = preload("res://config.tres") as EditorConfig
+var config : EditorConfig = load("res://config.tres") as EditorConfig
 
 
 var _level : Level:

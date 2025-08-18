@@ -107,6 +107,20 @@ static func get_siblings_of_type(node: Node, child_type, list :Array = [], flags
 	if(!node): return [];
 	return get_children_of_type(node.get_parent(), list, child_type, flags);
 	
+
+static func get_instances_of(arr: Array, child_type, ret: Array = [])->Array:
+	for elem in arr:
+		if is_instance_of(elem, child_type): 
+			ret.append(elem)
+	return ret
+	
+static func get_instance_of_indices(arr: Array, child_type, ret : PackedInt32Array = [])->PackedInt32Array:
+	var i : int = 0
+	while i < arr.size():
+		if is_instance_of(arr[i], child_type): 
+			ret.append(i)
+		i += 1
+	return ret
 	
 static func is_the_only_selected_node(node: Node)->bool:
 	var selection := EditorInterface.get_selection().get_selected_nodes()

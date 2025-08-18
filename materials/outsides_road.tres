@@ -10,6 +10,7 @@
 
 [sub_resource type="Resource" id="Resource_hk1ql"]
 script = ExtResource("3_fdxwp")
+priority = 0
 _placement_type = 1
 wall_length_range = Vector2(0, 0.5)
 texture = ExtResource("7_lquyj")

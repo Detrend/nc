@@ -57,3 +57,11 @@ static func insert_array(target:Array, idx: int, to_insert : Array)->Array:
 		target.insert(idx, elem)
 		idx += 1
 	return target
+
+static func fill_array_with(arr: Array, value: Variant, count: int)->Array:
+	arr.resize(count)
+	var t := 0
+	while t < count:
+		arr[t] = value
+		t += 1
+	return arr

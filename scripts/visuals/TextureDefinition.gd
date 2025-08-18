@@ -1,6 +1,6 @@
 @tool
 class_name TextureDefinition
-extends Resource
+extends ITextureDefinition
 
 @export var preview : Texture
 @export var _id : String
@@ -14,3 +14,16 @@ var id: String:
 			var ret := TextUtils.extract_file_name_from_path(preview.resource_path)
 			if not ret.is_empty(): return ret
 		return _id
+
+
+func append_info(out: Array[Dictionary], begin_height: float, end_height: float, ctx: TexturingContext)->void:
+	var info : Dictionary = {}
+	info["should_show"] = should_show
+	if should_show:
+		info["id"] = id
+		info["scale"] = scale
+		info["rotation"] = rotation
+	if ctx.subject_type == TexturingSubjectType.Wall:
+		info["begin_height"] = begin_height
+		info["end_height"] = end_height
+	out.append(info)
