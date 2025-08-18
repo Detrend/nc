@@ -84,8 +84,8 @@ class WallExportData:
 
 	var sector_a : Sector = null
 	var sector_b : Sector = null
-	var wall_a : Vector2i
-	var wall_b : Vector2i
+	var wall_a : int
+	var wall_b : int
 
 
 	func sectors_count()->int:
@@ -97,14 +97,21 @@ class WallExportData:
 	func get_only_sector()->Sector:
 		return sector_a
 
-	func register_sector(s: Sector)->void:
+	func get_wall_idx(s: Sector)->int:
+		return wall_a if (s == sector_a) else wall_b
+
+	func register_sector(s: Sector, wall_idx : int)->void:
 		if s.exclude_from_export:
 			holes_count += 1
 		else:
-			if sectors_count() == 0: sector_a = s
+			if sectors_count() == 0: 
+				sector_a = s
+				wall_a = wall_idx
 			elif sectors_count() == 2:
 				ErrorUtils.report_error("Appending 3rd sector ({0}) to wall: [{1}, {2}]".format([s.get_full_name(), sector_a.get_full_name(), sector_b.get_full_name()]))
-			else: sector_b = s
+			else: 
+				sector_b = s
+				wall_b = wall_idx
 
 	func compute_wall_height(this_sector : Sector)->float:
 		if sectors_count() == 1:
@@ -204,7 +211,7 @@ func create_level_export_data() -> Dictionary:
 		var walls_count := s.get_walls_count()
 		while i < walls_count:
 			var wall_data :WallExportData = get_wall_data(s.get_wall_begin(i), s.get_wall_end(i))
-			wall_data.register_sector(s)
+			wall_data.register_sector(s, i)
 			i += 1
 	
 	var sectors_export : Array[Dictionary]
