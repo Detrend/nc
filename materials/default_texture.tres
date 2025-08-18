@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="SectorMaterial" load_steps=10 format=3 uid="uid://b0ot7qa5l7k8d"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=12 format=3 uid="uid://b0ot7qa5l7k8d"]
 
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="1_23jo0"]
 [ext_resource type="Texture2D" uid="uid://jt3ssm48lqjc" path="res://imgs/floor1.png" id="1_37rwi"]
@@ -7,6 +7,7 @@
 [ext_resource type="Resource" uid="uid://crtucqy2narq3" path="res://material_textures/Bricks.tres" id="3_plrdw"]
 [ext_resource type="Resource" uid="uid://b62b6owe57oqc" path="res://material_textures/Floor1.tres" id="5_jrn1d"]
 [ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="6_uk745"]
+[ext_resource type="Resource" uid="uid://og8ff4s6kfso" path="res://material_textures/Wall3.tres" id="8_csai5"]
 
 [sub_resource type="Resource" id="Resource_csai5"]
 script = ExtResource("6_uk745")
@@ -17,9 +18,17 @@ metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 [sub_resource type="Resource" id="Resource_a6q66"]
 script = ExtResource("3_55itm")
 priority = 0
-_placement_type = 25
+_placement_type = 9
 wall_length_range = Vector2(0, 0.5)
 texture = ExtResource("5_jrn1d")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[sub_resource type="Resource" id="Resource_uk745"]
+script = ExtResource("3_55itm")
+priority = 0
+_placement_type = 17
+wall_length_range = Vector2(0, 2.3)
+texture = ExtResource("8_csai5")
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [resource]
@@ -28,7 +37,7 @@ preview = ExtResource("1_37rwi")
 preview_scale = 1.0
 preview_rotation = 0.0
 wall_default = SubResource("Resource_csai5")
-wall_rules = Array[ExtResource("3_55itm")]([SubResource("Resource_a6q66")])
+wall_rules = Array[ExtResource("3_55itm")]([SubResource("Resource_a6q66"), SubResource("Resource_uk745")])
 floor = ExtResource("5_jrn1d")
 ceiling = ExtResource("1_jrn1d")
 metadata/_custom_type_script = "uid://bd7os02w6f4ou"
