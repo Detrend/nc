@@ -593,6 +593,8 @@ mat4 MapSectors::calc_portal_to_portal_projection(
       vertices_out.push_back(static_cast<f32>(surface.texture_id));
       vertices_out.push_back(surface.scale);
       vertices_out.push_back(surface.rotation);
+      vertices_out.push_back(static_cast<f32>(surface.tile_rotations_count));
+      vertices_out.push_back(static_cast<f32>(surface.tile_rotation_increment));
       vertices_out.push_back(surface.offset.x);
       vertices_out.push_back(surface.offset.y);
     }

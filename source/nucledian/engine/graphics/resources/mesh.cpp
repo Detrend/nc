@@ -267,11 +267,13 @@ MeshHandle MeshManager::create_sector(ResLifetime lifetime, const f32* data, u32
    *  1 float  per texture id
    *  1 float  per texture scale
    *  1 float  per texture rotation
+   *  1 float  per texture tile rotations count
+   *  1 float  per texture tile rotation increment
    *  2 floats per texture offset
    * -------------------------------------
-   * 12 floats total
+   * 14 floats total
    */
-  constexpr u32 VERTEX_SIZE = 12;
+  constexpr u32 VERTEX_SIZE = 14;
 
   mesh.m_vertex_count = count / VERTEX_SIZE;
 
@@ -302,9 +304,15 @@ MeshHandle MeshManager::create_sector(ResLifetime lifetime, const f32* data, u32
   // texture rotation attribute
   glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(9 * sizeof(f32)));
   glEnableVertexAttribArray(5);
-  // texture offset attribute
-  glVertexAttribPointer(6, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(10 * sizeof(f32)));
+  // texture tile rotations count attribute
+  glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(10 * sizeof(f32)));
   glEnableVertexAttribArray(6);
+  // texture tile rotation increment attribute
+  glVertexAttribPointer(7, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(11 * sizeof(f32)));
+  glEnableVertexAttribArray(7);
+  // texture offset attribute
+  glVertexAttribPointer(8, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(12 * sizeof(f32)));
+  glEnableVertexAttribArray(8);
 
   glBindVertexArray(0);
 

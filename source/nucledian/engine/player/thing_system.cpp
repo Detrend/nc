@@ -264,6 +264,8 @@ static SurfaceData load_json_surface(const nlohmann::json &js)
           .scale = js["scale"],
           .rotation = js["rotation"],
           .offset = load_json_vector<2>(js["offset"]),
+          .tile_rotations_count = js["tile_rotations_count"],
+          .tile_rotation_increment = js["tile_rotation_increment"],
           .should_show = true
         };
     }

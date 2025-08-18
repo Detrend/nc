@@ -101,6 +101,10 @@ struct SurfaceData
   f32       rotation   = 0.0f;
   // Offset in texture coordinates [0-1].
   vec2      offset     = VEC2_ZERO;
+  // How many different ways a texture tile is allowed to be randomly rotated
+  u32       tile_rotations_count = 1;
+  // Fixed step between the randomized tile rotation options (in radians)
+  float     tile_rotation_increment = 1.5707963267948966f;
   // If false, skip generating the mesh entirely
   bool      should_show = true;
 };
