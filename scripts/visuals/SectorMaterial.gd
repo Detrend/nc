@@ -8,8 +8,6 @@ class_name SectorMaterial
 
 @export_category("Texturing")
 
-@export var wall : TextureDefinition
-@export var wall_priority : int = 0
 @export var wall_default : DefaultWallRule = DefaultWallRule.new()
 @export var wall_rules : Array[WallRule]
 

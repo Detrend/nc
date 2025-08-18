@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="UseTheOtherTextureDefinition" load_steps=2 format=3 uid="uid://d23g30feng5up"]
+
+[ext_resource type="Script" uid="uid://cu3v02g4t3cun" path="res://scripts/visuals/UseTheOtherTextureDefinition.gd" id="1_15i8n"]
+
+[resource]
+script = ExtResource("1_15i8n")
+metadata/_custom_type_script = "uid://cu3v02g4t3cun"

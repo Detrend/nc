@@ -23,7 +23,7 @@ enum PlacementType {
 var placement_type : PlacementType:
 	get: return _placement_type as PlacementType
 
-@export var texture : TextureDefinition
+@export var texture : ITextureDefinition
 
 
 func get_priority()->int:
