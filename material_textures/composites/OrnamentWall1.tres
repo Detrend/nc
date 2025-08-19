@@ -1,29 +1,76 @@
-[gd_resource type="Resource" script_class="LayeredTexture" load_steps=11 format=3 uid="uid://behq3vtxqr8q1"]
+[gd_resource type="Resource" script_class="LayeredTexture" load_steps=20 format=3 uid="uid://behq3vtxqr8q1"]
 
 [ext_resource type="Script" uid="uid://csukwu081bfv0" path="res://scripts/visuals/ILayeredTextureEntry.gd" id="1_w4hsy"]
 [ext_resource type="Script" uid="uid://dt7r05hfelhgq" path="res://scripts/visuals/LayeredTexture.gd" id="2_egult"]
 [ext_resource type="Script" uid="uid://b60vys5f055ei" path="res://scripts/visuals/LT_Entry.gd" id="2_gdawm"]
 [ext_resource type="Resource" uid="uid://7i6ybyw6rpjt" path="res://material_textures/Wall4.tres" id="3_8yddu"]
+[ext_resource type="Script" uid="uid://b7mxery2plfee" path="res://scripts/visuals/TextureOffsetAdjuster.gd" id="3_ds1pv"]
 [ext_resource type="Script" uid="uid://ds4udf2uy0wpn" path="res://scripts/visuals/LT_Filler.gd" id="4_ds1pv"]
 [ext_resource type="Resource" uid="uid://0pn0s6pgyedy" path="res://material_textures/Wall5.tres" id="5_qk0bx"]
 [ext_resource type="Resource" uid="uid://bc0oqp6r8ex75" path="res://material_textures/Wall6.tres" id="6_3e56x"]
+[ext_resource type="Resource" uid="uid://du2802l0rxokk" path="res://material_textures/Wall7.tres" id="7_8yddu"]
+[ext_resource type="Script" uid="uid://dpohkvy6wk8m2" path="res://scripts/visuals/ExtrudedTexture.gd" id="7_qk0bx"]
+
+[sub_resource type="Resource" id="Resource_qk0bx"]
+script = ExtResource("3_ds1pv")
+texture = ExtResource("3_8yddu")
+height_expression = "-stripe_height_min / scale"
+_arguments_preview = PackedStringArray("og_offset_x", "og_offset_y", "scale", "wall_height_min", "wall_height_max", "stripe_height_min", "stripe_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling")
+metadata/_custom_type_script = "uid://b7mxery2plfee"
 
 [sub_resource type="Resource" id="Resource_3qmfw"]
 script = ExtResource("2_gdawm")
-texture = ExtResource("3_8yddu")
+texture = SubResource("Resource_qk0bx")
 anchor_point = 1.0
 height_expression = "min(0.5, 0.5 * total_height)"
 _arguments_preview = PackedStringArray("total_height", "available_height", "wall_height_min", "wall_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling")
 metadata/_custom_type_script = "uid://b60vys5f055ei"
 
-[sub_resource type="Resource" id="Resource_hfg06"]
+[sub_resource type="Resource" id="Resource_8yddu"]
 script = ExtResource("4_ds1pv")
 texture = ExtResource("5_qk0bx")
 metadata/_custom_type_script = "uid://ds4udf2uy0wpn"
 
+[sub_resource type="Resource" id="Resource_skeuo"]
+script = ExtResource("7_qk0bx")
+texture = ExtResource("7_8yddu")
+mode = 0
+begin_up_direction = Vector3(0, 0.1, 0)
+end_up_direction = Vector3(0, 0.1, 0)
+begin_down_direction = Vector3(0, 0.1, 0)
+end_down_direction = Vector3(0, 0.1, 0)
+metadata/_custom_type_script = "uid://dpohkvy6wk8m2"
+
+[sub_resource type="Resource" id="Resource_ds1pv"]
+script = ExtResource("3_ds1pv")
+texture = SubResource("Resource_skeuo")
+height_expression = "-stripe_height_min / scale"
+_arguments_preview = PackedStringArray("og_offset_x", "og_offset_y", "scale", "wall_height_min", "wall_height_max", "stripe_height_min", "stripe_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling")
+metadata/_custom_type_script = "uid://b7mxery2plfee"
+
+[sub_resource type="Resource" id="Resource_hfg06"]
+script = ExtResource("2_gdawm")
+texture = SubResource("Resource_ds1pv")
+anchor_point = 0.5
+height_expression = "0.5 if available_height >= 0.5 else 0"
+_arguments_preview = PackedStringArray("total_height", "available_height", "wall_height_min", "wall_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling")
+metadata/_custom_type_script = "uid://b60vys5f055ei"
+
+[sub_resource type="Resource" id="Resource_bjrju"]
+script = ExtResource("4_ds1pv")
+texture = ExtResource("5_qk0bx")
+metadata/_custom_type_script = "uid://ds4udf2uy0wpn"
+
+[sub_resource type="Resource" id="Resource_3e56x"]
+script = ExtResource("3_ds1pv")
+texture = ExtResource("6_3e56x")
+height_expression = "-stripe_height_min / scale"
+_arguments_preview = PackedStringArray("og_offset_x", "og_offset_y", "scale", "wall_height_min", "wall_height_max", "stripe_height_min", "stripe_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling")
+metadata/_custom_type_script = "uid://b7mxery2plfee"
+
 [sub_resource type="Resource" id="Resource_r4hdo"]
 script = ExtResource("2_gdawm")
-texture = ExtResource("6_3e56x")
+texture = SubResource("Resource_3e56x")
 anchor_point = 0.0
 height_expression = "min(0.5, 0.5 * total_height)"
 _arguments_preview = PackedStringArray("total_height", "available_height", "wall_height_min", "wall_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling")
@@ -32,5 +79,5 @@ metadata/_custom_type_script = "uid://b60vys5f055ei"
 [resource]
 script = ExtResource("2_egult")
 composition_order = 3
-layers = Array[ExtResource("1_w4hsy")]([SubResource("Resource_3qmfw"), SubResource("Resource_hfg06"), SubResource("Resource_r4hdo")])
+layers = Array[ExtResource("1_w4hsy")]([SubResource("Resource_3qmfw"), SubResource("Resource_8yddu"), SubResource("Resource_hfg06"), SubResource("Resource_bjrju"), SubResource("Resource_r4hdo")])
 metadata/_custom_type_script = "uid://dt7r05hfelhgq"

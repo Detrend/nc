@@ -31,3 +31,9 @@ static func vec2_to_array(v: Vector2)->PackedFloat32Array:
 	
 static func vec3_to_array(v: Vector3)->PackedFloat32Array:
 	return [v.x, v.y, v.z]
+	
+static func vec2_from_array(arr: PackedFloat32Array)->Vector2:
+	return Vector2(arr[0],arr[1])
+	
+static func vec3_from_array(arr: PackedFloat32Array)->Vector3:
+	return Vector3(arr[0],arr[1],arr[2])
