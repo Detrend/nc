@@ -58,12 +58,9 @@ func append_info(out: Array[Dictionary], begin_height: float, end_height: float,
 
 func _adjust_normals(container : Array[Dictionary], begin_idx : int, begin_up_direction : Vector3, end_up_direction : Vector3, begin_down_direction : Vector3, end_down_direction : Vector3, additional: Callable = Callable())->void:
 	while begin_idx < container.size():
-		container[begin_idx].get_or_add('begin_up_direction', _vec_to_array(begin_up_direction))
-		container[begin_idx].get_or_add('end_up_direction',  _vec_to_array(end_up_direction))
-		container[begin_idx].get_or_add('begin_down_direction',  _vec_to_array(begin_down_direction))
-		container[begin_idx].get_or_add('end_down_direction',  _vec_to_array(end_down_direction))
+		container[begin_idx].get_or_add('begin_up_direction', TextUtils.vec3_to_array(begin_up_direction))
+		container[begin_idx].get_or_add('end_up_direction',  TextUtils.vec3_to_array(end_up_direction))
+		container[begin_idx].get_or_add('begin_down_direction',  TextUtils.vec3_to_array(begin_down_direction))
+		container[begin_idx].get_or_add('end_down_direction',  TextUtils.vec3_to_array(end_down_direction))
 		if additional: additional.call(container[begin_idx])
 		begin_idx += 1
-
-func _vec_to_array(v: Vector3)->PackedFloat32Array:
-	return [v.x, v.z, v.y]

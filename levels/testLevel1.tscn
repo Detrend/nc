@@ -3924,7 +3924,7 @@ position = Vector2(22.5649, 2.07227)
 [node name="_0" parent="Sectors/Outsides/TriangulatedMultisector-8559/TriangulatedMultisector-4438-Gen/TriangulatedMultisector-4094-Gen" instance=ExtResource("2_l4525")]
 z_index = -10
 position = Vector2(4786.44, 5394.93)
-color = Color(0.8677, 0.734358, 0.786444, 1)
+color = Color(0.867699, 0.734357, 0.786444, 1)
 polygon = PackedVector2Array(-4803, -5399, -4779, -5412, -4781, -5404, -4797, -5384)
 data = SubResource("Resource_d0lu7")
 floor_height = 1.05574
@@ -3934,7 +3934,7 @@ sector_material = ExtResource("20_sc5vv")
 [node name="_1" parent="Sectors/Outsides/TriangulatedMultisector-8559/TriangulatedMultisector-4438-Gen/TriangulatedMultisector-4094-Gen" instance=ExtResource("2_l4525")]
 z_index = -10
 position = Vector2(4786.44, 5394.93)
-color = Color(0.8677, 0.734358, 0.786444, 1)
+color = Color(0.867699, 0.734357, 0.786444, 1)
 polygon = PackedVector2Array(-4816, -5336, -4803, -5399, -4797, -5384, -4800, -5337)
 data = SubResource("Resource_d0lu7")
 floor_height = 1.05574
@@ -3944,7 +3944,7 @@ sector_material = ExtResource("20_sc5vv")
 [node name="_2" parent="Sectors/Outsides/TriangulatedMultisector-8559/TriangulatedMultisector-4438-Gen/TriangulatedMultisector-4094-Gen" instance=ExtResource("2_l4525")]
 z_index = -10
 position = Vector2(4786.44, 5394.93)
-color = Color(0.8677, 0.734358, 0.786444, 1)
+color = Color(0.867699, 0.734357, 0.786444, 1)
 polygon = PackedVector2Array(-4790, -5307, -4816, -5336, -4800, -5337, -4764, -5328, -4746, -5318)
 data = SubResource("Resource_d0lu7")
 floor_height = 1.05574
@@ -3954,7 +3954,7 @@ sector_material = ExtResource("20_sc5vv")
 [node name="_3" parent="Sectors/Outsides/TriangulatedMultisector-8559/TriangulatedMultisector-4438-Gen/TriangulatedMultisector-4094-Gen" instance=ExtResource("2_l4525")]
 z_index = -10
 position = Vector2(4786.44, 5394.93)
-color = Color(0.8677, 0.734358, 0.786444, 1)
+color = Color(0.867699, 0.734357, 0.786444, 1)
 polygon = PackedVector2Array(-4738, -5392, -4746, -5318, -4764, -5328, -4750, -5387)
 data = SubResource("Resource_d0lu7")
 floor_height = 1.05574
@@ -3964,7 +3964,7 @@ sector_material = ExtResource("20_sc5vv")
 [node name="_4" parent="Sectors/Outsides/TriangulatedMultisector-8559/TriangulatedMultisector-4438-Gen/TriangulatedMultisector-4094-Gen" instance=ExtResource("2_l4525")]
 z_index = -10
 position = Vector2(4786.44, 5394.93)
-color = Color(0.8677, 0.734358, 0.786444, 1)
+color = Color(0.867699, 0.734357, 0.786444, 1)
 polygon = PackedVector2Array(-4779, -5412, -4738, -5392, -4750, -5387, -4781, -5404)
 data = SubResource("Resource_d0lu7")
 floor_height = 1.05574
@@ -4016,7 +4016,6 @@ ceiling_height = 999.0
 sector_material = ExtResource("20_sc5vv")
 
 [node name="PickUps" type="Node2D" parent="."]
-visible = false
 
 [node name="HpBig" parent="PickUps" instance=ExtResource("7_hqisf")]
 position = Vector2(22, 54)
@@ -4093,46 +4092,57 @@ position = Vector2(-21, -19)
 [node name="Enemies" type="Node2D" parent="."]
 
 [node name="Pepe" parent="Enemies" instance=ExtResource("9_rrxkl")]
-visible = false
-position = Vector2(70, 5)
+position = Vector2(72, -16)
+rotation = 0.785397
 
 [node name="Pepe2" parent="Enemies" instance=ExtResource("9_rrxkl")]
-position = Vector2(225, -142)
+position = Vector2(240, -127)
 
 [node name="Pepe3" parent="Enemies" instance=ExtResource("9_rrxkl")]
-position = Vector2(247, -138)
+position = Vector2(259, -140)
+rotation = -1.57079
 
 [node name="Pepe4" parent="Enemies" instance=ExtResource("9_rrxkl")]
-position = Vector2(482, -19)
+position = Vector2(493, -15)
+rotation = 4.45058
 
 [node name="PepeArmy" type="Node2D" parent="Enemies"]
-position = Vector2(-5074, -5028)
+position = Vector2(-5062, -5178)
+rotation = 3.14159
 
 [node name="Pepe5" parent="Enemies/PepeArmy" instance=ExtResource("9_rrxkl")]
 position = Vector2(0, -1)
+height_offset = 0.0
 
 [node name="Pepe6" parent="Enemies/PepeArmy" instance=ExtResource("9_rrxkl")]
 position = Vector2(10, -2)
+height_offset = 0.0
 
 [node name="Pepe7" parent="Enemies/PepeArmy" instance=ExtResource("9_rrxkl")]
 position = Vector2(6, -11)
+height_offset = 0.0
 
 [node name="Pepe8" parent="Enemies/PepeArmy" instance=ExtResource("9_rrxkl")]
 position = Vector2(-4, -11)
+height_offset = 0.0
 
 [node name="Pepe9" parent="Enemies/PepeArmy" instance=ExtResource("9_rrxkl")]
 position = Vector2(-10, -1)
+height_offset = 0.0
 
 [node name="Pepe10" parent="Enemies/PepeArmy" instance=ExtResource("9_rrxkl")]
 position = Vector2(-4, 7)
+height_offset = 0.0
 
 [node name="Pepe11" parent="Enemies/PepeArmy" instance=ExtResource("9_rrxkl")]
 position = Vector2(6, 7)
+height_offset = 0.0
 
 [node name="Pepe12" parent="Enemies/PepeArmy" instance=ExtResource("9_rrxkl")]
 position = Vector2(14, 10)
+height_offset = 0.0
 
 [node name="PlayerPosition" parent="." instance=ExtResource("3_nqbmo")]
-position = Vector2(-5042, -5391)
+position = Vector2(-5092, -5410)
 placement_mode = 0
 height_offset = 0.5
