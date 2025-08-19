@@ -357,7 +357,7 @@ static WallSurfaceData load_json_wall_surface(const nlohmann::json& js)
         const vec3 forward = load_json_vector<3>(js_entity["forward"]).xzy;
         
         if (js_entity["is_player"] == true) {
-            auto* player = entities.create_entity<Player>(position);
+            auto* player = entities.create_entity<Player>(position, forward);
             player_id = player->get_id();
         }
         else {
@@ -911,7 +911,7 @@ void ThingSystem::build_map(LevelID level)
   if (level != Levels::json_map) { // json map does entity spawning on its own
       mapping->on_map_rebuild();
 
-      auto* player = entities->create_entity<Player>(vec3{ 0.5f, 0.0f, 0.5f });
+      auto* player = entities->create_entity<Player>(vec3{ 0.5f, 0.0f, 0.5f }, -VEC3_Z);
       player_id = player->get_id();
 
       // Beware that these fuckers can shoot you even if you do not see them and

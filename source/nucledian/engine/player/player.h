@@ -30,7 +30,7 @@ class Player : public Entity
 public:
   using Base = Entity;
 
-  Player(vec3 position);
+  Player(vec3 position, vec3 forward);
 
   static EntityType get_type_static();
 
