@@ -236,7 +236,7 @@ static vec<float, TSize> load_json_vector(const nlohmann::json& js)
 
 //==============================================================================
 template<typename T, typename TSupplier>
-static void load_json_optional(T& out, const nlohmann::json& js, const std::string& key, const TSupplier& supplier) 
+static void load_json_optional(T& out, const nlohmann::json& js, const cstr key, const TSupplier& supplier) 
 {
     if (js.contains(key)) {
         out = supplier(js[key]);
@@ -245,7 +245,7 @@ static void load_json_optional(T& out, const nlohmann::json& js, const std::stri
 
 
 //==============================================================================
-static bool load_json_flag(const nlohmann::json& js, const std::string& key) 
+static bool load_json_flag(const nlohmann::json& js, const cstr key)
 {
     if (js.contains(key)) {
         return js[key];
@@ -284,10 +284,10 @@ static WallSurfaceData load_json_wall_surface(const nlohmann::json& js)
         auto &entry = ret.surfaces.emplace_back();
         entry.surface = load_json_surface(js_entry);
         entry.end_height = js_entry["end_height"];
-        load_json_optional(entry.begin_up_tesselation,  js_entry, "begin_up_direction", load_json_vector<3>);
-        load_json_optional(entry.end_up_tesselation,    js_entry, "end_up_direction", load_json_vector<3>);
-        load_json_optional(entry.begin_down_tesselation,js_entry, "begin_down_direction", load_json_vector<3>);
-        load_json_optional(entry.end_down_tesselation,  js_entry, "end_down_direction", load_json_vector<3>);
+        load_json_optional(entry.begin_up_tesselation.xzy,  js_entry, "begin_up_direction", load_json_vector<3>);
+        load_json_optional(entry.end_up_tesselation.xzy,    js_entry, "end_up_direction", load_json_vector<3>);
+        load_json_optional(entry.begin_down_tesselation.xzy,js_entry, "begin_down_direction", load_json_vector<3>);
+        load_json_optional(entry.end_down_tesselation.xzy,  js_entry, "end_down_direction", load_json_vector<3>);
         if (load_json_flag(js_entry, "absolute_directions")) {
             entry.flags = static_cast<WallSurfaceData::Flags>(entry.flags | WallSurfaceData::Flags::absolute_directions);
         }
@@ -353,15 +353,16 @@ static WallSurfaceData load_json_wall_surface(const nlohmann::json& js)
 
     
     for (auto&& js_entity : data["entities"]) {
-        auto& js_position = js_entity["position"];
-        const vec3 position(js_position[0], js_position[2], js_position[1]);
+        const vec3 position = load_json_vector<3>(js_entity["position"]).xzy;
+        const vec3 forward = load_json_vector<3>(js_entity["forward"]).xzy;
+        
         if (js_entity["is_player"] == true) {
             auto* player = entities.create_entity<Player>(position);
             player_id = player->get_id();
         }
         else {
             // Beware that these fuckers can shoot you even if you do not see them and therefore kill you during the normal level testing.
-            entities.create_entity<Enemy>(position, FRONT_DIR);
+            entities.create_entity<Enemy>(position, forward);
         }
     }
 
