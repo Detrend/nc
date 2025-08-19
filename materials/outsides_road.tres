@@ -1,7 +1,6 @@
-[gd_resource type="Resource" script_class="SectorMaterial" load_steps=10 format=3 uid="uid://cngafoh223j4c"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=9 format=3 uid="uid://cngafoh223j4c"]
 
 [ext_resource type="Texture2D" uid="uid://5ju12ycw81g4" path="res://imgs/bricks.png" id="1_hk1ql"]
-[ext_resource type="Resource" uid="uid://lv2l2mulcl3e" path="res://material_textures/Floor2.tres" id="1_y0ttn"]
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="2_bcjow"]
 [ext_resource type="Resource" uid="uid://b62b6owe57oqc" path="res://material_textures/Floor1.tres" id="2_mygdj"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="3_fdxwp"]
@@ -30,5 +29,5 @@ preview_rotation = 0.0
 wall_default = SubResource("Resource_ucnai")
 wall_rules = Array[ExtResource("3_fdxwp")]([SubResource("Resource_hk1ql")])
 floor = ExtResource("2_mygdj")
-ceiling = ExtResource("1_y0ttn")
+ceiling = ExtResource("5_ucnai")
 metadata/_custom_type_script = "uid://bd7os02w6f4ou"

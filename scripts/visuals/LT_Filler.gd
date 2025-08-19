@@ -5,7 +5,7 @@ extends ILayeredTextureEntry
 @export var texture : ITextureDefinition
 
 
-func get_height(total_height: float, available_height: float)->float:
+func get_height(total_height: float, available_height: float, _texturing_interval : Vector2, _ctx : ITextureDefinition.TexturingContext)->float:
 	return available_height
 
 

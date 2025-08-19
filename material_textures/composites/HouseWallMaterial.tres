@@ -27,9 +27,8 @@ metadata/_custom_type_script = "uid://dpohkvy6wk8m2"
 script = ExtResource("4_wqr2l")
 texture = SubResource("Resource_4hq5t")
 anchor_point = 0.0
-height_mode = 3
-height_fixed = 1.0
-height_percent = 0.5
+height_expression = "min(1.0, 0.5 * total_height)"
+_arguments_preview = PackedStringArray("total_height", "available_height", "wall_height_min", "wall_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling")
 metadata/_custom_type_script = "uid://b60vys5f055ei"
 
 [resource]

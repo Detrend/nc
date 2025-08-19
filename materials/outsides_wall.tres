@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="SectorMaterial" load_steps=9 format=3 uid="uid://p738ciwykkty"]
 
-[ext_resource type="Resource" uid="uid://lv2l2mulcl3e" path="res://material_textures/Floor2.tres" id="1_n7d1l"]
+[ext_resource type="Resource" uid="uid://c0bfb1i38kqd" path="res://material_textures/_None.tres" id="1_hyndm"]
 [ext_resource type="Texture2D" uid="uid://5ju12ycw81g4" path="res://imgs/bricks.png" id="1_qr651"]
 [ext_resource type="Resource" uid="uid://b62b6owe57oqc" path="res://material_textures/Floor1.tres" id="2_hyndm"]
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="2_r0utu"]
@@ -22,5 +22,5 @@ preview_rotation = 0.0
 wall_default = SubResource("Resource_hshd3")
 wall_rules = Array[ExtResource("3_1qqi1")]([])
 floor = ExtResource("2_hyndm")
-ceiling = ExtResource("1_n7d1l")
+ceiling = ExtResource("1_hyndm")
 metadata/_custom_type_script = "uid://bd7os02w6f4ou"

@@ -43,7 +43,7 @@ func append_info(out: Array[Dictionary], begin_height: float, end_height: float,
 				break
 			t += 1
 		var free_size_interval_size := free_size_interval.y - free_size_interval.x
-		var desired_size := entry.get_height(total_size, free_size_interval_size)
+		var desired_size := entry.get_height(total_size, free_size_interval_size, Vector2(begin_height, end_height), ctx)
 		if desired_size >= free_size_interval_size:
 			sizes[entry_idx] = free_size_interval
 			continue
