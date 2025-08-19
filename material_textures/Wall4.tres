@@ -1,13 +1,15 @@
-[gd_resource type="Resource" script_class="TextureDefinition" load_steps=2 format=3 uid="uid://7i6ybyw6rpjt"]
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://7i6ybyw6rpjt"]
 
+[ext_resource type="Texture2D" uid="uid://b54wfi0jsacvs" path="res://imgs/wall4.png" id="1_25uho"]
 [ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="1_gv0q2"]
 
 [resource]
 script = ExtResource("1_gv0q2")
-_id = "wall4"
+preview = ExtResource("1_25uho")
+_id = ""
 scale = 0.5
 rotation = 0.0
-rotation_randomizer_options = 1
-rotation_randomizer_increment = 90.0
+tile_rotations_count = 1
+tile_rotation_increment = 90.0
 should_show = true
 metadata/_custom_type_script = "uid://chjmx3djsb6cj"

@@ -7,7 +7,7 @@
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="3_qxi2i"]
 [ext_resource type="Resource" uid="uid://crtucqy2narq3" path="res://material_textures/Bricks.tres" id="5_yci1d"]
 [ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="6_olw7g"]
-[ext_resource type="Resource" uid="uid://0pn0s6pgyedy" path="res://material_textures/Wall5.tres" id="7_6r3lj"]
+[ext_resource type="Resource" uid="uid://behq3vtxqr8q1" path="res://material_textures/composites/OrnamentWall1.tres" id="8_olw7g"]
 
 [sub_resource type="Resource" id="Resource_yci1d"]
 script = ExtResource("6_olw7g")
@@ -28,7 +28,7 @@ script = ExtResource("3_qxi2i")
 priority = 1
 _placement_type = 11
 wall_length_range = Vector2(2, 9999)
-texture = ExtResource("7_6r3lj")
+texture = ExtResource("8_olw7g")
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [resource]
