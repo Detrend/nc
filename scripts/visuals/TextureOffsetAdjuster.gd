@@ -71,6 +71,5 @@ func append_info(out: Array[Dictionary], begin_height: float, end_height: float,
 		var og_offset := offset
 		offset.y += height_change
 		entry['offset'] = TextUtils.vec2_to_array(offset)
-		print("{0}... offset {1} -> {2}".format([this_sector.get_full_name(), og_offset, offset]))
 		t += 1
 	
