@@ -76,6 +76,7 @@ private:
     const vec3& position;
     const mat4& view;
     const VisibilityTree& vis_tree;
+    const mat4& portal_dest_to_src;
   };
 };
 

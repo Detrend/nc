@@ -66,6 +66,7 @@ namespace nc
       inline constexpr Uniform<3, vec2> LEVEL_ATLAS_SIZE;
       inline constexpr Uniform<4, s32>  GAME_TEXTURE_ATLAS;
       inline constexpr Uniform<5, s32>  LEVEL_TEXTURE_ATLAS;
+      inline constexpr Uniform<6, mat4> PORTAL_DEST_TO_SRC;
     }
   }
 

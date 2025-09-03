@@ -8,9 +8,12 @@ struct TextureData {
   float in_game_atlas;
 };
 
+in vec3 stitched_position;
+
 in vec3 position;
 in vec3 normal;
 in float cumulative_wall_len;
+
 flat in int texture_id;
 flat in float texture_scale;
 flat in float texture_rotation;
@@ -68,7 +71,8 @@ void main()
   if (color.a == 0.0f)
     discard;
 
-  g_position.xyz = position;
+  // Position G-bugger works in camera local space in order to overcome portals space discontinuity.
+  g_position.xyz = stitched_position;
   // 4-th component of position is used to determine if pixel should be lit
   g_position.w = 1.0f;
   g_normal.xyz = normalize(normal);

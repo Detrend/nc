@@ -105,6 +105,7 @@ const
     .position = camera->get_position(),
     .view = camera->get_view(),
     .vis_tree = visibility_tree,
+    .portal_dest_to_src = mat4(1.0f),
   };
 
   do_geometry_pass(camera_data, gun_data);
@@ -279,6 +280,7 @@ void Renderer::render_sectors(const CameraData& camera) const
 
   m_sector_material.use();
   m_sector_material.set_uniform(shaders::sector::VIEW, camera.view);
+  m_sector_material.set_uniform(shaders::sector::PORTAL_DEST_TO_SRC, camera.portal_dest_to_src);
 
   for (const auto& [sector_id, _] : sectors_to_render)
   {
@@ -383,6 +385,7 @@ void Renderer::render_portals(const CameraData& camera) const
       .position   = camera.position,
       .view       = camera.view,
       .vis_tree   = subtree,
+      .portal_dest_to_src = mat4(1.0f),
     };
 
     render_portal(new_camera, render_data, 0);
@@ -537,6 +540,7 @@ void Renderer::render_portal(const CameraData& camera, const Portal& portal, u8 
     .position = camera.position,
     .view = virtual_view,
     .vis_tree = camera.vis_tree,
+    .portal_dest_to_src = camera.portal_dest_to_src * portal.dest_to_src,
   };
 
   render_portal_to_stencil(camera, portal, recursion);
@@ -554,6 +558,7 @@ void Renderer::render_portal(const CameraData& camera, const Portal& portal, u8 
       .position   = virtual_camera_data.position,
       .view       = virtual_camera_data.view,
       .vis_tree   = subtree,
+      .portal_dest_to_src = virtual_camera_data.portal_dest_to_src,
     };
 
     render_portal(new_cam_data, render_data, recursion + 1);
