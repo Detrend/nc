@@ -32,6 +32,13 @@ namespace nc
 
   //============================================================================================
 
+  GuiTexture* UiButton::get_texture()
+  {
+    return texture;
+  }
+
+  //============================================================================================
+
   MenuManager::MenuManager()
   {
     main_menu_page = new MainMenuPage();

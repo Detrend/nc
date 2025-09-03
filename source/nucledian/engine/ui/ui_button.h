@@ -21,6 +21,7 @@ namespace nc
     UiButton(GuiTexture* texture, std::function<void(void)> func);
     bool is_point_in_rec(vec2 point);
 
+    GuiTexture* get_texture();
 
   private:
     GuiTexture* texture;
