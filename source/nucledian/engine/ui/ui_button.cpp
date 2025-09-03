@@ -58,11 +58,11 @@ namespace nc
 
     SDL_GetMouseState(&mouse_x, &mouse_y);
 
-    u32 width = GraphicsSystem::WINDOW_WIDTH;
-    u32 height = GraphicsSystem::WINDOW_HEIGHT;
+    f32 width = GraphicsSystem::WINDOW_WIDTH;
+    f32 height = GraphicsSystem::WINDOW_HEIGHT;
 
     f32 half_width = width / 2.0f;
-    f32 half_height = width / 2.0f;
+    f32 half_height = height / 2.0f;
 
     //normalize between <0, 2>, then minus one to move it to <-1, 1>
     f32 norm_x = mouse_x / half_width - 1.0f;

@@ -1,5 +1,4 @@
 #include <engine/ui/ui_texture.h>
-#include <glad/glad.h>
 #include <engine/graphics/graphics_system.h>
 
 #include <vector>
