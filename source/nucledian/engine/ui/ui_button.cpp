@@ -86,10 +86,46 @@ namespace nc
     current_page = MAIN;
   }
 
+  //===============================================================================================
+
+  void MenuManager::update()
+  {
+    switch (current_page)
+    {
+    case nc::MAIN:
+      break;
+    case nc::NEW_GAME:
+      break;
+    case nc::OPTIONS:
+      break;
+    case nc::LOAD:
+      break;
+    case nc::SAVE:
+      break;
+    default:
+      break;
+    }
+  }
+
   //============================================================================================
 
   void MenuManager::draw()
   {
+    switch (current_page)
+    {
+    case nc::MAIN:
+      break;
+    case nc::NEW_GAME:
+      break;
+    case nc::OPTIONS:
+      break;
+    case nc::LOAD:
+      break;
+    case nc::SAVE:
+      break;
+    default:
+      break;
+    }
   }
 
   //===========================================================================================

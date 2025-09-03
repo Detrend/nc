@@ -82,6 +82,7 @@ namespace nc
     vec2 get_normalized_mouse_pos();
 
     void set_visible(bool visibility);
+    void update();
     void draw();
 
   private:
