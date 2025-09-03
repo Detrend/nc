@@ -1,4 +1,5 @@
 #include <engine/ui/ui_texture.h>
+#include <glad/glad.h>
 
 #include <vector>
 #include <functional>
@@ -18,10 +19,30 @@ namespace nc
     std::function<void(void)> func;
   };
 
-  class UiButtonManager
+  class MainMenuPage
   {
-  public:
-  private:
-    std::vector<UiButton> buttons;
+
+  };
+
+  class OptionsPage
+  {
+
+  };
+
+  class SaveGamePage 
+  {
+
+  };
+
+  class LoadGamePage
+  {
+
+  };
+
+  
+
+  class MenuManager
+  {
+
   };
 }
