@@ -34,7 +34,7 @@ namespace nc
     MainMenuPage();
     ~MainMenuPage();
 
-    void draw() {}
+    void draw();
 
   private:
     UiButton* new_game_button = nullptr;
@@ -47,28 +47,28 @@ namespace nc
   class NewGamePage
   {
   public:
-    void draw() {}
+    void draw();
   private:
   };
 
   class OptionsPage
   {
   public:
-    void draw() {}
+    void draw();
   private:
   };
 
   class SaveGamePage 
   {
   public:
-    void draw() {}
+    void draw();
   private:
   };
 
   class LoadGamePage
   {
   public:
-    void draw() {}
+    void draw();
   private:
   };
 
