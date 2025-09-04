@@ -103,5 +103,8 @@ namespace nc
     MenuPages current_page = MenuPages::MAIN;
 
     bool visible = false;
+
+    bool cur_esc_pressed = false;
+    bool prev_esc_pressed = false;
   };
 }

@@ -90,6 +90,25 @@ namespace nc
 
   void MenuManager::update()
   {
+    prev_esc_pressed = cur_esc_pressed;
+    cur_esc_pressed = false;
+
+    int size;
+    const Uint8* keyboard = SDL_GetKeyboardState(&size);
+    if (keyboard[SDL_SCANCODE_ESCAPE])
+    {
+      cur_esc_pressed = true;
+    }
+
+    if (cur_esc_pressed && !prev_esc_pressed)
+    {
+      set_visible(!visible);
+    }
+
+    if (!visible) {
+      return;
+    }
+
     switch (current_page)
     {
     case nc::MAIN:
