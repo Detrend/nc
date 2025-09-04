@@ -38,6 +38,15 @@ namespace nc
     void draw();
 
   private:
+
+    //These functions are for buttons
+    void new_game_func();
+    void options_func();
+    void load_game_func();
+    void save_game_func();
+    void quit_func();
+
+
     UiButton* new_game_button = nullptr;
     UiButton* options_button = nullptr;
     UiButton* load_button = nullptr;
