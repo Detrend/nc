@@ -1,6 +1,14 @@
 constexpr const char* FRAGMENT_SOURCE = R"(
 
 #version 430 core
+
+struct DirLight
+{
+    vec3  color;
+    float intensity;
+    vec3  direction;
+};
+
 in vec2 uv;
 
 out vec4 out_color;
@@ -10,6 +18,9 @@ layout(location = 1) uniform sampler2D g_normal;
 layout(location = 2) uniform sampler2D g_albedo;
 
 layout(location = 3) uniform vec3 view_position;
+layout(location = 4) uniform uint num_dir_lights;
+
+layout(std430, binding = 0) buffer DirLights { DirLight dir_lights[]; };
 
 void main()
 {
@@ -23,28 +34,31 @@ void main()
   // 4-th component of normal is used for specular strength
   float specular_strength = g_normal_sample.w;
 
-  vec4 color = texture(g_albedo, uv);
+  vec3 albedo = texture(g_albedo, uv).rgb;
 
   if (unlit)
   {
-    out_color = color;
+    out_color = vec4(albedo, 1.0f);
     return;
   }
 
   float ambient_strength = 0.3f;
-  int   shininess         = 128;
+  int   shininess        = 128;
 
-  vec3  light_color       = vec3(1.0f, 1.0f, 1.0f);
-  vec3  light_direction   = -normalize(vec3(-0.2f, -0.8f, -0.4f));
+  vec3 view_direction = normalize(view_position - position);
+  vec3 final_color    = ambient_strength * albedo;
 
-  vec3 view_direction    = normalize(view_position - position);
-  vec3 reflect_direction = reflect(-light_direction, normal);
+  for(int i = 0; i < num_dir_lights; i++)
+  {
+    vec3 reflect_direction = reflect(-dir_lights[i].direction, normal);
 
-  float ambient  = ambient_strength;
-  float diffuse  = max(dot(normal, light_direction), 0.0f);
-  float specular = specular_strength * pow(max(dot(view_direction, reflect_direction), 0.0f), shininess);
+    vec3 diffuse  = max(dot(normal, dir_lights[i].direction), 0.0f) * albedo;
+    vec3 specular = specular_strength * pow(max(dot(view_direction, reflect_direction), 0.0f), shininess) * vec3(1.0f);
 
-  out_color = vec4((ambient + diffuse + specular) * light_color, 1.0f) * color;
+    final_color += (diffuse + specular) * dir_lights[i].color * dir_lights[i].intensity;
+  }
+
+  out_color = vec4(final_color, 1.0f);
 }
 
 )";

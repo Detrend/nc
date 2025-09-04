@@ -14,6 +14,7 @@
 #include <engine/graphics/camera.h>
 #include <engine/graphics/gizmo.h>
 #include <engine/graphics/graphics_system.h>
+#include <engine/graphics/lights.h>
 #include <engine/map/map_system.h>
 #include <engine/player/thing_system.h>
 #include <engine/appearance.h>
@@ -72,6 +73,17 @@ Renderer::Renderer(u32 win_w, u32 win_h)
     data[i].in_game_atlas = (textures[i].get_lifetime() == ResLifetime::Game ? 1.0f : 0.0f);
   }
   glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(TextureData), data.data(), GL_STATIC_DRAW);
+
+  // setup directional light ssbo
+  glGenBuffers(1, &m_dir_light_ssbo);
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_dir_light_ssbo);
+  glBufferData
+  (
+    GL_SHADER_STORAGE_BUFFER,
+    DirectionalLight::MAX_DIRECTIONAL_LIGHTS * sizeof(DirectionalLight::GPUData),
+    nullptr,
+    GL_DYNAMIC_DRAW
+  );
   glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
@@ -108,6 +120,7 @@ const
     .portal_dest_to_src = mat4(1.0f),
   };
 
+  update_light_data();
   do_geometry_pass(camera_data, gun_data);
   do_lighting_pass(camera_data.position);
 }
@@ -247,6 +260,7 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  // bind g-bufers
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, m_g_position);
   glActiveTexture(GL_TEXTURE1);
@@ -254,13 +268,49 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   glActiveTexture(GL_TEXTURE2);
   glBindTexture(GL_TEXTURE_2D, m_g_albedo);
 
+  // bind light ssbos
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_dir_light_ssbo);
+
+  // prepare shader
   m_light_material.use();
   m_light_material.set_uniform(shaders::light::VIEW_POSITION, view_position);
+  m_light_material.set_uniform(shaders::light::NUM_DIR_LIGHTS, m_dir_light_ssbo_size);
 
+  // draw call
   const MeshHandle screen_quad = MeshManager::get().get_screen_quad();
   glBindVertexArray(screen_quad.get_vao());
   glDrawArrays(screen_quad.get_draw_mode(), 0, screen_quad.get_vertex_count());
+
+  // clean up
   glBindVertexArray(0);
+}
+
+//==============================================================================
+void Renderer::update_light_data() const
+{
+  // TODO: ignore directional lights when indoor
+
+  // get all directional lights
+  std::vector<DirectionalLight::GPUData> dir_light_data;
+  EntityRegistry& registry = ThingSystem::get().get_entities();
+  registry.for_each<DirectionalLight>([&dir_light_data](DirectionalLight& light)
+  {
+    dir_light_data.push_back(light.get_gpu_data());
+  });
+  m_dir_light_ssbo_size = static_cast<u32>(dir_light_data.size());
+
+  // update directional light ssbo
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_dir_light_ssbo);
+  glBufferSubData
+  (
+    GL_SHADER_STORAGE_BUFFER,
+    0,
+    dir_light_data.size() * sizeof(DirectionalLight::GPUData),
+    dir_light_data.data()
+  );
+
+  // clean up
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
 //==============================================================================

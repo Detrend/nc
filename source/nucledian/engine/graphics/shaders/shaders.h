@@ -52,6 +52,7 @@ namespace nc
       inline constexpr Uniform<1, s32>  G_NORMAL;
       inline constexpr Uniform<2, s32>  G_ALBEDO;
       inline constexpr Uniform<3, vec3> VIEW_POSITION;
+      inline constexpr Uniform<4, u32>  NUM_DIR_LIGHTS;
     }
 
     // Sector rendering.

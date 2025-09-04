@@ -200,6 +200,8 @@ void TopDownDebugRenderer::draw_entities()
     colors::ORANGE, // enemy
     colors::GREEN,  // pickup
     colors::TEAL,   // projectile
+    colors::BLACK,  // directional_light (we don't need to see them)
+    colors::YELLOW, // point_light
   };
   static_assert(ARRAY_LENGTH(ENTITY_TYPE_COLORS) == EntityTypes::count);
 

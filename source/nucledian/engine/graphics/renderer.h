@@ -44,7 +44,10 @@ private:
   // Used for lighting pass.
   const MaterialHandle  m_sector_material;
 
+  mutable u32 m_dir_light_ssbo_size = 0;
+
   GLuint m_texture_data_ssbo = 0;
+  GLuint m_dir_light_ssbo = 0;
 
   GLuint m_g_buffer = 0;
   GLuint m_g_position = 0;
@@ -57,6 +60,7 @@ private:
 
   void do_geometry_pass(const CameraData& camera, const RenderGunProperties& gun) const;
   void do_lighting_pass(const vec3& view_position) const;
+  void update_light_data() const;
 
   void render_sectors(const CameraData& camera)  const;
   void render_entities(const CameraData& camera) const;

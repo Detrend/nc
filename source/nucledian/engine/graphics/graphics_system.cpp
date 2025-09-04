@@ -15,6 +15,7 @@
 #include <engine/graphics/camera.h>
 #include <engine/graphics/gizmo.h>
 #include <engine/graphics/graphics_system.h>
+#include <engine/graphics/lights.h>
 #include <engine/graphics/resources/res_lifetime.h>
 
 #include <engine/map/map_system.h>
@@ -251,6 +252,13 @@ void GraphicsSystem::on_event(ModuleEvent& event)
     case ModuleEventType::after_map_rebuild:
     {
       create_sector_meshes();
+
+      // TODO: temporary directional lights (don't forget about lights header)
+      EntityRegistry& registry = ThingSystem::get().get_entities();
+      registry.create_entity<DirectionalLight>(vec3(0.218f, 0.872f, 0.436f), 0.4f, colors::WHITE);
+      registry.create_entity<DirectionalLight>(VEC3_X, 0.8f, colors::RED);
+      registry.create_entity<DirectionalLight>(VEC3_Z, 0.8f, colors::BLUE);
+
       break;
     }
 
