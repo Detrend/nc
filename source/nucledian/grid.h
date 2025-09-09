@@ -34,7 +34,6 @@ public:
   // Resets the grid into non initialized state and frees all resources
   void reset();
 
-private:
   struct Unit
   {
     aabb2 bbox; // bbox of the object
@@ -44,7 +43,6 @@ private:
   using Coll  = std::vector<Cell>;
   using Cells = std::vector<Coll>;
 
-private:
   // MR says: I am just not a fan of std::numeric_limits<blah blah>...
   vec2  m_min = vec2{ FLT_MAX};
   vec2  m_max = vec2{-FLT_MAX};

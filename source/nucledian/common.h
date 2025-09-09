@@ -61,8 +61,10 @@ inline void assert_fail_impl(const char* const expression_str, const logging::Lo
 
 #ifdef NC_CLANG
 #define NC_FORCE_INLINE __attribute__((always_inline))
+#define NC_NEVER_INLINE __attribute__((noinline))
 #elif defined(NC_MSVC)
 #define NC_FORCE_INLINE __forceinline
+#define NC_NEVER_INLINE __declspec(noinline)
 #endif
 
 //==============================================================================

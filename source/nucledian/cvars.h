@@ -108,7 +108,6 @@ struct CVar
   using VariantPtr = std::variant<s32*, f32*, bool*, std::string*>;
   VariantPtr ptr;
   cstr       desc;
-  cstr       category;
 };
 using CVarList = std::map<std::string, CVar>;
 

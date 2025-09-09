@@ -35,15 +35,17 @@ public:
 private:
   void draw_line(vec2 from, vec2 to, vec3 color = vec3{1});
   void draw_triangle(vec2 a, vec2 b, vec2 c, vec3 color);
-  void draw_text(vec2 coords, cstr text, vec3 color);
+  void draw_text(vec2 coords, cstr text, vec3 color, vec2 scr_offset = vec2{0});
 
   void draw_player(vec2 coords, vec2 dir, vec3 c1, vec3 c2, f32 scale);
   void draw_custom_objects();
   void draw_entities();
+  void draw_sector_grid();
 
-  void to_screen_space(vec2& pt) const;
+  void to_screen_space(vec2& pt)       const;
+  void to_world_space(vec2& screen_pt) const;
 
-  mat4 calc_transform();
+  mat3 calc_transform() const;
 
 private:
   struct Line
@@ -57,6 +59,8 @@ private:
 
   bool show_sector_frustums      = true;
   bool show_visible_sectors      = true;
+  bool show_sector_grid          = true;
+  bool show_sector_grid_list     = false;
   bool show_sector_ids           = false;
   bool inspect_nucledian_portals = false;
 

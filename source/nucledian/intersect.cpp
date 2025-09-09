@@ -474,12 +474,14 @@ bool ray_infinite_plane_xz(
 }
 
 //==============================================================================
-bool ray_aabb3(
+bool ray_aabb3
+(
   vec3  ray_start,
   vec3  ray_end,
   aabb3 bbox,
   f32&  out_coeff,
-  vec3& out_normal)
+  vec3& out_normal
+)
 {
   if (!bbox.is_valid()) [[unlikely]]
   {
@@ -567,6 +569,60 @@ bool ray_aabb3(
   {
     return false;
   }
+}
+
+//==============================================================================
+bool ray_aabb2
+(
+  vec2  ray_start,
+  vec2  ray_end,
+  aabb2 bbox
+)
+{
+  nc_assert(bbox.is_valid());
+
+  // It's actually a point
+  if (ray_start == ray_end) [[unlikely]]
+  {
+    return clamp(ray_start, bbox.min, bbox.max) == ray_start;
+  }
+
+  // Check for overlap on x-axis
+  f32 mn_x = min(ray_start.x, ray_end.x);
+  f32 mx_x = max(ray_start.x, ray_end.x);
+  if (max(mn_x, bbox.min.x) > min(mx_x, bbox.max.x))
+  {
+    return false;
+  }
+
+  vec2 direction = ray_end - ray_start;
+
+  // Check for straight line
+  if (direction.x == 0.0f) [[unlikely]]
+  {
+    // NOTE: no need to check x overlap here, as we already checked it above.
+    f32 mn_y = min(ray_start.y, ray_end.y);
+    f32 mx_y = max(ray_start.y, ray_end.y);
+    return max(mn_y, bbox.min.y) <= min(mx_y, bbox.max.y);
+  }
+
+  // Calculate y heights on the x boundaries of the bbox
+  f32 start_min_xdiff = bbox.min.x - ray_start.x;
+  f32 end_max_xdiff   = bbox.max.x - ray_end.x;
+  f32 rate            = direction.y / direction.x;
+
+  f32 y_start = ray_start.y + start_min_xdiff * rate;
+  f32 y_end   = ray_end.y   + end_max_xdiff   * rate;
+
+  // Check on overlap on y-axis
+  f32 mn_y = min(y_start, y_end);
+  f32 mx_y = max(y_start, y_end);
+  if (max(mn_y, bbox.min.y) > min(mx_y, bbox.max.y))
+  {
+    return false;
+  }
+
+  return true;
 }
 
 }

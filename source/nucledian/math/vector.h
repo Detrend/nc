@@ -32,6 +32,10 @@ using vec2 = glm::vec<2, f32, glm::packed>;
 using vec3 = glm::vec<3, f32, glm::packed>;
 using vec4 = glm::vec<4, f32, glm::packed>;
 
+using ivec2 = glm::vec<2, s32, glm::packed>;
+using ivec3 = glm::vec<3, s32, glm::packed>;
+using ivec4 = glm::vec<4, s32, glm::packed>;
+
 template<typename T, u64 S>
 using vec = glm::vec<S, T, glm::packed>;
 

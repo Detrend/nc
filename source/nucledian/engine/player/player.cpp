@@ -66,10 +66,10 @@ constexpr WeaponFlags DEFAULT_WEAPONS
 //==============================================================================
 Player::Player(vec3 position)
 : Base(position, 0.25f, 0.5f)
+, current_health(CVars::player_max_hp)
 , owned_weapons(DEFAULT_WEAPONS)
 , current_weapon(WeaponTypes::wrench)
 , weapon_fsm(0)
-, current_health(CVars::player_max_hp)
 {
   this->camera.update_transform(position, angle_yaw, angle_pitch, view_height);
 
@@ -425,7 +425,7 @@ void Player::damage(int damage)
 
   if (this->current_health <= 0)
   {
-    this->die();
+    //this->die();
   }
 }
 

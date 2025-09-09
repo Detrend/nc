@@ -639,53 +639,10 @@ void ThingSystem::on_event(ModuleEvent& event)
       // Handle enemies
       entity_system.for_each<Enemy>([&](Enemy& enemy)
       {
-        enemy.calculate_wish_velocity(event.update.dt);
+        enemy.update(event.update.dt);
       });
 
-      check_enemy_attack(event);
-
-      //CHECK FOR COLLISIONS
-      entity_system.for_each<Enemy>([&](Enemy& enemy)
-      {
-          this->get_player()->check_collision(enemy, this->get_player()->get_velocity(), event.update.dt);
-      });
-
-      entity_system.for_each<Enemy>([&](Enemy& enemy)
-      {
-        enemy.check_collision(*this->get_player(), enemy.get_velocity(), event.update.dt);
-
-        const auto& map = get_engine().get_map();
-        auto sector_id = map.get_sector_from_point(enemy.get_position().xz());
-
-        if (sector_id != INVALID_SECTOR_ID)
-        {
-          auto& entities_in_sector = get_sector_mapping().sectors_to_entities.entities[sector_id];
-
-          for (size_t i = 0; i < entities_in_sector.size(); i++)
-          {
-            auto& cur_entity = entities_in_sector[i];
-
-            if (cur_entity.type != EntityTypes::enemy)
-            {
-              continue;
-            }
-
-            auto enemy2 = entity_system.get_entity(cur_entity);
-
-            if (enemy.get_id() != enemy2->get_id())
-            {
-              enemy.check_collision(*enemy2, enemy.get_velocity(), event.update.dt);
-            }
-          }
-        }        
-      });
-
-      entity_system.for_each<Enemy>([&](Enemy& enemy)
-      {
-        enemy.apply_velocity();
-      });
-
-      // PROJECTILES
+      // Handle projectiles
       entity_system.for_each<Projectile>([&](Projectile& proj)
       {
         proj.update(event.update.dt);
@@ -852,29 +809,6 @@ void ThingSystem::build_map(LevelID level)
       // entities->create_entity<Enemy>(vec3{3, 0.0, 1}, FRONT_DIR);
       entities->create_entity<PickUp>(vec3{ -0.5f, 0.0f, 0.5f }, PickupTypes::hp_small);
   }
-}
-
-//==========================================================
-void ThingSystem::check_enemy_attack([[maybe_unused]] const ModuleEvent& event)
-{
-  auto& entity_system = this->get_entities();
-  entity_system.for_each<Enemy>([&](Enemy& enemy)
-  {
-    if (enemy.can_attack())
-    {
-      [[maybe_unused]] vec3 rayStart = enemy.get_position() + vec3(0, 0.5f, 0);
-      [[maybe_unused]] vec3 rayEnd = this->get_player()->get_position() + vec3(0, this->get_player()->get_view_height(), 0);
-
-      const auto wallHit = this->get_level().ray_cast_3d(rayStart, rayEnd);
-
-      if (wallHit) 
-      {
-        return;
-      }
-
-      this->get_player()->damage(10);
-    }
-  });
 }
 
 //==============================================================================
