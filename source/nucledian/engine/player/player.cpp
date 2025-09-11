@@ -66,15 +66,12 @@ constexpr WeaponFlags DEFAULT_WEAPONS
 //==============================================================================
 Player::Player(vec3 position, vec3 forward)
 : Base(position, 0.25f, 0.5f)
+, current_health(CVars::player_max_hp)
 , owned_weapons(DEFAULT_WEAPONS)
 , current_weapon(WeaponTypes::wrench)
 , weapon_fsm(0)
-, current_health(CVars::player_max_hp)
-  // Dunno why this is how it has to be done, but it works xD
-  // TODO: someone who knows what he's doing, please rewrite this to something more sensible, that maybe sets angle_pitch as well
-, angle_yaw(atan2f(forward.z, -forward.x) + (PI * 0.5f)) 
+, angle_yaw(atan2f(forward.z, -forward.x) + HALF_PI) // MR says: no idea if it's ok
 {
-    (void)forward;
   this->camera.update_transform(position, angle_yaw, angle_pitch, view_height);
 
   // Has to be called to set-up the FSM
@@ -429,7 +426,7 @@ void Player::damage(int damage)
 
   if (this->current_health <= 0)
   {
-    this->die();
+    //this->die();
   }
 }
 

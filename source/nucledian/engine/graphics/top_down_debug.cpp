@@ -23,6 +23,12 @@
 #include <imgui/imgui.h>
 #include <glad/glad.h>
 
+#include <string>
+#include <format>
+#include <cmath>    // std::abs
+#include <iterator> // std::next
+#include <numeric>  // std::accumulate
+
 namespace nc
 {
 
@@ -93,7 +99,13 @@ void TopDownDebugRenderer::draw_line(vec2 from, vec2 to, vec3 color)
 //==============================================================================
 void TopDownDebugRenderer::to_screen_space(vec2& pt) const
 {
-  pt = vec2{-1.0f, this->aspect} * (pt - this->pointed_position) * this->zoom;
+  pt = (this->calc_transform() * vec3{pt.x, pt.y, 1.0f}).xy();
+}
+
+//==============================================================================
+void TopDownDebugRenderer::to_world_space(vec2& pt) const
+{
+  pt = (inverse(this->calc_transform()) * vec3{pt.x, pt.y, 1.0f}).xy();
 }
 
 //==============================================================================
@@ -140,12 +152,19 @@ void TopDownDebugRenderer::draw_triangle(vec2 a, vec2 b, vec2 c, vec3 color)
 }
 
 //==============================================================================
-void TopDownDebugRenderer::draw_text(vec2 coords, cstr text, vec3 color)
+void TopDownDebugRenderer::draw_text(vec2 coords, cstr text, vec3 color, vec2 off)
 {
   this->to_screen_space(coords);
 
+  if (std::abs(coords.x) > 1.0f || std::abs(coords.y) > 1.0f)
+  {
+    return;
+  }
+
   f32 width  = cast<f32>(this->window_width);
   f32 height = cast<f32>(this->window_height);
+
+  coords += off / vec2{width, height};
 
   const auto col = ImColor{color.x, color.y, color.z, 1.0f};
 
@@ -223,9 +242,113 @@ void TopDownDebugRenderer::draw_entities()
 }
 
 //==============================================================================
-mat4 TopDownDebugRenderer::calc_transform()
+void TopDownDebugRenderer::draw_sector_grid()
 {
-  return mat4{};
+  auto& map = ThingSystem::get().get_map();
+
+  if (map.sector_grid.m_cells.empty())
+  {
+    return;
+  }
+
+  vec2 from = map.sector_grid.m_min;
+  vec2 to   = map.sector_grid.m_max;
+  s64  w    = cast<s64>(map.sector_grid.m_cells.size());
+  s64  h    = cast<s64>(map.sector_grid.m_cells[0].size());
+  f32  cell_w = (to.x - from.x) / w;
+  f32  cell_h = (to.y - from.y) / h;
+
+  vec2 screen_from = vec2{-1, -1};
+  vec2 screen_to   = vec2{ 1,  1};
+  this->to_world_space(screen_from);
+  this->to_world_space(screen_to);
+
+  vec2 ws_screen_from = min(screen_from, screen_to);
+  vec2 ws_screen_to   = max(screen_from, screen_to);
+
+  vec2 from_beg = max(ws_screen_from - from, VEC2_ZERO);
+  vec2 to_end   = max(to - ws_screen_to,     VEC2_ZERO);
+
+  s64 beg_off_x = cast<s64>(from_beg.x / cell_w);
+  s64 beg_off_y = cast<s64>(from_beg.y / cell_h);
+  s64 end_off_x = cast<s64>(to_end.x   / cell_w);
+  s64 end_off_y = cast<s64>(to_end.y   / cell_h);
+
+  // Vertical lines
+  for (s64 i = beg_off_x; i <= w - end_off_x; ++i)
+  {
+    f32 coeff = cast<f32>(i) / w;
+    f32 x     = coeff * to.x + (1.0f - coeff) * from.x;
+    this->draw_line(vec2{x, from.y}, vec2{x, to.y}, colors::WHITE);
+  }
+
+  // Horizontal lines
+  for (s64 i = beg_off_y; i <= h - end_off_y; ++i)
+  {
+    f32 coeff = cast<f32>(i) / h;
+    f32 y     = coeff * to.y + (1.0f - coeff) * from.y;
+    this->draw_line(vec2{from.x, y}, vec2{to.x, y}, colors::WHITE);
+  }
+
+  // Number of sectors
+  for (s64 x = beg_off_x; x <= w - end_off_x; ++x)
+  {
+    for (s64 y = beg_off_y; y <= h - end_off_y; ++y)
+    {
+      f32 cx  = cast<f32>(x) / w;
+      f32 xp  = cx * to.x + (1.0f - cx) * from.x + cell_w * 0.5f;
+      f32 cy  = cast<f32>(y) / h;
+      f32 yp  = cy * to.y + (1.0f - cy) * from.y + cell_h * 0.5f;
+
+      auto& cells = map.sector_grid.m_cells[x][y];
+      u64 cnt = cells.size();
+
+      std::string coord = std::format("({},{})", x, y);
+      std::string txt   = std::to_string(cnt);
+      this->draw_text(vec2{xp, yp}, coord.c_str(), colors::GRAY);
+
+      if (cnt)
+      {
+        this->draw_text(vec2{xp, yp}, txt.c_str(), colors::RED, vec2{0, -25});
+
+        if (this->show_sector_grid_list)
+        {
+          std::string list_of_sectors = std::accumulate
+          (
+            std::next(cells.begin()),
+            cells.end(),
+            std::to_string(cells.front().data),
+            [](std::string a, auto b)
+            {
+              return std::move(a) + "," + std::to_string(b.data);
+            }
+          );
+
+          this->draw_text
+          (
+            vec2{xp, yp}, list_of_sectors.c_str(), colors::BLUE, vec2{-150, -50}
+          );
+        }
+      }
+    }
+  }
+}
+
+//==============================================================================
+mat3 TopDownDebugRenderer::calc_transform() const
+{
+  mat3 translate = mat3
+  {
+    vec3{1.0f, 0.0f, 0.0f},
+    vec3{0.0f, 1.0f, 0.0f},
+    vec3{-this->player_position, 1.0f}
+  };
+
+  vec3 c0 = vec3{1.0f, 0.0f, 0.0f} * -1.0f        * this->zoom;
+  vec3 c1 = vec3{0.0f, 1.0f, 0.0f} * this->aspect * this->zoom;
+  mat3 scaling = mat3{c0, c1, vec3{0, 0, 1}};
+
+  return scaling * translate;
 }
 
 //==============================================================================
@@ -257,15 +380,10 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
 
   if (auto* camera = Camera::get())
   {
-    pointed_position = vec2{ camera->get_position().x, camera->get_position().z };
+    player_position = vec2{ camera->get_position().x, camera->get_position().z };
     const auto frwd = vec2{ camera->get_forward().x,  camera->get_forward().z };
     player_direction = is_zero(frwd) ? vec2{ 1, 0 } : normalize(frwd);
   }
-
-  auto level_space_to_screen_space = [&](vec2 pos) -> vec2
-  {
-    return pos;
-  };
 
   if (ImGui::Begin("2D Top Down Debug"))
   {
@@ -274,8 +392,37 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
     ImGui::Checkbox("Show visible sectors", &show_visible_sectors);
     ImGui::Checkbox("Show sector frustums", &show_sector_frustums);
     ImGui::Checkbox("Show sector IDs",      &show_sector_ids);
+    ImGui::Checkbox("Show sector grid",     &this->show_sector_grid);
+    if (this->show_sector_grid)
+    {
+      ImGui::Checkbox("Show list of sectors", &this->show_sector_grid_list);
+    }
+
     ImGui::Separator();
     ImGui::Checkbox("Inspect nuclidean portals", &inspect_nucledian_portals);
+
+    ImGui::Separator();
+    ImGui::Checkbox("Show path debug", &this->show_path_debug);
+    if (this->show_path_debug)
+    {
+      ImGui::Checkbox("Path Smoothing", &this->do_path_smoothing);
+
+      if (ImGui::Button("Set Start"))
+      {
+        this->path_debug_start = player_position;
+      }
+
+      if (ImGui::Button("Set End"))
+      {
+        this->path_debug_end = player_position;
+      }
+
+      if (ImGui::Button("Set End To Player"))
+      {
+        this->path_debug_end = VEC2_ZERO;
+      }
+    }
+
     ImGui::Separator();
     ImGui::Text("Categories");
 
@@ -291,6 +438,7 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
   ImGui::End();
 
   auto& map = get_engine().get_map();
+  auto  lvl = ThingSystem::get().get_level();
 
   // Render the floors of the visible_sectors with black or gray if visible_sectors
   for (SectorID i = 0; i < map.sectors.size(); ++i)
@@ -449,12 +597,42 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
   // and render the player
   this->draw_player
   (
-    pointed_position,
+    player_position,
     player_direction,
     colors::BLACK,
     colors::ORANGE,
     0.5f
   );
+
+  if (this->show_sector_grid)
+  {
+    this->draw_sector_grid();
+  }
+
+  if (this->show_path_debug)
+  {
+    vec3 from = vec3{this->path_debug_start.x, 0.0f, this->path_debug_start.y};
+    vec3 to   = vec3{this->path_debug_end.x,   0.0f, this->path_debug_end.y  };
+
+    if (this->path_debug_end == VEC2_ZERO)
+    {
+      to = vec3{player_position.x, 0.0f, player_position.y};
+    }
+
+    std::vector<vec3> path = map.get_path(from, to, 0.25f, 1.0f);
+    path.insert(path.begin(), from);
+    if (this->do_path_smoothing)
+    {
+      lvl.smooth_out_path(path, 0.25f, 1.0f);
+    }
+
+    for (u64 i = 1; i < path.size(); ++i)
+    {
+      vec3 curr = path[i];
+      vec3 prev = path[i-1];
+      this->draw_line(curr.xz(), prev.xz(), colors::LIME);
+    }
+  }
 
   // render entities
   this->draw_entities();

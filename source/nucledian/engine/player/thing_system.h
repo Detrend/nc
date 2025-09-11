@@ -72,8 +72,6 @@ private:
     const ModuleEvent& event
   );
 
-  void check_enemy_attack(const ModuleEvent& event);
-
   // Clean up the current map, entities, mapping etc..
   void cleanup_map();
 

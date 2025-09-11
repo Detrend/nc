@@ -35,15 +35,17 @@ public:
 private:
   void draw_line(vec2 from, vec2 to, vec3 color = vec3{1});
   void draw_triangle(vec2 a, vec2 b, vec2 c, vec3 color);
-  void draw_text(vec2 coords, cstr text, vec3 color);
+  void draw_text(vec2 coords, cstr text, vec3 color, vec2 scr_offset = vec2{0});
 
   void draw_player(vec2 coords, vec2 dir, vec3 c1, vec3 c2, f32 scale);
   void draw_custom_objects();
   void draw_entities();
+  void draw_sector_grid();
 
-  void to_screen_space(vec2& pt) const;
+  void to_screen_space(vec2& pt)       const;
+  void to_world_space(vec2& screen_pt) const;
 
-  mat4 calc_transform();
+  mat3 calc_transform() const;
 
 private:
   struct Line
@@ -56,13 +58,19 @@ private:
   inline static std::map<std::string, bool> g_enabled_categories;
 
   bool show_sector_frustums      = true;
-  bool show_visible_sectors      = true;
+  bool show_visible_sectors      = false;
+  bool show_sector_grid          = false;
+  bool show_sector_grid_list     = false;
   bool show_sector_ids           = false;
   bool inspect_nucledian_portals = false;
+  bool show_path_debug           = false;
+  bool do_path_smoothing         = true;
+  vec2 path_debug_start = VEC2_ZERO;
+  vec2 path_debug_end   = VEC2_ZERO;
 
   EntityTypeMask entities_to_render = cast<EntityTypeMask>(-1);
 
-  vec2 pointed_position = vec2{0.0f};
+  vec2 player_position  = vec2{0.0f};
   vec2 player_direction = vec2{0.0f};
   f32  zoom             = 0.04f;
   f32  aspect           = 1.0f;

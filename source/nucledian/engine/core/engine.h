@@ -53,7 +53,9 @@ public:
 
   void process_window_event(const SDL_Event& evnt);
 
-  f32  get_delta_time();
+  f32  get_delta_time() const;
+
+  u64  get_frame_idx() const;
 
 private:
   bool should_quit()             const;

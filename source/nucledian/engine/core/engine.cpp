@@ -512,9 +512,15 @@ void Engine::process_window_event(const SDL_Event& event)
 }
 
 //==============================================================================
-f32 Engine::get_delta_time()
+f32 Engine::get_delta_time() const
 {
   return m_delta_time;
+}
+
+//==============================================================================
+u64 Engine::get_frame_idx() const
+{
+  return m_frame_idx;
 }
 
 //==============================================================================

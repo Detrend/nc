@@ -52,7 +52,6 @@ void Projectile::update(f32 dt)
   auto  lvl  = game.get_level();
 
   vec3 position  = this->get_position();
-  vec3 forward   = m_velocity;
   mat4 transform = identity<mat4>();
 
   f32 r = this->get_radius();

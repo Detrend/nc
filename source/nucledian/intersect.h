@@ -159,12 +159,22 @@ bool ray_infinite_plane_xz(
 // of the intersecting point and "out_coeff" with coefficient of the intersection,
 // from which the intersection point can be calculated as follows:
 // hit_point = ray_start + (ray_end - ray_start) * out_coeff;
-bool ray_aabb3(
+bool ray_aabb3
+(
   vec3  ray_start,
   vec3  ray_end,
   aabb3 bbox,
   f32&  out_coeff,
-  vec3& out_normal);
+  vec3& out_normal
+);
+
+// Checks if a line and 2D bounding box intersect. Returns true if so.
+bool ray_aabb2
+(
+  vec2  ray_start,
+  vec2  ray_end,
+  aabb2 bbox
+);
 
 // Checks for intersection of two 2D AABBs and returns true if they intersect.
 bool aabb_aabb_2d(const aabb2& a, const aabb2& b);

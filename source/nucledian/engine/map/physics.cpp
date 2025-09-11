@@ -114,7 +114,7 @@ CollisionHit raycast_generic
   }
 
   CollisionHit best_hit = CollisionHit::no_hit();
-  u32  num_hits    = 1;
+  [[maybe_unused]]u32  num_hits    = 1;
   vec3 sum_normals = VEC3_ZERO;
 
   auto add_possible_hit = [&](const CollisionHit& hit)
@@ -390,7 +390,7 @@ CollisionHit CollisionHit::build(f32 c, vec3 n, EntityHit eh)
   {
     .coeff  = c,
     .normal = n,
-    .hit    = eh,
+    .hit    = Hit{.entity = eh},
     .type   = HitType::entity,
   };
 }
@@ -538,27 +538,73 @@ static bool intersect_wall_3d
   bool&             nc_hit
 )
 {
-  if (ray_from == ray_to)
+  if (ray_from.xz() == ray_to.xz())
   {
-    return false;
+    // Can't have any hit if the two points of the ray are same in 2D
+    goto bad_hit;
+    bad_hit:
+    {
+      nc_hit = false;
+      out_n  = VEC3_ZERO;
+      out_c  = FLT_MAX;
+      return false;
+    }
   }
 
-  const WallData&   w1 = map.walls[w1id];
-  const WallData&   w2 = map.walls[w2id];
-  const SectorData& sd = map.sectors[sid];
+  const WallData& w1 = map.walls[w1id];
+  const WallData& w2 = map.walls[w2id];
+  PortType portal_type = w1.get_portal_type();
 
-  const bool hit = intersect::ray_wall_3d
+  f32 temp_c, _;
+  bool hit = intersect::segment_segment
   (
-    ray_from, ray_to, w1.pos, w2.pos, sd.floor_height, sd.ceil_height, out_c
+    ray_from.xz(), ray_to.xz(), w1.pos, w2.pos, temp_c, _
   );
 
-  nc_hit = w1.get_portal_type() == PortalType::non_euclidean;
+  if (!hit)
+  {
+    // No hit even in 2D
+    goto bad_hit;
+  }
 
-  nc_assert(w1.pos != w2.pos);
-  auto n2 = flipped(normalize(w2.pos - w1.pos));
-  out_n = vec3{n2.x, 0.0f, n2.y};
+  if (portal_type == PortalType::none)
+  {
+    nc_hit = false;
+    goto good_hit;
+    good_hit:
+    {
+      vec2 n = flipped(normalize(w2.pos - w1.pos));
+      out_n  = vec3{n.x, 0.0f, n.y};
+      out_c  = temp_c;
+      return true;
+    }
+  }
 
-  return hit;
+  const SectorData& sd  = map.sectors[sid];
+  const SectorData& sd2 = map.sectors[w1.portal_sector_id];
+
+  f32 top = std::min(sd.ceil_height,  sd2.ceil_height);
+  f32 bot = std::max(sd.floor_height, sd2.floor_height);
+  f32 y   = ray_from.y + (ray_to.y - ray_from.y) * temp_c;
+
+  if (y <= bot || y >= top)
+  {
+    // We hit either the bottom or the top parts of the wall.
+    // This applies both to normal and non-euclidean portals.
+    nc_hit = false;
+    goto good_hit;
+  }
+
+  if (portal_type == PortalType::non_euclidean)
+  {
+    // Non euclidean portals report hit in this case
+    nc_hit = true;
+    goto good_hit;
+  }
+
+  // If we got here then this is a classic portal and we did not hit top or
+  // the bottom.
+  goto bad_hit;
 }
 
 //==============================================================================
@@ -1007,11 +1053,8 @@ const
   u32 iterations_left = MAX_ITERATIONS; 
   while(iterations_left-->0)
   {
-    using SectorHitType = CollisionHit::SectorHitType;
-
     const vec3 ray_from = position;
     const vec3 ray_to   = position + velocity;
-    const vec3 ray_dir  = ray_to   - ray_from;
 
     StackVector<EntityIdAndCoeff, 8> report_only;
     CylCastEntityIntersector<CollectReportOnly::Yes> entity_intersector
@@ -1227,8 +1270,6 @@ const
       return;
     }
 
-    using SectorHitType = CollisionHit::SectorHitType;
-
     vec3 velocity = normalize_or_zero(velocity_og) * remaining_distance;
     vec3 ray_from = position + h_offset;
     vec3 ray_to   = position + velocity;
@@ -1288,4 +1329,32 @@ const
   }
 }
 
+//==============================================================================
+void PhysLevel::smooth_out_path(std::vector<vec3>& path, f32 /*r*/, f32 /*h*/)
+{
+  if (path.empty())
+  {
+    return;
+  }
+
+  // Remove points from the end
+  for (u64 idx = 1; path.size() > 2 && idx < path.size()-1;)
+  {
+    vec2 from = path[idx - 1].xz();
+    vec2 to   = path[idx + 1].xz();
+
+    PhysLevel::Portals prt;
+    if (this->ray_cast_2d(from, to, 0, &prt) || prt.size())
+    {
+      // We hit the wall or traversed a nc-portal, can't remove this point
+      idx += 1;
+    }
+    else
+    {
+      // No obstruction in the way! Remove the point
+      path.erase(path.begin() + idx);
+    }
+  }
 }
+
+} 

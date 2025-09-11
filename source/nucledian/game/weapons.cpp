@@ -133,26 +133,26 @@ static_assert
 // ====================================================
 #define NC_REG_WP(_c, _d, _mn, _mx, _l) NC_REGISTER_CVAR_EXTERNAL_CPP_RANGED_IMPL(_c, _mn, _mx, _d, _l)
 
-#define NC_REGISTER_WEAPON_STATS(_weapon, _member)                                                                \
-  inline ::nc::WeaponStats& _weapon = ::nc::WEAPON_STATS[NC_TOKENJOIN(::nc::WeaponTypes::, _member)];             \
-  NC_REG_WP(NC_TOKENJOIN(_weapon, .rate_of_fire),   "Rate of fire",     0, 20, NC_TOKENJOIN(__LINE__, PA));       \
-  NC_REG_WP(NC_TOKENJOIN(_weapon, .projectile_cnt), "Projectile count", 0, 16, NC_TOKENJOIN(__LINE__, PB));       \
-  NC_REG_WP(NC_TOKENJOIN(_weapon, .hold_to_fire),   "Hold to fire",     0, 1,  NC_TOKENJOIN(__LINE__, PC));
+#define NC_REGISTER_WEAPON_STATS(_weapon, _member)                                                 \
+  inline ::nc::WeaponStats& _weapon = ::nc::WEAPON_STATS[::nc::WeaponTypes:: _member];             \
+  NC_REG_WP(_weapon .rate_of_fire,   "Rate of fire",     0, 20, NC_TOKENJOIN(__LINE__, PA));       \
+  NC_REG_WP(_weapon .projectile_cnt, "Projectile count", 0, 16, NC_TOKENJOIN(__LINE__, PB));       \
+  NC_REG_WP(_weapon .hold_to_fire,   "Hold to fire",     0, 1,  NC_TOKENJOIN(__LINE__, PC));
 
-#define NC_REGISTER_PROJECTILE_STATS(_weapon, _member)                                                            \
-  inline ::nc::ProjectileStats& _weapon = ::nc::PROJECTILE_STATS[NC_TOKENJOIN(::nc::WeaponTypes::, _member)];     \
-  NC_REG_WP(NC_TOKENJOIN(_weapon, .dmg_falloff), "Damage Falloff",           0, 100, NC_TOKENJOIN(__LINE__, WA)); \
-  NC_REG_WP(NC_TOKENJOIN(_weapon, .speed),       "Projectile speed (m/s)",   0, 100, NC_TOKENJOIN(__LINE__, WB)); \
-  NC_REG_WP(NC_TOKENJOIN(_weapon, .radius),      "Radius (m)",               0, 0.5, NC_TOKENJOIN(__LINE__, WC)); \
-  NC_REG_WP(NC_TOKENJOIN(_weapon, .gravity),     "Gravity",                  0, 1,   NC_TOKENJOIN(__LINE__, WD)); \
-  NC_REG_WP(NC_TOKENJOIN(_weapon, .friction),    "Friction [0.0-1.0]",       0, 1,   NC_TOKENJOIN(__LINE__, WE)); \
-  NC_REG_WP(NC_TOKENJOIN(_weapon, .lifetime),    "Lifetime (s)",             0, 100, NC_TOKENJOIN(__LINE__, WF)); \
-  NC_REG_WP(NC_TOKENJOIN(_weapon, .damage),      "Damage (units)",           0, 100, NC_TOKENJOIN(__LINE__, WG)); \
-  NC_REG_WP(NC_TOKENJOIN(_weapon, .bounce_cnt),  "Bounce times (0 = don't)", 0, 10,  NC_TOKENJOIN(__LINE__, WH));
+#define NC_REGISTER_PROJECTILE_STATS(_weapon, _member)                                             \
+  inline ::nc::ProjectileStats& _weapon = ::nc::PROJECTILE_STATS[::nc::WeaponTypes:: _member];     \
+  NC_REG_WP(_weapon .dmg_falloff, "Damage Falloff",           0, 100, NC_TOKENJOIN(__LINE__, WA)); \
+  NC_REG_WP(_weapon .speed,       "Projectile speed (m/s)",   0, 100, NC_TOKENJOIN(__LINE__, WB)); \
+  NC_REG_WP(_weapon .radius,      "Radius (m)",               0, 0.5, NC_TOKENJOIN(__LINE__, WC)); \
+  NC_REG_WP(_weapon .gravity,     "Gravity",                  0, 1,   NC_TOKENJOIN(__LINE__, WD)); \
+  NC_REG_WP(_weapon .friction,    "Friction [0.0-1.0]",       0, 1,   NC_TOKENJOIN(__LINE__, WE)); \
+  NC_REG_WP(_weapon .lifetime,    "Lifetime (s)",             0, 100, NC_TOKENJOIN(__LINE__, WF)); \
+  NC_REG_WP(_weapon .damage,      "Damage (units)",           0, 100, NC_TOKENJOIN(__LINE__, WG)); \
+  NC_REG_WP(_weapon .bounce_cnt,  "Bounce times (0 = don't)", 0, 10,  NC_TOKENJOIN(__LINE__, WH));
 
-#define NC_REGISTER_WEAPON_PROJECTILE_STATS(_w)                   \
-  NC_REGISTER_WEAPON_STATS(    NC_TOKENJOIN(_w, _weapon),     _w) \
-  NC_REGISTER_PROJECTILE_STATS(NC_TOKENJOIN(_w, _projectile), _w)
+#define NC_REGISTER_WEAPON_PROJECTILE_STATS(_w)     \
+  NC_REGISTER_WEAPON_STATS(    _w##_weapon,     _w) \
+  NC_REGISTER_PROJECTILE_STATS(_w##_projectile, _w)
 
 NC_REGISTER_WEAPON_PROJECTILE_STATS(wrench)
 NC_REGISTER_WEAPON_PROJECTILE_STATS(shotgun)

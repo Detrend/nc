@@ -246,7 +246,7 @@ void SoundSystem::update([[maybe_unused]] f32 delta_seconds)
 //==============================================================================
 void SoundSystem::on_channel_finished(int channel)
 {
-  nc_assert(channel >= 0 && channel < CHANNEL_COUNT);
+  nc_assert(channel >= 0 && channel < cast<int>(CHANNEL_COUNT));
 
   bool expected = false;
   while (!some_channel_was_just_stopped.compare_exchange_strong(expected, true))
