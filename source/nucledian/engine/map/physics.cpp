@@ -1329,4 +1329,32 @@ const
   }
 }
 
+//==============================================================================
+void PhysLevel::smooth_out_path(std::vector<vec3>& path, f32 /*r*/, f32 /*h*/)
+{
+  if (path.empty())
+  {
+    return;
+  }
+
+  // Remove points from the end
+  for (u64 idx = 1; path.size() > 2 && idx < path.size()-1;)
+  {
+    vec2 from = path[idx - 1].xz();
+    vec2 to   = path[idx + 1].xz();
+
+    PhysLevel::Portals prt;
+    if (this->ray_cast_2d(from, to, 0, &prt) || prt.size())
+    {
+      // We hit the wall or traversed a nc-portal, can't remove this point
+      idx += 1;
+    }
+    else
+    {
+      // No obstruction in the way! Remove the point
+      path.erase(path.begin() + idx);
+    }
+  }
 }
+
+} 

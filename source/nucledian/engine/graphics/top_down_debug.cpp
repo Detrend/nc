@@ -341,7 +341,7 @@ mat3 TopDownDebugRenderer::calc_transform() const
   {
     vec3{1.0f, 0.0f, 0.0f},
     vec3{0.0f, 1.0f, 0.0f},
-    vec3{-this->pointed_position, 1.0f}
+    vec3{-this->player_position, 1.0f}
   };
 
   vec3 c0 = vec3{1.0f, 0.0f, 0.0f} * -1.0f        * this->zoom;
@@ -380,7 +380,7 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
 
   if (auto* camera = Camera::get())
   {
-    pointed_position = vec2{ camera->get_position().x, camera->get_position().z };
+    player_position = vec2{ camera->get_position().x, camera->get_position().z };
     const auto frwd = vec2{ camera->get_forward().x,  camera->get_forward().z };
     player_direction = is_zero(frwd) ? vec2{ 1, 0 } : normalize(frwd);
   }
@@ -397,8 +397,32 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
     {
       ImGui::Checkbox("Show list of sectors", &this->show_sector_grid_list);
     }
+
     ImGui::Separator();
     ImGui::Checkbox("Inspect nuclidean portals", &inspect_nucledian_portals);
+
+    ImGui::Separator();
+    ImGui::Checkbox("Show path debug", &this->show_path_debug);
+    if (this->show_path_debug)
+    {
+      ImGui::Checkbox("Path Smoothing", &this->do_path_smoothing);
+
+      if (ImGui::Button("Set Start"))
+      {
+        this->path_debug_start = player_position;
+      }
+
+      if (ImGui::Button("Set End"))
+      {
+        this->path_debug_end = player_position;
+      }
+
+      if (ImGui::Button("Set End To Player"))
+      {
+        this->path_debug_end = VEC2_ZERO;
+      }
+    }
+
     ImGui::Separator();
     ImGui::Text("Categories");
 
@@ -414,6 +438,7 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
   ImGui::End();
 
   auto& map = get_engine().get_map();
+  auto  lvl = ThingSystem::get().get_level();
 
   // Render the floors of the visible_sectors with black or gray if visible_sectors
   for (SectorID i = 0; i < map.sectors.size(); ++i)
@@ -572,7 +597,7 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
   // and render the player
   this->draw_player
   (
-    pointed_position,
+    player_position,
     player_direction,
     colors::BLACK,
     colors::ORANGE,
@@ -582,6 +607,31 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
   if (this->show_sector_grid)
   {
     this->draw_sector_grid();
+  }
+
+  if (this->show_path_debug)
+  {
+    vec3 from = vec3{this->path_debug_start.x, 0.0f, this->path_debug_start.y};
+    vec3 to   = vec3{this->path_debug_end.x,   0.0f, this->path_debug_end.y  };
+
+    if (this->path_debug_end == VEC2_ZERO)
+    {
+      to = vec3{player_position.x, 0.0f, player_position.y};
+    }
+
+    std::vector<vec3> path = map.get_path(from, to, 0.25f, 1.0f);
+    path.insert(path.begin(), from);
+    if (this->do_path_smoothing)
+    {
+      lvl.smooth_out_path(path, 0.25f, 1.0f);
+    }
+
+    for (u64 i = 1; i < path.size(); ++i)
+    {
+      vec3 curr = path[i];
+      vec3 prev = path[i-1];
+      this->draw_line(curr.xz(), prev.xz(), colors::LIME);
+    }
   }
 
   // render entities

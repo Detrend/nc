@@ -189,6 +189,7 @@ void Enemy::handle_alert(f32 delta)
   auto& game   = ThingSystem::get();
   auto& ecs    = game.get_entities();
   auto& map    = game.get_map();
+  auto  lvl    = game.get_level();
 
   Entity* target = ecs.get_entity(this->target_id);
   if (!target)
@@ -233,6 +234,11 @@ void Enemy::handle_alert(f32 delta)
       this->follow_target_pos,
       this->get_radius(),
       this->get_height()
+    );
+
+    lvl.smooth_out_path
+    (
+      this->current_path.points, this->get_radius(), this->get_height()
     );
   }
 

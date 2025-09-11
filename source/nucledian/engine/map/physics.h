@@ -224,6 +224,9 @@ struct PhysLevel
     EntityTypeMask    colliders, // what entities to collide with
     CollisionListener listener = nullptr // reaction to collisions
   ) const;
+
+  // Tries shortening the path by removing un-necessary vertices
+  void smooth_out_path(std::vector<vec3>& path, f32 radius, f32 height);
 };
 
 }

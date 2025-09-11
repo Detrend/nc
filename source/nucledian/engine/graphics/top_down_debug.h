@@ -58,15 +58,19 @@ private:
   inline static std::map<std::string, bool> g_enabled_categories;
 
   bool show_sector_frustums      = true;
-  bool show_visible_sectors      = true;
-  bool show_sector_grid          = true;
+  bool show_visible_sectors      = false;
+  bool show_sector_grid          = false;
   bool show_sector_grid_list     = false;
   bool show_sector_ids           = false;
   bool inspect_nucledian_portals = false;
+  bool show_path_debug           = false;
+  bool do_path_smoothing         = true;
+  vec2 path_debug_start = VEC2_ZERO;
+  vec2 path_debug_end   = VEC2_ZERO;
 
   EntityTypeMask entities_to_render = cast<EntityTypeMask>(-1);
 
-  vec2 pointed_position = vec2{0.0f};
+  vec2 player_position  = vec2{0.0f};
   vec2 player_direction = vec2{0.0f};
   f32  zoom             = 0.04f;
   f32  aspect           = 1.0f;
