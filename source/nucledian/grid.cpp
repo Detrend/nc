@@ -63,6 +63,41 @@ static auto remap_point_to_indices
 }
 
 //==============================================================================
+static auto remap_point_to_indices_unclamped
+(
+  vec2 point,
+  vec2 min,
+  vec2 max,
+  u64  width,
+  u64  height
+)
+{
+  nc_assert(min.x < max.x && min.y < max.y);
+
+  // Remap to interval [0, 1]
+  vec2 map_size = max-min;
+  vec2 remapped = (point-min) / map_size;
+  
+  vec2  grid = vec2{cast<f32>(width), cast<f32>(height)};
+  ivec2 remapped_to_grid = remapped * grid;
+
+  nc_assert(remapped_to_grid.x >= 0    && remapped_to_grid.y >= 0);
+  nc_assert(remapped_to_grid.x < width && remapped_to_grid.y < height);
+
+  struct Output
+  {
+    u64 xindex;
+    u64 yindex;
+  };
+
+  return Output
+  {
+    .xindex = cast<u64>(remapped_to_grid.x),
+    .yindex = cast<u64>(remapped_to_grid.y),
+  };
+}
+
+//==============================================================================
 // Clips the line into the bbox. Might swap the points.
 // Returns false if the line was outside of the box.
 static bool check_line_in_bbox_and_clip_it(vec2& from, vec2& to, aabb2 bbox)
@@ -169,14 +204,14 @@ template<typename T, typename F>
 static void query_ray_helper(const StatGridAABB2<T>& self, vec2 from, vec2 to, F func)
 {
   // First, clip the line into the BBOX so we do not run outside
+  aabb2 grid_bbox = aabb2{self.m_min, self.m_max - vec2{0.0001f}};
+  nc_assert(grid_bbox.max != self.m_max);
+
+  bool inside_grid = check_line_in_bbox_and_clip_it(from, to, grid_bbox);
+  if (!inside_grid)
   {
-    aabb2 bbox = aabb2{self.m_min, self.m_max - vec2{0.0001f}};
-    nc_assert(bbox.max != self.m_max);
-    if (!check_line_in_bbox_and_clip_it(from, to, bbox))
-    {
-      // The line is outside the grid! Exit
-      return;
-    }
+    // The line is outside the grid! Exit
+    return;
   }
 
   vec2 abs_dir   = abs(to - from);
@@ -200,17 +235,14 @@ static void query_ray_helper(const StatGridAABB2<T>& self, vec2 from, vec2 to, F
     std::swap(grid_size.x,  grid_size.y);
   }
 
-  // TODO:
-  // [ ] Line remap to the AABB2 of the grid
-
   // Start cell
-  auto[xfrom, yfrom] = grid_helper::remap_point_to_indices
+  auto[xfrom, yfrom] = grid_helper::remap_point_to_indices_unclamped
   (
     from, grid_min, grid_max, grid_cnt.x, grid_cnt.y
   );
 
   // End cell
-  auto[xto, yto] = grid_helper::remap_point_to_indices
+  auto[xto, yto] = grid_helper::remap_point_to_indices_unclamped
   (
     to, grid_min, grid_max, grid_cnt.x, grid_cnt.y
   );
