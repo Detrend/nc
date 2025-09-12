@@ -67,6 +67,14 @@ namespace nc
       inline constexpr Uniform<4, s32>  GAME_TEXTURE_ATLAS;
       inline constexpr Uniform<5, s32>  LEVEL_TEXTURE_ATLAS;
     }
+
+    namespace ui_button
+    {
+      #include <engine/ui/ui_button.vert>
+      #include <engine/ui/ui_button.frag>
+
+      inline constexpr Uniform<0, mat4> TRANSFORM;
+    }
   }
 
 }

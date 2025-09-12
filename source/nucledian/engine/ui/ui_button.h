@@ -1,5 +1,6 @@
 #include <engine/ui/ui_texture.h>
 #include <engine/graphics/graphics_system.h>
+#include <engine/graphics/shaders/shaders.h>
 
 #include <vector>
 #include <functional>
