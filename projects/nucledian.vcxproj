@@ -329,6 +329,8 @@
     <None Include="..\source\nucledian\engine\graphics\shaders\sector.vert" />
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.frag" />
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.vert" />
+    <None Include="..\source\nucledian\engine\ui\ui_button.frag" />
+    <None Include="..\source\nucledian\engine\ui\ui_button.vert" />
     <None Include="..\source\nucledian\math\lingebra.inl" />
     <None Include="..\source\nucledian\engine\entity\entity_system.inl" />
     <None Include="..\source\nucledian\stack_allocator.inl" />
