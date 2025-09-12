@@ -46,6 +46,25 @@ namespace nc
     options_page = new OptionsPage();
     load_game_page = new LoadGamePage();
     save_game_page = new SaveGamePage();
+
+    vec2 vertices[] = { vec2(-1, 1), vec2(-1, -1), vec2(1, 1), vec2(1, -1) };
+
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 2, &vertices, GL_STATIC_DRAW);
+
+    glGenVertexArrays(1, &VAO);
+
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 2, &vertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+    glEnableVertexAttribArray(0);
+
+    glDisableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
   }
 
   //============================================================================================
@@ -134,6 +153,7 @@ namespace nc
     switch (current_page)
     {
     case nc::MAIN:
+      main_menu_page->draw(button_material, VAO);
       break;
     case nc::NEW_GAME:
       break;
@@ -162,8 +182,28 @@ namespace nc
 
   //=============================================================================================
 
-  void MainMenuPage::draw()
+  void MainMenuPage::draw(MaterialHandle button_material, GLuint VAO)
   {
+    button_material.use();
+
+    glBindVertexArray(VAO);
+    glEnableVertexAttribArray(0);
+
+    glDisable(GL_DEPTH_TEST);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    
+
+
+
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisableVertexAttribArray(0);
+    glBindVertexArray(0);
   }
 
   //==============================================================================================

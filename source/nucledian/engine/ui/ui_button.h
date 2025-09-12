@@ -37,7 +37,7 @@ namespace nc
     MainMenuPage();
     ~MainMenuPage();
 
-    void draw();
+    void draw(MaterialHandle button_material, GLuint VAO);
 
   private:
 
@@ -110,5 +110,8 @@ namespace nc
 
     bool cur_esc_pressed = false;
     bool prev_esc_pressed = false;
+
+    GLuint VBO;
+    GLuint VAO;
   };
 }
