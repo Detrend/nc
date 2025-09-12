@@ -39,7 +39,8 @@ namespace nc
 
   //============================================================================================
 
-  MenuManager::MenuManager()
+  MenuManager::MenuManager() : 
+  button_material(shaders::ui_button::VERTEX_SOURCE, shaders::ui_button::FRAGMENT_SOURCE)
   {
     main_menu_page = new MainMenuPage();
     options_page = new OptionsPage();

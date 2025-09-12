@@ -1,6 +1,7 @@
 #include <engine/ui/ui_texture.h>
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/shaders/shaders.h>
+#include <engine/graphics/resources/material.h>
 
 #include <vector>
 #include <functional>
@@ -96,6 +97,8 @@ namespace nc
     void draw();
 
   private:
+    const MaterialHandle button_material;
+
     MainMenuPage* main_menu_page = nullptr;
     OptionsPage* options_page = nullptr;
     LoadGamePage* load_game_page = nullptr;
