@@ -35,9 +35,42 @@ EntityType PointLight::get_type_static()
 }
 
 //==============================================================================
+PointLight::PointLight
+(
+  const vec3 position,
+  f32 intensity,
+  f32 constant,
+  f32 linear,
+  f32 quadratic,
+  const color3& color
+)
+:
+  Entity(position, 0.0f, 0.0f),
+  color(color),
+  intensity(intensity),
+  constant(constant),
+  linear(linear),
+  quadratic(quadratic)
+{}
+
+//==============================================================================
+PointLight::GPUData PointLight::get_gpu_data(const vec3& position) const
+{
+  return GPUData
+  {
+    .position = position,
+    .intensity = intensity,
+    .color = color,
+    .constant = constant,
+    .linear = linear,
+    .quadratic = quadratic,
+  };
+}
+
+//==============================================================================
 f32 PointLight::calculate_radius() const
 {
-  // TODO: we should probably also consider light intensity
+  // TODO: include light intensity
 
   constexpr f32 threshold = 5.0f / 255.0f;
 

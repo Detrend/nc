@@ -47,12 +47,37 @@ public:
   using Base = Entity;
   static EntityType get_type_static();
 
+  static constexpr size_t MAX_VISIBLE_POINT_LIGHTS = 1024;
+
+  // GPU data friendly with std430 layout
+  struct GPUData
+  {
+    vec3   position;
+    f32    intensity;
+    color3 color;
+    f32    constant;
+    f32    linear;
+    f32    quadratic;
+    f32    _padding[2];
+  };
+
   color3 color     = colors::WHITE;
   f32    intensity = 1.0f;
   f32    constant  = 1.0f;
   f32    linear    = 0.09f;
   f32    quadratic = 0.032f;
 
+  PointLight
+  (
+    const vec3 position,
+    f32 intensity = 1.0f,
+    f32 constant = 1.0f,
+    f32 linear = 0.09f,
+    f32 quadratic = 0.032f,
+    const color3& color = colors::WHITE
+  );
+
+  GPUData get_gpu_data(const vec3& position) const;
   f32 calculate_radius() const;
 };
 

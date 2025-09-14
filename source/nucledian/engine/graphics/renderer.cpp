@@ -8,18 +8,20 @@
 #include <math/utils.h>
 #include <math/lingebra.h>
 
-#include <engine/core/engine.h>
-#include <engine/entity/entity_system.h>
-#include <engine/entity/sector_mapping.h>
 #include <engine/graphics/camera.h>
 #include <engine/graphics/gizmo.h>
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/lights.h>
+#include <engine/graphics/shaders/shaders.h>
+
+#include <engine/entity/entity_system.h>
+#include <engine/entity/sector_mapping.h>
+#include <engine/entity/entity_type_definitions.h>
+
+#include <engine/core/engine.h>
 #include <engine/map/map_system.h>
 #include <engine/player/thing_system.h>
 #include <engine/appearance.h>
-
-#include <engine/graphics/shaders/shaders.h>
 
 #include <unordered_set>
 
@@ -84,6 +86,18 @@ Renderer::Renderer(u32 win_w, u32 win_h)
     nullptr,
     GL_DYNAMIC_DRAW
   );
+
+  // setup point light ssbo
+  glGenBuffers(1, &m_point_light_ssbo);
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_point_light_ssbo);
+  glBufferData
+  (
+    GL_SHADER_STORAGE_BUFFER,
+    PointLight::MAX_VISIBLE_POINT_LIGHTS * sizeof(PointLight::GPUData),
+    nullptr,
+    GL_DYNAMIC_DRAW
+  );
+
   glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
@@ -120,7 +134,6 @@ const
     .portal_dest_to_src = mat4(1.0f),
   };
 
-  update_light_data();
   do_geometry_pass(camera_data, gun_data);
   do_lighting_pass(camera_data.position);
 }
@@ -269,12 +282,15 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   glBindTexture(GL_TEXTURE_2D, m_g_albedo);
 
   // bind light ssbos
+  update_light_ssbos();
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_dir_light_ssbo);
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_dir_light_ssbo);
 
   // prepare shader
   m_light_material.use();
   m_light_material.set_uniform(shaders::light::VIEW_POSITION, view_position);
   m_light_material.set_uniform(shaders::light::NUM_DIR_LIGHTS, m_dir_light_ssbo_size);
+  m_light_material.set_uniform(shaders::light::NUM_DIR_LIGHTS, m_point_light_ssbo_size);
 
   // draw call
   const MeshHandle screen_quad = MeshManager::get().get_screen_quad();
@@ -286,7 +302,7 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
 }
 
 //==============================================================================
-void Renderer::update_light_data() const
+void Renderer::update_light_ssbos() const
 {
   // TODO: ignore directional lights when indoor
 
@@ -309,8 +325,45 @@ void Renderer::update_light_data() const
     dir_light_data.data()
   );
 
+  /*
+   * TODO:
+   * - point lights can be even more filtered through compute shader
+   *   - it would divide pixels into groups and do sub-frustrum culling for each group
+   *   - then during lighting pass we get group of current pixel and just iterate all lights which affects current group
+   */
+
+  // update point lights ssbo
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_point_light_ssbo);
+  glBufferSubData
+  (
+    GL_SHADER_STORAGE_BUFFER,
+    0,
+    m_point_light_data.size() * sizeof(PointLight::GPUData),
+    m_point_light_data.data()
+  );
+  m_point_light_ssbo_size = m_point_light_data.size();
+
   // clean up
+  m_point_light_data.clear();
   glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+}
+
+//==============================================================================
+void Renderer::append_point_light_data(const CameraData& camera) const
+{
+  const auto& mapping = ThingSystem::get().get_sector_mapping().sectors_to_entities.entities;
+  EntityRegistry& registry = ThingSystem::get().get_entities();
+
+  for (const auto& frustum : camera.vis_tree.sectors)
+  {
+    for (const auto& entity_id : mapping[frustum.sector])
+    {
+      const PointLight& light = *registry.get_entity(entity_id)->as<PointLight>();
+      const vec3 stiched_position = (inverse(camera.view) * vec4(light.get_position(), 1.0f)).xyz;
+
+      m_point_light_data.push_back(light.get_gpu_data(stiched_position));
+    }
+  }
 }
 
 //==============================================================================
