@@ -18,9 +18,9 @@ DirectionalLight::DirectionalLight(const vec3& direction, f32 intensity, const c
   : Entity(VEC3_ZERO, 0.0f, 0.0f), color(color), direction(direction), intensity(intensity) {}
 
 //==============================================================================
-DirectionalLight::GPUData DirectionalLight::get_gpu_data() const
+DirLightGPU DirectionalLight::get_gpu_data() const
 {
-  return GPUData
+  return DirLightGPU
   {
     .color = color,
     .intensity = intensity,
@@ -37,7 +37,7 @@ EntityType PointLight::get_type_static()
 //==============================================================================
 PointLight::PointLight
 (
-  const vec3 position,
+  const vec3& position,
   f32 intensity,
   f32 constant,
   f32 linear,
@@ -54,9 +54,9 @@ PointLight::PointLight
 {}
 
 //==============================================================================
-PointLight::GPUData PointLight::get_gpu_data(const vec3& position) const
+PointLightGPU PointLight::get_gpu_data(const vec3& position) const
 {
-  return GPUData
+  return PointLightGPU
   {
     .position = position,
     .intensity = intensity,

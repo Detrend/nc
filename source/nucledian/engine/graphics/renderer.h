@@ -18,8 +18,7 @@ namespace nc
 struct Portal;
 struct VisibilityTree;
 struct RenderGunProperties;
-struct PointLight;
-struct PointLight::GPUData;
+struct PointLightGPU;
 
 class Renderer
 {
@@ -45,9 +44,9 @@ private:
   const MaterialHandle m_light_material;
   const MaterialHandle m_sector_material;
 
-  mutable u32                              m_dir_light_ssbo_size = 0;
-  mutable u32                              m_point_light_ssbo_size = 0;
-  mutable std::vector<PointLight::GPUData> m_point_light_data;
+  mutable u32                        m_dir_light_ssbo_size = 0;
+  mutable u32                        m_point_light_ssbo_size = 0;
+  mutable std::vector<PointLightGPU> m_point_light_data;
 
   GLuint m_texture_data_ssbo = 0;
   GLuint m_dir_light_ssbo    = 0;

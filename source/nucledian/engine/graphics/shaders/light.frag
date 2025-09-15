@@ -69,7 +69,7 @@ void main()
 
     final_color += (diffuse + specular) * dir_lights[i].color * dir_lights[i].intensity;
   }
-
+  
   for (int i = 0; i < num_point_lights; i++)
   {
     vec3 light_direction = point_lights[i].position - position;
@@ -84,7 +84,7 @@ void main()
 
     final_color += (diffuse + specular) * point_lights[i].color * point_lights[i].intensity * attenuation;
   }
-
+  
   out_color = vec4(final_color, 1.0f);
 }
 

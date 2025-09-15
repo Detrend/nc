@@ -82,7 +82,7 @@ Renderer::Renderer(u32 win_w, u32 win_h)
   glBufferData
   (
     GL_SHADER_STORAGE_BUFFER,
-    DirectionalLight::MAX_DIRECTIONAL_LIGHTS * sizeof(DirectionalLight::GPUData),
+    DirectionalLight::MAX_DIRECTIONAL_LIGHTS * sizeof(DirLightGPU),
     nullptr,
     GL_DYNAMIC_DRAW
   );
@@ -93,7 +93,7 @@ Renderer::Renderer(u32 win_w, u32 win_h)
   glBufferData
   (
     GL_SHADER_STORAGE_BUFFER,
-    PointLight::MAX_VISIBLE_POINT_LIGHTS * sizeof(PointLight::GPUData),
+    PointLight::MAX_VISIBLE_POINT_LIGHTS * sizeof(PointLightGPU),
     nullptr,
     GL_DYNAMIC_DRAW
   );
@@ -284,13 +284,13 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   // bind light ssbos
   update_light_ssbos();
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_dir_light_ssbo);
-  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_dir_light_ssbo);
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_point_light_ssbo);
 
   // prepare shader
   m_light_material.use();
   m_light_material.set_uniform(shaders::light::VIEW_POSITION, view_position);
   m_light_material.set_uniform(shaders::light::NUM_DIR_LIGHTS, m_dir_light_ssbo_size);
-  m_light_material.set_uniform(shaders::light::NUM_DIR_LIGHTS, m_point_light_ssbo_size);
+  m_light_material.set_uniform(shaders::light::NUM_POINT_LIGHTS, m_point_light_ssbo_size);
 
   // draw call
   const MeshHandle screen_quad = MeshManager::get().get_screen_quad();
@@ -307,7 +307,7 @@ void Renderer::update_light_ssbos() const
   // TODO: ignore directional lights when indoor
 
   // get all directional lights
-  std::vector<DirectionalLight::GPUData> dir_light_data;
+  std::vector<DirLightGPU> dir_light_data;
   EntityRegistry& registry = ThingSystem::get().get_entities();
   registry.for_each<DirectionalLight>([&dir_light_data](DirectionalLight& light)
   {
@@ -321,7 +321,7 @@ void Renderer::update_light_ssbos() const
   (
     GL_SHADER_STORAGE_BUFFER,
     0,
-    dir_light_data.size() * sizeof(DirectionalLight::GPUData),
+    dir_light_data.size() * sizeof(DirLightGPU),
     dir_light_data.data()
   );
 
@@ -329,7 +329,8 @@ void Renderer::update_light_ssbos() const
    * TODO:
    * - point lights can be even more filtered through compute shader
    *   - it would divide pixels into groups and do sub-frustrum culling for each group
-   *   - then during lighting pass we get group of current pixel and just iterate all lights which affects current group
+   *   - then during lighting pass we get group of current pixel and just iterate all lights which affects current
+   *     group
    */
 
   // update point lights ssbo
@@ -338,10 +339,10 @@ void Renderer::update_light_ssbos() const
   (
     GL_SHADER_STORAGE_BUFFER,
     0,
-    m_point_light_data.size() * sizeof(PointLight::GPUData),
+    m_point_light_data.size() * sizeof(PointLightGPU),
     m_point_light_data.data()
   );
-  m_point_light_ssbo_size = m_point_light_data.size();
+  m_point_light_ssbo_size = static_cast<u32>(m_point_light_data.size());
 
   // clean up
   m_point_light_data.clear();
@@ -358,10 +359,13 @@ void Renderer::append_point_light_data(const CameraData& camera) const
   {
     for (const auto& entity_id : mapping[frustum.sector])
     {
-      const PointLight& light = *registry.get_entity(entity_id)->as<PointLight>();
-      const vec3 stiched_position = (inverse(camera.view) * vec4(light.get_position(), 1.0f)).xyz;
+      const PointLight* const light = registry.get_entity(entity_id)->as<PointLight>();
 
-      m_point_light_data.push_back(light.get_gpu_data(stiched_position));
+      if (light == nullptr)
+        continue;
+
+      const vec3 stiched_position = (inverse(camera.portal_dest_to_src) * vec4(light->get_position(), 1.0f)).xyz;
+      m_point_light_data.push_back(light->get_gpu_data(stiched_position));
     }
   }
 }
@@ -401,6 +405,8 @@ void Renderer::render_sectors(const CameraData& camera) const
 void Renderer::render_entities(const CameraData& camera) const
 {
   constexpr f32 BILLBOARD_TEXTURE_SCALE = 1.0f / 2048.0f;
+
+  append_point_light_data(camera);
 
   // group entities by texture atlas
   const auto& mapping = ThingSystem::get().get_sector_mapping().sectors_to_entities.entities;
