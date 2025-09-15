@@ -55,7 +55,7 @@ namespace nc
 
   //====================================================================================================
 
-  void UiButton::draw([[maybe_unused]] const MaterialHandle button_material, [[maybe_unused]] GLuint VAO)
+  void UiButton::draw([[maybe_unused]] const MaterialHandle button_material)
   {
     const TextureManager& manager = TextureManager::get();
     [[maybe_unused]] const TextureHandle& texture = manager[texture_name];
@@ -68,6 +68,9 @@ namespace nc
     const glm::mat4 final_trans = trans_mat;
 
     // button_material.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
+
+    glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   }
 
   //============================================================================================
@@ -229,8 +232,11 @@ namespace nc
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    
-
+    new_game_button->draw(button_material);
+    options_button->draw(button_material);
+    load_button->draw(button_material);
+    save_button->draw(button_material);
+    quit_button->draw(button_material);
 
 
     glDisable(GL_BLEND);

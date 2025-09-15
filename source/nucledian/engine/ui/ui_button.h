@@ -27,7 +27,7 @@ namespace nc
     vec2 get_position();
     vec2 get_scale();
 
-    void draw(MaterialHandle button_material, GLuint VAO); // Draw takes a VAO of (-1, 1) rectangle to then modify it for drawing in shader
+    void draw(MaterialHandle button_material); // Draw takes the shader to modify its uniforms
 
   private:
     const char* texture_name;
