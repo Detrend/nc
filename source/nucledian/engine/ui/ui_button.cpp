@@ -1,19 +1,28 @@
+#include <engine/graphics/resources/res_lifetime.h>
+
 #include <engine/ui/ui_button.h>
 #include <SDL.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 namespace nc
 {
-  UiButton::UiButton(GuiTexture* texture, std::function<void(void)> func)
+  UiButton::UiButton(const char* texture_name, vec2 position, vec2 scale, std::function<void(void)> func)
   {
-    this->texture = texture;
+    this->texture_name = texture_name;
+
+    this->position = position;
+    this->scale = scale;
     this->func = func;
+
   }
+
+  //================================================================================================
 
   bool UiButton::is_point_in_rec(vec2 point)
   {
-    vec2 position = texture->get_position();
-    vec2 scale = texture->get_scale();
-
     vec2 start = position - scale / 2.0f;
     vec2 end = position + scale / 2.0f;
 
@@ -30,11 +39,35 @@ namespace nc
     return true;
   }
 
-  //============================================================================================
+  //===================================================================================================
 
-  GuiTexture* UiButton::get_texture()
+  vec2 UiButton::get_position()
   {
-    return texture;
+    return position;
+  }
+
+  //======================================================================================================
+
+  vec2 UiButton::get_scale()
+  {
+    return scale;
+  }
+
+  //====================================================================================================
+
+  void UiButton::draw([[maybe_unused]] const MaterialHandle button_material, [[maybe_unused]] GLuint VAO)
+  {
+    const TextureManager& manager = TextureManager::get();
+    [[maybe_unused]] const TextureHandle& texture = manager[texture_name];
+
+    glm::mat4 trans_mat = glm::mat4(1.0f);
+    vec2 translate = position;
+    trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+    trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
+
+    const glm::mat4 final_trans = trans_mat;
+
+    // button_material.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
   }
 
   //============================================================================================
@@ -42,6 +75,7 @@ namespace nc
   MenuManager::MenuManager() : 
   button_material(shaders::ui_button::VERTEX_SOURCE, shaders::ui_button::FRAGMENT_SOURCE)
   {
+
     main_menu_page = new MainMenuPage();
     options_page = new OptionsPage();
     load_game_page = new LoadGamePage();
@@ -65,6 +99,7 @@ namespace nc
     glDisableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
   }
 
   //============================================================================================

@@ -2,6 +2,7 @@
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/resources/material.h>
+#include <engine/graphics/resources/texture.h>
 
 #include <vector>
 #include <functional>
@@ -20,13 +21,18 @@ namespace nc
   class UiButton
   {
   public:
-    UiButton(GuiTexture* texture, std::function<void(void)> func);
+    UiButton(const char* texture_name, vec2 position, vec2 scale, std::function<void(void)> func);
     bool is_point_in_rec(vec2 point);
 
-    GuiTexture* get_texture();
+    vec2 get_position();
+    vec2 get_scale();
+
+    void draw(MaterialHandle button_material, GLuint VAO); // Draw takes a VAO of (-1, 1) rectangle to then modify it for drawing in shader
 
   private:
-    GuiTexture* texture;
+    const char* texture_name;
+    vec2 position;
+    vec2 scale;
     bool isHover = false;
     std::function<void(void)> func;
   };
