@@ -16,6 +16,7 @@
 #include <engine/graphics/gizmo.h>
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/resources/res_lifetime.h>
+#include <engine/graphics/resources/texture.h>
 
 #include <engine/map/map_system.h>
 #include <engine/map/physics.h>

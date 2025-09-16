@@ -14,6 +14,7 @@
 #include <engine/input/input_system.h>
 #include <engine/map/physics.h>
 
+#include <engine/graphics/resources/texture.h>
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/gizmo.h>
 

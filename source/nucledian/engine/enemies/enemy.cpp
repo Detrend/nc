@@ -53,13 +53,13 @@ Enemy::Enemy(vec3 position, vec3 looking_dir)
     .sprite    = "cultist_idle_0",
     .direction = looking_dir,
     .scale     = 15.0f,
-    .mode      = Appearance::Mode::dir8,
+    .mode      = Appearance::SpriteMode::dir8,
     .pivot     = Appearance::PivotMode::bottom,
   };
 
   this->anim_fsm.set_state_length(AnimStates::idle,   1.0f);
-  this->anim_fsm.set_state_length(AnimStates::walk,   2.0f);
-  this->anim_fsm.set_state_length(AnimStates::attack, 2.0f);
+  this->anim_fsm.set_state_length(AnimStates::walk,   1.25f);
+  this->anim_fsm.set_state_length(AnimStates::attack, 3.75f);
   this->anim_fsm.set_state_length(AnimStates::dead,   2.0f);
 }
 
