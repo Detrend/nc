@@ -124,6 +124,17 @@ void AnimFSM<NS, GOTO, ST, TT>::set_state(State new_state)
 
 //==============================================================================
 template<u64 NS, auto GOTO, typename ST, typename TT>
+void AnimFSM<NS, GOTO, ST, TT>::require_state(State new_state)
+{
+  nc_assert(new_state < NS);
+  if (this->state != new_state)
+  {
+    this->set_state(new_state);
+  }
+}
+
+//==============================================================================
+template<u64 NS, auto GOTO, typename ST, typename TT>
 void AnimFSM<NS, GOTO, ST, TT>::set_state_length(State the_state, f32 len)
 {
   nc_assert(the_state < NS);

@@ -65,6 +65,9 @@ public:
   // Resets the state machine and starts from the given state
   void set_state(State new_state);
 
+  // Transitions to the state if not already in that state
+  void require_state(State new_state);
+
   // Sets a length for a current state
   void set_state_length(State the_state, f32 len);
 

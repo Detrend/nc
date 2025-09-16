@@ -43,6 +43,11 @@ f32 cross(const vec2& a, const vec2& b);
 template<typename T>
 T normalize_or_zero(const T& vec);
 
+// Clamps the length of the vector. Returns the input vector clamped by the min
+// and max length.
+template<typename T>
+T clamp_length(const T& vec, f32 min, f32 max);
+
 // Normalizes the vector if non-zero and returns it. Otherwise returns the other
 template<typename T>
 T normalize_or(const T& vec, const T& other);

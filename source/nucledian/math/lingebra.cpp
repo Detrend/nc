@@ -16,6 +16,13 @@ T normalize_or_zero(const T& vec)
 
 //==============================================================================
 template<typename T>
+T clamp_length(const T& vec, f32 mn, f32 mx)
+{
+  return normalize_or_zero(vec) * clamp(length(vec), mn, mx);
+}
+
+//==============================================================================
+template<typename T>
 T normalize_or(const T& vec, const T& other)
 {
   return (vec != glm::zero<T>()) ? normalize(vec) : other;
@@ -64,6 +71,10 @@ template vec4 normalize_or_zero(const vec4&);
 template vec2 normalize_or(const vec2&, const vec2&);
 template vec3 normalize_or(const vec3&, const vec3&);
 template vec4 normalize_or(const vec4&, const vec4&);
+
+template vec2 clamp_length(const vec2&, f32, f32);
+template vec3 clamp_length(const vec3&, f32, f32);
+template vec4 clamp_length(const vec4&, f32, f32);
 
 }
 

@@ -27,6 +27,11 @@
 namespace nc
 {
 
+constexpr f32 SPOT_DISTANCE         = 1.0f;  // Player will get spotted if closer
+constexpr f32 ENEMY_FOV_DEG         = 45.0f; // Field of view
+constexpr f32 TARGET_STOP_DISTANCE  = 1.0f;  // How far do we keep from the target
+constexpr f32 PATH_POINT_ERASE_DIST = 0.25f; // Removes the path point if this close
+
 //==============================================================================
 EntityType Enemy::get_type_static()
 {
@@ -51,7 +56,7 @@ Enemy::Enemy(vec3 position, vec3 looking_dir)
   this->appear = Appearance
   {
     .sprite    = "cultist_idle_0",
-    .direction = looking_dir,
+    .direction = this->facing,
     .scale     = 15.0f,
     .mode      = Appearance::SpriteMode::dir8,
     .pivot     = Appearance::PivotMode::bottom,
@@ -66,7 +71,7 @@ Enemy::Enemy(vec3 position, vec3 looking_dir)
 //==============================================================================
 void Enemy::update(f32 delta)
 {
-  if (this->state == EnemyState::dead)
+  if (this->state == EnemyAiState::dead)
   {
     this->velocity = VEC3_ZERO;
     return;
@@ -82,15 +87,15 @@ void Enemy::handle_ai(f32 delta_seconds)
 {
   switch (this->state)
   {
-    case EnemyState::idle:
+    case EnemyAiState::idle:
     {
-      this->handle_idle(delta_seconds);
+      this->handle_ai_idle(delta_seconds);
       break;
     }
 
-    case EnemyState::alert:
+    case EnemyAiState::alert:
     {
-      this->handle_alert(delta_seconds);
+      this->handle_ai_alert(delta_seconds);
       break;
     }
 
@@ -99,38 +104,12 @@ void Enemy::handle_ai(f32 delta_seconds)
 }
 
 //==============================================================================
-void Enemy::handle_attack()
-{
-  ThingSystem& game = ThingSystem::get();
-
-  Entity*   target = game.get_entities().get_entity(this->target_id);
-  PhysLevel lvl    = game.get_level();
-
-  if (this->can_attack() && target)
-  {
-    anim_fsm.set_state(AnimStates::attack);
-    time_until_attack = attackDelay;
-
-    vec3 ray_start = this->get_position()   + vec3(0, 0.5f, 0);
-    vec3 ray_end   = target->get_position() + vec3(0, 0.5f, 0);
-
-    auto wall_hit = lvl.ray_cast_3d(ray_start, ray_end);
-    if (wall_hit) 
-    {
-      return;
-    }
-
-    if (Player* player = target->as<Player>())
-    {
-      player->damage(10);
-    }
-  }
-}
-
-//==============================================================================
 void Enemy::handle_movement(f32 delta)
 {
   auto world = ThingSystem::get().get_level();
+
+  // Handle gravity
+  velocity.y -= GRAVITY * delta;
 
   vec3 position = this->get_position();
   world.move_character
@@ -191,52 +170,50 @@ void Enemy::die()
 }
 
 //==============================================================================
-void Enemy::handle_idle(f32 /*delta*/)
+void Enemy::handle_ai_idle(f32 /*delta*/)
 {
   auto& game = ThingSystem::get();
 
   Player* player = game.get_player();
-  this->velocity = vec3{0, 0, 0};
+  this->velocity = VEC3_ZERO;
 
-  if (anim_fsm.get_state() != AnimStates::idle)
-  {
-    anim_fsm.set_state(AnimStates::idle);
-  }
+  anim_fsm.require_state(AnimStates::idle);
 
   if (!player)
   {
     return;
   }
 
-  vec3 player_pos = game.get_player()->get_position();
+  vec3 player_pos = player->get_position();
+  vec3 player_dir = normalize_or_zero(player_pos - this->get_position());
 
-  if (distance(player->get_position(), this->get_position()) <= 1.0f)
+  bool transition_to_alert = false;
+
+  if (distance(player->get_position(), this->get_position()) <= SPOT_DISTANCE)
   {
-    this->state          = EnemyState::alert;
-    this->target_id      = player->get_id();
-    this->can_see_target = true;
-    this->time_since_saw_target = 0.0f;
-    return;
+    transition_to_alert = true;
   }
-
-  vec3 player_dir = normalize(player->get_position() - this->get_position());
-
-  if (dot(player_dir, this->facing) >= std::cosf(PI / 4.0f))
+  else if (dot(player_dir, this->facing) >= cos(rad2deg(ENEMY_FOV_DEG)))
   {
     vec3 ray_end = player_pos + vec3(0, 0.5f, 0);
 
     if (this->can_see_point(ray_end))
     {
-      this->state          = EnemyState::alert;
-      this->target_id      = player->get_id();
-      this->can_see_target = true;
-      this->time_since_saw_target = 0.0f;
+      transition_to_alert = true;
     }
+  }
+
+  if (transition_to_alert)
+  {
+    this->state          = EnemyAiState::alert;
+    this->target_id      = player->get_id();
+    this->can_see_target = true;
+    this->time_since_saw_target = 0.0f;
   }
 }
 
 //==============================================================================
-void Enemy::handle_alert(f32 delta)
+void Enemy::handle_ai_alert(f32 delta)
 {
   auto& engine = get_engine();
   auto& game   = ThingSystem::get();
@@ -248,13 +225,15 @@ void Enemy::handle_alert(f32 delta)
   if (!target)
   {
     // Return to idle state if the target is dead or does not exist
-    this->state     = EnemyState::idle;
+    this->state     = EnemyAiState::idle;
     this->target_id = INVALID_ENTITY_ID;
     this->can_see_target = false;
     this->time_since_saw_target = 0.0f;
     this->current_path.points.clear();
     return;
   }
+
+  vec2 position_2d = this->get_position().xz();
 
   // Handle target visibility once in a 16 frames
   u64 frame_idx = engine.get_frame_idx();
@@ -276,105 +255,108 @@ void Enemy::handle_alert(f32 delta)
     this->time_since_saw_target += delta;
   }
 
-  // Recompute the path if needed
-  bool no_path  = current_path.points.empty();
-  vec2 last_pt2 = no_path ? VEC2_ZERO : current_path.points.back().xz();
-  if (no_path || distance(last_pt2, this->follow_target_pos.xz()) > 5.0f)
+  // Animation
+  switch (this->anim_fsm.get_state())
   {
-    this->current_path.points = map.get_path
-    (
-      this->get_position(),
-      this->follow_target_pos,
-      this->get_radius(),
-      this->get_height()
-    );
+    // ATTACKING
+    case AnimStates::idle: [[fallthrough]];
+    case AnimStates::walk:
+    {
+      // Recompute the path if needed
+      bool no_path  = current_path.points.empty();
+      vec2 last_pt2 = no_path ? VEC2_ZERO : current_path.points.back().xz();
+      if (no_path || distance(last_pt2, this->follow_target_pos.xz()) > 5.0f)
+      {
+        this->current_path.points = map.get_path
+        (
+          this->get_position(),
+          this->follow_target_pos,
+          this->get_radius(),
+          this->get_height()
+        );
 
-    lvl.smooth_out_path
-    (
-      this->current_path.points, this->get_radius(), this->get_height()
-    );
+        lvl.smooth_out_path
+        (
+          this->current_path.points, this->get_radius(), this->get_height()
+        );
+      }
+
+      // Cooldown after attack
+      time_until_attack -= delta;
+
+      vec2 move_path_force        = VEC2_ZERO; // Moving towards the target
+      vec2 move_from_target_force = VEC2_ZERO; // Moving from the target if too close
+      vec2 move_from_mates_force  = VEC2_ZERO; // Moving away from other enemies if too close
+
+      auto& path = this->current_path.points;
+
+      // Erase the first point of the path if we are too close
+      while (path.size() && distance(position_2d, path[0].xz()) < PATH_POINT_ERASE_DIST)
+      {
+        path.erase(path.begin());
+      }
+
+      // Compute force moving as towards the closest point of the path
+      if (path.size())
+      {
+        move_path_force = normalize_or_zero(path[0].xz() - position_2d);
+      }
+
+      // Compute force for moving away from the target (so we do not get
+      // too close)
+      vec2 target_dir  = this->follow_target_pos.xz() - position_2d;
+      f32  target_dist = length(target_dir);
+      if (target_dist < TARGET_STOP_DISTANCE)
+      {
+        f32 coeff = 1.0f - target_dist / TARGET_STOP_DISTANCE;
+        move_from_target_force = -normalize_or_zero(target_dir) * coeff * 4.0f;
+      }
+
+      vec2 final_force = VEC2_ZERO;
+      final_force += move_path_force;
+      final_force += move_from_target_force;
+      final_force += move_from_mates_force;
+      final_force = clamp_length(final_force, 0.0f, 1.0f);
+
+      this->velocity.x = final_force.x;
+      this->velocity.z = final_force.y;
+
+      bool       is_moving     = length(this->velocity.xz()) > 0.1f;
+      AnimStates desired_state = is_moving ? AnimStates::walk : AnimStates::idle;
+
+      if (this->can_attack() && this->can_see_target)
+      {
+        desired_state = AnimStates::attack;
+        time_until_attack = attackDelay;
+      }
+
+      if (this->anim_fsm.get_state() != desired_state)
+      {
+        this->anim_fsm.set_state(desired_state);
+      }
+      break;
+    }
+
+    // STANDING or WALKING
+    case AnimStates::attack:
+    {
+      this->velocity.x = this->velocity.z = 0.0f; // Stand on a spot
+      vec2 dir_to_target = normalize_or_zero(this->follow_target_pos.xz() - position_2d);
+      if (dir_to_target != VEC2_ZERO)
+      {
+        this->facing = vec3{dir_to_target.x, 0.0f, dir_to_target.y};
+      }
+      break;
+    }
   }
 
-  // Handle attack
-  time_until_attack -= delta;
-  if (this->can_see_target)
-  {
-    this->handle_attack();
-  }
-
-  auto& path = this->current_path.points;
-  vec2  pos2 = this->get_position().xz();
-
-  // Playing the attack animation
-  if (this->anim_fsm.get_state() == AnimStates::attack)
-  {
-    this->velocity.x = this->velocity.z = 0.0f; // Stand on a spot
-    vec2 dir_to_target = normalize_or_zero(this->follow_target_pos.xz() - pos2);
-    if (dir_to_target != VEC2_ZERO)
-    {
-      this->facing = vec3{dir_to_target.x, 0.0f, dir_to_target.y};
-    }
-  }
-  else
-  {
-    // Erase the first point of the path if we are too close
-    while (path.size() && distance(pos2, path[0].xz()) < 0.25f)
-    {
-      path.erase(path.begin());
-    }
-
-    if (path.size())
-    {
-      vec2 target_dir = normalize_or_zero(path[0].xz() - pos2);
-      if (target_dir != VEC2_ZERO)
-      {
-        this->facing = vec3{target_dir.x, 0.0f, target_dir.y};
-      }
-
-      if (this->can_see_target && distance(this->follow_target_pos.xz(), pos2) < 3.0f)
-      {
-        this->velocity.x = this->velocity.z = 0.0f;
-      }
-      else
-      {
-        this->velocity.x = target_dir.x;
-        this->velocity.z = target_dir.y;
-      }
-    }
-    else
-    {
-      this->velocity.x = this->velocity.z = 0.0f;
-    }
-
-    if (this->velocity.xz() == VEC2_ZERO)
-    {
-      if (this->anim_fsm.get_state() != AnimStates::idle)
-      {
-        this->anim_fsm.set_state(AnimStates::idle);
-      }
-    }
-    else
-    {
-      if (this->anim_fsm.get_state() != AnimStates::walk)
-      {
-        this->anim_fsm.set_state(AnimStates::walk);
-      }
-    }
-  }
-
-  // Handle gravity
-  velocity.y -= GRAVITY * delta;
-
-  // Debug draw points
+  // Debug draw path points
 #ifdef NC_DEBUG_DRAW
   {
-    vec3 pos_2D = this->get_position();
-    pos_2D.y = 0;
-
-    for (u64 i = 0; i < path.size(); ++i)
+    for (u64 i = 0; i < current_path.points.size(); ++i)
     {
-      vec2 p1 = i ? path[i-1].xz() : pos_2D.xz();
-      vec2 p2 = path[i].xz();
+      vec2 p1 = i ? current_path.points[i-1].xz() : position_2d;
+      vec2 p2 = current_path.points[i].xz();
       Gizmo::create_line_2d("Paths", p1, p2, colors::BLUE);
     }
   }
