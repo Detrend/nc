@@ -11,8 +11,14 @@ namespace nc
 template<typename T>
 T normalize_or_zero(const T& vec)
 {
-  constexpr auto ZER0 = glm::zero<T>();
-  return (vec != ZER0) ? normalize(vec) : ZER0;
+  return normalize_or(vec, glm::zero<T>());
+}
+
+//==============================================================================
+template<typename T>
+T normalize_or(const T& vec, const T& other)
+{
+  return (vec != glm::zero<T>()) ? normalize(vec) : other;
 }
 
 //==============================================================================
@@ -54,6 +60,10 @@ template bool is_zero(const vec2&, f32);
 template vec2 normalize_or_zero(const vec2&);
 template vec3 normalize_or_zero(const vec3&);
 template vec4 normalize_or_zero(const vec4&);
+
+template vec2 normalize_or(const vec2&, const vec2&);
+template vec3 normalize_or(const vec3&, const vec3&);
+template vec4 normalize_or(const vec4&, const vec4&);
 
 }
 

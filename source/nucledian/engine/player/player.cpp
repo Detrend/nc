@@ -66,11 +66,11 @@ constexpr WeaponFlags DEFAULT_WEAPONS
 //==============================================================================
 Player::Player(vec3 position, vec3 forward)
 : Base(position, 0.25f, 0.5f)
+, angle_yaw(atan2f(forward.z, -forward.x) + HALF_PI) // MR says: no idea if it's ok
 , current_health(CVars::player_max_hp)
 , owned_weapons(DEFAULT_WEAPONS)
 , current_weapon(WeaponTypes::wrench)
 , weapon_fsm(0)
-, angle_yaw(atan2f(forward.z, -forward.x) + HALF_PI) // MR says: no idea if it's ok
 {
   this->camera.update_transform(position, angle_yaw, angle_pitch, view_height);
 

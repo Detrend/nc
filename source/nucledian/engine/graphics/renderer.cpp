@@ -205,10 +205,14 @@ void Renderer::create_g_buffers(u32 width, u32 height)
 void Renderer::recompute_projection(u32 width, u32 height, f32 fov)
 {
   f32 aspect = static_cast<f32>(width) / height;
-  m_default_projection = perspective
-  (
-    fov, aspect, 0.0001f, 100.0f
-  );
+
+  // The near value has to be very tiny, because otherwise the camera clips into
+  // the portals when traversing through them. On the other hand, making it too
+  // small will result in losing a lot of depth buffer precision in the long
+  // distance, which causes a flicering.
+  constexpr f32 NEAR = 0.001f;
+  constexpr f32 FAR  = 64.0f;
+  m_default_projection = perspective(fov, aspect, NEAR, FAR);
 
   m_solid_material.use();
   m_solid_material.set_uniform(shaders::solid::PROJECTION, m_default_projection);
@@ -293,6 +297,83 @@ void Renderer::render_sectors(const CameraData& camera) const
 }
 
 //==============================================================================
+// Chooses the exact texture handle for a given entity from the data in the
+// appearance component.
+static TextureHandle pick_texture_handle_from_appearance
+(
+  const Appearance&           appear,
+  const Renderer::CameraData& camera
+)
+{
+  switch (appear.mode)
+  {
+    // 1 directional sprite
+    case Appearance::SpriteMode::mono:
+    {
+      return TextureManager::get()[appear.sprite];
+      break;
+    }
+
+    // 8 directional sprite
+    case Appearance::SpriteMode::dir8:
+    {
+      nc_assert(appear.direction != VEC3_ZERO, "Dir has to be filled out");
+
+      vec3 dir_relative = camera.view * vec4{appear.direction, 0.0f};
+      vec2 dir_2d = normalize_or_zero(vec2{dir_relative.x, dir_relative.z});
+
+      if (dir_2d == VEC2_ZERO) [[unlikely]]
+      {
+        // Not sure if this can even happen legaly
+        return TextureManager::get()[appear.sprite + "_d"];
+      }
+
+      // ( 0.0f, -1.0f) ->  0.0f   (looking straight at us)
+      // ( 1.0f,  0.0f) ->  PI/2   (looking right)
+      // (-1.0f,  0.0f) -> -PI/2   (looking left)
+      // ( 0.0f,  1.0f) ->  PI     (looking back)
+      f32 angle  = atan2f(dir_2d.x, -dir_2d.y);
+      f32 degree = rad2deg(angle);
+
+      // 0 = right, 1 = left
+      u8  side = degree < 0; // [0-1]
+      // 0 = d, 1 = dl/dr, 2 = l/r, 3 = ul/ur/ 4 = u
+      u8  face = cast<u8>((abs(degree) + 22.5f) / 45.0f); // [0-4]
+      nc_assert(face < 5);
+
+      // Now calculate the suffix from those 10 combinations
+      u8 idx = side * 5 + face;
+      nc_assert(idx < 10);
+
+      constexpr cstr SUFFIX_LUT[]
+      {
+        // RIGHT
+        "_d",  // 0 + 0 = 0
+        "_dr", // 0 + 1 = 1
+        "_r",  // 0 + 2 = 2
+        "_ur", // 0 + 3 = 3
+        "_u",  // 0 + 4 = 4
+        // LEFT
+        "_d",  // 5 + 0 = 5
+        "_dl", // 5 + 1 = 6
+        "_l",  // 5 + 2 = 7
+        "_ul", // 5 + 3 = 8
+        "_u",  // 5 + 4 = 9
+      };
+
+      return TextureManager::get()[appear.sprite + SUFFIX_LUT[idx]];
+      break;
+    }
+
+    default:
+    {
+      nc_assert(false, "This should not happen!");
+      return TextureHandle::invalid();
+    }
+  }
+}
+
+//==============================================================================
 void Renderer::render_entities(const CameraData& camera) const
 {
   constexpr f32 BILLBOARD_TEXTURE_SCALE = 1.0f / 2048.0f;
@@ -309,7 +390,14 @@ void Renderer::render_entities(const CameraData& camera) const
       const Entity* entity = registry.get_entity(entity_id);
       if (const Appearance* appearance = entity->get_appearance())
       {
-        const ResLifetime lifetime = appearance->texture.get_lifetime();
+        // TODO: We have to call this twice (once here and once later), which
+        //       is not pretty. Rework maybe?
+        const TextureHandle& texture = pick_texture_handle_from_appearance
+        (
+          *appearance, camera
+        );
+
+        const ResLifetime lifetime = texture.get_lifetime();
         groups[lifetime].insert(entity);
       }
     }
@@ -340,21 +428,33 @@ void Renderer::render_entities(const CameraData& camera) const
       const Appearance& appearance = *entity->get_appearance();
       const vec3 position = entity->get_position();
 
-      const TextureHandle& texture = appearance.texture;
+      const TextureHandle& texture = pick_texture_handle_from_appearance
+      (
+        appearance, camera
+      );
+
       m_billboard_material.set_uniform(shaders::billboard::TEXTURE_POS, texture.get_pos());
       m_billboard_material.set_uniform(shaders::billboard::TEXTURE_SIZE, texture.get_size());
 
-      const vec3 pivot_offset(0.0f, texture.get_height() * BILLBOARD_TEXTURE_SCALE / 2.0f, 0.0f);
+      const bool bottom_mode = appearance.pivot == Appearance::PivotMode::bottom;
+      const vec3 root_offset = bottom_mode ? VEC3_Y * 0.5f : VEC3_ZERO;
+
+      const mat4 offset_transform = translate(mat4{1.0f}, root_offset);
+      const f32  height_move = bottom_mode ? 0.0f : (BILLBOARD_TEXTURE_SCALE * 0.5f);
+
+      const vec3 pivot_offset(0.0f, texture.get_height() * height_move, 0.0f);
       const vec3 scale(
         texture.get_width() * appearance.scale * BILLBOARD_TEXTURE_SCALE,
         texture.get_height() * appearance.scale * BILLBOARD_TEXTURE_SCALE,
         1.0f
       );
+
       const mat4 transform = translate(mat4(1.0f), position + pivot_offset)
         * rotation
-        * nc::scale(mat4(1.0f), scale);
-      m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, transform);
+        * nc::scale(mat4(1.0f), scale)
+        * offset_transform;
 
+      m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, transform); 
       glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
     }
   }

@@ -1,10 +1,11 @@
 // Project Nucledian Source File
 #pragma once
-#include <engine/entity/entity.h>
+
 #include <engine/entity/entity.h>
 #include <engine/entity/entity_types.h>
+
 #include <engine/appearance.h>
-#include <transform.h>
+#include <anim_state_machine.h>
 
 namespace nc
 {
@@ -35,6 +36,7 @@ private:
   void handle_ai(f32 delta);
   void handle_attack();
   void handle_movement(f32 delta);
+  void handle_appearance(f32 delta);
   void die();
 
   void handle_idle(f32 delta);
@@ -49,6 +51,40 @@ private:
   EnemyState state = EnemyState::idle;
   Appearance appear;
 
+  // We want to distinguish between animation states and enemy states.
+  // For example, we might want an enemy that is in the idle state to walk back
+  // to his spawn point, in which case he would have the "walk" anim state and
+  // "idle" state
+  enum AnimStates : u8
+  {
+    idle,
+    walk,
+    attack,
+    dead,
+    // - //
+    count,
+  };
+
+  static constexpr cstr ANIM_STATES_NAMES[]
+  {
+    "idle",
+    "walk",
+    "attack",
+    "dead",
+  };
+  static_assert(ARRAY_LENGTH(ANIM_STATES_NAMES) == AnimStates::count);
+
+  using GotoArray = std::array<AnimStates, AnimStates::count>;
+  static constexpr GotoArray ANIM_TRANSITIONS
+  {
+    AnimStates::idle, // idle   -> idle
+    AnimStates::walk, // walk   -> walk
+    AnimStates::idle, // attack -> idle
+    AnimStates::dead, // dead   -> dead
+  };
+  using EnemyFSM = AnimFSM<AnimStates::count, ANIM_TRANSITIONS>;
+  EnemyFSM anim_fsm;
+
   struct Path
   {
     std::vector<vec3> points;
@@ -61,7 +97,6 @@ private:
   bool     can_see_target : 1    = false;
 
   int health;
-  int maxHealth;
 
   float attackDelay = 3.0f;
   float time_until_attack = 3.0f;

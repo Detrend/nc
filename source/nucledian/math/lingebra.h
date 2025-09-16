@@ -43,6 +43,10 @@ f32 cross(const vec2& a, const vec2& b);
 template<typename T>
 T normalize_or_zero(const T& vec);
 
+// Normalizes the vector if non-zero and returns it. Otherwise returns the other
+template<typename T>
+T normalize_or(const T& vec, const T& other);
+
 template<typename VT, typename FT>
 VT with_x(const VT& v, const FT& x);
 

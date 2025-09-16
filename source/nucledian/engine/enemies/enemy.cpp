@@ -17,10 +17,12 @@
 #include <engine/entity/entity_type_definitions.h>
 
 #include <map>
+#include <format>
 
 #ifdef NC_DEBUG_DRAW
 #include <engine/graphics/gizmo.h>
 #endif
+
 
 namespace nc
 {
@@ -32,21 +34,33 @@ EntityType Enemy::get_type_static()
 }
 
 //==============================================================================
-Enemy::Enemy(vec3 position, vec3 facing)
-  : Entity(position, 0.15f, 0.35f, true)
+Enemy::Enemy(vec3 position, vec3 looking_dir)
+ : Entity(position, 0.15f, 0.35f, true)
+ , facing(looking_dir)
+ , anim_fsm(AnimStates::idle)
 {
-  appear = Appearance
+  // TODO: Move somewhere else
+  constexpr int MAX_HEALTH = 60;
+  nc_assert(looking_dir != VEC3_ZERO);
+
+  this->facing    = normalize(this->facing);
+  this->collision = true;
+  this->velocity  = VEC3_ZERO;
+  this->health    = MAX_HEALTH;
+
+  this->appear = Appearance
   {
-    .texture = TextureManager::get()["mff_pepe_walk"],
-    .scale = 1.0f,
+    .sprite    = "cultist_idle_0",
+    .direction = looking_dir,
+    .scale     = 15.0f,
+    .mode      = Appearance::Mode::dir8,
+    .pivot     = Appearance::PivotMode::bottom,
   };
 
-  collision = true;
-  this->facing = normalize(facing);
-  velocity = vec3(0, 0, 0);
-
-  maxHealth = 60;
-  health = maxHealth;
+  this->anim_fsm.set_state_length(AnimStates::idle,   1.0f);
+  this->anim_fsm.set_state_length(AnimStates::walk,   2.0f);
+  this->anim_fsm.set_state_length(AnimStates::attack, 2.0f);
+  this->anim_fsm.set_state_length(AnimStates::dead,   2.0f);
 }
 
 //==============================================================================
@@ -54,13 +68,13 @@ void Enemy::update(f32 delta)
 {
   if (this->state == EnemyState::dead)
   {
-    this->velocity = vec3{0, 0, 0};
+    this->velocity = VEC3_ZERO;
     return;
   }
 
   this->handle_ai(delta);
-  this->handle_attack();
   this->handle_movement(delta);
+  this->handle_appearance(delta);
 }
 
 //==============================================================================
@@ -94,6 +108,7 @@ void Enemy::handle_attack()
 
   if (this->can_attack() && target)
   {
+    anim_fsm.set_state(AnimStates::attack);
     time_until_attack = attackDelay;
 
     vec3 ray_start = this->get_position()   + vec3(0, 0.5f, 0);
@@ -127,6 +142,39 @@ void Enemy::handle_movement(f32 delta)
 }
 
 //==============================================================================
+void Enemy::handle_appearance(f32 delta)
+{
+  this->appear.direction = this->facing;
+
+  using Event   = AnimFSMEvents::evalue;
+  using Trigger = EnemyFSM::Trigger;
+  using State   = EnemyFSM::State;
+
+  this->anim_fsm.update(delta, [&](Event, Trigger, State)
+  {
+    // Do nothing here
+  });
+
+  // Calculate the correct sprite
+  constexpr u64 SPRITE_CNTS[]
+  {
+    1,
+    16,
+    45,
+    1,
+  };
+  static_assert(ARRAY_LENGTH(SPRITE_CNTS) == AnimStates::count);
+
+  u8   anim_state       = this->anim_fsm.get_state();
+  u64  state_sprite_cnt = SPRITE_CNTS[anim_state];
+  f32  rel_time         = this->anim_fsm.get_time_relative();
+  u64  sprite_idx       = cast<u64>(rel_time * state_sprite_cnt);
+  cstr sprite_sheet     = ANIM_STATES_NAMES[anim_state];
+
+  this->appear.sprite = std::format("cultist_{}_{}", sprite_sheet, sprite_idx);
+}
+
+//==============================================================================
 void Enemy::damage(int damage)
 {
   health -= damage;
@@ -149,6 +197,11 @@ void Enemy::handle_idle(f32 /*delta*/)
 
   Player* player = game.get_player();
   this->velocity = vec3{0, 0, 0};
+
+  if (anim_fsm.get_state() != AnimStates::idle)
+  {
+    anim_fsm.set_state(AnimStates::idle);
+  }
 
   if (!player)
   {
@@ -252,32 +305,61 @@ void Enemy::handle_alert(f32 delta)
   auto& path = this->current_path.points;
   vec2  pos2 = this->get_position().xz();
 
-  // Erase the first point of the path if we are too close
-  while (path.size() && distance(pos2, path[0].xz()) < 0.25f)
+  // Playing the attack animation
+  if (this->anim_fsm.get_state() == AnimStates::attack)
   {
-    path.erase(path.begin());
-  }
-
-  if (path.size())
-  {
-    vec2 target_dir = normalize_or_zero(path[0].xz() - pos2);
-    if (target_dir != VEC2_ZERO)
+    this->velocity.x = this->velocity.z = 0.0f; // Stand on a spot
+    vec2 dir_to_target = normalize_or_zero(this->follow_target_pos.xz() - pos2);
+    if (dir_to_target != VEC2_ZERO)
     {
-      this->facing = vec3{target_dir.x, 0.0f, target_dir.y};
-    }
-
-    if (this->can_see_target && distance(this->follow_target_pos.xz(), pos2) < 3.0f)
-    {
-      this->velocity = VEC3_ZERO;
-    }
-    else
-    {
-      this->velocity = vec3{target_dir.x, 0.0f, target_dir.y};
+      this->facing = vec3{dir_to_target.x, 0.0f, dir_to_target.y};
     }
   }
   else
   {
-    this->velocity = VEC3_ZERO;
+    // Erase the first point of the path if we are too close
+    while (path.size() && distance(pos2, path[0].xz()) < 0.25f)
+    {
+      path.erase(path.begin());
+    }
+
+    if (path.size())
+    {
+      vec2 target_dir = normalize_or_zero(path[0].xz() - pos2);
+      if (target_dir != VEC2_ZERO)
+      {
+        this->facing = vec3{target_dir.x, 0.0f, target_dir.y};
+      }
+
+      if (this->can_see_target && distance(this->follow_target_pos.xz(), pos2) < 3.0f)
+      {
+        this->velocity.x = this->velocity.z = 0.0f;
+      }
+      else
+      {
+        this->velocity.x = target_dir.x;
+        this->velocity.z = target_dir.y;
+      }
+    }
+    else
+    {
+      this->velocity.x = this->velocity.z = 0.0f;
+    }
+
+    if (this->velocity.xz() == VEC2_ZERO)
+    {
+      if (this->anim_fsm.get_state() != AnimStates::idle)
+      {
+        this->anim_fsm.set_state(AnimStates::idle);
+      }
+    }
+    else
+    {
+      if (this->anim_fsm.get_state() != AnimStates::walk)
+      {
+        this->anim_fsm.set_state(AnimStates::walk);
+      }
+    }
   }
 
   // Handle gravity
@@ -316,7 +398,9 @@ bool Enemy::can_see_point(vec3 pt) const
 //==============================================================================
 bool Enemy::can_attack() const
 {
-  return this->time_until_attack <= 0.0f;
+  bool cooldown_ok = this->time_until_attack <= 0.0f;
+  bool state_ok    = anim_fsm.get_state() != AnimStates::attack;
+  return cooldown_ok && state_ok;
 }
 
 //==============================================================================

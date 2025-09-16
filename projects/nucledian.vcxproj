@@ -45,7 +45,6 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <CLRSupport>false</CLRSupport>
     <EnableASAN>false</EnableASAN>
@@ -54,7 +53,6 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <CLRSupport>false</CLRSupport>
     <EnableASAN>false</EnableASAN>
@@ -415,7 +413,6 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalOptions>/arch:AVX %(AdditionalOptions)</AdditionalOptions>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <GenerateSourceDependencies>false</GenerateSourceDependencies>
       <AssemblerListingLocation>$(SolutionDir)asm\</AssemblerListingLocation>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -447,7 +444,6 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <Optimization>MaxSpeed</Optimization>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <GenerateSourceDependencies>false</GenerateSourceDependencies>
       <AssemblerListingLocation>$(SolutionDir)asm\</AssemblerListingLocation>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -479,7 +475,6 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <AdditionalOptions>/arch:AVX</AdditionalOptions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <GenerateSourceDependencies>false</GenerateSourceDependencies>
       <AssemblerListingLocation>$(SolutionDir)asm\</AssemblerListingLocation>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -508,7 +503,6 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <AdditionalOptions>/arch:AVX</AdditionalOptions>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
-      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <GenerateSourceDependencies>false</GenerateSourceDependencies>
       <AssemblerListingLocation>$(SolutionDir)asm\</AssemblerListingLocation>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>

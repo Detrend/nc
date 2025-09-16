@@ -18,6 +18,7 @@ namespace nc
 struct Portal;
 struct VisibilityTree;
 struct RenderGunProperties;
+struct Appearance;
 
 class Renderer
 {
@@ -33,9 +34,15 @@ public:
 
   const MaterialHandle& get_solid_material() const;
 
+  struct CameraData
+  {
+    const vec3&           position;
+    const mat4&           view;
+    const VisibilityTree& vis_tree;
+  };
+
 private:
   using Portal = Portal;
-  struct CameraData;
 
   mat4           m_default_projection;
   const MaterialHandle m_solid_material;
@@ -70,13 +77,6 @@ private:
 
   void render_portal(const CameraData& camera, const Portal& portal, u8 recursion) const;
   #pragma endregion
-
-  struct CameraData
-  {
-    const vec3& position;
-    const mat4& view;
-    const VisibilityTree& vis_tree;
-  };
 };
 
 }

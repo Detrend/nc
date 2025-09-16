@@ -81,8 +81,10 @@ static auto remap_point_to_indices_unclamped
   vec2  grid = vec2{cast<f32>(width), cast<f32>(height)};
   ivec2 remapped_to_grid = remapped * grid;
 
-  nc_assert(remapped_to_grid.x >= 0    && remapped_to_grid.y >= 0);
-  nc_assert(remapped_to_grid.x < width && remapped_to_grid.y < height);
+  nc_assert(remapped_to_grid.x >= 0);
+  nc_assert(remapped_to_grid.y >= 0);
+  nc_assert(cast<u64>(remapped_to_grid.x) < width);
+  nc_assert(cast<u64>(remapped_to_grid.y) < height);
 
   struct Output
   {

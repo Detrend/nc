@@ -23,8 +23,9 @@ PickUp::PickUp(vec3 position, PickupType my_type)
 
   appear = Appearance
   {
-    .texture = TextureManager::get()[texture_name],
-    .scale   = 1.0f,
+    .sprite = texture_name,
+    .scale  = 1.0f,
+    .mode   = Appearance::SpriteMode::mono,
   };
 }
 
