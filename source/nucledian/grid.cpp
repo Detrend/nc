@@ -35,8 +35,8 @@ static auto remap_point_to_indices
   // f32 mxy = std::nextafter(max.y, -INFINITY);
 
   // Instead, lets use this variation and let's hope it does not fail
-  f32 mxx = max.x - 0.0001f;
-  f32 mxy = max.y - 0.0001f;
+  f32 mxx = max.x - 0.001f;
+  f32 mxy = max.y - 0.001f;
   // This might fire if the world size is too big
   nc_assert(mxx != max.x && mxy != max.y); 
 
@@ -218,7 +218,7 @@ template<typename T, typename F>
 static void query_ray_helper(const StatGridAABB2<T>& self, vec2 from, vec2 to, F func)
 {
   // First, clip the line into the BBOX so we do not run outside
-  aabb2 grid_bbox = aabb2{self.m_min, self.m_max - vec2{0.0001f}};
+  aabb2 grid_bbox = aabb2{self.m_min, self.m_max - vec2{0.001f}};
   nc_assert(grid_bbox.max != self.m_max);
 
   bool inside_grid = check_line_in_bbox_and_clip_it(from, to, grid_bbox);

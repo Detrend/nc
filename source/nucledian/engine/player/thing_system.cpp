@@ -44,7 +44,7 @@
 namespace nc::map_helpers
 { 
 
-constexpr cstr JSON_LEVEL_PATH = ".\\content\\levels\\level_test1.json";
+constexpr cstr JSON_LEVEL_PATH = ".\\content\\levels\\level_test1_025.json";
 
 //==============================================================================
 static void test_make_sector_height(
@@ -926,4 +926,3 @@ void ThingSystem::do_raycast_debug()
 #endif
 
 }
-

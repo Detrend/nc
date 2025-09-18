@@ -62,10 +62,13 @@ static void smooth_towards(f32& value, f32 target, f32 delta)
 constexpr WeaponFlags DEFAULT_WEAPONS
 = (1 << WeaponTypes::plasma_rifle)
 | (1 << WeaponTypes::wrench);
+constexpr f32 PLAYER_HEIGHT     = 1.8f;
+constexpr f32 PLAYER_EYE_HEIGHT = 1.65f;
+constexpr f32 PLAYER_RADIUS     = 0.25f;
 
 //==============================================================================
 Player::Player(vec3 position, vec3 forward)
-: Base(position, 0.25f, 0.5f)
+: Base(position, PLAYER_RADIUS, PLAYER_HEIGHT)
 , angle_yaw(atan2f(forward.z, -forward.x) + HALF_PI) // MR says: no idea if it's ok
 , current_health(CVars::player_max_hp)
 , owned_weapons(DEFAULT_WEAPONS)
@@ -157,7 +160,7 @@ void Player::handle_weapon_change(GameInputs input, GameInputs /*prev_input*/)
     {
       // Accept only the first one if multiple keys are pressed
       this->change_weapon(i);
-      break; 
+      break;
     }
   }
 }
@@ -338,12 +341,10 @@ void Player::update_camera(f32 delta)
   f32 spd = CVars::camera_spring_update_speed;
   smooth_towards(this->vertical_camera_offset, 0.0f, delta * spd);
 
-  // And then the camera position
-  vec3 spring_offset   = vec3{0.0f, this->vertical_camera_offset, 0.0f};
-  vec3 real_camera_pos = this->get_position() + spring_offset;
   camera.update_transform
   (
-    real_camera_pos, this->angle_yaw, this->angle_pitch, view_height
+    this->get_position(), this->angle_yaw, this->angle_pitch,
+    PLAYER_EYE_HEIGHT + this->vertical_camera_offset
   );
 }
 
@@ -358,7 +359,7 @@ void Player::update_gun_anim(f32 delta)
   using Trigger = WeaponAnimFSM::Trigger;
   using State   = WeaponAnimFSM::State;
 
-  weapon_fsm.update(delta, [&](AnimFSMEvent event, Trigger, State)
+  this->weapon_fsm.update(delta, [&](AnimFSMEvent event, Trigger, State)
   {
     if (event == AnimFSMEvents::trigger)
     {
