@@ -12,6 +12,8 @@
 #include <math/lingebra.h>
 #include <math/utils.h>
 
+#include <cstdlib> // std::rand
+
 #include <engine/graphics/resources/texture.h>
 
 #include <engine/entity/entity_type_definitions.h>
@@ -31,6 +33,20 @@ constexpr f32 SPOT_DISTANCE         = 1.0f;  // Player will get spotted if close
 constexpr f32 ENEMY_FOV_DEG         = 45.0f; // Field of view
 constexpr f32 TARGET_STOP_DISTANCE  = 1.0f;  // How far do we keep from the target
 constexpr f32 PATH_POINT_ERASE_DIST = 0.25f; // Removes the path point if this close
+constexpr f32 ATTACK_DELAY_MIN      = 3.0f;
+constexpr f32 ATTACK_DELAY_MAX      = 8.0f;
+
+//==============================================================================
+static f32 random_range(f32 min, f32 max)
+{
+  NC_TODO("Implement a proper system for generating random numbers.");
+
+  f32 dist = max - min;
+  nc_assert(dist >= 0.0f);
+
+  f32 coeff = (std::rand() % 1024) / cast<f32>(1023);
+  return min + dist * coeff;
+}
 
 //==============================================================================
 EntityType Enemy::get_type_static()
@@ -304,7 +320,7 @@ void Enemy::handle_ai_alert(f32 delta)
 
       // Compute force for moving away from the target (so we do not get
       // too close)
-      vec2 target_dir  = this->follow_target_pos.xz() - position_2d;
+      vec2 target_dir  = target->get_position().xz() - position_2d;
       f32  target_dist = length(target_dir);
       if (target_dist < TARGET_STOP_DISTANCE)
       {
@@ -321,19 +337,26 @@ void Enemy::handle_ai_alert(f32 delta)
       this->velocity.x = final_force.x;
       this->velocity.z = final_force.y;
 
-      bool       is_moving     = length(this->velocity.xz()) > 0.1f;
-      AnimStates desired_state = is_moving ? AnimStates::walk : AnimStates::idle;
+      bool is_moving = length(this->velocity.xz()) > 0.1f;
+      AnimStates desired_state = AnimStates::idle;
+
+      if (is_moving)
+      {
+        this->facing = normalize(vec3{final_force.x, 0.0f, final_force.y});
+        desired_state = AnimStates::walk;
+      }
 
       if (this->can_attack() && this->can_see_target)
       {
         desired_state = AnimStates::attack;
-        time_until_attack = attackDelay;
+        time_until_attack = random_range(ATTACK_DELAY_MIN, ATTACK_DELAY_MAX);
       }
 
       if (this->anim_fsm.get_state() != desired_state)
       {
         this->anim_fsm.set_state(desired_state);
       }
+
       break;
     }
 
