@@ -12,6 +12,8 @@ class TexturingContext:
 	var target_sector : Sector
 	var this_wall_rule : IWallRule
 	var other_wall_rule : IWallRule
+	var export_scale : Vector3:
+		get: return target_sector._level.export_scale
 
 	func get_rule_owner_sector()->Sector: 
 		if export_data.sectors_count() <= 1:

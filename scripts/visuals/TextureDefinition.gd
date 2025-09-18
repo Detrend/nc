@@ -33,6 +33,6 @@ func append_info(out: Array[Dictionary], begin_height: float, end_height: float,
 		info["tile_rotation_increment"] = deg_to_rad(tile_rotation_increment)
 		
 	if ctx.subject_type == TexturingSubjectType.Wall:
-		info["begin_height"] = begin_height
-		info["end_height"] = end_height
+		info["begin_height"] = begin_height * ctx.export_scale.z
+		info["end_height"] = end_height * ctx.export_scale.z
 	out.append(info)
