@@ -207,8 +207,9 @@ void Player::apply_velocity(f32 delta_seconds)
   PhysLevel::CharacterCollisions collected_collisions;
   lvl.move_character
   (
-    position, velocity, &forward, delta_seconds, 0.25f, 1.0f,
-    0.25f, PLAYER_COLLIDERS, PLAYER_REPORTING, &collected_collisions
+    position, velocity, &forward, delta_seconds, PLAYER_RADIUS,
+    PLAYER_HEIGHT, PLAYER_HEIGHT * 0.3f, PLAYER_COLLIDERS,
+    PLAYER_REPORTING, &collected_collisions
   );
 
   // Change the position
@@ -376,7 +377,7 @@ void Player::do_attack()
   auto& sound_system  = SoundSystem::get();
 
   vec3 dir  = this->get_look_direction();
-  vec3 from = this->get_position() + UP_DIR * this->get_height() + dir * 0.3f;
+  vec3 from = this->get_position() + UP_DIR * PLAYER_EYE_HEIGHT + dir * 0.3f;
 
   WeaponType weapon = this->get_equipped_weapon();
   bool is_melee = WEAPON_STATS[weapon].ammo == AmmoTypes::melee;

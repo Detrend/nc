@@ -36,6 +36,9 @@ constexpr f32 PATH_POINT_ERASE_DIST = 0.25f; // Removes the path point if this c
 constexpr f32 ATTACK_DELAY_MIN      = 3.0f;
 constexpr f32 ATTACK_DELAY_MAX      = 8.0f;
 
+constexpr f32 ENEMY_HEIGHT = 2.5f;
+constexpr f32 ENEMY_RADIUS = 1.0f;
+
 //==============================================================================
 static f32 random_range(f32 min, f32 max)
 {
@@ -56,7 +59,7 @@ EntityType Enemy::get_type_static()
 
 //==============================================================================
 Enemy::Enemy(vec3 position, vec3 looking_dir)
- : Entity(position, 0.15f, 0.35f, true)
+ : Entity(position, ENEMY_RADIUS, ENEMY_HEIGHT, true)
  , facing(looking_dir)
  , anim_fsm(AnimStates::idle)
 {
@@ -73,7 +76,7 @@ Enemy::Enemy(vec3 position, vec3 looking_dir)
   {
     .sprite    = "cultist_idle_0",
     .direction = this->facing,
-    .scale     = 15.0f,
+    .scale     = 45.0f,
     .mode      = Appearance::SpriteMode::dir8,
     .pivot     = Appearance::PivotMode::bottom,
   };
@@ -130,8 +133,8 @@ void Enemy::handle_movement(f32 delta)
   vec3 position = this->get_position();
   world.move_character
   (
-    position, this->velocity, &this->facing, delta, 0.25f,
-    0.5f, 0.0f, PhysLevel::COLLIDE_ALL, 0
+    position, this->velocity, &this->facing, delta, ENEMY_HEIGHT,
+    ENEMY_RADIUS, ENEMY_HEIGHT * 0.3f, PhysLevel::COLLIDE_ALL, 0
   );
   this->set_position(position);
 }

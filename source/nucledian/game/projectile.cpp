@@ -41,7 +41,7 @@ Projectile::Projectile
   m_appear = Appearance
   {
     .sprite = "plasma_ball",
-    .scale  = 20.0f,
+    .scale  = 30.0f,
     .mode   = Appearance::SpriteMode::mono,
   };
 }

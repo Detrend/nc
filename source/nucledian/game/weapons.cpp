@@ -113,7 +113,7 @@ ProjectileStats PROJECTILE_STATS[] =
   ProjectileStats{.dmg_falloff = 0.2f, .speed = 12.0f, .radius = 0.01f, .damage = 8}, 
 
   // Plasma rifle
-  ProjectileStats{.dmg_falloff = 0.05f, .speed = 6.0f, .radius = 0.2f, .damage = 12, .bounce_cnt = 3}, 
+  ProjectileStats{.dmg_falloff = 0.05f, .speed = 12.0f, .radius = 0.2f, .damage = 12, .bounce_cnt = 3}, 
 
   // Nail gun
   ProjectileStats{.dmg_falloff = 0.05f, .speed = 8.0f, .radius = 0.03f, .damage = 3},
