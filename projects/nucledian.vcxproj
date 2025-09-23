@@ -142,7 +142,6 @@
     <ClCompile Include="..\source\nucledian\logging.cpp" />
     <ClCompile Include="..\source\nucledian\main.cpp" />
     <ClCompile Include="..\source\nucledian\profiling.cpp" />
-    <ClCompile Include="..\source\nucledian\transform.cpp" />
     <ClCompile Include="..\source\nucledian\math\lingebra.cpp" />
     <ClCompile Include="..\source\nucledian\math\utils.cpp" />
     <ClCompile Include="..\source\nucledian\engine\enemies\enemy.cpp" />
@@ -292,7 +291,6 @@
     <ClInclude Include="..\source\nucledian\profiling.h" />
     <ClInclude Include="..\source\nucledian\stack_allocator.h" />
     <ClInclude Include="..\source\nucledian\stack_vector.h" />
-    <ClInclude Include="..\source\nucledian\transform.h" />
     <ClInclude Include="..\source\nucledian\engine\core\engine.h" />
     <ClInclude Include="..\source\nucledian\engine\core\engine_module.h" />
     <ClInclude Include="..\source\nucledian\engine\core\engine_module_id.h" />
@@ -306,7 +304,6 @@
     <ClInclude Include="..\source\nucledian\engine\graphics\gizmo.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\gl_types.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\graphics_system.h" />
-    <ClInclude Include="..\source\nucledian\engine\graphics\primitive_models.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\model.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\mesh.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\res_lifetime.h" />
@@ -320,7 +317,6 @@
     <ClInclude Include="..\source\nucledian\intersect.h" />
     <ClInclude Include="..\source\nucledian\math\lingebra.h" />
     <ClInclude Include="..\source\nucledian\math\matrix.h" />
-    <ClInclude Include="..\source\nucledian\math\quaternion.h" />
     <ClInclude Include="..\source\nucledian\math\utils.h" />
     <ClInclude Include="..\source\nucledian\math\vector.h" />
     <ClInclude Include="..\source\nucledian\types.h" />

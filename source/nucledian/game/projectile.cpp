@@ -142,12 +142,6 @@ Appearance& Projectile::get_appearance()
 }
 
 //==============================================================================
-Transform Projectile::calc_transform() const
-{
-  return Transform{this->get_position()};
-}
-
-//==============================================================================
 EntityID Projectile::get_author_id() const
 {
   return m_author;

@@ -161,7 +161,7 @@ void Enemy::handle_appearance(f32 delta)
     if (etype == Event::trigger && ttype == TriggerTypes::trigger_fire)
     {
       vec3 dir  = this->facing;
-      vec3 from = this->get_position() + UP_DIR * ENEMY_HEIGHT * 0.65f + dir * 0.3f;
+      vec3 from = this->get_position() + UP_DIR * ENEMY_HEIGHT * 0.7f + dir * 0.3f;
 
       // Fire!
       auto& game = ThingSystem::get();
@@ -197,7 +197,7 @@ void Enemy::damage(int damage, EntityID from_who)
   auto& game = ThingSystem::get();
   Entity* attacker = game.get_entities().get_entity(from_who);
 
-  if (this->state == EnemyAiState::idle && attacker)
+  if (attacker)
   {
     this->state = EnemyAiState::alert;
     this->target_id = from_who;
@@ -218,7 +218,7 @@ void Enemy::die()
 {
   this->collision = false;
   this->state = EnemyAiState::dead;
-  this->appear.scale = 0.0f; // Hack
+  ThingSystem::get().get_entities().destroy_entity(this->get_id());
 }
 
 //==============================================================================

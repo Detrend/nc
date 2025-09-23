@@ -5,7 +5,6 @@
 #include <engine/entity/entity.h>
 
 #include <engine/appearance.h>
-#include <transform.h>
 
 #include <game/weapons_types.h>
 
@@ -23,7 +22,6 @@ public:
 
   Appearance&       get_appearance();
   const Appearance& get_appearance() const;
-  Transform         calc_transform() const;
   EntityID          get_author_id()  const;
 
 private:

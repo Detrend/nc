@@ -3,7 +3,6 @@
 
 #include <math/vector.h>
 #include <math/matrix.h>
-#include <math/quaternion.h>
 
 #include <glm/trigonometric.hpp>
 #include <glm/exponential.hpp>
