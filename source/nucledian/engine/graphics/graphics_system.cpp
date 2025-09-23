@@ -19,19 +19,15 @@
 #include <engine/graphics/resources/texture.h>
 
 #include <engine/map/map_system.h>
-#include <engine/map/physics.h>
 
 #include <engine/entity/entity_system.h>
 #include <engine/entity/entity_type_definitions.h>
-#include <engine/entity/sector_mapping.h>
 
-#include <engine/input/input_system.h>
 #include <engine/player/thing_system.h>
 #include <engine/player/level_types.h>
-#include <engine/ui/user_interface_module.h>
+#include <engine/player/player.h>
 
-#include <game/projectile.h>
-#include <game/weapons.h>
+#include <engine/ui/user_interface_module.h>
 
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
@@ -41,19 +37,22 @@
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_sdl2.h>
 #include <imgui/imgui_stdlib.h>
+#include <imgui/implot.h>
 #endif
 
+#ifdef NC_PROFILING
+#include <profiling.h>
+#endif
+
+#include <array>
 #include <algorithm>
 #include <cmath>
 #include <map>
 #include <numbers>
-#include <set>
 #include <string>
-#include <unordered_map>
-#include <unordered_set>
 #include <utility>
-#include <variant>
 #include <format>
+#include <numeric> // std::iota
 
 #ifdef NC_DEBUG_DRAW
 #include <chrono>
@@ -67,11 +66,11 @@
 
 #endif
 
-#ifdef NC_DEBUG_DRAW
 namespace nc::debug_helpers
 {
 
 //==============================================================================
+#ifdef NC_PROFILING
 static void display_fps_as_title(SDL_Window* window)
 {
   const auto delta_time = get_engine().get_delta_time();
@@ -83,8 +82,10 @@ static void display_fps_as_title(SDL_Window* window)
 
   SDL_SetWindowTitle(window, title_str.c_str());
 }
+#endif
 
 //==============================================================================
+#ifdef NC_DEBUG_DRAW
 static void APIENTRY gl_debug_message(
   GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum severity,
   GLsizei /*length*/, const GLchar* message, const void* /*userParam*/)
@@ -96,7 +97,7 @@ static void APIENTRY gl_debug_message(
     case GL_DEBUG_SEVERITY_LOW:          numeric_severity = 1; break;
     case GL_DEBUG_SEVERITY_MEDIUM:       numeric_severity = 2; break;
     case GL_DEBUG_SEVERITY_HIGH:         numeric_severity = 3; break;
-    default: nc_assert(false, "Unknown severity");                     break;
+    default: nc_assert(false, "Unknown severity");             break;
   }
 
   if (numeric_severity < CVars::opengl_debug_severity)
@@ -107,8 +108,9 @@ static void APIENTRY gl_debug_message(
   nc_log("GL Debug Message: '{0}'", message);
 }
 
-}
 #endif
+
+}
 
 namespace nc
 {
@@ -219,6 +221,8 @@ bool GraphicsSystem::init()
   // init imgui
 #ifdef NC_IMGUI
   ImGui::CreateContext();
+  ImPlot::CreateContext();
+
   ImGui_ImplSDL2_InitForOpenGL(m_window, m_gl_context);
   ImGui_ImplOpenGL3_Init(nullptr);
 
@@ -275,6 +279,7 @@ void GraphicsSystem::terminate()
 #ifdef NC_IMGUI
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplSDL2_Shutdown();
+  ImPlot::DestroyContext();
   ImGui::DestroyContext();
 #endif
 
@@ -353,6 +358,8 @@ static void grab_render_gun_props(RenderGunProperties& props)
 //==============================================================================
 void GraphicsSystem::render()
 {
+  NC_SCOPE_PROFILER(Render)
+
   int width = 0, height = 0;
   SDL_GetWindowSize(m_window, &width, &height);
 
@@ -371,7 +378,7 @@ void GraphicsSystem::render()
 #endif
   }
 
-#ifdef NC_DEBUG_DRAW
+#ifdef NC_PROFILING
   debug_helpers::display_fps_as_title(m_window);
 #endif
 
@@ -713,11 +720,127 @@ static void draw_export_menu()
 }
 
 //==============================================================================
+#ifdef NC_PROFILING
+enum class MainPlotType
+{
+  delta_time = 0,
+  num_calls,
+};
+
+//==============================================================================
+template<MainPlotType TYPE>
+static void draw_main_plot()
+{
+  constexpr ImPlotFlags PLOT_FLAGS
+    = ImPlotFlags_NoMouseText
+    | ImPlotFlags_NoBoxSelect
+    | ImPlotFlags_NoInputs;
+
+  constexpr ImPlotAxisFlags FLAGS_X
+    = ImPlotAxisFlags_NoTickLabels
+    | ImPlotAxisFlags_NoTickMarks
+    | ImPlotAxisFlags_NoGridLines
+    | ImPlotAxisFlags_AutoFit;
+
+  constexpr ImPlotAxisFlags FLAGS_Y
+    = ImPlotAxisFlags_AutoFit;
+
+  static std::array<f32, Profiler::MAX_SAMPLES> XS_F32 = []()
+  {
+    std::array<f32, Profiler::MAX_SAMPLES> data;
+    std::iota(data.begin(), data.end(), 0.0f);
+    return data;
+  }();
+
+  static std::array<u32, Profiler::MAX_SAMPLES> XS_U32 = []()
+  {
+    std::array<u32, Profiler::MAX_SAMPLES> data;
+    std::iota(data.begin(), data.end(), u32{0});
+    return data;
+  }();
+
+  constexpr cstr NAMES[2] = {"Delta Time Plot", "Number Of Calls Plot"};
+
+  const auto& samples = Profiler::get().get_profiling_data_for_all_scopes();
+
+  if (ImPlot::BeginPlot(NAMES[cast<int>(TYPE)], ImVec2(-1,300), PLOT_FLAGS))
+  {
+    ImPlot::SetupAxes(nullptr, nullptr, FLAGS_X, FLAGS_Y);
+
+    // Makes the shaded part of the plot transparent
+    ImPlot::PushStyleVar(ImPlotStyleVar_FillAlpha, 0.25f);
+
+    // Then render them
+    for (const auto&[name, data] : samples)
+    {
+      // Shaded part
+      if constexpr (TYPE == MainPlotType::delta_time)
+      {
+        ImPlot::PlotShaded
+        (
+          name.c_str(), XS_F32.data(), data.delta_time.data(),
+          cast<int>(XS_F32.size()), -INFINITY, 0
+        );
+      }
+      else
+      {
+        ImPlot::PlotShaded
+        (
+          name.c_str(), XS_U32.data(), data.num_calls.data(),
+          cast<int>(XS_U32.size()), -INFINITY, 0
+        );
+      }
+    }
+
+    // Plot the current position in the frame
+    u64 idx = get_engine().get_frame_idx() & (Profiler::MAX_SAMPLES - 1);
+
+    if constexpr (TYPE == MainPlotType::delta_time)
+    {
+      f32 ver_line_x = cast<f32>(idx);
+      ImPlot::PlotInfLines("##InfLine", &ver_line_x, 1);
+    }
+    else
+    {
+      ImPlot::PlotInfLines("##InfLine", &idx, 1);
+    }
+
+    ImPlot::EndPlot();
+  }
+}
+
+//==============================================================================
+void draw_profiling()
+{
+  NC_SCOPE_PROFILER(DrawProfiler)
+
+  static bool draw_delta_time = false;
+  static bool draw_num_calls  = false;
+  
+  ImGui::Checkbox("Plot Delta Time", &draw_delta_time);
+  ImGui::SameLine();
+  ImGui::Checkbox("Plot Num Calls", &draw_num_calls);
+  ImGui::Separator();
+
+  if (draw_delta_time)
+  {
+    draw_main_plot<MainPlotType::delta_time>();
+  }
+
+  if (draw_num_calls)
+  {
+    draw_main_plot<MainPlotType::num_calls>();
+  }
+}
+#endif
+
+//==============================================================================
 void GraphicsSystem::draw_debug_window()
 {
   if (CVars::display_imgui_demo)
   {
     ImGui::ShowDemoWindow(&CVars::display_imgui_demo);
+    ImPlot::ShowDemoWindow(&CVars::display_imgui_demo);
   }
 
   if (ImGui::Begin("Debug Window", &CVars::display_debug_window))
@@ -753,6 +876,14 @@ void GraphicsSystem::draw_debug_window()
         draw_export_menu();
         ImGui::EndTabItem();
       }
+
+#ifdef NC_PROFILING
+      if (ImGui::BeginTabItem("Profiling"))
+      {
+        draw_profiling();
+        ImGui::EndTabItem();
+      }
+#endif
 
       ImGui::EndTabBar();
     }

@@ -31,6 +31,7 @@
 #include <cvars.h>
 
 #include <intersect.h>
+#include <profiling.h>
 
 #include <fstream>
 #include <filesystem>
@@ -694,6 +695,8 @@ void ThingSystem::on_event(ModuleEvent& event)
 
     case ModuleEventType::game_update:
     {
+      NC_SCOPE_PROFILER(ThingSystemUpdate)
+
 #ifdef NC_DEBUG_DRAW
       this->do_raycast_debug();
 #endif

@@ -29,6 +29,8 @@
 
 #include <engine/entity/entity_type_definitions.h>
 
+#include <profiling.h>
+
 #include <algorithm> // std::clamp
 #include <format>    // std::format
 
@@ -391,7 +393,7 @@ void Player::do_attack()
     // Spawn projectile
     entity_system.create_entity<Projectile>
     (
-      from, dir, true, weapon
+      from, dir, this->get_id(), weapon
     );
   }
 
@@ -453,6 +455,8 @@ Camera* Player::get_camera()
 //==============================================================================
 void Player::update(GameInputs curr_input, GameInputs prev_input, f32 delta)
 {
+  NC_SCOPE_PROFILER(PlayerUpdate)
+
   if (!this->alive)
   {
     // Do nothing

@@ -22,9 +22,13 @@
 #include <engine/sound/sound_system.h>
 #include <engine/ui/user_interface_module.h>
 
-#ifdef NC_PROFILING
+#ifdef NC_BENCHMARK
 #include <benchmark/benchmark.h>
 #include <algorithm>
+#endif
+
+#ifdef NC_PROFILING
+#include <profiling.h>
 #endif
 
 #ifdef NC_TESTS
@@ -323,6 +327,10 @@ void Engine::run()
   {
     auto current_time = std::chrono::high_resolution_clock::now();
     f32 frame_time = eu::duration_to_seconds(previous_time, current_time);
+#ifdef NC_PROFILING
+    Profiler::get().new_frame(m_frame_idx, frame_time);
+    NC_SCOPE_PROFILER(FullFrame)
+#endif
     eu::limit_min_frametime(frame_time);
 
     // Limit the FPS if desired

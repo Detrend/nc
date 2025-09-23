@@ -8,6 +8,7 @@
 #include <math/lingebra.h>
 
 #include <intersect.h>
+#include <profiling.h>
 
 #include <set>
 #include <utility>  // std::pair
@@ -86,6 +87,8 @@ CollisionHit raycast_generic
   EntityHitLambda     entity_intersect
 )
 {
+  NC_SCOPE_PROFILER(Raycast)
+
   using SectorHitType = CollisionHit::SectorHitType;
   using HitType       = CollisionHit::HitType;
 
@@ -1012,8 +1015,7 @@ const
 {
   // #define NC_PHYS_DBG
 
-  StackVector<u64, 4> test;
-  test.push_back(8);
+  NC_SCOPE_PROFILER(MoveCharacter)
 
   auto sector_intersector = [height]
   (
@@ -1243,6 +1245,8 @@ const
 {
 //#define NC_VALIDATE
 
+  NC_SCOPE_PROFILER(MoveParticle)
+
   nc_assert(bounce >= 0.0f, "Invalid range.");
 
 	const vec3 h_offset = -UP_DIR * neg_height;
@@ -1332,6 +1336,8 @@ const
 //==============================================================================
 void PhysLevel::smooth_out_path(std::vector<vec3>& path, f32 /*r*/, f32 /*h*/)
 {
+  NC_SCOPE_PROFILER(SmoothOutPath)
+
   if (path.empty())
   {
     return;

@@ -9,6 +9,9 @@
 #include <engine/map/physics.h>
 #include <engine/entity/entity_system.h>
 
+#include <game/weapons.h>
+#include <game/projectile.h>
+
 #include <math/lingebra.h>
 #include <math/utils.h>
 
@@ -17,6 +20,7 @@
 #include <engine/graphics/resources/texture.h>
 
 #include <engine/entity/entity_type_definitions.h>
+#include <profiling.h>
 
 #include <map>
 #include <format>
@@ -85,11 +89,14 @@ Enemy::Enemy(vec3 position, vec3 looking_dir)
   this->anim_fsm.set_state_length(AnimStates::walk,   1.25f);
   this->anim_fsm.set_state_length(AnimStates::attack, 3.75f);
   this->anim_fsm.set_state_length(AnimStates::dead,   2.0f);
+  this->anim_fsm.add_trigger(AnimStates::attack, 2.3f, TriggerTypes::trigger_fire);
 }
 
 //==============================================================================
 void Enemy::update(f32 delta)
 {
+  NC_SCOPE_PROFILER(EnemyUpdate)
+
   if (this->state == EnemyAiState::dead)
   {
     this->velocity = VEC3_ZERO;
@@ -148,9 +155,21 @@ void Enemy::handle_appearance(f32 delta)
   using Trigger = EnemyFSM::Trigger;
   using State   = EnemyFSM::State;
 
-  this->anim_fsm.update(delta, [&](Event, Trigger, State)
+  this->anim_fsm.update(delta, [&](Event etype, Trigger ttype, State)
   {
     // Do nothing here
+    if (etype == Event::trigger && ttype == TriggerTypes::trigger_fire)
+    {
+      vec3 dir  = this->facing;
+      vec3 from = this->get_position() + UP_DIR * ENEMY_HEIGHT * 0.65f + dir * 0.3f;
+
+      // Fire!
+      auto& game = ThingSystem::get();
+      game.get_entities().create_entity<Projectile>
+      (
+        from, dir, this->get_id(), WeaponTypes::plasma_rifle
+      );
+    }
   });
 
   // Calculate the correct sprite
@@ -173,12 +192,24 @@ void Enemy::handle_appearance(f32 delta)
 }
 
 //==============================================================================
-void Enemy::damage(int damage)
+void Enemy::damage(int damage, EntityID from_who)
 {
+  auto& game = ThingSystem::get();
+  Entity* attacker = game.get_entities().get_entity(from_who);
+
+  if (this->state == EnemyAiState::idle && attacker)
+  {
+    this->state = EnemyAiState::alert;
+    this->target_id = from_who;
+    this->can_see_target = false;
+    this->time_since_saw_target = 0.0f;
+    this->follow_target_pos = attacker->get_position();
+  }
+
   health -= damage;
   if (health <= 0)
   {
-    //this->die();
+    this->die();
   }
 }
 
@@ -186,6 +217,8 @@ void Enemy::damage(int damage)
 void Enemy::die()
 {
   this->collision = false;
+  this->state = EnemyAiState::dead;
+  this->appear.scale = 0.0f; // Hack
 }
 
 //==============================================================================
@@ -277,7 +310,7 @@ void Enemy::handle_ai_alert(f32 delta)
   // Animation
   switch (this->anim_fsm.get_state())
   {
-    // ATTACKING
+    // STANDING or WALKING
     case AnimStates::idle: [[fallthrough]];
     case AnimStates::walk:
     {
@@ -363,7 +396,7 @@ void Enemy::handle_ai_alert(f32 delta)
       break;
     }
 
-    // STANDING or WALKING
+    // ATTACKING
     case AnimStates::attack:
     {
       this->velocity.x = this->velocity.z = 0.0f; // Stand on a spot

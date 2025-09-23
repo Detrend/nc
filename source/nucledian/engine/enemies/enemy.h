@@ -18,7 +18,7 @@ public:
   Enemy(vec3 position, vec3 facing);
 
   void update(f32 delta);
-  void damage(int damage);
+  void damage(int damage, EntityID from_who);
 
   vec3&             get_velocity();
   Appearance&       get_appearance();
@@ -68,6 +68,12 @@ private:
     AnimStates::dead, // dead   -> dead
   };
   using EnemyFSM = AnimFSM<AnimStates::count, ANIM_TRANSITIONS>;
+
+  enum TriggerTypes : u8
+  {
+    trigger_fire,
+    trigger_die,  // TODO
+  };
 
   static constexpr cstr ANIM_STATES_NAMES[]
   {

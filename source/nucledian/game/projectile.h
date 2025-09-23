@@ -17,18 +17,22 @@ class Projectile : public Entity
 public:
   static EntityType get_type_static();
 
-  Projectile(vec3 pos, vec3 dir, bool player_projectile, WeaponType proj_type);
+  Projectile(vec3 pos, vec3 dir, EntityID author_id, WeaponType proj_type);
 
   void update(f32 dt);
 
   Appearance&       get_appearance();
   const Appearance& get_appearance() const;
   Transform         calc_transform() const;
+  EntityID          get_author_id()  const;
 
 private:
-  bool m_player_authored = false;
-  vec3 m_velocity;
-	u32  m_hit_cnt_remaining;
+  bool on_entity_hit(const struct CollisionHit& hit);
+
+private:
+  EntityID m_author = INVALID_ENTITY_ID;
+  vec3     m_velocity;
+	u32      m_hit_cnt_remaining;
 
   Appearance m_appear;
   WeaponType m_type;

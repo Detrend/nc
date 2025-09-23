@@ -27,16 +27,23 @@ struct Appearance
     bottom,   // the position is the bottom(y) center(x)
   };
 
+  enum class RotationMode : u8
+  {
+    only_horizontal, // The billboard rotates only around the up/down axis
+    full,            // Faces fully to the camera
+  };
+
   // Depending on the sprite mode, the "sprite" field can mean 2 things:
   // mono: It is the name of the texture
   // dir8: It is a prefix of the texture onto which a directional suffix is
   //       appended which is calculated from the "direction" field and rotation
   //       of the camera.
-  std::string sprite;
-  vec3        direction = VEC3_ZERO;
-  f32         scale     = 1.0f;
-  SpriteMode  mode  : 1 = SpriteMode::mono;
-  PivotMode   pivot : 1 = PivotMode::centered;
+  std::string  sprite;
+  vec3         direction    = VEC3_ZERO;
+  f32          scale        = 1.0f;
+  SpriteMode   mode     : 1 = SpriteMode::mono;
+  PivotMode    pivot    : 1 = PivotMode::centered;
+  RotationMode rotation : 1 = RotationMode::only_horizontal;
 };
 
 }

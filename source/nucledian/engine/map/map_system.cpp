@@ -9,6 +9,7 @@
 #include <math/lingebra.h>
 
 #include <grid.h>
+#include <profiling.h>
 
 #include <algorithm>
 #include <array>
@@ -168,6 +169,8 @@ void MapSectors::query_visible
 )
 const
 {
+  NC_SCOPE_PROFILER(MapSystemQueryVisible)
+
   nc_assert(is_normal(view_dir));
   nc_assert(ver_fov < HALF_PI, "Fix this elsewhere");
 
@@ -886,6 +889,8 @@ std::vector<vec3> MapSectors::get_path
 )
 const
 {
+  NC_SCOPE_PROFILER(MapSystemGetPath)
+
   std::vector<vec3> path;
   path.push_back(end_pos);
   struct PrevPoint

@@ -413,7 +413,14 @@ void Renderer::render_entities(const CameraData& camera) const
   const mat3 camera_rotation = transpose(mat3(camera.view));
   // Extracting X and Y components from the forward vector.
   const float yaw = atan2(-camera_rotation[2][0], -camera_rotation[2][2]);
-  const mat4 rotation = eulerAngleY(yaw);
+  const mat4 rotation_horizontal = eulerAngleY(yaw);
+  const mat4 rotation_full = mat4
+  {
+    vec4{-camera_rotation[0], 0},
+    vec4{camera_rotation[1],  0},
+    vec4{-camera_rotation[2], 0},
+    vec4{0, 0, 0, 1}
+  };
 
   for (const auto& [lifetime, group] : groups)
   {
@@ -438,6 +445,9 @@ void Renderer::render_entities(const CameraData& camera) const
 
       const bool bottom_mode = appearance.pivot == Appearance::PivotMode::bottom;
       const vec3 root_offset = bottom_mode ? VEC3_Y * 0.5f : VEC3_ZERO;
+
+      const bool rot_only_hor = appearance.rotation == Appearance::RotationMode::only_horizontal;
+      const mat4& rotation = rot_only_hor ? rotation_horizontal : rotation_full;
 
       const mat4 offset_transform = translate(mat4{1.0f}, root_offset);
       const f32  height_move = bottom_mode ? 0.0f : (BILLBOARD_TEXTURE_SCALE * 0.5f);

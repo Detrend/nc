@@ -5,6 +5,7 @@
 #include <math/vector.h>
 #include <math/lingebra.h>
 #include <intersect.h>
+#include <profiling.h>
 
 #include <algorithm>    // std::clamp
 #include <set>          // std::set
@@ -383,6 +384,7 @@ void StatGridAABB2<T>::query_point(vec2 point, Visitor func) const
 template<typename T>
 void StatGridAABB2<T>::query_aabb(aabb2 bbox, Visitor func) const
 {
+  NC_SCOPE_PROFILER(QueryAABB)
   nc_assert(m_initialized);
 
   grid_helper::query_aabb_helper(*this, bbox, [&](ivec2 coord)
@@ -408,6 +410,7 @@ void StatGridAABB2<T>::query_ray
 )
 const
 {
+  NC_SCOPE_PROFILER(QueryRay)
   return this->query_ray(from.xz(), to.xz(), expand, func);
 }
 

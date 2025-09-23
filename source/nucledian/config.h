@@ -10,6 +10,7 @@
 #define NC_DEBUG_DRAW
 #define NC_IMGUI
 #define NC_ASSERTS
+#define NC_PROFILING
 #endif
 
 #if defined(NC_Deploy)
@@ -27,6 +28,7 @@
 #if defined (NC_Profiling)
 #define NC_PROFILING // code profiling tools should be on
 #define NC_BENCHMARK // benchmarks should be compiled
+#define NC_IMGUI     // we wanna visualize it
 
 // Google benchmark library requires this in order to link.
 #pragma comment (lib, "Shlwapi.lib")

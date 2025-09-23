@@ -49,6 +49,10 @@
     <ClCompile Include="..\source\nucledian\engine\entity\entity_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\player\save_types.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\top_down_debug.cpp" />
+    <ClCompile Include="..\source\libs\imgui\implot.cpp" />
+    <ClCompile Include="..\source\libs\imgui\implot_demo.cpp" />
+    <ClCompile Include="..\source\libs\imgui\implot_items.cpp" />
+    <ClCompile Include="..\source\nucledian\profiling.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -161,6 +165,9 @@
     <ClInclude Include="..\source\nucledian\engine\graphics\uniform.h" />
     <ClInclude Include="..\source\nucledian\anim_state_machine.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\top_down_debug.h" />
+    <ClInclude Include="..\source\nucledian\profiling.h" />
+    <ClInclude Include="..\source\libs\imgui\implot.h" />
+    <ClInclude Include="..\source\libs\imgui\implot_internal.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />

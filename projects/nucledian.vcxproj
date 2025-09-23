@@ -119,6 +119,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\source\libs\imgui\implot.cpp" />
+    <ClCompile Include="..\source\libs\imgui\implot_demo.cpp" />
+    <ClCompile Include="..\source\libs\imgui\implot_items.cpp" />
     <ClCompile Include="..\source\libs\stb\stb.cpp" />
     <ClCompile Include="..\source\nucledian\aabb.cpp" />
     <ClCompile Include="..\source\nucledian\cvars.cpp" />
@@ -138,6 +141,7 @@
     <ClCompile Include="..\source\nucledian\game\weapons.cpp" />
     <ClCompile Include="..\source\nucledian\logging.cpp" />
     <ClCompile Include="..\source\nucledian\main.cpp" />
+    <ClCompile Include="..\source\nucledian\profiling.cpp" />
     <ClCompile Include="..\source\nucledian\transform.cpp" />
     <ClCompile Include="..\source\nucledian\math\lingebra.cpp" />
     <ClCompile Include="..\source\nucledian\math\utils.cpp" />
@@ -231,6 +235,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\source\libs\imgui\implot.h" />
+    <ClInclude Include="..\source\libs\imgui\implot_internal.h" />
     <ClInclude Include="..\source\libs\imgui\imstb_rectpack.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">true</ExcludedFromBuild>
@@ -283,6 +289,7 @@
     <ClInclude Include="..\source\nucledian\game\weapons_types.h" />
     <ClInclude Include="..\source\nucledian\logging.h" />
     <ClInclude Include="..\source\nucledian\metaprogramming.h" />
+    <ClInclude Include="..\source\nucledian\profiling.h" />
     <ClInclude Include="..\source\nucledian\stack_allocator.h" />
     <ClInclude Include="..\source\nucledian\stack_vector.h" />
     <ClInclude Include="..\source\nucledian\transform.h" />
