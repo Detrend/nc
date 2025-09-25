@@ -202,6 +202,7 @@ void Renderer::create_g_buffers(u32 width, u32 height)
     GL_COLOR_ATTACHMENT2,
     GL_COLOR_ATTACHMENT3
   };
+  // TODO: move specular strength to stitched normal g buffer
   m_g_position        = create_g_buffer(GL_RGBA32F    , attachments[0], width, height);
   // TODO: merge stitched normals and normals into one g buffer
   m_g_normal          = create_g_buffer(GL_RGBA8_SNORM, attachments[1], width, height);
