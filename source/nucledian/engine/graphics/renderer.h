@@ -44,7 +44,7 @@ private:
   const MaterialHandle m_light_material;
   const MaterialHandle m_sector_material;
 
-  mutable u32                        m_dir_light_ssbo_size = 0;
+  mutable u32                        m_dir_light_ssbo_size   = 0;
   mutable u32                        m_point_light_ssbo_size = 0;
   mutable std::vector<PointLightGPU> m_point_light_data;
 
@@ -52,10 +52,11 @@ private:
   GLuint m_dir_light_ssbo    = 0;
   GLuint m_point_light_ssbo  = 0;
 
-  GLuint m_g_buffer   = 0;
-  GLuint m_g_position = 0;
-  GLuint m_g_normal   = 0;
-  GLuint m_g_albedo   = 0;
+  GLuint m_g_buffer          = 0;
+  GLuint m_g_position        = 0;
+  GLuint m_g_normal          = 0;
+  GLuint m_g_stitched_normal = 0;
+  GLuint m_g_albedo          = 0;
 
   void destroy_g_buffers();
   void create_g_buffers(u32 w, u32 h);

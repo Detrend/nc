@@ -23,6 +23,7 @@
 #include <engine/player/thing_system.h>
 #include <engine/appearance.h>
 
+#include <array>
 #include <unordered_set>
 
 namespace nc
@@ -41,19 +42,9 @@ Renderer::Renderer(u32 win_w, u32 win_h)
   const vec2 game_atlas_size = TextureManager::get().get_atlas(ResLifetime::Game).get_size();
   const vec2 level_atlas_size = TextureManager::get().get_atlas(ResLifetime::Level).get_size();
 
-  m_billboard_material.use();
-  m_billboard_material.set_uniform(shaders::billboard::TEXTURE, 0);
-
-  m_light_material.use();
-  m_light_material.set_uniform(shaders::light::G_POSITION, 0);
-  m_light_material.set_uniform(shaders::light::G_NORMAL, 1);
-  m_light_material.set_uniform(shaders::light::G_ALBEDO, 2);
-
   m_sector_material.use();
   m_sector_material.set_uniform(shaders::sector::GAME_ATLAS_SIZE, game_atlas_size);
   m_sector_material.set_uniform(shaders::sector::LEVEL_ATLAS_SIZE, level_atlas_size);
-  m_sector_material.set_uniform(shaders::sector::GAME_TEXTURE_ATLAS, 3);
-  m_sector_material.set_uniform(shaders::sector::LEVEL_TEXTURE_ATLAS, 4);
 
   // setup texture data ssbo
   // TODO: this should be done every time new texture atlas is created
@@ -204,11 +195,18 @@ void Renderer::create_g_buffers(u32 width, u32 height)
   glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
 
   // create g buffers
-  const GLenum attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-  m_g_position = create_g_buffer(GL_RGBA16F, attachments[0], width, height);
-  m_g_normal   = create_g_buffer(GL_RGBA16F, attachments[1], width, height);
-  m_g_albedo   = create_g_buffer(GL_RGBA,    attachments[2], width, height);
-  glDrawBuffers(3, attachments);
+  constexpr std::array<GLenum, 4> attachments =
+  {
+    GL_COLOR_ATTACHMENT0,
+    GL_COLOR_ATTACHMENT1,
+    GL_COLOR_ATTACHMENT2,
+    GL_COLOR_ATTACHMENT3
+  };
+  m_g_position        = create_g_buffer(GL_RGBA16F    , attachments[0], width, height);
+  m_g_normal          = create_g_buffer(GL_RGBA8_SNORM, attachments[1], width, height);
+  m_g_stitched_normal = create_g_buffer(GL_RGB8_SNORM , attachments[2], width, height);
+  m_g_albedo          = create_g_buffer(GL_RGBA8      , attachments[3], width, height);
+  glDrawBuffers(static_cast<GLsizei>(attachments.size()), attachments.data());
 
   // create depth-stencil buffer
   GLuint depth_stencil_buffer;
@@ -279,6 +277,8 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, m_g_normal);
   glActiveTexture(GL_TEXTURE2);
+  glBindTexture(GL_TEXTURE_2D, m_g_stitched_normal);
+  glActiveTexture(GL_TEXTURE3);
   glBindTexture(GL_TEXTURE_2D, m_g_albedo);
 
   // bind light ssbos
@@ -380,9 +380,9 @@ void Renderer::render_sectors(const CameraData& camera) const
   const auto& level_atlas = TextureManager::get().get_atlas(ResLifetime::Level);
 
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_texture_data_ssbo);
-  glActiveTexture(GL_TEXTURE3);
+  glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, game_atlas.handle);
-  glActiveTexture(GL_TEXTURE4);
+  glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, level_atlas.handle);
 
   m_sector_material.use();

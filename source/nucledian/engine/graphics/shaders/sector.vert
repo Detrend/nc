@@ -11,10 +11,10 @@ layout (location = 6) in float a_tile_rotations_count;
 layout (location = 7) in float a_tile_rotation_increment;
 layout (location = 8) in vec2  a_texture_offset;
 
-out vec3 stitched_position;
-
 out vec3 position;
+out vec3 stitched_position;
 out vec3 normal;
+out vec3 stitched_normal;
 out float cumulative_wall_len;
 
 flat out int texture_id;
@@ -26,7 +26,7 @@ flat out vec2 texture_offset;
 
 layout(location = 0) uniform mat4 view;
 layout(location = 1) uniform mat4 projection;
-layout(location = 6) uniform mat4 portal_dest_to_src;
+layout(location = 4) uniform mat4 portal_dest_to_src;
 
 void main()
 {
@@ -35,7 +35,9 @@ void main()
   stitched_position = (portal_dest_to_src * vec4(a_position, 1.0f)).xyz;
 
   position = a_position;
+  // normals are already in world space
   normal = a_normal;
+  stitched_normal = mat3(transpose(inverse(portal_dest_to_src))) * a_normal;
   cumulative_wall_len = a_cumulative_wall_len;
 
   texture_id = int(a_texture_id);

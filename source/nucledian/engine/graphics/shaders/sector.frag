@@ -8,10 +8,10 @@ struct TextureData {
   float in_game_atlas;
 };
 
-in vec3 stitched_position;
-
 in vec3 position;
+in vec3 stitched_position;
 in vec3 normal;
+in vec3 stitched_normal;
 in float cumulative_wall_len;
 
 flat in int texture_id;
@@ -23,12 +23,14 @@ flat in vec2 texture_offset;
 
 layout(location = 0) out vec4 g_position;
 layout(location = 1) out vec4 g_normal;
-layout(location = 2) out vec4 g_albedo;
+layout(location = 2) out vec3 g_stitched_normal;
+layout(location = 3) out vec4 g_albedo;
+
+layout(binding = 0) uniform sampler2D game_atlas_sampler;
+layout(binding = 1) uniform sampler2D level_atlas_sampler;
 
 layout(location = 2) uniform vec2 game_atlas_size;
 layout(location = 3) uniform vec2 level_atlas_size;
-layout(location = 4) uniform sampler2D game_atlas_sampler;
-layout(location = 5) uniform sampler2D level_atlas_sampler;
 
 layout(std430, binding = 0) buffer texture_buffer {
     TextureData textures[];
@@ -73,11 +75,12 @@ void main()
 
   // Position G-bugger works in camera local space in order to overcome portals space discontinuity.
   g_position.xyz = stitched_position;
-  // 4-th component of position is used to determine if pixel should be lit
-  g_position.w = 1.0f;
+  // 4-th component of position is used for specular strength
+  g_position.w = 0.0f;
   g_normal.xyz = normalize(normal);
-  // 4-th component of normal is used for specular strength
-  g_normal.w = 0.0f;
+  // 4-th component of normal is used to determine if pixel should be lit
+  g_normal.w = 1.0f;
+  g_stitched_normal = stitched_normal;
   g_albedo = color;
 }
 
