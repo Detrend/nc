@@ -80,7 +80,7 @@ void main()
   g_normal.xyz = normalize(normal);
   // 4-th component of normal is used to determine if pixel should be lit
   g_normal.w = 1.0f;
-  g_stitched_normal = stitched_normal;
+  g_stitched_normal = normalize(stitched_normal);
   g_albedo = color;
 }
 
