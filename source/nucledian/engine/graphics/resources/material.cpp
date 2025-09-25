@@ -135,6 +135,12 @@ void MaterialHandle::set_uniform(GLint location, const vec4& value) const
 }
 
 //==============================================================================
+void MaterialHandle::set_uniform(GLint location, u32 value) const
+{
+  glUniform1ui(location, value);
+}
+
+//==============================================================================
 void MaterialHandle::set_uniform(GLint location, s32 value) const
 {
   glUniform1i(location, value);

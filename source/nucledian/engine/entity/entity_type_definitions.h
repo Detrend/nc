@@ -27,6 +27,8 @@ namespace EntityTypes
     enemy,
     pickup,
     projectile,
+    directional_light,
+    point_light,
     // - //
     count  // <- total number of entity types, do not put any type
            //    after this one
@@ -39,6 +41,8 @@ constexpr cstr ENTITY_TYPE_NAMES[]
   "enemy",
   "pickup",
   "projectile",
+  "directional_light",
+  "point_light",
 };
 static_assert(ARRAY_LENGTH(ENTITY_TYPE_NAMES) == EntityTypes::count);
 
@@ -46,10 +50,12 @@ namespace EntityTypeFlags
 {
   enum evalue : EntityTypeMask
   {
-    player     = EntityTypeToMask(EntityTypes::player),
-    enemy      = EntityTypeToMask(EntityTypes::enemy),
-    pickup     = EntityTypeToMask(EntityTypes::pickup),
-    projectile = EntityTypeToMask(EntityTypes::projectile),
+    player            = EntityTypeToMask(EntityTypes::player),
+    enemy             = EntityTypeToMask(EntityTypes::enemy),
+    pickup            = EntityTypeToMask(EntityTypes::pickup),
+    projectile        = EntityTypeToMask(EntityTypes::projectile),
+    directional_light = EntityTypeToMask(EntityTypes::directional_light),
+    point_light       = EntityTypeToMask(EntityTypes::point_light),
   };
 }
 
