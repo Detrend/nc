@@ -14,8 +14,7 @@ var sectors_map : Dictionary[Sector, int] = {}
 var walls_map : Dictionary[Vector4, WallExportData] = {}
 
 var all_sectors : Array[Sector] 
-var all_pickups : Array[PickUp]
-var all_entities: Array[Entity]
+var all_things : Array[Thing]
 
 
 func do_export(level : Level)->void:
@@ -46,14 +45,12 @@ func do_export(level : Level)->void:
 func init_datastructs()->void:
 	level_export  = {}
 	points_export = []
-	pickups_export = []
-	entities_export = []
 	points_map = {}
 	sectors_map = {}
 	walls_map = {}
 	all_sectors = _level.get_sectors(true);
-	all_pickups = _level.get_pickups()
-	all_entities= _level.get_entities()
+	
+	all_things = _level.get_things()
 
 
 
@@ -229,8 +226,7 @@ func create_level_export_data() -> Dictionary:
 			var coords_idx : int = get_point_idx(coords)
 			sector_points.append(coords_idx)
 
-		process_things_in_sector(all_pickups, sector, pickups_export)
-		process_things_in_sector(all_entities, sector, entities_export)
+		process_things_in_sector(all_things, sector, level_export)
 
 		sector_export["debug_name"] = sector.name
 		sector_export["id"] = sectors_map[sector]
@@ -265,8 +261,6 @@ func create_level_export_data() -> Dictionary:
 		sectors_export.append(sector_export)
 	level_export["points"] = points_export
 	level_export["sectors"] = sectors_export
-	level_export["pickups"] = pickups_export
-	level_export["entities"] = entities_export
 
 	return level_export
 
@@ -288,7 +282,7 @@ static func get_texture_config(texture_def: TextureDefinition, texturing_type: I
 	return ret
 
 
-func process_things_in_sector(all_things: Array, sector: Sector, export_things: Array[Dictionary])->void:
+func process_things_in_sector(all_things: Array, sector: Sector, export_things: Dictionary)->void:
 	var i:= 0
 	while i < all_things.size():
 		var current :Thing = all_things[i]
@@ -303,8 +297,14 @@ func process_things_in_sector(all_things: Array, sector: Sector, export_things: 
 			else: ErrorUtils.report_error("Invalid placement_mode '{0}' for thing {1}".format([current.placement_mode, current]))
 			current_export['position'] = [export_coords_2d.x, export_coords_2d.y, height * _level.export_scale.z]
 			current.custom_export(sector, current_export)
-			export_things.append(current_export)
+			var export_destination_raw : Variant = export_things.get(current.get_export_category())
+			var export_destination :Array[Dictionary]
+			if export_destination_raw == null:
+				export_destination = []
+			else: export_destination = export_destination_raw
+			export_destination.append(current_export)
 			all_things.remove_at(i)
+			export_things[current.get_export_category()] = export_destination
 		else:
 			i += 1
 

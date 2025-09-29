@@ -96,6 +96,10 @@ func get_entities(entity_type = Entity, ret: Array[Entity] = [])->Array[Entity]:
 	ret = NodeUtils.get_children_by_predicate(self, func(n:Node)->bool: return is_instance_of(n, entity_type) and (n as Node2D).is_visible_in_tree(), ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)
 	return ret
 
+func get_things(thing_type = Thing, ret: Array[Thing] = [])->Array[Thing]:
+	ret = NodeUtils.get_children_by_predicate(self, func(n:Node)->bool: return is_instance_of(n, thing_type) and (n as Node2D).is_visible_in_tree(), ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)
+	return ret
+
 func get_editable_polygons() -> Array[EditablePolygon]:
 	var ret : Array[EditablePolygon] = []
 	ret = NodeUtils.get_children_by_predicate(self, func(n:Node)->bool: return n is EditablePolygon and n.is_visible_in_tree and n.is_editable, ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)

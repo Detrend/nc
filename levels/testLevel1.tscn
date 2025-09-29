@@ -11,15 +11,15 @@
 [ext_resource type="Resource" uid="uid://dru3antcr08im" path="res://materials/outsides.tres" id="7_phr4w"]
 [ext_resource type="PackedScene" uid="uid://cm0wgegxiipjw" path="res://prefabs/PickUps/HpSmall.tscn" id="8_rrxkl"]
 [ext_resource type="PackedScene" uid="uid://hg6kt5ju3l3a" path="res://prefabs/Entities/Pepe.tscn" id="9_rrxkl"]
-[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/sector/Sector.gd" id="9_xbdba"]
 [ext_resource type="Resource" uid="uid://ckwlq2hdguk10" path="res://materials/maintenance_shaft.tres" id="10_k8xne"]
 [ext_resource type="Resource" uid="uid://8mtk0xgkh1sd" path="res://materials/parkour_pillar.tres" id="10_n7tfj"]
 [ext_resource type="Resource" uid="uid://ce5gk7qrr45r8" path="res://materials/outsides_road_house.tres" id="14_3ce7l"]
 [ext_resource type="Resource" uid="uid://byw7ktlk5iaok" path="res://materials/outsides_house.tres" id="14_k8xne"]
-[ext_resource type="Script" uid="uid://0kbske84jb5g" path="res://scripts/sector/TriangulatedMultisector.gd" id="15_2dkgu"]
 [ext_resource type="Resource" uid="uid://p738ciwykkty" path="res://materials/outsides_wall.tres" id="16_xbdba"]
 [ext_resource type="Resource" uid="uid://cngafoh223j4c" path="res://materials/outsides_road.tres" id="17_pxq2e"]
+[ext_resource type="PackedScene" uid="uid://bve5ovba1xpi5" path="res://prefabs/Lights/DirectionalLight.tscn" id="19_2dkgu"]
 [ext_resource type="Resource" uid="uid://cj2t3mf314rsj" path="res://materials/outsides_hill.tres" id="20_sc5vv"]
+[ext_resource type="PackedScene" uid="uid://ctwevapidummr" path="res://prefabs/Lights/PointLight.tscn" id="20_xbdba"]
 
 [sub_resource type="Resource" id="Resource_h15or"]
 script = ExtResource("4_h15or")
@@ -2097,7 +2097,7 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [node name="TestLevel1" type="Node2D"]
 script = ExtResource("1_nqbmo")
-export_scale = Vector3(0.1, 0.1, 1)
+export_scale = Vector3(0.2, 0.2, 2)
 export_path = "../nc/content/levels/level_test1.json"
 
 [node name="Sectors" type="Node2D" parent="."]
@@ -4109,27 +4109,19 @@ sector_material = ExtResource("20_sc5vv")
 visible = false
 position = Vector2(567, 537)
 
-[node name="TriangulatedMultisector-2830" type="Polygon2D" parent="Sectors/Test" instance=ExtResource("3_l4525")]
-z_index = 11
-z_as_relative = false
+[node name="TriangulatedMultisector-2830" parent="Sectors/Test" instance=ExtResource("3_l4525")]
 position = Vector2(7.27905, -7.5481)
-color = Color(0.243137, 0.254902, 0.623529, 0.454902)
 polygon = PackedVector2Array(-17.2791, -32.4519, 10.7209, -41.4519, 27.7209, -37.4519, 74.7209, -39.4519, 142.721, -26.4519, 110.721, 42.5481, 91.7209, 53.5481, 25.7209, 53.5481, -8.27905, 56.5481, -19.2791, 42.5481, -12.2791, 12.5481, -12.2791, -8.4519)
-script = ExtResource("15_2dkgu")
 data = SubResource("Resource_wxxy7")
 
-[node name="Sector-4" type="Polygon2D" parent="Sectors/Test/TriangulatedMultisector-2830" instance=ExtResource("2_l4525")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-4" parent="Sectors/Test/TriangulatedMultisector-2830" instance=ExtResource("2_l4525")]
 position = Vector2(-8.27905, -30.4519)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(0, 0, 10, 0, 7, 7, 0, 10)
-script = ExtResource("9_xbdba")
 data = SubResource("Resource_bwsni")
 floor_height = 4.0
 ceiling_height = 10.0
 sector_material = ExtResource("10_n7tfj")
-show_portal_arrow = true
 
 [node name="Sector-5" parent="Sectors/Test/TriangulatedMultisector-2830" instance=ExtResource("2_l4525")]
 position = Vector2(-7.27905, -17.4519)
@@ -4176,18 +4168,13 @@ floor_height = 4.5
 ceiling_height = 10.0
 sector_material = ExtResource("10_n7tfj")
 
-[node name="Sector-4765" type="Polygon2D" parent="Sectors/Test" instance=ExtResource("2_l4525")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-4765" parent="Sectors/Test" instance=ExtResource("2_l4525")]
 position = Vector2(-30, -9)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(-9.84491, 0.720215, 20, -31, 25, -7, 25, 14, 18.1551, 43.7202)
-script = ExtResource("9_xbdba")
 data = SubResource("Resource_6qr5b")
 floor_height = 4.0
 ceiling_height = 10.0
-sector_material = ExtResource("6_2dkgu")
-show_portal_arrow = true
 
 [node name="PickUps" type="Node2D" parent="."]
 
@@ -4316,8 +4303,16 @@ height_offset = 0.0
 position = Vector2(14, 10)
 height_offset = 0.0
 
+[node name="Lights" type="Node2D" parent="."]
+
+[node name="DirectionalLight" parent="Lights" instance=ExtResource("19_2dkgu")]
+position = Vector2(20, -16)
+
+[node name="PointLight" parent="Lights" instance=ExtResource("20_xbdba")]
+position = Vector2(65, 51)
+
 [node name="PlayerPosition" parent="." instance=ExtResource("3_nqbmo")]
-position = Vector2(363, 53)
+position = Vector2(9, 50)
 rotation = -1.57079
 placement_mode = 0
 height_offset = 0.5
