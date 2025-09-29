@@ -50,7 +50,12 @@ void main()
   // compute atlas uv
   uv = (uv * texture_data.size + texture_data.pos) / atlas_size;
 
-  vec4 color = texture(use_game_atlas ? game_atlas_sampler : level_atlas_sampler, uv);
+  vec4 color;
+  if (use_game_atlas) {
+    color = texture(game_atlas_sampler, uv);
+  } else{
+    color = texture(level_atlas_sampler, uv);
+  }
   if (color.a == 0.0f)
     discard;
 
