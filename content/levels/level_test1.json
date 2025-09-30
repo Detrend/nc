@@ -385,8 +385,8 @@
 				1.0,
 				1.0
 			],
-			"constant": 1.0,
-			"intensity": 1.0,
+			"constant": 0.5,
+			"intensity": 2.57000000000698,
 			"linear": 0.09,
 			"position": [
 				-13.0,
