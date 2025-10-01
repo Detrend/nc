@@ -23,7 +23,7 @@ func append_info(out: Array[Dictionary], begin_height: float, end_height: float,
 	info["show"] = should_show
 	if should_show:
 		info["id"] = id
-		info["scale"] = scale
+		info["scale"] = scale * ctx.level.export_texture_scale
 		var base_rotation_deg :float = self.rotation
 		var custom_rotation_deg :float = ctx.target_sector.data.wall_texturing_rotation if ctx.subject_type == ITextureDefinition.TexturingSubjectType.Wall else ctx.target_sector.data.texturing_rotation
 		info["rotation"] = deg_to_rad(base_rotation_deg + custom_rotation_deg)

@@ -2098,6 +2098,8 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 [node name="TestLevel1" type="Node2D"]
 script = ExtResource("1_nqbmo")
 export_scale = Vector3(0.2, 0.2, 2)
+export_texture_scale = 2.0
+export_texture_extrude_scale = 2.0
 export_path = "../nc/content/levels/level_test1.json"
 
 [node name="Sectors" type="Node2D" parent="."]
@@ -4310,9 +4312,11 @@ position = Vector2(20, -16)
 
 [node name="PointLight" parent="Lights" instance=ExtResource("20_xbdba")]
 position = Vector2(65, 51)
+intensity = 2.57
+constant = 0.5
 
 [node name="PlayerPosition" parent="." instance=ExtResource("3_nqbmo")]
-position = Vector2(9, 50)
+position = Vector2(-5048, -5401)
 rotation = -1.57079
 placement_mode = 0
 height_offset = 0.5

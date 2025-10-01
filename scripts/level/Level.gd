@@ -12,6 +12,8 @@ var max_snapping_distance : float:
 
 @export var export_scale : Vector3 = Vector3(1.0, 1.0, 1.0)
 @export var export_offset : Vector2 = Vector2.ZERO
+@export var export_texture_scale : float = 1.0
+@export var export_texture_extrude_scale : float = 1.0
 @export var export_path : String = ""
 @export_tool_button("Export level") var export_level_tool_button = export_level
 

@@ -20,7 +20,7 @@ func append_info(out: Array[Dictionary], begin_height: float, end_height: float,
 	texture.append_info(out, begin_height, end_height, ctx)
 	
 	if mode == ExtrudeMode.Plain:
-		_adjust_normals(out, idx, begin_up_direction, end_up_direction, begin_down_direction, end_down_direction, ctx.export_scale)
+		_adjust_normals(out, idx, begin_up_direction, end_up_direction, begin_down_direction, end_down_direction, ctx.level.export_texture_extrude_scale)
 		return
 	
 	var owner_sector : Sector
@@ -48,7 +48,7 @@ func append_info(out: Array[Dictionary], begin_height: float, end_height: float,
 	var eu :Vector2 = (end_normal * Vector2(end_up_direction.x, end_up_direction.y).length())
 	var ed :Vector2 = (end_normal * Vector2(end_down_direction.x, end_down_direction.y).length())
 
-	_adjust_normals(out, idx, Vector3(bu.x, bu.y, begin_up_direction.z), Vector3(eu.x, eu.y, end_up_direction.z), Vector3(bd.x, bd.y, begin_down_direction.z), Vector3(ed.x, ed.y, end_down_direction.z), ctx.export_scale,
+	_adjust_normals(out, idx, Vector3(bu.x, bu.y, begin_up_direction.z), Vector3(eu.x, eu.y, end_up_direction.z), Vector3(bd.x, bd.y, begin_down_direction.z), Vector3(ed.x, ed.y, end_down_direction.z), ctx.level.export_texture_extrude_scale,
 		func(dict: Dictionary): dict['absolute_directions'] = true
 	)
 
@@ -56,11 +56,11 @@ func append_info(out: Array[Dictionary], begin_height: float, end_height: float,
 
 
 
-func _adjust_normals(container : Array[Dictionary], begin_idx : int, begin_up_direction : Vector3, end_up_direction : Vector3, begin_down_direction : Vector3, end_down_direction : Vector3, scale: Vector3, additional: Callable = Callable())->void:
+func _adjust_normals(container : Array[Dictionary], begin_idx : int, begin_up_direction : Vector3, end_up_direction : Vector3, begin_down_direction : Vector3, end_down_direction : Vector3, scale: float, additional: Callable = Callable())->void:
 	while begin_idx < container.size():
-		container[begin_idx].get_or_add('begin_up_direction', TextUtils.vec3_to_array(GeometryUtils.mult_members3(begin_up_direction, scale)))
-		container[begin_idx].get_or_add('end_up_direction',  TextUtils.vec3_to_array(GeometryUtils.mult_members3(end_up_direction, scale)))
-		container[begin_idx].get_or_add('begin_down_direction',  TextUtils.vec3_to_array(GeometryUtils.mult_members3(begin_down_direction, scale)))
-		container[begin_idx].get_or_add('end_down_direction',  TextUtils.vec3_to_array(GeometryUtils.mult_members3(end_down_direction, scale)))
+		container[begin_idx].get_or_add('begin_up_direction', TextUtils.vec3_to_array(begin_up_direction * scale))
+		container[begin_idx].get_or_add('end_up_direction',  TextUtils.vec3_to_array(end_up_direction * scale))
+		container[begin_idx].get_or_add('begin_down_direction',  TextUtils.vec3_to_array(begin_down_direction * scale))
+		container[begin_idx].get_or_add('end_down_direction',  TextUtils.vec3_to_array(end_down_direction * scale))
 		if additional: additional.call(container[begin_idx])
 		begin_idx += 1

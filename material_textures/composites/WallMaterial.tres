@@ -13,10 +13,10 @@
 script = ExtResource("5_kdler")
 texture = ExtResource("4_l1ppm")
 mode = 0
-begin_up_direction = Vector3(-5, 10, -0.5)
-end_up_direction = Vector3(5, 10, -0.5)
-begin_down_direction = Vector3(-5, 10, 0.3)
-end_down_direction = Vector3(5, 10, 0.3)
+begin_up_direction = Vector3(-0.2, 0.5, 0.5)
+end_up_direction = Vector3(0.2, 0.5, 0.5)
+begin_down_direction = Vector3(-0.2, 0.5, 0.3)
+end_down_direction = Vector3(0.2, 0.5, 0.3)
 metadata/_custom_type_script = "uid://dpohkvy6wk8m2"
 
 [sub_resource type="Resource" id="Resource_tnmf3"]
@@ -36,10 +36,10 @@ metadata/_custom_type_script = "uid://ds4udf2uy0wpn"
 script = ExtResource("5_kdler")
 texture = ExtResource("6_6m81s")
 mode = 0
-begin_up_direction = Vector3(0, 2, -0.1)
-end_up_direction = Vector3(0, 2, -0.1)
-begin_down_direction = Vector3(0, 2, 0)
-end_down_direction = Vector3(0, 2, 0)
+begin_up_direction = Vector3(0, 0.2, -0.1)
+end_up_direction = Vector3(0, 0.2, -0.1)
+begin_down_direction = Vector3(0, 0.2, 0)
+end_down_direction = Vector3(0, 0.2, 0)
 metadata/_custom_type_script = "uid://dpohkvy6wk8m2"
 
 [sub_resource type="Resource" id="Resource_guvti"]
