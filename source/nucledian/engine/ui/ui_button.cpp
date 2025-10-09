@@ -67,7 +67,7 @@ namespace nc
 
     const glm::mat4 final_trans = trans_mat;
 
-    // button_material.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
+    button_material.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
 
     glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
