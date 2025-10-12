@@ -1401,22 +1401,25 @@ static void build_sector_grid_and_bboxes(MapSectors& map)
     WallID wall_id
   )
   {
-    // TODO: replace these later once we can do visible_sectors with varying height
-    constexpr f32 FLOOR_Y = 0.0f;
-    constexpr f32 CEIL_Y = 1.5f;
+    const f32 floor_y = MapSectors::SECTOR_FLOOR_Y;
+    const f32 ceil_y = MapSectors::SECTOR_CEILING_Y;
+
+    //const SectorData& sector_data = map.sectors[sector_id];
+    //const f32 floor_y = sector_data.floor_height;
+    //const f32 ceil_y = sector_data.ceil_height;
 
     const WallID next_wall = map_helpers::next_wall(map, sector_id, wall_id);
     const vec2 position1 = map.walls[wall_id].pos;
     const vec2 position2 = map.walls[next_wall].pos;
 
     const vec2 center_2d = (position1 + position2) * 0.5f;
-    const vec3 center = vec3(center_2d.x, FLOOR_Y + (CEIL_Y - FLOOR_Y) / 2.0f, center_2d.y);
+    const vec3 center = vec3(center_2d.x, floor_y + (ceil_y - floor_y) / 2.0f, center_2d.y);
 
     const vec2 direction = normalize(position2 - position1);
     const f32  angle = atan2(direction.y, -direction.x);
 
     const f32 width = length(position2 - position1);
-    const f32 height = CEIL_Y - FLOOR_Y;
+    const f32 height = ceil_y - floor_y;
     const vec3 scale = vec3(width, height, 1.0f);
 
     return { center, angle, scale };
