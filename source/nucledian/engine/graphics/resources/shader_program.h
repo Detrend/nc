@@ -1,41 +1,45 @@
 #pragma once
 
-#include <math/vector.h>
 #include <engine/graphics/uniform.h>
 #include <engine/graphics/gl_types.h>
 
 #include <math/vector.h>
 #include <math/matrix.h>
 
+#include <initializer_list>
 #include <optional>
+#include <utility>
+#include <span>
 
 namespace nc
 {
 
 // Light-weight shader handle.
-struct MaterialHandle
+struct ShaderProgramHandle
 {
 public:
   friend class GizmoManager;
   friend class GraphicsSystem;
   friend class Renderer;
 
-  MaterialHandle(const char* vertex_source, const char* fragment_source);
+  explicit ShaderProgramHandle(const char* compute_source);
+  ShaderProgramHandle(const char* vertex_source, const char* fragment_source);
 
   bool is_valid() const;
   operator bool() const;
 
   // Gets a invalid material.
-  static MaterialHandle invalid();
+  static ShaderProgramHandle invalid();
 
   void use() const;
 
 // Shaders should be manipulated only within render system and related classes.
 private:
-  MaterialHandle() {}
+  ShaderProgramHandle() {}
+  explicit ShaderProgramHandle(std::initializer_list<std::pair<const char*, GLenum>> shader_sources);
 
   std::optional<GLuint> compile_shader(const char* source, GLenum type) const;
-  std::optional<GLuint> link_program(GLuint vertex_shader, GLuint fragment_shader) const;
+  std::optional<GLuint> link_program(std::span<const GLuint> shaders) const;
 
   template<GLint location, typename T>
   void set_uniform(Uniform<location, T> uniform, const T& value) const;
@@ -53,4 +57,4 @@ private:
 
 }
 
-#include <engine/graphics/resources/material.inl>
+#include <engine/graphics/resources/shader_program.inl>

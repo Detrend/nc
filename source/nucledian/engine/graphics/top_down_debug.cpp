@@ -9,7 +9,7 @@
 #include <engine/core/engine.h>
 
 #include <engine/map/map_system.h>
-#include <engine/graphics/resources/material.h>
+#include <engine/graphics/resources/shader_program.h>
 #include <engine/graphics/camera.h>
 
 #include <engine/player/thing_system.h>
@@ -32,7 +32,7 @@
 namespace nc
 {
 
-static MaterialHandle g_top_down_material = MaterialHandle::invalid();
+static ShaderProgramHandle g_top_down_material = ShaderProgramHandle::invalid();
 static GLuint         g_default_vao       = 0;
 
 //==============================================================================
@@ -358,7 +358,7 @@ TopDownDebugRenderer::TopDownDebugRenderer(u32 w, u32 h)
 : window_width(w)
 , window_height(h)
 {
-  g_top_down_material = MaterialHandle
+  g_top_down_material = ShaderProgramHandle
   (
     TOP_DOWN_VERTEX_SOURCE,
     TOP_DOWN_FRAGMENT_SOURCE

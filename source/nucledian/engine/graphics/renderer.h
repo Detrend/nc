@@ -4,7 +4,7 @@
 #include <types.h>
 
 #include <engine/graphics/gl_types.h>
-#include <engine/graphics/resources/material.h>
+#include <engine/graphics/resources/shader_program.h>
 
 #include <math/vector.h>
 #include <math/matrix.h>
@@ -40,16 +40,16 @@ public:
     const RenderGunProperties& gun
   ) const;
 
-  const MaterialHandle& get_solid_material() const;
+  const ShaderProgramHandle& get_solid_material() const;
 
 private:
   using Portal = Portal;
 
   mat4                 m_default_projection;
-  const MaterialHandle m_solid_material;
-  const MaterialHandle m_billboard_material;
-  const MaterialHandle m_light_material;
-  const MaterialHandle m_sector_material;
+  const ShaderProgramHandle m_solid_material;
+  const ShaderProgramHandle m_billboard_material;
+  const ShaderProgramHandle m_light_material;
+  const ShaderProgramHandle m_sector_material;
 
   mutable u32                        m_dir_light_ssbo_size   = 0;
   mutable u32                        m_point_light_ssbo_size = 0;

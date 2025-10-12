@@ -130,7 +130,7 @@ const
 }
 
 //==============================================================================
-const MaterialHandle& Renderer::get_solid_material() const
+const ShaderProgramHandle& Renderer::get_solid_material() const
 {
   return m_solid_material;
 }

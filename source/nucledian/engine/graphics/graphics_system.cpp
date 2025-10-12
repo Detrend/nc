@@ -350,7 +350,7 @@ const std::vector<MeshHandle>& GraphicsSystem::get_sector_meshes() const
 }
 
 //==============================================================================
-const MaterialHandle& GraphicsSystem::get_solid_material() const
+const ShaderProgramHandle& GraphicsSystem::get_solid_material() const
 {
   return m_renderer->get_solid_material();
 }
