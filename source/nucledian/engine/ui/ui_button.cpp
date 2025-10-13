@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <engine/core/engine.h>
 
 namespace nc
 {
@@ -123,8 +124,10 @@ namespace nc
 
     SDL_GetMouseState(&mouse_x, &mouse_y);
 
-    f32 width = GraphicsSystem::WINDOW_WIDTH;
-    f32 height = GraphicsSystem::WINDOW_HEIGHT;
+    vec2 dimensions = get_engine().get_module<GraphicsSystem>().get_window_size();
+
+    f32 width = dimensions.x;
+    f32 height = dimensions.y;
 
     f32 half_width = width / 2.0f;
     f32 half_height = height / 2.0f;
