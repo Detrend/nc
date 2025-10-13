@@ -108,7 +108,7 @@ namespace nc
     MainMenuPage* main_menu_page = nullptr;
     OptionsPage* options_page = nullptr;
     LoadGamePage* load_game_page = nullptr;
-    SaveGamePage* save_game_page = nullptr;
+    //SaveGamePage* save_game_page = nullptr;
 
     MenuPages current_page = MenuPages::MAIN;
 

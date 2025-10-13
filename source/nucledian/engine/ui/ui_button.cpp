@@ -83,7 +83,7 @@ namespace nc
     main_menu_page = new MainMenuPage();
     options_page = new OptionsPage();
     load_game_page = new LoadGamePage();
-    save_game_page = new SaveGamePage();
+    //save_game_page = new SaveGamePage();
 
     vec2 vertices[] = { vec2(-1, 1), vec2(-1, -1), vec2(1, 1), vec2(1, -1) };
 
@@ -113,7 +113,7 @@ namespace nc
     delete main_menu_page;
     delete options_page;
     delete load_game_page;
-    delete save_game_page;
+    //delete save_game_page;
   }
 
   //=============================================================================================
@@ -221,14 +221,14 @@ namespace nc
     const char* ng_text = "ui_new_game";
     const char* o_text = "ui_new_game";
     const char* lg_text = "ui_new_game";
-    const char* sg_text = "ui_new_game";
+    //const char* sg_text = "ui_new_game";
     const char* q_text = "ui_new_game";
 
-    new_game_button = new UiButton(ng_text, vec2(0.0f, 0.3f), vec2(0.5f, 0.1f), std::bind(&MainMenuPage::new_game_button, this));
-    options_button = new UiButton(o_text, vec2(0.0f, 0.1f), vec2(0.5f, 0.1f), std::bind(&MainMenuPage::options_func, this));
-    load_button = new UiButton(lg_text, vec2(0.0f, -0.1f), vec2(0.5f, 0.1f), std::bind(&MainMenuPage::load_game_func, this));
-    save_button = new UiButton(sg_text, vec2(0.0f, -0.3f), vec2(0.5f, 0.1f), std::bind(&MainMenuPage::save_game_func, this));
-    quit_button = new UiButton(q_text, vec2(0.0f, -0.5f), vec2(0.5f, 0.1f), std::bind(&MainMenuPage::quit_func, this));
+    new_game_button = new UiButton(ng_text, vec2(0.0f, 0.15f), vec2(0.5f, 0.1f), std::bind(&MainMenuPage::new_game_button, this));
+    options_button = new UiButton(o_text, vec2(0.0f, -0.1f), vec2(0.5f, 0.1f), std::bind(&MainMenuPage::options_func, this));
+    load_button = new UiButton(lg_text, vec2(0.0f, -0.35f), vec2(0.5f, 0.1f), std::bind(&MainMenuPage::load_game_func, this));
+    //save_button = new UiButton(sg_text, vec2(0.0f, -0.3f), vec2(0.5f, 0.1f), std::bind(&MainMenuPage::save_game_func, this));
+    quit_button = new UiButton(q_text, vec2(0.0f, -0.6f), vec2(0.5f, 0.1f), std::bind(&MainMenuPage::quit_func, this));
   }
 
   //============================================================================================
@@ -254,7 +254,7 @@ namespace nc
     new_game_button->draw(button_material);
     options_button->draw(button_material);
     load_button->draw(button_material);
-    save_button->draw(button_material);
+    //save_button->draw(button_material);
     quit_button->draw(button_material);
 
 
