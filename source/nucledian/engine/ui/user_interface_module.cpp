@@ -51,6 +51,8 @@ namespace nc
 
     load_texture();
 
+    menu = new MenuManager();
+
     return true;
   }
 
@@ -187,6 +189,8 @@ namespace nc
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisableVertexAttribArray(0);
     glBindVertexArray(0);
+
+    menu->draw();
   }
 
   void UserInterfaceSystem::load_texture()
@@ -230,6 +234,7 @@ namespace nc
       break;
     case ModuleEventType::game_update:
       gather_player_info();
+      menu->update();
       break;
     case ModuleEventType::render:
       //draw();

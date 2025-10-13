@@ -28,7 +28,7 @@ namespace nc
     
     void load_texture();
 
-
+    MenuManager* menu;
 
     std::vector<GuiTexture> ui_elements;
 

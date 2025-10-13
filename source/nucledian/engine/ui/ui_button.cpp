@@ -191,6 +191,11 @@ namespace nc
 
   void MenuManager::draw()
   {
+    if (!visible)
+    {
+      return;
+    }
+
     switch (current_page)
     {
     case nc::MAIN:
