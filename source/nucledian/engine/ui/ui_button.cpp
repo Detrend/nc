@@ -69,6 +69,9 @@ namespace nc
     const glm::mat4 final_trans = trans_mat;
 
     button_material.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
+    button_material.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas().get_size());
+    button_material.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
+    button_material.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
 
     glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -249,6 +252,7 @@ namespace nc
 
     glBindVertexArray(VAO);
     glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 
     glDisable(GL_DEPTH_TEST);
 
@@ -267,6 +271,7 @@ namespace nc
 
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
     glBindVertexArray(0);
   }
 
