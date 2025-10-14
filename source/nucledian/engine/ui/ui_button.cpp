@@ -88,10 +88,10 @@ namespace nc
     load_game_page = new LoadGamePage();
     //save_game_page = new SaveGamePage();
 
-    vec2 vertices[] = { vec2(-1, 1), vec2(0, 1), 
-        vec2(-1, -1), vec2(0, 0),
-        vec2(1, 1), vec2(1, 1),
-        vec2(1, -1), vec2(1, 0)};
+    vec2 vertices[] = { vec2(-1, 1), vec2(0, 0), 
+        vec2(-1, -1), vec2(0, 1),
+        vec2(1, 1), vec2(1, 0),
+        vec2(1, -1), vec2(1, 1)};
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
