@@ -228,16 +228,16 @@ namespace nc
   MainMenuPage::MainMenuPage()
   {
     const char* ng_text = "ui_new_game";
-    const char* o_text = "ui_new_game";
-    const char* lg_text = "ui_new_game";
+    const char* o_text = "ui_options";
+    const char* lg_text = "ui_load_game";
     //const char* sg_text = "ui_new_game";
-    const char* q_text = "ui_new_game";
+    const char* q_text = "ui_quit";
 
-    new_game_button = new UiButton(ng_text, vec2(0.0f, 0.15f), vec2(0.5f, 0.1f), std::bind(&MainMenuPage::new_game_button, this));
-    options_button = new UiButton(o_text, vec2(0.0f, -0.1f), vec2(0.5f, 0.1f), std::bind(&MainMenuPage::options_func, this));
-    load_button = new UiButton(lg_text, vec2(0.0f, -0.35f), vec2(0.5f, 0.1f), std::bind(&MainMenuPage::load_game_func, this));
+    new_game_button = new UiButton(ng_text, vec2(0.0f, 0.15f), vec2(0.45f, 0.1f), std::bind(&MainMenuPage::new_game_button, this));
+    options_button = new UiButton(o_text, vec2(0.0f, -0.1f), vec2(0.45f, 0.1f), std::bind(&MainMenuPage::options_func, this));
+    load_button = new UiButton(lg_text, vec2(0.0f, -0.35f), vec2(0.45f, 0.1f), std::bind(&MainMenuPage::load_game_func, this));
     //save_button = new UiButton(sg_text, vec2(0.0f, -0.3f), vec2(0.5f, 0.1f), std::bind(&MainMenuPage::save_game_func, this));
-    quit_button = new UiButton(q_text, vec2(0.0f, -0.6f), vec2(0.5f, 0.1f), std::bind(&MainMenuPage::quit_func, this));
+    quit_button = new UiButton(q_text, vec2(0.0f, -0.6f), vec2(0.45f, 0.1f), std::bind(&MainMenuPage::quit_func, this));
   }
 
   //============================================================================================
