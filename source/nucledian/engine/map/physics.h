@@ -197,7 +197,7 @@ struct PhysLevel
   (
     vec3&             position,          // the original position of the entity, will get changed
     vec3&             velocity,          // the velocity
-    vec3*             opt_forward,       // forward direction, changes after nc portal traversal
+    mat4&             transform_mod,     // transform after portal transition
     f32               delta_time,        // frame time
     f32               radius,            // radius of the entity
     f32               height,            // height of the entity

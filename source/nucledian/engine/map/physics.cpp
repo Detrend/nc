@@ -822,12 +822,15 @@ struct CylCastWallIntersector
     if (hit)
     {
       // Partial - have to check if there is a free window
-      nc_assert(map.is_valid_sector_id(w1.portal_sector_id));
-      const SectorData& neighbor = map.sectors[w1.portal_sector_id];
+      f32 neighbor_floor_height = 0.0f, neighbor_ceil_height = 0.0f;
+      map.calc_step_height_of_portal(sid, wid1, &neighbor_floor_height, &neighbor_ceil_height);
+
+      neighbor_floor_height += floor_y;
+      neighbor_ceil_height  += ceil_y;
 
       // Calculate the size of the window we can potentially fit into
-      f32 window_from_y = std::max(neighbor.floor_height, floor_y);
-      f32 window_to_y   = std::min(neighbor.ceil_height,  ceil_y) - height;
+      f32 window_from_y = max(neighbor_floor_height, floor_y);
+      f32 window_to_y   = min(neighbor_ceil_height,  ceil_y) - height;
 
       if constexpr (STAIR_WALK == StairWalkSettings::Enabled)
       {
@@ -1002,7 +1005,7 @@ void PhysLevel::move_character
 (
   vec3&                           position,
   vec3&                           velocity_og,
-  vec3*                           forward,
+  mat4&                           transform_out,
   f32                             delta_time,
   f32                             radius,
   f32                             height,
@@ -1111,24 +1114,18 @@ const
 
   // Now that we have the portals stored we iterate them and transform our
   // position/direction with the portals
-  const bool should_transform = portals.size();
-  mat4 transformation = identity<mat4>();
-  for (const auto&[wid, sid] : portals)
+  transform_out = identity<mat4>();
+  if (portals.size())
   {
-    const auto pp_trans = map.calc_portal_to_portal_projection(sid, wid);
-    transformation = pp_trans * transformation;
-  }
-
-  if (should_transform)
-  {
-    velocity_og = (transformation * vec4{velocity_og, 0.0f}).xyz();
-    position    = (transformation * vec4{position,    1.0f}).xyz();
-    velocity    = (transformation * vec4{velocity,    0.0f}).xyz();
-
-    if (forward)
+    for (const auto&[wid, sid] : portals)
     {
-      *forward = (transformation * vec4{*forward, 0.0f}).xyz();
+      const auto pp_trans = map.calc_portal_to_portal_projection(sid, wid);
+      transform_out = pp_trans * transform_out;
     }
+
+    velocity_og = (transform_out * vec4{velocity_og, 0.0f}).xyz();
+    position    = (transform_out * vec4{position,    1.0f}).xyz();
+    velocity    = (transform_out * vec4{velocity,    0.0f}).xyz();
   }
 
   // Note: this is questionable.. Do we add the velocity now, or before we

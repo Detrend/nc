@@ -206,10 +206,11 @@ void Player::apply_velocity(f32 delta_seconds)
   vec3 position = this->get_position();
   vec3 prev_pos = position;
 
+  mat4 portal_transform = identity<mat4>();
   PhysLevel::CharacterCollisions collected_collisions;
   lvl.move_character
   (
-    position, velocity, &forward, delta_seconds, PLAYER_RADIUS,
+    position, velocity, portal_transform, delta_seconds, PLAYER_RADIUS,
     PLAYER_HEIGHT, PLAYER_HEIGHT * 0.3f, PLAYER_COLLIDERS,
     PLAYER_REPORTING, &collected_collisions
   );
@@ -217,19 +218,32 @@ void Player::apply_velocity(f32 delta_seconds)
   // Change the position
   this->set_position(position);
 
-  // Spring - makes sure that the camera moves smoothly on the stairs
-  f32 height_diff = position.y - prev_pos.y;
-  f32 max_offset  = CVars::camera_spring_height;
-  this->vertical_camera_offset = std::clamp
-  (
-    this->vertical_camera_offset - height_diff, -max_offset, max_offset
-  );
+  // Change the direction after portal transition
+  this->forward = (portal_transform * vec4{this->forward, 0.0f}).xyz();
 
   // Recompute the angleYaw after moving through a portal
   const auto forward2 = normalize(with_y(forward, 0.0f));
   this->angle_yaw = rem_euclid
   (
     std::atan2f(forward2.z, -forward2.x) + HALF_PI, PI * 2
+  );
+
+  // Spring - makes sure that the camera moves smoothly on the stairs
+
+  // We have to work with prev_pos that is relative to our portal transformation.
+  //f32 prev_pos_rel_y = (portal_transform * vec4{prev_pos, 1.0f}).y;
+  // Same as above but without unnecessary multiplications
+  f32 prev_pos_rel_y
+    = prev_pos.x * portal_transform[0].y
+    + prev_pos.y * portal_transform[1].y
+    + prev_pos.z * portal_transform[2].y
+    + /*1.0f * */  portal_transform[3].y;
+
+  f32 height_diff = position.y - prev_pos_rel_y;
+  f32 max_offset  = CVars::camera_spring_height;
+  this->vertical_camera_offset = clamp
+  (
+    this->vertical_camera_offset - height_diff, -max_offset, max_offset
   );
 
   // Set on ground if touching floor

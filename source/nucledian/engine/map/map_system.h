@@ -164,13 +164,17 @@ struct WallData
   // The wall starts here and ends in the same point as the next
   // wall begins
   
-  vec2           pos               = vec2{0};
-  SectorID       portal_sector_id  = INVALID_SECTOR_ID; // if is portal
-  WallRelID      nc_portal_wall_id = INVALID_WALL_REL_ID;
-  PortalRenderID render_data_index = INVALID_PORTAL_RENDER_ID;
+  vec2            pos               = vec2{0};
+  SectorID        portal_sector_id  = INVALID_SECTOR_ID; // if is portal
+  WallRelID       nc_portal_wall_id = INVALID_WALL_REL_ID;
+  f32             nc_portal_offset  = 0.0f; // offset from ground, only nc portals
+  PortalRenderID  render_data_index = INVALID_PORTAL_RENDER_ID;
   WallSurfaceData surface;
 
   PortType get_portal_type() const;
+
+  // Returns 0 for normal portals and ground offset for non-euclidean portals
+  f32 get_ground_offset() const;
 
   // Returns true if this is a normal portal or nuclidean portal.
   // Returns false if this is a wall
@@ -250,8 +254,7 @@ struct MapSectors
     vec2       position,
     f32        range,
     SectorSet& sectors_out
-  )
-  const;
+  ) const;
 
   // Iterates all portals of this sector
   bool for_each_portal_of_sector(SectorID sector, WallVisitor visitor) const;
@@ -262,13 +265,28 @@ struct MapSectors
   // returned.
   SectorID get_sector_from_point(vec2 point) const;
 
-  mat4 calc_portal_to_portal_projection(
+  mat4 calc_portal_to_portal_projection
+  (
     SectorID from_sector,
-    WallID   from_portal) const;
+    WallID   from_portal
+  ) const;
 
-  void sector_to_vertices(
+  void sector_to_vertices
+  (
     SectorID           sector_id,
-    std::vector<f32>& vertices_out) const;
+    std::vector<f32>&  vertices_out
+  ) const;
+
+  // Calculates the height of the step between two sectors.
+  // For normal portals does only a comparison of floor and ceiling ys.
+  // Works with relative ys for non-euclidean portals.
+  void calc_step_height_of_portal
+  (
+    SectorID sector,            // the primary sector
+    WallID   portal_wall,       // wall leading to the other sector
+    f32*     step_opt,          // step height above the floor, positive if step up
+    f32*     ceil_opt = nullptr // ceiling depth below the ceil, positive if ceiling grows up
+  ) const;
 
   std::vector<vec3> get_path(vec3 start_pos, vec3 end_pos, f32 width, f32 height) const;
   bool is_point_in_sector(vec2 pt, SectorID sector)      const;

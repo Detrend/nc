@@ -138,9 +138,10 @@ void Enemy::handle_movement(f32 delta)
   velocity.y -= GRAVITY * delta;
 
   vec3 position = this->get_position();
+  mat4 portal_transform = identity<mat4>();
   world.move_character
   (
-    position, this->velocity, &this->facing, delta, ENEMY_HEIGHT,
+    position, this->velocity, portal_transform, delta, ENEMY_HEIGHT,
     ENEMY_RADIUS, ENEMY_HEIGHT * 0.3f, PhysLevel::COLLIDE_ALL, 0
   );
   this->set_position(position);

@@ -521,58 +521,70 @@ SectorID MapSectors::get_sector_from_point(vec2 point) const
 }
 
 //==============================================================================
-mat4 MapSectors::calc_portal_to_portal_projection(
+mat4 MapSectors::calc_portal_to_portal_projection
+(
   SectorID sector_from,
-  WallID   wall_from1) const
+  WallID   wall_from1
+)
+const
 {
-  nc_assert(sector_from < this->sectors.size());
-  nc_assert(wall_from1 < this->walls.size());
+  nc_assert(this->is_valid_sector_id(sector_from));
+  nc_assert(this->is_valid_wall_id(wall_from1));
 
-  const auto& wall = this->walls[wall_from1];
+  const WallData& wall = this->walls[wall_from1];
   SectorID sector_to = wall.portal_sector_id;
 
-  nc_assert(sector_to != INVALID_SECTOR_ID);
+  nc_assert(this->is_valid_sector_id(sector_to));
   nc_assert(wall.get_portal_type() == PortalType::non_euclidean);
 
-  const auto wall_from2 = map_helpers::next_wall(*this, sector_from, wall_from1);
+  WallID wall_from2 = map_helpers::next_wall(*this, sector_from, wall_from1);
+  WallID wall_to1   = this->sectors[sector_to].int_data.first_wall + wall.nc_portal_wall_id;
+  WallID wall_to2   = map_helpers::next_wall(*this, sector_to, wall_to1);
 
-  const WallID wall_to1 = this->sectors[sector_to].int_data.first_wall + wall.nc_portal_wall_id;
-  const WallID wall_to2 = map_helpers::next_wall(*this, sector_to, wall_to1);
+  vec2 from_p1 = this->walls[wall_from1].pos;
+  vec2 from_p2 = this->walls[wall_from2].pos;
+  vec2 to_p1   = this->walls[wall_to1].pos;
+  vec2 to_p2   = this->walls[wall_to2].pos;
 
-  const auto from_p1 = this->walls[wall_from1].pos;
-  const auto from_p2 = this->walls[wall_from2].pos;
-  const auto to_p1 = this->walls[wall_to1].pos;
-  const auto to_p2 = this->walls[wall_to2].pos;
+  f32 from_floor_height = this->sectors[sector_from].floor_height;
+  f32 to_floor_height   = this->sectors[sector_to].floor_height;
 
-  nc_assert(from_p1 != from_p2);
-  nc_assert(to_p1 != to_p2);
+  nc_assert(from_p1 != from_p2, "Retarded wall");
+  nc_assert(to_p1   != to_p2,   "Retarded wall");
 
   auto calc_wall_space_2_world_space = [](vec2 p1, vec2 p2, f32 h) -> mat4
+  {
+    vec3 pos3 = vec3{ p1.x, h, p1.y };
+    vec2 dir2 = normalize(p2 - p1);
+    vec2 nor2 = -flipped(dir2);
+
+    return mat4
     {
-      const vec3 pos3 = vec3{ p1.x, h, p1.y };
-      const vec2 dir2 = normalize(p2 - p1);
-      const vec2 nor2 = -flipped(dir2);
-
-      return mat4
-      {
-        vec4{dir2.x, 0.0f, dir2.y, 0.0f},
-        vec4{0.0f,   1.0f, 0.0f,   0.0f},
-        vec4{nor2.x, 0.0f, nor2.y, 0.0f},
-        vec4{pos3,                 1.0f},
-      };
+      vec4{dir2.x, 0.0f, dir2.y, 0.0f},
+      vec4{0.0f,   1.0f, 0.0f,   0.0f},
+      vec4{nor2.x, 0.0f, nor2.y, 0.0f},
+      vec4{pos3,                 1.0f},
     };
+  };
 
-  const mat4 wall_from_space_2_world_space
-    = calc_wall_space_2_world_space(from_p1, from_p2, SECTOR_CEILING_Y);
+  mat4 wall_from_space_2_world_space = calc_wall_space_2_world_space
+  (
+    from_p1, from_p2, from_floor_height
+  );
 
-  const mat4 world_space_2_wall_from_space =
-    inverse(wall_from_space_2_world_space);
+  mat4 world_space_2_wall_from_space = inverse
+  (
+    wall_from_space_2_world_space
+  );
 
-  const mat4 wall_to_space_2_world_space
-    = calc_wall_space_2_world_space(to_p2, to_p1, SECTOR_CEILING_Y);
+  mat4 wall_to_space_2_world_space = calc_wall_space_2_world_space
+  (
+    to_p2, to_p1, to_floor_height
+  );
 
-  const mat4 transition_matrix
+  mat4 transition_matrix
     = wall_to_space_2_world_space * world_space_2_wall_from_space;
+
   return transition_matrix;
 }
 
@@ -729,34 +741,37 @@ mat4 MapSectors::calc_portal_to_portal_projection(
       }
       else
       {
-            nc_assert(wall.portal_sector_id < this->sectors.size());
-            const auto& neighbor = this->sectors[wall.portal_sector_id];
+            f32 step_height = 0.0f, ceil_add = 0.0f;
+            this->calc_step_height_of_portal(sector_id, idx, &step_height, &ceil_add);
+
+            f32 neighbor_floor_height = sector.floor_height + step_height;
+            f32 neighbor_ceil_height  = sector.ceil_height  + ceil_add;
             
-            if (neighbor.floor_height >= sector.ceil_height || neighbor.ceil_height <= sector.floor_height)
+            if (neighbor_floor_height >= sector.ceil_height || neighbor_ceil_height <= sector.floor_height)
             {
                 // no overlap, draw the full wall 
                 add_wall_segments(sector.floor_height, sector.ceil_height);
             }
-            else if (neighbor.ceil_height >= sector.ceil_height && neighbor.floor_height <= sector.floor_height)
+            else if (neighbor_ceil_height >= sector.ceil_height && neighbor_floor_height <= sector.floor_height)
             {
                 // no need to draw any wall
                 continue;
             }
-            else if (neighbor.ceil_height >= sector.ceil_height && neighbor.floor_height > sector.floor_height)
+            else if (neighbor_ceil_height >= sector.ceil_height && neighbor_floor_height > sector.floor_height)
             {
                 // draw only bottom segment
-                add_wall_segments(sector.floor_height, neighbor.floor_height);
+                add_wall_segments(sector.floor_height, neighbor_floor_height);
             }
-            else if (neighbor.ceil_height < sector.ceil_height && neighbor.floor_height <= sector.floor_height)
+            else if (neighbor_ceil_height < sector.ceil_height && neighbor_floor_height <= sector.floor_height)
             {
                 // draw only top segment
-                add_wall_segments(neighbor.ceil_height, sector.ceil_height);
+                add_wall_segments(neighbor_ceil_height, sector.ceil_height);
             }
             else
             {
                 // draw both top and bottom
-                add_wall_segments(sector.floor_height, neighbor.floor_height);
-                add_wall_segments(neighbor.ceil_height, sector.ceil_height);
+                add_wall_segments(sector.floor_height, neighbor_floor_height);
+                add_wall_segments(neighbor_ceil_height, sector.ceil_height);
             }
       }
       
@@ -860,10 +875,61 @@ mat4 MapSectors::calc_portal_to_portal_projection(
   }
 
 //==============================================================================
+void MapSectors::calc_step_height_of_portal
+(
+  SectorID sector,
+  WallID   wall,
+  f32*     step_opt,
+  f32*     ceil_opt /*= nullptr*/
+)
+const
+{
+  nc_assert(this->is_valid_sector_id(sector));
+  nc_assert(this->is_valid_wall_id(wall));
+  nc_assert(step_opt || ceil_opt);
+
+  const SectorData& sd = this->sectors[sector];
+  const WallData&   wd = this->walls[wall];
+
+  nc_assert(wd.get_portal_type() != PortalType::none);
+  nc_assert(this->is_valid_sector_id(wd.portal_sector_id));
+
+  const SectorData& other = this->sectors[wd.portal_sector_id];
+
+  f32 my_floor_y    = sd.floor_height;
+  f32 my_ceil_y     = sd.ceil_height;
+  f32 other_floor_y = other.floor_height;
+  f32 other_ceil_y  = other.ceil_height;
+
+  // Apply transform if non-euclidean
+  if (wd.get_portal_type() == PortalType::non_euclidean)
+  {
+    mat4 transform = this->calc_portal_to_portal_projection(sector, wall);
+    //my_floor_y = (transform * vec4{0, my_floor_y, 0, 1}).y;
+    my_floor_y = transform[3].y + transform[1].y * my_floor_y; // Same as above
+    my_ceil_y  = transform[3].y + transform[1].y * my_ceil_y;
+  }
+
+  nc_assert(my_floor_y < my_ceil_y); // Check if something hasn't fucked up
+
+  // How much we have to step up
+  if (step_opt)
+  {
+    *step_opt = other_floor_y - my_floor_y;
+  }
+
+  // How much does the ceiling move up
+  if (ceil_opt)
+  {
+    *ceil_opt = other_ceil_y - my_ceil_y;
+  }
+}
+
+//==============================================================================
 bool MapSectors::is_point_in_sector(vec2 pt, SectorID sector_id) const
 {
   nc_assert(this->is_valid_sector_id(sector_id));
-const SectorData& sector = this->sectors[sector_id];
+  const SectorData& sector = this->sectors[sector_id];
   const auto first = sector.int_data.first_wall;
   const auto last = sector.int_data.last_wall;
   nc_assert(this->is_valid_wall_id(first));
@@ -1094,6 +1160,15 @@ bool WallData::is_portal() const
 }
 
 //==============================================================================
+f32 WallData::get_ground_offset() const
+{
+  [[maybe_unused]] PortType ptype = this->get_portal_type();
+  f32 offset = this->nc_portal_offset;
+  nc_assert(offset == 0.0f || ptype == PortalType::non_euclidean);
+  return offset;
+}
+
+//==============================================================================
 static bool is_visible_int(const VisibilityTree& tree, SectorID id, u64& depth)
 {
   auto it = std::find_if(tree.sectors.begin(), tree.sectors.end(), [id](const auto& pair)
@@ -1140,467 +1215,480 @@ bool VisibilityTree::is_visible(SectorID id) const
 namespace nc::map_building
 {
 
-  //==============================================================================
+//==============================================================================
 static void build_sector_grid_and_bboxes(MapSectors& map)
-  {
-    vec2 grid_min = vec2{ FLT_MAX };
-    vec2 grid_max = vec2{ -FLT_MAX };
+{
+  vec2 grid_min = vec2{ FLT_MAX };
+  vec2 grid_max = vec2{ -FLT_MAX };
 
-    for (const auto& wall : map.walls)
-    {
-      grid_min = min(grid_min, wall.pos);
-      grid_max = max(grid_max, wall.pos);
-    }
+  for (const auto& wall : map.walls)
+  {
+    grid_min = min(grid_min, wall.pos);
+    grid_max = max(grid_max, wall.pos);
+  }
 
   vec2 size = grid_max - grid_min;
 
-    u64 sector_count = map.sectors.size();
-    f32 height_to_width = size.y / size.x;
-    u64 width_grid_cells = sector_count;
-    u64 height_grid_cells = static_cast<u64>(sector_count * height_to_width);
+  u64 sector_count = map.sectors.size();
+  f32 height_to_width = size.y / size.x;
+  u64 width_grid_cells = sector_count;
+  u64 height_grid_cells = static_cast<u64>(sector_count * height_to_width);
 
-    map.sector_grid.initialize(width_grid_cells, height_grid_cells, grid_min, grid_max);
+  map.sector_grid.initialize(width_grid_cells, height_grid_cells, grid_min, grid_max);
 
-    // and now insert all the visible_sectors
-    for (SectorID sid = 0; sid < map.sectors.size(); ++sid)
+  // and now insert all the visible_sectors
+  for (SectorID sid = 0; sid < map.sectors.size(); ++sid)
+  {
+    const auto& sector = map.sectors[sid];
+    aabb2 sector_aabb;
+
+    for (u64 id = sector.int_data.first_wall; id < sector.int_data.last_wall; ++id)
     {
-      const auto& sector = map.sectors[sid];
-      aabb2 sector_aabb;
-
-      for (u64 id = sector.int_data.first_wall; id < sector.int_data.last_wall; ++id)
-      {
-        sector_aabb.insert_point(map.walls[id].pos);
-      }
+      sector_aabb.insert_point(map.walls[id].pos);
+    }
 
     aabb3 bbox3{};
     bbox3.min = vec3{sector_aabb.min.x, sector.floor_height, sector_aabb.min.y};
     bbox3.max = vec3{sector_aabb.max.x, sector.floor_height, sector_aabb.max.y};
 
     map.sector_bboxes.push_back(bbox3);
-      map.sector_grid.insert(sector_aabb, sid);
-    }
+    map.sector_grid.insert(sector_aabb, sid);
+  }
+}
+
+//==============================================================================
+// TODO: we are doing 2x the amount of intersections (each 2 visible_sectors are
+// intersected 2 times instead of only once).
+// TODO: use some data structure instead of the grid
+static bool check_for_sector_overlaps
+(
+  const std::vector<vec2>&            points,
+  const std::vector<SectorBuildData>& sectors,
+  OverlapInfo&                        overlap
+)
+{
+  using std::numeric_limits;
+
+  // the range of the map
+  vec2 map_min = vec2{ FLT_MAX,  FLT_MAX };
+  vec2 map_max = vec2{ -FLT_MAX, -FLT_MAX };
+
+  for (auto&& point : points)
+  {
+    map_min = min(map_min, point);
+    map_max = max(map_max, point);
   }
 
-  //==============================================================================
-  // TODO: we are doing 2x the amount of intersections (each 2 visible_sectors are
-  // intersected 2 times instead of only once).
-  // TODO: use some data structure instead of the grid
-  static bool check_for_sector_overlaps(
-    const std::vector<vec2>& points,
-    const std::vector<SectorBuildData>& sectors,
-    OverlapInfo& overlap)
+  constexpr u64 GRID_SIZE = 128;
+
+  StatGridAABB2<SectorID> grid;
+  grid.initialize(GRID_SIZE, GRID_SIZE, map_min, map_max);
+
+  // calculate bboxes for the visible_sectors
+  std::vector<aabb2> sector_bboxes(sectors.size());
+  for (SectorID sector_idx = 0; sector_idx < sectors.size(); ++sector_idx)
   {
-    using std::numeric_limits;
+    // make an aabb out of the sector points
+    aabb2 bbox;
 
-    // the range of the map
-    vec2 map_min = vec2{ FLT_MAX,  FLT_MAX };
-    vec2 map_max = vec2{ -FLT_MAX, -FLT_MAX };
-
-    for (auto&& point : points)
+    for (auto&& point : sectors[sector_idx].points)
     {
-      map_min = min(map_min, point);
-      map_max = max(map_max, point);
+      bbox.insert_point(points[point.point_index]);
     }
 
-    constexpr u64 GRID_SIZE = 128;
+    sector_bboxes[sector_idx] = bbox;
+  }
 
-    StatGridAABB2<SectorID> grid;
-    grid.initialize(GRID_SIZE, GRID_SIZE, map_min, map_max);
+  // populate the grid
+  for (SectorID sector_idx = 0; sector_idx < sectors.size(); ++sector_idx)
+  {
+    const auto& bbox = sector_bboxes[sector_idx];
+    nc_assert(bbox.is_valid());
 
-    // calculate bboxes for the visible_sectors
-    std::vector<aabb2> sector_bboxes(sectors.size());
-    for (SectorID sector_idx = 0; sector_idx < sectors.size(); ++sector_idx)
-    {
-      // make an aabb out of the sector points
-      aabb2 bbox;
+    grid.insert(bbox, sector_idx);
+  }
 
-      for (auto&& point : sectors[sector_idx].points)
+  // check visible_sectors overlap
+  for (SectorID sector_idx = 0; sector_idx < sectors.size(); ++sector_idx)
+  {
+    const auto& bbox = sector_bboxes[sector_idx];
+    nc_assert(bbox.is_valid());
+
+    std::set<SectorID> possible_intersection_sectors;
+    grid.query_aabb(bbox, [&](aabb2, const SectorID& sector)->bool
       {
-        bbox.insert_point(points[point.point_index]);
+        if (sector != sector_idx)
+        {
+          possible_intersection_sectors.insert(sector);
+        }
+        return false;
+      });
+
+    for (SectorID other_idx : possible_intersection_sectors)
+    {
+      nc_assert(other_idx != sector_idx);
+
+      const auto& sector1 = sectors[sector_idx];
+      const auto& sector2 = sectors[other_idx];
+
+      nc_assert(sector1.points.size() >= 3);
+      nc_assert(sector2.points.size() >= 3);
+
+      std::vector<vec2> points1, points2;
+      points1.reserve(sector1.points.size());
+      points2.reserve(sector2.points.size());
+
+      auto wb_data_to_point = [&](const WallBuildData& wb)->vec2
+        {
+          return points[wb.point_index];
+        };
+
+      std::transform(
+        sector1.points.begin(),
+        sector1.points.end(),
+        std::back_inserter(points1),
+        wb_data_to_point);
+
+      std::transform(
+        sector2.points.begin(),
+        sector2.points.end(),
+        std::back_inserter(points2),
+        wb_data_to_point);
+
+      if (intersect::convex_convex(points1, points2))
+      {
+        overlap = OverlapInfo
+        {
+          .sector1 = sector_idx,
+          .sector2 = other_idx,
+        };
+        return false;
       }
-
-      sector_bboxes[sector_idx] = bbox;
     }
+  }
 
-    // populate the grid
-    for (SectorID sector_idx = 0; sector_idx < sectors.size(); ++sector_idx)
+  return true;
+}
+
+//==============================================================================
+static void resolve_clockwise_wall_order(SectorBuildData& sector)
+{
+  // just revert the direction of the walls..
+  std::reverse(sector.points.begin(), sector.points.end());
+}
+
+//==============================================================================
+static bool resolve_non_convex_and_clockwise
+(
+  const std::vector<vec2>&      points,
+  std::vector<SectorBuildData>& sectors,
+  NonConvexInfo&                error 
+)
+{
+  for (SectorID sector_id = 0; sector_id < sectors.size(); ++sector_id)
+  {
+    // sum of inner angles
+    f32 degree_sum = 0.0f;
+
+    auto& sector = sectors[sector_id];
+    // If the shape is convex then it will have only counter-clockwise
+    // angles or only clockwise angles
+    u32 counter_clockwise_count = 0;
+    u32 clockwise_count = 0;
+
+    // First, check the counter-clockwise ordering.
+    // We want the points to be in counter clockwise order. This can be
+    // determined by examining the sign of 2D cross product of two wall
+    // directions.
+    // The sign of the cross product should be positive or zero for
+    // clockwise rotated walls.
+    for (u32 curr_index = 0; curr_index < sector.points.size(); ++curr_index)
     {
-      const auto& bbox = sector_bboxes[sector_idx];
-      nc_assert(bbox.is_valid());
+      u32 next_index = (curr_index + 1) % sector.points.size();
+      u32 third_index = (next_index + 1) % sector.points.size();
 
-      grid.insert(bbox, sector_idx);
-    }
+      const auto& p1 = points[sector.points[curr_index].point_index];
+      const auto& p2 = points[sector.points[next_index].point_index];
+      const auto& p3 = points[sector.points[third_index].point_index];
 
-    // check visible_sectors overlap
-    for (SectorID sector_idx = 0; sector_idx < sectors.size(); ++sector_idx)
-    {
-      const auto& bbox = sector_bboxes[sector_idx];
-      nc_assert(bbox.is_valid());
+      const auto p1_to_p2 = p2 - p1;    // first wall direction
+      const auto p2_to_p3 = p3 - p2;    // second wall direction
 
-      std::set<SectorID> possible_intersection_sectors;
-      grid.query_aabb(bbox, [&](aabb2, const SectorID& sector)->bool
-        {
-          if (sector != sector_idx)
-          {
-            possible_intersection_sectors.insert(sector);
-          }
-          return false;
-        });
+      const auto dot_prod = dot(normalize(p1_to_p2), normalize(p2_to_p3));
+      const auto degrees = rad2deg(std::acos(dot_prod));
+      degree_sum += degrees;
 
-      for (SectorID other_idx : possible_intersection_sectors)
+      // By using the 2D cross product we determine if two walls
+      // are counter clockwise or clockwise
+      const f32 sg = sgn(cross(p1_to_p2, p2_to_p3));
+      if (sg < 0.0f)
       {
-        nc_assert(other_idx != sector_idx);
-
-        const auto& sector1 = sectors[sector_idx];
-        const auto& sector2 = sectors[other_idx];
-
-        nc_assert(sector1.points.size() >= 3);
-        nc_assert(sector2.points.size() >= 3);
-
-        std::vector<vec2> points1, points2;
-        points1.reserve(sector1.points.size());
-        points2.reserve(sector2.points.size());
-
-        auto wb_data_to_point = [&](const WallBuildData& wb)->vec2
-          {
-            return points[wb.point_index];
-          };
-
-        std::transform(
-          sector1.points.begin(),
-          sector1.points.end(),
-          std::back_inserter(points1),
-          wb_data_to_point);
-
-        std::transform(
-          sector2.points.begin(),
-          sector2.points.end(),
-          std::back_inserter(points2),
-          wb_data_to_point);
-
-        if (intersect::convex_convex(points1, points2))
-        {
-          overlap = OverlapInfo
-          {
-            .sector1 = sector_idx,
-            .sector2 = other_idx,
-          };
-          return false;
-        }
+        // this angle between two walls is
+        clockwise_count += 1;
       }
-    }
-
-    return true;
-  }
-
-  //==============================================================================
-  static void resolve_clockwise_wall_order(SectorBuildData& sector)
-  {
-    // just revert the direction of the walls..
-    std::reverse(sector.points.begin(), sector.points.end());
-  }
-
-  //==============================================================================
-  static bool resolve_non_convex_and_clockwise(
-    const std::vector<vec2>& points,
-    std::vector<SectorBuildData>& sectors,
-    NonConvexInfo& error)    // we might add or modify this
-  {
-    for (SectorID sector_id = 0; sector_id < sectors.size(); ++sector_id)
-    {
-      // sum of inner angles
-      f32 degree_sum = 0.0f;
-
-      auto& sector = sectors[sector_id];
-      // If the shape is convex then it will have only counter-clockwise
-      // angles or only clockwise angles
-      u32 counter_clockwise_count = 0;
-      u32 clockwise_count = 0;
-
-      // First, check the counter-clockwise ordering.
-      // We want the points to be in counter clockwise order. This can be
-      // determined by examining the sign of 2D cross product of two wall
-      // directions.
-      // The sign of the cross product should be positive or zero for
-      // clockwise rotated walls.
-      for (u32 curr_index = 0; curr_index < sector.points.size(); ++curr_index)
+      else if (sg > 0.0f)
       {
-        u32 next_index = (curr_index + 1) % sector.points.size();
-        u32 third_index = (next_index + 1) % sector.points.size();
-
-        const auto& p1 = points[sector.points[curr_index].point_index];
-        const auto& p2 = points[sector.points[next_index].point_index];
-        const auto& p3 = points[sector.points[third_index].point_index];
-
-        const auto p1_to_p2 = p2 - p1;    // first wall direction
-        const auto p2_to_p3 = p3 - p2;    // second wall direction
-
-        const auto dot_prod = dot(normalize(p1_to_p2), normalize(p2_to_p3));
-        const auto degrees = rad2deg(std::acos(dot_prod));
-        degree_sum += degrees;
-
-        // By using the 2D cross product we determine if two walls
-        // are counter clockwise or clockwise
-        const f32 sg = sgn(cross(p1_to_p2, p2_to_p3));
-        if (sg < 0.0f)
-        {
-          // this angle between two walls is
-          clockwise_count += 1;
-        }
-        else if (sg > 0.0f)
-        {
-          counter_clockwise_count += 1;
-        }
-
-        if (clockwise_count && counter_clockwise_count)
-        {
-          // the shape is non convex, we can stop here..
-          break;
-        }
+        counter_clockwise_count += 1;
       }
 
       if (clockwise_count && counter_clockwise_count)
       {
-        // the sector is non-convex, not good
-        error = NonConvexInfo
-        {
-          .sector = sector_id,
-        };
-        return false;
-      }
-
-      // 1/4 degree to account for float inaccuracies
-      constexpr f32 MAX_DEGREE_DIFF = 0.25f;
-      const auto degree_diff = std::abs(degree_sum - 360.0f);
-      if (degree_diff > MAX_DEGREE_DIFF)
-      {
-        // the sector is apparently degenerated
-        error = NonConvexInfo
-        {
-          .sector = sector_id,
-        };
-        return false;
-      }
-
-      if (clockwise_count)
-      {
-        // The sector is ok, just the walls have incorrect ordering..
-        // Rotate the walls around so that they are in a
-        // counter clockwise order
-        resolve_clockwise_wall_order(sector);
+        // the shape is non convex, we can stop here..
+        break;
       }
     }
 
-    return true;
-  }
-
-  //==============================================================================
-  static std::tuple<vec3, f32, vec3> compute_pos_rotation_scale(
-    const MapSectors& map,
-    SectorID sector_id,
-    WallID wall_id
-  )
-  {
-    // TODO: replace these later once we can do visible_sectors with varying height
-    constexpr f32 FLOOR_Y = 0.0f;
-    constexpr f32 CEIL_Y = 1.5f;
-
-    const WallID next_wall = map_helpers::next_wall(map, sector_id, wall_id);
-    const vec2 position1 = map.walls[wall_id].pos;
-    const vec2 position2 = map.walls[next_wall].pos;
-
-    const vec2 center_2d = (position1 + position2) * 0.5f;
-    const vec3 center = vec3(center_2d.x, FLOOR_Y + (CEIL_Y - FLOOR_Y) / 2.0f, center_2d.y);
-
-    const vec2 direction = normalize(position2 - position1);
-    const f32  angle = atan2(direction.y, -direction.x);
-
-    const f32 width = length(position2 - position1);
-    const f32 height = CEIL_Y - FLOOR_Y;
-    const vec3 scale = vec3(width, height, 1.0f);
-
-    return { center, angle, scale };
-  }
-
-  //==============================================================================
-  static void compute_portal_render_data(MapSectors& map)
-  {
-    for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)
+    if (clockwise_count && counter_clockwise_count)
     {
-      map.for_each_portal_of_sector(sector_id, [&](WallID wall_id)
+      // the sector is non-convex, not good
+      error = NonConvexInfo
+      {
+        .sector = sector_id,
+      };
+      return false;
+    }
+
+    // 1/4 degree to account for float inaccuracies
+    constexpr f32 MAX_DEGREE_DIFF = 0.25f;
+    const auto degree_diff = std::abs(degree_sum - 360.0f);
+    if (degree_diff > MAX_DEGREE_DIFF)
+    {
+      // the sector is apparently degenerated
+      error = NonConvexInfo
+      {
+        .sector = sector_id,
+      };
+      return false;
+    }
+
+    if (clockwise_count)
+    {
+      // The sector is ok, just the walls have incorrect ordering..
+      // Rotate the walls around so that they are in a
+      // counter clockwise order
+      resolve_clockwise_wall_order(sector);
+    }
+  }
+
+  return true;
+}
+
+//==============================================================================
+static std::tuple<vec3, f32, vec3> compute_pos_rotation_scale
+(
+  const MapSectors& map,
+  SectorID          sector_id,
+  WallID            wall_id
+)
+{
+  f32 floor_height = map.sectors[sector_id].floor_height;
+  f32 ceil_height  = map.sectors[sector_id].ceil_height;
+
+  f32 above_floor = 0.0f, above_ceil = 0.0f;
+  map.calc_step_height_of_portal(sector_id, wall_id, &above_floor, &above_ceil);
+  above_floor = max(above_floor, 0.0f);
+  above_ceil  = min(above_ceil,  0.0f);
+  f32 portal_start_y = floor_height + above_floor;
+  f32 portal_end_y   = ceil_height  + above_ceil;
+
+  const WallID next_wall = map_helpers::next_wall(map, sector_id, wall_id);
+  const vec2 position1 = map.walls[wall_id].pos;
+  const vec2 position2 = map.walls[next_wall].pos;
+
+  const vec2 center_2d = (position1 + position2) * 0.5f;
+  const vec3 center = vec3(center_2d.x, (portal_start_y + portal_end_y) * 0.5f, center_2d.y);
+
+  const vec2 direction = normalize(position2 - position1);
+  const f32  angle = atan2(direction.y, -direction.x);
+
+  const f32 width = length(position2 - position1);
+  const f32 height = portal_end_y - portal_start_y;
+  const vec3 scale = vec3(width, height, 1.0f);
+
+  return { center, angle, scale };
+}
+
+//==============================================================================
+static void compute_portal_render_data(MapSectors& map)
+{
+  for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)
+  {
+    map.for_each_portal_of_sector(sector_id, [&](WallID wall_id)
+    {
+      if (map.walls[wall_id].get_portal_type() != PortalType::non_euclidean)
+        return;
+
+      const auto [src_pos, src_rotation, src_scale] = compute_pos_rotation_scale(map, sector_id, wall_id);
+      const mat4 src_transform_no_scale = translate(mat4(1.0f), src_pos) * rotate(mat4(1.0f), src_rotation, VEC3_Y);
+      const mat4 src_transform = src_transform_no_scale * scale(mat4(1.0f), src_scale);
+
+      const SectorID dest_sector_id = map.walls[wall_id].portal_sector_id;
+      const WallRelID dest_rel_wall_id = map.walls[wall_id].nc_portal_wall_id;
+      const WallID dest_wall_id = map_helpers::get_wall_id(map, dest_sector_id, dest_rel_wall_id);
+      const auto [dest_pos, dest_rotation, _] = compute_pos_rotation_scale(map, dest_sector_id, dest_wall_id);
+      const mat4 dest_transform_no_scale = translate(mat4(1.0f), dest_pos) * rotate(mat4(1.0f), dest_rotation, VEC3_Y);
+
+      map.walls[wall_id].render_data_index = static_cast<PortalRenderID>(map.portals_render_data.size());
+      map.portals_render_data.emplace_back(
+        src_rotation,
+        src_pos,
+        src_transform,
+        src_transform_no_scale * rotate(mat4(1.0f), PI, VEC3_Y) * inverse(dest_transform_no_scale)
+      );
+    });
+  }
+}
+
+//==============================================================================
+int build_map
+(
+  const std::vector<vec2>&            points,
+  const std::vector<SectorBuildData>& sectors,
+  MapSectors&                         output,
+  MapBuildFlags                       flags
+)
+{
+  using namespace MapBuildFlag;
+
+  // TODO: check if there are not too many walls, portals or walls within a sector
+  nc_assert(sectors.size() <= MAX_SECTORS);
+
+  output.sectors.clear();
+  output.walls.clear();
+
+  // list of visible_sectors for each point
+  std::vector<std::vector<SectorID>> points_to_sectors;
+  points_to_sectors.resize(points.size());
+
+  // copy of the original visible_sectors
+  auto temp_sectors = sectors;
+
+  [[maybe_unused]] const bool assert_on_check_fail = flags & assert_on_fail;
+
+  const bool do_convexity_check = !(flags & omit_convexity_clockwise_check);
+  const bool do_overlap_check = !(flags & omit_sector_overlap_check);
+
+  // Check for point and sector count
+  u64 MAX_U16 = static_cast<u16>(-1);
+  nc_assert(points.size() < MAX_U16);
+  nc_assert(sectors.size() < MAX_U16);
+
+  // Check for non convex and non-clockwise order visible_sectors
+  if (do_convexity_check)
+  {
+    if (NonConvexInfo oi; !resolve_non_convex_and_clockwise(points, temp_sectors, oi))
+    {
+      nc_assert(!assert_on_check_fail);
+      return false;
+    }
+  }
+
+  // Check for sector overlaps
+  if (do_overlap_check)
+  {
+    if (OverlapInfo oi; !check_for_sector_overlaps(points, temp_sectors, oi))
+    {
+      nc_assert(!assert_on_check_fail);
+      return false;
+    }
+  }
+
+  // store which points are used by which visible_sectors
+  for (u64 i = 0; i < temp_sectors.size(); ++i)
+  {
+    for (auto&& wall : temp_sectors[i].points)
+    {
+      points_to_sectors[wall.point_index].push_back(static_cast<u16>(i));
+    }
+  }
+
+  // find portal walls and store them
+  for (SectorID sector_id = 0; sector_id < temp_sectors.size(); ++sector_id)
+  {
+    auto&& sector = temp_sectors[sector_id];
+    auto& output_sector = output.sectors.emplace_back();
+    output_sector.floor_height = sector.floor_y;
+    output_sector.ceil_height = sector.ceil_y;
+    output_sector.floor_surface = sector.floor_surface;
+    output_sector.ceil_surface = sector.ceil_surface;
+
+    const u32 total_wall_count = static_cast<u32>(sector.points.size());
+
+    output_sector.int_data.first_wall = static_cast<WallID>(output.walls.size());
+    output_sector.int_data.last_wall = static_cast<WallID>(
+      output_sector.int_data.first_wall + total_wall_count);
+
+    // cycle through all walls and push them into the array
+    nc_assert(sector.points.size() <= MAX_WALLS_PER_SECTOR);
+    for (WallRelID wall_index = 0; wall_index < sector.points.size(); ++wall_index)
+    {
+      u16 next_wall_index = (wall_index + 1) % sector.points.size();
+      u16 point_index = sector.points[wall_index].point_index;
+      u16 next_point_index = sector.points[next_wall_index].point_index;
+
+      auto& neighbor_sectors_of_p1 = points_to_sectors[point_index];
+      SectorID portal_with = INVALID_SECTOR_ID;
+
+      // Find if this is a portal wall. We do this by checking if there is any other sector
+      // that has a wall on the same made of the same vertices
+      for (const u16 used_sector_id : neighbor_sectors_of_p1)
+      {
+        if (used_sector_id == sector_id)
         {
-          if (map.walls[wall_id].get_portal_type() != PortalType::non_euclidean)
-            return;
+          // this is us
+          continue;
+        }
 
-          const auto [src_pos, src_rotation, src_scale] = compute_pos_rotation_scale(map, sector_id, wall_id);
-          const mat4 src_transform_no_scale = translate(mat4(1.0f), src_pos) * rotate(mat4(1.0f), src_rotation, VEC3_Y);
-          const mat4 src_transform = src_transform_no_scale * scale(mat4(1.0f), src_scale);
+        auto& neighbor_sectors_of_p2 = points_to_sectors[next_point_index];
+        const auto& b = neighbor_sectors_of_p2.begin();
+        const auto& e = neighbor_sectors_of_p2.end();
+        const bool whole_wall = std::find(b, e, used_sector_id) != e;
+        if (whole_wall)
+        {
+          portal_with = used_sector_id;
+          break;
+        }
+      }
 
-          const SectorID dest_sector_id = map.walls[wall_id].portal_sector_id;
-          const WallRelID dest_rel_wall_id = map.walls[wall_id].nc_portal_wall_id;
-          const WallID dest_wall_id = map_helpers::get_wall_id(map, dest_sector_id, dest_rel_wall_id);
-          const auto [dest_pos, dest_rotation, _] = compute_pos_rotation_scale(map, dest_sector_id, dest_wall_id);
-          const mat4 dest_transform_no_scale = translate(mat4(1.0f), dest_pos) * rotate(mat4(1.0f), dest_rotation, VEC3_Y);
+      // Check if this is not a nuclidean portal..
+      const auto nuclidean_sector_id = sector.points[wall_index].nc_portal_sector_index;
+      const bool is_nuclidean_portal = nuclidean_sector_id != INVALID_SECTOR_ID;
+      WallRelID nuclidean_wall_rel_idx = INVALID_WALL_REL_ID;
+      if (is_nuclidean_portal)
+      {
+        if (portal_with != INVALID_SECTOR_ID)
+        {
+          // This happens if the portal is both nuclidean and non-nuclidean..
+          // We do not allow this
+          nc_assert(!assert_on_check_fail);
+          return false;
+        }
 
-          map.walls[wall_id].render_data_index = static_cast<PortalRenderID>(map.portals_render_data.size());
-          map.portals_render_data.emplace_back(
-            src_rotation,
-            src_pos,
-            src_transform,
-            src_transform_no_scale * rotate(mat4(1.0f), PI, VEC3_Y) * inverse(dest_transform_no_scale)
-          );
+        portal_with = nuclidean_sector_id;
+        nuclidean_wall_rel_idx = sector.points[wall_index].nc_portal_point_index;
+      }
+
+      // Add a new wall
+      output.walls.push_back(WallData
+        {
+          .pos = points[point_index],
+          .portal_sector_id = portal_with,
+          .nc_portal_wall_id = nuclidean_wall_rel_idx,
+          .surface = sector.points[wall_index].surface,
         });
     }
   }
 
-  //==============================================================================
-  int build_map(
-    const std::vector<vec2>& points,
-    const std::vector<SectorBuildData>& sectors,
-    MapSectors& output,
-    MapBuildFlags                       flags)
-  {
-    using namespace MapBuildFlag;
+  // now, there should be the same number of visible_sectors in the output as on the input
+  nc_assert(output.sectors.size() == sectors.size());
 
-    // TODO: check if there are not too many walls, portals or walls within a sector
-    nc_assert(sectors.size() <= MAX_SECTORS);
-
-    output.sectors.clear();
-    output.walls.clear();
-
-    // list of visible_sectors for each point
-    std::vector<std::vector<SectorID>> points_to_sectors;
-    points_to_sectors.resize(points.size());
-
-    // copy of the original visible_sectors
-    auto temp_sectors = sectors;
-
-    [[maybe_unused]] const bool assert_on_check_fail = flags & assert_on_fail;
-
-    const bool do_convexity_check = !(flags & omit_convexity_clockwise_check);
-    const bool do_overlap_check = !(flags & omit_sector_overlap_check);
-
-    // Check for point and sector count
-    u64 MAX_U16 = static_cast<u16>(-1);
-    nc_assert(points.size() < MAX_U16);
-    nc_assert(sectors.size() < MAX_U16);
-
-    // Check for non convex and non-clockwise order visible_sectors
-    if (do_convexity_check)
-    {
-      if (NonConvexInfo oi; !resolve_non_convex_and_clockwise(points, temp_sectors, oi))
-      {
-        nc_assert(!assert_on_check_fail);
-        return false;
-      }
-    }
-
-    // Check for sector overlaps
-    if (do_overlap_check)
-    {
-      if (OverlapInfo oi; !check_for_sector_overlaps(points, temp_sectors, oi))
-      {
-        nc_assert(!assert_on_check_fail);
-        return false;
-      }
-    }
-
-    // store which points are used by which visible_sectors
-    for (u64 i = 0; i < temp_sectors.size(); ++i)
-    {
-      for (auto&& wall : temp_sectors[i].points)
-      {
-        points_to_sectors[wall.point_index].push_back(static_cast<u16>(i));
-      }
-    }
-
-    // find portal walls and store them
-    for (SectorID sector_id = 0; sector_id < temp_sectors.size(); ++sector_id)
-    {
-      auto&& sector = temp_sectors[sector_id];
-      auto& output_sector = output.sectors.emplace_back();
-      output_sector.floor_height = sector.floor_y;
-      output_sector.ceil_height = sector.ceil_y;
-      output_sector.floor_surface = sector.floor_surface;
-      output_sector.ceil_surface = sector.ceil_surface;
-
-      const u32 total_wall_count = static_cast<u32>(sector.points.size());
-
-      output_sector.int_data.first_wall = static_cast<WallID>(output.walls.size());
-      output_sector.int_data.last_wall = static_cast<WallID>(
-        output_sector.int_data.first_wall + total_wall_count);
-
-      // cycle through all walls and push them into the array
-      nc_assert(sector.points.size() <= MAX_WALLS_PER_SECTOR);
-      for (WallRelID wall_index = 0; wall_index < sector.points.size(); ++wall_index)
-      {
-        u16 next_wall_index = (wall_index + 1) % sector.points.size();
-        u16 point_index = sector.points[wall_index].point_index;
-        u16 next_point_index = sector.points[next_wall_index].point_index;
-
-        auto& neighbor_sectors_of_p1 = points_to_sectors[point_index];
-        SectorID portal_with = INVALID_SECTOR_ID;
-
-        // Find if this is a portal wall. We do this by checking if there is any other sector
-        // that has a wall on the same made of the same vertices
-        for (const u16 used_sector_id : neighbor_sectors_of_p1)
-        {
-          if (used_sector_id == sector_id)
-          {
-            // this is us
-            continue;
-          }
-
-          auto& neighbor_sectors_of_p2 = points_to_sectors[next_point_index];
-          const auto& b = neighbor_sectors_of_p2.begin();
-          const auto& e = neighbor_sectors_of_p2.end();
-          const bool whole_wall = std::find(b, e, used_sector_id) != e;
-          if (whole_wall)
-          {
-            portal_with = used_sector_id;
-            break;
-          }
-        }
-
-        // Check if this is not a nuclidean portal..
-        const auto nuclidean_sector_id = sector.points[wall_index].nc_portal_sector_index;
-        const bool is_nuclidean_portal = nuclidean_sector_id != INVALID_SECTOR_ID;
-        WallRelID nuclidean_wall_rel_idx = INVALID_WALL_REL_ID;
-        if (is_nuclidean_portal)
-        {
-          if (portal_with != INVALID_SECTOR_ID)
-          {
-            // This happens if the portal is both nuclidean and non-nuclidean..
-            // We do not allow this
-            nc_assert(!assert_on_check_fail);
-            return false;
-          }
-
-          portal_with = nuclidean_sector_id;
-          nuclidean_wall_rel_idx = sector.points[wall_index].nc_portal_point_index;
-        }
-
-        // Add a new wall
-        output.walls.push_back(WallData
-          {
-            .pos = points[point_index],
-            .portal_sector_id = portal_with,
-            .nc_portal_wall_id = nuclidean_wall_rel_idx,
-            .surface = sector.points[wall_index].surface,
-          });
-      }
-    }
-
-    // now, there should be the same number of visible_sectors in the output as on the input
-    nc_assert(output.sectors.size() == sectors.size());
-
-    // and finally, build the grid
+  // and finally, build the grid
   build_sector_grid_and_bboxes(output);
 
-    compute_portal_render_data(output);
+  compute_portal_render_data(output);
 
-    return true;
-  }
+  return true;
+}
 
 #ifdef NC_BENCHMARK
 

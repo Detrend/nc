@@ -122,7 +122,6 @@ struct CVars
 {
   static constexpr CVarRange DEFAULT_RANGE = CVarRange{-100.0f, 100.0f};
 
-  static CVars&      get();
   static CVarList&   get_cvar_list();
   static CVarRanges& get_cvar_ranges();
 
