@@ -40,12 +40,14 @@
 
 #include <json/json.hpp>
 
+#include <engine/graphics/lights.h>
+
 
 //==============================================================================
 namespace nc::map_helpers
 { 
 
-constexpr cstr JSON_LEVEL_PATH = ".\\content\\levels\\level_test1_025.json";
+constexpr cstr JSON_LEVEL_PATH = ".\\content\\levels\\level_test1.json";
 
 //==============================================================================
 static void test_make_sector_height(
@@ -301,13 +303,18 @@ static WallSurfaceData load_json_wall_surface(const nlohmann::json& js)
     return ret;
 }
 
+static vec3 load_json_position(const nlohmann::json& js, const cstr &field_name = "position") 
+{
+    return load_json_vector<3>(js[field_name]).xzy;
+}
+
 //==============================================================================
-[[maybe_unused]] static void load_json_map(MapSectors& map, SectorMapping& mapping, EntityRegistry& entities, EntityID &player_id)
+[[maybe_unused]] static void load_json_map(MapSectors& map, SectorMapping& mapping, EntityRegistry& entities, EntityID& player_id)
 {
     std::ifstream f(JSON_LEVEL_PATH);
     nc_assert(f.is_open());
     auto data = nlohmann::json::parse(f);
-    
+
 
 
     std::vector<vec2> points;
@@ -333,7 +340,7 @@ static WallSurfaceData load_json_wall_surface(const nlohmann::json& js)
             for (auto&& js_wall_surface : js_sector["wall_surfaces"]) {
                 wall_surfaces.emplace_back(load_json_wall_surface(js_wall_surface));
             }
-        
+
             test_make_sector_height(floor, ceil, point_idxs, sectors, portal_wall, portal_destination_wall, portal_sector, floor_surface, ceiling_surface, wall_surfaces);
         }
     }
@@ -353,11 +360,11 @@ static WallSurfaceData load_json_wall_surface(const nlohmann::json& js)
 
     mapping.on_map_rebuild();
 
-    
+
     for (auto&& js_entity : data["entities"]) {
-        const vec3 position = load_json_vector<3>(js_entity["position"]).xzy;
+        const vec3 position = load_json_position(js_entity);
         const vec3 forward = load_json_vector<3>(js_entity["forward"]).xzy;
-        
+
         if (js_entity["is_player"] == true) {
             auto* player = entities.create_entity<Player>(position, forward);
             player_id = player->get_id();
@@ -369,12 +376,29 @@ static WallSurfaceData load_json_wall_surface(const nlohmann::json& js)
     }
 
     for (auto&& js_pickup : data["pickups"]) {
-        auto& js_position = js_pickup["position"];
-        const vec3 position(js_position[0], js_position[2], js_position[1]);
+        const vec3 position = load_json_position(js_pickup);
         const PickupTypes::evalue pickup_type = static_cast<PickupTypes::evalue>(js_pickup["type"]);
         entities.create_entity<PickUp>(position, pickup_type);
     }
+    for (auto&& js_light : data["directional_lights"]) {
+        //const vec3 position = load_json_position(js_light);
+        const color4 color = load_json_vector<4>(js_light["color"]);
+        const vec3 direction = load_json_vector<3>(js_light["direction"]);
+        const float intensity = js_light["intensity"];
 
+        entities.create_entity<DirectionalLight>(direction, intensity, color);
+    }
+    for (auto&& js_light : data["point_lights"]) {
+        const vec3 position = load_json_position(js_light);
+        const color4 color = load_json_vector<4>(js_light["color"]);
+        const float intensity = js_light["intensity"];
+
+        const float constant = js_light["constant"];
+        const float linear = js_light["linear"];
+        const float quadratic = js_light["quadratic"];
+
+        entities.create_entity<PointLight>(position, intensity, constant, linear, quadratic, color);
+    }
 
 }
 

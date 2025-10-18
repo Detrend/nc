@@ -225,7 +225,7 @@ struct MapSectors
 
   // TODO: replace these later once we can do sectors with varying height
   static constexpr f32 SECTOR_FLOOR_Y   = 0.0f;
-  static constexpr f32 SECTOR_CEILING_Y = 1.5f;
+  static constexpr f32 SECTOR_CEILING_Y = 3.0f;
 
   // TODO: do not use the retarded std::function, find a better alternative
   using TraverseVisitor = std::function<void(SectorID, Frustum2, WallID)>;

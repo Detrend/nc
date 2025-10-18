@@ -15,6 +15,7 @@
 #include <engine/graphics/camera.h>
 #include <engine/graphics/gizmo.h>
 #include <engine/graphics/graphics_system.h>
+#include <engine/graphics/lights.h>
 #include <engine/graphics/resources/res_lifetime.h>
 #include <engine/graphics/resources/texture.h>
 
@@ -233,6 +234,8 @@ bool GraphicsSystem::init()
 }
 
 //==============================================================================
+PointLight* light;
+
 void GraphicsSystem::on_event(ModuleEvent& event)
 {
   switch (event.type)
@@ -250,12 +253,34 @@ void GraphicsSystem::on_event(ModuleEvent& event)
     case ModuleEventType::game_update:
     {
       this->update(event.update.dt);
+
+      // TODO: temporary directional lights (don't forget about lights header)
+      EntityRegistry& registry = ThingSystem::get().get_entities();
+      registry.for_each<Player>([&registry](const Player& player)
+      {
+        const vec3 position = player.get_position();
+        light->set_position(position + vec3(0.0f, 0.5f, 0.0f));
+      });
+
       break;
     }
 
     case ModuleEventType::after_map_rebuild:
     {
       create_sector_meshes();
+
+      // TODO: temporary directional lights (don't forget about lights header)
+      EntityRegistry& registry = ThingSystem::get().get_entities();
+      registry.create_entity<DirectionalLight>(vec3(0.218f, 0.872f, 0.436f), 0.4f, colors::WHITE);
+      registry.create_entity<DirectionalLight>(VEC3_X, 0.8f, colors::RED);
+      registry.create_entity<DirectionalLight>(VEC3_Z, 0.8f, colors::BLUE);
+
+      registry.for_each<Player>([&registry](const Player& player)
+      {
+        const vec3 position = player.get_position();
+        light = registry.create_entity<PointLight>(position, 1.0f, 1.0f,  0.09f, 0.032f, colors::GREEN);
+      });
+
       break;
     }
 

@@ -8,18 +8,22 @@
 #include <math/utils.h>
 #include <math/lingebra.h>
 
-#include <engine/core/engine.h>
-#include <engine/entity/entity_system.h>
-#include <engine/entity/sector_mapping.h>
 #include <engine/graphics/camera.h>
 #include <engine/graphics/gizmo.h>
 #include <engine/graphics/graphics_system.h>
+#include <engine/graphics/lights.h>
+#include <engine/graphics/shaders/shaders.h>
+
+#include <engine/entity/entity_system.h>
+#include <engine/entity/sector_mapping.h>
+#include <engine/entity/entity_type_definitions.h>
+
+#include <engine/core/engine.h>
 #include <engine/map/map_system.h>
 #include <engine/player/thing_system.h>
 #include <engine/appearance.h>
 
-#include <engine/graphics/shaders/shaders.h>
-
+#include <array>
 #include <unordered_set>
 
 namespace nc
@@ -38,19 +42,9 @@ Renderer::Renderer(u32 win_w, u32 win_h)
   const vec2 game_atlas_size = TextureManager::get().get_atlas(ResLifetime::Game).get_size();
   const vec2 level_atlas_size = TextureManager::get().get_atlas(ResLifetime::Level).get_size();
 
-  m_billboard_material.use();
-  m_billboard_material.set_uniform(shaders::billboard::TEXTURE, 0);
-
-  m_light_material.use();
-  m_light_material.set_uniform(shaders::light::G_POSITION, 0);
-  m_light_material.set_uniform(shaders::light::G_NORMAL, 1);
-  m_light_material.set_uniform(shaders::light::G_ALBEDO, 2);
-
   m_sector_material.use();
   m_sector_material.set_uniform(shaders::sector::GAME_ATLAS_SIZE, game_atlas_size);
   m_sector_material.set_uniform(shaders::sector::LEVEL_ATLAS_SIZE, level_atlas_size);
-  m_sector_material.set_uniform(shaders::sector::GAME_TEXTURE_ATLAS, 3);
-  m_sector_material.set_uniform(shaders::sector::LEVEL_TEXTURE_ATLAS, 4);
 
   // setup texture data ssbo
   // TODO: this should be done every time new texture atlas is created
@@ -72,6 +66,29 @@ Renderer::Renderer(u32 win_w, u32 win_h)
     data[i].in_game_atlas = (textures[i].get_lifetime() == ResLifetime::Game ? 1.0f : 0.0f);
   }
   glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(TextureData), data.data(), GL_STATIC_DRAW);
+
+  // setup directional light ssbo
+  glGenBuffers(1, &m_dir_light_ssbo);
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_dir_light_ssbo);
+  glBufferData
+  (
+    GL_SHADER_STORAGE_BUFFER,
+    DirectionalLight::MAX_DIRECTIONAL_LIGHTS * sizeof(DirLightGPU),
+    nullptr,
+    GL_DYNAMIC_DRAW
+  );
+
+  // setup point light ssbo
+  glGenBuffers(1, &m_point_light_ssbo);
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_point_light_ssbo);
+  glBufferData
+  (
+    GL_SHADER_STORAGE_BUFFER,
+    PointLight::MAX_VISIBLE_POINT_LIGHTS * sizeof(PointLightGPU),
+    nullptr,
+    GL_DYNAMIC_DRAW
+  );
+
   glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
@@ -105,6 +122,7 @@ const
     .position = camera->get_position(),
     .view = camera->get_view(),
     .vis_tree = visibility_tree,
+    .portal_dest_to_src = mat4(1.0f),
   };
 
   do_geometry_pass(camera_data, gun_data);
@@ -177,11 +195,20 @@ void Renderer::create_g_buffers(u32 width, u32 height)
   glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
 
   // create g buffers
-  const GLenum attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-  m_g_position = create_g_buffer(GL_RGBA16F, attachments[0], width, height);
-  m_g_normal   = create_g_buffer(GL_RGBA16F, attachments[1], width, height);
-  m_g_albedo   = create_g_buffer(GL_RGBA,    attachments[2], width, height);
-  glDrawBuffers(3, attachments);
+  constexpr std::array<GLenum, 4> attachments =
+  {
+    GL_COLOR_ATTACHMENT0,
+    GL_COLOR_ATTACHMENT1,
+    GL_COLOR_ATTACHMENT2,
+    GL_COLOR_ATTACHMENT3
+  };
+  // TODO: move specular strength to stitched normal g buffer
+  m_g_position        = create_g_buffer(GL_RGBA32F    , attachments[0], width, height);
+  // TODO: merge stitched normals and normals into one g buffer
+  m_g_normal          = create_g_buffer(GL_RGBA8_SNORM, attachments[1], width, height);
+  m_g_stitched_normal = create_g_buffer(GL_RGB8_SNORM , attachments[2], width, height);
+  m_g_albedo          = create_g_buffer(GL_RGBA8      , attachments[3], width, height);
+  glDrawBuffers(static_cast<GLsizei>(attachments.size()), attachments.data());
 
   // create depth-stencil buffer
   GLuint depth_stencil_buffer;
@@ -250,20 +277,103 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  // bind g-bufers
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, m_g_position);
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, m_g_normal);
   glActiveTexture(GL_TEXTURE2);
+  glBindTexture(GL_TEXTURE_2D, m_g_stitched_normal);
+  glActiveTexture(GL_TEXTURE3);
   glBindTexture(GL_TEXTURE_2D, m_g_albedo);
 
+  // bind light ssbos
+  update_light_ssbos();
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_dir_light_ssbo);
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_point_light_ssbo);
+
+  // prepare shader
   m_light_material.use();
   m_light_material.set_uniform(shaders::light::VIEW_POSITION, view_position);
+  m_light_material.set_uniform(shaders::light::NUM_DIR_LIGHTS, m_dir_light_ssbo_size);
+  m_light_material.set_uniform(shaders::light::NUM_POINT_LIGHTS, m_point_light_ssbo_size);
 
+  // draw call
   const MeshHandle screen_quad = MeshManager::get().get_screen_quad();
   glBindVertexArray(screen_quad.get_vao());
   glDrawArrays(screen_quad.get_draw_mode(), 0, screen_quad.get_vertex_count());
+
+  // clean up
   glBindVertexArray(0);
+}
+
+//==============================================================================
+void Renderer::update_light_ssbos() const
+{
+  // TODO: ignore directional lights when indoor
+
+  // get all directional lights
+  std::vector<DirLightGPU> dir_light_data;
+  EntityRegistry& registry = ThingSystem::get().get_entities();
+  registry.for_each<DirectionalLight>([&dir_light_data](DirectionalLight& light)
+  {
+    dir_light_data.push_back(light.get_gpu_data());
+  });
+  m_dir_light_ssbo_size = static_cast<u32>(dir_light_data.size());
+
+  // update directional light ssbo
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_dir_light_ssbo);
+  glBufferSubData
+  (
+    GL_SHADER_STORAGE_BUFFER,
+    0,
+    dir_light_data.size() * sizeof(DirLightGPU),
+    dir_light_data.data()
+  );
+
+  /*
+   * TODO:
+   * - point lights can be even more filtered through compute shader
+   *   - it would divide pixels into groups and do sub-frustrum culling for each group
+   *   - then during lighting pass we get group of current pixel and just iterate all lights which affects current
+   *     group
+   */
+
+  // update point lights ssbo
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_point_light_ssbo);
+  glBufferSubData
+  (
+    GL_SHADER_STORAGE_BUFFER,
+    0,
+    m_point_light_data.size() * sizeof(PointLightGPU),
+    m_point_light_data.data()
+  );
+  m_point_light_ssbo_size = static_cast<u32>(m_point_light_data.size());
+
+  // clean up
+  m_point_light_data.clear();
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+}
+
+//==============================================================================
+void Renderer::append_point_light_data(const CameraData& camera) const
+{
+  const auto& mapping = ThingSystem::get().get_sector_mapping().sectors_to_entities.entities;
+  EntityRegistry& registry = ThingSystem::get().get_entities();
+
+  for (const auto& frustum : camera.vis_tree.sectors)
+  {
+    for (const auto& entity_id : mapping[frustum.sector])
+    {
+      const PointLight* const light = registry.get_entity(entity_id)->as<PointLight>();
+
+      if (light == nullptr)
+        continue;
+
+      const vec3 stiched_position = (inverse(camera.portal_dest_to_src) * vec4(light->get_position(), 1.0f)).xyz;
+      m_point_light_data.push_back(light->get_gpu_data(stiched_position));
+    }
+  }
 }
 
 //==============================================================================
@@ -276,13 +386,14 @@ void Renderer::render_sectors(const CameraData& camera) const
   const auto& level_atlas = TextureManager::get().get_atlas(ResLifetime::Level);
 
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_texture_data_ssbo);
-  glActiveTexture(GL_TEXTURE3);
+  glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, game_atlas.handle);
-  glActiveTexture(GL_TEXTURE4);
+  glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, level_atlas.handle);
 
   m_sector_material.use();
   m_sector_material.set_uniform(shaders::sector::VIEW, camera.view);
+  m_sector_material.set_uniform(shaders::sector::PORTAL_DEST_TO_SRC, camera.portal_dest_to_src);
 
   for (const auto& [sector_id, _] : sectors_to_render)
   {
@@ -377,6 +488,8 @@ static TextureHandle pick_texture_handle_from_appearance
 void Renderer::render_entities(const CameraData& camera) const
 {
   constexpr f32 BILLBOARD_TEXTURE_SCALE = 1.0f / 2048.0f;
+
+  append_point_light_data(camera);
 
   // group entities by texture atlas
   const auto& mapping = ThingSystem::get().get_sector_mapping().sectors_to_entities.entities;
@@ -493,6 +606,7 @@ void Renderer::render_portals(const CameraData& camera) const
       .position   = camera.position,
       .view       = camera.view,
       .vis_tree   = subtree,
+      .portal_dest_to_src = mat4(1.0f),
     };
 
     render_portal(new_camera, render_data, 0);
@@ -647,6 +761,7 @@ void Renderer::render_portal(const CameraData& camera, const Portal& portal, u8 
     .position = camera.position,
     .view = virtual_view,
     .vis_tree = camera.vis_tree,
+    .portal_dest_to_src = camera.portal_dest_to_src * portal.dest_to_src,
   };
 
   render_portal_to_stencil(camera, portal, recursion);
@@ -664,6 +779,7 @@ void Renderer::render_portal(const CameraData& camera, const Portal& portal, u8 
       .position   = virtual_camera_data.position,
       .view       = virtual_camera_data.view,
       .vis_tree   = subtree,
+      .portal_dest_to_src = virtual_camera_data.portal_dest_to_src,
     };
 
     render_portal(new_cam_data, render_data, recursion + 1);
