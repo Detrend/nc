@@ -1,7 +1,7 @@
 // Project Nucledian Source File
 #pragma once
 
-#include <game/item_types.h>
+#include <game/game_types.h>
 #include <engine/sound/sound_types.h>
 
 // Defined as (name, sfx)

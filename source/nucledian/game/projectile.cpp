@@ -13,18 +13,20 @@
 #include <engine/core/engine.h>
 #include <engine/graphics/graphics_system.h>
 
-#include <game/weapons.h>
+#include <game/projectiles.h>
 
 #include <engine/sound/sound_system.h>
 #include <engine/sound/sound_resources.h>
 
 #include <math/lingebra.h>
 
+#include <format>
+
 namespace nc
 {
 
 //==============================================================================
-EntityType Projectile::get_type_static()
+/*static*/ EntityType Projectile::get_type_static()
 {
   return EntityTypes::projectile;
 }
@@ -32,22 +34,28 @@ EntityType Projectile::get_type_static()
 //==============================================================================
 Projectile::Projectile
 (
-  vec3 pos, vec3 dir, EntityID author, WeaponType type
+  vec3 pos, vec3 dir, EntityID author, ProjectileType type
 )
-: Entity            (pos, PROJECTILE_STATS[type].radius, PROJECTILE_STATS[type].radius * 2.0f)
-, m_author          (author)
-, m_velocity        (normalize(dir) * PROJECTILE_STATS[type].speed)
-, m_type            (type)
+: Entity    (pos, PROJECTILE_STATS[type].radius, PROJECTILE_STATS[type].radius * 2.0f)
+, m_author  (author)
+, m_velocity(normalize(dir) * PROJECTILE_STATS[type].speed)
+, m_type    (type)
 {
-  m_hit_cnt_remaining = PROJECTILE_STATS[type].bounce_cnt + 1;
+  using SprMode = Appearance::SpriteMode;
+  const ProjectileStats& stats = PROJECTILE_STATS[type];
+
+  m_hit_cnt_remaining = stats.bounce_cnt + 1;
 
   m_appear = Appearance
   {
-    .sprite   = "plasma_ball",
+    .sprite   = "", // Will be immediately set by the update_appearance below
     .scale    = 30.0f,
     .mode     = Appearance::SpriteMode::mono,
     .rotation = Appearance::RotationMode::full,
   };
+
+  // Set the proper sprite
+  this->update_appearance();
 }
 
 //==============================================================================
@@ -55,6 +63,9 @@ void Projectile::update(f32 dt)
 {
   auto& game = ThingSystem::get();
   auto  lvl  = game.get_level();
+
+  m_lifetime += dt;
+  this->update_appearance();
 
   vec3 position  = this->get_position();
   mat4 transform = identity<mat4>();
@@ -127,6 +138,24 @@ bool Projectile::on_entity_hit(const CollisionHit& hit)
   }
 
   return false;
+}
+
+//==============================================================================
+void Projectile::update_appearance()
+{
+  const auto& stats = PROJECTILE_STATS[this->m_type];
+
+  if (stats.sprite_cnt > 1)
+  {
+    f32 anim_prog  = stats.anim_len ? fmod(m_lifetime, stats.anim_len) : 0.0f;
+    u32 sprite_idx = cast<u32>(stats.sprite_cnt * anim_prog);
+    m_appear.sprite = std::format("{}_{}", stats.sprite, sprite_idx);
+  }
+  else
+  {
+    // TODO: is this necessary? How do we avoid this?
+    m_appear.sprite = stats.sprite;
+  }
 }
 
 //==============================================================================

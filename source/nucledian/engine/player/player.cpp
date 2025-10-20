@@ -407,7 +407,7 @@ void Player::do_attack()
     // Spawn projectile
     entity_system.create_entity<Projectile>
     (
-      from, dir, this->get_id(), weapon
+      from, dir, this->get_id(), WEAPON_STATS[weapon].projectile
     );
   }
 

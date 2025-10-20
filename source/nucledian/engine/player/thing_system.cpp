@@ -26,6 +26,7 @@
 #include <game/weapons.h>
 #include <game/item.h>
 #include <game/item_resources.h> // PickupTypes::...
+#include <game/enemies.h>        // EnemyTypes::...
 
 #include <common.h>
 #include <cvars.h>
@@ -371,7 +372,7 @@ static vec3 load_json_position(const nlohmann::json& js, const cstr &field_name 
         }
         else {
             // Beware that these fuckers can shoot you even if you do not see them and therefore kill you during the normal level testing.
-            entities.create_entity<Enemy>(position, forward);
+            entities.create_entity<Enemy>(position, forward, EnemyTypes::cultist);
         }
     }
 

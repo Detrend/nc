@@ -6,7 +6,7 @@
 #include <engine/entity/entity.h>
 #include <engine/graphics/camera.h>
 
-#include <game/weapons_types.h>
+#include <game/game_types.h>
 #include <engine/entity/entity_types.h>
 
 #include <math/vector.h>

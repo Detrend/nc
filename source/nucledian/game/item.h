@@ -4,7 +4,7 @@
 #include <types.h>       // f32
 #include <math/vector.h> // vec3
 
-#include <game/item_types.h> // PickupType
+#include <game/game_types.h> // PickupType
 
 #include <engine/entity/entity.h>
 #include <engine/appearance.h>

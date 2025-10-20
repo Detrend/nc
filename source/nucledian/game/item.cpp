@@ -24,7 +24,7 @@ PickUp::PickUp(vec3 position, PickupType my_type)
   appear = Appearance
   {
     .sprite = texture_name,
-    .scale  = 1.0f,
+    .scale  = 2.0f,
     .mode   = Appearance::SpriteMode::mono,
   };
 }

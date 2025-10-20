@@ -10,7 +10,7 @@
 #include <engine/core/engine_module_id.h>
 #include <engine/graphics/resources/model.h>
 
-#include <game/weapons_types.h>
+#include <game/game_types.h>
 
 #include <vector>
 #include <string>

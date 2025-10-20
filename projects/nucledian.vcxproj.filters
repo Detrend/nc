@@ -52,6 +52,9 @@
     <ClCompile Include="..\source\libs\imgui\implot_demo.cpp" />
     <ClCompile Include="..\source\libs\imgui\implot_items.cpp" />
     <ClCompile Include="..\source\nucledian\profiling.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\graphics\lights.cpp" />
+    <ClCompile Include="..\source\nucledian\game\projectiles.cpp" />
+    <ClCompile Include="..\source\nucledian\game\enemies.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -105,7 +108,6 @@
     <ClInclude Include="..\source\nucledian\engine\graphics\renderer.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\texture.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\texture_id.h" />
-    <ClInclude Include="..\source\nucledian\engine\lights\light.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
     <ClInclude Include="..\source\nucledian\engine\map\physics.h" />
     <ClInclude Include="..\source\nucledian\engine\player\level_types.h" />
@@ -116,9 +118,7 @@
     <ClInclude Include="..\source\nucledian\game\item_resources.h" />
     <ClInclude Include="..\source\nucledian\engine\ui\ui_texture.h" />
     <ClInclude Include="..\source\nucledian\engine\ui\user_interface_module.h" />
-    <ClInclude Include="..\source\nucledian\game\item_types.h" />
     <ClInclude Include="..\source\nucledian\game\projectile.h" />
-    <ClInclude Include="..\source\nucledian\game\weapons_types.h" />
     <ClInclude Include="..\source\nucledian\logging.h" />
     <ClInclude Include="..\source\nucledian\metaprogramming.h" />
     <ClInclude Include="..\source\nucledian\stack_allocator.h" />
@@ -164,6 +164,10 @@
     <ClInclude Include="..\source\nucledian\profiling.h" />
     <ClInclude Include="..\source\libs\imgui\implot.h" />
     <ClInclude Include="..\source\libs\imgui\implot_internal.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\lights.h" />
+    <ClInclude Include="..\source\nucledian\game\projectiles.h" />
+    <ClInclude Include="..\source\nucledian\game\game_types.h" />
+    <ClInclude Include="..\source\nucledian\game\enemies.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />

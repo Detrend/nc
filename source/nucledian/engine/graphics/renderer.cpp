@@ -238,7 +238,7 @@ void Renderer::recompute_projection(u32 width, u32 height, f32 fov)
   // small will result in losing a lot of depth buffer precision in the long
   // distance, which causes a flicering.
   constexpr f32 NEAR = 0.001f;
-  constexpr f32 FAR  = 64.0f;
+  constexpr f32 FAR  = 128.0f;
   m_default_projection = perspective(fov, aspect, NEAR, FAR);
 
   m_solid_material.use();

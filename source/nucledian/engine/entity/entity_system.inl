@@ -36,7 +36,7 @@ void EntityRegistry::for_each(EntityTypeMask types, L lambda)
 template<typename T, typename L>
 void EntityRegistry::for_each(L lambda)
 {
-  this->for_each(1ull << T::get_type_static(), [&](Entity& entity)
+  this->for_each(EntityTypeToMask(T::get_type_static()), [&](Entity& entity)
   {
     lambda(*static_cast<T*>(&entity));
   });

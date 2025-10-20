@@ -9,8 +9,9 @@
 #include <engine/map/physics.h>
 #include <engine/entity/entity_system.h>
 
-#include <game/weapons.h>
+#include <game/projectiles.h> // ProjectileTypes
 #include <game/projectile.h>
+#include <game/enemies.h>     // ENEMY_STATS
 
 #include <math/lingebra.h>
 #include <math/utils.h>
@@ -33,15 +34,11 @@
 namespace nc
 {
 
+// These are the same for all enemies
 constexpr f32 SPOT_DISTANCE         = 1.0f;  // Player will get spotted if closer
 constexpr f32 ENEMY_FOV_DEG         = 45.0f; // Field of view
 constexpr f32 TARGET_STOP_DISTANCE  = 1.0f;  // How far do we keep from the target
 constexpr f32 PATH_POINT_ERASE_DIST = 0.25f; // Removes the path point if this close
-constexpr f32 ATTACK_DELAY_MIN      = 3.0f;
-constexpr f32 ATTACK_DELAY_MAX      = 8.0f;
-
-constexpr f32 ENEMY_HEIGHT = 2.5f;
-constexpr f32 ENEMY_RADIUS = 1.0f;
 
 //==============================================================================
 static f32 random_range(f32 min, f32 max)
@@ -62,19 +59,19 @@ EntityType Enemy::get_type_static()
 }
 
 //==============================================================================
-Enemy::Enemy(vec3 position, vec3 looking_dir)
- : Entity(position, ENEMY_RADIUS, ENEMY_HEIGHT, true)
+Enemy::Enemy(vec3 position, vec3 looking_dir, EnemyType tpe)
+: Entity(position, ENEMY_STATS[tpe].radius, ENEMY_STATS[tpe].height, true)
+ , type(tpe)
  , facing(looking_dir)
- , anim_fsm(AnimStates::idle)
+ , anim_fsm(ActorAnimStates::idle)
 {
-  // TODO: Move somewhere else
-  constexpr int MAX_HEALTH = 60;
+  nc_assert(this->type >= EnemyTypes::cultist && this->type < EnemyTypes::count);
   nc_assert(looking_dir != VEC3_ZERO);
 
   this->facing    = normalize(this->facing);
   this->collision = true;
   this->velocity  = VEC3_ZERO;
-  this->health    = MAX_HEALTH;
+  this->health    = this->get_stats().max_hp;
 
   this->appear = Appearance
   {
@@ -85,11 +82,13 @@ Enemy::Enemy(vec3 position, vec3 looking_dir)
     .pivot     = Appearance::PivotMode::bottom,
   };
 
-  this->anim_fsm.set_state_length(AnimStates::idle,   1.0f);
-  this->anim_fsm.set_state_length(AnimStates::walk,   1.25f);
-  this->anim_fsm.set_state_length(AnimStates::attack, 3.75f);
-  this->anim_fsm.set_state_length(AnimStates::dead,   2.0f);
-  this->anim_fsm.add_trigger(AnimStates::attack, 2.3f, TriggerTypes::trigger_fire);
+  this->anim_fsm.set_state_length(ActorAnimStates::idle,   1.0f);
+  this->anim_fsm.set_state_length(ActorAnimStates::walk,   1.25f);
+  this->anim_fsm.set_state_length(ActorAnimStates::attack, 3.75f);
+  this->anim_fsm.set_state_length(ActorAnimStates::dead,   2.0f);
+  this->anim_fsm.set_state_length(ActorAnimStates::dying,  1.6f);
+
+  this->anim_fsm.add_trigger(ActorAnimStates::attack, 2.3f, TriggerTypes::trigger_fire);
 }
 
 //==============================================================================
@@ -100,11 +99,13 @@ void Enemy::update(f32 delta)
   if (this->state == EnemyAiState::dead)
   {
     this->velocity = VEC3_ZERO;
-    return;
+  }
+  else
+  {
+    this->handle_ai(delta);
+    this->handle_movement(delta);
   }
 
-  this->handle_ai(delta);
-  this->handle_movement(delta);
   this->handle_appearance(delta);
 }
 
@@ -141,60 +142,106 @@ void Enemy::handle_movement(f32 delta)
   mat4 portal_transform = identity<mat4>();
   world.move_character
   (
-    position, this->velocity, portal_transform, delta, ENEMY_HEIGHT,
-    ENEMY_RADIUS, ENEMY_HEIGHT * 0.3f, PhysLevel::COLLIDE_ALL, 0
+    position, this->velocity, portal_transform, delta, this->get_height(),
+    this->get_radius(), this->get_height() * 0.3f, PhysLevel::COLLIDE_ALL, 0
   );
+
+  this->facing = (portal_transform * vec4{this->facing, 0.0f}).xyz();
   this->set_position(position);
 }
 
 //==============================================================================
 void Enemy::handle_appearance(f32 delta)
 {
+  const auto& stats = this->get_stats();
+
   this->appear.direction = this->facing;
 
   using Event   = AnimFSMEvents::evalue;
-  using Trigger = EnemyFSM::Trigger;
-  using State   = EnemyFSM::State;
+  using Trigger = ActorFSM::Trigger;
+  using State   = ActorFSM::State;
 
-  this->anim_fsm.update(delta, [&](Event etype, Trigger ttype, State)
+  bool died = false;
+
+  this->anim_fsm.update(delta, [&](Event etype, Trigger ttype, State /*prev*/)
   {
     // Do nothing here
-    if (etype == Event::trigger && ttype == TriggerTypes::trigger_fire)
+    switch (etype)
     {
-      vec3 dir  = this->facing;
-      vec3 from = this->get_position() + UP_DIR * ENEMY_HEIGHT * 0.7f + dir * 0.3f;
+      // On trigger
+      case Event::trigger:
+      {
+        if (ttype == TriggerTypes::trigger_fire)
+        {
+          vec3 dir  = this->facing;
+          vec3 from = this->get_position() + UP_DIR * stats.height * 0.7f + dir * 0.3f;
 
-      // Fire!
-      auto& game = ThingSystem::get();
-      game.get_entities().create_entity<Projectile>
-      (
-        from, dir, this->get_id(), WeaponTypes::plasma_rifle
-      );
+          // Fire!
+          auto& game = ThingSystem::get();
+          game.get_entities().create_entity<Projectile>
+          (
+            from, dir, this->get_id(), stats.projectile
+          );
+        }
+      }
+      break;
+
+      // On changed state
+      case Event::goto_state:
+      {
+        ActorAnimState new_state = this->anim_fsm.get_state();
+        if (new_state == ActorAnimStates::dead)
+        {
+          // Kill ourselves
+          died = true;
+        }
+      }
+      break;
     }
   });
+
+  if (died)
+  {
+    this->on_dying_anim_end();
+    return;
+  }
 
   // Calculate the correct sprite
   constexpr u64 SPRITE_CNTS[]
   {
-    1,
-    16,
-    45,
-    1,
+    1,  // idle
+    16, // walk
+    45, // attack
+    1,  // dead
+    20, // dying
   };
-  static_assert(ARRAY_LENGTH(SPRITE_CNTS) == AnimStates::count);
+  static_assert(ARRAY_LENGTH(SPRITE_CNTS) == ActorAnimStates::count);
 
   u8   anim_state       = this->anim_fsm.get_state();
   u64  state_sprite_cnt = SPRITE_CNTS[anim_state];
   f32  rel_time         = this->anim_fsm.get_time_relative();
   u64  sprite_idx       = cast<u64>(rel_time * state_sprite_cnt);
-  cstr sprite_sheet     = ANIM_STATES_NAMES[anim_state];
+  cstr sprite_sheet     = ACTOR_ANIM_STATES_NAMES[anim_state];
+  cstr type_name        = ENEMY_TYPE_NAMES[this->type];
 
-  this->appear.sprite = std::format("cultist_{}_{}", sprite_sheet, sprite_idx);
+  this->appear.mode = AnimStateToFlag(anim_state) & this->dir8_states
+    ? Appearance::SpriteMode::dir8
+    : Appearance::SpriteMode::mono;
+
+  this->appear.sprite = std::format
+  (
+    "{}_{}_{}", type_name, sprite_sheet, sprite_idx
+  );
 }
 
 //==============================================================================
 void Enemy::damage(int damage, EntityID from_who)
 {
+  if (this->state == EnemyAiState::dead)
+  {
+    return;
+  }
+
   auto& game = ThingSystem::get();
   Entity* attacker = game.get_entities().get_entity(from_who);
 
@@ -219,6 +266,13 @@ void Enemy::die()
 {
   this->collision = false;
   this->state = EnemyAiState::dead;
+  this->anim_fsm.set_state(ActorAnimStates::dying);
+}
+
+//==============================================================================
+void Enemy::on_dying_anim_end()
+{
+  // Remove the entity (TODO: and replace it with a prop)
   ThingSystem::get().get_entities().destroy_entity(this->get_id());
 }
 
@@ -230,7 +284,7 @@ void Enemy::handle_ai_idle(f32 /*delta*/)
   Player* player = game.get_player();
   this->velocity = VEC3_ZERO;
 
-  anim_fsm.require_state(AnimStates::idle);
+  anim_fsm.require_state(ActorAnimStates::idle);
 
   if (!player)
   {
@@ -273,6 +327,7 @@ void Enemy::handle_ai_alert(f32 delta)
   auto& ecs    = game.get_entities();
   auto& map    = game.get_map();
   auto  lvl    = game.get_level();
+  auto& stats  = this->get_stats();
 
   Entity* target = ecs.get_entity(this->target_id);
   if (!target)
@@ -312,8 +367,8 @@ void Enemy::handle_ai_alert(f32 delta)
   switch (this->anim_fsm.get_state())
   {
     // STANDING or WALKING
-    case AnimStates::idle: [[fallthrough]];
-    case AnimStates::walk:
+    case ActorAnimStates::idle: [[fallthrough]];
+    case ActorAnimStates::walk:
     {
       // Recompute the path if needed
       bool no_path  = current_path.points.empty();
@@ -375,18 +430,21 @@ void Enemy::handle_ai_alert(f32 delta)
       this->velocity.z = final_force.y;
 
       bool is_moving = length(this->velocity.xz()) > 0.1f;
-      AnimStates desired_state = AnimStates::idle;
+      ActorAnimState desired_state = ActorAnimStates::idle;
 
       if (is_moving)
       {
         this->facing = normalize(vec3{final_force.x, 0.0f, final_force.y});
-        desired_state = AnimStates::walk;
+        desired_state = ActorAnimStates::walk;
       }
 
       if (this->can_attack() && this->can_see_target)
       {
-        desired_state = AnimStates::attack;
-        time_until_attack = random_range(ATTACK_DELAY_MIN, ATTACK_DELAY_MAX);
+        desired_state = ActorAnimStates::attack;
+        time_until_attack = random_range
+        (
+          stats.atk_delay_min, stats.atk_delay_max
+        );
       }
 
       if (this->anim_fsm.get_state() != desired_state)
@@ -398,7 +456,7 @@ void Enemy::handle_ai_alert(f32 delta)
     }
 
     // ATTACKING
-    case AnimStates::attack:
+    case ActorAnimStates::attack:
     {
       this->velocity.x = this->velocity.z = 0.0f; // Stand on a spot
       vec2 dir_to_target = normalize_or_zero(this->follow_target_pos.xz() - position_2d);
@@ -441,7 +499,7 @@ bool Enemy::can_see_point(vec3 pt) const
 bool Enemy::can_attack() const
 {
   bool cooldown_ok = this->time_until_attack <= 0.0f;
-  bool state_ok    = anim_fsm.get_state() != AnimStates::attack;
+  bool state_ok    = anim_fsm.get_state() != ActorAnimStates::attack;
   return cooldown_ok && state_ok;
 }
 
@@ -455,6 +513,12 @@ vec3& Enemy::get_velocity()
 const Appearance& Enemy::get_appearance() const
 {
   return this->appear;
+}
+
+//==============================================================================
+const EnemyStats& Enemy::get_stats() const
+{
+  return ENEMY_STATS[this->type];
 }
 
 //==============================================================================
