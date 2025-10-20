@@ -40,6 +40,11 @@ constexpr f32 ENEMY_FOV_DEG         = 45.0f; // Field of view
 constexpr f32 TARGET_STOP_DISTANCE  = 1.0f;  // How far do we keep from the target
 constexpr f32 PATH_POINT_ERASE_DIST = 0.25f; // Removes the path point if this close
 
+// Global only temporaly, this will be set per enemy type.
+constexpr ActorAnimStateFlag dir8_states
+  = ActorAnimStatesFlags::all
+  & ~(ActorAnimStatesFlags::dying | ActorAnimStatesFlags::dead);
+
 //==============================================================================
 static f32 random_range(f32 min, f32 max)
 {
@@ -68,10 +73,12 @@ Enemy::Enemy(vec3 position, vec3 looking_dir, EnemyType tpe)
   nc_assert(this->type >= EnemyTypes::cultist && this->type < EnemyTypes::count);
   nc_assert(looking_dir != VEC3_ZERO);
 
+  const auto& stats = this->get_stats();
+
   this->facing    = normalize(this->facing);
   this->collision = true;
   this->velocity  = VEC3_ZERO;
-  this->health    = this->get_stats().max_hp;
+  this->health    = stats.max_hp;
 
   this->appear = Appearance
   {
@@ -82,13 +89,19 @@ Enemy::Enemy(vec3 position, vec3 looking_dir, EnemyType tpe)
     .pivot     = Appearance::PivotMode::bottom,
   };
 
-  this->anim_fsm.set_state_length(ActorAnimStates::idle,   1.0f);
-  this->anim_fsm.set_state_length(ActorAnimStates::walk,   1.25f);
-  this->anim_fsm.set_state_length(ActorAnimStates::attack, 3.75f);
-  this->anim_fsm.set_state_length(ActorAnimStates::dead,   2.0f);
-  this->anim_fsm.set_state_length(ActorAnimStates::dying,  1.6f);
+  namespace AnimStates = ActorAnimStates;
 
-  this->anim_fsm.add_trigger(ActorAnimStates::attack, 2.3f, TriggerTypes::trigger_fire);
+  for (ActorAnimState s = 0; s < AnimStates::count; ++s)
+  {
+    this->anim_fsm.set_state_length(s, stats.state_sprite_len[s]);
+  }
+
+  this->anim_fsm.add_trigger
+  (
+    AnimStates::attack,
+    stats.attack_frame / cast<f32>(stats.state_sprite_cnt[AnimStates::attack]),
+    TriggerTypes::trigger_fire
+  );
 }
 
 //==============================================================================
@@ -206,25 +219,23 @@ void Enemy::handle_appearance(f32 delta)
     return;
   }
 
-  // Calculate the correct sprite
-  constexpr u64 SPRITE_CNTS[]
-  {
-    1,  // idle
-    16, // walk
-    45, // attack
-    1,  // dead
-    20, // dying
-  };
-  static_assert(ARRAY_LENGTH(SPRITE_CNTS) == ActorAnimStates::count);
-
   u8   anim_state       = this->anim_fsm.get_state();
-  u64  state_sprite_cnt = SPRITE_CNTS[anim_state];
+
+  bool ok_state = anim_state == ActorAnimStates::walk || anim_state == ActorAnimStates::attack;
+  const auto& true_stats = ok_state ? ENEMY_STATS[this->type] : ENEMY_STATS[EnemyTypes::cultist];
+
+  u64  state_sprite_cnt = true_stats.state_sprite_cnt[anim_state];
   f32  rel_time         = this->anim_fsm.get_time_relative();
   u64  sprite_idx       = cast<u64>(rel_time * state_sprite_cnt);
   cstr sprite_sheet     = ACTOR_ANIM_STATES_NAMES[anim_state];
   cstr type_name        = ENEMY_TYPE_NAMES[this->type];
 
-  this->appear.mode = AnimStateToFlag(anim_state) & this->dir8_states
+  if (!ok_state)
+  {
+    type_name = ENEMY_TYPE_NAMES[EnemyTypes::cultist];
+  }
+
+  this->appear.mode = ActorAnimStateToFlag(anim_state) & dir8_states
     ? Appearance::SpriteMode::dir8
     : Appearance::SpriteMode::mono;
 
@@ -414,7 +425,7 @@ void Enemy::handle_ai_alert(f32 delta)
       // too close)
       vec2 target_dir  = target->get_position().xz() - position_2d;
       f32  target_dist = length(target_dir);
-      if (target_dist < TARGET_STOP_DISTANCE)
+      if (target_dist < TARGET_STOP_DISTANCE && !stats.is_melee)
       {
         f32 coeff = 1.0f - target_dist / TARGET_STOP_DISTANCE;
         move_from_target_force = -normalize_or_zero(target_dir) * coeff * 4.0f;
@@ -424,7 +435,7 @@ void Enemy::handle_ai_alert(f32 delta)
       final_force += move_path_force;
       final_force += move_from_target_force;
       final_force += move_from_mates_force;
-      final_force = clamp_length(final_force, 0.0f, 1.0f);
+      final_force = clamp_length(final_force, 0.0f, 1.0f) * stats.move_speed;
 
       this->velocity.x = final_force.x;
       this->velocity.z = final_force.y;
@@ -438,7 +449,7 @@ void Enemy::handle_ai_alert(f32 delta)
         desired_state = ActorAnimStates::walk;
       }
 
-      if (this->can_attack() && this->can_see_target)
+      if (this->can_attack(*target) && this->can_see_target)
       {
         desired_state = ActorAnimStates::attack;
         time_until_attack = random_range
@@ -496,11 +507,25 @@ bool Enemy::can_see_point(vec3 pt) const
 }
 
 //==============================================================================
-bool Enemy::can_attack() const
+bool Enemy::can_attack(const Entity& target) const
 {
   bool cooldown_ok = this->time_until_attack <= 0.0f;
   bool state_ok    = anim_fsm.get_state() != ActorAnimStates::attack;
-  return cooldown_ok && state_ok;
+
+  if (this->get_stats().is_melee)
+  {
+    f32 target_dist = distance
+    (
+      target.get_position().xz(), this->get_position().xz()
+    );
+
+    bool target_dist_ok = target_dist < 2.0f;
+    return target_dist_ok & cooldown_ok & state_ok;
+  }
+  else
+  {
+    return cooldown_ok & state_ok;
+  }
 }
 
 //==============================================================================
