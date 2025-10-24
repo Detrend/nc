@@ -32,6 +32,7 @@ public:
   static ShaderProgramHandle invalid();
 
   void use() const;
+  void dispatch(size_t group_x, size_t group_y, size_t group_z, bool sync) const;
 
 // Shaders should be manipulated only within render system and related classes.
 private:

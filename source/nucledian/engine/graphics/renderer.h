@@ -31,6 +31,13 @@ public:
     const mat4& portal_dest_to_src;
   };
 
+  // The near value has to be very tiny, because otherwise the camera clips into
+  // the portals when traversing through them. On the other hand, making it too
+  // small will result in losing a lot of depth buffer precision in the long
+  // distance, which causes a flicering.
+  static constexpr f32 NEAR = 0.001f;
+  static constexpr f32 FAR = 64.0f;
+
   Renderer(u32 window_w, u32 window_h);
 
   void on_window_resized(u32 new_width, u32 new_height);
@@ -45,19 +52,36 @@ public:
 private:
   using Portal = Portal;
 
-  mat4                 m_default_projection;
+  static constexpr size_t LIGHT_CULLING_TILE_SIZE_X = 16;
+  static constexpr size_t LIGHT_CULLING_TILE_SIZE_Y = 16;
+
+  mat4 m_default_projection;
+  vec2 m_window_size;
+  
   const ShaderProgramHandle m_solid_material;
   const ShaderProgramHandle m_billboard_material;
   const ShaderProgramHandle m_light_material;
   const ShaderProgramHandle m_sector_material;
+  const ShaderProgramHandle m_light_culling_shader;
 
   mutable u32                        m_dir_light_ssbo_size   = 0;
   mutable u32                        m_point_light_ssbo_size = 0;
   mutable std::vector<PointLightGPU> m_point_light_data;
 
   GLuint m_texture_data_ssbo = 0;
+
+  // light pass buffers
+
   GLuint m_dir_light_ssbo    = 0;
   GLuint m_point_light_ssbo  = 0;
+  
+  // light culling buffers
+ 
+  GLuint m_light_index_ssbo  = 0;
+  GLuint m_tile_data_ssbo    = 0;
+  GLuint m_atomic_counter    = 0;
+
+  // g buffers
 
   GLuint m_g_buffer          = 0;
   GLuint m_g_position        = 0;
@@ -65,13 +89,15 @@ private:
   GLuint m_g_stitched_normal = 0;
   GLuint m_g_albedo          = 0;
 
+
   void destroy_g_buffers();
   void create_g_buffers(u32 w, u32 h);
   void recompute_projection(u32 screen_w, u32 screen_h, f32 vertical_fov);
 
   void do_geometry_pass(const CameraData& camera, const RenderGunProperties& gun) const;
+  void do_ligh_culling_pass(const CameraData& camera) const;
   void do_lighting_pass(const vec3& view_position) const;
-  
+
   void update_light_ssbos() const;
   void append_point_light_data(const CameraData& camera) const;
 

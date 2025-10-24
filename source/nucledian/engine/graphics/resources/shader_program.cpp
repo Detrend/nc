@@ -140,6 +140,15 @@ void ShaderProgramHandle::use() const
 }
 
 //==============================================================================
+void ShaderProgramHandle::dispatch(size_t group_x, size_t group_y, size_t group_z, bool sync) const
+{
+  glDispatchCompute(static_cast<GLuint>(group_x), static_cast<GLuint>(group_y), static_cast<GLuint>(group_z));
+
+  if (sync)
+    glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+}
+
+//==============================================================================
 void ShaderProgramHandle::set_uniform(GLint location, const mat4& value) const
 {
   glUniformMatrix4fv(location, 1, GL_FALSE, value_ptr(value));
