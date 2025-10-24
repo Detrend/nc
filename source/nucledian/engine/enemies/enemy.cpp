@@ -2,6 +2,7 @@
 #include <common.h>
 
 #include <engine/enemies/enemy.h>
+#include <engine/graphics/prop.h>
 #include <engine/core/engine.h>
 #include <engine/player/thing_system.h>
 #include <engine/player/player.h>
@@ -283,8 +284,15 @@ void Enemy::die()
 //==============================================================================
 void Enemy::on_dying_anim_end()
 {
-  // Remove the entity (TODO: and replace it with a prop)
-  ThingSystem::get().get_entities().destroy_entity(this->get_id());
+  EntityRegistry& registry = ThingSystem::get().get_entities();
+
+  nc_assert(this->appear.mode == Appearance::SpriteMode::mono);
+  registry.create_entity<Prop>
+  (
+    this->get_position(), this->get_radius(), this->get_height(), this->appear
+  );
+
+  registry.destroy_entity(this->get_id());
 }
 
 //==============================================================================

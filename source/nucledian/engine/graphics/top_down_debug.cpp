@@ -221,6 +221,7 @@ void TopDownDebugRenderer::draw_entities()
     colors::TEAL,   // projectile
     colors::BLACK,  // directional_light (we don't need to see them)
     colors::YELLOW, // point_light
+    colors::PINK,   // prop
   };
   static_assert(ARRAY_LENGTH(ENTITY_TYPE_COLORS) == EntityTypes::count);
 

@@ -73,7 +73,7 @@ template
   typename SectorHitLambda,
   typename EntityHitLambda
 >
-CollisionHit raycast_generic
+static CollisionHit raycast_generic
 (
   const PhysLevel&    world,
   TVec                ray_from,
