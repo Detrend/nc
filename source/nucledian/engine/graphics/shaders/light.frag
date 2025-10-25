@@ -2,6 +2,9 @@ constexpr const char* FRAGMENT_SOURCE = R"(
 
 #version 430 core
 
+#define TILE_SIZE_X 16
+#define TILE_SIZE_Y 16
+
 struct DirLight
 {
     vec3  color;
@@ -19,6 +22,12 @@ struct PointLight
     float quadratic;
 };
 
+struct TileData
+{
+    uint count;
+    uint offset;
+};
+
 in vec2 uv;
 
 out vec4 out_color;
@@ -30,10 +39,12 @@ layout(binding = 3) uniform sampler2D g_albedo;
 
 layout(location = 0) uniform vec3 view_position;
 layout(location = 1) uniform uint num_dir_lights;
-layout(location = 2) uniform uint num_point_lights;
+layout(location = 2) uniform uint num_tiles_x;
 
-layout(std430, binding = 0) buffer dir_lights_buffer { DirLight dir_lights[]; };
-layout(std430, binding = 1) buffer point_light_buffer { PointLight point_lights[]; };
+layout(std430, binding = 0) readonly buffer dir_lights_buffer { DirLight dir_lights[]; };
+layout(std430, binding = 1) readonly buffer point_light_buffer { PointLight point_lights[]; };
+layout(std430, binding = 2) readonly buffer light_index_buffer { uint light_indices[]; };
+layout(std430, binding = 3) readonly buffer tile_data_buffer { TileData tile_data[]; };
 
 void main()
 {
@@ -74,19 +85,27 @@ void main()
   }
   
   // point lights
-  for (int i = 0; i < num_point_lights; i++)
+  uvec2 tile_coords = uvec2(gl_FragCoord.xy) / uvec2(TILE_SIZE_X, TILE_SIZE_Y);
+  uint tile_index = tile_coords.y * num_tiles_x + tile_coords.x;
+
+  TileData data = tile_data[tile_index];
+
+  for (int i = 0; i < data.count; i++)
   {
-    vec3 light_direction = point_lights[i].position - position;
+    uint light_index = light_indices[data.offset + i];
+    PointLight light = point_lights[light_index];
+
+    vec3 light_direction = light.position - position;
     float distance = length(light_direction);
     light_direction = normalize(light_direction);
 
-    float attenuation = 1.0f / (point_lights[i].constant + point_lights[i].linear * distance + point_lights[i].quadratic * (distance * distance));
+    float attenuation = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
     vec3 diffuse = max(dot(stitched_normal, light_direction), 0.0f) * albedo;
 
     vec3 reflect_direction = reflect(-light_direction, stitched_normal);
     vec3 specular = specular_strength * pow(max(dot(view_direction, reflect_direction), 0.0f), shininess) * vec3(1.0f);
 
-    final_color += (diffuse + specular) * point_lights[i].color * point_lights[i].intensity * attenuation;
+    final_color += (diffuse + specular) * light.color * light.intensity * attenuation;
   }
   
   out_color = vec4(final_color, 1.0f);

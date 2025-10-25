@@ -35,6 +35,8 @@ Renderer::Renderer(u32 win_w, u32 win_h)
 , m_billboard_material(shaders::billboard::VERTEX_SOURCE, shaders::billboard::FRAGMENT_SOURCE)
 , m_light_material(shaders::light::VERTEX_SOURCE, shaders::light::FRAGMENT_SOURCE)
 , m_sector_material(shaders::sector::VERTEX_SOURCE, shaders::sector::FRAGMENT_SOURCE)
+, m_light_culling_shader(shaders::light_culling::COMPUTE_SOURCE)
+, m_window_size(win_w, win_h)
 {
   this->create_g_buffers(win_w, win_h);
   this->recompute_projection(win_w, win_h, GraphicsSystem::FOV);
@@ -67,8 +69,36 @@ Renderer::Renderer(u32 win_w, u32 win_h)
   }
   glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(TextureData), data.data(), GL_STATIC_DRAW);
 
+  // setup light culling and light pass buffers
+  
+  const size_t num_tiles_x = (win_w + LIGHT_CULLING_TILE_SIZE_X - 1) / LIGHT_CULLING_TILE_SIZE_X;
+  const size_t num_tiles_y = (win_h + LIGHT_CULLING_TILE_SIZE_Y - 1) / LIGHT_CULLING_TILE_SIZE_Y;
+  const size_t num_tiles = num_tiles_x * num_tiles_y;
+
+  std::array<std::pair<GLuint*, size_t>, 5> buffers
+  {{
+    { &m_dir_light_ssbo, DirectionalLight::MAX_DIRECTIONAL_LIGHTS * sizeof(DirLightGPU) },
+    { &m_point_light_ssbo, PointLight::MAX_VISIBLE_POINT_LIGHTS * sizeof(PointLightGPU) },
+    { &m_light_index_ssbo, PointLight::MAX_LIGHTS_PER_TILE * num_tiles * sizeof(u32) },
+    { &m_tile_data_ssbo, num_tiles * 2 * sizeof(u32) },
+    { &m_atomic_counter, sizeof(u32) },
+  }};
+
+  for (auto&& [buffer, size] : buffers)
+  {
+    glGenBuffers(1, buffer);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, *buffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+  }
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+  //glGenBuffers(1, &m_atomic_counter);
+  //glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, m_atomic_counter);
+  //glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(u32), nullptr, GL_DYNAMIC_DRAW);
+  //glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+
   // setup directional light ssbo
-  glGenBuffers(1, &m_dir_light_ssbo);
+  /*glGenBuffers(1, &m_dir_light_ssbo);
   glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_dir_light_ssbo);
   glBufferData
   (
@@ -76,10 +106,10 @@ Renderer::Renderer(u32 win_w, u32 win_h)
     DirectionalLight::MAX_DIRECTIONAL_LIGHTS * sizeof(DirLightGPU),
     nullptr,
     GL_DYNAMIC_DRAW
-  );
+  );*/
 
   // setup point light ssbo
-  glGenBuffers(1, &m_point_light_ssbo);
+  /*glGenBuffers(1, &m_point_light_ssbo);
   glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_point_light_ssbo);
   glBufferData
   (
@@ -87,9 +117,12 @@ Renderer::Renderer(u32 win_w, u32 win_h)
     PointLight::MAX_VISIBLE_POINT_LIGHTS * sizeof(PointLightGPU),
     nullptr,
     GL_DYNAMIC_DRAW
-  );
+  );*/
 
-  glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+  // setup light culling buffers
+  //glGenBuffers()
+
+  // glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
 //==============================================================================
@@ -126,11 +159,12 @@ const
   };
 
   do_geometry_pass(camera_data, gun_data);
+  do_ligh_culling_pass(camera_data);
   do_lighting_pass(camera_data.position);
 }
 
 //==============================================================================
-const MaterialHandle& Renderer::get_solid_material() const
+const ShaderProgramHandle& Renderer::get_solid_material() const
 {
   return m_solid_material;
 }
@@ -206,7 +240,7 @@ void Renderer::create_g_buffers(u32 width, u32 height)
   m_g_position        = create_g_buffer(GL_RGBA32F    , attachments[0], width, height);
   // TODO: merge stitched normals and normals into one g buffer
   m_g_normal          = create_g_buffer(GL_RGBA8_SNORM, attachments[1], width, height);
-  m_g_stitched_normal = create_g_buffer(GL_RGB8_SNORM , attachments[2], width, height);
+  m_g_stitched_normal = create_g_buffer(GL_RGB8_SNORM, attachments[2], width, height);
   m_g_albedo          = create_g_buffer(GL_RGBA8      , attachments[3], width, height);
   glDrawBuffers(static_cast<GLsizei>(attachments.size()), attachments.data());
 
@@ -237,8 +271,8 @@ void Renderer::recompute_projection(u32 width, u32 height, f32 fov)
   // the portals when traversing through them. On the other hand, making it too
   // small will result in losing a lot of depth buffer precision in the long
   // distance, which causes a flicering.
-  constexpr f32 NEAR = 0.001f;
-  constexpr f32 FAR  = 128.0f;
+  //constexpr f32 NEAR = 0.001f;
+  //constexpr f32 FAR  = 128.0f;
   m_default_projection = perspective(fov, aspect, NEAR, FAR);
 
   m_solid_material.use();
@@ -273,6 +307,38 @@ const
 }
 
 //==============================================================================
+void Renderer::do_ligh_culling_pass(const CameraData& camera) const
+{
+  update_light_ssbos();
+
+  m_light_culling_shader.use();
+
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_point_light_ssbo);
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_light_index_ssbo);
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_tile_data_ssbo);
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_atomic_counter);
+
+  u32 zero = 0;
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_atomic_counter);
+  glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(u32), &zero);
+
+  m_light_culling_shader.set_uniform(shaders::light_culling::VIEW, camera.view);
+  m_light_culling_shader.set_uniform(shaders::light_culling::INV_PROJECTION, inverse(m_default_projection));
+  m_light_culling_shader.set_uniform(shaders::light_culling::WINDOW_SIZE, m_window_size);
+  m_light_culling_shader.set_uniform(shaders::light_culling::FAR_PLANE, FAR);
+  m_light_culling_shader.set_uniform(shaders::light_culling::NUM_LIGHTS, m_point_light_ssbo_size);
+
+  const size_t num_tiles_x = (static_cast<size_t>(m_window_size.x) + LIGHT_CULLING_TILE_SIZE_X - 1)
+    / LIGHT_CULLING_TILE_SIZE_X;
+  const size_t num_tiles_y = (static_cast<size_t>(m_window_size.y) + LIGHT_CULLING_TILE_SIZE_Y - 1) 
+    / LIGHT_CULLING_TILE_SIZE_Y;
+
+  m_light_culling_shader.dispatch(num_tiles_x, num_tiles_y, 1, true);
+
+  // glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+}
+
+//==============================================================================
 void Renderer::do_lighting_pass(const vec3& view_position) const
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -288,15 +354,19 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   glBindTexture(GL_TEXTURE_2D, m_g_albedo);
 
   // bind light ssbos
-  update_light_ssbos();
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_dir_light_ssbo);
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_point_light_ssbo);
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_light_index_ssbo);
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_tile_data_ssbo);
+
+  const size_t num_tiles_x = (static_cast<size_t>(m_window_size.x) + LIGHT_CULLING_TILE_SIZE_X - 1) 
+    / LIGHT_CULLING_TILE_SIZE_X;
 
   // prepare shader
   m_light_material.use();
   m_light_material.set_uniform(shaders::light::VIEW_POSITION, view_position);
   m_light_material.set_uniform(shaders::light::NUM_DIR_LIGHTS, m_dir_light_ssbo_size);
-  m_light_material.set_uniform(shaders::light::NUM_POINT_LIGHTS, m_point_light_ssbo_size);
+  m_light_material.set_uniform(shaders::light::NUM_TILES_X, static_cast<u32>(num_tiles_x));
 
   // draw call
   const MeshHandle screen_quad = MeshManager::get().get_screen_quad();
@@ -310,8 +380,6 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
 //==============================================================================
 void Renderer::update_light_ssbos() const
 {
-  // TODO: ignore directional lights when indoor
-
   // get all directional lights
   std::vector<DirLightGPU> dir_light_data;
   EntityRegistry& registry = ThingSystem::get().get_entities();
@@ -330,14 +398,6 @@ void Renderer::update_light_ssbos() const
     dir_light_data.size() * sizeof(DirLightGPU),
     dir_light_data.data()
   );
-
-  /*
-   * TODO:
-   * - point lights can be even more filtered through compute shader
-   *   - it would divide pixels into groups and do sub-frustrum culling for each group
-   *   - then during lighting pass we get group of current pixel and just iterate all lights which affects current
-   *     group
-   */
 
   // update point lights ssbo
   glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_point_light_ssbo);
@@ -370,7 +430,7 @@ void Renderer::append_point_light_data(const CameraData& camera) const
       if (light == nullptr)
         continue;
 
-      const vec3 stiched_position = (inverse(camera.portal_dest_to_src) * vec4(light->get_position(), 1.0f)).xyz;
+      const vec3 stiched_position = (camera.portal_dest_to_src * vec4(light->get_position(), 1.0f)).xyz;
       m_point_light_data.push_back(light->get_gpu_data(stiched_position));
     }
   }

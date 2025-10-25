@@ -161,7 +161,7 @@ void GizmoManager::draw_gizmos() const
   if (camera == nullptr)
     return;
 
-  const MaterialHandle& solid_material = graphics_system.get_solid_material();
+  const ShaderProgramHandle& solid_material = graphics_system.get_solid_material();
   solid_material.use();
   solid_material.set_uniform(shaders::solid::VIEW, camera->get_view());
 
