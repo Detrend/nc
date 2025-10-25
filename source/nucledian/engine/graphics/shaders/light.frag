@@ -43,9 +43,8 @@ layout(location = 2) uniform uint num_tiles_x;
 
 layout(std430, binding = 0) readonly buffer dir_lights_buffer { DirLight dir_lights[]; };
 layout(std430, binding = 1) readonly buffer point_light_buffer { PointLight point_lights[]; };
-layout(std430, binding = 2) readonly buffer light_index_buffer { uint indices[]; };
+layout(std430, binding = 2) readonly buffer light_index_buffer { uint light_indices[]; };
 layout(std430, binding = 3) readonly buffer tile_data_buffer { TileData tile_data[]; };
-
 
 void main()
 {
@@ -86,14 +85,14 @@ void main()
   }
   
   // point lights
-  ivec2 tile_coords = ivec2(gl_FragCoord.xy) / ivec2(TILE_SIZE_X, TILE_SIZE_Y);
+  uvec2 tile_coords = uvec2(gl_FragCoord.xy) / uvec2(TILE_SIZE_X, TILE_SIZE_Y);
   uint tile_index = tile_coords.y * num_tiles_x + tile_coords.x;
 
   TileData data = tile_data[tile_index];
 
   for (int i = 0; i < data.count; i++)
   {
-    uint light_index = indices[data.offset + i];
+    uint light_index = light_indices[data.offset + i];
     PointLight light = point_lights[light_index];
 
     vec3 light_direction = light.position - position;

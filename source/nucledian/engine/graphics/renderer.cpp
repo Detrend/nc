@@ -73,14 +73,14 @@ Renderer::Renderer(u32 win_w, u32 win_h)
   
   const size_t num_tiles_x = (win_w + LIGHT_CULLING_TILE_SIZE_X - 1) / LIGHT_CULLING_TILE_SIZE_X;
   const size_t num_tiles_y = (win_h + LIGHT_CULLING_TILE_SIZE_Y - 1) / LIGHT_CULLING_TILE_SIZE_Y;
-  const size_t tile_index_ssbo_size = num_tiles_x * num_tiles_y;
+  const size_t num_tiles = num_tiles_x * num_tiles_y;
 
   std::array<std::pair<GLuint*, size_t>, 5> buffers
   {{
     { &m_dir_light_ssbo, DirectionalLight::MAX_DIRECTIONAL_LIGHTS * sizeof(DirLightGPU) },
     { &m_point_light_ssbo, PointLight::MAX_VISIBLE_POINT_LIGHTS * sizeof(PointLightGPU) },
-    { &m_light_index_ssbo, PointLight::MAX_VISIBLE_POINT_LIGHTS * sizeof(u32) },
-    { &m_tile_data_ssbo, tile_index_ssbo_size * 2 * sizeof(u32) },
+    { &m_light_index_ssbo, PointLight::MAX_LIGHTS_PER_TILE * num_tiles * sizeof(u32) },
+    { &m_tile_data_ssbo, num_tiles * 2 * sizeof(u32) },
     { &m_atomic_counter, sizeof(u32) },
   }};
 
@@ -159,6 +159,7 @@ const
   };
 
   do_geometry_pass(camera_data, gun_data);
+  do_ligh_culling_pass(camera_data);
   do_lighting_pass(camera_data.position);
 }
 
@@ -238,8 +239,10 @@ void Renderer::create_g_buffers(u32 width, u32 height)
   // TODO: move specular strength to stitched normal g buffer
   m_g_position        = create_g_buffer(GL_RGBA32F    , attachments[0], width, height);
   // TODO: merge stitched normals and normals into one g buffer
-  m_g_normal          = create_g_buffer(GL_RGBA8_SNORM, attachments[1], width, height);
-  m_g_stitched_normal = create_g_buffer(GL_RGB8_SNORM , attachments[2], width, height);
+  m_g_normal          = create_g_buffer(GL_RGBA16F, attachments[1], width, height);
+  //m_g_normal          = create_g_buffer(GL_RGBA8_SNORM, attachments[1], width, height);
+  //m_g_stitched_normal = create_g_buffer(GL_RGB8_SNORM, attachments[2], width, height);
+  m_g_stitched_normal = create_g_buffer(GL_RGB16F, attachments[2], width, height);
   m_g_albedo          = create_g_buffer(GL_RGBA8      , attachments[3], width, height);
   glDrawBuffers(static_cast<GLsizei>(attachments.size()), attachments.data());
 
@@ -302,6 +305,8 @@ const
 //==============================================================================
 void Renderer::do_ligh_culling_pass(const CameraData& camera) const
 {
+  update_light_ssbos();
+
   m_light_culling_shader.use();
 
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_point_light_ssbo);
@@ -310,12 +315,14 @@ void Renderer::do_ligh_culling_pass(const CameraData& camera) const
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_atomic_counter);
 
   u32 zero = 0;
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_atomic_counter);
   glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(u32), &zero);
 
   m_light_culling_shader.set_uniform(shaders::light_culling::VIEW, camera.view);
   m_light_culling_shader.set_uniform(shaders::light_culling::INV_PROJECTION, inverse(m_default_projection));
   m_light_culling_shader.set_uniform(shaders::light_culling::WINDOW_SIZE, m_window_size);
   m_light_culling_shader.set_uniform(shaders::light_culling::FAR_PLANE, FAR);
+  m_light_culling_shader.set_uniform(shaders::light_culling::NUM_LIGHTS, m_point_light_ssbo_size);
 
   const size_t num_tiles_x = (static_cast<size_t>(m_window_size.x) + LIGHT_CULLING_TILE_SIZE_X - 1)
     / LIGHT_CULLING_TILE_SIZE_X;
@@ -324,7 +331,7 @@ void Renderer::do_ligh_culling_pass(const CameraData& camera) const
 
   m_light_culling_shader.dispatch(num_tiles_x, num_tiles_y, 1, true);
 
-  glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+  // glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 }
 
 //==============================================================================
@@ -343,7 +350,6 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   glBindTexture(GL_TEXTURE_2D, m_g_albedo);
 
   // bind light ssbos
-  update_light_ssbos();
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_dir_light_ssbo);
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_point_light_ssbo);
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_light_index_ssbo);
