@@ -239,10 +239,8 @@ void Renderer::create_g_buffers(u32 width, u32 height)
   // TODO: move specular strength to stitched normal g buffer
   m_g_position        = create_g_buffer(GL_RGBA32F    , attachments[0], width, height);
   // TODO: merge stitched normals and normals into one g buffer
-  m_g_normal          = create_g_buffer(GL_RGBA16F, attachments[1], width, height);
-  //m_g_normal          = create_g_buffer(GL_RGBA8_SNORM, attachments[1], width, height);
-  //m_g_stitched_normal = create_g_buffer(GL_RGB8_SNORM, attachments[2], width, height);
-  m_g_stitched_normal = create_g_buffer(GL_RGB16F, attachments[2], width, height);
+  m_g_normal          = create_g_buffer(GL_RGBA8_SNORM, attachments[1], width, height);
+  m_g_stitched_normal = create_g_buffer(GL_RGB8_SNORM, attachments[2], width, height);
   m_g_albedo          = create_g_buffer(GL_RGBA8      , attachments[3], width, height);
   glDrawBuffers(static_cast<GLsizei>(attachments.size()), attachments.data());
 
@@ -395,14 +393,6 @@ void Renderer::update_light_ssbos() const
     dir_light_data.data()
   );
 
-  /*
-   * TODO:
-   * - point lights can be even more filtered through compute shader
-   *   - it would divide pixels into groups and do sub-frustrum culling for each group
-   *   - then during lighting pass we get group of current pixel and just iterate all lights which affects current
-   *     group
-   */
-
   // update point lights ssbo
   glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_point_light_ssbo);
   glBufferSubData
@@ -434,7 +424,7 @@ void Renderer::append_point_light_data(const CameraData& camera) const
       if (light == nullptr)
         continue;
 
-      const vec3 stiched_position = (inverse(camera.portal_dest_to_src) * vec4(light->get_position(), 1.0f)).xyz;
+      const vec3 stiched_position = (camera.portal_dest_to_src * vec4(light->get_position(), 1.0f)).xyz;
       m_point_light_data.push_back(light->get_gpu_data(stiched_position));
     }
   }
