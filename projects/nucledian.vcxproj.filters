@@ -48,6 +48,7 @@
     <ClCompile Include="..\source\nucledian\engine\entity\entity_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\player\save_types.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\top_down_debug.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\ui\ui_button.cpp" />
     <ClCompile Include="..\source\libs\imgui\implot.cpp" />
     <ClCompile Include="..\source\libs\imgui\implot_demo.cpp" />
     <ClCompile Include="..\source\libs\imgui\implot_items.cpp" />
@@ -161,6 +162,7 @@
     <ClInclude Include="..\source\nucledian\game\weapons.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\uniform.h" />
     <ClInclude Include="..\source\nucledian\anim_state_machine.h" />
+    <ClInclude Include="..\source\nucledian\engine\ui\ui_button.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\top_down_debug.h" />
     <ClInclude Include="..\source\nucledian\profiling.h" />
     <ClInclude Include="..\source\libs\imgui\implot.h" />
@@ -189,6 +191,8 @@
     <None Include="..\source\nucledian\engine\entity\entity_system.inl" />
     <None Include="..\source\nucledian\stack_allocator.inl" />
     <None Include="..\source\nucledian\anim_state_machine.inl" />
+    <None Include="..\source\nucledian\engine\ui\ui_button.frag" />
+    <None Include="..\source\nucledian\engine\ui\ui_button.vert" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\source\libs\glm\CMakeLists.txt" />

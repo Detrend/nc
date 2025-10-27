@@ -21,6 +21,7 @@ public:
   friend class GizmoManager;
   friend class GraphicsSystem;
   friend class Renderer;
+  friend class UiButton;
 
   explicit ShaderProgramHandle(const char* compute_source);
   ShaderProgramHandle(const char* vertex_source, const char* fragment_source);

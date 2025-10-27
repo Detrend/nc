@@ -2,6 +2,7 @@
 #include <engine/core/engine_module_id.h>
 #include <engine/core/module_event.h>
 #include <engine/ui/ui_texture.h>
+#include <engine/ui/ui_button.h>
 
 #include <vector>
 
@@ -26,6 +27,8 @@ namespace nc
     void gather_player_info();
     
     void load_texture();
+
+    MenuManager* menu;
 
     std::vector<GuiTexture> ui_elements;
 
