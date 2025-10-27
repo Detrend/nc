@@ -56,7 +56,7 @@ namespace nc
 
   //====================================================================================================
 
-  void UiButton::draw([[maybe_unused]] const MaterialHandle button_material)
+  void UiButton::draw([[maybe_unused]] const ShaderProgramHandle button_material)
   {
     const TextureManager& manager = TextureManager::get();
     [[maybe_unused]] const TextureHandle& texture = manager[texture_name];
@@ -248,7 +248,7 @@ namespace nc
 
   //=============================================================================================
 
-  void MainMenuPage::draw(MaterialHandle button_material, GLuint VAO)
+  void MainMenuPage::draw(ShaderProgramHandle button_material, GLuint VAO)
   {
     button_material.use();
 

@@ -1,7 +1,7 @@
 #include <engine/ui/ui_texture.h>
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/shaders/shaders.h>
-#include <engine/graphics/resources/material.h>
+#include <engine/graphics/resources/shader_program.h>
 #include <engine/graphics/resources/texture.h>
 
 #include <vector>
@@ -27,7 +27,7 @@ namespace nc
     vec2 get_position();
     vec2 get_scale();
 
-    void draw(MaterialHandle button_material); // Draw takes the shader to modify its uniforms
+    void draw(ShaderProgramHandle button_material); // Draw takes the shader to modify its uniforms
 
   private:
     const char* texture_name;
@@ -43,7 +43,7 @@ namespace nc
     MainMenuPage();
     ~MainMenuPage();
 
-    void draw(MaterialHandle button_material, GLuint VAO);
+    void draw(ShaderProgramHandle button_material, GLuint VAO);
 
   private:
 
@@ -103,7 +103,7 @@ namespace nc
     void draw();
 
   private:
-    const MaterialHandle button_material;
+    const ShaderProgramHandle button_material;
 
     MainMenuPage* main_menu_page = nullptr;
     OptionsPage* options_page = nullptr;
