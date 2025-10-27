@@ -8,6 +8,25 @@ namespace nc
 {
 
 //==============================================================================
+EntityType AmbientLight::get_type_static()
+{
+  return EntityTypes::ambient_light;
+}
+
+//==============================================================================
+AmbientLight::AmbientLight(f32 strength)
+  : Entity(VEC3_ZERO, 0.0f, 0.0f), strength(strength)
+{
+  static bool alreadyCreated = false;
+
+  if (alreadyCreated)
+  {
+    nc_warn("More than 1 ambient light entity created.");
+  }
+  alreadyCreated = true;
+}
+
+//==============================================================================
 EntityType DirectionalLight::get_type_static()
 {
   return EntityTypes::directional_light;

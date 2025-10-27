@@ -368,6 +368,12 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   m_light_material.set_uniform(shaders::light::NUM_DIR_LIGHTS, m_dir_light_ssbo_size);
   m_light_material.set_uniform(shaders::light::NUM_TILES_X, static_cast<u32>(num_tiles_x));
 
+  EntityRegistry& registry = ThingSystem::get().get_entities();
+  registry.for_each<AmbientLight>([this](AmbientLight& ambient)
+  {
+    m_light_material.set_uniform(shaders::light::AMBIENT_STRENGTH, ambient.strength);
+  });
+
   // draw call
   const MeshHandle screen_quad = MeshManager::get().get_screen_quad();
   glBindVertexArray(screen_quad.get_vao());

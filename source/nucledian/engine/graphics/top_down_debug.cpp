@@ -219,6 +219,7 @@ void TopDownDebugRenderer::draw_entities()
     colors::ORANGE, // enemy
     colors::GREEN,  // pickup
     colors::TEAL,   // projectile
+    colors::BLACK,  // ambient_light (we don't need to see them)
     colors::BLACK,  // directional_light (we don't need to see them)
     colors::YELLOW, // point_light
     colors::PINK,   // prop

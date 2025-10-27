@@ -9,6 +9,17 @@
 namespace nc
 {
 
+class AmbientLight : public Entity
+{
+public:
+  using Base = Entity;
+  static EntityType get_type_static();
+
+  f32 strength;
+
+  AmbientLight(f32 strength);
+};
+
 // GPU data friendly with std430 layout
 struct DirLightGPU
 {

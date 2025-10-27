@@ -37,9 +37,10 @@ layout(binding = 1) uniform sampler2D g_normal;
 layout(binding = 2) uniform sampler2D g_stitched_normal;
 layout(binding = 3) uniform sampler2D g_albedo;
 
-layout(location = 0) uniform vec3 view_position;
-layout(location = 1) uniform uint num_dir_lights;
-layout(location = 2) uniform uint num_tiles_x;
+layout(location = 0) uniform vec3  view_position;
+layout(location = 1) uniform uint  num_dir_lights;
+layout(location = 2) uniform uint  num_tiles_x;
+layout(location = 3) uniform float ambient_strength;
 
 layout(std430, binding = 0) readonly buffer dir_lights_buffer { DirLight dir_lights[]; };
 layout(std430, binding = 1) readonly buffer point_light_buffer { PointLight point_lights[]; };
@@ -67,7 +68,6 @@ void main()
     return;
   }
 
-  float ambient_strength = 0.3f;
   int shininess = 128;
 
   vec3 view_direction = normalize(view_position - position);
