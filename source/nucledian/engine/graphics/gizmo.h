@@ -6,7 +6,7 @@
 
 #include <math/vector.h>
 #include <engine/graphics/resources/mesh.h>
-#include <engine/graphics/resources/material.h>
+#include <engine/graphics/resources/shader_program.h>
 
 #include <memory>
 #include <unordered_map>

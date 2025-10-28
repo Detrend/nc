@@ -350,7 +350,7 @@ const std::vector<MeshHandle>& GraphicsSystem::get_sector_meshes() const
 }
 
 //==============================================================================
-const MaterialHandle& GraphicsSystem::get_solid_material() const
+const ShaderProgramHandle& GraphicsSystem::get_solid_material() const
 {
   return m_renderer->get_solid_material();
 }
@@ -940,6 +940,17 @@ void GraphicsSystem::create_sector_meshes()
     );
     m_sector_meshes.push_back(mesh);
   }
+}
+
+//================================================================================
+vec2 GraphicsSystem::get_window_size()
+{
+    int x;
+    int y;
+    
+    SDL_GetWindowSize(m_window, &x, &y);
+
+    return vec2(x, y);
 }
 
 }

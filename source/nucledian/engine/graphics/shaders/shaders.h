@@ -48,7 +48,7 @@ namespace nc
 
       inline constexpr Uniform<0, vec3> VIEW_POSITION;
       inline constexpr Uniform<1, u32>  NUM_DIR_LIGHTS;
-      inline constexpr Uniform<2, u32>  NUM_POINT_LIGHTS;
+      inline constexpr Uniform<2, u32>  NUM_TILES_X;
     }
 
     // Sector rendering.
@@ -62,6 +62,29 @@ namespace nc
       inline constexpr Uniform<2, vec2> GAME_ATLAS_SIZE;
       inline constexpr Uniform<3, vec2> LEVEL_ATLAS_SIZE;
       inline constexpr Uniform<4, mat4> PORTAL_DEST_TO_SRC;
+    }
+
+    namespace light_culling
+    {
+      #include <engine/graphics/shaders/light_culling.comp>
+
+      inline constexpr Uniform<0, mat4> VIEW;
+      inline constexpr Uniform<1, mat4> INV_PROJECTION;
+      inline constexpr Uniform<2, vec2> WINDOW_SIZE;
+      inline constexpr Uniform<3, f32>  FAR_PLANE;
+      inline constexpr Uniform<4, u32>  NUM_LIGHTS;
+    }
+
+    namespace ui_button
+    {
+      #include <engine/ui/ui_button.vert>
+      #include <engine/ui/ui_button.frag>
+
+      inline constexpr Uniform<0, mat4> TRANSFORM;
+
+      inline constexpr Uniform<1, vec2> ATLAS_SIZE;
+      inline constexpr Uniform<2, vec2> TEXTURE_POS;
+      inline constexpr Uniform<3, vec2> TEXTURE_SIZE;
     }
   }
 

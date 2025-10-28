@@ -1,7 +1,7 @@
 #pragma once
 
 #include <engine/graphics/resources/mesh.h>
-#include <engine/graphics/resources/material.h>
+#include <engine/graphics/resources/shader_program.h>
 
 namespace nc
 {
@@ -10,7 +10,7 @@ namespace nc
 struct Model
 {
   MeshHandle mesh = MeshHandle::invalid();
-  MaterialHandle material = MaterialHandle::invalid();
+  ShaderProgramHandle material = ShaderProgramHandle::invalid();
 };
 
 }

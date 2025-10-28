@@ -1,0 +1,167 @@
+constexpr const char* COMPUTE_SOURCE = R"(
+
+#version 430 core
+
+#define TILE_SIZE_X 16
+#define TILE_SIZE_Y 16
+
+#define MAX_LIGHTS_PER_TILE 8
+
+layout (local_size_x = TILE_SIZE_X, local_size_y = TILE_SIZE_Y, local_size_z = 1) in;
+
+struct PointLight
+{
+    vec3  position;
+    float intensity;
+    vec3  color;
+    float constant;
+    float linear;
+    float quadratic;
+};
+
+struct TileData
+{
+    uint count;
+    uint offset;
+};
+
+layout(location = 0) uniform mat4 view;
+layout(location = 1) uniform mat4 inv_projection;
+layout(location = 2) uniform vec2 window_size;
+layout(location = 3) uniform float far_plane;
+layout(location = 4) uniform uint num_lights;
+
+layout(std430, binding = 0) readonly buffer light_buffer { PointLight lights[]; };
+layout(std430, binding = 1) writeonly buffer light_index_buffer { uint light_indices[]; };
+layout(std430, binding = 2) writeonly buffer tile_data_buffer { TileData tile_data[]; };
+layout(std430, binding = 3) buffer light_index_counter_buffer { uint light_index_counter; };
+
+shared uint shared_light_indices[MAX_LIGHTS_PER_TILE];
+shared uint shared_light_count;
+shared vec4 frustum_planes[4];
+
+float calculate_light_radius(PointLight light)
+{
+  float max_color = max(light.color.r, max(light.color.g, light.color.b));
+  float min_intensity = 256.0f;
+  float k = max_color * light.intensity * min_intensity;
+
+  if (light.quadratic < 0.0001)
+    return (k - light.constant) / light.linear;
+
+  float discriminant = light.linear * light.linear - 4 * light.quadratic * (light.constant - k);
+  if (discriminant < 0)
+    return 0;
+
+  return (-light.linear + sqrt(discriminant)) / (2.0 * light.quadratic);
+}
+
+float get_signed_distance_to_plane(vec3 point, vec4 plane)
+{
+  return dot(plane.xyz, point) + plane.w;
+}
+
+vec3 NDC_to_view(vec2 point_NDC)
+{
+  vec4 point_view = inv_projection * vec4(point_NDC, -1.0, 1.0);
+  return point_view.xyz / point_view.w;
+}
+
+void main()
+{
+  uvec2 tile_coords = gl_WorkGroupID.xy;
+  uint local_thread_index = gl_LocalInvocationIndex;
+
+  if (local_thread_index == 0)
+  {
+    shared_light_count = 0;
+    uvec2 tile_size = uvec2(TILE_SIZE_X, TILE_SIZE_Y);
+
+    // screen space
+    uvec2 bottom_left_screen = tile_coords * tile_size;
+    uvec2 top_right_screen = (tile_coords + uvec2(1, 1)) * tile_size;
+
+    // NDC space
+    vec2 bottom_left_NDC = (vec2(bottom_left_screen) / window_size) * 2.0 - 1.0;
+    vec2 top_right_NDC   = (vec2(top_right_screen  ) / window_size) * 2.0 - 1.0;
+
+    // view space (4 corners of frustum on near plane)
+    vec3 bottom_left  = NDC_to_view(vec2(bottom_left_NDC.x, bottom_left_NDC.y));
+    vec3 bottom_right = NDC_to_view(vec2(top_right_NDC.x  , bottom_left_NDC.y));
+    vec3 top_left     = NDC_to_view(vec2(bottom_left_NDC.x, top_right_NDC.y  ));
+    vec3 top_right    = NDC_to_view(vec2(top_right_NDC.x  , top_right_NDC.y  ));
+
+    // frustum_planes[0] = vec4(normalize(cross(top_left    , bottom_left )), 0.0); // left
+    // frustum_planes[1] = vec4(normalize(cross(bottom_right, top_right   )), 0.0); // right
+    // frustum_planes[2] = vec4(normalize(cross(bottom_left , bottom_right)), 0.0); // bottom
+    // frustum_planes[3] = vec4(normalize(cross(top_right   , top_left    )), 0.0); // top
+  
+    // Calculate plane normals pointing inward
+    frustum_planes[0] = vec4(normalize(cross(bottom_left, top_left)), 0.0);    // left
+    frustum_planes[1] = vec4(normalize(cross(top_right, bottom_right)), 0.0);  // right  
+    frustum_planes[2] = vec4(normalize(cross(bottom_right, bottom_left)), 0.0); // bottom
+    frustum_planes[3] = vec4(normalize(cross(top_left, top_right)), 0.0);      // top
+
+    // Calculate plane distances (D component)
+    frustum_planes[0].w = -dot(frustum_planes[0].xyz, bottom_left);
+    frustum_planes[1].w = -dot(frustum_planes[1].xyz, bottom_right);
+    frustum_planes[2].w = -dot(frustum_planes[2].xyz, bottom_left);
+    frustum_planes[3].w = -dot(frustum_planes[3].xyz, top_left);
+  }
+
+  // TODO: we can find frustum Z min and max for each tile
+  barrier();
+
+  uint group_size = TILE_SIZE_X * TILE_SIZE_Y;
+
+  for (uint light_index = local_thread_index; light_index < num_lights; light_index += group_size)
+  {
+    PointLight light = lights[light_index];
+        
+    vec3 light_pos_view = (view * vec4(light.position, 1.0)).xyz;
+    float light_radius = calculate_light_radius(light);
+
+    bool is_light_visible = true;
+    for (uint i = 0; i < 4; i++)
+    {
+      float distance = get_signed_distance_to_plane(light_pos_view, frustum_planes[i]);
+      if (distance < -light_radius)
+      {
+        is_light_visible = false;
+        break;
+      }
+    }
+    if (!is_light_visible)
+        continue;
+    if ((-light_pos_view.z - far_plane) > light_radius)
+        continue;
+    if ((-light_pos_view.z + light_radius) < 0.0)
+        continue;
+
+    uint tile_light_index = atomicAdd(shared_light_count, 1);
+    if (tile_light_index < MAX_LIGHTS_PER_TILE)
+    {
+        shared_light_indices[tile_light_index] = light_index;
+    }
+  }
+
+  barrier();
+
+  if (local_thread_index == 0)
+  {
+    uint tile_light_count = min(shared_light_count, MAX_LIGHTS_PER_TILE);
+    uint offset = atomicAdd(light_index_counter, tile_light_count);
+        
+    uint tile_index = tile_coords.y * gl_NumWorkGroups.x + tile_coords.x;
+    tile_data[tile_index].count = tile_light_count;
+    tile_data[tile_index].offset = offset;
+        
+    // TODO: this for loop can be parallelized within the group
+    for (uint i = 0; i < tile_light_count; i++)
+    {
+      light_indices[offset + i] = shared_light_indices[i];
+    }
+  }
+}
+
+)";

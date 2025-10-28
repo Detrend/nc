@@ -136,6 +136,7 @@
     <ClCompile Include="..\source\nucledian\engine\sound\sound_system.cpp" />
     <ClCompile Include="..\source\nucledian\game\enemies.cpp" />
     <ClCompile Include="..\source\nucledian\game\entity_attachment_manager.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\ui\ui_button.cpp" />
     <ClCompile Include="..\source\nucledian\game\item.cpp" />
     <ClCompile Include="..\source\nucledian\game\item_resources.cpp" />
     <ClCompile Include="..\source\nucledian\engine\ui\ui_texture.cpp" />
@@ -153,7 +154,7 @@
     <ClCompile Include="..\source\nucledian\engine\graphics\camera.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\gizmo.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\graphics_system.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\graphics\resources\material.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\graphics\resources\shader_program.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\mesh.cpp" />
     <ClCompile Include="..\source\nucledian\engine\input\input_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\map_system.cpp" />
@@ -288,6 +289,7 @@
     <ClInclude Include="..\source\nucledian\engine\sound\sound_types.h" />
     <ClInclude Include="..\source\nucledian\game\enemies.h" />
     <ClInclude Include="..\source\nucledian\game\entity_attachment_manager.h" />
+    <ClInclude Include="..\source\nucledian\engine\ui\ui_button.h" />
     <ClInclude Include="..\source\nucledian\game\game_types.h" />
     <ClInclude Include="..\source\nucledian\game\item.h" />
     <ClInclude Include="..\source\nucledian\game\item_resources.h" />
@@ -316,6 +318,7 @@
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\model.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\mesh.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\res_lifetime.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\resources\shader_program.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\shaders\shaders.h" />
     <ClInclude Include="..\source\nucledian\engine\input\game_input.h" />
     <ClInclude Include="..\source\nucledian\engine\input\input_system.h" />
@@ -342,7 +345,7 @@
     <None Include="..\source\nucledian\engine\entity\entity_tests.inl" />
     <None Include="..\source\nucledian\engine\graphics\resources\mesh.inl" />
     <None Include="..\source\nucledian\engine\graphics\resources\model.inl" />
-    <None Include="..\source\nucledian\engine\graphics\resources\material.inl" />
+    <None Include="..\source\nucledian\engine\graphics\resources\shader_program.inl" />
     <None Include="..\source\nucledian\engine\graphics\shaders\billboard.frag" />
     <None Include="..\source\nucledian\engine\graphics\shaders\billboard.vert" />
     <None Include="..\source\nucledian\engine\graphics\shaders\light.frag" />
@@ -351,6 +354,9 @@
     <None Include="..\source\nucledian\engine\graphics\shaders\sector.vert" />
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.frag" />
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.vert" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\light_culling.comp" />
+    <None Include="..\source\nucledian\engine\ui\ui_button.frag" />
+    <None Include="..\source\nucledian\engine\ui\ui_button.vert" />
     <None Include="..\source\nucledian\math\lingebra.inl" />
     <None Include="..\source\nucledian\engine\entity\entity_system.inl" />
     <None Include="..\source\nucledian\stack_allocator.inl" />

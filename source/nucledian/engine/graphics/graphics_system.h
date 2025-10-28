@@ -61,7 +61,9 @@ public:
 
   const std::vector<MeshHandle>& get_sector_meshes() const;
 
-  const MaterialHandle& get_solid_material() const;
+  const ShaderProgramHandle& get_solid_material() const;
+
+  vec2 get_window_size();
 
 private:
   void update(f32 delta_seconds);
