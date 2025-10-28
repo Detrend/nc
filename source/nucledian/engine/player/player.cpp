@@ -14,6 +14,7 @@
 #include <engine/entity/entity_system.h>
 
 #include <engine/graphics/graphics_system.h> // RenderGunProperties
+#include <engine/graphics/lights.h>
 
 // Sound
 #include <engine/sound/sound_system.h>
@@ -23,6 +24,7 @@
 #include <game/projectile.h>
 #include <game/weapons.h>
 #include <game/item.h>
+#include <game/entity_attachment_manager.h>
 
 #include <math/utils.h>
 #include <math/lingebra.h>
@@ -191,9 +193,14 @@ void Player::apply_velocity(f32 delta_seconds)
 {
   // Collide with everything but us and projectiles for now. Later, we will have
   // to enable collisions with projectiles once again.
+  constexpr EntityTypeMask IGNORED_COLLIDERS
+    = EntityTypeFlags::player
+    | EntityTypeFlags::projectile
+    | EntityTypeFlags::point_light
+    | EntityTypeFlags::prop;
+
   constexpr EntityTypeMask PLAYER_COLLIDERS
-    = PhysLevel::COLLIDE_ALL
-    & ~(EntityTypeFlags::player | EntityTypeFlags::projectile);
+    = PhysLevel::COLLIDE_ALL & ~IGNORED_COLLIDERS;
 
   // Report only pickups
   constexpr EntityTypeMask PLAYER_REPORTING
@@ -405,9 +412,21 @@ void Player::do_attack()
   else
   {
     // Spawn projectile
-    entity_system.create_entity<Projectile>
+    Projectile* projectile = entity_system.create_entity<Projectile>
     (
       from, dir, this->get_id(), WEAPON_STATS[weapon].projectile
+    );
+
+    // And its light
+    PointLight* light = entity_system.create_entity<PointLight>
+    (
+      from, 1.0f, 1.0f, 0.09f, 0.032f, colors::BLUE
+    );
+
+    // And attach it
+    ThingSystem::get().get_attachment_mgr().attach_entity
+    (
+      light->get_id(), projectile->get_id(), EntityAttachmentFlags::all
     );
   }
 

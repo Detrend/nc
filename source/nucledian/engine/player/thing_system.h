@@ -22,6 +22,7 @@ struct SectorMapping;
 struct PhysLevel;
 class  EntityRegistry;
 class  Player;
+class  EntityAttachment;
 
 class ThingSystem : public IEngineModule
 {
@@ -35,12 +36,19 @@ public:
   using MappingPtr    = std::unique_ptr<SectorMapping>;
   using MapPtr        = std::unique_ptr<MapSectors>;
   using RegistryPtr   = std::unique_ptr<EntityRegistry>;
+  using AttachmentPtr = std::unique_ptr<EntityAttachment>;
   using LevelDatabase = std::vector<LevelData>;
   using SaveDatabase  = std::vector<SaveDbEntry>;
 
 public:
   static EngineModuleId get_module_id();
   static ThingSystem&   get();
+
+  ThingSystem();
+  ~ThingSystem();
+
+  ThingSystem(const ThingSystem&)            = delete;
+  ThingSystem& operator=(const ThingSystem&) = delete;
 
   bool init();
   void on_event(ModuleEvent& event) override;
@@ -63,6 +71,9 @@ public:
   const SectorMapping&  get_sector_mapping() const;
   const LevelDatabase&  get_level_db()       const;
   PhysLevel             get_level()          const;
+
+  EntityAttachment&       get_attachment_mgr();
+  const EntityAttachment& get_attachment_mgr() const;
 
 private:
   void check_player_attack
@@ -95,6 +106,7 @@ private:
   EntityID       player_id = INVALID_ENTITY_ID;
   MapPtr         map;
   MappingPtr     mapping;
+  AttachmentPtr  attachment;
   RegistryPtr    entities;
   LevelID        level_id           = INVALID_LEVEL_ID;
   LevelID        scheduled_level_id = INVALID_LEVEL_ID;

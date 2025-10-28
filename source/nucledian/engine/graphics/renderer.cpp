@@ -443,7 +443,7 @@ static TextureHandle pick_texture_handle_from_appearance
       // ( 1.0f,  0.0f) ->  PI/2   (looking right)
       // (-1.0f,  0.0f) -> -PI/2   (looking left)
       // ( 0.0f,  1.0f) ->  PI     (looking back)
-      f32 angle  = atan2f(dir_2d.x, -dir_2d.y);
+      f32 angle  = atan2f(dir_2d.x, dir_2d.y);
       f32 degree = rad2deg(angle);
 
       // 0 = right, 1 = left

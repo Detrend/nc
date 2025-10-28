@@ -18,13 +18,13 @@ template<typename L>
 void EntityRegistry::for_each(EntityTypeMask types, L lambda)
 {
   // iterate all pools
-  for (EntityType t = 0; t < m_Pools.size(); ++t)
+  for (EntityType t = 0; t < m_pools.size(); ++t)
   {
     // and check if the pool stores the type we are interested in
     if (types & (u64{1} << t))
     {
       // if so then iterate all entities
-      for (auto&[idx, entity_unique] : m_Pools[t])
+      for (auto&[idx, entity_unique] : m_pools[t])
       {
         lambda(*entity_unique);
       }
@@ -46,13 +46,13 @@ void EntityRegistry::for_each(L lambda)
 template<typename T, typename...Args>
 T* EntityRegistry::create_entity(Args...args)
 {
-  nc_assert(T::get_type_static() < m_Pools.size());
+  nc_assert(T::get_type_static() < m_pools.size());
 
   EntityID id;
   id.type = T::get_type_static();
-  id.idx  = m_NextID++;
+  id.idx  = m_next_id++;
 
-  auto[it, is_ok] = m_Pools[T::get_type_static()].insert
+  auto[it, is_ok] = m_pools[T::get_type_static()].insert
   (
     { id.idx, std::make_unique<T>(std::forward<Args>(args)...) }
   );

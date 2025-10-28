@@ -37,6 +37,12 @@ void SectorMapping::on_entity_move(EntityID id, vec3 pos, f32 r, f32 h)
 }
 
 //==============================================================================
+void SectorMapping::on_entity_garbaged(EntityID /*id*/)
+{
+
+}
+
+//==============================================================================
 void SectorMapping::on_entity_destroy(EntityID id)
 {
   auto it = entities_to_sectors.find(id);

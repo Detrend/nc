@@ -4,6 +4,7 @@
 #include <engine/entity/entity.h>
 #include <engine/entity/entity_type_definitions.h>
 #include <engine/entity/sector_mapping.h>
+#include <engine/entity/entity_system.h>
 #include <engine/core/engine.h>
 #include <engine/map/map_system.h>
 
@@ -63,7 +64,7 @@ void Entity::set_position(vec3 np)
   if (m_position != np)
   {
     m_position = np;
-    m_mapping->on_entity_move(m_id_and_type, m_position, m_radius2d, m_height);
+    m_registry->on_entity_move_internal(m_id_and_type, m_position, m_radius2d, m_height);
   }
 }
 
@@ -80,7 +81,7 @@ void Entity::set_radius(f32 r)
   if (m_radius2d != r)
   {
     m_radius2d = r;
-    m_mapping->on_entity_move(m_id_and_type, m_position, m_radius2d, m_height);
+    m_registry->on_entity_move_internal(m_id_and_type, m_position, m_radius2d, m_height);
   }
 }
 
@@ -97,7 +98,7 @@ void Entity::set_height(f32 nh)
   if (m_height != nh)
   {
     m_height = nh;
-    m_mapping->on_entity_move(m_id_and_type, m_position, m_radius2d, m_height);
+    m_registry->on_entity_move_internal(m_id_and_type, m_position, m_radius2d, m_height);
   }
 }
 
@@ -109,7 +110,7 @@ void Entity::set_pos_rad_height(vec3 p, f32 r, f32 h)
     m_position = p;
     m_radius2d = r;
     m_height   = h;
-    m_mapping->on_entity_move(m_id_and_type, m_position, m_radius2d, m_height);
+    m_registry->on_entity_move_internal(m_id_and_type, m_position, m_radius2d, m_height);
   }
 }
 

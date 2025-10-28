@@ -56,6 +56,7 @@
     <ClCompile Include="..\source\nucledian\game\projectiles.cpp" />
     <ClCompile Include="..\source\nucledian\game\enemies.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\prop.cpp" />
+    <ClCompile Include="..\source\nucledian\game\entity_attachment_manager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -170,6 +171,8 @@
     <ClInclude Include="..\source\nucledian\game\game_types.h" />
     <ClInclude Include="..\source\nucledian\game\enemies.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\prop.h" />
+    <ClInclude Include="..\source\nucledian\engine\entity\entity_system_listener.h" />
+    <ClInclude Include="..\source\nucledian\game\entity_attachment_manager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
