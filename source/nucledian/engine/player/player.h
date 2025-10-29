@@ -42,6 +42,7 @@ public:
   Camera* get_camera();
   int     get_health();
 
+  int     get_current_weapon_ammo();
 
   vec3  get_look_direction();
   f32   get_view_height();
