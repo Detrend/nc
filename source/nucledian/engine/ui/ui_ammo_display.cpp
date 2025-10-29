@@ -83,7 +83,7 @@ namespace nc
 
       const glm::mat4 final_trans = trans_mat;
 
-      s32 digit = ammo % 10;
+      int digit = ammo % 10;
       digit += 48;
 
       if (!first && ammo == 0)
@@ -95,6 +95,7 @@ namespace nc
       shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
       shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
       shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+      shader.set_uniform(shaders::ui_text::CHARACTER, digit);
 
       glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
