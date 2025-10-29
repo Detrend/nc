@@ -91,11 +91,33 @@ void SectorMapping::on_entity_destroy(EntityID id)
 }
 
 //==============================================================================
-void SectorMapping::on_entity_create(EntityID id, vec3 pos, f32 /*r*/, f32 /*h*/)
+void SectorMapping::on_entity_create(EntityID id, vec3 pos, f32 rad, f32 /*h*/)
 {
   nc_assert(!entities_to_sectors.contains(id), "Duplicate entry!!!");
 
+  SectorSet sectors;
+  map.query_nearby_sectors_short_distance(pos.xz(), rad, sectors);
+
+  // Emplace empty
+  auto[it, ok] = entities_to_sectors.emplace(id, SectorsAndTransforms{});
+  nc_assert(ok);
+
+  SectorsAndTransforms& entity_sectors = it->second;
+
+  for (u64 i = 0, cnt = sectors.sectors.size(); i < cnt; ++i)
+  {
+    const mat4& transform = sectors.transforms[i];
+    const SectorID sector = sectors.sectors[i];
+
+    entity_sectors.sectors.push_back(sector);
+    entity_sectors.transforms.push_back(transform);
+
+    sectors_to_entities.entities[sector].push_back(id);
+    sectors_to_entities.transforms[sector].push_back(transform);
+  }
+
   // TODO: dump implementation, entity is only in one sector at a time
+  /*
   SectorID sector = map.get_sector_from_point(pos.xz());
   if (sector != INVALID_SECTOR_ID)
   {
@@ -108,6 +130,7 @@ void SectorMapping::on_entity_create(EntityID id, vec3 pos, f32 /*r*/, f32 /*h*/
     sectors_to_entities.entities[sector].push_back(id);
     sectors_to_entities.transforms[sector].push_back(mat4{1.0f});
   }
+  */
 }
 
 }

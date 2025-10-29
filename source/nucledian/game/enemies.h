@@ -61,7 +61,7 @@ enum evalue : ActorAnimStateFlag
 
 }
 
-static constexpr ActorAnimStateFlag actor_anim_state_to_flag(ActorAnimState state)
+constexpr ActorAnimStateFlag actor_anim_state_to_flag(ActorAnimState state)
 {
   return 1 << state;
 }

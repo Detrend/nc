@@ -67,6 +67,12 @@ public:
   f32    linear    = 0.09f;
   f32    quadratic = 0.032f;
 
+  // Recomputes the radius of the light from the parameters above and sets it
+  // as the entity radius.
+  // Do this after you change some of the light parameters or else it will not
+  // be properly tracked in the sector to entity mapping.
+  void refresh_entity_radius();
+
   PointLight
   (
     const vec3& position,

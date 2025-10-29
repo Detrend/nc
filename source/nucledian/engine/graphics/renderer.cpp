@@ -418,19 +418,49 @@ void Renderer::update_light_ssbos() const
 //==============================================================================
 void Renderer::append_point_light_data(const CameraData& camera) const
 {
-  const auto& mapping = ThingSystem::get().get_sector_mapping().sectors_to_entities.entities;
+  const auto& mapping = ThingSystem::get().get_sector_mapping().sectors_to_entities;
   EntityRegistry& registry = ThingSystem::get().get_entities();
+
+  std::unordered_map<const PointLight*, std::vector<mat4>> light_transforms;
 
   for (const auto& frustum : camera.vis_tree.sectors)
   {
-    for (const auto& entity_id : mapping[frustum.sector])
+    const auto& entities   = mapping.entities[frustum.sector];
+    const auto& transforms = mapping.transforms[frustum.sector];
+
+    for (u64 i = 0; i < entities.size(); ++i)
     {
+      EntityID entity_id = entities[i];
+      mat4     t  = transforms[i];
+
       const PointLight* const light = registry.get_entity(entity_id)->as<PointLight>();
 
       if (light == nullptr)
         continue;
 
-      const vec3 stiched_position = (camera.portal_dest_to_src * vec4(light->get_position(), 1.0f)).xyz;
+      if (auto it = light_transforms.find(light); it != light_transforms.end())
+      {
+        std::vector<mat4>& trans_list = it->second;
+        auto beg = trans_list.begin();
+        auto end = trans_list.end();
+        if (std::find(beg, end, t) == end)
+        {
+          // Insert and render
+          trans_list.push_back(t);
+        }
+        else
+        {
+          // Already found
+          continue;
+        }
+      }
+      else
+      {
+        light_transforms.insert({light, std::vector<mat4>{t}});
+      }
+
+      const vec3 light_pos = (t * vec4{light->get_position(), 1.0f}).xyz;
+      const vec3 stiched_position = (camera.portal_dest_to_src * vec4(light_pos, 1.0f)).xyz;
       m_point_light_data.push_back(light->get_gpu_data(stiched_position));
     }
   }
@@ -552,26 +582,54 @@ void Renderer::render_entities(const CameraData& camera) const
   append_point_light_data(camera);
 
   // group entities by texture atlas
-  const auto& mapping = ThingSystem::get().get_sector_mapping().sectors_to_entities.entities;
+  const auto& mapping = ThingSystem::get().get_sector_mapping().sectors_to_entities;
   const EntityRegistry& registry = ThingSystem::get().get_entities();
 
-  std::unordered_map<ResLifetime, std::unordered_set<const Entity*>> groups;
+  struct EntityRenderData
+  {
+    Appearance        appear;
+    vec3              world_pos;
+    std::vector<mat4> transforms;
+  };
+
+  std::unordered_map<const Entity*, EntityRenderData> groups[3]{};
+
   for (const auto& frustum : camera.vis_tree.sectors)
   {
-    for (const auto& entity_id : mapping[frustum.sector])
+    const auto& this_sector_entities   = mapping.entities[frustum.sector];
+    const auto& this_sector_transforms = mapping.transforms[frustum.sector];
+
+    for (u64 idx = 0, cnt = this_sector_entities.size(); idx < cnt; ++idx)
     {
+      EntityID entity_id = this_sector_entities[idx];
+      mat4     transform = this_sector_transforms[idx];
       const Entity* entity = registry.get_entity(entity_id);
+
       if (const Appearance* appearance = entity->get_appearance())
       {
-        // TODO: We have to call this twice (once here and once later), which
-        //       is not pretty. Rework maybe?
-        const TextureHandle& texture = pick_texture_handle_from_appearance
-        (
-          *appearance, camera
-        );
+        NC_TODO("Add multiple lifetimes to rendering of entities.");
+        //const ResLifetime lifetime = texture.get_lifetime();
+        //groups[lifetime].insert(entity);
 
-        const ResLifetime lifetime = texture.get_lifetime();
-        groups[lifetime].insert(entity);
+        auto& group = groups[cast<u64>(ResLifetime::Game)];
+        if (!group.contains(entity))
+        {
+          EntityRenderData& rd = group[entity];
+          rd.appear = *appearance;
+          rd.world_pos = entity->get_position();
+          rd.transforms.push_back(transform);
+        }
+        else
+        {
+          EntityRenderData& rd = group[entity];
+          auto beg = rd.transforms.begin();
+          auto end = rd.transforms.end();
+          if (std::find(beg, end, transform) == end)
+          {
+            // push back unique
+            rd.transforms.push_back(transform);
+          }
+        }
       }
     }
   }
@@ -595,50 +653,56 @@ void Renderer::render_entities(const CameraData& camera) const
     vec4{0, 0, 0, 1}
   };
 
-  for (const auto& [lifetime, group] : groups)
+  for (u64 l = cast<u64>(ResLifetime::Level); l <= cast<u64>(ResLifetime::Game); ++l)
   {
-    const TextureAtlas& atlas = TextureManager::get().get_atlas(lifetime);
+    const auto& group = groups[l];
+    const TextureAtlas& atlas = TextureManager::get().get_atlas(cast<ResLifetime>(l));
     glBindTexture(GL_TEXTURE_2D, atlas.handle);
     m_billboard_material.set_uniform(shaders::billboard::ATLAS_SIZE, atlas.get_size());
 
-    for (const auto* entity : group)
+    for (const auto& [entity, render_data] : group)
     {
-      nc_assert(entity->get_appearance(), "At this point entity must have appearance.");
+      const Appearance& base_appearance = render_data.appear;
+      const vec3 base_position = render_data.world_pos;
 
-      const Appearance& appearance = *entity->get_appearance();
-      const vec3 position = entity->get_position();
+      for (const mat4& entity_transform : render_data.transforms)
+      {
+        Appearance appearance = base_appearance;
+        appearance.direction = (entity_transform * vec4{appearance.direction, 0.0f}).xyz();
+        vec3 position = (entity_transform * vec4{base_position, 1.0f}).xyz();
 
-      const TextureHandle& texture = pick_texture_handle_from_appearance
-      (
-        appearance, camera
-      );
+        const TextureHandle& texture = pick_texture_handle_from_appearance
+        (
+          appearance, camera
+        );
 
-      m_billboard_material.set_uniform(shaders::billboard::TEXTURE_POS, texture.get_pos());
-      m_billboard_material.set_uniform(shaders::billboard::TEXTURE_SIZE, texture.get_size());
+        m_billboard_material.set_uniform(shaders::billboard::TEXTURE_POS, texture.get_pos());
+        m_billboard_material.set_uniform(shaders::billboard::TEXTURE_SIZE, texture.get_size());
 
-      const bool bottom_mode = appearance.pivot == Appearance::PivotMode::bottom;
-      const vec3 root_offset = bottom_mode ? VEC3_Y * 0.5f : VEC3_ZERO;
+        const bool bottom_mode = appearance.pivot == Appearance::PivotMode::bottom;
+        const vec3 root_offset = bottom_mode ? VEC3_Y * 0.5f : VEC3_ZERO;
 
-      const bool rot_only_hor = appearance.rotation == Appearance::RotationMode::only_horizontal;
-      const mat4& rotation = rot_only_hor ? rotation_horizontal : rotation_full;
+        const bool rot_only_hor = appearance.rotation == Appearance::RotationMode::only_horizontal;
+        const mat4& rotation = rot_only_hor ? rotation_horizontal : rotation_full;
 
-      const mat4 offset_transform = translate(mat4{1.0f}, root_offset);
-      const f32  height_move = bottom_mode ? 0.0f : (BILLBOARD_TEXTURE_SCALE * 0.5f);
+        const mat4 offset_transform = translate(mat4{1.0f}, root_offset);
+        const f32  height_move = bottom_mode ? 0.0f : (BILLBOARD_TEXTURE_SCALE * 0.5f);
 
-      const vec3 pivot_offset(0.0f, texture.get_height() * height_move, 0.0f);
-      const vec3 scale(
-        texture.get_width() * appearance.scale * BILLBOARD_TEXTURE_SCALE,
-        texture.get_height() * appearance.scale * BILLBOARD_TEXTURE_SCALE,
-        1.0f
-      );
+        const vec3 pivot_offset(0.0f, texture.get_height() * height_move, 0.0f);
+        const vec3 scale(
+          texture.get_width() * appearance.scale * BILLBOARD_TEXTURE_SCALE,
+          texture.get_height() * appearance.scale * BILLBOARD_TEXTURE_SCALE,
+          1.0f
+        );
 
-      const mat4 transform = translate(mat4(1.0f), position + pivot_offset)
-        * rotation
-        * nc::scale(mat4(1.0f), scale)
-        * offset_transform;
+        const mat4 transform = translate(mat4(1.0f), position + pivot_offset)
+          * rotation
+          * nc::scale(mat4(1.0f), scale)
+          * offset_transform;
 
-      m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, transform); 
-      glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
+        m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, transform); 
+        glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
+      }
     }
   }
 
