@@ -293,6 +293,7 @@ void Player::handle_attack(GameInputs curr_input, GameInputs prev_input, f32 dt)
     if (current_ammo[current_weapon] == -1)
     {
         this->weapon_fsm.set_state(WeaponStates::attack);
+        return;
     }
 
     if (current_ammo[current_weapon] == 0)
