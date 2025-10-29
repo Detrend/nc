@@ -86,6 +86,11 @@ namespace nc
       int digit = ammo % 10;
       digit += 48;
 
+      if (first && ammo == 0)
+      {
+        digit = '-';
+      }
+
       if (!first && ammo == 0)
       {
         digit = 0;
