@@ -603,9 +603,10 @@ EntityType Player::get_type_static()
   return EntityTypes::player;
 }
 
+//==============================================================================
 int Player::get_current_weapon_ammo()
 {
-  return current_ammo[current_weapon];
+  return this->current_ammo[this->current_weapon];
 }
 
 }
