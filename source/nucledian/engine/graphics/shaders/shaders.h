@@ -86,6 +86,18 @@ namespace nc
       inline constexpr Uniform<2, vec2> TEXTURE_POS;
       inline constexpr Uniform<3, vec2> TEXTURE_SIZE;
     }
+
+    namespace ui_text
+    {
+    #include <engine/ui/ui_text.vert>
+    #include <engine/ui/ui_text.frag>
+
+      inline constexpr Uniform<0, mat4> TRANSFORM;
+
+      inline constexpr Uniform<1, vec2> ATLAS_SIZE;
+      inline constexpr Uniform<2, vec2> TEXTURE_POS;
+      inline constexpr Uniform<3, vec2> TEXTURE_SIZE;
+    }
   }
 
 }

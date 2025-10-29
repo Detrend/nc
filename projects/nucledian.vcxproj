@@ -357,6 +357,8 @@
     <None Include="..\source\nucledian\engine\graphics\shaders\light_culling.comp" />
     <None Include="..\source\nucledian\engine\ui\ui_button.frag" />
     <None Include="..\source\nucledian\engine\ui\ui_button.vert" />
+    <None Include="..\source\nucledian\engine\ui\ui_text.frag" />
+    <None Include="..\source\nucledian\engine\ui\ui_text.vert" />
     <None Include="..\source\nucledian\math\lingebra.inl" />
     <None Include="..\source\nucledian\engine\entity\entity_system.inl" />
     <None Include="..\source\nucledian\stack_allocator.inl" />

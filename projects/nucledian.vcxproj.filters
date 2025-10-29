@@ -36,7 +36,6 @@
     <ClCompile Include="..\source\nucledian\engine\graphics\camera.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\gizmo.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\graphics_system.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\graphics\resources\material.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\mesh.cpp" />
     <ClCompile Include="..\source\nucledian\engine\input\input_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\map_system.cpp" />
@@ -58,6 +57,7 @@
     <ClCompile Include="..\source\nucledian\game\enemies.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\prop.cpp" />
     <ClCompile Include="..\source\nucledian\game\entity_attachment_manager.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\graphics\resources\shader_program.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -175,13 +175,13 @@
     <ClInclude Include="..\source\nucledian\engine\graphics\prop.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\entity_system_listener.h" />
     <ClInclude Include="..\source\nucledian\game\entity_attachment_manager.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\resources\shader_program.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
     <None Include="..\source\nucledian\engine\entity\entity_tests.inl" />
     <None Include="..\source\nucledian\engine\graphics\resources\mesh.inl" />
     <None Include="..\source\nucledian\engine\graphics\resources\model.inl" />
-    <None Include="..\source\nucledian\engine\graphics\resources\material.inl" />
     <None Include="..\source\nucledian\engine\graphics\shaders\billboard.frag" />
     <None Include="..\source\nucledian\engine\graphics\shaders\billboard.vert" />
     <None Include="..\source\nucledian\engine\graphics\shaders\light.frag" />
@@ -196,6 +196,10 @@
     <None Include="..\source\nucledian\anim_state_machine.inl" />
     <None Include="..\source\nucledian\engine\ui\ui_button.frag" />
     <None Include="..\source\nucledian\engine\ui\ui_button.vert" />
+    <None Include="..\source\nucledian\engine\graphics\resources\shader_program.inl" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\light_culling.comp" />
+    <None Include="..\source\nucledian\engine\ui\ui_text.frag" />
+    <None Include="..\source\nucledian\engine\ui\ui_text.vert" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\source\libs\glm\CMakeLists.txt" />
