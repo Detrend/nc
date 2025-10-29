@@ -24,7 +24,7 @@ namespace nc
     bool init();
     ~UserInterfaceSystem();
 
-  void draw_hud();
+    void draw_hud();
 
   private:
     void init_shaders();

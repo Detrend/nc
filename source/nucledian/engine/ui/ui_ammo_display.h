@@ -20,8 +20,6 @@ namespace nc
 		GLuint VAO;
 		GLuint VBO;
 
-		const char* texture_name = "ui_font";
-
 		const ShaderProgramHandle shader;
 	};
 }

@@ -59,7 +59,7 @@ namespace nc
     vec2 scale = vec2(0.03f, 0.07f);
 
     const TextureManager& manager = TextureManager::get();
-    [[maybe_unused]] const TextureHandle& texture = manager[texture_name];
+    [[maybe_unused]] const TextureHandle& texture = manager["ui_font"];
 
     bool first = true;
 
@@ -83,16 +83,14 @@ namespace nc
 
       const glm::mat4 final_trans = trans_mat;
 
-      int digit = ammo % 10;
+      s32 digit = ammo % 10;
       digit += 48;
 
       if (!first && ammo == 0)
       {
         digit = 0;
       }
-
-      ammo = ammo / 10;
-
+     
       shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
       shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
       shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
@@ -102,8 +100,10 @@ namespace nc
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
       first = false;
+      ammo = ammo / 10;
     }
 
+    // unbind
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
 

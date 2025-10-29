@@ -191,6 +191,7 @@ namespace nc
     glDisableVertexAttribArray(0);
     glBindVertexArray(0);
 
+    ammo_display->draw();
     menu->draw();
   }
 
@@ -240,7 +241,7 @@ namespace nc
       break;
     case ModuleEventType::render:
       //draw();
-      ammo_display->draw();
+      
       break;
     case ModuleEventType::cleanup:
       break;

@@ -12,7 +12,6 @@ layout(location = 0) uniform mat4 transformationMatrix;
 layout(location = 1) uniform vec2 atlas_size;
 layout(location = 2) uniform vec2 texture_pos;
 layout(location = 3) uniform vec2 texture_size;
-layout(location = 4) uniform int character;
 
 void main(void) {
 	gl_Position = transformationMatrix * vec4(position, 0.0, 1.0);

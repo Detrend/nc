@@ -59,7 +59,7 @@ namespace nc
   void UiButton::draw([[maybe_unused]] const ShaderProgramHandle button_material)
   {
     const TextureManager& manager = TextureManager::get();
-    [[maybe_unused]] const TextureHandle& texture = manager[texture_name];
+    const TextureHandle& texture = manager[texture_name];
 
     glm::mat4 trans_mat = glm::mat4(1.0f);
     vec2 translate = position;
