@@ -15,10 +15,12 @@ namespace nc
 
 		void init();
 
-		int ammo = 0;
+		int display_ammo = 0;
 
 		GLuint VAO;
 		GLuint VBO;
+
+		const char* texture_name = "ui_font";
 
 		const ShaderProgramHandle shader;
 	};

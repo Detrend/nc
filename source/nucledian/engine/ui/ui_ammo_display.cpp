@@ -2,6 +2,7 @@
 #include <engine/core/engine.h>
 #include <engine/player/thing_system.h>
 #include <engine/player/player.h>
+#include <glm/ext/matrix_transform.hpp>
 
 namespace nc
 {
@@ -42,11 +43,26 @@ namespace nc
 
 	void UiAmmoDisplay::update()
 	{
-		ammo = get_engine().get_module<ThingSystem>().get_player()->get_current_weapon_ammo();
+		display_ammo = get_engine().get_module<ThingSystem>().get_player()->get_current_weapon_ammo();
 	}
 
 	void UiAmmoDisplay::draw()
 	{
+    int ammo = display_ammo;
+
+    if (ammo < 0)
+    {
+      ammo = 0;
+    }
+
+    std::vector<vec2> positions = {vec2(0.8f, -0.8f) , vec2(0.74f, -0.8f), vec2(0.68f, -0.8f)  };
+    vec2 scale = vec2(0.03f, 0.07f);
+
+    const TextureManager& manager = TextureManager::get();
+    [[maybe_unused]] const TextureHandle& texture = manager[texture_name];
+
+    bool first = true;
+
     shader.use();
 
     glBindVertexArray(VAO);
@@ -58,7 +74,35 @@ namespace nc
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    for (size_t i = 0; i < 3; i++)
+    {
+      glm::mat4 trans_mat = glm::mat4(1.0f);
+      vec2 translate = positions[i];
+      trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+      trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
 
+      const glm::mat4 final_trans = trans_mat;
+
+      int digit = ammo % 10;
+      digit += 48;
+
+      if (!first && ammo == 0)
+      {
+        digit = 0;
+      }
+
+      ammo = ammo / 10;
+
+      shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+      shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+      shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+      shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+
+      glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+      first = false;
+    }
 
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);

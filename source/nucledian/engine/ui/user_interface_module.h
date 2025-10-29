@@ -1,3 +1,5 @@
+#pragma once
+
 #include <engine/core/engine_module.h>
 #include <engine/core/engine_module_id.h>
 #include <engine/core/module_event.h>
@@ -5,6 +7,8 @@
 #include <engine/ui/ui_button.h>
 
 #include <vector>
+
+#include <engine/ui/ui_ammo_display.h>
 
 
 namespace nc
@@ -29,6 +33,7 @@ namespace nc
     void load_texture();
 
     MenuManager* menu;
+    UiAmmoDisplay* ammo_display;
 
     std::vector<GuiTexture> ui_elements;
 

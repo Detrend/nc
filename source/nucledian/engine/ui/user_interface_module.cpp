@@ -52,6 +52,7 @@ namespace nc
     load_texture();
 
     menu = new MenuManager();
+    ammo_display = new UiAmmoDisplay();
 
     return true;
   }
@@ -234,10 +235,12 @@ namespace nc
       break;
     case ModuleEventType::game_update:
       gather_player_info();
+      ammo_display->update();
       menu->update();
       break;
     case ModuleEventType::render:
       //draw();
+      ammo_display->draw();
       break;
     case ModuleEventType::cleanup:
       break;
