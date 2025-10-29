@@ -86,7 +86,7 @@ namespace nc
       int digit = ammo % 10;
       digit += 48;
 
-      if (first && ammo == 0)
+      if (first && display_ammo == -1)
       {
         digit = '-';
       }
