@@ -17,6 +17,9 @@ namespace nc
 
 		int ammo = 0;
 
+		GLuint VAO;
+		GLuint VBO;
+
 		const ShaderProgramHandle shader;
 	};
 }
