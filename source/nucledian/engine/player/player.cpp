@@ -180,7 +180,7 @@ bool Player::get_attack_state(GameInputs curr_input, GameInputs prev_input, f32)
 
   if (holding_now && (can_hold || !holding_prev))
   {
-    return true;
+      return true;
   }
   else
   {
@@ -290,6 +290,17 @@ void Player::handle_attack(GameInputs curr_input, GameInputs prev_input, f32 dt)
 
   if (did_attack && this->weapon_fsm.get_state() == WeaponStates::idle)
   {
+    if (current_ammo[current_weapon] == -1)
+    {
+        this->weapon_fsm.set_state(WeaponStates::attack);
+    }
+
+    if (current_ammo[current_weapon] == 0)
+    {
+        return;
+    }
+
+    current_ammo[current_weapon] -= 1;
     this->weapon_fsm.set_state(WeaponStates::attack);
   }
 }

@@ -115,6 +115,9 @@ private:
   WeaponAnimFSM weapon_fsm;
 
   Camera camera;
+
+  int current_ammo[4] = {-1, 20, 20, 50};
+  int MAX_AMMO[4] = {-1, 50, 50, 100};
 };
 
 }
