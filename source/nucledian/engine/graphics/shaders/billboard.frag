@@ -14,7 +14,7 @@ layout(binding = 0) uniform sampler2D sampler;
 void main()
 {
   vec4 color = texture(sampler, uv);
-  if (color.a == 0.0f)
+  if (color.a < 0.95f)
     discard;
 
   g_position.xyz = position;

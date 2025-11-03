@@ -66,6 +66,9 @@ void main()
   uv = fract(uv);
   // flip y axis
   uv.y = 1.0f - uv.y;
+  // Hotfix for weird texture edges when mipmapping enabled..  This will break
+  // with large textures!
+  uv = clamp(uv, vec2(0.01f), vec2(0.99f));
   // compute atlas uv
   uv = (uv * texture_data.size + texture_data.pos) / atlas_size;
 
@@ -75,7 +78,7 @@ void main()
   } else{
     color = texture(level_atlas_sampler, uv);
   }
-  if (color.a == 0.0f)
+  if (color.a < 0.95f)
     discard;
 
   // Position G-bugger works in camera local space in order to overcome portals space discontinuity.

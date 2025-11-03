@@ -319,7 +319,7 @@ void TextureManager::finish_load(ResLifetime lifetime)
   glGenTextures(1, &gl_handle);
   glBindTexture(GL_TEXTURE_2D, gl_handle);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, target_width, target_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -360,6 +360,8 @@ void TextureManager::finish_load(ResLifetime lifetime)
     atlas.textures.emplace(load_data.name, handle);
     m_textures.push_back(handle);
   }
+
+  glGenerateMipmap(GL_TEXTURE_2D);
 
   m_load_rects.clear();
   m_load_data.clear();
