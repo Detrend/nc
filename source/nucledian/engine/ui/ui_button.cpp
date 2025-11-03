@@ -61,6 +61,8 @@ namespace nc
     const TextureManager& manager = TextureManager::get();
     const TextureHandle& texture = manager[texture_name];
 
+    glActiveTexture(GL_TEXTURE0);
+
     glm::mat4 trans_mat = glm::mat4(1.0f);
     vec2 translate = position;
     trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
@@ -123,6 +125,8 @@ namespace nc
     delete options_page;
     delete load_game_page;
     //delete save_game_page;
+    glDeleteBuffers(1, &VAO);
+    glDeleteBuffers(1, &VBO);
   }
 
   //=============================================================================================

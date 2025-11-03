@@ -27,24 +27,12 @@ namespace nc
     void draw_hud();
 
   private:
-    void init_shaders();
-    void gather_player_info();
-    
-    void load_texture();
-
     MenuManager* menu;
     UiAmmoDisplay* ammo_display;
 
     std::vector<GuiTexture> ui_elements;
 
     int display_health = 0;
-
-    unsigned int VBO;
-    unsigned int VAO;
-
-    unsigned int vertex_shader;
-    unsigned int fragment_shader;
-    unsigned int shader_program;
 
   };
 }

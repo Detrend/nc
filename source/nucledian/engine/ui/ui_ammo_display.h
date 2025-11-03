@@ -7,6 +7,7 @@ namespace nc
 	{
 	public:
 		UiAmmoDisplay();
+		~UiAmmoDisplay();
 
 		void update();
 
@@ -16,6 +17,7 @@ namespace nc
 		void init();
 
 		int display_ammo = 0;
+		int display_health = 0;
 
 		GLuint VAO;
 		GLuint VBO;
