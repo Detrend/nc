@@ -8,7 +8,7 @@
 
 #include <vector>
 
-#include <engine/ui/ui_ammo_display.h>
+#include <engine/ui/ui_hud_display.h>
 
 
 namespace nc
@@ -28,7 +28,7 @@ namespace nc
 
   private:
     MenuManager* menu;
-    UiAmmoDisplay* ammo_display;
+    UiHudDisplay* ammo_display;
 
     std::vector<GuiTexture> ui_elements;
 

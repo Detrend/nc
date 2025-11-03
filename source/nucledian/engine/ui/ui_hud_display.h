@@ -3,11 +3,11 @@
 
 namespace nc 
 {
-	class UiAmmoDisplay
+	class UiHudDisplay
 	{
 	public:
-		UiAmmoDisplay();
-		~UiAmmoDisplay();
+		UiHudDisplay();
+		~UiHudDisplay();
 
 		void update();
 

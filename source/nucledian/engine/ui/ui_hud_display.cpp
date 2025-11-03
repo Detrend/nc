@@ -1,4 +1,4 @@
-#include <engine/ui/ui_ammo_display.h>
+#include <engine/ui/ui_hud_display.h>
 #include <engine/core/engine.h>
 #include <engine/player/thing_system.h>
 #include <engine/player/player.h>
@@ -6,19 +6,19 @@
 
 namespace nc
 {
-	UiAmmoDisplay::UiAmmoDisplay() :
+	UiHudDisplay::UiHudDisplay() :
 		shader(shaders::ui_text::VERTEX_SOURCE, shaders::ui_text::FRAGMENT_SOURCE)
 	{
 		init();
 	}
 
-  UiAmmoDisplay::~UiAmmoDisplay()
+  UiHudDisplay::~UiHudDisplay()
   {
     glDeleteBuffers(1, &VAO);
     glDeleteBuffers(1, &VBO);
   }
 
-	void UiAmmoDisplay::init()
+	void UiHudDisplay::init()
 	{
     vec2 vertices[] = { vec2(-1, 1), vec2(0, 0),
         vec2(-1, -1), vec2(0, 1),
@@ -47,13 +47,13 @@ namespace nc
     glBindVertexArray(0);
 	}
 
-	void UiAmmoDisplay::update()
+	void UiHudDisplay::update()
 	{
 		display_ammo = get_engine().get_module<ThingSystem>().get_player()->get_current_weapon_ammo();
     display_health = get_engine().get_module<ThingSystem>().get_player()->get_health();
 	}
 
-	void UiAmmoDisplay::draw()
+	void UiHudDisplay::draw()
 	{
     int ammo = display_ammo;
 

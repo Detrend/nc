@@ -27,7 +27,7 @@ namespace nc
   bool UserInterfaceSystem::init()
   {
     menu = new MenuManager();
-    ammo_display = new UiAmmoDisplay();
+    ammo_display = new UiHudDisplay();
 
     return true;
   }
