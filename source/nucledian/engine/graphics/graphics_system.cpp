@@ -281,7 +281,7 @@ void GraphicsSystem::on_event(ModuleEvent& event)
       registry.for_each<Player>([&registry](const Player& player)
       {
         const vec3 position = player.get_position();
-        light = registry.create_entity<PointLight>(position, 1.0f, 1.0f,  0.09f, 0.032f, colors::GREEN);
+        light = registry.create_entity<PointLight>(position, 1.0f, 1.0f,  0.7f, 1.8f, colors::GREEN);
       });
 
       break;

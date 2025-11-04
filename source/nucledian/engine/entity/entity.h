@@ -23,6 +23,7 @@ class Entity
 {
 public:
   Entity(vec3 position, f32 radius, f32 height);
+  Entity(vec3 position, f32 radius);
   virtual ~Entity();
 
   // Deleted copy assignment and construction to not accidentally

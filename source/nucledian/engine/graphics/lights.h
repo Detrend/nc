@@ -89,7 +89,7 @@ public:
   );
 
   PointLightGPU get_gpu_data(const vec3& position) const;
-  f32 calculate_radius() const;
+  static f32 calculate_radius(const color3& color, f32 intensity, f32 constant, f32 linear, f32 quadratic);
 };
 
 }

@@ -34,7 +34,13 @@ EntityType DirectionalLight::get_type_static()
 
 //==============================================================================
 DirectionalLight::DirectionalLight(const vec3& direction, f32 intensity, const color3& color)
-  : Entity(VEC3_ZERO, 0.0f, 0.0f), color(color), direction(direction), intensity(intensity) {}
+  : Entity(VEC3_ZERO, 0.0f, 0.0f), color(color), direction(direction), intensity(clamp(intensity, 0.0f, 1.0f))
+{
+  if (intensity < 0.0f || intensity > 1.0f)
+  {
+    nc_warn("Light intensity is clamped because it is outside [0, 1] range.");
+  }
+}
 
 //==============================================================================
 DirLightGPU DirectionalLight::get_gpu_data() const
@@ -64,13 +70,24 @@ PointLight::PointLight
   const color3& color
 )
 :
-  Entity(position, 0.0f, 0.0f),
+  Entity(position, calculate_radius(color, intensity, constant, linear, quadratic)),
   color(color),
-  intensity(intensity),
+  intensity(clamp(intensity, 0.0f, 1.0f)),
   constant(constant),
   linear(linear),
   quadratic(quadratic)
-{}
+{
+  if (intensity < 0.0f || intensity > 1.0f)
+  {
+    nc_warn("Light intensity is clamped because it is outside [0, 1] range.");
+  }
+
+  const f32 radius = get_radius();
+  if (radius > 16.0f)
+  {
+    nc_warn("Light radius is too large. It could lead to bad performance. Consider tweaking light parameters.");
+  }
+}
 
 //==============================================================================
 PointLightGPU PointLight::get_gpu_data(const vec3& position) const
@@ -87,18 +104,22 @@ PointLightGPU PointLight::get_gpu_data(const vec3& position) const
 }
 
 //==============================================================================
-f32 PointLight::calculate_radius() const
+f32 PointLight::calculate_radius(const color3& color, f32 intensity, f32 constant, f32 linear, f32 quadratic)
 {
-  // TODO: include light intensity
+  // WARNING: Following code should be 1:1 copy of the calculate_light_radius function in light_culling.comp shader.
 
-  constexpr f32 threshold = 5.0f / 255.0f;
+  const float max_color = max(color.r, max(color.g, color.b));
+  const float min_intensity = 32.0f;
+  const float k = max_color * intensity * min_intensity;
 
-  const f32 c = constant - (1.0f / threshold);
-  const f32 d = (linear * linear) - (4.0f * quadratic * c);
+  if (quadratic < 0.0001f)
+    return (k - constant) / linear;
 
-  nc_assert(d >= 0.0f);
+  const float discriminant = linear * linear - 4.0f * quadratic * (constant - k);
+  if (discriminant < 0.0f)
+    return 0.0f;
 
-  return (-linear + sqrtf(d)) / (2.0f * quadratic);
+  return (-linear + sqrt(discriminant)) / (2.0f * quadratic);
 }
 
 }

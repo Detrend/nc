@@ -42,16 +42,18 @@ shared vec4 frustum_planes[4];
 
 float calculate_light_radius(PointLight light)
 {
-  float max_color = max(light.color.r, max(light.color.g, light.color.b));
-  float min_intensity = 256.0f;
-  float k = max_color * light.intensity * min_intensity;
+  // WARNING: following should be 1:1 copy of the calculate_radius function in lights.cpp source file.
+
+  const float max_color = max(light.color.r, max(light.color.g, light.color.b));
+  const float min_intensity = 32.0;
+  const float k = max_color * light.intensity * min_intensity;
 
   if (light.quadratic < 0.0001)
     return (k - light.constant) / light.linear;
 
-  float discriminant = light.linear * light.linear - 4 * light.quadratic * (light.constant - k);
-  if (discriminant < 0)
-    return 0;
+  const float discriminant = light.linear * light.linear - 4.0 * light.quadratic * (light.constant - k);
+  if (discriminant < 0.0)
+    return 0.0;
 
   return (-light.linear + sqrt(discriminant)) / (2.0 * light.quadratic);
 }

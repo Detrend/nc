@@ -35,6 +35,13 @@ Entity::Entity(vec3 position, f32 radius, f32 height)
 }
 
 //==============================================================================
+Entity::Entity(vec3 position, f32 radius)
+: Entity(position, radius, radius)
+{
+
+}
+
+//==============================================================================
 Entity::~Entity()
 {
   // TODO: unregister entity from the grid
