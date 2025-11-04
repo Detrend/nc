@@ -1,5 +1,6 @@
 // Project Nucledian Source File
 #include <game/item.h>
+#include <cvars.h>
 
 #include <engine/player/player.h> // for checking if should be picked up
 
@@ -48,6 +49,13 @@ bool PickUp::pickup([[maybe_unused]]const Player& player)
     {
       // TODO: pick up only if the player does not have full HP already
       picked_up = true;
+      Player& p = const_cast<Player&>(player);
+      for (int i = 0; i < 4; ++i)
+      {
+        p.current_ammo[i] = min(p.current_ammo[i] + 10, Player::MAX_AMMO[i]);
+      }
+      
+      p.current_health = min(p.current_health + 20, CVars::player_max_hp);
       break;
     }
 

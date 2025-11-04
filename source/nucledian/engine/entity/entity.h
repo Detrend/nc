@@ -10,7 +10,7 @@
 namespace nc
 {
 
-struct SectorMapping;
+class  EntityRegistry;
 struct Appearance;
 struct Physics;
 
@@ -88,11 +88,11 @@ protected:
   f32 GRAVITY = 6.0f;
 
 private: friend class EntityRegistry;
-  SectorMapping* m_mapping     = nullptr;
-  EntityID       m_id_and_type = INVALID_ENTITY_ID;
-  vec3           m_position;
-  f32            m_radius2d;
-  f32            m_height;
+  EntityRegistry* m_registry    = nullptr;
+  EntityID        m_id_and_type = INVALID_ENTITY_ID;
+  vec3            m_position;
+  f32             m_radius2d;
+  f32             m_height;
 };
 
 }

@@ -42,6 +42,7 @@ public:
   Camera* get_camera();
   int     get_health();
 
+  int     get_current_weapon_ammo();
 
   vec3  get_look_direction();
   f32   get_view_height();
@@ -77,7 +78,10 @@ private:
   /*PlayerSpecificInputs lastInputs;
   PlayerSpecificInputs currentInputs;*/
 
+public: // TODO: public for sake of the prototype
   s32 current_health;
+
+private:
 
   // Camera spring
   f32 vertical_camera_offset = 0.0f;
@@ -115,6 +119,10 @@ private:
   WeaponAnimFSM weapon_fsm;
 
   Camera camera;
+
+public: // Public for sake of demo
+  int current_ammo[4] = {-1, 20, 20, 50};
+  static constexpr int MAX_AMMO[4] = {-1, 50, 50, 100};
 };
 
 }

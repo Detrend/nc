@@ -1,9 +1,14 @@
+#pragma once
+
 #include <engine/core/engine_module.h>
 #include <engine/core/engine_module_id.h>
 #include <engine/core/module_event.h>
 #include <engine/ui/ui_texture.h>
+#include <engine/ui/ui_button.h>
 
 #include <vector>
+
+#include <engine/ui/ui_ammo_display.h>
 
 
 namespace nc
@@ -19,13 +24,16 @@ namespace nc
     bool init();
     ~UserInterfaceSystem();
 
-  void draw_hud();
+    void draw_hud();
 
   private:
     void init_shaders();
     void gather_player_info();
     
     void load_texture();
+
+    MenuManager* menu;
+    UiAmmoDisplay* ammo_display;
 
     std::vector<GuiTexture> ui_elements;
 

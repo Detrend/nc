@@ -152,7 +152,7 @@ bool GraphicsSystem::init()
 
   // init SDL
   constexpr auto SDL_INIT_FLAGS = SDL_INIT_VIDEO | SDL_INIT_EVENTS;
-  constexpr u32  SDL_WIN_FLAGS = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE;
+  constexpr u32  SDL_WIN_FLAGS = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED;
   constexpr cstr WINDOW_NAME = "Nucledian";
   constexpr auto WIN_POS = SDL_WINDOWPOS_UNDEFINED;
 
@@ -943,6 +943,17 @@ void GraphicsSystem::create_sector_meshes()
     );
     m_sector_meshes.push_back(mesh);
   }
+}
+
+//================================================================================
+vec2 GraphicsSystem::get_window_size()
+{
+    int x;
+    int y;
+    
+    SDL_GetWindowSize(m_window, &x, &y);
+
+    return vec2(x, y);
 }
 
 }

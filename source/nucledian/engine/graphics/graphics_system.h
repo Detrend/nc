@@ -63,6 +63,8 @@ public:
 
   const ShaderProgramHandle& get_solid_material() const;
 
+  vec2 get_window_size();
+
 private:
   void update(f32 delta_seconds);
   void render();

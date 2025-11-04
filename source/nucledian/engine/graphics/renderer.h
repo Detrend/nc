@@ -52,8 +52,8 @@ public:
 private:
   using Portal = Portal;
 
-  static constexpr size_t LIGHT_CULLING_TILE_SIZE_X = 16;
-  static constexpr size_t LIGHT_CULLING_TILE_SIZE_Y = 16;
+  static constexpr size_t LIGHT_CULLING_TILE_SIZE_X = 8;
+  static constexpr size_t LIGHT_CULLING_TILE_SIZE_Y = 8;
 
   mat4 m_default_projection;
   vec2 m_window_size;

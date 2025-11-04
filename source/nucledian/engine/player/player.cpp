@@ -14,6 +14,7 @@
 #include <engine/entity/entity_system.h>
 
 #include <engine/graphics/graphics_system.h> // RenderGunProperties
+#include <engine/graphics/lights.h>
 
 // Sound
 #include <engine/sound/sound_system.h>
@@ -23,6 +24,7 @@
 #include <game/projectile.h>
 #include <game/weapons.h>
 #include <game/item.h>
+#include <game/entity_attachment_manager.h>
 
 #include <math/utils.h>
 #include <math/lingebra.h>
@@ -178,7 +180,7 @@ bool Player::get_attack_state(GameInputs curr_input, GameInputs prev_input, f32)
 
   if (holding_now && (can_hold || !holding_prev))
   {
-    return true;
+      return true;
   }
   else
   {
@@ -191,9 +193,14 @@ void Player::apply_velocity(f32 delta_seconds)
 {
   // Collide with everything but us and projectiles for now. Later, we will have
   // to enable collisions with projectiles once again.
+  constexpr EntityTypeMask IGNORED_COLLIDERS
+    = EntityTypeFlags::player
+    | EntityTypeFlags::projectile
+    | EntityTypeFlags::point_light
+    | EntityTypeFlags::prop;
+
   constexpr EntityTypeMask PLAYER_COLLIDERS
-    = PhysLevel::COLLIDE_ALL
-    & ~(EntityTypeFlags::player | EntityTypeFlags::projectile);
+    = PhysLevel::COLLIDE_ALL & ~IGNORED_COLLIDERS;
 
   // Report only pickups
   constexpr EntityTypeMask PLAYER_REPORTING
@@ -283,6 +290,18 @@ void Player::handle_attack(GameInputs curr_input, GameInputs prev_input, f32 dt)
 
   if (did_attack && this->weapon_fsm.get_state() == WeaponStates::idle)
   {
+    if (current_ammo[current_weapon] == -1)
+    {
+        this->weapon_fsm.set_state(WeaponStates::attack);
+        return;
+    }
+
+    if (current_ammo[current_weapon] == 0)
+    {
+        return;
+    }
+
+    current_ammo[current_weapon] -= 1;
     this->weapon_fsm.set_state(WeaponStates::attack);
   }
 }
@@ -405,9 +424,21 @@ void Player::do_attack()
   else
   {
     // Spawn projectile
-    entity_system.create_entity<Projectile>
+    Projectile* projectile = entity_system.create_entity<Projectile>
     (
       from, dir, this->get_id(), WEAPON_STATS[weapon].projectile
+    );
+
+    // And its light
+    PointLight* light = entity_system.create_entity<PointLight>
+    (
+      from, 1.0f, 1.0f, 0.09f, 0.032f, colors::BLUE
+    );
+
+    // And attach it
+    ThingSystem::get().get_attachment_mgr().attach_entity
+    (
+      light->get_id(), projectile->get_id(), EntityAttachmentFlags::all
     );
   }
 
@@ -570,6 +601,12 @@ bool Player::has_weapon(WeaponType weapon) const
 EntityType Player::get_type_static()
 {
   return EntityTypes::player;
+}
+
+//==============================================================================
+int Player::get_current_weapon_ammo()
+{
+  return this->current_ammo[this->current_weapon];
 }
 
 }

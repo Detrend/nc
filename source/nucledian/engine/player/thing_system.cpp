@@ -21,6 +21,8 @@
 #include <engine/sound/sound_system.h>
 #include <engine/sound/sound_resources.h>
 
+#include <game/entity_attachment_manager.h>
+
 #include <engine/enemies/enemy.h>
 #include <game/projectile.h>
 #include <game/weapons.h>
@@ -372,6 +374,7 @@ static vec3 load_json_position(const nlohmann::json& js, const cstr &field_name 
         }
         else {
             // Beware that these fuckers can shoot you even if you do not see them and therefore kill you during the normal level testing.
+            //EnemyType type = (std::rand() % 2) ? EnemyTypes::cultist : EnemyTypes::possessed;
             entities.create_entity<Enemy>(position, forward, EnemyTypes::cultist);
         }
     }
@@ -541,19 +544,23 @@ namespace nc
 constexpr cstr SAVE_DIR_RELATIVE = "save";
 constexpr cstr SAVE_FILE_SUFFIX  = ".ncs";
 
-//==========================================================
+//==============================================================================
 EngineModuleId ThingSystem::get_module_id()
 {
   return EngineModule::entity_system;
 }
 
-//==========================================================
+//==============================================================================
 ThingSystem& ThingSystem::get()
 {
   return get_engine().get_module<ThingSystem>();
 }
 
-//==========================================================
+//==============================================================================
+ThingSystem::ThingSystem()  = default;
+ThingSystem::~ThingSystem() = default;
+
+//==============================================================================
 bool ThingSystem::init()
 {
   // init level db
@@ -853,6 +860,19 @@ PhysLevel ThingSystem::get_level() const
 }
 
 //==============================================================================
+EntityAttachment& ThingSystem::get_attachment_mgr()
+{
+  nc_assert(this->attachment);
+  return *this->attachment;
+}
+
+//==============================================================================
+const EntityAttachment& ThingSystem::get_attachment_mgr() const
+{
+  return const_cast<ThingSystem*>(this)->get_attachment_mgr();
+}
+
+//==============================================================================
 void ThingSystem::cleanup_map()
 {
   entities.reset();
@@ -861,13 +881,18 @@ void ThingSystem::cleanup_map()
   player_id = INVALID_ENTITY_ID;
 }
 
-//==========================================================
+//==============================================================================
 void ThingSystem::build_map(LevelID level)
 {
   nc_assert(!map && !mapping && !entities);
-  map      = std::make_unique<MapSectors>();
-  mapping  = std::make_unique<SectorMapping>(*map);
-  entities = std::make_unique<EntityRegistry>(*mapping);
+
+  map        = std::make_unique<MapSectors>();
+  mapping    = std::make_unique<SectorMapping>(*map);
+  entities   = std::make_unique<EntityRegistry>();
+  attachment = std::make_unique<EntityAttachment>(*entities);
+
+  entities->add_listener(mapping.get());
+  entities->add_listener(attachment.get());
 
   switch (level)
   {

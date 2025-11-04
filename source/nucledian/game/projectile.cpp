@@ -73,12 +73,19 @@ void Projectile::update(f32 dt)
   f32 r = this->get_radius();
   f32 h = this->get_height();
 
-  EntityTypeMask hit_types = PhysLevel::COLLIDE_ALL & ~(EntityTypeFlags::projectile);
+  constexpr EntityTypeMask DO_NOT_COLLIDE_WITH
+    = EntityTypeFlags::projectile
+    | EntityTypeFlags::point_light
+    | EntityTypeFlags::pickup
+    | EntityTypeFlags::prop;
+
+  constexpr EntityTypeMask HIT_TYPES
+    = PhysLevel::COLLIDE_ALL & ~DO_NOT_COLLIDE_WITH;
 
   lvl.move_particle
   (
     position, m_velocity, transform, dt, r, h, 0.0f,
-    1.0f, hit_types,
+    1.0f, HIT_TYPES,
     [&](const CollisionHit& hit)
     {
       if (hit.type == CollisionHit::entity && this->on_entity_hit(hit))

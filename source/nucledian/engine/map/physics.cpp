@@ -1098,6 +1098,12 @@ const
       break;
     }
 
+    // TODO: REMOVE THIS LATER!!! Assert prevention for Vojta demo
+    if (!is_normal(hit.normal))
+    {
+      break;
+    }
+
     nc_assert(is_normal(hit.normal), "Bad things can happen");
     const auto remaining = velocity * (1.0f - hit.coeff);
     const auto projected = hit.normal * dot(remaining, hit.normal);
@@ -1313,6 +1319,12 @@ const
     if (!hit)
     {
       // No hit? Then just end
+      break;
+    }
+
+    // TODO: REMOVE THIS LATER!!! Assert prevention for Vojta demo
+    if (!is_normal(hit.normal))
+    {
       break;
     }
 

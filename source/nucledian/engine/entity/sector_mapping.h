@@ -3,6 +3,7 @@
 
 #include <engine/entity/entity_types.h>
 #include <engine/map/map_types.h>
+#include <engine/entity/entity_system_listener.h>
 
 #include <math/matrix.h>
 
@@ -21,14 +22,16 @@ namespace nc
 // Data structure that tracks which entity is in which sector and
 // other way around.
 // Useful for spatial queries of entities
-struct SectorMapping
+struct SectorMapping : public IEntityListener
 {
   SectorMapping(MapSectors& map);
 
   void on_map_rebuild();
-  void on_entity_move(EntityID id, vec3 pos, f32 r, f32 h);
-  void on_entity_destroy(EntityID id);
-  void on_entity_create(EntityID id, vec3 pos, f32 r, f32 h);
+
+  virtual void on_entity_move(EntityID id, vec3 pos, f32 r, f32 h)   override;
+  virtual void on_entity_garbaged(EntityID id)                       override;
+  virtual void on_entity_destroy(EntityID id)                        override;
+  virtual void on_entity_create(EntityID id, vec3 pos, f32 r, f32 h) override;
 
   struct SectorsAndTransforms
   {

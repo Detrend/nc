@@ -42,9 +42,33 @@ constexpr f32 TARGET_STOP_DISTANCE  = 1.0f;  // How far do we keep from the targ
 constexpr f32 PATH_POINT_ERASE_DIST = 0.25f; // Removes the path point if this close
 
 // Global only temporaly, this will be set per enemy type.
-constexpr ActorAnimStateFlag dir8_states
+constexpr ActorAnimStateFlag ENEMY_DIR8_STATES
   = ActorAnimStatesFlags::all
   & ~(ActorAnimStatesFlags::dying | ActorAnimStatesFlags::dead);
+
+namespace sprites
+{
+
+//==============================================================================
+static std::string choose_sprite(const ActorFSM& fsm, EnemyType type)
+{
+  u8   anim_state       = fsm.get_state();
+  u64  state_sprite_cnt = ENEMY_STATS[type].state_sprite_cnt[anim_state];
+  f32  rel_time         = fsm.get_time_relative();
+  u64  sprite_idx       = cast<u64>(rel_time * state_sprite_cnt);
+  cstr sprite_sheet     = ACTOR_ANIM_STATES_NAMES[anim_state];
+  cstr type_name        = ENEMY_TYPE_NAMES[type];
+
+  return std::format("{}_{}_{}", type_name, sprite_sheet, sprite_idx);
+}
+
+//==============================================================================
+static Appearance::SpriteMode choose_sprite_mode(const ActorFSM& fsm)
+{
+  bool is_dir8 = actor_anim_state_to_flag(fsm.get_state()) & ENEMY_DIR8_STATES;
+  return is_dir8 ? Appearance::SpriteMode::dir8 : Appearance::SpriteMode::mono;
+}
+}
 
 //==============================================================================
 static f32 random_range(f32 min, f32 max)
@@ -83,7 +107,7 @@ Enemy::Enemy(vec3 position, vec3 looking_dir, EnemyType tpe)
 
   this->appear = Appearance
   {
-    .sprite    = "cultist_idle_0",
+    .sprite    = std::format("{}_idle_0", ENEMY_TYPE_NAMES[this->type]),
     .direction = this->facing,
     .scale     = 45.0f,
     .mode      = Appearance::SpriteMode::dir8,
@@ -97,11 +121,13 @@ Enemy::Enemy(vec3 position, vec3 looking_dir, EnemyType tpe)
     this->anim_fsm.set_state_length(s, stats.state_sprite_len[s]);
   }
 
+  u64 attack_frame_idx = stats.state_sprite_cnt[AnimStates::attack];
+  f32 attack_state_len = stats.state_sprite_len[AnimStates::attack];
+  f32 trigger_time = (stats.attack_frame * attack_state_len) / attack_frame_idx;
+
   this->anim_fsm.add_trigger
   (
-    AnimStates::attack,
-    stats.attack_frame / cast<f32>(stats.state_sprite_cnt[AnimStates::attack]),
-    TriggerTypes::trigger_fire
+    AnimStates::attack, trigger_time, TriggerTypes::trigger_fire
   );
 }
 
@@ -206,7 +232,8 @@ void Enemy::handle_appearance(f32 delta)
         ActorAnimState new_state = this->anim_fsm.get_state();
         if (new_state == ActorAnimStates::dead)
         {
-          // Kill ourselves
+          // Kill ourselves. Lets not do it here, but instead later when the
+          // state machine is finished.
           died = true;
         }
       }
@@ -216,34 +243,13 @@ void Enemy::handle_appearance(f32 delta)
 
   if (died)
   {
+    // Do not pick better sprite, keep the one we had before dying
     this->on_dying_anim_end();
     return;
   }
 
-  u8   anim_state       = this->anim_fsm.get_state();
-
-  bool ok_state = anim_state == ActorAnimStates::walk || anim_state == ActorAnimStates::attack;
-  const auto& true_stats = ok_state ? ENEMY_STATS[this->type] : ENEMY_STATS[EnemyTypes::cultist];
-
-  u64  state_sprite_cnt = true_stats.state_sprite_cnt[anim_state];
-  f32  rel_time         = this->anim_fsm.get_time_relative();
-  u64  sprite_idx       = cast<u64>(rel_time * state_sprite_cnt);
-  cstr sprite_sheet     = ACTOR_ANIM_STATES_NAMES[anim_state];
-  cstr type_name        = ENEMY_TYPE_NAMES[this->type];
-
-  if (!ok_state)
-  {
-    type_name = ENEMY_TYPE_NAMES[EnemyTypes::cultist];
-  }
-
-  this->appear.mode = ActorAnimStateToFlag(anim_state) & dir8_states
-    ? Appearance::SpriteMode::dir8
-    : Appearance::SpriteMode::mono;
-
-  this->appear.sprite = std::format
-  (
-    "{}_{}_{}", type_name, sprite_sheet, sprite_idx
-  );
+  this->appear.sprite = sprites::choose_sprite(this->anim_fsm, this->type);
+  this->appear.mode   = sprites::choose_sprite_mode(this->anim_fsm);
 }
 
 //==============================================================================
