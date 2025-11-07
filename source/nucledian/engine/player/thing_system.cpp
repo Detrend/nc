@@ -237,8 +237,8 @@ static void load_json_map(const LevelName &level_name, MapSectors& map, SectorMa
     }
     else {
       // Beware that these fuckers can shoot you even if you do not see them and therefore kill you during the normal level testing.
-      //EnemyType type = (std::rand() % 2) ? EnemyTypes::cultist : EnemyTypes::possessed;
-      entities.create_entity<Enemy>(position, forward, EnemyTypes::cultist);
+      const EnemyTypes::evalue entity_type = js_entity["entity_type"];
+      entities.create_entity<Enemy>(position, forward, entity_type);
     }
   }
 
