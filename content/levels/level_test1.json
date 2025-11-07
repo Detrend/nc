@@ -1,21 +1,50 @@
 {
+	"ambient_lights": [
+		{
+			"intensity": 0.3,
+			"position": [
+				-2.20000004768372,
+				3.40000009536743,
+				0.2
+			]
+		}
+	],
 	"directional_lights": [
 		{
 			"color": [
+				0.949999988079071,
+				0.29449999332428,
+				0.305424839258194,
+				1.0
+			],
+			"direction": [
 				1.0,
-				1.0,
+				0.0,
+				0.0
+			],
+			"intensity": 1.0,
+			"position": [
+				-4.0,
+				3.20000004768372,
+				0.2
+			]
+		},
+		{
+			"color": [
+				0.209999978542328,
+				0.302166759967804,
 				1.0,
 				1.0
 			],
 			"direction": [
 				0.0,
 				0.0,
-				-1.0
+				1.0
 			],
 			"intensity": 1.0,
 			"position": [
-				-4.0,
-				3.20000004768372,
+				-5.59999990463257,
+				3.60000014305115,
 				0.2
 			]
 		}
@@ -190,20 +219,6 @@
 			]
 		},
 		{
-			"entity_type": 0,
-			"forward": [
-				-0.0327614322304726,
-				-0.999463200569153,
-				0.0
-			],
-			"is_player": true,
-			"position": [
-				1018.20001220703,
-				1086.0,
-				1.0
-			]
-		},
-		{
 			"entity_type": 1,
 			"forward": [
 				0.166207879781723,
@@ -215,6 +230,20 @@
 				1009.40002441406,
 				1039.0,
 				0.2
+			]
+		},
+		{
+			"entity_type": 0,
+			"forward": [
+				-0.0327614322304726,
+				-0.999463200569153,
+				0.0
+			],
+			"is_player": true,
+			"position": [
+				1002.40008544922,
+				1084.80004882813,
+				1.0
 			]
 		},
 		{
@@ -9310,6 +9339,20 @@
 				],
 				[
 					{
+						"begin_height": 1.286956,
+						"end_height": 1.582608,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					},
+					{
 						"begin_height": 6.0,
 						"end_height": 12.0,
 						"id": "bricks",
@@ -9341,7 +9384,7 @@
 				"tile_rotations_count": 2
 			},
 			"debug_name": "@Polygon2D@30390",
-			"floor": 0.0,
+			"floor": 1.582608,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -9365,25 +9408,10 @@
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
+				[],
 				[
 					{
-						"begin_height": 0.0,
-						"end_height": 1.286956,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.1,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 0.0,
+						"begin_height": 1.582608,
 						"end_height": 6.0,
 						"id": "bricks",
 						"offset": [
@@ -9399,8 +9427,8 @@
 				],
 				[
 					{
-						"begin_height": 0.0,
-						"end_height": 0.4,
+						"begin_height": 1.582608,
+						"end_height": 1.87826,
 						"id": "floor1",
 						"offset": [
 							0.0,
@@ -9415,7 +9443,7 @@
 				],
 				[
 					{
-						"begin_height": 0.0,
+						"begin_height": 1.582608,
 						"end_height": 6.0,
 						"id": "bricks",
 						"offset": [
@@ -9446,7 +9474,7 @@
 				"tile_rotations_count": 2
 			},
 			"debug_name": "@Polygon2D@30738",
-			"floor": 0.4,
+			"floor": 1.87826,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -9488,7 +9516,7 @@
 				],
 				[
 					{
-						"begin_height": 0.4,
+						"begin_height": 1.87826,
 						"end_height": 6.4,
 						"id": "bricks",
 						"offset": [
@@ -9504,8 +9532,8 @@
 				],
 				[
 					{
-						"begin_height": 0.4,
-						"end_height": 0.8,
+						"begin_height": 1.87826,
+						"end_height": 2.173912,
 						"id": "floor1",
 						"offset": [
 							0.0,
@@ -9520,7 +9548,7 @@
 				],
 				[
 					{
-						"begin_height": 0.4,
+						"begin_height": 1.87826,
 						"end_height": 6.4,
 						"id": "bricks",
 						"offset": [
@@ -9551,7 +9579,7 @@
 				"tile_rotations_count": 2
 			},
 			"debug_name": "@Polygon2D@31086",
-			"floor": 0.8,
+			"floor": 2.173912,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -9593,7 +9621,7 @@
 				],
 				[
 					{
-						"begin_height": 0.8,
+						"begin_height": 2.173912,
 						"end_height": 6.8,
 						"id": "bricks",
 						"offset": [
@@ -9609,8 +9637,8 @@
 				],
 				[
 					{
-						"begin_height": 0.8,
-						"end_height": 1.2,
+						"begin_height": 2.173912,
+						"end_height": 2.469564,
 						"id": "floor1",
 						"offset": [
 							0.0,
@@ -9625,7 +9653,7 @@
 				],
 				[
 					{
-						"begin_height": 0.8,
+						"begin_height": 2.173912,
 						"end_height": 6.8,
 						"id": "bricks",
 						"offset": [
@@ -9656,7 +9684,7 @@
 				"tile_rotations_count": 2
 			},
 			"debug_name": "@Polygon2D@44213",
-			"floor": 1.2,
+			"floor": 2.469564,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -9682,7 +9710,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 1.2,
+						"begin_height": 2.469564,
 						"end_height": 7.2,
 						"id": "bricks",
 						"offset": [
@@ -9698,8 +9726,8 @@
 				],
 				[
 					{
-						"begin_height": 1.2,
-						"end_height": 1.6,
+						"begin_height": 2.469564,
+						"end_height": 2.765216,
 						"id": "floor1",
 						"offset": [
 							0.0,
@@ -9714,7 +9742,7 @@
 				],
 				[
 					{
-						"begin_height": 1.2,
+						"begin_height": 2.469564,
 						"end_height": 7.2,
 						"id": "bricks",
 						"offset": [
@@ -9761,7 +9789,7 @@
 				"tile_rotations_count": 2
 			},
 			"debug_name": "@Polygon2D@25686",
-			"floor": 1.6,
+			"floor": 2.765216,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -9803,7 +9831,7 @@
 				],
 				[
 					{
-						"begin_height": 1.6,
+						"begin_height": 2.765216,
 						"end_height": 7.6,
 						"id": "bricks",
 						"offset": [
@@ -9819,23 +9847,23 @@
 				],
 				[
 					{
-						"begin_height": 1.6,
+						"begin_height": 2.765216,
 						"end_height": 3.060868,
-						"id": "bricks",
+						"id": "floor1",
 						"offset": [
 							0.0,
 							0.0
 						],
 						"rotation": 0.0,
-						"scale": 1.1,
+						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
+						"tile_rotations_count": 4
 					}
 				],
 				[
 					{
-						"begin_height": 1.6,
+						"begin_height": 2.765216,
 						"end_height": 7.6,
 						"id": "bricks",
 						"offset": [
@@ -36774,7 +36802,7 @@
 				"tile_rotations_count": 2
 			},
 			"debug_name": "_Polygon2D_30390",
-			"floor": 0.0,
+			"floor": 1.582608,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -36800,7 +36828,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 0.0,
+						"begin_height": 1.582608,
 						"end_height": 6.0,
 						"id": "bricks",
 						"offset": [
@@ -36816,7 +36844,7 @@
 				],
 				[
 					{
-						"begin_height": 0.0,
+						"begin_height": 1.582608,
 						"end_height": 6.0,
 						"id": "bricks",
 						"offset": [
@@ -36832,8 +36860,8 @@
 				],
 				[
 					{
-						"begin_height": 0.0,
-						"end_height": 0.4,
+						"begin_height": 1.582608,
+						"end_height": 1.87826,
 						"id": "floor1",
 						"offset": [
 							0.0,
@@ -36848,7 +36876,7 @@
 				],
 				[
 					{
-						"begin_height": 0.0,
+						"begin_height": 1.582608,
 						"end_height": 6.0,
 						"id": "bricks",
 						"offset": [
@@ -36879,7 +36907,7 @@
 				"tile_rotations_count": 2
 			},
 			"debug_name": "_Polygon2D_30738",
-			"floor": 0.4,
+			"floor": 1.87826,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -36921,7 +36949,7 @@
 				],
 				[
 					{
-						"begin_height": 0.4,
+						"begin_height": 1.87826,
 						"end_height": 6.4,
 						"id": "bricks",
 						"offset": [
@@ -36937,8 +36965,8 @@
 				],
 				[
 					{
-						"begin_height": 0.4,
-						"end_height": 0.8,
+						"begin_height": 1.87826,
+						"end_height": 2.173912,
 						"id": "floor1",
 						"offset": [
 							0.0,
@@ -36953,7 +36981,7 @@
 				],
 				[
 					{
-						"begin_height": 0.4,
+						"begin_height": 1.87826,
 						"end_height": 6.4,
 						"id": "bricks",
 						"offset": [
@@ -36984,7 +37012,7 @@
 				"tile_rotations_count": 2
 			},
 			"debug_name": "_Polygon2D_31086",
-			"floor": 0.8,
+			"floor": 2.173912,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -37026,7 +37054,7 @@
 				],
 				[
 					{
-						"begin_height": 0.8,
+						"begin_height": 2.173912,
 						"end_height": 6.8,
 						"id": "bricks",
 						"offset": [
@@ -37042,8 +37070,8 @@
 				],
 				[
 					{
-						"begin_height": 0.8,
-						"end_height": 1.2,
+						"begin_height": 2.173912,
+						"end_height": 2.469564,
 						"id": "floor1",
 						"offset": [
 							0.0,
@@ -37058,7 +37086,7 @@
 				],
 				[
 					{
-						"begin_height": 0.8,
+						"begin_height": 2.173912,
 						"end_height": 6.8,
 						"id": "bricks",
 						"offset": [
@@ -37089,7 +37117,7 @@
 				"tile_rotations_count": 2
 			},
 			"debug_name": "_Polygon2D_44213",
-			"floor": 1.2,
+			"floor": 2.469564,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -37115,7 +37143,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 1.2,
+						"begin_height": 2.469564,
 						"end_height": 7.2,
 						"id": "bricks",
 						"offset": [
@@ -37131,8 +37159,8 @@
 				],
 				[
 					{
-						"begin_height": 1.2,
-						"end_height": 1.6,
+						"begin_height": 2.469564,
+						"end_height": 2.765216,
 						"id": "floor1",
 						"offset": [
 							0.0,
@@ -37147,7 +37175,7 @@
 				],
 				[
 					{
-						"begin_height": 1.2,
+						"begin_height": 2.469564,
 						"end_height": 7.2,
 						"id": "bricks",
 						"offset": [
@@ -37194,7 +37222,7 @@
 				"tile_rotations_count": 2
 			},
 			"debug_name": "_Polygon2D_25686",
-			"floor": 1.6,
+			"floor": 2.765216,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -37236,7 +37264,7 @@
 				],
 				[
 					{
-						"begin_height": 1.6,
+						"begin_height": 2.765216,
 						"end_height": 7.6,
 						"id": "bricks",
 						"offset": [
@@ -37252,7 +37280,7 @@
 				],
 				[
 					{
-						"begin_height": 1.6,
+						"begin_height": 2.765216,
 						"end_height": 7.6,
 						"id": "bricks",
 						"offset": [
@@ -37268,7 +37296,7 @@
 				],
 				[
 					{
-						"begin_height": 1.6,
+						"begin_height": 2.765216,
 						"end_height": 7.6,
 						"id": "bricks",
 						"offset": [

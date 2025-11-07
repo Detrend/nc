@@ -266,6 +266,11 @@ static void load_json_map(const LevelName &level_name, MapSectors& map, SectorMa
 
     entities.create_entity<PointLight>(position, intensity, constant, linear, quadratic, color);
   }
+  for (auto&& js_light : data["ambient_lights"]) {
+    const float intensity = js_light["intensity"];
+
+    entities.create_entity<AmbientLight>(intensity);
+  }
 
 }
 

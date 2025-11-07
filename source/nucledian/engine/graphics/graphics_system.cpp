@@ -271,12 +271,6 @@ void GraphicsSystem::on_event(ModuleEvent& event)
 
       // TODO: temporary directional lights (don't forget about lights header)
       EntityRegistry& registry = ThingSystem::get().get_entities();
-      
-      registry.create_entity<AmbientLight>(0.3f);
-      
-      registry.create_entity<DirectionalLight>(vec3(0.218f, 0.872f, 0.436f), 0.4f, colors::WHITE);
-      registry.create_entity<DirectionalLight>(VEC3_X, 0.8f, colors::RED);
-      registry.create_entity<DirectionalLight>(VEC3_Z, 0.8f, colors::BLUE);
 
       registry.for_each<Player>([&registry](const Player& player)
       {
