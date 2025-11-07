@@ -10,17 +10,13 @@
 
 [sub_resource type="Resource" id="Resource_2u6mu"]
 script = ExtResource("6_njmb3")
-priority = 0
 texture = ExtResource("3_gaxj5")
 metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 
 [resource]
 script = ExtResource("2_gaxj5")
 preview = ExtResource("1_45sh4")
-preview_scale = 1.0
-preview_rotation = 0.0
 wall_default = SubResource("Resource_2u6mu")
-wall_rules = Array[ExtResource("3_uwfw1")]([])
 floor = ExtResource("2_njmb3")
 ceiling = ExtResource("1_2e2ib")
 metadata/_custom_type_script = "uid://bd7os02w6f4ou"

@@ -17,7 +17,6 @@ metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 script = ExtResource("3_fr723")
 priority = 1
 _placement_type = 9
-wall_length_range = Vector2(inf_neg, inf)
 texture = ExtResource("2_e42dy")
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
@@ -25,7 +24,6 @@ metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 script = ExtResource("1_n8a10")
 preview = ExtResource("1_ooviw")
 preview_scale = 0.1
-preview_rotation = 0.0
 wall_default = SubResource("Resource_a7s6x")
 wall_rules = Array[ExtResource("3_fr723")]([SubResource("Resource_e42dy")])
 floor = ExtResource("2_e42dy")

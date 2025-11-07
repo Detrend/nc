@@ -16,7 +16,6 @@ metadata/_custom_type_script = "uid://ds4udf2uy0wpn"
 [sub_resource type="Resource" id="Resource_4hq5t"]
 script = ExtResource("5_w1xyq")
 texture = ExtResource("3_4hq5t")
-mode = 0
 begin_up_direction = Vector3(0, 0.2, -0.1)
 end_up_direction = Vector3(0, 0.2, -0.1)
 begin_down_direction = Vector3(0, 0.2, 0)
@@ -26,8 +25,6 @@ metadata/_custom_type_script = "uid://dpohkvy6wk8m2"
 [sub_resource type="Resource" id="Resource_guvti"]
 script = ExtResource("4_wqr2l")
 texture = SubResource("Resource_4hq5t")
-anchor_point = 0.0
-height_expression = "min(1.0, 0.5 * total_height)"
 _arguments_preview = PackedStringArray("total_height", "available_height", "wall_height_min", "wall_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling")
 metadata/_custom_type_script = "uid://b60vys5f055ei"
 

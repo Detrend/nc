@@ -17,10 +17,7 @@ metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 [resource]
 script = ExtResource("2_r0utu")
 preview = ExtResource("1_qr651")
-preview_scale = 1.0
-preview_rotation = 0.0
 wall_default = SubResource("Resource_hshd3")
-wall_rules = Array[ExtResource("3_1qqi1")]([])
 floor = ExtResource("2_hyndm")
 ceiling = ExtResource("1_hyndm")
 metadata/_custom_type_script = "uid://bd7os02w6f4ou"

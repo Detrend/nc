@@ -10,7 +10,6 @@
 
 [sub_resource type="Resource" id="Resource_0uif0"]
 script = ExtResource("6_hqytu")
-priority = 0
 texture = ExtResource("6_0uif0")
 metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 
@@ -25,8 +24,6 @@ metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 [resource]
 script = ExtResource("2_nswn4")
 preview = ExtResource("1_w87yy")
-preview_scale = 1.0
-preview_rotation = 0.0
 wall_default = SubResource("Resource_0uif0")
 wall_rules = Array[ExtResource("3_ni0fv")]([SubResource("Resource_w87yy")])
 floor = ExtResource("2_hqytu")

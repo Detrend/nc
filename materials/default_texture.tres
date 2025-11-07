@@ -11,13 +11,11 @@
 
 [sub_resource type="Resource" id="Resource_csai5"]
 script = ExtResource("6_uk745")
-priority = 0
 texture = ExtResource("3_plrdw")
 metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 
 [sub_resource type="Resource" id="Resource_a6q66"]
 script = ExtResource("3_55itm")
-priority = 0
 _placement_type = 9
 wall_length_range = Vector2(0, 0.5)
 texture = ExtResource("5_jrn1d")
@@ -25,7 +23,6 @@ metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [sub_resource type="Resource" id="Resource_uk745"]
 script = ExtResource("3_55itm")
-priority = 0
 _placement_type = 17
 wall_length_range = Vector2(0, 2.3)
 texture = ExtResource("8_csai5")
@@ -34,8 +31,6 @@ metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 [resource]
 script = ExtResource("1_23jo0")
 preview = ExtResource("1_37rwi")
-preview_scale = 1.0
-preview_rotation = 0.0
 wall_default = SubResource("Resource_csai5")
 wall_rules = Array[ExtResource("3_55itm")]([SubResource("Resource_a6q66"), SubResource("Resource_uk745")])
 floor = ExtResource("5_jrn1d")

@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://dgu644cct1eeb"]
+
+[ext_resource type="Script" uid="uid://cs4fi7b04r2ix" path="res://scripts/things/Entity.gd" id="1_r24g2"]
+[ext_resource type="Texture2D" uid="uid://cn552lhwtl5o1" path="res://imgs/possessed_face.png" id="3_5u5aa"]
+
+[node name="Possessed" type="Node2D"]
+z_index = 999
+script = ExtResource("1_r24g2")
+entity_type = 1
+
+[node name="Icon" type="Sprite2D" parent="."]
+texture_filter = 1
+texture_repeat = 1
+scale = Vector2(0.2428286, 0.2428286)
+texture = ExtResource("3_5u5aa")

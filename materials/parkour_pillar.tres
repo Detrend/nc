@@ -34,8 +34,6 @@ metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 [resource]
 script = ExtResource("2_caupq")
 preview = ExtResource("1_cr5p4")
-preview_scale = 1.0
-preview_rotation = 0.0
 wall_default = SubResource("Resource_yci1d")
 wall_rules = Array[ExtResource("3_qxi2i")]([SubResource("Resource_cr5p4"), SubResource("Resource_caupq")])
 floor = ExtResource("2_olw7g")

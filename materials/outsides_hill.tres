@@ -10,7 +10,6 @@
 
 [sub_resource type="Resource" id="Resource_xkrpa"]
 script = ExtResource("5_efelk")
-priority = 0
 texture = ExtResource("1_w0eko")
 metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 
@@ -18,7 +17,6 @@ metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 script = ExtResource("3_w0eko")
 priority = 2
 _placement_type = 9
-wall_length_range = Vector2(inf_neg, inf)
 texture = ExtResource("7_xkrpa")
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
@@ -26,7 +24,6 @@ metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 script = ExtResource("2_styc6")
 preview = ExtResource("1_shv6e")
 preview_scale = 0.1
-preview_rotation = 0.0
 wall_default = SubResource("Resource_xkrpa")
 wall_rules = Array[ExtResource("3_w0eko")]([SubResource("Resource_efelk")])
 floor = ExtResource("2_efelk")

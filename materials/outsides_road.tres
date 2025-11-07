@@ -15,7 +15,6 @@ metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 
 [sub_resource type="Resource" id="Resource_hk1ql"]
 script = ExtResource("3_fdxwp")
-priority = 0
 _placement_type = 9
 wall_length_range = Vector2(0, 0.5)
 texture = ExtResource("2_mygdj")
@@ -24,8 +23,6 @@ metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 [resource]
 script = ExtResource("2_bcjow")
 preview = ExtResource("1_hk1ql")
-preview_scale = 1.0
-preview_rotation = 0.0
 wall_default = SubResource("Resource_ucnai")
 wall_rules = Array[ExtResource("3_fdxwp")]([SubResource("Resource_hk1ql")])
 floor = ExtResource("2_mygdj")
