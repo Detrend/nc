@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bve5ovba1xpi5"]
 
-[ext_resource type="Script" uid="uid://bmx3qajii6u0l" path="res://scripts/things/DirectionalLight.gd" id="1_17h5p"]
+[ext_resource type="Script" path="res://scripts/things/DirectionalLight.gd" id="1_17h5p"]
 [ext_resource type="Texture2D" uid="uid://h5js83fc5ycx" path="res://imgs/johnny_automatic_sun_woodcut.svg" id="2_17h5p"]
 
 [node name="DirectionalLight" type="Node2D"]
