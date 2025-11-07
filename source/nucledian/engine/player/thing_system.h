@@ -37,7 +37,6 @@ public:
   using MapPtr        = std::unique_ptr<MapSectors>;
   using RegistryPtr   = std::unique_ptr<EntityRegistry>;
   using AttachmentPtr = std::unique_ptr<EntityAttachment>;
-  using LevelDatabase = std::vector<LevelData>;
   using SaveDatabase  = std::vector<SaveDbEntry>;
 
 public:
@@ -60,16 +59,14 @@ public:
   SaveDatabase& get_save_game_db();
 
   // Level transition
-  LevelID get_level_id() const;
-  void    request_level_change(LevelID new_level);
-  void    request_next_level();
+  LevelName get_level_name() const;
+  void      request_level_change(LevelName new_level);
 
   Player*               get_player();
   EntityRegistry&       get_entities();
   const EntityRegistry& get_entities()       const;
   const MapSectors&     get_map()            const;
   const SectorMapping&  get_sector_mapping() const;
-  const LevelDatabase&  get_level_db()       const;
   PhysLevel             get_level()          const;
 
   EntityAttachment&       get_attachment_mgr();
@@ -90,7 +87,7 @@ private:
   // "cleanup_map" to be called before. Do not call
   // this during the frame as it might cause bad stuff
   // to happen.
-  void build_map(LevelID level);
+  void build_map(LevelName level);
 
   void post_init();
 
@@ -108,9 +105,8 @@ private:
   MappingPtr     mapping;
   AttachmentPtr  attachment;
   RegistryPtr    entities;
-  LevelID        level_id           = INVALID_LEVEL_ID;
-  LevelID        scheduled_level_id = INVALID_LEVEL_ID;
-  LevelDatabase  levels_db;
+  LevelName      level_name           = INVALID_LEVEL_NAME;
+  LevelName      scheduled_level_id = INVALID_LEVEL_NAME;
   SaveDatabase   save_db;
   mutable SaveID last_save_id = 0;
 };

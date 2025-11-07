@@ -624,25 +624,24 @@ static void draw_level_selection()
 {
   auto& game = ThingSystem::get();
 
-  const auto& level_db = game.get_level_db();
-  const auto  curr_lvl = game.get_level_id();
+  const auto  curr_lvl = game.get_level_name();
 
   bool already_selected = false;
 
-  ImGui::Text("Current Level: %s", level_db[curr_lvl].name);
+  ImGui::Text("Current Level: %s", curr_lvl.data());
   ImGui::Separator();
 
   if (ImGui::Button("Next Level"))
   {
-    game.request_next_level();
+    game.request_level_change(Levels::LEVEL_2);
     already_selected = true;
   }
 
   ImGui::Separator();
 
-  for (LevelID id = 0; id < game.get_level_db().size(); ++id)
+  for(const auto &id : LevelsDB)
   {
-    if (ImGui::Button(LEVEL_NAMES[id]) && !already_selected)
+    if (ImGui::Button(id.data()) && !already_selected)
     {
       game.request_level_change(id);
       already_selected = true;
@@ -677,7 +676,7 @@ static void draw_saves_menu()
     ImGui::Text("Save IDX[%d]", i);
     ImGui::Text("Save ID [%d]", static_cast<int>(save.id));
     ImGui::Text("Dirty: %s", dirty ? "T" : "F");
-    ImGui::Text("Level: %d", static_cast<int>(save.last_level));
+    ImGui::Text("Level: %s", save.last_level.data());
 
 #ifdef NC_MSVC // localtime_s is platform specific
     ch::year_month_day date{ch::floor<ch::days>(save.time)};

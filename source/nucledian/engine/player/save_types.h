@@ -42,7 +42,7 @@ struct SaveGameData
   SaveID              id;
   SaveTime            time;
   ChapterID           chapter    = INVALID_CHAPTER_ID;
-  LevelID             last_level = INVALID_LEVEL_ID;
+  LevelName           last_level = INVALID_LEVEL_NAME;
   GameVersion         version;
   LevelPersistentData data;
 };

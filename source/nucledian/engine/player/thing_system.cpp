@@ -50,10 +50,8 @@
 namespace nc::map_helpers
 { 
 
-constexpr cstr JSON_LEVEL_PATH = ".\\content\\levels\\level_test1.json";
-
 //==============================================================================
-static void test_make_sector_height(
+static void make_sector_helper(
   f32                                         in_floor_y,
   f32                                         in_ceil_y,
   const std::vector<u16>&                     points,
@@ -91,153 +89,17 @@ static void test_make_sector_height(
   });
 }
 
-//==============================================================================
-static void test_make_sector
-(
-  const std::vector<u16>&                     points,
-  std::vector<map_building::SectorBuildData>& out,
-  int                                         portal_wall_id    = -1,
-  WallRelID                                   portal_wall_id_to = 0,
-  SectorID                                    portal_sector     = INVALID_SECTOR_ID,
-  const SurfaceData&                          surface = SurfaceData()
- )
-{
-  test_make_sector_height
-  (
-    MapSectors::SECTOR_FLOOR_Y,
-    MapSectors::SECTOR_CEILING_Y,
-    points, out, portal_wall_id,
-    portal_wall_id_to, portal_sector,
-      surface, surface, {}
-  );
-}
-
-//==============================================================================
-[[maybe_unused]] static void make_cool_looking_map(MapSectors& map)
-{
-  // {22, 12, 13, 23}
-  std::vector<vec2> points =
-  {
-    vec2{0	, 0},
-    vec2{6	, 1},
-    vec2{7	, 5},
-    vec2{9	, 5},
-    vec2{11	, 4},
-    vec2{14	, 4},
-    vec2{16	, 5},
-    vec2{16	, 8},
-    vec2{14	, 9},
-    vec2{11	, 9},
-    vec2{9	, 8},
-    vec2{8	, 8},
-    vec2{7	, 9},
-    vec2{7	, 12},
-    vec2{6	, 13},
-    vec2{5	, 13},
-    vec2{4	, 12},
-    vec2{4	, 9},
-    vec2{4	, 6},
-    vec2{2	, 4},
-    vec2{3	, 1},
-    vec2{5	, 9},
-    vec2{6	, 9},
-    vec2{6	, 10},
-    vec2{5	, 10},
-    vec2{16	, 14},    // extra 4 pts
-    vec2{18	, 14},
-    vec2{18	, 18},
-    vec2{16	, 18},
-  };
-
-  //constexpr vec2 max_range = {20.0f, 20.0f};
-  // normalize the points
-  //for (auto& pt : points)
-  //{
-  //  pt = ((pt / max_range) * 2.0f) - vec2{1.0f};
-  //}
-
-  // and then the sectors
-  std::vector<map_building::SectorBuildData> sectors;
-
-  test_make_sector({1, 2, 18, 19, 20}, sectors);
-  test_make_sector({18, 2, 11, 12, 22, 21, 17}, sectors);
-  test_make_sector({2, 3, 10, 11}, sectors);
-  test_make_sector({3, 4, 5, 6, 7, 8, 9, 10}, sectors);
-  test_make_sector({22, 12, 13, 23}, sectors, 1, 0, 8);    // this one
-  test_make_sector({23, 13, 14, 15, 16, 24}, sectors);
-  test_make_sector({17, 21, 24, 16}, sectors);
-  test_make_sector({21, 22, 23, 24}, sectors);
-  test_make_sector({25, 26, 27, 28}, sectors, 0, 1, 4);
-
-  using namespace map_building::MapBuildFlag;
-
-  map_building::build_map(
-    points, sectors, map,
-    //omit_convexity_clockwise_check |
-    //omit_sector_overlap_check      |
-    //omit_wall_overlap_check        |
-    assert_on_fail);
-}
-
-//==============================================================================
-[[maybe_unused]] static void make_random_square_maze_map(MapSectors& map, u32 size, u32 seed)
-{
-  constexpr f32 SCALING = 20.0f;
-
-  std::srand(seed);
-
-  std::vector<vec2> points;
-
-  // first up the points
-  for (u32 i = 0; i < size; ++i)
-  {
-    for (u32 j = 0; j < size; ++j)
-    {
-      const f32 x = ((j / static_cast<f32>(size-1)) * 2.0f - 1.0f) * SCALING;
-      const f32 y = ((i / static_cast<f32>(size-1)) * 2.0f - 1.0f) * SCALING;
-      points.push_back(vec2{x, y});
-    }
-  }
-
-  // and then the sectors
-  std::vector<map_building::SectorBuildData> sectors;
-
-  for (u16 i = 0; i < size-1; ++i)
-  {
-    for (u16 j = 0; j < size-1; ++j)
-    {
-      auto rng = std::rand();
-      if (rng % 4 != 0)
-      {
-        u16 i1 = static_cast<u16>(i * size + j);
-        u16 i2 = i1+1;
-        u16 i3 = static_cast<u16>((i+1) * size + j + 1);
-        u16 i4 = i3-1;
-        test_make_sector({i1, i2, i3, i4}, sectors);
-      }
-    }
-  }
-
-  using namespace map_building::MapBuildFlag;
-
-  map_building::build_map(
-    points, sectors, map,
-    //omit_convexity_clockwise_check |
-    //omit_sector_overlap_check      |
-    //omit_wall_overlap_check        |
-    assert_on_fail);
-}
 
 
 //==============================================================================
 template<size_t TSize>
 static vec<float, TSize> load_json_vector(const nlohmann::json& js) 
 {
-    vec<float, TSize> ret;
-    for (u32 t = 0; t < TSize; ++t) {
-        ret[t] = js[t];
-    }
-    return ret;
+  vec<float, TSize> ret;
+  for (u32 t = 0; t < TSize; ++t) {
+    ret[t] = js[t];
+  }
+  return ret;
 }
 
 
@@ -245,286 +107,112 @@ static vec<float, TSize> load_json_vector(const nlohmann::json& js)
 template<typename T, typename TSupplier>
 static void load_json_optional(T& out, const nlohmann::json& js, const cstr key, const TSupplier& supplier) 
 {
-    if (js.contains(key)) {
-        out = supplier(js[key]);
-    }
+  if (js.contains(key)) {
+    out = supplier(js[key]);
+  }
 }
 
 
 //==============================================================================
 static bool load_json_flag(const nlohmann::json& js, const cstr key)
 {
-    if (js.contains(key)) {
-        return js[key];
-    }
-    return false;
+  if (js.contains(key)) {
+    return js[key];
+  }
+  return false;
 }
 
 //==============================================================================
 static SurfaceData load_json_surface(const nlohmann::json &js) 
 {
-    if (const bool should_show = js["show"]) {
-        std::string texture_name = js["id"];
-        return SurfaceData
-        {
-          .texture_id = TextureManager::get()[texture_name].get_texture_id(),
-          .scale = js["scale"],
-          .rotation = js["rotation"],
-          .offset = load_json_vector<2>(js["offset"]),
-          .tile_rotations_count = js["tile_rotations_count"],
-          .tile_rotation_increment = js["tile_rotation_increment"],
-          .should_show = true
-        };
-    }
+  if (const bool should_show = js["show"]) {
+    std::string texture_name = js["id"];
     return SurfaceData
     {
-      .should_show = false
+      .texture_id = TextureManager::get()[texture_name].get_texture_id(),
+      .scale = js["scale"],
+      .rotation = js["rotation"],
+      .offset = load_json_vector<2>(js["offset"]),
+      .tile_rotations_count = js["tile_rotations_count"],
+      .tile_rotation_increment = js["tile_rotation_increment"],
+      .should_show = true
     };
+  }
+  return SurfaceData
+  {
+    .should_show = false
+  };
 }
 
 //==============================================================================
 static WallSurfaceData load_json_wall_surface(const nlohmann::json& js) 
 {
-    WallSurfaceData ret;
+  WallSurfaceData ret;
 
-    for (auto&& js_entry : js) {
-        auto &entry = ret.surfaces.emplace_back();
-        entry.surface = load_json_surface(js_entry);
-        entry.end_height = js_entry["end_height"];
-        load_json_optional(entry.begin_up_tesselation.xzy,  js_entry, "begin_up_direction", load_json_vector<3>);
-        load_json_optional(entry.end_up_tesselation.xzy,    js_entry, "end_up_direction", load_json_vector<3>);
-        load_json_optional(entry.begin_down_tesselation.xzy,js_entry, "begin_down_direction", load_json_vector<3>);
-        load_json_optional(entry.end_down_tesselation.xzy,  js_entry, "end_down_direction", load_json_vector<3>);
-        if (load_json_flag(js_entry, "absolute_directions")) {
-            entry.flags = static_cast<WallSurfaceData::Flags>(entry.flags | WallSurfaceData::Flags::absolute_directions);
-        }
-        if (load_json_flag(js_entry, "flip_side_normals")) {
-            entry.flags = static_cast<WallSurfaceData::Flags>(entry.flags | WallSurfaceData::Flags::flip_side_normals);
-        }
+  for (auto&& js_entry : js) {
+    auto &entry = ret.surfaces.emplace_back();
+    entry.surface = load_json_surface(js_entry);
+    entry.end_height = js_entry["end_height"];
+    load_json_optional(entry.begin_up_tesselation.xzy,  js_entry, "begin_up_direction", load_json_vector<3>);
+    load_json_optional(entry.end_up_tesselation.xzy,    js_entry, "end_up_direction", load_json_vector<3>);
+    load_json_optional(entry.begin_down_tesselation.xzy,js_entry, "begin_down_direction", load_json_vector<3>);
+    load_json_optional(entry.end_down_tesselation.xzy,  js_entry, "end_down_direction", load_json_vector<3>);
+    if (load_json_flag(js_entry, "absolute_directions")) {
+      entry.flags = static_cast<WallSurfaceData::Flags>(entry.flags | WallSurfaceData::Flags::absolute_directions);
     }
-
-    return ret;
-}
-
-static vec3 load_json_position(const nlohmann::json& js, const cstr &field_name = "position") 
-{
-    return load_json_vector<3>(js[field_name]).xzy;
-}
-
-//==============================================================================
-[[maybe_unused]] static void load_json_map(MapSectors& map, SectorMapping& mapping, EntityRegistry& entities, EntityID& player_id)
-{
-    std::ifstream f(JSON_LEVEL_PATH);
-    nc_assert(f.is_open());
-    auto data = nlohmann::json::parse(f);
-
-
-
-    std::vector<vec2> points;
-    std::vector<map_building::SectorBuildData> sectors;
-
-    try {
-        for (auto&& js_point : data["points"]) {
-            points.emplace_back(load_json_vector<2>(js_point));
-        }
-        for (auto&& js_sector : data["sectors"]) {
-            const float floor = js_sector["floor"];
-            const float ceil = js_sector["ceiling"];
-            const SectorID portal_sector = js_sector["portal_target"];
-            const int portal_wall = js_sector["portal_wall"];
-            const WallRelID portal_destination_wall = js_sector["portal_destination_wall"];
-            std::vector<u16> point_idxs;
-            for (auto&& js_point : js_sector["points"]) {
-                point_idxs.emplace_back((u16)(int)js_point);
-            }
-            auto floor_surface = load_json_surface(js_sector["floor_surface"]);
-            auto ceiling_surface = load_json_surface(js_sector["ceiling_surface"]);
-            std::vector<WallSurfaceData> wall_surfaces;
-            for (auto&& js_wall_surface : js_sector["wall_surfaces"]) {
-                wall_surfaces.emplace_back(load_json_wall_surface(js_wall_surface));
-            }
-
-            test_make_sector_height(floor, ceil, point_idxs, sectors, portal_wall, portal_destination_wall, portal_sector, floor_surface, ceiling_surface, wall_surfaces);
-        }
+    if (load_json_flag(js_entry, "flip_side_normals")) {
+      entry.flags = static_cast<WallSurfaceData::Flags>(entry.flags | WallSurfaceData::Flags::flip_side_normals);
     }
-    catch (nlohmann::json::type_error e) {
-        nc_crit("{0}", e.what());
-    }
-
-    using namespace map_building::MapBuildFlag;
-
-    map_building::build_map(
-        points, sectors, map,
-        //omit_convexity_clockwise_check |
-        //omit_sector_overlap_check      |
-        //omit_wall_overlap_check        |
-        assert_on_fail
-    );
-
-    mapping.on_map_rebuild();
-
-
-    for (auto&& js_entity : data["entities"]) {
-        const vec3 position = load_json_position(js_entity);
-        const vec3 forward = load_json_vector<3>(js_entity["forward"]).xzy;
-
-        if (js_entity["is_player"] == true) {
-            auto* player = entities.create_entity<Player>(position, forward);
-            player_id = player->get_id();
-        }
-        else {
-            // Beware that these fuckers can shoot you even if you do not see them and therefore kill you during the normal level testing.
-            //EnemyType type = (std::rand() % 2) ? EnemyTypes::cultist : EnemyTypes::possessed;
-            entities.create_entity<Enemy>(position, forward, EnemyTypes::cultist);
-        }
-    }
-
-    for (auto&& js_pickup : data["pickups"]) {
-        const vec3 position = load_json_position(js_pickup);
-        const PickupTypes::evalue pickup_type = static_cast<PickupTypes::evalue>(js_pickup["type"]);
-        entities.create_entity<PickUp>(position, pickup_type);
-    }
-    for (auto&& js_light : data["directional_lights"]) {
-        //const vec3 position = load_json_position(js_light);
-        const color4 color = load_json_vector<4>(js_light["color"]);
-        const vec3 direction = load_json_vector<3>(js_light["direction"]);
-        const float intensity = js_light["intensity"];
-
-        entities.create_entity<DirectionalLight>(direction, intensity, color);
-    }
-    for (auto&& js_light : data["point_lights"]) {
-        const vec3 position = load_json_position(js_light);
-        const color4 color = load_json_vector<4>(js_light["color"]);
-        const float intensity = js_light["intensity"];
-
-        const float constant = js_light["constant"];
-        const float linear = js_light["linear"];
-        const float quadratic = js_light["quadratic"];
-
-        entities.create_entity<PointLight>(position, intensity, constant, linear, quadratic, color);
-    }
-
-}
-
-
-//==============================================================================
-[[maybe_unused]] static void make_demo_map(MapSectors& map)
-{
- std::vector<vec2> points =
- {
-   vec2{0, 0},
-   vec2{9, 0},
-   vec2{9, 9},
-   vec2{0, 9}, //
-   vec2{2, 2},
-   vec2{7, 2},
-   vec2{7, 7},
-   vec2{2, 7}, //
-   vec2{3, 2},
-   vec2{6, 2},
-   vec2{7, 3},
-   vec2{7, 6},
-   vec2{6, 7},
-   vec2{3, 7},
-   vec2{2, 6},
-   vec2{2, 3},  //
-   vec2{13, 9}, // 16
-   vec2{16, 9},
-   vec2{16, 2},
-   vec2{23, 2},
-   vec2{23, 9},
-   vec2{26, 9},
-   vec2{26, 12},
-   vec2{20, 12},
-   vec2{20, 9},
-   vec2{19, 9},
-   vec2{19, 12},
-   vec2{13, 12},
-   vec2{19, 5},
-   vec2{20, 5},
-   vec2{20, 6},
-   vec2{19, 6},
- };
- 
- // and then the sectors
- std::vector<map_building::SectorBuildData> sectors;
- 
- /*0*/test_make_sector({0, 1, 5, 9,  8,  4}, sectors);
- /*1*/test_make_sector({1, 2, 6, 11, 10, 5}, sectors, 3, 4, 9);
- /*2*/test_make_sector({2, 3, 7, 13, 12, 6}, sectors);
- /*3*/test_make_sector({3, 0, 4, 15, 14, 7}, sectors, 3, 4, 4);
- 
- /*4*/test_make_sector_height(0.2f, 5.0f, {16, 17, 25, 26, 27},     sectors, 4, 3, 3); // 4
- /*5*/test_make_sector_height(0.3f, 2.0f, {25, 17, 31, 30, 20, 24}, sectors);
- /*6*/test_make_sector_height(0.3f, 2.0f, {31, 17, 18, 28},         sectors);
- /*7*/test_make_sector_height(0.3f, 2.0f, {18, 19, 29, 28},         sectors);
- /*8*/test_make_sector_height(0.3f, 2.0f, {19, 20, 30, 29},         sectors);
- /*9*/test_make_sector_height(0.2f, 5.0f, {22, 23, 24, 20, 21},     sectors, 4, 3, 1);
- 
- using namespace map_building::MapBuildFlag;
- 
- map_building::build_map(
-   points, sectors, map,
-   //omit_convexity_clockwise_check |
-   //omit_sector_overlap_check      |
-   //omit_wall_overlap_check        |
-   assert_on_fail);
-}
-
-//==============================================================================
-[[maybe_unused]] static void make_simple_portal_test_map(MapSectors& map)
-{
-  /*
-  *     0-------1-------2
-  *     |               |
-  *     A               | <- sector 0
-  *     |               |   
-  *     3-------4   -   5------12
-  *             |               |
-  * sector 1 -> B       |       B <- sector 3
-  *             |               |
-  *     6-------7   -   8------13
-  *     |               |
-  *     A               | <- sector 2
-  *     |               |
-  *     9------10------11
-  * 
-  * note: its actually flip along horizontal axis
-  */
-
-  const vec2 offset = vec2(-1.0f, 0.5f);
-  std::vector<vec2> points = {
-    vec2(0, 0), //  0
-    vec2(1, 0), //  1
-    vec2(2, 0), //  2
-    vec2(0, 1), //  3
-    vec2(1, 1), //  4
-    vec2(2, 1), //  5
-    vec2(0, 2), //  6
-    vec2(1, 2), //  7
-    vec2(2, 2), //  8
-    vec2(0, 3), //  9
-    vec2(1, 3), // 10
-    vec2(2, 3), // 11
-    vec2(3, 1), // 12
-    vec2(3, 2), // 13
-  };
-
-  for (auto& point : points)
-  {
-    point += offset;
   }
 
+  return ret;
+}
+
+//==============================================================================
+static vec3 load_json_position(const nlohmann::json& js, const cstr &field_name = "position") 
+{
+  return load_json_vector<3>(js[field_name]).xzy;
+}
+
+//==============================================================================
+static void load_json_map(const LevelName &level_name, MapSectors& map, SectorMapping& mapping, EntityRegistry& entities, EntityID& player_id)
+{
+  std::ifstream f(get_full_level_path(level_name));
+  nc_assert(f.is_open());
+  auto data = nlohmann::json::parse(f);
+
+  std::vector<vec2> points;
   std::vector<map_building::SectorBuildData> sectors;
 
-  // sector 0
-  test_make_sector({ 0, 1, 2, 5, 4, 3 }, sectors, 5, 5, 2);
-  // sector 1
-  test_make_sector({ 4, 5, 8, 7 }, sectors, 3, 1, 3);
-  // sector 2
-  test_make_sector({ 6, 7, 8, 11, 10, 9 }, sectors, 5, 5, 0);
-  // sector 3
-  test_make_sector({ 5, 12, 13, 8 }, sectors, 1, 3, 1);
+  try {
+    for (auto&& js_point : data["points"]) {
+      points.emplace_back(load_json_vector<2>(js_point));
+    }
+    for (auto&& js_sector : data["sectors"]) {
+      const float floor = js_sector["floor"];
+      const float ceil = js_sector["ceiling"];
+      const SectorID portal_sector = js_sector["portal_target"];
+      const int portal_wall = js_sector["portal_wall"];
+      const WallRelID portal_destination_wall = js_sector["portal_destination_wall"];
+
+      std::vector<u16> point_indices;
+      for (auto&& js_point : js_sector["points"]) {
+        point_indices.emplace_back((u16)(int)js_point);
+      }
+
+      auto floor_surface = load_json_surface(js_sector["floor_surface"]);
+      auto ceiling_surface = load_json_surface(js_sector["ceiling_surface"]);
+      std::vector<WallSurfaceData> wall_surfaces;
+      for (auto&& js_wall_surface : js_sector["wall_surfaces"]) {
+        wall_surfaces.emplace_back(load_json_wall_surface(js_wall_surface));
+      }
+
+      make_sector_helper(floor, ceil, point_indices, sectors, portal_wall, portal_destination_wall, portal_sector, floor_surface, ceiling_surface, wall_surfaces);
+    }
+  }
+  catch (nlohmann::json::type_error e) {
+    nc_crit("{0}", e.what());
+  }
 
   using namespace map_building::MapBuildFlag;
 
@@ -533,8 +221,54 @@ static vec3 load_json_position(const nlohmann::json& js, const cstr &field_name 
     //omit_convexity_clockwise_check |
     //omit_sector_overlap_check      |
     //omit_wall_overlap_check        |
-    assert_on_fail);
+    assert_on_fail
+  );
+
+  mapping.on_map_rebuild();
+
+
+  for (auto&& js_entity : data["entities"]) {
+    const vec3 position = load_json_position(js_entity);
+    const vec3 forward = load_json_vector<3>(js_entity["forward"]).xzy;
+
+    if (js_entity["is_player"] == true) {
+      auto* player = entities.create_entity<Player>(position, forward);
+      player_id = player->get_id();
+    }
+    else {
+      // Beware that these fuckers can shoot you even if you do not see them and therefore kill you during the normal level testing.
+      //EnemyType type = (std::rand() % 2) ? EnemyTypes::cultist : EnemyTypes::possessed;
+      entities.create_entity<Enemy>(position, forward, EnemyTypes::cultist);
+    }
+  }
+
+  for (auto&& js_pickup : data["pickups"]) {
+    const vec3 position = load_json_position(js_pickup);
+    const PickupTypes::evalue pickup_type = static_cast<PickupTypes::evalue>(js_pickup["type"]);
+    entities.create_entity<PickUp>(position, pickup_type);
+  }
+  for (auto&& js_light : data["directional_lights"]) {
+    //const vec3 position = load_json_position(js_light);
+    const color4 color = load_json_vector<4>(js_light["color"]);
+    const vec3 direction = load_json_vector<3>(js_light["direction"]);
+    const float intensity = js_light["intensity"];
+
+    entities.create_entity<DirectionalLight>(direction, intensity, color);
+  }
+  for (auto&& js_light : data["point_lights"]) {
+    const vec3 position = load_json_position(js_light);
+    const color4 color = load_json_vector<4>(js_light["color"]);
+    const float intensity = js_light["intensity"];
+
+    const float constant = js_light["constant"];
+    const float linear = js_light["linear"];
+    const float quadratic = js_light["quadratic"];
+
+    entities.create_entity<PointLight>(position, intensity, constant, linear, quadratic, color);
+  }
+
 }
+
 
 }
 
@@ -563,17 +297,6 @@ ThingSystem::~ThingSystem() = default;
 //==============================================================================
 bool ThingSystem::init()
 {
-  // init level db
-  for (LevelID id = 0; id < Levels::count; ++id)
-  {
-    LevelID next_lvl_id = (id+1 < Levels::count) ? id+1 : INVALID_LEVEL_ID;
-    this->levels_db.push_back(LevelData
-    {
-      .next_level = next_lvl_id,
-      .name       = LEVEL_NAMES[id],
-    });
-  }
-
   return true;
 }
 
@@ -632,7 +355,7 @@ void ThingSystem::post_init()
 
   // Schedule the loading of the first level..
   // This is probably only temporary.
-  this->request_level_change(Levels::json_map);
+  this->request_level_change(Levels::LEVEL_1);
 }
 
 //==============================================================================
@@ -704,7 +427,7 @@ void ThingSystem::on_event(ModuleEvent& event)
       //          not on cleanup, because for the first frame of
       //          the game there would be no level or entities.
       //          This simplifies the stuff a lot.
-      if (this->scheduled_level_id != INVALID_LEVEL_ID)
+      if (this->scheduled_level_id != INVALID_LEVEL_NAME)
       {
         get_engine().send_event
         (
@@ -714,8 +437,8 @@ void ThingSystem::on_event(ModuleEvent& event)
         // do level transition
         this->cleanup_map();
         this->build_map(this->scheduled_level_id);
-        this->level_id = this->scheduled_level_id;
-        this->scheduled_level_id = INVALID_LEVEL_ID;
+        this->level_name = this->scheduled_level_id;
+        this->scheduled_level_id = INVALID_LEVEL_NAME;
 
         get_engine().send_event
         (
@@ -782,7 +505,7 @@ const EntityRegistry& ThingSystem::get_entities() const
 SaveGameData ThingSystem::save_game() const
 {
   SaveGameData save;
-  save.last_level = this->get_level_id();
+  save.last_level = this->get_level_name();
   save.time       = SaveGameData::Clock::now();
   save.id         = ++last_save_id;
   return save;
@@ -801,31 +524,18 @@ ThingSystem::SaveDatabase& ThingSystem::get_save_game_db()
 }
 
 //==============================================================================
-LevelID ThingSystem::get_level_id() const
+LevelName ThingSystem::get_level_name() const
 {
-  return level_id;
+  return level_name;
 }
 
 //==============================================================================
-void ThingSystem::request_level_change(LevelID new_level)
+void ThingSystem::request_level_change(LevelName new_level)
 {
   // Another level already scheduled.
-  nc_assert(this->scheduled_level_id == INVALID_LEVEL_ID);
+  nc_assert(this->scheduled_level_id == INVALID_LEVEL_NAME);
 
   this->scheduled_level_id = new_level;
-}
-
-//==============================================================================
-void ThingSystem::request_next_level()
-{
-  nc_assert(this->level_id < this->levels_db.size());
-  const auto next_id = this->levels_db[this->level_id].next_level;
-  if (next_id == INVALID_LEVEL_ID)
-  {
-    return;
-  }
-
-  this->request_level_change(next_id);
 }
 
 //==============================================================================
@@ -840,12 +550,6 @@ const SectorMapping& ThingSystem::get_sector_mapping() const
 {
   nc_assert(mapping);
   return *mapping;
-}
-
-//==============================================================================
-const ThingSystem::LevelDatabase& ThingSystem::get_level_db() const
-{
-  return this->levels_db;
 }
 
 //==============================================================================
@@ -882,7 +586,7 @@ void ThingSystem::cleanup_map()
 }
 
 //==============================================================================
-void ThingSystem::build_map(LevelID level)
+void ThingSystem::build_map(LevelName level)
 {
   nc_assert(!map && !mapping && !entities);
 
@@ -894,45 +598,7 @@ void ThingSystem::build_map(LevelID level)
   entities->add_listener(mapping.get());
   entities->add_listener(attachment.get());
 
-  switch (level)
-  {
-    case Levels::json_map:
-      map_helpers::load_json_map(*map, *mapping, *entities, player_id);
-      break;
-
-    case Levels::demo_map:
-      map_helpers::make_demo_map(*map);
-      break;
-
-    case Levels::cool_map:
-      map_helpers::make_cool_looking_map(*map);
-      break;
-
-    case Levels::square_map:
-      map_helpers::make_random_square_maze_map(*map, 32, 0);
-      break;
-
-    case Levels::portal_test:
-      map_helpers::make_simple_portal_test_map(*map);
-      break;
-
-    default: nc_assert(false); break;
-  }
-
-  if (level != Levels::json_map) { // json map does entity spawning on its own
-      mapping->on_map_rebuild();
-
-      auto* player = entities->create_entity<Player>(vec3{ 0.5f, 0.0f, 0.5f }, -VEC3_Z);
-      player_id = player->get_id();
-
-      // Beware that these fuckers can shoot you even if you do not see them and
-      // therefore kill you during the normal level testing. Therefore, I commented
-      // them out.
-      // entities->create_entity<Enemy>(vec3{1, 0.0, 1}, FRONT_DIR);
-      // entities->create_entity<Enemy>(vec3{2, 0.0, 1}, FRONT_DIR);
-      // entities->create_entity<Enemy>(vec3{3, 0.0, 1}, FRONT_DIR);
-      entities->create_entity<PickUp>(vec3{ -0.5f, 0.0f, 0.5f }, PickupTypes::hp_small);
-  }
+  map_helpers::load_json_map(level, *map, *mapping, *entities, player_id);
 }
 
 //==============================================================================
