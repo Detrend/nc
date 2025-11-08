@@ -235,6 +235,7 @@ bool GraphicsSystem::init()
 
 //==============================================================================
 PointLight* light;
+PointLight* light_test;
 
 void GraphicsSystem::on_event(ModuleEvent& event)
 {
@@ -255,12 +256,14 @@ void GraphicsSystem::on_event(ModuleEvent& event)
       this->update(event.update.dt);
 
       // TODO: temporary directional lights (don't forget about lights header)
+      /*
       EntityRegistry& registry = ThingSystem::get().get_entities();
       registry.for_each<Player>([&registry](const Player& player)
       {
         const vec3 position = player.get_position();
         light->set_position(position + vec3(0.0f, 0.5f, 0.0f));
       });
+      */
 
       break;
     }
@@ -280,6 +283,8 @@ void GraphicsSystem::on_event(ModuleEvent& event)
         const vec3 position = player.get_position();
         light = registry.create_entity<PointLight>(position, 1.0f, 1.0f,  0.09f, 0.032f, colors::GREEN);
       });
+
+      light_test = registry.create_entity<PointLight>(vec3{974.0f, 2.0f, 1068.0f}, 1.0f, 1.0f,  0.09f, 0.032f, colors::GREEN);
 
       break;
     }
@@ -417,6 +422,38 @@ void GraphicsSystem::render()
     draw_debug_window();
   }
 #endif
+
+  if (ImGui::Begin("Light Debug"))
+  {
+    vec3 pos = light_test->get_position();
+    if (ImGui::DragFloat3("Position", &pos.x, 0.1f))
+    {
+      light_test->set_position(pos);
+    }
+
+    bool changed = false;
+
+    changed |= ImGui::ColorEdit3("Color",    &light_test->color.x);
+    changed |= ImGui::DragFloat("Intensity", &light_test->intensity);
+    changed |= ImGui::DragFloat("Constant",  &light_test->constant);
+    changed |= ImGui::DragFloat("Linear",    &light_test->linear);
+    changed |= ImGui::DragFloat("Quadratic", &light_test->quadratic);
+
+    if (changed)
+    {
+      light_test->refresh_entity_radius();
+    }
+
+    ImGui::Separator();
+    Player* p = ThingSystem::get().get_player();
+    if (p)
+    {
+      f32 dist = length(p->get_position() - light_test->get_position());
+      ImGui::Text("Distance to player is: %.2f", dist);
+    }
+    ImGui::Text("Light radius is: %.2f", light_test->get_radius());
+  }
+  ImGui::End();
 
   VisibilityTree visible_sectors;
   query_visibility(visible_sectors);

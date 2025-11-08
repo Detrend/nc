@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\source\libs\glad\glad.c" />
@@ -196,6 +196,7 @@
     <None Include="..\source\nucledian\anim_state_machine.inl" />
     <None Include="..\source\nucledian\engine\ui\ui_button.frag" />
     <None Include="..\source\nucledian\engine\ui\ui_button.vert" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\gun.vert" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\source\libs\glm\CMakeLists.txt" />

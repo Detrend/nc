@@ -15,7 +15,7 @@ static f32 calculate_point_light_radius
 )
 {
   f32 max_color = max(color.r, max(color.g, color.b));
-  f32 min_intensity = 256.0f;
+  f32 min_intensity = 64.0f;
   f32 k = max_color * intensity * min_intensity;
 
   if (quadratic < 0.0001)
@@ -90,7 +90,7 @@ void PointLight::refresh_entity_radius()
     this->color, this->intensity, this->constant, this->linear, this->quadratic
   );
 
-  this->set_radius(radius);
+  this->set_radius(max(radius, 0.0f));
 }
 
 //==============================================================================

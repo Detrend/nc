@@ -2,6 +2,7 @@ constexpr const char* FRAGMENT_SOURCE = R"(
 
 #version 430 core
 in vec3 position;
+in vec3 normal;
 in vec2 uv;
 
 layout(location = 0) out vec4 g_position;
@@ -20,8 +21,8 @@ void main()
   g_position.xyz = position;
   // 4-th component of position is used for specular strength
   g_position.w = 0.0f;
-  // 4-th component of normal is used to determine if pixel should be lit
-  g_normal = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+  // 4-th component of normal is used to determine if pixel is a billboard
+  g_normal = vec4(normal, 0.0f);
   g_stitched_normal = vec3(0.0f, 0.0f, 0.0f);
   g_albedo = color;
 }

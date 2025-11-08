@@ -55,11 +55,12 @@ private:
   static constexpr size_t LIGHT_CULLING_TILE_SIZE_X = 16;
   static constexpr size_t LIGHT_CULLING_TILE_SIZE_Y = 16;
 
-  mat4 m_default_projection;
-  vec2 m_window_size;
+  mat4  m_default_projection;
+  ivec2 m_window_size;
   
   const ShaderProgramHandle m_solid_material;
   const ShaderProgramHandle m_billboard_material;
+  const ShaderProgramHandle m_gun_material;
   const ShaderProgramHandle m_light_material;
   const ShaderProgramHandle m_sector_material;
   const ShaderProgramHandle m_light_culling_shader;
@@ -104,7 +105,7 @@ private:
   void render_sectors(const CameraData& camera)  const;
   void render_entities(const CameraData& camera) const;
   void render_portals(const CameraData& camera) const;
-  void render_gun(const RenderGunProperties& gun) const;
+  void render_gun(const CameraData& cam, const RenderGunProperties& gun) const;
 
   #pragma region portals rendering
   void render_portal_to_stencil(const CameraData& camera, const Portal& portal, u8 recursion) const;

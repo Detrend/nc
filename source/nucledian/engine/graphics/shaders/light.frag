@@ -56,16 +56,11 @@ void main()
   vec4 g_normal_sample = texture(g_normal, uv);
   vec3 normal = g_normal_sample.xyz;
   // 4-th component of normal is used to determine if pixel should be lit
-  bool unlit = g_normal_sample.w == 0.0f;
+  bool billboard = g_normal_sample.w == 0.0f;
 
+  // zero for billboards
   vec3 stitched_normal = texture(g_stitched_normal, uv).xyz;
   vec3 albedo = texture(g_albedo, uv).rgb;
-
-  if (unlit)
-  {
-    out_color = vec4(albedo, 1.0f);
-    return;
-  }
 
   float ambient_strength = 0.3f;
   int shininess = 128;
@@ -78,7 +73,9 @@ void main()
   {
     vec3 reflect_direction = reflect(-dir_lights[i].direction, normal);
 
-    vec3 diffuse = max(dot(normal, dir_lights[i].direction), 0.0f) * albedo;
+    // this is 0 for billboards
+    float angle = dot(normal, dir_lights[i].direction);
+    vec3 diffuse = max(angle, 0.0f) * albedo;
     vec3 specular = specular_strength * pow(max(dot(view_direction, reflect_direction), 0.0f), shininess) * vec3(1.0f);
 
     final_color += (diffuse + specular) * dir_lights[i].color * dir_lights[i].intensity;
@@ -99,8 +96,10 @@ void main()
     float distance = length(light_direction);
     light_direction = normalize(light_direction);
 
+    float angle = dot(stitched_normal, light_direction) + float(billboard);
+
     float attenuation = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
-    vec3 diffuse = max(dot(stitched_normal, light_direction), 0.0f) * albedo;
+    vec3 diffuse = max(angle, 0.0f) * albedo;
 
     vec3 reflect_direction = reflect(-light_direction, stitched_normal);
     vec3 specular = specular_strength * pow(max(dot(view_direction, reflect_direction), 0.0f), shininess) * vec3(1.0f);

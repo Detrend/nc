@@ -56,6 +56,30 @@ f32 cross(const vec2& a, const vec2& b)
 }
 
 //==============================================================================
+mat4 translation(vec3 how_much)
+{
+  return mat4
+  {
+    VEC4_X,
+    VEC4_Y,
+    VEC4_Z,
+    vec4{how_much, 1.0f},
+  };
+}
+
+//==============================================================================
+mat4 scaling(vec3 how_much)
+{
+  return mat4
+  {
+    VEC4_X * how_much.x,
+    VEC4_Y * how_much.y,
+    VEC4_Z * how_much.z,
+    VEC4_W,
+  };
+}
+
+//==============================================================================
 template bool is_normal(const vec4&, f32);
 template bool is_normal(const vec3&, f32);
 template bool is_normal(const vec2&, f32);

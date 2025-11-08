@@ -33,6 +33,7 @@ namespace nc
 Renderer::Renderer(u32 win_w, u32 win_h)
 : m_solid_material(shaders::solid::VERTEX_SOURCE, shaders::solid::FRAGMENT_SOURCE)
 , m_billboard_material(shaders::billboard::VERTEX_SOURCE, shaders::billboard::FRAGMENT_SOURCE)
+, m_gun_material(shaders::gun::VERTEX_SOURCE, shaders::gun::FRAGMENT_SOURCE)
 , m_light_material(shaders::light::VERTEX_SOURCE, shaders::light::FRAGMENT_SOURCE)
 , m_sector_material(shaders::sector::VERTEX_SOURCE, shaders::sector::FRAGMENT_SOURCE)
 , m_light_culling_shader(shaders::light_culling::COMPUTE_SOURCE)
@@ -128,6 +129,8 @@ Renderer::Renderer(u32 win_w, u32 win_h)
 //==============================================================================
 void Renderer::on_window_resized(u32 w, u32 h)
 {
+  m_window_size = ivec2{w, h};
+
   // clean them up first before recreating
   this->destroy_g_buffers();
 
@@ -301,7 +304,7 @@ const
   render_sectors(camera);
   render_entities(camera);
   render_portals(camera);
-  render_gun(gun);
+  render_gun(camera, gun);
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -324,7 +327,7 @@ void Renderer::do_ligh_culling_pass(const CameraData& camera) const
 
   m_light_culling_shader.set_uniform(shaders::light_culling::VIEW, camera.view);
   m_light_culling_shader.set_uniform(shaders::light_culling::INV_PROJECTION, inverse(m_default_projection));
-  m_light_culling_shader.set_uniform(shaders::light_culling::WINDOW_SIZE, m_window_size);
+  m_light_culling_shader.set_uniform(shaders::light_culling::WINDOW_SIZE, cast<vec2>(m_window_size));
   m_light_culling_shader.set_uniform(shaders::light_culling::FAR_PLANE, FAR);
   m_light_culling_shader.set_uniform(shaders::light_culling::NUM_LIGHTS, m_point_light_ssbo_size);
 
@@ -743,48 +746,50 @@ void Renderer::render_portals(const CameraData& camera) const
 }
 
 //==============================================================================
-void Renderer::render_gun(const RenderGunProperties& gun) const
+void Renderer::render_gun
+(
+  const CameraData& camera, const RenderGunProperties& gun
+)
+const
 {
+  namespace sb = shaders::billboard;
+
   if (gun.sprite.empty())
   {
     // Early exit if no gun should be rendered
     return;
   }
 
-  const TextureHandle& texture = TextureManager::get()[gun.sprite];
+  const TextureHandle& texture         = TextureManager::get()[gun.sprite];
+  const MeshHandle&    texturable_quad = MeshManager::get().get_texturable_quad();
 
-  GLint viewport[4];
-  glGetIntegerv(GL_VIEWPORT, viewport);
-  const f32 screen_width = static_cast<f32>(viewport[2]);
-  const f32 screen_height = static_cast<f32>(viewport[3]);
+  f32  gun_zoom = CVars::gun_zoom;
+  vec2 win_size = cast<vec2>(m_window_size);
+  vec3 scale    = -vec3{win_size.x * gun_zoom, win_size.y * gun_zoom, 1.0f};
+  f32  trans_x  = 0.5f + gun.sway.x * 0.5f;
+  f32  trans_y  = 0.5f + gun.sway.y * 0.5f;
+  vec3 trans    = vec3{trans_x * win_size.x, trans_y * win_size.y, 0.0f};
 
-  f32 gun_zoom = CVars::gun_zoom;
+  mat4 transform  = inverse(camera.view);
+  mat4 view       = translation(trans) * scaling(scale);
+  mat4 projection = ortho(0.0f, win_size.x, win_size.y, 0.0f, -1.0f, 1.0f);
 
-  vec3 scaling = -vec3{screen_width * gun_zoom, screen_height * gun_zoom, 1.0f};
-  f32  trans_x = 0.5f + gun.sway.x * 0.5f;
-  f32  trans_y = 0.5f + gun.sway.y * 0.5f;
-  vec3 trans   = vec3{trans_x * screen_width, trans_y * screen_height, 0.0f};
-
-  const mat4 projection = ortho(0.0f, screen_width, screen_height, 0.0f, -1.0f, 1.0f);
-  const mat4 transform  = translate(mat4{1.0f}, trans) * scale(mat4{1.0f}, scaling);
-
-  const MeshHandle& texturable_quad = MeshManager::get().get_texturable_quad();
   glBindVertexArray(texturable_quad.get_vao());
 
-  m_billboard_material.use();
-  m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, transform);
-  m_billboard_material.set_uniform(shaders::billboard::VIEW, mat4(1.0f));
-  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, projection);
-  m_billboard_material.set_uniform(shaders::billboard::ATLAS_SIZE, texture.get_atlas().get_size());
-  m_billboard_material.set_uniform(shaders::billboard::TEXTURE_POS, texture.get_pos());
-  m_billboard_material.set_uniform(shaders::billboard::TEXTURE_SIZE, texture.get_size());
+  m_gun_material.use();
+  m_gun_material.set_uniform(sb::TRANSFORM,    transform);
+  m_gun_material.set_uniform(sb::VIEW,         view);
+  m_gun_material.set_uniform(sb::PROJECTION,   projection);
+  m_gun_material.set_uniform(sb::ATLAS_SIZE,   texture.get_atlas().get_size());
+  m_gun_material.set_uniform(sb::TEXTURE_POS,  texture.get_pos());
+  m_gun_material.set_uniform(sb::TEXTURE_SIZE, texture.get_size());
 
   glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
   glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
 
   glBindTexture(GL_TEXTURE_2D, 0);
   glBindVertexArray(0);
-  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, m_default_projection);
+  m_gun_material.set_uniform(shaders::billboard::PROJECTION, m_default_projection);
 }
 
 #pragma region portals rendering
