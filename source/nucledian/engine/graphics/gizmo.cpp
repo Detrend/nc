@@ -66,7 +66,7 @@ Gizmo::Gizmo(const MeshHandle& mesh, const mat4& transform, const color4& color,
 //==============================================================================
 std::shared_ptr<Gizmo> Gizmo::create_cube_impl(f32 ttl, const vec3& position, f32 size, const color4& color)
 {
-  const mat4 transform = translate(mat4(1.0f), position) * scale(mat4(1.0f), vec3(size));
+  const mat4 transform = translation(position) * scaling(vec3(size));
 
   GizmoManager& gizmo_manager = GizmoManager::get();
   return gizmo_manager.add_gizmo(Gizmo(MeshManager::get().get_cube(), transform, color, ttl), ttl > 0.0f);
@@ -77,8 +77,8 @@ std::shared_ptr<Gizmo> Gizmo::create_ray_impl(f32 ttl, const vec3& start, const 
 {
   const auto [axis, angle] = compute_rotation_angle_axis(direction);
 
-  const mat4 transform = translate(mat4(1.0f), start)
-    * scale(mat4(1.0f), vec3(1e6f))
+  const mat4 transform = translation(start)
+    * scaling(vec3(1e6f))
     * rotate(mat4(1.0f), angle, axis);
   
   GizmoManager& gizmo_manager = GizmoManager::get();
@@ -91,8 +91,8 @@ std::shared_ptr<Gizmo> Gizmo::create_line_impl(f32 ttl, const vec3& start, const
   const vec3 direction = end - start;
   const auto [axis, angle] = compute_rotation_angle_axis(direction);
 
-  const mat4 transform = translate(mat4(1.0f), start)
-    * scale(mat4(1.0f), vec3(length(direction)))
+  const mat4 transform = translation(start)
+    * scaling(vec3(length(direction)))
     * rotate(mat4(1.0f), angle, axis);
 
   [[maybe_unused]] const vec3 recomp_start = transform * vec4{0, 0, 0, 1};

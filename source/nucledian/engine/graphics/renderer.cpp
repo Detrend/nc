@@ -681,7 +681,7 @@ void Renderer::render_entities(const CameraData& camera) const
         const bool rot_only_hor = appearance.rotation == Appearance::RotationMode::only_horizontal;
         const mat4& rotation = rot_only_hor ? rotation_horizontal : rotation_full;
 
-        const mat4 offset_transform = translate(mat4{1.0f}, root_offset);
+        const mat4 offset_transform = translation(root_offset);
         const f32  height_move = bottom_mode ? 0.0f : (BILLBOARD_TEXTURE_SCALE * 0.5f);
 
         const vec3 pivot_offset(0.0f, texture.get_height() * height_move, 0.0f);
@@ -691,9 +691,9 @@ void Renderer::render_entities(const CameraData& camera) const
           1.0f
         );
 
-        const mat4 transform = translate(mat4(1.0f), position + pivot_offset)
+        const mat4 transform = translation(position + pivot_offset)
           * rotation
-          * nc::scale(mat4(1.0f), scale)
+          * scaling(scale)
           * offset_transform;
 
         m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, transform); 

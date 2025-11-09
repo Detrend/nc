@@ -1519,14 +1519,14 @@ static void compute_portal_render_data(MapSectors& map)
         return;
 
       const auto [src_pos, src_rotation, src_scale] = compute_pos_rotation_scale(map, sector_id, wall_id);
-      const mat4 src_transform_no_scale = translate(mat4(1.0f), src_pos) * rotate(mat4(1.0f), src_rotation, VEC3_Y);
-      const mat4 src_transform = src_transform_no_scale * scale(mat4(1.0f), src_scale);
+      const mat4 src_transform_no_scale = translation(src_pos) * rotate(mat4(1.0f), src_rotation, VEC3_Y);
+      const mat4 src_transform = src_transform_no_scale * scaling(src_scale);
 
       const SectorID dest_sector_id = map.walls[wall_id].portal_sector_id;
       const WallRelID dest_rel_wall_id = map.walls[wall_id].nc_portal_wall_id;
       const WallID dest_wall_id = map_helpers::get_wall_id(map, dest_sector_id, dest_rel_wall_id);
       const auto [dest_pos, dest_rotation, _] = compute_pos_rotation_scale(map, dest_sector_id, dest_wall_id);
-      const mat4 dest_transform_no_scale = translate(mat4(1.0f), dest_pos) * rotate(mat4(1.0f), dest_rotation, VEC3_Y);
+      const mat4 dest_transform_no_scale = translation(dest_pos) * rotate(mat4(1.0f), dest_rotation, VEC3_Y);
 
       map.walls[wall_id].render_data_index = static_cast<PortalRenderID>(map.portals_render_data.size());
       map.portals_render_data.emplace_back(
