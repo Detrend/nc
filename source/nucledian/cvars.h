@@ -133,6 +133,7 @@ struct CVars
   NC_REGISTER_CVAR(bool, lock_camera_pitch,     false, "Restricts camera from looking up/down.");
   NC_REGISTER_CVAR(bool, has_fps_limit,         false, "Is the FPS limited?");
   NC_REGISTER_CVAR(bool, has_min_fps,           false, "Min FPS");
+  NC_REGISTER_CVAR(bool, light_debug,           false, "Light debugging.");
 
   NC_REGISTER_CVAR_RANGED(f32, fps_limit, 60.0f, 1.0f, 512.0f,
     "FPS limit if the \"has_fps_limit\" is turned on");

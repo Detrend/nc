@@ -408,37 +408,42 @@ void GraphicsSystem::render()
   }
 #endif
 
-  if (ImGui::Begin("Light Debug"))
+#ifdef NC_IMGUI
+  if (CVars::light_debug)
   {
-    vec3 pos = light_test->get_position();
-    if (ImGui::DragFloat3("Position", &pos.x, 0.1f))
+    if (ImGui::Begin("Light Debug", &CVars::light_debug))
     {
-      light_test->set_position(pos);
+      vec3 pos = light_test->get_position();
+      if (ImGui::DragFloat3("Position", &pos.x, 0.1f))
+      {
+        light_test->set_position(pos);
+      }
+
+      bool changed = false;
+
+      changed |= ImGui::ColorEdit3("Color",    &light_test->color.x);
+      changed |= ImGui::DragFloat("Intensity", &light_test->intensity, 0.1f, 0.0f, 1.0f);
+      changed |= ImGui::DragFloat("Constant",  &light_test->constant);
+      changed |= ImGui::DragFloat("Linear",    &light_test->linear);
+      changed |= ImGui::DragFloat("Quadratic", &light_test->quadratic);
+
+      if (changed)
+      {
+        light_test->refresh_entity_radius();
+      }
+
+      ImGui::Separator();
+      Player* p = ThingSystem::get().get_player();
+      if (p)
+      {
+        f32 dist = length(p->get_position() - light_test->get_position());
+        ImGui::Text("Distance to player is: %.2f", dist);
+      }
+      ImGui::Text("Light radius is: %.2f", light_test->get_radius());
     }
-
-    bool changed = false;
-
-    changed |= ImGui::ColorEdit3("Color",    &light_test->color.x);
-    changed |= ImGui::DragFloat("Intensity", &light_test->intensity, 0.1f, 0.0f, 1.0f);
-    changed |= ImGui::DragFloat("Constant",  &light_test->constant);
-    changed |= ImGui::DragFloat("Linear",    &light_test->linear);
-    changed |= ImGui::DragFloat("Quadratic", &light_test->quadratic);
-
-    if (changed)
-    {
-      light_test->refresh_entity_radius();
-    }
-
-    ImGui::Separator();
-    Player* p = ThingSystem::get().get_player();
-    if (p)
-    {
-      f32 dist = length(p->get_position() - light_test->get_position());
-      ImGui::Text("Distance to player is: %.2f", dist);
-    }
-    ImGui::Text("Light radius is: %.2f", light_test->get_radius());
+    ImGui::End();
   }
-  ImGui::End();
+#endif
 
   VisibilityTree visible_sectors;
   query_visibility(visible_sectors);
