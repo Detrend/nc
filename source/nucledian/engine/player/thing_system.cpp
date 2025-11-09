@@ -360,7 +360,7 @@ void ThingSystem::post_init()
 
   // Schedule the loading of the first level..
   // This is probably only temporary.
-  this->request_level_change(Levels::LEVEL_1);
+  this->request_level_change(Levels::TEST_LEVEL);
 }
 
 //==============================================================================
