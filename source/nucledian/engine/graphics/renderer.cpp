@@ -33,6 +33,7 @@ namespace nc
 Renderer::Renderer(u32 win_w, u32 win_h)
 : m_solid_material(shaders::solid::VERTEX_SOURCE, shaders::solid::FRAGMENT_SOURCE)
 , m_billboard_material(shaders::billboard::VERTEX_SOURCE, shaders::billboard::FRAGMENT_SOURCE)
+, m_gun_material(shaders::gun::VERTEX_SOURCE, shaders::gun::FRAGMENT_SOURCE)
 , m_light_material(shaders::light::VERTEX_SOURCE, shaders::light::FRAGMENT_SOURCE)
 , m_sector_material(shaders::sector::VERTEX_SOURCE, shaders::sector::FRAGMENT_SOURCE)
 , m_light_culling_shader(shaders::light_culling::COMPUTE_SOURCE)
@@ -128,6 +129,8 @@ Renderer::Renderer(u32 win_w, u32 win_h)
 //==============================================================================
 void Renderer::on_window_resized(u32 w, u32 h)
 {
+  m_window_size = ivec2{w, h};
+
   // clean them up first before recreating
   this->destroy_g_buffers();
 
@@ -161,12 +164,39 @@ const
   do_geometry_pass(camera_data, gun_data);
   do_ligh_culling_pass(camera_data);
   do_lighting_pass(camera_data.position);
+
+  m_light_checker.registry.clear();
+  m_entity_checker.registry.clear();
 }
 
 //==============================================================================
 const ShaderProgramHandle& Renderer::get_solid_material() const
 {
   return m_solid_material;
+}
+
+//==============================================================================
+bool Renderer::EntityRedundancyChecker::check_redundant(u64 id, mat4 trans)
+{
+  auto it = registry.find(id);
+  if (it == registry.end())
+  {
+    // Never seen before, our first time together
+    registry.insert({id, std::vector<mat4>{trans}});
+    return true;
+  }
+
+  std::vector<mat4>& tlist = it->second;
+  if (std::find(tlist.begin(), tlist.end(), trans) == tlist.end())
+  {
+    // We saw this light before, but from a different spot with a different
+    // transformation matrix.
+    tlist.push_back(trans);
+    return true;
+  }
+
+  // Already found once
+  return false;
 }
 
 //==============================================================================
@@ -301,7 +331,7 @@ const
   render_sectors(camera);
   render_entities(camera);
   render_portals(camera);
-  render_gun(gun);
+  render_gun(camera, gun);
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -324,7 +354,7 @@ void Renderer::do_ligh_culling_pass(const CameraData& camera) const
 
   m_light_culling_shader.set_uniform(shaders::light_culling::VIEW, camera.view);
   m_light_culling_shader.set_uniform(shaders::light_culling::INV_PROJECTION, inverse(m_default_projection));
-  m_light_culling_shader.set_uniform(shaders::light_culling::WINDOW_SIZE, m_window_size);
+  m_light_culling_shader.set_uniform(shaders::light_culling::WINDOW_SIZE, cast<vec2>(m_window_size));
   m_light_culling_shader.set_uniform(shaders::light_culling::FAR_PLANE, FAR);
   m_light_culling_shader.set_uniform(shaders::light_culling::NUM_LIGHTS, m_point_light_ssbo_size);
 
@@ -419,27 +449,6 @@ void Renderer::update_light_ssbos() const
   // clean up
   m_point_light_data.clear();
   glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-}
-
-//==============================================================================
-void Renderer::append_point_light_data(const CameraData& camera) const
-{
-  const auto& mapping = ThingSystem::get().get_sector_mapping().sectors_to_entities.entities;
-  EntityRegistry& registry = ThingSystem::get().get_entities();
-
-  for (const auto& frustum : camera.vis_tree.sectors)
-  {
-    for (const auto& entity_id : mapping[frustum.sector])
-    {
-      const PointLight* const light = registry.get_entity(entity_id)->as<PointLight>();
-
-      if (light == nullptr)
-        continue;
-
-      const vec3 stiched_position = (camera.portal_dest_to_src * vec4(light->get_position(), 1.0f)).xyz;
-      m_point_light_data.push_back(light->get_gpu_data(stiched_position));
-    }
-  }
 }
 
 //==============================================================================
@@ -555,31 +564,70 @@ void Renderer::render_entities(const CameraData& camera) const
 {
   constexpr f32 BILLBOARD_TEXTURE_SCALE = 1.0f / 2048.0f;
 
-  append_point_light_data(camera);
-
   // group entities by texture atlas
-  const auto& mapping = ThingSystem::get().get_sector_mapping().sectors_to_entities.entities;
+  const auto& mapping = ThingSystem::get().get_sector_mapping();
   const EntityRegistry& registry = ThingSystem::get().get_entities();
 
-  std::unordered_map<ResLifetime, std::unordered_set<const Entity*>> groups;
+  struct EntityRenderData
+  {
+    Appearance        appear;
+    vec3              world_pos;
+    std::vector<mat4> transforms;
+  };
+
+  std::unordered_map<u64, EntityRenderData> groups[3]{};
+
   for (const auto& frustum : camera.vis_tree.sectors)
   {
-    for (const auto& entity_id : mapping[frustum.sector])
+    SectorID sid = frustum.sector;
+    mapping.for_each_in_sector(sid, [&](EntityID id, mat4 t)
     {
-      const Entity* entity = registry.get_entity(entity_id);
-      if (const Appearance* appearance = entity->get_appearance())
+      if (id.type == EntityTypes::point_light)
       {
-        // TODO: We have to call this twice (once here and once later), which
-        //       is not pretty. Rework maybe?
-        const TextureHandle& texture = pick_texture_handle_from_appearance
-        (
-          *appearance, camera
-        );
+        // Now, we have to make sure to not include any light twice..
+        // However, this is not an easy task, as one light can shine on us from
+        // two different portals at the same time. Therefore, we have to first
+        // distinguish them by their ID and then by their position.
+        if (m_light_checker.check_redundant(id.as_u64(), t))
+        {
+          // Has to exist because it is in sector mapping
+          nc_assert(registry.get_entity(id));
 
-        const ResLifetime lifetime = texture.get_lifetime();
-        groups[lifetime].insert(entity);
+          const PointLight* light = registry.get_entity(id)->as<PointLight>();
+
+          // Has to be a light because we would not get here otherwise
+          nc_assert(light); 
+
+          vec3 light_pos = t * vec4{light->get_position(), 1.0f};
+          vec3 stich_pos = camera.portal_dest_to_src * vec4(light_pos, 1.0f);
+          m_point_light_data.push_back(light->get_gpu_data(stich_pos));
+        }
       }
-    }
+      else
+      {
+        const Entity* entity = registry.get_entity(id);
+        nc_assert(entity);
+
+        const Appearance* appearance = entity->get_appearance();
+        if (!appearance)
+        {
+          return;
+        }
+
+        NC_TODO("Add multiple lifetimes to rendering of entities.");
+        //const ResLifetime lifetime = texture.get_lifetime();
+        //groups[lifetime].insert(entity);
+
+        if (m_entity_checker.check_redundant(id.as_u64(), t))
+        {
+          auto& group = groups[cast<u64>(ResLifetime::Game)];
+          EntityRenderData& render_data = group[id.as_u64()];
+          render_data.appear    = *appearance;
+          render_data.world_pos = entity->get_position();
+          render_data.transforms.push_back(t);
+        }
+      }
+    });
   }
 
   m_billboard_material.use();
@@ -601,50 +649,56 @@ void Renderer::render_entities(const CameraData& camera) const
     vec4{0, 0, 0, 1}
   };
 
-  for (const auto& [lifetime, group] : groups)
+  for (u64 l = cast<u64>(ResLifetime::Level); l <= cast<u64>(ResLifetime::Game); ++l)
   {
-    const TextureAtlas& atlas = TextureManager::get().get_atlas(lifetime);
+    const auto& group = groups[l];
+    const TextureAtlas& atlas = TextureManager::get().get_atlas(cast<ResLifetime>(l));
     glBindTexture(GL_TEXTURE_2D, atlas.handle);
     m_billboard_material.set_uniform(shaders::billboard::ATLAS_SIZE, atlas.get_size());
 
-    for (const auto* entity : group)
+    for (const auto& [entity, render_data] : group)
     {
-      nc_assert(entity->get_appearance(), "At this point entity must have appearance.");
+      const Appearance& base_appearance = render_data.appear;
+      const vec3 base_position = render_data.world_pos;
 
-      const Appearance& appearance = *entity->get_appearance();
-      const vec3 position = entity->get_position();
+      for (const mat4& entity_transform : render_data.transforms)
+      {
+        Appearance appearance = base_appearance;
+        appearance.direction = (entity_transform * vec4{appearance.direction, 0.0f}).xyz();
+        vec3 position = (entity_transform * vec4{base_position, 1.0f}).xyz();
 
-      const TextureHandle& texture = pick_texture_handle_from_appearance
-      (
-        appearance, camera
-      );
+        const TextureHandle& texture = pick_texture_handle_from_appearance
+        (
+          appearance, camera
+        );
 
-      m_billboard_material.set_uniform(shaders::billboard::TEXTURE_POS, texture.get_pos());
-      m_billboard_material.set_uniform(shaders::billboard::TEXTURE_SIZE, texture.get_size());
+        m_billboard_material.set_uniform(shaders::billboard::TEXTURE_POS, texture.get_pos());
+        m_billboard_material.set_uniform(shaders::billboard::TEXTURE_SIZE, texture.get_size());
 
-      const bool bottom_mode = appearance.pivot == Appearance::PivotMode::bottom;
-      const vec3 root_offset = bottom_mode ? VEC3_Y * 0.5f : VEC3_ZERO;
+        const bool bottom_mode = appearance.pivot == Appearance::PivotMode::bottom;
+        const vec3 root_offset = bottom_mode ? VEC3_Y * 0.5f : VEC3_ZERO;
 
-      const bool rot_only_hor = appearance.rotation == Appearance::RotationMode::only_horizontal;
-      const mat4& rotation = rot_only_hor ? rotation_horizontal : rotation_full;
+        const bool rot_only_hor = appearance.rotation == Appearance::RotationMode::only_horizontal;
+        const mat4& rotation = rot_only_hor ? rotation_horizontal : rotation_full;
 
-      const mat4 offset_transform = translate(mat4{1.0f}, root_offset);
-      const f32  height_move = bottom_mode ? 0.0f : (BILLBOARD_TEXTURE_SCALE * 0.5f);
+        const mat4 offset_transform = translate(mat4{1.0f}, root_offset);
+        const f32  height_move = bottom_mode ? 0.0f : (BILLBOARD_TEXTURE_SCALE * 0.5f);
 
-      const vec3 pivot_offset(0.0f, texture.get_height() * height_move, 0.0f);
-      const vec3 scale(
-        texture.get_width() * appearance.scale * BILLBOARD_TEXTURE_SCALE,
-        texture.get_height() * appearance.scale * BILLBOARD_TEXTURE_SCALE,
-        1.0f
-      );
+        const vec3 pivot_offset(0.0f, texture.get_height() * height_move, 0.0f);
+        const vec3 scale(
+          texture.get_width() * appearance.scale * BILLBOARD_TEXTURE_SCALE,
+          texture.get_height() * appearance.scale * BILLBOARD_TEXTURE_SCALE,
+          1.0f
+        );
 
-      const mat4 transform = translate(mat4(1.0f), position + pivot_offset)
-        * rotation
-        * nc::scale(mat4(1.0f), scale)
-        * offset_transform;
+        const mat4 transform = translate(mat4(1.0f), position + pivot_offset)
+          * rotation
+          * nc::scale(mat4(1.0f), scale)
+          * offset_transform;
 
-      m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, transform); 
-      glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
+        m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, transform); 
+        glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
+      }
     }
   }
 
@@ -685,48 +739,50 @@ void Renderer::render_portals(const CameraData& camera) const
 }
 
 //==============================================================================
-void Renderer::render_gun(const RenderGunProperties& gun) const
+void Renderer::render_gun
+(
+  const CameraData& camera, const RenderGunProperties& gun
+)
+const
 {
+  namespace sb = shaders::billboard;
+
   if (gun.sprite.empty())
   {
     // Early exit if no gun should be rendered
     return;
   }
 
-  const TextureHandle& texture = TextureManager::get()[gun.sprite];
+  const TextureHandle& texture         = TextureManager::get()[gun.sprite];
+  const MeshHandle&    texturable_quad = MeshManager::get().get_texturable_quad();
 
-  GLint viewport[4];
-  glGetIntegerv(GL_VIEWPORT, viewport);
-  const f32 screen_width = static_cast<f32>(viewport[2]);
-  const f32 screen_height = static_cast<f32>(viewport[3]);
+  f32  gun_zoom = CVars::gun_zoom;
+  vec2 win_size = cast<vec2>(m_window_size);
+  vec3 scale    = -vec3{win_size.x * gun_zoom, win_size.y * gun_zoom, 1.0f};
+  f32  trans_x  = 0.5f + gun.sway.x * 0.5f;
+  f32  trans_y  = 0.5f + gun.sway.y * 0.5f;
+  vec3 trans    = vec3{trans_x * win_size.x, trans_y * win_size.y, 0.0f};
 
-  f32 gun_zoom = CVars::gun_zoom;
+  mat4 transform  = inverse(camera.view);
+  mat4 view       = translation(trans) * scaling(scale);
+  mat4 projection = ortho(0.0f, win_size.x, win_size.y, 0.0f, -1.0f, 1.0f);
 
-  vec3 scaling = -vec3{screen_width * gun_zoom, screen_height * gun_zoom, 1.0f};
-  f32  trans_x = 0.5f + gun.sway.x * 0.5f;
-  f32  trans_y = 0.5f + gun.sway.y * 0.5f;
-  vec3 trans   = vec3{trans_x * screen_width, trans_y * screen_height, 0.0f};
-
-  const mat4 projection = ortho(0.0f, screen_width, screen_height, 0.0f, -1.0f, 1.0f);
-  const mat4 transform  = translate(mat4{1.0f}, trans) * scale(mat4{1.0f}, scaling);
-
-  const MeshHandle& texturable_quad = MeshManager::get().get_texturable_quad();
   glBindVertexArray(texturable_quad.get_vao());
 
-  m_billboard_material.use();
-  m_billboard_material.set_uniform(shaders::billboard::TRANSFORM, transform);
-  m_billboard_material.set_uniform(shaders::billboard::VIEW, mat4(1.0f));
-  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, projection);
-  m_billboard_material.set_uniform(shaders::billboard::ATLAS_SIZE, texture.get_atlas().get_size());
-  m_billboard_material.set_uniform(shaders::billboard::TEXTURE_POS, texture.get_pos());
-  m_billboard_material.set_uniform(shaders::billboard::TEXTURE_SIZE, texture.get_size());
+  m_gun_material.use();
+  m_gun_material.set_uniform(sb::TRANSFORM,    transform);
+  m_gun_material.set_uniform(sb::VIEW,         view);
+  m_gun_material.set_uniform(sb::PROJECTION,   projection);
+  m_gun_material.set_uniform(sb::ATLAS_SIZE,   texture.get_atlas().get_size());
+  m_gun_material.set_uniform(sb::TEXTURE_POS,  texture.get_pos());
+  m_gun_material.set_uniform(sb::TEXTURE_SIZE, texture.get_size());
 
   glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
   glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
 
   glBindTexture(GL_TEXTURE_2D, 0);
   glBindVertexArray(0);
-  m_billboard_material.set_uniform(shaders::billboard::PROJECTION, m_default_projection);
+  m_gun_material.set_uniform(shaders::billboard::PROJECTION, m_default_projection);
 }
 
 #pragma region portals rendering

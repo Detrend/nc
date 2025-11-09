@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\source\libs\glad\glad.c" />
@@ -198,6 +198,8 @@
     <None Include="..\source\nucledian\anim_state_machine.inl" />
     <None Include="..\source\nucledian\engine\ui\ui_button.frag" />
     <None Include="..\source\nucledian\engine\ui\ui_button.vert" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\gun.vert" />
+    <None Include="..\source\nucledian\engine\entity\sector_mapping.inl" />
     <None Include="..\source\nucledian\engine\graphics\resources\shader_program.inl" />
     <None Include="..\source\nucledian\engine\graphics\shaders\light_culling.comp" />
     <None Include="..\source\nucledian\engine\ui\ui_text.frag" />

@@ -84,6 +84,12 @@ public:
     return nullptr;
   }
 
+  template<typename T>
+  const T* as() const
+  {
+    return const_cast<Entity*>(this)->as<T>();
+  }
+
 protected:
   bool  collision;
   f32 GRAVITY = 6.0f;

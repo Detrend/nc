@@ -40,6 +40,19 @@ namespace nc
       inline constexpr Uniform<5, vec2> TEXTURE_SIZE;
     }
 
+    namespace gun
+    {
+      #include <engine/graphics/shaders/gun.vert>
+      #include <engine/graphics/shaders/billboard.frag>
+
+      inline constexpr Uniform<0, mat4> TRANSFORM;
+      inline constexpr Uniform<1, mat4> VIEW;
+      inline constexpr Uniform<2, mat4> PROJECTION;
+      inline constexpr Uniform<3, vec2> ATLAS_SIZE;
+      inline constexpr Uniform<4, vec2> TEXTURE_POS;
+      inline constexpr Uniform<5, vec2> TEXTURE_SIZE;
+    }
+
     // Lighting pass.
     namespace light
     {

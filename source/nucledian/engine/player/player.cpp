@@ -432,7 +432,7 @@ void Player::do_attack()
     // And its light
     PointLight* light = entity_system.create_entity<PointLight>
     (
-      from, 1.0f, 1.0f, 0.09f, 0.032f, colors::BLUE
+      from, 1.0f, 0.0f, 0.0f, 0.15f, colors::BLUE
     );
 
     // And attach it

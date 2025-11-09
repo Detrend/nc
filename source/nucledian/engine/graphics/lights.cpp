@@ -104,6 +104,17 @@ PointLightGPU PointLight::get_gpu_data(const vec3& position) const
 }
 
 //==============================================================================
+void PointLight::refresh_entity_radius()
+{
+  f32 radius = calculate_radius
+  (
+    this->color, this->intensity, this->constant, this->linear, this->quadratic
+  );
+
+  this->set_radius(max(radius, 0.0f));
+}
+
+//==============================================================================
 f32 PointLight::calculate_radius(const color3& color, f32 intensity, f32 constant, f32 linear, f32 quadratic)
 {
   // WARNING: Following code should be 1:1 copy of the calculate_light_radius function in light_culling.comp shader.

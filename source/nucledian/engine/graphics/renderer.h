@@ -9,6 +9,7 @@
 #include <math/vector.h>
 #include <math/matrix.h>
 
+#include <unordered_map>
 #include <memory>
 #include <vector>
 
@@ -52,14 +53,28 @@ public:
 private:
   using Portal = Portal;
 
+  // One entity can be present in multiple sectors, but we want to render it
+  // only once. However, it is not sufficient to store only its ID as it can be
+  // visible in one sector more times at more places from non euclidean portals.
+  // Therefore, we first have to check for the ID and then for its
+  // transformation matrix to remove all duplicate entries.
+  // If this takes too much processing time then the 4x4 matrix can be replaced
+  // by its hash, which could speed it up a little bit (4x4 floats = 64 bytes).
+  struct EntityRedundancyChecker
+  {
+    bool check_redundant(u64 id, mat4 transform);
+    std::unordered_map<u64, std::vector<mat4>> registry;
+  };
+
   static constexpr size_t LIGHT_CULLING_TILE_SIZE_X = 8;
   static constexpr size_t LIGHT_CULLING_TILE_SIZE_Y = 8;
 
-  mat4 m_default_projection;
-  vec2 m_window_size;
+  mat4  m_default_projection;
+  ivec2 m_window_size;
   
   const ShaderProgramHandle m_solid_material;
   const ShaderProgramHandle m_billboard_material;
+  const ShaderProgramHandle m_gun_material;
   const ShaderProgramHandle m_light_material;
   const ShaderProgramHandle m_sector_material;
   const ShaderProgramHandle m_light_culling_shader;
@@ -67,6 +82,8 @@ private:
   mutable u32                        m_dir_light_ssbo_size   = 0;
   mutable u32                        m_point_light_ssbo_size = 0;
   mutable std::vector<PointLightGPU> m_point_light_data;
+  mutable EntityRedundancyChecker    m_light_checker;
+  mutable EntityRedundancyChecker    m_entity_checker;
 
   GLuint m_texture_data_ssbo = 0;
 
@@ -99,12 +116,11 @@ private:
   void do_lighting_pass(const vec3& view_position) const;
 
   void update_light_ssbos() const;
-  void append_point_light_data(const CameraData& camera) const;
 
   void render_sectors(const CameraData& camera)  const;
   void render_entities(const CameraData& camera) const;
   void render_portals(const CameraData& camera) const;
-  void render_gun(const RenderGunProperties& gun) const;
+  void render_gun(const CameraData& cam, const RenderGunProperties& gun) const;
 
   #pragma region portals rendering
   void render_portal_to_stencil(const CameraData& camera, const Portal& portal, u8 recursion) const;

@@ -16,7 +16,14 @@ struct EntityID
 
   EntityType type;
   u32        idx;
+
+  // Converts to u64 so it can be treated as a normal integer.
+  u64 as_u64() const
+  {
+    return (u64{type} << 32) | u64{idx};
+  }
 };
+static_assert(sizeof(EntityID) == 8);
 
 constexpr EntityID INVALID_ENTITY_ID = EntityID{.type = ~0ul, .idx = ~0ul};
 

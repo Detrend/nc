@@ -63,6 +63,13 @@ VT with_z(const VT& v, const FT& x);
 template<typename VT, typename FT>
 VT with_w(const VT& v, const FT& x);
 
+// Creates a translation matrix. Alternative for glm::translate which always
+// does an unnecessary matrix multiplication.
+mat4 translation(vec3 how_much);
+
+// Creates a scaling matrix.
+mat4 scaling(vec3 how_much);
+
 }
 
 #include <math/lingebra.inl>

@@ -17,10 +17,9 @@ layout(location = 5) uniform vec2 texture_size;
 
 void main()
 {
-  gl_Position = projection * view * transform * vec4(a_position, 1.0f);
-  position = (transform * vec4(a_position, 1.0f)).xyz;
-  // NOTE: Not sure why it has to be -1.0f, but with 1.0f it is flipped
-  normal = (transform * vec4(0.0f, 0.0f, -1.0f, 0.0f)).xyz;
+  gl_Position = projection * view * vec4(a_position, 1.0f);
+  position = (transform * vec4(vec3(0.0f), 1.0f)).xyz;
+  normal = (transform * vec4(0.0f, 0.0f, 1.0f, 0.0f)).xyz;
   uv = (a_uv * texture_size + texture_pos) / atlas_size;
 }
 
