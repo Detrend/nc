@@ -248,25 +248,14 @@ void GraphicsSystem::on_event(ModuleEvent& event)
 #ifdef NC_DEBUG_DRAW
       m_debug_renderer = std::make_unique<TopDownDebugRenderer>(m_window_width, m_window_height);
 #endif
-      break;
     }
+    break;
 
     case ModuleEventType::game_update:
     {
       this->update(event.update.dt);
-
-      // TODO: temporary directional lights (don't forget about lights header)
-      /*
-      EntityRegistry& registry = ThingSystem::get().get_entities();
-      registry.for_each<Player>([&registry](const Player& player)
-      {
-        const vec3 position = player.get_position();
-        light->set_position(position + vec3(0.0f, 0.5f, 0.0f));
-      });
-      */
-
-      break;
     }
+    break;
 
     case ModuleEventType::after_map_rebuild:
     {
@@ -285,21 +274,20 @@ void GraphicsSystem::on_event(ModuleEvent& event)
       });
 
       light_test = registry.create_entity<PointLight>(vec3{974.0f, 2.0f, 1068.0f}, 1.0f, 1.0f,  0.09f, 0.032f, colors::GREEN);
-
-      break;
     }
+    break;
 
     case ModuleEventType::render:
     {
       this->render();
-      break;
     }
+    break;
 
     case ModuleEventType::terminate:
     {
       this->terminate();
-      break;
     }
+    break;
   }
 }
 

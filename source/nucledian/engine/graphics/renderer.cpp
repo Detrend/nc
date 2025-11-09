@@ -164,12 +164,39 @@ const
   do_geometry_pass(camera_data, gun_data);
   do_ligh_culling_pass(camera_data);
   do_lighting_pass(camera_data.position);
+
+  m_light_checker.registry.clear();
+  m_entity_checker.registry.clear();
 }
 
 //==============================================================================
 const ShaderProgramHandle& Renderer::get_solid_material() const
 {
   return m_solid_material;
+}
+
+//==============================================================================
+bool Renderer::EntityRedundancyChecker::check_redundant(u64 id, mat4 trans)
+{
+  auto it = registry.find(id);
+  if (it == registry.end())
+  {
+    // Never seen before, our first time together
+    registry.insert({id, std::vector<mat4>{trans}});
+    return true;
+  }
+
+  std::vector<mat4>& tlist = it->second;
+  if (std::find(tlist.begin(), tlist.end(), trans) == tlist.end())
+  {
+    // We saw this light before, but from a different spot with a different
+    // transformation matrix.
+    tlist.push_back(trans);
+    return true;
+  }
+
+  // Already found once
+  return false;
 }
 
 //==============================================================================
@@ -419,57 +446,6 @@ void Renderer::update_light_ssbos() const
 }
 
 //==============================================================================
-void Renderer::append_point_light_data(const CameraData& camera) const
-{
-  const auto& mapping = ThingSystem::get().get_sector_mapping().sectors_to_entities;
-  EntityRegistry& registry = ThingSystem::get().get_entities();
-
-  std::unordered_map<const PointLight*, std::vector<mat4>> light_transforms;
-
-  for (const auto& frustum : camera.vis_tree.sectors)
-  {
-    const auto& entities   = mapping.entities[frustum.sector];
-    const auto& transforms = mapping.transforms[frustum.sector];
-
-    for (u64 i = 0; i < entities.size(); ++i)
-    {
-      EntityID entity_id = entities[i];
-      mat4     t  = transforms[i];
-
-      const PointLight* const light = registry.get_entity(entity_id)->as<PointLight>();
-
-      if (light == nullptr)
-        continue;
-
-      if (auto it = light_transforms.find(light); it != light_transforms.end())
-      {
-        std::vector<mat4>& trans_list = it->second;
-        auto beg = trans_list.begin();
-        auto end = trans_list.end();
-        if (std::find(beg, end, t) == end)
-        {
-          // Insert and render
-          trans_list.push_back(t);
-        }
-        else
-        {
-          // Already found
-          continue;
-        }
-      }
-      else
-      {
-        light_transforms.insert({light, std::vector<mat4>{t}});
-      }
-
-      const vec3 light_pos = (t * vec4{light->get_position(), 1.0f}).xyz;
-      const vec3 stiched_position = (camera.portal_dest_to_src * vec4(light_pos, 1.0f)).xyz;
-      m_point_light_data.push_back(light->get_gpu_data(stiched_position));
-    }
-  }
-}
-
-//==============================================================================
 void Renderer::render_sectors(const CameraData& camera) const
 {
   const auto& sectors_to_render = camera.vis_tree.sectors;
@@ -582,10 +558,8 @@ void Renderer::render_entities(const CameraData& camera) const
 {
   constexpr f32 BILLBOARD_TEXTURE_SCALE = 1.0f / 2048.0f;
 
-  append_point_light_data(camera);
-
   // group entities by texture atlas
-  const auto& mapping = ThingSystem::get().get_sector_mapping().sectors_to_entities;
+  const auto& mapping = ThingSystem::get().get_sector_mapping();
   const EntityRegistry& registry = ThingSystem::get().get_entities();
 
   struct EntityRenderData
@@ -595,46 +569,59 @@ void Renderer::render_entities(const CameraData& camera) const
     std::vector<mat4> transforms;
   };
 
-  std::unordered_map<const Entity*, EntityRenderData> groups[3]{};
+  std::unordered_map<u64, EntityRenderData> groups[3]{};
 
   for (const auto& frustum : camera.vis_tree.sectors)
   {
-    const auto& this_sector_entities   = mapping.entities[frustum.sector];
-    const auto& this_sector_transforms = mapping.transforms[frustum.sector];
-
-    for (u64 idx = 0, cnt = this_sector_entities.size(); idx < cnt; ++idx)
+    SectorID sid = frustum.sector;
+    mapping.for_each_in_sector(sid, [&](EntityID id, mat4 t)
     {
-      EntityID entity_id = this_sector_entities[idx];
-      mat4     transform = this_sector_transforms[idx];
-      const Entity* entity = registry.get_entity(entity_id);
-
-      if (const Appearance* appearance = entity->get_appearance())
+      if (id.type == EntityTypes::point_light)
       {
+        // Now, we have to make sure to not include any light twice..
+        // However, this is not an easy task, as one light can shine on us from
+        // two different portals at the same time. Therefore, we have to first
+        // distinguish them by their ID and then by their position.
+        if (m_light_checker.check_redundant(id.as_u64(), t))
+        {
+          // Has to exist because it is in sector mapping
+          nc_assert(registry.get_entity(id));
+
+          const PointLight* light = registry.get_entity(id)->as<PointLight>();
+
+          // Has to be a light because we would not get here otherwise
+          nc_assert(light); 
+
+          vec3 light_pos = t * vec4{light->get_position(), 1.0f};
+          vec3 stich_pos = camera.portal_dest_to_src * vec4(light_pos, 1.0f);
+          m_point_light_data.push_back(light->get_gpu_data(stich_pos));
+        }
+      }
+      else
+      {
+        const Entity* entity = registry.get_entity(id);
+        nc_assert(entity);
+
+        const Appearance* appearance = entity->get_appearance();
+        if (!appearance)
+        {
+          return;
+        }
+
         NC_TODO("Add multiple lifetimes to rendering of entities.");
         //const ResLifetime lifetime = texture.get_lifetime();
         //groups[lifetime].insert(entity);
 
-        auto& group = groups[cast<u64>(ResLifetime::Game)];
-        if (!group.contains(entity))
+        if (m_entity_checker.check_redundant(id.as_u64(), t))
         {
-          EntityRenderData& rd = group[entity];
-          rd.appear = *appearance;
-          rd.world_pos = entity->get_position();
-          rd.transforms.push_back(transform);
-        }
-        else
-        {
-          EntityRenderData& rd = group[entity];
-          auto beg = rd.transforms.begin();
-          auto end = rd.transforms.end();
-          if (std::find(beg, end, transform) == end)
-          {
-            // push back unique
-            rd.transforms.push_back(transform);
-          }
+          auto& group = groups[cast<u64>(ResLifetime::Game)];
+          EntityRenderData& render_data = group[id.as_u64()];
+          render_data.appear    = *appearance;
+          render_data.world_pos = entity->get_position();
+          render_data.transforms.push_back(t);
         }
       }
-    }
+    });
   }
 
   m_billboard_material.use();

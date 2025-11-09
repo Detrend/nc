@@ -91,9 +91,8 @@ void SectorMapping::on_entity_destroy(EntityID id)
 }
 
 //==============================================================================
-void SectorMapping::on_entity_create(EntityID id, vec3 pos, f32 /*rad*/, f32 /*h*/)
+void SectorMapping::on_entity_create(EntityID id, vec3 pos, f32 rad, f32 /*h*/)
 {
-  /*
   nc_assert(!entities_to_sectors.contains(id), "Duplicate entry!!!");
 
   SectorSet sectors;
@@ -116,9 +115,11 @@ void SectorMapping::on_entity_create(EntityID id, vec3 pos, f32 /*rad*/, f32 /*h
     sectors_to_entities.entities[sector].push_back(id);
     sectors_to_entities.transforms[sector].push_back(transform);
   }
-  */
 
-  // TODO: dump implementation, entity is only in one sector at a time
+  // This is the old sector mapping that maps the entity only to one sector - the
+  // one its pivot is inside of. Use this for debugging or if the above version
+  // fucks up.
+  /*
   SectorID sector = map.get_sector_from_point(pos.xz());
   if (sector != INVALID_SECTOR_ID)
   {
@@ -131,6 +132,7 @@ void SectorMapping::on_entity_create(EntityID id, vec3 pos, f32 /*rad*/, f32 /*h
     sectors_to_entities.entities[sector].push_back(id);
     sectors_to_entities.transforms[sector].push_back(mat4{1.0f});
   }
+  */
 }
 
 }

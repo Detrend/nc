@@ -68,7 +68,7 @@ PointLight::PointLight
 : Entity
   (
     position,
-    calculate_point_light_radius(color, intensity, constant, linear, quadratic),
+    min(calculate_point_light_radius(color, intensity, constant, linear, quadratic), 15.0f),
     0.0f
   )
 , color(color)
@@ -90,7 +90,7 @@ void PointLight::refresh_entity_radius()
     this->color, this->intensity, this->constant, this->linear, this->quadratic
   );
 
-  this->set_radius(max(radius, 0.0f));
+  this->set_radius(clamp(radius, 0.0f, 15.0f));
 }
 
 //==============================================================================

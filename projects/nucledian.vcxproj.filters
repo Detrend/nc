@@ -197,6 +197,7 @@
     <None Include="..\source\nucledian\engine\ui\ui_button.frag" />
     <None Include="..\source\nucledian\engine\ui\ui_button.vert" />
     <None Include="..\source\nucledian\engine\graphics\shaders\gun.vert" />
+    <None Include="..\source\nucledian\engine\entity\sector_mapping.inl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\source\libs\glm\CMakeLists.txt" />
