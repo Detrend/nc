@@ -19,8 +19,16 @@ static func recursive_array_tostring(arr: Array, separator :String = ", ", strin
 		
 	return ret + "]"
 	
+static func is_valid_path(path: String)->bool:
+	var start_idx = path.find("://") + 2
+	for c in ["<",">",":","\"","\\","|","?","*"]:
+		if path.find(c, start_idx) != -1: return false
+	return true
 
 static func extract_file_name_from_path(path: String)->String:
+	if not is_valid_path(path):
+		ErrorUtils.report_error("invalid path: '{0}'".format([path]))
+		return ""
 	var dot_idx = path.rfind('.')
 	var slash_idx = path.rfind('/') + 1 # if not found, this gets us to 0
 	if dot_idx < slash_idx: dot_idx = path.length() - 1
