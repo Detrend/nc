@@ -225,6 +225,54 @@ namespace nc
     default:
       break;
     }
+
+    draw_cursor();
+  }
+
+  void MenuManager::draw_cursor()
+  {
+    button_material.use();
+
+    glBindVertexArray(VAO);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
+    glDisable(GL_DEPTH_TEST);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    vec2 pos = get_normalized_mouse_pos();
+
+    const char* cursor_tex = "ui_cursor";
+
+    const TextureManager& manager = TextureManager::get();
+    const TextureHandle& texture = manager[cursor_tex];
+
+    glActiveTexture(GL_TEXTURE0);
+
+    glm::mat4 trans_mat = glm::mat4(1.0f);
+    vec2 translate = pos + vec2(0.015, -0.02);
+    trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+    trans_mat = glm::scale(trans_mat, glm::vec3(0.015f, 0.02f, 1));
+
+    const glm::mat4 final_trans = trans_mat;
+
+    button_material.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
+    button_material.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas().get_size());
+    button_material.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
+    button_material.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
+
+    glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glBindVertexArray(0);
   }
 
   //===========================================================================================

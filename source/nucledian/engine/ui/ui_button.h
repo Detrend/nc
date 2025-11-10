@@ -101,6 +101,7 @@ namespace nc
     void set_visible(bool visibility);
     void update();
     void draw();
+    void draw_cursor();
 
   private:
     const ShaderProgramHandle button_material;

@@ -23,6 +23,7 @@ public:
   friend class Renderer;
   friend class UiButton;
   friend class UiHudDisplay;
+  friend class MenuManager;
 
   explicit ShaderProgramHandle(const char* compute_source);
   ShaderProgramHandle(const char* vertex_source, const char* fragment_source);
