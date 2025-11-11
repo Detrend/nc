@@ -25,7 +25,9 @@
 #include <engine/sound/sound_resources.h>
 
 #include <game/entity_attachment_manager.h>
+#include <game/projectiles.h>
 
+#include <engine/graphics/lights.h>
 #include <engine/enemies/enemy.h>
 #include <game/projectile.h>
 #include <game/weapons.h>
@@ -630,6 +632,36 @@ EntityAttachment& ThingSystem::get_attachment_mgr()
 {
   nc_assert(this->attachment);
   return *this->attachment;
+}
+
+//==============================================================================
+Projectile* ThingSystem::spawn_projectile
+(
+  ProjectileType type, vec3 from, vec3 dir, EntityID author
+)
+{
+  // Spawn projectile
+  Projectile* projectile = get_entities().create_entity<Projectile>
+  (
+    from, dir, author, type 
+  );
+
+  if (vec3 light_col = PROJECTILE_STATS[type].light_color; light_col != VEC3_ZERO)
+  {
+    // And its light
+    PointLight* light = get_entities().create_entity<PointLight>
+    (
+      from, 1.0f, 0.0f, 0.0f, 0.15f, light_col
+    );
+
+    // And attach it
+    get_attachment_mgr().attach_entity
+    (
+      light->get_id(), projectile->get_id(), EntityAttachmentFlags::all
+    );
+  }
+
+  return projectile;
 }
 
 //==============================================================================

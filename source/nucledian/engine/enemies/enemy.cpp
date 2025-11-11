@@ -198,14 +198,14 @@ void Enemy::handle_ai(f32 delta_seconds)
     case EnemyAiState::idle:
     {
       this->handle_ai_idle(delta_seconds);
-      break;
     }
+    break;
 
     case EnemyAiState::alert:
     {
       this->handle_ai_alert(delta_seconds);
-      break;
     }
+    break;
 
     default: break;
   }
@@ -257,11 +257,9 @@ void Enemy::handle_appearance(f32 delta)
           vec3 dir  = this->facing;
           vec3 from = this->get_position() + UP_DIR * stats.height * 0.7f + dir * 0.3f;
 
-          // Fire!
-          auto& game = ThingSystem::get();
-          game.get_entities().create_entity<Projectile>
+          ThingSystem::get().spawn_projectile
           (
-            from, dir, this->get_id(), stats.projectile
+            stats.projectile, from, dir, this->get_id()
           );
         }
       }
@@ -459,7 +457,7 @@ void Enemy::handle_ai_alert(f32 delta)
       vec2 last_pt2 = no_path ? VEC2_ZERO : current_path.points.back().xz();
       if (no_path || distance(last_pt2, this->follow_target_pos.xz()) > 5.0f)
       {
-        this->current_path.points = map.get_path
+        this->current_path.points = map.calc_path
         (
           this->get_position(),
           this->follow_target_pos,

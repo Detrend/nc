@@ -946,7 +946,7 @@ bool MapSectors::is_point_in_sector(vec2 pt, SectorID sector_id) const
 }
 
 //=============================================================================
-std::vector<vec3> MapSectors::get_path
+std::vector<vec3> MapSectors::calc_path
 (
   vec3 start_pos,
   vec3 end_pos,

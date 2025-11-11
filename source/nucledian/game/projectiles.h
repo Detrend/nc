@@ -3,6 +3,7 @@
 
 #include <types.h>
 #include <game/game_types.h>
+#include <math/vector.h>
 
 namespace nc
 {
@@ -40,6 +41,7 @@ struct ProjectileStats
   cstr sprite      = nullptr;
   u8   sprite_cnt  = 0;
   f32  anim_len    = 0.0f;
+  vec3 light_color = VEC3_ZERO;
 };
 
 extern ProjectileStats PROJECTILE_STATS[];

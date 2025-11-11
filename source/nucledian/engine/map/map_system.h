@@ -284,7 +284,7 @@ struct MapSectors
     f32*     ceil_opt = nullptr // ceiling depth below the ceil, positive if ceiling grows up
   ) const;
 
-  std::vector<vec3> get_path(vec3 start_pos, vec3 end_pos, f32 width, f32 height) const;
+  std::vector<vec3> calc_path(vec3 start_pos, vec3 end_pos, f32 width, f32 height) const;
   bool is_point_in_sector(vec2 pt, SectorID sector)      const;
   f32  distance_from_sector_2d(vec2 pt, SectorID sector) const;
 

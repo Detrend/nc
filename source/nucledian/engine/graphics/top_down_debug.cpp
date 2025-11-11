@@ -648,7 +648,7 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
       to = vec3{player_position.x, 0.0f, player_position.y};
     }
 
-    std::vector<vec3> path = map.get_path(from, to, 0.25f, 1.0f);
+    std::vector<vec3> path = map.calc_path(from, to, 0.25f, 1.0f);
     path.insert(path.begin(), from);
     if (this->do_path_smoothing)
     {

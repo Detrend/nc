@@ -21,6 +21,7 @@ ProjectileStats PROJECTILE_STATS[] =
   {
     .dmg_falloff = 0.05f, .speed = 20.0f, .radius = 0.2f, .damage = 25,
     .bounce_cnt = 3, .sprite = "plasma_ball", .sprite_cnt = 1,
+    .light_color = colors::BLUE
   },
 
   // Fire ball
@@ -28,6 +29,7 @@ ProjectileStats PROJECTILE_STATS[] =
   {
     .dmg_falloff = 0.05f, .speed = 12.0f, .radius = 0.2f, .damage = 12,
     .sprite = "cultist_projectile", .sprite_cnt = 4, .anim_len = 0.8f,
+    .light_color = colors::RED,
   },
 };
 

@@ -14,17 +14,14 @@
 #include <engine/entity/entity_system.h>
 
 #include <engine/graphics/graphics_system.h> // RenderGunProperties
-#include <engine/graphics/lights.h>
 
 // Sound
 #include <engine/sound/sound_system.h>
 #include <engine/sound/sound_resources.h>
 
 // Game
-#include <game/projectile.h>
 #include <game/weapons.h>
 #include <game/item.h>
-#include <game/entity_attachment_manager.h>
 
 #include <math/utils.h>
 #include <math/lingebra.h>
@@ -408,7 +405,6 @@ void Player::update_gun_anim(f32 delta)
 //==============================================================================
 void Player::do_attack()
 {
-  auto& entity_system = ThingSystem::get().get_entities();
   auto& sound_system  = SoundSystem::get();
 
   vec3 dir  = this->get_look_direction();
@@ -423,22 +419,9 @@ void Player::do_attack()
   }
   else
   {
-    // Spawn projectile
-    Projectile* projectile = entity_system.create_entity<Projectile>
+    ThingSystem::get().spawn_projectile
     (
-      from, dir, this->get_id(), WEAPON_STATS[weapon].projectile
-    );
-
-    // And its light
-    PointLight* light = entity_system.create_entity<PointLight>
-    (
-      from, 1.0f, 0.0f, 0.0f, 0.15f, colors::BLUE
-    );
-
-    // And attach it
-    ThingSystem::get().get_attachment_mgr().attach_entity
-    (
-      light->get_id(), projectile->get_id(), EntityAttachmentFlags::all
+      WEAPON_STATS[weapon].projectile, from, dir, this->get_id()
     );
   }
 

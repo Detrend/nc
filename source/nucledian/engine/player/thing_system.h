@@ -10,6 +10,9 @@
 #include <engine/player/level_types.h>
 #include <engine/player/save_types.h>
 
+#include <game/game_types.h>
+#include <math/vector.h>
+
 #include <memory> // std::unique_ptr
 
 namespace nc
@@ -23,6 +26,7 @@ struct PhysLevel;
 class  EntityRegistry;
 class  Player;
 class  EntityAttachment;
+class  Projectile;
 
 class ThingSystem : public IEngineModule
 {
@@ -62,15 +66,20 @@ public:
   LevelName get_level_name() const;
   void      request_level_change(LevelName new_level);
 
-  Player*               get_player();
-  EntityRegistry&       get_entities();
-  const EntityRegistry& get_entities()       const;
-  const MapSectors&     get_map()            const;
-  const SectorMapping&  get_sector_mapping() const;
-  PhysLevel             get_level()          const;
-
+  Player*                 get_player();
+  EntityRegistry&         get_entities();
+  const EntityRegistry&   get_entities()       const;
+  const MapSectors&       get_map()            const;
+  const SectorMapping&    get_sector_mapping() const;
+  PhysLevel               get_level()          const;
   EntityAttachment&       get_attachment_mgr();
   const EntityAttachment& get_attachment_mgr() const;
+
+  // Helper for creating projectiles
+  Projectile* spawn_projectile
+  (
+    ProjectileType type, vec3 point, vec3 dir, EntityID author
+  );
 
 private:
   void check_player_attack
