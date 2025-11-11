@@ -30,14 +30,18 @@ inline std::string get_full_level_path(const LevelName& level_name)
 
 namespace Levels
 {
-inline const LevelName LEVEL_1 = "level_test1";
-inline const LevelName LEVEL_2 = "level_test2";
+inline const LevelName TEST_LEVEL = "level_test1";
+inline const LevelName LEVEL_1 = "level_final1";
+inline const LevelName LEVEL_2 = "level_final2";
+inline const LevelName LEVEL_3 = "level_final3";
 }
 
 static auto LevelsDB = std::to_array
 ({
+  Levels::TEST_LEVEL,
   Levels::LEVEL_1,
-  Levels::LEVEL_2
+  Levels::LEVEL_2,
+  Levels::LEVEL_3,
 });
 
 
