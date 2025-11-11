@@ -255,11 +255,24 @@ void Enemy::handle_appearance(f32 delta)
         if (ttype == TriggerTypes::trigger_fire)
         {
           vec3 dir  = this->facing;
-          vec3 from = this->get_position() + UP_DIR * stats.height * 0.7f + dir * 0.3f;
+          vec3 from = this->get_position() + UP_DIR * stats.atk_height + dir * 0.3f;
+
+          mat4 rot1 = rotate(identity<mat4>(), deg2rad( 3.0f), UP_DIR);
+          mat4 rot2 = rotate(identity<mat4>(), deg2rad(-3.0f), UP_DIR);
 
           ThingSystem::get().spawn_projectile
           (
             stats.projectile, from, dir, this->get_id()
+          );
+
+          ThingSystem::get().spawn_projectile
+          (
+            stats.projectile, from, rot1 * vec4{dir, 0.0f}, this->get_id()
+          );
+
+          ThingSystem::get().spawn_projectile
+          (
+            stats.projectile, from, rot2 * vec4{dir, 0.0f}, this->get_id()
           );
         }
       }
@@ -302,7 +315,10 @@ void Enemy::damage(int damage, EntityID from_who)
   auto& game = ThingSystem::get();
   Entity* attacker = game.get_entities().get_entity(from_who);
 
-  if (attacker)
+  bool from_fellow    = from_who.type == EntityTypes::enemy;
+  f32  retreat_chance = from_fellow ? this->get_stats().infight_chance : 1.0f;
+
+  if (attacker && retreat_chance >= random_range(0.0f, 1.0f))
   {
     this->state = EnemyAiState::alert;
     this->target_id = from_who;
@@ -691,15 +707,9 @@ const EnemyStats& Enemy::get_stats() const
 }
 
 //==============================================================================
-f32 Enemy::get_eye_height() const
-{
-  return get_stats().height * 0.9f;
-}
-
-//==============================================================================
 vec3 Enemy::get_eye_pos() const
 {
-  return this->get_position() + UP_DIR * this->get_eye_height();
+  return this->get_position() + UP_DIR * this->get_stats().eye_height;
 }
 
 //==============================================================================

@@ -99,17 +99,20 @@ static_assert(ARRAY_LENGTH(ENEMY_TYPE_NAMES) == EnemyTypes::count);
 
 struct EnemyStats
 {
-  f32            move_speed    = 5.0f;
-  ProjectileType projectile    = 0;
-  s32            max_hp        = 100;
-  f32            height        = 2.0f;
-  f32            radius        = 0.25f;
-  f32            atk_delay_min = 3.0f;
-  f32            atk_delay_max = 8.0f;
+  f32            move_speed     = 5.0f;
+  ProjectileType projectile     = 0;
+  s32            max_hp         = 100;
+  f32            height         = 2.0f;
+  f32            eye_height     = 1.8f;
+  f32            atk_height     = 1.5f;
+  f32            radius         = 0.25f;
+  f32            atk_delay_min  = 3.0f;
+  f32            atk_delay_max  = 8.0f;
   u32            state_sprite_cnt[ActorAnimStates::count]{};
   f32            state_sprite_len[ActorAnimStates::count]{};
-  u32            attack_frame  = 0;
-  bool           is_melee : 1  = false;
+  u32            attack_frame   = 0;
+  bool           is_melee : 1   = false;
+  f32            infight_chance = 0.0f;
 };
 
 extern EnemyStats ENEMY_STATS[];

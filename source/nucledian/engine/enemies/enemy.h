@@ -30,9 +30,8 @@ public:
   const Appearance& get_appearance() const;
   const EnemyStats& get_stats()      const;
 
-  f32  get_eye_height() const;
-  vec3 get_eye_pos()    const;
-  vec3 get_facing()     const;
+  vec3 get_eye_pos() const;
+  vec3 get_facing()  const;
 
 private:
   void handle_ai(f32 delta);
