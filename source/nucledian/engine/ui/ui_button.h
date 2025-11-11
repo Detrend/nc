@@ -90,9 +90,18 @@ namespace nc
   class OptionsPage
   {
   public:
+    OptionsPage();
+    ~OptionsPage();
+
     void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
     void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
+    void do_nothing() {};
+
+    UiButton* sound_text = nullptr;
+    UiButton* music_text = nullptr;
+    UiButton* sensitivity_text = nullptr;
+
   };
 
   class SaveGamePage 

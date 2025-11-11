@@ -224,6 +224,7 @@ namespace nc
 			new_game_page->update(mouse_pos, prev_mousestate, cur_mousestate);
 			break;
 		case nc::OPTIONS:
+			options_page->update(mouse_pos, prev_mousestate, cur_mousestate);
 			break;
 		case nc::LOAD:
 			break;
@@ -255,6 +256,7 @@ namespace nc
 			new_game_page->draw(button_material, VAO);
 			break;
 		case nc::OPTIONS:
+			options_page->draw(button_material, VAO);
 			break;
 		case nc::LOAD:
 			break;
@@ -541,6 +543,42 @@ namespace nc
 	//============================================================================================
 	void OptionsPage::draw([[maybe_unused]]ShaderProgramHandle button_material, [[maybe_unused]] GLuint VAO)
 	{
+		button_material.use();
+
+		glBindVertexArray(VAO);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+
+		glDisable(GL_DEPTH_TEST);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		sound_text->draw(button_material);
+		music_text->draw(button_material);
+		sensitivity_text->draw(button_material);
+
+		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glBindVertexArray(0);
+	}
+
+	OptionsPage::OptionsPage()
+	{
+		sound_text	=				new UiButton("ui_sound",				vec2(-0.3f, 0.15f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
+		music_text	=				new UiButton("ui_music",				vec2(-0.3f, -0.1f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
+		sensitivity_text =	new UiButton("ui_sensitivity",	vec2(-0.3f, -0.35f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
+	}
+
+	OptionsPage::~OptionsPage()
+	{
+		delete sound_text;
+		delete music_text;
+		delete sensitivity_text;
 	}
 
 	//==============================================================================================
