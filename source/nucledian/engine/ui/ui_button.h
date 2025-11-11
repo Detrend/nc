@@ -1,3 +1,4 @@
+#pragma once
 #include <engine/ui/ui_texture.h>
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/shaders/shaders.h>
@@ -15,8 +16,11 @@ namespace nc
     NEW_GAME,
     OPTIONS,
     LOAD,
-    SAVE
+    SAVE,
+    QUIT
   };
+
+  //======================================================================================
 
   class UiButton
   {
@@ -26,6 +30,10 @@ namespace nc
 
     vec2 get_position();
     vec2 get_scale();
+
+    void set_hover(bool hover);
+
+    void on_click();
 
     void draw(ShaderProgramHandle button_material); // Draw takes the shader to modify its uniforms
 
@@ -37,12 +45,15 @@ namespace nc
     std::function<void(void)> func;
   };
 
+  //======================================================================================
+
   class MainMenuPage
   {
   public:
     MainMenuPage();
     ~MainMenuPage();
 
+    void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
     void draw(ShaderProgramHandle button_material, GLuint VAO);
 
   private:
@@ -54,7 +65,6 @@ namespace nc
     void save_game_func();
     void quit_func();
 
-
     UiButton* new_game_button = nullptr;
     UiButton* options_button = nullptr;
     UiButton* load_button = nullptr;
@@ -62,45 +72,100 @@ namespace nc
     UiButton* quit_button = nullptr;
   };
 
+  //======================================================================================
+
   class NewGamePage
   {
   public:
-    void draw();
+    NewGamePage();
+    ~NewGamePage();
+
+    void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
+    void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
+
+    void level_1_func();
+    void level_2_func();
+    void level_3_func();
+
+    UiButton* level_1_button = nullptr;
+    UiButton* level_2_button = nullptr;
+    UiButton* level_3_button = nullptr;
   };
+
+  //======================================================================================
 
   class OptionsPage
   {
   public:
-    void draw();
+    OptionsPage();
+    ~OptionsPage();
+
+    void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
+    void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
+    void do_nothing() {};
+
+    UiButton* sound_text = nullptr;
+    UiButton* music_text = nullptr;
+    UiButton* sensitivity_text = nullptr;
+
   };
 
-  class SaveGamePage 
+  //======================================================================================
+
+  /*class SaveGamePage 
   {
   public:
-    void draw();
+    void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
+    void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
-  };
+  };*/
+
+  //======================================================================================
 
   class LoadGamePage
   {
   public:
-    void draw();
+    void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
+    void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
   };
+
+  //======================================================================================
+
+  class QuitGamePage
+  {
+  public:
+    QuitGamePage();
+    ~QuitGamePage();
+
+    void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
+    void draw(ShaderProgramHandle button_material, GLuint VAO);
+  private:
+    void yes_func();
+    void no_func();
+
+    UiButton* yes_button = nullptr;
+    UiButton* no_button = nullptr;
+  };
+
+  //======================================================================================
 
   class MenuManager
   {
   public:
     MenuManager();
     ~MenuManager();
-    
+
+    void set_page(MenuPages page);
+
     vec2 get_normalized_mouse_pos();
 
     void set_visible(bool visibility);
     void update();
     void draw();
+    void draw_cursor();
 
   private:
     const ShaderProgramHandle button_material;
@@ -108,7 +173,8 @@ namespace nc
     MainMenuPage* main_menu_page = nullptr;
     OptionsPage* options_page = nullptr;
     LoadGamePage* load_game_page = nullptr;
-    //SaveGamePage* save_game_page = nullptr;
+    NewGamePage* new_game_page = nullptr;
+    QuitGamePage* quit_game_page = nullptr;
 
     MenuPages current_page = MenuPages::MAIN;
 
@@ -116,6 +182,9 @@ namespace nc
 
     bool cur_esc_pressed = false;
     bool prev_esc_pressed = false;
+
+    uint32 prev_mousestate = 0;
+    uint32 cur_mousestate = 0;
 
     GLuint VBO;
     GLuint VAO;

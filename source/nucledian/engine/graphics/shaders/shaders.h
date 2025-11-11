@@ -99,6 +99,7 @@ namespace nc
       inline constexpr Uniform<1, vec2> ATLAS_SIZE;
       inline constexpr Uniform<2, vec2> TEXTURE_POS;
       inline constexpr Uniform<3, vec2> TEXTURE_SIZE;
+      inline constexpr Uniform<4, bool> HOVER;
     }
 
     namespace ui_text
@@ -112,6 +113,7 @@ namespace nc
       inline constexpr Uniform<2, vec2> TEXTURE_POS;
       inline constexpr Uniform<3, vec2> TEXTURE_SIZE;
       inline constexpr Uniform<4, s32> CHARACTER;
+      
     }
   }
 
