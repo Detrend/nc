@@ -7,7 +7,8 @@
 namespace nc
 {
 	UiHudDisplay::UiHudDisplay() :
-		shader(shaders::ui_text::VERTEX_SOURCE, shaders::ui_text::FRAGMENT_SOURCE)
+		digit_shader(shaders::ui_text::VERTEX_SOURCE, shaders::ui_text::FRAGMENT_SOURCE),
+		text_shader(shaders::ui_button::VERTEX_SOURCE, shaders::ui_button::FRAGMENT_SOURCE)
 	{
 		init();
 	}
@@ -78,7 +79,7 @@ namespace nc
 
     bool first = true;
 
-    shader.use();
+    digit_shader.use();
 
     glBindVertexArray(VAO);
     glEnableVertexAttribArray(0);
@@ -114,11 +115,11 @@ namespace nc
         digit = 0;
       }
      
-      shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-      shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
-      shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
-      shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
-      shader.set_uniform(shaders::ui_text::CHARACTER, digit);
+      digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+      digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+      digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+      digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+      digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
 
       glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -127,7 +128,7 @@ namespace nc
       ammo = ammo / 10;
     }
 
-    // Helath
+    // Health
     for (size_t i = 0; i < 3; i++)
     {
       glm::mat4 trans_mat = glm::mat4(1.0f);
@@ -150,11 +151,11 @@ namespace nc
         digit = 0;
       }
 
-      shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-      shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
-      shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
-      shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
-      shader.set_uniform(shaders::ui_text::CHARACTER, digit);
+      digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+      digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+      digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+      digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+      digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
 
       glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -163,9 +164,56 @@ namespace nc
       health = health / 10;
     }
 
-    
-
     // unbind
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glBindVertexArray(0);
+
+    // Drawing texts under the numbers
+
+    std::vector<vec2> positionsTexts = { vec2(-0.74f, -0.9f), vec2(0.74f, -0.9f)};
+    std::vector<vec2> scalesTexts = { vec2(0.09f, 0.035f), vec2(0.06f, 0.035f) };
+    std::vector<const char*> texts = { "ui_health", "ui_ammo" };
+
+    text_shader.use();
+
+    glBindVertexArray(VAO);
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
+    glDisable(GL_DEPTH_TEST);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    for (size_t i = 0; i < 2; i++)
+    {
+      // transformation matrices
+      glm::mat4 trans_mat = glm::mat4(1.0f);
+      vec2 translate = positionsTexts[i];
+      trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+      trans_mat = glm::scale(trans_mat, glm::vec3(scalesTexts[i].x, scalesTexts[i].y, 1));
+
+      const glm::mat4 final_trans = trans_mat;
+
+      // texture pickup
+      const TextureManager& manager2 = TextureManager::get();
+      const TextureHandle& texture2 = manager2[texts[i]];
+
+      text_shader.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
+      text_shader.set_uniform(shaders::ui_button::ATLAS_SIZE, texture2.get_atlas().get_size());
+      text_shader.set_uniform(shaders::ui_button::TEXTURE_POS, texture2.get_pos());
+      text_shader.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture2.get_size());
+
+      glBindTexture(GL_TEXTURE_2D, texture2.get_atlas().handle);
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    }
+
+
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
 

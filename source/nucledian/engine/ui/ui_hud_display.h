@@ -22,6 +22,7 @@ namespace nc
 		GLuint VAO;
 		GLuint VBO;
 
-		const ShaderProgramHandle shader;
+		const ShaderProgramHandle digit_shader;
+		const ShaderProgramHandle text_shader;
 	};
 }
