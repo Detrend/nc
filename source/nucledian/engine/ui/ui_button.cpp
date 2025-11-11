@@ -206,7 +206,15 @@ namespace nc
 
 		if (cur_esc_pressed && !prev_esc_pressed)
 		{
+			/*if (current_page == MAIN)
+			{*/
 			set_visible(!visible);
+			//}
+			//else
+			//{
+			//	current_page = MAIN;
+			//}
+			
 		}
 
 		if (!visible) {
