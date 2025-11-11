@@ -27,6 +27,8 @@ namespace nc
     vec2 get_position();
     vec2 get_scale();
 
+    void set_hover(bool hover);
+
     void draw(ShaderProgramHandle button_material); // Draw takes the shader to modify its uniforms
 
   private:
@@ -43,6 +45,7 @@ namespace nc
     MainMenuPage();
     ~MainMenuPage();
 
+    void update(vec2 mouse_pos);
     void draw(ShaderProgramHandle button_material, GLuint VAO);
 
   private:
