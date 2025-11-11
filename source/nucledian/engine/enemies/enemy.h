@@ -30,6 +30,10 @@ public:
   const Appearance& get_appearance() const;
   const EnemyStats& get_stats()      const;
 
+  f32  get_eye_height() const;
+  vec3 get_eye_pos()    const;
+  vec3 get_facing()     const;
+
 private:
   void handle_ai(f32 delta);
   void handle_movement(f32 delta);
@@ -37,11 +41,14 @@ private:
   void die();
   void on_dying_anim_end();
 
+  // Returns true if this enemy can perform a visibility query this frame.
+  bool is_my_turn_for_visibility_query() const;
+
   void handle_ai_idle(f32 delta);
   void handle_ai_alert(f32 delta);
 
-  bool can_see_point(vec3 pt)           const;
-  bool can_attack(const Entity& target) const;
+  bool can_see_point(vec3 pt, vec3 look_dir) const;
+  bool can_attack(const Entity& target)      const;
 
 private:
   enum class EnemyAiState : u8

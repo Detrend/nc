@@ -217,17 +217,13 @@ struct MapSectors
   template<typename T>
   using column = std::vector<T>;
 
-  column<SectorData>       sectors;
-  column<WallData>         walls;
-  column<Portal>           portals_render_data;
-  column<aabb3>            sector_bboxes;
-  StatGridAABB2<SectorID>  sector_grid;
+  column<SectorData>      sectors;
+  column<WallData>        walls;
+  column<Portal>          portals_render_data;
+  column<aabb3>           sector_bboxes;
+  StatGridAABB2<SectorID> sector_grid;
 
-  // TODO: replace these later once we can do sectors with varying height
-  static constexpr f32 SECTOR_FLOOR_Y   = 0.0f;
-  static constexpr f32 SECTOR_CEILING_Y = 3.0f;
-
-  // TODO: do not use the retarded std::function, find a better alternative
+  // TODO: Do not use the retarded std::function, find a better API alternative
   using TraverseVisitor = std::function<void(SectorID, Frustum2, WallID)>;
   using WallVisitor     = std::function<void(WallID)>;
   // Traverses the sector system in a BFS order and calls the visitor

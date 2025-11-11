@@ -1,5 +1,6 @@
 // Project Nucledian Source File
 #include <common.h>
+#include <cvars.h>
 
 #include <engine/enemies/enemy.h>
 #include <engine/graphics/prop.h>
@@ -37,7 +38,7 @@ namespace nc
 
 // These are the same for all enemies
 constexpr f32 SPOT_DISTANCE         = 1.0f;  // Player will get spotted if closer
-constexpr f32 ENEMY_FOV_DEG         = 45.0f; // Field of view
+constexpr f32 ENEMY_FOV_DEG         = 100.0f; // Field of view
 constexpr f32 TARGET_STOP_DISTANCE  = 1.0f;  // How far do we keep from the target
 constexpr f32 PATH_POINT_ERASE_DIST = 0.25f; // Removes the path point if this close
 
@@ -80,6 +81,46 @@ static f32 random_range(f32 min, f32 max)
 
   f32 coeff = (std::rand() % 1024) / cast<f32>(1023);
   return min + dist * coeff;
+}
+
+//==============================================================================
+// Iterates the tree layer by layer. Stops iterating if the callback returns false.
+// Returns true if the whole tree has been iterated through, false if there was
+// a quick exit before.
+template<typename F>
+bool scan_sector_tree_recursively
+(
+  const MapSectors&     map,
+  const VisibilityTree& tree,
+  mat4                  transform,
+  F                     callback
+)
+{
+  for (const VisibilityTree::SectorFrustum& sfs : tree.sectors)
+  {
+    if (!callback(sfs.sector, sfs.frustum, transform))
+    {
+      return false;
+    }
+  }
+
+  for (const VisibilityTree& subtree : tree.children)
+  {
+    nc_assert(map.is_valid_sector_id(subtree.portal_sector));
+    nc_assert(map.is_valid_wall_id(subtree.portal_wall));
+
+    mat4 sub_transform = map.calc_portal_to_portal_projection
+    (
+      subtree.portal_sector, subtree.portal_wall
+    );
+    
+    if (!scan_sector_tree_recursively(map, subtree, sub_transform * transform, callback))
+    {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 //==============================================================================
@@ -302,6 +343,16 @@ void Enemy::on_dying_anim_end()
 }
 
 //==============================================================================
+bool Enemy::is_my_turn_for_visibility_query() const
+{
+  constexpr u64 CHECK_PER_FRAMES = 32; // Once per 32 frames
+
+  u64 frame_idx = get_engine().get_frame_idx();
+  u64 my_idx    = this->get_id().idx;
+  return (frame_idx % CHECK_PER_FRAMES) == (my_idx % CHECK_PER_FRAMES);
+}
+
+//==============================================================================
 void Enemy::handle_ai_idle(f32 /*delta*/)
 {
   auto& game = ThingSystem::get();
@@ -321,18 +372,23 @@ void Enemy::handle_ai_idle(f32 /*delta*/)
 
   bool transition_to_alert = false;
 
+  vec3 look_at_pos = player_pos + vec3(0, 0.5f, 0);
+
+  bool my_turn = this->is_my_turn_for_visibility_query();
+
   if (distance(player->get_position(), this->get_position()) <= SPOT_DISTANCE)
   {
     transition_to_alert = true;
   }
-  else if (dot(player_dir, this->facing) >= cos(rad2deg(ENEMY_FOV_DEG)))
+  else if (my_turn && this->can_see_point(look_at_pos, this->facing))
   {
-    vec3 ray_end = player_pos + vec3(0, 0.5f, 0);
+    transition_to_alert = true;
+  }
 
-    if (this->can_see_point(ray_end))
-    {
-      transition_to_alert = true;
-    }
+  // For debugging reasons want to do the query even if the player is invisible
+  if (CVars::invisibility)
+  {
+    transition_to_alert = false;
   }
 
   if (transition_to_alert)
@@ -347,7 +403,6 @@ void Enemy::handle_ai_idle(f32 /*delta*/)
 //==============================================================================
 void Enemy::handle_ai_alert(f32 delta)
 {
-  auto& engine = get_engine();
   auto& game   = ThingSystem::get();
   auto& ecs    = game.get_entities();
   auto& map    = game.get_map();
@@ -368,13 +423,17 @@ void Enemy::handle_ai_alert(f32 delta)
 
   vec2 position_2d = this->get_position().xz();
 
-  // Handle target visibility once in a 16 frames
-  u64 frame_idx = engine.get_frame_idx();
-  u64 my_idx    = this->get_id().idx;
-  if ((frame_idx % 16) == (my_idx % 16))
+  // Update only once in a while
+  if (this->is_my_turn_for_visibility_query())
   {
     vec3 pt = target->get_position() + vec3{0, 0.5f, 0};
-    this->can_see_target = this->can_see_point(pt);
+    vec3 direction = normalize_or_zero(pt - target->get_position());
+    this->can_see_target = this->can_see_point(pt, direction);
+
+    if (CVars::invisibility && target->get_type() == EntityTypes::player)
+    {
+      this->can_see_target = false;
+    }
   }
 
   // Update the last seen pos if we see the target
@@ -507,17 +566,90 @@ void Enemy::handle_ai_alert(f32 delta)
 }
 
 //==============================================================================
-bool Enemy::can_see_point(vec3 pt) const
+bool Enemy::can_see_point(vec3 point, vec3 look_direction) const
 {
-  constexpr EntityTypeMask COLLS = PhysLevel::COLLIDE_NONE;
-  auto lvl = ThingSystem::get().get_level();
+  constexpr EntityTypeMask NO_ENTITY_COLLISIONS = PhysLevel::COLLIDE_NONE;
+  const f32 FOV_RAD      = deg2rad(ENEMY_FOV_DEG);
+  const f32 HALF_FOV_RAD = FOV_RAD * 0.5f;
 
-  vec3 from = this->get_position() + vec3{0, 0.5f, 0};
-  vec3 to   = pt;
+  auto level = ThingSystem::get().get_level();
 
-  CollisionHit hit = lvl.ray_cast_3d(from, to, COLLS);
+  const vec3 from  = this->get_eye_pos();
+  const vec3 to    = point;
+  const vec2 to_2d = to.xz();
 
-  return hit ? false : true;
+  if (from == to)
+  {
+    // We can definitely see the point we are in
+    return true;
+  }
+
+  // First perform default cheap raycast inside our FOV
+  if (dot(normalize(to - from), look_direction) >= cos(HALF_FOV_RAD))
+  {
+    if (!level.ray_cast_3d(from, to, NO_ENTITY_COLLISIONS))
+    {
+      // We can see the player directly
+      return true;
+    }
+  }
+
+  // Did not hit? Do a more complex query involving non euclidean portals..
+  vec3 look_dir_2d = normalize_or_zero(with_y(look_direction, 0.0f));
+  if (look_dir_2d == VEC3_ZERO)
+  {
+    // We are right next to the point
+    return true;
+  }
+
+  // TODO: This is not an ideal algorithm and therefore not very efficient.
+  // Do a visibility query, store the visible sectors and iterate them.
+  // Search for the point inside these sectors.
+  VisibilityTree tree;
+  level.map.query_visible(from, look_dir_2d, FOV_RAD, PI * 0.25f, tree, 3);
+
+  bool sees_the_point        = false;
+  u8   raycast_attempts_left = 3; // number of recursive raycasts is limited to this
+
+  scan_sector_tree_recursively(level.map, tree, identity<mat4>(),
+  [&](SectorID sector_id, const FrustumBuffer& frustums, mat4 portal_transforms)
+  {
+    if (!level.map.is_point_in_sector(to_2d, sector_id))
+    {
+      // Continue checking other sectors
+      return true;
+    }
+
+    // Check if at least one frustum contains the point, then try raycasting it
+    for (const Frustum2& the_frustum : frustums.frustum_slots)
+    {
+      if (the_frustum == INVALID_FRUSTUM)
+      {
+        break;
+      }
+
+      if (the_frustum.contains_point(to_2d))
+      {
+        raycast_attempts_left -= 1;
+
+        // Calculate the position of the point relative to us.. It can be
+        // different if we are looking at the point from a non euclidean portal
+        vec3 point_relative = (inverse(portal_transforms) * vec4{to, 1.0f}).xyz();
+
+        if (!level.ray_cast_3d(from, point_relative, NO_ENTITY_COLLISIONS))
+        {
+          sees_the_point = true;
+          return false; // no need to continue
+        }
+
+        break;
+      }
+    }
+
+    return raycast_attempts_left > 0;
+  });
+
+  return sees_the_point;
 }
 
 //==============================================================================
@@ -558,6 +690,24 @@ const Appearance& Enemy::get_appearance() const
 const EnemyStats& Enemy::get_stats() const
 {
   return ENEMY_STATS[this->type];
+}
+
+//==============================================================================
+f32 Enemy::get_eye_height() const
+{
+  return get_stats().height * 0.9f;
+}
+
+//==============================================================================
+vec3 Enemy::get_eye_pos() const
+{
+  return this->get_position() + UP_DIR * this->get_eye_height();
+}
+
+//==============================================================================
+vec3 Enemy::get_facing() const
+{
+  return this->facing;
 }
 
 //==============================================================================

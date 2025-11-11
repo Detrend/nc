@@ -15,9 +15,12 @@
 namespace nc
 {
 
+constexpr f32 PICKUP_RADIUS = 0.4f;
+constexpr f32 PICKUP_HEIGHT = 0.2f;
+
 //==============================================================================
 PickUp::PickUp(vec3 position, PickupType my_type)
-: Entity(position, 0.15f, 0.2f, true)
+: Entity(position, PICKUP_RADIUS, PICKUP_HEIGHT, true)
 , type(my_type)
 {
   cstr texture_name = PICKUP_NAMES[this->type];

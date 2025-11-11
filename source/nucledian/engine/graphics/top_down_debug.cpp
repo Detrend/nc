@@ -20,6 +20,8 @@
 #include <math/utils.h>
 #include <math/lingebra.h>
 
+#include <engine/enemies/enemy.h>
+
 #include <imgui/imgui.h>
 #include <glad/glad.h>
 
@@ -190,6 +192,10 @@ void TopDownDebugRenderer::draw_player
   this->draw_line(left, back, color2);
   this->draw_line(back, right, color2);
   this->draw_line(right, front, color2);
+
+  // axes
+  this->draw_line(coords, coords + VEC2_X, colors::RED);
+  this->draw_line(coords, coords + VEC2_Y, colors::GREEN);
 }
 
 //==============================================================================
@@ -228,6 +234,7 @@ void TopDownDebugRenderer::draw_entities()
 
   ecs.for_each(this->entities_to_render, [&](Entity& entity)
   {
+    EntityID   id     = entity.get_id();
     EntityType type   = entity.get_type();
     f32        radius = entity.get_radius();
     vec3       color  = ENTITY_TYPE_COLORS[type].xyz();
@@ -242,6 +249,23 @@ void TopDownDebugRenderer::draw_entities()
     this->draw_line(pos + rt, pos + rb, color);
     this->draw_line(pos + rb, pos + lb, color);
     this->draw_line(pos + lb, pos + lt, color);
+
+    // Draw the direction for enemies
+    if (Enemy* enemy = entity.as<Enemy>())
+    {
+      this->draw_line(pos, pos + enemy->get_facing().xz(), colors::WHITE);
+    }
+
+    if (this->show_entity_ids)
+    {
+      auto entity_str = std::format("{}:{}", ENTITY_TYPE_NAMES[type], id.idx);
+      this->draw_text
+      (
+        pos,
+        entity_str.c_str(),
+        color
+      );
+    }
   });
 }
 
@@ -393,9 +417,10 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
   {
     ImGui::SliderFloat("Zoom", &zoom, 0.01f, 1.0f);
     ImGui::Separator();
-    ImGui::Checkbox("Show visible sectors", &show_visible_sectors);
-    ImGui::Checkbox("Show sector frustums", &show_sector_frustums);
-    ImGui::Checkbox("Show sector IDs",      &show_sector_ids);
+    ImGui::Checkbox("Show visible sectors", &this->show_visible_sectors);
+    ImGui::Checkbox("Show sector frustums", &this->show_sector_frustums);
+    ImGui::Checkbox("Show sector IDs",      &this->show_sector_ids);
+    ImGui::Checkbox("Show entity IDs",      &this->show_entity_ids);
     ImGui::Checkbox("Show sector grid",     &this->show_sector_grid);
     if (this->show_sector_grid)
     {

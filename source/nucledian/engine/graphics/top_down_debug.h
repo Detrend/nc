@@ -62,6 +62,7 @@ private:
   bool show_sector_grid          = false;
   bool show_sector_grid_list     = false;
   bool show_sector_ids           = false;
+  bool show_entity_ids           = false;
   bool inspect_nucledian_portals = false;
   bool show_path_debug           = false;
   bool do_path_smoothing         = true;

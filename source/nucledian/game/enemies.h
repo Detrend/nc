@@ -102,8 +102,8 @@ struct EnemyStats
   f32            move_speed    = 5.0f;
   ProjectileType projectile    = 0;
   s32            max_hp        = 100;
-  f32            height        = 2.5f;
-  f32            radius        = 1.0f;
+  f32            height        = 2.0f;
+  f32            radius        = 0.25f;
   f32            atk_delay_min = 3.0f;
   f32            atk_delay_max = 8.0f;
   u32            state_sprite_cnt[ActorAnimStates::count]{};

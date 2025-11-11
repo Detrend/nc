@@ -10,7 +10,7 @@ EnemyStats ENEMY_STATS[] =
   // Cultist
   EnemyStats
   {
-    .move_speed = 1.0f,
+    .move_speed = 2.5f,
     .projectile = ProjectileTypes::fire_ball,
     .max_hp = 100,
     .state_sprite_cnt
