@@ -20,6 +20,7 @@
 #include <engine/graphics/resources/texture.h>
 
 #include <engine/map/map_system.h>
+#include <engine/map/map_dynamics.h>
 
 #include <engine/entity/entity_system.h>
 #include <engine/entity/entity_type_definitions.h>
@@ -334,9 +335,31 @@ void GraphicsSystem::query_visibility(VisibilityTree& tree) const
 }
 
 //==============================================================================
-const std::vector<MeshHandle>& GraphicsSystem::get_sector_meshes() const
+const MeshHandle& GraphicsSystem::get_and_update_sector_mesh(SectorID sid)
 {
-  return m_sector_meshes;
+  nc_assert(sid < m_sector_meshes.size());
+
+  if (m_dirty_sectors[sid])
+  {
+    std::vector<f32> vertices;
+    ThingSystem::get().get_map().sector_to_vertices(sid, vertices);
+
+    MeshManager::get().recreate_sector
+    (
+      m_sector_meshes[sid], vertices.data(), cast<u32>(vertices.size())
+    );
+
+    m_dirty_sectors[sid] = false;
+  }
+
+  return m_sector_meshes[sid];
+}
+
+//==============================================================================
+void GraphicsSystem::mark_sector_dirty(SectorID sid)
+{
+  nc_assert(sid < m_dirty_sectors.size());
+  m_dirty_sectors[sid] = true;
 }
 
 //==============================================================================
@@ -443,6 +466,63 @@ void GraphicsSystem::render()
     }
     ImGui::End();
   }
+
+  MapSectors& map = const_cast<MapSectors&>(ThingSystem::get().get_map());
+
+  if (ImGui::Begin("Runtime map changes debug"))
+  {
+    static int modify = -1;
+    ImGui::DragInt("Sector to modify", &modify, 1.0f, -1, cast<int>(map.sectors.size()) - 1);
+
+    if (modify != -1)
+    {
+      ImGui::Text("Selected sector %d", modify);
+      SectorData& sd = map.sectors[modify];
+
+      bool changed = false;
+
+      changed |= ImGui::DragFloat("Floor height", &sd.floor_height, 0.01f, 0.0f, 100.0f);
+      changed |= ImGui::DragFloat("Ceil height",  &sd.ceil_height,  0.01f, 0.0f, 100.0f);
+      sd.ceil_height = max(sd.floor_height + 0.1f, sd.ceil_height);
+
+      if (changed)
+      {
+        SectorID sid = cast<SectorID>(modify);
+        GraphicsSystem::get().mark_sector_dirty(sid);
+
+        map.for_each_portal_of_sector(sid, [&](WallID wall)
+        {
+          SectorID neighbor = map.walls[wall].portal_sector_id;
+          nc_assert(map.is_valid_sector_id(neighbor));
+          GraphicsSystem::get().mark_sector_dirty(neighbor);
+        });
+      }
+    }
+
+    MapDynamics& dynamics = ThingSystem::get().get_map_dynamics();
+    u64 i = 0;
+    for (auto& entry : dynamics.entries)
+    {
+      ImGui::Separator();
+      for (u64 idx = 0; idx < entry.second.states.size(); ++idx)
+      {
+        std::string txt = std::format("[{}] {}", i, idx);
+        if (ImGui::Button(txt.c_str()))
+        {
+          entry.second.state = cast<u16>(idx);
+        }
+        ImGui::SameLine();
+      }
+
+      ImGui::NewLine();
+      std::string txt = std::format("[{}] Speed", i);
+      ImGui::SliderFloat(txt.c_str(), &entry.second.speed, 0.001f, 20.0f);
+      ImGui::Separator();
+
+      ++i;
+    }
+  }
+  ImGui::End();
 #endif
 
   VisibilityTree visible_sectors;
@@ -951,7 +1031,9 @@ void GraphicsSystem::create_sector_meshes()
   std::vector<f32>  vertices;
 
   m_sector_meshes.clear();
+  m_dirty_sectors.clear();
   m_sector_meshes.reserve(map.sectors.size());
+  m_dirty_sectors.resize(map.sectors.size(), false);
 
   for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)
   {

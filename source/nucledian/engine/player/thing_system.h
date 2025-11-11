@@ -20,6 +20,7 @@ namespace nc
 
 struct ModuleEvent;
 struct MapSectors;
+struct MapDynamics;
 struct GameInputs;
 struct SectorMapping;
 struct PhysLevel;
@@ -39,6 +40,7 @@ public:
 
   using MappingPtr    = std::unique_ptr<SectorMapping>;
   using MapPtr        = std::unique_ptr<MapSectors>;
+  using DynamicsPtr   = std::unique_ptr<MapDynamics>;
   using RegistryPtr   = std::unique_ptr<EntityRegistry>;
   using AttachmentPtr = std::unique_ptr<EntityAttachment>;
   using SaveDatabase  = std::vector<SaveDbEntry>;
@@ -68,6 +70,7 @@ public:
 
   Player*                 get_player();
   EntityRegistry&         get_entities();
+  MapDynamics&            get_map_dynamics();
   const EntityRegistry&   get_entities()       const;
   const MapSectors&       get_map()            const;
   const SectorMapping&    get_sector_mapping() const;
@@ -112,9 +115,10 @@ private:
   EntityID       player_id = INVALID_ENTITY_ID;
   MapPtr         map;
   MappingPtr     mapping;
+  DynamicsPtr    dynamics;
   AttachmentPtr  attachment;
   RegistryPtr    entities;
-  LevelName      level_name           = INVALID_LEVEL_NAME;
+  LevelName      level_name         = INVALID_LEVEL_NAME;
   LevelName      scheduled_level_id = INVALID_LEVEL_NAME;
   SaveDatabase   save_db;
   mutable SaveID last_save_id = 0;

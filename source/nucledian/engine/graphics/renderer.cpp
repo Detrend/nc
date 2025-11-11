@@ -454,8 +454,8 @@ void Renderer::update_light_ssbos() const
 //==============================================================================
 void Renderer::render_sectors(const CameraData& camera) const
 {
+  auto& gfx = GraphicsSystem::get();
   const auto& sectors_to_render = camera.vis_tree.sectors;
-  const std::vector<MeshHandle>& sector_meshes = GraphicsSystem::get().get_sector_meshes();
 
   const auto& game_atlas = TextureManager::get().get_atlas(ResLifetime::Game);
   const auto& level_atlas = TextureManager::get().get_atlas(ResLifetime::Level);
@@ -472,8 +472,8 @@ void Renderer::render_sectors(const CameraData& camera) const
 
   for (const auto& [sector_id, _] : sectors_to_render)
   {
-    nc_assert(sector_id < sector_meshes.size());
-    const MeshHandle& mesh = sector_meshes[sector_id];
+    // This returns the mesh and optionally updates it before if it is dirty.
+    const MeshHandle& mesh = gfx.get_and_update_sector_mesh(sector_id);
 
     glBindVertexArray(mesh.get_vao());
     glDrawArrays(mesh.get_draw_mode(), 0, mesh.get_vertex_count());

@@ -37,6 +37,7 @@ private:
 
   ResLifetime m_lifetime     = ResLifetime::None;
   u16         m_generation   = 0;
+  u16         m_index        = 0;
   GLuint      m_vao          = 0;
   GLuint      m_vbo          = 0;
   u32         m_vertex_count = 0;
@@ -68,6 +69,10 @@ public:
    * Creates mesh, for a sector, from vertex data and stores it in GPU memory.
    */
   MeshHandle create_sector(ResLifetime lifetime, const f32* data, u32 count, GLenum draw_mode = GL_TRIANGLES);
+  /*
+  * Unloads the old mesh and recreates it once again.
+  */
+  void recreate_sector(MeshHandle& handle, const f32* data, u32 count);
   /**
    * Unloads all meshes with specified lifetime. 
    */
@@ -82,6 +87,8 @@ public:
 private:
   inline static std::unique_ptr<MeshManager> m_instance = nullptr;
   MeshManager() {}
+
+  void populate_sector_mesh(MeshHandle& mesh, const f32* data, u32 count);
 
   static inline u16 m_generation = 0;
 

@@ -59,6 +59,7 @@
     <ClCompile Include="..\source\nucledian\game\entity_attachment_manager.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\shader_program.cpp" />
     <ClCompile Include="..\source\nucledian\engine\ui\ui_ammo_display.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\map\map_dynamics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -178,6 +179,7 @@
     <ClInclude Include="..\source\nucledian\game\entity_attachment_manager.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\shader_program.h" />
     <ClInclude Include="..\source\nucledian\engine\ui\ui_ammo_display.h" />
+    <ClInclude Include="..\source\nucledian\engine\map\map_dynamics.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\engine\core\engine.inl" />
