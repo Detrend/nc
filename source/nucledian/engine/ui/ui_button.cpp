@@ -11,8 +11,6 @@
 
 #include <engine/core/engine.h>
 
-
-
 namespace nc
 {
 	UiButton::UiButton(const char* texture_name, vec2 position, vec2 scale, std::function<void(void)> func)
@@ -59,10 +57,14 @@ namespace nc
 		return scale;
 	}
 
+	//==============================================================================================
+
 	void UiButton::set_hover(bool hover)
 	{
 		isHover = hover;
 	}
+
+	//==============================================================================================
 
 	void UiButton::on_click()
 	{
@@ -147,6 +149,7 @@ namespace nc
 		glDeleteBuffers(1, &VBO);
 	}
 
+	//==============================================================================================
 
 	void MenuManager::set_page(MenuPages page)
 	{
@@ -267,6 +270,8 @@ namespace nc
 		draw_cursor();
 	}
 
+	//==============================================================================================
+
 	void MenuManager::draw_cursor()
 	{
 		button_material.use();
@@ -377,6 +382,7 @@ namespace nc
 		}
 	}
 
+	//==============================================================================================
 	void NewGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
 	{
 		UiButton* hover_over_button = nullptr;
@@ -409,6 +415,7 @@ namespace nc
 		}
 	}
 
+	//==============================================================================================
 	void MainMenuPage::draw(ShaderProgramHandle button_material, GLuint VAO)
 	{
 		button_material.use();
@@ -481,6 +488,7 @@ namespace nc
 		level_3_button = new UiButton("ui_level3", vec2(0.0f, -0.35f), vec2(0.45f, 0.1f), std::bind(&NewGamePage::level_3_func, this));
 	}
 
+	//==============================================================================================
 	NewGamePage::~NewGamePage()
 	{
 		delete level_1_button;
@@ -488,6 +496,7 @@ namespace nc
 		delete level_3_button;
 	}
 
+	//==============================================================================================
 	void NewGamePage::draw(ShaderProgramHandle button_material, GLuint VAO)
 	{
 		button_material.use();
@@ -514,14 +523,17 @@ namespace nc
 		glBindVertexArray(0);
 	}
 
+	//==============================================================================================
 	void NewGamePage::level_1_func()
 	{
 	}
 
+	//==============================================================================================
 	void NewGamePage::level_2_func()
 	{
 	}
 
+	//==============================================================================================
 	void NewGamePage::level_3_func()
 	{
 	}
@@ -531,13 +543,8 @@ namespace nc
 	{
 	}
 
-
+	//==============================================================================================
 	void OptionsPage::update([[maybe_unused]] vec2 mouse_pos, [[maybe_unused]] u32 prev_mouse, [[maybe_unused]] u32 cur_mouse)
-	{
-	}
-
-	//=============================================================================================
-	void SaveGamePage::draw([[maybe_unused]] ShaderProgramHandle button_material, [[maybe_unused]] GLuint VAO)
 	{
 	}
 
@@ -546,17 +553,20 @@ namespace nc
 	{
 	}
 
+	//==============================================================================================
 	void LoadGamePage::draw([[maybe_unused]] ShaderProgramHandle button_material, [[maybe_unused]] GLuint VAO)
 	{
 		
 	}
 
+	//==============================================================================================
 	QuitGamePage::QuitGamePage()
 	{
 		yes_button = new UiButton("ui_yes", vec2(0.0f, 0.15f), vec2(0.45f, 0.1f), std::bind(&QuitGamePage::yes_func, this));
 		no_button = new UiButton("ui_no", vec2(0.0f, -0.1f), vec2(0.45f, 0.1f), std::bind(&QuitGamePage::no_func, this));
 	}
 
+	//==============================================================================================
 	QuitGamePage::~QuitGamePage()
 	{
 		delete yes_button;
@@ -591,6 +601,7 @@ namespace nc
 		}
 	}
 
+	//==============================================================================================
 	void QuitGamePage::draw([[maybe_unused]] ShaderProgramHandle button_material, [[maybe_unused]] GLuint VAO)
 	{
 		button_material.use();
@@ -616,11 +627,13 @@ namespace nc
 		glBindVertexArray(0);
 	}
 
+	//==============================================================================================
 	void QuitGamePage::yes_func()
 	{
 		get_engine().request_quit();
 	}
 
+	//==============================================================================================
 	void QuitGamePage::no_func()
 	{
 		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MAIN);
