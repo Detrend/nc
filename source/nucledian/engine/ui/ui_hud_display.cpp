@@ -6,12 +6,14 @@
 
 namespace nc
 {
-	UiHudDisplay::UiHudDisplay() :
-		digit_shader(shaders::ui_text::VERTEX_SOURCE, shaders::ui_text::FRAGMENT_SOURCE),
-		text_shader(shaders::ui_button::VERTEX_SOURCE, shaders::ui_button::FRAGMENT_SOURCE)
-	{
-		init();
-	}
+  UiHudDisplay::UiHudDisplay() :
+    digit_shader(shaders::ui_text::VERTEX_SOURCE, shaders::ui_text::FRAGMENT_SOURCE),
+    text_shader(shaders::ui_button::VERTEX_SOURCE, shaders::ui_button::FRAGMENT_SOURCE)
+  {
+    init();
+  }
+
+  //=========================================================================================
 
   UiHudDisplay::~UiHudDisplay()
   {
@@ -19,8 +21,10 @@ namespace nc
     glDeleteBuffers(1, &VBO);
   }
 
-	void UiHudDisplay::init()
-	{
+  //=========================================================================================
+
+  void UiHudDisplay::init()
+  {
     vec2 vertices[] = { vec2(-1, 1), vec2(0, 0),
         vec2(-1, -1), vec2(0, 1),
         vec2(1, 1), vec2(1, 0),
@@ -46,39 +50,29 @@ namespace nc
     glDisableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-	}
+  }
 
-	void UiHudDisplay::update()
-	{
-		display_ammo = get_engine().get_module<ThingSystem>().get_player()->get_current_weapon_ammo();
+  //=========================================================================================
+
+  void UiHudDisplay::update()
+  {
+    display_ammo = get_engine().get_module<ThingSystem>().get_player()->get_current_weapon_ammo();
     display_health = get_engine().get_module<ThingSystem>().get_player()->get_health();
-	}
+  }
 
-	void UiHudDisplay::draw()
-	{
-    int ammo = display_ammo;
+  //=========================================================================================
 
-    if (ammo < 0)
-    {
-      ammo = 0;
-    }
+  void UiHudDisplay::draw()
+  {
+    draw_digits();
 
-    int health = display_health;
+    draw_texts();
+  }
 
-    if (health < 0)
-    {
-      health = 0;
-    }
+  //=========================================================================================
 
-    std::vector<vec2> positionsAmmo = {vec2(0.8f, -0.8f) , vec2(0.74f, -0.8f), vec2(0.68f, -0.8f)  };
-    std::vector<vec2> positionHealth = {vec2(-0.68f, -0.8f), vec2(-0.74f, -0.8f), vec2(-0.8f, -0.8f) };
-    vec2 scale = vec2(0.03f, 0.07f);
-
-    const TextureManager& manager = TextureManager::get();
-    const TextureHandle& texture = manager["ui_font"];
-
-    bool first = true;
-
+  void UiHudDisplay::draw_digits()
+  {
     digit_shader.use();
 
     glBindVertexArray(VAO);
@@ -90,7 +84,86 @@ namespace nc
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // Ammo
+    draw_ammo();
+    draw_health();
+
+    // unbind
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glBindVertexArray(0);
+  }
+
+  void UiHudDisplay::draw_health()
+  {
+    int health = display_health;
+
+    if (health < 0)
+    {
+      health = 0;
+    }
+
+    bool first = true;
+
+    std::vector<vec2> positionHealth = { vec2(-0.68f, -0.8f), vec2(-0.74f, -0.8f), vec2(-0.8f, -0.8f) };
+    vec2 scale = vec2(0.03f, 0.07f);
+
+    const TextureManager& manager = TextureManager::get();
+    const TextureHandle& texture = manager["ui_font"];
+
+    for (size_t i = 0; i < 3; i++)
+    {
+      glm::mat4 trans_mat = glm::mat4(1.0f);
+      vec2 translate = positionHealth[i];
+      trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+      trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
+
+      const glm::mat4 final_trans = trans_mat;
+
+      int digit = health % 10;
+      digit += 48;
+
+      if (!first && health == 0)
+      {
+        digit = 32;
+      }
+
+      digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+      digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+      digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+      digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+      digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
+
+      glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+      first = false;
+      health = health / 10;
+    }
+  }
+
+  //=========================================================================================
+
+  void UiHudDisplay::draw_ammo()
+  {
+    int ammo = display_ammo;
+
+    if (ammo < 0)
+    {
+      ammo = 0;
+    }
+
+    bool first = true;
+
+    std::vector<vec2> positionsAmmo = { vec2(0.8f, -0.8f) , vec2(0.74f, -0.8f), vec2(0.68f, -0.8f) };
+    vec2 scale = vec2(0.03f, 0.07f);
+
+    const TextureManager& manager = TextureManager::get();
+    const TextureHandle& texture = manager["ui_font"];
+
     for (size_t i = 0; i < 3; i++)
     {
       glActiveTexture(GL_TEXTURE0);
@@ -112,9 +185,9 @@ namespace nc
 
       if (!first && ammo == 0)
       {
-        digit = 0;
+        digit = 32;
       }
-     
+
       digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
       digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
       digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
@@ -127,55 +200,15 @@ namespace nc
       first = false;
       ammo = ammo / 10;
     }
+  }
 
-    // Health
-    for (size_t i = 0; i < 3; i++)
-    {
-      glm::mat4 trans_mat = glm::mat4(1.0f);
-      vec2 translate = positionHealth[i];
-      trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
-      trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
+  //=====================================================================================
 
-      const glm::mat4 final_trans = trans_mat;
-
-      int digit = health % 10;
-      digit += 48;
-
-      if (first && display_ammo == -1)
-      {
-        digit = '-';
-      }
-
-      if (!first && health == 0)
-      {
-        digit = 0;
-      }
-
-      digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-      digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
-      digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
-      digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
-      digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
-
-      glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
-      glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-      first = false;
-      health = health / 10;
-    }
-
-    // unbind
-    glDisable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    glBindVertexArray(0);
-
+  void UiHudDisplay::draw_texts()
+  {
     // Drawing texts under the numbers
 
-    std::vector<vec2> positionsTexts = { vec2(-0.74f, -0.9f), vec2(0.74f, -0.9f)};
+    std::vector<vec2> positionsTexts = { vec2(-0.74f, -0.9f), vec2(0.74f, -0.9f) };
     std::vector<vec2> scalesTexts = { vec2(0.09f, 0.035f), vec2(0.06f, 0.035f) };
     std::vector<const char*> texts = { "ui_health", "ui_ammo" };
 
@@ -221,5 +254,5 @@ namespace nc
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
     glBindVertexArray(0);
-	}
+  }
 }

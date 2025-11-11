@@ -12,9 +12,14 @@ namespace nc
 		void update();
 
 		void draw();
+		
 	private:
-
 		void init();
+
+		void draw_digits();
+		void draw_health();
+		void draw_ammo();
+		void draw_texts();
 
 		int display_ammo = 0;
 		int display_health = 0;
