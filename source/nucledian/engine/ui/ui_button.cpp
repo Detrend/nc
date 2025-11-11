@@ -105,6 +105,7 @@ namespace nc
 		options_page = new OptionsPage();
 		load_game_page = new LoadGamePage();
 		new_game_page = new NewGamePage();
+		quit_game_page = new QuitGamePage();
 
 		vec2 vertices[] = { vec2(-1, 1), vec2(0, 0),
 				vec2(-1, -1), vec2(0, 1),
@@ -226,6 +227,7 @@ namespace nc
 		case nc::SAVE:
 			break;
 		case nc::QUIT:
+			quit_game_page->update(mouse_pos, prev_mousestate, cur_mousestate);
 			break;
 		default:
 			break;
@@ -256,6 +258,7 @@ namespace nc
 		case nc::SAVE:
 			break;
 		case nc::QUIT:
+			quit_game_page->draw(button_material, VAO);
 			break;
 		default:
 			break;
@@ -329,7 +332,10 @@ namespace nc
 
 	MainMenuPage::~MainMenuPage()
 	{
-		
+		delete new_game_button;
+		delete options_button;
+		delete load_button;
+		delete quit_button;
 	}
 
 	//=============================================================================================
@@ -364,7 +370,7 @@ namespace nc
 		{
 			hover_over_button->set_hover(true);
 
-			if (!prev_mouse && cur_mouse)
+			if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
 			{
 				hover_over_button->on_click();
 			}
@@ -396,7 +402,7 @@ namespace nc
 		{
 			hover_over_button->set_hover(true);
 
-			if (!prev_mouse && cur_mouse)
+			if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
 			{
 				hover_over_button->on_click();
 			}
@@ -525,14 +531,98 @@ namespace nc
 	{
 	}
 
+
+	void OptionsPage::update([[maybe_unused]] vec2 mouse_pos, [[maybe_unused]] u32 prev_mouse, [[maybe_unused]] u32 cur_mouse)
+	{
+	}
+
 	//=============================================================================================
 	void SaveGamePage::draw([[maybe_unused]] ShaderProgramHandle button_material, [[maybe_unused]] GLuint VAO)
 	{
 	}
 
 	//==============================================================================================
+	void LoadGamePage::update([[maybe_unused]] vec2 mouse_pos, [[maybe_unused]] u32 prev_mouse, [[maybe_unused]] u32 cur_mouse)
+	{
+	}
 
 	void LoadGamePage::draw([[maybe_unused]] ShaderProgramHandle button_material, [[maybe_unused]] GLuint VAO)
 	{
+		
+	}
+
+	QuitGamePage::QuitGamePage()
+	{
+		yes_button = new UiButton("ui_yes", vec2(0.0f, 0.15f), vec2(0.45f, 0.1f), std::bind(&QuitGamePage::yes_func, this));
+		no_button = new UiButton("ui_no", vec2(0.0f, -0.1f), vec2(0.45f, 0.1f), std::bind(&QuitGamePage::no_func, this));
+	}
+
+	QuitGamePage::~QuitGamePage()
+	{
+		delete yes_button;
+		delete no_button;
+	}
+
+	//==============================================================================================
+	void QuitGamePage::update([[maybe_unused]] vec2 mouse_pos, [[maybe_unused]] u32 prev_mouse, [[maybe_unused]] u32 cur_mouse)
+	{
+		UiButton* hover_over_button = nullptr;
+
+		yes_button->set_hover(false);
+		no_button->set_hover(false);
+
+		if (yes_button->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = yes_button;
+		}
+		else if (no_button->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = no_button;
+		}
+
+		if (hover_over_button != nullptr)
+		{
+			hover_over_button->set_hover(true);
+
+			if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+			{
+				hover_over_button->on_click();
+			}
+		}
+	}
+
+	void QuitGamePage::draw([[maybe_unused]] ShaderProgramHandle button_material, [[maybe_unused]] GLuint VAO)
+	{
+		button_material.use();
+
+		glBindVertexArray(VAO);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+
+		glDisable(GL_DEPTH_TEST);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		yes_button->draw(button_material);
+		no_button->draw(button_material);
+
+		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glBindVertexArray(0);
+	}
+
+	void QuitGamePage::yes_func()
+	{
+		get_engine().request_quit();
+	}
+
+	void QuitGamePage::no_func()
+	{
+		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MAIN);
 	}
 }

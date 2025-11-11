@@ -90,6 +90,7 @@ namespace nc
   class OptionsPage
   {
   public:
+    void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
     void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
   };
@@ -97,6 +98,7 @@ namespace nc
   class SaveGamePage 
   {
   public:
+    void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
     void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
   };
@@ -104,8 +106,25 @@ namespace nc
   class LoadGamePage
   {
   public:
+    void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
     void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
+  };
+
+  class QuitGamePage
+  {
+  public:
+    QuitGamePage();
+    ~QuitGamePage();
+
+    void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
+    void draw(ShaderProgramHandle button_material, GLuint VAO);
+  private:
+    void yes_func();
+    void no_func();
+
+    UiButton* yes_button = nullptr;
+    UiButton* no_button = nullptr;
   };
 
   class MenuManager
@@ -130,6 +149,7 @@ namespace nc
     OptionsPage* options_page = nullptr;
     LoadGamePage* load_game_page = nullptr;
     NewGamePage* new_game_page = nullptr;
+    QuitGamePage* quit_game_page = nullptr;
 
     MenuPages current_page = MenuPages::MAIN;
 
