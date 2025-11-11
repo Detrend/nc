@@ -20,6 +20,8 @@ namespace nc
     QUIT
   };
 
+  //======================================================================================
+
   class UiButton
   {
   public:
@@ -42,6 +44,8 @@ namespace nc
     bool isHover = false;
     std::function<void(void)> func;
   };
+
+  //======================================================================================
 
   class MainMenuPage
   {
@@ -68,6 +72,8 @@ namespace nc
     UiButton* quit_button = nullptr;
   };
 
+  //======================================================================================
+
   class NewGamePage
   {
   public:
@@ -87,6 +93,8 @@ namespace nc
     UiButton* level_3_button = nullptr;
   };
 
+  //======================================================================================
+
   class OptionsPage
   {
   public:
@@ -104,13 +112,17 @@ namespace nc
 
   };
 
-  class SaveGamePage 
+  //======================================================================================
+
+  /*class SaveGamePage 
   {
   public:
     void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
     void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
-  };
+  };*/
+
+  //======================================================================================
 
   class LoadGamePage
   {
@@ -119,6 +131,8 @@ namespace nc
     void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
   };
+
+  //======================================================================================
 
   class QuitGamePage
   {
@@ -135,6 +149,8 @@ namespace nc
     UiButton* yes_button = nullptr;
     UiButton* no_button = nullptr;
   };
+
+  //======================================================================================
 
   class MenuManager
   {
