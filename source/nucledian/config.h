@@ -11,6 +11,9 @@
 #define NC_IMGUI
 #define NC_ASSERTS
 #define NC_PROFILING
+#define NC_HOT_RELOAD 1
+#else
+#define NC_HOT_RELOAD 0
 #endif
 
 #if defined(NC_Deploy)

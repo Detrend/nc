@@ -2,6 +2,7 @@
 #pragma once
 
 #include <types.h>
+#include <config.h>
 
 #include <engine/entity/entity.h>
 #include <engine/graphics/camera.h>
@@ -52,6 +53,11 @@ public:
   bool       has_weapon(WeaponType weapon) const;
 
   void get_gun_props(RenderGunProperties& props) const;
+
+#if NC_HOT_RELOAD
+  void hot_reload_set_pos_rot(vec3 pos, f32 yaw, f32 pitch);
+  void hot_reload_get_pos_rot(vec3& pos, f32& yaw, f32& pitch);
+#endif
 
 private:
   void apply_velocity(f32 delta_seconds);

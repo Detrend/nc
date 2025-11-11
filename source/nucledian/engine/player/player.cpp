@@ -592,6 +592,24 @@ void Player::get_gun_props(RenderGunProperties& props_out) const
 }
 
 //==============================================================================
+#if NC_HOT_RELOAD
+void Player::hot_reload_set_pos_rot(vec3 pos, f32 yaw, f32 pitch)
+{
+  this->set_position(pos);
+  this->angle_pitch = pitch;
+  this->angle_yaw   = yaw;
+}
+
+//==============================================================================
+void Player::hot_reload_get_pos_rot(vec3& pos, f32& yaw, f32& pitch)
+{
+  pos   = this->get_position();
+  yaw   = this->angle_yaw;
+  pitch = this->angle_pitch;
+}
+#endif
+
+//==============================================================================
 bool Player::has_weapon(WeaponType weapon) const
 {
   return owned_weapons & (1 << weapon);

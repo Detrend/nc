@@ -1,4 +1,7 @@
 // Project Nucledian Source File
+#include <common.h>
+#include <cvars.h>
+
 #include <engine/player/thing_system.h>
 #include <engine/player/player.h>
 
@@ -30,8 +33,9 @@
 #include <game/item_resources.h> // PickupTypes::...
 #include <game/enemies.h>        // EnemyTypes::...
 
-#include <common.h>
-#include <cvars.h>
+#ifdef NC_IMGUI
+#include <imgui/imgui.h> // for hot reload
+#endif
 
 #include <intersect.h>
 #include <profiling.h>
@@ -280,6 +284,16 @@ static void load_json_map(const LevelName &level_name, MapSectors& map, SectorMa
 namespace nc
 {
 
+#if NC_HOT_RELOAD
+struct HotReloadData
+{
+  inline static vec3 player_position = VEC3_ZERO;
+  inline static f32  player_yaw      = 0.0f;
+  inline static f32  player_pitch    = 0.0f;
+  inline static bool has_data        = false;
+};
+#endif
+
 constexpr cstr SAVE_DIR_RELATIVE = "save";
 constexpr cstr SAVE_FILE_SUFFIX  = ".ncs";
 
@@ -404,6 +418,30 @@ void ThingSystem::on_cleanup()
 }
 
 //==============================================================================
+#if NC_HOT_RELOAD
+static void notify_hot_reload_post_map_build()
+{
+  if (HotReloadData::has_data)
+  {
+    if (Player* player = ThingSystem::get().get_player())
+    {
+      player->hot_reload_set_pos_rot
+      (
+        HotReloadData::player_position,
+        HotReloadData::player_yaw,
+        HotReloadData::player_pitch
+      );
+    }
+
+    HotReloadData::player_position = VEC3_ZERO;
+    HotReloadData::player_yaw      = 0.0f;
+    HotReloadData::player_pitch    = 0.0f;
+    HotReloadData::has_data        = false;
+  }
+}
+#endif
+
+//==============================================================================
 void ThingSystem::on_event(ModuleEvent& event)
 {
   switch (event.type)
@@ -449,6 +487,8 @@ void ThingSystem::on_event(ModuleEvent& event)
         (
           ModuleEvent{.type = ModuleEventType::after_map_rebuild}
         );
+
+        notify_hot_reload_post_map_build();
       }
       break;
     }
@@ -459,6 +499,23 @@ void ThingSystem::on_event(ModuleEvent& event)
 
 #ifdef NC_DEBUG_DRAW
       this->do_raycast_debug();
+#endif
+
+#ifdef NC_IMGUI
+      if (ImGui::IsKeyReleased(ImGuiKey_F5))
+      {
+        if (Player* player = get_player())
+        {
+          player->hot_reload_get_pos_rot
+          (
+            HotReloadData::player_position,
+            HotReloadData::player_yaw,
+            HotReloadData::player_pitch
+          );
+          HotReloadData::has_data = true;
+          this->request_level_change(this->get_level_name());
+        }
+      }
 #endif
 
       auto& entity_system = this->get_entities();
