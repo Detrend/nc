@@ -24,6 +24,8 @@ namespace nc
     bool init();
     ~UserInterfaceSystem();
 
+    MenuManager* get_menu_manager();
+
     void draw_hud();
 
   private:

@@ -38,6 +38,11 @@ namespace nc
     delete menu;
   }
 
+  MenuManager* UserInterfaceSystem::get_menu_manager()
+  {
+    return menu;
+  }
+
   void UserInterfaceSystem::draw_hud()
   {
     ammo_display->draw();

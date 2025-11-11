@@ -1,3 +1,4 @@
+#pragma once
 #include <engine/ui/ui_texture.h>
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/shaders/shaders.h>
@@ -15,7 +16,8 @@ namespace nc
     NEW_GAME,
     OPTIONS,
     LOAD,
-    SAVE
+    SAVE,
+    QUIT
   };
 
   class UiButton
@@ -28,6 +30,8 @@ namespace nc
     vec2 get_scale();
 
     void set_hover(bool hover);
+
+    void on_click();
 
     void draw(ShaderProgramHandle button_material); // Draw takes the shader to modify its uniforms
 
@@ -45,10 +49,8 @@ namespace nc
     MainMenuPage();
     ~MainMenuPage();
 
-    void update(vec2 mouse_pos);
+    void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
     void draw(ShaderProgramHandle button_material, GLuint VAO);
-
-  private:
 
     //These functions are for buttons
     void new_game_func();
@@ -57,6 +59,9 @@ namespace nc
     void save_game_func();
     void quit_func();
 
+  private:
+
+   
 
     UiButton* new_game_button = nullptr;
     UiButton* options_button = nullptr;
@@ -98,7 +103,9 @@ namespace nc
   public:
     MenuManager();
     ~MenuManager();
-    
+
+    void set_page(MenuPages page);
+
     vec2 get_normalized_mouse_pos();
 
     void set_visible(bool visibility);
@@ -120,6 +127,9 @@ namespace nc
 
     bool cur_esc_pressed = false;
     bool prev_esc_pressed = false;
+
+    uint32 prev_mousestate = 0;
+    uint32 cur_mousestate = 0;
 
     GLuint VBO;
     GLuint VAO;

@@ -1,3 +1,5 @@
+#include <engine/ui/user_interface_module.h>
+
 #include <engine/graphics/resources/res_lifetime.h>
 
 #include <engine/ui/ui_button.h>
@@ -6,7 +8,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
 #include <engine/core/engine.h>
+
+
 
 namespace nc
 {
@@ -57,6 +62,11 @@ namespace nc
 	void UiButton::set_hover(bool hover)
 	{
 		isHover = hover;
+	}
+
+	void UiButton::on_click()
+	{
+		func();
 	}
 
 	//====================================================================================================
@@ -135,13 +145,22 @@ namespace nc
 		glDeleteBuffers(1, &VBO);
 	}
 
+
+	void MenuManager::set_page(MenuPages page)
+	{
+		current_page = page;
+	}
+
 	//=============================================================================================
 
 	vec2 MenuManager::get_normalized_mouse_pos()
 	{
 		int mouse_x, mouse_y;
 
-		SDL_GetMouseState(&mouse_x, &mouse_y);
+		uint32 state = SDL_GetMouseState(&mouse_x, &mouse_y);
+
+		prev_mousestate = cur_mousestate;
+		cur_mousestate = state;
 
 		vec2 dimensions = get_engine().get_module<GraphicsSystem>().get_window_size();
 
@@ -194,7 +213,7 @@ namespace nc
 		switch (current_page)
 		{
 		case nc::MAIN:
-			main_menu_page->update(mouse_pos);
+			main_menu_page->update(mouse_pos, prev_mousestate, cur_mousestate);
 			break;
 		case nc::NEW_GAME:
 			break;
@@ -203,6 +222,8 @@ namespace nc
 		case nc::LOAD:
 			break;
 		case nc::SAVE:
+			break;
+		case nc::QUIT:
 			break;
 		default:
 			break;
@@ -230,6 +251,8 @@ namespace nc
 		case nc::LOAD:
 			break;
 		case nc::SAVE:
+			break;
+		case nc::QUIT:
 			break;
 		default:
 			break;
@@ -294,7 +317,7 @@ namespace nc
 		//const char* sg_text = "ui_new_game";
 		const char* q_text = "ui_quit";
 
-		new_game_button = new UiButton(ng_text, vec2(0.0f, 0.15f), vec2(0.45f, 0.1f), std::bind(&MainMenuPage::new_game_button, this));
+		new_game_button = new UiButton(ng_text, vec2(0.0f, 0.15f), vec2(0.45f, 0.1f), std::bind(&MainMenuPage::new_game_func, this));
 		options_button = new UiButton(o_text, vec2(0.0f, -0.1f), vec2(0.45f, 0.1f), std::bind(&MainMenuPage::options_func, this));
 		load_button = new UiButton(lg_text, vec2(0.0f, -0.35f), vec2(0.45f, 0.1f), std::bind(&MainMenuPage::load_game_func, this));
 		//save_button = new UiButton(sg_text, vec2(0.0f, -0.3f), vec2(0.5f, 0.1f), std::bind(&MainMenuPage::save_game_func, this));
@@ -309,7 +332,7 @@ namespace nc
 
 	//=============================================================================================
 
-	void MainMenuPage::update([[maybe_unused]] vec2 mouse_pos)
+	void MainMenuPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
 	{
 		UiButton* hover_over_button = nullptr;
 
@@ -338,6 +361,11 @@ namespace nc
 		if (hover_over_button != nullptr)
 		{
 			hover_over_button->set_hover(true);
+
+			if (!prev_mouse && cur_mouse)
+			{
+				hover_over_button->on_click();
+			}
 		}
 	}
 
@@ -374,18 +402,21 @@ namespace nc
 
 	void MainMenuPage::new_game_func()
 	{
+		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(NEW_GAME);
 	}
 
 	//==============================================================================================
 
 	void MainMenuPage::options_func()
 	{
+		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(OPTIONS);
 	}
 
 	//================================================================================================
 
 	void MainMenuPage::load_game_func()
 	{
+		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(LOAD);
 	}
 
 	//==============================================================================================
@@ -398,6 +429,7 @@ namespace nc
 
 	void MainMenuPage::quit_func()
 	{
+		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(QUIT);
 	}
 
 	//============================================================================================
