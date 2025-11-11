@@ -10,6 +10,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <engine/core/engine.h>
+#include <engine/player/thing_system.h>
 
 namespace nc
 {
@@ -536,16 +537,19 @@ namespace nc
 	//==============================================================================================
 	void NewGamePage::level_1_func()
 	{
+		get_engine().get_module<ThingSystem>().request_level_change(0);
 	}
 
 	//==============================================================================================
 	void NewGamePage::level_2_func()
 	{
+		//get_engine().get_module<ThingSystem>().request_level_change(1);
 	}
 
 	//==============================================================================================
 	void NewGamePage::level_3_func()
 	{
+		//get_engine().get_module<ThingSystem>().request_level_change(2);
 	}
 
 	//============================================================================================
