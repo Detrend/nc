@@ -52,16 +52,14 @@ namespace nc
     void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
     void draw(ShaderProgramHandle button_material, GLuint VAO);
 
+  private:
+
     //These functions are for buttons
     void new_game_func();
     void options_func();
     void load_game_func();
     void save_game_func();
     void quit_func();
-
-  private:
-
-   
 
     UiButton* new_game_button = nullptr;
     UiButton* options_button = nullptr;
@@ -73,28 +71,40 @@ namespace nc
   class NewGamePage
   {
   public:
-    void draw();
+    NewGamePage();
+    ~NewGamePage();
+
+    void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
+    void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
+
+    void level_1_func();
+    void level_2_func();
+    void level_3_func();
+
+    UiButton* level_1_button = nullptr;
+    UiButton* level_2_button = nullptr;
+    UiButton* level_3_button = nullptr;
   };
 
   class OptionsPage
   {
   public:
-    void draw();
+    void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
   };
 
   class SaveGamePage 
   {
   public:
-    void draw();
+    void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
   };
 
   class LoadGamePage
   {
   public:
-    void draw();
+    void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
   };
 
@@ -119,7 +129,7 @@ namespace nc
     MainMenuPage* main_menu_page = nullptr;
     OptionsPage* options_page = nullptr;
     LoadGamePage* load_game_page = nullptr;
-    //SaveGamePage* save_game_page = nullptr;
+    NewGamePage* new_game_page = nullptr;
 
     MenuPages current_page = MenuPages::MAIN;
 

@@ -104,7 +104,7 @@ namespace nc
 		main_menu_page = new MainMenuPage();
 		options_page = new OptionsPage();
 		load_game_page = new LoadGamePage();
-		//save_game_page = new SaveGamePage();
+		new_game_page = new NewGamePage();
 
 		vec2 vertices[] = { vec2(-1, 1), vec2(0, 0),
 				vec2(-1, -1), vec2(0, 1),
@@ -140,7 +140,8 @@ namespace nc
 		delete main_menu_page;
 		delete options_page;
 		delete load_game_page;
-		//delete save_game_page;
+		delete new_game_page;
+
 		glDeleteBuffers(1, &VAO);
 		glDeleteBuffers(1, &VBO);
 	}
@@ -216,6 +217,7 @@ namespace nc
 			main_menu_page->update(mouse_pos, prev_mousestate, cur_mousestate);
 			break;
 		case nc::NEW_GAME:
+			new_game_page->update(mouse_pos, prev_mousestate, cur_mousestate);
 			break;
 		case nc::OPTIONS:
 			break;
@@ -245,6 +247,7 @@ namespace nc
 			main_menu_page->draw(button_material, VAO);
 			break;
 		case nc::NEW_GAME:
+			new_game_page->draw(button_material, VAO);
 			break;
 		case nc::OPTIONS:
 			break;
@@ -314,13 +317,11 @@ namespace nc
 		const char* ng_text = "ui_new_game";
 		const char* o_text = "ui_options";
 		const char* lg_text = "ui_load_game";
-		//const char* sg_text = "ui_new_game";
 		const char* q_text = "ui_quit";
 
 		new_game_button = new UiButton(ng_text, vec2(0.0f, 0.15f), vec2(0.45f, 0.1f), std::bind(&MainMenuPage::new_game_func, this));
 		options_button = new UiButton(o_text, vec2(0.0f, -0.1f), vec2(0.45f, 0.1f), std::bind(&MainMenuPage::options_func, this));
 		load_button = new UiButton(lg_text, vec2(0.0f, -0.35f), vec2(0.45f, 0.1f), std::bind(&MainMenuPage::load_game_func, this));
-		//save_button = new UiButton(sg_text, vec2(0.0f, -0.3f), vec2(0.5f, 0.1f), std::bind(&MainMenuPage::save_game_func, this));
 		quit_button = new UiButton(q_text, vec2(0.0f, -0.6f), vec2(0.45f, 0.1f), std::bind(&MainMenuPage::quit_func, this));
 	}
 
@@ -328,6 +329,7 @@ namespace nc
 
 	MainMenuPage::~MainMenuPage()
 	{
+		
 	}
 
 	//=============================================================================================
@@ -356,6 +358,38 @@ namespace nc
 		else if (quit_button->is_point_in_rec(mouse_pos))
 		{
 			hover_over_button = quit_button;
+		}
+
+		if (hover_over_button != nullptr)
+		{
+			hover_over_button->set_hover(true);
+
+			if (!prev_mouse && cur_mouse)
+			{
+				hover_over_button->on_click();
+			}
+		}
+	}
+
+	void NewGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
+	{
+		UiButton* hover_over_button = nullptr;
+
+		level_1_button->set_hover(false);
+		level_2_button->set_hover(false);
+		level_3_button->set_hover(false);
+
+		if (level_1_button->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = level_1_button;
+		}
+		else if (level_2_button->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = level_2_button;
+		}
+		else if (level_3_button->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = level_3_button;
 		}
 
 		if (hover_over_button != nullptr)
@@ -434,23 +468,71 @@ namespace nc
 
 	//============================================================================================
 
-	void NewGamePage::draw()
+	NewGamePage::NewGamePage()
+	{
+		level_1_button = new UiButton("ui_level1", vec2(0.0f, 0.15f), vec2(0.45f, 0.1f), std::bind(&NewGamePage::level_1_func, this));
+		level_2_button = new UiButton("ui_level2", vec2(0.0f, -0.1f), vec2(0.45f, 0.1f), std::bind(&NewGamePage::level_2_func, this));
+		level_3_button = new UiButton("ui_level3", vec2(0.0f, -0.35f), vec2(0.45f, 0.1f), std::bind(&NewGamePage::level_3_func, this));
+	}
+
+	NewGamePage::~NewGamePage()
+	{
+		delete level_1_button;
+		delete level_2_button;
+		delete level_3_button;
+	}
+
+	void NewGamePage::draw(ShaderProgramHandle button_material, GLuint VAO)
+	{
+		button_material.use();
+
+		glBindVertexArray(VAO);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+
+		glDisable(GL_DEPTH_TEST);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		level_1_button->draw(button_material);
+		level_2_button->draw(button_material);
+		level_3_button->draw(button_material);
+
+		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glBindVertexArray(0);
+	}
+
+	void NewGamePage::level_1_func()
+	{
+	}
+
+	void NewGamePage::level_2_func()
+	{
+	}
+
+	void NewGamePage::level_3_func()
 	{
 	}
 
 	//============================================================================================
-	void OptionsPage::draw()
+	void OptionsPage::draw([[maybe_unused]]ShaderProgramHandle button_material, [[maybe_unused]] GLuint VAO)
 	{
 	}
 
 	//=============================================================================================
-	void SaveGamePage::draw()
+	void SaveGamePage::draw([[maybe_unused]] ShaderProgramHandle button_material, [[maybe_unused]] GLuint VAO)
 	{
 	}
 
 	//==============================================================================================
 
-	void LoadGamePage::draw()
+	void LoadGamePage::draw([[maybe_unused]] ShaderProgramHandle button_material, [[maybe_unused]] GLuint VAO)
 	{
 	}
 }
