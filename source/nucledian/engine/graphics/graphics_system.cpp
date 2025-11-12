@@ -431,6 +431,7 @@ void GraphicsSystem::render()
   }
 #endif
 
+  // TODO: Remove this shit
 #ifdef NC_IMGUI
   if (CVars::light_debug)
   {
@@ -464,65 +465,70 @@ void GraphicsSystem::render()
       }
       ImGui::Text("Light radius is: %.2f", light_test->get_radius());
     }
+
     ImGui::End();
   }
 
-  MapSectors& map = const_cast<MapSectors&>(ThingSystem::get().get_map());
-
-  if (ImGui::Begin("Runtime map changes debug"))
+  if (CVars::sector_height_debug)
   {
-    static int modify = -1;
-    ImGui::DragInt("Sector to modify", &modify, 1.0f, -1, cast<int>(map.sectors.size()) - 1);
+    MapSectors& map = const_cast<MapSectors&>(ThingSystem::get().get_map());
 
-    if (modify != -1)
+    if (ImGui::Begin("Runtime map changes debug"))
     {
-      ImGui::Text("Selected sector %d", modify);
-      SectorData& sd = map.sectors[modify];
+      static int modify = -1;
+      ImGui::DragInt("Sector to modify", &modify, 1.0f, -1, cast<int>(map.sectors.size()) - 1);
 
-      bool changed = false;
-
-      changed |= ImGui::DragFloat("Floor height", &sd.floor_height, 0.01f, 0.0f, 100.0f);
-      changed |= ImGui::DragFloat("Ceil height",  &sd.ceil_height,  0.01f, 0.0f, 100.0f);
-      sd.ceil_height = max(sd.floor_height + 0.1f, sd.ceil_height);
-
-      if (changed)
+      if (modify != -1)
       {
-        SectorID sid = cast<SectorID>(modify);
-        GraphicsSystem::get().mark_sector_dirty(sid);
+        ImGui::Text("Selected sector %d", modify);
+        SectorData& sd = map.sectors[modify];
 
-        map.for_each_portal_of_sector(sid, [&](WallID wall)
-        {
-          SectorID neighbor = map.walls[wall].portal_sector_id;
-          nc_assert(map.is_valid_sector_id(neighbor));
-          GraphicsSystem::get().mark_sector_dirty(neighbor);
-        });
-      }
-    }
+        bool changed = false;
 
-    MapDynamics& dynamics = ThingSystem::get().get_map_dynamics();
-    u64 i = 0;
-    for (auto& entry : dynamics.entries)
-    {
-      ImGui::Separator();
-      for (u64 idx = 0; idx < entry.second.states.size(); ++idx)
-      {
-        std::string txt = std::format("[{}] {}", i, idx);
-        if (ImGui::Button(txt.c_str()))
+        changed |= ImGui::DragFloat("Floor height", &sd.floor_height, 0.01f, 0.0f, 100.0f);
+        changed |= ImGui::DragFloat("Ceil height",  &sd.ceil_height,  0.01f, 0.0f, 100.0f);
+        sd.ceil_height = max(sd.floor_height + 0.1f, sd.ceil_height);
+
+        if (changed)
         {
-          entry.second.state = cast<u16>(idx);
+          SectorID sid = cast<SectorID>(modify);
+          GraphicsSystem::get().mark_sector_dirty(sid);
+
+          map.for_each_portal_of_sector(sid, [&](WallID wall)
+          {
+            SectorID neighbor = map.walls[wall].portal_sector_id;
+            nc_assert(map.is_valid_sector_id(neighbor));
+            GraphicsSystem::get().mark_sector_dirty(neighbor);
+          });
         }
-        ImGui::SameLine();
       }
 
-      ImGui::NewLine();
-      std::string txt = std::format("[{}] Speed", i);
-      ImGui::SliderFloat(txt.c_str(), &entry.second.speed, 0.001f, 20.0f);
-      ImGui::Separator();
+      MapDynamics& dynamics = ThingSystem::get().get_map_dynamics();
+      u64 i = 0;
+      for (auto& entry : dynamics.entries)
+      {
+        ImGui::Separator();
+        for (u64 idx = 0; idx < entry.second.states.size(); ++idx)
+        {
+          std::string txt = std::format("[{}] {}", i, idx);
+          if (ImGui::Button(txt.c_str()))
+          {
+            entry.second.state = cast<u16>(idx);
+          }
+          ImGui::SameLine();
+        }
 
-      ++i;
+        ImGui::NewLine();
+        std::string txt = std::format("[{}] Speed", i);
+        ImGui::SliderFloat(txt.c_str(), &entry.second.speed, 0.001f, 20.0f);
+        ImGui::Separator();
+
+        ++i;
+      }
     }
+
+    ImGui::End();
   }
-  ImGui::End();
 #endif
 
   VisibilityTree visible_sectors;
