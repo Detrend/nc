@@ -9,6 +9,7 @@
 #include <engine/core/engine_module.h>
 #include <engine/core/engine_module_id.h>
 #include <engine/graphics/resources/model.h>
+#include <engine/map/map_types.h>            // SectorID
 
 #include <game/game_types.h>
 
@@ -59,7 +60,10 @@ public:
   bool init();
   void on_event(ModuleEvent& event) override;
 
-  const std::vector<MeshHandle>& get_sector_meshes() const;
+  // This returns the mesh handle. If the sector is dirty (was changed)
+  // then it is recomputed.
+  const MeshHandle& get_and_update_sector_mesh(SectorID sector);
+  void              mark_sector_dirty(SectorID sector);
 
   const ShaderProgramHandle& get_solid_material() const;
 
@@ -92,6 +96,7 @@ private:
 
   RendererPtr             m_renderer = nullptr;
   std::vector<MeshHandle> m_sector_meshes;
+  std::vector<bool>       m_dirty_sectors;
 
 #ifdef NC_DEBUG_DRAW
   DebugRendererPtr m_debug_renderer = nullptr;

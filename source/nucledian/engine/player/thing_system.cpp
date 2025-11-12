@@ -9,13 +9,15 @@
 #include <engine/core/engine_module_types.h>
 #include <engine/core/module_event.h>
 
-#include <engine/map/map_system.h>
 #include <engine/entity/entity_system.h>
 #include <engine/entity/sector_mapping.h>
 #include <engine/entity/entity_type_definitions.h>
 
 #include <engine/input/input_system.h>
+
 #include <engine/map/physics.h>
+#include <engine/map/map_system.h>
+#include <engine/map/map_dynamics.h>
 
 #include <engine/graphics/resources/texture.h>
 #include <engine/graphics/graphics_system.h>
@@ -451,20 +453,20 @@ void ThingSystem::on_event(ModuleEvent& event)
     case ModuleEventType::post_init:
     {
       this->post_init();
-      break;
     }
+    break;
 
     case ModuleEventType::pre_terminate:
     {
       this->pre_terminate();
-      break;
     }
+    break;
 
     case ModuleEventType::cleanup:
     {
       this->on_cleanup();
-      break;
     }
+    break;
 
     case ModuleEventType::frame_start:
     {
@@ -492,8 +494,8 @@ void ThingSystem::on_event(ModuleEvent& event)
 
         notify_hot_reload_post_map_build();
       }
-      break;
     }
+    break;
 
     case ModuleEventType::game_update:
     {
@@ -541,8 +543,10 @@ void ThingSystem::on_event(ModuleEvent& event)
         proj.update(event.update.dt);
       });
 
-      break;
+      // And update the map
+      dynamics->update(event.update.dt);
     }
+    break;
   }
 }
 
@@ -557,6 +561,13 @@ EntityRegistry& ThingSystem::get_entities()
 {
   nc_assert(entities);
   return *entities;
+}
+
+//==============================================================================
+MapDynamics& ThingSystem::get_map_dynamics()
+{
+  nc_assert(dynamics);
+  return *dynamics;
 }
 
 //==============================================================================
@@ -685,14 +696,24 @@ void ThingSystem::build_map(LevelName level)
   nc_assert(!map && !mapping && !entities);
 
   map        = std::make_unique<MapSectors>();
+  dynamics   = std::make_unique<MapDynamics>(*map);
   mapping    = std::make_unique<SectorMapping>(*map);
   entities   = std::make_unique<EntityRegistry>();
   attachment = std::make_unique<EntityAttachment>(*entities);
+
+  dynamics->callback = [](SectorID sector)
+  {
+    GraphicsSystem::get().mark_sector_dirty(sector);
+  };
 
   entities->add_listener(mapping.get());
   entities->add_listener(attachment.get());
 
   map_helpers::load_json_map(level, *map, *mapping, *entities, player_id);
+
+  MapDynamics::SectorEntry& entry = dynamics->entries[67];
+  entry.states.push_back(MapDynamics::SectorState{0.4f, 12.0f});
+  entry.states.push_back(MapDynamics::SectorState{0.4f, 0.401f});
 }
 
 //==============================================================================

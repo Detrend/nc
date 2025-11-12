@@ -219,12 +219,14 @@ void Enemy::handle_movement(f32 delta)
   // Handle gravity
   velocity.y -= GRAVITY * delta;
 
+  EntityTypeMask collide_with = EntityTypeFlags::player | EntityTypeFlags::enemy;
+
   vec3 position = this->get_position();
   mat4 portal_transform = identity<mat4>();
   world.move_character
   (
     position, this->velocity, portal_transform, delta, this->get_height(),
-    this->get_radius(), this->get_height() * 0.3f, PhysLevel::COLLIDE_ALL, 0
+    this->get_radius(), this->get_height() * 0.3f, collide_with, 0
   );
 
   this->facing = (portal_transform * vec4{this->facing, 0.0f}).xyz();

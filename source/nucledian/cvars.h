@@ -134,6 +134,7 @@ struct CVars
   NC_REGISTER_CVAR(bool, has_fps_limit,         false, "Is the FPS limited?");
   NC_REGISTER_CVAR(bool, has_min_fps,           false, "Min FPS");
   NC_REGISTER_CVAR(bool, light_debug,           false, "Light debugging.");
+  NC_REGISTER_CVAR(bool, sector_height_debug,   false, "Sector movement debug.");
   NC_REGISTER_CVAR(bool, invisibility,          false, "Makes the player invisible to enemies.");
 
   NC_REGISTER_CVAR_RANGED(f32, fps_limit, 60.0f, 1.0f, 512.0f,

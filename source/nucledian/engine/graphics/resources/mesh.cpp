@@ -214,6 +214,7 @@ MeshHandle MeshManager::create(ResLifetime lifetime, const f32* data, u32 count,
 
   // store created mesh
   auto& storage = this->get_storage(lifetime);
+  mesh.m_index = cast<u16>(storage.size());
   storage.push_back(mesh);
 
   return mesh;
@@ -248,18 +249,15 @@ MeshHandle MeshManager::create_texturable(ResLifetime lifetime, const f32* data,
 
   // store created mesh
   auto& storage = this->get_storage(lifetime);
+  mesh.m_index = cast<u16>(storage.size());
   storage.push_back(mesh);
 
   return mesh;
 }
 
 //==============================================================================
-MeshHandle MeshManager::create_sector(ResLifetime lifetime, const f32* data, u32 count, GLenum draw_mode)
+void MeshManager::populate_sector_mesh(MeshHandle& mesh, const f32* data, u32 count)
 {
-  MeshHandle mesh;
-  mesh.m_lifetime = lifetime;
-  mesh.m_generation = MeshManager::m_generation;
-  mesh.m_draw_mode = draw_mode;
   /**
    *  3 floats per position
    *  3 floats per normal
@@ -315,12 +313,48 @@ MeshHandle MeshManager::create_sector(ResLifetime lifetime, const f32* data, u32
   glEnableVertexAttribArray(8);
 
   glBindVertexArray(0);
+}
+
+//==============================================================================
+MeshHandle MeshManager::create_sector(ResLifetime lifetime, const f32* data, u32 count, GLenum draw_mode)
+{
+  MeshHandle mesh;
+  mesh.m_lifetime = lifetime;
+  mesh.m_generation = MeshManager::m_generation;
+  mesh.m_draw_mode = draw_mode;
+
+  populate_sector_mesh(mesh, data, count);
 
   // store created mesh
   auto& storage = this->get_storage(lifetime);
+  mesh.m_index = cast<u16>(storage.size());
   storage.push_back(mesh);
 
   return mesh;
+}
+
+//==============================================================================
+void MeshManager::recreate_sector(MeshHandle& mesh, const f32* data, u32 count)
+{
+  // clean it up
+  if (mesh.m_vao != 0)
+  {
+    glDeleteVertexArrays(1, &mesh.m_vao);
+    mesh.m_vao = 0;
+  }
+
+  if (mesh.m_vbo != 0)
+  {
+    glDeleteBuffers(1, &mesh.m_vbo);
+    mesh.m_vbo = 0;
+  }
+
+  // repopulate it with a new data
+  populate_sector_mesh(mesh, data, count);
+
+  // and replace it in the storage
+  auto& storage = this->get_storage(mesh.m_lifetime);
+  storage[mesh.m_index] = mesh;
 }
 
 //==============================================================================
