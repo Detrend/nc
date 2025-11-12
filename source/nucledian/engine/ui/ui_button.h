@@ -106,9 +106,16 @@ namespace nc
   private:
     void do_nothing() {};
 
+    void set_windowed();
+    void set_fullscreen();
+
     UiButton* sound_text = nullptr;
     UiButton* music_text = nullptr;
     UiButton* sensitivity_text = nullptr;
+    UiButton* fullscreen_button = nullptr;
+    UiButton* windowed_button = nullptr;
+
+    bool isWindowed = true;
 
   };
 

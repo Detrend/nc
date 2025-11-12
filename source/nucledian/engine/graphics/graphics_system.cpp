@@ -979,4 +979,9 @@ vec2 GraphicsSystem::get_window_size()
     return vec2(x, y);
 }
 
+SDL_Window* GraphicsSystem::get_window()
+{
+    return m_window;
+}
+
 }

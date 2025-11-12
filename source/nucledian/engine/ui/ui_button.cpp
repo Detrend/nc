@@ -215,7 +215,7 @@ namespace nc
 			//{
 			//	current_page = MAIN;
 			//}
-			
+
 		}
 
 		if (!visible) {
@@ -537,23 +537,23 @@ namespace nc
 	//==============================================================================================
 	void NewGamePage::level_1_func()
 	{
-		get_engine().get_module<ThingSystem>().request_level_change(0);
+		get_engine().get_module<ThingSystem>().request_level_change(Levels::LEVEL_1);
 	}
 
 	//==============================================================================================
 	void NewGamePage::level_2_func()
 	{
-		//get_engine().get_module<ThingSystem>().request_level_change(1);
+		get_engine().get_module<ThingSystem>().request_level_change(Levels::LEVEL_2);
 	}
 
 	//==============================================================================================
 	void NewGamePage::level_3_func()
 	{
-		//get_engine().get_module<ThingSystem>().request_level_change(2);
+		get_engine().get_module<ThingSystem>().request_level_change(Levels::LEVEL_3);
 	}
 
 	//============================================================================================
-	void OptionsPage::draw([[maybe_unused]]ShaderProgramHandle button_material, [[maybe_unused]] GLuint VAO)
+	void OptionsPage::draw([[maybe_unused]] ShaderProgramHandle button_material, [[maybe_unused]] GLuint VAO)
 	{
 		button_material.use();
 
@@ -570,6 +570,15 @@ namespace nc
 		music_text->draw(button_material);
 		sensitivity_text->draw(button_material);
 
+		if (isWindowed)
+		{
+			windowed_button->draw(button_material);
+		}
+		else
+		{
+			fullscreen_button->draw(button_material);
+		}
+
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 
@@ -579,11 +588,27 @@ namespace nc
 		glBindVertexArray(0);
 	}
 
+	void OptionsPage::set_windowed()
+	{
+		SDL_Window* window = get_engine().get_module<GraphicsSystem>().get_window();
+		SDL_SetWindowFullscreen(window, 0);
+		isWindowed = true;
+	}
+
+	void OptionsPage::set_fullscreen()
+	{
+		SDL_Window* window = get_engine().get_module<GraphicsSystem>().get_window();
+		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+		isWindowed = false;
+	}
+
 	OptionsPage::OptionsPage()
 	{
-		sound_text	=				new UiButton("ui_sound",				vec2(-0.3f, 0.15f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
-		music_text	=				new UiButton("ui_music",				vec2(-0.3f, -0.1f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
-		sensitivity_text =	new UiButton("ui_sensitivity",	vec2(-0.3f, -0.35f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
+		sound_text = new UiButton("ui_sound", vec2(-0.3f, 0.15f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
+		music_text = new UiButton("ui_music", vec2(-0.3f, -0.1f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
+		sensitivity_text = new UiButton("ui_sensitivity", vec2(-0.3f, -0.35f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
+		fullscreen_button = new UiButton("ui_fullscreen", vec2(0.3f, -0.6f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::set_windowed, this));
+		windowed_button = new UiButton("ui_windowed", vec2(0.3f, -0.6f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::set_fullscreen, this));
 	}
 
 	OptionsPage::~OptionsPage()
@@ -591,11 +616,44 @@ namespace nc
 		delete sound_text;
 		delete music_text;
 		delete sensitivity_text;
+		delete fullscreen_button;
+		delete windowed_button;
 	}
 
 	//==============================================================================================
 	void OptionsPage::update([[maybe_unused]] vec2 mouse_pos, [[maybe_unused]] u32 prev_mouse, [[maybe_unused]] u32 cur_mouse)
 	{
+		UiButton* hover_over_button = nullptr;
+
+		fullscreen_button->set_hover(false);
+		windowed_button->set_hover(false);
+
+		if (isWindowed)
+		{
+			if (windowed_button->is_point_in_rec(mouse_pos))
+			{
+				hover_over_button = windowed_button;
+			}
+		}
+
+		else 
+		{
+			if (fullscreen_button->is_point_in_rec(mouse_pos))
+			{
+				hover_over_button = fullscreen_button;
+			}
+			
+		}
+
+		if (hover_over_button != nullptr)
+		{
+			hover_over_button->set_hover(true);
+
+			if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+			{
+				hover_over_button->on_click();
+			}
+		}
 	}
 
 	//==============================================================================================
@@ -606,7 +664,7 @@ namespace nc
 	//==============================================================================================
 	void LoadGamePage::draw([[maybe_unused]] ShaderProgramHandle button_material, [[maybe_unused]] GLuint VAO)
 	{
-		
+
 	}
 
 	//==============================================================================================
