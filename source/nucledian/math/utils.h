@@ -33,6 +33,10 @@ f32 deg2rad(f32 degrees);
 // Converts radians to degrees
 f32 rad2deg(f32 radians);
 
+// Moves the value towards the target by the amount. If the difference is
+// smaller than amount then sets the value to target.
+void lerp_towards(f32& value, f32 target, f32 amount);
+
 constexpr f32 PI         = std::numbers::pi_v<f32>;
 constexpr f32 HALF_PI    = PI * 0.5f;
 constexpr f32 QUARTER_PI = PI * 0.25f;

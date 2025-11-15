@@ -1,4 +1,10 @@
 {
+	"activators": [
+		{
+			"name": "abc",
+			"threshold": 1
+		}
+	],
 	"ambient_lights": [
 		{
 			"intensity": 0.3,
@@ -19946,6 +19952,7 @@
 		},
 		{
 			"ceiling": 20.0,
+			"ceiling2": 20.0,
 			"ceiling_surface": {
 				"id": "floor2",
 				"offset": [
@@ -19960,6 +19967,7 @@
 			},
 			"debug_name": "_Polygon2D_201968",
 			"floor": 11.2,
+			"floor2": 5.0,
 			"floor_surface": {
 				"id": "floor3",
 				"offset": [

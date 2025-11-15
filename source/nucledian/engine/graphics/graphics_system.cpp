@@ -502,29 +502,6 @@ void GraphicsSystem::render()
           });
         }
       }
-
-      MapDynamics& dynamics = ThingSystem::get().get_map_dynamics();
-      u64 i = 0;
-      for (auto& entry : dynamics.entries)
-      {
-        ImGui::Separator();
-        for (u64 idx = 0; idx < entry.second.states.size(); ++idx)
-        {
-          std::string txt = std::format("[{}] {}", i, idx);
-          if (ImGui::Button(txt.c_str()))
-          {
-            entry.second.state = cast<u16>(idx);
-          }
-          ImGui::SameLine();
-        }
-
-        ImGui::NewLine();
-        std::string txt = std::format("[{}] Speed", i);
-        ImGui::SliderFloat(txt.c_str(), &entry.second.speed, 0.001f, 20.0f);
-        ImGui::Separator();
-
-        ++i;
-      }
     }
 
     ImGui::End();
