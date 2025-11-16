@@ -155,3 +155,4 @@ else()
 endif()
 
 set_target_properties(nucledian PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT nucledian)
