@@ -70,7 +70,8 @@ public:
   static EntityType get_type_static();
 
   static constexpr size_t MAX_VISIBLE_POINT_LIGHTS = 1024;
-  static constexpr size_t MAX_LIGHTS_PER_TILE = 8;
+  // WARNING: Keep value of this constant same as MAX_LIGHTS_PER_TILE in light_culling.comp.
+  static constexpr size_t MAX_LIGHTS_PER_TILE = 16;
 
   color3 color     = colors::WHITE;
   f32    intensity = 1.0f;

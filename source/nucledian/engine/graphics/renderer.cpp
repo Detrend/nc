@@ -92,38 +92,6 @@ Renderer::Renderer(u32 win_w, u32 win_h)
     glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
   }
   glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-  //glGenBuffers(1, &m_atomic_counter);
-  //glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, m_atomic_counter);
-  //glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(u32), nullptr, GL_DYNAMIC_DRAW);
-  //glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
-
-  // setup directional light ssbo
-  /*glGenBuffers(1, &m_dir_light_ssbo);
-  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_dir_light_ssbo);
-  glBufferData
-  (
-    GL_SHADER_STORAGE_BUFFER,
-    DirectionalLight::MAX_DIRECTIONAL_LIGHTS * sizeof(DirLightGPU),
-    nullptr,
-    GL_DYNAMIC_DRAW
-  );*/
-
-  // setup point light ssbo
-  /*glGenBuffers(1, &m_point_light_ssbo);
-  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_point_light_ssbo);
-  glBufferData
-  (
-    GL_SHADER_STORAGE_BUFFER,
-    PointLight::MAX_VISIBLE_POINT_LIGHTS * sizeof(PointLightGPU),
-    nullptr,
-    GL_DYNAMIC_DRAW
-  );*/
-
-  // setup light culling buffers
-  //glGenBuffers()
-
-  // glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
 //==============================================================================
@@ -139,6 +107,24 @@ void Renderer::on_window_resized(u32 w, u32 h)
 
   // and recompute projection matrix for this aspect ratio
   this->recompute_projection(w, h, GraphicsSystem::FOV);
+
+  // resize ssbo buffers
+  const size_t num_tiles_x = (w + LIGHT_CULLING_TILE_SIZE_X - 1) / LIGHT_CULLING_TILE_SIZE_X;
+  const size_t num_tiles_y = (h + LIGHT_CULLING_TILE_SIZE_Y - 1) / LIGHT_CULLING_TILE_SIZE_Y;
+  const size_t num_tiles = num_tiles_x * num_tiles_y;
+
+  std::array<std::pair<GLuint*, size_t>, 2> buffers
+  {{
+    { &m_light_index_ssbo, PointLight::MAX_LIGHTS_PER_TILE * num_tiles * sizeof(u32) },
+    { &m_tile_data_ssbo, num_tiles * 2 * sizeof(u32) },
+  }};
+
+  for (auto&& [buffer, size] : buffers)
+  {
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, *buffer);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+  }
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
 //==============================================================================
