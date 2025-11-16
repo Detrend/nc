@@ -1,14 +1,24 @@
+# CMake
+build
+out
+
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+*.cmake.user
+
+# Visual Studio & Visual Studio Code
 .vs
+.vscode
+*.user
+
+# build artifacts
 /bin
 /asm
 /bin_temp
 **/x64
-*.vcxproj.user
 
-# ignore imgui configuration
+# other stuff
 imgui.ini
-/projects/nucledian.vcxproj.filters.orig
-/source/nucledian/engine/entity/entity.h.orig
-/source/nucledian/engine/entity/entity.cpp.orig
-/source/nucledian/engine/player/player.cpp.orig
 /.godot
+*.orig
