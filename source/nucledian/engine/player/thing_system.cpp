@@ -43,7 +43,7 @@
 
 #include <json/json.hpp>
 
-#include <engine/graphics/lights.h>
+#include <engine/graphics/entities/lights.h>
 
 
 //==============================================================================

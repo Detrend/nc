@@ -14,7 +14,7 @@
 #include <engine/entity/entity_system.h>
 
 #include <engine/graphics/graphics_system.h> // RenderGunProperties
-#include <engine/graphics/lights.h>
+#include <engine/graphics/entities/lights.h>
 
 // Sound
 #include <engine/sound/sound_system.h>

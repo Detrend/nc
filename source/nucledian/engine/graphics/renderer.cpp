@@ -11,8 +11,9 @@
 #include <engine/graphics/camera.h>
 #include <engine/graphics/gizmo.h>
 #include <engine/graphics/graphics_system.h>
-#include <engine/graphics/lights.h>
 #include <engine/graphics/shaders/shaders.h>
+#include <engine/graphics/entities/lights.h>
+#include <engine/graphics/entities/sky_box.h>
 
 #include <engine/entity/entity_system.h>
 #include <engine/entity/sector_mapping.h>
@@ -36,6 +37,7 @@ Renderer::Renderer(u32 win_w, u32 win_h)
 , m_light_material(shaders::light::VERTEX_SOURCE, shaders::light::FRAGMENT_SOURCE)
 , m_sector_material(shaders::sector::VERTEX_SOURCE, shaders::sector::FRAGMENT_SOURCE)
 , m_light_culling_shader(shaders::light_culling::COMPUTE_SOURCE)
+, m_sky_box_material(shaders::sky_box::VERTEX_SOURCE, shaders::sky_box::FRAGMENT_SOURCE)
 , m_window_size(win_w, win_h)
 {
   this->create_g_buffers(win_w, win_h);
@@ -91,38 +93,6 @@ Renderer::Renderer(u32 win_w, u32 win_h)
     glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
   }
   glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-  //glGenBuffers(1, &m_atomic_counter);
-  //glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, m_atomic_counter);
-  //glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(u32), nullptr, GL_DYNAMIC_DRAW);
-  //glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
-
-  // setup directional light ssbo
-  /*glGenBuffers(1, &m_dir_light_ssbo);
-  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_dir_light_ssbo);
-  glBufferData
-  (
-    GL_SHADER_STORAGE_BUFFER,
-    DirectionalLight::MAX_DIRECTIONAL_LIGHTS * sizeof(DirLightGPU),
-    nullptr,
-    GL_DYNAMIC_DRAW
-  );*/
-
-  // setup point light ssbo
-  /*glGenBuffers(1, &m_point_light_ssbo);
-  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_point_light_ssbo);
-  glBufferData
-  (
-    GL_SHADER_STORAGE_BUFFER,
-    PointLight::MAX_VISIBLE_POINT_LIGHTS * sizeof(PointLightGPU),
-    nullptr,
-    GL_DYNAMIC_DRAW
-  );*/
-
-  // setup light culling buffers
-  //glGenBuffers()
-
-  // glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
 //==============================================================================
@@ -302,6 +272,7 @@ const
   render_entities(camera);
   render_portals(camera);
   render_gun(gun);
+  render_sky_box(camera);
 
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -727,6 +698,38 @@ void Renderer::render_gun(const RenderGunProperties& gun) const
   glBindTexture(GL_TEXTURE_2D, 0);
   glBindVertexArray(0);
   m_billboard_material.set_uniform(shaders::billboard::PROJECTION, m_default_projection);
+}
+
+void Renderer::render_sky_box(const CameraData& camera) const
+{
+  EntityRegistry& registry = ThingSystem::get().get_entities();
+  const MeshHandle& cube = MeshManager::get().get_cube();
+
+  
+
+  glDepthMask(GL_FALSE);
+  glDepthFunc(GL_LEQUAL);
+  glCullFace(GL_FRONT);
+
+  m_sky_box_material.use();
+  m_sky_box_material.set_uniform(shaders::sky_box::VIEW, camera.view);
+  m_sky_box_material.set_uniform(shaders::sky_box::PROJECTION, m_default_projection);
+
+  glActiveTexture(GL_TEXTURE0);
+  registry.for_each<SkyBox>([this](const SkyBox& sky_box)
+  {
+    glBindTexture(GL_TEXTURE_2D, sky_box.get_texture_handle());
+
+    m_sky_box_material.set_uniform(shaders::sky_box::EXPOSURE, sky_box.exposure);
+    m_sky_box_material.set_uniform(shaders::sky_box::USE_GAMMA_CORRECTION, sky_box.use_gamma_correction);
+  });
+
+  glBindVertexArray(cube.get_vao());
+  glDrawArrays(cube.get_draw_mode(), 0, cube.get_vertex_count());
+
+  glDepthMask(GL_TRUE);
+  glDepthFunc(GL_LESS);
+  glCullFace(GL_BACK);
 }
 
 #pragma region portals rendering

@@ -1,4 +1,4 @@
-#include <engine/graphics/lights.h>
+#include <engine/graphics/entities/lights.h>
 
 #include <common.h>
 
