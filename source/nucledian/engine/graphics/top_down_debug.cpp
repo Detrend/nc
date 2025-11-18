@@ -229,6 +229,7 @@ void TopDownDebugRenderer::draw_entities()
     colors::BLACK,  // directional_light (we don't need to see them)
     colors::YELLOW, // point_light
     colors::PINK,   // prop
+    colors::BLACK,  // sky_box (we don't need to see them)
   };
   static_assert(ARRAY_LENGTH(ENTITY_TYPE_COLORS) == EntityTypes::count);
 

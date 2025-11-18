@@ -1,11 +1,13 @@
+#include <engine/graphics/resources/texture.h>
+
 #include <common.h>
 #include <logging.h>
-#include <engine/graphics/resources/texture.h>
 
 #include <glad/glad.h>
 #include <stb/stb_image.h>
 
 #include <filesystem>
+#include <string>
 
 namespace nc
 {
@@ -111,12 +113,17 @@ TextureManager& TextureManager::get()
 //==============================================================================
 void TextureManager::load_directory(ResLifetime lifetime, const std::string& path)
 {
-  for (const auto& entry : std::filesystem::directory_iterator(path))
+  for (const auto& entry : std::filesystem::recursive_directory_iterator(path))
   {
-    if (!entry.is_regular_file())
+    if (!entry.path().has_extension())
       continue;
 
-    load(entry.path().string());
+    const std::string extension = entry.path().extension().string();
+    if (extension == ".png" || extension == ".jpg")
+      load_texture(entry.path().string());
+    // not only cube maps have .hdr extension, but for now we are using HDR textures only for cube maps
+    else if (extension == ".hdr")
+      load_equirectangular_map(entry.path().string(), lifetime);
   }
 
   finish_load(lifetime);
@@ -134,6 +141,9 @@ void TextureManager::unload(ResLifetime lifetime)
   atlas.textures.clear();
 
   m_generation++;
+
+  // TODO: delete texture from m_textures
+  // TODO: delete sky boxes
 }
 
 //==============================================================================
@@ -179,6 +189,12 @@ const TextureHandle& TextureManager::operator[](u16 texture_id) const
 }
 
 //==============================================================================
+GLuint TextureManager::get_equirectangular_map(const std::string& name, ResLifetime lifetime) const
+{
+  return get_equirectangular_maps(lifetime).at(name);
+}
+
+//==============================================================================
 TextureManager::TextureManager()
 {
   create_error_texture();
@@ -193,6 +209,27 @@ TextureAtlas& TextureManager::get_atlas_mut(ResLifetime lifetime)
     return m_game_atlas;
   else
     return m_level_atlas;
+}
+
+//==============================================================================
+TextureManager::EquirectangularMapMap& TextureManager::get_equirectangular_maps(ResLifetime lifetime)
+{
+  nc_assert(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
+
+  if (lifetime == ResLifetime::Game)
+    return m_game_equirectangular_maps;
+  else
+    return m_level_equirectangular_maps;
+}
+
+const TextureManager::EquirectangularMapMap& TextureManager::get_equirectangular_maps(ResLifetime lifetime) const
+{
+  nc_assert(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
+
+  if (lifetime == ResLifetime::Game)
+    return m_game_equirectangular_maps;
+  else
+    return m_level_equirectangular_maps;
 }
 
 //==============================================================================
@@ -233,8 +270,18 @@ void TextureManager::create_error_texture()
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+std::string TextureManager::get_name(const std::string& path) const
+{
+  const size_t last_separator_pos = path.find_last_of("/\\");
+  const std::string filename = (last_separator_pos != std::string::npos) ? path.substr(last_separator_pos + 1) : path;
+  const size_t first_dot_pos = filename.find('.');
+  const std::string name = (first_dot_pos != std::string::npos) ? filename.substr(0, first_dot_pos) : filename;
+
+  return name;
+}
+
 //==============================================================================
-void nc::TextureManager::load(const std::string& path)
+void nc::TextureManager::load_texture(const std::string& path)
 {
   int width, height, channels;
   unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
@@ -255,28 +302,48 @@ void nc::TextureManager::load(const std::string& path)
     stbi_image_free(data);
   }
 
-  const size_t last_separator_pos = path.find_last_of("/\\");
-  const std::string filename = (last_separator_pos != std::string::npos) ? path.substr(last_separator_pos + 1) : path;
-  const size_t first_dot_pos = filename.find('.');
-  const std::string name = (first_dot_pos != std::string::npos) ? filename.substr(0, first_dot_pos) : filename;
-
   m_load_rects.push_back(stbrp_rect
-    {
-      .id = static_cast<int>(m_load_rects.size()),
-      .w = width,
-      .h = height,
-      .x = 0,
-      .y = 0,
-      .was_packed = 0,
-    });
+  {
+    .id = static_cast<int>(m_load_rects.size()),
+    .w = width,
+    .h = height,
+    .x = 0,
+    .y = 0,
+    .was_packed = 0,
+  });
   m_load_data.push_back(LoadData
-    {
-      .width = width,
-      .height = height,
-      .format = format,
-      .data = data,
-      .name = name,
-    });
+  {
+    .width = width,
+    .height = height,
+    .format = format,
+    .data = data,
+    .name = get_name(path),
+  });
+}
+
+//==============================================================================
+void TextureManager::load_equirectangular_map(const std::string& path, ResLifetime lifetime)
+{
+  // load equirectangular map texture
+  int width, height, channels;
+  float* data = stbi_loadf(path.c_str(), &width, &height, &channels, 3);
+  if (data == nullptr)
+    nc_crit("Cannot load cube map \"{}\": {}", path, stbi_failure_reason());
+
+  GLuint handle;
+  glGenTextures(1, &handle);
+  glBindTexture(GL_TEXTURE_2D, handle);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data);
+  
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+  stbi_image_free(data);
+
+  EquirectangularMapMap& maps = get_equirectangular_maps(lifetime);
+  maps.insert({ get_name(path), handle });
 }
 
 //==============================================================================

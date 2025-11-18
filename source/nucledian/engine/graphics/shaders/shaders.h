@@ -115,6 +115,17 @@ namespace nc
       inline constexpr Uniform<4, s32> CHARACTER;
       
     }
+
+    namespace sky_box
+    {
+      #include <engine/graphics/shaders/sky_box.vert>
+      #include <engine/graphics/shaders/sky_box.frag>
+
+      inline constexpr Uniform<0, mat4> VIEW;
+      inline constexpr Uniform<1, mat4> PROJECTION;
+      inline constexpr Uniform<2, f32>  EXPOSURE;
+      inline constexpr Uniform<3, bool> USE_GAMMA_CORRECTION;
+    }
   }
 
 }

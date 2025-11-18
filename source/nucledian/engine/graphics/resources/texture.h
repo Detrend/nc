@@ -80,11 +80,9 @@ public:
   friend class TextureHandle;
 
   static TextureManager& get();
-
   
   // Load all textures from a directory. They will be loaded into texture atlas of specified lifetime.
   void load_directory(ResLifetime lifetime, const std::string& path);
-  // Unloads all textures with specified lifetime. This will unload the texture atlas of specified lifetime.
   void unload(ResLifetime lifetime);
 
   const TextureAtlas& get_atlas(ResLifetime lifetime) const;
@@ -95,10 +93,14 @@ public:
   const TextureHandle& operator[](const std::string& name) const;
   const TextureHandle& operator[](u16 texture_id) const;
 
+  GLuint get_equirectangular_map(const std::string& name, ResLifetime lifetime) const;
+
   constexpr static u32 ERROR_TEXTURE_SIZE = 1024;
 
 private:
   struct LoadData;
+
+  using EquirectangularMapMap = std::unordered_map<std::string, GLuint>;
 
   inline static std::unique_ptr<TextureManager> m_instance = nullptr;
   inline static u16 m_generation = 0;
@@ -106,21 +108,30 @@ private:
   TextureManager();
 
   TextureAtlas& get_atlas_mut(ResLifetime lifetime);
+  EquirectangularMapMap& get_equirectangular_maps(ResLifetime lifetime);
+  const EquirectangularMapMap& get_equirectangular_maps(ResLifetime lifetime) const;
   void create_error_texture();
 
+  // Get asset name based on it's path.
+  std::string get_name(const std::string& path) const;
   /**
    * Loads texture from the file. After loading all textures of a specified lifetime, you must call
    * TextureManager::finih_load which will actually load the textures.
    */
-  void load(const std::string& path);
+  void load_texture(const std::string& path);
+  void load_equirectangular_map(const std::string& path, ResLifetime lifetime);
   // Finishes loading of multiple textures of a specified lifetime. Creates a texture atlas.
   void finish_load(ResLifetime lifetime);
 
+  // EquirectangularMapHandle
+
   TextureAtlas m_game_atlas;
   TextureAtlas m_level_atlas;
+  EquirectangularMapMap m_game_equirectangular_maps;
+  EquirectangularMapMap m_level_equirectangular_maps;
   std::vector<TextureHandle> m_textures;
 
-  GLuint m_error_texture   = 0;
+  GLuint m_error_texture = 0;
 
   /**
    * During a load operation, each loaded texture's width and height are added here to be processed by stb_rect_pack

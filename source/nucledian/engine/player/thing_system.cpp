@@ -19,6 +19,7 @@
 #include <engine/map/map_system.h>
 #include <engine/map/map_dynamics.h>
 
+#include <engine/graphics/entities/lights.h>
 #include <engine/graphics/resources/texture.h>
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/gizmo.h>
@@ -29,7 +30,6 @@
 #include <game/entity_attachment_manager.h>
 #include <game/projectiles.h>
 
-#include <engine/graphics/lights.h>
 #include <engine/enemies/enemy.h>
 #include <game/projectile.h>
 #include <game/weapons.h>
@@ -51,7 +51,7 @@
 
 #include <json/json.hpp>
 
-#include <engine/graphics/lights.h>
+#include <engine/graphics/entities/lights.h>
 
 
 //==============================================================================

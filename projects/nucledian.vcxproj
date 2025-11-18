@@ -128,7 +128,8 @@
     <ClCompile Include="..\source\nucledian\engine\core\engine.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\entity.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\sector_mapping.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\graphics\lights.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\graphics\entities\sky_box.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\graphics\entities\lights.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\prop.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\renderer.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\top_down_debug.cpp" />
@@ -276,7 +277,8 @@
     <ClInclude Include="..\source\nucledian\engine\entity\entity_types.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\entity_type_definitions.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\sector_mapping.h" />
-    <ClInclude Include="..\source\nucledian\engine\graphics\lights.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\entities\sky_box.h" />
+    <ClInclude Include="..\source\nucledian\engine\graphics\entities\lights.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\prop.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\renderer.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\texture.h" />
@@ -356,6 +358,8 @@
     <None Include="..\source\nucledian\engine\graphics\shaders\light.vert" />
     <None Include="..\source\nucledian\engine\graphics\shaders\sector.frag" />
     <None Include="..\source\nucledian\engine\graphics\shaders\sector.vert" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\sky_box.frag" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\sky_box.vert" />
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.frag" />
     <None Include="..\source\nucledian\engine\graphics\shaders\solid.vert" />
     <None Include="..\source\nucledian\engine\graphics\shaders\light_culling.comp" />

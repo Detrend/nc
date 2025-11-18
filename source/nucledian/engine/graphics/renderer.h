@@ -78,6 +78,7 @@ private:
   const ShaderProgramHandle m_light_material;
   const ShaderProgramHandle m_sector_material;
   const ShaderProgramHandle m_light_culling_shader;
+  const ShaderProgramHandle m_sky_box_material;
 
   mutable u32                        m_dir_light_ssbo_size   = 0;
   mutable u32                        m_point_light_ssbo_size = 0;
@@ -121,6 +122,7 @@ private:
   void render_entities(const CameraData& camera) const;
   void render_portals(const CameraData& camera) const;
   void render_gun(const CameraData& cam, const RenderGunProperties& gun) const;
+  void render_sky_box(const CameraData& camera) const;
 
   #pragma region portals rendering
   void render_portal_to_stencil(const CameraData& camera, const Portal& portal, u8 recursion) const;

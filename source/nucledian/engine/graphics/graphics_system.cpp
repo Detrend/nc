@@ -15,7 +15,8 @@
 #include <engine/graphics/camera.h>
 #include <engine/graphics/gizmo.h>
 #include <engine/graphics/graphics_system.h>
-#include <engine/graphics/lights.h>
+#include <engine/graphics/entities/lights.h>
+#include <engine/graphics/entities/sky_box.h>
 #include <engine/graphics/resources/res_lifetime.h>
 #include <engine/graphics/resources/texture.h>
 
@@ -270,6 +271,14 @@ void GraphicsSystem::on_event(ModuleEvent& event)
         const vec3 position = player.get_position();
         light = registry.create_entity<PointLight>(position, 1.0f, 1.0f,  0.7f, 1.8f, colors::GREEN);
       });
+
+      // TODO: temporary skybox (don't forget about skybox header)
+      GLuint sky_box_map = TextureManager::get().get_equirectangular_map
+      (
+        "qwantani_night_puresky_1k",
+        ResLifetime::Game
+      );
+      registry.create_entity<SkyBox>(sky_box_map, 1.1f);
 
       light_test = registry.create_entity<PointLight>(vec3{974.0f, 2.0f, 1068.0f}, 1.0f, 1.0f,  0.09f, 0.032f, colors::GREEN);
     }

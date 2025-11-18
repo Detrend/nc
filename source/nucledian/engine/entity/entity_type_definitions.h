@@ -31,6 +31,7 @@ namespace EntityTypes
     directional_light,
     point_light,
     prop,
+    sky_box,
     // - //
     count  // <- total number of entity types, do not put any type
            //    after this one
@@ -47,6 +48,7 @@ constexpr cstr ENTITY_TYPE_NAMES[]
   "directional_light",
   "point_light",
   "prop",
+  "sky_box",
 };
 static_assert(ARRAY_LENGTH(ENTITY_TYPE_NAMES) == EntityTypes::count);
 
@@ -62,6 +64,7 @@ namespace EntityTypeFlags
     directional_light = EntityTypeToMask(EntityTypes::directional_light),
     point_light       = EntityTypeToMask(EntityTypes::point_light),
     prop              = EntityTypeToMask(EntityTypes::prop),
+    sky_box           = EntityTypeToMask(EntityTypes::sky_box),
   };
 }
 
