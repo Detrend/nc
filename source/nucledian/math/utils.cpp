@@ -1,7 +1,8 @@
 // Project Nucledian Source File
 #include <math/utils.h>
 
-#include <cmath> // std::floor
+#include <cmath>     // std::floor
+#include <algorithm> // std::min
 
 namespace nc
 {
