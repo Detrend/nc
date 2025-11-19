@@ -1611,6 +1611,7 @@ int build_map
     output_sector.ceil_height  = sector.ceil_y [0];
     output_sector.state_floors[0] = output_sector.state_floors[1] = 0.0f;
     output_sector.state_ceils [0] = output_sector.state_ceils [1] = 0.0f;
+    output_sector.activator = sector.activator;
 
     if (sector.has_more_states)
     {

@@ -179,16 +179,13 @@ static TriggerData load_json_trigger
 
   std::string activator_name = js["activator"];
   nc_assert(activators.contains(activator_name));
+
   td.activator = activators.at(activator_name);
-
-  if (js.contains("timeout"))
-  {
-    td.timeout = js["timeout"];
-  }
-
+  td.timeout          = js["timeout"];
   td.can_turn_off     = load_json_flag(js, "can_turn_off");
   td.player_sensitive = load_json_flag(js, "player_sensitive");
   td.enemy_sensitive  = load_json_flag(js, "enemy_sensitive");
+  td.while_alive      = load_json_flag(js, "while_alive");
 
   return td;
 }
@@ -196,10 +193,16 @@ static TriggerData load_json_trigger
 //==============================================================================
 static WallSegmentData load_json_wall_surface
 (
-  const nlohmann::json& js, const ActivatorMap& activators, TriggerTable& triggers
-) 
+  const nlohmann::json& js,
+  const ActivatorMap&   activators,
+  TriggerTable&         triggers,
+  SectorID              sid,
+  WallRelID             wrelid
+)
 {
   WallSegmentData ret;
+
+  u8 segment_idx = 0;
 
   for (auto&& js_entry : js)
   {
@@ -223,9 +226,16 @@ static WallSegmentData load_json_wall_surface
 
     if (js_entry.contains("trigger"))
     {
-      entry.trigger = cast<TriggerID>(triggers.size());
-      triggers.push_back(load_json_trigger(js_entry["trigger"], activators));
+      TriggerData td = load_json_trigger(js_entry["trigger"], activators);
+      td.type = TriggerData::wall;
+      td.wall_type.sector  = sid;
+      td.wall_type.wall    = wrelid;
+      td.wall_type.segment = segment_idx;
+
+      triggers.push_back(td);
     }
+
+    segment_idx += 1;
   }
 
   return ret;
@@ -248,6 +258,8 @@ static void load_json_map
   EntityID&        player_id
 )
 {
+  using namespace map_building;
+
   std::ifstream f(get_full_level_path(level_name));
   nc_assert(f.is_open());
   auto data = nlohmann::json::parse(f);
@@ -275,6 +287,7 @@ static void load_json_map
       points.emplace_back(load_json_vector<2>(js_point));
     }
 
+    SectorID sid = 0;
     for (auto&& js_sector : data["sectors"])
     {
       const f32 floor = js_sector["floor"];
@@ -296,35 +309,51 @@ static void load_json_map
 
       std::vector<WallSegmentData> wall_surfaces;
 
+      // Surfaces
+      WallRelID wrelid = 0;
       for (auto&& js_wall_surface : js_sector["wall_surfaces"])
       {
-        wall_surfaces.emplace_back
+        WallSegmentData sd = load_json_wall_surface
         (
-          load_json_wall_surface(js_wall_surface, activator_map, trigger_table)
+          js_wall_surface, activator_map, trigger_table, sid, wrelid
         );
+
+        wall_surfaces.push_back(sd);
+        wrelid += 1;
       }
 
       make_sector_helper(floor, ceil, point_indices, sectors, portal_wall, portal_destination_wall, portal_sector, floor_surface, ceiling_surface, wall_surfaces);
+      map_building::SectorBuildData& build_data = sectors.back();
+
+      // Multiple states
       if (more_states)
       {
-        sectors.back().has_more_states = more_states;
-        sectors.back().floor_y[1] = js_sector["floor2"];
-        sectors.back().ceil_y[1]  = js_sector["ceiling2"];
+        build_data.has_more_states = more_states;
+        build_data.floor_y[1] = js_sector["floor2"];
+        build_data.ceil_y[1]  = js_sector["ceiling2"];
       }
 
+      // Triggers
       if (js_sector.contains("triggers"))
       {
         for (auto&& js_trigger : js_sector["triggers"])
         {
-          if (sectors.back().first_trigger == INVALID_TRIGGER_ID)
-          {
-            sectors.back().first_trigger = cast<TriggerID>(trigger_table.size());
-          }
-
-          trigger_table.push_back(load_json_trigger(js_trigger, activator_map));
-          sectors.back().last_trigger = cast<TriggerID>(trigger_table.size());
+          TriggerData td = load_json_trigger(js_trigger, activator_map);
+          td.type = TriggerData::sector;
+          td.sector_type.sector = sid;
+          trigger_table.push_back(td);
         }
       }
+
+      // Activator
+      if (js_sector.contains("activator"))
+      {
+        std::string activator_name = js_sector["activator"];
+        nc_assert(activator_map.contains(activator_name));
+        build_data.activator = activator_map[activator_name];
+      }
+
+      sid += 1;
     }
   }
   catch (nlohmann::json::type_error e)
@@ -333,21 +362,10 @@ static void load_json_map
     nc_assert(false);
   }
 
-  using namespace map_building::MapBuildFlag;
+  map_building::build_map(points, sectors, map, MapBuildFlag::assert_on_fail);
 
-  map_building::build_map(
-    points, sectors, map,
-    //omit_convexity_clockwise_check |
-    //omit_sector_overlap_check      |
-    //omit_wall_overlap_check        |
-    assert_on_fail
-  );
-
-  map.activators = std::move(activator_table);
-  map.triggers   = std::move(trigger_table);
-
+  // Mapping has to be initialized BEFORE creating any entities!!!
   mapping.on_map_rebuild();
-  dynamics.on_map_rebuild();
 
   for (auto&& js_entity : data["entities"])
   {
@@ -361,9 +379,19 @@ static void load_json_map
     }
     else
     {
-      // Beware that these fuckers can shoot you even if you do not see them and therefore kill you during the normal level testing.
       const EnemyTypes::evalue entity_type = js_entity["entity_type"];
-      entities.create_entity<Enemy>(position, forward, entity_type);
+      Entity* enemy = entities.create_entity<Enemy>(position, forward, entity_type);
+
+      if (js_entity.contains("triggers"))
+      {
+        for (auto&& js_trigger : js_entity["triggers"])
+        {
+          TriggerData td = load_json_trigger(js_trigger, activator_map);
+          td.type = TriggerData::entity;
+          td.entity_type.entity = enemy->get_id();
+          trigger_table.push_back(td);
+        }
+      }
     }
   }
 
@@ -371,7 +399,19 @@ static void load_json_map
   {
     const vec3 position = load_json_position(js_pickup);
     const PickupTypes::evalue pickup_type = static_cast<PickupTypes::evalue>(js_pickup["type"]);
-    entities.create_entity<PickUp>(position, pickup_type);
+
+    Entity* pickup = entities.create_entity<PickUp>(position, pickup_type);
+
+    if (js_pickup.contains("triggers"))
+    {
+      for (auto&& js_trigger : js_pickup["triggers"])
+      {
+        TriggerData td = load_json_trigger(js_trigger, activator_map);
+        td.type = TriggerData::entity;
+        td.entity_type.entity = pickup->get_id();
+        trigger_table.push_back(td);
+      }
+    }
   }
   for (auto&& js_light : data["directional_lights"])
   {
@@ -400,6 +440,11 @@ static void load_json_map
 
     entities.create_entity<AmbientLight>(intensity);
   }
+
+  dynamics.activators = std::move(activator_table);
+  dynamics.triggers   = std::move(trigger_table);
+
+  dynamics.on_map_rebuild_and_entities_created();
 }
 
 
@@ -825,7 +870,7 @@ void ThingSystem::build_map(LevelName level)
   dynamics   = std::make_unique<MapDynamics>(*map, *entities, *mapping);
   attachment = std::make_unique<EntityAttachment>(*entities);
 
-  dynamics->callback = [](SectorID sector)
+  dynamics->sector_change_callback = [](SectorID sector)
   {
     GraphicsSystem::get().mark_sector_dirty(sector);
   };

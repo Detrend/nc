@@ -92,31 +92,6 @@ struct SectorIntData
   WallID last_wall  = INVALID_WALL_ID; // [first_wall..total_wall_count]
 };
 
-struct TriggerData
-{
-  ActivatorID activator = INVALID_ACTIVATOR_ID; // Activator to activate
-
-  // Resets back to off after the time
-  f32  timeout = 0.0f;
-
-  bool has_timeout() const
-  {
-    return timeout > 0.0f;
-  }
-
-  // Can be turned off manually? By leaving (sector) or triggering again (wall)
-  bool can_turn_off     : 1 = false; // Can be turned back off manually
-  bool player_sensitive : 1 = true;  // Triggers by player
-  bool enemy_sensitive  : 1 = false; // Triggers by enemy
-};
-
-struct ActivatorData
-{
-  u16 threshold = 0; // How many triggers have to be activated to turn on
-  // TODO: Some other properties..
-  // Like if it should print some text on the screen..
-};
-
 // Describes how a surface should be rendered.
 struct SurfaceData
 {
@@ -163,7 +138,6 @@ struct WallSegmentData
     vec3        begin_up_tesselation = vec3(0.0f, 0.0f, 0.0f);
     vec3        begin_down_tesselation = vec3(0.0f, 0.0f, 0.0f);
     Flags       flags = Flags::generate_all_faces;
-    TriggerID   trigger = INVALID_TRIGGER_ID; // Only one trigger per segment
   };
 
   // Height intervals either for the floor-difference part of the wall (if this wall has a portal connecting two sectors), or for the whole wall (if there are no two neighbors)
@@ -178,12 +152,10 @@ struct SectorData
   f32           ceil_height   = 0.0f;
   SurfaceData   floor_surface;
   SurfaceData   ceil_surface;
-  TriggerID     first_trigger = 0; // Sector can have multiple triggers
-  TriggerID     last_trigger  = 0;
-  ActivatorID   activator;         // But only one activator
   f32           state_floors[2]{}; // Heights for both OFF and ON states
   f32           state_ceils [2]{};
   f32           move_speed = 1.0f; // Speed of change betwen states, m/s
+  ActivatorID   activator = INVALID_ACTIVATOR_ID; // Only one activator owns us
 };
 
 using PortType = u8;
@@ -258,8 +230,6 @@ struct MapSectors
   column<SectorData>      sectors;
   column<WallData>        walls;
   column<Portal>          portals_render_data;
-  column<TriggerData>     triggers;
-  column<ActivatorData>   activators;
   column<aabb3>           sector_bboxes;
   StatGridAABB2<SectorID> sector_grid;
 
@@ -359,8 +329,7 @@ struct SectorBuildData
   bool                       has_more_states = false;
   SurfaceData                floor_surface;
   SurfaceData                ceil_surface;
-  TriggerID                  first_trigger = INVALID_TRIGGER_ID;
-  TriggerID                  last_trigger  = INVALID_TRIGGER_ID;
+  ActivatorID                activator = INVALID_ACTIVATOR_ID;
 };
 
 struct OverlapInfo
