@@ -673,10 +673,14 @@ void Renderer::render_entities(const CameraData& camera) const
         const mat4 offset_transform = translation(root_offset);
         const f32  height_move = bottom_mode ? 0.0f : (BILLBOARD_TEXTURE_SCALE * 0.5f);
 
-        const vec3 pivot_offset(0.0f, texture.get_height() * height_move, 0.0f);
+        const bool tex_size_scaling = appearance.scaling == Appearance::ScalingMode::texture_size;
+        const f32 t_height = tex_size_scaling ? texture.get_height() : 64.0f;
+        const f32 t_width  = tex_size_scaling ? texture.get_width()  : 64.0f;
+
+        const vec3 pivot_offset(0.0f, t_height * height_move, 0.0f);
         const vec3 scale(
-          texture.get_width() * appearance.scale * BILLBOARD_TEXTURE_SCALE,
-          texture.get_height() * appearance.scale * BILLBOARD_TEXTURE_SCALE,
+          t_width  * appearance.scale * BILLBOARD_TEXTURE_SCALE,
+          t_height * appearance.scale * BILLBOARD_TEXTURE_SCALE,
           1.0f
         );
 

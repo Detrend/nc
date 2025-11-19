@@ -27,6 +27,12 @@ struct Appearance
     bottom,   // the position is the bottom(y) center(x)
   };
 
+  enum class ScalingMode : u8
+  {
+    fixed,        // the size remains the same
+    texture_size, // the size is multiplied by the texture resolution
+  };
+
   enum class RotationMode : u8
   {
     only_horizontal, // The billboard rotates only around the up/down axis
@@ -43,6 +49,7 @@ struct Appearance
   f32          scale        = 1.0f;
   SpriteMode   mode     : 1 = SpriteMode::mono;
   PivotMode    pivot    : 1 = PivotMode::centered;
+  ScalingMode  scaling  : 1 = ScalingMode::texture_size;
   RotationMode rotation : 1 = RotationMode::only_horizontal;
 };
 
