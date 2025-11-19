@@ -701,7 +701,7 @@ const
       {
         f32 y1 = 0.0f;
         f32 y2 = 0.0f;
-        const WallSurfaceData::Entry* surface = nullptr;
+        const WallSegmentData::Entry* surface = nullptr;
       };
 
       const auto& wall = this->walls[idx];
@@ -796,7 +796,7 @@ const
             vec3 bd_shift = current.surface->begin_down_tesselation;
             vec3 eu_shift = current.surface->end_up_tesselation;
             vec3 ed_shift = current.surface->end_down_tesselation;
-            if (!(current.surface->flags & WallSurfaceData::Flags::absolute_directions)) {
+            if (!(current.surface->flags & WallSegmentData::Flags::absolute_directions)) {
                 bu_shift = bu_shift * wall_rotation;
                 bd_shift = bd_shift * wall_rotation;
                 eu_shift = eu_shift * wall_rotation;
@@ -821,17 +821,17 @@ const
             push_triangle(wall_normal, current.surface->surface, bu_shifted, cumulative_wall_length, ed_shifted, end_wall_length, eu_shifted, end_wall_length);
             
 
-            const float up_down_normal_mult   = ((current.surface->flags & WallSurfaceData::Flags::flip_side_normals) ? -1.0f : 1.0f);
-            const float begin_end_normal_mult = ((current.surface->flags & WallSurfaceData::Flags::flip_side_normals) ? -1.0f : 1.0f);
+            const float up_down_normal_mult   = ((current.surface->flags & WallSegmentData::Flags::flip_side_normals) ? -1.0f : 1.0f);
+            const float begin_end_normal_mult = ((current.surface->flags & WallSegmentData::Flags::flip_side_normals) ? -1.0f : 1.0f);
 
             if (bu_shift != VEC3_ZERO) {
                 const vec3 up_normal = normalize(cross(bu_shift, (eu_shifted - bu_shifted)) * up_down_normal_mult);
                 const vec3 begin_normal = normalize(-cross(bu_shift, (bd - bu)) * begin_end_normal_mult);
                 const f32 len = length(bu_shift.xz());
 
-                if(current.surface->flags & WallSurfaceData::Flags::generate_up_face)
+                if(current.surface->flags & WallSegmentData::Flags::generate_up_face)
                     push_triangle(up_normal, current.surface->surface, bu, cumulative_wall_length, bu_shifted, cumulative_wall_length, eu_shifted, end_wall_length);
-                if (current.surface->flags & WallSurfaceData::Flags::generate_right_face)
+                if (current.surface->flags & WallSegmentData::Flags::generate_right_face)
                     push_triangle(begin_normal, current.surface->surface, bu_shifted, end_wall_length + len, bu, end_wall_length, bd, end_wall_length);
             }
             
@@ -840,9 +840,9 @@ const
                 const vec3 end_normal = normalize(cross(eu_shift, (ed - eu)) * begin_end_normal_mult);
                 const f32 len = length(eu_shift.xz());
 
-                if (current.surface->flags & WallSurfaceData::Flags::generate_up_face)
+                if (current.surface->flags & WallSegmentData::Flags::generate_up_face)
                     push_triangle(up_normal, current.surface->surface, bu, cumulative_wall_length, eu_shifted, end_wall_length, eu, end_wall_length);
-                if (current.surface->flags & WallSurfaceData::Flags::generate_left_face)
+                if (current.surface->flags & WallSegmentData::Flags::generate_left_face)
                     push_triangle(end_normal, current.surface->surface, eu_shifted, cumulative_wall_length + len, ed, cumulative_wall_length, eu, cumulative_wall_length);
             }
             
@@ -852,9 +852,9 @@ const
                 const vec3 begin_normal = normalize(-cross(bu_shift, (bd - bu)) * begin_end_normal_mult);
                 const f32 len = length(bd_shift.xz());
 
-                if (current.surface->flags & WallSurfaceData::Flags::generate_down_face)
+                if (current.surface->flags & WallSegmentData::Flags::generate_down_face)
                     push_triangle(down_normal, current.surface->surface, bd, cumulative_wall_length, ed, end_wall_length, ed_shifted, end_wall_length);
-                if (current.surface->flags & WallSurfaceData::Flags::generate_right_face)
+                if (current.surface->flags & WallSegmentData::Flags::generate_right_face)
                     push_triangle(begin_normal, current.surface->surface, bd, end_wall_length, bd_shifted, end_wall_length + len, bu_shifted, end_wall_length + len);
             }
             
@@ -863,9 +863,9 @@ const
                 const vec3 end_normal = normalize(cross(eu_shift, (ed - eu)) * begin_end_normal_mult);
                 const f32 len = length(ed_shift.xz());
 
-                if (current.surface->flags & WallSurfaceData::Flags::generate_down_face)
+                if (current.surface->flags & WallSegmentData::Flags::generate_down_face)
                     push_triangle(down_normal, current.surface->surface, bd, cumulative_wall_length, ed_shifted, end_wall_length, bd_shifted, cumulative_wall_length);
-                if (current.surface->flags & WallSurfaceData::Flags::generate_left_face)
+                if (current.surface->flags & WallSegmentData::Flags::generate_left_face)
                     push_triangle(end_normal, current.surface->surface, ed, cumulative_wall_length, eu_shifted, cumulative_wall_length + len, ed_shifted, cumulative_wall_length + len);
             }
       }
@@ -1606,9 +1606,26 @@ int build_map
   for (SectorID sector_id = 0; sector_id < temp_sectors.size(); ++sector_id)
   {
     auto&& sector = temp_sectors[sector_id];
-    auto& output_sector = output.sectors.emplace_back();
-    output_sector.floor_height = sector.floor_y;
-    output_sector.ceil_height = sector.ceil_y;
+    SectorData& output_sector = output.sectors.emplace_back();
+    output_sector.floor_height = sector.floor_y[0];
+    output_sector.ceil_height  = sector.ceil_y [0];
+    output_sector.state_floors[0] = output_sector.state_floors[1] = 0.0f;
+    output_sector.state_ceils [0] = output_sector.state_ceils [1] = 0.0f;
+    output_sector.activator = sector.activator;
+
+    if (sector.has_more_states)
+    {
+      output_sector.state_floors[0] = sector.floor_y[0];
+      output_sector.state_floors[1] = sector.floor_y[1];
+      output_sector.state_ceils [0] = sector.ceil_y [0];
+      output_sector.state_ceils [1] = sector.ceil_y [1];
+    }
+    else
+    {
+      output_sector.state_floors[0] = sector.floor_y[0];
+      output_sector.state_ceils [0] = sector.ceil_y [0];
+    }
+
     output_sector.floor_surface = sector.floor_surface;
     output_sector.ceil_surface = sector.ceil_surface;
 

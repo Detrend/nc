@@ -44,22 +44,6 @@ static constexpr cstr WEAPON_STATE_NAMES[] =
 };
 
 //==============================================================================
-static void smooth_towards(f32& value, f32 target, f32 delta)
-{
-  nc_assert(delta >= 0.0f);
-
-  if (std::abs(value - target) < delta)
-  {
-    value = target;
-  }
-  else
-  {
-    f32 sg = value > target ? -1.0f : 1.0f;
-    value += delta * sg;
-  }
-}
-
-//==============================================================================
 constexpr WeaponFlags DEFAULT_WEAPONS
 = (1 << WeaponTypes::plasma_rifle)
 | (1 << WeaponTypes::wrench);
@@ -363,8 +347,8 @@ void Player::update_gun_sway(f32 delta)
   const bool is_moving = length(this->velocity.xz()) > 0.01f;
   const bool in_air    = !on_ground;
 
-  smooth_towards(this->moving_time, is_moving ? move_fadein : 0.0f, delta);
-  smooth_towards(this->air_time,    in_air    ? air_fadein  : 0.0f, delta);
+  lerp_towards(this->moving_time, is_moving ? move_fadein : 0.0f, delta);
+  lerp_towards(this->air_time,    in_air    ? air_fadein  : 0.0f, delta);
 }
 
 //==============================================================================
@@ -372,7 +356,7 @@ void Player::update_camera(f32 delta)
 {
   // Update the spring
   f32 spd = CVars::camera_spring_update_speed;
-  smooth_towards(this->vertical_camera_offset, 0.0f, delta * spd);
+  lerp_towards(this->vertical_camera_offset, 0.0f, delta * spd);
 
   camera.update_transform
   (

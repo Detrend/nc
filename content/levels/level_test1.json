@@ -1,4 +1,10 @@
 {
+	"activators": [
+		{
+			"name": "abc",
+			"threshold": 1
+		}
+	],
 	"ambient_lights": [
 		{
 			"intensity": 0.3,
@@ -12724,6 +12730,13 @@
 				"tile_rotations_count": 4
 			},
 			"id": 105,
+			"triggers": [
+				{
+					"activator": "abc",
+					"timeout": 1.0,
+					"player_sensitive": true
+				}
+			],
 			"points": [
 				243,
 				244,
@@ -19946,6 +19959,7 @@
 		},
 		{
 			"ceiling": 20.0,
+			"ceiling2": 20.0,
 			"ceiling_surface": {
 				"id": "floor2",
 				"offset": [
@@ -19960,6 +19974,7 @@
 			},
 			"debug_name": "_Polygon2D_201968",
 			"floor": 11.2,
+			"floor2": 5.0,
 			"floor_surface": {
 				"id": "floor3",
 				"offset": [
@@ -19991,7 +20006,8 @@
 				[],
 				[],
 				[]
-			]
+			],
+			"activator": "abc"
 		},
 		{
 			"ceiling": 20.0,

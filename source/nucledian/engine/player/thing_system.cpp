@@ -48,6 +48,9 @@
 #include <filesystem>
 #include <string>
 #include <chrono>
+#include <map>
+#include <vector>
+#include <string>
 
 #include <json/json.hpp>
 
@@ -69,7 +72,7 @@ static void make_sector_helper(
   SectorID                                    portal_sector     = INVALID_SECTOR_ID,
   const SurfaceData                           &floor_surface    = SurfaceData{},
   const SurfaceData                           &ceiling_surface  = SurfaceData{},
-  const std::vector<WallSurfaceData>              &wall_surfaces    = {}
+  const std::vector<WallSegmentData>          &wall_surfaces    = {}
 )
 {
   std::vector<map_building::WallBuildData> walls;
@@ -90,14 +93,16 @@ static void make_sector_helper(
   out.push_back(map_building::SectorBuildData
   {
     .points        = std::move(walls),
-    .floor_y       = in_floor_y,
-    .ceil_y        = in_ceil_y,
+    .floor_y       = { in_floor_y, in_floor_y },
+    .ceil_y        = { in_ceil_y,  in_ceil_y  },
     .floor_surface = floor_surface,
     .ceil_surface  = ceiling_surface,
   });
 }
 
-
+using ActivatorTable = std::vector<ActivatorData>;
+using ActivatorMap   = std::map<std::string, ActivatorID>;
+using TriggerTable   = std::vector<TriggerData>;
 
 //==============================================================================
 template<size_t TSize>
@@ -135,9 +140,21 @@ static SurfaceData load_json_surface(const nlohmann::json &js)
 {
   if (const bool should_show = js["show"]) {
     std::string texture_name = js["id"];
+
+    TextureID tid = TextureManager::get()[texture_name].get_texture_id();
+    TextureID alt_tid = tid;
+
+    if (js.contains("id_triggered"))
+    {
+      std::string alt_texture_name = js["id_triggered"];
+      alt_tid = TextureManager::get()[alt_texture_name].get_texture_id();
+    }
+
     return SurfaceData
     {
-      .texture_id = TextureManager::get()[texture_name].get_texture_id(),
+      .texture_id = tid,
+      .texture_id_default = tid,
+      .texture_id_triggered = alt_tid,
       .scale = js["scale"],
       .rotation = js["rotation"],
       .offset = load_json_vector<2>(js["offset"]),
@@ -153,11 +170,42 @@ static SurfaceData load_json_surface(const nlohmann::json &js)
 }
 
 //==============================================================================
-static WallSurfaceData load_json_wall_surface(const nlohmann::json& js) 
+static TriggerData load_json_trigger
+(
+  const nlohmann::json& js, const ActivatorMap& activators
+)
 {
-  WallSurfaceData ret;
+  TriggerData td;
 
-  for (auto&& js_entry : js) {
+  std::string activator_name = js["activator"];
+  nc_assert(activators.contains(activator_name));
+
+  td.activator = activators.at(activator_name);
+  td.timeout          = js["timeout"];
+  td.can_turn_off     = load_json_flag(js, "can_turn_off");
+  td.player_sensitive = load_json_flag(js, "player_sensitive");
+  td.enemy_sensitive  = load_json_flag(js, "enemy_sensitive");
+  td.while_alive      = load_json_flag(js, "while_alive");
+
+  return td;
+}
+
+//==============================================================================
+static WallSegmentData load_json_wall_surface
+(
+  const nlohmann::json& js,
+  const ActivatorMap&   activators,
+  TriggerTable&         triggers,
+  SectorID              sid,
+  WallRelID             wrelid
+)
+{
+  WallSegmentData ret;
+
+  u8 segment_idx = 0;
+
+  for (auto&& js_entry : js)
+  {
     auto &entry = ret.surfaces.emplace_back();
     entry.surface = load_json_surface(js_entry);
     entry.end_height = js_entry["end_height"];
@@ -165,12 +213,29 @@ static WallSurfaceData load_json_wall_surface(const nlohmann::json& js)
     load_json_optional(entry.end_up_tesselation.xzy,    js_entry, "end_up_direction", load_json_vector<3>);
     load_json_optional(entry.begin_down_tesselation.xzy,js_entry, "begin_down_direction", load_json_vector<3>);
     load_json_optional(entry.end_down_tesselation.xzy,  js_entry, "end_down_direction", load_json_vector<3>);
-    if (load_json_flag(js_entry, "absolute_directions")) {
-      entry.flags = static_cast<WallSurfaceData::Flags>(entry.flags | WallSurfaceData::Flags::absolute_directions);
+
+    if (load_json_flag(js_entry, "absolute_directions"))
+    {
+      entry.flags = static_cast<WallSegmentData::Flags>(entry.flags | WallSegmentData::Flags::absolute_directions);
     }
-    if (load_json_flag(js_entry, "flip_side_normals")) {
-      entry.flags = static_cast<WallSurfaceData::Flags>(entry.flags | WallSurfaceData::Flags::flip_side_normals);
+
+    if (load_json_flag(js_entry, "flip_side_normals"))
+    {
+      entry.flags = static_cast<WallSegmentData::Flags>(entry.flags | WallSegmentData::Flags::flip_side_normals);
     }
+
+    if (js_entry.contains("trigger"))
+    {
+      TriggerData td = load_json_trigger(js_entry["trigger"], activators);
+      td.type = TriggerData::wall;
+      td.wall_type.sector  = sid;
+      td.wall_type.wall    = wrelid;
+      td.wall_type.segment = segment_idx;
+
+      triggers.push_back(td);
+    }
+
+    segment_idx += 1;
   }
 
   return ret;
@@ -183,8 +248,18 @@ static vec3 load_json_position(const nlohmann::json& js, const cstr &field_name 
 }
 
 //==============================================================================
-static void load_json_map(const LevelName &level_name, MapSectors& map, SectorMapping& mapping, EntityRegistry& entities, EntityID& player_id)
+static void load_json_map
+(
+  const LevelName& level_name,
+  MapSectors&      map,
+  SectorMapping&   mapping,
+  EntityRegistry&  entities,
+  MapDynamics&     dynamics,
+  EntityID&        player_id
+)
 {
+  using namespace map_building;
+
   std::ifstream f(get_full_level_path(level_name));
   nc_assert(f.is_open());
   auto data = nlohmann::json::parse(f);
@@ -192,70 +267,154 @@ static void load_json_map(const LevelName &level_name, MapSectors& map, SectorMa
   std::vector<vec2> points;
   std::vector<map_building::SectorBuildData> sectors;
 
-  try {
-    for (auto&& js_point : data["points"]) {
+  ActivatorTable activator_table;
+  ActivatorMap   activator_map;
+  TriggerTable   trigger_table;
+
+  try
+  {
+    for (auto&& js_activator : data["activators"])
+    {
+      std::string name = js_activator["name"];
+      nc_assert(!activator_map.contains(name));
+      activator_map[name] = cast<ActivatorID>(activator_table.size());
+      s32 threshold = js_activator["threshold"];
+      activator_table.push_back(ActivatorData{cast<u16>(threshold)});
+    }
+
+    for (auto&& js_point : data["points"])
+    {
       points.emplace_back(load_json_vector<2>(js_point));
     }
-    for (auto&& js_sector : data["sectors"]) {
-      const float floor = js_sector["floor"];
-      const float ceil = js_sector["ceiling"];
+
+    SectorID sid = 0;
+    for (auto&& js_sector : data["sectors"])
+    {
+      const f32 floor = js_sector["floor"];
+      const f32 ceil = js_sector["ceiling"];
+      bool more_states = js_sector.contains("floor2");
+
       const SectorID portal_sector = js_sector["portal_target"];
       const int portal_wall = js_sector["portal_wall"];
       const WallRelID portal_destination_wall = js_sector["portal_destination_wall"];
 
       std::vector<u16> point_indices;
-      for (auto&& js_point : js_sector["points"]) {
+      for (auto&& js_point : js_sector["points"])
+      {
         point_indices.emplace_back((u16)(int)js_point);
       }
 
-      auto floor_surface = load_json_surface(js_sector["floor_surface"]);
+      auto floor_surface   = load_json_surface(js_sector["floor_surface"]);
       auto ceiling_surface = load_json_surface(js_sector["ceiling_surface"]);
-      std::vector<WallSurfaceData> wall_surfaces;
-      for (auto&& js_wall_surface : js_sector["wall_surfaces"]) {
-        wall_surfaces.emplace_back(load_json_wall_surface(js_wall_surface));
+
+      std::vector<WallSegmentData> wall_surfaces;
+
+      // Surfaces
+      WallRelID wrelid = 0;
+      for (auto&& js_wall_surface : js_sector["wall_surfaces"])
+      {
+        WallSegmentData sd = load_json_wall_surface
+        (
+          js_wall_surface, activator_map, trigger_table, sid, wrelid
+        );
+
+        wall_surfaces.push_back(sd);
+        wrelid += 1;
       }
 
       make_sector_helper(floor, ceil, point_indices, sectors, portal_wall, portal_destination_wall, portal_sector, floor_surface, ceiling_surface, wall_surfaces);
+      map_building::SectorBuildData& build_data = sectors.back();
+
+      // Multiple states
+      if (more_states)
+      {
+        build_data.has_more_states = more_states;
+        build_data.floor_y[1] = js_sector["floor2"];
+        build_data.ceil_y[1]  = js_sector["ceiling2"];
+      }
+
+      // Triggers
+      if (js_sector.contains("triggers"))
+      {
+        for (auto&& js_trigger : js_sector["triggers"])
+        {
+          TriggerData td = load_json_trigger(js_trigger, activator_map);
+          td.type = TriggerData::sector;
+          td.sector_type.sector = sid;
+          trigger_table.push_back(td);
+        }
+      }
+
+      // Activator
+      if (js_sector.contains("activator"))
+      {
+        std::string activator_name = js_sector["activator"];
+        nc_assert(activator_map.contains(activator_name));
+        build_data.activator = activator_map[activator_name];
+      }
+
+      sid += 1;
     }
   }
-  catch (nlohmann::json::type_error e) {
+  catch (nlohmann::json::type_error e)
+  {
     nc_crit("{0}", e.what());
+    nc_assert(false);
   }
 
-  using namespace map_building::MapBuildFlag;
+  map_building::build_map(points, sectors, map, MapBuildFlag::assert_on_fail);
 
-  map_building::build_map(
-    points, sectors, map,
-    //omit_convexity_clockwise_check |
-    //omit_sector_overlap_check      |
-    //omit_wall_overlap_check        |
-    assert_on_fail
-  );
-
+  // Mapping has to be initialized BEFORE creating any entities!!!
   mapping.on_map_rebuild();
 
-
-  for (auto&& js_entity : data["entities"]) {
+  for (auto&& js_entity : data["entities"])
+  {
     const vec3 position = load_json_position(js_entity);
     const vec3 forward = load_json_vector<3>(js_entity["forward"]).xzy;
 
-    if (js_entity["is_player"] == true) {
+    if (js_entity["is_player"] == true)
+    {
       auto* player = entities.create_entity<Player>(position, forward);
       player_id = player->get_id();
     }
-    else {
-      // Beware that these fuckers can shoot you even if you do not see them and therefore kill you during the normal level testing.
+    else
+    {
       const EnemyTypes::evalue entity_type = js_entity["entity_type"];
-      entities.create_entity<Enemy>(position, forward, entity_type);
+      Entity* enemy = entities.create_entity<Enemy>(position, forward, entity_type);
+
+      if (js_entity.contains("triggers"))
+      {
+        for (auto&& js_trigger : js_entity["triggers"])
+        {
+          TriggerData td = load_json_trigger(js_trigger, activator_map);
+          td.type = TriggerData::entity;
+          td.entity_type.entity = enemy->get_id();
+          trigger_table.push_back(td);
+        }
+      }
     }
   }
 
-  for (auto&& js_pickup : data["pickups"]) {
+  for (auto&& js_pickup : data["pickups"])
+  {
     const vec3 position = load_json_position(js_pickup);
     const PickupTypes::evalue pickup_type = static_cast<PickupTypes::evalue>(js_pickup["type"]);
-    entities.create_entity<PickUp>(position, pickup_type);
+
+    Entity* pickup = entities.create_entity<PickUp>(position, pickup_type);
+
+    if (js_pickup.contains("triggers"))
+    {
+      for (auto&& js_trigger : js_pickup["triggers"])
+      {
+        TriggerData td = load_json_trigger(js_trigger, activator_map);
+        td.type = TriggerData::entity;
+        td.entity_type.entity = pickup->get_id();
+        trigger_table.push_back(td);
+      }
+    }
   }
-  for (auto&& js_light : data["directional_lights"]) {
+  for (auto&& js_light : data["directional_lights"])
+  {
     //const vec3 position = load_json_position(js_light);
     const color4 color = load_json_vector<4>(js_light["color"]);
     const vec3 direction = load_json_vector<3>(js_light["direction"]);
@@ -263,7 +422,8 @@ static void load_json_map(const LevelName &level_name, MapSectors& map, SectorMa
 
     entities.create_entity<DirectionalLight>(direction, intensity, color);
   }
-  for (auto&& js_light : data["point_lights"]) {
+  for (auto&& js_light : data["point_lights"])
+  {
     const vec3 position = load_json_position(js_light);
     const color4 color = load_json_vector<4>(js_light["color"]);
     const float intensity = js_light["intensity"];
@@ -274,12 +434,17 @@ static void load_json_map(const LevelName &level_name, MapSectors& map, SectorMa
 
     entities.create_entity<PointLight>(position, intensity, constant, linear, quadratic, color);
   }
-  for (auto&& js_light : data["ambient_lights"]) {
+  for (auto&& js_light : data["ambient_lights"])
+  {
     const float intensity = js_light["intensity"];
 
     entities.create_entity<AmbientLight>(intensity);
   }
 
+  dynamics.activators = std::move(activator_table);
+  dynamics.triggers   = std::move(trigger_table);
+
+  dynamics.on_map_rebuild_and_entities_created();
 }
 
 
@@ -639,13 +804,6 @@ PhysLevel ThingSystem::get_level() const
 }
 
 //==============================================================================
-EntityAttachment& ThingSystem::get_attachment_mgr()
-{
-  nc_assert(this->attachment);
-  return *this->attachment;
-}
-
-//==============================================================================
 Projectile* ThingSystem::spawn_projectile
 (
   ProjectileType type, vec3 from, vec3 dir, EntityID author
@@ -676,6 +834,13 @@ Projectile* ThingSystem::spawn_projectile
 }
 
 //==============================================================================
+EntityAttachment& ThingSystem::get_attachment_mgr()
+{
+  nc_assert(this->attachment);
+  return *this->attachment;
+}
+
+//==============================================================================
 const EntityAttachment& ThingSystem::get_attachment_mgr() const
 {
   return const_cast<ThingSystem*>(this)->get_attachment_mgr();
@@ -684,9 +849,13 @@ const EntityAttachment& ThingSystem::get_attachment_mgr() const
 //==============================================================================
 void ThingSystem::cleanup_map()
 {
+  // Reset in reverse order of iteration
+  attachment.reset();
+  dynamics.reset();
   entities.reset();
   mapping.reset();
   map.reset();
+
   player_id = INVALID_ENTITY_ID;
 }
 
@@ -696,12 +865,12 @@ void ThingSystem::build_map(LevelName level)
   nc_assert(!map && !mapping && !entities);
 
   map        = std::make_unique<MapSectors>();
-  dynamics   = std::make_unique<MapDynamics>(*map);
   mapping    = std::make_unique<SectorMapping>(*map);
   entities   = std::make_unique<EntityRegistry>();
+  dynamics   = std::make_unique<MapDynamics>(*map, *entities, *mapping);
   attachment = std::make_unique<EntityAttachment>(*entities);
 
-  dynamics->callback = [](SectorID sector)
+  dynamics->sector_change_callback = [](SectorID sector)
   {
     GraphicsSystem::get().mark_sector_dirty(sector);
   };
@@ -709,11 +878,7 @@ void ThingSystem::build_map(LevelName level)
   entities->add_listener(mapping.get());
   entities->add_listener(attachment.get());
 
-  map_helpers::load_json_map(level, *map, *mapping, *entities, player_id);
-
-  MapDynamics::SectorEntry& entry = dynamics->entries[67];
-  entry.states.push_back(MapDynamics::SectorState{0.4f, 12.0f});
-  entry.states.push_back(MapDynamics::SectorState{0.4f, 0.401f});
+  map_helpers::load_json_map(level, *map, *mapping, *entities, *dynamics, player_id);
 }
 
 //==============================================================================

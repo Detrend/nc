@@ -4,6 +4,7 @@
 #include <engine/entity/entity.h>
 #include <engine/entity/entity_types.h>
 
+#include <engine/map/map_types.h>
 #include <engine/appearance.h>
 #include <anim_state_machine.h>
 
@@ -77,6 +78,7 @@ private:
   ActorFSM     anim_fsm;
   Path         current_path;
   EntityID     target_id             = INVALID_ENTITY_ID;
+  ActivatorID  on_death_trigger      = INVALID_ACTIVATOR_ID;
   vec3         follow_target_pos     = VEC3_ZERO;
   f32          time_since_saw_target = 0.0f;
   f32          time_since_idle       = 0.0f;

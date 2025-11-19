@@ -480,6 +480,7 @@ void GraphicsSystem::render()
 
   if (CVars::sector_height_debug)
   {
+    /*
     MapSectors& map = const_cast<MapSectors&>(ThingSystem::get().get_map());
 
     if (ImGui::Begin("Runtime map changes debug"))
@@ -511,32 +512,25 @@ void GraphicsSystem::render()
           });
         }
       }
-
-      MapDynamics& dynamics = ThingSystem::get().get_map_dynamics();
-      u64 i = 0;
-      for (auto& entry : dynamics.entries)
-      {
-        ImGui::Separator();
-        for (u64 idx = 0; idx < entry.second.states.size(); ++idx)
-        {
-          std::string txt = std::format("[{}] {}", i, idx);
-          if (ImGui::Button(txt.c_str()))
-          {
-            entry.second.state = cast<u16>(idx);
-          }
-          ImGui::SameLine();
-        }
-
-        ImGui::NewLine();
-        std::string txt = std::format("[{}] Speed", i);
-        ImGui::SliderFloat(txt.c_str(), &entry.second.speed, 0.001f, 20.0f);
-        ImGui::Separator();
-
-        ++i;
-      }
     }
 
     ImGui::End();
+    */
+
+    MapDynamics& dynamics = ThingSystem::get().get_map_dynamics();
+    std::vector<u16> activator_values(dynamics.activators.size());
+    dynamics.evaluate_activators(activator_values);
+
+    for (u64 idx = 0; idx < activator_values.size(); ++idx)
+    {
+      int value  = cast<int>(activator_values[idx]);
+      int thresh = cast<int>(dynamics.activators[idx].threshold);
+      int scount = cast<int>(dynamics.activator_list[idx].size());
+
+      ImGui::PushID(cast<int>(idx));
+      ImGui::Text("Value/Threshold/SectorCNT: %d/%d/%d", value, thresh, scount);
+      ImGui::PopID();
+    }
   }
 #endif
 

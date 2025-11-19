@@ -38,5 +38,13 @@ f32 rad2deg(f32 radians)
   return radians * PI_INV * 180.0f;
 }
 
+//==============================================================================
+void lerp_towards(f32& value, f32 target, f32 amount)
+{
+  f32 rem = target - value;
+  f32 dir = sgn(rem);
+  f32 change = dir * std::min(abs(rem), amount);
+  value += change;
 }
 
+}

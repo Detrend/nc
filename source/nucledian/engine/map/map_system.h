@@ -95,7 +95,9 @@ struct SectorIntData
 // Describes how a surface should be rendered.
 struct SurfaceData
 {
-  TextureID texture_id = INVALID_TEXTURE_ID;
+  TextureID texture_id           = INVALID_TEXTURE_ID;
+  TextureID texture_id_default   = INVALID_TEXTURE_ID;
+  TextureID texture_id_triggered = INVALID_TEXTURE_ID;
   f32       scale      = 1.0f;
   // Rotation in radians, counter-clockwise.
   f32       rotation   = 0.0f;
@@ -111,31 +113,35 @@ struct SurfaceData
 
 // Describes how a wall surface should be rendered.
 // Wall can be divided into multiple height intervals, which each has a different texture
-struct WallSurfaceData {
-    enum Flags : u32 {
-        none = 0,
-        generate_left_face = 1,
-        generate_right_face = 2,
-        generate_up_face = 4,
-        generate_down_face = 8,
-        generate_all_faces = 0xF,
-        flip_side_normals = 16,
-        absolute_directions = 32
-    };
-    struct Entry {
-        // Surface used in this wall interval
-        SurfaceData surface;
-        // Height in absolute world coords, where this segment ends. It begins at the end of the previous entry
-        f32         end_height = +INFINITY;
-        vec3        end_up_tesselation  = vec3(0.0f, 0.0f, 0.0f);
-        vec3        end_down_tesselation  = vec3(0.0f, 0.0f, 0.0f);
-        vec3        begin_up_tesselation = vec3(0.0f, 0.0f, 0.0f);
-        vec3        begin_down_tesselation = vec3(0.0f, 0.0f, 0.0f);
-        Flags       flags = Flags::generate_all_faces;
-    };
+struct WallSegmentData
+{
+  enum Flags : u32
+  {
+    none = 0,
+    generate_left_face = 1,
+    generate_right_face = 2,
+    generate_up_face = 4,
+    generate_down_face = 8,
+    generate_all_faces = 0xF,
+    flip_side_normals = 16,
+    absolute_directions = 32
+  };
 
-    // Height intervals either for the floor-difference part of the wall (if this wall has a portal connecting two sectors), or for the whole wall (if there are no two neighbors)
-    std::vector<Entry> surfaces;
+  struct Entry
+  {
+    // Surface used in this wall interval
+    SurfaceData surface;
+    // Height in absolute world coords, where this segment ends. It begins at the end of the previous entry
+    f32         end_height = +INFINITY;
+    vec3        end_up_tesselation  = vec3(0.0f, 0.0f, 0.0f);
+    vec3        end_down_tesselation  = vec3(0.0f, 0.0f, 0.0f);
+    vec3        begin_up_tesselation = vec3(0.0f, 0.0f, 0.0f);
+    vec3        begin_down_tesselation = vec3(0.0f, 0.0f, 0.0f);
+    Flags       flags = Flags::generate_all_faces;
+  };
+
+  // Height intervals either for the floor-difference part of the wall (if this wall has a portal connecting two sectors), or for the whole wall (if there are no two neighbors)
+  std::vector<Entry> surfaces;
 };
 
 // Each sector is comprised of internal data
@@ -146,6 +152,10 @@ struct SectorData
   f32           ceil_height   = 0.0f;
   SurfaceData   floor_surface;
   SurfaceData   ceil_surface;
+  f32           state_floors[2]{}; // Heights for both OFF and ON states
+  f32           state_ceils [2]{};
+  f32           move_speed = 1.0f; // Speed of change betwen states, m/s
+  ActivatorID   activator = INVALID_ACTIVATOR_ID; // Only one activator owns us
 };
 
 using PortType = u8;
@@ -169,7 +179,7 @@ struct WallData
   WallRelID       nc_portal_wall_id = INVALID_WALL_REL_ID;
   f32             nc_portal_offset  = 0.0f; // offset from ground, only nc portals
   PortalRenderID  render_data_index = INVALID_PORTAL_RENDER_ID;
-  WallSurfaceData surface;
+  WallSegmentData surface;
 
   PortType get_portal_type() const;
 
@@ -305,19 +315,21 @@ namespace map_building
 
 struct WallBuildData
 {
-  WallID      point_index = 0;
-  WallRelID   nc_portal_point_index  = 0;
-  SectorID    nc_portal_sector_index = INVALID_SECTOR_ID;
-  WallSurfaceData surface;
+  WallID          point_index = 0;
+  WallRelID       nc_portal_point_index  = 0;
+  SectorID        nc_portal_sector_index = INVALID_SECTOR_ID;
+  WallSegmentData surface;
 };
 
 struct SectorBuildData
 {
   std::vector<WallBuildData> points;
-  f32                        floor_y;
-  f32                        ceil_y;
+  f32                        floor_y[2]{};
+  f32                        ceil_y[2]{};
+  bool                       has_more_states = false;
   SurfaceData                floor_surface;
   SurfaceData                ceil_surface;
+  ActivatorID                activator = INVALID_ACTIVATOR_ID;
 };
 
 struct OverlapInfo
