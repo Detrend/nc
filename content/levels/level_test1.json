@@ -12730,6 +12730,13 @@
 				"tile_rotations_count": 4
 			},
 			"id": 105,
+			"triggers": [
+				{
+					"activator": "abc",
+					"timeout": 1.0,
+					"player_sensitive": true
+				}
+			],
 			"points": [
 				243,
 				244,
@@ -19999,7 +20006,8 @@
 				[],
 				[],
 				[]
-			]
+			],
+			"activator": "abc"
 		},
 		{
 			"ceiling": 20.0,
