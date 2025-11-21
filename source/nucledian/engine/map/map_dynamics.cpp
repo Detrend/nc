@@ -239,7 +239,15 @@ void MapDynamics::update(f32 delta)
 
       if (changed && sector_change_callback)
       {
+        // The sector changed.. Notify potential listener.
         sector_change_callback(sid);
+
+        // Mark the surrounding sectors as dirty as well
+        map.for_each_portal_of_sector(sid, [&](WallID wid)
+        {
+          nc_assert(map.walls[wid].portal_sector_id != INVALID_SECTOR_ID);
+          sector_change_callback(map.walls[wid].portal_sector_id);
+        });
       }
     }
   }

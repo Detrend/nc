@@ -480,7 +480,6 @@ void GraphicsSystem::render()
 
   if (CVars::sector_height_debug)
   {
-    /*
     MapSectors& map = const_cast<MapSectors&>(ThingSystem::get().get_map());
 
     if (ImGui::Begin("Runtime map changes debug"))
@@ -515,7 +514,6 @@ void GraphicsSystem::render()
     }
 
     ImGui::End();
-    */
 
     MapDynamics& dynamics = ThingSystem::get().get_map_dynamics();
     std::vector<u16> activator_values(dynamics.activators.size());

@@ -701,6 +701,7 @@ const
       {
         f32 y1 = 0.0f;
         f32 y2 = 0.0f;
+        f32 height_offset = 0.0f;
         const WallSegmentData::Entry* surface = nullptr;
       };
 
@@ -710,69 +711,94 @@ const
       WallSegmentHeights wall_segments[MAX_WALL_SEGMENTS_COUNT];
       u8 num_wall_segments = 0;
 
-      auto add_wall_segments = [&](const f32 begin_height, const f32 end_height)->void {
+      auto add_wall_segments = [&](f32 begin_height, f32 end_height, f32 offset)
+      {
+        f32 last_end_height = begin_height;
 
-          f32 last_end_height = begin_height;
-          for (const auto& entry : wall.surface.surfaces) {
-              if (entry.end_height < begin_height) {
-                  continue;
-              }
-              nc_assert(num_wall_segments < (MAX_WALL_SEGMENTS_COUNT));
-              if (last_end_height >= end_height) {
-                  break;
-              }
-              auto& current(wall_segments[num_wall_segments]);
-              const f32 current_end_height = min(entry.end_height, end_height);
+        for (const auto& entry : wall.surface.surfaces)
+        {
+          f32 effective_height = entry.end_height + offset;
 
-              current.y1 = last_end_height;
-              current.y2 = current_end_height;
-              current.surface = &entry;
-              
-              last_end_height = current_end_height;
-              ++num_wall_segments;
+          if (effective_height < begin_height)
+          {
+            continue;
           }
 
+          nc_assert(num_wall_segments < (MAX_WALL_SEGMENTS_COUNT));
+
+          if (last_end_height >= end_height)
+          {
+            break;
+          }
+
+          auto& current = wall_segments[num_wall_segments];
+          const f32 current_end_height = min(effective_height, end_height);
+
+          current.y1 = last_end_height;
+          current.y2 = current_end_height;
+          current.height_offset = offset;
+          current.surface = &entry;
+
+          last_end_height = current_end_height;
+          ++num_wall_segments;
+        }
       };
 
-
-
-      if (wall.portal_sector_id == INVALID_SECTOR_ID) {
-          add_wall_segments(sector.floor_height, sector.ceil_height);
+      if (wall.portal_sector_id == INVALID_SECTOR_ID)
+      {
+        add_wall_segments(sector.floor_height, sector.ceil_height, 0.0f);
       }
       else
       {
-            f32 step_height = 0.0f, ceil_add = 0.0f;
-            this->calc_step_height_of_portal(sector_id, idx, &step_height, &ceil_add);
+        f32 step_height = 0.0f, ceil_add = 0.0f;
+        this->calc_step_height_of_portal(sector_id, idx, &step_height, &ceil_add);
 
-            f32 neighbor_floor_height = sector.floor_height + step_height;
-            f32 neighbor_ceil_height  = sector.ceil_height  + ceil_add;
+        f32 neighbor_floor_height = sector.floor_height + step_height;
+        f32 neighbor_ceil_height  = sector.ceil_height  + ceil_add;
+
+        const SectorData& neighbor = sectors[walls[idx].portal_sector_id];
+        f32 neighbor_bot_change = neighbor.floor_height - neighbor.state_floors[0];
+        f32 neighbor_top_change = neighbor.ceil_height  - neighbor.state_ceils[0];
             
-            if (neighbor_floor_height >= sector.ceil_height || neighbor_ceil_height <= sector.floor_height)
-            {
-                // no overlap, draw the full wall 
-                add_wall_segments(sector.floor_height, sector.ceil_height);
-            }
-            else if (neighbor_ceil_height >= sector.ceil_height && neighbor_floor_height <= sector.floor_height)
-            {
-                // no need to draw any wall
-                continue;
-            }
-            else if (neighbor_ceil_height >= sector.ceil_height && neighbor_floor_height > sector.floor_height)
-            {
-                // draw only bottom segment
-                add_wall_segments(sector.floor_height, neighbor_floor_height);
-            }
-            else if (neighbor_ceil_height < sector.ceil_height && neighbor_floor_height <= sector.floor_height)
-            {
-                // draw only top segment
-                add_wall_segments(neighbor_ceil_height, sector.ceil_height);
-            }
-            else
-            {
-                // draw both top and bottom
-                add_wall_segments(sector.floor_height, neighbor_floor_height);
-                add_wall_segments(neighbor_ceil_height, sector.ceil_height);
-            }
+        if (neighbor_floor_height >= sector.ceil_height || neighbor_ceil_height <= sector.floor_height)
+        {
+          // no overlap, draw the full wall 
+          add_wall_segments(sector.floor_height, sector.ceil_height, neighbor_bot_change);
+        }
+        else if (neighbor_ceil_height >= sector.ceil_height && neighbor_floor_height <= sector.floor_height)
+        {
+          // no need to draw any wall
+          continue;
+        }
+        else if (neighbor_ceil_height >= sector.ceil_height && neighbor_floor_height > sector.floor_height)
+        {
+          // draw only bottom segment
+          add_wall_segments
+          (
+            sector.floor_height, neighbor_floor_height, neighbor_bot_change
+          );
+        }
+        else if (neighbor_ceil_height < sector.ceil_height && neighbor_floor_height <= sector.floor_height)
+        {
+          // draw only top segment
+          add_wall_segments
+          (
+            neighbor_ceil_height, sector.ceil_height, neighbor_top_change
+          );
+        }
+        else
+        {
+          // draw both top and bottom
+          add_wall_segments
+          (
+            sector.floor_height, neighbor_floor_height, neighbor_bot_change
+          );
+
+          add_wall_segments
+          (
+            neighbor_ceil_height, sector.ceil_height, neighbor_top_change
+          );
+        }
       }
       
       const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
@@ -815,10 +841,12 @@ const
             const auto bu_shifted = bu + bu_shift;
             const auto eu_shifted = eu + eu_shift;
       
+            SurfaceData shifted_surface = current.surface->surface;
+            shifted_surface.offset.y -= current.height_offset * current.surface->surface.scale;
 
             // first triangle
-            push_triangle(wall_normal, current.surface->surface, bd_shifted, cumulative_wall_length, ed_shifted, end_wall_length, bu_shifted, cumulative_wall_length);
-            push_triangle(wall_normal, current.surface->surface, bu_shifted, cumulative_wall_length, ed_shifted, end_wall_length, eu_shifted, end_wall_length);
+            push_triangle(wall_normal, shifted_surface, bd_shifted, cumulative_wall_length, ed_shifted, end_wall_length, bu_shifted, cumulative_wall_length);
+            push_triangle(wall_normal, shifted_surface, bu_shifted, cumulative_wall_length, ed_shifted, end_wall_length, eu_shifted, end_wall_length);
             
 
             const float up_down_normal_mult   = ((current.surface->flags & WallSegmentData::Flags::flip_side_normals) ? -1.0f : 1.0f);
@@ -830,9 +858,9 @@ const
                 const f32 len = length(bu_shift.xz());
 
                 if(current.surface->flags & WallSegmentData::Flags::generate_up_face)
-                    push_triangle(up_normal, current.surface->surface, bu, cumulative_wall_length, bu_shifted, cumulative_wall_length, eu_shifted, end_wall_length);
+                    push_triangle(up_normal, shifted_surface, bu, cumulative_wall_length, bu_shifted, cumulative_wall_length, eu_shifted, end_wall_length);
                 if (current.surface->flags & WallSegmentData::Flags::generate_right_face)
-                    push_triangle(begin_normal, current.surface->surface, bu_shifted, end_wall_length + len, bu, end_wall_length, bd, end_wall_length);
+                    push_triangle(begin_normal, shifted_surface, bu_shifted, end_wall_length + len, bu, end_wall_length, bd, end_wall_length);
             }
             
             if (eu_shift != VEC3_ZERO) {
@@ -841,9 +869,9 @@ const
                 const f32 len = length(eu_shift.xz());
 
                 if (current.surface->flags & WallSegmentData::Flags::generate_up_face)
-                    push_triangle(up_normal, current.surface->surface, bu, cumulative_wall_length, eu_shifted, end_wall_length, eu, end_wall_length);
+                    push_triangle(up_normal, shifted_surface, bu, cumulative_wall_length, eu_shifted, end_wall_length, eu, end_wall_length);
                 if (current.surface->flags & WallSegmentData::Flags::generate_left_face)
-                    push_triangle(end_normal, current.surface->surface, eu_shifted, cumulative_wall_length + len, ed, cumulative_wall_length, eu, cumulative_wall_length);
+                    push_triangle(end_normal, shifted_surface, eu_shifted, cumulative_wall_length + len, ed, cumulative_wall_length, eu, cumulative_wall_length);
             }
             
             
@@ -853,9 +881,9 @@ const
                 const f32 len = length(bd_shift.xz());
 
                 if (current.surface->flags & WallSegmentData::Flags::generate_down_face)
-                    push_triangle(down_normal, current.surface->surface, bd, cumulative_wall_length, ed, end_wall_length, ed_shifted, end_wall_length);
+                    push_triangle(down_normal, shifted_surface, bd, cumulative_wall_length, ed, end_wall_length, ed_shifted, end_wall_length);
                 if (current.surface->flags & WallSegmentData::Flags::generate_right_face)
-                    push_triangle(begin_normal, current.surface->surface, bd, end_wall_length, bd_shifted, end_wall_length + len, bu_shifted, end_wall_length + len);
+                    push_triangle(begin_normal, shifted_surface, bd, end_wall_length, bd_shifted, end_wall_length + len, bu_shifted, end_wall_length + len);
             }
             
             if (ed_shift != VEC3_ZERO) {
@@ -864,9 +892,9 @@ const
                 const f32 len = length(ed_shift.xz());
 
                 if (current.surface->flags & WallSegmentData::Flags::generate_down_face)
-                    push_triangle(down_normal, current.surface->surface, bd, cumulative_wall_length, ed_shifted, end_wall_length, bd_shifted, cumulative_wall_length);
+                    push_triangle(down_normal, shifted_surface, bd, cumulative_wall_length, ed_shifted, end_wall_length, bd_shifted, cumulative_wall_length);
                 if (current.surface->flags & WallSegmentData::Flags::generate_left_face)
-                    push_triangle(end_normal, current.surface->surface, ed, cumulative_wall_length, eu_shifted, cumulative_wall_length + len, ed_shifted, cumulative_wall_length + len);
+                    push_triangle(end_normal, shifted_surface, ed, cumulative_wall_length, eu_shifted, cumulative_wall_length + len, ed_shifted, cumulative_wall_length + len);
             }
       }
       
