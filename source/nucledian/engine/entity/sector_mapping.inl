@@ -33,4 +33,21 @@ void SectorMapping::for_each_in_sector(SectorID sector, F&& func) const
   }
 }
 
+//==============================================================================
+template<typename F>
+void SectorMapping::for_each_sector_of_entity(EntityID entity, F&& func) const
+{
+  auto it = entities_to_sectors.find(entity);
+  if (it == entities_to_sectors.end())
+  {
+    return;
+  }
+
+  const SectorsAndTransforms& sectors = it->second;
+  for (u64 i = 0; i < sectors.transforms.size(); ++i)
+  {
+    func(sectors.sectors[i], sectors.transforms[i]);
+  }
+}
+
 }

@@ -19,9 +19,10 @@ constexpr f32 PICKUP_RADIUS = 0.4f;
 constexpr f32 PICKUP_HEIGHT = 0.2f;
 
 //==============================================================================
-PickUp::PickUp(vec3 position, PickupType my_type)
+PickUp::PickUp(vec3 position, PickupType my_type, bool on_floor)
 : Entity(position, PICKUP_RADIUS, PICKUP_HEIGHT, true)
 , type(my_type)
+, snap_to_floor(on_floor)
 {
   cstr texture_name = PICKUP_NAMES[this->type];
 
@@ -76,6 +77,12 @@ bool PickUp::pickup([[maybe_unused]]const Player& player)
   }
 
   return picked_up;
+}
+
+//==============================================================================
+bool PickUp::snaps_to_floor() const
+{
+  return this->snap_to_floor;
 }
 
 //==============================================================================

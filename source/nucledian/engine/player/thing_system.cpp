@@ -37,12 +37,15 @@
 #include <game/item_resources.h> // PickupTypes::...
 #include <game/enemies.h>        // EnemyTypes::...
 
+#include <math/lingebra.h>
+
 #ifdef NC_IMGUI
 #include <imgui/imgui.h> // for hot reload
 #endif
 
 #include <intersect.h>
 #include <profiling.h>
+#include <stack_vector.h>
 
 #include <fstream>
 #include <filesystem>
@@ -872,7 +875,68 @@ void ThingSystem::build_map(LevelName level)
 
   dynamics->sector_change_callback = [](SectorID sector)
   {
+    // Rebuild the sector geometry
     GraphicsSystem::get().mark_sector_dirty(sector);
+
+    const MapSectors&     map      = ThingSystem::get().get_map();
+    const SectorMapping&  mapping  = ThingSystem::get().get_sector_mapping();
+
+    EntityRegistry& registry = ThingSystem::get().get_entities();
+
+    // Move pickups with the floor
+    struct NewHeight
+    {
+      Entity* entity;
+      f32     height;
+    };
+    StackVector<NewHeight, 16> new_heights;
+
+    mapping.for_each_in_sector(sector, [&](EntityID entity_id, mat4)
+    {
+      auto it = std::find_if(new_heights.begin(), new_heights.end(), [&](auto& nh)
+      {
+        return nh.entity->get_id() == entity_id;
+      });
+
+      if (it != new_heights.end())
+      {
+        // Already iterated this entity from a different portal
+        return;
+      }
+
+      Entity* entity = registry.get_entity(entity_id);
+      PickUp* pickup = entity ? entity->as<PickUp>() : nullptr;
+      if (pickup && pickup->snaps_to_floor())
+      {
+        f32 top_height = -FLT_MAX;
+        mapping.for_each_sector_of_entity(entity_id, [&](SectorID sid, mat4 t)
+        {
+          // Avoid matrix multiplications and inversions
+          f32 floor_height = map.sectors[sid].floor_height;
+          f32 t_height     = t[1].y * floor_height + t[3].y;
+          f32 real_floor_h = floor_height - (t_height - floor_height);
+
+          if (real_floor_h > top_height)
+          {
+            top_height = real_floor_h;
+          }
+        });
+
+        if (top_height != -FLT_MAX)
+        {
+          new_heights.push_back(NewHeight{entity, top_height});
+        }
+      }
+    });
+
+    // We have to change the heights here separately because it caused rebuild
+    // of the mapping. Therefore, we can't do it while iterating the mapping
+    // above.
+    for (NewHeight to_change : new_heights)
+    {
+      vec3 pos = to_change.entity->get_position();
+      to_change.entity->set_position(with_y(pos, to_change.height));
+    }
   };
 
   entities->add_listener(mapping.get());

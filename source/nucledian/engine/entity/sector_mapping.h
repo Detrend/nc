@@ -44,6 +44,9 @@ struct SectorMapping : public IEntityListener
   template<typename EntityT, typename F>
   void for_each_in_sector(SectorID sector, F&& func) const;
 
+  template<typename F>
+  void for_each_sector_of_entity(EntityID entity, F&& func) const;
+
   struct SectorsAndTransforms
   {
     std::vector<mat4>     transforms;

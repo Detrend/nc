@@ -17,7 +17,7 @@ class Player;
 class PickUp : public Entity
 {
 public:
-  PickUp(vec3 position, PickupType type);
+  PickUp(vec3 position, PickupType type, bool snap_to_floor = true);
 
   static EntityType get_type_static();
 
@@ -27,12 +27,17 @@ public:
   // Is automatically destroyed after returning true.
   bool pickup(const Player& player);
 
+  // Should the pickup lie on the floor, or levitate in the air?
+  // If true then the pickup changes height with the floors it lies on.
+  bool snaps_to_floor() const;
+
   Appearance&       get_appearance();
   const Appearance& get_appearance() const;
 
 private:
   PickupType type;
   Appearance appear;
+  bool       snap_to_floor = false;
 };
 
 }
