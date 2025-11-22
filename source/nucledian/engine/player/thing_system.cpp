@@ -886,39 +886,115 @@ void ThingSystem::build_map(LevelName level)
 void ThingSystem::do_raycast_debug()
 {
   Player* player = this->get_player();
+
   if (player && player->get_camera() && CVars::debug_player_raycasts)
   {
-    const Camera* camera = player->get_camera();
-    const auto& lvl = ThingSystem::get().get_level();
-
-    constexpr f32 RAY_LEN = 10.0f;
-	
-    const vec3 eye_pos  = camera->get_position();
-    const vec3 look_dir = camera->get_forward();
-	
-    const vec3 ray_start = eye_pos;
-    const vec3 ray_end   = eye_pos + look_dir * RAY_LEN;
-
-    PhysLevel::Portals portals;
-	
-    CollisionHit hit = lvl.cylinder_cast_3d
-    (
-      ray_start, ray_end, 0.25f, 0.25f, 0, &portals
-    );
-
-    if (hit)
+    if (ImGui::Begin("Raycast debug", &CVars::debug_player_raycasts))
     {
-      vec3 hit_point  = ray_start + (ray_end - ray_start) * hit.coeff;
-      vec3 out_normal = hit.normal;
-      
-      for (const auto&[wid, sid] : portals)
-      {
-        mat4 transform = lvl.map.calc_portal_to_portal_projection(sid, wid);
-        hit_point  = transform * vec4{hit_point,  1.0f};
-        out_normal = transform * vec4{out_normal, 0.0f};
-      }
+      const Camera* camera = player->get_camera();
+      const auto& lvl = ThingSystem::get().get_level();
 
-      Gizmo::create_line(1.0f, hit_point, hit_point + out_normal, colors::RED);
+      static f32 ray_len = 10.0f;
+      ImGui::SliderFloat("Ray lenght", &ray_len, 1.0f, 25.0f);
+	
+      const vec3 eye_pos  = camera->get_position();
+      const vec3 look_dir = camera->get_forward();
+	
+      const vec3 ray_start = eye_pos;
+      const vec3 ray_end   = eye_pos + look_dir * ray_len;
+
+      PhysLevel::Portals portals;
+
+      constexpr auto TYPES_TO_CHECK = std::array
+      {
+        EntityTypes::enemy, EntityTypes::pickup, EntityTypes::prop
+      };
+
+      ImGui::Separator();
+
+      ImGui::Text("Entity types to hit:");
+
+      static EntityTypeMask hit_types = 0;
+      for (EntityType entity_type : TYPES_TO_CHECK)
+      {
+        bool value = hit_types & entity_type_to_mask(entity_type);
+
+        if (ImGui::Checkbox(ENTITY_TYPE_NAMES[entity_type], &value))
+        {
+          if (value)
+          {
+            hit_types |= entity_type_to_mask(entity_type);
+          }
+          else
+          {
+            hit_types &= ~entity_type_to_mask(entity_type);
+          }
+        }
+      }
+	
+      ImGui::Separator();
+
+      CollisionHit hit = lvl.cylinder_cast_3d
+      (
+        ray_start, ray_end, 0.25f, 0.25f, hit_types, &portals
+      );
+
+      if (hit)
+      {
+        vec3 hit_point  = ray_start + (ray_end - ray_start) * hit.coeff;
+        vec3 out_normal = hit.normal;
+      
+        for (const auto&[wid, sid] : portals)
+        {
+          mat4 transform = lvl.map.calc_portal_to_portal_projection(sid, wid);
+          hit_point  = transform * vec4{hit_point,  1.0f};
+          out_normal = transform * vec4{out_normal, 0.0f};
+        }
+
+        Gizmo::create_line(1.0f, hit_point, hit_point + out_normal, colors::RED);
+
+        vec3 pt = ray_start + (ray_end - ray_start) * hit.coeff;
+
+        ImGui::Text("Hit distance: %.3f", ray_len * hit.coeff);
+        ImGui::Text("Hit pt: [%.2f, %.2f, %.2f]", pt.x, pt.y, pt.z);
+        ImGui::Text("Num portals: %d", cast<int>(portals.size()));
+
+        ImGui::Separator();
+
+        if (hit.is_wall_hit())
+        {
+          SectorID  sid    = hit.hit.sector.sector_id;
+          WallID    wid    = hit.hit.sector.wall_id;
+          int       wrelid = wid - lvl.map.sectors[sid].int_data.first_wall;
+          ImGui::Text("Hit type: wall");
+          ImGui::Text("Sector:   %d", cast<int>(sid));
+          ImGui::Text("Wall:     %d", cast<int>(wid));
+          ImGui::Text("Rel wall: %d", wrelid);
+          ImGui::Text("Segment:  %d", cast<int>(hit.hit.sector.wall_segment_id));
+        }
+        else if (hit.is_floor_hit() || hit.is_ceil_hit())
+        {
+          ImGui::Text("Hit type: floor/ceil");
+          ImGui::Text("SectorID: %d", cast<int>(hit.hit.sector.sector_id));
+        }
+        else if (hit.is_entity_hit())
+        {
+          EntityID id = hit.hit.entity.entity_id;
+
+          std::string id_as_str = std::format
+          (
+            "[{}]:[{}]", ENTITY_TYPE_NAMES[id.type], id.idx
+          );
+
+          ImGui::Text("Hit type: entity");
+          ImGui::Text("Entity:   %s", id_as_str.c_str());
+        }
+      }
+      else
+      {
+        ImGui::Text("No hit");
+      }
+      ImGui::End();
     }
   }
 }

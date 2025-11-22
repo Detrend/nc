@@ -757,9 +757,9 @@ const
         f32 neighbor_ceil_height  = sector.ceil_height  + ceil_add;
 
         const SectorData& neighbor = sectors[walls[idx].portal_sector_id];
-        f32 neighbor_bot_change = neighbor.floor_height - neighbor.state_floors[0];
-        f32 neighbor_top_change = neighbor.ceil_height  - neighbor.state_ceils[0];
-            
+        f32 neighbor_bot_change, neighbor_top_change;
+        neighbor.get_shift_amount(&neighbor_bot_change, &neighbor_top_change);
+
         if (neighbor_floor_height >= sector.ceil_height || neighbor_ceil_height <= sector.floor_height)
         {
           // no overlap, draw the full wall 
@@ -919,7 +919,7 @@ const
   const SectorData& sd = this->sectors[sector];
   const WallData&   wd = this->walls[wall];
 
-  nc_assert(wd.get_portal_type() != PortalType::none);
+  nc_assert(wd.is_portal());
   nc_assert(this->is_valid_sector_id(wd.portal_sector_id));
 
   const SectorData& other = this->sectors[wd.portal_sector_id];
@@ -951,6 +951,45 @@ const
   {
     *ceil_opt = other_ceil_y - my_ceil_y;
   }
+}
+
+//==============================================================================
+u8 MapSectors::get_segment_idx_from_height(WallID wall_id, f32 ypos) const
+{
+  nc_assert(this->is_valid_wall_id(wall_id));
+
+  const WallData& wall = walls[wall_id];
+  f32 floor_shift = 0, ceil_shift = 0;
+  f32 default_ceil_height = 0.0f;
+
+  if (wall.is_portal())
+  {
+    const SectorData& ssd = sectors[wall.portal_sector_id];
+    ssd.get_shift_amount(&floor_shift, &ceil_shift);
+    default_ceil_height = ssd.state_ceils[0];
+  }
+
+  if (wall.surface.surfaces.empty())
+  {
+    return 0;
+  }
+
+  nc_assert(wall.surface.surfaces.size() <= cast<u64>(255));
+  for (u8 idx = 0; idx < wall.surface.surfaces.size(); ++idx)
+  {
+    const WallSegmentData::Entry& entry = wall.surface.surfaces[idx];
+
+    bool is_bottom = entry.end_height < default_ceil_height;
+    f32  shift     = is_bottom ? floor_shift : ceil_shift;
+
+    if (entry.end_height + shift > ypos)
+    {
+      return idx;
+    }
+  }
+
+  // Return the index of the last entry
+  return cast<u8>(wall.surface.surfaces.size() - 1);
 }
 
 //==============================================================================
@@ -1159,6 +1198,22 @@ f32 MapSectors::distance_from_sector_2d(vec2 pt, SectorID sector_id) const
   }
 
   return min_dist;
+}
+
+//==============================================================================
+void SectorData::get_shift_amount(f32* bottom, f32* top) const
+{
+  nc_assert(bottom || top);
+
+  if (bottom)
+  {
+    *bottom = floor_height - state_floors[0];
+  }
+
+  if (top)
+  {
+    *top = ceil_height - state_ceils[0];
+  }
 }
 
 //==============================================================================

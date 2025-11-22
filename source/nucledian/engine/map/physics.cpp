@@ -93,6 +93,7 @@ static CollisionHit raycast_generic
   using HitType       = CollisionHit::HitType;
 
   nc_assert(expand >= 0.0f, "Radius can not be negative!");
+  static_assert(std::is_same_v<TVec, vec3> || std::is_same_v<TVec, vec2>);
 
   std::set<SectorID> overlap_sectors;
 
@@ -210,12 +211,22 @@ static CollisionHit raycast_generic
 
       if (does_intersect)
       {
+        u8 segment_id = 0;
+
+        // TODO: No need to do it here. This can be actually computed from the
+        // CollisionHit data AFTER the raycast function returns
+        if constexpr (std::is_same_v<TVec, vec3>)
+        {
+          f32 hit_y = ray_from.y + (ray_to.y - ray_from.y) * c;
+          segment_id = world.map.get_segment_idx_from_height(wall_id, hit_y);
+        }
+
         SectorHitType hit_type = is_nc_hit ? SectorHitType::nuclidean_wall : SectorHitType::wall;
         add_possible_hit(CollisionHit::build(c, n, CollisionHit::SectorHit
         {
           .sector_id       = sector_id,
           .wall_id         = wall_id,
-          .wall_segment_id = 0,
+          .wall_segment_id = segment_id,
           .type            = hit_type,
         }));
       }
@@ -224,7 +235,7 @@ static CollisionHit raycast_generic
     // Check entity intersections
     for (auto entity_id : world.mapping.sectors_to_entities.entities[sector_id])
     {
-      if (!(EntityTypeToMask(entity_id.type) & ent_types))
+      if (!(entity_type_to_mask(entity_id.type) & ent_types))
       {
         // skip this entity, we do not check it
         continue;
@@ -356,7 +367,7 @@ namespace nc
 //==============================================================================
 CollisionHit::operator bool() const
 {
-  return coeff != FLT_MAX;
+  return this->is_hit();
 }
 
 //==============================================================================
@@ -396,6 +407,42 @@ CollisionHit CollisionHit::build(f32 c, vec3 n, EntityHit eh)
     .hit    = Hit{.entity = eh},
     .type   = HitType::entity,
   };
+}
+
+//==============================================================================
+bool CollisionHit::is_hit() const
+{
+  return coeff != FLT_MAX;
+}
+
+//==============================================================================
+bool CollisionHit::is_sector_hit() const
+{
+  return this->is_hit() && this->type == HitType::sector;
+}
+
+//==============================================================================
+bool CollisionHit::is_floor_hit()  const
+{
+  return this->is_sector_hit() && this->hit.sector.type & SectorHitType::floor;
+}
+
+//==============================================================================
+bool CollisionHit::is_ceil_hit()   const
+{
+  return this->is_sector_hit() && this->hit.sector.type & SectorHitType::ceil;
+}
+
+//==============================================================================
+bool CollisionHit::is_wall_hit()   const
+{
+  return this->is_sector_hit() && this->hit.sector.type & SectorHitType::wall;
+}
+
+//==============================================================================
+bool CollisionHit::is_entity_hit() const
+{
+  return this->is_hit() && type == HitType::entity;
 }
 
 //==============================================================================
@@ -944,7 +991,7 @@ struct CylCastEntityIntersector
     
     if constexpr (Collect == CollectReportOnly::Yes)
     {
-      if (report_only & EntityTypeToMask(entity.get_type()))
+      if (report_only & entity_type_to_mask(entity.get_type()))
       {
         nc_assert(collector); // Must be present if collecting is on
         collector->push_back(EntityIdAndCoeff{entity.get_id(), c_int});

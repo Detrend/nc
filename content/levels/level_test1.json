@@ -12730,13 +12730,6 @@
 				"tile_rotations_count": 4
 			},
 			"id": 105,
-			"triggers": [
-				{
-					"activator": "abc",
-					"timeout": 1.0,
-					"player_sensitive": true
-				}
-			],
 			"points": [
 				243,
 				244,
@@ -19973,8 +19966,8 @@
 				"tile_rotations_count": 2
 			},
 			"debug_name": "_Polygon2D_201968",
-			"floor": 11.2,
-			"floor2": 5.0,
+			"floor": 1.0,
+			"floor2": 11.0,
 			"floor_surface": {
 				"id": "floor3",
 				"offset": [
@@ -20056,6 +20049,7 @@
 		},
 		{
 			"ceiling": 20.0,
+			"ceiling2": 20.0,
 			"ceiling_surface": {
 				"id": "floor2",
 				"offset": [
@@ -20069,7 +20063,9 @@
 				"tile_rotations_count": 2
 			},
 			"debug_name": "@Polygon2D@205304",
-			"floor": 10.0,
+			"floor": 1.0,
+			"floor2": 10.0,
+			"activator": "abc",
 			"floor_surface": {
 				"id": "floor3",
 				"offset": [
@@ -20891,8 +20887,46 @@
 				[
 					{
 						"begin_height": 10.0,
+						"end_height": 11.0,
+						"id": "bricks",
+						"id_triggered": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.1,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					},
+					{
+						"begin_height": 11.0,
+						"end_height": 12.0,
+						"id": "bricks",
+						"id_triggered": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.1,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1,
+						"trigger":
+						{
+							"activator": "abc",
+							"timeout": 25.0,
+							"player_sensitive": true,
+							"can_turn_off": false
+						}
+					},
+					{
+						"begin_height": 12.0,
 						"end_height": 16.4,
 						"id": "bricks",
+						"id_triggered": "floor1",
 						"offset": [
 							0.0,
 							0.0

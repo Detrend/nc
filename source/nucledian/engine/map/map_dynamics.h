@@ -88,7 +88,10 @@ struct MapDynamics
 
   void update(f32 delta);
 
-  void evaluate_activators(std::vector<u16>& out_values, f32 update_dt = 0.0f);
+  void evaluate_activators
+  (
+    std::vector<u16>& out_values, f32 update_dt = 0.0f, bool notify = false
+  );
 
   void switch_wall_segment_trigger(SectorID sector, WallID wall, u8 segment);
 
@@ -97,6 +100,7 @@ struct MapDynamics
     f32       countdown = 0.0f;
     bool      triggered = false;
     TriggerID trigger   = INVALID_TRIGGER_ID;
+    bool      dirty     = false;
   };
 
   using SectorChangeCallback = std::function<void(SectorID)>;

@@ -60,7 +60,7 @@ void MapDynamics::on_map_rebuild_and_entities_created()
     );
 
     nc_assert(!segment_trigger_runtime.contains(idx));
-    segment_trigger_runtime.insert({idx, RuntimeSegmentInfo{}});
+    segment_trigger_runtime.insert({idx, RuntimeSegmentInfo{.trigger = tid}});
   }
 
   // Map sectors to their activators
@@ -98,39 +98,32 @@ void MapDynamics::switch_wall_segment_trigger
   }
 
   RuntimeSegmentInfo& sinfo = it->second;
+  nc_assert(sinfo.trigger != INVALID_TRIGGER_ID);
   const TriggerData& td = triggers[sinfo.trigger];
 
-  bool changed = true;
-
-  if (!sinfo.trigger)
+  if (!sinfo.triggered)
   {
     // Turn on and set cooldown potentially
     sinfo.triggered = true;
+    sinfo.dirty = true;
 
     if (td.has_timeout())
     {
       sinfo.countdown = td.timeout;
     }
-
-    changed = true;
   }
   else if (td.can_turn_off)
   {
     // Turn off
     sinfo.triggered = false;
-    changed = true;
-  }
-
-  if (changed && sector_change_callback)
-  {
-    sector_change_callback(sector);
+    sinfo.dirty = true;
   }
 }
 
 //==============================================================================
 void MapDynamics::evaluate_activators
 (
-  std::vector<u16>& activator_values, f32 delta
+  std::vector<u16>& activator_values, f32 delta, bool notify
 )
 {
   nc_assert(triggers.size() <= MAX_TRIGGERS);
@@ -138,7 +131,7 @@ void MapDynamics::evaluate_activators
 
   TriggerID trigger_cnt = cast<TriggerID>(triggers.size());
 
-  // Now iterate all sectors that can be activated and move them correctly
+  // Now iterate all triggers
   for (TriggerID trigger_id = 0; trigger_id < trigger_cnt; ++trigger_id)
   {
     TriggerData& td = triggers[trigger_id];
@@ -172,13 +165,34 @@ void MapDynamics::evaluate_activators
         nc_assert(segment_trigger_runtime.contains(idx));
         RuntimeSegmentInfo& info = segment_trigger_runtime[idx];
 
-        if (td.has_timeout())
+        if (td.has_timeout() && info.triggered)
         {
           lerp_towards(info.countdown, 0.0f, delta);
           if (info.countdown == 0.0f)
           {
             info.triggered = false;
+            info.dirty     = true;
           }
+        }
+
+        if (notify && info.dirty)
+        {
+          WallRelID wrelid = td.wall_type.wall;
+
+          const SectorData& sd = map.sectors[td.wall_type.sector];
+          WallData& wd = map.walls[wrelid + sd.int_data.first_wall];
+
+          SurfaceData& ssd = wd.surface.surfaces[td.wall_type.segment].surface;
+          TextureID tids[2] = {ssd.texture_id_default, ssd.texture_id_triggered};
+
+          ssd.texture_id = tids[info.triggered];
+
+          if (sector_change_callback)
+          {
+            sector_change_callback(td.wall_type.sector);
+          }
+
+          info.dirty = false;
         }
 
         activator_values[activator] += info.triggered;
@@ -205,7 +219,7 @@ void MapDynamics::update(f32 delta)
   std::vector<u16> activator_values(activator_cnt, 0);
 
   // Iterate triggers
-  evaluate_activators(activator_values, delta);
+  evaluate_activators(activator_values, delta, true);
 
   // Iterate activators
   for (ActivatorID activator_id = 0; activator_id < activator_cnt; ++activator_id)

@@ -60,6 +60,14 @@ struct CollisionHit
   // Constructs entity hit
   static CollisionHit build(f32 coeff, vec3 n, EntityHit eh);
 
+  // Basics checking
+  bool is_hit()        const;
+  bool is_sector_hit() const;
+  bool is_floor_hit()  const;
+  bool is_ceil_hit()   const;
+  bool is_wall_hit()   const;
+  bool is_entity_hit() const;
+
   // Internals
   enum HitType : u8
   {

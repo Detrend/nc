@@ -9,6 +9,7 @@
 #include <engine/input/input_system.h>
 
 #include <engine/map/map_system.h>
+#include <engine/map/map_dynamics.h>
 #include <engine/map/physics.h>
 #include <engine/player/thing_system.h>
 #include <engine/entity/entity_system.h>
@@ -64,6 +65,15 @@ Player::Player(vec3 position, vec3 forward)
 
   // Has to be called to set-up the FSM
   this->change_weapon(this->get_equipped_weapon());
+}
+
+//==============================================================================
+static GameInputs pressed_inputs(const GameInputs& now, const GameInputs& prev)
+{
+  GameInputs output;
+  std::memset(&output, 0, sizeof(output));
+  output.player_inputs.keys = now.player_inputs.keys & ~prev.player_inputs.keys;
+  return output;
 }
 
 //==============================================================================
@@ -273,17 +283,49 @@ void Player::handle_attack(GameInputs curr_input, GameInputs prev_input, f32 dt)
   {
     if (current_ammo[current_weapon] == -1)
     {
-        this->weapon_fsm.set_state(WeaponStates::attack);
-        return;
+      this->weapon_fsm.set_state(WeaponStates::attack);
+      return;
     }
 
     if (current_ammo[current_weapon] == 0)
     {
-        return;
+      return;
     }
 
     current_ammo[current_weapon] -= 1;
     this->weapon_fsm.set_state(WeaponStates::attack);
+  }
+}
+
+//==============================================================================
+void Player::handle_use(GameInputs curr_input, GameInputs prev_input, f32 /*dt*/)
+{
+  using Hit = CollisionHit;
+  GameInputs pressed = pressed_inputs(curr_input, prev_input);
+  ThingSystem& game = ThingSystem::get();
+
+  if (pressed.player_inputs.keys & 1 << PlayerKeyInputs::use)
+  {
+    constexpr EntityTypeMask INPUT_BLOCKERS   = EntityTypeFlags::enemy;
+    constexpr f32            INTERACTION_DIST = 3.0f;
+
+    vec3 from = this->get_camera()->get_position();
+    vec3 dir  = this->get_camera()->get_forward();
+
+    Hit hit = game.get_level().ray_cast_3d
+    (
+      from, from + dir * INTERACTION_DIST, INPUT_BLOCKERS
+    );
+
+    if (hit.is_wall_hit())
+    {
+      game.get_map_dynamics().switch_wall_segment_trigger
+      (
+        hit.hit.sector.sector_id,
+        hit.hit.sector.wall_id,
+        hit.hit.sector.wall_segment_id
+      );
+    }
   }
 }
 
@@ -480,6 +522,7 @@ void Player::update(GameInputs curr_input, GameInputs prev_input, f32 delta)
   this->handle_weapon_change(curr_input, prev_input);
   this->update_gun_anim(delta);
   this->handle_attack(curr_input, prev_input, delta);
+  this->handle_use(curr_input, prev_input, delta);
   this->apply_velocity(delta);
   this->update_camera(delta); // should be after "apply_velocity"
 }

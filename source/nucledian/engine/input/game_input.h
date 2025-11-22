@@ -16,6 +16,7 @@ namespace PlayerKeyInputs
     left,
     right,
     jump,
+    use,
 
     primary,
     secondary,
@@ -27,7 +28,9 @@ namespace PlayerKeyInputs
     weapon_3, // nail_gun
 
     // - //
-    count
+    count,
+    first_weapon = weapon_0,
+    last_weapon  = weapon_3,
   };
 }
 static_assert

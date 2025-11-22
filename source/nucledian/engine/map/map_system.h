@@ -156,6 +156,10 @@ struct SectorData
   f32           state_ceils [2]{};
   f32           move_speed = 1.0f; // Speed of change betwen states, m/s
   ActivatorID   activator = INVALID_ACTIVATOR_ID; // Only one activator owns us
+
+  // Calculates how much have the floor and ceiling moved compared to the
+  // default state.
+  void get_shift_amount(f32* out_floor, f32* out_ceil) const;
 };
 
 using PortType = u8;
@@ -293,6 +297,9 @@ struct MapSectors
     f32*     step_opt,          // step height above the floor, positive if step up
     f32*     ceil_opt = nullptr // ceiling depth below the ceil, positive if ceiling grows up
   ) const;
+
+  // Returns the index of the wall segment in this height.
+  u8 get_segment_idx_from_height(WallID wall, f32 y_height) const;
 
   std::vector<vec3> calc_path(vec3 start_pos, vec3 end_pos, f32 width, f32 height) const;
   bool is_point_in_sector(vec2 pt, SectorID sector)      const;

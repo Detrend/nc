@@ -62,6 +62,7 @@ public:
 private:
   void apply_velocity(f32 delta_seconds);
   void handle_attack(GameInputs input, GameInputs prev_input, f32 delta_seconds);
+  void handle_use(GameInputs input, GameInputs prev_input, f32 delta_seconds);
   void handle_weapon_change(GameInputs input, GameInputs prev_input);
   void calculate_wish_velocity(GameInputs input, f32 delta_seconds);
   bool get_attack_state(GameInputs curInput, GameInputs prevInput, f32 delta_seconds);

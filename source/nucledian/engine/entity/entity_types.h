@@ -27,7 +27,7 @@ static_assert(sizeof(EntityID) == 8);
 
 constexpr EntityID INVALID_ENTITY_ID = EntityID{.type = ~0ul, .idx = ~0ul};
 
-constexpr EntityTypeMask EntityTypeToMask(EntityType type)
+constexpr EntityTypeMask entity_type_to_mask(EntityType type)
 {
   return EntityTypeMask{1} << type;
 }

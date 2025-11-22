@@ -9,8 +9,62 @@
 
 #include <SDL2/include/SDL.h>
 
+#include <utility> // std::pair
+
 namespace nc
 {
+
+//==============================================================================
+static void handle_player_input(GameInputs& inputs)
+{
+  namespace Keys      = PlayerKeyInputs;
+  namespace Analogues = PlayerAnalogInputs;
+
+  const u8* keyboard_state = SDL_GetKeyboardState(nullptr);
+  nc_assert(keyboard_state);
+
+  constexpr auto KEY_MAPPINGS = std::array
+  {
+    std::pair{SDL_SCANCODE_W,     Keys::forward},
+    std::pair{SDL_SCANCODE_S,     Keys::backward},
+    std::pair{SDL_SCANCODE_A,     Keys::left},
+    std::pair{SDL_SCANCODE_D,     Keys::right},
+    std::pair{SDL_SCANCODE_SPACE, Keys::jump},
+    std::pair{SDL_SCANCODE_E,     Keys::use},
+  };
+
+  // Movement
+  for (const auto[scancode, key_idx] : KEY_MAPPINGS)
+  {
+    if (keyboard_state[scancode])
+    {
+      inputs.player_inputs.keys |= 1 << key_idx;
+    }
+  }
+
+  // Weapons
+  for (int i = 0; i < Keys::last_weapon - Keys::first_weapon + 1; ++i)
+  {
+    if (keyboard_state[SDL_SCANCODE_1 + i])
+    {
+      inputs.player_inputs.keys |= 1 << (Keys::weapon_0 + i);
+    }
+  }
+
+  // Look around
+  int x, y;
+  u32 mouse_code = SDL_GetRelativeMouseState(&x, &y);
+
+  f32 sensitivity = -1.0f / 800.0f;
+  inputs.player_inputs.analog[Analogues::look_vertical  ] = y * sensitivity;
+  inputs.player_inputs.analog[Analogues::look_horizontal] = x * sensitivity;
+
+  // Shooting
+  if (SDL_BUTTON(mouse_code) == 1)
+  {
+    inputs.player_inputs.keys |= 1 << Keys::primary;
+  }
+}
   
 //==============================================================================
 EngineModuleId InputSystem::get_module_id()
@@ -29,18 +83,13 @@ void InputSystem::on_event(ModuleEvent& event)
 {
   switch (event.type)
   {
-  case ModuleEventType::game_update:
-  {
-    get_player_inputs();  
-    break;
-  }
     case ModuleEventType::cleanup:
     {
       // store the old inputs and reset the current ones
       m_previous_inputs = m_current_inputs;
-      m_current_inputs = GameInputs{};
-      break;
+      m_current_inputs  = GameInputs{};
     }
+    break;
   }
 }
 
@@ -59,11 +108,11 @@ void InputSystem::update_window_and_pump_messages()
 
   while (SDL_PollEvent(&event))
   {
-    #ifdef NC_IMGUI
+#ifdef NC_IMGUI
     // this needs to be done so that ImGui can handle keyboard input or clicking
     // on buttons/checkboxes
     ImGui_ImplSDL2_ProcessEvent(&event);
-    #endif
+#endif
 
     // distribute the message to the engine
     get_engine().process_window_event(event);
@@ -71,6 +120,8 @@ void InputSystem::update_window_and_pump_messages()
     // consume the message ourselves
     this->handle_app_event(event);
   }
+
+  handle_player_input(m_current_inputs);
 }
 
 //==============================================================================
@@ -82,91 +133,11 @@ void InputSystem::override_player_inputs(const PlayerSpecificInputs& new_inputs)
 //==============================================================================
 void InputSystem::handle_app_event(const SDL_Event& event)
 {
-  switch (event.type) 
+  if (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
   {
-  case SDL_KEYDOWN:
-    switch (event.key.keysym.scancode) 
-    {
     // MR says: workaround for showing up cursor
-    case SDL_SCANCODE_ESCAPE:
-    {
-      m_disable_player_inputs = !m_disable_player_inputs;
-      SDL_SetRelativeMouseMode(m_disable_player_inputs ? SDL_FALSE : SDL_TRUE);
-      break;
-    }
-    case SDL_SCANCODE_W:
-      m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys & (1 << PlayerKeyInputs::forward);
-      break;
-    case SDL_SCANCODE_S:
-      m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys & (1 << PlayerKeyInputs::backward);
-      break;
-    case SDL_SCANCODE_A:
-      m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys & (1 << PlayerKeyInputs::left);
-      break;
-    case SDL_SCANCODE_D:
-      m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys & (1 << PlayerKeyInputs::right);
-      break;
-    default:
-      break;
-    }
-    break;
-  case SDL_KEYUP:
-    switch (event.key.keysym.scancode)
-    {
-    case SDL_SCANCODE_W:
-      m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys ^ (1 << PlayerKeyInputs::forward);
-      break;
-    case SDL_SCANCODE_S:
-      m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys ^ (1 << PlayerKeyInputs::backward);
-      break;
-    case SDL_SCANCODE_A:
-      m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys ^ (1 << PlayerKeyInputs::left);
-      break;
-    case SDL_SCANCODE_D:
-      m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys ^ (1 << PlayerKeyInputs::right);
-      break;
-    default:
-      break;
-    }
-    break;
-  default:
-    break;
-  }
-}
-
-//==============================================================================
-
-void InputSystem::get_player_inputs()
-{
-  const u8* keyboard_state = SDL_GetKeyboardState(nullptr);
-
-  if (keyboard_state[SDL_SCANCODE_W])
-    m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys | (1 << PlayerKeyInputs::forward);
-  if (keyboard_state[SDL_SCANCODE_S])
-    m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys | (1 << PlayerKeyInputs::backward);
-  if (keyboard_state[SDL_SCANCODE_A])
-    m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys | (1 << PlayerKeyInputs::left);
-  if (keyboard_state[SDL_SCANCODE_D])
-    m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys | (1 << PlayerKeyInputs::right);
-  if (keyboard_state[SDL_SCANCODE_SPACE])
-    m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys | (1 << PlayerKeyInputs::jump);
-
-  for (int i = 0; i < 4; ++i)
-  {
-    if (keyboard_state[SDL_SCANCODE_1 + i])
-      m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys | (1 << (PlayerKeyInputs::weapon_0 + i));
-  }
-
-  int x, y;
-  u32 mouseCode = SDL_GetRelativeMouseState(&x, &y);
-
-  f32 sensitivity = -1.0f / 800.0f;
-  m_current_inputs.player_inputs.analog[PlayerAnalogInputs::look_vertical]   = y * sensitivity;
-  m_current_inputs.player_inputs.analog[PlayerAnalogInputs::look_horizontal] = x * sensitivity;
-
-  if (SDL_BUTTON(mouseCode) == 1)
-  {
-    m_current_inputs.player_inputs.keys = m_current_inputs.player_inputs.keys | (1 << PlayerKeyInputs::primary);
+    m_disable_player_inputs = !m_disable_player_inputs;
+    SDL_SetRelativeMouseMode(m_disable_player_inputs ? SDL_FALSE : SDL_TRUE);
   }
 }
 
@@ -182,6 +153,7 @@ GameInputs InputSystem::get_inputs() const
   return m_current_inputs;
 }
 
+//==============================================================================
 GameInputs InputSystem::get_prev_inputs() const
 {
   if (m_disable_player_inputs)
@@ -193,4 +165,3 @@ GameInputs InputSystem::get_prev_inputs() const
 }
 
 }
-

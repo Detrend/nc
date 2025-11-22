@@ -56,15 +56,15 @@ namespace EntityTypeFlags
 {
   enum evalue : EntityTypeMask
   {
-    player            = EntityTypeToMask(EntityTypes::player),
-    enemy             = EntityTypeToMask(EntityTypes::enemy),
-    pickup            = EntityTypeToMask(EntityTypes::pickup),
-    projectile        = EntityTypeToMask(EntityTypes::projectile),
-    ambient_light     = EntityTypeToMask(EntityTypes::ambient_light),
-    directional_light = EntityTypeToMask(EntityTypes::directional_light),
-    point_light       = EntityTypeToMask(EntityTypes::point_light),
-    prop              = EntityTypeToMask(EntityTypes::prop),
-    sky_box           = EntityTypeToMask(EntityTypes::sky_box),
+    player            = entity_type_to_mask(EntityTypes::player),
+    enemy             = entity_type_to_mask(EntityTypes::enemy),
+    pickup            = entity_type_to_mask(EntityTypes::pickup),
+    projectile        = entity_type_to_mask(EntityTypes::projectile),
+    ambient_light     = entity_type_to_mask(EntityTypes::ambient_light),
+    directional_light = entity_type_to_mask(EntityTypes::directional_light),
+    point_light       = entity_type_to_mask(EntityTypes::point_light),
+    prop              = entity_type_to_mask(EntityTypes::prop),
+    sky_box           = entity_type_to_mask(EntityTypes::sky_box),
   };
 }
 
