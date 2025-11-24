@@ -153,6 +153,16 @@ void SoundSystem::on_event(ModuleEvent& event)
   }
 }
 
+void SoundSystem::set_sound_volume(int step)
+{
+  soundVoulume = 1.0f / 9.0f * step;
+}
+
+void SoundSystem::set_music_voulme(int step)
+{
+  musicVolume = 1.0f / 9.0f * step;
+}
+
 //==============================================================================
 void SoundSystem::play_oneshot(SoundID sound)
 {
@@ -203,7 +213,7 @@ SoundHandle SoundSystem::play(SoundID sound, f32 volume /*= 1.0f*/)
 
   // We have to set the volume each time explicitly because we do not want the
   // sound to have the old volume of the channel.
-  handle.set_volume(volume); 
+  handle.set_volume(volume * soundVoulume); 
 
   return handle;
 }

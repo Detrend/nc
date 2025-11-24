@@ -164,4 +164,11 @@ GameInputs InputSystem::get_prev_inputs() const
   return m_previous_inputs;
 }
 
+void InputSystem::set_sensitivity(int step)
+{
+  float ZERO_SENSITIVITY = -0.0003125f;
+
+  SENSITIVITY = ZERO_SENSITIVITY * step;
+}
+
 }

@@ -11,6 +11,8 @@
 
 #include <engine/core/engine.h>
 #include <engine/player/thing_system.h>
+#include <engine/input/input_system.h>
+#include <engine/sound/sound_system.h>
 
 namespace nc
 {
@@ -76,6 +78,8 @@ namespace nc
 
 	void UiButton::draw([[maybe_unused]] const ShaderProgramHandle button_material)
 	{
+		button_material.use();
+
 		const TextureManager& manager = TextureManager::get();
 		const TextureHandle& texture = manager[texture_name];
 
@@ -579,6 +583,63 @@ namespace nc
 			fullscreen_button->draw(button_material);
 		}
 
+		sound_volume_less->draw(button_material);
+		sound_volume_more->draw(button_material);
+
+		music_volume_less->draw(button_material);
+		music_volume_more->draw(button_material);
+
+		sensitivity_more->draw(button_material);
+		sensitivity_less->draw(button_material);
+
+		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glBindVertexArray(0);
+		
+		// rendering of values
+
+		digit_shader.use();
+
+		std::vector<vec2> positions = { vec2(0.4f, 0.15f), vec2(0.4f, -0.1), vec2(0.4f, -0.35) };
+		std::vector<int> steps = { soundStep, musicStep, sensitivityStep - 1 }; //sensitivity step is 1 - 10, but we can draw only 0 - 9
+
+		glBindVertexArray(VAO);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+
+		glDisable(GL_DEPTH_TEST);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		const TextureManager& manager = TextureManager::get();
+		const TextureHandle& texture = manager["ui_font"];
+
+		for (size_t i = 0; i < 3; i++)
+		{
+			glm::mat4 trans_mat = glm::mat4(1.0f);
+			vec2 translate = positions[i];
+			trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+			trans_mat = glm::scale(trans_mat, glm::vec3(0.05f, 0.1f, 1));
+
+			const glm::mat4 final_trans = trans_mat;
+
+			int digit = steps[i] + 48;
+
+			digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+			digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+			digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+			digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+			digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
+
+			glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		}
+
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 
@@ -602,13 +663,57 @@ namespace nc
 		isWindowed = false;
 	}
 
-	OptionsPage::OptionsPage()
+	void OptionsPage::set_sensitivity_less()
+	{
+		sensitivityStep = max(1, sensitivityStep - 1);
+		get_engine().get_module<InputSystem>().set_sensitivity(sensitivityStep);
+	}
+
+	void OptionsPage::set_sensitivity_more()
+	{
+		sensitivityStep = min(10, sensitivityStep + 1);
+		get_engine().get_module<InputSystem>().set_sensitivity(sensitivityStep);
+	}
+
+	void OptionsPage::set_sound_less()
+	{
+		soundStep = max(0, soundStep - 1);
+		get_engine().get_module<SoundSystem>().set_sound_volume(soundStep);
+	}
+
+	void OptionsPage::set_sound_more()
+	{
+		soundStep = min(9, soundStep + 1);
+		get_engine().get_module<SoundSystem>().set_sound_volume(soundStep);
+	}
+
+	void OptionsPage::set_music_less()
+	{
+		musicStep = max(0, musicStep - 1);
+		get_engine().get_module<SoundSystem>().set_music_voulme(musicStep);
+	}
+
+	void OptionsPage::set_music_more()
+	{
+		musicStep = min(9, soundStep + 1);
+		get_engine().get_module<SoundSystem>().set_music_voulme(musicStep);
+	}
+
+	OptionsPage::OptionsPage() :
+		digit_shader(shaders::ui_text::VERTEX_SOURCE, shaders::ui_text::FRAGMENT_SOURCE)
 	{
 		sound_text = new UiButton("ui_sound", vec2(-0.3f, 0.15f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
 		music_text = new UiButton("ui_music", vec2(-0.3f, -0.1f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
 		sensitivity_text = new UiButton("ui_sensitivity", vec2(-0.3f, -0.35f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
 		fullscreen_button = new UiButton("ui_fullscreen", vec2(0.3f, -0.6f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::set_windowed, this));
 		windowed_button = new UiButton("ui_windowed", vec2(0.3f, -0.6f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::set_fullscreen, this));
+
+		sound_volume_less = new UiButton("ui_arrow_left", vec2(0.3f, 0.15f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_sound_less, this));
+		sound_volume_more = new UiButton("ui_arrow_right", vec2(0.5f, 0.15f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_sound_more, this));
+		music_volume_less = new UiButton("ui_arrow_left", vec2(0.3f, -0.1f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_music_less, this));
+		music_volume_more = new UiButton("ui_arrow_right", vec2(0.5f, -0.1f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_music_more, this));
+		sensitivity_less = new UiButton("ui_arrow_left", vec2(0.3f, -0.35f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_sensitivity_less, this));
+		sensitivity_more = new UiButton("ui_arrow_right", vec2(0.5f, -0.35f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_sensitivity_more, this));
 	}
 
 	OptionsPage::~OptionsPage()
@@ -618,6 +723,12 @@ namespace nc
 		delete sensitivity_text;
 		delete fullscreen_button;
 		delete windowed_button;
+		delete sound_volume_less;
+		delete sound_volume_more;
+		delete music_volume_less;
+		delete music_volume_more;
+		delete sensitivity_less;
+		delete sensitivity_more;
 	}
 
 	//==============================================================================================
@@ -627,6 +738,15 @@ namespace nc
 
 		fullscreen_button->set_hover(false);
 		windowed_button->set_hover(false);
+
+		sound_volume_less->set_hover(false);
+		sound_volume_more->set_hover(false);
+
+		music_volume_less->set_hover(false);
+		music_volume_more->set_hover(false);
+
+		sensitivity_less->set_hover(false);
+		sensitivity_more->set_hover(false);
 
 		if (isWindowed)
 		{
@@ -641,8 +761,32 @@ namespace nc
 			if (fullscreen_button->is_point_in_rec(mouse_pos))
 			{
 				hover_over_button = fullscreen_button;
-			}
-			
+			}			
+		}
+
+		if (sound_volume_less->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = sound_volume_less;
+		}
+		else if (sound_volume_more->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = sound_volume_more;
+		}
+		else if (music_volume_less->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = music_volume_less;
+		}
+		else if (music_volume_more->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = music_volume_more;
+		}
+		else if (sensitivity_less->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = sensitivity_less;
+		}
+		else if (sensitivity_more->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = sensitivity_more;
 		}
 
 		if (hover_over_button != nullptr)
