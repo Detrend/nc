@@ -11,6 +11,8 @@
 
 #include <engine/core/engine.h>
 #include <engine/player/thing_system.h>
+#include <engine/input/input_system.h>
+#include <engine/sound/sound_system.h>
 
 namespace nc
 {
@@ -579,6 +581,15 @@ namespace nc
 			fullscreen_button->draw(button_material);
 		}
 
+		sound_volume_less->draw(button_material);
+		sound_volume_more->draw(button_material);
+
+		music_volume_less->draw(button_material);
+		music_volume_more->draw(button_material);
+
+		sensitivity_more->draw(button_material);
+		sensitivity_less->draw(button_material);
+
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 
@@ -602,6 +613,42 @@ namespace nc
 		isWindowed = false;
 	}
 
+	void OptionsPage::set_sensitivity_less()
+	{
+		sensitivityStep = max(1, sensitivityStep - 1);
+		get_engine().get_module<InputSystem>().set_sensitivity(sensitivityStep);
+	}
+
+	void OptionsPage::set_sensitivity_more()
+	{
+		sensitivityStep = min(10, sensitivityStep + 1);
+		get_engine().get_module<InputSystem>().set_sensitivity(sensitivityStep);
+	}
+
+	void OptionsPage::set_sound_less()
+	{
+		soundStep = max(0, soundStep - 1);
+		get_engine().get_module<SoundSystem>().set_sound_volume(soundStep);
+	}
+
+	void OptionsPage::set_sound_more()
+	{
+		soundStep = min(9, soundStep + 1);
+		get_engine().get_module<SoundSystem>().set_sound_volume(soundStep);
+	}
+
+	void OptionsPage::set_music_less()
+	{
+		musicStep = max(0, musicStep - 1);
+		get_engine().get_module<SoundSystem>().set_music_voulme(musicStep);
+	}
+
+	void OptionsPage::set_music_more()
+	{
+		musicStep = min(9, soundStep + 1);
+		get_engine().get_module<SoundSystem>().set_music_voulme(musicStep);
+	}
+
 	OptionsPage::OptionsPage()
 	{
 		sound_text = new UiButton("ui_sound", vec2(-0.3f, 0.15f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
@@ -609,6 +656,13 @@ namespace nc
 		sensitivity_text = new UiButton("ui_sensitivity", vec2(-0.3f, -0.35f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
 		fullscreen_button = new UiButton("ui_fullscreen", vec2(0.3f, -0.6f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::set_windowed, this));
 		windowed_button = new UiButton("ui_windowed", vec2(0.3f, -0.6f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::set_fullscreen, this));
+
+		sound_volume_less = new UiButton("ui_arrow_left", vec2(0.3f, 0.15f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_sound_less, this));
+		sound_volume_more = new UiButton("ui_arrow_right", vec2(0.5f, 0.15f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_sound_more, this));
+		music_volume_less = new UiButton("ui_arrow_left", vec2(0.3f, -0.1f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_music_less, this));
+		music_volume_more = new UiButton("ui_arrow_right", vec2(0.5f, -0.1f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_music_more, this));
+		sensitivity_less = new UiButton("ui_arrow_left", vec2(0.3f, -0.35f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_sensitivity_less, this));
+		sensitivity_more = new UiButton("ui_arrow_right", vec2(0.5f, -0.35f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_sensitivity_more, this));
 	}
 
 	OptionsPage::~OptionsPage()
@@ -618,6 +672,12 @@ namespace nc
 		delete sensitivity_text;
 		delete fullscreen_button;
 		delete windowed_button;
+		delete sound_volume_less;
+		delete sound_volume_more;
+		delete music_volume_less;
+		delete music_volume_more;
+		delete sensitivity_less;
+		delete sensitivity_more;
 	}
 
 	//==============================================================================================
@@ -627,6 +687,15 @@ namespace nc
 
 		fullscreen_button->set_hover(false);
 		windowed_button->set_hover(false);
+
+		sound_volume_less->set_hover(false);
+		sound_volume_more->set_hover(false);
+
+		music_volume_less->set_hover(false);
+		music_volume_more->set_hover(false);
+
+		sensitivity_less->set_hover(false);
+		sensitivity_more->set_hover(false);
 
 		if (isWindowed)
 		{
@@ -641,8 +710,32 @@ namespace nc
 			if (fullscreen_button->is_point_in_rec(mouse_pos))
 			{
 				hover_over_button = fullscreen_button;
-			}
-			
+			}			
+		}
+
+		if (sound_volume_less->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = sound_volume_less;
+		}
+		else if (sound_volume_more->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = sound_volume_more;
+		}
+		else if (music_volume_less->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = music_volume_less;
+		}
+		else if (music_volume_more->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = music_volume_more;
+		}
+		else if (sensitivity_less->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = sensitivity_less;
+		}
+		else if (sensitivity_more->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = sensitivity_more;
 		}
 
 		if (hover_over_button != nullptr)
