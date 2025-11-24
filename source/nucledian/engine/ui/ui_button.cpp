@@ -78,6 +78,8 @@ namespace nc
 
 	void UiButton::draw([[maybe_unused]] const ShaderProgramHandle button_material)
 	{
+		button_material.use();
+
 		const TextureManager& manager = TextureManager::get();
 		const TextureHandle& texture = manager[texture_name];
 
@@ -597,6 +599,54 @@ namespace nc
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glBindVertexArray(0);
+		
+		// rendering of values
+
+		digit_shader.use();
+
+		std::vector<vec2> positions = { vec2(0.4f, 0.15f), vec2(0.4f, -0.1), vec2(0.4f, -0.35) };
+		std::vector<int> steps = { soundStep, musicStep, sensitivityStep - 1 }; //sensitivity step is 1 - 10, but we can draw only 0 - 9
+
+		glBindVertexArray(VAO);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+
+		glDisable(GL_DEPTH_TEST);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		const TextureManager& manager = TextureManager::get();
+		const TextureHandle& texture = manager["ui_font"];
+
+		for (size_t i = 0; i < 3; i++)
+		{
+			glm::mat4 trans_mat = glm::mat4(1.0f);
+			vec2 translate = positions[i];
+			trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+			trans_mat = glm::scale(trans_mat, glm::vec3(0.05f, 0.1f, 1));
+
+			const glm::mat4 final_trans = trans_mat;
+
+			int digit = steps[i] + 48;
+
+			digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+			digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+			digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+			digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+			digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
+
+			glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		}
+
+		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glBindVertexArray(0);
 	}
 
 	void OptionsPage::set_windowed()
@@ -649,7 +699,8 @@ namespace nc
 		get_engine().get_module<SoundSystem>().set_music_voulme(musicStep);
 	}
 
-	OptionsPage::OptionsPage()
+	OptionsPage::OptionsPage() :
+		digit_shader(shaders::ui_text::VERTEX_SOURCE, shaders::ui_text::FRAGMENT_SOURCE)
 	{
 		sound_text = new UiButton("ui_sound", vec2(-0.3f, 0.15f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
 		music_text = new UiButton("ui_music", vec2(-0.3f, -0.1f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));

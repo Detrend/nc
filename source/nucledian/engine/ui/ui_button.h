@@ -104,6 +104,9 @@ namespace nc
     void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
     void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
+
+    const ShaderProgramHandle digit_shader;
+
     void do_nothing() {};
 
     void set_windowed();
