@@ -160,9 +160,9 @@ void InputSystem::get_player_inputs()
   int x, y;
   u32 mouseCode = SDL_GetRelativeMouseState(&x, &y);
 
-  f32 sensitivity = -1.0f / 800.0f;
-  m_current_inputs.player_inputs.analog[PlayerAnalogInputs::look_vertical]   = y * sensitivity;
-  m_current_inputs.player_inputs.analog[PlayerAnalogInputs::look_horizontal] = x * sensitivity;
+  //f32 sensitivity = SENSITIVITY;
+  m_current_inputs.player_inputs.analog[PlayerAnalogInputs::look_vertical]   = y * SENSITIVITY;
+  m_current_inputs.player_inputs.analog[PlayerAnalogInputs::look_horizontal] = x * SENSITIVITY;
 
   if (SDL_BUTTON(mouseCode) == 1)
   {
@@ -190,6 +190,13 @@ GameInputs InputSystem::get_prev_inputs() const
   }
 
   return m_previous_inputs;
+}
+
+void InputSystem::set_sensitivity(int step)
+{
+  float ZERO_SENSITIVITY = -0.0003125f;
+
+  SENSITIVITY = ZERO_SENSITIVITY * step;
 }
 
 }
