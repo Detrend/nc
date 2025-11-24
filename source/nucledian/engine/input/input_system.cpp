@@ -15,7 +15,7 @@ namespace nc
 {
 
 //==============================================================================
-static void handle_player_input(GameInputs& inputs)
+void handle_player_input(GameInputs& inputs)
 {
   namespace Keys      = PlayerKeyInputs;
   namespace Analogues = PlayerAnalogInputs;
@@ -55,7 +55,7 @@ static void handle_player_input(GameInputs& inputs)
   int x, y;
   u32 mouse_code = SDL_GetRelativeMouseState(&x, &y);
 
-  f32 sensitivity = -1.0f / 800.0f;
+  f32 sensitivity = get_engine().get_module<InputSystem>().get_sensitivity();
   inputs.player_inputs.analog[Analogues::look_vertical  ] = y * sensitivity;
   inputs.player_inputs.analog[Analogues::look_horizontal] = x * sensitivity;
 
@@ -169,6 +169,11 @@ void InputSystem::set_sensitivity(int step)
   float ZERO_SENSITIVITY = -0.0003125f;
 
   SENSITIVITY = ZERO_SENSITIVITY * step;
+}
+
+float InputSystem::get_sensitivity()
+{
+  return SENSITIVITY;
 }
 
 }
