@@ -117,6 +117,9 @@ namespace nc
 
     bool isWindowed = true;
 
+    int soundStep = 9;
+    int musicStep = 9;
+    int sensitivityStep = 4;
   };
 
   //======================================================================================
