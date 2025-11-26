@@ -1,10 +1,8 @@
 ## Quick and dirty level editor
 
-> This is in no way intended to be used long-term, it's just a quickly put-together, unmaintainable piece of junk that will hopefully let us experiment with level design without needing to wait for the real level editor to be finished.
+> T̶̶h̶̶i̶̶s̶̶ ̶i̶̶s̶̶ ̶i̶̶n̶̶ ̶n̶̶o̶̶ ̶w̶̶a̶̶y̶̶ ̶i̶̶n̶̶t̶̶e̶̶n̶̶d̶̶e̶̶d̶̶ ̶t̶̶o̶̶ ̶b̶̶e̶̶ ̶u̶̶s̶̶e̶̶d̶̶ ̶l̶̶o̶̶n̶̶g̶̶-̶̶t̶̶e̶̶r̶̶m̶̶,̶ ̶i̶̶t̶̶'̶s̶̶ ̶j̶̶u̶̶s̶̶t̶̶ ̶a̶̶ ̶q̶̶u̶̶i̶̶c̶̶k̶̶l̶̶y̶̶ ̶p̶̶u̶̶t̶̶-̶̶t̶̶o̶̶g̶̶e̶̶t̶̶h̶̶e̶̶r̶̶,̶ ̶u̶̶n̶̶m̶̶a̶̶i̶̶n̶̶t̶̶a̶̶i̶̶n̶̶a̶̶b̶̶l̶̶e̶̶ ̶p̶̶i̶̶e̶̶c̶̶e̶̶ ̶o̶̶f̶̶ ̶j̶̶u̶̶n̶̶k̶̶ ̶t̶̶h̶̶a̶̶t̶̶ ̶w̶̶i̶̶l̶̶l̶̶ ̶h̶̶o̶̶p̶̶e̶̶f̶̶u̶̶l̶̶l̶̶y̶̶ ̶l̶̶e̶̶t̶̶ ̶u̶̶s̶̶ ̶e̶̶x̶̶p̶̶e̶̶r̶̶i̶̶m̶̶e̶̶n̶̶t̶̶ ̶w̶̶i̶̶t̶̶h̶̶ ̶l̶̶e̶̶v̶̶e̶̶l̶̶ ̶d̶̶e̶̶s̶̶i̶̶g̶̶n̶̶ ̶w̶̶i̶̶t̶̶h̶̶o̶̶u̶̶t̶̶ ̶n̶̶e̶̶e̶̶d̶̶i̶̶n̶̶g̶̶ ̶t̶̶o̶̶ ̶w̶̶a̶̶i̶̶t̶̶ ̶f̶̶o̶̶r̶̶ ̶t̶̶h̶̶e̶̶ ̶r̶̶e̶̶a̶̶l̶̶ ̶l̶̶e̶̶v̶̶e̶̶l̶̶ ̶e̶̶d̶̶i̶̶t̶̶o̶̶r̶̶ ̶t̶̶o̶̶ ̶b̶̶e̶̶ ̶f̶̶i̶̶n̶̶i̶̶s̶̶h̶̶e̶̶d̶̶.̶
 
-To run, just open this in Godot 4.4.1 as one would with any normal game project.   
-
-To try out the exported level, use game branch `qd-level-import` and make sure `JSON_LEVEL_PATH` at the top of `thing_system.cpp` is set to the path to your exported level.
+To run, just open this in Godot 4.5.1 as one would with any normal game project.   
 
 
 ---------------------------------
