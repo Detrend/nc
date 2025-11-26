@@ -12,6 +12,8 @@
 
 #include <algorithm> // std::count_if
 
+// TODO:
+// - topo sort for triggers based on their activator dependency
 
 namespace nc
 {

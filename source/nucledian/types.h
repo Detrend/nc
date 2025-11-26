@@ -28,4 +28,24 @@ using s64 = std::int64_t;
 using f32 = float;
 using f64 = double;
 
+constexpr u64 operator""_u64(unsigned long long int n)
+{
+  return static_cast<u64>(n);
+}
+
+constexpr u32 operator""_u32(unsigned long long int n)
+{
+  return static_cast<u32>(n);
+}
+
+constexpr u16 operator""_u16(unsigned long long int n)
+{
+  return static_cast<u16>(n);
+}
+
+constexpr u8 operator""_u8(unsigned long long int n)
+{
+  return static_cast<u8>(n);
+}
+
 }

@@ -44,7 +44,7 @@ void Profiler::new_frame(u64 idx, f32 /*dt*/)
       // Reset number of calls as well
       std::fill
       (
-        it->second.num_calls.begin(), it->second.num_calls.end(), u32{0}
+        it->second.num_calls.begin(), it->second.num_calls.end(), 0_u32
       );
     }
 

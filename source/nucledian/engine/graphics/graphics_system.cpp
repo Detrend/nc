@@ -893,7 +893,7 @@ static void draw_main_plot()
   static std::array<u32, Profiler::MAX_SAMPLES> XS_U32 = []()
   {
     std::array<u32, Profiler::MAX_SAMPLES> data;
-    std::iota(data.begin(), data.end(), u32{0});
+    std::iota(data.begin(), data.end(), 0_u32);
     return data;
   }();
 

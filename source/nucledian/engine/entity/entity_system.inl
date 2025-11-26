@@ -21,7 +21,7 @@ void EntityRegistry::for_each(EntityTypeMask types, L lambda)
   for (EntityType t = 0; t < m_pools.size(); ++t)
   {
     // and check if the pool stores the type we are interested in
-    if (types & (u64{1} << t))
+    if (types & (1_u64 << t))
     {
       // if so then iterate all entities
       for (auto&[idx, entity_unique] : m_pools[t])
