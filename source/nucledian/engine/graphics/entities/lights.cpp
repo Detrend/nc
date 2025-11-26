@@ -7,6 +7,8 @@
 namespace nc
 {
 
+constexpr f32 RADIUS_COEFF = 0.23f;
+
 //==============================================================================
 EntityType AmbientLight::get_type_static()
 {
@@ -70,7 +72,7 @@ PointLight::PointLight
   const color3& color
 )
 :
-  Entity(position, calculate_radius(color, intensity, constant, linear, quadratic)),
+  Entity(position, RADIUS_COEFF * calculate_radius(color, intensity, constant, linear, quadratic)),
   color(color),
   intensity(clamp(intensity, 0.0f, 1.0f)),
   constant(constant),
@@ -111,7 +113,7 @@ void PointLight::refresh_entity_radius()
     this->color, this->intensity, this->constant, this->linear, this->quadratic
   );
 
-  this->set_radius(max(radius, 0.0f));
+  this->set_radius(max(radius * RADIUS_COEFF, 0.0f));
 }
 
 //==============================================================================

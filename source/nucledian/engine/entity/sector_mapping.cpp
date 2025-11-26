@@ -3,6 +3,7 @@
 
 #include <engine/entity/sector_mapping.h>
 #include <engine/map/map_system.h>
+#include <engine/entity/entity_type_definitions.h>
 
 #include <iterator>
 
@@ -96,7 +97,14 @@ void SectorMapping::on_entity_create(EntityID id, vec3 pos, f32 rad, f32 /*h*/)
   nc_assert(!entities_to_sectors.contains(id), "Duplicate entry!!!");
 
   SectorSet sectors;
-  map.query_nearby_sectors_short_distance(pos.xz(), rad, sectors);
+  if (id.type == EntityTypes::point_light)
+  {
+    map.query_nearby_sectors_for_lights(pos.xz(), rad, sectors);
+  }
+  else
+  {
+    map.query_nearby_sectors_short_distance(pos.xz(), rad, sectors);
+  }
 
   // Emplace empty
   auto[it, ok] = entities_to_sectors.emplace(id, SectorsAndTransforms{});

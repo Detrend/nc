@@ -18,6 +18,7 @@
 #include <glm/gtc/matrix_access.hpp>
 
 #include <glm/gtx/euler_angles.hpp>
+#include <glm/gtx/norm.hpp>
 
 namespace nc
 {

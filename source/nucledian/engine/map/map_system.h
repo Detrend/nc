@@ -266,6 +266,13 @@ struct MapSectors
     SectorSet& sectors_out
   ) const;
 
+  void query_nearby_sectors_for_lights
+  (
+    vec2       position,
+    f32        range,
+    SectorSet& sectors_out
+  ) const;
+
   // Iterates all portals of this sector
   bool for_each_portal_of_sector(SectorID sector, WallVisitor visitor) const;
 

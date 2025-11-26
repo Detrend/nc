@@ -331,6 +331,115 @@ const
 }
 
 //==============================================================================
+void MapSectors::query_nearby_sectors_for_lights
+(
+  vec2       pos,
+  f32        range,
+  SectorSet& sectors_out
+)
+const
+{
+  nc_assert(sectors_out.sectors.empty());
+  nc_assert(sectors_out.transforms.empty());
+
+  struct Item
+  {
+    SectorID sid;
+    vec2     pt;
+    f32      dist;
+    mat4     trans;
+  };
+
+  // Perform a floodfill from the given point
+  // NOTE: this algorithm assumes that we do not visit the same sectors through
+  // different NC portals twice. In such case it might not work properly.
+  SectorSet        visited;
+  std::queue<Item> to_visit;
+
+  constexpr u64 MAX_START_SECTORS = 8;
+  SectorID start_sectors[MAX_START_SECTORS]{};
+
+  u64 start_cnt = map_helpers::get_sectors_from_point
+  (
+    *this, pos, start_sectors, MAX_START_SECTORS
+  );
+
+  if (!start_cnt)
+  {
+    // We are outside all sectors..
+    return;
+  }
+
+  // Insert the starting sectors
+  for (u64 i = 0; i < std::min(MAX_START_SECTORS, start_cnt); ++i)
+  {
+    mat4     trans = identity<mat4>();
+    SectorID sid   = start_sectors[i];
+
+    to_visit.push(Item{sid, pos, range, trans});
+    visited.sectors.push_back(sid);
+    visited.transforms.push_back(trans);
+  }
+
+  // Then go on
+  while (!to_visit.empty())
+  {
+    auto[sid, pt, r, trans] = to_visit.front();
+    to_visit.pop();
+
+    map_helpers::for_each_portal(*this, sid, [&](WallID wid)
+    {
+      const WallData& wd  = this->walls[wid];
+      const WallData& wd2 = this->walls[map_helpers::next_wall(*this, sid, wid)];
+      if (!wd.is_portal())
+      {
+        // It is not a portal
+        return;
+      }
+
+      SectorID neighbor = wd.portal_sector_id;
+      auto vis_b = visited.sectors.begin();
+      auto vis_e = visited.sectors.end();
+      if (std::find(vis_b, vis_e, neighbor) != vis_e)
+      {
+        // This sector was already visited
+        return;
+      }
+
+      // Not visited? Then let's visit it.
+      // Calculate the absolute transform of the sector relative to us.
+      if (wd.get_portal_type() == PortalType::non_euclidean) [[unlikely]]
+      {
+        if (f32 d = dist::point_line_2d(pt, wd.pos, wd2.pos); d <= r)
+        {
+          vec2 midpt    = (wd.pos + wd2.pos) * 0.5f;
+          mat4 relative = this->calc_portal_to_portal_projection(sid, wid);
+
+          mat4 full_trans = relative * trans;
+          vec2 tpt = (relative * vec4{midpt.x, 0.0f, midpt.y, 1.0f}).xz();
+
+          to_visit.push(Item{neighbor, tpt, r-d, full_trans});
+          visited.sectors.push_back(neighbor);
+          visited.transforms.push_back(full_trans);
+        }
+      }
+      else
+      {
+        if (dist::point_line_2d(pt, wd.pos, wd2.pos) <= r)
+        {
+          to_visit.push(Item{neighbor, pt, r, trans});
+          visited.sectors.push_back(neighbor);
+          visited.transforms.push_back(trans);
+        }
+      }
+    });
+  }
+
+  // Move it from the visited list to output
+  sectors_out = std::move(visited);
+}
+
+//==============================================================================
 void MapSectors::query_visible_sectors_impl
 (
   const SectorID*      start_sector,

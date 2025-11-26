@@ -164,27 +164,30 @@ const ShaderProgramHandle& Renderer::get_solid_material() const
 }
 
 //==============================================================================
-bool Renderer::EntityRedundancyChecker::check_redundant(u64 id, mat4 trans)
+bool Renderer::EntityRedundancyChecker::check_redundant(u64 id, vec3 pos)
 {
   auto it = registry.find(id);
   if (it == registry.end())
   {
     // Never seen before, our first time together
-    registry.insert({id, std::vector<mat4>{trans}});
+    registry.insert({id, std::vector<vec3>{pos}});
     return true;
   }
 
-  std::vector<mat4>& tlist = it->second;
-  if (std::find(tlist.begin(), tlist.end(), trans) == tlist.end())
+  std::vector<vec3>& tlist = it->second;
+  for (vec3 pt : tlist)
   {
-    // We saw this light before, but from a different spot with a different
-    // transformation matrix.
-    tlist.push_back(trans);
-    return true;
+    if (distance2(pt, pos) <= DIST_THRESHOLD * DIST_THRESHOLD)
+    {
+      // It is there
+      return false;
+    }
   }
 
-  // Already found once
-  return false;
+  // We saw this light before, but from a different spot with a different
+  // transformation matrix.
+  tlist.push_back(pos);
+  return true;
 }
 
 //==============================================================================
@@ -571,13 +574,18 @@ void Renderer::render_entities(const CameraData& camera) const
     SectorID sid = frustum.sector;
     mapping.for_each_in_sector(sid, [&](EntityID id, mat4 t)
     {
+      const Entity* entity = registry.get_entity(id);
+      nc_assert(entity);
+      vec3 world_pos  = entity->get_position();
+      vec3 camera_pos = (camera.view * t * vec4{world_pos, 1.0f}).xyz();
+
       if (id.type == EntityTypes::point_light)
       {
         // Now, we have to make sure to not include any light twice..
         // However, this is not an easy task, as one light can shine on us from
         // two different portals at the same time. Therefore, we have to first
         // distinguish them by their ID and then by their position.
-        if (m_light_checker.check_redundant(id.as_u64(), t))
+        if (m_light_checker.check_redundant(id.as_u64(), camera_pos))
         {
           // Has to exist because it is in sector mapping
           nc_assert(registry.get_entity(id));
@@ -594,9 +602,6 @@ void Renderer::render_entities(const CameraData& camera) const
       }
       else
       {
-        const Entity* entity = registry.get_entity(id);
-        nc_assert(entity);
-
         const Appearance* appearance = entity->get_appearance();
         if (!appearance)
         {
@@ -607,7 +612,7 @@ void Renderer::render_entities(const CameraData& camera) const
         //const ResLifetime lifetime = texture.get_lifetime();
         //groups[lifetime].insert(entity);
 
-        if (m_entity_checker.check_redundant(id.as_u64(), t))
+        if (m_entity_checker.check_redundant(id.as_u64(), camera_pos))
         {
           auto& group = groups[cast<u64>(ResLifetime::Game)];
           EntityRenderData& render_data = group[id.as_u64()];

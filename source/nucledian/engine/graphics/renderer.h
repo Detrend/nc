@@ -62,8 +62,9 @@ private:
   // by its hash, which could speed it up a little bit (4x4 floats = 64 bytes).
   struct EntityRedundancyChecker
   {
-    bool check_redundant(u64 id, mat4 transform);
-    std::unordered_map<u64, std::vector<mat4>> registry;
+    static constexpr f32 DIST_THRESHOLD = 0.25f; // 25cm
+    bool check_redundant(u64 id, vec3 camera_space_pos);
+    std::unordered_map<u64, std::vector<vec3>> registry;
   };
 
   static constexpr size_t LIGHT_CULLING_TILE_SIZE_X = 8;
