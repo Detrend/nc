@@ -1,4 +1,4 @@
-[gd_scene load_steps=225 format=3 uid="uid://befdk2p7cnnba"]
+[gd_scene load_steps=226 format=3 uid="uid://befdk2p7cnnba"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_nqbmo"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_l4525"]
@@ -23,6 +23,7 @@
 [ext_resource type="PackedScene" uid="uid://ctwevapidummr" path="res://prefabs/Lights/PointLight.tscn" id="20_xbdba"]
 [ext_resource type="PackedScene" uid="uid://dgu644cct1eeb" path="res://prefabs/Entities/Possessed.tscn" id="22_3ce7l"]
 [ext_resource type="PackedScene" uid="uid://2lt4yhe883yf" path="res://prefabs/Lights/AmbientLight.tscn" id="23_au8ug"]
+[ext_resource type="PackedScene" uid="uid://j4vtgvfml3yh" path="res://prefabs/Props/ScatteredFlesh.tscn" id="24_sc5vv"]
 
 [sub_resource type="Resource" id="Resource_h15or"]
 script = ExtResource("4_h15or")
@@ -340,139 +341,138 @@ material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_i6y5j"]
 script = ExtResource("4_h15or")
-floor_height = 0.347826
+floor_height = 0.34782608695652173
 ceiling_height = 6.0
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_mo35u"]
 script = ExtResource("4_h15or")
-floor_height = 0.49565200000000004
+floor_height = 0.4956521739130435
 ceiling_height = 6.0
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_x703p"]
 script = ExtResource("4_h15or")
-floor_height = 0.643478
+floor_height = 0.6434782608695653
 ceiling_height = 6.0
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_bklt4"]
 script = ExtResource("4_h15or")
-floor_height = 0.791304
 ceiling_height = 3.0
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_kd8mq"]
 script = ExtResource("4_h15or")
-floor_height = 0.93913
+floor_height = 0.2
 ceiling_height = 3.2
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_0m6xw"]
 script = ExtResource("4_h15or")
-floor_height = 1.086956
+floor_height = 0.4
 ceiling_height = 3.4000000000000004
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_c6a8k"]
 script = ExtResource("4_h15or")
-floor_height = 1.234782
+floor_height = 0.6000000000000001
 ceiling_height = 3.6000000000000005
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_sdn6o"]
 script = ExtResource("4_h15or")
-floor_height = 1.382608
+floor_height = 0.8
 ceiling_height = 3.8000000000000007
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_1dcth"]
 script = ExtResource("4_h15or")
-floor_height = 1.530434
+floor_height = 1.530434782608696
 ceiling_height = 6.0
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_2v1cl"]
 script = ExtResource("4_h15or")
-floor_height = 1.67826
+floor_height = 1.6782608695652177
 ceiling_height = 6.0
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_brq1o"]
 script = ExtResource("4_h15or")
-floor_height = 1.826086
+floor_height = 1.8260869565217395
 ceiling_height = 6.0
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_7i31c"]
 script = ExtResource("4_h15or")
-floor_height = 1.9739120000000001
+floor_height = 1.9739130434782612
 ceiling_height = 6.0
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_xumdc"]
 script = ExtResource("4_h15or")
-floor_height = 2.121738
+floor_height = 2.121739130434783
 ceiling_height = 6.0
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_750p3"]
 script = ExtResource("4_h15or")
-floor_height = 2.269564
+floor_height = 2.2695652173913046
 ceiling_height = 6.0
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_6msd8"]
 script = ExtResource("4_h15or")
-floor_height = 2.41739
+floor_height = 2.4173913043478263
 ceiling_height = 6.0
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_our03"]
 script = ExtResource("4_h15or")
-floor_height = 2.5652160000000004
+floor_height = 2.565217391304348
 ceiling_height = 6.0
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_glucu"]
 script = ExtResource("4_h15or")
-floor_height = 2.7130420000000006
+floor_height = 2.71304347826087
 ceiling_height = 6.0
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_8d65h"]
 script = ExtResource("4_h15or")
-floor_height = 2.860868000000001
+floor_height = 2.8608695652173917
 ceiling_height = 6.0
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_8jvu6"]
 script = ExtResource("4_h15or")
-floor_height = 3.008694000000001
+floor_height = 3.0086956521739134
 ceiling_height = 6.0
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_1ryfd"]
 script = ExtResource("4_h15or")
-floor_height = 3.1565200000000013
+floor_height = 3.156521739130435
 ceiling_height = 6.0
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_mk60v"]
 script = ExtResource("4_h15or")
-floor_height = 3.3043460000000016
+floor_height = 3.304347826086957
 ceiling_height = 6.0
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_5kxvq"]
 script = ExtResource("4_h15or")
-floor_height = 3.452172000000002
+floor_height = 3.4521739130434788
 ceiling_height = 6.2
 material = ExtResource("6_2dkgu")
 
 [sub_resource type="Resource" id="Resource_xrb3f"]
 script = ExtResource("4_h15or")
-floor_height = 3.599998000000002
+floor_height = 3.6000000000000005
 ceiling_height = 7.0
 material = ExtResource("6_2dkgu")
 
@@ -1805,8 +1805,8 @@ position = Vector2(264, -45)
 [node name="StairMaker" parent="Sectors/StairSequence" instance=ExtResource("5_l4xrs")]
 set_floor = true
 floor_begin = 0.2
-floor_end = 3.5999980000000003
-floor_increment = 0.147826
+floor_end = 3.6000000000000005
+floor_increment = 0.14782608695652175
 ceiling_end = nan
 ceiling_increment = nan
 
@@ -1821,209 +1821,208 @@ ceiling_height = 6.0
 
 [node name="@Polygon2D@24469" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.9560035, 0.9116605, 0.92898196, 1)
+color = Color(0.9560035, 0.9116605, 0.9289819, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(254, -72, 259, -69, 246, -60)
 data = SubResource("Resource_i6y5j")
-floor_height = 0.347826
+floor_height = 0.34782608695652173
 ceiling_height = 6.0
 
 [node name="@Polygon2D@24817" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.9374421, 0.8743917, 0.8990207, 1)
+color = Color(0.9374421, 0.8743916, 0.8990207, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(259, -69, 262, -65, 246, -60)
 data = SubResource("Resource_mo35u")
-floor_height = 0.49565200000000004
+floor_height = 0.4956521739130435
 ceiling_height = 6.0
 
 [node name="@Polygon2D@30042" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.918952, 0.8372657, 0.8691743, 1)
+color = Color(0.9189519, 0.8372656, 0.86917424, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(246, -60, 262, -65, 263, -60)
 data = SubResource("Resource_x703p")
-floor_height = 0.643478
+floor_height = 0.6434782608695653
 ceiling_height = 6.0
 
 [node name="@Polygon2D@30390" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.90052557, 0.8002678, 0.8394309, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(246, -60, 263, -60, 263, -53, 245, -53)
 data = SubResource("Resource_bklt4")
-floor_height = 0.791304
 ceiling_height = 3.0
 
 [node name="@Polygon2D@30738" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.88215566, 0.76338327, 0.8097786, 1)
+color = Color(0.97464335, 0.94908696, 0.9590699, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(245, -53, 263, -53, 263, -47, 245, -47)
 data = SubResource("Resource_kd8mq")
-floor_height = 0.93913
+floor_height = 0.2
 ceiling_height = 3.2
 
 [node name="@Polygon2D@31086" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.86383474, 0.7265972, 0.7802055, 1)
+color = Color(0.9494438, 0.89848953, 0.9183935, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(245, -47, 263, -47, 263, -41, 245, -41)
 data = SubResource("Resource_0m6xw")
-floor_height = 1.086956
+floor_height = 0.4
 ceiling_height = 3.4000000000000004
 
 [node name="@Polygon2D@44213" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.8455556, 0.68989503, 0.75069976, 1)
+color = Color(0.9243833, 0.84817106, 0.87794137, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(263, -41, 263, -35, 245, -35, 245, -41)
 data = SubResource("Resource_c6a8k")
-floor_height = 1.234782
+floor_height = 0.6000000000000001
 ceiling_height = 3.6000000000000005
 
 [node name="@Polygon2D@25686" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.8273108, 0.6532618, 0.72124946, 1)
+color = Color(0.89944345, 0.798095, 0.83768415, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(245, -35, 263, -35, 263, -29, 245, -28)
 data = SubResource("Resource_sdn6o")
-floor_height = 1.382608
+floor_height = 0.8
 ceiling_height = 3.8000000000000007
 
 [node name="_Polygon2D_26386aa" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.8090931, 0.6166829, 0.6918429, 1)
+color = Color(0.809093, 0.61668265, 0.69184273, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(245, -28, 263, -29, 264.091, -27.9093, 247, -17, 245, -20)
 data = SubResource("Resource_1dcth")
-floor_height = 1.530434
+floor_height = 1.530434782608696
 ceiling_height = 6.0
 
 [node name="_Polygon2D_26386ab" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.790895, 0.5801433, 0.66246796, 1)
+color = Color(0.79089487, 0.5801431, 0.66246784, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(264.091, -27.9093, 265, -27, 256, -12, 247, -17)
 data = SubResource("Resource_2v1cl")
-floor_height = 1.67826
+floor_height = 1.6782608695652177
 ceiling_height = 6.0
 
 [node name="_Polygon2D_26386baa" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.7727092, 0.54362845, 0.6331129, 1)
+color = Color(0.7727091, 0.5436283, 0.6331127, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(265, -27, 265, -10, 256, -12)
 data = SubResource("Resource_brq1o")
-floor_height = 1.826086
+floor_height = 1.8260869565217395
 ceiling_height = 6.0
 
 [node name="_Polygon2D_26386bab" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.75452834, 0.50712365, 0.60376585, 1)
+color = Color(0.7545282, 0.5071234, 0.60376567, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(265, -27, 273, -12, 265, -10)
 data = SubResource("Resource_7i31c")
-floor_height = 1.9739120000000001
+floor_height = 1.9739130434782612
 ceiling_height = 6.0
 
 [node name="_Polygon2D_26386bba" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.7363451, 0.47061396, 0.5744149, 1)
+color = Color(0.73634493, 0.47061366, 0.5744147, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(265, -27, 266.024, -28.024, 282, -18, 273, -12)
 data = SubResource("Resource_xumdc")
-floor_height = 2.121738
+floor_height = 2.121739130434783
 ceiling_height = 6.0
 
 [node name="_Polygon2D_26386bbb" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.71815205, 0.43408465, 0.54504824, 1)
+color = Color(0.7181519, 0.43408436, 0.545048, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(266.024, -28.024, 267, -29, 284, -28, 284, -21, 282, -18)
 data = SubResource("Resource_750p3")
-floor_height = 2.269564
+floor_height = 2.2695652173913046
 ceiling_height = 6.0
 
 [node name="@Polygon2D@29862" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.6999419, 0.3975209, 0.5156538, 1)
+color = Color(0.69994175, 0.39752066, 0.5156536, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(267, -29, 267, -35, 284, -35, 284, -28)
 data = SubResource("Resource_6msd8")
-floor_height = 2.41739
+floor_height = 2.4173913043478263
 ceiling_height = 6.0
 
 [node name="@Polygon2D@31604" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.6817073, 0.36090815, 0.48622, 1)
+color = Color(0.68170714, 0.36090773, 0.48621964, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(267, -41, 284, -41, 284, -35, 267, -35)
 data = SubResource("Resource_our03")
-floor_height = 2.5652160000000004
+floor_height = 2.565217391304348
 ceiling_height = 6.0
 
 [node name="@Polygon2D@32646" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.6634408, 0.32423127, 0.45673466, 1)
+color = Color(0.6634407, 0.32423103, 0.45673448, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(267, -47, 284, -47, 284, -41, 267, -41)
 data = SubResource("Resource_glucu")
-floor_height = 2.7130420000000006
+floor_height = 2.71304347826087
 ceiling_height = 6.0
 
 [node name="@Polygon2D@34040" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.6451352, 0.28747594, 0.42718625, 1)
+color = Color(0.645135, 0.28747547, 0.42718583, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(267, -53, 284, -53, 284, -47, 267, -47)
 data = SubResource("Resource_8d65h")
-floor_height = 2.860868000000001
+floor_height = 2.8608695652173917
 ceiling_height = 6.0
 
 [node name="@Polygon2D@37536" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.626783, 0.25062704, 0.39756262, 1)
+color = Color(0.62678283, 0.25062662, 0.39756227, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(267, -60, 284, -57, 284, -53, 267, -53)
 data = SubResource("Resource_8jvu6")
-floor_height = 3.008694000000001
+floor_height = 3.0086956521739134
 ceiling_height = 6.0
 
 [node name="@Polygon2D@38925" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.608377, 0.2136699, 0.3678519, 1)
+color = Color(0.60837674, 0.21366942, 0.36785156, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(270, -67, 284, -57, 267, -60)
 data = SubResource("Resource_1ryfd")
-floor_height = 3.1565200000000013
+floor_height = 3.156521739130435
 ceiling_height = 6.0
 
 [node name="@Polygon2D@40329" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.58990955, 0.17658973, 0.33804238, 1)
+color = Color(0.5899093, 0.17658925, 0.33804196, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(276, -71, 284, -57, 270, -67)
 data = SubResource("Resource_mk60v")
-floor_height = 3.3043460000000016
+floor_height = 3.304347826086957
 ceiling_height = 6.0
 
 [node name="@Polygon2D@41376" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.5713736, 0.13937187, 0.3081221, 1)
+color = Color(0.57137334, 0.1393714, 0.30812174, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(284, -74, 284, -57, 276, -71)
 data = SubResource("Resource_5kxvq")
-floor_height = 3.452172000000002
+floor_height = 3.4521739130434788
 ceiling_height = 6.2
 
 [node name="Sector" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.5527617, 0.10200149, 0.27807927, 1)
+color = Color(0.5527615, 0.10200107, 0.2780789, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(284, -74, 296, -76, 296, -57, 284, -57)
 data = SubResource("Resource_xrb3f")
-floor_height = 3.599998000000002
+floor_height = 3.6000000000000005
 ceiling_height = 7.0
 
 [node name="@Polygon2D@45551" parent="Sectors/StairSequence" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
@@ -3299,47 +3298,46 @@ ceiling_increment = 0.2
 
 [node name="_Polygon2D_30390" parent="Sectors/Test2" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.90052557, 0.8002678, 0.8394309, 1)
+color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(245, -59, 263, -59, 263, -53, 245, -53)
 data = SubResource("Resource_bklt4")
-floor_height = 0.791304
 ceiling_height = 3.0
 
 [node name="_Polygon2D_30738" parent="Sectors/Test2" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.88215566, 0.76338327, 0.8097786, 1)
+color = Color(0.97464335, 0.94908696, 0.9590699, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(245, -53, 263, -53, 263, -47, 245, -47)
 data = SubResource("Resource_kd8mq")
-floor_height = 0.93913
+floor_height = 0.2
 ceiling_height = 3.2
 
 [node name="_Polygon2D_31086" parent="Sectors/Test2" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.86383474, 0.7265972, 0.7802055, 1)
+color = Color(0.9494438, 0.89848953, 0.9183935, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(245, -47, 263, -47, 263, -41, 245, -41)
 data = SubResource("Resource_0m6xw")
-floor_height = 1.086956
+floor_height = 0.4
 ceiling_height = 3.4000000000000004
 
 [node name="_Polygon2D_44213" parent="Sectors/Test2" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.8455556, 0.68989503, 0.75069976, 1)
+color = Color(0.9243833, 0.84817106, 0.87794137, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(263, -41, 263, -35, 245, -35, 245, -41)
 data = SubResource("Resource_c6a8k")
-floor_height = 1.234782
+floor_height = 0.6000000000000001
 ceiling_height = 3.6000000000000005
 
 [node name="_Polygon2D_25686" parent="Sectors/Test2" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.8273108, 0.6532618, 0.72124946, 1)
+color = Color(0.89944345, 0.798095, 0.83768415, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(245, -35, 263, -35, 263, -29, 245, -29)
 data = SubResource("Resource_sdn6o")
-floor_height = 1.382608
+floor_height = 0.8
 ceiling_height = 3.8000000000000007
 portal_destination = NodePath("../_Polygon2D_30390")
 portal_wall = 2
@@ -3499,6 +3497,11 @@ constant = 0.5
 [node name="AmbientLight" parent="Lights" instance=ExtResource("23_au8ug")]
 position = Vector2(11, -17)
 intensity = 0.3
+
+[node name="Props" type="Node2D" parent="."]
+
+[node name="ScatteredFlesh" parent="Props" instance=ExtResource("24_sc5vv")]
+position = Vector2(-5013.0005, -5381.0005)
 
 [node name="PlayerPosition" parent="." instance=ExtResource("3_nqbmo")]
 position = Vector2(-5012.0005, -5424)
