@@ -386,17 +386,38 @@ func _perform_extrusion(idx: int, points: PackedVector2Array)->void:
 	#get_undo_redo_raw().undo() # remove the add-point polygon action from history
 
 	var unre := get_undo_redo()
-	unre.create_action("Extrude ({0}[{1}][{2}])".format([get_full_name(), a, b]))
+	var history := unre.get_history_undo_redo(unre.get_object_history_id(self))
+	while history.get_history_count() > 0:
+		var current_action := history.get_current_action_name()
+		print("undoing: '{0}'".format([history.get_current_action_name()]))
+		history.undo()
+		if current_action == "Insert Point": break
+	print("current action: '{0}'".format([history.get_current_action_name()]))
+	var extrude_action_name = "Extrude ({0}[{1}..{2}])".format([get_full_name(), a, b])
+	unre.create_action(extrude_action_name)
 	var new_sector_command := _level.make_add_sector_command(prefab_to_use, self.global_position, points_to_give, get_loop_cut_product_name(original_name), get_parent())
 	new_sector_command.child_idx = self.get_index() + 1
 	var new_sector := _level.add_sector(new_sector_command, unre)
 	new_sector.global_position = self.global_position
 	new_sector.data = self.data.duplicate()
 	unre.add_do_property(self, 'polygon', points_to_keep)
-	unre.add_undo_property(self, 'polygon', original_points)
+	unre.add_undo_property(self, 'polygon', points_to_keep)
 	unre.add_do_method(self, 'on_editing_finish', false)
 	unre.add_do_method(new_sector, 'on_editing_finish', false)
 	unre.commit_action()
+	NodeUtils.set_selection([new_sector])
+	await _level.every_frame_signal
+	await _level.every_frame_signal
+	if history.get_current_action_name() == extrude_action_name:
+		return
+	print("on next frame...")
+	while history.get_history_count() > 0:
+		var current_action := history.get_current_action_name()
+		print("undoing: '{0}'".format([history.get_current_action_name()]))
+		history.undo()
+		if current_action == extrude_action_name: break
+	
+	history.redo()
 	NodeUtils.set_selection([new_sector])
 
 var _loop_cut_first_idx : int = -1
