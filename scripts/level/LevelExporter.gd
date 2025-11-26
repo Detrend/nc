@@ -50,7 +50,7 @@ func init_datastructs()->void:
 	walls_map = {}
 	all_sectors = _level.get_sectors(true);
 	
-	all_things = _level.get_things()
+	all_things = _level.get_standalone_things()
 
 
 
@@ -283,31 +283,43 @@ static func get_texture_config(texture_def: TextureDefinition, texturing_type: I
 
 
 func process_things_in_sector(all_things: Array, sector: Sector, export_things: Dictionary)->void:
-	var i:= 0
-	while i < all_things.size():
-		var current :Thing = all_things[i]
+	for i in Vector3i(all_things.size()-1, -1, -1):
+		var current :Thing = all_things[i]		
 		var pos := current.global_position
-		if sector.contains_point(pos):
-			var current_export : Dictionary = {}
-			var export_coords_2d = _get_export_coords(pos)
-			var height :float
-			if current.placement_mode == Things.PlacementMode.Floor: height = sector.floor_height + current.height_offset
-			elif current.placement_mode == Things.PlacementMode.Ceiling: height = sector.floor_height - current.height_offset
-			elif current.placement_mode == Things.PlacementMode.Absolute: height = current.height_offset
-			else: ErrorUtils.report_error("Invalid placement_mode '{0}' for thing {1}".format([current.placement_mode, current]))
-			current_export['position'] = [export_coords_2d.x, export_coords_2d.y, height * _level.export_scale.z]
-			current.custom_export(sector, current_export)
-			var export_destination_raw : Variant = export_things.get(current.get_export_category())
-			var export_destination :Array[Dictionary]
-			if export_destination_raw == null:
-				export_destination = []
-			else: export_destination = export_destination_raw
-			export_destination.append(current_export)
-			all_things.remove_at(i)
-			export_things[current.get_export_category()] = export_destination
-		else:
-			i += 1
+		
+		if not current.is_standalone(): continue
+		if not sector.contains_point(pos): continue
+		
+		var height :float
+		if current.placement_mode == Things.PlacementMode.Floor: height = sector.floor_height + current.height_offset
+		elif current.placement_mode == Things.PlacementMode.Ceiling: height = sector.floor_height - current.height_offset
+		elif current.placement_mode == Things.PlacementMode.Absolute: height = current.height_offset
+		else: ErrorUtils.report_error("Invalid placement_mode '{0}' for thing {1}".format([current.placement_mode, current]))
+		
+		process_a_thing(current, sector, pos, height, export_things)
+		
+		all_things.remove_at(i)
 
+
+func process_a_thing(current: Thing, sector: Sector, pos: Vector2, height: float, export_things: Dictionary)->void:
+		var current_export : Dictionary = {}
+		var export_coords_2d = _get_export_coords(pos)
+		
+		current_export['position'] = [export_coords_2d.x, export_coords_2d.y, height * _level.export_scale.z]
+		current.custom_export(sector, current_export)
+		var export_destination_raw : Variant = export_things.get(current.get_export_category())
+		var export_destination :Array[Dictionary]
+		if export_destination_raw == null:
+			export_destination = []
+		else: export_destination = export_destination_raw
+		export_destination.append(current_export)
+		export_things[current.get_export_category()] = export_destination
+		
+		for child_raw in NodeUtils.get_children_by_predicate(current, func(ch)->bool: return (ch is Thing) and (not(ch as Thing).is_standalone())):
+			var child : Thing= child_raw as Thing
+			var child_pos := child.global_position
+			var child_height = height + child.height_offset
+			process_a_thing(child, sector, child_pos, child_height, export_things)
 
 
 func _get_export_coords(p : Vector2)-> Vector2:
