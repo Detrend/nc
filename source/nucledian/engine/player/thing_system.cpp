@@ -36,6 +36,7 @@
 #include <game/item.h>
 #include <game/item_resources.h> // PickupTypes::...
 #include <game/enemies.h>        // EnemyTypes::...
+#include <engine/graphics/prop.h>
 
 #include <math/lingebra.h>
 
@@ -415,6 +416,24 @@ static void load_json_map
         trigger_table.push_back(td);
       }
     }
+  }
+
+  for (auto&& js_prop : data["props"])
+  {
+    const vec3 position = load_json_position(js_prop);
+    const f32 radius = js_prop["radius"];
+    const f32 height = js_prop["height"];
+    const Appearance appearance {
+      js_prop["sprite"],
+      load_json_vector<3>(js_prop["direction"]).xzy,
+      js_prop["scale"],
+      static_cast<Appearance::SpriteMode>(js_prop["mode"]),
+      static_cast<Appearance::PivotMode>(js_prop["pivot"]),
+      static_cast<Appearance::ScalingMode>(js_prop["scaling"]),
+      static_cast<Appearance::RotationMode>(js_prop["rotation"]),
+    };
+
+    entities.create_entity<Prop>(position, radius, height, appearance);
   }
   for (auto&& js_light : data["directional_lights"])
   {
