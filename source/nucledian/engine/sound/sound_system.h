@@ -70,6 +70,9 @@ public:
   // IEngineModule
   void on_event(ModuleEvent& event) override;
 
+  void set_sound_volume(int step);
+  void set_music_voulme(int step);
+
 private:
   void terminate();
   void update(f32 delta_seconds);
@@ -80,6 +83,9 @@ private:
   static constexpr u64 CHANNEL_COUNT = 64;
 
   using ChannelArray = std::array<u8, CHANNEL_COUNT>;
+
+  f32 soundVoulume = 1;
+  f32 musicVolume = 1;
 
   // This is a queue of channels to free during the next update. The callback
   // that a certain channel stopped playing is usually called from other thread

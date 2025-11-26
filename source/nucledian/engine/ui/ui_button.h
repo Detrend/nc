@@ -104,10 +104,23 @@ namespace nc
     void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
     void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
+
+    const ShaderProgramHandle digit_shader;
+
     void do_nothing() {};
 
     void set_windowed();
     void set_fullscreen();
+
+    void set_sensitivity_less();
+    void set_sensitivity_more();
+
+    void set_sound_less();
+    void set_sound_more();
+
+    void set_music_less();
+    void set_music_more();
+
 
     UiButton* sound_text = nullptr;
     UiButton* music_text = nullptr;
@@ -115,8 +128,18 @@ namespace nc
     UiButton* fullscreen_button = nullptr;
     UiButton* windowed_button = nullptr;
 
+    UiButton* sound_volume_less = nullptr;
+    UiButton* sound_volume_more = nullptr;
+    UiButton* music_volume_less = nullptr;
+    UiButton* music_volume_more = nullptr;
+    UiButton* sensitivity_less = nullptr;
+    UiButton* sensitivity_more = nullptr;
+
     bool isWindowed = true;
 
+    int soundStep = 9;
+    int musicStep = 9;
+    int sensitivityStep = 4;
   };
 
   //======================================================================================

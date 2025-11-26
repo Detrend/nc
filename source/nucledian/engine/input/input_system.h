@@ -36,11 +36,18 @@ public:
   GameInputs get_inputs() const;
   GameInputs get_prev_inputs() const;
 
+  void set_sensitivity(int step);
+  float get_sensitivity();
+
 private:
   GameInputs m_current_inputs;
   GameInputs m_previous_inputs;
 
+  float SENSITIVITY = -0.00125f;
+
   bool m_disable_player_inputs : 1 = false;
+
+  
 };
 
 }
