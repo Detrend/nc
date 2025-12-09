@@ -1,15 +1,19 @@
-[gd_scene load_steps=226 format=3 uid="uid://befdk2p7cnnba"]
+[gd_scene load_steps=230 format=3 uid="uid://befdk2p7cnnba"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_nqbmo"]
+[ext_resource type="Script" uid="uid://bbt07sf8vceiw" path="res://scripts/reactivity/Activator.gd" id="2_fxlut"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_l4525"]
+[ext_resource type="Script" uid="uid://b8tkglirbwf1e" path="res://scripts/reactivity/ActivatorPool.gd" id="2_ud3ux"]
 [ext_resource type="PackedScene" uid="uid://cmy30fxadpjn2" path="res://prefabs/TriangulatedMultisector.tscn" id="3_l4525"]
 [ext_resource type="PackedScene" uid="uid://2xarq0korji0" path="res://prefabs/Entities/PlayerPosition.tscn" id="3_nqbmo"]
 [ext_resource type="Script" uid="uid://cft80p5qydrwt" path="res://scripts/sector/SectorProperties.gd" id="4_h15or"]
 [ext_resource type="PackedScene" uid="uid://cyihcpnjneypy" path="res://prefabs/StairMaker.tscn" id="5_l4xrs"]
 [ext_resource type="Resource" uid="uid://b0ot7qa5l7k8d" path="res://materials/default_texture.tres" id="6_2dkgu"]
+[ext_resource type="Script" uid="uid://mrxb63xvcsa1" path="res://scripts/sector/wall/WallAttachment.gd" id="7_bx8rf"]
 [ext_resource type="PackedScene" uid="uid://b8tr8d62bd5s2" path="res://prefabs/PickUps/HpBig.tscn" id="7_hqisf"]
 [ext_resource type="Resource" uid="uid://dru3antcr08im" path="res://materials/outsides.tres" id="7_phr4w"]
 [ext_resource type="PackedScene" uid="uid://cm0wgegxiipjw" path="res://prefabs/PickUps/HpSmall.tscn" id="8_rrxkl"]
+[ext_resource type="Texture2D" uid="uid://c6fxl8yses7sc" path="res://icon.svg" id="8_x5ano"]
 [ext_resource type="PackedScene" uid="uid://hg6kt5ju3l3a" path="res://prefabs/Entities/Cultist.tscn" id="9_rrxkl"]
 [ext_resource type="Resource" uid="uid://ckwlq2hdguk10" path="res://materials/maintenance_shaft.tres" id="10_k8xne"]
 [ext_resource type="Resource" uid="uid://8mtk0xgkh1sd" path="res://materials/parkour_pillar.tres" id="10_n7tfj"]
@@ -1211,6 +1215,12 @@ export_texture_scale = 2.0
 export_texture_extrude_scale = 2.0
 export_path = "../nc/content/levels/level_test1.json"
 
+[node name="Activators" type="Node" parent="."]
+script = ExtResource("2_ud3ux")
+
+[node name="ParkourActivate" type="Node" parent="Activators"]
+script = ExtResource("2_fxlut")
+
 [node name="Sectors" type="Node2D" parent="."]
 
 [node name="InfinitePassage" type="Node2D" parent="Sectors"]
@@ -1359,6 +1369,16 @@ floor_height = 0.1
 portal_destination = NodePath("../../TopPart/Sector13")
 portal_wall = 1
 portal_destination_wall = 2
+
+[node name="Node2D" type="Node2D" parent="Sectors/Square/Sector6"]
+position = Vector2(0, 27)
+script = ExtResource("7_bx8rf")
+
+[node name="Icon" type="Sprite2D" parent="Sectors/Square/Sector6/Node2D"]
+z_index = 999
+position = Vector2(-8, 5)
+scale = Vector2(0.065, 0.065)
+texture = ExtResource("8_x5ano")
 
 [node name="Sector7" parent="Sectors/Square" instance=ExtResource("2_l4525")]
 color = Color(0.97464335, 0.94908696, 0.9590699, 1)
@@ -2159,7 +2179,7 @@ ceiling_height = 4.0
 position = Vector2(-264, 45)
 color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(364, -7, 383, -2, 374, 17, 356, 14)
+polygon = PackedVector2Array(364, -7, 383, -2, 376, 16, 356, 14)
 data = SubResource("Resource_y4auh")
 floor_height = 5.0
 ceiling_height = 7.0
@@ -2271,7 +2291,7 @@ position = Vector2(389, 71)
 
 [node name="Triangulator" parent="Sectors/Parcour" instance=ExtResource("3_l4525")]
 position = Vector2(61, -68)
-polygon = PackedVector2Array(-76, 14, -78, 102, -34, 102, 24, 94, 70, 103, 102, 104, 119, 104, 129, 74, 129, 38, 126, 29, 117, 9, 107, -29, 64, -36, 44, -38, 35, -4, 49, 7, 63, -4, 74, -13, 81, -4, 102, 10, 19, 29)
+polygon = PackedVector2Array(-74, 13, -78, 102, -34, 102, 24, 94, 70, 103, 102, 104, 119, 104, 129, 74, 129, 38, 126, 29, 117, 9, 107, -29, 64, -36, 44, -38, 35, -4, 49, 7, 63, -4, 74, -13, 81, -4, 102, 10, 19, 29)
 data = SubResource("Resource_bjjgi")
 
 [node name="Sector2" parent="Sectors/Parcour/Triangulator" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
@@ -2443,7 +2463,7 @@ ceiling_height = 10.0
 position = Vector2(-389, -71)
 color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(355, 105, 340, 71, 340, 40, 356, 14, 374, 17, 372, 105)
+polygon = PackedVector2Array(355, 105, 340, 71, 340, 40, 356, 14, 376, 16, 372, 105)
 data = SubResource("Resource_kc2um")
 floor_height = 5.0
 ceiling_height = 10.0

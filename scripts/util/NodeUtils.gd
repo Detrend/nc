@@ -143,6 +143,12 @@ static func get_unique_id()->int:
 	_counter += 1;
 	return _counter;
 
+static func instantiate_child_by_type(parent: Node, type: Variant)->Node:
+	var ret :Node = type.new()
+	parent.add_child(ret)
+	ret.owner = parent.get_tree().edited_scene_root
+	return ret
+
 static func instantiate_child(parent: Node, prefab: Resource)->Node:
 	var ret :Node = prefab.instantiate()
 	parent.add_child(ret)
@@ -202,3 +208,8 @@ static func try_send_message_to_ancestor(this: Node, message_name: String, argum
 	var parent:Node = NodeUtils.get_ancestor_by_predicate(this.get_parent(), func(an:Node)->bool: return an.has_method(message_name))
 	if ! parent: return null
 	return parent.callv(message_name, arguments) 
+
+static func try_callv(this: Node, message_name: String, arguments: Array):
+	if this.has_method(message_name):
+		return this.callv(message_name, arguments)
+	return null

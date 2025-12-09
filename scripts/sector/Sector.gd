@@ -73,6 +73,25 @@ func has_portal()-> bool: return enable_portal and portal_destination != null an
 var _visualizer_line : Line2D:
 	get: return get_node_or_null("VisualizerLine")
 
+
+@export_group("")
+@export_tool_button("Add Trigger") var _add_trigger_tool_button = _add_trigger
+@export_tool_button("Add Alternative Config") var _add_alt_config_tool_button = _add_alt_config
+
+func _add_trigger()->void:
+	var child :Trigger = NodeUtils.instantiate_child_by_type(self, Trigger)
+	child.name = "Trigger"
+	NodeUtils.set_selection([child])
+	
+func _add_alt_config()->void:
+	var child :SectorAltConfig = NodeUtils.instantiate_child_by_type(self, SectorAltConfig)
+	child.name = "Configuration"
+	child.floor_height = self.floor_height
+	child.ceiling_height = self.ceiling_height
+	NodeUtils.set_selection([child])
+
+
+
 func get_own_prefab()->Resource:
 	return Level.SECTOR_PREFAB
 
@@ -101,6 +120,9 @@ func _selected_update(_selected_list: Array[Node])->void:
 	super._selected_update(_selected_list)
 	if is_editable:
 		_update_visuals()
+		for child in get_children():
+			if child is WallAttachment:
+				(child as WallAttachment)._on_parent_selected_update(self, _selected_list)
 
 func _alt_mode_drag_update()->void:
 	super._alt_mode_drag_update()
