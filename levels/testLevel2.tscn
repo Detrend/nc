@@ -1261,7 +1261,7 @@ ceiling_height = 10.0
 [node name="Sector-7677" parent="Sectors/Parcour" instance=ExtResource("2_a102k")]
 position = Vector2(335.74023, 157.5314)
 color = Color(0.501961, 0, 0.196078, 1)
-polygon = PackedVector2Array(-0.7402344, -2.5314026, 16.259766, -4.5314026, 16.259766, 7.4685974, -0.7402344, 10.468597)
+polygon = PackedVector2Array(-0.7402344, -2.5314026, 16.259766, -4.5314026, 16.259766, 7.4685974, -0.7402344, 10.468597, -0.7402344, 0.4685974)
 data = SubResource("Resource_esya7")
 floor_height = 5.0
 ceiling_height = 12.0
@@ -1404,7 +1404,7 @@ ceiling_height = 4.0
 [node name="Sector-7801y" parent="Sectors/Parcour" instance=ExtResource("2_a102k")]
 position = Vector2(267.50577, 112.16402)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(33.494232, 30.835983, 33.494232, 32.913704, 33.494232, 45.835983, 33.494232, 63.835983, 18.494236, 63.69477, 18.494232, 30.835983)
+polygon = PackedVector2Array(33.494232, 30.835983, 33.494232, 35.835983, 33.494232, 45.835983, 33.494232, 63.835983, 30.494232, 63.835983, 26.494232, 63.835983, 22.494232, 63.835983, 18.494236, 63.69477, 18.494232, 30.835983)
 data = SubResource("Resource_441pw")
 ceiling_height = 12.0
 
@@ -1425,7 +1425,7 @@ ceiling_height = 12.0
 [node name="Sector-7801t" parent="Sectors/Parcour" instance=ExtResource("2_a102k")]
 position = Vector2(267.50577, 112.16402)
 color = Color(0.89944345, 0.798095, 0.83768415, 1)
-polygon = PackedVector2Array(22.32248, 63.69477, 22.322475, 82.83598, 18.494232, 82.83598, 18.494236, 63.69477)
+polygon = PackedVector2Array(22.494232, 63.835983, 22.322475, 82.83598, 18.494232, 82.83598, 18.494236, 63.69477)
 data = SubResource("Resource_eh1xy")
 floor_height = 0.8
 ceiling_height = 4.0
@@ -1433,7 +1433,7 @@ ceiling_height = 4.0
 [node name="Sector-7801u" parent="Sectors/Parcour" instance=ExtResource("2_a102k")]
 position = Vector2(267.50577, 112.16402)
 color = Color(0.9243833, 0.84817106, 0.87794137, 1)
-polygon = PackedVector2Array(26.150723, 63.69477, 26.494232, 82.83598, 22.322475, 82.83598, 22.32248, 63.69477)
+polygon = PackedVector2Array(26.494232, 63.835983, 26.494232, 82.83598, 22.322475, 82.83598, 22.494232, 63.835983)
 data = SubResource("Resource_ws2wv")
 floor_height = 0.6
 ceiling_height = 4.0
@@ -1441,7 +1441,7 @@ ceiling_height = 4.0
 [node name="Sector-7801v" parent="Sectors/Parcour" instance=ExtResource("2_a102k")]
 position = Vector2(267.50577, 112.16402)
 color = Color(0.9494438, 0.89848953, 0.9183935, 1)
-polygon = PackedVector2Array(29.978966, 63.69477, 29.978962, 82.83598, 26.150719, 82.83598, 26.150723, 63.69477)
+polygon = PackedVector2Array(30.494232, 63.835983, 30.494232, 82.83598, 26.150719, 82.83598, 26.494232, 63.835983)
 data = SubResource("Resource_4u38u")
 floor_height = 0.4
 ceiling_height = 4.0
@@ -1449,7 +1449,7 @@ ceiling_height = 4.0
 [node name="Sector-7801w" parent="Sectors/Parcour" instance=ExtResource("2_a102k")]
 position = Vector2(267.50577, 112.16402)
 color = Color(0.97464335, 0.94908696, 0.9590699, 1)
-polygon = PackedVector2Array(33.80721, 63.69477, 33.807205, 82.83598, 29.978962, 82.83598, 29.978966, 63.69477)
+polygon = PackedVector2Array(33.80721, 63.69477, 33.807205, 82.83598, 30.494232, 82.83598, 30.494232, 63.835983)
 data = SubResource("Resource_1eqat")
 floor_height = 0.2
 ceiling_height = 4.0
@@ -1485,7 +1485,7 @@ ceiling_height = 12.0
 [node name="Sector-7801za" parent="Sectors/Parcour" instance=ExtResource("2_a102k")]
 position = Vector2(268, 112)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(67, 46, 67, 56, 67, 57, 57, 57, 47.494232, 56.835983, 47.494232, 45.835983)
+polygon = PackedVector2Array(67, 46, 67, 56, 67, 57, 57, 57, 47, 57, 47.494232, 45.835983)
 data = SubResource("Resource_cvbo3")
 ceiling_height = 12.0
 
@@ -1964,7 +1964,7 @@ ceiling_height = 11.0
 [node name="Sector-3883" parent="Sectors/Parcour" instance=ExtResource("2_a102k")]
 position = Vector2(315, 169)
 color = Color(0.75131977, 0.5006813, 0.5985867, 1)
-polygon = PackedVector2Array(0, 0, 10, 0, 10, 10, 0, 10)
+polygon = PackedVector2Array(0, 0, 10, 0, 10, 10, 0, 10, 0, 7)
 data = SubResource("Resource_cmxnk")
 floor_height = 2.0
 ceiling_height = 10.0
