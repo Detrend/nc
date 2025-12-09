@@ -231,6 +231,15 @@ void Enemy::handle_movement(f32 delta)
 
   this->facing = (portal_transform * vec4{this->facing, 0.0f}).xyz();
   this->set_position(position);
+
+  // Transform all the path points if we traverse through a portal
+  if (portal_transform != identity<mat4>())
+  {
+    for (vec3& point : current_path.points)
+    {
+      point = (portal_transform * vec4{point, 1.0f}).xyz();
+    }
+  }
 }
 
 //==============================================================================
@@ -420,7 +429,6 @@ void Enemy::handle_ai_alert(f32 delta)
 {
   auto& game   = GameSystem::get();
   auto& ecs    = game.get_entities();
-  auto& map    = game.get_map();
   auto  lvl    = game.get_level();
   auto& stats  = this->get_stats();
 
@@ -474,17 +482,15 @@ void Enemy::handle_ai_alert(f32 delta)
       vec2 last_pt2 = no_path ? VEC2_ZERO : current_path.points.back().xz();
       if (no_path || distance(last_pt2, this->follow_target_pos.xz()) > 5.0f)
       {
-        this->current_path.points = map.calc_path
+        this->current_path.points = lvl.calc_path_relative
         (
           this->get_position(),
           this->follow_target_pos,
           this->get_radius(),
-          this->get_height()
-        );
-
-        lvl.smooth_out_path
-        (
-          this->current_path.points, this->get_radius(), this->get_height()
+          this->get_height(),
+          this->get_height() * 0.5f,
+          this->get_height() * 2.0f,
+          true
         );
       }
 

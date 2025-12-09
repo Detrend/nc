@@ -9,10 +9,12 @@
 
 #include <intersect.h>
 #include <profiling.h>
+#include <stack_vector.h>
 
 #include <set>
 #include <utility>  // std::pair
 #include <type_traits>
+#include <queue>    // std::priority_queue
 
 namespace nc::phys_helpers
 {
@@ -357,6 +359,251 @@ static CollisionHit raycast_generic
 
   // Return true if we hit something
   return best_hit;
+}
+
+//==============================================================================
+// Returns true if the path was found. If no path found then returns false and
+// some path that tried getting to the target.
+template<typename OutPointsVector, typename OutTransformsVector>
+static bool calc_path_raw
+(
+  const PhysLevel&     lvl,
+  vec3                 start_pos,
+  vec3                 end_pos,
+  f32                  radius,
+  f32                  height,
+  f32                  step_up,
+  f32                  step_down,
+  OutPointsVector&     points,
+  OutTransformsVector& transforms
+)
+{
+  NC_SCOPE_PROFILER(PhysicsCalcPathRaw);
+  const MapSectors& map = lvl.map;
+
+  nc_assert(step_up   >= 0.0f);
+  nc_assert(step_down >= 0.0f);
+
+  struct PrevPoint
+  {
+    SectorID prev_sector; // Previous sector
+    WallID   wall_index;  // Portal we used to get to this sector
+    vec3     point;       // Way point
+    f32      dist;
+  };
+
+  struct CurPoint
+  {
+    SectorID index;
+    f32      dist;
+  };
+
+  auto cmp = [](const CurPoint l, const CurPoint r)
+  {
+    return l.dist > r.dist;
+  };
+
+  SectorID startID = map.get_sector_from_point(start_pos.xz);
+  SectorID endID   = map.get_sector_from_point(end_pos.xz);
+  if (startID == INVALID_SECTOR_ID || endID == INVALID_SECTOR_ID)
+  {
+    // MR says: Hotfix for the case when the enemy or player are outside of the
+    // map and therefore "get_sector_from_point" returns invalid sector ID.
+    return true;
+  }
+
+  SectorID curID = startID;
+  std::priority_queue<CurPoint, std::vector<CurPoint>, decltype(cmp)> fringe;
+  std::map<SectorID, PrevPoint> visited;
+
+  visited.insert
+  ({
+    startID, PrevPoint
+    {
+      INVALID_SECTOR_ID,
+      INVALID_WALL_ID,
+      start_pos,
+      0
+    }
+  });
+
+  fringe.push({startID, 0});
+
+  while (fringe.size())
+  {
+    // Get sector from queue
+    CurPoint cur = fringe.top();
+    curID = cur.index;
+    f32 cur_dist = cur.dist;
+    fringe.pop();
+
+    // Found path, end search
+    if (curID == endID)
+    {
+      break;
+    }
+
+    map.for_each_portal_of_sector(curID, [&](WallID wall1_idx)
+    {
+      const auto next_sector = map.walls[wall1_idx].portal_sector_id;
+      nc_assert(next_sector != INVALID_SECTOR_ID);
+
+      f32 step_size;
+      map.calc_step_height_of_portal(curID, wall1_idx, &step_size);
+      if (step_size > step_up || step_size < -step_down)
+      {
+        // We would either have to make step that is too high, or drop down
+        // too much.
+        // Do not consider this path.
+        return;
+      }
+
+      const SectorData& next_sd = map.sectors[next_sector];
+      f32 sector_height = next_sd.ceil_height - next_sd.floor_height;
+      if (sector_height <= height)
+      {
+        // We wouldn't fit into this sector
+        return;
+      }
+
+      if (!visited.contains(next_sector))
+      {
+        const auto wall2_idx = map_helpers::next_wall(map, curID, wall1_idx);
+
+        // const bool is_nuclidean = walls[wall1_idx].get_portal_type() == PortalType::non_euclidean;       
+        auto p1 = map.walls[wall1_idx].pos;
+        auto p2 = map.walls[wall2_idx].pos;
+        auto p1_to_p2 = p2 - p1;
+        if (length(p1_to_p2) > radius * 2.0f) // side to side clearance
+        {
+          vec2 wall_dir;
+          wall_dir = normalize_or_zero(p1_to_p2);
+
+          if (abs(p1_to_p2.x) > abs(p1_to_p2.y))
+          {
+            wall_dir = wall_dir / abs(wall_dir.x);
+          }
+          else
+          {
+            wall_dir = wall_dir / abs(wall_dir.y);
+          }
+
+          p1 += wall_dir * radius;
+          p2 -= wall_dir * radius;
+          p1_to_p2 = p2 - p1;
+          // Get a previous position, but also with portal transformation
+          vec3 prev_post = visited[curID].point;
+          WallID prev_wall = visited[curID].wall_index;
+          SectorID prev_sector = visited[curID].prev_sector;
+          if (prev_wall != INVALID_WALL_ID && map.walls[prev_wall].get_portal_type() == PortalType::non_euclidean)
+          {
+            mat4 transformation = map.calc_portal_to_portal_projection(prev_sector, prev_wall);
+            prev_post = (transformation * vec4{ prev_post, 1.0f }).xyz();
+          }
+
+          // Calculate closest point on p1_to_p2 line
+          f32 l2 = length(p1_to_p2);
+          l2 *= l2;
+          const float t = max(0.0f, min(1.0f, dot(prev_post.xz - p1, p1_to_p2) / l2));
+          const vec2 projection = p1 + t * (p1_to_p2);
+
+          f32 segment_dist = distance(prev_post.xz(), projection);
+
+          // Insert closest point to queue
+          visited.insert
+          ({
+            next_sector, PrevPoint
+            {
+              curID,
+              wall1_idx,
+              vec3(projection.x, 0, projection.y),
+              cur_dist + segment_dist
+            }
+          });
+
+          fringe.push({next_sector, cur_dist + segment_dist});
+        }
+      }
+    });
+  }
+
+  PrevPoint prev_point;
+
+  bool found_path = curID == endID;
+
+  // reconstruct the path in reverse order
+  while (true)
+  {
+    prev_point = visited[curID];
+    mat4 transform = identity<mat4>();
+    bool valid = prev_point.wall_index != INVALID_SECTOR_ID;
+    if (valid && map.walls[prev_point.wall_index].is_nc_portal())
+    {
+      nc_assert(map.is_valid_wall_id(prev_point.wall_index));
+      nc_assert(map.is_valid_sector_id(prev_point.prev_sector));
+
+      transform = map.calc_portal_to_portal_projection
+      (
+        prev_point.prev_sector, prev_point.wall_index
+      );
+    }
+
+    points.push_back(prev_point.point);
+    transforms.push_back(transform);
+
+    if (curID == startID)
+    {
+      break;
+    }
+    else
+    {
+      curID = prev_point.prev_sector;
+    }
+  }
+
+  // Make this a first transform (will get reversed later) as the first point
+  // does not have a transform.
+  transforms.push_back(identity<mat4>());
+
+  // Reverse the path
+  std::reverse(points.begin(), points.end());
+  std::reverse(transforms.begin(), transforms.end());
+
+  // Last point and no transform
+  points.push_back(end_pos);
+
+  return found_path;
+}
+
+//==============================================================================
+template<typename OutPointsVector, typename OutTransformsVector>
+static void smooth_out_path
+(
+  const PhysLevel&     lvl,
+  OutPointsVector&     points,
+  OutTransformsVector& transforms
+)
+{
+  // Remove points from the end
+  for (u64 idx = 1; points.size() > 2 && idx < points.size()-1;)
+  {
+    vec2 from = points[idx - 1].xz();
+    vec2 to   = points[idx + 1].xz();
+
+    bool ok_trans = transforms[idx] == identity<mat4>();
+    PhysLevel::Portals portals;
+    if (!ok_trans || lvl.ray_cast_2d(from, to, 0, &portals))
+    {
+      // We hit the wall or traversed a nc-portal, can't remove this point
+      idx += 1;
+    }
+    else
+    {
+      // No obstruction in the way! Remove the point
+      points.erase(points.begin()         + idx);
+      transforms.erase(transforms.begin() + idx);
+    }
+  }
 }
 
 }
@@ -1389,34 +1636,55 @@ const
   }
 }
 
-//==============================================================================
-void PhysLevel::smooth_out_path(std::vector<vec3>& path, f32 /*r*/, f32 /*h*/)
+//=============================================================================
+std::vector<vec3> PhysLevel::calc_path_relative
+(
+  vec3 start_pos,
+  vec3 end_pos,
+  f32  radius,
+  f32  height,
+  f32  step_up,
+  f32  step_down,
+  bool do_smoothing
+)
+const
 {
-  NC_SCOPE_PROFILER(SmoothOutPath)
+  StackVector<vec3, 20> points;
+  StackVector<mat4, 20> transforms;
 
-  if (path.empty())
+  // Calculate the path
+  phys_helpers::calc_path_raw
+  (
+    *this,
+    start_pos,
+    end_pos,
+    radius,
+    height,
+    step_up,
+    step_down,
+    points,
+    transforms
+  );
+
+  nc_assert(points.size() == transforms.size());
+
+  // Smooth out the path by raycasting if required
+  if (do_smoothing)
   {
-    return;
+    phys_helpers::smooth_out_path(*this, points, transforms);
   }
 
-  // Remove points from the end
-  for (u64 idx = 1; path.size() > 2 && idx < path.size()-1;)
-  {
-    vec2 from = path[idx - 1].xz();
-    vec2 to   = path[idx + 1].xz();
+  std::vector<vec3> final_path;
 
-    PhysLevel::Portals prt;
-    if (this->ray_cast_2d(from, to, 0, &prt) || prt.size())
-    {
-      // We hit the wall or traversed a nc-portal, can't remove this point
-      idx += 1;
-    }
-    else
-    {
-      // No obstruction in the way! Remove the point
-      path.erase(path.begin() + idx);
-    }
+  mat4 accumulated_t = identity<mat4>();
+  for (u64 i = 0; i < points.size(); ++i)
+  {
+    accumulated_t = transforms[i] * accumulated_t;
+    mat4 inv_t = inverse(accumulated_t);
+    final_path.push_back((inv_t * vec4{points[i], 1.0f}).xyz());
   }
+
+  return final_path;
 }
 
 } 

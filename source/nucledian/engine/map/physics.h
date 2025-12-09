@@ -233,8 +233,20 @@ struct PhysLevel
     CollisionListener listener = nullptr // reaction to collisions
   ) const;
 
-  // Tries shortening the path by removing un-necessary vertices
-  void smooth_out_path(std::vector<vec3>& path, f32 radius, f32 height);
+  // Computes a path. Points which were reached through non-euclidean portals
+  // are RELATIVE to the sector where start_pos is in.
+  // After a NPC traverses through a non-euclidean portal these points have to
+  // be transformed by the portal transform.
+  std::vector<vec3> calc_path_relative
+  (
+    vec3 start_pos,
+    vec3 end_pos,
+    f32  width,
+    f32  height,
+    f32  step_up,    // Positive
+    f32  step_down,  // Positive
+    bool do_smoothing = true
+  ) const;
 };
 
 }

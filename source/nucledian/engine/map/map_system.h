@@ -193,6 +193,9 @@ struct WallData
   // Returns true if this is a normal portal or nuclidean portal.
   // Returns false if this is a wall
   bool is_portal() const;
+
+  // Checks if the given wall is a nuclidean portal
+  bool is_nc_portal() const;
 };
 
 struct Portal
@@ -308,7 +311,6 @@ struct MapSectors
   // Returns the index of the wall segment in this height.
   u8 get_segment_idx_from_height(WallID wall, f32 y_height) const;
 
-  std::vector<vec3> calc_path(vec3 start_pos, vec3 end_pos, f32 width, f32 height) const;
   bool is_point_in_sector(vec2 pt, SectorID sector)      const;
   f32  distance_from_sector_2d(vec2 pt, SectorID sector) const;
 

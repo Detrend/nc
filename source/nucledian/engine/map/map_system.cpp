@@ -17,9 +17,9 @@
 #include <queue>
 #include <set>
 #include <map>
-#include <iterator>   // std::back_inserter
-#include <cmath>      // std::acos
-#include <utility>    // std::pair
+#include <iterator> // std::back_inserter
+#include <cmath>    // std::acos
+#include <utility>  // std::pair
 
 #ifdef NC_BENCHMARK
 #include <benchmark/benchmark.h>
@@ -1121,151 +1121,6 @@ bool MapSectors::is_point_in_sector(vec2 pt, SectorID sector_id) const
   return false;
 }
 
-//=============================================================================
-std::vector<vec3> MapSectors::calc_path
-(
-  vec3 start_pos,
-  vec3 end_pos,
-  f32  radius,
-  f32  /*height*/
-)
-const
-{
-  NC_SCOPE_PROFILER(MapSystemGetPath)
-
-  std::vector<vec3> path;
-  path.push_back(end_pos);
-  struct PrevPoint
-  {
-    SectorID prev_sector; // previous sector
-    WallID wall_index; // portal we used to get to this sector
-    vec3 point; // way point
-    f32 dist;
-  };
-  struct CurPoint
-  {
-    SectorID index;
-    f32 dist;
-  };
-  auto cmp = [](const CurPoint l, const CurPoint r) {return l.dist > r.dist; };
-
-  SectorID startID = get_sector_from_point(start_pos.xz);
-  SectorID endID   = get_sector_from_point(end_pos.xz);
-  if (startID == INVALID_SECTOR_ID || endID == INVALID_SECTOR_ID)
-  {
-    // MR says: Hotfix for the case when the enemy or player are outside of the
-    // map and therefore "get_sector_from_point" returns invalid sector ID.
-    return std::vector<vec3>{start_pos};
-  }
-
-  SectorID curID = startID;
-  // std::vector<SectorID> fringe;
-  std::priority_queue<CurPoint, std::vector<CurPoint>, decltype(cmp)> fringe;
-  std::map<SectorID, PrevPoint> visited;
-
-  visited.insert({ startID, {
-    INVALID_SECTOR_ID,
-    INVALID_WALL_ID,
-    start_pos,
-    0
-    } });
-
-  fringe.push({ startID, 0 });
-
-  while (fringe.size())
-  {
-    // get sector from queue
-    CurPoint cur = fringe.top();
-    curID = cur.index;
-    f32 cur_dist = cur.dist;
-    fringe.pop();
-
-    // found path, end search
-    if (curID == endID)
-    {
-      break;
-    }
-
-    map_helpers::for_each_portal(*this, curID, [&](WallID wall1_idx)
-    {
-      const auto next_sector = walls[wall1_idx].portal_sector_id;
-      nc_assert(next_sector != INVALID_SECTOR_ID);
-
-      if (!visited.contains(next_sector) &&
-        abs(sectors[curID].floor_height - sectors[next_sector].floor_height) <= 0.2f) // check for floor height dif
-      {
-        const auto wall2_idx = map_helpers::next_wall(*this, curID, wall1_idx);
-
-        // const bool is_nuclidean = walls[wall1_idx].get_portal_type() == PortalType::non_euclidean;       
-        auto p1 = walls[wall1_idx].pos;
-        auto p2 = walls[wall2_idx].pos;
-        auto p1_to_p2 = p2 - p1;
-        if (abs(p1_to_p2.x) > 2 * radius || abs(p1_to_p2.y) > 2 * radius) // side to side clearance
-        {
-          vec2 wall_dir;
-          wall_dir = normalize_or_zero(p1_to_p2);
-
-          if (abs(p1_to_p2.x) > abs(p1_to_p2.y))
-          {
-            wall_dir = wall_dir / abs(wall_dir.x);
-          }
-          else
-          {
-            wall_dir = wall_dir / abs(wall_dir.y);
-          }
-
-          p1 += wall_dir * radius;
-          p2 -= wall_dir * radius;
-          p1_to_p2 = p2 - p1;
-          // get a previous position, but also with portal transformation
-          vec3 prev_post = visited[curID].point;
-          WallID prev_wall = visited[curID].wall_index;
-          SectorID prev_sector = visited[curID].prev_sector;
-          if (prev_wall != INVALID_WALL_ID && walls[prev_wall].get_portal_type() == PortalType::non_euclidean)
-          {
-            mat4 transformation = calc_portal_to_portal_projection(prev_sector, prev_wall);
-            prev_post = (transformation * vec4{ prev_post, 1.0f }).xyz();
-          }
-          // calculate closest point on p1_to_p2 line
-          f32 l2 = length(p1_to_p2);
-          l2 *= l2;
-          const float t = max(0.0f, min(1.0f, dot(prev_post.xz - p1, p1_to_p2) / l2));
-          const vec2 projection = p1 + t * (p1_to_p2);
-
-          f32 segment_dist = distance(prev_post, vec3(projection.x, 0, projection.y));
-
-          // insert closest point to queue
-          visited.insert({ next_sector,
-            {curID, wall1_idx, vec3(projection.x, 0, projection.y), cur_dist + segment_dist} });
-          fringe.push({ next_sector, cur_dist + segment_dist });
-        }
-      }
-    });
-  }
-  PrevPoint prev_point;
-  // reconstruct the path in reverse order
-  while (true)
-  {
-    prev_point = visited[curID];
-
-    path.push_back(prev_point.point);
-
-    if (curID == startID)
-    {
-      break;
-    }
-    else
-    {
-      curID = prev_point.prev_sector;
-    }
-  }
-
-  // reverse the path
-  std::reverse(path.begin(), path.end());
-
-  return path;
-}
-
 //==============================================================================
 f32 MapSectors::distance_from_sector_2d(vec2 pt, SectorID sector_id) const
 {
@@ -1349,6 +1204,12 @@ PortType WallData::get_portal_type() const
 bool WallData::is_portal() const
 {
   return this->get_portal_type() != PortalType::none;
+}
+
+//==============================================================================
+bool WallData::is_nc_portal() const
+{
+  return this->get_portal_type() == PortalType::non_euclidean;
 }
 
 //==============================================================================
