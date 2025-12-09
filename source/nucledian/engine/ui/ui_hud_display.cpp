@@ -3,6 +3,7 @@
 #include <engine/player/thing_system.h>
 #include <engine/player/player.h>
 #include <glm/ext/matrix_transform.hpp>
+#include <engine/graphics/graphics_system.h>
 
 namespace nc
 {
@@ -86,6 +87,7 @@ namespace nc
 
     draw_ammo();
     draw_health();
+    draw_crosshair();
 
     // unbind
     glDisable(GL_BLEND);
@@ -136,6 +138,8 @@ namespace nc
       digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
       digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
       digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
+      digit_shader.set_uniform(shaders::ui_text::HEIGHT, 16.0f);
+      digit_shader.set_uniform(shaders::ui_text::WIDTH, 8.0f);
 
       glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -253,5 +257,40 @@ namespace nc
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
     glBindVertexArray(0);
+  }
+
+  void UiHudDisplay::draw_crosshair()
+  {
+    
+    int temp = 5;
+
+    vec2 win_size = get_engine().get_module<GraphicsSystem>().get_window_size();
+
+    vec2 position = vec2(0.0f, 0.0f);
+    vec2 scale = vec2(0.03f, 0.03f * win_size.x / win_size.y);
+
+    const TextureManager& manager = TextureManager::get();
+    const TextureHandle& texture = manager["ui_crosshair"];
+
+    glActiveTexture(GL_TEXTURE0);
+
+    glm::mat4 trans_mat = glm::mat4(1.0f);
+    vec2 translate = position;
+    trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+    trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
+
+    const glm::mat4 final_trans = trans_mat;
+    digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+    digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+    digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+    digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+
+    digit_shader.set_uniform(shaders::ui_text::CHARACTER, temp);
+
+    digit_shader.set_uniform(shaders::ui_text::HEIGHT, 1.0f);
+    digit_shader.set_uniform(shaders::ui_text::WIDTH, 10.0f);
+
+    glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   }
 }
