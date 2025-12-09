@@ -2,7 +2,7 @@
 #include <engine/graphics/camera.h>
 
 #include <engine/player/player.h>
-#include <engine/player/thing_system.h>
+#include <engine/player/game_system.h>
 
 #include <math/utils.h>
 #include <math/lingebra.h>
@@ -16,7 +16,7 @@ namespace nc
 //==============================================================================
 Camera* Camera::get()
 {
-  return ThingSystem::get().get_player()->get_camera();
+  return GameSystem::get().get_player()->get_camera();
 }
 
 //==============================================================================

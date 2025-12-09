@@ -26,7 +26,7 @@
 #include <engine/entity/entity_system.h>
 #include <engine/entity/entity_type_definitions.h>
 
-#include <engine/player/thing_system.h>
+#include <engine/player/game_system.h>
 #include <engine/player/level_types.h>
 #include <engine/player/player.h>
 
@@ -264,7 +264,7 @@ void GraphicsSystem::on_event(ModuleEvent& event)
       create_sector_meshes();
 
       // TODO: temporary directional lights (don't forget about lights header)
-      EntityRegistry& registry = ThingSystem::get().get_entities();
+      EntityRegistry& registry = GameSystem::get().get_entities();
 
       registry.for_each<Player>([&registry](const Player& player)
       {
@@ -351,7 +351,7 @@ const MeshHandle& GraphicsSystem::get_and_update_sector_mesh(SectorID sid)
   if (m_dirty_sectors[sid])
   {
     std::vector<f32> vertices;
-    ThingSystem::get().get_map().sector_to_vertices(sid, vertices);
+    GameSystem::get().get_map().sector_to_vertices(sid, vertices);
 
     MeshManager::get().recreate_sector
     (
@@ -388,7 +388,7 @@ void GraphicsSystem::update([[maybe_unused]]f32 delta_seconds)
 //==============================================================================
 static void grab_render_gun_props(RenderGunProperties& props)
 {
-  ThingSystem& game = ThingSystem::get();
+  GameSystem& game = GameSystem::get();
   const Player* player = game.get_player();
 
   if (player)
@@ -466,7 +466,7 @@ void GraphicsSystem::render()
       }
 
       ImGui::Separator();
-      Player* p = ThingSystem::get().get_player();
+      Player* p = GameSystem::get().get_player();
       if (p)
       {
         f32 dist = length(p->get_position() - light_test->get_position());
@@ -480,7 +480,7 @@ void GraphicsSystem::render()
 
   if (CVars::sector_height_debug)
   {
-    MapSectors& map = const_cast<MapSectors&>(ThingSystem::get().get_map());
+    MapSectors& map = const_cast<MapSectors&>(GameSystem::get().get_map());
 
     if (ImGui::Begin("Runtime map changes debug"))
     {
@@ -515,7 +515,7 @@ void GraphicsSystem::render()
 
     ImGui::End();
 
-    MapDynamics& dynamics = ThingSystem::get().get_map_dynamics();
+    MapDynamics& dynamics = GameSystem::get().get_map_dynamics();
     std::vector<u16> activator_values(dynamics.activators.size());
     dynamics.evaluate_activators(activator_values);
 
@@ -733,7 +733,7 @@ static void draw_keybinds_bar()
 //==============================================================================
 static void draw_level_selection()
 {
-  auto& game = ThingSystem::get();
+  auto& game = GameSystem::get();
 
   const auto  curr_lvl = game.get_level_name();
 
@@ -763,13 +763,13 @@ static void draw_level_selection()
 //==============================================================================
 static void draw_saves_menu()
 {
-  auto& game  = ThingSystem::get();
+  auto& game  = GameSystem::get();
   auto& saves = game.get_save_game_db();
 
   if (ImGui::Button("Save Current Game"))
   {
     auto save = game.save_game();
-    saves.push_back(ThingSystem::SaveDbEntry
+    saves.push_back(GameSystem::SaveDbEntry
     {
       .data  = save,
       .dirty = true,
@@ -1033,7 +1033,7 @@ void GraphicsSystem::draw_debug_window()
 //==============================================================================
 void GraphicsSystem::create_sector_meshes()
 {
-  const MapSectors& map          = ThingSystem::get().get_map();
+  const MapSectors& map          = GameSystem::get().get_map();
   MeshManager&      mesh_manager = MeshManager::get();
   std::vector<f32>  vertices;
 
@@ -1057,20 +1057,16 @@ void GraphicsSystem::create_sector_meshes()
   }
 }
 
-//================================================================================
+//==============================================================================
 vec2 GraphicsSystem::get_window_size()
 {
-    int x;
-    int y;
-    
-    SDL_GetWindowSize(m_window, &x, &y);
-
-    return vec2(x, y);
+  return vec2{m_window_width, m_window_width};
 }
 
+//==============================================================================
 SDL_Window* GraphicsSystem::get_window()
 {
-    return m_window;
+  return m_window;
 }
 
 }

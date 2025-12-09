@@ -21,7 +21,7 @@
 
 #include <engine/core/engine.h>
 #include <engine/map/map_system.h>
-#include <engine/player/thing_system.h>
+#include <engine/player/game_system.h>
 #include <engine/appearance.h>
 
 #include <array>
@@ -390,7 +390,7 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   m_light_material.set_uniform(shaders::light::NUM_DIR_LIGHTS, m_dir_light_ssbo_size);
   m_light_material.set_uniform(shaders::light::NUM_TILES_X, static_cast<u32>(num_tiles_x));
 
-  EntityRegistry& registry = ThingSystem::get().get_entities();
+  EntityRegistry& registry = GameSystem::get().get_entities();
   registry.for_each<AmbientLight>([this](AmbientLight& ambient)
   {
     m_light_material.set_uniform(shaders::light::AMBIENT_STRENGTH, ambient.strength);
@@ -410,7 +410,7 @@ void Renderer::update_light_ssbos() const
 {
   // get all directional lights
   std::vector<DirLightGPU> dir_light_data;
-  EntityRegistry& registry = ThingSystem::get().get_entities();
+  EntityRegistry& registry = GameSystem::get().get_entities();
   registry.for_each<DirectionalLight>([&dir_light_data](DirectionalLight& light)
   {
     dir_light_data.push_back(light.get_gpu_data());
@@ -557,8 +557,8 @@ void Renderer::render_entities(const CameraData& camera) const
   constexpr f32 BILLBOARD_TEXTURE_SCALE = 1.0f / 2048.0f;
 
   // group entities by texture atlas
-  const auto& mapping = ThingSystem::get().get_sector_mapping();
-  const EntityRegistry& registry = ThingSystem::get().get_entities();
+  const auto& mapping = GameSystem::get().get_sector_mapping();
+  const EntityRegistry& registry = GameSystem::get().get_entities();
 
   struct EntityRenderData
   {
@@ -784,7 +784,7 @@ const
 
 void Renderer::render_sky_box(const CameraData& camera) const
 {
-  EntityRegistry& registry = ThingSystem::get().get_entities();
+  EntityRegistry& registry = GameSystem::get().get_entities();
   const MeshHandle& cube = MeshManager::get().get_cube();
 
   glDepthMask(GL_FALSE);

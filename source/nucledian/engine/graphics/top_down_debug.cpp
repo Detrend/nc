@@ -12,7 +12,7 @@
 #include <engine/graphics/resources/shader_program.h>
 #include <engine/graphics/camera.h>
 
-#include <engine/player/thing_system.h>
+#include <engine/player/game_system.h>
 #include <engine/map/physics.h>
 #include <engine/entity/entity_system.h>
 #include <engine/entity/entity_type_definitions.h>
@@ -216,7 +216,7 @@ void TopDownDebugRenderer::draw_custom_objects()
 //==============================================================================
 void TopDownDebugRenderer::draw_entities()
 {
-  auto& game = ThingSystem::get();
+  auto& game = GameSystem::get();
   auto& ecs  = game.get_entities();
 
   constexpr vec4 ENTITY_TYPE_COLORS[]
@@ -273,7 +273,7 @@ void TopDownDebugRenderer::draw_entities()
 //==============================================================================
 void TopDownDebugRenderer::draw_sector_grid()
 {
-  auto& map = ThingSystem::get().get_map();
+  auto& map = GameSystem::get().get_map();
 
   if (map.sector_grid.m_cells.empty())
   {
@@ -468,7 +468,7 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
   ImGui::End();
 
   auto& map = get_engine().get_map();
-  auto  lvl = ThingSystem::get().get_level();
+  auto  lvl = GameSystem::get().get_level();
 
   // Render the floors of the visible_sectors with black or gray if visible_sectors
   for (SectorID i = 0; i < map.sectors.size(); ++i)

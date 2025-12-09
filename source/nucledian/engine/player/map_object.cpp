@@ -1,7 +1,7 @@
 #include <engine/player/map_object.h>
 #include <engine/core/engine.h>
 #include <engine/map/map_system.h>
-#include <engine/player/thing_system.h>
+#include <engine/player/game_system.h>
 #include <engine/map/physics.h>
 
 #include <math/lingebra.h>

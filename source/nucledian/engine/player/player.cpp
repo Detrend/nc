@@ -11,7 +11,7 @@
 #include <engine/map/map_system.h>
 #include <engine/map/map_dynamics.h>
 #include <engine/map/physics.h>
-#include <engine/player/thing_system.h>
+#include <engine/player/game_system.h>
 #include <engine/entity/entity_system.h>
 
 #include <engine/graphics/graphics_system.h> // RenderGunProperties
@@ -197,8 +197,8 @@ void Player::apply_velocity(f32 delta_seconds)
   constexpr EntityTypeMask PLAYER_REPORTING
     = EntityTypeFlags::pickup | EntityTypeFlags::projectile;
 
-  PhysLevel       lvl = ThingSystem::get().get_level();
-  EntityRegistry& ecs = ThingSystem::get().get_entities();
+  PhysLevel       lvl = GameSystem::get().get_level();
+  EntityRegistry& ecs = GameSystem::get().get_entities();
 
   // Store the position here, change it, and then set it again later
   vec3 position = this->get_position();
@@ -302,7 +302,7 @@ void Player::handle_use(GameInputs curr_input, GameInputs prev_input, f32 /*dt*/
 {
   using Hit = CollisionHit;
   GameInputs pressed = pressed_inputs(curr_input, prev_input);
-  ThingSystem& game = ThingSystem::get();
+  GameSystem& game = GameSystem::get();
 
   if (pressed.player_inputs.keys & 1 << PlayerKeyInputs::use)
   {
@@ -445,7 +445,7 @@ void Player::do_attack()
   }
   else
   {
-    ThingSystem::get().spawn_projectile
+    GameSystem::get().spawn_projectile
     (
       WEAPON_STATS[weapon].projectile, from, dir, this->get_id()
     );

@@ -9,10 +9,11 @@
 #include <engine/map/map_system.h>
 
 #include <math/lingebra.h>
-#include <engine/player/thing_system.h>
+#include <engine/player/game_system.h>
 
 #include <engine/player/player.h>
 #include <engine/enemies/enemy.h>
+#include <engine/graphics/entities/lights.h>
 
 #include <game/projectile.h>
 #include <game/item.h>
@@ -44,7 +45,7 @@ Entity::Entity(vec3 position, f32 radius)
 //==============================================================================
 Entity::~Entity()
 {
-  // TODO: unregister entity from the grid
+
 }
 
 //==============================================================================
@@ -153,121 +154,31 @@ const Physics* Entity::get_physics() const
 }
 
 //==============================================================================
-Entity::Entity(vec3 position, f32 width, f32 height, bool collision)
-  : Entity(position, width, height)
+SectorSnapType Entity::get_snap_type() const
 {
-  this->collision = collision;
+  switch (this->get_type())
+  {
+    case EntityTypes::point_light: return this->as<PointLight>()->snap;
+    case EntityTypes::pickup: return SectorSnapTypes::floor;
+    case EntityTypes::prop:   return this->as<Prop>()->get_snap_type();
+    default:                  return SectorSnapTypes::free;
+  }
 }
 
-// ===============================================================================
-bool Entity::did_collide(const Entity& collider)
+//==============================================================================
+f32 Entity::get_snap_offset() const
 {
-  // EACH OBJECT HAS AN AABB COLLISION HULL
-
-  if (!collision || !collider.collision)
+  if (this->get_type() == EntityTypes::point_light)
   {
-    return false;
+    return this->as<PointLight>()->snap_offset;
   }
 
-  vec3 position = Entity::get_position();
-  f32  width = Entity::get_radius();
-  f32  height = Entity::get_radius();
-
-  // get distance from top down
-
-  f32 difX = abs(position.x - collider.get_position().x);
-  f32 difZ = abs(position.z - collider.get_position().z);
-
-  //f32 topDownDistance = sqrtf(difX * difX + difY * difY);
-
-  /*if (topDownDistance > width + collider.width)
+  if (this->get_snap_type() == SectorSnapTypes::ceiling)
   {
-    return false;
-  }*/
-
-  // AABB
-  if (difX > width + collider.get_radius() + 0.01f || difZ > width + collider.get_radius() + 0.01f)
-  {
-    return false;
+    return this->get_height();
   }
 
-  // check whether the bottom point of collider is in range of our position - height
-  if (position.y <= collider.get_position().y && collider.get_position().y <= position.y + height)
-  {
-    return true;
-  }
-
-  // check whether the top point of collider is in range of our position - height
-  if (position.y <= collider.get_position().y + height && collider.get_position().y + height <= position.y + height)
-  {
-    return true;
-  }
-
-  return false;
+  return 0.0f;
 }
 
-void Entity::check_collision(const Entity& collider, vec3& velocity, f32 delta_seconds)
-{
-  vec3 velocity_per_frame = velocity * delta_seconds;
-
-  this->set_position(this->get_position() + velocity_per_frame);
-
-  if (!did_collide(collider))
-  {
-    this->set_position(this->get_position() - velocity_per_frame);
-    return;
-  }
-
-  f32 width = this->get_radius();
-
-  vec3 target_dist = collider.get_position() - this->get_position();
-  float dist = length(target_dist);
-
-  vec3 intersect_union = vec3(get_radius(), 0, get_radius()) - (target_dist - vec3(collider.get_radius(), 0, collider.get_radius()));
-
-  this->set_position(this->get_position() - velocity_per_frame);
-  float dist2 = length(collider.get_position() - this->get_position());
-
-  vec3 new_velocity = velocity_per_frame - intersect_union;
-  vec3 mult = vec3(velocity_per_frame.x / (1 - new_velocity.x), 0, velocity_per_frame.z / (1 - new_velocity.z));
-
-  if (dist2 < dist)
-  {
-    mult.x = 1;
-    mult.z = 1;
-
-    velocity.x = velocity_per_frame.x * mult.x / delta_seconds;
-    velocity.z = velocity_per_frame.z * mult.z / delta_seconds;
-
-    return;
-  }
-
-  target_dist = collider.get_position() - this->get_position();
-  target_dist.x = abs(target_dist.x);
-  target_dist.z = abs(target_dist.z);
-
-  if (target_dist.x >= width + collider.get_radius())
-  {
-    mult.z = 1;
-  }
-
-  if (target_dist.z >= width + collider.get_radius())
-  {
-    mult.x = 1;
-  }
-
-  velocity.x = velocity_per_frame.x * mult.x / delta_seconds;
-  velocity.z = velocity_per_frame.z * mult.z / delta_seconds;
 }
-
-// ===============================================================================
-
-f32 Entity::get_width() const
-{
-  return Entity::get_radius();
-}
-
-// ===============================================================================
-
-}
-

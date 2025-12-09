@@ -161,7 +161,7 @@
     <ClCompile Include="..\source\nucledian\engine\input\input_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\map_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\player\player.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\player\thing_system.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\player\game_system.cpp" />
     <ClCompile Include="..\source\nucledian\grid.cpp" />
     <ClCompile Include="..\source\nucledian\intersect.cpp" />
     <ClCompile Include="..\source\nucledian\unit_test.cpp" />
@@ -329,7 +329,7 @@
     <ClInclude Include="..\source\nucledian\engine\input\input_system.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_system.h" />
     <ClInclude Include="..\source\nucledian\engine\player\player.h" />
-    <ClInclude Include="..\source\nucledian\engine\player\thing_system.h" />
+    <ClInclude Include="..\source\nucledian\engine\player\game_system.h" />
     <ClInclude Include="..\source\nucledian\grid.h" />
     <ClInclude Include="..\source\nucledian\intersect.h" />
     <ClInclude Include="..\source\nucledian\math\lingebra.h" />

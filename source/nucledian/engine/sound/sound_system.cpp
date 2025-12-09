@@ -16,7 +16,7 @@
 #include <engine/input/input_system.h>
 #include <engine/map/map_system.h>
 #include <engine/entity/entity_system.h>
-#include <engine/player/thing_system.h>
+#include <engine/player/game_system.h>
 
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>

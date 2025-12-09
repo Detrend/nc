@@ -29,7 +29,7 @@ class  Player;
 class  EntityAttachment;
 class  Projectile;
 
-class ThingSystem : public IEngineModule
+class GameSystem : public IEngineModule
 {
 public:
   struct SaveDbEntry
@@ -47,13 +47,13 @@ public:
 
 public:
   static EngineModuleId get_module_id();
-  static ThingSystem&   get();
+  static GameSystem&   get();
 
-  ThingSystem();
-  ~ThingSystem();
+  GameSystem();
+  ~GameSystem();
 
-  ThingSystem(const ThingSystem&)            = delete;
-  ThingSystem& operator=(const ThingSystem&) = delete;
+  GameSystem(const GameSystem&)            = delete;
+  GameSystem& operator=(const GameSystem&) = delete;
 
   bool init();
   void on_event(ModuleEvent& event) override;

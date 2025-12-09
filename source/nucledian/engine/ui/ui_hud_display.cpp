@@ -1,6 +1,6 @@
 #include <engine/ui/ui_hud_display.h>
 #include <engine/core/engine.h>
-#include <engine/player/thing_system.h>
+#include <engine/player/game_system.h>
 #include <engine/player/player.h>
 #include <glm/ext/matrix_transform.hpp>
 
@@ -56,8 +56,8 @@ namespace nc
 
   void UiHudDisplay::update()
   {
-    display_ammo = get_engine().get_module<ThingSystem>().get_player()->get_current_weapon_ammo();
-    display_health = get_engine().get_module<ThingSystem>().get_player()->get_health();
+    display_ammo = get_engine().get_module<GameSystem>().get_player()->get_current_weapon_ammo();
+    display_health = get_engine().get_module<GameSystem>().get_player()->get_health();
   }
 
   //=========================================================================================

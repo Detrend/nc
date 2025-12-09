@@ -79,6 +79,14 @@ public:
   f32    linear    = 0.09f;
   f32    quadratic = 0.032f;
 
+  // This is a temporary workaround, because I hated all other alternatives.
+  // If the light has a certain snap mode active then this is the offset it is
+  // gonna have from floor/ceiling. This is the only entity type for which we
+  // want this at the moment and will replace this later by a hopefully better
+  // solution.
+  f32            snap_offset = 0.0f;
+  SectorSnapType snap        = 0;
+
   // Recomputes the radius of the light from the parameters above and sets it
   // as the entity radius.
   // Do this after you change some of the light parameters or else it will not

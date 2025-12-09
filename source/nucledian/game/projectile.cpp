@@ -1,7 +1,7 @@
 // Project Nucledian Source File
 #include <game/projectile.h>
 
-#include <engine/player/thing_system.h>
+#include <engine/player/game_system.h>
 
 #include <engine/entity/entity_type_definitions.h>
 #include <engine/map/physics.h>
@@ -61,7 +61,7 @@ Projectile::Projectile
 //==============================================================================
 void Projectile::update(f32 dt)
 {
-  auto& game = ThingSystem::get();
+  auto& game = GameSystem::get();
   auto  lvl  = game.get_level();
 
   m_lifetime += dt;
@@ -121,7 +121,7 @@ void Projectile::update(f32 dt)
 //==============================================================================
 bool Projectile::on_entity_hit(const CollisionHit& hit)
 {
-  auto& game = ThingSystem::get();
+  auto& game = GameSystem::get();
   nc_assert(hit.type == CollisionHit::entity);
 
   if (Entity* entity = game.get_entities().get_entity(hit.hit.entity.entity_id))

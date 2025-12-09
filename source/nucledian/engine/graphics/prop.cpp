@@ -13,10 +13,25 @@ namespace nc
 }
 
 //==============================================================================
-Prop::Prop(vec3 pos, f32 rad, f32 height, const Appearance& appear)
-: Entity(pos, rad, height)
+SectorSnapType Prop::get_snap_type() const
 {
-  m_appear = appear;
+  return m_snap;
+}
+
+//==============================================================================
+Prop::Prop
+(
+  vec3              pos,
+  f32               rad,
+  f32               height,
+  const Appearance& appear,
+  SectorSnapType    snap
+)
+: Entity(pos, rad, height)
+, m_appear(appear)
+, m_snap(snap)
+{
+
 }
 
 //==============================================================================

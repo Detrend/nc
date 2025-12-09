@@ -2,7 +2,7 @@
 #include <common.h>
 #include <cvars.h>
 
-#include <engine/player/thing_system.h>
+#include <engine/player/game_system.h>
 #include <engine/player/player.h>
 
 #include <engine/core/engine.h>
@@ -489,29 +489,29 @@ constexpr cstr SAVE_DIR_RELATIVE = "save";
 constexpr cstr SAVE_FILE_SUFFIX  = ".ncs";
 
 //==============================================================================
-EngineModuleId ThingSystem::get_module_id()
+EngineModuleId GameSystem::get_module_id()
 {
   return EngineModule::entity_system;
 }
 
 //==============================================================================
-ThingSystem& ThingSystem::get()
+GameSystem& GameSystem::get()
 {
-  return get_engine().get_module<ThingSystem>();
+  return get_engine().get_module<GameSystem>();
 }
 
 //==============================================================================
-ThingSystem::ThingSystem()  = default;
-ThingSystem::~ThingSystem() = default;
+GameSystem::GameSystem()  = default;
+GameSystem::~GameSystem() = default;
 
 //==============================================================================
-bool ThingSystem::init()
+bool GameSystem::init()
 {
   return true;
 }
 
 //==============================================================================
-void ThingSystem::post_init()
+void GameSystem::post_init()
 {
   // Load game saves and populate the database
   namespace fs = std::filesystem;
@@ -569,7 +569,7 @@ void ThingSystem::post_init()
 }
 
 //==============================================================================
-void ThingSystem::pre_terminate()
+void GameSystem::pre_terminate()
 {
   // Store the dirty save games
   for (const auto&[save, dirty] : this->get_save_game_db())
@@ -602,7 +602,7 @@ void ThingSystem::pre_terminate()
 }
 
 //==============================================================================
-void ThingSystem::on_cleanup()
+void GameSystem::on_cleanup()
 {
   // cleanup dead entities
   this->get_entities().cleanup();
@@ -614,7 +614,7 @@ static void notify_hot_reload_post_map_build()
 {
   if (HotReloadData::has_data)
   {
-    if (Player* player = ThingSystem::get().get_player())
+    if (Player* player = GameSystem::get().get_player())
     {
       player->hot_reload_set_pos_rot
       (
@@ -633,7 +633,7 @@ static void notify_hot_reload_post_map_build()
 #endif
 
 //==============================================================================
-void ThingSystem::on_event(ModuleEvent& event)
+void GameSystem::on_event(ModuleEvent& event)
 {
   switch (event.type)
   {
@@ -679,14 +679,16 @@ void ThingSystem::on_event(ModuleEvent& event)
           ModuleEvent{.type = ModuleEventType::after_map_rebuild}
         );
 
+#if NC_HOT_RELOAD
         notify_hot_reload_post_map_build();
+#endif
       }
     }
     break;
 
     case ModuleEventType::game_update:
     {
-      NC_SCOPE_PROFILER(ThingSystemUpdate)
+      NC_SCOPE_PROFILER(GameSystemUpdate)
 
 #ifdef NC_DEBUG_DRAW
       this->do_raycast_debug();
@@ -738,33 +740,33 @@ void ThingSystem::on_event(ModuleEvent& event)
 }
 
 //==========================================================
-Player* ThingSystem::get_player()
+Player* GameSystem::get_player()
 {
   return this->get_entities().get_entity<Player>(player_id);
 }
 
 //==============================================================================
-EntityRegistry& ThingSystem::get_entities()
+EntityRegistry& GameSystem::get_entities()
 {
   nc_assert(entities);
   return *entities;
 }
 
 //==============================================================================
-MapDynamics& ThingSystem::get_map_dynamics()
+MapDynamics& GameSystem::get_map_dynamics()
 {
   nc_assert(dynamics);
   return *dynamics;
 }
 
 //==============================================================================
-const EntityRegistry& ThingSystem::get_entities() const
+const EntityRegistry& GameSystem::get_entities() const
 {
-  return const_cast<ThingSystem*>(this)->get_entities();
+  return const_cast<GameSystem*>(this)->get_entities();
 }
 
 //==============================================================================
-SaveGameData ThingSystem::save_game() const
+SaveGameData GameSystem::save_game() const
 {
   SaveGameData save;
   save.last_level = this->get_level_name();
@@ -774,25 +776,25 @@ SaveGameData ThingSystem::save_game() const
 }
 
 //==============================================================================
-void ThingSystem::load_game(const SaveGameData& save)
+void GameSystem::load_game(const SaveGameData& save)
 {
   this->request_level_change(save.last_level);
 }
 
 //==============================================================================
-ThingSystem::SaveDatabase& ThingSystem::get_save_game_db()
+GameSystem::SaveDatabase& GameSystem::get_save_game_db()
 {
   return save_db;
 }
 
 //==============================================================================
-LevelName ThingSystem::get_level_name() const
+LevelName GameSystem::get_level_name() const
 {
   return level_name;
 }
 
 //==============================================================================
-void ThingSystem::request_level_change(LevelName new_level)
+void GameSystem::request_level_change(LevelName new_level)
 {
   // Another level already scheduled.
   nc_assert(this->scheduled_level_id == INVALID_LEVEL_NAME);
@@ -801,21 +803,21 @@ void ThingSystem::request_level_change(LevelName new_level)
 }
 
 //==============================================================================
-const MapSectors& ThingSystem::get_map() const
+const MapSectors& GameSystem::get_map() const
 {
   nc_assert(map);
   return *map;
 }
 
 //==============================================================================
-const SectorMapping& ThingSystem::get_sector_mapping() const
+const SectorMapping& GameSystem::get_sector_mapping() const
 {
   nc_assert(mapping);
   return *mapping;
 }
 
 //==============================================================================
-PhysLevel ThingSystem::get_level() const
+PhysLevel GameSystem::get_level() const
 {
   return PhysLevel
   {
@@ -826,7 +828,7 @@ PhysLevel ThingSystem::get_level() const
 }
 
 //==============================================================================
-Projectile* ThingSystem::spawn_projectile
+Projectile* GameSystem::spawn_projectile
 (
   ProjectileType type, vec3 from, vec3 dir, EntityID author
 )
@@ -856,20 +858,20 @@ Projectile* ThingSystem::spawn_projectile
 }
 
 //==============================================================================
-EntityAttachment& ThingSystem::get_attachment_mgr()
+EntityAttachment& GameSystem::get_attachment_mgr()
 {
   nc_assert(this->attachment);
   return *this->attachment;
 }
 
 //==============================================================================
-const EntityAttachment& ThingSystem::get_attachment_mgr() const
+const EntityAttachment& GameSystem::get_attachment_mgr() const
 {
-  return const_cast<ThingSystem*>(this)->get_attachment_mgr();
+  return const_cast<GameSystem*>(this)->get_attachment_mgr();
 }
 
 //==============================================================================
-void ThingSystem::cleanup_map()
+void GameSystem::cleanup_map()
 {
   // Reset in reverse order of iteration
   attachment.reset();
@@ -882,7 +884,54 @@ void ThingSystem::cleanup_map()
 }
 
 //==============================================================================
-void ThingSystem::build_map(LevelName level)
+// Checks if the entity should be snapped to floor or ceiling. Returns the
+// snapped y-position if so.
+static bool recalc_snap_entity_height
+(
+  Entity&              entity,
+  const MapSectors&    map,
+  const SectorMapping& mapping,
+  f32&                 out_height
+)
+{
+  SectorSnapType snap = entity.get_snap_type();
+  if (snap == SectorSnapTypes::free)
+  {
+    return false;
+  }
+
+  EntityID entity_id = entity.get_id();
+  bool     to_floor  = snap == SectorSnapTypes::floor;
+  f32      default_h = to_floor ? -FLT_MAX : FLT_MAX;
+  f32      best_h    = default_h;
+
+  mapping.for_each_sector_of_entity(entity_id, [&](SectorID sid, mat4 t)
+  {
+    // Avoid matrix multiplications and inversions
+    f32 offset = entity.get_snap_offset();
+
+    const SectorData& sd = map.sectors[sid];
+    const f32 heights[2] = {sd.ceil_height - offset, sd.floor_height + offset};
+
+    f32 height   = heights[to_floor];
+    f32 t_height = t[1].y * height + t[3].y;
+    f32 real_h   = height - (t_height - height);
+
+    const bool conditions[2] = {real_h < best_h, real_h > best_h};
+
+    // Search for 
+    if (conditions[to_floor])
+    {
+      best_h = real_h;
+    }
+  });
+
+  out_height = best_h;
+  return best_h != default_h;
+}
+
+//==============================================================================
+void GameSystem::build_map(LevelName level)
 {
   nc_assert(!map && !mapping && !entities);
 
@@ -897,10 +946,10 @@ void ThingSystem::build_map(LevelName level)
     // Rebuild the sector geometry
     GraphicsSystem::get().mark_sector_dirty(sector);
 
-    const MapSectors&     map      = ThingSystem::get().get_map();
-    const SectorMapping&  mapping  = ThingSystem::get().get_sector_mapping();
+    const MapSectors&     map      = GameSystem::get().get_map();
+    const SectorMapping&  mapping  = GameSystem::get().get_sector_mapping();
 
-    EntityRegistry& registry = ThingSystem::get().get_entities();
+    EntityRegistry& registry = GameSystem::get().get_entities();
 
     // Move pickups with the floor
     struct NewHeight
@@ -924,33 +973,19 @@ void ThingSystem::build_map(LevelName level)
       }
 
       Entity* entity = registry.get_entity(entity_id);
-      PickUp* pickup = entity ? entity->as<PickUp>() : nullptr;
-      if (pickup && pickup->snaps_to_floor())
+      nc_assert(entity);
+
+      if (f32 out_h; recalc_snap_entity_height(*entity, map, mapping, out_h))
       {
-        f32 top_height = -FLT_MAX;
-        mapping.for_each_sector_of_entity(entity_id, [&](SectorID sid, mat4 t)
+        if (out_h != entity->get_position().y)
         {
-          // Avoid matrix multiplications and inversions
-          f32 floor_height = map.sectors[sid].floor_height;
-          f32 t_height     = t[1].y * floor_height + t[3].y;
-          f32 real_floor_h = floor_height - (t_height - floor_height);
-
-          if (real_floor_h > top_height)
-          {
-            top_height = real_floor_h;
-          }
-        });
-
-        if (top_height != -FLT_MAX)
-        {
-          new_heights.push_back(NewHeight{entity, top_height});
+          new_heights.push_back(NewHeight{entity, out_h});
         }
       }
     });
 
-    // We have to change the heights here separately because it caused rebuild
-    // of the mapping. Therefore, we can't do it while iterating the mapping
-    // above.
+    // We have to change the heights here separately because doing it at the
+    // same time would cause a rebuild of the mapping WHILE iterating it.
     for (NewHeight to_change : new_heights)
     {
       vec3 pos = to_change.entity->get_position();
@@ -962,11 +997,23 @@ void ThingSystem::build_map(LevelName level)
   entities->add_listener(attachment.get());
 
   map_helpers::load_json_map(level, *map, *mapping, *entities, *dynamics, player_id);
+
+  // Now snap all required entities to floor
+  entities->for_each(EntityTypes::all, [&](Entity& entity)
+  {
+    if (f32 out_h; recalc_snap_entity_height(entity, *map, *mapping, out_h))
+    {
+      if (vec3 pos = entity.get_position(); pos.y != out_h)
+      {
+        entity.set_position(with_y(pos, out_h));
+      }
+    }
+  });
 }
 
 //==============================================================================
 #ifdef NC_DEBUG_DRAW
-void ThingSystem::do_raycast_debug()
+void GameSystem::do_raycast_debug()
 {
   Player* player = this->get_player();
 
@@ -975,7 +1022,7 @@ void ThingSystem::do_raycast_debug()
     if (ImGui::Begin("Raycast debug", &CVars::debug_player_raycasts))
     {
       const Camera* camera = player->get_camera();
-      const auto& lvl = ThingSystem::get().get_level();
+      const auto& lvl = GameSystem::get().get_level();
 
       static f32 ray_len = 10.0f;
       ImGui::SliderFloat("Ray lenght", &ray_len, 1.0f, 25.0f);

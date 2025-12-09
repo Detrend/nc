@@ -5,7 +5,7 @@
 #include <engine/enemies/enemy.h>
 #include <engine/graphics/prop.h>
 #include <engine/core/engine.h>
-#include <engine/player/thing_system.h>
+#include <engine/player/game_system.h>
 #include <engine/player/player.h>
 #include <engine/map/map_system.h>
 #include <engine/map/physics.h>
@@ -41,6 +41,7 @@ constexpr f32 SPOT_DISTANCE         = 1.0f;  // Player will get spotted if close
 constexpr f32 ENEMY_FOV_DEG         = 100.0f; // Field of view
 constexpr f32 TARGET_STOP_DISTANCE  = 1.0f;  // How far do we keep from the target
 constexpr f32 PATH_POINT_ERASE_DIST = 0.25f; // Removes the path point if this close
+constexpr f32 ENEMY_GRAVITY         = 6.0f;
 
 // Global only temporaly, this will be set per enemy type.
 constexpr ActorAnimStateFlag ENEMY_DIR8_STATES
@@ -131,7 +132,7 @@ EntityType Enemy::get_type_static()
 
 //==============================================================================
 Enemy::Enemy(vec3 position, vec3 looking_dir, EnemyType tpe)
-: Entity(position, ENEMY_STATS[tpe].radius, ENEMY_STATS[tpe].height, true)
+: Entity(position, ENEMY_STATS[tpe].radius, ENEMY_STATS[tpe].height)
  , type(tpe)
  , facing(looking_dir)
  , anim_fsm(ActorAnimStates::idle)
@@ -142,7 +143,6 @@ Enemy::Enemy(vec3 position, vec3 looking_dir, EnemyType tpe)
   const auto& stats = this->get_stats();
 
   this->facing    = normalize(this->facing);
-  this->collision = true;
   this->velocity  = VEC3_ZERO;
   this->health    = stats.max_hp;
 
@@ -214,10 +214,10 @@ void Enemy::handle_ai(f32 delta_seconds)
 //==============================================================================
 void Enemy::handle_movement(f32 delta)
 {
-  auto world = ThingSystem::get().get_level();
+  auto world = GameSystem::get().get_level();
 
   // Handle gravity
-  velocity.y -= GRAVITY * delta;
+  velocity.y -= ENEMY_GRAVITY * delta;
 
   EntityTypeMask collide_with = EntityTypeFlags::player | EntityTypeFlags::enemy;
 
@@ -262,17 +262,17 @@ void Enemy::handle_appearance(f32 delta)
           mat4 rot1 = rotate(identity<mat4>(), deg2rad( 3.0f), UP_DIR);
           mat4 rot2 = rotate(identity<mat4>(), deg2rad(-3.0f), UP_DIR);
 
-          ThingSystem::get().spawn_projectile
+          GameSystem::get().spawn_projectile
           (
             stats.projectile, from, dir, this->get_id()
           );
 
-          ThingSystem::get().spawn_projectile
+          GameSystem::get().spawn_projectile
           (
             stats.projectile, from, rot1 * vec4{dir, 0.0f}, this->get_id()
           );
 
-          ThingSystem::get().spawn_projectile
+          GameSystem::get().spawn_projectile
           (
             stats.projectile, from, rot2 * vec4{dir, 0.0f}, this->get_id()
           );
@@ -314,7 +314,7 @@ void Enemy::damage(int damage, EntityID from_who)
     return;
   }
 
-  auto& game = ThingSystem::get();
+  auto& game = GameSystem::get();
   Entity* attacker = game.get_entities().get_entity(from_who);
 
   bool from_fellow    = from_who.type == EntityTypes::enemy;
@@ -339,7 +339,6 @@ void Enemy::damage(int damage, EntityID from_who)
 //==============================================================================
 void Enemy::die()
 {
-  this->collision = false;
   this->state = EnemyAiState::dead;
   this->anim_fsm.set_state(ActorAnimStates::dying);
 }
@@ -347,7 +346,7 @@ void Enemy::die()
 //==============================================================================
 void Enemy::on_dying_anim_end()
 {
-  EntityRegistry& registry = ThingSystem::get().get_entities();
+  EntityRegistry& registry = GameSystem::get().get_entities();
 
   nc_assert(this->appear.mode == Appearance::SpriteMode::mono);
   registry.create_entity<Prop>
@@ -371,7 +370,7 @@ bool Enemy::is_my_turn_for_visibility_query() const
 //==============================================================================
 void Enemy::handle_ai_idle(f32 /*delta*/)
 {
-  auto& game = ThingSystem::get();
+  auto& game = GameSystem::get();
 
   Player* player = game.get_player();
   this->velocity = VEC3_ZERO;
@@ -419,7 +418,7 @@ void Enemy::handle_ai_idle(f32 /*delta*/)
 //==============================================================================
 void Enemy::handle_ai_alert(f32 delta)
 {
-  auto& game   = ThingSystem::get();
+  auto& game   = GameSystem::get();
   auto& ecs    = game.get_entities();
   auto& map    = game.get_map();
   auto  lvl    = game.get_level();
@@ -588,7 +587,7 @@ bool Enemy::can_see_point(vec3 point, vec3 look_direction) const
   const f32 FOV_RAD      = deg2rad(ENEMY_FOV_DEG);
   const f32 HALF_FOV_RAD = FOV_RAD * 0.5f;
 
-  auto level = ThingSystem::get().get_level();
+  auto level = GameSystem::get().get_level();
 
   const vec3 from  = this->get_eye_pos();
   const vec3 to    = point;

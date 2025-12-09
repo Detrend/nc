@@ -33,8 +33,18 @@ namespace EntityTypes
     prop,
     sky_box,
     // - //
-    count  // <- total number of entity types, do not put any type
-           //    after this one
+    count,  // <- total number of entity types
+    all = EntityType(-1),
+  };
+}
+
+namespace SectorSnapTypes
+{
+  enum evalue : SectorSnapType
+  {
+    free = 0, // Do not snap to anything
+    floor,    // Entity changes height with the floor
+    ceiling,  // Entity changes height with the ceiling
   };
 }
 

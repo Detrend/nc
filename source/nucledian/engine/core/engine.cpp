@@ -18,7 +18,7 @@
 // The engine subsystems
 #include <engine/graphics/graphics_system.h>
 #include <engine/input/input_system.h>
-#include <engine/player/thing_system.h>
+#include <engine/player/game_system.h>
 #include <engine/sound/sound_system.h>
 #include <engine/ui/user_interface_module.h>
 
@@ -300,7 +300,7 @@ bool Engine::init()
 
   INIT_MODULE(GraphicsSystem);
   INIT_MODULE(InputSystem);
-  INIT_MODULE(ThingSystem);
+  INIT_MODULE(GameSystem);
   INIT_MODULE(SoundSystem);
   INIT_MODULE(UserInterfaceSystem);
 
@@ -448,7 +448,7 @@ void Engine::terminate()
 //==============================================================================
 const MapSectors& Engine::get_map()
 {
-  return ThingSystem::get().get_map();
+  return GameSystem::get().get_map();
 }
 
 //==============================================================================

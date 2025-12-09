@@ -7,6 +7,8 @@
 #include <types.h>       // f32
 #include <math/vector.h> // vec3
 
+#include <type_traits>   // std::is_polymorphic
+
 namespace nc
 {
 
@@ -24,7 +26,7 @@ class Entity
 public:
   Entity(vec3 position, f32 radius, f32 height);
   Entity(vec3 position, f32 radius);
-  virtual ~Entity();
+  ~Entity();
 
   // Deleted copy assignment and construction to not accidentally
   // copy the entity
@@ -34,13 +36,6 @@ public:
   // Each entity type has to contain a public static constexpr
   // member variable containing it's type! Like this:
   // static EntityType get_type_static();
-
-  Entity(vec3 position, f32 radius, f32 height, bool collision);
-
-  virtual bool did_collide(const Entity& collider);
-  virtual void check_collision(const Entity& collider, vec3& velocity, f32 delta_seconds);
-
-  f32 get_width() const;
 
   // =============================================
   // Non virtual interface - same for each entity
@@ -63,10 +58,13 @@ public:
   //             Components
   // =============================================
   Appearance*       get_appearance();
-  const Appearance* get_appearance() const;
+  const Appearance* get_appearance()  const;
 
   Physics*          get_physics();
-  const Physics*    get_physics() const;
+  const Physics*    get_physics()     const;
+
+  SectorSnapType    get_snap_type()   const;
+  f32               get_snap_offset() const;
 
   // =============================================
   //              Utility
@@ -90,10 +88,6 @@ public:
     return const_cast<Entity*>(this)->as<T>();
   }
 
-protected:
-  bool  collision;
-  f32 GRAVITY = 6.0f;
-
 private: friend class EntityRegistry;
   EntityRegistry* m_registry    = nullptr;
   EntityID        m_id_and_type = INVALID_ENTITY_ID;
@@ -101,5 +95,11 @@ private: friend class EntityRegistry;
   f32             m_radius2d;
   f32             m_height;
 };
+
+// A surprise tool that will help us later.
+// This way, we can serialize any entity to bytes and desereialize it later
+// without any problem. Having a vtable would interfere with this and would
+// result in undefined behaviour.
+static_assert(std::is_polymorphic_v<Entity> == false);
 
 }

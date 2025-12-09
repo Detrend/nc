@@ -9,6 +9,7 @@ namespace nc
 
 using EntityType     = u32;
 using EntityTypeMask = u64;
+using SectorSnapType = u8;
 
 struct EntityID
 {

@@ -20,7 +20,7 @@ constexpr f32 PICKUP_HEIGHT = 0.2f;
 
 //==============================================================================
 PickUp::PickUp(vec3 position, PickupType my_type, bool on_floor)
-: Entity(position, PICKUP_RADIUS, PICKUP_HEIGHT, true)
+: Entity(position, PICKUP_RADIUS, PICKUP_HEIGHT)
 , type(my_type)
 , snap_to_floor(on_floor)
 {
