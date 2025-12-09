@@ -3,7 +3,7 @@ extends Resource
 class_name EditorConfig
 
 enum SectorColoringMode{
-	Floor, Ceiling, Texturing
+	Floor, Ceiling, Texturing, YSize
 }
 
 @export_group("Node editing")
@@ -79,6 +79,26 @@ var _gridsnap_step_inv_impl : float
 	get: return ceiling_color_curve
 	set(val): ceiling_color_curve = val; on_cosmetics_changed.emit()
 
+@export_group("YSize visuals")
+@export var ysize_min : float = 1.0:
+	get: return ysize_min
+	set(val): ysize_min = val; on_cosmetics_changed.emit()
+@export var ysize_min_color : Color = Color.WHITE:
+	get: return ysize_min_color
+	set(val): ysize_min_color = val; on_cosmetics_changed.emit()
+@export var ysize_max : float = 10.0:
+	get: return ysize_max
+	set(val): ysize_max = val; on_cosmetics_changed.emit()
+@export var ysize_do_normalize : bool = true:
+	get: return ysize_do_normalize
+	set(val): ysize_do_normalize = val; on_cosmetics_changed.emit()
+@export var ysize_max_color : Color = Color.DARK_GRAY:
+	get: return ysize_max_color
+	set(val): ysize_max_color = val; on_cosmetics_changed.emit()
+@export var ysize_color_curve : Curve:
+	get: return ysize_color_curve
+	set(val): ysize_color_curve = val; on_cosmetics_changed.emit()
+
 @export_group("Misc visuals")
 @export var excluded_sector_color : Color = Color(1, 1, 1, 0.3):
 	get: return excluded_sector_color
@@ -94,15 +114,23 @@ static func get_sector_color(this: EditorConfig, sector: Sector)->Color:
 		return get_floor_color(this, sector.data.floor_height)
 	if mode == SectorColoringMode.Ceiling:
 		return get_ceiling_color(this, sector.data.ceiling_height)
+	if mode == SectorColoringMode.YSize:
+		return get_ysize_color(this, (sector.data.ceiling_height - sector.data.floor_height))
 	ErrorUtils.report_error("this shouldn't happen!")
 	return Color.TRANSPARENT
 
 static func get_floor_color(this: EditorConfig, floor: float)->Color:
-	var t = clampf((floor - this.floor_min_height)/(this.floor_max_height - this.floor_min_height), 0.0, 1.0)
+	var t :float= clampf((floor - this.floor_min_height)/(this.floor_max_height - this.floor_min_height), 0.0, 1.0)
 	if this.floor_color_curve: t = this.floor_color_curve.sample(t)
 	return lerp(this.floor_min_height_color, this.floor_max_height_color, t)
 
 static func get_ceiling_color(this: EditorConfig, ceiling: float)->Color:
-	var t = clampf((ceiling - this.ceiling_min_height)/(this.ceiling_max_height - this.ceiling_min_height), 0.0, 1.0)
+	var t :float= clampf((ceiling - this.ceiling_min_height)/(this.ceiling_max_height - this.ceiling_min_height), 0.0, 1.0)
 	if this.ceiling_color_curve: t = this.ceiling_color_curve.sample(t)
 	return lerp(this.ceiling_min_height_color, this.ceiling_max_height_color, t)
+
+static func get_ysize_color(this: EditorConfig, ysize: float)->Color:
+	var t :float= clampf((ysize - this.ysize_min)/(this.ysize_max - this.ysize_min), 0.0, 1.0)
+	if not this.ysize_do_normalize: t = ysize
+	if this.ysize_color_curve: t = this.ysize_color_curve.sample(t)
+	return lerp(this.ysize_min_color, this.ysize_max_color, t)

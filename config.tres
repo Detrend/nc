@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="EditorConfig" load_steps=4 format=3 uid="uid://dppwe11x5k3v7"]
+[gd_resource type="Resource" script_class="EditorConfig" load_steps=5 format=3 uid="uid://dppwe11x5k3v7"]
 
 [ext_resource type="Script" uid="uid://bcqqujkyuiq7b" path="res://scripts/EditorConfig.gd" id="1_x30i3"]
 
@@ -9,6 +9,11 @@ point_count = 3
 [sub_resource type="Curve" id="Curve_2lgy8"]
 _data = [Vector2(0, 0), 0.0, 1.02166, 0, 0, Vector2(1, 1), 1.02711, 0.0, 0, 0]
 point_count = 2
+
+[sub_resource type="Curve" id="Curve_btaq4"]
+_limits = [0.0, 1.0, 0.0, 10.0]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1.6161616, 0.008717656), 0.0, 0.0, 0, 0, Vector2(1.778405, 0.6091558), 0.11872975, 0.11872975, 0, 0, Vector2(1.9901199, 0.61332476), 0.0, 0.0, 0, 0, Vector2(1.9971771, 0.9520564), 0.0, 0.0, 0, 0, Vector2(8.29201, 1), 0.0, 0.0, 0, 0]
+point_count = 6
 
 [resource]
 script = ExtResource("1_x30i3")
@@ -25,5 +30,9 @@ floor_max_height_color = Color(0.501961, 0, 0.196078, 1)
 floor_color_curve = SubResource("Curve_2lgy8")
 ceiling_max_height_color = Color(0.662745, 0.662745, 0.662745, 1)
 ceiling_color_curve = SubResource("Curve_x30i3")
+ysize_min_color = Color(0.94049186, 0, 0.44290173, 1)
+ysize_do_normalize = null
+ysize_max_color = Color(1, 1, 1, 1)
+ysize_color_curve = SubResource("Curve_btaq4")
 excluded_sector_color = Color(0, 0, 1, 0.145098)
 metadata/_custom_type_script = "uid://bcqqujkyuiq7b"
