@@ -121,6 +121,8 @@ namespace nc
     void set_music_less();
     void set_music_more();
 
+    void set_crosshair_less();
+    void set_crosshair_more();
 
     UiButton* sound_text = nullptr;
     UiButton* music_text = nullptr;
@@ -134,12 +136,15 @@ namespace nc
     UiButton* music_volume_more = nullptr;
     UiButton* sensitivity_less = nullptr;
     UiButton* sensitivity_more = nullptr;
+    UiButton* crosshair_less = nullptr;
+    UiButton* crosshair_more = nullptr;
 
     bool isWindowed = true;
 
     int soundStep = 9;
     int musicStep = 9;
     int sensitivityStep = 4;
+    int crosshairStep = 1;
   };
 
   //======================================================================================

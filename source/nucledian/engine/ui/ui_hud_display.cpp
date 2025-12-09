@@ -72,6 +72,13 @@ namespace nc
 
   //=========================================================================================
 
+  void UiHudDisplay::set_crosshair(int val)
+  {
+    crosshair = val;
+  }
+
+  //=========================================================================================
+
   void UiHudDisplay::draw_digits()
   {
     digit_shader.use();
@@ -197,6 +204,8 @@ namespace nc
       digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
       digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
       digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
+      digit_shader.set_uniform(shaders::ui_text::HEIGHT, 16.0f);
+      digit_shader.set_uniform(shaders::ui_text::WIDTH, 8.0f);
 
       glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -261,8 +270,6 @@ namespace nc
 
   void UiHudDisplay::draw_crosshair()
   {
-    
-    int temp = 9;
 
     vec2 win_size = get_engine().get_module<GraphicsSystem>().get_window_size();
 
@@ -285,7 +292,7 @@ namespace nc
     digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
     digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
 
-    digit_shader.set_uniform(shaders::ui_text::CHARACTER, temp);
+    digit_shader.set_uniform(shaders::ui_text::CHARACTER, crosshair);
 
     digit_shader.set_uniform(shaders::ui_text::HEIGHT, 1.0f);
     digit_shader.set_uniform(shaders::ui_text::WIDTH, 10.0f);

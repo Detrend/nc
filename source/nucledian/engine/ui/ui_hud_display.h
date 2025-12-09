@@ -13,6 +13,8 @@ namespace nc
 
 		void draw();
 		
+		void set_crosshair(int val);
+
 	private:
 		void init();
 
@@ -24,6 +26,7 @@ namespace nc
 
 		int display_ammo = 0;
 		int display_health = 0;
+		int crosshair = 1;
 
 		GLuint VAO;
 		GLuint VBO;

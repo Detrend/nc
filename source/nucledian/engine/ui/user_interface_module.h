@@ -28,6 +28,8 @@ namespace nc
 
     void draw_hud();
 
+    UiHudDisplay* get_hud() { return ammo_display; }
+
   private:
     MenuManager* menu;
     UiHudDisplay* ammo_display;
@@ -35,6 +37,5 @@ namespace nc
     std::vector<GuiTexture> ui_elements;
 
     int display_health = 0;
-
   };
 }
