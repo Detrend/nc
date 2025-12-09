@@ -129,6 +129,7 @@ namespace nc
     UiButton* sensitivity_text = nullptr;
     UiButton* fullscreen_button = nullptr;
     UiButton* windowed_button = nullptr;
+    UiButton* crosshair_text = nullptr;
 
     UiButton* sound_volume_less = nullptr;
     UiButton* sound_volume_more = nullptr;

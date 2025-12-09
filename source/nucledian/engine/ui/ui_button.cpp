@@ -573,7 +573,7 @@ namespace nc
 		sound_text->draw(button_material);
 		music_text->draw(button_material);
 		sensitivity_text->draw(button_material);
-		
+		crosshair_text->draw(button_material);
 
 		if (isWindowed)
 		{
@@ -723,6 +723,7 @@ namespace nc
 		sound_text = new UiButton("ui_sound", vec2(-0.3f, 0.40f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
 		music_text = new UiButton("ui_music", vec2(-0.3f, 0.15f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
 		sensitivity_text = new UiButton("ui_sensitivity", vec2(-0.3f, -0.1f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
+		crosshair_text = new UiButton("ui_crosshair_text", vec2(-0.3f, -0.35f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
 		fullscreen_button = new UiButton("ui_fullscreen", vec2(0.3f, -0.6f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::set_windowed, this));
 		windowed_button = new UiButton("ui_windowed", vec2(0.3f, -0.6f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::set_fullscreen, this));
 
