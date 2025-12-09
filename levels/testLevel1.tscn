@@ -1600,14 +1600,14 @@ portal_destination = NodePath("../Sector-6355")
 position = Vector2(-0.73097, -28.682)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(9.731, 5.682, 17.731, 22.682, 1.73097, 16.682)
+polygon = PackedVector2Array(14.730972, 3.6819992, 22.730972, 19.682, 6.7309723, 11.681999)
 data = SubResource("Resource_2fk48")
 
 [node name="Sector-6355" parent="Sectors/PortalStressTest3" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(18.1613, -26.3418)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(-9.16122, 3.3418, 6.83878, 3.3418, -1.16122, 20.3418)
+polygon = PackedVector2Array(-4.1613007, 1.3417969, 11.838699, 1.3417969, 3.8386993, 17.341797)
 data = SubResource("Resource_icrml")
 portal_destination = NodePath("../Sector-7816")
 enable_portal = false
@@ -1617,7 +1617,7 @@ portal_destination_wall = 2
 position = Vector2(27.4624, -21.7936)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(-2.46239, -1.20641, 5.53761, 9.79358, -10.4624, 15.7936)
+polygon = PackedVector2Array(2.5375977, -3.206398, 10.537598, 4.793602, -5.4624023, 12.793602)
 data = SubResource("Resource_smahr")
 portal_destination = NodePath("../Sector-1877")
 portal_destination_wall = 2
@@ -1626,7 +1626,7 @@ portal_destination_wall = 2
 position = Vector2(25, -9.99999)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(-8, 4, 8, -2, 8, 11)
+polygon = PackedVector2Array(-3, 0.99998474, 13, -7.0000153, 13, 8.999985)
 data = SubResource("Resource_8rja0")
 portal_destination = NodePath("../Sector-3721")
 enable_portal = false
@@ -1637,14 +1637,14 @@ portal_destination_wall = 2
 position = Vector2(3.52143, -6.41091)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(-2.52138, -5.58908, 13.4786, 0.410919, -1.52138, 8.41092)
+polygon = PackedVector2Array(2.4785767, -10.589096, 18.478577, -2.589096, 2.4785767, 5.410904)
 data = SubResource("Resource_w3g3p")
 
 [node name="Sector-8582" parent="Sectors/PortalStressTest3" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_l4525")]
 position = Vector2(17.8972, 4.55271)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(-0.897186, -10.5527, 15.1028, -3.55272, 6.10281, 5.44728)
+polygon = PackedVector2Array(4.1027985, -13.552704, 20.102798, -5.552704, 12.102798, 2.4472961)
 data = SubResource("Resource_ckcn5")
 portal_destination = NodePath("../Sector-4300")
 portal_wall = 1
@@ -1654,14 +1654,14 @@ portal_destination_wall = 2
 position = Vector2(9.45074, 11.1533)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(-7.45071, -9.15329, 7.54929, -17.1533, 0.549286, -1.15329)
+polygon = PackedVector2Array(-3.4507446, -12.153305, 12.549255, -20.153305, 4.5492554, -4.153305)
 data = SubResource("Resource_1pswn")
 
 [node name="Sector-7816" parent="Sectors/PortalStressTest3" instance=ExtResource("2_l4525")]
 position = Vector2(18.121, 21.6135)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(-8.12094, -11.6135, -1.12094, -27.6135, 5.87906, -11.6135)
+polygon = PackedVector2Array(-4.121002, -14.613495, 3.8789978, -30.613495, 11.878998, -14.613495)
 data = SubResource("Resource_lcdlo")
 
 [node name="TopPart" type="Node2D" parent="Sectors"]
@@ -2880,7 +2880,7 @@ sector_material = ExtResource("14_k8xne")
 position = Vector2(154.95, 26.4978)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(2.33188, -5.36192, 12.3319, -5.36192, 12.0498, 19.5024, 2.0498, 18.5024)
+polygon = PackedVector2Array(2.33188, -5.36192, 12.3319, -5.36192, 12.049805, 18.502441, 2.0498047, 17.502441)
 data = SubResource("Resource_mpein")
 ceiling_height = 8.0
 sector_material = ExtResource("14_k8xne")
@@ -2890,7 +2890,7 @@ portal_wall = 2
 position = Vector2(154.95, 26.4976)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(12.0498, 19.5024, 12.0498, 26.5024, 2.0498, 27.5024, 2.0498, 18.5024)
+polygon = PackedVector2Array(12.049805, 18.502441, 12.049805, 26.502441, 2.0498, 27.5024, 2.0498047, 17.502441)
 data = SubResource("Resource_ame6t")
 floor_height = -0.03
 ceiling_height = 8.0
@@ -2901,7 +2901,7 @@ portal_destination = NodePath("../../../../StairSequence/_Polygon2D_121205c")
 position = Vector2(154.95, 26.4976)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(12.0498, 26.5024, 12.0496, 50.5022, 2.33188, 50.6381, 2.0498, 27.5024)
+polygon = PackedVector2Array(12.049805, 26.502441, 12.0496, 50.5022, 2.33188, 50.6381, 2.0498, 27.5024)
 data = SubResource("Resource_oq2t7")
 ceiling_height = 8.0
 sector_material = ExtResource("14_k8xne")
@@ -2919,7 +2919,7 @@ sector_material = ExtResource("14_k8xne")
 
 [node name="TriangulatedMultisector-3336" parent="Sectors/Outsides/TriangulatedMultisector-8559/Road" instance=ExtResource("3_l4525")]
 position = Vector2(231.507, -188.437)
-polygon = PackedVector2Array(-1, -9, 25, -9, 24, 64, 12, 75, -90, 76, -104, 103, -104, 123, -97.8613, 129.291, -55, 135, -55, 143, -98, 143, -105, 146, -105, 217, -98.6809, 225.834, -26, 230, -26, 240, -97.7845, 241.504, -108, 250, -109, 317, -101, 326, -69, 331, -69, 340, -118, 342, -131, 328, -127, 98, -116, 67, -98, 54, -16, 57, -1, 46)
+polygon = PackedVector2Array(-1, -9, 25, -9, 24, 64, 12, 75, -90, 76, -104, 103, -104, 123, -97.8613, 129.291, -55, 135, -55, 143, -98, 143, -105, 146, -105, 217, -98.6809, 225.834, -26, 230, -26, 240, -97.7845, 241.504, -108, 250, -109, 317, -101, 326, -69, 330, -69, 340, -118, 342, -131, 328, -127, 98, -116, 67, -98, 54, -16, 57, -1, 46)
 data = SubResource("Resource_so1xo")
 
 [node name="Sector-9443w" parent="Sectors/Outsides/TriangulatedMultisector-8559/Road" instance=ExtResource("2_l4525")]
@@ -3048,7 +3048,7 @@ visible = false
 position = Vector2(-47.4932, -62.437)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(5, 5)
-polygon = PackedVector2Array(210, 205, 210, 214, 178, 215, 183, 203)
+polygon = PackedVector2Array(210, 204, 210, 214, 178, 215, 183, 203)
 data = SubResource("Resource_qxix2")
 floor_height = -0.02
 ceiling_height = 999.0
