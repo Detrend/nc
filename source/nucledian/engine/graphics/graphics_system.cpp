@@ -1060,7 +1060,7 @@ void GraphicsSystem::create_sector_meshes()
 //==============================================================================
 vec2 GraphicsSystem::get_window_size()
 {
-  return vec2{m_window_width, m_window_width};
+  return vec2(m_window_width, m_window_height);
 }
 
 //==============================================================================

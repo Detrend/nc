@@ -573,6 +573,7 @@ namespace nc
 		sound_text->draw(button_material);
 		music_text->draw(button_material);
 		sensitivity_text->draw(button_material);
+		crosshair_text->draw(button_material);
 
 		if (isWindowed)
 		{
@@ -592,6 +593,9 @@ namespace nc
 		sensitivity_more->draw(button_material);
 		sensitivity_less->draw(button_material);
 
+		crosshair_less->draw(button_material);
+		crosshair_more->draw(button_material);
+
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 
@@ -604,8 +608,8 @@ namespace nc
 
 		digit_shader.use();
 
-		std::vector<vec2> positions = { vec2(0.4f, 0.15f), vec2(0.4f, -0.1), vec2(0.4f, -0.35) };
-		std::vector<int> steps = { soundStep, musicStep, sensitivityStep - 1 }; //sensitivity step is 1 - 10, but we can draw only 0 - 9
+		std::vector<vec2> positions = { vec2(0.4f, 0.40f), vec2(0.4f, 0.15f), vec2(0.4f, -0.1f), vec2(0.4f, -0.35f) };
+		std::vector<int> steps = { soundStep, musicStep, sensitivityStep - 1, crosshairStep }; //sensitivity step is 1 - 10, but we can draw only 0 - 9
 
 		glBindVertexArray(VAO);
 		glEnableVertexAttribArray(0);
@@ -619,7 +623,7 @@ namespace nc
 		const TextureManager& manager = TextureManager::get();
 		const TextureHandle& texture = manager["ui_font"];
 
-		for (size_t i = 0; i < 3; i++)
+		for (size_t i = 0; i < positions.size(); i++)
 		{
 			glm::mat4 trans_mat = glm::mat4(1.0f);
 			vec2 translate = positions[i];
@@ -635,6 +639,8 @@ namespace nc
 			digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
 			digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
 			digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
+			digit_shader.set_uniform(shaders::ui_text::HEIGHT, 16.0f);
+			digit_shader.set_uniform(shaders::ui_text::WIDTH, 8.0f);
 
 			glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -695,25 +701,40 @@ namespace nc
 
 	void OptionsPage::set_music_more()
 	{
-		musicStep = min(9, soundStep + 1);
+		musicStep = min(9, musicStep + 1);
 		get_engine().get_module<SoundSystem>().set_music_voulme(musicStep);
+	}
+
+	void OptionsPage::set_crosshair_less()
+	{
+		crosshairStep = (crosshairStep - 1) % 10;
+		get_engine().get_module<UserInterfaceSystem>().get_hud()->set_crosshair(crosshairStep);
+	}
+
+	void OptionsPage::set_crosshair_more()
+	{
+		crosshairStep = (crosshairStep + 1) % 10;
+		get_engine().get_module<UserInterfaceSystem>().get_hud()->set_crosshair(crosshairStep);
 	}
 
 	OptionsPage::OptionsPage() :
 		digit_shader(shaders::ui_text::VERTEX_SOURCE, shaders::ui_text::FRAGMENT_SOURCE)
 	{
-		sound_text = new UiButton("ui_sound", vec2(-0.3f, 0.15f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
-		music_text = new UiButton("ui_music", vec2(-0.3f, -0.1f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
-		sensitivity_text = new UiButton("ui_sensitivity", vec2(-0.3f, -0.35f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
+		sound_text = new UiButton("ui_sound", vec2(-0.3f, 0.40f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
+		music_text = new UiButton("ui_music", vec2(-0.3f, 0.15f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
+		sensitivity_text = new UiButton("ui_sensitivity", vec2(-0.3f, -0.1f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
+		crosshair_text = new UiButton("ui_crosshair_text", vec2(-0.3f, -0.35f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
 		fullscreen_button = new UiButton("ui_fullscreen", vec2(0.3f, -0.6f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::set_windowed, this));
 		windowed_button = new UiButton("ui_windowed", vec2(0.3f, -0.6f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::set_fullscreen, this));
 
-		sound_volume_less = new UiButton("ui_arrow_left", vec2(0.3f, 0.15f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_sound_less, this));
-		sound_volume_more = new UiButton("ui_arrow_right", vec2(0.5f, 0.15f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_sound_more, this));
-		music_volume_less = new UiButton("ui_arrow_left", vec2(0.3f, -0.1f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_music_less, this));
-		music_volume_more = new UiButton("ui_arrow_right", vec2(0.5f, -0.1f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_music_more, this));
-		sensitivity_less = new UiButton("ui_arrow_left", vec2(0.3f, -0.35f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_sensitivity_less, this));
-		sensitivity_more = new UiButton("ui_arrow_right", vec2(0.5f, -0.35f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_sensitivity_more, this));
+		sound_volume_less = new UiButton("ui_arrow_left", vec2(0.3f, 0.40f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_sound_less, this));
+		sound_volume_more = new UiButton("ui_arrow_right", vec2(0.5f, 0.40f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_sound_more, this));
+		music_volume_less = new UiButton("ui_arrow_left", vec2(0.3f, 0.15f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_music_less, this));
+		music_volume_more = new UiButton("ui_arrow_right", vec2(0.5f, 0.15f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_music_more, this));
+		sensitivity_less = new UiButton("ui_arrow_left", vec2(0.3f, -0.1f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_sensitivity_less, this));
+		sensitivity_more = new UiButton("ui_arrow_right", vec2(0.5f, -0.1f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_sensitivity_more, this));
+		crosshair_less = new UiButton("ui_arrow_left", vec2(0.3f, -0.35f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_crosshair_less, this));
+		crosshair_more = new UiButton("ui_arrow_right", vec2(0.5f, -0.35f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_crosshair_more, this));
 	}
 
 	OptionsPage::~OptionsPage()
@@ -729,6 +750,8 @@ namespace nc
 		delete music_volume_more;
 		delete sensitivity_less;
 		delete sensitivity_more;
+		delete crosshair_less;
+		delete crosshair_more;
 	}
 
 	//==============================================================================================
@@ -747,6 +770,9 @@ namespace nc
 
 		sensitivity_less->set_hover(false);
 		sensitivity_more->set_hover(false);
+
+		crosshair_less->set_hover(false);
+		crosshair_more->set_hover(false);
 
 		if (isWindowed)
 		{
@@ -787,6 +813,14 @@ namespace nc
 		else if (sensitivity_more->is_point_in_rec(mouse_pos))
 		{
 			hover_over_button = sensitivity_more;
+		}
+		else if (crosshair_less->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = crosshair_less;
+		}
+		else if (crosshair_more->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = crosshair_more;
 		}
 
 		if (hover_over_button != nullptr)

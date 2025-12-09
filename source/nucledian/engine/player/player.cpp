@@ -396,6 +396,27 @@ void Player::update_gun_sway(f32 delta)
 //==============================================================================
 void Player::update_camera(f32 delta)
 {
+  if (!alive)
+  {
+    dead_camera_offset -= delta * 1.0f;
+
+    if (dead_camera_offset < 0.3f)
+    {
+      dead_camera_offset = 0.3f;
+    }
+
+    f32 spd = CVars::camera_spring_update_speed;
+    lerp_towards(this->vertical_camera_offset, 0.0f, delta * spd);
+
+    camera.update_transform
+    (
+      this->get_position(), this->angle_yaw, this->angle_pitch,
+      dead_camera_offset + this->vertical_camera_offset
+    );
+
+    return;
+  }
+
   // Update the spring
   f32 spd = CVars::camera_spring_update_speed;
   lerp_towards(this->vertical_camera_offset, 0.0f, delta * spd);
@@ -484,13 +505,17 @@ void Player::damage(int damage)
 
   if (this->current_health <= 0)
   {
-    //this->die();
+    this->die();
   }
 }
 
 //==============================================================================
 void Player::die()
 {
+  if (alive)
+  {
+    dead_camera_offset = PLAYER_EYE_HEIGHT;
+  }
   alive = false;
 }
 
@@ -513,7 +538,9 @@ void Player::update(GameInputs curr_input, GameInputs prev_input, f32 delta)
 
   if (!this->alive)
   {
+    time_since_death += delta;
     // Do nothing
+    this->update_camera(delta);
     return;
   }
 
@@ -555,6 +582,7 @@ WeaponType Player::get_equipped_weapon() const
 //==============================================================================
 void Player::get_gun_props(RenderGunProperties& props_out) const
 {
+  const f32 death_limit    = 2.0f;
   const f32 max_gun_change = CVars::gun_change_time;
   const f32 sway_speed     = CVars::gun_sway_speed;
   const f32 sway_amount    = CVars::gun_sway_amount;
@@ -572,7 +600,7 @@ void Player::get_gun_props(RenderGunProperties& props_out) const
     ? (gun_change_bounded / max_gun_change)
     : 0.0f;
 
-  vec2 gun_change_offset = vec2{0.0f, (1.0f - gun_change_coeff)};
+  vec2 gun_change_offset = vec2{0.0f, min(death_limit, (1.0f - gun_change_coeff + time_since_death))};
 
   // Movement
   f32 movement_coeff = moving_time / fadein_time;

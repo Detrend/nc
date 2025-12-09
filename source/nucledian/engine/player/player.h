@@ -93,12 +93,15 @@ private:
   // Camera spring
   f32 vertical_camera_offset = 0.0f;
 
+  f32 dead_camera_offset = 0.0f;
+
   // Gun sway
   f32 moving_time           = 0.0f; // for how long we were moving
   f32 time_since_gun_change = 0.0f;
   f32 time_since_shoot      = 0.0f;
   f32 time_since_start      = 0.0f;
   f32 air_time              = 0.0f;
+  f32 time_since_death      = 0.0f;
 
   // Bit flags for the weapons owned
   WeaponFlags owned_weapons  = 0;
