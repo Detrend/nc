@@ -156,9 +156,9 @@ struct CVars
   NC_REGISTER_CVAR_RANGED(f32, camera_spring_update_speed, 6.0f, 0.1f, 10.0f, "");
 
   NC_REGISTER_CVAR_RANGED(f32, player_jump_force,    6.5f,  0.5f, 10.0f, "How high the player jumps.");
-  NC_REGISTER_CVAR_RANGED(f32, player_max_speed,     4.5f,  0.5f, 10.0f, "Maximum speed [m/s]");
-  NC_REGISTER_CVAR_RANGED(f32, player_acceleration,  20.0f, 1.0f, 50.0f, "Acceleration [m/s2]");
-  NC_REGISTER_CVAR_RANGED(f32, player_deceleration,  11.0f, 1.0f, 50.0f, "Deceleration [m/s2]");
+  NC_REGISTER_CVAR_RANGED(f32, player_max_speed,     6.0f,  0.5f, 10.0f, "Maximum speed [m/s]");
+  NC_REGISTER_CVAR_RANGED(f32, player_acceleration,  40.0f, 1.0f, 50.0f, "Acceleration [m/s2]");
+  NC_REGISTER_CVAR_RANGED(f32, player_deceleration,  25.0f, 1.0f, 50.0f, "Deceleration [m/s2]");
   NC_REGISTER_CVAR_RANGED(f32, player_gravity,       15.0f, 1.0f, 50.0f, "Gravity [m/s2]");
   NC_REGISTER_CVAR_RANGED(f32, player_air_acc_coeff, 0.5f,  0.0f, 01.0f, "Acceleration in air compared to ground.");
   NC_REGISTER_CVAR_RANGED(f32, player_air_dec_coeff, 0.5f,  0.0f, 01.0f, "Deceleration in air compared to ground.");
