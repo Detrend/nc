@@ -268,8 +268,7 @@ func _handle_input()->void:
 	var selected :Array[Node] = []
 	selected = NodeUtils.get_selected_nodes_of_type(Node, selected)
 	for node in selected: 
-		if node is EditablePolygon:
-			node._on_selected_input(selected)
+		if node is EditablePolygon: node._on_selected_input(selected)
 
 	_handle_stairs_increment()
 	_handle_triangulation_command(selected)
@@ -315,12 +314,14 @@ func _handle_selections()->void:
 		(last_selection[0] as EditablePolygon)._on_sole_unselected()
 	if current_selection.size() == 1 and ( last_selection.size() != 1 or last_selection[0] != current_selection[0]) and current_selection[0] and current_selection[0] is EditablePolygon:
 		(current_selection[0] as EditablePolygon)._on_sole_selected()
+	
+	const SELECTED_UPDATE_METHOD_NAME :String= "_selected_update"
 	for last in last_selection:
-		if last and last is EditablePolygon and current_selection.find(last) < 0:
-			(last as EditablePolygon)._selected_update(current_selection)
+		if last and last.has_method(SELECTED_UPDATE_METHOD_NAME) and current_selection.find(last) < 0:
+			last._selected_update(current_selection)
 	for current in current_selection:
-		if current and current is EditablePolygon:
-			(current as EditablePolygon)._selected_update(current_selection)
+		if current and current.has_method(SELECTED_UPDATE_METHOD_NAME):
+			current._selected_update(current_selection)
 	last_selection = current_selection
 	
 
