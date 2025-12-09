@@ -1060,7 +1060,12 @@ void GraphicsSystem::create_sector_meshes()
 //==============================================================================
 vec2 GraphicsSystem::get_window_size()
 {
-  return vec2{m_window_width, m_window_width};
+  int x;
+  int y;
+
+  SDL_GetWindowSize(m_window, &x, &y);
+
+  return vec2(x, y);
 }
 
 //==============================================================================
