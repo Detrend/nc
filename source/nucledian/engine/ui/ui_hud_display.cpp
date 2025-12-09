@@ -262,12 +262,12 @@ namespace nc
   void UiHudDisplay::draw_crosshair()
   {
     
-    int temp = 5;
+    int temp = 9;
 
     vec2 win_size = get_engine().get_module<GraphicsSystem>().get_window_size();
 
     vec2 position = vec2(0.0f, 0.0f);
-    vec2 scale = vec2(0.03f, 0.03f * win_size.x / win_size.y);
+    vec2 scale = vec2(0.05f, 0.05f * win_size.x / win_size.y);
 
     const TextureManager& manager = TextureManager::get();
     const TextureHandle& texture = manager["ui_crosshair"];
