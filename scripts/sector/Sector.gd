@@ -230,7 +230,15 @@ static func sanity_check_all(level: Level, all_sectors: Array[Sector])->void:
 							ErrorUtils.report_warning("Unsnapped points: {0} <-> {1}".format([a, b]))
 				j += 1
 			i += 1
-	
+	if level.config.sanity_check_portals:
+		print("\tCheck - portals...")
+		for s in all_sectors:
+			if s.has_portal():
+				var portal_length_in := s.get_wall_direction(s.portal_wall).length()
+				var portal_length_out := s.portal_destination.get_wall_direction(s.portal_destination_wall).length()
+				if abs(portal_length_in - portal_length_out) > level.config.sanity_check_portal_length_epsilon:
+					ErrorUtils.report_warning("Portal lengths not matching: {0}[{1}] -> {2}[{3}] ({4} m vs {5} m)"
+						.format([s.get_full_name(), s.portal_wall, s.portal_destination.get_full_name(), s.portal_destination_wall, portal_length_in, portal_length_out]))
 
 
 func is_convex()->bool:
