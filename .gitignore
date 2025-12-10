@@ -12,3 +12,4 @@ imgui.ini
 /source/nucledian/engine/entity/entity.cpp.orig
 /source/nucledian/engine/player/player.cpp.orig
 /.godot
+/demo

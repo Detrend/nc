@@ -488,7 +488,9 @@ struct HotReloadData
 #endif
 
 constexpr cstr SAVE_DIR_RELATIVE = "save";
+constexpr cstr DEMO_DIR_RELATIVE = "demo";
 constexpr cstr SAVE_FILE_SUFFIX  = ".ncs";
+constexpr cstr DEMO_FILE_SUFFIX  = ".demo";
 
 //==============================================================================
 EngineModuleId GameSystem::get_module_id()
@@ -1200,6 +1202,120 @@ void GameSystem::do_raycast_debug()
 }
 
 //==============================================================================
+/*static*/ std::vector<std::string> GameSystem::list_available_demos()
+{
+  namespace fs = std::filesystem;
+
+  std::vector<std::string> result;
+  fs::path demo_dir = DEMO_DIR_RELATIVE;
+
+  if (!fs::exists(demo_dir) || !fs::is_directory(demo_dir))
+  {
+    return result;
+  }
+
+  for (auto &entry : fs::directory_iterator(demo_dir))
+  {
+    if (entry.is_regular_file())
+    {
+      auto path = entry.path();
+      if (path.extension() == DEMO_FILE_SUFFIX)
+      {
+        result.push_back(path.filename().string());
+      }
+    }
+  }
+
+  return result;
+}
+
+//==============================================================================
+/*static*/ void GameSystem::save_demo_data
+(
+  const std::string& lvl_name,
+  u8*                data,
+  u64                data_size
+)
+{
+  namespace fs = std::filesystem;
+
+#if DO_JOURNAL_CHECKS
+  nc_assert(false, "You are trying to save sanitization data into a demo file");
+#endif
+
+  fs::path demo_dir = DEMO_DIR_RELATIVE;
+  if (!fs::exists(demo_dir))
+  {
+    fs::create_directory(demo_dir);
+  }
+
+  int index = 1;
+  std::string file_name;
+  fs::path full_path;
+
+  while (true)
+  {
+    file_name = lvl_name + "_" + std::to_string(index) + DEMO_FILE_SUFFIX;
+    full_path = demo_dir / file_name;
+
+    if (!fs::exists(full_path))
+    {
+      break;
+    }
+
+    ++index;
+  }
+
+  std::ofstream out(full_path, std::ios::binary);
+  nc_assert(out);
+
+  out.write(recast<cstr>(data), cast<std::streamsize>(data_size));
+}
+
+//==============================================================================
+/*static*/ void GameSystem::load_demo_from_bytes
+(
+  const std::string& demo_name,
+  std::vector<u8>&   out
+)
+{
+  namespace fs = std::filesystem;
+
+#if DO_JOURNAL_CHECKS
+  nc_assert(false, "You are trying to load sanitization data into a demo file");
+#endif
+
+  fs::path demo_dir = DEMO_DIR_RELATIVE;
+  if (!fs::exists(demo_dir) || !fs::is_directory(demo_dir))
+  {
+    nc_assert(false);
+    return;
+  }
+
+  fs::path full_path = demo_dir / demo_name;
+  if (!fs::exists(full_path) || !fs::is_regular_file(full_path))
+  {
+    nc_assert(false);
+    return;
+  }
+
+  std::ifstream in(full_path, std::ios::binary);
+  nc_assert(in);
+
+  in.seekg(0, std::ios::end);
+  std::streamsize size = in.tellg();
+  in.seekg(0, std::ios::beg);
+
+  out.resize(size);
+
+  if (!in.read(recast<char*>(out.data()), size))
+  {
+    nc_assert(false);
+    return;
+  }
+}
+
+//==============================================================================
 void GameSystem::do_demo_debug()
 {
   if (!CVars::debug_demo_recording)
@@ -1216,22 +1332,59 @@ void GameSystem::do_demo_debug()
     if (journal.state == JournalState::recording)
     {
       ImGui::Text("Frames recorded: %d", cast<int>(journal.frames.size()));
-      if (ImGui::Button("Replay"))
+      if (ImGui::Button("Play"))
       {
         this->request_level_change(this->get_level_name());
-        journal.state = JournalState::playing;
         journal.rover = 0;
+        journal.state = JournalState::playing;
       }
     }
     else if (journal.state == JournalState::playing)
     {
       ImGui::Text("Currend idx: %d", cast<int>(journal.rover)-1);
-      if (ImGui::Button("End replay"))
+      if (ImGui::Button("Save to filesystem"))
+      {
+        save_demo_data
+        (
+          level_name,
+          recast<u8*>(journal.frames.data()),
+          journal.frames.size() * sizeof(JournalFrame)
+        );
+      }
+    }
+
+    if (ImGui::Button("Start new demo"))
+    {
+      this->request_level_change(this->get_level_name());
+      journal.state = JournalState::recording;
+      journal.rover = 0;
+      journal.frames.clear();
+    }
+
+    if (ImGui::Button("Start new game without recording"))
+    {
+      this->request_level_change(this->get_level_name());
+      journal.state = JournalState::none;
+      journal.rover = 0;
+      journal.frames.clear();
+    }
+
+    ImGui::Separator();
+
+    ImGui::Text("Open demo:");
+    std::vector<std::string> available_demos = list_available_demos();
+    for (const std::string& demo : available_demos)
+    {
+      if (ImGui::Button(demo.c_str()))
       {
         this->request_level_change(this->get_level_name());
-        journal.state = JournalState::recording;
+        std::vector<u8> bytes;
+        load_demo_from_bytes(demo, bytes);
+        u64 num_frames = bytes.size() / sizeof(JournalFrame);
+        journal.state = JournalState::playing;
         journal.rover = 0;
-        journal.frames.clear();
+        journal.frames.resize(num_frames);
+        std::memcpy(journal.frames.data(), bytes.data(), bytes.size());
       }
     }
   }

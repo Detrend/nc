@@ -16,6 +16,8 @@
 
 #include <memory> // std::unique_ptr
 #include <unordered_set>
+#include <string>
+#include <vector>
 
 namespace nc
 {
@@ -105,6 +107,20 @@ private:
 #ifdef NC_DEBUG_DRAW
   void do_raycast_debug();
   void do_demo_debug();
+
+  static void save_demo_data
+  (
+    const std::string& lvl_name,
+    u8*                data,
+    u64                data_size
+  );
+
+  static std::vector<std::string> list_available_demos();
+
+  static void load_demo_from_bytes
+  (
+    const std::string& path, std::vector<u8>& out
+  );
 #endif
 
 private:
