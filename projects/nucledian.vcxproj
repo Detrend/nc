@@ -169,6 +169,7 @@
     <ClCompile Include="..\source\nucledian\engine\player\save_types.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\map_dynamics.cpp" />
     <ClCompile Include="..\source\nucledian\engine\game\game.cpp" />
+    <ClCompile Include="..\source\nucledian\rng.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -346,6 +347,7 @@
     <ClInclude Include="..\source\nucledian\game\weapons.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_dynamics.h" />
     <ClInclude Include="..\source\nucledian\engine\game\game.h" />
+    <ClInclude Include="..\source\nucledian\rng.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\anim_state_machine.inl" />

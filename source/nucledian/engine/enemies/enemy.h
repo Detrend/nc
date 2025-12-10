@@ -10,6 +10,7 @@
 
 #include <game/game_types.h> // EnemyType
 #include <game/enemies.h>
+#include <rng.h>
 
 namespace nc
 {
@@ -22,6 +23,7 @@ public:
   static EntityType get_type_static();
 
   Enemy(vec3 position, vec3 facing, EnemyType type);
+  void post_init();
 
   void update(f32 delta);
   void damage(int damage, EntityID from_who);
@@ -85,6 +87,7 @@ private:
   vec3         follow_target_pos     = VEC3_ZERO;
   f32          time_since_saw_target = 0.0f;
   f32          time_since_idle       = 0.0f;
+  Rng          rng;
   bool         can_see_target : 1    = false;
 
   int health;

@@ -73,21 +73,6 @@ static Appearance::SpriteMode choose_sprite_mode(const ActorFSM& fsm)
 }
 
 //==============================================================================
-static f32 random_range(f32 min, f32 max)
-{
-  return (min + max) * 0.5f;
-
-  /*
-  NC_TODO("Implement a proper system for generating random numbers.");
-  f32 dist = max - min;
-  nc_assert(dist >= 0.0f);
-
-  f32 coeff = (std::rand() % 1024) / cast<f32>(1023);
-  return min + dist * coeff;
-  */
-}
-
-//==============================================================================
 // Iterates the tree layer by layer. Stops iterating if the callback returns false.
 // Returns true if the whole tree has been iterated through, false if there was
 // a quick exit before.
@@ -173,6 +158,13 @@ Enemy::Enemy(vec3 position, vec3 looking_dir, EnemyType tpe)
   (
     AnimStates::attack, trigger_time, TriggerTypes::trigger_fire
   );
+}
+
+//==============================================================================
+void Enemy::post_init()
+{
+  // Seed the rng generator from our ID so it is deterministic.
+  rng.seed(cast<u8>(this->get_id().idx));
 }
 
 //==============================================================================
@@ -336,7 +328,7 @@ void Enemy::damage(int damage, EntityID from_who)
   bool from_fellow    = from_who.type == EntityTypes::enemy;
   f32  retreat_chance = from_fellow ? this->get_stats().infight_chance : 1.0f;
 
-  if (attacker && retreat_chance >= random_range(0.0f, 1.0f))
+  if (attacker && retreat_chance >= rng.next(0.0f, 1.0f))
   {
     this->state = EnemyAiState::alert;
     this->target_id = from_who;
@@ -558,7 +550,7 @@ void Enemy::handle_ai_alert(f32 delta)
       if (this->can_attack(*target) && this->can_see_target)
       {
         desired_state = ActorAnimStates::attack;
-        time_until_attack = random_range
+        time_until_attack = rng.next
         (
           stats.atk_delay_min, stats.atk_delay_max
         );
