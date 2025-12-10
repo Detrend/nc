@@ -20,6 +20,11 @@ void UiScreenEffect::did_damage([[maybe_unused] ]int damage)
   //time_since_last_dmg = 0.0f;
 }
 
+void UiScreenEffect::did_pickup()
+{
+  time_since_last_pickup = 0.0f;
+}
+
 void UiScreenEffect::init()
 {
   vec2 vertices[] = { vec2(-1, 1), vec2(0, 0),
@@ -51,8 +56,8 @@ void UiScreenEffect::init()
 
 void UiScreenEffect::update(float delta)
 {
-  time_since_last_dmg = min(time_since_last_dmg + delta, MAX_DURATION);
-
+  time_since_last_dmg = min(time_since_last_dmg + delta, MAX_DMG_FLASH_DURATION);
+  time_since_last_pickup = min(time_since_last_pickup + delta, MAX_PICKUP_FLASH_DURATION);
 }
 
 void UiScreenEffect::draw()
@@ -84,7 +89,14 @@ void UiScreenEffect::draw()
   shader.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
   shader.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
 
-  shader.set_uniform(shaders::ui_button::COLOR, vec4(1.0f, 0.0f, 0.0f, (MAX_DURATION - time_since_last_dmg)));
+  if ((MAX_DMG_FLASH_DURATION - time_since_last_dmg) == 0)
+  {
+    shader.set_uniform(shaders::ui_button::COLOR, vec4(1.0f, 1.0f, 0.0f, (MAX_PICKUP_FLASH_DURATION - time_since_last_pickup)/ MAX_PICKUP_FLASH_DURATION));
+  }
+  else
+  {
+    shader.set_uniform(shaders::ui_button::COLOR, vec4(1.0f, 0.0f, 0.0f, (MAX_DMG_FLASH_DURATION - time_since_last_dmg)));
+  }
 
   glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

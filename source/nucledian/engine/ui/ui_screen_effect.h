@@ -15,10 +15,14 @@ namespace nc
 
 			void did_damage(int damage);
 
+			void did_pickup();
+
 		private:
-			const f32 MAX_DURATION = 2.0f;
-			
-			f32 time_since_last_dmg = MAX_DURATION;
+			const f32 MAX_DMG_FLASH_DURATION = 2.0f;
+			const f32 MAX_PICKUP_FLASH_DURATION = 0.25f;
+
+			f32 time_since_last_dmg = MAX_DMG_FLASH_DURATION;
+			f32 time_since_last_pickup = MAX_PICKUP_FLASH_DURATION;
 
 			void init();
 

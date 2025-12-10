@@ -264,6 +264,7 @@ void Player::apply_velocity(f32 delta_seconds)
         {
           // Destroy if picked up sucessfully.
           ecs.destroy_entity(report_id);
+          get_engine().get_module<UserInterfaceSystem>().get_ui_screen_effect()->did_pickup();
         }
         break;
       }
