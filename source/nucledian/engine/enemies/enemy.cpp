@@ -479,7 +479,7 @@ void Enemy::handle_ai_alert(f32 delta)
     {
       // Recompute the path if needed
       bool no_path  = current_path.points.empty();
-      vec2 last_pt2 = no_path ? VEC2_ZERO : current_path.points.back().xz();
+      vec2 last_pt2 = current_path.target_pt_world_space.xz();
       if (no_path || distance(last_pt2, this->follow_target_pos.xz()) > 5.0f)
       {
         this->current_path.points = lvl.calc_path_relative
@@ -492,6 +492,8 @@ void Enemy::handle_ai_alert(f32 delta)
           this->get_height() * 2.0f,
           true
         );
+
+        this->current_path.target_pt_world_space = this->follow_target_pos;
       }
 
       // Cooldown after attack

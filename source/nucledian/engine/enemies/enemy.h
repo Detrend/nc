@@ -68,6 +68,8 @@ private:
   struct Path
   {
     std::vector<vec3> points;
+
+    vec3 target_pt_world_space;
   };
 
   EnemyType    type                  = 0;
