@@ -239,13 +239,14 @@ struct PhysLevel
   // be transformed by the portal transform.
   std::vector<vec3> calc_path_relative
   (
-    vec3 start_pos,
-    vec3 end_pos,
-    f32  width,
-    f32  height,
-    f32  step_up,    // Positive
-    f32  step_down,  // Positive
-    bool do_smoothing = true
+    vec3  start_pos,                 // Starting position
+    vec3  end_pos,                   // Target position
+    f32   radius,                    // Radius of the entity
+    f32   height,                    // Max height of the ceiling
+    f32   step_up,                   // Max step height, positive or 0
+    f32   step_down,                 // Max drop down height, positive or 0
+    bool  do_smoothing = true,       // Should the path be smoothed out?
+    mat4* nc_transform_opt = nullptr // Nucledian transformation of the portals
   ) const;
 };
 

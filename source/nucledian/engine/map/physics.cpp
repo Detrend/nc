@@ -1639,13 +1639,14 @@ const
 //=============================================================================
 std::vector<vec3> PhysLevel::calc_path_relative
 (
-  vec3 start_pos,
-  vec3 end_pos,
-  f32  radius,
-  f32  height,
-  f32  step_up,
-  f32  step_down,
-  bool do_smoothing
+  vec3  start_pos,
+  vec3  end_pos,
+  f32   radius,
+  f32   height,
+  f32   step_up,
+  f32   step_down,
+  bool  do_smoothing,
+  mat4* nc_transform_opt
 )
 const
 {
@@ -1682,6 +1683,11 @@ const
     accumulated_t = transforms[i] * accumulated_t;
     mat4 inv_t = inverse(accumulated_t);
     final_path.push_back((inv_t * vec4{points[i], 1.0f}).xyz());
+  }
+
+  if (nc_transform_opt)
+  {
+    *nc_transform_opt = accumulated_t;
   }
 
   return final_path;

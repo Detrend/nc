@@ -239,6 +239,10 @@ void Enemy::handle_movement(f32 delta)
     {
       point = (portal_transform * vec4{point, 1.0f}).xyz();
     }
+
+    // The target inverse has to be recomputed as well
+    current_path.target_transform_inv
+      = portal_transform * current_path.target_transform_inv;
   }
 }
 
@@ -482,6 +486,7 @@ void Enemy::handle_ai_alert(f32 delta)
       vec2 last_pt2 = current_path.target_pt_world_space.xz();
       if (no_path || distance(last_pt2, this->follow_target_pos.xz()) > 5.0f)
       {
+        mat4 nc_transform;
         this->current_path.points = lvl.calc_path_relative
         (
           this->get_position(),
@@ -490,10 +495,12 @@ void Enemy::handle_ai_alert(f32 delta)
           this->get_height(),
           this->get_height() * 0.5f,
           this->get_height() * 2.0f,
-          true
+          true,
+          &nc_transform
         );
 
         this->current_path.target_pt_world_space = this->follow_target_pos;
+        this->current_path.target_transform_inv  = inverse(nc_transform);
       }
 
       // Cooldown after attack
@@ -566,7 +573,16 @@ void Enemy::handle_ai_alert(f32 delta)
     case ActorAnimStates::attack:
     {
       this->velocity.x = this->velocity.z = 0.0f; // Stand on a spot
-      vec2 dir_to_target = normalize_or_zero(this->follow_target_pos.xz() - position_2d);
+
+      // The direction has to be transformed if the target is behind a nc portal.
+      vec3 rel_target_pos =
+      (
+        current_path.target_transform_inv * vec4{this->follow_target_pos, 1.0f}
+      ).xyz();
+
+      vec2 dir_to_target = normalize_or_zero(rel_target_pos.xz() - position_2d);
+
+      // TODO: Make this 3 dimensional!
       if (dir_to_target != VEC2_ZERO)
       {
         this->facing = vec3{dir_to_target.x, 0.0f, dir_to_target.y};

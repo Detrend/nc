@@ -146,7 +146,7 @@ struct CVars
   NC_REGISTER_CVAR_RANGED(f32, time_speed, 1.0f, 0.0f, 10.0f, "Changes the update speed.");
 
   NC_REGISTER_CVAR_RANGED(f32, gun_sway_amount,           0.05f, 0.0f, 1.0f, "");
-  NC_REGISTER_CVAR_RANGED(f32, gun_sway_speed,            5.5f,  0.0f, 8.0f, "");
+  NC_REGISTER_CVAR_RANGED(f32, gun_sway_speed,            6.5f,  0.0f, 8.0f, "");
   NC_REGISTER_CVAR_RANGED(f32, gun_change_time,           0.4f,  0.0f, 5.0f, "");
   NC_REGISTER_CVAR_RANGED(f32, gun_sway_move_fadein_time, 0.2f,  0.0f, 5.0f, "");
   NC_REGISTER_CVAR_RANGED(f32, gun_sway_air_time,         0.6f,  0.0f, 3.0f, "");

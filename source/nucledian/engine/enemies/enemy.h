@@ -69,7 +69,8 @@ private:
   {
     std::vector<vec3> points;
 
-    vec3 target_pt_world_space;
+    vec3 target_pt_world_space = VEC3_ZERO;
+    mat4 target_transform_inv = mat4{1.0f};
   };
 
   EnemyType    type                  = 0;
