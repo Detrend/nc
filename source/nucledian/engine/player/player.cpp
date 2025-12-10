@@ -515,6 +515,7 @@ void Player::die()
   if (alive)
   {
     dead_camera_offset = PLAYER_EYE_HEIGHT;
+    SoundSystem::get().play_oneshot(Sounds::death);
   }
   alive = false;
 }
