@@ -147,8 +147,12 @@ private:
   struct Journal
   {
     std::vector<JournalFrame> frames;
-    u64                       rover = 0;
     JournalState              state = JournalState::recording;
+    u64                       rover = 0;
+    bool                      paused = false;
+
+    void reset(JournalState to_state);
+    void reset_and_clear(JournalState to_state);
   };
 
   GamePtr        game;
