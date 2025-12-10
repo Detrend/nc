@@ -100,6 +100,7 @@ namespace nc
       inline constexpr Uniform<2, vec2> TEXTURE_POS;
       inline constexpr Uniform<3, vec2> TEXTURE_SIZE;
       inline constexpr Uniform<4, bool> HOVER;
+      inline constexpr Uniform<5, vec4> COLOR;
     }
 
     namespace ui_text

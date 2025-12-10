@@ -9,6 +9,7 @@ out vec4 FragColor;
 uniform sampler2D sampler;
 
 layout(location = 4) uniform bool hover = false;
+layout(location = 5) uniform vec4 color = vec4(1, 1, 1, 1);
 
 void main(void) {
     FragColor = texture(sampler, uv);
@@ -17,6 +18,8 @@ void main(void) {
     {
         FragColor.xyz *= 0.5;
     }
+
+    FragColor *= color;
 }
 
 )";

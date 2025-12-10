@@ -28,6 +28,7 @@ namespace nc
   {
     menu = new MenuManager();
     ammo_display = new UiHudDisplay();
+    screen_effect = new UiScreenEffect();
 
     return true;
   }
@@ -43,10 +44,16 @@ namespace nc
     return menu;
   }
 
+  UiScreenEffect* UserInterfaceSystem::get_ui_screen_effect()
+  {
+    return screen_effect;
+  }
+
   void UserInterfaceSystem::draw_hud()
   {
     ammo_display->draw();
     menu->draw();
+    screen_effect->draw();
   }
 
   void UserInterfaceSystem::on_event(ModuleEvent& event)
@@ -58,6 +65,7 @@ namespace nc
     case ModuleEventType::game_update:
       ammo_display->update();
       menu->update();
+      screen_effect->update(event.update.dt);
       break;
     case ModuleEventType::render:
       //draw();

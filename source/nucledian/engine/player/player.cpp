@@ -16,6 +16,9 @@
 
 #include <engine/graphics/graphics_system.h> // RenderGunProperties
 
+#include <engine/ui/user_interface_module.h>
+#include <engine/ui/ui_screen_effect.h>
+
 // Sound
 #include <engine/sound/sound_system.h>
 #include <engine/sound/sound_resources.h>
@@ -501,11 +504,18 @@ void Player::change_weapon(WeaponType new_weapon)
 //==============================================================================
 void Player::damage(int damage)
 {
+  if (!alive)
+  {
+    return;
+  }
+
   this->current_health -= damage;
+  get_engine().get_module<UserInterfaceSystem>().get_ui_screen_effect()->did_damage(damage);
 
   if (this->current_health <= 0)
   {
     this->die();
+    get_engine().get_module<UserInterfaceSystem>().get_ui_screen_effect()->did_damage(200);
   }
 }
 
