@@ -10,7 +10,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <engine/core/engine.h>
-#include <engine/player/game_system.h>
+#include <engine/game/game_system.h>
 #include <engine/input/input_system.h>
 #include <engine/sound/sound_system.h>
 

@@ -5,7 +5,7 @@
 #include <engine/enemies/enemy.h>
 #include <engine/graphics/prop.h>
 #include <engine/core/engine.h>
-#include <engine/player/game_system.h>
+#include <engine/game/game_system.h>
 #include <engine/player/player.h>
 #include <engine/map/map_system.h>
 #include <engine/map/physics.h>
@@ -75,13 +75,16 @@ static Appearance::SpriteMode choose_sprite_mode(const ActorFSM& fsm)
 //==============================================================================
 static f32 random_range(f32 min, f32 max)
 {
-  NC_TODO("Implement a proper system for generating random numbers.");
+  return (min + max) * 0.5f;
 
+  /*
+  NC_TODO("Implement a proper system for generating random numbers.");
   f32 dist = max - min;
   nc_assert(dist >= 0.0f);
 
   f32 coeff = (std::rand() % 1024) / cast<f32>(1023);
   return min + dist * coeff;
+  */
 }
 
 //==============================================================================
@@ -375,7 +378,7 @@ bool Enemy::is_my_turn_for_visibility_query() const
 {
   constexpr u64 CHECK_PER_FRAMES = 32; // Once per 32 frames
 
-  u64 frame_idx = get_engine().get_frame_idx();
+  u64 frame_idx = GameSystem::get().get_frame_idx();
   u64 my_idx    = this->get_id().idx;
   return (frame_idx % CHECK_PER_FRAMES) == (my_idx % CHECK_PER_FRAMES);
 }

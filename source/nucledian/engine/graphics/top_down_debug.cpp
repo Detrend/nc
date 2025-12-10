@@ -12,7 +12,7 @@
 #include <engine/graphics/resources/shader_program.h>
 #include <engine/graphics/camera.h>
 
-#include <engine/player/game_system.h>
+#include <engine/game/game_system.h>
 #include <engine/map/physics.h>
 #include <engine/entity/entity_system.h>
 #include <engine/entity/entity_type_definitions.h>

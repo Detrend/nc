@@ -245,7 +245,7 @@ struct PhysLevel
     f32   height,                    // Max height of the ceiling
     f32   step_up,                   // Max step height, positive or 0
     f32   step_down,                 // Max drop down height, positive or 0
-    bool  do_smoothing = true,       // Should the path be smoothed out?
+    bool  do_smoothing     = true,   // Should the path be smoothed out?
     mat4* nc_transform_opt = nullptr // Nucledian transformation of the portals
   ) const;
 };

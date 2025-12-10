@@ -2,7 +2,7 @@
 #include <common.h>
 #include <cvars.h>
 
-#include <engine/player/game_system.h>
+#include <engine/game/game_system.h>
 #include <engine/player/player.h>
 
 #include <engine/core/engine.h>
@@ -29,6 +29,8 @@
 
 #include <game/entity_attachment_manager.h>
 #include <game/projectiles.h>
+
+#include <engine/game/game.h>
 
 #include <engine/enemies/enemy.h>
 #include <game/projectile.h>
@@ -507,6 +509,7 @@ GameSystem::~GameSystem() = default;
 //==============================================================================
 bool GameSystem::init()
 {
+  this->cleanup_map();
   return true;
 }
 
@@ -711,29 +714,85 @@ void GameSystem::on_event(ModuleEvent& event)
       }
 #endif
 
-      auto& entity_system = this->get_entities();
-
       //INPUT PHASE
       GameInputs curr_input = InputSystem::get().get_inputs();
       GameInputs prev_input = InputSystem::get().get_prev_inputs();
 
-      // Handle the player first
-      this->get_player()->update(curr_input, prev_input, event.update.dt);
+      bool do_update = true;
 
-      // Handle enemies
-      entity_system.for_each<Enemy>([&](Enemy& enemy)
+      PlayerSpecificInputs player_input_curr, player_input_prev;
+      f32 delta_time;
+
+      if (journal.state == JournalState::playing)
       {
-        enemy.update(event.update.dt);
-      });
+        PlayerSpecificInputs empty_inputs;
+        std::memset(&empty_inputs, 0, sizeof(empty_inputs));
 
-      // Handle projectiles
-      entity_system.for_each<Projectile>([&](Projectile& proj)
+        const JournalFrame& frame = journal.frames[journal.rover];
+
+        player_input_prev = journal.rover
+          ? journal.frames[journal.rover-1].inputs
+          : empty_inputs;
+
+        player_input_curr = frame.inputs;
+        delta_time = frame.delta;
+
+#if DO_JOURNAL_CHECKS
+        Player* player = this->get_player();
+        nc_assert(player->get_position() == frame.player_position);
+        this->get_entities().for_each(EntityTypes::all, [&](Entity& entity)
+        {
+          nc_assert(frame.alive_entities.contains(entity.get_id().as_u64()));
+        });
+#endif
+
+        if (journal.rover == journal.frames.size()-1)
+        {
+          // Do not update after the demo ended
+          do_update = false;
+        }
+        else
+        {
+          journal.rover += 1;
+        }
+      }
+      else
       {
-        proj.update(event.update.dt);
-      });
+        player_input_curr = curr_input.player_inputs;
+        player_input_prev = prev_input.player_inputs;
+        delta_time        = event.update.dt;
 
-      // And update the map
-      dynamics->update(event.update.dt);
+        if (journal.state == JournalState::recording)
+        {
+          // Record the inputs as well
+          journal.frames.push_back(JournalFrame
+          {
+            .inputs = player_input_curr,
+            .delta  = delta_time,
+          });
+
+#if DO_JOURNAL_CHECKS
+        Player* player = this->get_player();
+        journal.frames.back().player_position = player->get_position();
+        this->get_entities().for_each(EntityTypes::all, [&](Entity& entity)
+        {
+          journal.frames.back().alive_entities.insert(entity.get_id().as_u64());
+        });
+#endif
+        }
+      }
+
+      if (do_update)
+      {
+        game->update
+        (
+          delta_time, player_input_curr, player_input_prev
+        );
+      }
+
+#ifdef NC_IMGUI
+      this->do_demo_debug();
+#endif
     }
     break;
   }
@@ -742,21 +801,21 @@ void GameSystem::on_event(ModuleEvent& event)
 //==========================================================
 Player* GameSystem::get_player()
 {
-  return this->get_entities().get_entity<Player>(player_id);
+  return this->get_entities().get_entity<Player>(game->player_id);
 }
 
 //==============================================================================
 EntityRegistry& GameSystem::get_entities()
 {
-  nc_assert(entities);
-  return *entities;
+  nc_assert(game->entities);
+  return *game->entities;
 }
 
 //==============================================================================
 MapDynamics& GameSystem::get_map_dynamics()
 {
-  nc_assert(dynamics);
-  return *dynamics;
+  nc_assert(game->dynamics);
+  return *game->dynamics;
 }
 
 //==============================================================================
@@ -805,15 +864,15 @@ void GameSystem::request_level_change(LevelName new_level)
 //==============================================================================
 const MapSectors& GameSystem::get_map() const
 {
-  nc_assert(map);
-  return *map;
+  nc_assert(game->map);
+  return *game->map;
 }
 
 //==============================================================================
 const SectorMapping& GameSystem::get_sector_mapping() const
 {
-  nc_assert(mapping);
-  return *mapping;
+  nc_assert(game->mapping);
+  return *game->mapping;
 }
 
 //==============================================================================
@@ -860,8 +919,8 @@ Projectile* GameSystem::spawn_projectile
 //==============================================================================
 EntityAttachment& GameSystem::get_attachment_mgr()
 {
-  nc_assert(this->attachment);
-  return *this->attachment;
+  nc_assert(game->attachment);
+  return *game->attachment;
 }
 
 //==============================================================================
@@ -871,16 +930,16 @@ const EntityAttachment& GameSystem::get_attachment_mgr() const
 }
 
 //==============================================================================
+u64 GameSystem::get_frame_idx() const
+{
+  return game->frame_idx;
+}
+
+//==============================================================================
 void GameSystem::cleanup_map()
 {
-  // Reset in reverse order of iteration
-  attachment.reset();
-  dynamics.reset();
-  entities.reset();
-  mapping.reset();
-  map.reset();
-
-  player_id = INVALID_ENTITY_ID;
+  game.reset();
+  game = std::make_unique<Game>();
 }
 
 //==============================================================================
@@ -933,15 +992,18 @@ static bool recalc_snap_entity_height
 //==============================================================================
 void GameSystem::build_map(LevelName level)
 {
-  nc_assert(!map && !mapping && !entities);
+  nc_assert(!game->map && !game->mapping && !game->entities);
 
-  map        = std::make_unique<MapSectors>();
-  mapping    = std::make_unique<SectorMapping>(*map);
-  entities   = std::make_unique<EntityRegistry>();
-  dynamics   = std::make_unique<MapDynamics>(*map, *entities, *mapping);
-  attachment = std::make_unique<EntityAttachment>(*entities);
+  game->map        = std::make_unique<MapSectors>();
+  game->mapping    = std::make_unique<SectorMapping>(*game->map);
+  game->entities   = std::make_unique<EntityRegistry>();
+  game->dynamics   = std::make_unique<MapDynamics>
+  (
+    *game->map, *game->entities, *game->mapping
+  );
+  game->attachment = std::make_unique<EntityAttachment>(*game->entities);
 
-  dynamics->sector_change_callback = [](SectorID sector)
+  game->dynamics->sector_change_callback = [](SectorID sector)
   {
     // Rebuild the sector geometry
     GraphicsSystem::get().mark_sector_dirty(sector);
@@ -993,15 +1055,23 @@ void GameSystem::build_map(LevelName level)
     }
   };
 
-  entities->add_listener(mapping.get());
-  entities->add_listener(attachment.get());
+  game->entities->add_listener(game->mapping.get());
+  game->entities->add_listener(game->attachment.get());
 
-  map_helpers::load_json_map(level, *map, *mapping, *entities, *dynamics, player_id);
+  map_helpers::load_json_map
+  (
+    level,
+    *game->map,
+    *game->mapping,
+    *game->entities,
+    *game->dynamics,
+    game->player_id
+  );
 
-  // Now snap all required entities to floor
-  entities->for_each(EntityTypes::all, [&](Entity& entity)
+  // Now snap all required entities to the floor
+  game->entities->for_each(EntityTypes::all, [&](Entity& entity)
   {
-    if (f32 out_h; recalc_snap_entity_height(entity, *map, *mapping, out_h))
+    if (f32 out_h; recalc_snap_entity_height(entity, *game->map, *game->mapping, out_h))
     {
       if (vec3 pos = entity.get_position(); pos.y != out_h)
       {
@@ -1128,6 +1198,46 @@ void GameSystem::do_raycast_debug()
     }
   }
 }
+
+//==============================================================================
+void GameSystem::do_demo_debug()
+{
+  if (!CVars::debug_demo_recording)
+  {
+    return;
+  }
+
+  if (ImGui::Begin("Journal debug", &CVars::debug_demo_recording))
+  {
+    constexpr cstr STATE_NAMES[] {"recording", "playing", "none"};
+    cstr journal_state = STATE_NAMES[cast<u8>(journal.state)];
+    ImGui::Text("Journal state: %s", journal_state);
+
+    if (journal.state == JournalState::recording)
+    {
+      ImGui::Text("Frames recorded: %d", cast<int>(journal.frames.size()));
+      if (ImGui::Button("Replay"))
+      {
+        this->request_level_change(this->get_level_name());
+        journal.state = JournalState::playing;
+        journal.rover = 0;
+      }
+    }
+    else if (journal.state == JournalState::playing)
+    {
+      ImGui::Text("Currend idx: %d", cast<int>(journal.rover)-1);
+      if (ImGui::Button("End replay"))
+      {
+        this->request_level_change(this->get_level_name());
+        journal.state = JournalState::recording;
+        journal.rover = 0;
+        journal.frames.clear();
+      }
+    }
+  }
+  ImGui::End();
+}
+
 #endif
 
 }

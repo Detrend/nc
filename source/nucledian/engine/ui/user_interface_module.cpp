@@ -3,7 +3,7 @@
 #include <engine/core/engine.h>
 
 #include <engine/player/player.h>
-#include <engine/player/game_system.h>
+#include <engine/game/game_system.h>
 
 #include <stb/stb_image.h>
 #include <glad/glad.h>

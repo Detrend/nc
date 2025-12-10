@@ -130,6 +130,7 @@ struct CVars
   NC_REGISTER_CVAR(bool, display_debug_window,  false, "Displays debug window.");
   NC_REGISTER_CVAR(bool, display_imgui_demo,    false, "Displays imgui demo window for inspiration.");
   NC_REGISTER_CVAR(bool, debug_player_raycasts, false, "Debug raycast from player's eyes.");
+  NC_REGISTER_CVAR(bool, debug_demo_recording,  false, "Debug that enables replaying a demo.");
   NC_REGISTER_CVAR(bool, lock_camera_pitch,     false, "Restricts camera from looking up/down.");
   NC_REGISTER_CVAR(bool, has_fps_limit,         false, "Is the FPS limited?");
   NC_REGISTER_CVAR(bool, has_min_fps,           false, "Min FPS");

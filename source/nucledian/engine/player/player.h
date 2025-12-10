@@ -19,7 +19,7 @@
 namespace nc
 {
 // Forward declare, we do not want to include
-struct GameInputs;
+struct PlayerSpecificInputs;
 struct RenderGunProperties;
 }
 
@@ -38,7 +38,12 @@ public:
   void damage(int damage);
   void die();
 
-  void update(GameInputs input, GameInputs prev_input, f32 delta_seconds);
+  void update
+  (
+    PlayerSpecificInputs input,
+    PlayerSpecificInputs prev_input,
+    f32                  delta_seconds
+  );
 
   Camera* get_camera();
   int     get_health();
@@ -61,11 +66,11 @@ public:
 
 private:
   void apply_velocity(f32 delta_seconds);
-  void handle_attack(GameInputs input, GameInputs prev_input, f32 delta_seconds);
-  void handle_use(GameInputs input, GameInputs prev_input, f32 delta_seconds);
-  void handle_weapon_change(GameInputs input, GameInputs prev_input);
-  void calculate_wish_velocity(GameInputs input, f32 delta_seconds);
-  bool get_attack_state(GameInputs curInput, GameInputs prevInput, f32 delta_seconds);
+  void handle_attack(PlayerSpecificInputs input, PlayerSpecificInputs prev_input, f32 delta_seconds);
+  void handle_use(PlayerSpecificInputs input, PlayerSpecificInputs prev_input, f32 delta_seconds);
+  void handle_weapon_change(PlayerSpecificInputs input, PlayerSpecificInputs prev_input);
+  void calculate_wish_velocity(PlayerSpecificInputs input, f32 delta_seconds);
+  bool get_attack_state(PlayerSpecificInputs curInput, PlayerSpecificInputs prevInput, f32 delta_seconds);
   void apply_acceleration(vec3 movement_direction, f32 delta_seconds);
   void apply_deceleration(vec3 movement_direction, f32 delta_seconds);
   void update_gun_sway(f32 delta);

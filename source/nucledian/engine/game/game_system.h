@@ -10,10 +10,12 @@
 #include <engine/player/level_types.h>
 #include <engine/player/save_types.h>
 
+#include <engine/input/game_input.h>
 #include <game/game_types.h>
 #include <math/vector.h>
 
 #include <memory> // std::unique_ptr
+#include <unordered_set>
 
 namespace nc
 {
@@ -24,6 +26,8 @@ struct MapDynamics;
 struct GameInputs;
 struct SectorMapping;
 struct PhysLevel;
+struct Game;
+struct PlayerSpecificInputs;
 class  EntityRegistry;
 class  Player;
 class  EntityAttachment;
@@ -38,16 +42,12 @@ public:
     bool         dirty = false;
   };
 
-  using MappingPtr    = std::unique_ptr<SectorMapping>;
-  using MapPtr        = std::unique_ptr<MapSectors>;
-  using DynamicsPtr   = std::unique_ptr<MapDynamics>;
-  using RegistryPtr   = std::unique_ptr<EntityRegistry>;
-  using AttachmentPtr = std::unique_ptr<EntityAttachment>;
-  using SaveDatabase  = std::vector<SaveDbEntry>;
+  using GamePtr      = std::unique_ptr<Game>;
+  using SaveDatabase = std::vector<SaveDbEntry>;
 
 public:
   static EngineModuleId get_module_id();
-  static GameSystem&   get();
+  static GameSystem&    get();
 
   GameSystem();
   ~GameSystem();
@@ -78,6 +78,8 @@ public:
   EntityAttachment&       get_attachment_mgr();
   const EntityAttachment& get_attachment_mgr() const;
 
+  u64 get_frame_idx() const;
+
   // Helper for creating projectiles
   Projectile* spawn_projectile
   (
@@ -102,18 +104,42 @@ private:
 
 #ifdef NC_DEBUG_DRAW
   void do_raycast_debug();
+  void do_demo_debug();
 #endif
 
 private:
-  EntityID       player_id = INVALID_ENTITY_ID;
-  MapPtr         map;
-  MappingPtr     mapping;
-  DynamicsPtr    dynamics;
-  AttachmentPtr  attachment;
-  RegistryPtr    entities;
+#define DO_JOURNAL_CHECKS 0
+
+  struct JournalFrame
+  {
+    PlayerSpecificInputs inputs;
+    f32                  delta;
+#if DO_JOURNAL_CHECKS
+    // Position AFTER the frame ended
+    vec3                    player_position = VEC3_ZERO;
+    std::unordered_set<u64> alive_entities;
+#endif
+  };
+
+  enum class JournalState : u8
+  {
+    recording = 0, // Recording inputs into a journal
+    playing,       // Playing the inputs from the journal
+    none           // None of the above
+  };
+
+  struct Journal
+  {
+    std::vector<JournalFrame> frames;
+    u64                       rover = 0;
+    JournalState              state = JournalState::recording;
+  };
+
+  GamePtr        game;
   LevelName      level_name         = INVALID_LEVEL_NAME;
   LevelName      scheduled_level_id = INVALID_LEVEL_NAME;
   SaveDatabase   save_db;
+  Journal        journal;
   mutable SaveID last_save_id = 0;
 };
 
