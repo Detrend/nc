@@ -607,13 +607,6 @@ void GameSystem::pre_terminate()
 }
 
 //==============================================================================
-void GameSystem::on_cleanup()
-{
-  // cleanup dead entities
-  this->get_entities().cleanup();
-}
-
-//==============================================================================
 #if NC_HOT_RELOAD
 static void notify_hot_reload_post_map_build()
 {
@@ -651,12 +644,6 @@ void GameSystem::on_event(ModuleEvent& event)
     case ModuleEventType::pre_terminate:
     {
       this->pre_terminate();
-    }
-    break;
-
-    case ModuleEventType::cleanup:
-    {
-      this->on_cleanup();
     }
     break;
 
@@ -720,6 +707,17 @@ void GameSystem::on_event(ModuleEvent& event)
 
       if (journal.state == JournalState::playing)
       {
+        // Calculate proper number of frames to simulate to keep a pace
+        f32 dt_left = event.update.dt;
+        num_frames_to_simulate = 0;
+        u64 idx = journal.rover;
+        while (dt_left > 0.0f && idx < journal.frames.size())
+        {
+          num_frames_to_simulate += 1;
+          dt_left -= journal.frames[idx].delta;
+          idx += 1;
+        }
+
 #ifdef NC_DEBUG_DRAW
         if (ImGui::IsKeyPressed(ImGuiKey_Space))
         {
@@ -732,8 +730,10 @@ void GameSystem::on_event(ModuleEvent& event)
         {
           num_frames_to_simulate = 0;
 
-          bool shift = ImGui::IsKeyPressed(ImGuiKey_LeftShift);
-          bool skip  = ImGui::IsKeyPressed(ImGuiKey_RightArrow);
+          bool lshift = ImGui::IsKeyDown(ImGuiKey_LeftShift);
+          bool rshift = ImGui::IsKeyDown(ImGuiKey_RightShift);
+          bool shift  = lshift | rshift;
+          bool skip   = ImGui::IsKeyPressed(ImGuiKey_RightArrow);
           if (skip)
           {
             num_frames_to_simulate = min(shift ? 100_u64 : 1_u64, frames_left);

@@ -14,7 +14,10 @@ namespace nc
 ProjectileStats PROJECTILE_STATS[] = 
 {
   // Wrench
-  ProjectileStats{.damage = 10},
+  ProjectileStats
+  {
+    .damage = 25,
+  },
 
   // Plasma ball
   ProjectileStats
@@ -30,6 +33,13 @@ ProjectileStats PROJECTILE_STATS[] =
     .dmg_falloff = 0.05f, .speed = 12.0f, .radius = 0.2f, .damage = 12,
     .sprite = "cultist_projectile", .sprite_cnt = 4, .anim_len = 0.8f,
     .light_color = colors::RED * 0.65f,
+  },
+
+  // Possessed fist
+  ProjectileStats
+  {
+    .damage = 30,
+    .sprite = "cultist_projectile",
   },
 };
 

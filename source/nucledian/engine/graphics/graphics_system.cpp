@@ -438,98 +438,9 @@ void GraphicsSystem::render()
   {
     draw_debug_window();
   }
-#endif
 
-  // TODO: Remove this shit
-#ifdef NC_IMGUI
-  if (CVars::light_debug)
-  {
-    if (ImGui::Begin("Light Debug", &CVars::light_debug))
-    {
-      vec3 pos = light_test->get_position();
-      if (ImGui::DragFloat3("Position", &pos.x, 0.1f))
-      {
-        light_test->set_position(pos);
-      }
-
-      bool changed = false;
-
-      changed |= ImGui::ColorEdit3("Color",    &light_test->color.x);
-      changed |= ImGui::DragFloat("Intensity", &light_test->intensity, 0.1f, 0.0f, 1.0f);
-      changed |= ImGui::DragFloat("Constant",  &light_test->constant);
-      changed |= ImGui::DragFloat("Linear",    &light_test->linear);
-      changed |= ImGui::DragFloat("Quadratic", &light_test->quadratic);
-
-      if (changed)
-      {
-        light_test->refresh_entity_radius();
-      }
-
-      ImGui::Separator();
-      Player* p = GameSystem::get().get_player();
-      if (p)
-      {
-        f32 dist = length(p->get_position() - light_test->get_position());
-        ImGui::Text("Distance to player is: %.2f", dist);
-      }
-      ImGui::Text("Light radius is: %.2f", light_test->get_radius());
-    }
-
-    ImGui::End();
-  }
-
-  if (CVars::sector_height_debug)
-  {
-    MapSectors& map = const_cast<MapSectors&>(GameSystem::get().get_map());
-
-    if (ImGui::Begin("Runtime map changes debug"))
-    {
-      static int modify = -1;
-      ImGui::DragInt("Sector to modify", &modify, 1.0f, -1, cast<int>(map.sectors.size()) - 1);
-
-      if (modify != -1)
-      {
-        ImGui::Text("Selected sector %d", modify);
-        SectorData& sd = map.sectors[modify];
-
-        bool changed = false;
-
-        changed |= ImGui::DragFloat("Floor height", &sd.floor_height, 0.01f, 0.0f, 100.0f);
-        changed |= ImGui::DragFloat("Ceil height",  &sd.ceil_height,  0.01f, 0.0f, 100.0f);
-        sd.ceil_height = max(sd.floor_height + 0.1f, sd.ceil_height);
-
-        if (changed)
-        {
-          SectorID sid = cast<SectorID>(modify);
-          GraphicsSystem::get().mark_sector_dirty(sid);
-
-          map.for_each_portal_of_sector(sid, [&](WallID wall)
-          {
-            SectorID neighbor = map.walls[wall].portal_sector_id;
-            nc_assert(map.is_valid_sector_id(neighbor));
-            GraphicsSystem::get().mark_sector_dirty(neighbor);
-          });
-        }
-      }
-    }
-
-    ImGui::End();
-
-    MapDynamics& dynamics = GameSystem::get().get_map_dynamics();
-    std::vector<u16> activator_values(dynamics.activators.size());
-    dynamics.evaluate_activators(activator_values);
-
-    for (u64 idx = 0; idx < activator_values.size(); ++idx)
-    {
-      int value  = cast<int>(activator_values[idx]);
-      int thresh = cast<int>(dynamics.activators[idx].threshold);
-      int scount = cast<int>(dynamics.activator_list[idx].size());
-
-      ImGui::PushID(cast<int>(idx));
-      ImGui::Text("Value/Threshold/SectorCNT: %d/%d/%d", value, thresh, scount);
-      ImGui::PopID();
-    }
-  }
+  handle_light_debug();
+  handle_sector_height_debug();
 #endif
 
   VisibilityTree visible_sectors;
@@ -971,6 +882,103 @@ void draw_profiling()
   }
 }
 #endif
+
+//==============================================================================
+void GraphicsSystem::handle_light_debug()
+{
+  if (CVars::light_debug)
+  {
+    if (ImGui::Begin("Light Debug", &CVars::light_debug))
+    {
+      vec3 pos = light_test->get_position();
+      if (ImGui::DragFloat3("Position", &pos.x, 0.1f))
+      {
+        light_test->set_position(pos);
+      }
+
+      bool changed = false;
+
+      changed |= ImGui::ColorEdit3("Color",    &light_test->color.x);
+      changed |= ImGui::DragFloat("Intensity", &light_test->intensity, 0.1f, 0.0f, 1.0f);
+      changed |= ImGui::DragFloat("Constant",  &light_test->constant);
+      changed |= ImGui::DragFloat("Linear",    &light_test->linear);
+      changed |= ImGui::DragFloat("Quadratic", &light_test->quadratic);
+
+      if (changed)
+      {
+        light_test->refresh_entity_radius();
+      }
+
+      ImGui::Separator();
+      Player* p = GameSystem::get().get_player();
+      if (p)
+      {
+        f32 dist = length(p->get_position() - light_test->get_position());
+        ImGui::Text("Distance to player is: %.2f", dist);
+      }
+      ImGui::Text("Light radius is: %.2f", light_test->get_radius());
+    }
+
+    ImGui::End();
+  }
+}
+
+//==============================================================================
+void GraphicsSystem::handle_sector_height_debug()
+{
+  if (CVars::sector_height_debug)
+  {
+    MapSectors& map = const_cast<MapSectors&>(GameSystem::get().get_map());
+
+    if (ImGui::Begin("Runtime map changes debug"))
+    {
+      static int modify = -1;
+      ImGui::DragInt("Sector to modify", &modify, 1.0f, -1, cast<int>(map.sectors.size()) - 1);
+
+      if (modify != -1)
+      {
+        ImGui::Text("Selected sector %d", modify);
+        SectorData& sd = map.sectors[modify];
+
+        bool changed = false;
+
+        changed |= ImGui::DragFloat("Floor height", &sd.floor_height, 0.01f, 0.0f, 100.0f);
+        changed |= ImGui::DragFloat("Ceil height",  &sd.ceil_height,  0.01f, 0.0f, 100.0f);
+        sd.ceil_height = max(sd.floor_height + 0.1f, sd.ceil_height);
+
+        if (changed)
+        {
+          SectorID sid = cast<SectorID>(modify);
+          GraphicsSystem::get().mark_sector_dirty(sid);
+
+          map.for_each_portal_of_sector(sid, [&](WallID wall)
+          {
+            SectorID neighbor = map.walls[wall].portal_sector_id;
+            nc_assert(map.is_valid_sector_id(neighbor));
+            GraphicsSystem::get().mark_sector_dirty(neighbor);
+          });
+        }
+      }
+    }
+
+    ImGui::End();
+
+    MapDynamics& dynamics = GameSystem::get().get_map_dynamics();
+    std::vector<u16> activator_values(dynamics.activators.size());
+    dynamics.evaluate_activators(activator_values);
+
+    for (u64 idx = 0; idx < activator_values.size(); ++idx)
+    {
+      int value  = cast<int>(activator_values[idx]);
+      int thresh = cast<int>(dynamics.activators[idx].threshold);
+      int scount = cast<int>(dynamics.activator_list[idx].size());
+
+      ImGui::PushID(cast<int>(idx));
+      ImGui::Text("Value/Threshold/SectorCNT: %d/%d/%d", value, thresh, scount);
+      ImGui::PopID();
+    }
+  }
+}
 
 //==============================================================================
 void GraphicsSystem::draw_debug_window()

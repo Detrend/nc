@@ -82,14 +82,13 @@ private:
 #ifdef NC_DEBUG_DRAW
   void render_map_top_down(const VisibilityTree& visible);
   void draw_debug_window();
+  void handle_light_debug();
+  void handle_sector_height_debug();
 #endif
 
 private:
   // Because we do not want to include the whole renderer with this header
   using RendererPtr = std::unique_ptr<class Renderer>;
-#ifdef NC_DEBUG_DRAW
-  using DebugRendererPtr = std::unique_ptr<class TopDownDebugRenderer>;
-#endif
 
   SDL_Window* m_window     = nullptr;
   void*       m_gl_context = nullptr;
@@ -99,6 +98,7 @@ private:
   std::vector<bool>       m_dirty_sectors;
 
 #ifdef NC_DEBUG_DRAW
+  using DebugRendererPtr = std::unique_ptr<class TopDownDebugRenderer>;
   DebugRendererPtr m_debug_renderer = nullptr;
 #endif
 

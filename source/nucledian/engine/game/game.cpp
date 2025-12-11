@@ -50,6 +50,9 @@ void Game::update
 
   // Push the frame index
   frame_idx += 1;
+
+  // And then clean up the dead entities
+  entities->cleanup();
 }
 
 }

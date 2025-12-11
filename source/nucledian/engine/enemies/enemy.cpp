@@ -42,6 +42,8 @@ constexpr f32 ENEMY_FOV_DEG         = 100.0f; // Field of view
 constexpr f32 TARGET_STOP_DISTANCE  = 1.0f;  // How far do we keep from the target
 constexpr f32 PATH_POINT_ERASE_DIST = 0.25f; // Removes the path point if this close
 constexpr f32 ENEMY_GRAVITY         = 6.0f;
+constexpr f32 ENEMY_MELEE_RANGE     = 2.5f;
+constexpr f32 ENEMY_MELEE_EXPAND    = 0.1f;
 
 // Global only temporaly, this will be set per enemy type.
 constexpr ActorAnimStateFlag ENEMY_DIR8_STATES
@@ -138,7 +140,7 @@ Enemy::Enemy(vec3 position, vec3 looking_dir, EnemyType tpe)
   {
     .sprite    = std::format("{}_idle_0", ENEMY_TYPE_NAMES[this->type]),
     .direction = this->facing,
-    .scale     = 45.0f,
+    .scale     = 40.0f,
     .mode      = Appearance::SpriteMode::dir8,
     .pivot     = Appearance::PivotMode::bottom,
   };
@@ -244,8 +246,6 @@ void Enemy::handle_movement(f32 delta)
 //==============================================================================
 void Enemy::handle_appearance(f32 delta)
 {
-  const auto& stats = this->get_stats();
-
   this->appear.direction = this->facing;
 
   using Event   = AnimFSMEvents::evalue;
@@ -264,26 +264,7 @@ void Enemy::handle_appearance(f32 delta)
       {
         if (ttype == TriggerTypes::trigger_fire)
         {
-          vec3 dir  = this->facing;
-          vec3 from = this->get_position() + UP_DIR * stats.atk_height + dir * 0.3f;
-
-          mat4 rot1 = rotate(identity<mat4>(), deg2rad( 3.0f), UP_DIR);
-          mat4 rot2 = rotate(identity<mat4>(), deg2rad(-3.0f), UP_DIR);
-
-          GameSystem::get().spawn_projectile
-          (
-            stats.projectile, from, dir, this->get_id()
-          );
-
-          GameSystem::get().spawn_projectile
-          (
-            stats.projectile, from, rot1 * vec4{dir, 0.0f}, this->get_id()
-          );
-
-          GameSystem::get().spawn_projectile
-          (
-            stats.projectile, from, rot2 * vec4{dir, 0.0f}, this->get_id()
-          );
+          this->on_attack_trigger();
         }
       }
       break;
@@ -309,6 +290,9 @@ void Enemy::handle_appearance(f32 delta)
     this->on_dying_anim_end();
     return;
   }
+
+  // Sanity check, this should never happen!
+  nc_assert(this->anim_fsm.get_state() != ActorAnimStates::dead);
 
   this->appear.sprite = sprites::choose_sprite(this->anim_fsm, this->type);
   this->appear.mode   = sprites::choose_sprite_mode(this->anim_fsm);
@@ -337,9 +321,11 @@ void Enemy::damage(int damage, EntityID from_who)
     this->follow_target_pos = attacker->get_position();
   }
 
+  int prev_health = health;
   health -= damage;
-  if (health <= 0)
+  if (health <= 0 && prev_health > 0)
   {
+    // Die only once
     this->die();
   }
 }
@@ -705,6 +691,69 @@ bool Enemy::can_attack(const Entity& target) const
   else
   {
     return cooldown_ok & state_ok;
+  }
+}
+
+//==============================================================================
+void Enemy::on_attack_trigger()
+{
+  const EnemyStats& stats = this->get_stats();
+
+  vec3 dir  = this->facing;
+  vec3 from = this->get_position() + UP_DIR * stats.atk_height + dir * 0.3f;
+
+  if (stats.is_melee)
+  {
+    constexpr EntityTypeMask TARGET_TYPES
+      = EntityTypeFlags::player
+      | EntityTypeFlags::enemy;
+
+    CollisionHit hit = GameSystem::get().get_level().cylinder_cast_3d
+    (
+      from, from + dir * ENEMY_MELEE_RANGE, ENEMY_MELEE_EXPAND,
+      ENEMY_MELEE_EXPAND, TARGET_TYPES
+    );
+
+    if (hit.is_entity_hit())
+    {
+      Entity* target = GameSystem::get().get_entities().get_entity
+      (
+        hit.hit.entity.entity_id
+      );
+
+      nc_assert(target);
+
+      s32 hit_dmg = PROJECTILE_STATS[stats.projectile].damage;
+      if (Player* player = target->as<Player>())
+      {
+        player->damage(hit_dmg);
+      }
+      else if (Enemy* enemy = target->as<Enemy>())
+      {
+        enemy->damage(hit_dmg, this->get_id());
+      }
+    }
+  }
+  else
+  {
+    // Make this more general for all types of enemies..
+    mat4 rot1 = rotate(identity<mat4>(), deg2rad( 3.0f), UP_DIR);
+    mat4 rot2 = rotate(identity<mat4>(), deg2rad(-3.0f), UP_DIR);
+
+    GameSystem::get().spawn_projectile
+    (
+      stats.projectile, from, dir, this->get_id()
+    );
+
+    GameSystem::get().spawn_projectile
+    (
+      stats.projectile, from, rot1 * vec4{dir, 0.0f}, this->get_id()
+    );
+
+    GameSystem::get().spawn_projectile
+    (
+      stats.projectile, from, rot2 * vec4{dir, 0.0f}, this->get_id()
+    );
   }
 }
 

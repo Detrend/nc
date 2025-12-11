@@ -52,6 +52,8 @@ private:
   bool can_see_point(vec3 pt, vec3 look_dir) const;
   bool can_attack(const Entity& target)      const;
 
+  void on_attack_trigger();
+
 private:
   enum class EnemyAiState : u8
   {

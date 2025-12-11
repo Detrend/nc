@@ -16,6 +16,7 @@ EnemyStats ENEMY_STATS[] =
     .height     = 2.0f,
     .eye_height = 1.85f,
     .atk_height = 1.6f,
+    .radius     = 0.35f,
     .state_sprite_cnt
     {
       1,  // idle
@@ -40,10 +41,11 @@ EnemyStats ENEMY_STATS[] =
   EnemyStats
   {
     .move_speed    = 5.0f,
-    .projectile    = ProjectileTypes::fire_ball,
+    .projectile    = ProjectileTypes::possessed_fist,
     .max_hp        = 200,
-    .atk_delay_min = 0.25f,
-    .atk_delay_max = 0.5f,
+    .radius        = 0.4f,
+    .atk_delay_min = 0.2f,
+    .atk_delay_max = 0.4f,
     .state_sprite_cnt
     {
       1,  // idle

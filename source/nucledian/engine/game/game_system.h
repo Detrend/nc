@@ -102,8 +102,6 @@ private:
 
   void pre_terminate();
 
-  void on_cleanup();
-
 #ifdef NC_DEBUG_DRAW
   void do_raycast_debug();
   void do_demo_debug();

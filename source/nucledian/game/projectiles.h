@@ -19,6 +19,7 @@ enum evalue : ProjectileType
 
   // enemy ones
   fire_ball,
+  possessed_fist,
 
   // misc..
 

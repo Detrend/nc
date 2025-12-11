@@ -13,6 +13,7 @@
 #include <engine/map/physics.h>
 #include <engine/game/game_system.h>
 #include <engine/entity/entity_system.h>
+#include <engine/enemies/enemy.h>
 
 #include <engine/graphics/graphics_system.h> // RenderGunProperties
 
@@ -26,6 +27,7 @@
 // Game
 #include <game/weapons.h>
 #include <game/item.h>
+#include <game/projectiles.h>
 
 #include <math/utils.h>
 #include <math/lingebra.h>
@@ -51,9 +53,10 @@ static constexpr cstr WEAPON_STATE_NAMES[] =
 constexpr WeaponFlags DEFAULT_WEAPONS
 = (1 << WeaponTypes::plasma_rifle)
 | (1 << WeaponTypes::wrench);
-constexpr f32 PLAYER_HEIGHT     = 1.8f;
-constexpr f32 PLAYER_EYE_HEIGHT = 1.65f;
-constexpr f32 PLAYER_RADIUS     = 0.25f;
+constexpr f32 PLAYER_HEIGHT      = 1.8f;
+constexpr f32 PLAYER_EYE_HEIGHT  = 1.65f;
+constexpr f32 PLAYER_RADIUS      = 0.25f;
+constexpr f32 MELEE_DAMAGE_RANGE = 2.25f;
 
 //==============================================================================
 Player::Player(vec3 position, vec3 forward)
@@ -459,17 +462,39 @@ void Player::do_attack()
   auto& sound_system  = SoundSystem::get();
 
   vec3 dir  = this->get_look_direction();
-  vec3 from = this->get_position() + UP_DIR * PLAYER_EYE_HEIGHT + dir * 0.3f;
 
   WeaponType weapon = this->get_equipped_weapon();
   bool is_melee = WEAPON_STATS[weapon].ammo == AmmoTypes::melee;
 
   if (is_melee)
   {
-    // TODO
+    vec3 from = this->get_position() + UP_DIR * PLAYER_EYE_HEIGHT;
+    CollisionHit hit = GameSystem::get().get_level().cylinder_cast_3d
+    (
+      from, from + dir * MELEE_DAMAGE_RANGE, 0.1f, 0.1f, EntityTypeFlags::enemy
+    );
+
+    if (hit.is_entity_hit())
+    {
+      Entity* target = GameSystem::get().get_entities().get_entity
+      (
+        hit.hit.entity.entity_id
+      );
+
+      nc_assert(target);
+
+      if (Enemy* enemy = target->as<Enemy>())
+      {
+        s32 dmg = PROJECTILE_STATS[WEAPON_STATS[weapon].projectile].damage;
+        enemy->damage(dmg, this->get_id());
+        sound_system.play(Sounds::melee_hit);
+      }
+    }
   }
   else
   {
+    vec3 from = this->get_position() + UP_DIR * PLAYER_EYE_HEIGHT + dir * 0.3f;
+
     GameSystem::get().spawn_projectile
     (
       WEAPON_STATS[weapon].projectile, from, dir, this->get_id()
