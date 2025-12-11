@@ -153,12 +153,14 @@ void SoundSystem::on_event(ModuleEvent& event)
   }
 }
 
+//==============================================================================
 void SoundSystem::set_sound_volume(int step)
 {
   soundVoulume = 1.0f / 9.0f * step;
 }
 
-void SoundSystem::set_music_voulme(int step)
+//==============================================================================
+void SoundSystem::set_music_volume(int step)
 {
   musicVolume = 1.0f / 9.0f * step;
 }

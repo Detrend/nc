@@ -607,6 +607,156 @@ void GameSystem::pre_terminate()
 }
 
 //==============================================================================
+void GameSystem::game_update(f32 delta)
+{
+  NC_SCOPE_PROFILER(GameSystemUpdate)
+
+#ifdef NC_DEBUG_DRAW
+  this->handle_raycast_debug();
+#endif
+
+#ifdef NC_EDITOR
+  this->handle_hot_reload();
+#endif
+
+  u64 num_frames_to_simulate = 1;
+
+  if (journal.state == JournalState::playing)
+  {
+    // Calculate proper number of frames to simulate to keep a pace
+    f32 dt_left = delta;
+    num_frames_to_simulate = 0;
+    u64 idx = journal.rover;
+    while (dt_left > 0.0f && idx < journal.frames.size())
+    {
+      num_frames_to_simulate += 1;
+      dt_left -= journal.frames[idx].delta;
+      idx += 1;
+    }
+
+#if defined(NC_DEBUG_DRAW) && defined(NC_IMGUI)
+    if (ImGui::IsKeyPressed(ImGuiKey_Space))
+    {
+      journal.paused = !journal.paused;
+    }
+
+    u64 frames_left = journal.frames.size() - journal.rover - 1;
+
+    if (journal.paused)
+    {
+      num_frames_to_simulate = 0;
+
+      bool lshift = ImGui::IsKeyDown(ImGuiKey_LeftShift);
+      bool rshift = ImGui::IsKeyDown(ImGuiKey_RightShift);
+      bool shift  = lshift | rshift;
+      bool skip   = ImGui::IsKeyPressed(ImGuiKey_RightArrow);
+      if (skip)
+      {
+        num_frames_to_simulate = min(shift ? 100_u64 : 1_u64, frames_left);
+      }
+    }
+#endif
+
+    if (journal.rover == journal.frames.size() - 1)
+    {
+      // Journal ended
+      num_frames_to_simulate = 0;
+    }
+  }
+
+  while (num_frames_to_simulate-->0)
+  {
+    GameInputs curr_input = InputSystem::get().get_inputs();
+    GameInputs prev_input = InputSystem::get().get_prev_inputs();
+
+    PlayerSpecificInputs player_input_curr, player_input_prev;
+    f32 delta_time = 0.0f;
+
+    if (journal.state == JournalState::playing)
+    {
+      PlayerSpecificInputs empty_inputs;
+      std::memset(&empty_inputs, 0, sizeof(empty_inputs));
+
+      nc_assert(journal.rover < journal.frames.size());
+      const JournalFrame& frame = journal.frames[journal.rover];
+
+      player_input_prev = journal.rover
+        ? journal.frames[journal.rover-1].inputs
+        : empty_inputs;
+
+      player_input_curr = frame.inputs;
+      delta_time        = frame.delta;
+
+#if DO_JOURNAL_CHECKS
+      Player* player = this->get_player();
+      nc_assert(player->get_position() == frame.player_position);
+      this->get_entities().for_each(EntityTypes::all, [&](Entity& entity)
+      {
+        nc_assert(frame.alive_entities.contains(entity.get_id().as_u64()));
+      });
+#endif
+
+      journal.rover += 1;
+    }
+    else
+    {
+      player_input_curr = curr_input.player_inputs;
+      player_input_prev = prev_input.player_inputs;
+      delta_time        = delta;
+
+      if (journal.state == JournalState::recording)
+      {
+        // Record the inputs as well
+        journal.frames.push_back(JournalFrame
+        {
+          .inputs = player_input_curr,
+          .delta  = delta_time,
+        });
+
+#if DO_JOURNAL_CHECKS
+      Player* player = this->get_player();
+      journal.frames.back().player_position = player->get_position();
+      this->get_entities().for_each(EntityTypes::all, [&](Entity& entity)
+      {
+        journal.frames.back().alive_entities.insert(entity.get_id().as_u64());
+      });
+#endif
+      }
+    }
+
+    game->update
+    (
+      delta_time, player_input_curr, player_input_prev
+    );
+  }
+
+#ifdef NC_IMGUI
+  this->handle_demo_debug();
+#endif
+}
+
+//==============================================================================
+#ifdef NC_EDITOR
+void GameSystem::handle_hot_reload()
+{
+  if (ImGui::IsKeyReleased(ImGuiKey_F5))
+  {
+    if (Player* player = get_player())
+    {
+      player->hot_reload_get_pos_rot
+      (
+        HotReloadData::player_position,
+        HotReloadData::player_yaw,
+        HotReloadData::player_pitch
+      );
+      HotReloadData::has_data = true;
+      this->request_level_change(this->get_level_name());
+    }
+  }
+}
+#endif
+
+//==============================================================================
 #if NC_HOT_RELOAD
 static void notify_hot_reload_post_map_build()
 {
@@ -680,143 +830,7 @@ void GameSystem::on_event(ModuleEvent& event)
 
     case ModuleEventType::game_update:
     {
-      NC_SCOPE_PROFILER(GameSystemUpdate)
-
-#ifdef NC_DEBUG_DRAW
-      this->do_raycast_debug();
-#endif
-
-#ifdef NC_IMGUI
-      if (ImGui::IsKeyReleased(ImGuiKey_F5))
-      {
-        if (Player* player = get_player())
-        {
-          player->hot_reload_get_pos_rot
-          (
-            HotReloadData::player_position,
-            HotReloadData::player_yaw,
-            HotReloadData::player_pitch
-          );
-          HotReloadData::has_data = true;
-          this->request_level_change(this->get_level_name());
-        }
-      }
-#endif
-
-      u64 num_frames_to_simulate = 1;
-
-      if (journal.state == JournalState::playing)
-      {
-        // Calculate proper number of frames to simulate to keep a pace
-        f32 dt_left = event.update.dt;
-        num_frames_to_simulate = 0;
-        u64 idx = journal.rover;
-        while (dt_left > 0.0f && idx < journal.frames.size())
-        {
-          num_frames_to_simulate += 1;
-          dt_left -= journal.frames[idx].delta;
-          idx += 1;
-        }
-
-#ifdef NC_DEBUG_DRAW
-        if (ImGui::IsKeyPressed(ImGuiKey_Space))
-        {
-          journal.paused = !journal.paused;
-        }
-
-        u64 frames_left = journal.frames.size() - journal.rover - 1;
-
-        if (journal.paused)
-        {
-          num_frames_to_simulate = 0;
-
-          bool lshift = ImGui::IsKeyDown(ImGuiKey_LeftShift);
-          bool rshift = ImGui::IsKeyDown(ImGuiKey_RightShift);
-          bool shift  = lshift | rshift;
-          bool skip   = ImGui::IsKeyPressed(ImGuiKey_RightArrow);
-          if (skip)
-          {
-            num_frames_to_simulate = min(shift ? 100_u64 : 1_u64, frames_left);
-          }
-        }
-#endif
-
-        if (journal.rover == journal.frames.size() - 1)
-        {
-          // Journal ended
-          num_frames_to_simulate = 0;
-        }
-      }
-
-      while (num_frames_to_simulate-->0)
-      {
-        GameInputs curr_input = InputSystem::get().get_inputs();
-        GameInputs prev_input = InputSystem::get().get_prev_inputs();
-
-        PlayerSpecificInputs player_input_curr, player_input_prev;
-        f32 delta_time = 0.0f;
-
-        if (journal.state == JournalState::playing)
-        {
-          PlayerSpecificInputs empty_inputs;
-          std::memset(&empty_inputs, 0, sizeof(empty_inputs));
-
-          nc_assert(journal.rover < journal.frames.size());
-          const JournalFrame& frame = journal.frames[journal.rover];
-
-          player_input_prev = journal.rover
-            ? journal.frames[journal.rover-1].inputs
-            : empty_inputs;
-
-          player_input_curr = frame.inputs;
-          delta_time        = frame.delta;
-
-  #if DO_JOURNAL_CHECKS
-          Player* player = this->get_player();
-          nc_assert(player->get_position() == frame.player_position);
-          this->get_entities().for_each(EntityTypes::all, [&](Entity& entity)
-          {
-            nc_assert(frame.alive_entities.contains(entity.get_id().as_u64()));
-          });
-  #endif
-
-          journal.rover += 1;
-        }
-        else
-        {
-          player_input_curr = curr_input.player_inputs;
-          player_input_prev = prev_input.player_inputs;
-          delta_time        = event.update.dt;
-
-          if (journal.state == JournalState::recording)
-          {
-            // Record the inputs as well
-            journal.frames.push_back(JournalFrame
-            {
-              .inputs = player_input_curr,
-              .delta  = delta_time,
-            });
-
-  #if DO_JOURNAL_CHECKS
-          Player* player = this->get_player();
-          journal.frames.back().player_position = player->get_position();
-          this->get_entities().for_each(EntityTypes::all, [&](Entity& entity)
-          {
-            journal.frames.back().alive_entities.insert(entity.get_id().as_u64());
-          });
-  #endif
-          }
-        }
-
-        game->update
-        (
-          delta_time, player_input_curr, player_input_prev
-        );
-      }
-
-#ifdef NC_IMGUI
-      this->do_demo_debug();
-#endif
+      this->game_update(event.update.dt);
     }
     break;
   }
@@ -1122,7 +1136,7 @@ void GameSystem::Journal::reset_and_clear(GameSystem::JournalState to_state)
 
 //==============================================================================
 #ifdef NC_DEBUG_DRAW
-void GameSystem::do_raycast_debug()
+void GameSystem::handle_raycast_debug()
 {
   Player* player = this->get_player();
 
@@ -1353,7 +1367,7 @@ void GameSystem::do_raycast_debug()
 }
 
 //==============================================================================
-void GameSystem::do_demo_debug()
+void GameSystem::handle_demo_debug()
 {
   if (ImGui::IsKeyReleased(ImGuiKey_F6))
   {

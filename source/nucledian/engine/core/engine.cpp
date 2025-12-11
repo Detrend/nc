@@ -26,9 +26,7 @@
 #include <algorithm>
 #endif
 
-#ifdef NC_PROFILING
 #include <profiling.h>
-#endif
 
 #ifdef NC_TESTS
 #include <unit_test.h>

@@ -696,13 +696,13 @@ namespace nc
 	void OptionsPage::set_music_less()
 	{
 		musicStep = max(0, musicStep - 1);
-		get_engine().get_module<SoundSystem>().set_music_voulme(musicStep);
+		get_engine().get_module<SoundSystem>().set_music_volume(musicStep);
 	}
 
 	void OptionsPage::set_music_more()
 	{
 		musicStep = min(9, musicStep + 1);
-		get_engine().get_module<SoundSystem>().set_music_voulme(musicStep);
+		get_engine().get_module<SoundSystem>().set_music_volume(musicStep);
 	}
 
 	void OptionsPage::set_crosshair_less()

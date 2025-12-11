@@ -15,6 +15,7 @@
 #include <utility>  // std::pair
 #include <type_traits>
 #include <queue>    // std::priority_queue
+#include <map>      // std::map
 
 namespace nc::phys_helpers
 {

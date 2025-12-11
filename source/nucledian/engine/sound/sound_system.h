@@ -71,7 +71,7 @@ public:
   void on_event(ModuleEvent& event) override;
 
   void set_sound_volume(int step);
-  void set_music_voulme(int step);
+  void set_music_volume(int step);
 
 private:
   void terminate();

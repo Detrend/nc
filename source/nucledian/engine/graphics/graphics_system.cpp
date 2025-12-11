@@ -43,9 +43,7 @@
 #include <imgui/implot.h>
 #endif
 
-#ifdef NC_PROFILING
 #include <profiling.h>
-#endif
 
 #include <array>
 #include <algorithm>
@@ -425,7 +423,7 @@ void GraphicsSystem::render()
 #endif
   }
 
-#ifdef NC_PROFILING
+#ifdef NC_DEBUG_DRAW
   debug_helpers::display_fps_as_title(m_window);
 #endif
 

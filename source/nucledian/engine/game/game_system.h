@@ -102,9 +102,15 @@ private:
 
   void pre_terminate();
 
+  void game_update(f32 delta);
+
+#ifdef NC_EDITOR
+  void handle_hot_reload();
+#endif
+
 #ifdef NC_DEBUG_DRAW
-  void do_raycast_debug();
-  void do_demo_debug();
+  void handle_raycast_debug();
+  void handle_demo_debug();
 
   static void save_demo_data
   (
