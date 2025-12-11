@@ -2,7 +2,7 @@
 #include <common.h>
 #include <cvars.h>
 
-#include <engine/player/game_system.h>
+#include <engine/game/game_system.h>
 #include <engine/player/player.h>
 
 #include <engine/core/engine.h>
@@ -29,6 +29,8 @@
 
 #include <game/entity_attachment_manager.h>
 #include <game/projectiles.h>
+
+#include <engine/game/game.h>
 
 #include <engine/enemies/enemy.h>
 #include <game/projectile.h>
@@ -486,7 +488,9 @@ struct HotReloadData
 #endif
 
 constexpr cstr SAVE_DIR_RELATIVE = "save";
+constexpr cstr DEMO_DIR_RELATIVE = "demo";
 constexpr cstr SAVE_FILE_SUFFIX  = ".ncs";
+constexpr cstr DEMO_FILE_SUFFIX  = ".demo";
 
 //==============================================================================
 EngineModuleId GameSystem::get_module_id()
@@ -507,6 +511,7 @@ GameSystem::~GameSystem() = default;
 //==============================================================================
 bool GameSystem::init()
 {
+  this->cleanup_map();
   return true;
 }
 
@@ -711,29 +716,107 @@ void GameSystem::on_event(ModuleEvent& event)
       }
 #endif
 
-      auto& entity_system = this->get_entities();
+      u64 num_frames_to_simulate = 1;
 
-      //INPUT PHASE
-      GameInputs curr_input = InputSystem::get().get_inputs();
-      GameInputs prev_input = InputSystem::get().get_prev_inputs();
-
-      // Handle the player first
-      this->get_player()->update(curr_input, prev_input, event.update.dt);
-
-      // Handle enemies
-      entity_system.for_each<Enemy>([&](Enemy& enemy)
+      if (journal.state == JournalState::playing)
       {
-        enemy.update(event.update.dt);
-      });
+#ifdef NC_DEBUG_DRAW
+        if (ImGui::IsKeyPressed(ImGuiKey_Space))
+        {
+          journal.paused = !journal.paused;
+        }
 
-      // Handle projectiles
-      entity_system.for_each<Projectile>([&](Projectile& proj)
+        u64 frames_left = journal.frames.size() - journal.rover - 1;
+
+        if (journal.paused)
+        {
+          num_frames_to_simulate = 0;
+
+          bool shift = ImGui::IsKeyPressed(ImGuiKey_LeftShift);
+          bool skip  = ImGui::IsKeyPressed(ImGuiKey_RightArrow);
+          if (skip)
+          {
+            num_frames_to_simulate = min(shift ? 100_u64 : 1_u64, frames_left);
+          }
+        }
+#endif
+
+        if (journal.rover == journal.frames.size() - 1)
+        {
+          // Journal ended
+          num_frames_to_simulate = 0;
+        }
+      }
+
+      while (num_frames_to_simulate-->0)
       {
-        proj.update(event.update.dt);
-      });
+        GameInputs curr_input = InputSystem::get().get_inputs();
+        GameInputs prev_input = InputSystem::get().get_prev_inputs();
 
-      // And update the map
-      dynamics->update(event.update.dt);
+        PlayerSpecificInputs player_input_curr, player_input_prev;
+        f32 delta_time = 0.0f;
+
+        if (journal.state == JournalState::playing)
+        {
+          PlayerSpecificInputs empty_inputs;
+          std::memset(&empty_inputs, 0, sizeof(empty_inputs));
+
+          nc_assert(journal.rover < journal.frames.size());
+          const JournalFrame& frame = journal.frames[journal.rover];
+
+          player_input_prev = journal.rover
+            ? journal.frames[journal.rover-1].inputs
+            : empty_inputs;
+
+          player_input_curr = frame.inputs;
+          delta_time        = frame.delta;
+
+  #if DO_JOURNAL_CHECKS
+          Player* player = this->get_player();
+          nc_assert(player->get_position() == frame.player_position);
+          this->get_entities().for_each(EntityTypes::all, [&](Entity& entity)
+          {
+            nc_assert(frame.alive_entities.contains(entity.get_id().as_u64()));
+          });
+  #endif
+
+          journal.rover += 1;
+        }
+        else
+        {
+          player_input_curr = curr_input.player_inputs;
+          player_input_prev = prev_input.player_inputs;
+          delta_time        = event.update.dt;
+
+          if (journal.state == JournalState::recording)
+          {
+            // Record the inputs as well
+            journal.frames.push_back(JournalFrame
+            {
+              .inputs = player_input_curr,
+              .delta  = delta_time,
+            });
+
+  #if DO_JOURNAL_CHECKS
+          Player* player = this->get_player();
+          journal.frames.back().player_position = player->get_position();
+          this->get_entities().for_each(EntityTypes::all, [&](Entity& entity)
+          {
+            journal.frames.back().alive_entities.insert(entity.get_id().as_u64());
+          });
+  #endif
+          }
+        }
+
+        game->update
+        (
+          delta_time, player_input_curr, player_input_prev
+        );
+      }
+
+#ifdef NC_IMGUI
+      this->do_demo_debug();
+#endif
     }
     break;
   }
@@ -742,21 +825,21 @@ void GameSystem::on_event(ModuleEvent& event)
 //==========================================================
 Player* GameSystem::get_player()
 {
-  return this->get_entities().get_entity<Player>(player_id);
+  return this->get_entities().get_entity<Player>(game->player_id);
 }
 
 //==============================================================================
 EntityRegistry& GameSystem::get_entities()
 {
-  nc_assert(entities);
-  return *entities;
+  nc_assert(game->entities);
+  return *game->entities;
 }
 
 //==============================================================================
 MapDynamics& GameSystem::get_map_dynamics()
 {
-  nc_assert(dynamics);
-  return *dynamics;
+  nc_assert(game->dynamics);
+  return *game->dynamics;
 }
 
 //==============================================================================
@@ -805,15 +888,15 @@ void GameSystem::request_level_change(LevelName new_level)
 //==============================================================================
 const MapSectors& GameSystem::get_map() const
 {
-  nc_assert(map);
-  return *map;
+  nc_assert(game->map);
+  return *game->map;
 }
 
 //==============================================================================
 const SectorMapping& GameSystem::get_sector_mapping() const
 {
-  nc_assert(mapping);
-  return *mapping;
+  nc_assert(game->mapping);
+  return *game->mapping;
 }
 
 //==============================================================================
@@ -860,8 +943,8 @@ Projectile* GameSystem::spawn_projectile
 //==============================================================================
 EntityAttachment& GameSystem::get_attachment_mgr()
 {
-  nc_assert(this->attachment);
-  return *this->attachment;
+  nc_assert(game->attachment);
+  return *game->attachment;
 }
 
 //==============================================================================
@@ -871,16 +954,16 @@ const EntityAttachment& GameSystem::get_attachment_mgr() const
 }
 
 //==============================================================================
+u64 GameSystem::get_frame_idx() const
+{
+  return game->frame_idx;
+}
+
+//==============================================================================
 void GameSystem::cleanup_map()
 {
-  // Reset in reverse order of iteration
-  attachment.reset();
-  dynamics.reset();
-  entities.reset();
-  mapping.reset();
-  map.reset();
-
-  player_id = INVALID_ENTITY_ID;
+  game.reset();
+  game = std::make_unique<Game>();
 }
 
 //==============================================================================
@@ -933,15 +1016,18 @@ static bool recalc_snap_entity_height
 //==============================================================================
 void GameSystem::build_map(LevelName level)
 {
-  nc_assert(!map && !mapping && !entities);
+  nc_assert(!game->map && !game->mapping && !game->entities);
 
-  map        = std::make_unique<MapSectors>();
-  mapping    = std::make_unique<SectorMapping>(*map);
-  entities   = std::make_unique<EntityRegistry>();
-  dynamics   = std::make_unique<MapDynamics>(*map, *entities, *mapping);
-  attachment = std::make_unique<EntityAttachment>(*entities);
+  game->map        = std::make_unique<MapSectors>();
+  game->mapping    = std::make_unique<SectorMapping>(*game->map);
+  game->entities   = std::make_unique<EntityRegistry>();
+  game->dynamics   = std::make_unique<MapDynamics>
+  (
+    *game->map, *game->entities, *game->mapping
+  );
+  game->attachment = std::make_unique<EntityAttachment>(*game->entities);
 
-  dynamics->sector_change_callback = [](SectorID sector)
+  game->dynamics->sector_change_callback = [](SectorID sector)
   {
     // Rebuild the sector geometry
     GraphicsSystem::get().mark_sector_dirty(sector);
@@ -993,15 +1079,23 @@ void GameSystem::build_map(LevelName level)
     }
   };
 
-  entities->add_listener(mapping.get());
-  entities->add_listener(attachment.get());
+  game->entities->add_listener(game->mapping.get());
+  game->entities->add_listener(game->attachment.get());
 
-  map_helpers::load_json_map(level, *map, *mapping, *entities, *dynamics, player_id);
+  map_helpers::load_json_map
+  (
+    level,
+    *game->map,
+    *game->mapping,
+    *game->entities,
+    *game->dynamics,
+    game->player_id
+  );
 
-  // Now snap all required entities to floor
-  entities->for_each(EntityTypes::all, [&](Entity& entity)
+  // Now snap all required entities to the floor
+  game->entities->for_each(EntityTypes::all, [&](Entity& entity)
   {
-    if (f32 out_h; recalc_snap_entity_height(entity, *map, *mapping, out_h))
+    if (f32 out_h; recalc_snap_entity_height(entity, *game->map, *game->mapping, out_h))
     {
       if (vec3 pos = entity.get_position(); pos.y != out_h)
       {
@@ -1009,6 +1103,21 @@ void GameSystem::build_map(LevelName level)
       }
     }
   });
+}
+
+//==============================================================================
+void GameSystem::Journal::reset(GameSystem::JournalState to_state)
+{
+  state = to_state;
+  paused = false;
+  rover = 0;
+}
+
+//==============================================================================
+void GameSystem::Journal::reset_and_clear(GameSystem::JournalState to_state)
+{
+  reset(to_state);
+  frames.clear();
 }
 
 //==============================================================================
@@ -1128,6 +1237,197 @@ void GameSystem::do_raycast_debug()
     }
   }
 }
+
+//==============================================================================
+/*static*/ std::vector<std::string> GameSystem::list_available_demos()
+{
+  namespace fs = std::filesystem;
+
+  std::vector<std::string> result;
+  fs::path demo_dir = DEMO_DIR_RELATIVE;
+
+  if (!fs::exists(demo_dir) || !fs::is_directory(demo_dir))
+  {
+    return result;
+  }
+
+  for (auto &entry : fs::directory_iterator(demo_dir))
+  {
+    if (entry.is_regular_file())
+    {
+      auto path = entry.path();
+      if (path.extension() == DEMO_FILE_SUFFIX)
+      {
+        result.push_back(path.filename().string());
+      }
+    }
+  }
+
+  return result;
+}
+
+//==============================================================================
+/*static*/ void GameSystem::save_demo_data
+(
+  const std::string& lvl_name,
+  u8*                data,
+  u64                data_size
+)
+{
+  namespace fs = std::filesystem;
+
+#if DO_JOURNAL_CHECKS
+  nc_assert(false, "You are trying to save sanitization data into a demo file");
+#endif
+
+  fs::path demo_dir = DEMO_DIR_RELATIVE;
+  if (!fs::exists(demo_dir))
+  {
+    fs::create_directory(demo_dir);
+  }
+
+  int index = 1;
+  std::string file_name;
+  fs::path full_path;
+
+  while (true)
+  {
+    file_name = lvl_name + "_" + std::to_string(index) + DEMO_FILE_SUFFIX;
+    full_path = demo_dir / file_name;
+
+    if (!fs::exists(full_path))
+    {
+      break;
+    }
+
+    ++index;
+  }
+
+  std::ofstream out(full_path, std::ios::binary);
+  nc_assert(out);
+
+  out.write(recast<cstr>(data), cast<std::streamsize>(data_size));
+}
+
+//==============================================================================
+/*static*/ void GameSystem::load_demo_from_bytes
+(
+  const std::string& demo_name,
+  std::vector<u8>&   out
+)
+{
+  namespace fs = std::filesystem;
+
+#if DO_JOURNAL_CHECKS
+  nc_assert(false, "You are trying to load sanitization data into a demo file");
+#endif
+
+  fs::path demo_dir = DEMO_DIR_RELATIVE;
+  if (!fs::exists(demo_dir) || !fs::is_directory(demo_dir))
+  {
+    nc_assert(false);
+    return;
+  }
+
+  fs::path full_path = demo_dir / demo_name;
+  if (!fs::exists(full_path) || !fs::is_regular_file(full_path))
+  {
+    nc_assert(false);
+    return;
+  }
+
+  std::ifstream in(full_path, std::ios::binary);
+  nc_assert(in);
+
+  in.seekg(0, std::ios::end);
+  std::streamsize size = in.tellg();
+  in.seekg(0, std::ios::beg);
+
+  out.resize(size);
+
+  if (!in.read(recast<char*>(out.data()), size))
+  {
+    nc_assert(false);
+    return;
+  }
+}
+
+//==============================================================================
+void GameSystem::do_demo_debug()
+{
+  if (ImGui::IsKeyReleased(ImGuiKey_F6))
+  {
+    CVars::debug_demo_recording = !CVars::debug_demo_recording;
+  }
+
+  if (!CVars::debug_demo_recording)
+  {
+    return;
+  }
+
+  if (ImGui::Begin("Journal Debug", &CVars::debug_demo_recording))
+  {
+    constexpr cstr STATE_NAMES[] {"recording", "playing", "none"};
+    cstr journal_state = STATE_NAMES[cast<u8>(journal.state)];
+    ImGui::Text("Journal state: %s", journal_state);
+
+    if (journal.state == JournalState::recording)
+    {
+      ImGui::Text("Frames recorded: %d", cast<int>(journal.frames.size()));
+      if (ImGui::Button("Play"))
+      {
+        this->request_level_change(this->get_level_name());
+        journal.reset(JournalState::playing);
+      }
+    }
+    else if (journal.state == JournalState::playing)
+    {
+      ImGui::Text("Currend idx: %d", cast<int>(journal.rover)-1);
+      if (ImGui::Button("Save to filesystem"))
+      {
+        save_demo_data
+        (
+          level_name,
+          recast<u8*>(journal.frames.data()),
+          journal.frames.size() * sizeof(JournalFrame)
+        );
+      }
+    }
+
+    if (ImGui::Button("Start new demo"))
+    {
+      this->request_level_change(this->get_level_name());
+      journal.reset_and_clear(JournalState::recording);
+    }
+
+    if (ImGui::Button("Start new game without recording"))
+    {
+      this->request_level_change(this->get_level_name());
+      journal.reset_and_clear(JournalState::none);
+    }
+
+    ImGui::Separator();
+
+    ImGui::Text("Open demo:");
+    std::vector<std::string> available_demos = list_available_demos();
+    for (const std::string& demo : available_demos)
+    {
+      if (ImGui::Button(demo.c_str()))
+      {
+        this->request_level_change(this->get_level_name());
+        std::vector<u8> bytes;
+        load_demo_from_bytes(demo, bytes);
+        u64 num_frames = bytes.size() / sizeof(JournalFrame);
+
+        journal.reset(JournalState::playing);
+        journal.frames.resize(num_frames);
+        std::memcpy(journal.frames.data(), bytes.data(), bytes.size());
+      }
+    }
+  }
+  ImGui::End();
+}
+
 #endif
 
 }

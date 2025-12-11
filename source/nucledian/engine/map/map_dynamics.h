@@ -16,7 +16,7 @@
 //     |-----------------X------------------------X---------------------|     //
 //     | Segment of wall | Interacts with segment |          NO         |     //
 //     | On the sector   | Player enters sector   |          NO         |     //
-//     | On the enemy    | Enemy dies             |         YES         |     //
+//     | On the entity   | Entity dies            |         YES         |     //
 //     |----------------------------------------------------------------|     //
 
 namespace nc

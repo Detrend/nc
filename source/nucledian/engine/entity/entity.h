@@ -28,6 +28,12 @@ public:
   Entity(vec3 position, f32 radius);
   ~Entity();
 
+  // Called on the type of the entity post ID assignment. Does not need to be
+  // virtual as the caller has the information about the type.
+  // Should not do anything by default, but can be overloaded in other entity
+  // types.
+  void post_init() {};
+
   // Deleted copy assignment and construction to not accidentally
   // copy the entity
   Entity(const Entity&)            = delete;

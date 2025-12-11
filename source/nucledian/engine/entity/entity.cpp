@@ -9,7 +9,7 @@
 #include <engine/map/map_system.h>
 
 #include <math/lingebra.h>
-#include <engine/player/game_system.h>
+#include <engine/game/game_system.h>
 
 #include <engine/player/player.h>
 #include <engine/enemies/enemy.h>

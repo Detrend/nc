@@ -2,7 +2,7 @@
 #include <engine/graphics/camera.h>
 
 #include <engine/player/player.h>
-#include <engine/player/game_system.h>
+#include <engine/game/game_system.h>
 
 #include <math/utils.h>
 #include <math/lingebra.h>

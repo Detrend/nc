@@ -1,6 +1,6 @@
 #include <engine/ui/ui_hud_display.h>
 #include <engine/core/engine.h>
-#include <engine/player/game_system.h>
+#include <engine/game/game_system.h>
 #include <engine/player/player.h>
 #include <glm/ext/matrix_transform.hpp>
 #include <engine/graphics/graphics_system.h>

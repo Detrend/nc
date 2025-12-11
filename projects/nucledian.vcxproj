@@ -128,6 +128,7 @@
     <ClCompile Include="..\source\nucledian\engine\core\engine.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\entity.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\sector_mapping.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\game\game_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\entities\sky_box.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\entities\lights.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\prop.cpp" />
@@ -161,13 +162,14 @@
     <ClCompile Include="..\source\nucledian\engine\input\input_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\map_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\player\player.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\player\game_system.cpp" />
     <ClCompile Include="..\source\nucledian\grid.cpp" />
     <ClCompile Include="..\source\nucledian\intersect.cpp" />
     <ClCompile Include="..\source\nucledian\unit_test.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\entity_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\player\save_types.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\map_dynamics.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\game\game.cpp" />
+    <ClCompile Include="..\source\nucledian\rng.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -277,6 +279,7 @@
     <ClInclude Include="..\source\nucledian\engine\entity\entity_types.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\entity_type_definitions.h" />
     <ClInclude Include="..\source\nucledian\engine\entity\sector_mapping.h" />
+    <ClInclude Include="..\source\nucledian\engine\game\game_system.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\entities\sky_box.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\entities\lights.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\prop.h" />
@@ -329,7 +332,6 @@
     <ClInclude Include="..\source\nucledian\engine\input\input_system.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_system.h" />
     <ClInclude Include="..\source\nucledian\engine\player\player.h" />
-    <ClInclude Include="..\source\nucledian\engine\player\game_system.h" />
     <ClInclude Include="..\source\nucledian\grid.h" />
     <ClInclude Include="..\source\nucledian\intersect.h" />
     <ClInclude Include="..\source\nucledian\math\lingebra.h" />
@@ -344,6 +346,8 @@
     <ClInclude Include="..\source\nucledian\engine\player\save_types.h" />
     <ClInclude Include="..\source\nucledian\game\weapons.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_dynamics.h" />
+    <ClInclude Include="..\source\nucledian\engine\game\game.h" />
+    <ClInclude Include="..\source\nucledian\rng.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\anim_state_machine.inl" />

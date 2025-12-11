@@ -1,7 +1,7 @@
 // Project Nucledian Source File
 #include <game/projectile.h>
 
-#include <engine/player/game_system.h>
+#include <engine/game/game_system.h>
 
 #include <engine/entity/entity_type_definitions.h>
 #include <engine/map/physics.h>

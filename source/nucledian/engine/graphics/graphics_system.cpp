@@ -26,7 +26,7 @@
 #include <engine/entity/entity_system.h>
 #include <engine/entity/entity_type_definitions.h>
 
-#include <engine/player/game_system.h>
+#include <engine/game/game_system.h>
 #include <engine/player/level_types.h>
 #include <engine/player/player.h>
 

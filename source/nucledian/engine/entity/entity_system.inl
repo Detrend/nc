@@ -61,7 +61,12 @@ T* EntityRegistry::create_entity(Args...args)
   Entity* entity = it->second.get();
   this->setup_entity(*entity, id);
 
-  return static_cast<T*>(entity);
+  // Notice that we have to call "post_init" on the correct type as it is
+  // non-virtual.
+  T* entity_typed = static_cast<T*>(entity);
+  entity_typed->post_init();
+
+  return entity_typed;
 }
 
 }

@@ -11,7 +11,7 @@
 #include <engine/map/map_system.h>
 #include <engine/map/map_dynamics.h>
 #include <engine/map/physics.h>
-#include <engine/player/game_system.h>
+#include <engine/game/game_system.h>
 #include <engine/entity/entity_system.h>
 
 #include <engine/graphics/graphics_system.h> // RenderGunProperties
@@ -68,40 +68,40 @@ Player::Player(vec3 position, vec3 forward)
 }
 
 //==============================================================================
-static GameInputs pressed_inputs(const GameInputs& now, const GameInputs& prev)
+static PlayerSpecificInputs pressed_inputs(const PlayerSpecificInputs& now, const PlayerSpecificInputs& prev)
 {
-  GameInputs output;
+  PlayerSpecificInputs output;
   std::memset(&output, 0, sizeof(output));
-  output.player_inputs.keys = now.player_inputs.keys & ~prev.player_inputs.keys;
+  output.keys = now.keys & ~prev.keys;
   return output;
 }
 
 //==============================================================================
-void Player::calculate_wish_velocity(GameInputs input, f32 delta_seconds)
+void Player::calculate_wish_velocity(PlayerSpecificInputs input, f32 delta_seconds)
 {
   // INPUT HANDLING
   vec3 input_vector = vec3(0, 0, 0);
 
   // movement keys
-  if (input.player_inputs.keys & (1 << PlayerKeyInputs::forward))
+  if (input.keys & (1 << PlayerKeyInputs::forward))
   {
     input_vector += vec3(0, 0, 1);
   }
-  if (input.player_inputs.keys & (1 << PlayerKeyInputs::backward))
+  if (input.keys & (1 << PlayerKeyInputs::backward))
   {
     input_vector += vec3(0, 0, -1);
   }
-  if (input.player_inputs.keys & (1 << PlayerKeyInputs::left))
+  if (input.keys & (1 << PlayerKeyInputs::left))
   {
     input_vector += vec3(-1, 0, 0);
   }
-  if (input.player_inputs.keys & (1 << PlayerKeyInputs::right))
+  if (input.keys & (1 << PlayerKeyInputs::right))
   {
     input_vector += vec3(1, 0, 0);
   }
 
-  this->angle_pitch += input.player_inputs.analog[PlayerAnalogInputs::look_vertical];
-  this->angle_yaw   += input.player_inputs.analog[PlayerAnalogInputs::look_horizontal];
+  this->angle_pitch += input.analog[PlayerAnalogInputs::look_vertical];
+  this->angle_yaw   += input.analog[PlayerAnalogInputs::look_horizontal];
 
   this->angle_yaw   = rem_euclid(this->angle_yaw, 2.0f * PI);
   this->angle_pitch = clamp(this->angle_pitch, -HALF_PI + 0.001f, HALF_PI - 0.001f);
@@ -130,7 +130,7 @@ void Player::calculate_wish_velocity(GameInputs input, f32 delta_seconds)
   this->apply_acceleration(movement_direction, delta_seconds);
 
   // JUMPING
-  bool wants_jump = input.player_inputs.keys & (1 << PlayerKeyInputs::jump);
+  bool wants_jump = input.keys & (1 << PlayerKeyInputs::jump);
   bool can_jump   = this->on_ground;
 
   if (wants_jump && can_jump)
@@ -142,14 +142,14 @@ void Player::calculate_wish_velocity(GameInputs input, f32 delta_seconds)
 }
 
 //==========================================================================
-void Player::handle_weapon_change(GameInputs input, GameInputs /*prev_input*/)
+void Player::handle_weapon_change(PlayerSpecificInputs input, PlayerSpecificInputs /*prev_input*/)
 {
   for (WeaponType i = 0; i < WeaponTypes::count; ++i)
   {
     PlayerKeyFlags weapon_flag = 1 << (PlayerKeyInputs::weapon_0 + i);
 
     const bool owns_weapon  = this->has_weapon(i);
-    const bool wants_weapon = input.player_inputs.keys & weapon_flag;
+    const bool wants_weapon = input.keys & weapon_flag;
 
     if (owns_weapon && wants_weapon && current_weapon != i)
     {
@@ -161,11 +161,11 @@ void Player::handle_weapon_change(GameInputs input, GameInputs /*prev_input*/)
 }
 
 //==============================================================================
-bool Player::get_attack_state(GameInputs curr_input, GameInputs prev_input, f32)
+bool Player::get_attack_state(PlayerSpecificInputs curr_input, PlayerSpecificInputs prev_input, f32)
 {
   PlayerKeyFlags flag = (1 << PlayerKeyInputs::primary);
-  bool holding_now  = curr_input.player_inputs.keys & flag;
-  bool holding_prev = prev_input.player_inputs.keys & flag;
+  bool holding_now  = curr_input.keys & flag;
+  bool holding_prev = prev_input.keys & flag;
 
   bool can_hold = WEAPON_STATS[this->get_equipped_weapon()].hold_to_fire;
 
@@ -275,7 +275,7 @@ void Player::apply_velocity(f32 delta_seconds)
 }
 
 //==============================================================================
-void Player::handle_attack(GameInputs curr_input, GameInputs prev_input, f32 dt)
+void Player::handle_attack(PlayerSpecificInputs curr_input, PlayerSpecificInputs prev_input, f32 dt)
 {
   bool did_attack = this->get_attack_state(curr_input, prev_input, dt);
 
@@ -298,13 +298,13 @@ void Player::handle_attack(GameInputs curr_input, GameInputs prev_input, f32 dt)
 }
 
 //==============================================================================
-void Player::handle_use(GameInputs curr_input, GameInputs prev_input, f32 /*dt*/)
+void Player::handle_use(PlayerSpecificInputs curr_input, PlayerSpecificInputs prev_input, f32 /*dt*/)
 {
   using Hit = CollisionHit;
-  GameInputs pressed = pressed_inputs(curr_input, prev_input);
+  PlayerSpecificInputs pressed = pressed_inputs(curr_input, prev_input);
   GameSystem& game = GameSystem::get();
 
-  if (pressed.player_inputs.keys & 1 << PlayerKeyInputs::use)
+  if (pressed.keys & 1 << PlayerKeyInputs::use)
   {
     constexpr EntityTypeMask INPUT_BLOCKERS   = EntityTypeFlags::enemy;
     constexpr f32            INTERACTION_DIST = 3.0f;
@@ -533,7 +533,12 @@ Camera* Player::get_camera()
 }
 
 //==============================================================================
-void Player::update(GameInputs curr_input, GameInputs prev_input, f32 delta)
+void Player::update
+(
+  PlayerSpecificInputs curr_input,
+  PlayerSpecificInputs prev_input,
+  f32                  delta
+)
 {
   NC_SCOPE_PROFILER(PlayerUpdate)
 

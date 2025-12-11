@@ -9,7 +9,6 @@
 #include <engine/core/module_event.h>
 #include <engine/core/is_engine_module.h>
 #include <engine/core/engine_module_types.h>
-#include <engine/core/event_journal.h>
 
 #include <engine/map/map_system.h>
 #include <engine/entity/entity_system.h>
@@ -18,7 +17,7 @@
 // The engine subsystems
 #include <engine/graphics/graphics_system.h>
 #include <engine/input/input_system.h>
-#include <engine/player/game_system.h>
+#include <engine/game/game_system.h>
 #include <engine/sound/sound_system.h>
 #include <engine/ui/user_interface_module.h>
 
@@ -321,7 +320,7 @@ void Engine::run()
   namespace eu = engine_utils;
   auto previous_time = std::chrono::high_resolution_clock::now();
 
-  auto& input_system = this->get_module<InputSystem>();
+  InputSystem& input_system = this->get_module<InputSystem>();
 
   while (!this->should_quit())
   {
@@ -351,35 +350,10 @@ void Engine::run()
       .type = ModuleEventType::frame_start,
     });
 
-    this->handle_journal_state_during_update();
-    const bool replay_active = this->event_journal_active();
-
     // pump messages
     input_system.update_window_and_pump_messages();
 
-    // override the player-specific inputs of the input system if 
-    // a journal replay is active
-    if (this->event_journal_active())
-    {
-      nc_assert(m_journal);
-      auto& journal_top = m_journal->frames.back();
-      input_system.override_player_inputs(journal_top.player_inputs);
-    }
-
-    const f32 game_logic_update_time = replay_active
-      ? m_journal->frames.back().frame_time // take time speed from replay
-      : frame_time * CVars::time_speed;     // modify time speed by cvar
-
-    if (m_recorded_journal)
-    {
-      // store frametime and inputs into the journal we are recoring
-      auto& frames = m_recorded_journal->frames;
-      frames.insert(frames.begin(), EventJournalFrame
-      {
-        .player_inputs = input_system.get_inputs().player_inputs,
-        .frame_time    = game_logic_update_time,
-      });
-    }
+    const f32 game_logic_update_time = frame_time * CVars::time_speed;
 
     // frame start
     this->send_event(ModuleEvent
@@ -405,20 +379,6 @@ void Engine::run()
     {
       .type = ModuleEventType::cleanup,
     });
-
-    NC_TODO("We might actually want to wait here or drop a frame because the "
-      "journal's framerate might be different than our own");
-
-    NC_TODO("This is a quite stupid implementation of the journal.. "
-      "Instead of manipulating the journal and popping the frames we "
-      "could just keep an iterator are move it forward.");
-
-    if (this->event_journal_active())
-    {
-      // pop the last frame of the journal
-      nc_assert(m_journal);
-      m_journal->frames.pop_back();
-    }
 
     m_frame_idx += 1;
   }
@@ -455,34 +415,6 @@ const MapSectors& Engine::get_map()
 void Engine::request_quit()
 {
   m_should_quit = true;
-}
-
-//==============================================================================
-void Engine::install_and_replay_event_journal(EventJournal&& journal)
-{
-  if (this->event_journal_installed())
-  {
-    // the old journal was just replaying
-    this->stop_event_journal();
-  }
-
-  m_journal_installed = true;
-  m_journal_active    = false;
-
-  m_journal = std::make_unique<EventJournal>(std::move(journal));
-}
-
-//==============================================================================
-void Engine::stop_event_journal()
-{
-  m_journal_interrupted = true;
-  m_journal.reset();
-}
-
-//==============================================================================
-void Engine::set_recording_journal(EventJournal* journal)
-{
-  m_recorded_journal = journal;
 }
 
 //==============================================================================
@@ -535,57 +467,6 @@ u64 Engine::get_frame_idx() const
 bool Engine::should_quit() const
 {
   return m_should_quit;
-}
-
-//==============================================================================
-bool Engine::event_journal_installed() const
-{
-  return m_journal_installed;
-}
-
-//==============================================================================
-bool Engine::event_journal_active() const
-{
-  return m_journal_active;
-}
-
-//==============================================================================
-void Engine::handle_journal_state_during_update()
-{
-  if (m_journal_interrupted)
-  {
-    // the journal that was just replaying was interrupted, send a message
-    this->send_event(ModuleEvent
-    {
-      .type = ModuleEventType::event_journal_uninstalled,
-    });
-    m_journal_interrupted = false;
-    m_journal_active      = false;
-  }
-
-  if (m_journal_installed)
-  {
-    // new journal was installed, send a message
-    nc_assert(m_journal);
-    this->send_event(ModuleEvent
-    {
-      .type = ModuleEventType::event_journal_installed,
-    });
-    m_journal_installed = false;
-    m_journal_active    = true;
-  }
-
-  if (m_journal && m_journal->frames.empty())
-  {
-    // the journal was fully replayed, end replay
-    this->send_event(ModuleEvent
-    {
-      .type = ModuleEventType::event_journal_uninstalled,
-    });
-    m_journal_interrupted = false;
-    m_journal_active      = false;
-    m_journal_installed   = false;
-  }
 }
 
 }

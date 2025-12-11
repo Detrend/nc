@@ -21,7 +21,7 @@
 
 #include <engine/core/engine.h>
 #include <engine/map/map_system.h>
-#include <engine/player/game_system.h>
+#include <engine/game/game_system.h>
 #include <engine/appearance.h>
 
 #include <array>
