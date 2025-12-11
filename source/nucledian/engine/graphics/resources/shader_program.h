@@ -26,6 +26,7 @@ public:
   friend class MenuManager;
   friend class TextureManager;
   friend class OptionsPage;
+  friend class UiScreenEffect;
 
   explicit ShaderProgramHandle(const char* compute_source);
   ShaderProgramHandle(const char* vertex_source, const char* fragment_source);

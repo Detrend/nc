@@ -5,6 +5,7 @@
 #include <engine/core/module_event.h>
 #include <engine/ui/ui_texture.h>
 #include <engine/ui/ui_button.h>
+#include <engine/ui/ui_screen_effect.h>
 
 #include <vector>
 
@@ -25,6 +26,7 @@ namespace nc
     ~UserInterfaceSystem();
 
     MenuManager* get_menu_manager();
+    UiScreenEffect* get_ui_screen_effect();
 
     void draw_hud();
 
@@ -33,6 +35,7 @@ namespace nc
   private:
     MenuManager* menu;
     UiHudDisplay* ammo_display;
+    UiScreenEffect* screen_effect;
 
     std::vector<GuiTexture> ui_elements;
 
