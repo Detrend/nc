@@ -248,6 +248,15 @@ struct PhysLevel
     bool  do_smoothing     = true,   // Should the path be smoothed out?
     mat4* nc_transform_opt = nullptr // Nucledian transformation of the portals
   ) const;
+
+  // Calculates the loudness of the sound in 3D world.
+  // Returns a value in [0, 1] interval.
+  f32 calc_3d_sound_volume
+  (
+    vec3 camera_pos,
+    vec3 sound_pos,
+    f32  sound_distance
+  ) const;
 };
 
 }

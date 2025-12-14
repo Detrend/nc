@@ -360,7 +360,8 @@ static bool calc_path_raw
   f32                  step_up,
   f32                  step_down,
   OutPointsVector&     points,
-  OutTransformsVector& transforms
+  OutTransformsVector& transforms,
+  f32                  max_len = 0.0f
 )
 {
   NC_SCOPE_PROFILER(PhysicsCalcPathRaw);
@@ -493,20 +494,23 @@ static bool calc_path_raw
           const vec2 projection = p1 + t * (p1_to_p2);
 
           f32 segment_dist = distance(prev_post.xz(), projection);
+          f32 total_dist   = cur_dist + segment_dist;
+          if (max_len > 0.0f && total_dist <= max_len)
+          {
+            // Insert closest point to queue
+            visited.insert
+            ({
+              next_sector, PrevPoint
+              {
+                curID,
+                wall1_idx,
+                vec3(projection.x, 0, projection.y),
+                cur_dist + segment_dist
+              }
+            });
 
-          // Insert closest point to queue
-          visited.insert
-          ({
-            next_sector, PrevPoint
-            {
-              curID,
-              wall1_idx,
-              vec3(projection.x, 0, projection.y),
-              cur_dist + segment_dist
-            }
-          });
-
-          fringe.push({next_sector, cur_dist + segment_dist});
+            fringe.push({next_sector, cur_dist + segment_dist});
+          }
         }
       }
     });
@@ -1676,6 +1680,75 @@ const
   }
 
   return final_path;
+}
+
+//=============================================================================
+f32 PhysLevel::calc_3d_sound_volume
+(
+	vec3 camera_pos, vec3 sound_pos, f32 sound_distance
+)
+const
+{
+  nc_assert(sound_distance > 0.0f);
+
+  StackVector<vec3, 20> points;
+  StackVector<mat4, 20> transforms;
+
+  // Calculate the path
+  phys_helpers::calc_path_raw
+  (
+    *this,
+    camera_pos,
+    sound_pos,
+    0.0f,
+    0.0f,
+    1000.0f,
+    1000.0f,
+    points,
+    transforms,
+    sound_distance * 1.5f
+  );
+
+  nc_assert(points.size() == transforms.size());
+
+  // Smooth out the path by raycasting if required
+  phys_helpers::smooth_out_path(*this, points, transforms);
+
+  vec3 previous_rel       = camera_pos;
+  f32  total_distance = 0.0f;
+  mat4 accumulated_t  = identity<mat4>();
+
+  for (u64 i = 0; i < points.size(); ++i)
+  {
+    accumulated_t = transforms[i] * accumulated_t;
+    mat4 inv_t       = inverse(accumulated_t);
+    vec2 world_pt    = points[i].xz();
+    vec3 relative_pt = (inv_t * vec4{points[i], 1.0f}).xyz();
+
+    SectorID sid = map.get_sector_from_point(world_pt);
+    if (!map.is_valid_sector_id(sid))
+    {
+      nc_warn("Sound out of bounds. Pt: [{}, {}]", world_pt.x, world_pt.y);
+      return 0.0f;
+    }
+
+    const SectorData& sd = map.sectors[sid];
+
+    f32 floor_h = sd.floor_height;
+    f32 ceil_h  = sd.ceil_height;
+
+    f32 floor_h_rel = inv_t[1][1] * floor_h + inv_t[3][1];
+    f32 ceil_h_rel  = inv_t[1][1] * ceil_h  + inv_t[3][1];
+
+    f32 sound_h = clamp(previous_rel.y, floor_h_rel, ceil_h_rel);
+
+    vec3 real_rel_sound_pos = with_y(relative_pt, sound_h);
+    total_distance += distance(real_rel_sound_pos, previous_rel);
+    previous_rel = real_rel_sound_pos;
+  }
+
+  f32 dist_coeff = 1.0f - min(total_distance / sound_distance, 1.0f);
+  return dist_coeff * dist_coeff;
 }
 
 } 

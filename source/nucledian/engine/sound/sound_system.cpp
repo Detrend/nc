@@ -156,13 +156,13 @@ void SoundSystem::on_event(ModuleEvent& event)
 //==============================================================================
 void SoundSystem::set_sound_volume(int step)
 {
-  soundVoulume = 1.0f / 9.0f * step;
+  global_sound_volume = 1.0f / 9.0f * step;
 }
 
 //==============================================================================
 void SoundSystem::set_music_volume(int step)
 {
-  musicVolume = 1.0f / 9.0f * step;
+  global_music_volume = 1.0f / 9.0f * step;
 }
 
 //==============================================================================
@@ -177,6 +177,13 @@ SoundHandle SoundSystem::play(SoundID sound, f32 volume /*= 1.0f*/)
   using Channel = SoundHandle::Channel;
 
   nc_assert(sound < TOTAL_SOUND_CNT);
+  nc_assert(volume >= 0.0f);
+
+  if (volume == 0.0f)
+  {
+    // Do not play the sound at all if the volume is 0
+    return SoundHandle{SoundHandle::INVALID_CHANNEL, 0};
+  }
 
   Mix_Chunk* chunk = g_loaded_sound_chunks[sound];
   if (!chunk)
@@ -215,7 +222,7 @@ SoundHandle SoundSystem::play(SoundID sound, f32 volume /*= 1.0f*/)
 
   // We have to set the volume each time explicitly because we do not want the
   // sound to have the old volume of the channel.
-  handle.set_volume(volume * soundVoulume); 
+  handle.set_volume(volume * global_sound_volume);
 
   return handle;
 }
