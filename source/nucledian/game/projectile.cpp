@@ -99,7 +99,10 @@ void Projectile::update(f32 dt)
         if (m_hit_cnt_remaining)
         {
           // play the ricochet snd
-          SoundSystem::get().play(Sounds::ricochet, 0.3f);
+          GameSystem::get().play_3d_sound
+          (
+            position, Sounds::ricochet, 32.0f, 0.3f
+          );
         }
         else
         {

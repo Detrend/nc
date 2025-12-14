@@ -84,8 +84,8 @@ private:
 
   using ChannelArray = std::array<u8, CHANNEL_COUNT>;
 
-  f32 soundVoulume = 1;
-  f32 musicVolume = 1;
+  f32 global_sound_volume = 1.0f;
+  f32 global_music_volume = 1.0f;
 
   // This is a queue of channels to free during the next update. The callback
   // that a certain channel stopped playing is usually called from other thread

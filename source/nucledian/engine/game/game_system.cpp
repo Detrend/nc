@@ -955,6 +955,33 @@ Projectile* GameSystem::spawn_projectile
 }
 
 //==============================================================================
+void GameSystem::play_3d_sound
+(
+  vec3 position, SoundID sound, f32 distance, f32 volume
+)
+{
+  Player* player = this->get_player();
+  if (!player)
+  {
+    return;
+  }
+
+  nc_assert(player->get_camera());
+
+  f32 dist_vol = this->get_level().calc_3d_sound_volume
+  (
+    player->get_camera()->get_position(),
+    position,
+    distance
+  );
+
+  if (dist_vol > 0.0f)
+  {
+    SoundSystem::get().play(sound, volume * dist_vol);
+  }
+}
+
+//==============================================================================
 EntityAttachment& GameSystem::get_attachment_mgr()
 {
   nc_assert(game->attachment);

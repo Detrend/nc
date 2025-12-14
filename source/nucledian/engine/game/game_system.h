@@ -9,6 +9,7 @@
 #include <engine/entity/entity_types.h>
 #include <engine/player/level_types.h>
 #include <engine/player/save_types.h>
+#include <engine/sound/sound_types.h>
 
 #include <engine/input/game_input.h>
 #include <game/game_types.h>
@@ -87,6 +88,8 @@ public:
   (
     ProjectileType type, vec3 point, vec3 dir, EntityID author
   );
+
+  void play_3d_sound(vec3 position, SoundID sound, f32 distance, f32 volume);
 
 private:
   // Clean up the current map, entities, mapping etc..
