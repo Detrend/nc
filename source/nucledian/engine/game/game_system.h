@@ -152,8 +152,9 @@ private:
   {
     std::vector<JournalFrame> frames;
     JournalState              state = JournalState::recording;
-    u64                       rover = 0;
-    bool                      paused = false;
+    u64                       rover   = 0;
+    bool                      paused  = false;
+    int                       skip_to = -1;
 
     void reset(JournalState to_state);
     void reset_and_clear(JournalState to_state);

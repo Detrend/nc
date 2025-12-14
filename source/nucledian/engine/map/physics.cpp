@@ -121,24 +121,13 @@ static CollisionHit raycast_generic
   }
 
   CollisionHit best_hit = CollisionHit::no_hit();
-  [[maybe_unused]]u32  num_hits    = 1;
-  vec3 sum_normals = VEC3_ZERO;
 
   auto add_possible_hit = [&](const CollisionHit& hit)
   {
     if (hit < best_hit)
     {
       // this hit is just better
-      best_hit    = hit;
-      num_hits    = 1;
-      sum_normals = hit.normal;
-    }
-    // This causes retardation.. Not sure why
-    else if (hit == best_hit && hit.hit.sector.type == best_hit.hit.sector.type)
-    {
-      // they are the same, average them out
-      num_hits    += 1;
-      sum_normals += hit.normal;
+      best_hit = hit;
     }
   };
 
@@ -278,11 +267,6 @@ static CollisionHit raycast_generic
         }));
       }
     }
-  }
-
-  if (best_hit)
-  {
-    best_hit.normal = normalize(sum_normals);
   }
 
   // Recurse into nuclidean portal if we have to

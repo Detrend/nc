@@ -655,6 +655,14 @@ void GameSystem::game_update(f32 delta)
         num_frames_to_simulate = min(shift ? 100_u64 : 1_u64, frames_left);
       }
     }
+
+    if (journal.skip_to != -1)
+    {
+      nc_assert(journal.skip_to >= journal.rover);
+      u64 to_skip = cast<u64>(journal.skip_to - journal.rover);
+      num_frames_to_simulate = min(to_skip, frames_left);
+      journal.skip_to = -1;
+    }
 #endif
 
     if (journal.rover == journal.frames.size() - 1)
@@ -1405,6 +1413,16 @@ void GameSystem::handle_demo_debug()
           recast<u8*>(journal.frames.data()),
           journal.frames.size() * sizeof(JournalFrame)
         );
+      }
+
+      static int skip_to_idx = 0;
+      int from = cast<int>(journal.rover + 1);
+      int to   = cast<int>(journal.frames.size() - 1);
+      ImGui::SliderInt("Skip idx", &skip_to_idx, from, to);
+      ImGui::SameLine();
+      if (ImGui::Button("Skip"))
+      {
+        journal.skip_to = skip_to_idx;
       }
     }
 
