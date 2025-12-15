@@ -13,6 +13,7 @@
 #include <engine/game/game_system.h>
 #include <engine/input/input_system.h>
 #include <engine/sound/sound_system.h>
+#include <engine/sound/sound_resources.h>
 
 namespace nc
 {
@@ -71,6 +72,7 @@ namespace nc
 
 	void UiButton::on_click()
 	{
+		SoundSystem::get().play(Sounds::ui_click, 1.0f);
 		func();
 	}
 
@@ -542,18 +544,21 @@ namespace nc
 	void NewGamePage::level_1_func()
 	{
 		get_engine().get_module<GameSystem>().request_level_change(Levels::LEVEL_1);
+		//get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_visible(false);
 	}
 
 	//==============================================================================================
 	void NewGamePage::level_2_func()
 	{
 		get_engine().get_module<GameSystem>().request_level_change(Levels::LEVEL_2);
+		//get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_visible(false);
 	}
 
 	//==============================================================================================
 	void NewGamePage::level_3_func()
 	{
 		get_engine().get_module<GameSystem>().request_level_change(Levels::LEVEL_3);
+		//get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_visible(false);
 	}
 
 	//============================================================================================
