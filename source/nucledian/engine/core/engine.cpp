@@ -431,7 +431,8 @@ void Engine::process_window_event(const SDL_Event& event)
     {
       if (event.key.keysym.scancode == SDL_SCANCODE_F1)
       {
-        CVars::time_speed = CVars::time_speed ? 0.0f : 1.0f;
+        //CVars::time_speed = CVars::time_speed ? 0.0f : 1.0f;
+        //pause(CVars::time_speed ? 0.0f : 1.0f);
       }
 
       if (event.key.keysym.scancode == SDL_SCANCODE_F4)
@@ -459,6 +460,13 @@ f32 Engine::get_delta_time() const
 u64 Engine::get_frame_idx() const
 {
   return m_frame_idx;
+}
+
+//==============================================================================
+
+void nc::Engine::pause(bool pause)
+{
+  CVars::time_speed = pause ? 0.0f : 1.0f;
 }
 
 //==============================================================================
