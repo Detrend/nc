@@ -209,6 +209,7 @@ namespace nc
 		if (keyboard[SDL_SCANCODE_ESCAPE])
 		{
 			cur_esc_pressed = true;
+			
 		}
 
 		if (cur_esc_pressed && !prev_esc_pressed)
@@ -216,6 +217,7 @@ namespace nc
 			/*if (current_page == MAIN)
 			{*/
 			set_visible(!visible);
+			get_engine().pause(visible);
 			//}
 			//else
 			//{
