@@ -495,7 +495,7 @@ static bool calc_path_raw
 
           f32 segment_dist = distance(prev_post.xz(), projection);
           f32 total_dist   = cur_dist + segment_dist;
-          if (max_len > 0.0f && total_dist <= max_len)
+          if (max_len <= 0.0f || total_dist <= max_len)
           {
             // Insert closest point to queue
             visited.insert
@@ -552,14 +552,20 @@ static bool calc_path_raw
 
   // Make this a first transform (will get reversed later) as the first point
   // does not have a transform.
-  transforms.push_back(identity<mat4>());
+  if (found_path)
+  {
+    transforms.push_back(identity<mat4>());
+  }
 
   // Reverse the path
   std::reverse(points.begin(), points.end());
   std::reverse(transforms.begin(), transforms.end());
 
   // Last point and no transform
-  points.push_back(end_pos);
+  if (found_path)
+  {
+    points.push_back(end_pos);
+  }
 
   return found_path;
 }
