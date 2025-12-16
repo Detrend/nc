@@ -63,7 +63,6 @@ void main()
   vec3 stitched_normal = texture(g_stitched_normal, uv).xyz;
   vec3 albedo = texture(g_albedo, uv).rgb;
 
-  float ambient_strength = 0.3f;
   int shininess = 128;
 
   vec3 view_direction = normalize(view_position - position);
