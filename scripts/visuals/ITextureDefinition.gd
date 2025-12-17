@@ -24,3 +24,6 @@ class TexturingContext:
 
 func append_info(out: Array[Dictionary], begin_height: float, end_height: float, ctx: TexturingContext)->void:
 	InterfaceUtils.report_not_implemented_error(append_info)
+
+func resolve(out: TexturingResult, begin_height: float, end_height : float, ctx : TexturingContext)->void:
+	InterfaceUtils.report_not_implemented_error(resolve)

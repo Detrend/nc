@@ -120,13 +120,11 @@ func _selected_update(_selected_list: Array[Node])->void:
 	super._selected_update(_selected_list)
 	if is_editable:
 		_update_visuals()
-		for child in get_children():
-			if child is WallAttachment:
-				(child as WallAttachment)._on_parent_selected_update(self, _selected_list)
 
 func _alt_mode_drag_update()->void:
 	super._alt_mode_drag_update()
 	_update_visuals()
+
 
 func do_postprocess(points: PackedVector2Array)->bool:
 	var did_change :bool = false
@@ -288,6 +286,15 @@ func is_convex()->bool:
 
 static func get_sectors(this: Node, ret : Array[Sector] = [], include_uneditable: bool = false, lookup_flags: NodeUtils.LOOKUP_FLAGS = NodeUtils.LOOKUP_FLAGS.RECURSIVE):
 	ret = NodeUtils.get_children_by_predicate(this, func(n:Node)->bool: return n is Sector and (include_uneditable || n.is_editable), ret, lookup_flags)
+	return ret
+
+
+func get_all_wall_attachments(ret : Array[WallAttachment] = [])->Array[WallAttachment]:
+	ret = NodeUtils.get_children_by_predicate(self, func(n:Node)->bool: return n is WallAttachment and (n as Node2D).is_visible_in_tree())
+	return ret
+
+func get_wall_attachments(wall_idx : int, ret : Array[WallAttachment] = [])->Array[WallAttachment]:
+	ret = NodeUtils.get_children_by_predicate(self, func(n:Node)->bool: return n is WallAttachment and (n as Node2D).is_visible_in_tree() and (n as WallAttachment).find_wall(self) == wall_idx)
 	return ret
 
 #endregion

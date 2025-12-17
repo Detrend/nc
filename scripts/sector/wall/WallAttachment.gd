@@ -46,18 +46,21 @@ func _get_display_position(parent_sector : Sector, wall_idx : int)->Vector2:
 var _icon : Node2D:
 	get: return $Icon
 	
-func _process(delta: float) -> void:
-	pass#_update_visuals(find_sector())
-
-func _on_parent_selected_update(parent_polygon : EditablePolygon, _selected_list: Array[Node])->void:
-	_update_visuals(find_sector(parent_polygon))	
+	
+func _on_parent_selected_update(parent_polygon : EditablePolygon)->void:
+	var parent := find_sector(parent_polygon)
+	var wall := find_wall(parent)
+	var display_pos = _get_display_position(parent, wall)
+	self.global_position = display_pos
+	_update_visuals(parent, wall)	
 	
 func _selected_update(_selected_list: Array[Node])->void:
-	_update_visuals(find_sector())	
+	var parent := find_sector()
+	var wall := find_wall(parent)
+	_update_visuals(parent, wall)	
 
-func _update_visuals(parent : Sector)->void:
+func _update_visuals(parent : Sector, wall : int)->void:
 	var icon := _icon
 	if icon:
-		var wall := find_wall(parent)
 		var display_pos = _get_display_position(parent, wall)
 		icon.global_position = display_pos
