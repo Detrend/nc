@@ -20,6 +20,7 @@
 #include <engine/map/map_dynamics.h>
 
 #include <engine/graphics/entities/lights.h>
+#include <engine/graphics/entities/sky_box.h>
 #include <engine/graphics/resources/texture.h>
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/gizmo.h>
@@ -465,6 +466,14 @@ static void load_json_map
     const float intensity = js_light["intensity"];
 
     entities.create_entity<AmbientLight>(intensity);
+  }
+  for (auto&& js_skybox : data["skyboxes"])
+  {
+    const std::string texture = js_skybox["texture"];
+    const float exposure = js_skybox["exposure"];
+    const bool use_gamma = js_skybox["use_gamma_correction"];
+    const GLuint sky_box_map = TextureManager::get().get_equirectangular_map(texture, ResLifetime::Game);
+    entities.create_entity<SkyBox>(sky_box_map, exposure, use_gamma);
   }
 
   dynamics.activators = std::move(activator_table);
