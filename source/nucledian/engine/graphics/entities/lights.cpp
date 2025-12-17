@@ -90,12 +90,10 @@ PointLightGPU PointLight::get_gpu_data(const vec3& position, u32 stitched_sector
   return PointLightGPU
   {
     .position  = position,
-    .intensity = intensity * 10,
+    .intensity = intensity,
     .color     = color,
-    .radius    = radius * 10,
-    .falloff   = falloff * 0.1f,
-    .sector_id = stitched_sector_id,
-    //GameSystem::get().get_map().get_sector_from_point(position.xy),
+    .radius    = radius,
+    .falloff   = falloff,
   };
 }
 

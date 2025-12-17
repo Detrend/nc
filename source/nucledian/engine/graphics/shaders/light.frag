@@ -219,7 +219,6 @@ void main()
     float angle = dot(stitched_normal, light_direction) + float(billboard);
 
     float attenuation = pow(max(light.radius - distance, 0.0f) / light.radius, light.falloff);
-    //attenuation = pow(ceil(pow(attenuation, 2.0f) * LIGHT_BANDS) / LIGHT_BANDS, 0.5f);
 
     vec3 diffuse = max(angle, 0.0f) * albedo;
 
