@@ -39,20 +39,20 @@ static var _HEIGHT_EXPRESSION_ARGUMENTS : PackedStringArray = [
 ]
 
 
-func append_info(out: Array[Dictionary], begin_height: float, end_height: float, ctx: TexturingContext)->void:
+func resolve(out: TexturingResult, begin_height: float, end_height: float, ctx: TexturingContext)->void:
 	var this_sector :Sector = ctx.target_sector
 	var other_sector :Sector = ctx.export_data.get_other_sector(this_sector)
 	var owner_sector : Sector = ctx.get_rule_owner_sector()
 	
-	var t :int = out.size()
-	texture.append_info(out, begin_height, end_height, ctx)
+	var t :int = out.entries.size()
+	texture.resolve(out, begin_height, end_height, ctx)
 	var height_expr := get_height_expression()
-	while t < out.size():
-		var entry : Dictionary = out[t]
-		var offset := TextUtils.vec2_from_array(entry['offset'])
-		var stripe_height_min :float= entry['begin_height']
-		var stripe_height_max :float= entry['end_height']
-		var texture_scale :float = entry['scale']
+	while t < out.entries.size():
+		var entry := out.entries[t]
+		var offset := entry.offset
+		var stripe_height_min :float= entry.begin_height
+		var stripe_height_max :float= entry.end_height
+		var texture_scale :float = entry.scale
 		var height_change :float = height_expr.execute([
 			offset.x,
 			offset.y,
@@ -68,8 +68,7 @@ func append_info(out: Array[Dictionary], begin_height: float, end_height: float,
 			other_sector.data.floor_height if other_sector else null,
 			other_sector.data.ceiling_height if other_sector else null,
 		])
-		var og_offset := offset
 		offset.y += height_change
-		entry['offset'] = TextUtils.vec2_to_array(offset)
+		entry.offset = offset
 		t += 1
 	

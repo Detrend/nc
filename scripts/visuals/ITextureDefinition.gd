@@ -23,7 +23,9 @@ class TexturingContext:
 		return target_sector if (this_wall_rule.get_priority() >= other_wall_rule.get_priority()) else export_data.get_other_sector(target_sector)
 
 func append_info(out: Array[Dictionary], begin_height: float, end_height: float, ctx: TexturingContext)->void:
-	InterfaceUtils.report_not_implemented_error(append_info)
+	var result := TexturingResult.new()
+	resolve(result, begin_height, end_height, ctx)
+	result.export(out)
 
 func resolve(out: TexturingResult, begin_height: float, end_height : float, ctx : TexturingContext)->void:
 	InterfaceUtils.report_not_implemented_error(resolve)

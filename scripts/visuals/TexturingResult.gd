@@ -2,19 +2,19 @@ class_name TexturingResult
 extends RefCounted
 
 class Entry:
-	var is_wall : bool
+	var is_wall : bool = false
 	var begin_height : float
 	var end_height : float
 	
-	var show : bool
+	var show : bool = false
 	var id : String
 	var scale : float
 	var rotation_deg : float
 	var tile_rotations_count : int
-	var tile_rotation_increment_deg : int
+	var tile_rotation_increment_deg : float
 	var offset : Vector2
 
-	var is_extruded : bool
+	var is_extruded : bool = false
 	var extrude_use_absolute_directions : bool
 	var begin_up_direction : Vector3
 	var end_up_direction : Vector3
@@ -44,6 +44,10 @@ class Entry:
 var entries : Array[Entry]
 
 
+func add_entry()->Entry:
+	var ret := Entry.new()
+	entries.append(ret)
+	return ret
 
 
 func export(out: Array[Dictionary] = [])->Array[Dictionary]:

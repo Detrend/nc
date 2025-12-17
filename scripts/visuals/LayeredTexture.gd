@@ -15,7 +15,7 @@ enum CompositionOrder{
 
 
 
-func append_info(out: Array[Dictionary], begin_height: float, end_height: float, ctx: TexturingContext)->void:
+func resolve(out: TexturingResult, begin_height: float, end_height: float, ctx: TexturingContext)->void:
 	var layers : Array[ILayeredTextureEntry] = []
 	layers.append_array(self.layers)
 	layers.reverse()
@@ -78,7 +78,7 @@ func append_info(out: Array[Dictionary], begin_height: float, end_height: float,
 			var layer :ILayeredTextureEntry = layers[t]
 			var size_interval :Vector2 = sizes[t]
 			if size_interval.x < size_interval.y:
-				layer.get_texture().append_info(out, size_interval.x, size_interval.y, ctx)
+				layer.get_texture().resolve(out, size_interval.x, size_interval.y, ctx)
 			t += 1
 
 
