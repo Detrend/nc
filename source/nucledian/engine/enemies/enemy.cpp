@@ -475,7 +475,7 @@ void Enemy::handle_ai_alert(f32 delta)
           this->get_radius(),
           this->get_height(),
           this->get_height() * 0.5f,
-          this->get_height() * 2.0f,
+          this->get_height() * 0.5f,
           true,
           &nc_transform
         );

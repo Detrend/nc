@@ -393,7 +393,7 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   EntityRegistry& registry = GameSystem::get().get_entities();
   registry.for_each<AmbientLight>([this](AmbientLight& ambient)
   {
-    m_light_material.set_uniform(shaders::light::AMBIENT_STRENGTH, ambient.strength);
+     m_light_material.set_uniform(shaders::light::AMBIENT_STRENGTH, ambient.strength);
   });
 
   // draw call

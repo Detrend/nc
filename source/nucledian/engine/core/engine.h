@@ -48,6 +48,8 @@ public:
 
   u64  get_frame_idx() const;
 
+  void pause(bool pause);
+
 private:
   bool should_quit()             const;
   void build_map_and_sectors();
