@@ -138,7 +138,7 @@ func _visualize_polygon()->void:
 	if _level.coloring_mode == EditorConfig.SectorColoringMode.Texturing and (! self.exclude_from_export):
 		self.color = Color.WHITE
 		self.texture = sector_material.preview
-		self.texture_scale = Vector2(1/(sector_material.wall_scale * _level.export_scale.x), 1/(sector_material.wall_scale * _level.export_scale.y)) * sector_material.preview_scale
+		self.texture_scale = Vector2(1/(_level.export_scale.x), 1/(_level.export_scale.y)) * sector_material.preview_scale
 		self.texture_offset = -data.texturing_offset
 		self.texture_rotation = deg_to_rad(-data.texturing_rotation - sector_material.preview_rotation)
 	else:
