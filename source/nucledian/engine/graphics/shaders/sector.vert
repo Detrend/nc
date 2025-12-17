@@ -1,32 +1,32 @@
 constexpr const char* VERTEX_SOURCE = R"(
 
 #version 430 core
-layout (location = 0) in vec3  a_position;
-layout (location = 1) in vec3  a_normal;
-layout (location = 2) in float a_cumulative_wall_len;
-layout (location = 3) in float a_texture_id;
-layout (location = 4) in float a_texture_scale;
-layout (location = 5) in float a_texture_rotation;
-layout (location = 6) in float a_tile_rotations_count;
-layout (location = 7) in float a_tile_rotation_increment;
-layout (location = 8) in vec2  a_texture_offset;
+layout (location = 0) in vec3   a_position;
+layout (location = 1) in vec3   a_normal;
+layout (location = 2) in float  a_cumulative_wall_len;
+layout (location = 3) in float  a_texture_id;
+layout (location = 4) in float  a_texture_scale;
+layout (location = 5) in float  a_texture_rotation;
+layout (location = 6) in float  a_tile_rotations_count;
+layout (location = 7) in float  a_tile_rotation_increment;
+layout (location = 8) in vec2   a_texture_offset;
 
-out vec3 position;
-out vec3 stitched_position;
-out vec3 normal;
-out vec3 stitched_normal;
+out vec3  position;
+out vec3  stitched_position;
+out vec3  normal;
+out vec3  stitched_normal;
 out float cumulative_wall_len;
 
-flat out int texture_id;
-flat out float texture_scale;
-flat out float texture_rotation;
-flat out float tile_rotations_count;
-flat out float tile_rotation_increment;
-flat out vec2 texture_offset;
+flat out int    texture_id;
+flat out float  texture_scale;
+flat out float  texture_rotation;
+flat out float  tile_rotations_count;
+flat out float  tile_rotation_increment;
+flat out vec2   texture_offset;
 
-layout(location = 0) uniform mat4 view;
-layout(location = 1) uniform mat4 projection;
-layout(location = 4) uniform mat4 portal_dest_to_src;
+layout(location = 0) uniform mat4   view;
+layout(location = 1) uniform mat4   projection;
+layout(location = 4) uniform mat4   portal_dest_to_src;
 
 void main()
 {

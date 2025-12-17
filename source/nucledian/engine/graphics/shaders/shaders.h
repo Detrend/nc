@@ -38,6 +38,7 @@ namespace nc
       inline constexpr Uniform<3, vec2> ATLAS_SIZE;
       inline constexpr Uniform<4, vec2> TEXTURE_POS;
       inline constexpr Uniform<5, vec2> TEXTURE_SIZE;
+      inline constexpr Uniform<6, u32>  SECTOR_ID;
     }
 
     namespace gun
@@ -76,6 +77,7 @@ namespace nc
       inline constexpr Uniform<2, vec2> GAME_ATLAS_SIZE;
       inline constexpr Uniform<3, vec2> LEVEL_ATLAS_SIZE;
       inline constexpr Uniform<4, mat4> PORTAL_DEST_TO_SRC;
+      inline constexpr Uniform<5, u32>  SECTOR_ID;
     }
 
     namespace light_culling
