@@ -17,9 +17,8 @@ struct PointLight
     vec3  position;
     float intensity;
     vec3  color;
-    float constant;
-    float linear;
-    float quadratic;
+    float radius;
+    float falloff;
 };
 
 struct TileData
@@ -99,7 +98,8 @@ void main()
 
     float angle = dot(stitched_normal, light_direction) + float(billboard);
 
-    float attenuation = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+    float attenuation = pow(max(light.radius - distance, 0.0f) / light.radius, light.falloff);
+
     vec3 diffuse = max(angle, 0.0f) * albedo;
 
     vec3 reflect_direction = reflect(-light_direction, stitched_normal);
