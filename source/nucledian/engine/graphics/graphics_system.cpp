@@ -234,7 +234,6 @@ bool GraphicsSystem::init()
 }
 
 //==============================================================================
-PointLight* light;
 PointLight* light_test;
 
 void GraphicsSystem::on_event(ModuleEvent& event)
@@ -264,12 +263,6 @@ void GraphicsSystem::on_event(ModuleEvent& event)
       // TODO: temporary directional lights (don't forget about lights header)
       EntityRegistry& registry = GameSystem::get().get_entities();
 
-      registry.for_each<Player>([&registry](const Player& player)
-      {
-        const vec3 position = player.get_position();
-        light = registry.create_entity<PointLight>(position, 1.0f, 1.0f,  0.7f, 1.8f, colors::GREEN);
-      });
-
       // TODO: temporary skybox (don't forget about skybox header)
       GLuint sky_box_map = TextureManager::get().get_equirectangular_map
       (
@@ -278,7 +271,7 @@ void GraphicsSystem::on_event(ModuleEvent& event)
       );
       registry.create_entity<SkyBox>(sky_box_map, 1.1f);
 
-      light_test = registry.create_entity<PointLight>(vec3{974.0f, 2.0f, 1068.0f}, 1.0f, 1.0f,  0.09f, 0.032f, colors::GREEN);
+      light_test = registry.create_entity<PointLight>(vec3{974.0f, 2.0f, 1068.0f}, 5.0f, 1.0f, 1.0f, colors::GREEN);
     }
     break;
 
@@ -897,10 +890,9 @@ void GraphicsSystem::handle_light_debug()
       bool changed = false;
 
       changed |= ImGui::ColorEdit3("Color",    &light_test->color.x);
-      changed |= ImGui::DragFloat("Intensity", &light_test->intensity, 0.1f, 0.0f, 1.0f);
-      changed |= ImGui::DragFloat("Constant",  &light_test->constant);
-      changed |= ImGui::DragFloat("Linear",    &light_test->linear);
-      changed |= ImGui::DragFloat("Quadratic", &light_test->quadratic);
+      changed |= ImGui::DragFloat("Intensity", &light_test->intensity, 0.001f, 0.0f, 10.0f);
+      changed |= ImGui::DragFloat("Radius",    &light_test->radius, 0.001f, 0.0f, 32.0f);
+      changed |= ImGui::DragFloat("Falloff",   &light_test->falloff, 0.001f, 0.01f, 10.0f);
 
       if (changed)
       {

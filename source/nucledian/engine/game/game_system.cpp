@@ -448,15 +448,17 @@ static void load_json_map
   }
   for (auto&& js_light : data["point_lights"])
   {
-    const vec3 position = load_json_position(js_light);
-    const color4 color = load_json_vector<4>(js_light["color"]);
-    const float intensity = js_light["intensity"];
+    const vec3   position  = load_json_position(js_light);
+    const color4 color     = load_json_vector<4>(js_light["color"]);
+    const float  intensity = js_light["intensity"];
+    const float  radius    = js_light.contains("radius") 
+      ? cast<f32>(js_light["radius"])
+      : 3.0f;
+    const float  falloff   = js_light.contains("falloff")
+      ? cast<f32>(js_light["falloff"])
+      : 1.0f;
 
-    const float constant = js_light["constant"];
-    const float linear = js_light["linear"];
-    const float quadratic = js_light["quadratic"];
-
-    entities.create_entity<PointLight>(position, intensity, constant, linear, quadratic, color);
+    entities.create_entity<PointLight>(position, radius, intensity, falloff, color);
   }
   for (auto&& js_light : data["ambient_lights"])
   {
@@ -949,7 +951,7 @@ Projectile* GameSystem::spawn_projectile
     // And its light
     PointLight* light = get_entities().create_entity<PointLight>
     (
-      from, 1.0f, 0.0f, 0.0f, 0.15f, light_col
+      from, 3.0f, 2.5f, 1.15f, light_col
     );
 
     // And attach it

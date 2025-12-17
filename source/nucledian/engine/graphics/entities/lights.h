@@ -57,10 +57,9 @@ struct PointLightGPU
   vec3   position;
   f32    intensity;
   color3 color;
-  f32    constant;
-  f32    linear;
-  f32    quadratic;
-  f32    _padding[2];
+  f32    radius;
+  f32    falloff;
+  f32    _padding[3];
 };
 
 class PointLight : public Entity
@@ -75,9 +74,8 @@ public:
 
   color3 color     = colors::WHITE;
   f32    intensity = 1.0f;
-  f32    constant  = 1.0f;
-  f32    linear    = 0.09f;
-  f32    quadratic = 0.032f;
+  f32    radius    = 1.0f;
+  f32    falloff   = 1.0f;
 
   // This is a temporary workaround, because I hated all other alternatives.
   // If the light has a certain snap mode active then this is the offset it is
@@ -95,16 +93,14 @@ public:
 
   PointLight
   (
-    const vec3& position,
-    f32 intensity = 1.0f,
-    f32 constant = 1.0f,
-    f32 linear = 0.09f,
-    f32 quadratic = 0.032f,
+    const vec3&   position,   // Position of the light in the world
+    f32           radius,     // Radius of the light in meters
+    f32           intentsity, // Intensity of the light [0, inf)
+    f32           falloff,    // How does the light intensity change with distance
     const color3& color = colors::WHITE
   );
 
   PointLightGPU get_gpu_data(const vec3& position) const;
-  static f32 calculate_radius(const color3& color, f32 intensity, f32 constant, f32 linear, f32 quadratic);
 };
 
 }

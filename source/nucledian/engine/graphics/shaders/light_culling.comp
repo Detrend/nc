@@ -15,9 +15,8 @@ struct PointLight
     vec3  position;
     float intensity;
     vec3  color;
-    float constant;
-    float linear;
-    float quadratic;
+    float radius;
+    float falloff;
 };
 
 struct TileData
@@ -43,20 +42,7 @@ shared vec4 frustum_planes[4];
 
 float calculate_light_radius(PointLight light)
 {
-  // WARNING: following should be 1:1 copy of the calculate_radius function in lights.cpp source file.
-
-  const float max_color = max(light.color.r, max(light.color.g, light.color.b));
-  const float min_intensity = 32.0;
-  const float k = max_color * light.intensity * min_intensity;
-
-  if (light.quadratic < 0.0001)
-    return (k - light.constant) / light.linear;
-
-  const float discriminant = light.linear * light.linear - 4.0 * light.quadratic * (light.constant - k);
-  if (discriminant < 0.0)
-    return 0.0;
-
-  return (-light.linear + sqrt(discriminant)) / (2.0 * light.quadratic);
+  return light.radius;
 }
 
 float get_signed_distance_to_plane(vec3 point, vec4 plane)
