@@ -228,18 +228,25 @@ void Renderer::destroy_g_buffers()
   if (m_g_position)
   {
     // These must be valid always
+    nc_assert(m_g_position);
     nc_assert(m_g_normal);
+    nc_assert(m_g_stitched_normal);
     nc_assert(m_g_albedo);
+    nc_assert(m_g_sector);
     nc_assert(glIsTexture(m_g_position));
     nc_assert(glIsTexture(m_g_normal));
+    nc_assert(glIsTexture(m_g_stitched_normal));
     nc_assert(glIsTexture(m_g_albedo));
+    nc_assert(glIsTexture(m_g_sector));
 
-    GLuint textures[3]{m_g_position, m_g_normal, m_g_albedo};
-    glDeleteTextures(3, textures);
+    GLuint textures[5]{m_g_position, m_g_normal, m_g_stitched_normal, m_g_albedo, m_g_sector};
+    glDeleteTextures(5, textures);
 
-    m_g_position = 0;
-    m_g_normal   = 0;
-    m_g_albedo   = 0;
+    m_g_position        = 0;
+    m_g_normal          = 0;
+    m_g_stitched_normal = 0;
+    m_g_albedo          = 0;
+    m_g_sector          = 0;
   }
 }
 
@@ -250,19 +257,21 @@ void Renderer::create_g_buffers(u32 width, u32 height)
   glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
 
   // create g buffers
-  constexpr std::array<GLenum, 4> attachments =
+  constexpr std::array<GLenum, 5> attachments =
   {
     GL_COLOR_ATTACHMENT0,
     GL_COLOR_ATTACHMENT1,
     GL_COLOR_ATTACHMENT2,
-    GL_COLOR_ATTACHMENT3
+    GL_COLOR_ATTACHMENT3,
+    GL_COLOR_ATTACHMENT4,
   };
   // TODO: move specular strength to stitched normal g buffer
   m_g_position        = create_g_buffer(GL_RGBA32F    , attachments[0], width, height);
   // TODO: merge stitched normals and normals into one g buffer
   m_g_normal          = create_g_buffer(GL_RGBA8_SNORM, attachments[1], width, height);
-  m_g_stitched_normal = create_g_buffer(GL_RGB8_SNORM, attachments[2], width, height);
+  m_g_stitched_normal = create_g_buffer(GL_RGB8_SNORM , attachments[2], width, height);
   m_g_albedo          = create_g_buffer(GL_RGBA8      , attachments[3], width, height);
+  m_g_sector          = create_g_buffer(GL_R16F, attachments[4], width, height);
   glDrawBuffers(static_cast<GLsizei>(attachments.size()), attachments.data());
 
   // create depth-stencil buffer
@@ -464,6 +473,7 @@ void Renderer::render_sectors(const CameraData& camera) const
 
   for (const auto& [sector_id, _] : sectors_to_render)
   {
+    m_sector_material.set_uniform(shaders::sector::SECTOR_ID, static_cast<u32>(sector_id));
     // This returns the mesh and optionally updates it before if it is dirty.
     const MeshHandle& mesh = gfx.get_and_update_sector_mesh(sector_id);
 
@@ -565,6 +575,7 @@ void Renderer::render_entities(const CameraData& camera) const
     Appearance        appear;
     vec3              world_pos;
     std::vector<mat4> transforms;
+    SectorID          sector_id;
   };
 
   std::unordered_map<u64, EntityRenderData> groups[3]{};
@@ -619,6 +630,7 @@ void Renderer::render_entities(const CameraData& camera) const
           render_data.appear    = *appearance;
           render_data.world_pos = entity->get_position();
           render_data.transforms.push_back(t);
+          render_data.sector_id = sid;
         }
       }
     });
@@ -654,6 +666,8 @@ void Renderer::render_entities(const CameraData& camera) const
     {
       const Appearance& base_appearance = render_data.appear;
       const vec3 base_position = render_data.world_pos;
+
+      m_billboard_material.set_uniform(shaders::billboard::SECTOR_ID, static_cast<u32>(render_data.sector_id));
 
       for (const mat4& entity_transform : render_data.transforms)
       {
@@ -765,6 +779,9 @@ const
   mat4 view       = translation(trans) * scaling(scale);
   mat4 projection = ortho(0.0f, win_size.x, win_size.y, 0.0f, -1.0f, 1.0f);
 
+  const vec2 player_position = ((Entity*)GameSystem::get().get_player())->get_position().xy;
+  const SectorID sector_id = GameSystem::get().get_map().get_sector_from_point(player_position);
+
   glBindVertexArray(texturable_quad.get_vao());
 
   m_gun_material.use();
@@ -774,7 +791,7 @@ const
   m_gun_material.set_uniform(sb::ATLAS_SIZE,   texture.get_atlas().get_size());
   m_gun_material.set_uniform(sb::TEXTURE_POS,  texture.get_pos());
   m_gun_material.set_uniform(sb::TEXTURE_SIZE, texture.get_size());
-
+  m_gun_material.set_uniform(sb::SECTOR_ID,    static_cast<u32>(sector_id));
   glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
   glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
 
