@@ -40,8 +40,8 @@
 [ext_resource type="Script" uid="uid://d1u512ud4vhrt" path="res://scripts/reactivity/SectorAltConfig.gd" id="23_q7j84"]
 [ext_resource type="Script" uid="uid://t310iayp4xsr" path="res://scripts/reactivity/WallAttachedTrigger.gd" id="24_a36uj"]
 [ext_resource type="PackedScene" uid="uid://j4vtgvfml3yh" path="res://prefabs/Props/ScatteredFlesh.tscn" id="24_sc5vv"]
+[ext_resource type="PackedScene" uid="uid://cn044shocju7e" path="res://prefabs/WallAttachments/WallButton.tscn" id="24_xqdbr"]
 [ext_resource type="Resource" uid="uid://ddrx3nt3ky7po" path="res://material_textures/composites/Button1_3D.tres" id="25_iyvop"]
-[ext_resource type="Texture2D" uid="uid://dhe6v0fco6xv0" path="res://imgs/palette.png" id="25_xqdbr"]
 [ext_resource type="PackedScene" uid="uid://c36mdme0482de" path="res://materials/skyboxes/skybox_default.tscn" id="30_70ooc"]
 
 [sub_resource type="Resource" id="Resource_h15or"]
@@ -2574,7 +2574,7 @@ data = SubResource("Resource_kc2um")
 floor_height = 5.0
 ceiling_height = 10.0
 
-[node name="TextureOverride" type="Node2D" parent="Sectors/Parcour/@Polygon2D@223595"]
+[node name="Button" type="Node2D" parent="Sectors/Parcour/@Polygon2D@223595" instance=ExtResource("24_xqdbr")]
 position = Vector2(346, 27)
 script = ExtResource("24_a36uj")
 texture = ExtResource("25_iyvop")
@@ -2582,13 +2582,7 @@ stripe_floor_offset = 0.5
 _use_stripe_width = true
 stripe_width = 0.5
 
-[node name="Icon" type="Sprite2D" parent="Sectors/Parcour/@Polygon2D@223595/TextureOverride"]
-z_index = 500
-z_as_relative = false
-scale = Vector2(0.045, 0.045)
-texture = ExtResource("25_xqdbr")
-
-[node name="Trigger" type="Node" parent="Sectors/Parcour/@Polygon2D@223595/TextureOverride" node_paths=PackedStringArray("target")]
+[node name="Trigger" type="Node" parent="Sectors/Parcour/@Polygon2D@223595/Button" node_paths=PackedStringArray("target")]
 script = ExtResource("9_r3w7q")
 target = NodePath("../../../../../Activators/ParkourActivate")
 can_turn_off = true

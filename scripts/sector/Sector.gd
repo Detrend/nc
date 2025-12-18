@@ -75,7 +75,8 @@ var _visualizer_line : Line2D:
 
 
 @export_group("")
-@export_tool_button("Add Trigger") var _add_trigger_tool_button = func()->void: NodeUtils.instantiate_child_by_type_and_select(self, Trigger, "Trigger")
+@export_tool_button("Add Step Trigger") var _add_trigger_tool_button = func()->void: NodeUtils.instantiate_child_by_type_and_select(self, Trigger, "Trigger")
+@export_tool_button("Add Wall Trigger") var _add_wall_trigger_tool_button = func()->void: NodeUtils.instantiate_child_and_select(self, load("res://prefabs/WallAttachments/WallButton.tscn"), "Button")
 @export_tool_button("Add Alternative Config") var _add_alt_config_tool_button = _add_alt_config
 @export_tool_button("Add Wall Texture Override") var _add_wall_texture_override_tool_button = func()->void: NodeUtils.instantiate_child_and_select(self, load("res://prefabs/WallAttachments/WallTextureOverride.tscn"), "TextureOverride")
 #@export_tool_button("Add Wall Trigger") var _add_wall_texture_override_tool_button = func()->void: NodeUtils.instantiate_child_and_select(self, load("res://prefabs/WallAttachments/WallTextureOverride.tscn"), "TextureOverride")
