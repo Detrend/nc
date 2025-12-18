@@ -9,7 +9,7 @@ extends ITextureDefinition
 func resolve(out: TexturingResult, total_begin_height: float, total_end_height: float, ctx: TexturingContext)->void:
 	var total_size := total_end_height - total_begin_height
 	var texturing_interval := Vector2(total_begin_height, total_end_height)
-	print("layers from <{0}, {1}>".format([total_begin_height, total_end_height]))
+	#print("layers from <{0}, {1}>".format([total_begin_height, total_end_height]))
 	
 	var sizes : PackedFloat32Array =[]
 	sizes.resize(layers.size())
@@ -55,12 +55,12 @@ func resolve(out: TexturingResult, total_begin_height: float, total_end_height: 
 		var size := sizes[i]
 		var current_texturing_end := minf(total_end_height, current_texturing_begin + size if i < (layers.size()-1) else total_end_height)
 		if current_texturing_end <= current_texturing_begin: 
-			print(" - skip({2}): <{0}, {1}>".format([current_texturing_begin, current_texturing_end, i]))
+			#print(" - skip({2}): <{0}, {1}>".format([current_texturing_begin, current_texturing_end, i]))
 			continue
 		layer.get_texture().resolve(out, current_texturing_begin, current_texturing_end, ctx)
-		print(" - texturing({2}): <{0}, {1}>".format([current_texturing_begin, current_texturing_end, i]))
+		#print(" - texturing({2}): <{0}, {1}>".format([current_texturing_begin, current_texturing_end, i]))
 		current_texturing_begin = current_texturing_end
-	print("END")
+	#print("END")
 
 
 func gather_tiers()->PackedInt32Array:
