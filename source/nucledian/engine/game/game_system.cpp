@@ -213,13 +213,13 @@ static WallSegmentData load_json_wall_surface
 
   for (auto&& js_entry : js)
   {
-    auto &entry = ret.surfaces.emplace_back();
+    auto& entry = ret.surfaces.emplace_back();
     entry.surface = load_json_surface(js_entry);
     entry.end_height = js_entry["end_height"];
-    load_json_optional(entry.begin_up_tesselation.xzy,  js_entry, "begin_up_direction", load_json_vector<3>);
-    load_json_optional(entry.end_up_tesselation.xzy,    js_entry, "end_up_direction", load_json_vector<3>);
-    load_json_optional(entry.begin_down_tesselation.xzy,js_entry, "begin_down_direction", load_json_vector<3>);
-    load_json_optional(entry.end_down_tesselation.xzy,  js_entry, "end_down_direction", load_json_vector<3>);
+    load_json_optional(entry.begin_up_tesselation.xzy, js_entry, "begin_up_direction", load_json_vector<3>);
+    load_json_optional(entry.end_up_tesselation.xzy, js_entry, "end_up_direction", load_json_vector<3>);
+    load_json_optional(entry.begin_down_tesselation.xzy, js_entry, "begin_down_direction", load_json_vector<3>);
+    load_json_optional(entry.end_down_tesselation.xzy, js_entry, "end_down_direction", load_json_vector<3>);
 
     if (load_json_flag(js_entry, "absolute_directions"))
     {
@@ -231,15 +231,17 @@ static WallSegmentData load_json_wall_surface
       entry.flags = static_cast<WallSegmentData::Flags>(entry.flags | WallSegmentData::Flags::flip_side_normals);
     }
 
-    if (js_entry.contains("trigger"))
+    if (js_entry.contains("triggers"))
     {
-      TriggerData td = load_json_trigger(js_entry["trigger"], activators);
-      td.type = TriggerData::wall;
-      td.wall_type.sector  = sid;
-      td.wall_type.wall    = wrelid;
-      td.wall_type.segment = segment_idx;
+      for (const auto& js_trigger : js_entry["triggers"]) {
+        TriggerData td = load_json_trigger(js_trigger, activators);
+        td.type = TriggerData::wall;
+        td.wall_type.sector = sid;
+        td.wall_type.wall = wrelid;
+        td.wall_type.segment = segment_idx;
 
-      triggers.push_back(td);
+        triggers.push_back(td);
+      }
     }
 
     segment_idx += 1;
@@ -299,7 +301,6 @@ static void load_json_map
     {
       const f32 floor = js_sector["floor"];
       const f32 ceil = js_sector["ceiling"];
-      bool more_states = js_sector.contains("floor2");
 
       const SectorID portal_sector = js_sector["portal_target"];
       const int portal_wall = js_sector["portal_wall"];
@@ -333,11 +334,17 @@ static void load_json_map
       map_building::SectorBuildData& build_data = sectors.back();
 
       // Multiple states
-      if (more_states)
+      if (js_sector.contains("alt_states"))
       {
-        build_data.has_more_states = more_states;
-        build_data.floor_y[1] = js_sector["floor2"];
-        build_data.ceil_y[1]  = js_sector["ceiling2"];
+        for (auto&& js_alt_state : js_sector["alt_states"]) {
+          build_data.has_more_states = true;
+          build_data.floor_y[1] = js_alt_state["floor"];
+          build_data.ceil_y[1] = js_alt_state["ceiling"];
+
+          std::string activator_name = js_alt_state["activator"];
+          build_data.activator = activator_map[activator_name];
+          nc_assert(activator_map.contains(activator_name));
+        }
       }
 
       // Triggers
@@ -352,22 +359,15 @@ static void load_json_map
         }
       }
 
-      // Activator
-      if (js_sector.contains("activator"))
-      {
-        std::string activator_name = js_sector["activator"];
-        nc_assert(activator_map.contains(activator_name));
-        build_data.activator = activator_map[activator_name];
-      }
-
       sid += 1;
     }
   }
-  catch (nlohmann::json::type_error e)
-  {
-    nc_crit("{0}", e.what());
-    nc_assert(false);
-  }
+  //catch (nlohmann::json::type_error e)
+  //{
+  //  nc_crit("{0}", e.what());
+  //  nc_assert(false);
+  //}
+  catch(int){}
 
   map_building::build_map(points, sectors, map, MapBuildFlag::assert_on_fail);
 
