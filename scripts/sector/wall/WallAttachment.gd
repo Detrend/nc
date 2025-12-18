@@ -49,6 +49,7 @@ var _icon : Node2D:
 	
 func _on_parent_selected_update(parent_polygon : EditablePolygon)->void:
 	var parent := find_sector(parent_polygon)
+	if not parent: return
 	var wall := find_wall(parent)
 	var display_pos = _get_display_position(parent, wall)
 	self.global_position = display_pos
@@ -56,6 +57,7 @@ func _on_parent_selected_update(parent_polygon : EditablePolygon)->void:
 	
 func _selected_update(_selected_list: Array[Node])->void:
 	var parent := find_sector()
+	if not parent: return
 	var wall := find_wall(parent)
 	_update_visuals(parent, wall)	
 

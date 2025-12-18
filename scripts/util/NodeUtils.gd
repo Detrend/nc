@@ -218,7 +218,8 @@ static func try_callv(this: Node, message_name: String, arguments: Array):
 static func get_full_name(this : Node, separator : String = "::", is_stop: Callable = Callable())->String:
 	var ret : Array[String] = []
 	var node : Node= this
-	while (node != null) and (not is_stop or is_stop.call(node)):
+	var tree_root := this.get_tree().edited_scene_root if Engine.is_editor_hint() else this.get_tree().root
+	while (node != null) and (node != tree_root) and (not is_stop or is_stop.call(node)):
 		ret.append(node.name)
 		node = node.get_parent()
 	ret.reverse()

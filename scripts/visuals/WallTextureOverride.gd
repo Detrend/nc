@@ -29,7 +29,7 @@ var __use_stripe_width_impl_ : bool = false
 
 func apply(out: TexturingResult, og_begin_height: float, og_end_height : float, ctx : TexturingContext)->void:
 	if not texture:
-		ErrorUtils.report_error("Invalid (nil) texture override on {0}".format([NodeUtils.get_full_name(self)]))
+		ErrorUtils.report_warning("Empty texture override on {0}".format([NodeUtils.get_full_name(self)]))
 		return
 
 	var begin : float = clampf(og_begin_height + stripe_floor_offset, og_begin_height, og_end_height)
@@ -59,7 +59,7 @@ func apply(out: TexturingResult, og_begin_height: float, og_end_height : float, 
 				lower_half.end_height = begin
 				out.entries.append(lower_half)
 			if override == null:
-				ErrorUtils.report_error("Single texture override used more than once! on {0}".format([NodeUtils.get_full_name(self)]))
+				ErrorUtils.report_error("This shouldn't happen! - Single texture override used more than once! on {0}".format([NodeUtils.get_full_name(self)]))
 			out.entries.append_array(override.entries)
 			if end < e.end_height:
 				var upper_half := e.clone()
@@ -74,7 +74,7 @@ func apply(out: TexturingResult, og_begin_height: float, og_end_height : float, 
 			e.begin_height = end
 			out.entries.append(e)
 			continue
-		ErrorUtils.report_error("This shouldn't happen! - wall override on {0}".format([NodeUtils.get_full_name(self)]))
+		ErrorUtils.report_error("This shouldn't happen! - situation coverd by no case in wall override {0}".format([NodeUtils.get_full_name(self)]))
 		
 	if override != null:
 		ErrorUtils.report_error("This shouldn't happen! - wall override WASN'T APPLIED on {0}".format([NodeUtils.get_full_name(self)]))
