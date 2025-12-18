@@ -24,6 +24,8 @@ class Entry:
 	var begin_down_direction : Vector3
 	var end_down_direction : Vector3
 
+	var triggers : Array[Trigger] = []
+
 	func export(out: Dictionary, ctx: TexturingContext)->Dictionary:
 		out["show"] = show
 		if show:
@@ -43,6 +45,11 @@ class Entry:
 			out["begin_down_direction"] = TextUtils.vec3_to_array(begin_down_direction)
 			out["end_down_direction"] = TextUtils.vec3_to_array(end_down_direction)
 			out["absolute_directions"] = extrude_use_absolute_directions
+		if triggers and (not triggers.is_empty()):
+			var triggers_export : Array[Dictionary] = []
+			for trigger in triggers:
+				triggers_export.append(trigger.do_export())
+			out["triggers"] = triggers_export
 		return out
 
 	func clone() -> Entry:

@@ -27,7 +27,7 @@ var __use_stripe_width_impl_ : bool = false
 @export var stripe_width : float = 0.0
 
 
-func apply(out: TexturingResult, og_begin_height: float, og_end_height : float, ctx : TexturingContext)->void:
+func apply(out: TexturingResult, og_begin_height: float, og_end_height : float, ctx : TexturingContext, additional_processing_per_segment :Callable = Callable())->void:
 	if not texture:
 		ErrorUtils.report_warning("Empty texture override on {0}".format([NodeUtils.get_full_name(self)]))
 		return
@@ -46,6 +46,9 @@ func apply(out: TexturingResult, og_begin_height: float, og_end_height : float, 
 	out.entries = []
 	var override := TexturingResult.new()
 	texture.resolve(override, begin, end, ctx)
+	if additional_processing_per_segment:
+		for ov in override.entries:
+			additional_processing_per_segment.call(ov)
 
 	for e in original_entries:
 		if e.end_height <= begin or end <= e.begin_height:

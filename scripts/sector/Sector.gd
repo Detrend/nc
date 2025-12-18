@@ -78,6 +78,7 @@ var _visualizer_line : Line2D:
 @export_tool_button("Add Trigger") var _add_trigger_tool_button = func()->void: NodeUtils.instantiate_child_by_type_and_select(self, Trigger, "Trigger")
 @export_tool_button("Add Alternative Config") var _add_alt_config_tool_button = _add_alt_config
 @export_tool_button("Add Wall Texture Override") var _add_wall_texture_override_tool_button = func()->void: NodeUtils.instantiate_child_and_select(self, load("res://prefabs/WallAttachments/WallTextureOverride.tscn"), "TextureOverride")
+#@export_tool_button("Add Wall Trigger") var _add_wall_texture_override_tool_button = func()->void: NodeUtils.instantiate_child_and_select(self, load("res://prefabs/WallAttachments/WallTextureOverride.tscn"), "TextureOverride")
 
 
 func _add_alt_config()->void:
@@ -294,5 +295,10 @@ func get_wall_attachments_of_type(wall_idx : int, type, ret : Array = []):
 	ret = NodeUtils.get_children_by_predicate(self, func(n:Node)->bool: return is_instance_of(n, type) and (n as Node2D).is_visible_in_tree() and (n as WallAttachment).find_wall(self) == wall_idx)
 	return ret
 
+func get_sector_triggers(ret : Array[Trigger] = [])->Array[Trigger]:
+	return NodeUtils.get_children_of_type(self, Trigger, ret) as Array[Trigger]
+
+func get_sector_alt_configs(ret : Array[SectorAltConfig] = []) -> Array[SectorAltConfig]:
+	return NodeUtils.get_children_of_type(self, SectorAltConfig, ret) as Array[SectorAltConfig]
 
 #endregion
