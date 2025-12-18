@@ -59,7 +59,7 @@ func add_entry()->Entry:
 	return ret
 
 
-func export(out: Array[Dictionary])->Array[Dictionary]:
+func export(out: Array[Dictionary], ctx: TexturingContext)->Array[Dictionary]:
 	for e in entries:
-		out.append(e.export({}, null))
+		out.append(e.export({}, ctx))
 	return out

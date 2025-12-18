@@ -297,4 +297,9 @@ func get_wall_attachments(wall_idx : int, ret : Array[WallAttachment] = [])->Arr
 	ret = NodeUtils.get_children_by_predicate(self, func(n:Node)->bool: return n is WallAttachment and (n as Node2D).is_visible_in_tree() and (n as WallAttachment).find_wall(self) == wall_idx)
 	return ret
 
+func get_wall_attachments_of_type(wall_idx : int, type, ret : Array = []):
+	ret = NodeUtils.get_children_by_predicate(self, func(n:Node)->bool: return is_instance_of(n, type) and (n as Node2D).is_visible_in_tree() and (n as WallAttachment).find_wall(self) == wall_idx)
+	return ret
+
+
 #endregion

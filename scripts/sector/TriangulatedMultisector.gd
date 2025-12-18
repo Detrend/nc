@@ -89,7 +89,7 @@ func do_triangulate()->void:
 	var counter : int = 0
 	for segment in computed_segments:
 		#print("clockwise: {0}".format([Geometry2D.is_polygon_clockwise(segment)]))
-		var added :Sector = NodeUtils.instantiate_child(generated_parent, preload("res://prefabs/Sector.tscn")) as Sector
+		var added :Sector = NodeUtils.instantiate_child(generated_parent, load("res://prefabs/Sector.tscn")) as Sector
 		added.global_position = Vector2.ZERO
 		added.polygon = segment
 		added.is_editable = only_manual_triangulation#false

@@ -2,7 +2,7 @@
 class_name Level
 extends Node2D
 
-var config : EditorConfig = preload("res://config.tres") as EditorConfig
+var config : EditorConfig = load("res://config.tres") as EditorConfig
 @export var coloring_mode: EditorConfig.SectorColoringMode = EditorConfig.SectorColoringMode.Floor
 
 var max_snapping_distance : float:
@@ -18,10 +18,10 @@ var max_snapping_distance : float:
 @export_tool_button("Export level") var export_level_tool_button = export_level
 
 
-static var SECTOR_PREFAB : Resource = preload("res://prefabs/Sector.tscn")
+static var SECTOR_PREFAB : Resource = load("res://prefabs/Sector.tscn")
 static var TRIANGULATED_MULTISECTOR_PREFAB : Resource:
 	get: return load("res://prefabs/TriangulatedMultisector.tscn")
-static var STAIR_MAKER_PREFAB : Resource = preload("res://prefabs/StairMaker.tscn")
+static var STAIR_MAKER_PREFAB : Resource = load("res://prefabs/StairMaker.tscn")
 
 
 var _editor_plugin : EditorPlugin:

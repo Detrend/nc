@@ -213,3 +213,13 @@ static func try_callv(this: Node, message_name: String, arguments: Array):
 	if this.has_method(message_name):
 		return this.callv(message_name, arguments)
 	return null
+
+
+static func get_full_name(this : Node, separator : String = "::", is_stop: Callable = Callable())->String:
+	var ret : Array[String] = []
+	var node : Node= this
+	while (node != null) and (not is_stop or is_stop.call(node)):
+		ret.append(node.name)
+		node = node.get_parent()
+	ret.reverse()
+	return DatastructUtils.string_concat(ret, "::")
