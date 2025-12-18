@@ -23,16 +23,16 @@ func resolve(out: TexturingResult, begin_height: float, end_height: float, ctx: 
 	info.show = should_show
 	if should_show:
 		info.id = self.id
-		info.scale = scale * ctx.level.export_texture_scale
+		info.scale = scale
 		var base_rotation_deg :float = self.rotation
-		var custom_rotation_deg :float = ctx.target_sector.data.wall_texturing_rotation if ctx.subject_type == ITextureDefinition.TexturingSubjectType.Wall else ctx.target_sector.data.texturing_rotation
+		var custom_rotation_deg :float = ctx.target_sector.data.wall_texturing_rotation if ctx.subject_type == TexturingContext.TexturingSubjectType.Wall else ctx.target_sector.data.texturing_rotation
 		info.rotation_deg = base_rotation_deg + custom_rotation_deg
-		var offset := ctx.target_sector.data.wall_texturing_offset if (ctx.subject_type == ITextureDefinition.TexturingSubjectType.Wall) else ctx.target_sector.data.texturing_offset
+		var offset := ctx.target_sector.data.wall_texturing_offset if (ctx.subject_type == TexturingContext.TexturingSubjectType.Wall) else ctx.target_sector.data.texturing_offset
 		info.offset = offset
 		info.tile_rotations_count = tile_rotations_count if tile_rotations_count else 0
 		info.tile_rotation_increment_deg = tile_rotation_increment
 		
-	if ctx.subject_type == TexturingSubjectType.Wall:
+	if ctx.subject_type == TexturingContext.TexturingSubjectType.Wall:
 		info.is_wall = true
-		info.begin_height = begin_height * ctx.export_scale.z
-		info.end_height = end_height * ctx.export_scale.z
+		info.begin_height = begin_height
+		info.end_height = end_height

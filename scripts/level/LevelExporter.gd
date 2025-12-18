@@ -1,3 +1,4 @@
+@tool
 class_name LevelExporter
 extends Object
 
@@ -137,11 +138,11 @@ class WallExportData:
 	func export_wall_data( this_sector : Sector)->Array[Dictionary]:
 		var ret: Array[Dictionary] = []
 
-		if not LevelExporter._temp_ctx: LevelExporter._temp_ctx = ITextureDefinition.TexturingContext.new()
+		if not LevelExporter._temp_ctx: LevelExporter._temp_ctx = TexturingContext.new()
 		var ctx := LevelExporter._temp_ctx
 		ctx.export_data = self
 		ctx.target_sector = this_sector
-		ctx.subject_type = ITextureDefinition.TexturingSubjectType.Wall
+		ctx.subject_type = TexturingContext.TexturingSubjectType.Wall
 
 		if sectors_count() <= 1:
 			var wall_height :float = this_sector.ceiling_height - this_sector.floor_height
@@ -236,8 +237,8 @@ func create_level_export_data() -> Dictionary:
 
 		if not sector.data.material:
 			ErrorUtils.report_error("No material for sector '{0}'".format([sector.get_full_name()]))
-		sector_export["floor_surface"] = get_texture_config(sector.data.material.floor, ITextureDefinition.TexturingSubjectType.Floor, sector)
-		sector_export["ceiling_surface"] = get_texture_config(sector.data.material.ceiling, ITextureDefinition.TexturingSubjectType.Ceiling, sector)
+		sector_export["floor_surface"] = get_texture_config(sector.data.material.floor, TexturingContext.TexturingSubjectType.Floor, sector)
+		sector_export["ceiling_surface"] = get_texture_config(sector.data.material.ceiling, TexturingContext.TexturingSubjectType.Ceiling, sector)
 		var walls_export : Array[Array] = []
 		var wall_idx := 0
 		var walls_count = sector.get_walls_count()
@@ -266,12 +267,12 @@ func create_level_export_data() -> Dictionary:
 
 
 static var _temp_array_of_dict : Array[Dictionary] = []
-static var _temp_ctx : ITextureDefinition.TexturingContext
-static func get_texture_config(texture_def: TextureDefinition, texturing_type: ITextureDefinition.TexturingSubjectType, sector : Sector)->Dictionary:
+static var _temp_ctx : TexturingContext
+static func get_texture_config(texture_def: TextureDefinition, texturing_type: TexturingContext.TexturingSubjectType, sector : Sector)->Dictionary:
 	if not texture_def:
 		ErrorUtils.report_error("invalid texture def: {0}".format([sector.get_full_name()]))
 	if not _temp_array_of_dict: _temp_array_of_dict = []
-	if not _temp_ctx: _temp_ctx = ITextureDefinition.TexturingContext.new()
+	if not _temp_ctx: _temp_ctx = TexturingContext.new()
 	_temp_ctx.export_data = null
 	_temp_ctx.subject_type = texturing_type
 	_temp_ctx.target_sector = sector
