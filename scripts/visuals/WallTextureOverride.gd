@@ -47,9 +47,6 @@ func apply(out: TexturingResult, og_begin_height: float, og_end_height : float, 
 	var override := TexturingResult.new()
 	texture.resolve(override, begin, end, ctx)
 
-	for ov in override.entries:
-		print("ov-{0}... <{1}, {2}>".format([ov.id, ov.begin_height, ov.end_height]))
-
 	for e in original_entries:
 		if e.end_height <= begin or end <= e.begin_height:
 			out.entries.append(e)
