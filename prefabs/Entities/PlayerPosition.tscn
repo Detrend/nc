@@ -5,8 +5,7 @@
 
 [node name="PlayerPosition" type="Node2D"]
 script = ExtResource("1_138pb")
-placement_mode = null
-height_offset = null
+entity_type = -1
 
 [node name="Icon" type="Sprite2D" parent="."]
 z_index = 999

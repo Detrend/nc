@@ -75,26 +75,15 @@ var _visualizer_line : Line2D:
 
 
 @export_group("")
-@export_tool_button("Add Trigger") var _add_trigger_tool_button = _add_trigger
+@export_tool_button("Add Trigger") var _add_trigger_tool_button = func()->void: NodeUtils.instantiate_child_by_type_and_select(self, Trigger, "Trigger")
 @export_tool_button("Add Alternative Config") var _add_alt_config_tool_button = _add_alt_config
-@export_tool_button("Add Wall Texture Override") var _add_wall_texture_override_tool_button = _add_wall_texture_override
+@export_tool_button("Add Wall Texture Override") var _add_wall_texture_override_tool_button = func()->void: NodeUtils.instantiate_child_and_select(self, load("res://prefabs/WallAttachments/WallTextureOverride.tscn"), "TextureOverride")
 
-func _add_trigger()->void:
-	var child :Trigger = NodeUtils.instantiate_child_by_type(self, Trigger)
-	child.name = "Trigger"
-	NodeUtils.set_selection([child])
-	
+
 func _add_alt_config()->void:
-	var child :SectorAltConfig = NodeUtils.instantiate_child_by_type(self, SectorAltConfig)
-	child.name = "Configuration"
+	var child :SectorAltConfig = NodeUtils.instantiate_child_by_type_and_select(self, SectorAltConfig, "Configuration")
 	child.floor_height = self.floor_height
 	child.ceiling_height = self.ceiling_height
-	NodeUtils.set_selection([child])
-
-func _add_wall_texture_override()->void:
-	var child : WallTextureOverride = NodeUtils.instantiate_child(self, load("res://prefabs/WallAttachments/WallTextureOverride.tscn"))
-	child.name = "TextureOverride"
-	NodeUtils.set_selection([child])
 
 func get_own_prefab()->Resource:
 	return Level.SECTOR_PREFAB

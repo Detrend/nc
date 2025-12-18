@@ -4,6 +4,7 @@ extends ITextureDefinition
 
 @export var preview : Texture
 @export var _id : String
+@export var id_triggered : String
 @export var scale : float = 1.0
 @export_range(0.0, 360.0) var rotation : float = 0.0
 @export_range(1, 32) var tile_rotations_count : int = 1
@@ -23,6 +24,7 @@ func resolve(out: TexturingResult, begin_height: float, end_height: float, ctx: 
 	info.show = should_show
 	if should_show:
 		info.id = self.id
+		if id_triggered and (not id_triggered.is_empty()): info.id_triggered = id_triggered
 		info.scale = scale
 		var base_rotation_deg :float = self.rotation
 		var custom_rotation_deg :float = ctx.target_sector.data.wall_texturing_rotation if ctx.subject_type == TexturingContext.TexturingSubjectType.Wall else ctx.target_sector.data.texturing_rotation

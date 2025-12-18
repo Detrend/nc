@@ -9,6 +9,7 @@ class Entry:
 	
 	var show : bool = false
 	var id : String
+	var id_triggered : String
 	var scale : float # not yet multiplied by level's texturing scale
 	var rotation_deg : float
 	var tile_rotations_count : int
@@ -27,6 +28,7 @@ class Entry:
 		out["show"] = show
 		if show:
 			out["id"] = id
+			if (id_triggered != null) and (not id_triggered.is_empty()): out["id_triggered"] = id_triggered
 			out["scale"] = scale * ctx.level.export_texture_scale
 			out["rotation"] = deg_to_rad(rotation_deg)
 			out["offset"] = [offset.x, offset.y]
