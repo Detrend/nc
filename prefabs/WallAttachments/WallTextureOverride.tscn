@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://dbqtclaunulw7"]
+
+[ext_resource type="Script" uid="uid://d4dmybuav1ksc" path="res://scripts/visuals/WallTextureOverride.gd" id="1_0a0jm"]
+[ext_resource type="Texture2D" uid="uid://dhe6v0fco6xv0" path="res://imgs/palette.png" id="2_ff36w"]
+
+[node name="WallTextureOverride" type="Node2D"]
+script = ExtResource("1_0a0jm")
+_use_ceiling_offset = true
+
+[node name="Icon" type="Sprite2D" parent="."]
+z_index = 500
+z_as_relative = false
+scale = Vector2(0.045, 0.045)
+texture = ExtResource("2_ff36w")

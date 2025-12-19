@@ -30,6 +30,5 @@ metadata/_custom_type_script = "uid://b60vys5f055ei"
 
 [resource]
 script = ExtResource("6_728su")
-composition_order = 1
 layers = Array[ExtResource("1_dqeej")]([SubResource("Resource_nauyv"), SubResource("Resource_guvti")])
 metadata/_custom_type_script = "uid://dt7r05hfelhgq"

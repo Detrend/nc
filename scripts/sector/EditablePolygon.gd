@@ -98,7 +98,15 @@ func _manage_points()->void:
 			#print("after:  {0}".format([self.polygon]))
 		
 	last_points = points
+	_notify_wall_attachments_that_their_parent_is_being_edited()
 	
+
+func _notify_wall_attachments_that_their_parent_is_being_edited()->void:
+		for child in get_children():
+			if child is WallAttachment:
+				(child as WallAttachment)._on_parent_selected_update(self)
+
+
 
 func do_postprocess(_points: PackedVector2Array)->bool:
 	return false

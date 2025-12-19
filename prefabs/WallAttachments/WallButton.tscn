@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://cn044shocju7e"]
+
+[ext_resource type="Script" uid="uid://t310iayp4xsr" path="res://scripts/reactivity/WallAttachedTrigger.gd" id="1_c5gi2"]
+[ext_resource type="Resource" uid="uid://ddrx3nt3ky7po" path="res://material_textures/composites/Button1_3D.tres" id="2_c5gi2"]
+[ext_resource type="Texture2D" uid="uid://c3f3p13anu2ol" path="res://imgs/key_icon.png" id="2_n1hgp"]
+
+[node name="WallButton" type="Node2D"]
+script = ExtResource("1_c5gi2")
+texture = ExtResource("2_c5gi2")
+stripe_floor_offset = 0.5
+_use_stripe_width = true
+stripe_width = 0.5
+
+[node name="Icon" type="Sprite2D" parent="."]
+z_index = 500
+z_as_relative = false
+scale = Vector2(0.035, 0.035)
+texture = ExtResource("2_n1hgp")

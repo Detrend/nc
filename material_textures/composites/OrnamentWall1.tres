@@ -21,8 +21,8 @@ metadata/_custom_type_script = "uid://b7mxery2plfee"
 [sub_resource type="Resource" id="Resource_3qmfw"]
 script = ExtResource("2_gdawm")
 texture = SubResource("Resource_qk0bx")
-anchor_point = 1.0
-height_expression = "min(0.5, 0.5 * total_height)"
+tier = 1
+height_expression = "min(0.5, 0.5 * available_height)"
 _arguments_preview = PackedStringArray("total_height", "available_height", "wall_height_min", "wall_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling")
 metadata/_custom_type_script = "uid://b60vys5f055ei"
 
@@ -50,8 +50,7 @@ metadata/_custom_type_script = "uid://b7mxery2plfee"
 [sub_resource type="Resource" id="Resource_hfg06"]
 script = ExtResource("2_gdawm")
 texture = SubResource("Resource_ds1pv")
-anchor_point = 0.5
-height_expression = "0.5 if available_height >= 0.5 else 0"
+height_expression = "ternary(available_height >= 0.5, 0.5, 0)"
 _arguments_preview = PackedStringArray("total_height", "available_height", "wall_height_min", "wall_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling")
 metadata/_custom_type_script = "uid://b60vys5f055ei"
 
@@ -70,12 +69,12 @@ metadata/_custom_type_script = "uid://b7mxery2plfee"
 [sub_resource type="Resource" id="Resource_r4hdo"]
 script = ExtResource("2_gdawm")
 texture = SubResource("Resource_3e56x")
-height_expression = "min(0.5, 0.5 * total_height)"
+tier = 1
+height_expression = "min(0.5, 0.5 * available_height)"
 _arguments_preview = PackedStringArray("total_height", "available_height", "wall_height_min", "wall_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling")
 metadata/_custom_type_script = "uid://b60vys5f055ei"
 
 [resource]
 script = ExtResource("2_egult")
-composition_order = 3
 layers = Array[ExtResource("1_w4hsy")]([SubResource("Resource_3qmfw"), SubResource("Resource_8yddu"), SubResource("Resource_hfg06"), SubResource("Resource_bjrju"), SubResource("Resource_r4hdo")])
 metadata/_custom_type_script = "uid://dt7r05hfelhgq"

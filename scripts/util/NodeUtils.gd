@@ -155,6 +155,19 @@ static func instantiate_child(parent: Node, prefab: Resource)->Node:
 	ret.owner = parent.get_tree().edited_scene_root
 	return ret
 
+static func instantiate_child_and_select(parent: Node, prefab: Resource, name: String)->Node:
+	var child := instantiate_child(parent, prefab)
+	child.name = name
+	NodeUtils.set_selection([child])
+	return child
+
+static func instantiate_child_by_type_and_select(parent: Node, type: Variant, name: String)->Node:
+	var child := instantiate_child_by_type(parent, type)
+	child.name = name
+	NodeUtils.set_selection([child])
+	return child
+
+
 static func add_do_undo_child(unre: EditorUndoRedoManager, parent: Node, child: Node, idx:int = -1, new_edited_scene_root : Node=null)->Node:
 	# see: https://forum.godotengine.org/t/undoredomanager-add-and-remove-nodes-for-plugin/111380
 	unre.add_do_method(parent, 'add_child', child, true)
@@ -213,3 +226,14 @@ static func try_callv(this: Node, message_name: String, arguments: Array):
 	if this.has_method(message_name):
 		return this.callv(message_name, arguments)
 	return null
+
+
+static func get_full_name(this : Node, separator : String = "::", is_stop: Callable = Callable())->String:
+	var ret : Array[String] = []
+	var node : Node= this
+	var tree_root := this.get_tree().edited_scene_root if Engine.is_editor_hint() else this.get_tree().root
+	while (node != null) and (node != tree_root) and (not is_stop or is_stop.call(node)):
+		ret.append(node.name)
+		node = node.get_parent()
+	ret.reverse()
+	return DatastructUtils.string_concat(ret, "::")

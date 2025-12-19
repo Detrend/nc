@@ -75,22 +75,17 @@ var _visualizer_line : Line2D:
 
 
 @export_group("")
-@export_tool_button("Add Trigger") var _add_trigger_tool_button = _add_trigger
+@export_tool_button("Add Step Trigger") var _add_trigger_tool_button = func()->void: NodeUtils.instantiate_child_by_type_and_select(self, Trigger, "Trigger")
+@export_tool_button("Add Wall Trigger") var _add_wall_trigger_tool_button = func()->void: NodeUtils.instantiate_child_and_select(self, load("res://prefabs/WallAttachments/WallButton.tscn"), "Button")
 @export_tool_button("Add Alternative Config") var _add_alt_config_tool_button = _add_alt_config
+@export_tool_button("Add Wall Texture Override") var _add_wall_texture_override_tool_button = func()->void: NodeUtils.instantiate_child_and_select(self, load("res://prefabs/WallAttachments/WallTextureOverride.tscn"), "TextureOverride")
+#@export_tool_button("Add Wall Trigger") var _add_wall_texture_override_tool_button = func()->void: NodeUtils.instantiate_child_and_select(self, load("res://prefabs/WallAttachments/WallTextureOverride.tscn"), "TextureOverride")
 
-func _add_trigger()->void:
-	var child :Trigger = NodeUtils.instantiate_child_by_type(self, Trigger)
-	child.name = "Trigger"
-	NodeUtils.set_selection([child])
-	
+
 func _add_alt_config()->void:
-	var child :SectorAltConfig = NodeUtils.instantiate_child_by_type(self, SectorAltConfig)
-	child.name = "Configuration"
+	var child :SectorAltConfig = NodeUtils.instantiate_child_by_type_and_select(self, SectorAltConfig, "Configuration")
 	child.floor_height = self.floor_height
 	child.ceiling_height = self.ceiling_height
-	NodeUtils.set_selection([child])
-
-
 
 func get_own_prefab()->Resource:
 	return Level.SECTOR_PREFAB
@@ -120,13 +115,11 @@ func _selected_update(_selected_list: Array[Node])->void:
 	super._selected_update(_selected_list)
 	if is_editable:
 		_update_visuals()
-		for child in get_children():
-			if child is WallAttachment:
-				(child as WallAttachment)._on_parent_selected_update(self, _selected_list)
 
 func _alt_mode_drag_update()->void:
 	super._alt_mode_drag_update()
 	_update_visuals()
+
 
 func do_postprocess(points: PackedVector2Array)->bool:
 	var did_change :bool = false
@@ -138,7 +131,7 @@ func _visualize_polygon()->void:
 	if _level.coloring_mode == EditorConfig.SectorColoringMode.Texturing and (! self.exclude_from_export):
 		self.color = Color.WHITE
 		self.texture = sector_material.preview
-		self.texture_scale = Vector2(1/(sector_material.wall_scale * _level.export_scale.x), 1/(sector_material.wall_scale * _level.export_scale.y)) * sector_material.preview_scale
+		self.texture_scale = Vector2(1/(_level.export_scale.x), 1/(_level.export_scale.y)) * sector_material.preview_scale
 		self.texture_offset = -data.texturing_offset
 		self.texture_rotation = deg_to_rad(-data.texturing_rotation - sector_material.preview_rotation)
 	else:
@@ -289,5 +282,24 @@ func is_convex()->bool:
 static func get_sectors(this: Node, ret : Array[Sector] = [], include_uneditable: bool = false, lookup_flags: NodeUtils.LOOKUP_FLAGS = NodeUtils.LOOKUP_FLAGS.RECURSIVE):
 	ret = NodeUtils.get_children_by_predicate(this, func(n:Node)->bool: return n is Sector and (include_uneditable || n.is_editable), ret, lookup_flags)
 	return ret
+
+
+func get_all_wall_attachments(ret : Array[WallAttachment] = [])->Array[WallAttachment]:
+	ret = NodeUtils.get_children_by_predicate(self, func(n:Node)->bool: return n is WallAttachment and (n as Node2D).is_visible_in_tree())
+	return ret
+
+func get_wall_attachments(wall_idx : int, ret : Array[WallAttachment] = [])->Array[WallAttachment]:
+	ret = NodeUtils.get_children_by_predicate(self, func(n:Node)->bool: return n is WallAttachment and (n as Node2D).is_visible_in_tree() and (n as WallAttachment).find_wall(self) == wall_idx)
+	return ret
+
+func get_wall_attachments_of_type(wall_idx : int, type, ret : Array = []):
+	ret = NodeUtils.get_children_by_predicate(self, func(n:Node)->bool: return is_instance_of(n, type) and (n as Node2D).is_visible_in_tree() and (n as WallAttachment).find_wall(self) == wall_idx)
+	return ret
+
+func get_sector_triggers(ret : Array[Trigger] = [])->Array[Trigger]:
+	return Trigger.get_triggers_for_node(self, ret) 
+
+func get_sector_alt_configs(ret : Array[SectorAltConfig] = []) -> Array[SectorAltConfig]:
+	return SectorAltConfig.get_alt_configs_for_node(self, ret)
 
 #endregion

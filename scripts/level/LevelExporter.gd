@@ -1,3 +1,4 @@
+@tool
 class_name LevelExporter
 extends Object
 
@@ -134,14 +135,14 @@ class WallExportData:
 
 		return this_sector.data.material.wall_default
 
-	func export_wall_data( this_sector : Sector)->Array[Dictionary]:
-		var ret: Array[Dictionary] = []
-
-		if not LevelExporter._temp_ctx: LevelExporter._temp_ctx = ITextureDefinition.TexturingContext.new()
+	func export_wall_data(this_sector : Sector)->Array[Dictionary]:
+		if not LevelExporter._temp_ctx: LevelExporter._temp_ctx = TexturingContext.new()
 		var ctx := LevelExporter._temp_ctx
 		ctx.export_data = self
 		ctx.target_sector = this_sector
-		ctx.subject_type = ITextureDefinition.TexturingSubjectType.Wall
+		ctx.subject_type = TexturingContext.TexturingSubjectType.Wall
+
+		var res := TexturingResult.new()
 
 		if sectors_count() <= 1:
 			var wall_height :float = this_sector.ceiling_height - this_sector.floor_height
@@ -151,39 +152,51 @@ class WallExportData:
 			ctx.other_wall_rule = null
 			if not chosen_texture:
 				ErrorUtils.report_error("Chosen rule with no texture: '{0}'".format([this_sector.get_full_name()]))
-			else: chosen_texture.append_info(ret, this_sector.floor_height, this_sector.ceiling_height, ctx)
+			else:
+				chosen_texture.resolve(res, this_sector.floor_height, this_sector.ceiling_height, ctx)
+		else:
+			# sectors_count() == 2
+			var other_sector :Sector= get_other_sector(this_sector)
 
-			return ret
-		# sectors_count() == 2
-		var other_sector :Sector= get_other_sector(this_sector)
+			var floor_delta :float = other_sector.floor_height - this_sector.floor_height
+			if floor_delta > 0:
+				var this_floor_rule := choose_wall_rule(this_sector, floor_delta, WallRule.PlacementType.Floor)
+				var other_floor_rule := choose_wall_rule(other_sector, floor_delta, WallRule.PlacementType.Floor)
+				var chosen_floor_rule := this_floor_rule if (this_floor_rule.get_priority() >= other_floor_rule.get_priority()) else other_floor_rule
+				
+				ctx.this_wall_rule = this_floor_rule
+				ctx.other_wall_rule = other_floor_rule
+				var chosen_texture := chosen_floor_rule.get_texture()
+				if not chosen_texture:
+					ErrorUtils.report_error("Chosen rule with no texture: '{0}'".format([this_sector.get_full_name()]))
+				else: chosen_texture.resolve(res, this_sector.floor_height, other_sector.floor_height, ctx)
 
-		var floor_delta :float = other_sector.floor_height - this_sector.floor_height
-		if floor_delta > 0:
-			var this_floor_rule := choose_wall_rule(this_sector, floor_delta, WallRule.PlacementType.Floor)
-			var other_floor_rule := choose_wall_rule(other_sector, floor_delta, WallRule.PlacementType.Floor)
-			var chosen_floor_rule := this_floor_rule if (this_floor_rule.get_priority() >= other_floor_rule.get_priority()) else other_floor_rule
-			
-			ctx.this_wall_rule = this_floor_rule
-			ctx.other_wall_rule = other_floor_rule
-			var chosen_texture := chosen_floor_rule.get_texture()
-			if not chosen_texture:
-				ErrorUtils.report_error("Chosen rule with no texture: '{0}'".format([this_sector.get_full_name()]))
-			else: chosen_texture.append_info(ret, this_sector.floor_height, other_sector.floor_height, ctx)
-
-		var ceiling_delta :float = this_sector.ceiling_height - other_sector.ceiling_height
-		if ceiling_delta > 0:
-			var   this_ceiling_rule := choose_wall_rule(this_sector, ceiling_delta, WallRule.PlacementType.Ceiling)
-			var  other_ceiling_rule := choose_wall_rule(other_sector, ceiling_delta, WallRule.PlacementType.Ceiling)
-			var chosen_ceiling_rule := this_ceiling_rule if (this_ceiling_rule.get_priority() >= other_ceiling_rule.get_priority()) else other_ceiling_rule
-			
-			ctx.this_wall_rule = this_ceiling_rule
-			ctx.other_wall_rule = other_ceiling_rule
-			var chosen_texture := chosen_ceiling_rule.get_texture()
-			if not chosen_texture:
-				ErrorUtils.report_error("Chosen rule with no texture: '{0}'".format([this_sector.get_full_name()]))
-			else: chosen_texture.append_info(ret, other_sector.ceiling_height, this_sector.ceiling_height, ctx)
-			
-		return ret
+			var ceiling_delta :float = this_sector.ceiling_height - other_sector.ceiling_height
+			if ceiling_delta > 0:
+				var   this_ceiling_rule := choose_wall_rule(this_sector, ceiling_delta, WallRule.PlacementType.Ceiling)
+				var  other_ceiling_rule := choose_wall_rule(other_sector, ceiling_delta, WallRule.PlacementType.Ceiling)
+				var chosen_ceiling_rule := this_ceiling_rule if (this_ceiling_rule.get_priority() >= other_ceiling_rule.get_priority()) else other_ceiling_rule
+				
+				ctx.this_wall_rule = this_ceiling_rule
+				ctx.other_wall_rule = other_ceiling_rule
+				var chosen_texture := chosen_ceiling_rule.get_texture()
+				if not chosen_texture:
+					ErrorUtils.report_error("Chosen rule with no texture: '{0}'".format([this_sector.get_full_name()]))
+				else: chosen_texture.resolve(res, other_sector.ceiling_height, this_sector.ceiling_height, ctx)
+		
+		# apply overrides
+		var this_wall_idx := get_wall_idx(this_sector)
+		for override in this_sector.get_wall_attachments_of_type(this_wall_idx, WallTextureOverride):
+			var additional_processing : Callable = Callable()
+			var trigger_parent := override as WallAttachedTrigger
+			if trigger_parent:
+				var triggers := trigger_parent.get_triggers()
+				additional_processing = func(segment: TexturingResult.Entry)->void: segment.triggers.append_array(triggers)
+			(override as WallTextureOverride).apply(res, this_sector.floor_height, this_sector.ceiling_height, ctx, additional_processing)
+		
+		var segments_export := res.export([], ctx)
+		
+		return segments_export
 
 
 
@@ -201,6 +214,11 @@ func create_level_export_data() -> Dictionary:
 
 	Sector.sanity_check_all(_level, all_sectors)
 	level_sanity_checks()
+	
+	var activators_export : Array[Dictionary] = []
+	for activator in NodeUtils.get_descendants_of_type(_level, Activator):
+		activators_export.append((activator as Activator).do_export({}))
+	level_export["activators"] = activators_export
 	
 	for t in range(all_sectors.size()):
 		sectors_map[all_sectors[t]] = t
@@ -236,8 +254,8 @@ func create_level_export_data() -> Dictionary:
 
 		if not sector.data.material:
 			ErrorUtils.report_error("No material for sector '{0}'".format([sector.get_full_name()]))
-		sector_export["floor_surface"] = get_texture_config(sector.data.material.floor, ITextureDefinition.TexturingSubjectType.Floor, sector)
-		sector_export["ceiling_surface"] = get_texture_config(sector.data.material.ceiling, ITextureDefinition.TexturingSubjectType.Ceiling, sector)
+		sector_export["floor_surface"] = get_texture_config(sector.data.material.floor, TexturingContext.TexturingSubjectType.Floor, sector)
+		sector_export["ceiling_surface"] = get_texture_config(sector.data.material.ceiling, TexturingContext.TexturingSubjectType.Ceiling, sector)
 		var walls_export : Array[Array] = []
 		var wall_idx := 0
 		var walls_count = sector.get_walls_count()
@@ -258,6 +276,23 @@ func create_level_export_data() -> Dictionary:
 			sector_export["portal_target"] = sectors_map[host]
 			sector_export["portal_wall"] = host.portal_destination_wall
 			sector_export["portal_destination_wall"] = host.portal_wall
+			
+		var triggers_export : Array[Dictionary] = []
+		for trigger in sector.get_sector_triggers():
+			triggers_export.append(trigger.do_export({}))
+		if not triggers_export.is_empty(): 
+			sector_export["triggers"] = triggers_export
+			
+		var alt_states_export : Array[Dictionary] = []
+		for alt_state in sector.get_sector_alt_configs():
+			if not alt_state.is_active(): continue
+			alt_states_export.append(alt_state.do_export())
+		if not alt_states_export.is_empty():
+			if alt_states_export.size() > 1:
+				ErrorUtils.report_warning("Currently only 1 alt state is supported by the game, but {0} has {1} of them!".format([sector.get_full_name(), alt_states_export.size()]))
+			sector_export["alt_states"] = alt_states_export
+
+		
 		sectors_export.append(sector_export)
 	level_export["points"] = points_export
 	level_export["sectors"] = sectors_export
@@ -266,12 +301,12 @@ func create_level_export_data() -> Dictionary:
 
 
 static var _temp_array_of_dict : Array[Dictionary] = []
-static var _temp_ctx : ITextureDefinition.TexturingContext
-static func get_texture_config(texture_def: TextureDefinition, texturing_type: ITextureDefinition.TexturingSubjectType, sector : Sector)->Dictionary:
+static var _temp_ctx : TexturingContext
+static func get_texture_config(texture_def: TextureDefinition, texturing_type: TexturingContext.TexturingSubjectType, sector : Sector)->Dictionary:
 	if not texture_def:
 		ErrorUtils.report_error("invalid texture def: {0}".format([sector.get_full_name()]))
 	if not _temp_array_of_dict: _temp_array_of_dict = []
-	if not _temp_ctx: _temp_ctx = ITextureDefinition.TexturingContext.new()
+	if not _temp_ctx: _temp_ctx = TexturingContext.new()
 	_temp_ctx.export_data = null
 	_temp_ctx.subject_type = texturing_type
 	_temp_ctx.target_sector = sector

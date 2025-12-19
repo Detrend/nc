@@ -21,7 +21,6 @@ metadata/_custom_type_script = "uid://dpohkvy6wk8m2"
 [sub_resource type="Resource" id="Resource_tnmf3"]
 script = ExtResource("4_tnmf3")
 texture = SubResource("Resource_w3r6n")
-anchor_point = 1.0
 height_expression = "max(0.5, 0.15*wall_height_max)"
 _arguments_preview = PackedStringArray("total_height", "available_height", "wall_height_min", "wall_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling")
 metadata/_custom_type_script = "uid://b60vys5f055ei"
@@ -49,6 +48,5 @@ metadata/_custom_type_script = "uid://b60vys5f055ei"
 
 [resource]
 script = ExtResource("7_pilsr")
-composition_order = 1
 layers = Array[ExtResource("1_xtk7s")]([SubResource("Resource_tnmf3"), SubResource("Resource_nauyv"), SubResource("Resource_guvti")])
 metadata/_custom_type_script = "uid://dt7r05hfelhgq"

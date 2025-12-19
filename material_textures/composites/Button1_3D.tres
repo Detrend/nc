@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ExtrudedTexture" load_steps=3 format=3 uid="uid://ddrx3nt3ky7po"]
+
+[ext_resource type="Script" uid="uid://dpohkvy6wk8m2" path="res://scripts/visuals/ExtrudedTexture.gd" id="1_3yx5s"]
+[ext_resource type="Resource" uid="uid://dbwhxywoik5dt" path="res://material_textures/Button1.tres" id="2_n3fdf"]
+
+[resource]
+script = ExtResource("1_3yx5s")
+texture = ExtResource("2_n3fdf")
+begin_up_direction = Vector3(0.02, 0.05, -0.05)
+end_up_direction = Vector3(-0.02, 0.05, -0.05)
+begin_down_direction = Vector3(0.02, 0.05, 0.05)
+end_down_direction = Vector3(-0.02, 0.05, 0.05)
+metadata/_custom_type_script = "uid://dpohkvy6wk8m2"

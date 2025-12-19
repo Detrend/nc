@@ -11,9 +11,7 @@
 script = ExtResource("2_ejjwb")
 texture = ExtResource("3_ymyod")
 anchor_point = 1.0
-height_mode = 3
-height_fixed = 0.4
-height_percent = 0.5
+_arguments_preview = PackedStringArray("total_height", "available_height", "wall_height_min", "wall_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling")
 metadata/_custom_type_script = "uid://b60vys5f055ei"
 
 [sub_resource type="Resource" id="Resource_j6br4"]
@@ -24,14 +22,10 @@ metadata/_custom_type_script = "uid://ds4udf2uy0wpn"
 [sub_resource type="Resource" id="Resource_wv1t6"]
 script = ExtResource("2_ejjwb")
 texture = ExtResource("3_ymyod")
-anchor_point = 0.0
-height_mode = 3
-height_fixed = 0.4
-height_percent = 0.5
+_arguments_preview = PackedStringArray("total_height", "available_height", "wall_height_min", "wall_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling")
 metadata/_custom_type_script = "uid://b60vys5f055ei"
 
 [resource]
 script = ExtResource("1_issm8")
-composition_order = 0
 layers = Array[ExtResource("1_ejjwb")]([SubResource("Resource_ymyod"), SubResource("Resource_j6br4"), SubResource("Resource_wv1t6")])
 metadata/_custom_type_script = "uid://dt7r05hfelhgq"
