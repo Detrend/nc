@@ -21,3 +21,8 @@ func do_export(out : Dictionary = {})->Dictionary:
 	out["enemy_sensitive"] = enemy_sensitive
 	out["while_alive"] = while_entity_is_alive
 	return out
+
+func is_active()->bool: return target != null
+
+static func get_triggers_for_node(parent: Node, ret: Array[Trigger] = []) -> Array[Trigger]:
+	return NodeUtils.get_children_by_predicate(parent, func(n:Node)->bool: return n is Trigger and (n as Trigger).is_active(), ret)

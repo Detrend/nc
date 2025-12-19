@@ -297,9 +297,9 @@ func get_wall_attachments_of_type(wall_idx : int, type, ret : Array = []):
 	return ret
 
 func get_sector_triggers(ret : Array[Trigger] = [])->Array[Trigger]:
-	return NodeUtils.get_children_of_type(self, Trigger, ret) as Array[Trigger]
+	return Trigger.get_triggers_for_node(self, ret) 
 
 func get_sector_alt_configs(ret : Array[SectorAltConfig] = []) -> Array[SectorAltConfig]:
-	return NodeUtils.get_children_of_type(self, SectorAltConfig, ret) as Array[SectorAltConfig]
+	return SectorAltConfig.get_alt_configs_for_node(self, ret)
 
 #endregion

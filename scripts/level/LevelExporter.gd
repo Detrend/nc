@@ -288,7 +288,8 @@ func create_level_export_data() -> Dictionary:
 			if not alt_state.is_active(): continue
 			alt_states_export.append(alt_state.do_export())
 		if not alt_states_export.is_empty():
-			print("setting alt states for {0}".format([sector.get_full_name()]))
+			if alt_states_export.size() > 1:
+				ErrorUtils.report_warning("Currently only 1 alt state is supported by the game, but {0} has {1} of them!".format([sector.get_full_name(), alt_states_export.size()]))
 			sector_export["alt_states"] = alt_states_export
 
 		

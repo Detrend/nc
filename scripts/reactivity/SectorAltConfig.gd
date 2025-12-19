@@ -37,3 +37,7 @@ func do_export(ret : Dictionary = {})->Dictionary:
 	ret["floor"] = get_floor_height() * _parent_sector._level.export_scale.z
 	ret["ceiling"] = get_ceiling_height() * _parent_sector._level.export_scale.z
 	return ret
+
+
+static func get_alt_configs_for_node(parent: Node, ret: Array[SectorAltConfig] = []) -> Array[SectorAltConfig]:
+	return NodeUtils.get_children_by_predicate(parent, func(n:Node)->bool: return n is SectorAltConfig and (n as SectorAltConfig).is_active(), ret)
