@@ -259,19 +259,6 @@ void GraphicsSystem::on_event(ModuleEvent& event)
     case ModuleEventType::after_map_rebuild:
     {
       create_sector_meshes();
-
-      // TODO: temporary directional lights (don't forget about lights header)
-      EntityRegistry& registry = GameSystem::get().get_entities();
-
-      // TODO: temporary skybox (don't forget about skybox header)
-      GLuint sky_box_map = TextureManager::get().get_equirectangular_map
-      (
-        "qwantani_night_puresky_1k",
-        ResLifetime::Game
-      );
-      registry.create_entity<SkyBox>(sky_box_map, 1.1f);
-
-      light_test = registry.create_entity<PointLight>(vec3{974.0f, 2.0f, 1068.0f}, 5.0f, 1.0f, 1.0f, colors::GREEN);
     }
     break;
 
