@@ -72,19 +72,24 @@ Renderer::Renderer(u32 win_w, u32 win_h)
   }
   glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(TextureData), data.data(), GL_STATIC_DRAW);
 
-  // setup light culling and light pass buffers
+  // setup ssbo buffers
   
   const size_t num_tiles_x = (win_w + LIGHT_CULLING_TILE_SIZE_X - 1) / LIGHT_CULLING_TILE_SIZE_X;
   const size_t num_tiles_y = (win_h + LIGHT_CULLING_TILE_SIZE_Y - 1) / LIGHT_CULLING_TILE_SIZE_Y;
   const size_t num_tiles = num_tiles_x * num_tiles_y;
 
-  std::array<std::pair<GLuint*, size_t>, 5> buffers
+  std::array<std::pair<GLuint*, size_t>, 7> buffers
   {{
+    // light pass & light culling
     { &m_dir_light_ssbo, DirectionalLight::MAX_DIRECTIONAL_LIGHTS * sizeof(DirLightGPU) },
     { &m_point_light_ssbo, PointLight::MAX_VISIBLE_POINT_LIGHTS * sizeof(PointLightGPU) },
     { &m_light_index_ssbo, PointLight::MAX_LIGHTS_PER_TILE * num_tiles * sizeof(u32) },
     { &m_tile_data_ssbo, num_tiles * 2 * sizeof(u32) },
     { &m_atomic_counter, sizeof(u32) },
+
+	// level geometry
+    { &m_sector_data_ssbo, MAX_SECTORS * sizeof(SectorGPUData) },
+	{ &m_wall_data_ssbo, MAX_WALLS * sizeof(WallGPUData) },
   }};
 
   for (auto&& [buffer, size] : buffers)
@@ -328,6 +333,10 @@ const
 #ifdef NC_DEBUG_DRAW
   GizmoManager::get().draw_gizmos();
 #endif
+
+  m_sector_data_ssbo_size = 0;
+  m_wall_data_ssbo_size   = 0;
+
   render_sectors(camera);
   render_entities(camera);
   render_portals(camera);
@@ -453,6 +462,62 @@ void Renderer::update_light_ssbos() const
 }
 
 //==============================================================================
+void Renderer::load_sector_to_gpu(SectorID sector_id) const
+{
+    const MapSectors& map = GameSystem::get().get_map();
+
+    std::vector<WallGPUData> walls_data;
+    map.for_each_wall_of_sector(sector_id, [&map, &walls_data](WallID wall_id)
+    {
+        const WallData& wall = map.walls[wall_id];
+
+        if (walls_data.size() > 0)
+            walls_data[walls_data.size() - 1].end = wall.pos;
+        
+        walls_data.emplace_back(wall.pos, vec2(), 0, wall.portal_sector_id);
+    });
+    walls_data[walls_data.size() - 1].end = walls_data[0].start;
+
+    for (WallGPUData& wall_data : walls_data)
+    {
+        const vec2 direction     = wall_data.end - wall_data.start;
+        const vec2 normal        = vec2(-direction.y, direction.x);
+        const u32  packed_normal = packSnorm2x16(normal);
+
+        wall_data.packed_normal = packed_normal;
+    }
+
+    const SectorGPUData sector_data
+    {
+        .floor_z      = map.sectors[sector_id].floor_height,
+        .ceil_z       = map.sectors[sector_id].ceil_height,
+        .walls_offset = m_wall_data_ssbo_size,
+        .walls_count  = static_cast<u32>(walls_data.size()),
+    };
+    
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_sector_data_ssbo);
+    glBufferSubData
+    (
+        GL_SHADER_STORAGE_BUFFER,
+        static_cast<GLintptr>(m_sector_data_ssbo_size) * sizeof(SectorGPUData),
+        sizeof(SectorGPUData),
+        &sector_data
+    );
+
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_wall_data_ssbo);
+    glBufferSubData
+    (
+        GL_SHADER_STORAGE_BUFFER,
+        static_cast<GLintptr>(m_wall_data_ssbo_size) * sizeof(WallGPUData),
+        walls_data.size() * sizeof(WallGPUData),
+        &walls_data
+    );
+
+    m_sector_data_ssbo_size++;
+    m_wall_data_ssbo_size += static_cast<u32>(walls_data.size());
+}
+
+//==============================================================================
 void Renderer::render_sectors(const CameraData& camera) const
 {
   auto& gfx = GraphicsSystem::get();
@@ -479,6 +544,8 @@ void Renderer::render_sectors(const CameraData& camera) const
 
     glBindVertexArray(mesh.get_vao());
     glDrawArrays(mesh.get_draw_mode(), 0, mesh.get_vertex_count());
+
+    load_sector_to_gpu(sector_id);
   }
 
   glBindVertexArray(0);
