@@ -622,6 +622,12 @@ bool MapSectors::for_each_portal_of_sector(
 }
 
 //==============================================================================
+void MapSectors::for_each_wall_of_sector(SectorID sector, WallVisitor visitor) const
+{
+    map_helpers::for_each_wall(*this, sector, [&visitor](WallID current, WallID) { visitor(current); });
+}
+
+//==============================================================================
 SectorID MapSectors::get_sector_from_point(vec2 point) const
 {
   SectorID sector = INVALID_SECTOR_ID;

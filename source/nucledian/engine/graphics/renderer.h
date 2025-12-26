@@ -5,6 +5,7 @@
 
 #include <engine/graphics/gl_types.h>
 #include <engine/graphics/resources/shader_program.h>
+#include <engine/map/map_types.h>
 
 #include <math/vector.h>
 #include <math/matrix.h>
@@ -81,15 +82,45 @@ private:
   const ShaderProgramHandle m_light_culling_shader;
   const ShaderProgramHandle m_sky_box_material;
 
-  mutable u32                        m_dir_light_ssbo_size   = 0;
-  mutable u32                        m_point_light_ssbo_size = 0;
-  mutable std::vector<PointLightGPU> m_point_light_data;
   mutable EntityRedundancyChecker    m_light_checker;
   mutable EntityRedundancyChecker    m_entity_checker;
 
   GLuint m_texture_data_ssbo = 0;
 
-  // light pass buffers
+  #pragma region Level Geometry ssbos
+
+  struct SectorGPUData
+  {
+      f32 floor_z;
+      f32 ceil_z;
+      u32 walls_offset;
+      u32 walls_count;
+  };
+
+  struct WallGPUData
+  {
+      vec2 start;
+      vec2 end;
+      u32 packed_normal;
+      u32 destination;
+  };
+
+  static constexpr size_t MAX_SECTORS = 1024;
+  static constexpr size_t MAX_WALLS   = MAX_SECTORS * 8;
+
+  mutable u32 m_sector_data_ssbo_size = 0;
+  mutable u32 m_wall_data_ssbo_size   = 0;
+
+  GLuint m_sector_data_ssbo  = 0;
+  GLuint m_wall_data_ssbo    = 0;
+
+  #pragma endregion
+
+  // light pass ssbos
+
+  mutable u32                        m_dir_light_ssbo_size = 0;
+  mutable u32                        m_point_light_ssbo_size = 0;
+  mutable std::vector<PointLightGPU> m_point_light_data;
 
   GLuint m_dir_light_ssbo    = 0;
   GLuint m_point_light_ssbo  = 0;
@@ -119,6 +150,7 @@ private:
   void do_lighting_pass(const vec3& view_position) const;
 
   void update_light_ssbos() const;
+  void load_sector_to_gpu(SectorID sector_id) const;
 
   void render_sectors(const CameraData& camera)  const;
   void render_entities(const CameraData& camera) const;
