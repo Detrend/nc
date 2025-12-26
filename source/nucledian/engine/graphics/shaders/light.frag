@@ -21,12 +21,29 @@ struct PointLight
     vec3  color;
     float radius;
     float falloff;
+    uint  sector_id;
 };
 
 struct TileData
 {
     uint count;
     uint offset;
+};
+
+struct SectorData
+{
+    float floor_z;
+    float ceil_z;
+    uint  walls_offset;
+    uint  walls_count;
+};
+
+struct WallData
+{
+    vec2 start;
+    vec2 end;
+    uint packed_normal;
+    uint destination_sector;
 };
 
 in vec2 uv;
@@ -42,11 +59,15 @@ layout(location = 0) uniform vec3  view_position;
 layout(location = 1) uniform uint  num_dir_lights;
 layout(location = 2) uniform uint  num_tiles_x;
 layout(location = 3) uniform float ambient_strength;
+layout(location = 4) uniform uint  num_sectors;
+layout(location = 5) uniform uint  num_lights;
 
-layout(std430, binding = 0) readonly buffer dir_lights_buffer { DirLight dir_lights[]; };
-layout(std430, binding = 1) readonly buffer point_light_buffer { PointLight point_lights[]; };
-layout(std430, binding = 2) readonly buffer light_index_buffer { uint light_indices[]; };
-layout(std430, binding = 3) readonly buffer tile_data_buffer { TileData tile_data[]; };
+layout(std430, binding = 0) readonly buffer dir_lights_buffer  { DirLight   dir_lights[];    };
+layout(std430, binding = 1) readonly buffer point_light_buffer { PointLight point_lights[];  };
+layout(std430, binding = 2) readonly buffer light_index_buffer { uint       light_indices[]; };
+layout(std430, binding = 3) readonly buffer tile_data_buffer   { TileData   tile_data[];     };
+layout(std430, binding = 4) readonly buffer sector_data_buffer { SectorData sectors[];       };
+layout(std430, binding = 5) readonly buffer wall_data_buffer   { WallData   walls[];         };
 
 void main()
 {
