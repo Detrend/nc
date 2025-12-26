@@ -59,7 +59,8 @@ struct PointLightGPU
   color3 color;
   f32    radius;
   f32    falloff;
-  f32    _padding[3];
+  u32    sector_id;
+  f32    _padding[2];
 };
 
 class PointLight : public Entity

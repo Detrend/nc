@@ -2,6 +2,7 @@
 
 #include <common.h>
 
+#include <engine/game/game_system.h>
 #include <engine/entity/entity_type_definitions.h>
 
 namespace nc
@@ -93,6 +94,7 @@ PointLightGPU PointLight::get_gpu_data(const vec3& position) const
     .color     = color,
     .radius    = radius,
     .falloff   = falloff,
+    .sector_id = GameSystem::get().get_map().get_sector_from_point(position.xy),
   };
 }
 

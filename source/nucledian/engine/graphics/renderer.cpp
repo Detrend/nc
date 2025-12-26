@@ -398,6 +398,8 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_point_light_ssbo);
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_light_index_ssbo);
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_tile_data_ssbo);
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, m_sector_data_ssbo);
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 5, m_wall_data_ssbo);
 
   const size_t num_tiles_x = (static_cast<size_t>(m_window_size.x) + LIGHT_CULLING_TILE_SIZE_X - 1) 
     / LIGHT_CULLING_TILE_SIZE_X;
@@ -407,6 +409,8 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   m_light_material.set_uniform(shaders::light::VIEW_POSITION, view_position);
   m_light_material.set_uniform(shaders::light::NUM_DIR_LIGHTS, m_dir_light_ssbo_size);
   m_light_material.set_uniform(shaders::light::NUM_TILES_X, static_cast<u32>(num_tiles_x));
+  m_light_material.set_uniform(shaders::light::NUM_SECTORS, m_sector_data_ssbo_size);
+  m_light_material.set_uniform(shaders::light::NUM_WALLS, m_wall_data_ssbo_size);
 
   EntityRegistry& registry = GameSystem::get().get_entities();
   registry.for_each<AmbientLight>([this](AmbientLight& ambient)
