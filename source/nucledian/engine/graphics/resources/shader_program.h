@@ -1,6 +1,6 @@
 #pragma once
 
-#include <engine/graphics/uniform.h>
+#include <engine/graphics/shaders/uniform.h>
 #include <engine/graphics/gl_types.h>
 
 #include <math/vector.h>

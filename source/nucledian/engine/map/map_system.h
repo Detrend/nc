@@ -37,7 +37,7 @@
 #include <math/matrix.h>
 #include <intersect.h>
 #include <grid.h>
-#include <engine/graphics/texture_id.h>
+#include <engine/graphics/resources/texture_id.h>
 
 #include <vector>
 #include <functional>

@@ -67,6 +67,17 @@ vec2 TextureHandle::get_size() const
 }
 
 //==============================================================================
+TextureGPU TextureHandle::get_gpu_data() const
+{
+    return TextureGPU
+    {
+      .pos = get_pos(),
+      .size = get_size(),
+      .in_game_atlas = (get_lifetime() == ResLifetime::Game ? 1.0f : 0.0f),
+    };
+}
+
+//==============================================================================
 TextureHandle TextureHandle::invalid()
 {
   return TextureHandle();

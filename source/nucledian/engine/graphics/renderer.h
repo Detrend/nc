@@ -4,6 +4,9 @@
 #include <types.h>
 
 #include <engine/graphics/gl_types.h>
+#include <engine/graphics/ssbo_buffer.h>
+#include <engine/graphics/entities/lights.h>
+#include <engine/graphics/resources/texture.h>
 #include <engine/graphics/resources/shader_program.h>
 #include <engine/map/map_types.h>
 
@@ -25,12 +28,24 @@ struct PointLightGPU;
 class Renderer
 {
 public:
+  static constexpr size_t MAX_DIR_LIGHTS = 8;
+  static constexpr size_t MAX_VISIBLE_POINT_LIGHTS = 1024;
+
+  // WARNING: Keep value of this constant same as MAX_LIGHTS_PER_TILE in light_culling.comp.
+  static constexpr size_t MAX_LIGHTS_PER_TILE = 16;
+  static constexpr size_t LIGHT_CULLING_TILE_SIZE_X = 8;
+  static constexpr size_t LIGHT_CULLING_TILE_SIZE_Y = 8;
+
+  static constexpr size_t MAX_SECTORS = 1024;
+  static constexpr size_t MAX_WALLS = MAX_SECTORS * 8;
+
   struct CameraData
   {
     const vec3& position;
     const mat4& view;
     const VisibilityTree& vis_tree;
     const mat4& portal_dest_to_src;
+    WallID portal_id = INVALID_WALL_ID;
   };
 
   // The near value has to be very tiny, because otherwise the camera clips into
@@ -68,8 +83,21 @@ private:
     std::unordered_map<u64, std::vector<vec3>> registry;
   };
 
-  static constexpr size_t LIGHT_CULLING_TILE_SIZE_X = 8;
-  static constexpr size_t LIGHT_CULLING_TILE_SIZE_Y = 8;
+  struct SectorGPU
+  {
+    f32  floor_z;
+    f32  ceil_z;
+    u32  walls_offset;
+    u32  walls_count;
+  };
+
+  struct WallGPU
+  {
+    vec2 start;
+    vec2 end;
+    u32  packed_normal;
+    u32  destination;
+  };
 
   mat4  m_default_projection;
   ivec2 m_window_size;
@@ -82,56 +110,20 @@ private:
   const ShaderProgramHandle m_light_culling_shader;
   const ShaderProgramHandle m_sky_box_material;
 
-  mutable EntityRedundancyChecker    m_light_checker;
-  mutable EntityRedundancyChecker    m_entity_checker;
+  mutable EntityRedundancyChecker m_light_checker;
+  mutable EntityRedundancyChecker m_entity_checker;
 
-  GLuint m_texture_data_ssbo = 0;
+  mutable SSBOBuffer<TextureGPU> m_textures_ssbo;
+  mutable SSBOBuffer<u32>        m_light_index_ssbo;
+  mutable SSBOBuffer<u32>        m_light_tiles_ssbo;
+  mutable SSBOBuffer<u32>        m_light_counter_ssbo;
 
-  #pragma region Level Geometry ssbos
+  mutable SSBOBuffer<DirLightGPU>   m_dir_light_ssbo   { MAX_DIR_LIGHTS           };
+  mutable SSBOBuffer<PointLightGPU> m_point_light_ssbo { MAX_VISIBLE_POINT_LIGHTS };
+  mutable SSBOBuffer<SectorGPU>     m_sectors_ssbo     { MAX_SECTORS              };
+  mutable SSBOBuffer<WallGPU>       m_walls_ssbo       { MAX_WALLS                };
 
-  struct SectorGPUData
-  {
-      f32 floor_z;
-      f32 ceil_z;
-      u32 walls_offset;
-      u32 walls_count;
-  };
-
-  struct WallGPUData
-  {
-      vec2 start;
-      vec2 end;
-      u32 packed_normal;
-      u32 destination;
-  };
-
-  static constexpr size_t MAX_SECTORS = 1024;
-  static constexpr size_t MAX_WALLS   = MAX_SECTORS * 8;
-
-  mutable u32 m_sector_data_ssbo_size = 0;
-  mutable u32 m_wall_data_ssbo_size   = 0;
-
-  GLuint m_sector_data_ssbo  = 0;
-  GLuint m_wall_data_ssbo    = 0;
-
-  #pragma endregion
-
-  // light pass ssbos
-
-  mutable u32                        m_dir_light_ssbo_size = 0;
-  mutable u32                        m_point_light_ssbo_size = 0;
-  mutable std::vector<PointLightGPU> m_point_light_data;
-
-  GLuint m_dir_light_ssbo    = 0;
-  GLuint m_point_light_ssbo  = 0;
-  
-  // light culling buffers
- 
-  GLuint m_light_index_ssbo  = 0;
-  GLuint m_tile_data_ssbo    = 0;
-  GLuint m_atomic_counter    = 0;
-
-  // g buffers
+  mutable std::unordered_map<u32, u32> m_sector_id_map;
 
   GLuint m_g_buffer          = 0;
   GLuint m_g_position        = 0;
@@ -139,7 +131,6 @@ private:
   GLuint m_g_stitched_normal = 0;
   GLuint m_g_albedo          = 0;
   GLuint m_g_sector          = 0;
-
 
   void destroy_g_buffers();
   void create_g_buffers(u32 w, u32 h);
@@ -149,8 +140,9 @@ private:
   void do_ligh_culling_pass(const CameraData& camera) const;
   void do_lighting_pass(const vec3& view_position) const;
 
-  void update_light_ssbos() const;
-  void load_sector_to_gpu(SectorID sector_id) const;
+  u32 get_stitched_sector_id(SectorID sector_id, WallID portal_id) const;
+  void push_sector_to_ssbo(SectorID sector_id, WallID enter_portal, const mat4& transform) const;
+  void update_ssbos() const;
 
   void render_sectors(const CameraData& camera)  const;
   void render_entities(const CameraData& camera) const;

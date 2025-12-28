@@ -7,41 +7,41 @@ constexpr const char* FRAGMENT_SOURCE = R"(
 
 struct DirLight
 {
-    vec3  color;
-    float intensity;
-    vec3  direction;
+  vec3  color;
+  float intensity;
+  vec3  direction;
 };
 
 struct PointLight
 {
-    vec3  position;
-    float intensity;
-    vec3  color;
-    float radius;
-    float falloff;
-    uint  sector_id;
+  vec3  position;
+  float intensity;
+  vec3  color;
+  float radius;
+  float falloff;
+  uint  sector_id;
 };
 
 struct TileData
 {
-    uint count;
-    uint offset;
+  uint count;
+  uint offset;
 };
 
 struct SectorData
 {
-    float floor_z;
-    float ceil_z;
-    uint  walls_offset;
-    uint  walls_count;
+  float floor_z;
+  float ceil_z;
+  uint  walls_offset;
+  uint  walls_count;
 };
 
 struct WallData
 {
-    vec2 start;
-    vec2 end;
-    uint packed_normal;
-    uint destination_sector;
+  vec2 start;
+  vec2 end;
+  uint packed_normal;
+  uint destination_sector;
 };
 
 in vec2 uv;
@@ -52,6 +52,7 @@ layout(binding = 0) uniform sampler2D g_position;
 layout(binding = 1) uniform sampler2D g_normal;
 layout(binding = 2) uniform sampler2D g_stitched_normal;
 layout(binding = 3) uniform sampler2D g_albedo;
+layout(binding = 4) uniform sampler2D g_sector;
 
 layout(location = 0) uniform vec3  view_position;
 layout(location = 1) uniform uint  num_dir_lights;
@@ -66,6 +67,35 @@ layout(std430, binding = 2) readonly buffer light_index_buffer { uint       ligh
 layout(std430, binding = 3) readonly buffer tile_data_buffer   { TileData   tile_data[];     };
 layout(std430, binding = 4) readonly buffer sector_data_buffer { SectorData sectors[];       };
 layout(std430, binding = 5) readonly buffer wall_data_buffer   { WallData   walls[];         };
+
+bool is_in_shadow(vec3 position, uint start_sector_id, PointLight light)
+{
+  return false;
+
+  const uint INVALID_WALL_ID = 65535;
+  const uint MAX_LIGHT_TRAVERSE_SECTORS = 32;
+
+  uint current_sector_id = start_sector_id;
+  
+  for (int i = 0; i < MAX_LIGHT_TRAVERSE_SECTORS; ++i)
+  {
+    // TODO: check for roof and ceiling
+
+    if (current_sector_id == light.sector_id)
+      return false;
+
+    // TODO: go over all walls of this sector and returns first which intersects with shadow ray
+    WallData wall;
+
+    // wall is solid wall (not a portal)
+    if (wall.destination_sector == INVALID_WALL_ID)
+      return true;
+
+    current_sector_id = wall.destination_sector;
+  }
+
+  return true;
+}
 
 void main()
 {
@@ -82,6 +112,8 @@ void main()
   // zero for billboards
   vec3 stitched_normal = texture(g_stitched_normal, uv).xyz;
   vec3 albedo = texture(g_albedo, uv).rgb;
+
+  uint sector_id = uint(texture(g_sector, uv).x);
 
   int shininess = 128;
 
@@ -111,6 +143,9 @@ void main()
   {
     uint light_index = light_indices[data.offset + i];
     PointLight light = point_lights[light_index];
+
+    if (is_in_shadow(position, sector_id, light))
+        continue;
 
     vec3 light_direction = light.position - position;
     float distance = length(light_direction);
