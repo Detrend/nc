@@ -3,7 +3,7 @@
 #include <cvars.h>
 
 #include <engine/enemies/enemy.h>
-#include <engine/graphics/prop.h>
+#include <engine/graphics/entities/prop.h>
 #include <engine/core/engine.h>
 #include <engine/game/game_system.h>
 #include <engine/player/player.h>
@@ -29,7 +29,7 @@
 #include <format>
 
 #ifdef NC_DEBUG_DRAW
-#include <engine/graphics/gizmo.h>
+#include <engine/graphics/debug/gizmo.h>
 #endif
 
 

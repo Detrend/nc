@@ -13,7 +13,7 @@
 
 #include <engine/graphics/renderer.h>
 #include <engine/graphics/camera.h>
-#include <engine/graphics/gizmo.h>
+#include <engine/graphics/debug/gizmo.h>
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/entities/lights.h>
 #include <engine/graphics/entities/sky_box.h>
@@ -63,7 +63,7 @@
 #include <fstream>
 
 // Debug top-down renderer
-#include <engine/graphics/top_down_debug.h>
+#include <engine/graphics/debug/top_down_debug.h>
 
 #endif
 

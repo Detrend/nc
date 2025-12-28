@@ -35,8 +35,6 @@ public:
   using Base = Entity;
   static EntityType get_type_static();
 
-  static constexpr size_t MAX_DIRECTIONAL_LIGHTS = 8;
-
   color3 color     = colors::WHITE;
   vec3   direction = vec3(0.218f, 0.872f, 0.436f);
   f32    intensity = 1.0f;
@@ -69,10 +67,6 @@ public:
   using Base = Entity;
   static EntityType get_type_static();
 
-  static constexpr size_t MAX_VISIBLE_POINT_LIGHTS = 1024;
-  // WARNING: Keep value of this constant same as MAX_LIGHTS_PER_TILE in light_culling.comp.
-  static constexpr size_t MAX_LIGHTS_PER_TILE = 16;
-
   color3 color     = colors::WHITE;
   f32    intensity = 1.0f;
   f32    radius    = 1.0f;
@@ -101,7 +95,7 @@ public:
     const color3& color = colors::WHITE
   );
 
-  PointLightGPU get_gpu_data(const vec3& position) const;
+  PointLightGPU get_gpu_data(const vec3& position, u32 stitched_sector_id) const;
 };
 
 }

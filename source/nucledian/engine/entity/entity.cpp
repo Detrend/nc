@@ -18,7 +18,7 @@
 #include <game/projectile.h>
 #include <game/item.h>
 
-#include <engine/graphics/prop.h>
+#include <engine/graphics/entities/prop.h>
 
 #include <set>
 #include <map>

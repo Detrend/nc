@@ -23,7 +23,7 @@
 #include <engine/graphics/entities/sky_box.h>
 #include <engine/graphics/resources/texture.h>
 #include <engine/graphics/graphics_system.h>
-#include <engine/graphics/gizmo.h>
+#include <engine/graphics/debug/gizmo.h>
 
 #include <engine/sound/sound_system.h>
 #include <engine/sound/sound_resources.h>
@@ -39,7 +39,7 @@
 #include <game/item.h>
 #include <game/item_resources.h> // PickupTypes::...
 #include <game/enemies.h>        // EnemyTypes::...
-#include <engine/graphics/prop.h>
+#include <engine/graphics/entities/prop.h>
 #include <engine/map/map_dynamics_hooks.h>
 
 #include <math/lingebra.h>
