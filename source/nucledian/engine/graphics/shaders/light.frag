@@ -68,24 +68,75 @@ layout(std430, binding = 3) readonly buffer tile_data_buffer   { TileData   tile
 layout(std430, binding = 4) readonly buffer sector_data_buffer { SectorData sectors[];       };
 layout(std430, binding = 5) readonly buffer wall_data_buffer   { WallData   walls[];         };
 
+float cross(vec2 a, vec2 b)
+{
+  return a.x * b.y - a.y * b.x;
+}
+
+// check intersection between top-down shadow ray and "wall ray"
+// return t which tells at which point intersersection occurs
+// if no intersection, returns -1.0f
+float get_intersection_t(vec2 ray_origin, vec2 ray_direction, vec2 wall_p0, vec2 wall_p1)
+{
+  vec2 wall_origin = wall_p0;
+  vec2 wall_direction = wall_p1 - wall_p0;
+
+  float denominator = cross(ray_direction, wall_direction);
+
+  // rays are parallel
+  if (abs(denominator) < 0.0001f)
+    return -1.0f;
+
+  float ray_t  = cross(wall_origin - ray_origin, wall_direction) / denominator;
+  float wall_t = cross(wall_origin - ray_origin, ray_direction ) / denominator;
+
+  // intersection occurs outside of wall this wall segment
+  if (wall_t < 0.0f || wall_t > 1.0f || ray_t <= 0.0001f)
+    return -1.0f;
+
+  return ray_t;
+}
+
 bool is_in_shadow(vec3 position, uint start_sector_id, PointLight light)
 {
-  return false;
-
   const uint INVALID_WALL_ID = 65535;
   const uint MAX_LIGHT_TRAVERSE_SECTORS = 32;
 
+  vec3 ray_origin = position;
+  vec3 ray_direction = light.position - position;
+
   uint current_sector_id = start_sector_id;
-  
+
   for (int i = 0; i < MAX_LIGHT_TRAVERSE_SECTORS; ++i)
   {
-    // TODO: check for roof and ceiling
-
     if (current_sector_id == light.sector_id)
       return false;
 
-    // TODO: go over all walls of this sector and returns first which intersects with shadow ray
-    WallData wall;
+    SectorData sector = sectors[current_sector_id];
+    uint wall_index;
+    float ray_t;
+
+    for (uint i = 0; i < sector.walls_count; ++i)
+    {
+      // TODO: discard wall if it's normal is not facing ray direction
+
+      WallData wall = walls[sector.walls_offset + i];
+      float t = get_intersection_t(ray_origin.xy, ray_direction.xy, wall.start, wall.end);
+
+      if (t != -1.0f)
+      {
+        wall_index = i;
+        ray_t = t;
+        break;
+      }
+    }
+
+    WallData wall = walls[sector.walls_offset + wall_index];
+    
+    // check if ray collides with floor or ceiling
+    float ray_hit_z = ray_origin.z + ray_t * ray_direction.z;
+    if (ray_hit_z < sector.floor_z || ray_hit_z > sector.ceil_z)
+      return true;
 
     // wall is solid wall (not a portal)
     if (wall.destination_sector == INVALID_WALL_ID)

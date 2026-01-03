@@ -395,6 +395,9 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
 //==============================================================================
 u32 Renderer::get_stitched_sector_id(SectorID sector_id, WallID portal_id) const
 {
+  if (sector_id == INVALID_SECTOR_ID)
+    return INVALID_SECTOR_ID;
+
   return static_cast<u32>(sector_id) + (static_cast<u32>(portal_id) << 16);
 }
 
@@ -458,11 +461,17 @@ void Renderer::update_ssbos() const
 
   auto remap_sector_ids_point_lights = [this](PointLightGPU& light)
   {
+    if (light.sector_id == INVALID_SECTOR_ID)
+      return;
+
     auto [it, _] = m_sector_id_map.try_emplace(light.sector_id, static_cast<u32>(m_sector_id_map.size()));
     light.sector_id = it->second;
   };
   auto remap_sector_ids_walls = [this](WallGPU& wall)
   {
+    if (wall.destination == INVALID_SECTOR_ID)
+      return;
+
     auto [it, _] = m_sector_id_map.try_emplace(wall.destination, static_cast<u32>(m_sector_id_map.size()));
     wall.destination = it->second;
   };
