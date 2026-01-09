@@ -18,11 +18,13 @@ public:
 
   void resize(size_t new_capacity);
   void clear();
-  void push_back(T&& value);
+  size_t push_back(T&& value);
   void extend(std::vector<T>&& elements);
   void update_gpu_data(bool reset_capacity = false);
   template <typename UnaryOp>
   void update_gpu_data(UnaryOp op, bool reset_capacity = false);
+  void update_gpu_data_with(const std::vector<T>& elements);
+  T& get_buffer_item(size_t index);
 
   void bind(GLuint index) const;
 

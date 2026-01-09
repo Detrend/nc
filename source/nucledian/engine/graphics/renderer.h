@@ -79,7 +79,7 @@ private:
   struct EntityRedundancyChecker
   {
     static constexpr f32 DIST_THRESHOLD = 0.25f; // 25cm
-    bool check_redundant(u64 id, vec3 camera_space_pos);
+    std::pair<bool, size_t> check_redundant(u64 id, vec3 camera_space_pos);
     std::unordered_map<u64, std::vector<vec3>> registry;
   };
 
@@ -121,9 +121,11 @@ private:
   mutable SSBOBuffer<DirLightGPU>   m_dir_light_ssbo   { MAX_DIR_LIGHTS           };
   mutable SSBOBuffer<PointLightGPU> m_point_light_ssbo { MAX_VISIBLE_POINT_LIGHTS };
   mutable SSBOBuffer<SectorGPU>     m_sectors_ssbo     { MAX_SECTORS              };
+  mutable SSBOBuffer<u32>           m_sector_map_ssbo  { MAX_SECTORS              };
   mutable SSBOBuffer<WallGPU>       m_walls_ssbo       { MAX_WALLS                };
 
   mutable std::unordered_map<u32, u32> m_sector_id_map;
+  mutable std::unordered_map<u64, size_t> m_light_gpu_data_indices;
 
   GLuint m_g_buffer          = 0;
   GLuint m_g_position        = 0;
@@ -141,6 +143,8 @@ private:
   void do_lighting_pass(const vec3& view_position) const;
 
   u32 get_stitched_sector_id(SectorID sector_id, WallID portal_id) const;
+  u64 get_stitched_entity_id(u32 stitched_sector_id, u32 entity_id) const;
+
   void push_sector_to_ssbo(SectorID sector_id, WallID enter_portal, const mat4& transform) const;
   void update_ssbos() const;
 

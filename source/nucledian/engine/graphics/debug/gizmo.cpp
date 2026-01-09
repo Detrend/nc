@@ -1,4 +1,4 @@
-#include <engine/graphics/gizmo.h>
+#include <engine/graphics/debug/gizmo.h>
 
 #ifdef NC_DEBUG_DRAW
 
@@ -9,7 +9,7 @@
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/graphics_system.h>
 
-#include <engine/graphics/top_down_debug.h>
+#include <engine/graphics/debug/top_down_debug.h>
 
 #include <ranges>
 #include <array>

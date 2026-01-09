@@ -42,6 +42,7 @@ struct WallData
 {
   vec2 start;
   vec2 end;
+  // TODO: useless, remove
   uint packed_normal;
   uint destination_sector;
 };
@@ -50,11 +51,11 @@ in vec2 uv;
 
 out vec4 out_color;
 
-layout(binding = 0) uniform sampler2D g_position;
-layout(binding = 1) uniform sampler2D g_normal;
-layout(binding = 2) uniform sampler2D g_stitched_normal;
-layout(binding = 3) uniform sampler2D g_albedo;
-layout(binding = 4) uniform sampler2D g_sector;
+layout(binding = 0) uniform sampler2D  g_position;
+layout(binding = 1) uniform sampler2D  g_normal;
+layout(binding = 2) uniform sampler2D  g_stitched_normal;
+layout(binding = 3) uniform sampler2D  g_albedo;
+layout(binding = 4) uniform usampler2D g_sector;
 
 layout(location = 0) uniform vec3  view_position;
 layout(location = 1) uniform uint  num_dir_lights;
@@ -68,7 +69,8 @@ layout(std430, binding = 1) readonly buffer point_light_buffer { PointLight poin
 layout(std430, binding = 2) readonly buffer light_index_buffer { uint       light_indices[]; };
 layout(std430, binding = 3) readonly buffer tile_data_buffer   { TileData   tile_data[];     };
 layout(std430, binding = 4) readonly buffer sector_data_buffer { SectorData sectors[];       };
-layout(std430, binding = 5) readonly buffer wall_data_buffer   { WallData   walls[];         };
+layout(std430, binding = 5) readonly buffer sector_map_buffer  { uint       sector_map[];    };
+layout(std430, binding = 6) readonly buffer wall_data_buffer   { WallData   walls[];         };
 
 float cross(vec2 a, vec2 b)
 {
@@ -120,8 +122,6 @@ bool is_in_shadow(vec3 position, uint start_sector_id, PointLight light)
 
     for (uint i = 0; i < sector.walls_count; ++i)
     {
-      // TODO: discard wall if it's normal is not facing ray direction
-
       WallData wall = walls[sector.walls_offset + i];
       float t = get_intersection_t(ray_origin.xy, ray_direction.xy, wall.start, wall.end);
 
@@ -166,7 +166,15 @@ void main()
   vec3 stitched_normal = texture(g_stitched_normal, uv).xyz;
   vec3 albedo = texture(g_albedo, uv).rgb;
 
-  uint sector_id = uint(texture(g_sector, uv).x);
+  uint sector_id = texture(g_sector, uv).x;
+  for (uint remmaped_id = 0; remmaped_id < sector_map.length(); ++remmaped_id)
+  {
+    if (sector_id == sector_map[remmaped_id])
+    {
+      sector_id = remmaped_id;
+      break;
+    }
+  }
 
   int shininess = 128;
 

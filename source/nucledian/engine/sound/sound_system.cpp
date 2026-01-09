@@ -10,7 +10,7 @@
 #include <engine/core/engine_module_types.h>
 #include <engine/core/module_event.h>
 
-#include <engine/graphics/gizmo.h>
+#include <engine/graphics/debug/gizmo.h>
 #include <engine/graphics/resources/res_lifetime.h>
 
 #include <engine/input/input_system.h>
