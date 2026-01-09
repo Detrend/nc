@@ -1,5 +1,5 @@
 // Project Nucledian Source File
-#include <engine/graphics/prop.h>
+#include <engine/graphics/entities/prop.h>
 
 #include <engine/entity/entity_type_definitions.h>
 

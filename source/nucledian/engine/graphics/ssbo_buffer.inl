@@ -35,10 +35,12 @@ inline void SSBOBuffer<T>::clear()
 
 //==============================================================================
 template<typename T>
-inline void SSBOBuffer<T>::push_back(T&& value)
+inline size_t SSBOBuffer<T>::push_back(T&& value)
 {
   buffer.push_back(value);
   m_size++;
+
+  return m_size - 1;
 }
 
 //==============================================================================
@@ -86,6 +88,30 @@ inline void SSBOBuffer<T>::update_gpu_data(UnaryOp op, bool reset_capacity)
   }
 
   update_gpu_data(reset_capacity);
+}
+
+//==============================================================================
+template<typename T>
+inline void SSBOBuffer<T>::update_gpu_data_with(const std::vector<T>& elements)
+{
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_handle);
+  glBufferSubData
+  (
+    GL_SHADER_STORAGE_BUFFER,
+    m_gpu_size * sizeof(T),
+    elements.size() * sizeof(T),
+    elements.data()
+  );
+
+  m_size += elements.size();
+  m_gpu_size = m_size;;
+}
+
+//==============================================================================
+template<typename T>
+inline T& SSBOBuffer<T>::get_buffer_item(size_t index)
+{
+  return buffer[index];
 }
 
 //==============================================================================
