@@ -657,8 +657,7 @@ void Renderer::render_entities(const CameraData& camera) const
       vec3 world_pos  = entity->get_position();
       vec3 camera_pos = (camera.view * t * vec4{world_pos, 1.0f}).xyz();
 
-      const vec3 entity_position = entity->get_position();
-      const SectorID entity_sector_id = GameSystem::get().get_map().get_sector_from_point(entity_position);
+      const SectorID entity_sector_id = GameSystem::get().get_map().get_sector_from_point(world_pos.xz());
       const u32 entity_stitched_sector_id = get_stitched_sector_id(entity_sector_id, camera.portal_id);
 
       if (id.type == EntityTypes::point_light)
@@ -677,7 +676,7 @@ void Renderer::render_entities(const CameraData& camera) const
           // Has to be a light because we would not get here otherwise
           nc_assert(light); 
 
-          const vec3 light_pos = t * vec4{entity_position, 1.0f};
+          const vec3 light_pos = t * vec4{ world_pos, 1.0f };
           const vec3 stich_pos = camera.portal_dest_to_src * vec4(light_pos, 1.0f);
 
           const size_t light_gpu_index = m_point_light_ssbo.push_back
@@ -714,7 +713,7 @@ void Renderer::render_entities(const CameraData& camera) const
           auto& group = groups[cast<u64>(ResLifetime::Game)];
           EntityRenderData& render_data = group[id.as_u32()];
           render_data.appear    = *appearance;
-          render_data.world_pos = entity_position;
+          render_data.world_pos = world_pos;
           render_data.transforms.push_back(t);
           // TODO: this id is incorrect in case entity is only with it border and not it's center
           // current in frustum.sector
