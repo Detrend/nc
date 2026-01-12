@@ -30,8 +30,8 @@ struct TileData
 
 struct SectorData
 {
-  float floor_z;
-  float ceil_z;
+  float floor_y;
+  float ceil_y;
   uint  walls_offset;
   uint  walls_count;
 };
@@ -108,6 +108,7 @@ bool is_in_shadow(vec3 position, uint start_sector_id, PointLight light)
   vec3 ray_direction = light.position - position;
 
   uint current_sector_id = start_sector_id;
+  float ray_t = 0.0f;
 
   for (int i = 0; i < MAX_LIGHT_TRAVERSE_SECTORS; ++i)
   {
@@ -116,14 +117,14 @@ bool is_in_shadow(vec3 position, uint start_sector_id, PointLight light)
 
     SectorData sector = sectors[current_sector_id];
     uint wall_index;
-    float ray_t;
 
     for (uint i = 0; i < sector.walls_count; ++i)
     {
       WallData wall = walls[sector.walls_offset + i];
-      float t = get_intersection_t(ray_origin.xy, ray_direction.xy, wall.start, wall.end);
+      float t = get_intersection_t(ray_origin.xz, ray_direction.xz, wall.start, wall.end);
 
-      if (t != -1.0f)
+      // hit point is further away on ray than previous hit points (prevents going backwards)
+      if (t > ray_t + 0.01f)
       {
         wall_index = i;
         ray_t = t;
@@ -134,8 +135,8 @@ bool is_in_shadow(vec3 position, uint start_sector_id, PointLight light)
     WallData wall = walls[sector.walls_offset + wall_index];
     
     // check if ray collides with floor or ceiling
-    float ray_hit_z = ray_origin.z + ray_t * ray_direction.z;
-    if (ray_hit_z < sector.floor_z || ray_hit_z > sector.ceil_z)
+    float ray_hit_y = ray_origin.y + ray_t * ray_direction.y;
+    if (ray_hit_y < sector.floor_y || ray_hit_y > sector.ceil_y)
       return true;
 
     // wall is solid wall (not a portal)
