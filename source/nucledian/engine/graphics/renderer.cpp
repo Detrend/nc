@@ -441,12 +441,13 @@ void Renderer::push_sector_to_ssbo(SectorID sector_id, WallID enter_portal, cons
   map.for_each_wall_of_sector(sector_id, [this, &map, &walls_data, enter_portal, &transform](WallID wall_id)
   {
     const WallData& wall = map.walls[wall_id];
-    const vec2 pos = (transform * vec4(wall.pos, 0.0f, 1.0f)).xy;
+    const vec2 pos = (transform * vec4(wall.pos.x, 0.0f, wall.pos.y, 1.0f)).xz;
 
     if (walls_data.size() > 0)
       walls_data[walls_data.size() - 1].end = pos;
-
-    walls_data.emplace_back(pos, vec2(), 0, get_stitched_sector_id(wall.portal_sector_id, wall_id));
+    
+    const WallID portal_id = wall.get_portal_type() == PortalType::classic ? enter_portal : wall_id;
+    walls_data.emplace_back(pos, vec2(), 0, get_stitched_sector_id(wall.portal_sector_id, portal_id));
   });
   walls_data[walls_data.size() - 1].end = walls_data[0].start;
 
