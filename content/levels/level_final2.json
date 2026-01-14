@@ -6,7 +6,7 @@
 		},
 		{
 			"name": "ActivatorDoor",
-			"threshold": 2
+			"threshold": 1
 		},
 		{
 			"name": "ActivatorTrap",
@@ -487,6 +487,22 @@
 				-21.0999984741211,
 				5.40000057220459,
 				1.6
+			],
+			"type": 0
+		},
+		{
+			"position": [
+				-55.9000015258789,
+				-2.10000014305115,
+				4.1
+			],
+			"type": 0
+		},
+		{
+			"position": [
+				-55.2999992370605,
+				-2.10000014305115,
+				4.1
 			],
 			"type": 0
 		},
@@ -1538,27 +1554,19 @@
 		],
 		[
 			-55.2999992370605,
-			-2.60000014305115
+			-1.30000007152557
 		],
 		[
 			-56.7000007629395,
-			-2.60000014305115
+			-1.30000007152557
 		],
 		[
 			-56.7000007629395,
-			-5.59999990463257
+			-4.30000019073486
 		],
 		[
 			-55.2999992370605,
-			-5.59999990463257
-		],
-		[
-			-54.2999992370605,
-			-5.30000019073486
-		],
-		[
-			-54.2999992370605,
-			-3.10000014305115
+			-4.30000019073486
 		],
 		[
 			-29.7000007629395,
@@ -5611,7 +5619,7 @@
 				[
 					{
 						"begin_height": 3.0,
-						"end_height": 11.0,
+						"end_height": 4.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -5622,6 +5630,20 @@
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
 						"tile_rotations_count": 1
+					},
+					{
+						"begin_height": 10.0,
+						"end_height": 11.0,
+						"id": "wall3",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 0.5,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					}
 				],
 				[
@@ -15539,8 +15561,8 @@
 				260,
 				261,
 				262,
-				263,
-				264
+				48,
+				39
 			],
 			"portal_destination_wall": 5,
 			"portal_target": 173,
@@ -15610,22 +15632,7 @@
 						"tile_rotations_count": 1
 					}
 				],
-				[
-					{
-						"begin_height": 4.0,
-						"end_height": 10.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 0.55,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
+				[],
 				[
 					{
 						"begin_height": 4.0,
@@ -15674,8 +15681,8 @@
 			},
 			"id": 171,
 			"points": [
-				265,
-				266,
+				263,
+				264,
 				258,
 				257
 			],
@@ -15779,10 +15786,10 @@
 			},
 			"id": 172,
 			"points": [
-				267,
-				268,
+				265,
 				266,
-				265
+				264,
+				263
 			],
 			"portal_destination_wall": 1,
 			"portal_target": 177,
@@ -15884,12 +15891,12 @@
 			},
 			"id": 173,
 			"points": [
-				269,
-				270,
+				267,
+				268,
 				29,
 				1,
-				271,
-				272
+				269,
+				270
 			],
 			"portal_destination_wall": 1,
 			"portal_target": 170,
@@ -16016,8 +16023,8 @@
 			"id": 174,
 			"points": [
 				107,
-				273,
-				274,
+				271,
+				272,
 				108
 			],
 			"portal_destination_wall": 0,
@@ -16120,24 +16127,14 @@
 			},
 			"id": 175,
 			"points": [
-				275,
-				276,
+				273,
 				274,
-				273
+				272,
+				271
 			],
 			"portal_destination_wall": 1,
 			"portal_target": 100,
 			"portal_wall": 0,
-			"triggers": [
-				{
-					"activator": "ActivatorTrap",
-					"can_turn_off": false,
-					"enemy_sensitive": false,
-					"player_sensitive": true,
-					"timeout": 0.0,
-					"while_alive": false
-				}
-			],
 			"wall_surfaces": [
 				[
 					{
@@ -16221,8 +16218,8 @@
 			"id": 176,
 			"points": [
 				239,
-				277,
-				278,
+				275,
+				276,
 				240
 			],
 			"portal_destination_wall": 0,
@@ -16311,8 +16308,8 @@
 			"id": 177,
 			"points": [
 				226,
-				279,
-				280,
+				277,
+				278,
 				227
 			],
 			"portal_destination_wall": 0,
@@ -16431,8 +16428,8 @@
 			"points": [
 				94,
 				109,
-				281,
-				282
+				279,
+				280
 			],
 			"portal_destination_wall": 3,
 			"portal_target": 96,
@@ -16519,8 +16516,8 @@
 			},
 			"id": 179,
 			"points": [
-				283,
-				284,
+				281,
+				282,
 				107,
 				110
 			],
@@ -16654,8 +16651,8 @@
 			},
 			"id": 180,
 			"points": [
-				285,
 				283,
+				281,
 				110,
 				111
 			],
