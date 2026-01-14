@@ -46,13 +46,13 @@ extends EditablePolygon
 @export var portal_wall : int:
 	get: return portal_wall
 	set(value): 
-		portal_wall = value if polygon.size() <= 0 else (value % polygon.size())
+		portal_wall = value if polygon.size() <= 0 else ((value + polygon.size()) % polygon.size())
 		_update_visuals()
 		
 @export var portal_destination_wall: int:
 	get: return portal_destination_wall
 	set(value): 
-		portal_destination_wall = value if !(portal_destination and portal_destination.get_points_count()>0) else (value % portal_destination.get_points_count())
+		portal_destination_wall = value if !(portal_destination and portal_destination.get_points_count()>0) else ((value + portal_destination.get_points_count()) % portal_destination.get_points_count())
 		_update_visuals()
 		
 @export var is_portal_bidirectional : bool = true:

@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://t1cowha8gphl"]
+
+[ext_resource type="Script" uid="uid://ch4bt1j0u2kcf" path="res://addons/ncedit/export_dock/export_button.gd" id="1_dtwd3"]
+
+[node name="ExportDock" type="HBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ExportButton" type="Button" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Export Level"
+script = ExtResource("1_dtwd3")
+
+[connection signal="pressed" from="ExportButton" to="ExportButton" method="_on_pressed"]

@@ -201,7 +201,7 @@ func add_sector(command: AddSectorCommand, unre: EditorUndoRedoManager = null)->
 		NodeUtils.add_do_undo_child(unre, parent, new_sector, command.child_idx)
 	new_sector.name = command.name
 	unre.add_do_property(new_sector, 'global_position', command.position)
-	new_sector.global_position = command.position
+	new_sector.global_position = command.position.floor()
 	new_sector.polygon = command.points
 	if command.data != null:
 		new_sector.data = command.data
