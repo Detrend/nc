@@ -1,4 +1,4 @@
-[gd_scene load_steps=107 format=3 uid="uid://cta47u4q0nac4"]
+[gd_scene load_steps=104 format=3 uid="uid://cta47u4q0nac4"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_tdhj0"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_a102k"]
@@ -7,13 +7,10 @@
 [ext_resource type="Resource" uid="uid://b0ot7qa5l7k8d" path="res://materials/default_texture.tres" id="3_p88uy"]
 [ext_resource type="Script" uid="uid://cft80p5qydrwt" path="res://scripts/sector/SectorProperties.gd" id="4_hw0gl"]
 [ext_resource type="Script" uid="uid://d3f0i3y2s53si" path="res://scripts/sector/StairMaker.gd" id="5_p88uy"]
-[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/sector/Sector.gd" id="8_1rnkb"]
 [ext_resource type="PackedScene" uid="uid://b8tr8d62bd5s2" path="res://prefabs/PickUps/HpBig.tscn" id="8_3yx7i"]
 [ext_resource type="Script" uid="uid://d1u512ud4vhrt" path="res://scripts/reactivity/SectorAltConfig.gd" id="9_7ccak"]
 [ext_resource type="PackedScene" uid="uid://cn044shocju7e" path="res://prefabs/WallAttachments/WallButton.tscn" id="11_1rnkb"]
 [ext_resource type="PackedScene" uid="uid://dgu644cct1eeb" path="res://prefabs/Entities/Possessed.tscn" id="11_81ckq"]
-[ext_resource type="Script" uid="uid://t310iayp4xsr" path="res://scripts/reactivity/WallAttachedTrigger.gd" id="11_yr7rp"]
-[ext_resource type="Resource" uid="uid://ddrx3nt3ky7po" path="res://material_textures/composites/Button1_3D.tres" id="12_750xn"]
 [ext_resource type="PackedScene" uid="uid://hg6kt5ju3l3a" path="res://prefabs/Entities/Cultist.tscn" id="13_fhq8p"]
 [ext_resource type="PackedScene" uid="uid://cm0wgegxiipjw" path="res://prefabs/PickUps/HpSmall.tscn" id="14_1rnkb"]
 [ext_resource type="Script" uid="uid://crfvtueim4q0s" path="res://scripts/reactivity/Trigger.gd" id="14_750xn"]
@@ -757,13 +754,8 @@ data = SubResource("Resource_66pbo")
 floor_height = 2.0
 ceiling_height = 11.0
 
-[node name="Button" type="Node2D" parent="Sectors/TriangulatedMultisector-1145/Sector-4239" instance=ExtResource("11_1rnkb")]
+[node name="Button" parent="Sectors/TriangulatedMultisector-1145/Sector-4239" instance=ExtResource("11_1rnkb")]
 position = Vector2(-122, 5)
-script = ExtResource("11_yr7rp")
-texture = ExtResource("12_750xn")
-stripe_floor_offset = 0.5
-_use_stripe_width = true
-stripe_width = 0.5
 
 [node name="Trigger" type="Node" parent="Sectors/TriangulatedMultisector-1145/Sector-4239/Button" node_paths=PackedStringArray("target")]
 script = ExtResource("14_750xn")
@@ -984,13 +976,8 @@ data = SubResource("Resource_1hg5c")
 floor_height = 7.5
 ceiling_height = 12.0
 
-[node name="Button" type="Node2D" parent="Sectors/Sector-467" instance=ExtResource("11_1rnkb")]
+[node name="Button" parent="Sectors/Sector-467" instance=ExtResource("11_1rnkb")]
 position = Vector2(-2.6907043, 6.056946)
-script = ExtResource("11_yr7rp")
-texture = ExtResource("12_750xn")
-stripe_floor_offset = 0.5
-_use_stripe_width = true
-stripe_width = 0.5
 
 [node name="Trigger" type="Node" parent="Sectors/Sector-467/Button" node_paths=PackedStringArray("target")]
 script = ExtResource("14_750xn")
@@ -1139,16 +1126,12 @@ ceiling_height = 5.0
 portal_destination = NodePath("../Sector-9129")
 portal_destination_wall = 2
 
-[node name="Sector-4846b" type="Polygon2D" parent="Sectors" instance=ExtResource("2_a102k")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-4846b" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(336, 78)
+color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(10, 6, -20, 25, -24, 17, 6, -2)
-script = ExtResource("8_1rnkb")
 data = SubResource("Resource_ayg6c")
 ceiling_height = 0.001
-sector_material = ExtResource("3_p88uy")
-show_portal_arrow = true
 
 [node name="Configuration" type="Node" parent="Sectors/Sector-4846b" node_paths=PackedStringArray("source")]
 script = ExtResource("9_7ccak")
@@ -1197,13 +1180,8 @@ data = SubResource("Resource_865gc")
 floor_height = 0.75
 ceiling_height = 3.5
 
-[node name="Button" type="Node2D" parent="Sectors/Sector-9129j" instance=ExtResource("11_1rnkb")]
+[node name="Button" parent="Sectors/Sector-9129j" instance=ExtResource("11_1rnkb")]
 position = Vector2(-18, -41.5)
-script = ExtResource("11_yr7rp")
-texture = ExtResource("12_750xn")
-stripe_floor_offset = 0.5
-_use_stripe_width = true
-stripe_width = 0.5
 
 [node name="Trigger" type="Node" parent="Sectors/Sector-9129j/Button" node_paths=PackedStringArray("target")]
 script = ExtResource("14_750xn")
@@ -1635,7 +1613,6 @@ script = ExtResource("19_750xn")
 
 [node name="ActivatorDoor" type="Node" parent="Activators"]
 script = ExtResource("19_750xn")
-threshold = 2
 metadata/_custom_type_script = "uid://bbt07sf8vceiw"
 
 [node name="ActivatorTrap" type="Node" parent="Activators"]
