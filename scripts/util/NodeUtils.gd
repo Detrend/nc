@@ -229,6 +229,7 @@ static func try_callv(this: Node, message_name: String, arguments: Array):
 
 
 static func get_full_name(this : Node, separator : String = "::", is_stop: Callable = Callable())->String:
+	if this == null: return "<nil>"
 	var ret : Array[String] = []
 	var node : Node= this
 	var tree_root := this.get_tree().edited_scene_root if Engine.is_editor_hint() else this.get_tree().root

@@ -8,6 +8,8 @@ enum ComputationMode{
 	Ignore, Relative, Absolute
 }
 
+## in metres per second
+@export var move_speed : float = 1.0
 @export var floor_mode : ComputationMode = ComputationMode.Ignore
 @export var floor_height : float
 @export var ceiling_mode : ComputationMode = ComputationMode.Ignore
@@ -36,6 +38,8 @@ func do_export(ret : Dictionary = {})->Dictionary:
 	ret["activator"] = source.get_activator_name()
 	ret["floor"] = get_floor_height() * _parent_sector._level.export_scale.z
 	ret["ceiling"] = get_ceiling_height() * _parent_sector._level.export_scale.z
+	ret["move_speed"] = move_speed
+	if move_speed <= 0.0: ErrorUtils.report_warning("{0} - Invalid move speed {1}".format([NodeUtils.get_full_name(self), move_speed]))
 	return ret
 
 
