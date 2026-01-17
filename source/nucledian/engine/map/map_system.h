@@ -346,6 +346,7 @@ struct SectorBuildData
   SurfaceData                floor_surface;
   SurfaceData                ceil_surface;
   ActivatorID                activator = INVALID_ACTIVATOR_ID;
+  f32                        move_speed = 1.0f;
 };
 
 struct OverlapInfo

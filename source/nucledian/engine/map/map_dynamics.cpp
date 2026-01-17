@@ -136,8 +136,8 @@ void MapDynamics::evaluate_activators
   // Now iterate all triggers
   for (TriggerID trigger_id = 0; trigger_id < trigger_cnt; ++trigger_id)
   {
-    TriggerData& td = triggers[trigger_id];
-    ActivatorID activator = td.activator;
+    const TriggerData& td = triggers[trigger_id];
+    u16& activator_value = activator_values[td.activator];
 
     switch (td.type)
     {
@@ -145,11 +145,12 @@ void MapDynamics::evaluate_activators
       case TriggerData::sector:
       {
         SectorID sid = td.sector_type.sector;
+        // Increment the activator for each relevant entity that is inside this sector
         mapping.for_each_in_sector(sid, [&](EntityID id, mat4)
         {
-          bool player = id.type == EntityTypes::player && td.player_sensitive;
-          bool enemy  = id.type == EntityTypes::enemy  && td.enemy_sensitive;
-          activator_values[activator] += (player | enemy);
+          const bool player = td.player_sensitive && (id.type == EntityTypes::player);
+          const bool enemy  = td.enemy_sensitive && (id.type == EntityTypes::enemy);
+          activator_value += (player || enemy);
         });
       }
       break;
@@ -157,7 +158,7 @@ void MapDynamics::evaluate_activators
       // Handle walls
       case TriggerData::wall:
       {
-        u32 idx = sector_wall_segment_to_u32
+        const u32 idx = sector_wall_segment_to_u32
         (
           td.wall_type.sector,
           td.wall_type.wall,
@@ -197,7 +198,7 @@ void MapDynamics::evaluate_activators
           info.dirty = false;
         }
 
-        activator_values[activator] += info.triggered;
+        activator_value += info.triggered;
       }
       break;
 
@@ -205,7 +206,7 @@ void MapDynamics::evaluate_activators
       case TriggerData::entity:
       {
         bool exists = registry.get_entity(td.entity_type.entity);
-        activator_values[activator] += (exists == td.while_alive);
+        activator_value += (exists == td.while_alive);
       }
       break;
     }
@@ -233,23 +234,23 @@ void MapDynamics::update(f32 delta)
 
     for (SectorID sid : activator_list[activator_id])
     {
-      SectorData& sd = map.sectors[sid];
+      SectorData& sector = map.sectors[sid];
 
-      f32 desired_floor    = sd.state_floors[is_on];
-      f32 desired_ceil     = sd.state_ceils[is_on];
-      f32 change_per_frame = delta * sd.move_speed;
+      const f32 desired_floor    = sector.state_floors[is_on];
+      const f32 desired_ceil     = sector.state_ceils[is_on];
+      const f32 change_per_frame = delta * sector.move_speed;
 
       bool changed = false;
 
-      if (sd.floor_height != desired_floor && change_per_frame != 0)
+      if (sector.floor_height != desired_floor && change_per_frame != 0)
       {
-        lerp_towards(sd.floor_height, desired_floor, change_per_frame);
+        lerp_towards(sector.floor_height, desired_floor, change_per_frame);
         changed = true;
       }
 
-      if (sd.ceil_height != desired_ceil && change_per_frame != 0)
+      if (sector.ceil_height != desired_ceil && change_per_frame != 0)
       {
-        lerp_towards(sd.ceil_height, desired_ceil, change_per_frame);
+        lerp_towards(sector.ceil_height, desired_ceil, change_per_frame);
         changed = true;
       }
 

@@ -1665,6 +1665,7 @@ int build_map
     output_sector.state_floors[0] = output_sector.state_floors[1] = 0.0f;
     output_sector.state_ceils [0] = output_sector.state_ceils [1] = 0.0f;
     output_sector.activator = sector.activator;
+    output_sector.move_speed = sector.move_speed;
 
     if (sector.has_more_states)
     {

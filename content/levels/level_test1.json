@@ -19743,7 +19743,8 @@
 				{
 					"activator": "ParkourActivate",
 					"ceiling": 16.0,
-					"floor": 10.0
+					"floor": 10.0,
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 19.8,
@@ -19844,7 +19845,8 @@
 				{
 					"activator": "ParkourActivate",
 					"ceiling": 20.0,
-					"floor": 10.0
+					"floor": 10.0,
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 20.0,

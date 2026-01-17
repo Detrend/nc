@@ -340,6 +340,7 @@ static void load_json_map
           build_data.has_more_states = true;
           build_data.floor_y[1] = js_alt_state["floor"];
           build_data.ceil_y[1] = js_alt_state["ceiling"];
+          build_data.move_speed = js_alt_state["move_speed"];
 
           std::string activator_name = js_alt_state["activator"];
           build_data.activator = activator_map[activator_name];
