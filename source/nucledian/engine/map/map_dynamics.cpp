@@ -66,9 +66,9 @@ void MapDynamics::on_map_rebuild_and_entities_created()
   }
 
   // Map sectors to their activators
-  activator_list.resize(activators.size());
-
   nc_assert(map.sectors.size() < MAX_SECTORS);
+  nc_assert(std::ranges::all_of(activators, [](const ActivatorData& activator)->bool { return activator.affected_sectors.empty(); }));
+
   SectorID sector_cnt = cast<SectorID>(map.sectors.size());
   for (SectorID sid = 0; sid < sector_cnt; ++sid)
   {
@@ -76,8 +76,8 @@ void MapDynamics::on_map_rebuild_and_entities_created()
 
     if (sd.activator != INVALID_ACTIVATOR_ID)
     {
-      nc_assert(sd.activator < activator_list.size());
-      activator_list[sd.activator].push_back(sid);
+      nc_assert(sd.activator < activators.size());
+      activators[sd.activator].affected_sectors.push_back(sid);
     }
   }
 }
@@ -217,8 +217,8 @@ void MapDynamics::evaluate_activators
 void MapDynamics::update(f32 delta)
 {
   // Now iterate all sectors that can be activated and move them correctly
-  nc_assert(activator_list.size() <= MAX_ACTIVATORS);
-  ActivatorID activator_cnt = cast<ActivatorID>(activator_list.size());
+  nc_assert(activators.size() <= MAX_ACTIVATORS);
+  ActivatorID activator_cnt = cast<ActivatorID>(activators.size());
   std::vector<u16> activator_values(activator_cnt, 0);
 
   // Iterate triggers
@@ -227,12 +227,14 @@ void MapDynamics::update(f32 delta)
   // Iterate activators
   for (ActivatorID activator_id = 0; activator_id < activator_cnt; ++activator_id)
   {
-    u16 threshold = activators[activator_id].threshold;
+    ActivatorData& activator = activators[activator_id];
+    u16 threshold = activator.threshold;
     u16 value     = activator_values[activator_id];
 
     bool is_on = value >= threshold;
 
-    for (SectorID sid : activator_list[activator_id])
+    // Update affected sectors
+    for (SectorID sid : activators[activator_id].affected_sectors)
     {
       SectorData& sector = map.sectors[sid];
 
@@ -267,6 +269,23 @@ void MapDynamics::update(f32 delta)
         });
       }
     }
+
+    // Update hooks
+    const bool activeness_did_change = (is_on != activator.is_active);
+    activator.is_active = is_on;
+    if (is_on || activeness_did_change) {
+      for (const std::unique_ptr<IActivatorHook>& hook : activator.hooks) {
+        if (activeness_did_change && is_on)
+          hook->on_activated_start();
+        if(is_on)
+          hook->on_activated_update(delta);
+        if (activeness_did_change && (!is_on))
+          hook->on_activated_end();
+      }
+    }
+
+
+
   }
 }
 

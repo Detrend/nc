@@ -40,6 +40,7 @@
 #include <game/item_resources.h> // PickupTypes::...
 #include <game/enemies.h>        // EnemyTypes::...
 #include <engine/graphics/prop.h>
+#include <engine/map/map_dynamics_hooks.h>
 
 #include <math/lingebra.h>
 
@@ -288,7 +289,13 @@ static void load_json_map
       nc_assert(!activator_map.contains(name));
       activator_map[name] = cast<ActivatorID>(activator_table.size());
       s32 threshold = js_activator["threshold"];
-      activator_table.push_back(ActivatorData{cast<u16>(threshold)});
+      ActivatorData &ad = activator_table.emplace_back(ActivatorData{cast<u16>(threshold)});
+      for (const auto& hook_js : js_activator["hooks"]) {
+        std::string hook_type = hook_js["type"];
+        auto hook = create_hook_by_type(hook_type);
+        hook->load(hook_js);
+        ad.hooks.emplace_back(std::move(hook));
+      }
     }
 
     for (auto&& js_point : data["points"])

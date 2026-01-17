@@ -9,6 +9,8 @@
 #include <functional>
 #include <string>
 
+#include <json/json_fwd.hpp>
+
 //                       .------------------------.                           //
 //                       |        TRIGGERS        |                           //
 //     .-----------------X------------------------X---------------------.     //
@@ -73,12 +75,36 @@ struct TriggerData
   }
 };
 
+class IActivatorHook {
+public:
+  
+  using SerializedData = nlohmann::json;
+  
+  virtual ~IActivatorHook(){}
+
+  virtual void load(const SerializedData& data) = 0;
+
+  virtual void on_activated_update(const f32 delta) { (void)delta; }
+  virtual void on_activated_start(){}
+  virtual void on_activated_end(){}
+};
+
 struct ActivatorData
 {
-  u16 threshold = 0; // How many triggers have to be activated to turn on
+
+  // How many triggers have to be activated to turn on
+  u16                                               threshold = 0; 
+  // If this flag changes, `on_activated_start/end` events will be sent to the registered hooks
+  bool                                              is_active = false;
+  // Sectors whose floor/ceiling can dynamically change based on the activator's state
+  std::vector<SectorID>                             affected_sectors;
+  // Generic behaviors that happen depending on the activator
+  std::vector<std::unique_ptr<IActivatorHook>>      hooks;
+
+
   // TODO: Some other properties..
   // Like if it should print some text on the screen..
-};
+};  
 
 struct MapDynamics
 {
@@ -103,6 +129,7 @@ struct MapDynamics
     bool      dirty     = false;
   };
 
+
   using SectorChangeCallback = std::function<void(SectorID)>;
   using ActivatorList        = std::vector<std::vector<SectorID>>;
   using SegmentRuntimeMap    = std::unordered_map<u32, RuntimeSegmentInfo>;
@@ -121,7 +148,6 @@ struct MapDynamics
   std::vector<ActivatorData> activators;
 
   SectorChangeCallback  sector_change_callback;
-  ActivatorList         activator_list;
 };
 
 }

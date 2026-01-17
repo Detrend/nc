@@ -149,6 +149,7 @@
     <ClCompile Include="..\source\nucledian\engine\graphics\prop.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\renderer.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\top_down_debug.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\map\map_dynamics_hooks.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\physics.cpp" />
     <ClCompile Include="..\source\nucledian\engine\sound\sound_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\ui\ui_hud_display.cpp" />

@@ -948,7 +948,7 @@ void GraphicsSystem::handle_sector_height_debug()
     {
       int value  = cast<int>(activator_values[idx]);
       int thresh = cast<int>(dynamics.activators[idx].threshold);
-      int scount = cast<int>(dynamics.activator_list[idx].size());
+      int scount = cast<int>(dynamics.activators[idx].affected_sectors.size());
 
       ImGui::PushID(cast<int>(idx));
       ImGui::Text("Value/Threshold/SectorCNT: %d/%d/%d", value, thresh, scount);
