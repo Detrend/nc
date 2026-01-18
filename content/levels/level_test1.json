@@ -472,15 +472,14 @@
 				1.0,
 				1.0
 			],
-			"constant": 0.5,
+			"falloff": 1.0,
 			"intensity": 2.57,
-			"linear": 0.09,
 			"position": [
 				-13.0,
 				-10.1999998092651,
 				0.6
 			],
-			"quadratic": 0.032
+			"radius": 3.0
 		}
 	],
 	"points": [
