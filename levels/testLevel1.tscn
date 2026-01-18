@@ -1,4 +1,4 @@
-[gd_scene load_steps=254 format=3 uid="uid://befdk2p7cnnba"]
+[gd_scene load_steps=253 format=3 uid="uid://befdk2p7cnnba"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_nqbmo"]
 [ext_resource type="Script" uid="uid://bbt07sf8vceiw" path="res://scripts/reactivity/Activator.gd" id="2_fxlut"]
@@ -36,7 +36,6 @@
 [ext_resource type="Script" uid="uid://dt7r05hfelhgq" path="res://scripts/visuals/LayeredTexture.gd" id="20_fnnsj"]
 [ext_resource type="Resource" uid="uid://cj2t3mf314rsj" path="res://materials/outsides_hill.tres" id="20_sc5vv"]
 [ext_resource type="PackedScene" uid="uid://ctwevapidummr" path="res://prefabs/Lights/PointLight.tscn" id="20_xbdba"]
-[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/sector/Sector.gd" id="21_xqdbr"]
 [ext_resource type="PackedScene" uid="uid://dgu644cct1eeb" path="res://prefabs/Entities/Possessed.tscn" id="22_3ce7l"]
 [ext_resource type="PackedScene" uid="uid://2lt4yhe883yf" path="res://prefabs/Lights/AmbientLight.tscn" id="23_au8ug"]
 [ext_resource type="Script" uid="uid://d1u512ud4vhrt" path="res://scripts/reactivity/SectorAltConfig.gd" id="23_q7j84"]
@@ -1978,7 +1977,7 @@ ceiling_height = 6.0
 
 [node name="@Polygon2D@30390" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(1, 1, 1, 1)
+color = Color(0.89187425, 0.78289706, 0.82546616, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(246, -60, 263, -60, 263, -53, 245, -53)
 data = SubResource("Resource_bklt4")
@@ -1986,7 +1985,7 @@ ceiling_height = 3.0
 
 [node name="@Polygon2D@30738" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.97464335, 0.94908696, 0.9590699, 1)
+color = Color(0.8713731, 0.7417333, 0.7923737, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(245, -53, 263, -53, 263, -47, 245, -47)
 data = SubResource("Resource_kd8mq")
@@ -1995,7 +1994,7 @@ ceiling_height = 3.2
 
 [node name="@Polygon2D@31086" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.9494438, 0.89848953, 0.9183935, 1)
+color = Color(0.8509278, 0.7006818, 0.7593715, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(245, -47, 263, -47, 263, -41, 245, -41)
 data = SubResource("Resource_0m6xw")
@@ -2004,7 +2003,7 @@ ceiling_height = 3.4000000000000004
 
 [node name="@Polygon2D@44213" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.9243833, 0.84817106, 0.87794137, 1)
+color = Color(0.83052826, 0.6597219, 0.72644293, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(263, -41, 263, -35, 245, -35, 245, -41)
 data = SubResource("Resource_c6a8k")
@@ -2013,7 +2012,7 @@ ceiling_height = 3.6000000000000005
 
 [node name="@Polygon2D@25686" parent="Sectors/StairSequence/StairMaker" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
-color = Color(0.89944345, 0.798095, 0.83768415, 1)
+color = Color(0.810164, 0.61883307, 0.6935715, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(245, -35, 263, -35, 263, -29, 245, -28)
 data = SubResource("Resource_sdn6o")
@@ -2189,31 +2188,22 @@ portal_destination = NodePath("../../Square/Sector7")
 portal_wall = 3
 portal_destination_wall = 2
 
-[node name="_Polygon2D_120857a" type="Polygon2D" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
-texture_filter = 1
-texture_repeat = 2
+[node name="_Polygon2D_120857a" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(368, -97, 392, -97, 385, -82, 377, -82)
-script = ExtResource("21_xqdbr")
 data = SubResource("Resource_6i1h7")
 floor_height = 4.0
 ceiling_height = 5.6
-sector_material = ExtResource("6_2dkgu")
-show_portal_arrow = true
 
-[node name="_Polygon2D_120857b" type="Polygon2D" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
-texture_filter = 1
-texture_repeat = 2
+[node name="_Polygon2D_120857b" parent="Sectors/StairSequence" instance=ExtResource("2_l4525")]
 position = Vector2(-264, 45)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(368, -108, 392, -108, 392, -97, 368, -97)
-script = ExtResource("21_xqdbr")
 data = SubResource("Resource_4wvia")
 floor_height = 4.0
 ceiling_height = 5.6
 sector_material = ExtResource("7_phr4w")
-show_portal_arrow = true
 
 [node name="GoToLevel3" type="Node" parent="Sectors/StairSequence/_Polygon2D_120857b" node_paths=PackedStringArray("target")]
 script = ExtResource("9_r3w7q")
@@ -3702,7 +3692,6 @@ color = Color(0.20999998, 0.30216676, 1, 1)
 [node name="PointLight" parent="Lights" instance=ExtResource("20_xbdba")]
 position = Vector2(65, 51)
 intensity = 2.57
-constant = 0.5
 
 [node name="AmbientLight" parent="Lights" instance=ExtResource("23_au8ug")]
 position = Vector2(11, -17)
