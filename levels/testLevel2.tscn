@@ -1,4 +1,4 @@
-[gd_scene load_steps=110 format=3 uid="uid://cta47u4q0nac4"]
+[gd_scene load_steps=116 format=3 uid="uid://cta47u4q0nac4"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_tdhj0"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_a102k"]
@@ -9,11 +9,17 @@
 [ext_resource type="Script" uid="uid://d3f0i3y2s53si" path="res://scripts/sector/StairMaker.gd" id="5_p88uy"]
 [ext_resource type="PackedScene" uid="uid://b8tr8d62bd5s2" path="res://prefabs/PickUps/HpBig.tscn" id="8_3yx7i"]
 [ext_resource type="Script" uid="uid://d1u512ud4vhrt" path="res://scripts/reactivity/SectorAltConfig.gd" id="9_7ccak"]
+[ext_resource type="Resource" uid="uid://dhhae3v7amxur" path="res://materials/connecting.tres" id="10_ayg6c"]
+[ext_resource type="Resource" uid="uid://cj2t3mf314rsj" path="res://materials/outsides_hill.tres" id="10_qvcjj"]
 [ext_resource type="PackedScene" uid="uid://cn044shocju7e" path="res://prefabs/WallAttachments/WallButton.tscn" id="11_1rnkb"]
 [ext_resource type="PackedScene" uid="uid://dgu644cct1eeb" path="res://prefabs/Entities/Possessed.tscn" id="11_81ckq"]
+[ext_resource type="Resource" uid="uid://wbq6l6c38uhq" path="res://materials/big_room.tres" id="11_750xn"]
+[ext_resource type="Resource" uid="uid://diodph1xiouf0" path="res://materials/cave_texture.tres" id="11_ayg6c"]
+[ext_resource type="Resource" uid="uid://bukx1atttvm3n" path="res://materials/broken_wall.tres" id="12_qo51o"]
 [ext_resource type="PackedScene" uid="uid://hg6kt5ju3l3a" path="res://prefabs/Entities/Cultist.tscn" id="13_fhq8p"]
 [ext_resource type="PackedScene" uid="uid://cm0wgegxiipjw" path="res://prefabs/PickUps/HpSmall.tscn" id="14_1rnkb"]
 [ext_resource type="Script" uid="uid://crfvtueim4q0s" path="res://scripts/reactivity/Trigger.gd" id="14_750xn"]
+[ext_resource type="Resource" uid="uid://8mtk0xgkh1sd" path="res://materials/parkour_pillar.tres" id="14_qo51o"]
 [ext_resource type="Script" uid="uid://b8tkglirbwf1e" path="res://scripts/reactivity/ActivatorPool.gd" id="18_yr7rp"]
 [ext_resource type="Script" uid="uid://bbt07sf8vceiw" path="res://scripts/reactivity/Activator.gd" id="19_750xn"]
 
@@ -159,76 +165,76 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 [sub_resource type="Resource" id="Resource_441pw"]
 script = ExtResource("4_hw0gl")
 ceiling_height = 10.0
-material = ExtResource("3_p88uy")
+material = ExtResource("10_qvcjj")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_b1rou"]
 script = ExtResource("4_hw0gl")
 floor_height = 3.0
 ceiling_height = 10.0
-material = ExtResource("3_p88uy")
+material = ExtResource("14_qo51o")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_ukqkk"]
 script = ExtResource("4_hw0gl")
 floor_height = 5.0
 ceiling_height = 10.0
-material = ExtResource("3_p88uy")
+material = ExtResource("14_qo51o")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_ws2wv"]
 script = ExtResource("4_hw0gl")
 floor_height = 2.5
 ceiling_height = 10.0
-material = ExtResource("3_p88uy")
+material = ExtResource("10_qvcjj")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_4u38u"]
 script = ExtResource("4_hw0gl")
 floor_height = 1.0
 ceiling_height = 10.0
-material = ExtResource("3_p88uy")
+material = ExtResource("10_qvcjj")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_1eqat"]
 script = ExtResource("4_hw0gl")
 floor_height = 1.75
 ceiling_height = 10.0
-material = ExtResource("3_p88uy")
+material = ExtResource("10_qvcjj")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_epslv"]
 script = ExtResource("4_hw0gl")
 floor_height = 5.0
 ceiling_height = 10.0
-material = ExtResource("3_p88uy")
+material = ExtResource("12_qo51o")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_cvbo3"]
 script = ExtResource("4_hw0gl")
 ceiling_height = 5.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_mkkp8"]
 script = ExtResource("4_hw0gl")
 floor_height = 5.0
 ceiling_height = 10.0
-material = ExtResource("3_p88uy")
+material = ExtResource("12_qo51o")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_4jj6q"]
 script = ExtResource("4_hw0gl")
 floor_height = 3.0
 ceiling_height = 10.0
-material = ExtResource("3_p88uy")
+material = ExtResource("14_qo51o")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_a8vsr"]
 script = ExtResource("4_hw0gl")
 floor_height = 0.75
 ceiling_height = 10.0
-material = ExtResource("3_p88uy")
+material = ExtResource("10_qvcjj")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_mfwgm"]
@@ -242,151 +248,151 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 script = ExtResource("4_hw0gl")
 floor_height = 2.0
 ceiling_height = 8.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_3npeq"]
 script = ExtResource("4_hw0gl")
 floor_height = 1.5
 ceiling_height = 6.5
-material = ExtResource("3_p88uy")
+material = ExtResource("11_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_sbevk"]
 script = ExtResource("4_hw0gl")
 floor_height = 1.0
 ceiling_height = 8.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_vvl8y"]
 script = ExtResource("4_hw0gl")
 floor_height = 0.5
 ceiling_height = 10.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_bvedg"]
 script = ExtResource("4_hw0gl")
 floor_height = 0.5
 ceiling_height = 0.501
-material = ExtResource("3_p88uy")
+material = ExtResource("12_qo51o")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_kqjx2"]
 script = ExtResource("4_hw0gl")
 floor_height = 0.5
 ceiling_height = 10.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_esya7"]
 script = ExtResource("4_hw0gl")
 floor_height = 5.0
 ceiling_height = 10.0
-material = ExtResource("3_p88uy")
+material = ExtResource("10_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_1hg5c"]
 script = ExtResource("4_hw0gl")
 floor_height = 7.5
 ceiling_height = 12.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_5u3p1"]
 script = ExtResource("4_hw0gl")
 floor_height = 7.5
 ceiling_height = 11.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_kamwd"]
 script = ExtResource("4_hw0gl")
 floor_height = 7.0
 ceiling_height = 10.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_qnm01"]
 script = ExtResource("4_hw0gl")
 ceiling_height = 10.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_kn7ro"]
 script = ExtResource("4_hw0gl")
 floor_height = 1.0
-ceiling_height = 15.0
-material = ExtResource("3_p88uy")
+ceiling_height = 10.0
+material = ExtResource("14_qo51o")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_kwltn"]
 script = ExtResource("4_hw0gl")
 floor_height = 2.0
-ceiling_height = 15.0
-material = ExtResource("3_p88uy")
+ceiling_height = 10.0
+material = ExtResource("14_qo51o")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_ckmwn"]
 script = ExtResource("4_hw0gl")
 floor_height = 1.0
-ceiling_height = 15.0
-material = ExtResource("3_p88uy")
+ceiling_height = 10.0
+material = ExtResource("14_qo51o")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_4j321"]
 script = ExtResource("4_hw0gl")
 floor_height = 6.0
 ceiling_height = 10.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_fauak"]
 script = ExtResource("4_hw0gl")
 ceiling_height = 10.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_elhaf"]
 script = ExtResource("4_hw0gl")
 floor_height = 7.0
-ceiling_height = 15.0
-material = ExtResource("3_p88uy")
+ceiling_height = 10.0
+material = ExtResource("14_qo51o")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_s8rn1"]
 script = ExtResource("4_hw0gl")
 floor_height = 5.5
-ceiling_height = 15.0
-material = ExtResource("3_p88uy")
+ceiling_height = 10.0
+material = ExtResource("14_qo51o")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_kpnbw"]
 script = ExtResource("4_hw0gl")
 floor_height = 0.5
 ceiling_height = 6.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_inhny"]
 script = ExtResource("4_hw0gl")
 floor_height = 1.0
 ceiling_height = 7.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_si88k"]
 script = ExtResource("4_hw0gl")
 floor_height = 1.5
 ceiling_height = 7.5
-material = ExtResource("3_p88uy")
+material = ExtResource("11_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_qihcm"]
 script = ExtResource("4_hw0gl")
 ceiling_height = 3.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_vkih1"]
@@ -398,7 +404,7 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 [sub_resource type="Resource" id="Resource_ayg6c"]
 script = ExtResource("4_hw0gl")
 ceiling_height = 0.001
-material = ExtResource("3_p88uy")
+material = ExtResource("10_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_33x0n"]
@@ -412,7 +418,7 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 script = ExtResource("4_hw0gl")
 floor_height = 0.25
 ceiling_height = 3.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_dgqsh"]
@@ -426,56 +432,56 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 script = ExtResource("4_hw0gl")
 floor_height = 0.5
 ceiling_height = 3.25
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_865gc"]
 script = ExtResource("4_hw0gl")
 floor_height = 0.75
 ceiling_height = 3.5
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_duq65"]
 script = ExtResource("4_hw0gl")
 floor_height = 1.0
 ceiling_height = 3.75
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_idevf"]
 script = ExtResource("4_hw0gl")
 floor_height = 1.0
 ceiling_height = 1.001
-material = ExtResource("3_p88uy")
+material = ExtResource("10_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_vpetx"]
 script = ExtResource("4_hw0gl")
 floor_height = 1.25
 ceiling_height = 4.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_opk0q"]
 script = ExtResource("4_hw0gl")
 floor_height = 1.5
 ceiling_height = 4.25
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_nej2j"]
 script = ExtResource("4_hw0gl")
 floor_height = 1.75
 ceiling_height = 4.5
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_3rv2j"]
 script = ExtResource("4_hw0gl")
 floor_height = 1.5
 ceiling_height = 1.501
-material = ExtResource("3_p88uy")
+material = ExtResource("10_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_oiyai"]
@@ -503,49 +509,49 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 script = ExtResource("4_hw0gl")
 floor_height = 2.25
 ceiling_height = 5.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_k7a20"]
 script = ExtResource("4_hw0gl")
 floor_height = 2.0
 ceiling_height = 4.75
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_fvfnt"]
 script = ExtResource("4_hw0gl")
 floor_height = 2.5
 ceiling_height = 5.25
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_mibrt"]
 script = ExtResource("4_hw0gl")
 floor_height = 2.5
 ceiling_height = 2.501
-material = ExtResource("3_p88uy")
+material = ExtResource("10_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_c62bs"]
 script = ExtResource("4_hw0gl")
 floor_height = 4.0
 ceiling_height = 10.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_4pfkq"]
 script = ExtResource("4_hw0gl")
 floor_height = 2.75
 ceiling_height = 5.5
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_cns10"]
 script = ExtResource("4_hw0gl")
 floor_height = 3.0
 ceiling_height = 5.75
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_ilvx7"]
@@ -559,33 +565,33 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 script = ExtResource("4_hw0gl")
 floor_height = 5.0
 ceiling_height = 15.0
-material = ExtResource("3_p88uy")
+material = ExtResource("10_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_c8gdw"]
 script = ExtResource("4_hw0gl")
 floor_height = 5.0
 ceiling_height = 10.0
-material = ExtResource("3_p88uy")
+material = ExtResource("10_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_elgkf"]
 script = ExtResource("4_hw0gl")
 floor_height = 2.0
 ceiling_height = 4.5
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_v3ohs"]
 script = ExtResource("4_hw0gl")
 ceiling_height = 5.5
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_cmxnk"]
 script = ExtResource("4_hw0gl")
 ceiling_height = 5.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_fh6m7"]
@@ -598,13 +604,13 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 [sub_resource type="Resource" id="Resource_qo51o"]
 script = ExtResource("4_hw0gl")
 ceiling_height = 3.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_qvcjj"]
 script = ExtResource("4_hw0gl")
 ceiling_height = 3.0
-material = ExtResource("3_p88uy")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_yr7rp"]
@@ -850,6 +856,7 @@ polygon = PackedVector2Array(5, -4, 14, 6, 4, 15, -5, 4)
 data = SubResource("Resource_b1rou")
 floor_height = 3.0
 ceiling_height = 10.0
+sector_material = ExtResource("14_qo51o")
 
 [node name="Sector-4399" parent="Sectors/TriangulatedMultisector-5402" instance=ExtResource("2_a102k")]
 position = Vector2(-97.7926, 34.28299)
@@ -858,6 +865,7 @@ polygon = PackedVector2Array(-4, 4, 5, -4, 14, 4, 6, 13)
 data = SubResource("Resource_ukqkk")
 floor_height = 5.0
 ceiling_height = 10.0
+sector_material = ExtResource("14_qo51o")
 
 [node name="Sector-4200" parent="Sectors/TriangulatedMultisector-5402" instance=ExtResource("2_a102k")]
 position = Vector2(-148.7926, -17.71701)
@@ -866,6 +874,7 @@ polygon = PackedVector2Array(-9, 6, -8, -10, 4, -43, 16, -4, 9, 7, -6, 22)
 data = SubResource("Resource_ws2wv")
 floor_height = 2.5
 ceiling_height = 10.0
+sector_material = ExtResource("10_qvcjj")
 
 [node name="Sector-4074" parent="Sectors/TriangulatedMultisector-5402" instance=ExtResource("2_a102k")]
 position = Vector2(-136.7926, -41.71701)
@@ -874,6 +883,7 @@ polygon = PackedVector2Array(-8, -19, 6, -38, 39, -37, 4, 20)
 data = SubResource("Resource_4u38u")
 floor_height = 1.0
 ceiling_height = 10.0
+sector_material = ExtResource("10_qvcjj")
 
 [node name="Sector-6021" parent="Sectors/TriangulatedMultisector-5402" instance=ExtResource("2_a102k")]
 position = Vector2(-141.7926, -0.7170105)
@@ -882,6 +892,7 @@ polygon = PackedVector2Array(-13, 5, 2, -10, 39, 23, 12, 36, -6, 16)
 data = SubResource("Resource_1eqat")
 floor_height = 1.75
 ceiling_height = 10.0
+sector_material = ExtResource("10_qvcjj")
 
 [node name="Sector-9092" parent="Sectors/TriangulatedMultisector-5402" instance=ExtResource("2_a102k")]
 position = Vector2(-17.792603, -6.7170105)
@@ -890,6 +901,7 @@ polygon = PackedVector2Array(0, 0, 0, 30, -3, 28, -3, 2)
 data = SubResource("Resource_epslv")
 floor_height = 5.0
 ceiling_height = 10.0
+sector_material = ExtResource("12_qo51o")
 
 [node name="Sector-8518" parent="Sectors/TriangulatedMultisector-5402" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_a102k")]
 position = Vector2(-3.7926025, -21.71701)
@@ -897,6 +909,7 @@ color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(18, -1, 19, 12, -6, 12, -2, 9)
 data = SubResource("Resource_cvbo3")
 ceiling_height = 5.0
+sector_material = ExtResource("11_ayg6c")
 portal_destination = NodePath("../../Sector-7308")
 portal_wall = 3
 portal_destination_wall = 2
@@ -908,6 +921,7 @@ polygon = PackedVector2Array(-23, 45, -12, 12, -4, 1, -7, 20)
 data = SubResource("Resource_mkkp8")
 floor_height = 5.0
 ceiling_height = 10.0
+sector_material = ExtResource("12_qo51o")
 
 [node name="Sector-8837" parent="Sectors/TriangulatedMultisector-5402" instance=ExtResource("2_a102k")]
 position = Vector2(-55.792603, -42.71701)
@@ -916,6 +930,7 @@ polygon = PackedVector2Array(5.138199, -7.4474335, 10, 0, 0, 10, -7.861801, 0.55
 data = SubResource("Resource_4jj6q")
 floor_height = 3.0
 ceiling_height = 10.0
+sector_material = ExtResource("14_qo51o")
 
 [node name="Sector-5035" parent="Sectors/TriangulatedMultisector-5402" instance=ExtResource("2_a102k")]
 position = Vector2(-127.7926, -0.7170105)
@@ -924,6 +939,7 @@ polygon = PackedVector2Array(-12, -10, -5, -21, 25, 23)
 data = SubResource("Resource_a8vsr")
 floor_height = 0.75
 ceiling_height = 10.0
+sector_material = ExtResource("10_qvcjj")
 
 [node name="@Polygon2D@227918" parent="Sectors" instance=ExtResource("2_a102k")]
 visible = false
@@ -946,6 +962,7 @@ polygon = PackedVector2Array(-25.239716, -6.6343994, 37.760284, -15.634399, 27.7
 data = SubResource("Resource_o132h")
 floor_height = 2.0
 ceiling_height = 8.0
+sector_material = ExtResource("11_ayg6c")
 
 [node name="Sector-6853b" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(388.23972, 314.6344)
@@ -954,6 +971,7 @@ polygon = PackedVector2Array(-34.239716, -10.634399, 30.760284, -31.6344, 37.760
 data = SubResource("Resource_3npeq")
 floor_height = 1.5
 ceiling_height = 6.5
+sector_material = ExtResource("11_ayg6c")
 
 [node name="Sector-6853c" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(388.23972, 314.6344)
@@ -962,6 +980,7 @@ polygon = PackedVector2Array(-63.239716, -59.6344, 37.760284, -60.6344, 30.76028
 data = SubResource("Resource_sbevk")
 floor_height = 1.0
 ceiling_height = 8.0
+sector_material = ExtResource("11_ayg6c")
 
 [node name="Sector-6853d" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(388.23972, 314.6344)
@@ -970,6 +989,7 @@ polygon = PackedVector2Array(-81.239716, -80.6344, 53.760284, -103.6344, 45.7602
 data = SubResource("Resource_vvl8y")
 floor_height = 0.5
 ceiling_height = 10.0
+sector_material = ExtResource("11_750xn")
 
 [node name="Sector-6853e" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(388.23972, 314.6344)
@@ -978,6 +998,7 @@ polygon = PackedVector2Array(59.760284, -101.6344, 51.760284, -73.6344, 45.76028
 data = SubResource("Resource_bvedg")
 floor_height = 0.5
 ceiling_height = 0.501
+sector_material = ExtResource("12_qo51o")
 
 [node name="Configuration" type="Node" parent="Sectors/Sector-6853e" node_paths=PackedStringArray("source")]
 script = ExtResource("9_7ccak")
@@ -994,6 +1015,7 @@ polygon = PackedVector2Array(68.760284, -108.6344, 98.760284, -94.6344, 96.76028
 data = SubResource("Resource_kqjx2")
 floor_height = 0.5
 ceiling_height = 10.0
+sector_material = ExtResource("11_ayg6c")
 
 [node name="Sector-7677" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(335.74023, 157.5314)
@@ -1002,6 +1024,7 @@ polygon = PackedVector2Array(-125.740234, -11.531403, -83.740234, -11.531403, -8
 data = SubResource("Resource_esya7")
 floor_height = 5.0
 ceiling_height = 10.0
+sector_material = ExtResource("10_ayg6c")
 
 [node name="Sector-467" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(466.6907, 177.94305)
@@ -1010,6 +1033,7 @@ polygon = PackedVector2Array(-3.6907043, -9.943054, 12.309296, -5.943054, 4.3092
 data = SubResource("Resource_1hg5c")
 floor_height = 7.5
 ceiling_height = 12.0
+sector_material = ExtResource("11_ayg6c")
 
 [node name="Button" parent="Sectors/Sector-467" instance=ExtResource("11_1rnkb")]
 position = Vector2(-2.6907043, 6.056946)
@@ -1025,6 +1049,7 @@ polygon = PackedVector2Array(22.309296, -5.943054, 26.309296, 13.056946, 4.30929
 data = SubResource("Resource_5u3p1")
 floor_height = 7.5
 ceiling_height = 11.0
+sector_material = ExtResource("11_ayg6c")
 
 [node name="Sector-467b" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(467, 178)
@@ -1033,6 +1058,7 @@ polygon = PackedVector2Array(39, -9, 39, 11, 26, 13, 22, -6)
 data = SubResource("Resource_kamwd")
 floor_height = 7.0
 ceiling_height = 10.0
+sector_material = ExtResource("11_ayg6c")
 
 [node name="TriangulatedMultisector-3272" parent="Sectors" instance=ExtResource("3_a102k")]
 position = Vector2(397, 172)
@@ -1047,7 +1073,8 @@ color = Color(0.87460613, 0.74822485, 0.7975924, 1)
 polygon = PackedVector2Array(0, 0, 5, -1, 10, 0, 11, 5, 10, 10, 5, 11, 0, 10, -1, 5)
 data = SubResource("Resource_kn7ro")
 floor_height = 1.0
-ceiling_height = 15.0
+ceiling_height = 10.0
+sector_material = ExtResource("14_qo51o")
 
 [node name="Configuration" type="Node" parent="Sectors/TriangulatedMultisector-3272/Sector-9229" node_paths=PackedStringArray("source")]
 script = ExtResource("9_7ccak")
@@ -1063,7 +1090,8 @@ color = Color(0.75131977, 0.5006813, 0.5985867, 1)
 polygon = PackedVector2Array(0, 0, 5, -1, 10, 0, 11, 5, 10, 10, 5, 11, 0, 10, -1, 5)
 data = SubResource("Resource_kwltn")
 floor_height = 2.0
-ceiling_height = 15.0
+ceiling_height = 10.0
+sector_material = ExtResource("14_qo51o")
 
 [node name="Configuration" type="Node" parent="Sectors/TriangulatedMultisector-3272/Sector-5566" node_paths=PackedStringArray("source")]
 script = ExtResource("9_7ccak")
@@ -1079,7 +1107,8 @@ color = Color(0.87460613, 0.74822485, 0.7975924, 1)
 polygon = PackedVector2Array(0, 0, 5, -1, 10, 0, 11, 5, 10, 10, 5, 11, 0, 10, -1, 5)
 data = SubResource("Resource_ckmwn")
 floor_height = 1.0
-ceiling_height = 15.0
+ceiling_height = 10.0
+sector_material = ExtResource("14_qo51o")
 
 [node name="Configuration" type="Node" parent="Sectors/TriangulatedMultisector-3272/Sector-8817" node_paths=PackedStringArray("source")]
 script = ExtResource("9_7ccak")
@@ -1096,6 +1125,7 @@ polygon = PackedVector2Array(22, 1, 35, 3, 35, 11, 26, 12, 15, 4)
 data = SubResource("Resource_4j321")
 floor_height = 6.0
 ceiling_height = 10.0
+sector_material = ExtResource("11_750xn")
 
 [node name="TriangulatedMultisector-3272a" parent="Sectors" instance=ExtResource("3_a102k")]
 position = Vector2(397, 172)
@@ -1110,7 +1140,8 @@ color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(2.2704468, -0.44633484, 11.270447, -0.44633484, 14.270447, 7.553665, 10.270447, 14.553665, -0.7295532, 12.553665)
 data = SubResource("Resource_elhaf")
 floor_height = 7.0
-ceiling_height = 15.0
+ceiling_height = 10.0
+sector_material = ExtResource("14_qo51o")
 
 [node name="Sector-6386" parent="Sectors/TriangulatedMultisector-3272a" instance=ExtResource("2_a102k")]
 position = Vector2(-2.894104, -60.89097)
@@ -1118,7 +1149,8 @@ color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(-0.105895996, -1.1090317, 3.894104, -5.1090317, 0.894104, 7.8909683, -1.105896, 1.8909683)
 data = SubResource("Resource_s8rn1")
 floor_height = 5.5
-ceiling_height = 15.0
+ceiling_height = 10.0
+sector_material = ExtResource("14_qo51o")
 
 [node name="Sector-5235" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(466.71524, 136.24728)
@@ -1127,6 +1159,7 @@ polygon = PackedVector2Array(-18.71524, -30.247284, 1.2847595, -10.247284, 10.28
 data = SubResource("Resource_kpnbw")
 floor_height = 0.5
 ceiling_height = 6.0
+sector_material = ExtResource("11_ayg6c")
 
 [node name="Sector-5235a" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(466.71524, 136.24728)
@@ -1135,6 +1168,7 @@ polygon = PackedVector2Array(26.28476, -14.247284, 31.28476, 5.752716, 10.284759
 data = SubResource("Resource_inhny")
 floor_height = 1.0
 ceiling_height = 7.0
+sector_material = ExtResource("11_ayg6c")
 
 [node name="Sector-5235b" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_a102k")]
 position = Vector2(466.71524, 136.24728)
@@ -1143,6 +1177,7 @@ polygon = PackedVector2Array(38.28476, -15.247284, 38.28476, 4.752716, 31.28476,
 data = SubResource("Resource_si88k")
 floor_height = 1.5
 ceiling_height = 7.5
+sector_material = ExtResource("11_ayg6c")
 portal_destination = NodePath("../Sector-467b")
 
 [node name="Sector-4846" parent="Sectors" instance=ExtResource("2_a102k")]
@@ -1151,6 +1186,7 @@ color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(-20, 25, 10, 6, 19, 7, -24, 42)
 data = SubResource("Resource_qihcm")
 ceiling_height = 3.0
+sector_material = ExtResource("11_750xn")
 
 [node name="Sector-4846a" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_a102k")]
 position = Vector2(336, 78)
@@ -1167,6 +1203,7 @@ color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(10, 6, -20, 25, -24, 17, 6, -2)
 data = SubResource("Resource_ayg6c")
 ceiling_height = 0.001
+sector_material = ExtResource("10_ayg6c")
 
 [node name="Configuration" type="Node" parent="Sectors/Sector-4846b" node_paths=PackedStringArray("source")]
 script = ExtResource("9_7ccak")
@@ -1190,6 +1227,7 @@ polygon = PackedVector2Array(3, -48, 10, -48, 19, -28, -5, -28)
 data = SubResource("Resource_bdhiw")
 floor_height = 0.25
 ceiling_height = 3.0
+sector_material = ExtResource("11_750xn")
 
 [node name="Sector-9129p" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(706, 235)
@@ -1206,6 +1244,7 @@ polygon = PackedVector2Array(-15, -36, 1, -50, 3, -48, -5, -28)
 data = SubResource("Resource_qawoe")
 floor_height = 0.5
 ceiling_height = 3.25
+sector_material = ExtResource("11_750xn")
 
 [node name="Sector-9129j" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(706, 235)
@@ -1214,6 +1253,7 @@ polygon = PackedVector2Array(-21, -47, -1, -52, 1, -50, -15, -36)
 data = SubResource("Resource_865gc")
 floor_height = 0.75
 ceiling_height = 3.5
+sector_material = ExtResource("11_750xn")
 
 [node name="Button" parent="Sectors/Sector-9129j" instance=ExtResource("11_1rnkb")]
 position = Vector2(-18, -41.5)
@@ -1230,6 +1270,7 @@ polygon = PackedVector2Array(-21, -66, -1, -58, -1, -52, -21, -47)
 data = SubResource("Resource_duq65")
 floor_height = 1.0
 ceiling_height = 3.75
+sector_material = ExtResource("11_750xn")
 
 [node name="Sector-9129m" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(706, 235)
@@ -1238,6 +1279,7 @@ polygon = PackedVector2Array(-25, -47, -25, -66, -21, -66, -21, -47)
 data = SubResource("Resource_idevf")
 floor_height = 1.0
 ceiling_height = 1.001
+sector_material = ExtResource("10_ayg6c")
 
 [node name="Configuration" type="Node" parent="Sectors/Sector-9129m" node_paths=PackedStringArray("source")]
 script = ExtResource("9_7ccak")
@@ -1254,6 +1296,7 @@ polygon = PackedVector2Array(-15, -75, 1, -60, -1, -58, -21, -66)
 data = SubResource("Resource_vpetx")
 floor_height = 1.25
 ceiling_height = 4.0
+sector_material = ExtResource("11_750xn")
 
 [node name="Sector-9129i" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(706, 235)
@@ -1262,6 +1305,7 @@ polygon = PackedVector2Array(-5, -82, 3, -62, 1, -60, -15, -75)
 data = SubResource("Resource_opk0q")
 floor_height = 1.5
 ceiling_height = 4.25
+sector_material = ExtResource("11_750xn")
 
 [node name="Sector-9129e" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(706, 235)
@@ -1270,6 +1314,7 @@ polygon = PackedVector2Array(16, -82, 9, -62, 3, -62, -5, -82)
 data = SubResource("Resource_nej2j")
 floor_height = 1.75
 ceiling_height = 4.5
+sector_material = ExtResource("11_750xn")
 
 [node name="Sector-9129n" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(706, 235)
@@ -1278,6 +1323,7 @@ polygon = PackedVector2Array(-5, -86, 16, -86, 16, -82, -5, -82)
 data = SubResource("Resource_3rv2j")
 floor_height = 1.5
 ceiling_height = 1.501
+sector_material = ExtResource("10_ayg6c")
 
 [node name="Configuration" type="Node" parent="Sectors/Sector-9129n" node_paths=PackedStringArray("source")]
 script = ExtResource("9_7ccak")
@@ -1318,6 +1364,7 @@ polygon = PackedVector2Array(33, -66, 13, -58, 11, -60, 27, -77)
 data = SubResource("Resource_vu21u")
 floor_height = 2.25
 ceiling_height = 5.0
+sector_material = ExtResource("11_750xn")
 
 [node name="Sector-9129k" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(756, 236)
@@ -1326,6 +1373,7 @@ polygon = PackedVector2Array(10, -61, 20, -81, 27, -77, 11, -60)
 data = SubResource("Resource_k7a20")
 floor_height = 2.0
 ceiling_height = 4.75
+sector_material = ExtResource("11_750xn")
 
 [node name="Sector-9129g" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(756, 236)
@@ -1334,6 +1382,7 @@ polygon = PackedVector2Array(33, -44, 13, -52, 13, -58, 33, -66)
 data = SubResource("Resource_fvfnt")
 floor_height = 2.5
 ceiling_height = 5.25
+sector_material = ExtResource("11_750xn")
 
 [node name="Sector-9129o" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(756, 236)
@@ -1342,6 +1391,7 @@ polygon = PackedVector2Array(37, -66, 37, -44, 33, -44, 33, -66)
 data = SubResource("Resource_mibrt")
 floor_height = 2.5
 ceiling_height = 2.501
+sector_material = ExtResource("10_ayg6c")
 
 [node name="Configuration" type="Node" parent="Sectors/Sector-9129o" node_paths=PackedStringArray("source")]
 script = ExtResource("9_7ccak")
@@ -1358,6 +1408,7 @@ polygon = PackedVector2Array(47, -71, 61, -71, 61, -41, 47, -41, 37, -44, 37, -6
 data = SubResource("Resource_c62bs")
 floor_height = 4.0
 ceiling_height = 10.0
+sector_material = ExtResource("11_750xn")
 portal_destination = NodePath("../Sector-3995")
 portal_wall = 1
 portal_destination_wall = 5
@@ -1369,6 +1420,7 @@ polygon = PackedVector2Array(29, -35, 12, -50, 13, -52, 33, -44)
 data = SubResource("Resource_4pfkq")
 floor_height = 2.75
 ceiling_height = 5.5
+sector_material = ExtResource("11_750xn")
 
 [node name="Sector-9129l" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_a102k")]
 position = Vector2(756, 236)
@@ -1377,6 +1429,7 @@ polygon = PackedVector2Array(25, -32, 11, -49, 12, -50, 29, -35)
 data = SubResource("Resource_cns10")
 floor_height = 3.0
 ceiling_height = 5.75
+sector_material = ExtResource("11_750xn")
 portal_destination = NodePath("../Sector-3623")
 portal_destination_wall = 1
 
@@ -1395,6 +1448,7 @@ polygon = PackedVector2Array(-17.374237, -2.395256, -8.374237, -10.395256, 11.62
 data = SubResource("Resource_eh1xy")
 floor_height = 5.0
 ceiling_height = 15.0
+sector_material = ExtResource("10_ayg6c")
 
 [node name="Configuration" type="Node" parent="Sectors/Sector-8620" node_paths=PackedStringArray("source")]
 script = ExtResource("9_7ccak")
@@ -1410,6 +1464,7 @@ polygon = PackedVector2Array(8, 2, 28, 20, 20, 28, 0, 10)
 data = SubResource("Resource_c8gdw")
 floor_height = 5.0
 ceiling_height = 10.0
+sector_material = ExtResource("10_ayg6c")
 portal_destination = NodePath("../Sector-6853")
 portal_destination_wall = 1
 
@@ -1420,6 +1475,7 @@ polygon = PackedVector2Array(0, 0, 4, 1, -6, 21, -7, 20)
 data = SubResource("Resource_elgkf")
 floor_height = 2.0
 ceiling_height = 4.5
+sector_material = ExtResource("11_750xn")
 portal_destination = NodePath("../Sector-9129k")
 portal_wall = 1
 
@@ -1429,6 +1485,7 @@ color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(-24.636719, -13.288071, -23.636719, -14.288071, -9.636719, 2.7119293, -15.636719, 6.7119293)
 data = SubResource("Resource_v3ohs")
 ceiling_height = 5.5
+sector_material = ExtResource("11_750xn")
 
 [node name="Sector-7308" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(153, 92)
@@ -1436,6 +1493,7 @@ color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(-12, -3, 21, -25, 15, -15, -5, -5)
 data = SubResource("Resource_cmxnk")
 ceiling_height = 5.0
+sector_material = ExtResource("11_ayg6c")
 
 [node name="TriangulatedMultisector-1602" parent="Sectors" instance=ExtResource("3_a102k")]
 visible = false
@@ -1468,6 +1526,7 @@ color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(2.098175, 7.3629303, 12.098175, 7.3629303, 13.098175, 11.36293, 1.098175, 11.36293)
 data = SubResource("Resource_qo51o")
 ceiling_height = 3.0
+sector_material = ExtResource("11_750xn")
 
 [node name="Button" parent="Sectors/Sector-2479" instance=ExtResource("11_1rnkb")]
 position = Vector2(7.098175, 7.3629303)
@@ -1484,6 +1543,7 @@ color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(-2, 7, 11, 8, 10, 12, -3, 11)
 data = SubResource("Resource_qvcjj")
 ceiling_height = 3.0
+sector_material = ExtResource("11_750xn")
 
 [node name="Button" parent="Sectors/Sector-6199" instance=ExtResource("11_1rnkb")]
 position = Vector2(4.5, 7.5)
