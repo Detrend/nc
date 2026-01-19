@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://dce6r4jkh8mi6"]
+
+[ext_resource type="Texture2D" uid="uid://byd7ucibixj52" path="res://imgs/button_off_bricks_1.png" id="1_psitf"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_fmak1"]
+
+[resource]
+script = ExtResource("2_fmak1")
+preview = ExtResource("1_psitf")
+scale = 0.55
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

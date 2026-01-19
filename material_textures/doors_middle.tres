@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://dtww6d6bqpx47"]
+
+[ext_resource type="Texture2D" uid="uid://dqkx5vq4hiaj0" path="res://imgs/doors_middle.png" id="1_2yoqc"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_8dtwg"]
+
+[resource]
+script = ExtResource("2_8dtwg")
+preview = ExtResource("1_2yoqc")
+scale = 0.55
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

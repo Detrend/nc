@@ -1,4 +1,4 @@
-[gd_scene load_steps=111 format=3 uid="uid://cta47u4q0nac4"]
+[gd_scene load_steps=110 format=3 uid="uid://cta47u4q0nac4"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_tdhj0"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_a102k"]
@@ -11,7 +11,6 @@
 [ext_resource type="Script" uid="uid://d1u512ud4vhrt" path="res://scripts/reactivity/SectorAltConfig.gd" id="9_7ccak"]
 [ext_resource type="PackedScene" uid="uid://cn044shocju7e" path="res://prefabs/WallAttachments/WallButton.tscn" id="11_1rnkb"]
 [ext_resource type="PackedScene" uid="uid://dgu644cct1eeb" path="res://prefabs/Entities/Possessed.tscn" id="11_81ckq"]
-[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/sector/Sector.gd" id="12_1rnkb"]
 [ext_resource type="PackedScene" uid="uid://hg6kt5ju3l3a" path="res://prefabs/Entities/Cultist.tscn" id="13_fhq8p"]
 [ext_resource type="PackedScene" uid="uid://cm0wgegxiipjw" path="res://prefabs/PickUps/HpSmall.tscn" id="14_1rnkb"]
 [ext_resource type="Script" uid="uid://crfvtueim4q0s" path="res://scripts/reactivity/Trigger.gd" id="14_750xn"]
@@ -798,7 +797,6 @@ position = Vector2(-122, 5)
 script = ExtResource("14_750xn")
 target = NodePath("../../../../../Activators/ActivatorDoorStaircase2")
 timeout = 1000000.0
-can_turn_off = true
 
 [node name="Sector-8813" parent="Sectors/TriangulatedMultisector-1145" instance=ExtResource("2_a102k")]
 position = Vector2(-24.923584, -44.645187)
@@ -1224,7 +1222,6 @@ position = Vector2(-18, -41.5)
 script = ExtResource("14_750xn")
 target = NodePath("../../../../Activators/ActivatorDoorStaircase1")
 timeout = 1000000.0
-can_turn_off = true
 
 [node name="Sector-9129c" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(706, 235)
@@ -1497,96 +1494,61 @@ target = NodePath("../../../../Activators/ActivatorDoor")
 timeout = 1000000.0
 can_turn_off = true
 
-[node name="Sector-934" type="Polygon2D" parent="Sectors" instance=ExtResource("2_a102k")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-934" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(636.8825, 175.1748)
 color = Color(0.87460613, 0.74822485, 0.7975924, 1)
 polygon = PackedVector2Array(-13.882507, 12.825195, 14.117493, -24.174805, 21.117493, -25.174805, 41.117493, -25.174805, 44.117493, -25.174805, 44.117493, -6.1748047, 44.117493, 12.825195)
-script = ExtResource("12_1rnkb")
 data = SubResource("Resource_yr7rp")
 floor_height = 1.0
 ceiling_height = 7.0
-sector_material = ExtResource("3_p88uy")
-show_portal_arrow = true
 
-[node name="Sector-934a" type="Polygon2D" parent="Sectors" instance=ExtResource("2_a102k")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-934a" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(636.8825, 175.1748)
 color = Color(0.87460613, 0.74822485, 0.7975924, 1)
 polygon = PackedVector2Array(41.117493, -38.174805, 44.117493, -38.174805, 44.117493, -25.174805, 41.117493, -25.174805)
-script = ExtResource("12_1rnkb")
 data = SubResource("Resource_750xn")
 floor_height = 1.0
 ceiling_height = 7.0
-sector_material = ExtResource("3_p88uy")
-show_portal_arrow = true
 
-[node name="Sector-1530" type="Polygon2D" parent="Sectors" instance=ExtResource("2_a102k")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-1530" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(641, 151)
 color = Color(0.87460613, 0.74822485, 0.7975924, 1)
 polygon = PackedVector2Array(-4, 0, 10, 0, -18, 37, -61, 30, -29, 0, -14, 0)
-script = ExtResource("12_1rnkb")
 data = SubResource("Resource_ycu8d")
 floor_height = 1.0
 ceiling_height = 7.0
-sector_material = ExtResource("3_p88uy")
-show_portal_arrow = true
 
-[node name="Sector-1530a" type="Polygon2D" parent="Sectors" instance=ExtResource("2_a102k")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-1530a" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(641, 151)
 color = Color(0.87460613, 0.74822485, 0.7975924, 1)
 polygon = PackedVector2Array(-14, -14, -4, -14, -4, 0, -14, 0)
-script = ExtResource("12_1rnkb")
 data = SubResource("Resource_wj1op")
 floor_height = 1.0
 ceiling_height = 7.0
-sector_material = ExtResource("3_p88uy")
-show_portal_arrow = true
 
-[node name="Sector-6732" type="Polygon2D" parent="Sectors" instance=ExtResource("2_a102k")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-6732" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(590, 159.80573)
 color = Color(0.87460613, 0.74822485, 0.7975924, 1)
 polygon = PackedVector2Array(9, -10.805725, 21.686462, -8.805725, -10, 21.194275, -10, -10.805725, -4, -10.805725, 0, -10.805725, 4, -10.805725)
-script = ExtResource("12_1rnkb")
 data = SubResource("Resource_yisy5")
 floor_height = 1.0
 ceiling_height = 7.0
-sector_material = ExtResource("3_p88uy")
-show_portal_arrow = true
 
-[node name="Sector-6732a" type="Polygon2D" parent="Sectors" instance=ExtResource("2_a102k")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-6732a" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(590, 159.80573)
 color = Color(0.87460613, 0.74822485, 0.7975924, 1)
 polygon = PackedVector2Array(9, -22.805725, 22, -22.805725, 21.686462, -8.805725, 9, -10.805725)
-script = ExtResource("12_1rnkb")
 data = SubResource("Resource_1iv76")
 floor_height = 1.0
 ceiling_height = 7.0
-sector_material = ExtResource("3_p88uy")
-show_portal_arrow = true
 
-[node name="Sector-7950" type="Polygon2D" parent="Sectors" instance=ExtResource("2_a102k")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-7950" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(651, 137)
 color = Color(0.87460613, 0.74822485, 0.7975924, 1)
 polygon = PackedVector2Array(0, 0, 7, 0, 7, 13, 0, 14)
-script = ExtResource("12_1rnkb")
 data = SubResource("Resource_wvwr6")
 floor_height = 1.0
 ceiling_height = 7.0
-sector_material = ExtResource("3_p88uy")
-show_portal_arrow = true
 
 [node name="Entities" type="Node2D" parent="."]
 

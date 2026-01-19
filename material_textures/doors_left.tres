@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://rhy6jtgh18mi"]
+
+[ext_resource type="Texture2D" uid="uid://ovosqtpx7gmf" path="res://imgs/doors_left.png" id="1_82sen"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_5cs66"]
+
+[resource]
+script = ExtResource("2_5cs66")
+preview = ExtResource("1_82sen")
+scale = 0.55
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

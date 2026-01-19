@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://ch4ti6q2t2t21"]
+
+[ext_resource type="Texture2D" uid="uid://c7byphnlh0xiq" path="res://imgs/wall_2.png" id="1_mdxxc"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_hry6s"]
+
+[resource]
+script = ExtResource("2_hry6s")
+preview = ExtResource("1_mdxxc")
+scale = 0.5
+tile_rotations_count = 4
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

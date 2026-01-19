@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://dbh1k4ldwww4m"]
+
+[ext_resource type="Texture2D" uid="uid://dtvmqcnkb5vlf" path="res://imgs/bricks_2.png" id="1_vkejl"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_oir3i"]
+
+[resource]
+script = ExtResource("2_oir3i")
+preview = ExtResource("1_vkejl")
+scale = 0.55
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

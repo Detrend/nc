@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://b4e3hy476g1tl"]
+
+[ext_resource type="Texture2D" uid="uid://h0ljlec031rl" path="res://imgs/button_off_wall_1.png" id="1_qe8xx"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_8n2iq"]
+
+[resource]
+script = ExtResource("2_8n2iq")
+preview = ExtResource("1_qe8xx")
+scale = 0.55
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"
