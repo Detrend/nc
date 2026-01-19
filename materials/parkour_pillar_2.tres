@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=12 format=3 uid="uid://dis7ixepyskju"]
+
+[ext_resource type="Resource" uid="uid://ch4ti6q2t2t21" path="res://material_textures/Wall_2.tres" id="1_43l2b"]
+[ext_resource type="Resource" uid="uid://hwlv04oo2a08" path="res://material_textures/Floor3.tres" id="2_kcupo"]
+[ext_resource type="Texture2D" uid="uid://dtu5fh5ewxna6" path="res://imgs/floor3.png" id="3_d1p4s"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="4_vkc0s"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="5_q1tvy"]
+[ext_resource type="Resource" uid="uid://crtucqy2narq3" path="res://material_textures/Bricks.tres" id="6_xgo3k"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="7_3cu01"]
+[ext_resource type="Resource" uid="uid://behq3vtxqr8q1" path="res://material_textures/composites/OrnamentWall1.tres" id="8_xqe4v"]
+
+[sub_resource type="Resource" id="Resource_yci1d"]
+script = ExtResource("5_q1tvy")
+priority = 1
+texture = ExtResource("6_xgo3k")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[sub_resource type="Resource" id="Resource_cr5p4"]
+script = ExtResource("7_3cu01")
+priority = 1
+_placement_type = 9
+wall_length_range = Vector2(0, 2)
+texture = ExtResource("6_xgo3k")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[sub_resource type="Resource" id="Resource_caupq"]
+script = ExtResource("7_3cu01")
+priority = 1
+_placement_type = 11
+wall_length_range = Vector2(2, 9999)
+texture = ExtResource("8_xqe4v")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[resource]
+script = ExtResource("4_vkc0s")
+preview = ExtResource("3_d1p4s")
+wall_default = SubResource("Resource_yci1d")
+wall_rules = Array[ExtResource("7_3cu01")]([SubResource("Resource_cr5p4"), SubResource("Resource_caupq")])
+floor = ExtResource("2_kcupo")
+ceiling = ExtResource("1_43l2b")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"
