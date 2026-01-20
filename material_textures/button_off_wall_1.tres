@@ -6,5 +6,5 @@
 [resource]
 script = ExtResource("2_8n2iq")
 preview = ExtResource("1_qe8xx")
-scale = 0.55
+id_triggered = "button_on_wall_1"
 metadata/_custom_type_script = "uid://chjmx3djsb6cj"

@@ -7,5 +7,5 @@
 script = ExtResource("2_52p6d")
 preview = ExtResource("1_tr5yh")
 scale = 0.5
-tile_rotations_count = 4
+tile_rotation_increment = 0.0
 metadata/_custom_type_script = "uid://chjmx3djsb6cj"
