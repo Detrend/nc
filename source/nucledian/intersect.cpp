@@ -970,6 +970,11 @@ f32 Frustum2::angle_difference(const Frustum2& other) const
 }
 
 //==============================================================================
+/**
++ point{ x = 11.9542952 y = -14.2328987 r = 11.9542952 ... }	glm::vec<2, float, 0>
++to_a{ x = -0.951572061 y = 0.307425737 r = -0.951572061 ... }	glm::vec<2, float, 0>
++to_b{ x = 0.951565325 y = -0.307446599 r = 0.951565325 ... }	glm::vec<2, float, 0>
+/**/
 Frustum2 Frustum2::from_point_and_portal(vec2 point, vec2 a, vec2 b)
 {
   auto new_frustum = Frustum2
