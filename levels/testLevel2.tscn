@@ -6,18 +6,19 @@
 [ext_resource type="PackedScene" uid="uid://2xarq0korji0" path="res://prefabs/Entities/PlayerPosition.tscn" id="3_hw0gl"]
 [ext_resource type="Resource" uid="uid://b0ot7qa5l7k8d" path="res://materials/default_texture.tres" id="3_p88uy"]
 [ext_resource type="Script" uid="uid://cft80p5qydrwt" path="res://scripts/sector/SectorProperties.gd" id="4_hw0gl"]
-[ext_resource type="Resource" uid="uid://blfhwtielbamq" path="res://materials/small_room.tres" id="4_yisy5"]
+[ext_resource type="Resource" uid="uid://blfhwtielbamq" path="res://materials/lvl2/small_room.tres" id="4_yisy5"]
 [ext_resource type="Script" uid="uid://d3f0i3y2s53si" path="res://scripts/sector/StairMaker.gd" id="5_p88uy"]
 [ext_resource type="PackedScene" uid="uid://b8tr8d62bd5s2" path="res://prefabs/PickUps/HpBig.tscn" id="8_3yx7i"]
-[ext_resource type="Resource" uid="uid://c34c3oqtcsdap" path="res://materials/broken_wall_and_ceil.tres" id="8_ycu8d"]
+[ext_resource type="Resource" uid="uid://c34c3oqtcsdap" path="res://materials/lvl2/broken_wall_and_ceil.tres" id="8_ycu8d"]
 [ext_resource type="Script" uid="uid://d1u512ud4vhrt" path="res://scripts/reactivity/SectorAltConfig.gd" id="9_7ccak"]
-[ext_resource type="Resource" uid="uid://dhhae3v7amxur" path="res://materials/connecting.tres" id="10_ayg6c"]
+[ext_resource type="Resource" uid="uid://dhhae3v7amxur" path="res://materials/lvl2/connecting.tres" id="10_ayg6c"]
 [ext_resource type="Resource" uid="uid://cj2t3mf314rsj" path="res://materials/outsides_hill.tres" id="10_qvcjj"]
 [ext_resource type="PackedScene" uid="uid://cn044shocju7e" path="res://prefabs/WallAttachments/WallButton.tscn" id="11_1rnkb"]
 [ext_resource type="PackedScene" uid="uid://dgu644cct1eeb" path="res://prefabs/Entities/Possessed.tscn" id="11_81ckq"]
-[ext_resource type="Resource" uid="uid://wbq6l6c38uhq" path="res://materials/big_room.tres" id="11_750xn"]
-[ext_resource type="Resource" uid="uid://diodph1xiouf0" path="res://materials/cave_texture.tres" id="11_ayg6c"]
-[ext_resource type="Resource" uid="uid://bukx1atttvm3n" path="res://materials/broken_wall.tres" id="12_qo51o"]
+[ext_resource type="Resource" uid="uid://wbq6l6c38uhq" path="res://materials/lvl2/big_room.tres" id="11_750xn"]
+[ext_resource type="Resource" uid="uid://diodph1xiouf0" path="res://materials/lvl2/cave_texture.tres" id="11_ayg6c"]
+[ext_resource type="Resource" uid="uid://dmo641fc58mtd" path="res://material_textures/composites/Button2b_3D.tres" id="12_fh6m7"]
+[ext_resource type="Resource" uid="uid://bukx1atttvm3n" path="res://materials/lvl2/broken_wall.tres" id="12_qo51o"]
 [ext_resource type="PackedScene" uid="uid://hg6kt5ju3l3a" path="res://prefabs/Entities/Cultist.tscn" id="13_fhq8p"]
 [ext_resource type="PackedScene" uid="uid://cm0wgegxiipjw" path="res://prefabs/PickUps/HpSmall.tscn" id="14_1rnkb"]
 [ext_resource type="Resource" uid="uid://dru3antcr08im" path="res://materials/outsides.tres" id="14_3x66b"]
@@ -27,9 +28,8 @@
 [ext_resource type="Script" uid="uid://bbt07sf8vceiw" path="res://scripts/reactivity/Activator.gd" id="19_750xn"]
 [ext_resource type="Resource" uid="uid://dis7ixepyskju" path="res://materials/parkour_pillar_2.tres" id="20_1iv76"]
 [ext_resource type="Resource" uid="uid://bhkmhwn1gce07" path="res://material_textures/composites/Button2_3D.tres" id="20_w02fj"]
-[ext_resource type="Resource" uid="uid://c24jvv4xuawmu" path="res://materials/doors.tres" id="21_3x66b"]
+[ext_resource type="Resource" uid="uid://c24jvv4xuawmu" path="res://materials/lvl2/doors.tres" id="21_3x66b"]
 [ext_resource type="PackedScene" uid="uid://dbqtclaunulw7" path="res://prefabs/WallAttachments/WallTextureOverride.tscn" id="21_441pw"]
-[ext_resource type="Script" uid="uid://d4dmybuav1ksc" path="res://scripts/visuals/WallTextureOverride.gd" id="22_b1rou"]
 [ext_resource type="PackedScene" uid="uid://c36mdme0482de" path="res://materials/skyboxes/skybox_default.tscn" id="22_wvwr6"]
 [ext_resource type="Resource" uid="uid://dyel65pf2hq5a" path="res://material_textures/Wall.tres" id="23_fh6m7"]
 [ext_resource type="PackedScene" uid="uid://2lt4yhe883yf" path="res://prefabs/Lights/AmbientLight.tscn" id="31_b1rou"]
@@ -456,6 +456,7 @@ script = ExtResource("4_hw0gl")
 floor_height = 0.5
 ceiling_height = 3.25
 material = ExtResource("11_750xn")
+wall_texturing_offset = Vector2(0.465, 0)
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_865gc"]
@@ -838,7 +839,7 @@ sector_material = ExtResource("11_750xn")
 
 [node name="Button" parent="Sectors/TriangulatedMultisector-1145/Sector-4239" instance=ExtResource("11_1rnkb")]
 position = Vector2(-122, 5)
-texture = ExtResource("20_w02fj")
+texture = ExtResource("12_fh6m7")
 stripe_floor_offset = 1.0
 stripe_width = 1.0
 
@@ -1100,11 +1101,9 @@ floor_height = 7.5
 ceiling_height = 12.0
 sector_material = ExtResource("11_ayg6c")
 
-[node name="TextureOverride" type="Node2D" parent="Sectors/Sector-467" instance=ExtResource("21_441pw")]
+[node name="TextureOverride" parent="Sectors/Sector-467" instance=ExtResource("21_441pw")]
 position = Vector2(-6.6907043, 5.056946)
-script = ExtResource("22_b1rou")
 texture = ExtResource("23_fh6m7")
-_use_ceiling_offset = true
 
 [node name="Button" parent="Sectors/Sector-467" instance=ExtResource("11_1rnkb")]
 position = Vector2(-6.6907043, 5.056946)
@@ -1333,8 +1332,8 @@ sector_material = ExtResource("11_750xn")
 
 [node name="Button" parent="Sectors/Sector-9129j" instance=ExtResource("11_1rnkb")]
 position = Vector2(-18, -41.5)
-texture = ExtResource("20_w02fj")
-stripe_floor_offset = 1.0
+texture = ExtResource("12_fh6m7")
+stripe_floor_offset = 0.92
 stripe_width = 1.0
 
 [node name="Trigger" type="Node" parent="Sectors/Sector-9129j/Button" node_paths=PackedStringArray("target")]

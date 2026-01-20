@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="ExtrudedTexture" load_steps=5 format=3 uid="uid://dmo641fc58mtd"]
+
+[ext_resource type="Script" uid="uid://dpohkvy6wk8m2" path="res://scripts/visuals/ExtrudedTexture.gd" id="1_rcqfx"]
+[ext_resource type="Script" uid="uid://b7mxery2plfee" path="res://scripts/visuals/TextureOffsetAdjuster.gd" id="2_xf2wm"]
+[ext_resource type="Resource" uid="uid://dce6r4jkh8mi6" path="res://material_textures/button_off_bricks_1.tres" id="3_g6hkl"]
+
+[sub_resource type="Resource" id="Resource_ushbu"]
+script = ExtResource("2_xf2wm")
+texture = ExtResource("3_g6hkl")
+height_expression = "-stripe_height_min / scale"
+_arguments_preview = PackedStringArray("og_offset_x", "og_offset_y", "scale", "wall_height_min", "wall_height_max", "stripe_height_min", "stripe_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling")
+metadata/_custom_type_script = "uid://b7mxery2plfee"
+
+[resource]
+script = ExtResource("1_rcqfx")
+texture = SubResource("Resource_ushbu")
+metadata/_custom_type_script = "uid://dpohkvy6wk8m2"
