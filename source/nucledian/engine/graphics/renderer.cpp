@@ -464,12 +464,15 @@ void Renderer::push_sector_to_ssbo(SectorID sector_id, WallID enter_portal, cons
   const u32 walls_count = static_cast<u32>(walls_data.size());
   m_walls_ssbo.extend(std::move(walls_data));
 
+  const f32 y_scale = transform[1].y;
+  const f32 y_trans = transform[3].y;
+
   m_sectors_ssbo.push_back
   (
     SectorGPU
     {
-      .floor_z = map.sectors[sector_id].floor_height,
-      .ceil_z = map.sectors[sector_id].ceil_height,
+      .floor_y = map.sectors[sector_id].floor_height * y_scale + y_trans,
+      .ceil_y = map.sectors[sector_id].ceil_height * y_scale + y_trans,
       .walls_offset = walls_offset,
       .walls_count = walls_count,
     }
