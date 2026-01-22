@@ -85,8 +85,8 @@ private:
 
   struct SectorGPU
   {
-    f32  floor_z;
-    f32  ceil_z;
+    f32  floor_y;
+    f32  ceil_y;
     u32  walls_offset;
     u32  walls_count;
   };
