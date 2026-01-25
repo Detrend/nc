@@ -382,11 +382,11 @@ static bool calc_path_raw
   {
     SectorID index;
     f32      dist;
-  };
 
-  auto cmp = [](const CurPoint l, const CurPoint r)
-  {
-    return l.dist > r.dist;
+    constexpr bool operator<(const CurPoint& other) const
+    {
+      return dist > other.dist;
+    }
   };
 
   SectorID startID = map.get_sector_from_point(start_pos.xz);
@@ -399,7 +399,7 @@ static bool calc_path_raw
   }
 
   SectorID curID = startID;
-  std::priority_queue<CurPoint, std::vector<CurPoint>, decltype(cmp)> fringe;
+  std::priority_queue<CurPoint> fringe;
   std::map<SectorID, PrevPoint> visited;
 
   visited.insert
@@ -1631,7 +1631,7 @@ const
   }
 }
 
-//=============================================================================
+//==============================================================================
 std::vector<vec3> PhysLevel::calc_path_relative
 (
   vec3  start_pos,
@@ -1688,7 +1688,7 @@ const
   return final_path;
 }
 
-//=============================================================================
+//==============================================================================
 f32 PhysLevel::calc_3d_sound_volume
 (
 	vec3 camera_pos, vec3 sound_pos, f32 sound_distance
@@ -1757,4 +1757,91 @@ const
   return dist_coeff * dist_coeff;
 }
 
-} 
+//==============================================================================
+void PhysLevel::floodfill_nearby_sectors
+(
+  vec3 point, f32 max_distance, StackVector<SectorID, 32>& sectors_out
+)
+const
+{
+  struct ToVisit
+  {
+    SectorID sid;
+    vec2     pt;
+    f32      dist;   // Distance from the start
+
+    constexpr bool operator<(const ToVisit& other) const
+    {
+      return dist > other.dist;
+    }
+  };
+
+  std::priority_queue<ToVisit> to_visit;
+  StackVector<SectorID, 128>   visited;  // 256 bytes
+
+  vec2     point_2d = point.xz();
+  SectorID start_id = map.get_sector_from_point(point_2d);
+
+  if (start_id == INVALID_SECTOR_ID)
+  {
+    // Outside of all sectors
+    return;
+  }
+
+  to_visit.push(ToVisit
+  {
+    .sid  = start_id,
+    .pt   = point_2d,
+    .dist = 0.0f,
+  });
+
+  while (to_visit.size())
+  {
+    auto[sector, pt, dstart] = to_visit.top();
+    to_visit.pop();
+
+    map.for_each_portal_of_sector(sector, [&](WallID this_wall)
+    {
+      WallID next_wall = map_helpers::next_wall(map, sector, this_wall);
+
+      vec2 wall_pt1 = map.walls[this_wall].pos;
+      vec2 wall_pt2 = map.walls[next_wall].pos;
+
+      SectorID neighbor = map.walls[this_wall].portal_sector_id;
+
+      f32 total_dist = dist::point_line_2d(pt, wall_pt1, wall_pt2) + dstart;
+      if (total_dist >= max_distance)
+      {
+        return;
+      }
+
+      auto beg = visited.begin();
+      auto end = visited.end();
+      if (std::find(beg, end, neighbor) != end)
+      {
+        // Already visited
+        return;
+      }
+
+      vec2 pt_from = (wall_pt1 + wall_pt2) * 0.5f;
+
+      // Nc portal case (have to transform the point)
+      if (map.walls[this_wall].is_nc_portal())
+      {
+        mat4 trans = map.calc_portal_to_portal_projection(sector, this_wall);
+        pt_from = (trans * vec4{pt_from.x, 0.0f, pt_from.y, 1.0f}).xz();
+      }
+
+      visited.push_back(neighbor);
+      sectors_out.push_back(neighbor);
+      to_visit.push(ToVisit
+      {
+        .sid  = neighbor,
+        .pt   = pt_from,
+        .dist = total_dist,
+      });
+    });
+  }
+}
+
+}

@@ -499,6 +499,8 @@ void Player::do_attack()
     (
       WEAPON_STATS[weapon].projectile, from, dir, this->get_id()
     );
+
+    GameSystem::get().alert_nearby_enemies(20.0f);
   }
 
   sound_system.play(WEAPON_STATS[weapon].shoot_snd, 0.5f);

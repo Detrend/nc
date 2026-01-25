@@ -103,9 +103,13 @@ private: friend class EntityRegistry;
 };
 
 // A surprise tool that will help us later.
-// This way, we can serialize any entity to bytes and desereialize it later
+// This way, we can serialize any entity to bytes and deserialize it later
 // without any problem. Having a vtable would interfere with this and would
 // result in undefined behaviour.
+// Note that for now, we don't serialize any entities to bytes (and we can't
+// because some entities have containers or pointers as member variables).
+// However, we plan to do this later and therefore I am banning vtables right
+// away.
 static_assert(std::is_polymorphic_v<Entity> == false);
 
 }
