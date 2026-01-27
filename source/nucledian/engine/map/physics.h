@@ -246,7 +246,8 @@ struct PhysLevel
     f32   step_up,                   // Max step height, positive or 0
     f32   step_down,                 // Max drop down height, positive or 0
     bool  do_smoothing     = true,   // Should the path be smoothed out?
-    mat4* nc_transform_opt = nullptr // Nucledian transformation of the portals
+    mat4* nc_transform_opt = nullptr,// Nucledian transformation of the portals
+    bool* found_path_opt   = nullptr // If we found a path
   ) const;
 
   // Calculates the loudness of the sound in 3D world.

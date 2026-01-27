@@ -467,8 +467,16 @@ void Enemy::handle_ai_alert(f32 delta)
       vec2 last_pt2 = current_path.target_pt_world_space.xz();
       if (no_path || distance(last_pt2, this->follow_target_pos.xz()) > 5.0f)
       {
+        // Portal transform of the path
         mat4 nc_transform;
-        this->current_path.points = lvl.calc_path_relative
+
+        // Points relative to our portal transform
+        std::vector<vec3> path_points;
+
+        bool found_one         = false;
+        bool only_for_shooting = false;
+
+        path_points = lvl.calc_path_relative
         (
           this->get_position(),
           this->follow_target_pos,
@@ -477,11 +485,51 @@ void Enemy::handle_ai_alert(f32 delta)
           this->get_height() * 0.5f,
           this->get_height() * 0.5f,
           true,
-          &nc_transform
+          &nc_transform,
+          &found_one
         );
 
-        this->current_path.target_pt_world_space = this->follow_target_pos;
-        this->current_path.target_transform_inv  = inverse(nc_transform);
+        if (!found_one && !get_stats().is_melee)
+        {
+          // We calculate this path only for shooting, because we need to know
+          // where the player is relative to us when we account for portals.
+          // We do this only for ranged enemies, because they can just stand on
+          // a spot and shoot.
+          only_for_shooting = true;
+
+          f32 r = 0.25f; // So we can shoot through spaces we can't squeeze
+          f32 h = 0.25f; // through
+          f32 up_down = 300.0f; // Arbitrary large number so we can shoot from up or below
+
+          path_points = lvl.calc_path_relative
+          (
+            this->get_position(),
+            this->follow_target_pos,
+            r, h, up_down, up_down,
+            false, // No need to smooth
+            &nc_transform,
+            &found_one
+          );
+        }
+        else if (get_stats().is_melee)
+        {
+          // Calculate random shit path for melee dudes that are out of reach
+          // of the target.
+          // This will make them harder to hit.
+        }
+
+        if (found_one)
+        {
+          // We found a path, let's set it
+          this->current_path.target_pt_world_space = this->follow_target_pos;
+          this->current_path.target_transform_inv  = inverse(nc_transform);
+
+          if (!only_for_shooting)
+          {
+            // It might be only a visibility path for shooting
+            this->current_path.points = std::move(path_points);
+          }
+        }
       }
 
       // Cooldown after attack
@@ -524,13 +572,24 @@ void Enemy::handle_ai_alert(f32 delta)
       this->velocity.x = final_force.x;
       this->velocity.z = final_force.y;
 
-      bool is_moving = length(this->velocity.xz()) > 0.1f;
       ActorAnimState desired_state = ActorAnimStates::idle;
 
+      bool is_moving = length(this->velocity.xz()) > 0.1f;
       if (is_moving)
       {
         this->facing = normalize(vec3{final_force.x, 0.0f, final_force.y});
         desired_state = ActorAnimStates::walk;
+      }
+      else
+      {
+        vec3 rel_target_pos =
+        (
+          current_path.target_transform_inv * vec4{this->follow_target_pos, 1.0f}
+        ).xyz();
+
+        vec2 facing2d = normalize_or(rel_target_pos.xz() - position_2d, VEC2_X);
+        this->facing = vec3{facing2d.x, 0.0f, facing2d.y};
+        desired_state = ActorAnimStates::idle;
       }
 
       if (this->can_attack(*target) && this->can_see_target)

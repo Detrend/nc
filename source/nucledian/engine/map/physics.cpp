@@ -395,7 +395,7 @@ static bool calc_path_raw
   {
     // MR says: Hotfix for the case when the enemy or player are outside of the
     // map and therefore "get_sector_from_point" returns invalid sector ID.
-    return true;
+    return false;
   }
 
   SectorID curID = startID;
@@ -1641,7 +1641,8 @@ std::vector<vec3> PhysLevel::calc_path_relative
   f32   step_up,
   f32   step_down,
   bool  do_smoothing,
-  mat4* nc_transform_opt
+  mat4* nc_transform_opt,
+  bool* found_path_opt
 )
 const
 {
@@ -1649,7 +1650,7 @@ const
   StackVector<mat4, 20> transforms;
 
   // Calculate the path
-  phys_helpers::calc_path_raw
+  bool found = phys_helpers::calc_path_raw
   (
     *this,
     start_pos,
@@ -1661,6 +1662,11 @@ const
     points,
     transforms
   );
+
+  if (found_path_opt)
+  {
+    *found_path_opt = found;
+  }
 
   nc_assert(points.size() == transforms.size());
 
