@@ -261,7 +261,10 @@ struct PhysLevel
   // Spreads into sectors near the point and returns their IDs
   void floodfill_nearby_sectors
   (
-    vec3 point, f32 distance, StackVector<SectorID, 32>& sectors_out
+    vec3                       point,
+    f32                        distance,
+    f32                        sector_height_threshold,
+    StackVector<SectorID, 32>& sectors_out
   ) const;
 };
 

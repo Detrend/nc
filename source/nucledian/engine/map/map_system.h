@@ -160,6 +160,10 @@ struct SectorData
   // Calculates how much have the floor and ceiling moved compared to the
   // default state.
   void get_shift_amount(f32* out_floor, f32* out_ceil) const;
+
+  // Calculates the current height of the sector from floor to ceiling.
+  // Negative if ceiling is under the floor (which should never happen!)
+  f32 get_sector_height() const;
 };
 
 using PortType = u8;

@@ -1760,7 +1760,10 @@ const
 //==============================================================================
 void PhysLevel::floodfill_nearby_sectors
 (
-  vec3 point, f32 max_distance, StackVector<SectorID, 32>& sectors_out
+  vec3                       point,
+  f32                        max_distance,
+  f32                        sector_height_threshold,
+  StackVector<SectorID, 32>& sectors_out
 )
 const
 {
@@ -1808,10 +1811,18 @@ const
       vec2 wall_pt2 = map.walls[next_wall].pos;
 
       SectorID neighbor = map.walls[this_wall].portal_sector_id;
+      nc_assert(map.is_valid_sector_id(neighbor));
+
+      if (map.sectors[neighbor].get_sector_height() < sector_height_threshold)
+      {
+        // The sector is not tall enough, maybe a closed door?
+        return;
+      }
 
       f32 total_dist = dist::point_line_2d(pt, wall_pt1, wall_pt2) + dstart;
       if (total_dist >= max_distance)
       {
+        // Too far away
         return;
       }
 

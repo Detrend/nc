@@ -1005,32 +1005,6 @@ void GameSystem::play_3d_sound
 }
 
 //==============================================================================
-void GameSystem::alert_nearby_enemies(f32 distance)
-{
-  Player* player = get_player();
-  nc_assert(player);
-
-  StackVector<SectorID, 32> sectors_to_alert;
-  get_level().floodfill_nearby_sectors
-  (
-    player->get_position(), distance, sectors_to_alert
-  );
-
-  const SectorMapping& mapping = get_sector_mapping();
-  EntityRegistry& registry = get_entities();
-
-  for (SectorID sid : sectors_to_alert)
-  {
-    mapping.for_each_in_sector<Enemy>(sid, [&](EntityID eid, mat4)
-    {
-      Enemy* enemy = registry.get_entity<Enemy>(eid);
-      nc_assert(enemy);
-      enemy->damage(0, player->get_id());
-    });
-  }
-}
-
-//==============================================================================
 EntityAttachment& GameSystem::get_attachment_mgr()
 {
   nc_assert(game->attachment);

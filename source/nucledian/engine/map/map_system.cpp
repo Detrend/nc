@@ -1181,6 +1181,12 @@ void SectorData::get_shift_amount(f32* bottom, f32* top) const
 }
 
 //==============================================================================
+f32 SectorData::get_sector_height() const
+{
+  return ceil_height - floor_height;
+}
+
+//==============================================================================
 PortType WallData::get_portal_type() const
 {
   if (this->portal_sector_id == INVALID_SECTOR_ID)

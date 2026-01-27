@@ -91,9 +91,6 @@ public:
 
   void play_3d_sound(vec3 position, SoundID sound, f32 distance, f32 volume);
 
-	// Alerts enemies close to the player
-	void alert_nearby_enemies(f32 distance);
-
 private:
   // Clean up the current map, entities, mapping etc..
   void cleanup_map();

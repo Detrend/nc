@@ -11,6 +11,8 @@
 #include <engine/map/map_system.h>
 #include <engine/map/map_dynamics.h>
 #include <engine/map/physics.h>
+#include <engine/entity/sector_mapping.h>
+
 #include <engine/game/game_system.h>
 #include <engine/entity/entity_system.h>
 #include <engine/enemies/enemy.h>
@@ -499,8 +501,11 @@ void Player::do_attack()
     (
       WEAPON_STATS[weapon].projectile, from, dir, this->get_id()
     );
+  }
 
-    GameSystem::get().alert_nearby_enemies(20.0f);
+  if (WEAPON_STATS[weapon].loudness_dist > 0.0f)
+  {
+    this->alert_nearby_enemies(WEAPON_STATS[weapon].loudness_dist);
   }
 
   sound_system.play(WEAPON_STATS[weapon].shoot_snd, 0.5f);
@@ -526,6 +531,34 @@ void Player::change_weapon(WeaponType new_weapon)
 
     this->weapon_fsm.set_state_length(state, anim.time);
     this->weapon_fsm.add_trigger(state, trigger_t, 0);
+  }
+}
+
+//==============================================================================
+void Player::alert_nearby_enemies(f32 distance)
+{
+  // Do not distribute sound through closed doors
+  constexpr f32 SECTOR_HEIGHT_THRESHOLD = 0.05f;
+
+  GameSystem& game_system = GameSystem::get();
+
+  StackVector<SectorID, 32> sectors_to_alert;
+  game_system.get_level().floodfill_nearby_sectors
+  (
+    this->get_position(), distance, SECTOR_HEIGHT_THRESHOLD, sectors_to_alert
+  );
+
+  const SectorMapping& mapping = game_system.get_sector_mapping();
+  EntityRegistry& registry = game_system.get_entities();
+
+  for (SectorID sid : sectors_to_alert)
+  {
+    mapping.for_each_in_sector<Enemy>(sid, [&](EntityID eid, mat4)
+    {
+      Enemy* enemy = registry.get_entity<Enemy>(eid);
+      nc_assert(enemy);
+      enemy->damage(0, this->get_id());
+    });
   }
 }
 
