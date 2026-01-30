@@ -5,6 +5,8 @@ constexpr const char* FRAGMENT_SOURCE = R"(
 #define TILE_SIZE_X 16
 #define TILE_SIZE_Y 16
 
+#define LIGHT_BANDS 48
+
 struct DirLight
 {
     vec3  color;
@@ -86,6 +88,9 @@ void main()
 
   TileData data = tile_data[tile_index];
 
+  #define VOX_CNT 16
+  position = round(position * VOX_CNT) / VOX_CNT;
+
   for (int i = 0; i < data.count; i++)
   {
     uint light_index = light_indices[data.offset + i];
@@ -98,6 +103,7 @@ void main()
     float angle = dot(stitched_normal, light_direction) + float(billboard);
 
     float attenuation = pow(max(light.radius - distance, 0.0f) / light.radius, light.falloff);
+    //attenuation = pow(ceil(pow(attenuation, 2.0f) * LIGHT_BANDS) / LIGHT_BANDS, 0.5f);
 
     vec3 diffuse = max(angle, 0.0f) * albedo;
 

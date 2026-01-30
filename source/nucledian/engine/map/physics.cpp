@@ -382,11 +382,11 @@ static bool calc_path_raw
   {
     SectorID index;
     f32      dist;
-  };
 
-  auto cmp = [](const CurPoint l, const CurPoint r)
-  {
-    return l.dist > r.dist;
+    constexpr bool operator<(const CurPoint& other) const
+    {
+      return dist > other.dist;
+    }
   };
 
   SectorID startID = map.get_sector_from_point(start_pos.xz);
@@ -395,11 +395,11 @@ static bool calc_path_raw
   {
     // MR says: Hotfix for the case when the enemy or player are outside of the
     // map and therefore "get_sector_from_point" returns invalid sector ID.
-    return true;
+    return false;
   }
 
   SectorID curID = startID;
-  std::priority_queue<CurPoint, std::vector<CurPoint>, decltype(cmp)> fringe;
+  std::priority_queue<CurPoint> fringe;
   std::map<SectorID, PrevPoint> visited;
 
   visited.insert
@@ -1631,7 +1631,7 @@ const
   }
 }
 
-//=============================================================================
+//==============================================================================
 std::vector<vec3> PhysLevel::calc_path_relative
 (
   vec3  start_pos,
@@ -1641,7 +1641,8 @@ std::vector<vec3> PhysLevel::calc_path_relative
   f32   step_up,
   f32   step_down,
   bool  do_smoothing,
-  mat4* nc_transform_opt
+  mat4* nc_transform_opt,
+  bool* found_path_opt
 )
 const
 {
@@ -1649,7 +1650,7 @@ const
   StackVector<mat4, 20> transforms;
 
   // Calculate the path
-  phys_helpers::calc_path_raw
+  bool found = phys_helpers::calc_path_raw
   (
     *this,
     start_pos,
@@ -1661,6 +1662,11 @@ const
     points,
     transforms
   );
+
+  if (found_path_opt)
+  {
+    *found_path_opt = found;
+  }
 
   nc_assert(points.size() == transforms.size());
 
@@ -1688,7 +1694,7 @@ const
   return final_path;
 }
 
-//=============================================================================
+//==============================================================================
 f32 PhysLevel::calc_3d_sound_volume
 (
 	vec3 camera_pos, vec3 sound_pos, f32 sound_distance
@@ -1757,4 +1763,102 @@ const
   return dist_coeff * dist_coeff;
 }
 
-} 
+//==============================================================================
+void PhysLevel::floodfill_nearby_sectors
+(
+  vec3                       point,
+  f32                        max_distance,
+  f32                        sector_height_threshold,
+  StackVector<SectorID, 32>& sectors_out
+)
+const
+{
+  struct ToVisit
+  {
+    SectorID sid;
+    vec2     pt;
+    f32      dist;   // Distance from the start
+
+    constexpr bool operator<(const ToVisit& other) const
+    {
+      return dist > other.dist;
+    }
+  };
+
+  std::priority_queue<ToVisit> to_visit;
+  StackVector<SectorID, 128>   visited;  // 256 bytes
+
+  vec2     point_2d = point.xz();
+  SectorID start_id = map.get_sector_from_point(point_2d);
+
+  if (start_id == INVALID_SECTOR_ID)
+  {
+    // Outside of all sectors
+    return;
+  }
+
+  to_visit.push(ToVisit
+  {
+    .sid  = start_id,
+    .pt   = point_2d,
+    .dist = 0.0f,
+  });
+
+  while (to_visit.size())
+  {
+    auto[sector, pt, dstart] = to_visit.top();
+    to_visit.pop();
+
+    map.for_each_portal_of_sector(sector, [&](WallID this_wall)
+    {
+      WallID next_wall = map_helpers::next_wall(map, sector, this_wall);
+
+      vec2 wall_pt1 = map.walls[this_wall].pos;
+      vec2 wall_pt2 = map.walls[next_wall].pos;
+
+      SectorID neighbor = map.walls[this_wall].portal_sector_id;
+      nc_assert(map.is_valid_sector_id(neighbor));
+
+      if (map.sectors[neighbor].get_sector_height() < sector_height_threshold)
+      {
+        // The sector is not tall enough, maybe a closed door?
+        return;
+      }
+
+      f32 total_dist = dist::point_line_2d(pt, wall_pt1, wall_pt2) + dstart;
+      if (total_dist >= max_distance)
+      {
+        // Too far away
+        return;
+      }
+
+      auto beg = visited.begin();
+      auto end = visited.end();
+      if (std::find(beg, end, neighbor) != end)
+      {
+        // Already visited
+        return;
+      }
+
+      vec2 pt_from = (wall_pt1 + wall_pt2) * 0.5f;
+
+      // Nc portal case (have to transform the point)
+      if (map.walls[this_wall].is_nc_portal())
+      {
+        mat4 trans = map.calc_portal_to_portal_projection(sector, this_wall);
+        pt_from = (trans * vec4{pt_from.x, 0.0f, pt_from.y, 1.0f}).xz();
+      }
+
+      visited.push_back(neighbor);
+      sectors_out.push_back(neighbor);
+      to_visit.push(ToVisit
+      {
+        .sid  = neighbor,
+        .pt   = pt_from,
+        .dist = total_dist,
+      });
+    });
+  }
+}
+
+}

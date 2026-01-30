@@ -22,6 +22,7 @@ WeaponStats WEAPON_STATS[] =
     .rate_of_fire = 1.0f, .ammo = AmmoTypes::melee,
     .projectile_cnt = 1, .hold_to_fire = false,
     .shoot_snd = Sounds::hurt,
+    .loudness_dist = 0.0f,
   },
 
   // Shotgun
@@ -29,7 +30,8 @@ WeaponStats WEAPON_STATS[] =
   {
     .projectile = ProjectileTypes::wrench,
     .rate_of_fire = 1.0f, .ammo = AmmoTypes::slugs,
-    .projectile_cnt = 5, .hold_to_fire = false
+    .projectile_cnt = 5, .hold_to_fire = false,
+    .loudness_dist = 20.0f,
   },
 
   // Plasma rifle
@@ -39,6 +41,7 @@ WeaponStats WEAPON_STATS[] =
     .rate_of_fire = 0.5f, .ammo = AmmoTypes::plasma,
     .projectile_cnt = 1, .hold_to_fire = true,
     .shoot_snd = Sounds::plasma_rifle,
+    .loudness_dist = 20.0f,
   },
 
   // Nail gun

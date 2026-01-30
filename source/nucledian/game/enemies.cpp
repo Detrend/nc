@@ -12,11 +12,13 @@ EnemyStats ENEMY_STATS[] =
   {
     .move_speed = 2.5f,
     .projectile = ProjectileTypes::fire_ball,
-    .max_hp     = 100,
+    .max_hp     = 80,
     .height     = 2.0f,
     .eye_height = 1.85f,
     .atk_height = 1.6f,
     .radius     = 0.35f,
+    .atk_delay_min = 0.5f,
+    .atk_delay_max = 2.5f,
     .state_sprite_cnt
     {
       1,  // idle
@@ -29,7 +31,7 @@ EnemyStats ENEMY_STATS[] =
     {
       1.0f,
       1.25f,
-      2.0f,
+      1.5f,
       2.0f,
       1.6f,
     },
@@ -40,7 +42,7 @@ EnemyStats ENEMY_STATS[] =
   // Possessed
   EnemyStats
   {
-    .move_speed    = 5.0f,
+    .move_speed    = 4.0f,
     .projectile    = ProjectileTypes::possessed_fist,
     .max_hp        = 200,
     .radius        = 0.4f,
@@ -58,7 +60,7 @@ EnemyStats ENEMY_STATS[] =
     {
       1.0f,
       1.0f,
-      1.0f,
+      1.5f,
       2.0f,
       1.6f,
     },
