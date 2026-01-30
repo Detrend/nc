@@ -1,4 +1,4 @@
-[gd_scene load_steps=130 format=3 uid="uid://cta47u4q0nac4"]
+[gd_scene load_steps=129 format=3 uid="uid://cta47u4q0nac4"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_tdhj0"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_a102k"]
@@ -619,13 +619,6 @@ ceiling_height = 5.0
 material = ExtResource("11_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
-[sub_resource type="Resource" id="Resource_fh6m7"]
-script = ExtResource("4_hw0gl")
-floor_height = 2.0
-ceiling_height = 5.5
-material = ExtResource("3_p88uy")
-metadata/_custom_type_script = "uid://cft80p5qydrwt"
-
 [sub_resource type="Resource" id="Resource_qo51o"]
 script = ExtResource("4_hw0gl")
 ceiling_height = 3.0
@@ -1006,12 +999,6 @@ data = SubResource("Resource_w7ga0")
 ceiling_height = 5.0
 sector_material = ExtResource("11_ayg6c")
 
-[node name="@Polygon2D@227918" parent="Sectors" instance=ExtResource("2_a102k")]
-visible = false
-position = Vector2(-389, -71)
-color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(576, 40, 600, 48, 600, 72, 576, 81)
-
 [node name="Sector-6853" parent="Sectors" instance=ExtResource("2_a102k")]
 position = Vector2(388.23972, 314.6344)
 color = Color(0.501961, 0, 0.196078, 1)
@@ -1140,7 +1127,7 @@ data = SubResource("Resource_qnm01")
 [node name="Generated2" type="Node2D" parent="Sectors/TriangulatedMultisector-3272"]
 
 [node name="Sector-9229" parent="Sectors/TriangulatedMultisector-3272" instance=ExtResource("2_a102k")]
-position = Vector2(6, -21)
+position = Vector2(9, -20)
 color = Color(0.87460613, 0.74822485, 0.7975924, 1)
 polygon = PackedVector2Array(0, 0, 5, -1, 10, 0, 11, 5, 10, 10, 5, 11, 0, 10, -1, 5)
 data = SubResource("Resource_kn7ro")
@@ -1157,7 +1144,7 @@ ceiling_mode = 2
 ceiling_height = 10.0
 
 [node name="Sector-5566" parent="Sectors/TriangulatedMultisector-3272" instance=ExtResource("2_a102k")]
-position = Vector2(-45, -23)
+position = Vector2(-31, -24)
 color = Color(0.75131977, 0.5006813, 0.5985867, 1)
 polygon = PackedVector2Array(0, 0, 5, -1, 10, 0, 11, 5, 10, 10, 5, 11, 0, 10, -1, 5)
 data = SubResource("Resource_kwltn")
@@ -1174,7 +1161,7 @@ ceiling_mode = 2
 ceiling_height = 10.0
 
 [node name="Sector-8817" parent="Sectors/TriangulatedMultisector-3272" instance=ExtResource("2_a102k")]
-position = Vector2(-103, -18)
+position = Vector2(-95, -19)
 color = Color(0.87460613, 0.74822485, 0.7975924, 1)
 polygon = PackedVector2Array(0, 0, 5, -1, 10, 0, 11, 5, 10, 10, 5, 11, 0, 10, -1, 5)
 data = SubResource("Resource_ckmwn")
@@ -1577,19 +1564,9 @@ data = SubResource("Resource_cmxnk")
 ceiling_height = 5.0
 sector_material = ExtResource("11_ayg6c")
 
-[node name="TriangulatedMultisector-1602" parent="Sectors" instance=ExtResource("3_a102k")]
-visible = false
-position = Vector2(598.0059, -90.53)
-polygon = PackedVector2Array(-25.005905, -8.470001, 10.994095, -53.47, 3.9940948, 0.5299988, 32.994095, -17.470001, 18.994095, 9.529999, 70.994095, -1.4700012, 27.994095, 32.53, -7.005905, 20.529999)
-only_manual_triangulation = true
-data = SubResource("Resource_fh6m7")
-
-[node name="Generated2" type="Node2D" parent="Sectors/TriangulatedMultisector-1602"]
-
 [node name="Parcour" type="Node2D" parent="Sectors"]
 
 [node name="Stairs" type="Node2D" parent="Sectors"]
-visible = false
 script = ExtResource("5_p88uy")
 set_floor = true
 floor_begin = 2.0
@@ -1717,14 +1694,13 @@ ceiling_height = 10.0
 sector_material = ExtResource("11_ayg6c")
 
 [node name="Entities" type="Node2D" parent="."]
-visible = false
 
 [node name="Possessed14" parent="Entities" instance=ExtResource("11_81ckq")]
 position = Vector2(-368, 40.00003)
 rotation = -2.9359994
 
 [node name="Cultist" parent="Entities" instance=ExtResource("13_fhq8p")]
-position = Vector2(-187.99998, 3.000001)
+position = Vector2(-181, 1.9999994)
 rotation = 2.6909337
 
 [node name="Cultist2" parent="Entities" instance=ExtResource("13_fhq8p")]
@@ -1736,7 +1712,7 @@ position = Vector2(-168, 31.999998)
 rotation = 1.8804984
 
 [node name="Possessed2" parent="Entities" instance=ExtResource("11_81ckq")]
-position = Vector2(-106, -16)
+position = Vector2(-92, 31)
 rotation = 2.6492825
 
 [node name="Cultist3" parent="Entities" instance=ExtResource("13_fhq8p")]
