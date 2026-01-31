@@ -94,6 +94,7 @@ PointLightGPU PointLight::get_gpu_data(const vec3& position, u32 stitched_sector
     .color     = color,
     .radius    = radius,
     .falloff   = falloff,
+    .sector_id = stitched_sector_id,
   };
 }
 
