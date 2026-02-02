@@ -1,4 +1,4 @@
-[gd_scene load_steps=145 format=3 uid="uid://cta47u4q0nac4"]
+[gd_scene load_steps=146 format=3 uid="uid://cta47u4q0nac4"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_tdhj0"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_a102k"]
@@ -38,6 +38,7 @@
 [ext_resource type="Script" uid="uid://t310iayp4xsr" path="res://scripts/reactivity/WallAttachedTrigger.gd" id="29_2qdqy"]
 [ext_resource type="PackedScene" uid="uid://2lt4yhe883yf" path="res://prefabs/Lights/AmbientLight.tscn" id="31_b1rou"]
 [ext_resource type="PackedScene" uid="uid://ctwevapidummr" path="res://prefabs/Lights/PointLight.tscn" id="38_8hkti"]
+[ext_resource type="Script" uid="uid://cw0a2syvnfeio" path="res://scripts/reactivity/hooks/LevelTransition.gd" id="38_xcudj"]
 [ext_resource type="PackedScene" uid="uid://bve5ovba1xpi5" path="res://prefabs/Lights/DirectionalLight.tscn" id="39_xcudj"]
 
 [sub_resource type="Resource" id="Resource_yr3c6"]
@@ -443,7 +444,7 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 [sub_resource type="Resource" id="Resource_y0es2"]
 script = ExtResource("4_hw0gl")
 ceiling_height = 9.5
-material = ExtResource("20_1iv76")
+material = ExtResource("11_750xn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_fauak"]
@@ -1388,7 +1389,7 @@ polygon = PackedVector2Array(63, -14, 132, -10, -3, 13)
 script = ExtResource("19_fh6m7")
 data = SubResource("Resource_y0es2")
 ceiling_height = 9.5
-sector_material = ExtResource("20_1iv76")
+sector_material = ExtResource("11_750xn")
 show_portal_arrow = true
 
 [node name="TriangulatedMultisector-3272a" parent="Sectors" instance=ExtResource("3_a102k")]
@@ -2071,8 +2072,14 @@ script = ExtResource("19_750xn")
 [node name="ActivatorExit" type="Node" parent="Activators"]
 script = ExtResource("19_750xn")
 
+[node name="ActivatorHook_LevelTransition" type="Node" parent="Activators/ActivatorExit"]
+script = ExtResource("38_xcudj")
+destination = "level_test1"
+metadata/_custom_type_script = "uid://cw0a2syvnfeio"
+
 [node name="PointLight" parent="." instance=ExtResource("38_8hkti")]
 position = Vector2(-15, -28)
+radius = 5.0
 
 [node name="PointLight2" parent="." instance=ExtResource("38_8hkti")]
 position = Vector2(216, 58)
@@ -2080,9 +2087,11 @@ position = Vector2(216, 58)
 [node name="DirectionalLight" parent="." instance=ExtResource("39_xcudj")]
 position = Vector2(-390, -34)
 direction = Vector3(1, 1, -1)
+intensity = 0.5
 
 [node name="PointLight3" parent="." instance=ExtResource("38_8hkti")]
 position = Vector2(-285, -146)
+radius = 5.0
 
 [node name="PointLight4" parent="." instance=ExtResource("38_8hkti")]
 position = Vector2(234, -54)
@@ -2104,9 +2113,10 @@ position = Vector2(-28, 103)
 
 [node name="PointLight10" parent="." instance=ExtResource("38_8hkti")]
 position = Vector2(-258, 16)
+radius = 5.0
 
 [node name="PointLight11" parent="." instance=ExtResource("38_8hkti")]
 position = Vector2(-120, -70)
 
 [node name="PointLight12" parent="." instance=ExtResource("38_8hkti")]
-position = Vector2(-22, 15)
+position = Vector2(-22, 16)
