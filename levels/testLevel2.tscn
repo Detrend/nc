@@ -663,7 +663,7 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_eh1xy"]
 script = ExtResource("4_hw0gl")
-floor_height = 5.0
+floor_height = 4.9
 ceiling_height = 8.0
 material = ExtResource("10_ayg6c")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
@@ -672,7 +672,7 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 script = ExtResource("4_hw0gl")
 floor_height = 5.0
 ceiling_height = 8.0
-material = ExtResource("10_ayg6c")
+material = ExtResource("12_qo51o")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_elgkf"]
@@ -1732,7 +1732,7 @@ position = Vector2(207.37424, 21.395264)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(-17.374237, -2.395256, -8.374237, -10.395256, 11.625763, 7.604744, 2.625763, 16.604744)
 data = SubResource("Resource_eh1xy")
-floor_height = 5.0
+floor_height = 4.9
 ceiling_height = 8.0
 sector_material = ExtResource("10_ayg6c")
 
@@ -1741,7 +1741,7 @@ script = ExtResource("9_7ccak")
 source = NodePath("../../../Activators/ActivatorLift")
 floor_mode = 2
 ceiling_mode = 2
-ceiling_height = 15.0
+ceiling_height = 8.0
 
 [node name="Sector-7403" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_a102k")]
 position = Vector2(199, 1)
@@ -1750,7 +1750,7 @@ polygon = PackedVector2Array(8, 2, 28, 20, 20, 28, 0, 10)
 data = SubResource("Resource_c8gdw")
 floor_height = 5.0
 ceiling_height = 8.0
-sector_material = ExtResource("10_ayg6c")
+sector_material = ExtResource("12_qo51o")
 portal_destination = NodePath("../Sector-6853")
 portal_destination_wall = 1
 
@@ -2079,7 +2079,7 @@ position = Vector2(216, 58)
 
 [node name="DirectionalLight" parent="." instance=ExtResource("39_xcudj")]
 position = Vector2(-390, -34)
-direction = Vector3(1, 0, -1)
+direction = Vector3(1, 1, -1)
 
 [node name="PointLight3" parent="." instance=ExtResource("38_8hkti")]
 position = Vector2(-285, -146)
