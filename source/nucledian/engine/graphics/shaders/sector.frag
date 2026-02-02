@@ -1,6 +1,7 @@
 constexpr const char* FRAGMENT_SOURCE = R"(
 
 #version 430 core
+#extension GL_NV_gpu_shader5 : enable
 
 struct TextureData {
   vec2 pos;
@@ -25,12 +26,14 @@ layout(location = 0) out vec4 g_position;
 layout(location = 1) out vec4 g_normal;
 layout(location = 2) out vec3 g_stitched_normal;
 layout(location = 3) out vec4 g_albedo;
+layout(location = 4) out uint g_sector;
 
 layout(binding = 0) uniform sampler2D game_atlas_sampler;
 layout(binding = 1) uniform sampler2D level_atlas_sampler;
 
 layout(location = 2) uniform vec2 game_atlas_size;
 layout(location = 3) uniform vec2 level_atlas_size;
+layout(location = 5) uniform uint sector_id;
 
 layout(std430, binding = 0) buffer texture_buffer {
     TextureData textures[];
@@ -90,6 +93,7 @@ void main()
   g_normal.w = 1.0f;
   g_stitched_normal = normalize(stitched_normal);
   g_albedo = color;
+  g_sector = sector_id;
 }
 
 )";

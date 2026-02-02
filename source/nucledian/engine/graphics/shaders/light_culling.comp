@@ -17,6 +17,7 @@ struct PointLight
     vec3  color;
     float radius;
     float falloff;
+    uint  sector_id;
 };
 
 struct TileData

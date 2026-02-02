@@ -1,5 +1,5 @@
 // Project Nucledian Source File
-#include <engine/graphics/top_down_debug.h>
+#include <engine/graphics/debug/top_down_debug.h>
 
 #ifdef NC_DEBUG_DRAW
 

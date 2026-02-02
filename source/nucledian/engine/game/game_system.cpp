@@ -23,7 +23,7 @@
 #include <engine/graphics/entities/sky_box.h>
 #include <engine/graphics/resources/texture.h>
 #include <engine/graphics/graphics_system.h>
-#include <engine/graphics/gizmo.h>
+#include <engine/graphics/debug/gizmo.h>
 
 #include <engine/sound/sound_system.h>
 #include <engine/sound/sound_resources.h>
@@ -39,7 +39,7 @@
 #include <game/item.h>
 #include <game/item_resources.h> // PickupTypes::...
 #include <game/enemies.h>        // EnemyTypes::...
-#include <engine/graphics/prop.h>
+#include <engine/graphics/entities/prop.h>
 #include <engine/map/map_dynamics_hooks.h>
 
 #include <math/lingebra.h>
@@ -460,8 +460,12 @@ static void load_json_map
     const vec3   position  = load_json_position(js_light);
     const color4 color     = load_json_vector<4>(js_light["color"]);
     const float  intensity = js_light["intensity"];
-    const float  radius    = js_light["radius"];
-    const float  falloff   = js_light["falloff"];
+    const float  radius    = js_light.contains("radius") 
+      ? cast<f32>(js_light["radius"])
+      : 3.0f;
+    const float  falloff   = js_light.contains("falloff")
+      ? cast<f32>(js_light["falloff"])
+      : 1.0f;
 
     entities.create_entity<PointLight>(position, radius, intensity, falloff, color);
   }

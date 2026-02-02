@@ -7,7 +7,7 @@
 
 #include <engine/graphics/gl_types.h>
 #include <engine/graphics/resources/res_lifetime.h>
-#include <engine/graphics/texture_id.h>
+#include <engine/graphics/resources/texture_id.h>
 
 // Ignore unused variable in debug code on clang
 #ifdef NC_COMPILER_CLANG
@@ -31,6 +31,14 @@ namespace nc
 
 struct TextureAtlas;
 
+struct TextureGPU
+{
+  vec2 pos;
+  vec2 size;
+  f32  in_game_atlas;
+  f32  _padding;
+};
+
 class TextureHandle
 {
 public:
@@ -48,6 +56,8 @@ public:
 
   vec2 get_pos() const;
   vec2 get_size() const;
+
+  TextureGPU get_gpu_data() const;
 
 private:
   TextureHandle() {}

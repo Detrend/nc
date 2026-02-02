@@ -3,11 +3,12 @@
 
 #include <types.h>
 #include <vector> // required for std::hash specialization
+#include <common.h>
 
 namespace nc
 {
 
-using EntityType     = u32;
+using EntityType     = u8;
 using EntityTypeMask = u64;
 using SectorSnapType = u8;
 
@@ -19,14 +20,21 @@ struct EntityID
   u32        idx;
 
   // Converts to u64 so it can be treated as a normal integer.
-  u64 as_u64() const
+  u32 as_u32() const
   {
-    return (u64{type} << 32) | u64{idx};
+    nc_assert(idx <= (1 << 24) - 1);
+    
+    return (static_cast<u32>(idx) << 24) | static_cast<u32>(type);
+    // return (u64{ type } << 24) | u64{ idx };
   }
 };
 static_assert(sizeof(EntityID) == 8);
 
-constexpr EntityID INVALID_ENTITY_ID = EntityID{.type = ~0ul, .idx = ~0ul};
+constexpr EntityID INVALID_ENTITY_ID = EntityID
+{
+  .type = std::numeric_limits<EntityType>().max(),
+  .idx  = std::numeric_limits<u32>().max(),
+ };
 
 constexpr EntityTypeMask entity_type_to_mask(EntityType type)
 {

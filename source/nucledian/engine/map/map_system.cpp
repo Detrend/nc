@@ -622,6 +622,12 @@ bool MapSectors::for_each_portal_of_sector(
 }
 
 //==============================================================================
+void MapSectors::for_each_wall_of_sector(SectorID sector, WallVisitor visitor) const
+{
+    map_helpers::for_each_wall(*this, sector, [&visitor](WallID current, WallID) { visitor(current); });
+}
+
+//==============================================================================
 SectorID MapSectors::get_sector_from_point(vec2 point) const
 {
   SectorID sector = INVALID_SECTOR_ID;
@@ -745,30 +751,29 @@ const
     auto push_triangle = [&](vec3 normal, const SurfaceData& surface, vec3 a, f32 a_length, vec3 b, f32 b_length, vec3 c, f32 c_length) {
         Vertex
         {
-        .position = a,
-        .normal = normal,
-        .cumulative_wall_len = a_length,
-        .surface = surface,
+          .position = a,
+          .normal = normal,
+          .cumulative_wall_len = a_length,
+          .surface = surface,
         }
         .push_to(vertices_out);
         Vertex
         {
-        .position = b,
-        .normal = normal,
-        .cumulative_wall_len = b_length,
-        .surface = surface,
+          .position = b,
+          .normal = normal,
+          .cumulative_wall_len = b_length,
+          .surface = surface,
         }
         .push_to(vertices_out);
         Vertex
         {
-        .position = c,
-        .normal = normal,
-        .cumulative_wall_len = c_length,
-        .surface = surface,
+          .position = c,
+          .normal = normal,
+          .cumulative_wall_len = c_length,
+          .surface = surface,
         }
         .push_to(vertices_out);
-        };
-
+    };
 
     if (sector.floor_surface.should_show) {
         const vec3 first_pt_grounded = with_y(first_pt, sector.floor_height);

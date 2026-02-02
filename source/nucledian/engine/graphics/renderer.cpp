@@ -9,7 +9,7 @@
 #include <math/lingebra.h>
 
 #include <engine/graphics/camera.h>
-#include <engine/graphics/gizmo.h>
+#include <engine/graphics/debug/gizmo.h>
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/entities/lights.h>
@@ -53,47 +53,26 @@ Renderer::Renderer(u32 win_w, u32 win_h)
 
   // setup texture data ssbo
   // TODO: this should be done every time new texture atlas is created
-  struct TextureData
   {
-    vec2 pos;
-    vec2 size;
-    f32  in_game_atlas;
-    f32  _padding;
-  };
-  glGenBuffers(1, &m_texture_data_ssbo);
-  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_texture_data_ssbo);
-  const std::vector<TextureHandle> textures = TextureManager::get().get_textures();
-  std::vector<TextureData> data(textures.size());
-  for (std::size_t i = 0; i < data.size(); ++i)
-  {
-    data[i].pos = textures[i].get_pos();
-    data[i].size = textures[i].get_size();
-    data[i].in_game_atlas = (textures[i].get_lifetime() == ResLifetime::Game ? 1.0f : 0.0f);
+    const std::vector<TextureHandle> textures = TextureManager::get().get_textures();
+    m_textures_ssbo = SSBOBuffer<TextureGPU>(textures.size());
+    for (auto&& texture : textures)
+    {
+      m_textures_ssbo.push_back(texture.get_gpu_data());
+    }
+    m_textures_ssbo.update_gpu_data(true);
   }
-  glBufferData(GL_SHADER_STORAGE_BUFFER, data.size() * sizeof(TextureData), data.data(), GL_STATIC_DRAW);
 
-  // setup light culling and light pass buffers
-  
-  const size_t num_tiles_x = (win_w + LIGHT_CULLING_TILE_SIZE_X - 1) / LIGHT_CULLING_TILE_SIZE_X;
-  const size_t num_tiles_y = (win_h + LIGHT_CULLING_TILE_SIZE_Y - 1) / LIGHT_CULLING_TILE_SIZE_Y;
-  const size_t num_tiles = num_tiles_x * num_tiles_y;
-
-  std::array<std::pair<GLuint*, size_t>, 5> buffers
-  {{
-    { &m_dir_light_ssbo, DirectionalLight::MAX_DIRECTIONAL_LIGHTS * sizeof(DirLightGPU) },
-    { &m_point_light_ssbo, PointLight::MAX_VISIBLE_POINT_LIGHTS * sizeof(PointLightGPU) },
-    { &m_light_index_ssbo, PointLight::MAX_LIGHTS_PER_TILE * num_tiles * sizeof(u32) },
-    { &m_tile_data_ssbo, num_tiles * 2 * sizeof(u32) },
-    { &m_atomic_counter, sizeof(u32) },
-  }};
-
-  for (auto&& [buffer, size] : buffers)
+  // setup light culling ssbos
   {
-    glGenBuffers(1, buffer);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, *buffer);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+    const size_t num_tiles_x = (win_w + LIGHT_CULLING_TILE_SIZE_X - 1) / LIGHT_CULLING_TILE_SIZE_X;
+    const size_t num_tiles_y = (win_h + LIGHT_CULLING_TILE_SIZE_Y - 1) / LIGHT_CULLING_TILE_SIZE_Y;
+    const size_t num_tiles = num_tiles_x * num_tiles_y;
+
+    m_light_index_ssbo = SSBOBuffer<u32>(MAX_LIGHTS_PER_TILE * num_tiles);
+    m_light_tiles_ssbo = SSBOBuffer<u32>(num_tiles * 2);
+    m_light_counter_ssbo = SSBOBuffer<u32>(1);
   }
-  glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
 //==============================================================================
@@ -101,32 +80,20 @@ void Renderer::on_window_resized(u32 w, u32 h)
 {
   m_window_size = ivec2{w, h};
 
-  // clean them up first before recreating
+  // resize g buffers
   this->destroy_g_buffers();
-
-  // and recreate with the new size
   this->create_g_buffers(w, h);
-
-  // and recompute projection matrix for this aspect ratio
   this->recompute_projection(w, h, GraphicsSystem::FOV);
 
   // resize ssbo buffers
-  const size_t num_tiles_x = (w + LIGHT_CULLING_TILE_SIZE_X - 1) / LIGHT_CULLING_TILE_SIZE_X;
-  const size_t num_tiles_y = (h + LIGHT_CULLING_TILE_SIZE_Y - 1) / LIGHT_CULLING_TILE_SIZE_Y;
-  const size_t num_tiles = num_tiles_x * num_tiles_y;
-
-  std::array<std::pair<GLuint*, size_t>, 2> buffers
-  {{
-    { &m_light_index_ssbo, PointLight::MAX_LIGHTS_PER_TILE * num_tiles * sizeof(u32) },
-    { &m_tile_data_ssbo, num_tiles * 2 * sizeof(u32) },
-  }};
-
-  for (auto&& [buffer, size] : buffers)
   {
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, *buffer);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+    const size_t num_tiles_x = (w + LIGHT_CULLING_TILE_SIZE_X - 1) / LIGHT_CULLING_TILE_SIZE_X;
+    const size_t num_tiles_y = (h + LIGHT_CULLING_TILE_SIZE_Y - 1) / LIGHT_CULLING_TILE_SIZE_Y;
+    const size_t num_tiles = num_tiles_x * num_tiles_y;
+
+    m_light_index_ssbo.resize(MAX_LIGHTS_PER_TILE * num_tiles);
+    m_light_tiles_ssbo.resize(num_tiles * 2);
   }
-  glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
 
 //==============================================================================
@@ -150,8 +117,18 @@ const
   };
 
   do_geometry_pass(camera_data, gun_data);
+  update_ssbos();
   do_ligh_culling_pass(camera_data);
   do_lighting_pass(camera_data.position);
+
+  m_dir_light_ssbo.clear();
+  m_point_light_ssbo.clear();
+  m_sectors_ssbo.clear();
+  m_sector_map_ssbo.clear();
+  m_walls_ssbo.clear();
+
+  m_sector_id_map.clear();
+  m_light_gpu_data_indices.clear();
 
   m_light_checker.registry.clear();
   m_entity_checker.registry.clear();
@@ -164,35 +141,47 @@ const ShaderProgramHandle& Renderer::get_solid_material() const
 }
 
 //==============================================================================
-bool Renderer::EntityRedundancyChecker::check_redundant(u64 id, vec3 pos)
+std::pair<bool, size_t> Renderer::EntityRedundancyChecker::check_redundant(u64 id, vec3 pos)
 {
   auto it = registry.find(id);
   if (it == registry.end())
   {
     // Never seen before, our first time together
     registry.insert({id, std::vector<vec3>{pos}});
-    return true;
+    return { true, 0 };
   }
 
   std::vector<vec3>& tlist = it->second;
-  for (vec3 pt : tlist)
+  for (size_t i = 0; i < tlist.size(); ++i)
   {
+    const vec3& pt = tlist[i];
+
     if (distance2(pt, pos) <= DIST_THRESHOLD * DIST_THRESHOLD)
     {
       // It is there
-      return false;
+      return { false, i };
     }
   }
 
   // We saw this light before, but from a different spot with a different
   // transformation matrix.
   tlist.push_back(pos);
-  return true;
+  return { true, tlist.size() - 1 };
 }
 
 //==============================================================================
 static GLuint create_g_buffer(GLint internal_format, GLenum attachment, u32 w, u32 h)
 {
+  GLenum format = GL_RGBA;
+  GLenum type   = GL_FLOAT;
+
+  // TODO: temp solution
+  if (internal_format == GL_R32UI)
+  {
+    format = GL_RED_INTEGER;
+    type   = GL_UNSIGNED_INT;
+  }
+
   GLuint g_handle;
   glGenTextures(1, &g_handle);
   glBindTexture(GL_TEXTURE_2D, g_handle);
@@ -203,8 +192,9 @@ static GLuint create_g_buffer(GLint internal_format, GLenum attachment, u32 w, u
     static_cast<GLsizei>(w),
     static_cast<GLsizei>(h),
     0,
-    GL_RGBA,
-    GL_FLOAT,
+    // format and type are not relevant for us because we modify the g-bufers only from GPU
+    format,
+    type,
     nullptr
   );
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -228,18 +218,25 @@ void Renderer::destroy_g_buffers()
   if (m_g_position)
   {
     // These must be valid always
+    nc_assert(m_g_position);
     nc_assert(m_g_normal);
+    nc_assert(m_g_stitched_normal);
     nc_assert(m_g_albedo);
+    nc_assert(m_g_sector);
     nc_assert(glIsTexture(m_g_position));
     nc_assert(glIsTexture(m_g_normal));
+    nc_assert(glIsTexture(m_g_stitched_normal));
     nc_assert(glIsTexture(m_g_albedo));
+    nc_assert(glIsTexture(m_g_sector));
 
-    GLuint textures[3]{m_g_position, m_g_normal, m_g_albedo};
-    glDeleteTextures(3, textures);
+    GLuint textures[5]{m_g_position, m_g_normal, m_g_stitched_normal, m_g_albedo, m_g_sector};
+    glDeleteTextures(5, textures);
 
-    m_g_position = 0;
-    m_g_normal   = 0;
-    m_g_albedo   = 0;
+    m_g_position        = 0;
+    m_g_normal          = 0;
+    m_g_stitched_normal = 0;
+    m_g_albedo          = 0;
+    m_g_sector          = 0;
   }
 }
 
@@ -250,19 +247,21 @@ void Renderer::create_g_buffers(u32 width, u32 height)
   glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
 
   // create g buffers
-  constexpr std::array<GLenum, 4> attachments =
+  constexpr std::array<GLenum, 5> attachments =
   {
     GL_COLOR_ATTACHMENT0,
     GL_COLOR_ATTACHMENT1,
     GL_COLOR_ATTACHMENT2,
-    GL_COLOR_ATTACHMENT3
+    GL_COLOR_ATTACHMENT3,
+    GL_COLOR_ATTACHMENT4,
   };
   // TODO: move specular strength to stitched normal g buffer
   m_g_position        = create_g_buffer(GL_RGBA32F    , attachments[0], width, height);
   // TODO: merge stitched normals and normals into one g buffer
   m_g_normal          = create_g_buffer(GL_RGBA8_SNORM, attachments[1], width, height);
-  m_g_stitched_normal = create_g_buffer(GL_RGB8_SNORM, attachments[2], width, height);
+  m_g_stitched_normal = create_g_buffer(GL_RGB8_SNORM , attachments[2], width, height);
   m_g_albedo          = create_g_buffer(GL_RGBA8      , attachments[3], width, height);
+  m_g_sector          = create_g_buffer(GL_R32UI      , attachments[4], width, height);
   glDrawBuffers(static_cast<GLsizei>(attachments.size()), attachments.data());
 
   // create depth-stencil buffer
@@ -315,10 +314,14 @@ const
 {
   glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+  
+  const GLuint clear_value = 0;
+  glClearBufferuiv(GL_COLOR, 4, &clear_value);
 
 #ifdef NC_DEBUG_DRAW
   GizmoManager::get().draw_gizmos();
 #endif
+
   render_sectors(camera);
   render_entities(camera);
   render_portals(camera);
@@ -331,24 +334,22 @@ const
 //==============================================================================
 void Renderer::do_ligh_culling_pass(const CameraData& camera) const
 {
-  update_light_ssbos();
-
   m_light_culling_shader.use();
 
-  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_point_light_ssbo);
-  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_light_index_ssbo);
-  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_tile_data_ssbo);
-  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_atomic_counter);
+  m_point_light_ssbo.bind(0);
+  m_light_index_ssbo.bind(1);
+  m_light_tiles_ssbo.bind(2);
+  m_light_counter_ssbo.bind(3);
 
-  u32 zero = 0;
-  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_atomic_counter);
-  glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, sizeof(u32), &zero);
+  m_light_counter_ssbo.clear();
+  m_light_counter_ssbo.push_back(0);
+  m_light_counter_ssbo.update_gpu_data();
 
   m_light_culling_shader.set_uniform(shaders::light_culling::VIEW, camera.view);
   m_light_culling_shader.set_uniform(shaders::light_culling::INV_PROJECTION, inverse(m_default_projection));
   m_light_culling_shader.set_uniform(shaders::light_culling::WINDOW_SIZE, cast<vec2>(m_window_size));
   m_light_culling_shader.set_uniform(shaders::light_culling::FAR_PLANE, FAR);
-  m_light_culling_shader.set_uniform(shaders::light_culling::NUM_LIGHTS, m_point_light_ssbo_size);
+  m_light_culling_shader.set_uniform(shaders::light_culling::NUM_LIGHTS, m_point_light_ssbo.gpu_size_u32());
 
   const size_t num_tiles_x = (static_cast<size_t>(m_window_size.x) + LIGHT_CULLING_TILE_SIZE_X - 1)
     / LIGHT_CULLING_TILE_SIZE_X;
@@ -356,8 +357,6 @@ void Renderer::do_ligh_culling_pass(const CameraData& camera) const
     / LIGHT_CULLING_TILE_SIZE_Y;
 
   m_light_culling_shader.dispatch(num_tiles_x, num_tiles_y, 1, true);
-
-  // glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 }
 
 //==============================================================================
@@ -374,12 +373,17 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   glBindTexture(GL_TEXTURE_2D, m_g_stitched_normal);
   glActiveTexture(GL_TEXTURE3);
   glBindTexture(GL_TEXTURE_2D, m_g_albedo);
+  glActiveTexture(GL_TEXTURE4);
+  glBindTexture(GL_TEXTURE_2D, m_g_sector);
 
   // bind light ssbos
-  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_dir_light_ssbo);
-  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_point_light_ssbo);
-  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, m_light_index_ssbo);
-  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, m_tile_data_ssbo);
+  m_dir_light_ssbo.bind(0);
+  m_point_light_ssbo.bind(1);
+  m_light_index_ssbo.bind(2);
+  m_light_tiles_ssbo.bind(3);
+  m_sectors_ssbo.bind(4);
+  m_sector_map_ssbo.bind(5);
+  m_walls_ssbo.bind(6);
 
   const size_t num_tiles_x = (static_cast<size_t>(m_window_size.x) + LIGHT_CULLING_TILE_SIZE_X - 1) 
     / LIGHT_CULLING_TILE_SIZE_X;
@@ -387,8 +391,10 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   // prepare shader
   m_light_material.use();
   m_light_material.set_uniform(shaders::light::VIEW_POSITION, view_position);
-  m_light_material.set_uniform(shaders::light::NUM_DIR_LIGHTS, m_dir_light_ssbo_size);
+  m_light_material.set_uniform(shaders::light::NUM_DIR_LIGHTS, m_dir_light_ssbo.gpu_size_u32());
   m_light_material.set_uniform(shaders::light::NUM_TILES_X, static_cast<u32>(num_tiles_x));
+  m_light_material.set_uniform(shaders::light::NUM_SECTORS, m_sectors_ssbo.gpu_size_u32());
+  m_light_material.set_uniform(shaders::light::NUM_WALLS, m_walls_ssbo.gpu_size_u32());
 
   EntityRegistry& registry = GameSystem::get().get_entities();
   registry.for_each<AmbientLight>([this](AmbientLight& ambient)
@@ -406,41 +412,110 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
 }
 
 //==============================================================================
-void Renderer::update_light_ssbos() const
+u32 Renderer::get_stitched_sector_id(SectorID sector_id, WallID portal_id) const
 {
-  // get all directional lights
-  std::vector<DirLightGPU> dir_light_data;
-  EntityRegistry& registry = GameSystem::get().get_entities();
-  registry.for_each<DirectionalLight>([&dir_light_data](DirectionalLight& light)
+  if (sector_id == INVALID_SECTOR_ID)
+    return INVALID_SECTOR_ID;
+
+  return static_cast<u32>(sector_id) + (static_cast<u32>(portal_id) << 16);
+}
+
+//==============================================================================
+u64 Renderer::get_stitched_entity_id(u32 stitched_sector_id, u32 entity_id) const
+{
+  return (static_cast<u64>(stitched_sector_id) << 32) + static_cast<i64>(entity_id);
+}
+
+//==============================================================================
+void Renderer::push_sector_to_ssbo(SectorID sector_id, WallID enter_portal, const mat4& transform) const
+{
+  const u32 stitched_sector_id = get_stitched_sector_id(sector_id, enter_portal);
+  const u32 remaped_sector_id = static_cast<u32>(m_sector_id_map.size());
+  auto [_, was_inserted] = m_sector_id_map.try_emplace(stitched_sector_id, remaped_sector_id);
+  if (!was_inserted)
+    return;
+
+  const MapSectors& map = GameSystem::get().get_map();
+
+  std::vector<WallGPU> walls_data;
+  map.for_each_wall_of_sector(sector_id, [this, &map, &walls_data, enter_portal, &transform](WallID wall_id)
   {
-    dir_light_data.push_back(light.get_gpu_data());
+    const WallData& wall = map.walls[wall_id];
+    const vec2 pos = (transform * vec4(wall.pos.x, 0.0f, wall.pos.y, 1.0f)).xz;
+
+    if (walls_data.size() > 0)
+      walls_data[walls_data.size() - 1].end = pos;
+    
+    const WallID portal_id = wall.get_portal_type() == PortalType::classic ? enter_portal : wall_id;
+    walls_data.emplace_back(pos, vec2(), 0, get_stitched_sector_id(wall.portal_sector_id, portal_id));
   });
-  m_dir_light_ssbo_size = static_cast<u32>(dir_light_data.size());
+  walls_data[walls_data.size() - 1].end = walls_data[0].start;
 
-  // update directional light ssbo
-  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_dir_light_ssbo);
-  glBufferSubData
+  for (WallGPU& wall_data : walls_data)
+  {
+    const vec2 direction     = wall_data.end - wall_data.start;
+    const vec2 normal        = vec2(-direction.y, direction.x);
+    const u32  packed_normal = packSnorm2x16(normal);
+
+    wall_data.packed_normal = packed_normal;
+  }
+
+  const u32 walls_offset = m_walls_ssbo.size_u32();
+  const u32 walls_count = static_cast<u32>(walls_data.size());
+  m_walls_ssbo.extend(std::move(walls_data));
+
+  const f32 y_scale = transform[1].y;
+  const f32 y_trans = transform[3].y;
+
+  m_sectors_ssbo.push_back
   (
-    GL_SHADER_STORAGE_BUFFER,
-    0,
-    dir_light_data.size() * sizeof(DirLightGPU),
-    dir_light_data.data()
+    SectorGPU
+    {
+      .floor_y = map.sectors[sector_id].floor_height * y_scale + y_trans,
+      .ceil_y = map.sectors[sector_id].ceil_height * y_scale + y_trans,
+      .walls_offset = walls_offset,
+      .walls_count = walls_count,
+    }
   );
+}
 
-  // update point lights ssbo
-  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_point_light_ssbo);
-  glBufferSubData
-  (
-    GL_SHADER_STORAGE_BUFFER,
-    0,
-    m_point_light_data.size() * sizeof(PointLightGPU),
-    m_point_light_data.data()
-  );
-  m_point_light_ssbo_size = static_cast<u32>(m_point_light_data.size());
+//==============================================================================
+void Renderer::update_ssbos() const
+{
+  EntityRegistry& registry = GameSystem::get().get_entities();
+  registry.for_each<DirectionalLight>([this](DirectionalLight& light)
+  {
+    m_dir_light_ssbo.push_back(light.get_gpu_data());
+  });
 
-  // clean up
-  m_point_light_data.clear();
-  glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+  auto remap_sector_ids_point_lights = [this](PointLightGPU& light)
+  {
+    if (light.sector_id == INVALID_SECTOR_ID)
+      return;
+
+    auto [it, _] = m_sector_id_map.try_emplace(light.sector_id, static_cast<u32>(m_sector_id_map.size()));
+    light.sector_id = it->second;
+  };
+  auto remap_sector_ids_walls = [this](WallGPU& wall)
+  {
+    if (wall.destination == INVALID_SECTOR_ID)
+      return;
+
+    auto [it, _] = m_sector_id_map.try_emplace(wall.destination, static_cast<u32>(m_sector_id_map.size()));
+    wall.destination = it->second;
+  };
+
+  std::vector<u32> sector_map(m_sector_id_map.size());
+  for (const auto& [key, value] : m_sector_id_map)
+  {
+    sector_map[value] = key;
+  }
+  m_sector_map_ssbo.update_gpu_data_with(sector_map);
+  
+  m_dir_light_ssbo.update_gpu_data();
+  m_point_light_ssbo.update_gpu_data(remap_sector_ids_point_lights);
+  m_sectors_ssbo.update_gpu_data();
+  m_walls_ssbo.update_gpu_data(remap_sector_ids_walls);
 }
 
 //==============================================================================
@@ -452,7 +527,7 @@ void Renderer::render_sectors(const CameraData& camera) const
   const auto& game_atlas = TextureManager::get().get_atlas(ResLifetime::Game);
   const auto& level_atlas = TextureManager::get().get_atlas(ResLifetime::Level);
 
-  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_texture_data_ssbo);
+  m_textures_ssbo.bind(0);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, game_atlas.handle);
   glActiveTexture(GL_TEXTURE1);
@@ -464,11 +539,16 @@ void Renderer::render_sectors(const CameraData& camera) const
 
   for (const auto& [sector_id, _] : sectors_to_render)
   {
+    const uint stitched_sector_id = get_stitched_sector_id(sector_id, camera.portal_id);
+    m_sector_material.set_uniform(shaders::sector::SECTOR_ID, stitched_sector_id);
+
     // This returns the mesh and optionally updates it before if it is dirty.
     const MeshHandle& mesh = gfx.get_and_update_sector_mesh(sector_id);
 
     glBindVertexArray(mesh.get_vao());
     glDrawArrays(mesh.get_draw_mode(), 0, mesh.get_vertex_count());
+
+    push_sector_to_ssbo(sector_id, camera.portal_id, camera.portal_dest_to_src);
   }
 
   glBindVertexArray(0);
@@ -565,19 +645,24 @@ void Renderer::render_entities(const CameraData& camera) const
     Appearance        appear;
     vec3              world_pos;
     std::vector<mat4> transforms;
+    u32               stitched_sector_id;
   };
 
   std::unordered_map<u64, EntityRenderData> groups[3]{};
 
   for (const auto& frustum : camera.vis_tree.sectors)
   {
-    SectorID sid = frustum.sector;
-    mapping.for_each_in_sector(sid, [&](EntityID id, mat4 t)
+    const SectorID sector_id = frustum.sector;
+
+    mapping.for_each_in_sector(sector_id, [&](EntityID id, mat4 t)
     {
       const Entity* entity = registry.get_entity(id);
       nc_assert(entity);
       vec3 world_pos  = entity->get_position();
       vec3 camera_pos = (camera.view * t * vec4{world_pos, 1.0f}).xyz();
+
+      const SectorID entity_sector_id = GameSystem::get().get_map().get_sector_from_point(world_pos.xz());
+      const u32 entity_stitched_sector_id = get_stitched_sector_id(entity_sector_id, camera.portal_id);
 
       if (id.type == EntityTypes::point_light)
       {
@@ -585,19 +670,34 @@ void Renderer::render_entities(const CameraData& camera) const
         // However, this is not an easy task, as one light can shine on us from
         // two different portals at the same time. Therefore, we have to first
         // distinguish them by their ID and then by their position.
-        if (m_light_checker.check_redundant(id.as_u64(), camera_pos))
+        auto [is_unique, index] = m_light_checker.check_redundant(id.as_u32(), camera_pos);
+        if (is_unique)
         {
           // Has to exist because it is in sector mapping
           nc_assert(registry.get_entity(id));
 
           const PointLight* light = registry.get_entity(id)->as<PointLight>();
-
           // Has to be a light because we would not get here otherwise
           nc_assert(light); 
 
-          vec3 light_pos = t * vec4{light->get_position(), 1.0f};
-          vec3 stich_pos = camera.portal_dest_to_src * vec4(light_pos, 1.0f);
-          m_point_light_data.push_back(light->get_gpu_data(stich_pos));
+          const vec3 light_pos = t * vec4{ world_pos, 1.0f };
+          const vec3 stich_pos = camera.portal_dest_to_src * vec4(light_pos, 1.0f);
+
+          const size_t light_gpu_index = m_point_light_ssbo.push_back
+          (
+            light->get_gpu_data(stich_pos, entity_stitched_sector_id)
+          );
+
+          m_light_gpu_data_indices.emplace
+          (
+            (static_cast<u64>(id.as_u32()) << 32) + index,
+            light_gpu_index
+          );
+        }
+        else if (sector_id == entity_sector_id)
+        {
+           PointLightGPU& light_gpu = m_point_light_ssbo.get_buffer_item(m_light_gpu_data_indices[(static_cast<u64>(id.as_u32()) << 32) + index]);
+           light_gpu.sector_id = entity_stitched_sector_id;
         }
       }
       else
@@ -612,13 +712,16 @@ void Renderer::render_entities(const CameraData& camera) const
         //const ResLifetime lifetime = texture.get_lifetime();
         //groups[lifetime].insert(entity);
 
-        if (m_entity_checker.check_redundant(id.as_u64(), camera_pos))
+        if (m_entity_checker.check_redundant(id.as_u32(), camera_pos).first)
         {
           auto& group = groups[cast<u64>(ResLifetime::Game)];
-          EntityRenderData& render_data = group[id.as_u64()];
+          EntityRenderData& render_data = group[id.as_u32()];
           render_data.appear    = *appearance;
-          render_data.world_pos = entity->get_position();
+          render_data.world_pos = world_pos;
           render_data.transforms.push_back(t);
+          // TODO: this id is incorrect in case entity is only with it border and not it's center
+          // current in frustum.sector
+          render_data.stitched_sector_id = entity_stitched_sector_id;
         }
       }
     });
@@ -654,6 +757,8 @@ void Renderer::render_entities(const CameraData& camera) const
     {
       const Appearance& base_appearance = render_data.appear;
       const vec3 base_position = render_data.world_pos;
+
+      m_billboard_material.set_uniform(shaders::billboard::STICHED_SECTOR_ID, render_data.stitched_sector_id);
 
       for (const mat4& entity_transform : render_data.transforms)
       {
@@ -725,6 +830,7 @@ void Renderer::render_portals(const CameraData& camera) const
       .view       = camera.view,
       .vis_tree   = subtree,
       .portal_dest_to_src = mat4(1.0f),
+      .portal_id = subtree.portal_wall,
     };
 
     render_portal(new_camera, render_data, 0);
@@ -765,6 +871,9 @@ const
   mat4 view       = translation(trans) * scaling(scale);
   mat4 projection = ortho(0.0f, win_size.x, win_size.y, 0.0f, -1.0f, 1.0f);
 
+  const vec2 player_position = ((Entity*)GameSystem::get().get_player())->get_position().xy;
+  const SectorID sector_id = GameSystem::get().get_map().get_sector_from_point(player_position);
+
   glBindVertexArray(texturable_quad.get_vao());
 
   m_gun_material.use();
@@ -774,7 +883,7 @@ const
   m_gun_material.set_uniform(sb::ATLAS_SIZE,   texture.get_atlas().get_size());
   m_gun_material.set_uniform(sb::TEXTURE_POS,  texture.get_pos());
   m_gun_material.set_uniform(sb::TEXTURE_SIZE, texture.get_size());
-
+  m_gun_material.set_uniform(sb::STICHED_SECTOR_ID,    get_stitched_sector_id(sector_id, camera.portal_id));
   glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
   glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
 
@@ -911,6 +1020,7 @@ void Renderer::render_portal(const CameraData& camera, const Portal& portal, u8 
     .view = virtual_view,
     .vis_tree = camera.vis_tree,
     .portal_dest_to_src = camera.portal_dest_to_src * portal.dest_to_src,
+    .portal_id = camera.portal_id,
   };
 
   render_portal_to_stencil(camera, portal, recursion);
@@ -929,6 +1039,7 @@ void Renderer::render_portal(const CameraData& camera, const Portal& portal, u8 
       .view       = virtual_camera_data.view,
       .vis_tree   = subtree,
       .portal_dest_to_src = virtual_camera_data.portal_dest_to_src,
+      .portal_id = subtree.portal_wall,
     };
 
     render_portal(new_cam_data, render_data, recursion + 1);
