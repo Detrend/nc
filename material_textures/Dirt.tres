@@ -7,6 +7,5 @@
 script = ExtResource("2_mblow")
 preview = ExtResource("1_wx0hd")
 _id = "Dirt2"
-scale = 2.5
 tile_rotations_count = 4
 metadata/_custom_type_script = "uid://chjmx3djsb6cj"

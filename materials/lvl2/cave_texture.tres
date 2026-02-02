@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="SectorMaterial" load_steps=9 format=3 uid="uid://diodph1xiouf0"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=10 format=3 uid="uid://diodph1xiouf0"]
 
 [ext_resource type="Resource" uid="uid://coohq55u58kbj" path="res://material_textures/stone_wall.tres" id="1_3q6rt"]
 [ext_resource type="Resource" uid="uid://b1mvck7y6yxlq" path="res://material_textures/Dirt.tres" id="2_3q6rt"]
@@ -20,12 +20,19 @@ wall_length_range = Vector2(0, 0.5)
 texture = ExtResource("2_3q6rt")
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
+[sub_resource type="Resource" id="Resource_0gutw"]
+script = ExtResource("7_elm1p")
+priority = 4
+_placement_type = 17
+texture = ExtResource("1_3q6rt")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
 [resource]
 script = ExtResource("4_eq2cf")
 preview = ExtResource("3_8inrw")
 preview_scale = 4.0
 wall_default = SubResource("Resource_csai5")
-wall_rules = Array[ExtResource("7_elm1p")]([SubResource("Resource_a6q66")])
+wall_rules = Array[ExtResource("7_elm1p")]([SubResource("Resource_a6q66"), SubResource("Resource_0gutw")])
 floor = ExtResource("2_3q6rt")
 ceiling = ExtResource("1_3q6rt")
 metadata/_custom_type_script = "uid://bd7os02w6f4ou"

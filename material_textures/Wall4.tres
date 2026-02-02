@@ -6,10 +6,4 @@
 [resource]
 script = ExtResource("1_gv0q2")
 preview = ExtResource("1_25uho")
-_id = ""
-scale = 0.5
-rotation = 0.0
-tile_rotations_count = 1
-tile_rotation_increment = 90.0
-should_show = true
 metadata/_custom_type_script = "uid://chjmx3djsb6cj"
