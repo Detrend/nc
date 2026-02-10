@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=9 format=3 uid="uid://bofik5k13ct81"]
+
+[ext_resource type="Resource" uid="uid://dcsu5hhk2stk2" path="res://material_textures/meat_wall_2.tres" id="1_77j7n"]
+[ext_resource type="Texture2D" uid="uid://40v2ssppj8gd" path="res://imgs/meat_wall_2.png" id="2_gupol"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="3_b74bg"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="4_cjcro"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="5_0t0gl"]
+[ext_resource type="Resource" uid="uid://b62b6owe57oqc" path="res://material_textures/Floor1.tres" id="6_rde1h"]
+
+[sub_resource type="Resource" id="Resource_csai5"]
+script = ExtResource("4_cjcro")
+texture = ExtResource("1_77j7n")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[sub_resource type="Resource" id="Resource_a6q66"]
+script = ExtResource("5_0t0gl")
+_placement_type = 9
+wall_length_range = Vector2(0, 0.5)
+texture = ExtResource("6_rde1h")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[resource]
+script = ExtResource("3_b74bg")
+preview = ExtResource("2_gupol")
+preview_scale = 4.0
+wall_default = SubResource("Resource_csai5")
+wall_rules = Array[ExtResource("5_0t0gl")]([SubResource("Resource_a6q66")])
+floor = ExtResource("1_77j7n")
+ceiling = ExtResource("1_77j7n")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"
