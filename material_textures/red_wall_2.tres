@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://b4ya40y303f1w"]
+
+[ext_resource type="Texture2D" uid="uid://chwj60wvuoux2" path="res://imgs/red_wall_2.png" id="1_ojjsw"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_4k5ih"]
+
+[resource]
+script = ExtResource("2_4k5ih")
+preview = ExtResource("1_ojjsw")
+tile_rotation_increment = 0.0
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

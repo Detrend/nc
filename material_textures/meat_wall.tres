@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://kh7a5fcqt4bn"]
+
+[ext_resource type="Texture2D" uid="uid://b1vao66nid58t" path="res://imgs/meat_wall.png" id="1_84re4"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_d36sy"]
+
+[resource]
+script = ExtResource("2_d36sy")
+preview = ExtResource("1_84re4")
+tile_rotation_increment = 0.0
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"
