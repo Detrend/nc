@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=10 format=3 uid="uid://cfqh4t2e67b3j"]
+
+[ext_resource type="Resource" uid="uid://c0bfb1i38kqd" path="res://material_textures/_None.tres" id="1_bmepl"]
+[ext_resource type="Resource" uid="uid://ch8b8xs0ih8wi" path="res://material_textures/red_wall.tres" id="1_poull"]
+[ext_resource type="Texture2D" uid="uid://d12sja416ew7t" path="res://imgs/red_wall.png" id="2_bmepl"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="3_muvgd"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="4_6s3jb"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="5_fay21"]
+[ext_resource type="Resource" uid="uid://b62b6owe57oqc" path="res://material_textures/Floor1.tres" id="6_yy0yq"]
+
+[sub_resource type="Resource" id="Resource_csai5"]
+script = ExtResource("4_6s3jb")
+texture = ExtResource("1_poull")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[sub_resource type="Resource" id="Resource_a6q66"]
+script = ExtResource("5_fay21")
+_placement_type = 9
+wall_length_range = Vector2(0, 0.5)
+texture = ExtResource("6_yy0yq")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[resource]
+script = ExtResource("3_muvgd")
+preview = ExtResource("2_bmepl")
+preview_scale = 4.0
+wall_default = SubResource("Resource_csai5")
+wall_rules = Array[ExtResource("5_fay21")]([SubResource("Resource_a6q66")])
+floor = ExtResource("1_poull")
+ceiling = ExtResource("1_bmepl")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"

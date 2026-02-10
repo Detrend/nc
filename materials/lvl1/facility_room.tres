@@ -1,15 +1,17 @@
-[gd_resource type="Resource" script_class="SectorMaterial" load_steps=9 format=3 uid="uid://boupypkadrc5s"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=10 format=3 uid="uid://boupypkadrc5s"]
 
 [ext_resource type="Resource" uid="uid://ch4ti6q2t2t21" path="res://material_textures/Wall_2.tres" id="1_ftjtv"]
-[ext_resource type="Texture2D" uid="uid://c7byphnlh0xiq" path="res://imgs/wall_2.png" id="2_pa3en"]
+[ext_resource type="Texture2D" uid="uid://dtvmqcnkb5vlf" path="res://imgs/bricks_2.png" id="2_pa3en"]
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="3_rtax1"]
 [ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="4_4trib"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="5_7nvss"]
+[ext_resource type="Resource" uid="uid://dbh1k4ldwww4m" path="res://material_textures/Bricks_2.tres" id="5_rtax1"]
 [ext_resource type="Resource" uid="uid://b62b6owe57oqc" path="res://material_textures/Floor1.tres" id="6_a2112"]
 
 [sub_resource type="Resource" id="Resource_csai5"]
 script = ExtResource("4_4trib")
-texture = ExtResource("1_ftjtv")
+priority = 3
+texture = ExtResource("5_rtax1")
 metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 
 [sub_resource type="Resource" id="Resource_a6q66"]
