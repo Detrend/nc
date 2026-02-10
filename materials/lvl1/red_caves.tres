@@ -1,11 +1,11 @@
 [gd_resource type="Resource" script_class="SectorMaterial" load_steps=9 format=3 uid="uid://dveryoeo505ml"]
 
+[ext_resource type="Resource" uid="uid://b4ya40y303f1w" path="res://material_textures/red_wall_2.tres" id="1_0fj68"]
 [ext_resource type="Resource" uid="uid://ch8b8xs0ih8wi" path="res://material_textures/red_wall.tres" id="1_fcsm4"]
 [ext_resource type="Texture2D" uid="uid://d12sja416ew7t" path="res://imgs/red_wall.png" id="2_0fj68"]
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="3_vanu3"]
 [ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="4_k4rpa"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="6_vjemx"]
-[ext_resource type="Resource" uid="uid://b62b6owe57oqc" path="res://material_textures/Floor1.tres" id="7_sb04n"]
 
 [sub_resource type="Resource" id="Resource_csai5"]
 script = ExtResource("4_k4rpa")
@@ -16,7 +16,7 @@ metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 script = ExtResource("6_vjemx")
 _placement_type = 9
 wall_length_range = Vector2(0, 0.5)
-texture = ExtResource("7_sb04n")
+texture = ExtResource("1_0fj68")
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [resource]

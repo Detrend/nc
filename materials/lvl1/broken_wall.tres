@@ -1,22 +1,23 @@
-[gd_resource type="Resource" script_class="SectorMaterial" load_steps=9 format=3 uid="uid://db34y2f3a3r7n"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=8 format=3 uid="uid://db34y2f3a3r7n"]
 
 [ext_resource type="Resource" uid="uid://coohq55u58kbj" path="res://material_textures/stone_wall.tres" id="1_gbk6q"]
 [ext_resource type="Texture2D" uid="uid://66w4a1f13c53" path="res://imgs/stone_wall.png" id="2_xj06o"]
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="3_6h106"]
 [ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="4_sdk6a"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="5_6cjwq"]
-[ext_resource type="Resource" uid="uid://b62b6owe57oqc" path="res://material_textures/Floor1.tres" id="6_tifom"]
 
 [sub_resource type="Resource" id="Resource_csai5"]
 script = ExtResource("4_sdk6a")
+priority = 2
 texture = ExtResource("1_gbk6q")
 metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 
 [sub_resource type="Resource" id="Resource_a6q66"]
 script = ExtResource("5_6cjwq")
+priority = 8
 _placement_type = 9
 wall_length_range = Vector2(0, 0.5)
-texture = ExtResource("6_tifom")
+texture = ExtResource("1_gbk6q")
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [resource]

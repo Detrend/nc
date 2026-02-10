@@ -10,6 +10,7 @@
 
 [sub_resource type="Resource" id="Resource_csai5"]
 script = ExtResource("4_0nkdu")
+priority = 7
 texture = ExtResource("5_0nkdu")
 metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 
