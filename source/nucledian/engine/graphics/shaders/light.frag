@@ -61,8 +61,6 @@ layout(location = 0) uniform vec3  view_position;
 layout(location = 1) uniform uint  num_dir_lights;
 layout(location = 2) uniform uint  num_tiles_x;
 layout(location = 3) uniform float ambient_strength;
-layout(location = 4) uniform uint  num_sectors;
-layout(location = 5) uniform uint  num_lights;
 
 layout(std430, binding = 0) readonly buffer dir_lights_buffer  { DirLight   dir_lights[];    };
 layout(std430, binding = 1) readonly buffer point_light_buffer { PointLight point_lights[];  };
