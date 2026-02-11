@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://c3gl2xtkcfe3f"]
+
+[ext_resource type="Script" uid="uid://bvy2sc6knx1r2" path="res://scripts/things/Prop.gd" id="1_xbhrl"]
+[ext_resource type="Texture2D" uid="uid://bdnqqmldb4mrt" path="res://imgs/props/bush_1.png" id="2_xbhrl"]
+
+[node name="Bush1" type="Node2D"]
+scale = Vector2(2.1301146, 2.1301146)
+script = ExtResource("1_xbhrl")
+radius = 1.0
+height = 1.0
+sprite_name = "bush_1"
+sprite_scale = 22.5
+pivot_mode = 1
+height_offset = 0.0
+
+[node name="Icon" type="Sprite2D" parent="."]
+z_index = 999
+texture_filter = 1
+position = Vector2(0, -2.8167498)
+scale = Vector2(0.04088975, 0.04088975)
+texture = ExtResource("2_xbhrl")

@@ -6,5 +6,5 @@
 [resource]
 script = ExtResource("2_fmak1")
 preview = ExtResource("1_psitf")
-id_triggered = "button_on_bricks_2"
+id_triggered = "button_on_bricks_1"
 metadata/_custom_type_script = "uid://chjmx3djsb6cj"

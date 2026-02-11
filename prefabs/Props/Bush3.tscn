@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://75c6ft47ph3"]
+
+[ext_resource type="Script" uid="uid://bvy2sc6knx1r2" path="res://scripts/things/Prop.gd" id="1_wa3wg"]
+[ext_resource type="Texture2D" uid="uid://dgpw0a37m1ht2" path="res://imgs/props/bush_3.png" id="2_wa3wg"]
+
+[node name="Bush3" type="Node2D"]
+scale = Vector2(2.1301146, 2.1301146)
+script = ExtResource("1_wa3wg")
+radius = 1.0
+height = 1.0
+sprite_name = "bush_3"
+sprite_scale = 22.5
+pivot_mode = 1
+height_offset = 0.0
+
+[node name="Icon" type="Sprite2D" parent="."]
+z_index = 999
+texture_filter = 1
+position = Vector2(0, -2.8167498)
+scale = Vector2(0.04088975, 0.04088975)
+texture = ExtResource("2_wa3wg")
