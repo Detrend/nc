@@ -16,6 +16,5 @@ height_offset = 0.0
 [node name="Icon" type="Sprite2D" parent="."]
 z_index = 999
 texture_filter = 1
-position = Vector2(0, -2.8167498)
 scale = Vector2(0.04088975, 0.04088975)
 texture = ExtResource("2_7rc1a")
