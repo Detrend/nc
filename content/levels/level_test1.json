@@ -2042,6 +2042,146 @@
 				0.0,
 				0.0
 			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-4.59999990463257,
+				-14.4000005722046,
+				0.8
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_cluster_4"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-1.60000002384186,
+				-14.4000005722046,
+				0.8
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_cluster_5"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-10.4000005722046,
+				2.40000009536743,
+				4.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_cluster_1"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-10.0,
+				2.20000004768372,
+				4.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_3"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-12.8000001907349,
+				-6.0,
+				5.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_5"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-13.4000005722046,
+				-5.59999990463257,
+				5.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_cluster_1"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-12.4000005722046,
+				-5.59999990463257,
+				5.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_5"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
 			"height": 4.0,
 			"mode": 0,
 			"pivot": 1,
@@ -2055,6 +2195,106 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "possessed_dying_23"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-5.0,
+				10.8000001907349,
+				0.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_5"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-0.800000011920929,
+				11.1999998092651,
+				0.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_cluster_4"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				2.79999995231628,
+				9.80000019073486,
+				0.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_cluster_2"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 4.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-2.40000009536743,
+				9.80000019073486,
+				2.0
+			],
+			"radius": 0.0500000007450581,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "hanging_body_2"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 4.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				2.60000014305115,
+				10.0,
+				2.0
+			],
+			"radius": 0.0500000007450581,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "hanging_body_1"
 		},
 		{
 			"direction": [
@@ -2086,6 +2326,66 @@
 			"mode": 0,
 			"pivot": 1,
 			"position": [
+				-5.40000009536743,
+				14.1999998092651,
+				2.0
+			],
+			"radius": 0.0500000007450581,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "hanging_body_1"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 4.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-2.60000014305115,
+				15.0,
+				2.0
+			],
+			"radius": 0.0500000007450581,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "hanging_body_1"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-8.80000019073486,
+				11.6000003814697,
+				0.4
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_cluster_4"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 4.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
 				-10.6000003814697,
 				17.2000007629395,
 				0.4
@@ -2095,6 +2395,26 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "possessed_dying_23"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-10.0,
+				18.0,
+				0.4
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_cluster_1"
 		},
 		{
 			"direction": [
@@ -2122,6 +2442,166 @@
 				0.0,
 				0.0
 			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-2.20000004768372,
+				19.3999996185303,
+				0.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_3"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				4.20000028610229,
+				19.2000007629395,
+				0.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_4"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 4.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				1.80000007152557,
+				18.8000011444092,
+				2.0
+			],
+			"radius": 0.0500000007450581,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "hanging_body_1"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 4.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				3.60000014305115,
+				20.6000003814697,
+				2.0
+			],
+			"radius": 0.0500000007450581,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "hanging_body_2"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 4.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-4.40000009536743,
+				19.0,
+				2.0
+			],
+			"radius": 0.0500000007450581,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "hanging_body_2"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				5.20000028610229,
+				12.8000001907349,
+				0.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_cluster_3"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 4.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				2.40000009536743,
+				13.4000005722046,
+				2.0
+			],
+			"radius": 0.0500000007450581,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "hanging_body_2"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 4.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				5.40000009536743,
+				16.2000007629395,
+				2.0
+			],
+			"radius": 0.0500000007450581,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "hanging_body_1"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
 			"height": 4.0,
 			"mode": 0,
 			"pivot": 1,
@@ -2135,6 +2615,46 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "possessed_dying_23"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				12.0,
+				20.6000003814697,
+				0.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_5"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				12.0,
+				19.3999996185303,
+				0.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_cluster_4"
 		},
 		{
 			"direction": [
@@ -2175,6 +2695,246 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "possessed_dying_23"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 4.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-3.60000014305115,
+				24.6000003814697,
+				2.0
+			],
+			"radius": 0.0500000007450581,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "hanging_body_2"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				1.80000007152557,
+				33.0,
+				0.8
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_cluster_3"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				0.400000005960464,
+				33.4000015258789,
+				1.2
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_6"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-11.4000005722046,
+				33.2000007629395,
+				0.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_2"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-11.4000005722046,
+				31.6000003814697,
+				0.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_3"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-10.8000001907349,
+				32.4000015258789,
+				0.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_6"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-24.8000011444092,
+				39.4000015258789,
+				8.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_cluster_4"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-23.2000007629395,
+				39.0,
+				8.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_2"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-23.2000007629395,
+				39.6000022888184,
+				8.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_1"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-22.2000007629395,
+				39.0,
+				8.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_1"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-24.0,
+				39.4000015258789,
+				8.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_3"
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 2.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-21.3999996185303,
+				39.4000015258789,
+				8.0
+			],
+			"radius": 0.200000002980232,
+			"rotation": 0,
+			"scale": 45.0,
+			"scaling": 1,
+			"sprite": "candle_5"
 		}
 	],
 	"sectors": [
