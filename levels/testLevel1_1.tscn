@@ -1,4 +1,4 @@
-[gd_scene load_steps=164 format=3 uid="uid://ntcc2v6lwf2q"]
+[gd_scene load_steps=175 format=3 uid="uid://ntcc2v6lwf2q"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_qh6nn"]
 [ext_resource type="Script" uid="uid://b8tkglirbwf1e" path="res://scripts/reactivity/ActivatorPool.gd" id="2_dkf2s"]
@@ -21,10 +21,21 @@
 [ext_resource type="Resource" uid="uid://d2vj11fjtuqye" path="res://material_textures/composites/Button2b_3D_gray.tres" id="21_5x42g"]
 [ext_resource type="PackedScene" uid="uid://cpyr2arwj8evp" path="res://prefabs/Props/HangingBody1.tscn" id="23_ddl2b"]
 [ext_resource type="PackedScene" uid="uid://c76363mfckhet" path="res://prefabs/Props/HangingBody2.tscn" id="24_qk32x"]
+[ext_resource type="PackedScene" uid="uid://btmw5evvahvyn" path="res://prefabs/Props/CandleCluster5.tscn" id="25_dkf2s"]
 [ext_resource type="Script" uid="uid://d1u512ud4vhrt" path="res://scripts/reactivity/SectorAltConfig.gd" id="25_iogyf"]
+[ext_resource type="PackedScene" uid="uid://boeburcj5vvkc" path="res://prefabs/Props/CandleCluster4.tscn" id="26_dt02l"]
 [ext_resource type="PackedScene" uid="uid://cn044shocju7e" path="res://prefabs/WallAttachments/WallButton.tscn" id="26_l78eb"]
+[ext_resource type="PackedScene" uid="uid://sxwn2wmj6jav" path="res://prefabs/Props/Candle5.tscn" id="27_x550q"]
+[ext_resource type="PackedScene" uid="uid://dyojsnfb83l5e" path="res://prefabs/Props/CandleCluster1.tscn" id="28_0vebr"]
+[ext_resource type="PackedScene" uid="uid://beysvfh4d06tx" path="res://prefabs/Props/Candle3.tscn" id="29_a7gko"]
+[ext_resource type="PackedScene" uid="uid://bts3bshxihgtd" path="res://prefabs/Props/CandleCluster2.tscn" id="30_4j2rr"]
+[ext_resource type="PackedScene" uid="uid://brruqo6b7t0pp" path="res://prefabs/Props/CandleCluster3.tscn" id="31_4em76"]
+[ext_resource type="PackedScene" uid="uid://cagu403rqp0l7" path="res://prefabs/Props/Candle4.tscn" id="32_lg8hh"]
 [ext_resource type="PackedScene" uid="uid://b8tr8d62bd5s2" path="res://prefabs/PickUps/HpBig.tscn" id="33_jb74a"]
+[ext_resource type="PackedScene" uid="uid://c0km1cjckrkft" path="res://prefabs/Props/Candle6.tscn" id="33_lq5a2"]
 [ext_resource type="PackedScene" uid="uid://cm0wgegxiipjw" path="res://prefabs/PickUps/HpSmall.tscn" id="34_k45ft"]
+[ext_resource type="PackedScene" uid="uid://blxk4j1livtyx" path="res://prefabs/Props/Candle2.tscn" id="34_y2kwg"]
+[ext_resource type="PackedScene" uid="uid://btuj6614a15hk" path="res://prefabs/Props/Candle1.tscn" id="35_1jclx"]
 [ext_resource type="PackedScene" uid="uid://hg6kt5ju3l3a" path="res://prefabs/Entities/Cultist.tscn" id="35_pdeeh"]
 [ext_resource type="PackedScene" uid="uid://dgu644cct1eeb" path="res://prefabs/Entities/Possessed.tscn" id="36_hksti"]
 [ext_resource type="PackedScene" uid="uid://ctwevapidummr" path="res://prefabs/Lights/PointLight.tscn" id="38_kivxp"]
@@ -2383,6 +2394,90 @@ height_offset = 1.0
 position = Vector2(-9, -94)
 placement_mode = 0
 height_offset = 1.0
+
+[node name="CandleCluster" parent="Sectors" instance=ExtResource("25_dkf2s")]
+position = Vector2(8, 72)
+
+[node name="CandleCluster2" parent="Sectors" instance=ExtResource("26_dt02l")]
+position = Vector2(23, 72)
+
+[node name="Candle5" parent="Sectors" instance=ExtResource("27_x550q")]
+position = Vector2(62, 28)
+
+[node name="CandleCluster3" parent="Sectors" instance=ExtResource("28_0vebr")]
+position = Vector2(67, 28)
+
+[node name="Candle6" parent="Sectors" instance=ExtResource("27_x550q")]
+position = Vector2(64, 30)
+
+[node name="Candle3" parent="Sectors" instance=ExtResource("29_a7gko")]
+position = Vector2(50, -11)
+
+[node name="CandleCluster4" parent="Sectors" instance=ExtResource("28_0vebr")]
+position = Vector2(52, -12)
+
+[node name="CandleCluster5" parent="Sectors" instance=ExtResource("30_4j2rr")]
+position = Vector2(-14, -49)
+
+[node name="CandleCluster6" parent="Sectors" instance=ExtResource("31_4em76")]
+position = Vector2(-26, -64)
+
+[node name="CandleCluster7" parent="Sectors" instance=ExtResource("26_dt02l")]
+position = Vector2(4, -56)
+
+[node name="Candle7" parent="Sectors" instance=ExtResource("27_x550q")]
+position = Vector2(25, -54)
+
+[node name="Candle4" parent="Sectors" instance=ExtResource("32_lg8hh")]
+position = Vector2(-21, -96)
+
+[node name="Candle8" parent="Sectors" instance=ExtResource("29_a7gko")]
+position = Vector2(11, -97)
+
+[node name="CandleCluster8" parent="Sectors" instance=ExtResource("26_dt02l")]
+position = Vector2(-60, -97)
+
+[node name="Candle9" parent="Sectors" instance=ExtResource("27_x550q")]
+position = Vector2(-60, -103)
+
+[node name="Candle10" parent="Sectors" instance=ExtResource("33_lq5a2")]
+position = Vector2(54, -162)
+
+[node name="Candle11" parent="Sectors" instance=ExtResource("29_a7gko")]
+position = Vector2(57, -158)
+
+[node name="Candle2" parent="Sectors" instance=ExtResource("34_y2kwg")]
+position = Vector2(57, -166)
+
+[node name="Candle12" parent="Sectors" instance=ExtResource("33_lq5a2")]
+position = Vector2(-2, -167)
+
+[node name="CandleCluster9" parent="Sectors" instance=ExtResource("31_4em76")]
+position = Vector2(-9, -165)
+
+[node name="CandleCluster10" parent="Sectors" instance=ExtResource("26_dt02l")]
+position = Vector2(44, -58)
+
+[node name="CandleCluster11" parent="Sectors" instance=ExtResource("28_0vebr")]
+position = Vector2(50, -90)
+
+[node name="Candle13" parent="Sectors" instance=ExtResource("27_x550q")]
+position = Vector2(107, -197)
+
+[node name="Candle14" parent="Sectors" instance=ExtResource("29_a7gko")]
+position = Vector2(120, -197)
+
+[node name="Candle1" parent="Sectors" instance=ExtResource("35_1jclx")]
+position = Vector2(111, -195)
+
+[node name="Candle15" parent="Sectors" instance=ExtResource("35_1jclx")]
+position = Vector2(116, -198)
+
+[node name="Candle16" parent="Sectors" instance=ExtResource("34_y2kwg")]
+position = Vector2(116, -195)
+
+[node name="CandleCluster12" parent="Sectors" instance=ExtResource("26_dt02l")]
+position = Vector2(124, -197)
 
 [node name="PickUps" type="Node2D" parent="."]
 
