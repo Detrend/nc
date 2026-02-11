@@ -70,6 +70,7 @@ private:
   void handle_use(PlayerSpecificInputs input, PlayerSpecificInputs prev_input, f32 delta_seconds);
   void handle_weapon_change(PlayerSpecificInputs input, PlayerSpecificInputs prev_input);
   void calculate_wish_velocity(PlayerSpecificInputs input, f32 delta_seconds);
+  void calculate_gravity_velocity(f32 delta_seconds);
   bool get_attack_state(PlayerSpecificInputs curInput, PlayerSpecificInputs prevInput, f32 delta_seconds);
   void apply_acceleration(vec3 movement_direction, f32 delta_seconds);
   void apply_deceleration(vec3 movement_direction, f32 delta_seconds);

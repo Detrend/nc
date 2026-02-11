@@ -145,7 +145,11 @@ void Player::calculate_wish_velocity(PlayerSpecificInputs input, f32 delta_secon
   {
     this->velocity.y = CVars::player_jump_force;
   }
+}
 
+//==============================================================================
+void Player::calculate_gravity_velocity(f32 delta_seconds)
+{
   this->velocity.y -= CVars::player_gravity * delta_seconds;
 }
 
@@ -613,21 +617,23 @@ void Player::update
 {
   NC_SCOPE_PROFILER(PlayerUpdate)
 
-  if (!this->alive)
+  if (this->alive)
+  {
+    this->update_gun_sway(delta);
+    this->handle_weapon_change(curr_input, prev_input);
+    this->update_gun_anim(delta);
+    this->handle_attack(curr_input, prev_input, delta);
+    this->handle_use(curr_input, prev_input, delta);
+    this->calculate_wish_velocity(curr_input, delta);
+  }
+  else
   {
     time_since_death += delta;
-    // Do nothing
-    this->update_camera(delta);
-    return;
   }
 
-  this->update_gun_sway(delta);
-  this->calculate_wish_velocity(curr_input, delta);
-  this->handle_weapon_change(curr_input, prev_input);
-  this->update_gun_anim(delta);
-  this->handle_attack(curr_input, prev_input, delta);
-  this->handle_use(curr_input, prev_input, delta);
-  this->apply_velocity(delta);
+  // Has to happen even if dead because it calculates gravity
+  this->calculate_gravity_velocity(delta);
+  this->apply_velocity(delta); 
   this->update_camera(delta); // should be after "apply_velocity"
 }
 
