@@ -327,7 +327,7 @@ func process_things_in_sector(all_things: Array, sector: Sector, export_things: 
 		
 		var height :float
 		if current.placement_mode == Things.PlacementMode.Floor: height = sector.floor_height + current.height_offset
-		elif current.placement_mode == Things.PlacementMode.Ceiling: height = sector.floor_height - current.height_offset
+		elif current.placement_mode == Things.PlacementMode.Ceiling: height = sector.ceiling_height - current.height_offset
 		elif current.placement_mode == Things.PlacementMode.Absolute: height = current.height_offset
 		else: ErrorUtils.report_error("Invalid placement_mode '{0}' for thing {1}".format([current.placement_mode, current]))
 		
