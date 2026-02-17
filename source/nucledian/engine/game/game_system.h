@@ -14,6 +14,7 @@
 #include <engine/input/game_input.h>
 #include <game/game_types.h>
 #include <math/vector.h>
+#include <math/matrix.h>
 
 #include <memory> // std::unique_ptr
 #include <unordered_set>
@@ -90,6 +91,10 @@ public:
   );
 
   void play_3d_sound(vec3 position, SoundID sound, f32 distance, f32 volume);
+
+  // Called by player after it traverses through a nuclidean portal and changes
+  // its position.
+  void on_player_traversed_nc_portal(EntityID player, mat4 transform);
 
 private:
   // Clean up the current map, entities, mapping etc..

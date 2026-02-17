@@ -285,6 +285,15 @@ void Player::apply_velocity(f32 delta_seconds)
       }
     }
   }
+
+  // Notify the game that we traversed through a portal
+  if (portal_transform != identity<mat4>())
+  {
+    GameSystem::get().on_player_traversed_nc_portal
+    (
+      this->get_id(), portal_transform
+    );
+  }
 }
 
 //==============================================================================
@@ -589,6 +598,7 @@ void Player::die()
 {
   if (alive)
   {
+    this->velocity.x = this->velocity.z = 0.0f; // Stop on the place
     dead_camera_offset = PLAYER_EYE_HEIGHT;
     SoundSystem::get().play_oneshot(Sounds::death);
   }

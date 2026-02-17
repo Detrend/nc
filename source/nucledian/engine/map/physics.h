@@ -19,6 +19,7 @@ namespace nc
 struct MapSectors;
 struct SectorMapping;
 class  EntityRegistry;
+class  Rng;
 }
 
 namespace nc
@@ -250,6 +251,19 @@ struct PhysLevel
     bool* found_path_opt   = nullptr // If we found a path
   ) const;
 
+  std::vector<vec3> calc_random_path_nearby
+  (
+    vec3  start_pos,
+    f32   distance,
+    f32   radius,
+    f32   height,
+    f32   step_up,
+    f32   step_down,
+    Rng   generator,
+    bool  do_smoothing     = true,
+    mat4* nc_transform_opt = nullptr
+  ) const;
+
   // Calculates the loudness of the sound in 3D world.
   // Returns a value in [0, 1] interval.
   f32 calc_3d_sound_volume
@@ -265,7 +279,9 @@ struct PhysLevel
     vec3                       point,
     f32                        distance,
     f32                        sector_height_threshold,
-    StackVector<SectorID, 32>& sectors_out
+    StackVector<SectorID, 32>& sectors_out,
+    f32                        step_up   = FLT_MAX,
+    f32                        step_down = FLT_MAX
   ) const;
 };
 

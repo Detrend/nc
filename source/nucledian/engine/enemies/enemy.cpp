@@ -468,7 +468,7 @@ void Enemy::handle_ai_alert(f32 delta)
       if (no_path || distance(last_pt2, this->follow_target_pos.xz()) > 5.0f)
       {
         // Portal transform of the path
-        mat4 nc_transform;
+        mat4 nc_transform = identity<mat4>();
 
         // Points relative to our portal transform
         std::vector<vec3> path_points;
@@ -511,11 +511,25 @@ void Enemy::handle_ai_alert(f32 delta)
             &found_one
           );
         }
-        else if (get_stats().is_melee)
+        else if (!found_one && get_stats().is_melee)
         {
           // Calculate random shit path for melee dudes that are out of reach
           // of the target.
           // This will make them harder to hit.
+          path_points = lvl.calc_random_path_nearby
+          (
+            this->get_position(),
+            15.0f,
+            this->get_radius(),
+            this->get_height(),
+            this->get_height() * 0.5f,
+            this->get_height() * 0.5f,
+            this->rng,
+            true,
+            &nc_transform
+          );
+
+          found_one = !path_points.empty();
         }
 
         if (found_one)
@@ -844,6 +858,16 @@ vec3 Enemy::get_eye_pos() const
 vec3 Enemy::get_facing() const
 {
   return this->facing;
+}
+
+//==============================================================================
+void Enemy::on_player_traversed_nc_portal(EntityID /*player*/, mat4 transform)
+{
+  // Modify the target transform inv
+  // This fixes the bug due to which the enemy suddenly turns around if the
+  // player traverses portal during his shooting animation
+  current_path.target_transform_inv
+    = inverse(transform) * current_path.target_transform_inv;
 }
 
 //==============================================================================

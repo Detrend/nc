@@ -7,6 +7,7 @@
 
 #include <math/lingebra.h>
 
+#include <rng.h>
 #include <intersect.h>
 #include <profiling.h>
 #include <stack_vector.h>
@@ -1695,6 +1696,96 @@ const
 }
 
 //==============================================================================
+std::vector<vec3> PhysLevel::calc_random_path_nearby
+(
+  vec3  start_pos,
+  f32   distance,
+  f32   radius,
+  f32   height,
+  f32   step_up,
+  f32   step_down,
+  Rng   generator,
+  bool  do_smoothing,
+  mat4* nc_transform_opt
+)
+const
+{
+  StackVector<SectorID, 32> sectors_nearby;
+  this->floodfill_nearby_sectors
+  (
+    start_pos, distance, 0.05f, sectors_nearby, step_up, step_down
+  );
+
+  if (sectors_nearby.empty())
+  {
+    return {};
+  }
+
+  bool success       = false;
+  u32  attempts_left = 4;
+
+  while (!success && attempts_left-->0)
+  {
+    // Pick a "random" one
+    f32 random_number = generator.next(0.0f, 0.99f);
+    u64 adjusted      = cast<u64>(random_number * sectors_nearby.size());
+
+    SectorID sid = sectors_nearby[adjusted];
+
+    nc_assert(map.is_valid_sector_id(sid));
+    const SectorData& sd = map.sectors[sid];
+
+    WallID first_wall   = sd.int_data.first_wall;
+    WallID last_wall    = sd.int_data.last_wall;
+
+    // Choose a point somewhere on the sector and follow that one
+    vec2 center_point = VEC2_ZERO;
+    f32  sum          = 0.0f;
+
+    for (WallID wid = first_wall; wid < last_wall; ++wid)
+    {
+      f32  weight  = generator.next(0.2f, 0.8f);
+      vec2 wall_pt = map.walls[wid].pos;
+
+      sum          += weight;
+      center_point += wall_pt * weight;
+    }
+
+    center_point /= sum;
+
+    vec3 end_point = vec3{center_point.x, 0.0f, center_point.y};
+
+    // Now calculate a path to that point
+    std::vector<vec3> points = this->calc_path_relative
+    (
+      start_pos, end_point, radius, height, step_up,
+      step_down, do_smoothing, nc_transform_opt, &success
+    );
+
+    if (success)
+    {
+      // Success, return the path
+      return points;
+    }
+    else
+    {
+      // Increment for the next iteration
+      random_number += 1;
+    }
+  }
+
+  nc_warn(
+    "Failed to find a random path from [{}, {}] in distance [{}]",
+    start_pos.x, start_pos.z, distance);
+
+  if (nc_transform_opt)
+  {
+    *nc_transform_opt = identity<mat4>();
+  }
+  return {};
+}
+
+//==============================================================================
 f32 PhysLevel::calc_3d_sound_volume
 (
 	vec3 camera_pos, vec3 sound_pos, f32 sound_distance
@@ -1769,10 +1860,15 @@ void PhysLevel::floodfill_nearby_sectors
   vec3                       point,
   f32                        max_distance,
   f32                        sector_height_threshold,
-  StackVector<SectorID, 32>& sectors_out
+  StackVector<SectorID, 32>& sectors_out,
+  f32                        step_up,
+  f32                        step_down
 )
 const
 {
+  nc_assert(step_up   >= 0.0f);
+  nc_assert(step_down >= 0.0f);
+
   struct ToVisit
   {
     SectorID sid;
@@ -1822,6 +1918,14 @@ const
       if (map.sectors[neighbor].get_sector_height() < sector_height_threshold)
       {
         // The sector is not tall enough, maybe a closed door?
+        return;
+      }
+
+      f32 step_size = 0.0f;
+      map.calc_step_height_of_portal(sector, this_wall, &step_size);
+      if (step_size > step_up || -step_size > step_down)
+      {
+        // Step up/down height is too significant, do not go here
         return;
       }
 

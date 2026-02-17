@@ -36,6 +36,8 @@ public:
   vec3 get_eye_pos() const;
   vec3 get_facing()  const;
 
+  void on_player_traversed_nc_portal(EntityID player, mat4 transform);
+
 private:
   void handle_ai(f32 delta);
   void handle_movement(f32 delta);
@@ -74,7 +76,7 @@ private:
     std::vector<vec3> points;
 
     vec3 target_pt_world_space = VEC3_ZERO;
-    mat4 target_transform_inv = mat4{1.0f};
+    mat4 target_transform_inv  = mat4{1.0f};
   };
 
   EnemyType    type                  = 0;
@@ -85,17 +87,13 @@ private:
   ActorFSM     anim_fsm;
   Path         current_path;
   EntityID     target_id             = INVALID_ENTITY_ID;
-  ActivatorID  on_death_trigger      = INVALID_ACTIVATOR_ID;
   vec3         follow_target_pos     = VEC3_ZERO;
   f32          time_since_saw_target = 0.0f;
   f32          time_since_idle       = 0.0f;
   Rng          rng;
+  float        time_until_attack     = 3.0f;
+  int          health                = 0;
   bool         can_see_target : 1    = false;
-
-  int health;
-
-  float attackDelay = 3.0f;
-  float time_until_attack = 3.0f;
 };
 
 }

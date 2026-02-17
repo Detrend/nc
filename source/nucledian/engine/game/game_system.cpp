@@ -1009,6 +1009,15 @@ void GameSystem::play_3d_sound
 }
 
 //==============================================================================
+void GameSystem::on_player_traversed_nc_portal(EntityID player, mat4 transform)
+{
+  get_entities().for_each<Enemy>([&](Enemy& enemy)
+  {
+    enemy.on_player_traversed_nc_portal(player, transform);
+  });
+}
+
+//==============================================================================
 EntityAttachment& GameSystem::get_attachment_mgr()
 {
   nc_assert(game->attachment);
