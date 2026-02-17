@@ -16,6 +16,7 @@ enum evalue : ProjectileType
   // player ones
   wrench,
   plasma_ball,
+  shotgun_slug,
 
   // enemy ones
   fire_ball,
@@ -39,7 +40,7 @@ struct ProjectileStats
   f32  lifetime    = 0; // how long alive in seconds, 0 for inf
   s32  damage      = 0; // units
   s32  bounce_cnt  = 0; // if should bounce and how many times, 0 = death on hit
-  cstr sprite      = nullptr;
+  cstr sprite      = nullptr; // Null for invisible
   u8   sprite_cnt  = 0;
   f32  anim_len    = 0.0f;
   vec3 light_color = VEC3_ZERO;

@@ -28,10 +28,12 @@ WeaponStats WEAPON_STATS[] =
   // Shotgun
   WeaponStats
   {
-    .projectile = ProjectileTypes::wrench,
+    .projectile = ProjectileTypes::shotgun_slug,
     .rate_of_fire = 1.0f, .ammo = AmmoTypes::slugs,
-    .projectile_cnt = 5, .hold_to_fire = false,
-    .loudness_dist = 20.0f,
+    .projectile_cnt = 10, .hold_to_fire = false,
+    .shoot_snd = Sounds::shotgun,
+    .loudness_dist = 30.0f,
+    .spread_amount = 0.15f,
   },
 
   // Plasma rifle
@@ -85,7 +87,23 @@ WeaponAnims WEAPON_ANIMS[] =
   },
 
   // Shotgun
-  WeaponAnims{},
+  WeaponAnims
+  {
+    .set_name = "shotgun",
+    .anims = 
+    {
+      // Idle
+      WeaponAnim
+      {
+        .frames_cnt = 1, .time = 1.0f
+      },
+      // Attack
+      WeaponAnim
+      {
+        .frames_cnt = 41, .action_frame = 1, .time = 2.0f
+      },
+    },
+  },
 
   // Plasma rifle
   WeaponAnims
@@ -121,7 +139,8 @@ WeaponAnims WEAPON_ANIMS[] =
   inline ::nc::WeaponStats& _weapon = ::nc::WEAPON_STATS[::nc::WeaponTypes:: _member];             \
   NC_REG_WP(_weapon .rate_of_fire,   "Rate of fire",     0, 20, NC_TOKENJOIN(__LINE__, PA));       \
   NC_REG_WP(_weapon .projectile_cnt, "Projectile count", 0, 16, NC_TOKENJOIN(__LINE__, PB));       \
-  NC_REG_WP(_weapon .hold_to_fire,   "Hold to fire",     0, 1,  NC_TOKENJOIN(__LINE__, PC));
+  NC_REG_WP(_weapon .hold_to_fire,   "Hold to fire",     0, 1,  NC_TOKENJOIN(__LINE__, PC));       \
+  NC_REG_WP(_weapon .spread_amount,  "Spread",           0, 5,  NC_TOKENJOIN(__LINE__, PD));
 
 #define NC_REGISTER_WEAPON_STATS_EXT(_w) \
   NC_REGISTER_WEAPON_STATS( _w##_weapon, _w)

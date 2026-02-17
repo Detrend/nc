@@ -20,8 +20,8 @@ public:
 
   void update(f32 dt);
 
-  Appearance&       get_appearance();
-  const Appearance& get_appearance() const;
+  Appearance*       get_appearance();
+  const Appearance* get_appearance() const;
   EntityID          get_author_id()  const;
 
 private:

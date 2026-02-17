@@ -27,6 +27,14 @@ ProjectileStats PROJECTILE_STATS[] =
     .light_color = colors::BLUE
   },
 
+  // Shotgun slug
+  ProjectileStats
+  {
+    .dmg_falloff = 0.05f, .speed = 100.0f, .radius = 0.1f, .damage = 15,
+    .bounce_cnt = 0, .sprite = nullptr, .sprite_cnt = 1,
+    .light_color = colors::BLUE
+  },
+
   // Fire ball
   ProjectileStats
   {

@@ -154,6 +154,7 @@ void Projectile::update_appearance()
 
   if (stats.sprite_cnt > 1)
   {
+    nc_assert(stats.sprite);
     f32 anim_prog  = stats.anim_len ? fmod(m_lifetime, stats.anim_len) : 0.0f;
     u32 sprite_idx = cast<u32>(stats.sprite_cnt * anim_prog);
     m_appear.sprite = std::format("{}_{}", stats.sprite, sprite_idx);
@@ -161,20 +162,20 @@ void Projectile::update_appearance()
   else
   {
     // TODO: is this necessary? How do we avoid this?
-    m_appear.sprite = stats.sprite;
+    m_appear.sprite = stats.sprite ? stats.sprite : "";
   }
 }
 
 //==============================================================================
-const Appearance& Projectile::get_appearance() const
+const Appearance* Projectile::get_appearance() const
 {
-  return m_appear;
+  return const_cast<Projectile*>(this)->get_appearance();
 }
 
 //==============================================================================
-Appearance& Projectile::get_appearance()
+Appearance* Projectile::get_appearance()
 {
-  return m_appear;
+  return m_appear.sprite.length() ? &m_appear : nullptr;
 }
 
 //==============================================================================

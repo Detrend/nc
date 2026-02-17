@@ -134,6 +134,9 @@ struct PhysLevel
   };
   using Portals = std::vector<PortalSector>;
 
+  // Calculates the transformation of all the portals
+  mat4 calc_portal_projection(const Portals& portals) const;
+
   // Casts either a ray or circle and returns if it hit something.
   // Is expected to be used for collision detection.
   // Also returns hit coefficient, which is <= 1, but might be negative

@@ -128,7 +128,7 @@ Appearance* Entity::get_appearance()
   switch (this->get_type())
   {
     case EntityTypes::enemy:      return &this->as<Enemy>()->get_appearance();
-    case EntityTypes::projectile: return &this->as<Projectile>()->get_appearance();
+    case EntityTypes::projectile: return this->as<Projectile>()->get_appearance();
     case EntityTypes::pickup:     return &this->as<PickUp>()->get_appearance();
     case EntityTypes::prop:       return &this->as<Prop>()->get_appearance();
     default:                      return nullptr;

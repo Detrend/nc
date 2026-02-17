@@ -788,6 +788,18 @@ static bool intersect_entity_empty
 }
 
 //==============================================================================
+mat4 PhysLevel::calc_portal_projection(const Portals& portals) const
+{
+  mat4 transform = identity<mat4>();
+
+  for (const auto&[wid, sid] : portals)
+  {
+    transform = map.calc_portal_to_portal_projection(wid, sid) * transform;
+  }
+  return transform;
+}
+
+//==============================================================================
 CollisionHit PhysLevel::circle_cast_2d
 (
   vec2            from,

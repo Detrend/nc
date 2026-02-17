@@ -52,6 +52,7 @@ struct WeaponStats
   bool           hold_to_fire   = false;
   SoundID        shoot_snd      = INVALID_SOUND;
   f32            loudness_dist  = 20.0f;
+  f32            spread_amount  = 0.0f;
 };
 
 struct WeaponAnim

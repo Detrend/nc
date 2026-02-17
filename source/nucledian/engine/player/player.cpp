@@ -452,6 +452,7 @@ void Player::update_gun_anim(f32 delta)
 void Player::do_attack()
 {
   auto& sound_system = SoundSystem::get();
+  auto  world        = GameSystem::get().get_level();
 
   vec3 dir  = this->get_look_direction();
 
@@ -461,7 +462,7 @@ void Player::do_attack()
   if (is_melee)
   {
     vec3 from = this->get_position() + UP_DIR * PLAYER_EYE_HEIGHT;
-    CollisionHit hit = GameSystem::get().get_level().cylinder_cast_3d
+    CollisionHit hit = world.cylinder_cast_3d
     (
       from, from + dir * MELEE_DAMAGE_RANGE, 0.1f, 0.1f, EntityTypeFlags::enemy
     );
@@ -485,12 +486,48 @@ void Player::do_attack()
   }
   else
   {
-    vec3 from = this->get_position() + UP_DIR * PLAYER_EYE_HEIGHT + dir * 0.3f;
+    vec3 ahead_dir = dir * 0.3f;
+    vec3 from_pos  = this->get_position() + UP_DIR * PLAYER_EYE_HEIGHT;
 
-    GameSystem::get().spawn_projectile
+    // Raycast ahead of us
+    PhysLevel::Portals portals_traversed;
+    CollisionHit hit = world.ray_cast_3d
     (
-      WEAPON_STATS[weapon].projectile, from, dir, this->get_id()
+      from_pos,
+      from_pos + ahead_dir,
+      PhysLevel::COLLIDE_NONE,
+      &portals_traversed
     );
+
+    vec3 from = from_pos + ahead_dir * (hit ? hit.coeff : 1.0f);
+    if (portals_traversed.size())
+    {
+      mat4 transform = world.calc_portal_projection(portals_traversed);
+      from = (transform * vec4{from, 1.0f}).xyz();
+      dir  = (transform * vec4{dir,  0.0f}).xyz();
+    }
+
+    for (s32 idx = 0; idx < WEAPON_STATS[weapon].projectile_cnt; ++idx)
+    {
+      vec3 front_dir = dir;
+      vec3 side_dir  = normalize_or(cross(front_dir, UP_DIR), VEC3_X);
+      vec3 up_dir    = -cross(front_dir, side_dir);
+
+      mat3 dir_base = {side_dir, up_dir, front_dir};
+
+      f32 angle  = rng.next(0.0f, PI2);
+      f32 amount = rng.next(0.0f, WEAPON_STATS[weapon].spread_amount);
+      f32 rx     = sin(angle) * amount;
+      f32 ry     = cos(angle) * amount;
+
+      vec3 spreaded_dir = normalize(vec3{rx, ry, 1.0f});
+      vec3 adjusted_dir = dir_base * spreaded_dir;
+
+      GameSystem::get().spawn_projectile
+      (
+        WEAPON_STATS[weapon].projectile, from, adjusted_dir, this->get_id()
+      );
+    }
   }
 
   if (WEAPON_STATS[weapon].loudness_dist > 0.0f)

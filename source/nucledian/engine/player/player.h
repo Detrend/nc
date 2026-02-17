@@ -3,6 +3,7 @@
 
 #include <types.h>
 #include <config.h>
+#include <rng.h>
 
 #include <engine/entity/entity.h>
 #include <engine/graphics/camera.h>
@@ -99,13 +100,7 @@ private:
   f32  angle_pitch = 0.0f; //UP-DOWN
   f32  angle_yaw   = 0.0f; //LET-RIGHT
 
-  /*PlayerSpecificInputs lastInputs;
-  PlayerSpecificInputs currentInputs;*/
-
-public: // TODO: public for sake of the prototype
   s32 current_health;
-
-private:
 
   // Camera spring
   f32 vertical_camera_offset = 0.0f;
@@ -123,6 +118,8 @@ private:
   // Bit flags for the weapons owned
   WeaponFlags owned_weapons  = 0;
   WeaponType  current_weapon = 0;
+
+  Rng rng;
 
   bool alive     : 1 = true;
   bool on_ground : 1 = true;
