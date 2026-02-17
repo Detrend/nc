@@ -52,9 +52,7 @@ static constexpr cstr WEAPON_STATE_NAMES[] =
 };
 
 //==============================================================================
-constexpr WeaponFlags DEFAULT_WEAPONS
-= (1 << WeaponTypes::plasma_rifle)
-| (1 << WeaponTypes::wrench);
+constexpr WeaponFlags DEFAULT_WEAPONS = weapon_flag(WeaponTypes::wrench);
 constexpr f32 PLAYER_HEIGHT      = 1.8f;
 constexpr f32 PLAYER_EYE_HEIGHT  = 1.65f;
 constexpr f32 PLAYER_RADIUS      = 0.25f;
@@ -194,16 +192,10 @@ bool Player::get_attack_state(PlayerSpecificInputs curr_input, PlayerSpecificInp
 //==============================================================================
 void Player::apply_velocity(f32 delta_seconds)
 {
-  // Collide with everything but us and projectiles for now. Later, we will have
-  // to enable collisions with projectiles once again.
-  constexpr EntityTypeMask IGNORED_COLLIDERS
-    = EntityTypeFlags::player
-    | EntityTypeFlags::projectile
-    | EntityTypeFlags::point_light
-    | EntityTypeFlags::prop;
-
+  // TODO: Do not collide with our own projectiles for now
   constexpr EntityTypeMask PLAYER_COLLIDERS
-    = PhysLevel::COLLIDE_ALL & ~IGNORED_COLLIDERS;
+    = EntityTypeFlags::enemy
+    | EntityTypeFlags::pickup;
 
   // Report only pickups
   constexpr EntityTypeMask PLAYER_REPORTING
@@ -262,27 +254,12 @@ void Player::apply_velocity(f32 delta_seconds)
   // Process report only collisions
   for (EntityID report_id : collected_collisions.report_entities)
   {
-    switch (report_id.type)
+    if (report_id.type == EntityTypes::pickup)
     {
-      case EntityTypes::pickup:
-      {
-        PickUp* pickup = ecs.get_entity<PickUp>(report_id);
-        nc_assert(pickup);
+      PickUp* pickup = ecs.get_entity<PickUp>(report_id);
+      nc_assert(pickup);
 
-        if (pickup->pickup(*this))
-        {
-          // Destroy if picked up sucessfully.
-          ecs.destroy_entity(report_id);
-          get_engine().get_module<UserInterfaceSystem>().get_ui_screen_effect()->did_pickup();
-        }
-        break;
-      }
-
-      case EntityTypes::projectile:
-      {
-        // TODO: later
-        break;
-      }
+      this->handle_pickup(*pickup);
     }
   }
 
@@ -303,18 +280,18 @@ void Player::handle_attack(PlayerSpecificInputs curr_input, PlayerSpecificInputs
 
   if (did_attack && this->weapon_fsm.get_state() == WeaponStates::idle)
   {
-    if (current_ammo[current_weapon] == -1)
-    {
-      this->weapon_fsm.set_state(WeaponStates::attack);
-      return;
-    }
+    bool is_melee = this->current_weapon == WeaponTypes::wrench;
 
-    if (current_ammo[current_weapon] == 0)
+    if (!is_melee && current_ammo[this->current_weapon] == 0)
     {
       return;
     }
 
-    current_ammo[current_weapon] -= 1;
+    if (!is_melee)
+    {
+      this->current_ammo[this->current_weapon] -= 1;
+    }
+
     this->weapon_fsm.set_state(WeaponStates::attack);
   }
 }
@@ -474,7 +451,7 @@ void Player::update_gun_anim(f32 delta)
 //==============================================================================
 void Player::do_attack()
 {
-  auto& sound_system  = SoundSystem::get();
+  auto& sound_system = SoundSystem::get();
 
   vec3 dir  = this->get_look_direction();
 
@@ -548,6 +525,22 @@ void Player::change_weapon(WeaponType new_weapon)
 }
 
 //==============================================================================
+void Player::handle_pickup(PickUp& pickup)
+{
+  if (pickup.pickup(*this))
+  {
+    EntityRegistry&      ecs = GameSystem::get().get_entities();
+    UserInterfaceSystem& ui  = get_engine().get_module<UserInterfaceSystem>();
+
+    // Destroy if picked up sucessfully.
+    ecs.destroy_entity(pickup.get_id());
+
+    // Notify UI to show a overlay effect
+    ui.get_ui_screen_effect()->did_pickup();
+  }
+}
+
+//==============================================================================
 void Player::alert_nearby_enemies(f32 distance)
 {
   // Do not distribute sound through closed doors
@@ -594,6 +587,19 @@ void Player::damage(int damage)
 }
 
 //==============================================================================
+void Player::heal(u32 how_much)
+{
+  if (!alive)
+  {
+    // Can't heal while dead, too late!
+    return;
+  }
+
+  u32 max_hp = static_cast<u32>(max(this->get_max_health(), 0));
+  this->current_health = min(this->current_health + how_much, max_hp);
+}
+
+//==============================================================================
 void Player::die()
 {
   if (alive)
@@ -606,9 +612,15 @@ void Player::die()
 }
 
 //==============================================================================
-int Player::get_health()
+int Player::get_health() const
 {
   return this->current_health;
+}
+
+//==============================================================================
+int Player::get_max_health() const
+{
+  return CVars::player_max_hp;
 }
 
 //==============================================================================
@@ -743,7 +755,28 @@ void Player::hot_reload_get_pos_rot(vec3& pos, f32& yaw, f32& pitch)
 //==============================================================================
 bool Player::has_weapon(WeaponType weapon) const
 {
-  return owned_weapons & (1 << weapon);
+  return owned_weapons & weapon_flag(weapon);
+}
+
+//==============================================================================
+void Player::give_weapon(WeaponType weapon)
+{
+  if (!has_weapon(weapon))
+  {
+    // Award the weapon
+    this->owned_weapons |= weapon_flag(weapon);
+
+    // And change to it
+    this->change_weapon(weapon);
+  }
+}
+
+//==============================================================================
+void Player::give_ammo(WeaponType weapon, u32 amount)
+{
+  nc_assert(weapon >= 0 && weapon < ARRAY_LENGTH(MAX_AMMO));
+  u32 max_ammo = MAX_AMMO[weapon];
+  this->current_ammo[weapon] = min(this->current_ammo[weapon] + amount, max_ammo);
 }
 
 //==============================================================================
@@ -753,9 +786,23 @@ EntityType Player::get_type_static()
 }
 
 //==============================================================================
-int Player::get_current_weapon_ammo()
+s32 Player::get_current_weapon_ammo()
 {
-  return this->current_ammo[this->current_weapon];
+  return this->get_ammo(this->get_equipped_weapon());
+}
+
+//==============================================================================
+s32 Player::get_ammo(WeaponType weapon) const
+{
+  nc_assert(weapon >= 0 && weapon < ARRAY_LENGTH(current_ammo));
+  return this->current_ammo[weapon];
+}
+
+//==============================================================================
+s32 Player::get_max_ammo(WeaponType weapon) const
+{
+  nc_assert(weapon >= 0 && weapon < ARRAY_LENGTH(MAX_AMMO));
+  return MAX_AMMO[weapon];
 }
 
 }

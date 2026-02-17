@@ -164,6 +164,9 @@ struct CVars
   NC_REGISTER_CVAR_RANGED(f32, player_air_acc_coeff, 0.5f,  0.0f, 01.0f, "Acceleration in air compared to ground.");
   NC_REGISTER_CVAR_RANGED(f32, player_air_dec_coeff, 0.5f,  0.0f, 01.0f, "Deceleration in air compared to ground.");
   NC_REGISTER_CVAR_RANGED(s32, player_max_hp,        100,  50, 300,      "Max HP.");
+
+  NC_REGISTER_CVAR_RANGED(s32, medkit_small_hp, 10, 1, 100, "Small medkit HP.");
+  NC_REGISTER_CVAR_RANGED(s32, medkit_large_hp, 40, 1, 100, "Large medkit HP.");
 };
 
 }

@@ -25,11 +25,15 @@ public:
   // Should return true and apply the specific effect or return false and
   // do nothing.
   // Is automatically destroyed after returning true.
-  bool pickup(const Player& player);
+  bool pickup(Player& player);
 
   // Should the pickup lie on the floor, or levitate in the air?
   // If true then the pickup changes height with the floors it lies on.
   bool snaps_to_floor() const;
+
+  bool is_ammo()   const;
+  bool is_weapon() const;
+  bool is_heal()   const;
 
   Appearance&       get_appearance();
   const Appearance& get_appearance() const;

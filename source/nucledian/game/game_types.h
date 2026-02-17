@@ -20,4 +20,9 @@ using ActorAnimStateFlag = u8;
 
 constexpr WeaponType INVALID_WEAPON_TYPE = static_cast<WeaponType>(-1);
 
+constexpr WeaponFlags weapon_flag(WeaponType type)
+{
+  return 1_u32 << type;
+}
+
 }

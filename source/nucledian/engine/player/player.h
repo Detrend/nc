@@ -21,6 +21,7 @@ namespace nc
 // Forward declare, we do not want to include
 struct PlayerSpecificInputs;
 struct RenderGunProperties;
+class  PickUp;
 }
 
 namespace nc
@@ -36,6 +37,7 @@ public:
   static EntityType get_type_static();
 
   void damage(int damage);
+  void heal(u32 how_much);
   void die();
 
   void update
@@ -46,9 +48,12 @@ public:
   );
 
   Camera* get_camera();
-  int     get_health();
+  int     get_health()     const;
+  int     get_max_health() const;
 
-  int     get_current_weapon_ammo();
+  s32     get_current_weapon_ammo();
+  s32     get_ammo(WeaponType weapon)     const;
+  s32     get_max_ammo(WeaponType weapon) const;
 
   vec3  get_look_direction();
   f32   get_view_height();
@@ -56,6 +61,8 @@ public:
 
   WeaponType get_equipped_weapon()         const;
   bool       has_weapon(WeaponType weapon) const;
+  void       give_weapon(WeaponType weapon);
+  void       give_ammo(WeaponType weapon, u32 amount);
 
   void get_gun_props(RenderGunProperties& props) const;
 
@@ -79,6 +86,7 @@ private:
   void update_gun_anim(f32 delta);
   void do_attack();
   void change_weapon(WeaponType new_weapon);
+  void handle_pickup(PickUp& pickup);
 
 	// Alerts enemies close to the player
 	void alert_nearby_enemies(f32 distance);
@@ -139,9 +147,10 @@ private:
 
   Camera camera;
 
-public: // Public for sake of demo
-  int current_ammo[4] = {-1, 20, 20, 50};
-  static constexpr int MAX_AMMO[4] = {-1, 50, 50, 100};
+  static constexpr s32 MAX_AMMO[4] = {-1, 20, 48, 96};
+
+  s32 current_ammo[4] = {-1, 0, 0, 0}; // We start with nothing
+  static_assert(ARRAY_LENGTH(current_ammo) == ARRAY_LENGTH(MAX_AMMO));
 };
 
 }

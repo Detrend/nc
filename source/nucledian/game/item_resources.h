@@ -9,10 +9,10 @@
   xx(hp_small,     pickup) \
   xx(hp_big,       pickup) \
   xx(shotgun,      pickup) \
-  xx(shotgun_ammo, pickup) \
   xx(plasma_rifle, pickup) \
-  xx(plasma_ammo,  pickup) \
   xx(nail_gun,     pickup) \
+  xx(shotgun_ammo, pickup) \
+  xx(plasma_ammo,  pickup) \
   xx(nail_ammo,    pickup)
 
 
@@ -29,6 +29,10 @@ enum evalue : PickupType
 {
   NC_PICKUPS(NC_DEFINE_PICKUP_ENUM)
   count,
+  first_weapon = shotgun,
+  last_weapon  = nail_gun,
+  first_ammo   = shotgun_ammo,
+  last_ammo    = nail_ammo,
 };
 
 }
