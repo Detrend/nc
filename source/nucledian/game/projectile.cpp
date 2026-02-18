@@ -14,6 +14,7 @@
 #include <engine/graphics/graphics_system.h>
 
 #include <game/projectiles.h>
+#include <game/particle.h>
 
 #include <engine/sound/sound_system.h>
 #include <engine/sound/sound_resources.h>
@@ -79,6 +80,8 @@ void Projectile::update(f32 dt)
 		? (EntityTypeFlags::enemy)
 		: (EntityTypeFlags::enemy | EntityTypeFlags::player);
 
+  bool was_entity_hit = false;
+
   lvl.move_particle
   (
     position, m_velocity, transform, dt, r, h, 0.0f,
@@ -87,6 +90,7 @@ void Projectile::update(f32 dt)
     {
       if (hit.type == CollisionHit::entity && this->on_entity_hit(hit))
       {
+        was_entity_hit = true;
         m_hit_cnt_remaining = 0;
         // play damage hit
       }
@@ -111,8 +115,32 @@ void Projectile::update(f32 dt)
 
   this->set_position(position);
 
+
   if (!m_hit_cnt_remaining)
   {
+    // Spawn blood particle on entity hit
+    if (was_entity_hit)
+    {
+      game.get_entities().create_entity<Particle>
+      (
+        this->get_position(), "blood", 4, 0.3f
+      );
+    }
+
+    // Spawn destroy particle if necessary
+    if (PROJECTILE_STATS[m_type].hit_sprite)
+    {
+      game.get_entities().create_entity<Particle>
+      (
+        this->get_position(),
+        PROJECTILE_STATS[m_type].hit_sprite,
+        PROJECTILE_STATS[m_type].hit_sprite_cnt,
+        PROJECTILE_STATS[m_type].hit_sprite_len,
+        PROJECTILE_STATS[m_type].hit_sprite_col,
+        PROJECTILE_STATS[m_type].hit_sprite_rad
+      );
+    }
+
     // Kill ourselves
     game.get_entities().destroy_entity(this->get_id());
   }

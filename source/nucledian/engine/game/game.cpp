@@ -6,6 +6,7 @@
 #include <engine/player/player.h>
 #include <engine/enemies/enemy.h>
 #include <game/projectile.h>
+#include <game/particle.h>
 
 // Other
 #include <engine/map/map_system.h>
@@ -43,6 +44,12 @@ void Game::update
   entities->for_each<Projectile>([&](Projectile& proj)
   {
     proj.update(dt);
+  });
+
+  // Handle particles
+  entities->for_each<Particle>([&](Particle& particle)
+  {
+    particle.update(dt);
   });
 
   // And update the map

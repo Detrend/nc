@@ -30,6 +30,7 @@
 #include <game/weapons.h>
 #include <game/item.h>
 #include <game/projectiles.h>
+#include <game/particle.h>
 
 #include <math/utils.h>
 #include <math/lingebra.h>
@@ -52,7 +53,7 @@ static constexpr cstr WEAPON_STATE_NAMES[] =
 };
 
 //==============================================================================
-constexpr WeaponFlags DEFAULT_WEAPONS = weapon_flag(WeaponTypes::wrench);
+constexpr WeaponFlags DEFAULT_WEAPONS = weapon_flag(WeaponTypes::wrench) | weapon_flag(WeaponTypes::plasma_rifle);
 constexpr f32 PLAYER_HEIGHT      = 1.8f;
 constexpr f32 PLAYER_EYE_HEIGHT  = 1.65f;
 constexpr f32 PLAYER_RADIUS      = 0.25f;
@@ -526,6 +527,16 @@ void Player::do_attack()
       GameSystem::get().spawn_projectile
       (
         WEAPON_STATS[weapon].projectile, from, adjusted_dir, this->get_id()
+      );
+    }
+
+    // Do a weapon flash
+    if (WEAPON_STATS[weapon].flash_color != VEC3_ZERO)
+    {
+      vec3 cpos = this->get_camera()->get_position();
+      GameSystem::get().get_entities().create_entity<Particle>
+      (
+        cpos, 0.1f, WEAPON_STATS[weapon].flash_color, 8.0f
       );
     }
   }

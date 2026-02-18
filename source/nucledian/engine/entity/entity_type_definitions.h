@@ -32,6 +32,7 @@ namespace EntityTypes
     point_light,
     prop,
     sky_box,
+    particle,
     // - //
     count,  // <- total number of entity types
     all = EntityType(-1),
@@ -59,6 +60,7 @@ constexpr cstr ENTITY_TYPE_NAMES[]
   "point_light",
   "prop",
   "sky_box",
+  "particle",
 };
 static_assert(ARRAY_LENGTH(ENTITY_TYPE_NAMES) == EntityTypes::count);
 
@@ -75,6 +77,7 @@ namespace EntityTypeFlags
     point_light       = entity_type_to_mask(EntityTypes::point_light),
     prop              = entity_type_to_mask(EntityTypes::prop),
     sky_box           = entity_type_to_mask(EntityTypes::sky_box),
+    particle          = entity_type_to_mask(EntityTypes::particle),
   };
 }
 

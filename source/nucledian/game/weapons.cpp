@@ -34,6 +34,7 @@ WeaponStats WEAPON_STATS[] =
     .shoot_snd = Sounds::shotgun,
     .loudness_dist = 30.0f,
     .spread_amount = 0.15f,
+    .flash_color   = colors::ORANGE,
   },
 
   // Plasma rifle
@@ -44,6 +45,7 @@ WeaponStats WEAPON_STATS[] =
     .projectile_cnt = 1, .hold_to_fire = true,
     .shoot_snd = Sounds::plasma_rifle,
     .loudness_dist = 20.0f,
+    .flash_color   = colors::WHITE,
   },
 
   // Nail gun

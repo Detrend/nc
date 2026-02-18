@@ -24,15 +24,23 @@ ProjectileStats PROJECTILE_STATS[] =
   {
     .dmg_falloff = 0.05f, .speed = 20.0f, .radius = 0.2f, .damage = 25,
     .bounce_cnt = 3, .sprite = "plasma_ball", .sprite_cnt = 1,
-    .light_color = colors::BLUE
+    .light_color = colors::BLUE,
+    .hit_sprite = "plasma_ball_death",
+    .hit_sprite_cnt = 6,
+    .hit_sprite_len = 0.5f,
+    .hit_sprite_col = colors::BLUE,
+    .hit_sprite_rad = 2.0f,
   },
 
   // Shotgun slug
   ProjectileStats
   {
-    .dmg_falloff = 0.05f, .speed = 100.0f, .radius = 0.1f, .damage = 15,
+    .dmg_falloff = 0.05f, .speed = 100.0f, .radius = 0.01f, .damage = 15,
     .bounce_cnt = 0, .sprite = nullptr, .sprite_cnt = 1,
-    .light_color = colors::BLUE
+    .light_color = VEC3_ZERO,
+    .hit_sprite = "buck",
+    .hit_sprite_cnt = 4,
+    .hit_sprite_len = 0.35f,
   },
 
   // Fire ball

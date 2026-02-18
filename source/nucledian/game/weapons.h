@@ -6,6 +6,8 @@
 #include <game/game_types.h>
 #include <engine/sound/sound_types.h> // SoundID
 
+#include <math/vector.h>
+
 // Include this file inside the .cpps, but not in the headers. We do not want
 // to rebuild the entire solution each time someone adds new item to enum or
 // tweaks something.
@@ -53,6 +55,7 @@ struct WeaponStats
   SoundID        shoot_snd      = INVALID_SOUND;
   f32            loudness_dist  = 20.0f;
   f32            spread_amount  = 0.0f;
+  color3         flash_color    = VEC3_ZERO;
 };
 
 struct WeaponAnim
