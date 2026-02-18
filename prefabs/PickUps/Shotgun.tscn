@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://1dbhovgj17my"]
+
+[ext_resource type="Script" uid="uid://8su8gwb3cmui" path="res://scripts/things/PickUp.gd" id="1_k3grh"]
+[ext_resource type="Texture2D" uid="uid://dg8mj3nucrihg" path="res://imgs/pickups/shotgun.png" id="2_1hfsw"]
+
+[node name="Shotgun" type="Node2D"]
+z_index = 999
+script = ExtResource("1_k3grh")
+type_id = 2
+
+[node name="Icon" type="Sprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(0.195, 0.195)
+texture = ExtResource("2_1hfsw")
+region_enabled = true
+region_rect = Rect2(0, 62.84214, 97, 34.15786)

@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://guolywc6hufx"]
+
+[ext_resource type="Script" uid="uid://8su8gwb3cmui" path="res://scripts/things/PickUp.gd" id="1_mcty7"]
+[ext_resource type="Texture2D" uid="uid://yk3t1deytj2" path="res://imgs/pickups/plasma_ammo.png" id="2_mcty7"]
+
+[node name="PlasmaAmmo" type="Node2D"]
+z_index = 999
+script = ExtResource("1_mcty7")
+type_id = 6
+
+[node name="Icon" type="Sprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(0.264, 0.264)
+texture = ExtResource("2_mcty7")

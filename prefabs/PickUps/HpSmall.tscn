@@ -5,9 +5,8 @@
 
 [node name="HpSmall" type="Node2D"]
 z_index = 999
-scale = Vector2(0.617411, 0.617411)
 script = ExtResource("1_v1438")
 
 [node name="Icon" type="Sprite2D" parent="."]
-scale = Vector2(0.0092898, 0.0092898)
+scale = Vector2(0.0078125, 0.0078125)
 texture = ExtResource("3_cal4k")

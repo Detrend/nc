@@ -1,4 +1,4 @@
-[gd_scene load_steps=253 format=3 uid="uid://befdk2p7cnnba"]
+[gd_scene load_steps=255 format=3 uid="uid://befdk2p7cnnba"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_nqbmo"]
 [ext_resource type="Script" uid="uid://bbt07sf8vceiw" path="res://scripts/reactivity/Activator.gd" id="2_fxlut"]
@@ -10,11 +10,9 @@
 [ext_resource type="Script" uid="uid://cft80p5qydrwt" path="res://scripts/sector/SectorProperties.gd" id="4_h15or"]
 [ext_resource type="PackedScene" uid="uid://cyihcpnjneypy" path="res://prefabs/StairMaker.tscn" id="5_l4xrs"]
 [ext_resource type="Resource" uid="uid://b0ot7qa5l7k8d" path="res://materials/default_texture.tres" id="6_2dkgu"]
-[ext_resource type="Script" uid="uid://mrxb63xvcsa1" path="res://scripts/sector/wall/WallAttachment.gd" id="7_bx8rf"]
 [ext_resource type="PackedScene" uid="uid://b8tr8d62bd5s2" path="res://prefabs/PickUps/HpBig.tscn" id="7_hqisf"]
 [ext_resource type="Resource" uid="uid://dru3antcr08im" path="res://materials/outsides.tres" id="7_phr4w"]
 [ext_resource type="PackedScene" uid="uid://cm0wgegxiipjw" path="res://prefabs/PickUps/HpSmall.tscn" id="8_rrxkl"]
-[ext_resource type="Texture2D" uid="uid://c6fxl8yses7sc" path="res://icon.svg" id="8_x5ano"]
 [ext_resource type="Script" uid="uid://crfvtueim4q0s" path="res://scripts/reactivity/Trigger.gd" id="9_r3w7q"]
 [ext_resource type="PackedScene" uid="uid://hg6kt5ju3l3a" path="res://prefabs/Entities/Cultist.tscn" id="9_rrxkl"]
 [ext_resource type="Resource" uid="uid://ckwlq2hdguk10" path="res://materials/maintenance_shaft.tres" id="10_k8xne"]
@@ -42,6 +40,10 @@
 [ext_resource type="PackedScene" uid="uid://j4vtgvfml3yh" path="res://prefabs/Props/ScatteredFlesh.tscn" id="24_sc5vv"]
 [ext_resource type="PackedScene" uid="uid://cn044shocju7e" path="res://prefabs/WallAttachments/WallButton.tscn" id="24_xqdbr"]
 [ext_resource type="PackedScene" uid="uid://c36mdme0482de" path="res://materials/skyboxes/skybox_default.tscn" id="30_70ooc"]
+[ext_resource type="PackedScene" uid="uid://brvpsjb10qgr1" path="res://prefabs/PickUps/ShotgunAmmo.tscn" id="41_iyvop"]
+[ext_resource type="PackedScene" uid="uid://1dbhovgj17my" path="res://prefabs/PickUps/Shotgun.tscn" id="42_23eq1"]
+[ext_resource type="PackedScene" uid="uid://3yx126jx5y0c" path="res://prefabs/PickUps/PlasmaRifle.tscn" id="43_xq51q"]
+[ext_resource type="PackedScene" uid="uid://guolywc6hufx" path="res://prefabs/PickUps/PlasmaAmmo.tscn" id="44_fnnsj"]
 
 [sub_resource type="Resource" id="Resource_h15or"]
 script = ExtResource("4_h15or")
@@ -1445,16 +1447,6 @@ floor_height = 0.1
 portal_destination = NodePath("../../TopPart/Sector13")
 portal_wall = 1
 portal_destination_wall = 2
-
-[node name="Node2D" type="Node2D" parent="Sectors/Square/Sector6"]
-position = Vector2(0, 27)
-script = ExtResource("7_bx8rf")
-
-[node name="Icon" type="Sprite2D" parent="Sectors/Square/Sector6/Node2D"]
-z_index = 999
-position = Vector2(-8, 5)
-scale = Vector2(0.065, 0.065)
-texture = ExtResource("8_x5ano")
 
 [node name="Trigger" type="Node" parent="Sectors/Square/Sector6" node_paths=PackedStringArray("target")]
 script = ExtResource("9_r3w7q")
@@ -3606,6 +3598,18 @@ position = Vector2(-14, -10)
 [node name="HpBig15" parent="PickUps/RedCross" instance=ExtResource("7_hqisf")]
 position = Vector2(-21, -19)
 
+[node name="ShotgunAmmo" parent="PickUps" instance=ExtResource("41_iyvop")]
+position = Vector2(30, 49)
+
+[node name="Shotgun" parent="PickUps" instance=ExtResource("42_23eq1")]
+position = Vector2(47, 46)
+
+[node name="PlasmaRifle" parent="PickUps" instance=ExtResource("43_xq51q")]
+position = Vector2(40, 56)
+
+[node name="PlasmaAmmo" parent="PickUps" instance=ExtResource("44_fnnsj")]
+position = Vector2(2, 46)
+
 [node name="Enemies" type="Node2D" parent="."]
 
 [node name="Pepe" parent="Enemies" instance=ExtResource("9_rrxkl")]
@@ -3703,7 +3707,7 @@ intensity = 0.3
 position = Vector2(-5013.0005, -5381.0005)
 
 [node name="PlayerPosition" parent="." instance=ExtResource("3_nqbmo")]
-position = Vector2(374, -66)
+position = Vector2(2.999939, 15.000015)
 rotation = -2.7602623
 height_offset = 0.5
 

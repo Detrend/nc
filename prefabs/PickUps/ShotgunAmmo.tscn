@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://brvpsjb10qgr1"]
+
+[ext_resource type="Script" uid="uid://8su8gwb3cmui" path="res://scripts/things/PickUp.gd" id="1_0v4vu"]
+[ext_resource type="Texture2D" uid="uid://dptqvkxt6uhpt" path="res://imgs/pickups/shotgun_ammo.png" id="2_0v4vu"]
+
+[node name="ShotgunAmmo" type="Node2D"]
+z_index = 999
+script = ExtResource("1_0v4vu")
+type_id = 5
+
+[node name="Icon" type="Sprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(0.264, 0.264)
+texture = ExtResource("2_0v4vu")
