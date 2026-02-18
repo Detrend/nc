@@ -129,7 +129,6 @@ struct MapDynamics
     bool      dirty     = false;
   };
 
-
   using SectorChangeCallback = std::function<void(SectorID)>;
   using ActivatorList        = std::vector<std::vector<SectorID>>;
   using SegmentRuntimeMap    = std::unordered_map<u32, RuntimeSegmentInfo>;

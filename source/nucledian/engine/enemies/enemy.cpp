@@ -145,20 +145,18 @@ Enemy::Enemy(vec3 position, vec3 looking_dir, EnemyType tpe)
     .pivot     = Appearance::PivotMode::bottom,
   };
 
-  namespace AnimStates = ActorAnimStates;
-
-  for (ActorAnimState s = 0; s < AnimStates::count; ++s)
+  for (ActorAnimState s = 0; s < ActorAnimStates::count; ++s)
   {
     this->anim_fsm.set_state_length(s, stats.state_sprite_len[s]);
   }
 
-  u64 attack_frame_idx = stats.state_sprite_cnt[AnimStates::attack];
-  f32 attack_state_len = stats.state_sprite_len[AnimStates::attack];
+  u64 attack_frame_idx = stats.state_sprite_cnt[ActorAnimStates::attack];
+  f32 attack_state_len = stats.state_sprite_len[ActorAnimStates::attack];
   f32 trigger_time = (stats.attack_frame * attack_state_len) / attack_frame_idx;
 
   this->anim_fsm.add_trigger
   (
-    AnimStates::attack, trigger_time, TriggerTypes::trigger_fire
+    ActorAnimStates::attack, trigger_time, TriggerTypes::trigger_fire
   );
 }
 
@@ -866,8 +864,11 @@ void Enemy::on_player_traversed_nc_portal(EntityID /*player*/, mat4 transform)
   // Modify the target transform inv
   // This fixes the bug due to which the enemy suddenly turns around if the
   // player traverses portal during his shooting animation
-  current_path.target_transform_inv
-    = inverse(transform) * current_path.target_transform_inv;
+  if (this->state != EnemyAiState::idle)
+  {
+    current_path.target_transform_inv
+      = inverse(transform) * current_path.target_transform_inv;
+  }
 }
 
 //==============================================================================
