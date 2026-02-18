@@ -181,7 +181,7 @@ struct PhysLevel
   ) const;
 
   // For recording simulation hits
-  using CollisionListener = std::function<void(const CollisionHit& /*hit*/)>;
+  using CollisionListener = std::function<bool(const CollisionHit& /*hit*/)>;
 
   struct CharacterCollisions
   {
@@ -234,6 +234,7 @@ struct PhysLevel
     f32               neg_height,// -y offset of the cylinder start
     f32               bounce,    // bounce factor, 1 = normal bounce
     EntityTypeMask    colliders, // what entities to collide with
+    u32               hit_cnt  = 1,      // End on the first hit
     CollisionListener listener = nullptr // reaction to collisions
   ) const;
 

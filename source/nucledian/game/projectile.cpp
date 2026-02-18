@@ -80,19 +80,20 @@ void Projectile::update(f32 dt)
 		? (EntityTypeFlags::enemy)
 		: (EntityTypeFlags::enemy | EntityTypeFlags::player);
 
-  bool was_entity_hit = false;
+  bool was_entity_hit   = false;
 
   lvl.move_particle
   (
     position, m_velocity, transform, dt, r, h, 0.0f,
-    1.0f, COLLIDE_WITH,
+    1.0f, COLLIDE_WITH, m_hit_cnt_remaining,
     [&](const CollisionHit& hit)
     {
       if (hit.type == CollisionHit::entity && this->on_entity_hit(hit))
       {
         was_entity_hit = true;
         m_hit_cnt_remaining = 0;
-        // play damage hit
+        // TODO: play damage hit?
+        return false;
       }
       else
       {
@@ -104,10 +105,13 @@ void Projectile::update(f32 dt)
           (
             position, Sounds::ricochet, 32.0f, 0.3f
           );
+
+          return true;
         }
         else
         {
-          // play destroy sound
+          // TODO: play destroy sound?
+          return false;
         }
       }
     }
