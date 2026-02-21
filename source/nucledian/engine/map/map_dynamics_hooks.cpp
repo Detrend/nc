@@ -28,7 +28,7 @@ namespace nc
 
 
   void ActivatorHook_LevelTransition::load(const SerializedData& data) {
-    this->destination = data["destination"];
+    this->destination = std::string_view(data["destination"]);
   }
   void ActivatorHook_LevelTransition::on_activated_start() {
     GameSystem::get().request_level_change(destination);

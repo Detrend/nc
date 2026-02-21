@@ -1472,7 +1472,7 @@ void GameSystem::handle_demo_debug()
       {
         save_demo_data
         (
-          level_name,
+          level_name.to_string(),
           recast<u8*>(journal.frames.data()),
           journal.frames.size() * sizeof(JournalFrame)
         );

@@ -369,6 +369,7 @@
     <ClInclude Include="..\source\nucledian\math\matrix.h" />
     <ClInclude Include="..\source\nucledian\math\utils.h" />
     <ClInclude Include="..\source\nucledian\math\vector.h" />
+    <ClInclude Include="..\source\nucledian\token.h" />
     <ClInclude Include="..\source\nucledian\types.h" />
     <ClInclude Include="..\source\nucledian\unit_test.h" />
     <ClInclude Include="logging.h" />
@@ -426,6 +427,9 @@
     <ProjectReference Include="SDL_mixer.vcxproj">
       <Project>{f7e944b3-0815-40cd-b3e4-90b2a15b0e33}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="nc.natvis" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />

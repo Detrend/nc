@@ -628,7 +628,7 @@ static void draw_level_selection()
 
   bool already_selected = false;
 
-  ImGui::Text("Current Level: %s", curr_lvl.data());
+  ImGui::Text("Current Level: %s", curr_lvl.to_cstring().data());
   ImGui::Separator();
 
   if (ImGui::Button("Next Level"))
@@ -641,7 +641,7 @@ static void draw_level_selection()
 
   for(const auto &id : LevelsDB)
   {
-    if (ImGui::Button(id.data()) && !already_selected)
+    if (ImGui::Button(id.to_cstring().data()) && !already_selected)
     {
       game.request_level_change(id);
       already_selected = true;
@@ -676,7 +676,7 @@ static void draw_saves_menu()
     ImGui::Text("Save IDX[%d]", i);
     ImGui::Text("Save ID [%d]", static_cast<int>(save.id));
     ImGui::Text("Dirty: %s", dirty ? "T" : "F");
-    ImGui::Text("Level: %s", save.last_level.data());
+    ImGui::Text("Level: %s", save.last_level.to_cstring().data());
 
 #ifdef NC_MSVC // localtime_s is platform specific
     ch::year_month_day date{ch::floor<ch::days>(save.time)};
