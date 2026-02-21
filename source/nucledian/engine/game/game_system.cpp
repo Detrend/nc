@@ -780,6 +780,14 @@ void GameSystem::handle_hot_reload()
       this->request_level_change(this->get_level_name());
     }
   }
+  else if (ImGui::IsKeyReleased(ImGuiKey_F7))
+  {
+    if (Player* player = get_player())
+    {
+      HotReloadData::has_data = false;
+      this->request_level_change(this->get_level_name());
+    }
+  }
 }
 #endif
 
