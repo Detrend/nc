@@ -257,6 +257,7 @@ static vec3 load_json_position(const nlohmann::json& js, const cstr &field_name 
   return load_json_vector<3>(js[field_name]).xzy;
 }
 
+
 //==============================================================================
 static void load_json_map
 (
@@ -269,6 +270,7 @@ static void load_json_map
 )
 {
   using namespace map_building;
+
 
   std::ifstream f(get_full_level_path(level_name));
   nc_assert(f.is_open());
@@ -482,6 +484,14 @@ static void load_json_map
     const bool use_gamma = js_skybox["use_gamma_correction"];
     const GLuint sky_box_map = TextureManager::get().get_equirectangular_map(texture, ResLifetime::Game);
     entities.create_entity<SkyBox>(sky_box_map, exposure, use_gamma);
+  }
+
+
+  if (data.contains("music")) {
+    SoundSystem::get().play_music(data["music"]);
+  }
+  else {
+    SoundSystem::get().play_music("music_ambient"); // just to not have to reexport all levels, will be later removed
   }
 
   dynamics.activators = std::move(activator_table);

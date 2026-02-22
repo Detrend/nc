@@ -66,6 +66,9 @@ public:
   void        play_oneshot(SoundID sound);
   SoundHandle play(SoundID sound, f32 volume = 1.0f);
   bool        is_handle_valid(const SoundHandle& handle) const;
+  
+  void        play_music(const std::string& track_name);
+
 
   // IEngineModule
   void on_event(ModuleEvent& event) override;

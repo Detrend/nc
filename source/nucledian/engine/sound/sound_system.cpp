@@ -171,6 +171,18 @@ void SoundSystem::play_oneshot(SoundID sound)
   play(sound);
 }
 
+
+void SoundSystem::play_music(const std::string& track_name)
+{
+  std::string path = std::format(NC_SOUND_DIRECTORY_CSTR "{}" NC_SOUND_TYPE, track_name);
+  if (Mix_Music* const music = Mix_LoadMUS(path.data())) {
+    Mix_PlayMusic(music, -1);
+  }
+  else {
+    nc_warn("Failed to load music \"{}\"", path);
+  }
+}
+
 //==============================================================================
 SoundHandle SoundSystem::play(SoundID sound, f32 volume /*= 1.0f*/)
 {
