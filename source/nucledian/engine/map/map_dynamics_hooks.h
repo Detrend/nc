@@ -26,10 +26,11 @@ namespace nc
 
     virtual void load(const SerializedData& data);
 
-    virtual void on_activated_start() override;
+    virtual void on_activated_start([[maybe_unused]] const IActivatorHook::Args& args) override;
 
   private:
     LevelName destination;
   };
+
 
 }

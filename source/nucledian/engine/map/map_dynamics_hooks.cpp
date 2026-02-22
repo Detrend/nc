@@ -14,6 +14,8 @@
 
 #include <json/json.hpp>
 
+#include <unordered_map>
+
 
 namespace nc
 {
@@ -23,15 +25,20 @@ namespace nc
     if (hook_type == "level_transition") {
       return std::make_unique<ActivatorHook_LevelTransition>();
     }
+    
     return nullptr;
   }
 
 
-  void ActivatorHook_LevelTransition::load(const SerializedData& data) {
+  void ActivatorHook_LevelTransition::load(const SerializedData& data) 
+  {
     this->destination = std::string_view(data["destination"]);
   }
-  void ActivatorHook_LevelTransition::on_activated_start() {
+  void ActivatorHook_LevelTransition::on_activated_start([[maybe_unused]] const IActivatorHook::Args& args) 
+  {
     GameSystem::get().request_level_change(destination);
   }
+
+
 
 }
