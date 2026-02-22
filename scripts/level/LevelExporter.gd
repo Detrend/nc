@@ -215,6 +215,8 @@ func create_level_export_data() -> Dictionary:
 	Sector.sanity_check_all(_level, all_sectors)
 	level_sanity_checks()
 	
+	level_export["music"] = _level.music
+	
 	var activators_export : Array[Dictionary] = []
 	for activator in NodeUtils.get_descendants_of_type(_level, Activator):
 		activators_export.append((activator as Activator).do_export({}))

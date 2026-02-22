@@ -10,6 +10,8 @@ var max_snapping_distance : float:
 @export_tool_button("Snap points") var snap_points_tool_button = _snap_points
 @export var auto_heights:bool = true
 
+@export var music : String
+
 @export var export_scale : Vector3 = Vector3(1.0, 1.0, 1.0)
 @export var export_offset : Vector2 = Vector2.ZERO
 @export var export_texture_scale : float = 1.0
