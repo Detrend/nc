@@ -17,7 +17,7 @@ namespace nc {
 /// 
 /// All of its operations are supposed to be constexpr-friendly.
 /// </summary>
-struct Token {
+struct BasicToken {
 
 private:
 
@@ -49,14 +49,14 @@ private:
 
 public:
 
-  // a single Token can contain at most this many chars
+  // a single BasicToken can contain at most this many chars
   static constexpr size_t MAX_LENGTH = 12;
 
 
-  constexpr Token() : raw(0) {}
+  constexpr BasicToken() : raw(0) {}
 
 
-  constexpr Token(const std::string_view& str)
+  constexpr BasicToken(const std::string_view& str)
     : raw(0)
   {
     if (str.size() > MAX_LENGTH) throw std::exception("String too big for a token!");
@@ -66,44 +66,46 @@ public:
     }
   }
 
-  constexpr Token(const Token &other) : raw(other.raw){}
-  constexpr Token& operator=(const Token& other) 
+  constexpr BasicToken(const BasicToken &other) : raw(other.raw){}
+  constexpr BasicToken& operator=(const BasicToken& other) 
   {
     this->raw = other.raw;
     return *this;
   }
 
-  constexpr bool operator==(const Token other) const
+  constexpr bool operator==(const BasicToken other) const
   {
     return get_raw() == other.get_raw();
   }
 
-  constexpr bool operator!=(const Token other) const
+  constexpr bool operator!=(const BasicToken other) const
   {
     return get_raw() != other.get_raw();
   }
 
-  constexpr std::string to_string() const
-  {
-    std::string ret;
-    for (u64 t = raw; t > 0; t /= BASE) {
-      ret.push_back(code_to_char(t % BASE));
-    }
-    return ret;
-  }
 
+  constexpr char *write_to_buffer(char* buffer) const 
+  {
+    for (u64 t = raw; t > 0; t /= BASE) {
+      *(buffer++) = code_to_char(t % BASE);
+    }
+    *buffer = '\0';
+
+    return buffer;
+  }
 
   constexpr auto to_cstring() const
   {
     std::array<char, MAX_LENGTH + 1> ret{};
 
-    size_t idx = 0;
-    for (u64 t = raw; t > 0; t /= BASE) {
-      ret[idx++] = code_to_char(t % BASE);
-    }
-    ret[idx] = '\0';
+    write_to_buffer(ret.data());
 
     return ret;
+  }
+
+  constexpr std::string to_string() const
+  {
+    return std::string(to_cstring().data());
   }
 
   constexpr u64 get_raw() const
@@ -117,5 +119,87 @@ private:
   u64 raw;
 
 };
+
+
+
+/// <summary>
+/// Fixed-size string of characters in range /_a-z0-9/ (alphanumeric and '_', case-insensitive) compressed into a single 64-bit number.
+/// Very fast to pass around and compare against each other.
+/// 
+/// All of its operations are supposed to be constexpr-friendly.
+/// 
+/// Max number of chars is `TTokenCount * BasicToken::MAX_LENGTH`
+/// </summary>
+template<size_t TTokenCount>
+struct CompositeToken {
+
+  static constexpr size_t MAX_LENGTH = TTokenCount * BasicToken::MAX_LENGTH;
+
+  constexpr CompositeToken() : storage{} {}
+  constexpr CompositeToken(const CompositeToken& other) : storage(other.storage) {}
+  constexpr CompositeToken& operator=(const CompositeToken& other)
+  {
+    this->storage = other.storage;
+    return *this;
+  }
+
+
+  constexpr CompositeToken(const std::string_view& str)
+    : storage{}
+  {
+    if (str.size() > MAX_LENGTH) throw std::exception("String too big for a token!");
+
+    for (size_t t = 0; t < TTokenCount; ++t) {
+      const size_t start = t * BasicToken::MAX_LENGTH;
+      if (start >= str.size()) break;
+      const size_t count = (start + BasicToken::MAX_LENGTH >= str.size()) ? (str.size() - start) : BasicToken::MAX_LENGTH;
+      storage[t] = BasicToken(str.substr(start, count));
+    }
+  }
+
+
+  constexpr bool operator==(const CompositeToken other) const
+  {
+    return storage == other.storage;
+  }
+
+  constexpr bool operator!=(const CompositeToken other) const
+  {
+    return storage != other.storage;
+  }
+
+  const std::array<BasicToken, TTokenCount>& get_storage() const {
+    return storage;
+  }
+
+  constexpr auto to_cstring() const
+  {
+    std::array<char, MAX_LENGTH + 1> ret{};
+
+    for (size_t t = 0; t < TTokenCount; ++t) {
+      char* const start = ret.data() + t * BasicToken::MAX_LENGTH;
+      const auto end = storage[t].write_to_buffer(start);
+      if (end < start + BasicToken::MAX_LENGTH)
+        break;
+    }
+    return ret;
+  }
+
+  constexpr std::string to_string() const
+  {
+    return std::string(to_cstring().data());
+  }
+
+
+
+
+private:
+  std::array<BasicToken, TTokenCount> storage;
+};
+
+
+// Declare our standard token to carry up to 24 chars
+using Token = CompositeToken<2>;
+
 
 }
