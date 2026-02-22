@@ -182,6 +182,7 @@
     <ClCompile Include="..\source\nucledian\engine\player\player.cpp" />
     <ClCompile Include="..\source\nucledian\grid.cpp" />
     <ClCompile Include="..\source\nucledian\intersect.cpp" />
+    <ClCompile Include="..\source\nucledian\token_tests.cpp" />
     <ClCompile Include="..\source\nucledian\unit_test.cpp" />
     <ClCompile Include="..\source\nucledian\engine\entity\entity_system.cpp" />
     <ClCompile Include="..\source\nucledian\engine\player\save_types.cpp" />

@@ -48,4 +48,11 @@ void lerp_towards(f32& value, f32 target, f32 amount)
   value += change;
 }
 
+//==============================================================================
+size_t hash_combine(size_t accumulator, size_t next_hash)
+{
+  // Copypasted from boost
+  return accumulator ^ next_hash + 0x9e3779b9 + (accumulator << 6) + (accumulator >> 2);
+}
+
 }

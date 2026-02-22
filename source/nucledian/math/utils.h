@@ -42,5 +42,9 @@ constexpr f32 HALF_PI    = PI * 0.5f;
 constexpr f32 QUARTER_PI = PI * 0.25f;
 constexpr f32 PI2        = PI * 2.0f;
 
+
+// Combine hashes of two elements into a single hash
+size_t hash_combine(size_t accumulator, size_t next_hash);
+
 }
 
