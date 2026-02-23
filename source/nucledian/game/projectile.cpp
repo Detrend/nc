@@ -127,7 +127,8 @@ void Projectile::update(f32 dt)
     {
       game.get_entities().create_entity<Particle>
       (
-        this->get_position(), "blood", 4, 0.3f
+        this->get_position(), "blood_splatter1",
+        5, 0.3f, colors::BLACK, 0.0f, 24.0f
       );
     }
 
