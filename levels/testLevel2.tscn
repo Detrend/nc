@@ -1,4 +1,4 @@
-[gd_scene load_steps=151 format=3 uid="uid://cta47u4q0nac4"]
+[gd_scene load_steps=155 format=3 uid="uid://cta47u4q0nac4"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_tdhj0"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_a102k"]
@@ -35,6 +35,9 @@
 [ext_resource type="PackedScene" uid="uid://c36mdme0482de" path="res://materials/skyboxes/skybox_default.tscn" id="22_wvwr6"]
 [ext_resource type="Resource" uid="uid://dyel65pf2hq5a" path="res://material_textures/Wall.tres" id="23_fh6m7"]
 [ext_resource type="PackedScene" uid="uid://2lt4yhe883yf" path="res://prefabs/Lights/AmbientLight.tscn" id="31_b1rou"]
+[ext_resource type="PackedScene" uid="uid://3yx126jx5y0c" path="res://prefabs/PickUps/PlasmaRifle.tscn" id="33_uxovv"]
+[ext_resource type="PackedScene" uid="uid://guolywc6hufx" path="res://prefabs/PickUps/PlasmaAmmo.tscn" id="34_jnh0i"]
+[ext_resource type="PackedScene" uid="uid://1dbhovgj17my" path="res://prefabs/PickUps/Shotgun.tscn" id="35_jv3ye"]
 [ext_resource type="PackedScene" uid="uid://ctwevapidummr" path="res://prefabs/Lights/PointLight.tscn" id="38_8hkti"]
 [ext_resource type="Script" uid="uid://cw0a2syvnfeio" path="res://scripts/reactivity/hooks/LevelTransition.gd" id="38_xcudj"]
 [ext_resource type="PackedScene" uid="uid://p6tlah2kdmhf" path="res://prefabs/Props/Vines1.tscn" id="39_glkwk"]
@@ -45,6 +48,7 @@
 [ext_resource type="PackedScene" uid="uid://deia7l8swr6i1" path="res://prefabs/Props/Bush4.tscn" id="44_jv3ye"]
 [ext_resource type="PackedScene" uid="uid://dfen5ojms1xh" path="res://prefabs/Props/Bush2.tscn" id="45_wy7wl"]
 [ext_resource type="PackedScene" uid="uid://c3gl2xtkcfe3f" path="res://prefabs/Props/Bush1.tscn" id="46_4ktck"]
+[ext_resource type="PackedScene" uid="uid://brvpsjb10qgr1" path="res://prefabs/PickUps/ShotgunAmmo.tscn" id="49_wy7wl"]
 
 [sub_resource type="Resource" id="Resource_yr3c6"]
 script = ExtResource("4_hw0gl")
@@ -2005,6 +2009,24 @@ position = Vector2(-147, 108)
 [node name="HpSmall14" parent="Entities" instance=ExtResource("14_1rnkb")]
 position = Vector2(-141, 124)
 
+[node name="PlasmaRifle" parent="Entities" instance=ExtResource("33_uxovv")]
+position = Vector2(-104, 121)
+
+[node name="PlasmaAmmo" parent="Entities" instance=ExtResource("34_jnh0i")]
+position = Vector2(-77, 120)
+
+[node name="PlasmaAmmo2" parent="Entities" instance=ExtResource("34_jnh0i")]
+position = Vector2(-72, 112)
+
+[node name="PlasmaAmmo3" parent="Entities" instance=ExtResource("34_jnh0i")]
+position = Vector2(-31, 0)
+
+[node name="PlasmaAmmo4" parent="Entities" instance=ExtResource("34_jnh0i")]
+position = Vector2(-116, -5)
+
+[node name="Shotgun2" parent="Entities" instance=ExtResource("35_jv3ye")]
+position = Vector2(-275, -140)
+
 [node name="AmbientLight" parent="." instance=ExtResource("31_b1rou")]
 position = Vector2(-432, -77)
 intensity = 0.2
@@ -2191,3 +2213,18 @@ height_offset = 5.25
 
 [node name="Bush14" parent="." instance=ExtResource("46_4ktck")]
 position = Vector2(-69, 119)
+
+[node name="ShotgunAmmo" parent="." instance=ExtResource("49_wy7wl")]
+position = Vector2(-268, -135)
+
+[node name="PlasmaAmmo" parent="." instance=ExtResource("34_jnh0i")]
+position = Vector2(-272, -7)
+
+[node name="HpSmall" parent="." instance=ExtResource("14_1rnkb")]
+position = Vector2(-273, 16)
+
+[node name="ShotgunAmmo2" parent="." instance=ExtResource("49_wy7wl")]
+position = Vector2(154, -11)
+
+[node name="PlasmaAmmo2" parent="." instance=ExtResource("34_jnh0i")]
+position = Vector2(552, 37)

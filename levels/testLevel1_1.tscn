@@ -1,4 +1,4 @@
-[gd_scene load_steps=175 format=3 uid="uid://ntcc2v6lwf2q"]
+[gd_scene load_steps=177 format=3 uid="uid://ntcc2v6lwf2q"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_qh6nn"]
 [ext_resource type="Script" uid="uid://b8tkglirbwf1e" path="res://scripts/reactivity/ActivatorPool.gd" id="2_dkf2s"]
@@ -39,10 +39,12 @@
 [ext_resource type="PackedScene" uid="uid://hg6kt5ju3l3a" path="res://prefabs/Entities/Cultist.tscn" id="35_pdeeh"]
 [ext_resource type="PackedScene" uid="uid://dgu644cct1eeb" path="res://prefabs/Entities/Possessed.tscn" id="36_hksti"]
 [ext_resource type="PackedScene" uid="uid://ctwevapidummr" path="res://prefabs/Lights/PointLight.tscn" id="38_kivxp"]
+[ext_resource type="PackedScene" uid="uid://brvpsjb10qgr1" path="res://prefabs/PickUps/ShotgunAmmo.tscn" id="38_x550q"]
 [ext_resource type="PackedScene" uid="uid://2lt4yhe883yf" path="res://prefabs/Lights/AmbientLight.tscn" id="39_uuk6h"]
 [ext_resource type="PackedScene" uid="uid://j4vtgvfml3yh" path="res://prefabs/Props/ScatteredFlesh.tscn" id="40_fl1xu"]
 [ext_resource type="PackedScene" uid="uid://2xarq0korji0" path="res://prefabs/Entities/PlayerPosition.tscn" id="41_cgoqi"]
 [ext_resource type="PackedScene" uid="uid://c36mdme0482de" path="res://materials/skyboxes/skybox_default.tscn" id="42_c8jby"]
+[ext_resource type="PackedScene" uid="uid://1dbhovgj17my" path="res://prefabs/PickUps/Shotgun.tscn" id="45_0vebr"]
 
 [sub_resource type="Resource" id="Resource_ctoo8"]
 script = ExtResource("7_4j2rr")
@@ -2514,6 +2516,18 @@ position = Vector2(-56, 54)
 [node name="HpSmall8" parent="PickUps" instance=ExtResource("34_k45ft")]
 position = Vector2(44, -123)
 
+[node name="ShotgunAmmo" parent="PickUps" instance=ExtResource("38_x550q")]
+position = Vector2(-64, 24)
+
+[node name="ShotgunAmmo2" parent="PickUps" instance=ExtResource("38_x550q")]
+position = Vector2(-76, 24)
+
+[node name="ShotgunAmmo3" parent="PickUps" instance=ExtResource("38_x550q")]
+position = Vector2(-47, -110)
+
+[node name="ShotgunAmmo4" parent="PickUps" instance=ExtResource("38_x550q")]
+position = Vector2(-70, 24)
+
 [node name="Enemies" type="Node2D" parent="."]
 
 [node name="Possessed8" parent="Enemies" instance=ExtResource("36_hksti")]
@@ -2717,3 +2731,21 @@ height_offset = 0.5
 
 [node name="Possessed" parent="." instance=ExtResource("36_hksti")]
 position = Vector2(-9, -122)
+
+[node name="Shotgun" parent="." instance=ExtResource("45_0vebr")]
+position = Vector2(65, 29)
+
+[node name="ShotgunAmmo" parent="." instance=ExtResource("38_x550q")]
+position = Vector2(62, 21)
+
+[node name="ShotgunAmmo2" parent="." instance=ExtResource("38_x550q")]
+position = Vector2(69, 22)
+
+[node name="ShotgunAmmo3" parent="." instance=ExtResource("38_x550q")]
+position = Vector2(16, -122)
+
+[node name="ShotgunAmmo4" parent="." instance=ExtResource("38_x550q")]
+position = Vector2(9, -123)
+
+[node name="ShotgunAmmo5" parent="." instance=ExtResource("38_x550q")]
+position = Vector2(44, -165)
