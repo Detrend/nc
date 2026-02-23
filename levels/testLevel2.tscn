@@ -1,4 +1,4 @@
-[gd_scene load_steps=152 format=3 uid="uid://cta47u4q0nac4"]
+[gd_scene load_steps=151 format=3 uid="uid://cta47u4q0nac4"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_tdhj0"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_a102k"]
@@ -38,7 +38,6 @@
 [ext_resource type="PackedScene" uid="uid://ctwevapidummr" path="res://prefabs/Lights/PointLight.tscn" id="38_8hkti"]
 [ext_resource type="Script" uid="uid://cw0a2syvnfeio" path="res://scripts/reactivity/hooks/LevelTransition.gd" id="38_xcudj"]
 [ext_resource type="PackedScene" uid="uid://p6tlah2kdmhf" path="res://prefabs/Props/Vines1.tscn" id="39_glkwk"]
-[ext_resource type="PackedScene" uid="uid://bve5ovba1xpi5" path="res://prefabs/Lights/DirectionalLight.tscn" id="39_xcudj"]
 [ext_resource type="PackedScene" uid="uid://bg7d1yqbfwtm5" path="res://prefabs/Props/Vines2.tscn" id="40_wyod0"]
 [ext_resource type="PackedScene" uid="uid://b3t24xsb2evsa" path="res://prefabs/Props/Vines3.tscn" id="41_tetij"]
 [ext_resource type="PackedScene" uid="uid://bh1r63nf0cmsu" path="res://prefabs/Props/Vines4.tscn" id="42_uxovv"]
@@ -2048,10 +2047,9 @@ radius = 5.0
 [node name="PointLight2" parent="." instance=ExtResource("38_8hkti")]
 position = Vector2(216, 58)
 
-[node name="DirectionalLight" parent="." instance=ExtResource("39_xcudj")]
-position = Vector2(-390, -34)
-direction = Vector3(1, 1, -1)
-intensity = 0.5
+[node name="PointLight14" parent="." instance=ExtResource("38_8hkti")]
+position = Vector2(136, -13)
+radius = 5.0
 
 [node name="PointLight3" parent="." instance=ExtResource("38_8hkti")]
 position = Vector2(-285, -146)
@@ -2065,9 +2063,11 @@ position = Vector2(210, -54)
 
 [node name="PointLight6" parent="." instance=ExtResource("38_8hkti")]
 position = Vector2(339, 81)
+radius = 5.0
 
 [node name="PointLight7" parent="." instance=ExtResource("38_8hkti")]
 position = Vector2(474, 32)
+radius = 5.0
 
 [node name="PointLight8" parent="." instance=ExtResource("38_8hkti")]
 position = Vector2(-6, 65)
@@ -2078,6 +2078,11 @@ position = Vector2(-28, 103)
 [node name="PointLight10" parent="." instance=ExtResource("38_8hkti")]
 position = Vector2(-258, 16)
 radius = 5.0
+
+[node name="PointLight13" parent="." instance=ExtResource("38_8hkti")]
+position = Vector2(-412, -40)
+radius = 15.0
+height_offset = 5.0
 
 [node name="PointLight11" parent="." instance=ExtResource("38_8hkti")]
 position = Vector2(-120, -70)
