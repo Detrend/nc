@@ -2637,6 +2637,16 @@ color = Color(0.76020277, 3.706068e-06, 4.813075e-07, 1)
 radius = 10.0
 height_offset = 1.5
 
+[node name="PointLight25" parent="Lights" instance=ExtResource("38_kivxp")]
+position = Vector2(-124, -95)
+color = Color(0.76020277, 3.706068e-06, 4.813075e-07, 1)
+height_offset = 0.5
+
+[node name="PointLight26" parent="Lights" instance=ExtResource("38_kivxp")]
+position = Vector2(-14, -80)
+color = Color(0.76020277, 3.706068e-06, 4.813075e-07, 1)
+height_offset = 0.5
+
 [node name="PointLight10" parent="Lights" instance=ExtResource("38_kivxp")]
 position = Vector2(-61, -101)
 color = Color(0.76020277, 3.706068e-06, 4.813075e-07, 1)
