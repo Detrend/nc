@@ -28,7 +28,8 @@ public:
     u32    num_imgs,
     f32    duration,
     color3 light       = colors::BLACK,
-    f32    light_range = 0.0f
+    f32    light_range = 0.0f,
+    f32    scale       = 30.0f
   );
 
   Particle
@@ -36,7 +37,8 @@ public:
     vec3   position,
     f32    duration,
     color3 light,
-    f32    light_range
+    f32    light_range,
+    f32    scale = 30.0f
   );
 
   Appearance*       get_appearance();

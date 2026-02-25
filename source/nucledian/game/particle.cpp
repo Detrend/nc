@@ -27,7 +27,8 @@ Particle::Particle
   u32    num_imgs,
   f32    duration,
   color3 light,
-  f32    light_range
+  f32    light_range,
+  f32    scale
 )
 : Entity(position, light_range)
 , m_light_color(light)
@@ -50,7 +51,7 @@ Particle::Particle
       m_appear.sprite = sprite;
     }
 
-    m_appear.scale    = 30.0f;
+    m_appear.scale    = scale;
     m_appear.mode     = Appearance::SpriteMode::mono;
     m_appear.pivot    = Appearance::PivotMode::centered;
     //m_appear.scaling  = Appearance::ScalingMode::fixed;
@@ -64,9 +65,10 @@ Particle::Particle
   vec3   position,
   f32    duration,
   color3 light,
-  f32    light_range
+  f32    light_range,
+  f32    scale
 )
-: Particle(position, nullptr, 0, duration, light, light_range)
+: Particle(position, nullptr, 0, duration, light, light_range, scale)
 {
   
 }

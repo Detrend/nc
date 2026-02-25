@@ -442,6 +442,14 @@ const
     // Faster implementation for raycasts (expansion size == 0.0f)
     grid_helper::query_ray_helper(*this, from, to, [&](ivec2 coord)
     {
+      if (coord.x >= this->m_cells.size() || coord.y >= this->m_cells[0].size())
+      {
+        nc_warn(
+          "Out of bounds grid indexing! Grid size: [{}, {}], idx: [{}, {}]",
+          this->m_cells.size(), this->m_cells[0].size(), coord.x, coord.y);
+        return;
+      }
+
       for (const Unit& unit : this->m_cells[coord.x][coord.y])
       {
         if (intersect::ray_aabb2(from, to, unit.bbox))
