@@ -253,7 +253,7 @@
 			]
 		}
 	],
-	"music": "",
+	"music": "music_ambient",
 	"pickups": [
 		{
 			"position": [
