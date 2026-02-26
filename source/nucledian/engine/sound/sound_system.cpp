@@ -163,6 +163,7 @@ void SoundSystem::set_sound_volume(int step)
 void SoundSystem::set_music_volume(int step)
 {
   global_music_volume = 1.0f / 9.0f * step;
+  Mix_VolumeMusic(MIX_MAX_VOLUME * global_music_volume);
 }
 
 //==============================================================================
