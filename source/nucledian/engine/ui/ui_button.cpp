@@ -546,21 +546,27 @@ namespace nc
 	void NewGamePage::level_1_func()
 	{
 		get_engine().get_module<GameSystem>().request_level_change(Levels::LEVEL_1);
-		//get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_visible(false);
+		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_visible(false);
+		get_engine().pause(false);
+		get_engine().get_module<InputSystem>().unlock_player_input();
 	}
 
 	//==============================================================================================
 	void NewGamePage::level_2_func()
 	{
 		get_engine().get_module<GameSystem>().request_level_change(Levels::LEVEL_2);
-		//get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_visible(false);
+		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_visible(false);
+		get_engine().pause(false);
+		get_engine().get_module<InputSystem>().unlock_player_input();
 	}
 
 	//==============================================================================================
 	void NewGamePage::level_3_func()
 	{
 		get_engine().get_module<GameSystem>().request_level_change(Levels::LEVEL_3);
-		//get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_visible(false);
+		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_visible(false);
+		get_engine().pause(false);
+		get_engine().get_module<InputSystem>().unlock_player_input();
 	}
 
 	//============================================================================================
