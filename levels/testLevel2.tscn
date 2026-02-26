@@ -773,6 +773,7 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [node name="TestLevel1" type="Node2D"]
 script = ExtResource("1_tdhj0")
+music = "music_ambient"
 export_scale = Vector3(0.1, 0.1, 1)
 export_path = "../../nc/content/levels/level_final2.json"
 

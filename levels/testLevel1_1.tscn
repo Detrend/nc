@@ -921,6 +921,7 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [node name="TestLevel1" type="Node2D"]
 script = ExtResource("1_qh6nn")
+music = "music_ambient"
 export_scale = Vector3(0.2, 0.2, 2)
 export_texture_scale = 2.0
 export_texture_extrude_scale = 2.0
