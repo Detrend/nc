@@ -32,6 +32,11 @@
 
 #include <engine/ui/user_interface_module.h>
 
+#ifdef NC_DEBUG_DRAW
+// Only for turning off the input when the cvar tweaking window is displayed.
+#include <engine/input/input_system.h>
+#endif
+
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
 
@@ -404,6 +409,7 @@ void GraphicsSystem::render()
   }
 
 #ifdef NC_DEBUG_DRAW
+  // Note that this call can take up to 200 microseconds
   debug_helpers::display_fps_as_title(m_window);
 #endif
 
@@ -412,6 +418,12 @@ void GraphicsSystem::render()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 #ifdef NC_DEBUG_DRAW
+  // Do not forward inputs to the player if the cvar window is visible.
+  InputSystem::get().lock_player_input
+  (
+    InputLockLayers::cvars, CVars::display_debug_window
+  );
+
   if (CVars::display_debug_window)
   {
     draw_debug_window();
@@ -633,7 +645,7 @@ static void draw_level_selection()
 
   if (ImGui::Button("Next Level"))
   {
-    game.request_level_change(Levels::LEVEL_2);
+    game.request_play_level(Levels::LEVEL_2);
     already_selected = true;
   }
 
@@ -643,7 +655,7 @@ static void draw_level_selection()
   {
     if (ImGui::Button(id.to_cstring().data()) && !already_selected)
     {
-      game.request_level_change(id);
+      game.request_play_level(id);
       already_selected = true;
     }
   }
@@ -676,7 +688,7 @@ static void draw_saves_menu()
     ImGui::Text("Save IDX[%d]", i);
     ImGui::Text("Save ID [%d]", static_cast<int>(save.id));
     ImGui::Text("Dirty: %s", dirty ? "T" : "F");
-    ImGui::Text("Level: %s", save.last_level.to_cstring().data());
+    //ImGui::Text("Level: %s", save.last_level.to_cstring().data());
 
 #ifdef NC_MSVC // localtime_s is platform specific
     ch::year_month_day date{ch::floor<ch::days>(save.time)};

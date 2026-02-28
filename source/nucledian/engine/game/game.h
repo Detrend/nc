@@ -33,6 +33,7 @@ struct Game
   std::unique_ptr<EntityRegistry>   entities;
   std::unique_ptr<EntityAttachment> attachment;
   u64                               frame_idx = 0;
+  bool                              is_level_completed = false;
 };
 
 }

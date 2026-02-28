@@ -20,6 +20,7 @@
 #include <unordered_set>
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace nc
 {
@@ -62,15 +63,13 @@ public:
   bool init();
   void on_event(ModuleEvent& event) override;
 
-  // Saving and loading the game. 
+  // Saving and loading the game.
   SaveGameData save_game() const;
   void         load_game(const SaveGameData& save);
 
   SaveDatabase& get_save_game_db();
 
-  // Level transition
   LevelName get_level_name() const;
-  void      request_level_change(LevelName new_level);
 
   Player*                 get_player();
   EntityRegistry&         get_entities();
@@ -96,6 +95,23 @@ public:
   // its position.
   void on_player_traversed_nc_portal(EntityID player, mat4 transform);
 
+  // Request a new level to play - an empty one.
+  // Comes in handy in the menu
+  void request_empty_level();
+
+  // Starts a level and gives control to the player. Interrupts currently playing
+  // demo or currently played level.
+  void request_play_level(const LevelName& new_level);
+
+  // If there is a demo or not
+  void request_level_change
+  (
+    const LevelName& new_level, std::vector<DemoDataFrame>&& frames = {}
+  );
+
+  // Called from the action trigger
+  void end_level_and_go_to_another_one_from_gamemode(const LevelName& new_level);
+
 private:
   // Clean up the current map, entities, mapping etc..
   void cleanup_map();
@@ -110,7 +126,15 @@ private:
 
   void pre_terminate();
 
+  void frame_start();
+
   void game_update(f32 delta);
+
+  void on_level_end();
+
+  void on_demo_end();
+
+  void save_current_demo();
 
 #ifdef NC_EDITOR
   void handle_hot_reload();
@@ -118,7 +142,6 @@ private:
 
 #ifdef NC_DEBUG_DRAW
   void handle_raycast_debug();
-  void handle_demo_debug();
 
   static void save_demo_data
   (
@@ -126,54 +149,47 @@ private:
     u8*                data,
     u64                data_size
   );
-
-  static std::vector<std::string> list_available_demos();
-
-  static void load_demo_from_bytes
-  (
-    const std::string& path, std::vector<u8>& out
-  );
 #endif
 
 private:
-#define DO_JOURNAL_CHECKS 0
-
-  struct JournalFrame
-  {
-    PlayerSpecificInputs inputs;
-    f32                  delta;
-#if DO_JOURNAL_CHECKS
-    // Position AFTER the frame ended
-    vec3                    player_position = VEC3_ZERO;
-    std::unordered_set<u64> alive_entities;
-#endif
-  };
-
   enum class JournalState : u8
   {
-    recording = 0, // Recording inputs into a journal
-    playing,       // Playing the inputs from the journal
-    none           // None of the above
+    none,      // None of the above
+    recording, // Recording inputs into a journal
+    playing,   // Playing the inputs from the journal
   };
+
+  // We want to do demo recording by default for debugging purposes.
+  static constexpr JournalState DEFAULT_JOURNAL_STATE = JournalState::recording;
 
   struct Journal
   {
-    std::vector<JournalFrame> frames;
-    JournalState              state = JournalState::recording;
-    u64                       rover   = 0;
-    bool                      paused  = false;
-    int                       skip_to = -1;
+    std::vector<DemoDataFrame> frames;
+    JournalState               state       = DEFAULT_JOURNAL_STATE;
+    u64                        rover       = 0;
+    bool                       paused      = false;
+    int                        skip_to     = -1;
+    f32                        extra_delta = 0.0f;
 
     void reset(JournalState to_state);
     void reset_and_clear(JournalState to_state);
   };
 
-  GamePtr        game;
-  LevelName      level_name         = INVALID_LEVEL_NAME;
-  LevelName      scheduled_level_id = INVALID_LEVEL_NAME;
-  SaveDatabase   save_db;
-  Journal        journal;
-  mutable SaveID last_save_id = 0;
+  struct NextRequestedState
+  {
+    LevelName                  level;
+    std::vector<DemoDataFrame> demo;
+  };
+
+  GamePtr         game;
+  LevelName       level_name         = INVALID_LEVEL_NAME;
+  LevelName       scheduled_level_id = INVALID_LEVEL_NAME;
+  SaveDatabase    save_db;
+  Journal         journal;
+  u64             demo_rng_idx = 0;
+  mutable SaveID  last_save_id = 0;
+
+  std::optional<NextRequestedState> scheduled_state;
 };
 
 }

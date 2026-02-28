@@ -96,8 +96,6 @@ void InputSystem::on_event(ModuleEvent& event)
 //==============================================================================
 bool InputSystem::init()
 {
-  // MR says: remove this later, keep it just for now.
-  SDL_SetRelativeMouseMode(m_disable_player_inputs ? SDL_FALSE : SDL_TRUE);
   return true;
 }
 
@@ -125,27 +123,16 @@ void InputSystem::update_window_and_pump_messages()
 }
 
 //==============================================================================
-void InputSystem::override_player_inputs(const PlayerSpecificInputs& new_inputs)
+void InputSystem::handle_app_event([[maybe_unused]]const SDL_Event& event)
 {
-  m_current_inputs.player_inputs = new_inputs;
-}
-
-//==============================================================================
-void InputSystem::handle_app_event(const SDL_Event& event)
-{
-  if (event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
-  {
-    // MR says: workaround for showing up cursor
-    m_disable_player_inputs = !m_disable_player_inputs;
-    SDL_SetRelativeMouseMode(m_disable_player_inputs ? SDL_FALSE : SDL_TRUE);
-  }
+  
 }
 
 //==============================================================================
 GameInputs InputSystem::get_inputs() const
 {
   // MR says: workaround for now
-  if (m_disable_player_inputs)
+  if (this->are_game_inputs_disabled())
   {
     return GameInputs{};
   }
@@ -156,7 +143,7 @@ GameInputs InputSystem::get_inputs() const
 //==============================================================================
 GameInputs InputSystem::get_prev_inputs() const
 {
-  if (m_disable_player_inputs)
+  if (this->are_game_inputs_disabled())
   {
     return GameInputs{};
   }
@@ -176,10 +163,36 @@ float InputSystem::get_sensitivity()
   return SENSITIVITY;
 }
 
-void InputSystem::unlock_player_input()
+//==============================================================================
+void InputSystem::lock_player_input(InputLockLayer layer, bool lock)
 {
-  m_disable_player_inputs = false;
-  SDL_SetRelativeMouseMode(m_disable_player_inputs ? SDL_FALSE : SDL_TRUE);
+  bool disabled_previously = !!m_locked_inputs;
+
+  if (lock)
+  {
+    m_locked_inputs |= layer;
+  }
+  else
+  {
+    m_locked_inputs &= ~layer;
+  }
+
+  bool disabled_now = !!m_locked_inputs;
+
+  if (disabled_previously != disabled_now)
+  {
+    // Do nothing
+    return;
+  }
+
+  // Switch
+  SDL_SetRelativeMouseMode(disabled_now ? SDL_FALSE : SDL_TRUE);
+}
+
+//==============================================================================
+bool InputSystem::are_game_inputs_disabled() const
+{
+  return !!m_locked_inputs;
 }
 
 }

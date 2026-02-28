@@ -37,9 +37,10 @@
 
 #include <SDL.h>   // SDL_Event
 
-#include <ranges>  // std::views::reverse
-#include <chrono>  // std::chrono::high_resolution_clock
-#include <cstdlib> // std::rand
+#include <ranges>   // std::views::reverse
+#include <chrono>   // std::chrono::high_resolution_clock
+#include <cstdlib>  // std::rand
+#include <iterator> // std::next
 
 namespace nc
 {
@@ -53,6 +54,8 @@ namespace engine_utils
 [[maybe_unused]] constexpr cstr BENCHMARK_ARG      = "-benchmark";
 [[maybe_unused]] constexpr cstr UNIT_TEST_ARG      = "-unit_test";
 [[maybe_unused]] constexpr cstr TEST_FILTER_PREFIX = "-test_filter=";
+[[maybe_unused]] constexpr cstr START_LEVEL_ARG    = "-start_level";
+[[maybe_unused]] constexpr cstr START_DEMO_ARG     = "-start_demo";
 
 //==============================================================================
 static f32 duration_to_seconds(auto t1, auto t2)
@@ -214,25 +217,25 @@ Engine& get_engine()
 }
 
 //==============================================================================
-int init_engine_and_run_game([[maybe_unused]]const std::vector<std::string>& args)
+int init_engine_and_run_game(const CmdArgs& args)
 {
   [[maybe_unused]] bool exit_after_benchmarks_and_tests = false;
 
-  #ifdef NC_BENCHMARK
+#ifdef NC_BENCHMARK
   if (engine_utils::execute_benchmarks_if_required(args))
   {
     // only benchmark run, exit
     exit_after_benchmarks_and_tests = true;
   }
-  #endif
+#endif
 
-  #ifdef NC_TESTS
+#ifdef NC_TESTS
   if (engine_utils::execute_unit_tests_if_required(args))
   {
     // running only tests, exit
     exit_after_benchmarks_and_tests = true;
   }
-  #endif
+#endif
 
   if (exit_after_benchmarks_and_tests)
   {
@@ -243,10 +246,9 @@ int init_engine_and_run_game([[maybe_unused]]const std::vector<std::string>& arg
   // create instance of the engine
   g_engine = new Engine();
 
-  if (!g_engine->init())
+  if (!g_engine->init(args))
   {
     // failed to init, end it here
-    // do something here
     delete g_engine;
     return 1;
   }
@@ -261,8 +263,35 @@ int init_engine_and_run_game([[maybe_unused]]const std::vector<std::string>& arg
 }
 
 //==============================================================================
+void Engine::on_event(const ModuleEvent& event)
+{
+  switch (event.type)
+  {
+    case ModuleEventType::menu_opened:
+    {
+      this->on_menu_state_changed(true);
+    }
+    break;
+
+    case ModuleEventType::menu_closed:
+    {
+      this->on_menu_state_changed(false);
+    }
+    break;
+
+    case ModuleEventType::new_game_level_requested:
+    {
+      this->on_new_game_selected_from_menu(event.new_game.level);
+    }
+    break;
+  }
+}
+
+//==============================================================================
 void Engine::send_event(ModuleEvent& event)
 {
+  this->on_event(event);
+
   for (u64 i = 0; i < m_modules.size(); ++i)
   {
     const EngineModuleMask mask = 1<<i;
@@ -281,7 +310,45 @@ void Engine::send_event(ModuleEvent&& event)
 }
 
 //==============================================================================
-bool Engine::init()
+static bool contains_pair_of_args
+(
+  const CmdArgs& cmd_args, cstr search_for, std::string& out
+)
+{
+  auto it = std::find_if(cmd_args.begin(), cmd_args.end(),
+  [&](const std::string& arg)
+  {
+    return arg == search_for;
+  });
+
+  if (it == cmd_args.end())
+  {
+    return false;
+  }
+
+  if (std::next(it) == cmd_args.end())
+  {
+    return false;
+  }
+
+  out = *std::next(it);
+  return true;
+}
+
+//==============================================================================
+static bool should_play_demo(const CmdArgs& cmd_args, std::string& out_demo)
+{
+  return contains_pair_of_args(cmd_args, engine_utils::START_DEMO_ARG, out_demo);
+}
+
+//==============================================================================
+static bool should_play_level(const CmdArgs& cmd_args, std::string& out_lvl)
+{
+  return contains_pair_of_args(cmd_args, engine_utils::START_LEVEL_ARG, out_lvl);
+}
+
+//==============================================================================
+bool Engine::init(const CmdArgs& cmd_args)
 {
   // init the modules here..
   #define INIT_MODULE(_module_class, ...)                     \
@@ -308,7 +375,93 @@ bool Engine::init()
   {
     .type = ModuleEventType::post_init,
   });
-  
+
+  // Boot into the menu or start a demo
+  return this->handle_post_init_game_startup(cmd_args);
+}
+
+//==============================================================================
+void Engine::play_random_demo()
+{
+  GameSystem& game_system = GameSystem::get();
+
+  std::vector<std::string> demos = list_available_demo_files();
+
+  if (demos.empty())
+  {
+    // Empty level = black screen in the menu
+    nc_warn("No demos available, playing empty level.");
+    game_system.request_empty_level();
+    return;
+  }
+
+  // Pick a random one
+  const std::string& demo = demos[std::rand() % demos.size()];
+
+  // Play one demo and then exit
+  std::string lvl_name;
+  std::vector<DemoDataFrame> frames;
+
+  if (!load_demo_from_file(demo, lvl_name, frames))
+  {
+    // Empty level = black screen in the menu
+    nc_warn(
+      "Failed to play a random demo from a file \"{}\", starting empty level.",
+      demo);
+    game_system.request_empty_level();
+    return;
+  }
+
+  // Demo loaded, play it
+  game_system.request_level_change
+  (
+    LevelName{std::string_view{lvl_name}},
+    std::move(frames)
+  );
+}
+
+//==============================================================================
+bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
+{
+  GameSystem& game_system = get_module<GameSystem>();
+
+  if (std::string demo; should_play_demo(cmd_args, demo))
+  {
+    // Play one demo and then exit
+    std::string lvl_name;
+    std::vector<DemoDataFrame> frames;
+
+    if (!load_demo_from_file(demo, lvl_name, frames))
+    {
+      nc_crit("Could not start demo \"{}\", quitting game.", demo);
+      return false;
+    }
+
+    m_game_state = GameState::debug_playing_demo;
+
+    game_system.request_level_change
+    (
+      LevelName{std::string_view{lvl_name}},
+      std::move(frames)
+    );
+  }
+  else if (std::string lvl; should_play_level(cmd_args, lvl))
+  {
+    // Start a level
+    m_game_state = GameState::player_handled;
+    game_system.request_play_level(LevelName{std::string_view{lvl}});
+  }
+  else
+  {
+    // Open up the menu and play demos on the background
+    m_game_state = GameState::in_menu;
+
+    UserInterfaceSystem& ui_system = get_module<UserInterfaceSystem>();
+    ui_system.get_menu_manager()->set_visible(true); // Make the menu visible
+
+    this->play_random_demo();
+  }
+
   return true;
 }
 
@@ -463,16 +616,116 @@ u64 Engine::get_frame_idx() const
 }
 
 //==============================================================================
-
-void nc::Engine::pause(bool pause)
+void Engine::pause(bool pause)
 {
-  CVars::time_speed = pause ? 0.0f : 1.0f;
+  m_paused = pause;
+}
+
+//==============================================================================
+bool Engine::is_game_paused() const
+{
+  return m_paused;
+}
+
+//==============================================================================
+void Engine::on_demo_end()
+{
+  switch (m_game_state)
+  {
+    case GameState::in_menu:
+    {
+      // Schedule the next demo. This overwrites the requests of other systems
+      this->play_random_demo();
+    }
+    break;
+
+    case GameState::debug_playing_demo:
+    {
+      // Exit the game.. Will quit at the start of the next frame
+      m_should_quit = true;
+    }
+    break;
+  }
+}
+
+//==============================================================================
+void Engine::on_level_end()
+{
+  // Do nothing
 }
 
 //==============================================================================
 bool Engine::should_quit() const
 {
   return m_should_quit;
+}
+
+//==============================================================================
+bool Engine::should_ammo_hp_hud_be_visible() const
+{
+  return m_game_state != GameState::in_menu;
+}
+
+//==============================================================================
+bool Engine::should_run_demo_proportional_speed() const
+{
+  return true;
+}
+
+//==============================================================================
+void Engine::on_menu_state_changed(bool opened)
+{
+  switch (m_game_state)
+  {
+    case GameState::debug_playing_demo:
+    {
+      // Don't care
+    }
+    break;
+
+    case GameState::in_menu:
+    {
+      // Don't care
+    }
+    break;
+
+    case GameState::player_handled:
+    {
+      // Pause the game
+      this->pause(opened);
+
+      // Do not forward mouse movement and keypresses to the player
+      InputSystem::get().lock_player_input(InputLockLayers::menu, opened);
+    }
+    break;
+  }
+}
+
+//==============================================================================
+void Engine::on_new_game_selected_from_menu(LevelName level)
+{
+  switch (m_game_state)
+  {
+    case GameState::in_menu:
+    case GameState::player_handled:
+    {
+      m_game_state = GameState::player_handled;
+      GameSystem::get().request_level_change(level);
+      UserInterfaceSystem::get().get_menu_manager()->set_visible(false);
+
+      if (this->is_game_paused())
+      {
+        this->pause(false);
+      }
+    }
+    break;
+  }
+}
+
+//==============================================================================
+bool Engine::is_menu_locked_visible() const
+{
+  return m_game_state == GameState::in_menu;
 }
 
 }

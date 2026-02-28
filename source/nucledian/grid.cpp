@@ -287,6 +287,13 @@ static void query_ray_helper(const StatGridAABB2<T>& self, vec2 from, vec2 to, F
 
   for (u64 ix = xfrom, iy = yfrom; ix <= xto; ++ix)
   {
+    // Set the correct y for the last iteration. Note that the first iteration
+    // can also be the last one.
+    if (ix == xto)
+    {
+      yp = to.y;
+    }
+
     func(swap_axes ? ivec2{iy, ix} : ivec2{ix, iy});
 
     i64 iy_signed = cast<i64>((yp - grid_min.y) * one_over_gs_y * grid_cnt.y);
@@ -299,14 +306,8 @@ static void query_ray_helper(const StatGridAABB2<T>& self, vec2 from, vec2 to, F
       iy = new_iy;
     }
 
-    if (ix + 1 == xto) [[unlikely]] // Before the last iteration
-    {
-      yp = to.y;
-    }
-    else
-    {
-      yp += rate * cell_width;
-    }
+    // This will be overwritten at the start of the last iteration
+    yp += rate * cell_width;
   }
 }
 

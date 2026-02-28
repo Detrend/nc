@@ -15,6 +15,8 @@ public:
   f32  next(f32 min, f32 max); // Calculates next random float
   void seed(u8 new_state);     // Sets a custom seed
 
+  u8 next(); // Calculates next random 8 bit unsigned integer
+
 private:
   u8 m_state = 0;
 };

@@ -2,7 +2,6 @@
 
 #include <engine/core/engine_module.h>
 #include <engine/core/engine_module_id.h>
-#include <engine/core/module_event.h>
 #include <engine/ui/ui_texture.h>
 #include <engine/ui/ui_button.h>
 #include <engine/ui/ui_screen_effect.h>

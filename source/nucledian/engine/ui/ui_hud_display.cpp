@@ -57,8 +57,17 @@ namespace nc
 
   void UiHudDisplay::update()
   {
-    display_ammo = get_engine().get_module<GameSystem>().get_player()->get_current_weapon_ammo();
-    display_health = get_engine().get_module<GameSystem>().get_player()->get_health();
+    // Player might not exist in an empty level in menu
+    if (Player* player = get_engine().get_module<GameSystem>().get_player())
+    {
+      display_ammo   = player->get_current_weapon_ammo();
+      display_health = player->get_health();
+    }
+    else
+    {
+      display_ammo   = 0;
+      display_health = 0;
+    }
   }
 
   //=========================================================================================
