@@ -404,6 +404,7 @@ void GraphicsSystem::render()
   }
 
 #ifdef NC_DEBUG_DRAW
+  // Note that this call can take up to 200 microseconds
   debug_helpers::display_fps_as_title(m_window);
 #endif
 
@@ -633,7 +634,7 @@ static void draw_level_selection()
 
   if (ImGui::Button("Next Level"))
   {
-    game.request_level_change(Levels::LEVEL_2);
+    game.request_play_level(Levels::LEVEL_2);
     already_selected = true;
   }
 
@@ -643,7 +644,7 @@ static void draw_level_selection()
   {
     if (ImGui::Button(id.to_cstring().data()) && !already_selected)
     {
-      game.request_level_change(id);
+      game.request_play_level(id);
       already_selected = true;
     }
   }

@@ -597,9 +597,12 @@ void GameSystem::post_init()
     this->last_save_id = std::max(this->last_save_id, save_game.id);
   }
 
-  // Schedule the loading of the first level..
-  // This is probably only temporary.
-  this->request_level_change(Levels::TEST_LEVEL);
+  // Schedule the main menu demos
+  if (!this->schedule_next_demo())
+  {
+    // Load an empty level which creates a black background
+    this->request_level_change(Levels::TEST_LEVEL);
+  }
 }
 
 //==============================================================================
@@ -701,7 +704,11 @@ void GameSystem::game_update(f32 delta)
     }
   }
 
-  while (num_frames_to_simulate-->0)
+  bool is_demo = journal.state == JournalState::playing;
+  bool level_completed_before = game->is_level_completed;
+  bool demo_finished_before   = is_demo && journal.rover == journal.frames.size() - 1;
+
+  while (num_frames_to_simulate-->0 && !game->is_level_completed)
   {
     GameInputs curr_input = InputSystem::get().get_inputs();
     GameInputs prev_input = InputSystem::get().get_prev_inputs();
@@ -715,7 +722,7 @@ void GameSystem::game_update(f32 delta)
       std::memset(&empty_inputs, 0, sizeof(empty_inputs));
 
       nc_assert(journal.rover < journal.frames.size());
-      const JournalFrame& frame = journal.frames[journal.rover];
+      const DemoDataFrame& frame = journal.frames[journal.rover];
 
       player_input_prev = journal.rover
         ? journal.frames[journal.rover-1].inputs
@@ -744,7 +751,7 @@ void GameSystem::game_update(f32 delta)
       if (journal.state == JournalState::recording)
       {
         // Record the inputs as well
-        journal.frames.push_back(JournalFrame
+        journal.frames.push_back(DemoDataFrame
         {
           .inputs = player_input_curr,
           .delta  = delta_time,
@@ -767,9 +774,91 @@ void GameSystem::game_update(f32 delta)
     );
   }
 
+  if (game->is_level_completed && !level_completed_before)
+  {
+    // Callback level end
+    this->on_level_end();
+  }
+
+  bool is_finished = is_demo && journal.rover == journal.frames.size() - 1;
+  if (is_finished && !demo_finished_before)
+  {
+    // Callback demo end
+    this->on_demo_end();
+  }
+
 #ifdef NC_IMGUI
   this->handle_demo_debug();
 #endif
+}
+
+//==============================================================================
+void GameSystem::on_level_end()
+{
+  if (this->state == GameSystemState::player_handled)
+  {
+    // Get idx of this level
+    const LevelName& lvl = this->get_level_name();
+
+    // Start a next level
+    this->request_play_level();
+  }
+}
+
+//==============================================================================
+void GameSystem::on_demo_end()
+{
+  if (this->state == GameSystemState::playing_demos)
+  {
+    // Schedule a next demo
+    if (!this->schedule_next_demo())
+    {
+      // 
+    }
+  }
+}
+
+//==============================================================================
+bool GameSystem::schedule_next_demo()
+{
+  std::vector<std::string> demos = this->list_available_demos();
+  if (demos.empty())
+  {
+    return false;
+  }
+
+  constexpr u64 PRIME = 6969691; // What a nice prime
+
+  // Choose "randomly" one of the demos
+  u32 attempts_left = 4;
+  while (attempts_left-->0)
+  {
+    demo_rng_idx = (demo_rng_idx + PRIME) % demos.size();
+    const std::string& chosen_demo = demos[demo_rng_idx];
+
+    // And then load it
+    std::vector<u8> bytes;
+    if (!load_demo_from_file_into_bytes(chosen_demo, bytes))
+    {
+      continue;
+    }
+
+    DemoDataHeader header;
+    std::vector<DemoDataFrame> frames;
+
+    if (!load_demo_from_bytes(header, frames, bytes.data(), bytes.size()))
+    {
+      continue;
+    }
+
+    // All good?
+    this->request_level_change(header.level_name);
+    this->journal.reset_and_clear(JournalState::playing);
+    this->journal.frames = std::move(frames);
+    return true;
+  }
+
+  return false;
 }
 
 //==============================================================================
@@ -911,16 +1000,23 @@ const EntityRegistry& GameSystem::get_entities() const
 SaveGameData GameSystem::save_game() const
 {
   SaveGameData save;
-  save.last_level = this->get_level_name();
-  save.time       = SaveGameData::Clock::now();
-  save.id         = ++last_save_id;
+
+  // Level name
+  const LevelName& lvl_name = this->get_level_name();
+  nc_assert(lvl_name.size() <= SaveGameData::LVL_NAME_SIZE);
+  std::memset(save.level_name, 0, sizeof(SaveGameData::level_name));
+  std::memcpy(save.level_name, lvl_name.data(), lvl_name.size() * sizeof(char));
+
+  // Time and ID
+  save.time = SaveGameData::Clock::now();
+  save.id   = ++last_save_id;
   return save;
 }
 
 //==============================================================================
 void GameSystem::load_game(const SaveGameData& save)
 {
-  this->request_level_change(save.last_level);
+  this->request_level_change(save.level_name);
 }
 
 //==============================================================================
@@ -936,7 +1032,31 @@ LevelName GameSystem::get_level_name() const
 }
 
 //==============================================================================
-void GameSystem::request_level_change(LevelName new_level)
+void GameSystem::request_play_level(const LevelName& new_level)
+{
+  this->state = GameSystemState::player_handled;
+  this->request_level_change(new_level);
+  journal.reset_and_clear(DEFAULT_JOURNAL_STATE);
+}
+
+//==============================================================================
+void GameSystem::request_play_random_demos()
+{
+  if (this->state == GameSystemState::playing_demos)
+  {
+    // Early exit, we are already playing demos..
+    return;
+  }
+
+  if (!this->schedule_next_demo())
+  {
+    // TODO: Load an empty level
+    this->request_play_level(Levels::TEST_LEVEL);
+  }
+}
+
+//==============================================================================
+void GameSystem::request_level_change(const LevelName& new_level)
 {
   // Another level already scheduled.
   nc_assert(this->scheduled_level_id == INVALID_LEVEL_NAME);
@@ -1405,7 +1525,7 @@ void GameSystem::handle_raycast_debug()
 }
 
 //==============================================================================
-/*static*/ void GameSystem::load_demo_from_bytes
+/*static*/ bool GameSystem::load_demo_from_file_into_bytes
 (
   const std::string& demo_name,
   std::vector<u8>&   out
@@ -1420,19 +1540,20 @@ void GameSystem::handle_raycast_debug()
   fs::path demo_dir = DEMO_DIR_RELATIVE;
   if (!fs::exists(demo_dir) || !fs::is_directory(demo_dir))
   {
-    nc_assert(false);
-    return;
+    return false;
   }
 
   fs::path full_path = demo_dir / demo_name;
   if (!fs::exists(full_path) || !fs::is_regular_file(full_path))
   {
-    nc_assert(false);
-    return;
+    return false;
   }
 
   std::ifstream in(full_path, std::ios::binary);
-  nc_assert(in);
+  if (!in)
+  {
+    return false;
+  }
 
   in.seekg(0, std::ios::end);
   std::streamsize size = in.tellg();
@@ -1442,9 +1563,10 @@ void GameSystem::handle_raycast_debug()
 
   if (!in.read(recast<char*>(out.data()), size))
   {
-    nc_assert(false);
-    return;
+    return false;
   }
+
+  return true;
 }
 
 //==============================================================================
@@ -1472,7 +1594,6 @@ void GameSystem::handle_demo_debug()
       if (ImGui::Button("Play"))
       {
         this->request_level_change(this->get_level_name());
-        journal.reset(JournalState::playing);
       }
     }
     else if (journal.state == JournalState::playing)
@@ -1480,12 +1601,27 @@ void GameSystem::handle_demo_debug()
       ImGui::Text("Currend idx: %d", cast<int>(journal.rover)-1);
       if (ImGui::Button("Save to filesystem"))
       {
-        save_demo_data
+        DemoDataHeader header;
+
+        const LevelName& lvl_name = this->get_level_name();
+
+        std::memcpy
         (
-          level_name.to_string(),
-          recast<u8*>(journal.frames.data()),
-          journal.frames.size() * sizeof(JournalFrame)
+          header.signature,
+          DemoDataHeader::SIGNATURE,
+          DemoDataHeader::SIGNATURE_SIZE
         );
+
+        std::memset(header.level_name, 0, DemoDataHeader::LVL_NAME_SIZE);
+        std::memcpy(header.level_name, lvl_name.data(), lvl_name.size());
+
+        header.version = CURRENT_GAME_VERSION;
+        header.num_frames = this->journal.frames.size();
+
+        std::vector<byte> bytes;
+        bytes.resize(calc_size_for_demo_to_bytes(header));
+        save_demo_to_bytes(header, journal.frames.data(), bytes.data());
+        save_demo_data(level_name, bytes.data(), bytes.size());
       }
 
       static int skip_to_idx = 0;
@@ -1519,14 +1655,27 @@ void GameSystem::handle_demo_debug()
     {
       if (ImGui::Button(demo.c_str()))
       {
-        this->request_level_change(this->get_level_name());
-        std::vector<u8> bytes;
-        load_demo_from_bytes(demo, bytes);
-        u64 num_frames = bytes.size() / sizeof(JournalFrame);
+        std::vector<byte> bytes;
+        if (!this->load_demo_from_file_into_bytes(demo, bytes))
+        {
+          continue;
+        }
 
-        journal.reset(JournalState::playing);
-        journal.frames.resize(num_frames);
-        std::memcpy(journal.frames.data(), bytes.data(), bytes.size());
+        DemoDataHeader header;
+        std::vector<DemoDataFrame> frames;
+        if (!load_demo_from_bytes(header, frames, bytes.data(), bytes.size()))
+        {
+          continue;
+        }
+
+        if (header.version != CURRENT_GAME_VERSION)
+        {
+          continue;
+        }
+
+        this->journal.reset(JournalState::playing);
+        this->journal.frames = std::move(frames);
+        this->request_level_change(header.level_name);
       }
     }
   }

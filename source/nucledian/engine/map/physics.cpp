@@ -1838,7 +1838,7 @@ const
   // Smooth out the path by raycasting if required
   phys_helpers::smooth_out_path(*this, points, transforms);
 
-  vec3 previous_rel       = camera_pos;
+  vec3 previous_rel   = camera_pos;
   f32  total_distance = 0.0f;
   mat4 accumulated_t  = identity<mat4>();
 

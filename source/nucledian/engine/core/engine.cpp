@@ -37,9 +37,10 @@
 
 #include <SDL.h>   // SDL_Event
 
-#include <ranges>  // std::views::reverse
-#include <chrono>  // std::chrono::high_resolution_clock
-#include <cstdlib> // std::rand
+#include <ranges>   // std::views::reverse
+#include <chrono>   // std::chrono::high_resolution_clock
+#include <cstdlib>  // std::rand
+#include <iterator> // std::next
 
 namespace nc
 {
@@ -53,6 +54,8 @@ namespace engine_utils
 [[maybe_unused]] constexpr cstr BENCHMARK_ARG      = "-benchmark";
 [[maybe_unused]] constexpr cstr UNIT_TEST_ARG      = "-unit_test";
 [[maybe_unused]] constexpr cstr TEST_FILTER_PREFIX = "-test_filter=";
+[[maybe_unused]] constexpr cstr START_LEVEL_ARG    = "-start_level";
+[[maybe_unused]] constexpr cstr START_DEMO_ARG     = "-start_demo";
 
 //==============================================================================
 static f32 duration_to_seconds(auto t1, auto t2)
@@ -214,25 +217,25 @@ Engine& get_engine()
 }
 
 //==============================================================================
-int init_engine_and_run_game([[maybe_unused]]const std::vector<std::string>& args)
+int init_engine_and_run_game(const CmdArgs& args)
 {
   [[maybe_unused]] bool exit_after_benchmarks_and_tests = false;
 
-  #ifdef NC_BENCHMARK
+#ifdef NC_BENCHMARK
   if (engine_utils::execute_benchmarks_if_required(args))
   {
     // only benchmark run, exit
     exit_after_benchmarks_and_tests = true;
   }
-  #endif
+#endif
 
-  #ifdef NC_TESTS
+#ifdef NC_TESTS
   if (engine_utils::execute_unit_tests_if_required(args))
   {
     // running only tests, exit
     exit_after_benchmarks_and_tests = true;
   }
-  #endif
+#endif
 
   if (exit_after_benchmarks_and_tests)
   {
@@ -243,10 +246,9 @@ int init_engine_and_run_game([[maybe_unused]]const std::vector<std::string>& arg
   // create instance of the engine
   g_engine = new Engine();
 
-  if (!g_engine->init())
+  if (!g_engine->init(args))
   {
     // failed to init, end it here
-    // do something here
     delete g_engine;
     return 1;
   }
@@ -280,8 +282,48 @@ void Engine::send_event(ModuleEvent&& event)
   this->send_event(ref);
 }
 
+using CmdArgs = std::vector<std::string>;
+
 //==============================================================================
-bool Engine::init()
+static bool contains_pair_of_args
+(
+  const CmdArgs& cmd_args, cstr search_for, std::string& out
+)
+{
+  auto it = std::find_if(cmd_args.begin(), cmd_args.end(),
+  [&](const std::string& arg)
+  {
+    return arg == search_for;
+  });
+
+  if (it == cmd_args.end())
+  {
+    return false;
+  }
+
+  if (std::next(it) == cmd_args.end())
+  {
+    return false;
+  }
+
+  out = *std::next(it);
+  return true;
+}
+
+//==============================================================================
+static bool should_play_demo(const CmdArgs& cmd_args, std::string& out_demo)
+{
+  return contains_pair_of_args(cmd_args, engine_utils::START_DEMO_ARG, out_demo);
+}
+
+//==============================================================================
+static bool should_play_level(const CmdArgs& cmd_args, std::string& out_lvl)
+{
+  return contains_pair_of_args(cmd_args, engine_utils::START_LEVEL_ARG, out_lvl);
+}
+
+//==============================================================================
+bool Engine::init(const CmdArgs& cmd_args)
 {
   // init the modules here..
   #define INIT_MODULE(_module_class, ...)                     \
@@ -308,7 +350,30 @@ bool Engine::init()
   {
     .type = ModuleEventType::post_init,
   });
-  
+
+  GameSystem&          game_system = get_module<GameSystem>();
+  UserInterfaceSystem& ui_system   = get_module<UserInterfaceSystem>();
+
+  if (std::string demo; should_play_demo(cmd_args, demo))
+  {
+    // Play one demo and then exit
+    m_game_state = GameState::debug_playing_demo;
+    game_system.request_play_demo(demo);
+  }
+  else if (std::string lvl; should_play_level(cmd_args, lvl))
+  {
+    // Start a level
+    m_game_state = GameState::player_handled;
+    game_system.request_play_level(lvl);
+  }
+  else
+  {
+    // Open up the menu and play demos on the background
+    m_game_state = GameState::in_menu;
+    ui_system.get_menu_manager()->set_visible(true);
+    game_system.request_play_random_demos();
+  }
+
   return true;
 }
 

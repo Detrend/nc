@@ -78,12 +78,12 @@ struct CollisionHit
 
   enum SectorHitType : u8
   {
-    // first 2 bits reserved for type
+    // first 3 bits reserved for type
     wall      =  0b001,
     floor     =  0b010,
     ceil      =  0b100,
 
-    // third bit for nuclidean/non-nuclidean
+    // fourth bit for nuclidean/non-nuclidean
     nuclidean = 0b1000,
 
     nuclidean_wall = wall | nuclidean,

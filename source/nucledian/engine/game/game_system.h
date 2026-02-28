@@ -62,15 +62,24 @@ public:
   bool init();
   void on_event(ModuleEvent& event) override;
 
-  // Saving and loading the game. 
+  // Saving and loading the game.
   SaveGameData save_game() const;
   void         load_game(const SaveGameData& save);
 
   SaveDatabase& get_save_game_db();
 
-  // Level transition
   LevelName get_level_name() const;
-  void      request_level_change(LevelName new_level);
+
+  // Starts a level and gives control to the player. Interrupts currently playing
+  // demo or currently played level.
+  void request_play_level(const LevelName& new_level);
+
+  // Starts playing past demos of the game. After one demo ends another is
+  // chosen randomly and starts playing instead.
+  void request_play_random_demos();
+
+  // Loads a demo and plays it
+  void request_play_demo(const std::string& demo_name);
 
   Player*                 get_player();
   EntityRegistry&         get_entities();
@@ -97,6 +106,8 @@ public:
   void on_player_traversed_nc_portal(EntityID player, mat4 transform);
 
 private:
+  void request_level_change(const LevelName& new_level);
+
   // Clean up the current map, entities, mapping etc..
   void cleanup_map();
 
@@ -111,6 +122,14 @@ private:
   void pre_terminate();
 
   void game_update(f32 delta);
+
+  void on_level_end();
+
+  void on_demo_end();
+
+  // Picks a random demo from the directory and plays it.
+  // Returns false if no demos are available.
+  bool schedule_next_demo();
 
 #ifdef NC_EDITOR
   void handle_hot_reload();
@@ -129,51 +148,55 @@ private:
 
   static std::vector<std::string> list_available_demos();
 
-  static void load_demo_from_bytes
+  static bool load_demo_from_file_into_bytes
   (
     const std::string& path, std::vector<u8>& out
   );
 #endif
 
 private:
-#define DO_JOURNAL_CHECKS 0
-
-  struct JournalFrame
-  {
-    PlayerSpecificInputs inputs;
-    f32                  delta;
-#if DO_JOURNAL_CHECKS
-    // Position AFTER the frame ended
-    vec3                    player_position = VEC3_ZERO;
-    std::unordered_set<u64> alive_entities;
-#endif
-  };
-
   enum class JournalState : u8
   {
-    recording = 0, // Recording inputs into a journal
-    playing,       // Playing the inputs from the journal
-    none           // None of the above
+    none,      // None of the above
+    recording, // Recording inputs into a journal
+    playing,   // Playing the inputs from the journal
   };
+
+  enum class GameSystemState : u8
+  {
+    none = 0,         // Only at the start of the game
+    playing_one_demo, // Playing one demo, returns to menu if ends
+    playing_demos,    // The demos play in the background, another starts playing if one ends
+    player_handled,   // Player is in control in the level
+  };
+
+#ifdef NC_DEBUG_DRAW
+  // We want to do demo recording by default for debugging purposes.
+  static constexpr JournalState DEFAULT_JOURNAL_STATE = JournalState::recording;
+#else
+  static constexpr JournalState DEFAULT_JOURNAL_STATE = JournalState::none;
+#endif
 
   struct Journal
   {
-    std::vector<JournalFrame> frames;
-    JournalState              state = JournalState::recording;
-    u64                       rover   = 0;
-    bool                      paused  = false;
-    int                       skip_to = -1;
+    std::vector<DemoDataFrame> frames;
+    JournalState               state   = DEFAULT_JOURNAL_STATE;
+    u64                        rover   = 0;
+    bool                       paused  = false;
+    int                        skip_to = -1;
 
     void reset(JournalState to_state);
     void reset_and_clear(JournalState to_state);
   };
 
-  GamePtr        game;
-  LevelName      level_name         = INVALID_LEVEL_NAME;
-  LevelName      scheduled_level_id = INVALID_LEVEL_NAME;
-  SaveDatabase   save_db;
-  Journal        journal;
-  mutable SaveID last_save_id = 0;
+  GamePtr         game;
+  LevelName       level_name         = INVALID_LEVEL_NAME;
+  LevelName       scheduled_level_id = INVALID_LEVEL_NAME;
+  SaveDatabase    save_db;
+  Journal         journal;
+  GameSystemState state = GameSystemState::none; // At the start of the game
+  u64             demo_rng_idx = 0;
+  mutable SaveID  last_save_id = 0;
 };
 
 }

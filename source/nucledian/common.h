@@ -70,6 +70,9 @@ inline void assert_fail_impl(const char* const expression_str, const logging::Lo
 #define NC_NEVER_INLINE __declspec(noinline)
 #endif
 
+#define NC_PUSH_PACKED __pragma(pack(push)); __pragma(pack(1));
+#define NC_POP_PACKED  __pragma(pack(pop));
+
 //==============================================================================
 // Casting macros because I hate writing "static_cast" every fuckin time
 #define cast   static_cast

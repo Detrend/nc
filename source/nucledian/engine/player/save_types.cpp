@@ -5,6 +5,7 @@
 #include <common.h>
 
 #include <array>
+#include <cstring> // std::memcpy
 
 namespace nc
 {
@@ -67,6 +68,87 @@ bool deserialize_save_game_from_bytes
 
   // Everything ok
   data_out = save.data;
+  return true;
+}
+
+//==============================================================================
+u64 calc_size_for_demo_to_bytes(const DemoDataHeader& header)
+{
+  return sizeof(DemoDataHeader) + header.num_frames * sizeof(DemoDataFrame);
+}
+
+//==============================================================================
+void save_demo_to_bytes
+(
+  const DemoDataHeader& header,
+  const DemoDataFrame*  frames,
+  byte*                 bytes_out
+)
+{
+  // Copy header
+  std::memcpy(bytes_out, &header, sizeof(DemoDataHeader));
+
+  // Copy frames
+  std::memcpy
+  (
+    bytes_out + sizeof(DemoDataHeader), frames,
+    header.num_frames * sizeof(DemoDataFrame)
+  );
+}
+
+//==============================================================================
+bool load_demo_from_bytes
+(
+  DemoDataHeader&             header_out,
+  std::vector<DemoDataFrame>& frames_out,
+  const byte*                 bytes_start,
+  u64                         bytes_cnt
+)
+{
+  if (bytes_cnt < sizeof(DemoDataHeader))
+  {
+    // Size is retarded apparently
+    return false;
+  }
+
+  std::memcpy(&header_out, bytes_start, sizeof(DemoDataHeader));
+  bool header_mismatch = std::memcmp
+  (
+    header_out.signature,
+    DemoDataHeader::SIGNATURE,
+    DemoDataHeader::SIGNATURE_SIZE
+  );
+
+  if (header_mismatch)
+  {
+    // Header does not match
+    return false;
+  }
+
+  if (header_out.version != CURRENT_GAME_VERSION)
+  {
+    // Versions do not match
+    return false;
+  }
+
+  u64 required_size
+    = header_out.num_frames * sizeof(DemoDataFrame) + sizeof(DemoDataHeader);
+
+  if (required_size != bytes_cnt)
+  {
+    // What the fuck
+    return false;
+  }
+
+  // Memcpy the fuck out of it
+  frames_out.resize(header_out.num_frames);
+  std::memcpy
+  (
+    frames_out.data(), bytes_start + sizeof(DemoDataHeader),
+    sizeof(DemoDataFrame) * header_out.num_frames
+  );
+
+  // All good on the demo front
   return true;
 }
 
