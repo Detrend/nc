@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://cieo8n2cl30cw"]
+
+[ext_resource type="Texture2D" uid="uid://6gkdvke2lg1n" path="res://imgs/moss.png" id="1_3ir3l"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_iw0s7"]
+
+[resource]
+script = ExtResource("2_iw0s7")
+preview = ExtResource("1_3ir3l")
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

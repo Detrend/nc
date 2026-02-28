@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://423uia4dyrw1"]
+
+[ext_resource type="Texture2D" uid="uid://vx8dbx20iamp" path="res://imgs/stone_wall_2.png" id="1_bkof4"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_6xygx"]
+
+[resource]
+script = ExtResource("2_6xygx")
+preview = ExtResource("1_bkof4")
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

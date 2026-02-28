@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://c1ku3etge0pxq"]
+
+[ext_resource type="Texture2D" uid="uid://b53574ty2qsdj" path="res://imgs/mossy_rocks.png" id="1_hgxli"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_rd2ye"]
+
+[resource]
+script = ExtResource("2_rd2ye")
+preview = ExtResource("1_hgxli")
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

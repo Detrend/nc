@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://c7jatlcq5i3ma"]
+
+[ext_resource type="Texture2D" uid="uid://cvr37ali82gp6" path="res://imgs/smooth_stem.png" id="1_n753m"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_gf2ga"]
+
+[resource]
+script = ExtResource("2_gf2ga")
+preview = ExtResource("1_n753m")
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

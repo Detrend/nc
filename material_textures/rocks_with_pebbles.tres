@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://qj6kjp1paykc"]
+
+[ext_resource type="Texture2D" uid="uid://cstuppm4fnni3" path="res://imgs/rocks_with_pebbles.png" id="1_3tni5"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_b2g24"]
+
+[resource]
+script = ExtResource("2_b2g24")
+preview = ExtResource("1_3tni5")
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"
