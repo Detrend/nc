@@ -693,6 +693,17 @@ void Renderer::render_entities(const CameraData& camera) const
             (static_cast<u64>(id.as_u32()) << 32) + index,
             light_gpu_index
           );
+
+          // THis ensures that sector data within radius of every visible light is on the GPU.
+          SectorSet lit_sectors;
+          GameSystem::get().get_map().query_nearby_sectors_for_lights(world_pos.xz(), light->radius, lit_sectors);
+          for (size_t i = 0; i < lit_sectors.sectors.size(); ++i)
+          {
+            const SectorID lit_sector_id = lit_sectors.sectors[i];
+            const mat4 transform = camera.portal_dest_to_src * lit_sectors.transforms[i];
+
+            push_sector_to_ssbo(lit_sector_id, camera.portal_id, transform);
+          }
         }
         else if (sector_id == entity_sector_id)
         {
