@@ -199,9 +199,6 @@ void main()
 
   TileData data = tile_data[tile_index];
 
-  #define VOX_CNT 16
-  position = round(position * VOX_CNT) / VOX_CNT;
-
   for (int i = 0; i < data.count; i++)
   {
     uint light_index = light_indices[data.offset + i];
@@ -209,6 +206,9 @@ void main()
 
     if (is_in_shadow(position, sector_id, light))
         continue;
+
+    #define VOX_CNT 16
+    position = round(position * VOX_CNT) / VOX_CNT;
 
     vec3 light_direction = light.position - position;
     float distance = length(light_direction);
