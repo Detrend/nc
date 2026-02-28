@@ -14,6 +14,7 @@
 #include <engine/input/input_system.h>
 #include <engine/sound/sound_system.h>
 #include <engine/sound/sound_resources.h>
+#include <engine/core/module_event.h>
 
 namespace nc
 {
@@ -193,15 +194,19 @@ namespace nc
 
 	void MenuManager::set_visible(bool visibility)
 	{
+    if (visible != visibility)
+    {
+      namespace EventType = ModuleEventType;
+
+      get_engine().send_event(ModuleEvent
+      {
+        .type = visibility ? EventType::menu_opened : EventType::menu_closed
+      });
+    }
+
 		visible = visibility;
 		current_page = MAIN;
 	}
-
-  //===============================================================================================
-  void MenuManager::lock_visible(bool lock)
-  {
-    locked = lock;
-  }
 
 	//===============================================================================================
 
@@ -215,21 +220,19 @@ namespace nc
 		if (keyboard[SDL_SCANCODE_ESCAPE])
 		{
 			cur_esc_pressed = true;
-			
 		}
 
+    bool locked = get_engine().is_menu_locked_visible();
 		if (!locked && cur_esc_pressed && !prev_esc_pressed)
 		{
 			/*if (current_page == MAIN)
 			{*/
 			set_visible(!visible);
-			get_engine().pause(visible);
 			//}
 			//else
 			//{
 			//	current_page = MAIN;
 			//}
-
 		}
 
 		if (!visible) {
@@ -549,30 +552,31 @@ namespace nc
 	}
 
 	//==============================================================================================
+  static void level_func(LevelName lvl)
+  {
+    get_engine().send_event(ModuleEvent
+    {
+      .type = ModuleEventType::new_game_level_requested,
+      .new_game = EventNewGame{.level = lvl},
+    });
+  }
+
+	//==============================================================================================
 	void NewGamePage::level_1_func()
 	{
-		get_engine().get_module<GameSystem>().request_level_change(Levels::LEVEL_1);
-		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_visible(false);
-		get_engine().pause(false);
-		get_engine().get_module<InputSystem>().unlock_player_input();
+    level_func(Levels::LEVEL_1);
 	}
 
 	//==============================================================================================
 	void NewGamePage::level_2_func()
 	{
-		get_engine().get_module<GameSystem>().request_level_change(Levels::LEVEL_2);
-		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_visible(false);
-		get_engine().pause(false);
-		get_engine().get_module<InputSystem>().unlock_player_input();
+    level_func(Levels::LEVEL_2);
 	}
 
 	//==============================================================================================
 	void NewGamePage::level_3_func()
 	{
-		get_engine().get_module<GameSystem>().request_level_change(Levels::LEVEL_3);
-		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_visible(false);
-		get_engine().pause(false);
-		get_engine().get_module<InputSystem>().unlock_player_input();
+    level_func(Levels::LEVEL_3);
 	}
 
 	//============================================================================================

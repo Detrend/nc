@@ -36,7 +36,7 @@ constexpr GameVersion CURRENT_GAME_VERSION = GameVersions::demo_001;          //
 constexpr cstr SAVE_DIR_RELATIVE = "save";
 constexpr cstr DEMO_DIR_RELATIVE = "demo";
 constexpr cstr SAVE_FILE_SUFFIX  = ".ncs";
-constexpr cstr DEMO_FILE_SUFFIX  = ".demo";
+constexpr cstr DEMO_FILE_SUFFIX  = ".ncd";
 
 // A set of data that persists between levels
 NC_PUSH_PACKED
@@ -80,7 +80,7 @@ struct DemoDataHeader
   static constexpr u64  LVL_NAME_SIZE  = 32;
 
   char        signature[SIGNATURE_SIZE];
-  char        level_name[32]; // Name of the level
+  char        level_name[LVL_NAME_SIZE]; // Name of the level
   GameVersion version;
   u64         num_frames = 0;
 };
@@ -123,6 +123,14 @@ bool load_demo_from_bytes
   std::vector<DemoDataFrame>& frames_out,
   const byte*                 bytes_start,
   u64                         bytes_cnt
+);
+
+void save_demo_to_file
+(
+  const std::string&   filename, // No path or extension, only filename
+  const std::string&   lvl_name, // Name of the level
+  const DemoDataFrame* frames,
+  u64                  frames_cnt
 );
 
 }

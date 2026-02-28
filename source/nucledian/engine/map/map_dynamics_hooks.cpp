@@ -31,7 +31,8 @@ namespace nc
     this->destination = std::string_view(data["destination"]);
   }
   void ActivatorHook_LevelTransition::on_activated_start() {
-    GameSystem::get().request_level_change(destination);
+    GameSystem& gs = GameSystem::get();
+    gs.end_level_and_go_to_another_one_from_gamemode(destination);
   }
 
 }

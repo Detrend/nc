@@ -71,10 +71,6 @@ public:
 
   LevelName get_level_name() const;
 
-  // Starts a level and gives control to the player. Interrupts currently playing
-  // demo or currently played level.
-  void request_play_level(const LevelName& new_level);
-
   Player*                 get_player();
   EntityRegistry&         get_entities();
   MapDynamics&            get_map_dynamics();
@@ -102,6 +98,10 @@ public:
   // Request a new level to play - an empty one.
   // Comes in handy in the menu
   void request_empty_level();
+
+  // Starts a level and gives control to the player. Interrupts currently playing
+  // demo or currently played level.
+  void request_play_level(const LevelName& new_level);
 
   // If there is a demo or not
   void request_level_change
@@ -134,9 +134,7 @@ private:
 
   void on_demo_end();
 
-  // Picks a random demo from the directory and plays it.
-  // Returns false if no demos are available.
-  bool schedule_next_demo();
+  void save_current_demo();
 
 #ifdef NC_EDITOR
   void handle_hot_reload();
@@ -144,7 +142,6 @@ private:
 
 #ifdef NC_DEBUG_DRAW
   void handle_raycast_debug();
-  void handle_demo_debug();
 
   static void save_demo_data
   (
@@ -162,20 +159,17 @@ private:
     playing,   // Playing the inputs from the journal
   };
 
-#ifdef NC_DEBUG_DRAW
   // We want to do demo recording by default for debugging purposes.
   static constexpr JournalState DEFAULT_JOURNAL_STATE = JournalState::recording;
-#else
-  static constexpr JournalState DEFAULT_JOURNAL_STATE = JournalState::none;
-#endif
 
   struct Journal
   {
     std::vector<DemoDataFrame> frames;
-    JournalState               state   = DEFAULT_JOURNAL_STATE;
-    u64                        rover   = 0;
-    bool                       paused  = false;
-    int                        skip_to = -1;
+    JournalState               state       = DEFAULT_JOURNAL_STATE;
+    u64                        rover       = 0;
+    bool                       paused      = false;
+    int                        skip_to     = -1;
+    f32                        extra_delta = 0.0f;
 
     void reset(JournalState to_state);
     void reset_and_clear(JournalState to_state);

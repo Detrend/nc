@@ -513,7 +513,6 @@ static void load_json_map
   dynamics.on_map_rebuild_and_entities_created();
 }
 
-
 }
 
 namespace nc
@@ -543,10 +542,7 @@ static void notify_hot_reload_post_map_build()
       );
     }
 
-    HotReloadData::player_position = VEC3_ZERO;
-    HotReloadData::player_yaw      = 0.0f;
-    HotReloadData::player_pitch    = 0.0f;
-    HotReloadData::has_data        = false;
+    HotReloadData::has_data = false;
   }
 }
 #endif
@@ -671,6 +667,8 @@ void GameSystem::frame_start()
   //          to check everywhere if a level exists or not..
   if (scheduled_state)
   {
+    NextRequestedState& scheduled_state_ref = *scheduled_state;
+
     get_engine().send_event
     (
       ModuleEvent{.type = ModuleEventType::before_map_rebuild}
@@ -680,14 +678,21 @@ void GameSystem::frame_start()
     this->cleanup_map();
 
     // Build the normal map
-    this->build_map(scheduled_state->level);
+    this->build_map(scheduled_state_ref.level);
 
-    this->level_name = scheduled_state->level;
+    this->level_name = scheduled_state_ref.level;
 
-    // Optionally install the demo?
-    if (scheduled_state->demo.size())
+    // Demo
+    if (scheduled_state_ref.demo.size())
     {
-      // Fucked up for now >:[
+      // Install frames and play them
+      journal.reset_and_clear(JournalState::playing);
+      journal.frames = std::move(scheduled_state_ref.demo);
+    }
+    else
+    {
+      // Record frames
+      journal.reset_and_clear(JournalState::recording);
     }
 
     // Reset it
@@ -706,6 +711,44 @@ void GameSystem::frame_start()
 }
 
 //==============================================================================
+static u64 calc_num_demo_frames_to_simulate
+(
+  f32                               frame_delta,
+  const std::vector<DemoDataFrame>& frames,
+  u64                               rover_idx,
+  f32&                              extra_delta
+)
+{
+  // Calculate proper number of frames to simulate to keep a pace
+  f32 delta_left   = frame_delta + extra_delta;
+  u64 simulate_cnt = 0;
+
+  while (rover_idx < frames.size())
+  {
+    if (delta_left < frames[rover_idx].delta)
+    {
+      break;
+    }
+
+    simulate_cnt += 1;
+    delta_left   -= frames[rover_idx].delta;
+    rover_idx    += 1;
+  }
+
+  extra_delta = delta_left;
+
+  return simulate_cnt;
+}
+
+//==============================================================================
+template<typename InputGetter>
+void simulate_one_frame(Game& game, InputGetter inputs)
+{
+  const auto[delta, curr_inputs, prev_inputs] = inputs();
+  game.update(delta, curr_inputs, prev_inputs);
+}
+
+//==============================================================================
 void GameSystem::game_update(f32 delta)
 {
   NC_SCOPE_PROFILER(GameSystemUpdate)
@@ -720,125 +763,87 @@ void GameSystem::game_update(f32 delta)
 
   u64 num_frames_to_simulate = 1;
 
-  if (journal.state == JournalState::playing)
+  if (get_engine().is_game_paused())
   {
-    // Calculate proper number of frames to simulate to keep a pace
-    f32 dt_left = delta;
     num_frames_to_simulate = 0;
-    u64 idx = journal.rover;
-    while (dt_left > 0.0f && idx < journal.frames.size())
+  }
+  else if (journal.state == JournalState::playing)
+  {
+    if (get_engine().should_run_demo_proportional_speed())
     {
-      num_frames_to_simulate += 1;
-      dt_left -= journal.frames[idx].delta;
-      idx += 1;
+      num_frames_to_simulate = calc_num_demo_frames_to_simulate
+      (
+        delta, journal.frames, journal.rover, journal.extra_delta
+      );
     }
-
-#if defined(NC_DEBUG_DRAW) && defined(NC_IMGUI)
-    if (ImGui::IsKeyPressed(ImGuiKey_Space))
+    else
     {
-      journal.paused = !journal.paused;
-    }
-
-    u64 frames_left = journal.frames.size() - journal.rover - 1;
-
-    if (journal.paused)
-    {
-      num_frames_to_simulate = 0;
-
-      bool lshift = ImGui::IsKeyDown(ImGuiKey_LeftShift);
-      bool rshift = ImGui::IsKeyDown(ImGuiKey_RightShift);
-      bool shift  = lshift | rshift;
-      bool skip   = ImGui::IsKeyPressed(ImGuiKey_RightArrow);
-      if (skip)
-      {
-        num_frames_to_simulate = min(shift ? 100_u64 : 1_u64, frames_left);
-      }
-    }
-
-    if (journal.skip_to != -1)
-    {
-      nc_assert(journal.skip_to >= journal.rover);
-      u64 to_skip = cast<u64>(journal.skip_to - journal.rover);
-      num_frames_to_simulate = min(to_skip, frames_left);
-      journal.skip_to = -1;
-    }
-#endif
-
-    if (journal.rover == journal.frames.size() - 1)
-    {
-      // Journal ended
-      num_frames_to_simulate = 0;
+      num_frames_to_simulate = 1;
     }
   }
 
   bool is_demo = journal.state == JournalState::playing;
+
   bool level_completed_before = game->is_level_completed;
-  bool demo_finished_before   = is_demo && journal.rover == journal.frames.size() - 1;
 
-  while (num_frames_to_simulate-->0 && !game->is_level_completed)
+  bool demo_finished_before 
+    = is_demo
+    && (journal.rover == journal.frames.size() - 1 || game->is_level_completed);
+
+  while (num_frames_to_simulate-->0)
   {
-    GameInputs curr_input = InputSystem::get().get_inputs();
-    GameInputs prev_input = InputSystem::get().get_prev_inputs();
-
-    PlayerSpecificInputs player_input_curr, player_input_prev;
-    f32 delta_time = 0.0f;
-
-    if (journal.state == JournalState::playing)
+    auto demo_inputs = [this]()
     {
       PlayerSpecificInputs empty_inputs;
-      std::memset(&empty_inputs, 0, sizeof(empty_inputs));
+      PlayerSpecificInputs prev_inputs;
+      PlayerSpecificInputs curr_inputs;
+      f32                  delta_time = 0.0f;
 
       nc_assert(journal.rover < journal.frames.size());
-      const DemoDataFrame& frame = journal.frames[journal.rover];
 
-      player_input_prev = journal.rover
-        ? journal.frames[journal.rover-1].inputs
-        : empty_inputs;
+      const std::vector<DemoDataFrame>& frames = journal.frames;
+      const DemoDataFrame& frame = frames[journal.rover];
 
-      player_input_curr = frame.inputs;
-      delta_time        = frame.delta;
-
-#if DO_JOURNAL_CHECKS
-      Player* player = this->get_player();
-      nc_assert(player->get_position() == frame.player_position);
-      this->get_entities().for_each(EntityTypes::all, [&](Entity& entity)
-      {
-        nc_assert(frame.alive_entities.contains(entity.get_id().as_u64()));
-      });
-#endif
+      bool first_frame = !journal.rover;
+      prev_inputs = first_frame ? empty_inputs : frames[journal.rover-1].inputs;
+      curr_inputs = frame.inputs;
+      delta_time  = frame.delta;
 
       journal.rover += 1;
-    }
-    else
+
+      return std::make_tuple(delta_time, curr_inputs, prev_inputs);
+    };
+
+    auto game_inputs = [this, delta]()
     {
-      player_input_curr = curr_input.player_inputs;
-      player_input_prev = prev_input.player_inputs;
-      delta_time        = delta;
+      GameInputs curr_input = InputSystem::get().get_inputs();
+      GameInputs prev_input = InputSystem::get().get_prev_inputs();
+
+      PlayerSpecificInputs curr_inputs = curr_input.player_inputs;
+      PlayerSpecificInputs prev_inputs = prev_input.player_inputs;
+      f32                  delta_time  = delta;
 
       if (journal.state == JournalState::recording)
       {
         // Record the inputs as well
         journal.frames.push_back(DemoDataFrame
         {
-          .inputs = player_input_curr,
+          .inputs = curr_inputs,
           .delta  = delta_time,
         });
-
-#if DO_JOURNAL_CHECKS
-      Player* player = this->get_player();
-      journal.frames.back().player_position = player->get_position();
-      this->get_entities().for_each(EntityTypes::all, [&](Entity& entity)
-      {
-        journal.frames.back().alive_entities.insert(entity.get_id().as_u64());
-      });
-#endif
       }
-    }
 
-    game->update
-    (
-      delta_time, player_input_curr, player_input_prev
-    );
+      return std::make_tuple(delta_time, curr_inputs, prev_inputs);
+    };
+
+    if (journal.state == JournalState::playing)
+    {
+      simulate_one_frame(*game, demo_inputs);
+    }
+    else
+    {
+      simulate_one_frame(*game, game_inputs);
+    }
   }
 
   // If the game finished by itself then some game system requested the next
@@ -846,27 +851,35 @@ void GameSystem::game_update(f32 delta)
   // Now, the other systems have a chance to react to it and potentially
   // overwrite the level that should play.
 
-  bool is_finished = is_demo && journal.rover == journal.frames.size() - 1;
-  if (is_finished && !demo_finished_before)
+  bool demo_finished
+    = is_demo
+    && (journal.rover == journal.frames.size() - 1 || game->is_level_completed);
+
+  bool level_completed_now = game->is_level_completed && !level_completed_before;
+  bool demo_finished_now   = demo_finished && !demo_finished_before;
+
+  if (demo_finished_now)
   {
     // Callback demo end
     this->on_demo_end();
   }
 
-  if (game->is_level_completed && !level_completed_before)
+  if (level_completed_now)
   {
     // Callback level end
     this->on_level_end();
   }
-
-#ifdef NC_IMGUI
-  this->handle_demo_debug();
-#endif
 }
 
 //==============================================================================
 void GameSystem::on_level_end()
 {
+  if (journal.state == JournalState::recording)
+  {
+    // Save the demo
+    this->save_current_demo();
+  }
+
   get_engine().on_level_end();
 }
 
@@ -874,6 +887,21 @@ void GameSystem::on_level_end()
 void GameSystem::on_demo_end()
 {
   get_engine().on_demo_end();
+}
+
+//==============================================================================
+void GameSystem::save_current_demo()
+{
+  nc_assert(journal.state == JournalState::recording);
+
+  auto now = floor<std::chrono::seconds>(std::chrono::system_clock::now());
+  auto lvl = level_name.to_cstring();
+
+  std::string demoname = std::format("{}_{:%S_%M_%H_%d_%m_%Y}", lvl.data(), now);
+  save_demo_to_file
+  (
+    demoname, lvl.data(), journal.frames.data(), journal.frames.size()
+  );
 }
 
 //==============================================================================
@@ -1003,7 +1031,6 @@ LevelName GameSystem::get_level_name() const
 void GameSystem::request_play_level(const LevelName& new_level)
 {
   this->request_level_change(new_level);
-  journal.reset_and_clear(DEFAULT_JOURNAL_STATE);
 }
 
 //==============================================================================
@@ -1316,9 +1343,10 @@ void GameSystem::build_map(LevelName level)
 //==============================================================================
 void GameSystem::Journal::reset(GameSystem::JournalState to_state)
 {
-  state = to_state;
-  paused = false;
-  rover = 0;
+  state       = to_state;
+  paused      = false;
+  rover       = 0;
+  extra_delta = 0.0f;
 }
 
 //==============================================================================
@@ -1445,6 +1473,7 @@ void GameSystem::handle_raycast_debug()
     }
   }
 }
+#endif
 
 //==============================================================================
 /*static*/ void GameSystem::save_demo_data
@@ -1455,10 +1484,6 @@ void GameSystem::handle_raycast_debug()
 )
 {
   namespace fs = std::filesystem;
-
-#if DO_JOURNAL_CHECKS
-  nc_assert(false, "You are trying to save sanitization data into a demo file");
-#endif
 
   fs::path demo_dir = DEMO_DIR_RELATIVE;
   if (!fs::exists(demo_dir))
@@ -1488,115 +1513,5 @@ void GameSystem::handle_raycast_debug()
 
   out.write(recast<cstr>(data), cast<std::streamsize>(data_size));
 }
-
-//==============================================================================
-void GameSystem::handle_demo_debug()
-{
-  if (ImGui::IsKeyReleased(ImGuiKey_F6))
-  {
-    CVars::debug_demo_recording = !CVars::debug_demo_recording;
-  }
-
-  if (!CVars::debug_demo_recording)
-  {
-    return;
-  }
-
-  if (ImGui::Begin("Journal Debug", &CVars::debug_demo_recording))
-  {
-    constexpr cstr STATE_NAMES[] {"recording", "playing", "none"};
-    cstr journal_state = STATE_NAMES[cast<u8>(journal.state)];
-    ImGui::Text("Journal state: %s", journal_state);
-
-    if (journal.state == JournalState::recording)
-    {
-      ImGui::Text("Frames recorded: %d", cast<int>(journal.frames.size()));
-      if (ImGui::Button("Play"))
-      {
-        this->request_level_change(this->get_level_name());
-      }
-    }
-    else if (journal.state == JournalState::playing)
-    {
-      ImGui::Text("Currend idx: %d", cast<int>(journal.rover)-1);
-      if (ImGui::Button("Save to filesystem"))
-      {
-        DemoDataHeader header;
-
-        //const LevelName& lvl_name = this->get_level_name();
-
-        std::memcpy
-        (
-          header.signature,
-          DemoDataHeader::SIGNATURE,
-          DemoDataHeader::SIGNATURE_SIZE
-        );
-
-        /*
-        std::memset(header.level_name, 0, DemoDataHeader::LVL_NAME_SIZE);
-        std::memcpy(header.level_name, lvl_name.data(), lvl_name.size());
-        */
-
-        header.version = CURRENT_GAME_VERSION;
-        header.num_frames = this->journal.frames.size();
-
-        std::vector<byte> bytes;
-        bytes.resize(calc_size_for_demo_to_bytes(header));
-        save_demo_to_bytes(header, journal.frames.data(), bytes.data());
-        //save_demo_data(level_name, bytes.data(), bytes.size());
-      }
-
-      static int skip_to_idx = 0;
-      int from = cast<int>(journal.rover + 1);
-      int to   = cast<int>(journal.frames.size() - 1);
-      ImGui::SliderInt("Skip idx", &skip_to_idx, from, to);
-      ImGui::SameLine();
-      if (ImGui::Button("Skip"))
-      {
-        journal.skip_to = skip_to_idx;
-      }
-    }
-
-    if (ImGui::Button("Start new demo"))
-    {
-      this->request_level_change(this->get_level_name());
-      journal.reset_and_clear(JournalState::recording);
-    }
-
-    if (ImGui::Button("Start new game without recording"))
-    {
-      this->request_level_change(this->get_level_name());
-      journal.reset_and_clear(JournalState::none);
-    }
-
-    ImGui::Separator();
-
-    ImGui::Text("Open demo:");
-    std::vector<std::string> available_demos = list_available_demo_files();
-
-    for (const std::string& demo_file : available_demos)
-    {
-      if (ImGui::Button(demo_file.c_str()))
-      {
-        std::vector<DemoDataFrame> frames;
-        std::string                level;
-
-        if (!load_demo_from_file(demo_file, level, frames))
-        {
-          nc_warn("Failed to load a demo from the file \"{}\"", demo_file);
-          continue;
-        }
-
-        this->request_level_change
-        (
-          LevelName{std::string_view{level}}, std::move(frames)
-        );
-      }
-    }
-  }
-  ImGui::End();
-}
-
-#endif
 
 }

@@ -17,6 +17,16 @@ namespace nc
 
 struct ModuleEvent;
 
+using InputLockLayer = u8;
+namespace InputLockLayers
+{
+enum evalue : InputLockLayer
+{
+  menu  = 1 << 0, // Locked by the menu
+  cvars = 1 << 1, // Locked by the cvars
+};
+};
+
 class InputSystem : public IEngineModule
 {
 public:
@@ -27,19 +37,19 @@ public:
 
   void update_window_and_pump_messages();
 
-  // Backdoor for replay system. This enables us to override player
-  // inputs.
-  void override_player_inputs(const PlayerSpecificInputs& player_inputs);
-
   void handle_app_event(const SDL_Event& event);
   void get_player_inputs();
   GameInputs get_inputs() const;
   GameInputs get_prev_inputs() const;
 
-  void set_sensitivity(int step);
+  void  set_sensitivity(int step);
   float get_sensitivity();
 
-  void unlock_player_input();
+  // Disables mouse and movement. Can be used by the menu or some screen that
+  // requires mouse or keyboard inputs.
+  void lock_player_input(InputLockLayer layer, bool lock);
+
+  bool are_game_inputs_disabled() const;
 
 private:
   GameInputs m_current_inputs;
@@ -47,7 +57,7 @@ private:
 
   float SENSITIVITY = -0.00125f;
 
-  bool m_disable_player_inputs : 1 = false;
+  InputLockLayer m_locked_inputs = 0;
 
   
 };

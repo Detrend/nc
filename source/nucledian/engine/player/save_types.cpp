@@ -163,10 +163,6 @@ static bool load_demo_from_file_into_bytes
 {
   namespace fs = std::filesystem;
 
-#if DO_JOURNAL_CHECKS
-  nc_assert(false, "You are trying to load sanitization data into a demo file");
-#endif
-
   fs::path demo_dir = DEMO_DIR_RELATIVE;
   if (!fs::exists(demo_dir) || !fs::is_directory(demo_dir))
   {
@@ -197,6 +193,21 @@ static bool load_demo_from_file_into_bytes
   }
 
   return true;
+}
+
+//==============================================================================
+static void bytes_to_file
+(
+  const std::string& file_path,
+  u8*                data,
+  u64                data_size
+)
+{
+  std::ofstream out(file_path, std::ios::binary);
+  nc_assert(out);
+
+  out.write(recast<cstr>(data), cast<std::streamsize>(data_size));
+  out.close();
 }
 
 //==============================================================================
@@ -250,6 +261,54 @@ std::vector<std::string> list_available_demo_files()
   }
 
   return result;
+}
+
+//==============================================================================
+void save_demo_to_file
+(
+  const std::string&   name,
+  const std::string&   lvl_name,
+  const DemoDataFrame* frames,
+  u64                  frames_cnt
+)
+{
+  namespace fs = std::filesystem;
+
+  DemoDataHeader header;
+
+  // Set the file signature
+  std::memcpy
+  (
+    header.signature, DemoDataHeader::SIGNATURE, DemoDataHeader::SIGNATURE_SIZE
+  );
+
+  // Set the level name
+  nc_assert(lvl_name.size() < DemoDataHeader::LVL_NAME_SIZE);
+  std::memset(header.level_name, 0, DemoDataHeader::LVL_NAME_SIZE);
+  std::memcpy(header.level_name, lvl_name.data(), lvl_name.size());
+
+  header.version = CURRENT_GAME_VERSION;
+  header.num_frames = frames_cnt;
+
+  std::vector<byte> bytes(calc_size_for_demo_to_bytes(header));
+
+  // Demo to bytes
+  save_demo_to_bytes(header, frames, bytes.data());
+
+  // Create the directory for demos if it does not exist
+  if (!fs::exists(DEMO_DIR_RELATIVE))
+  {
+    fs::create_directory(DEMO_DIR_RELATIVE);
+  }
+
+  // Append the demo dir to the path
+  std::string final_path = std::format
+  (
+    "{}/{}{}", DEMO_DIR_RELATIVE, name, DEMO_FILE_SUFFIX
+  );
+
+  // Bytes to a file
+  bytes_to_file(final_path, bytes.data(), bytes.size());
 }
 
 }

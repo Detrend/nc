@@ -263,8 +263,35 @@ int init_engine_and_run_game(const CmdArgs& args)
 }
 
 //==============================================================================
+void Engine::on_event(const ModuleEvent& event)
+{
+  switch (event.type)
+  {
+    case ModuleEventType::menu_opened:
+    {
+      this->on_menu_state_changed(true);
+    }
+    break;
+
+    case ModuleEventType::menu_closed:
+    {
+      this->on_menu_state_changed(false);
+    }
+    break;
+
+    case ModuleEventType::new_game_level_requested:
+    {
+      this->on_new_game_selected_from_menu(event.new_game.level);
+    }
+    break;
+  }
+}
+
+//==============================================================================
 void Engine::send_event(ModuleEvent& event)
 {
+  this->on_event(event);
+
   for (u64 i = 0; i < m_modules.size(); ++i)
   {
     const EngineModuleMask mask = 1<<i;
@@ -281,8 +308,6 @@ void Engine::send_event(ModuleEvent&& event)
   auto& ref = event;
   this->send_event(ref);
 }
-
-using CmdArgs = std::vector<std::string>;
 
 //==============================================================================
 static bool contains_pair_of_args
@@ -351,43 +376,8 @@ bool Engine::init(const CmdArgs& cmd_args)
     .type = ModuleEventType::post_init,
   });
 
-  GameSystem&          game_system = get_module<GameSystem>();
-  UserInterfaceSystem& ui_system   = get_module<UserInterfaceSystem>();
-
-  if (std::string demo; should_play_demo(cmd_args, demo))
-  {
-    // Play one demo and then exit
-    std::string lvl_name;
-    std::vector<DemoDataFrame> frames;
-
-    if (!load_demo_from_file(demo, lvl_name, frames))
-    {
-      return false;
-    }
-
-    m_game_state = GameState::debug_playing_demo;
-
-    game_system.request_level_change
-    (
-      LevelName{std::string_view{lvl_name}},
-      std::move(frames)
-    );
-  }
-  else if (std::string lvl; should_play_level(cmd_args, lvl))
-  {
-    // Start a level
-    m_game_state = GameState::player_handled;
-    game_system.request_play_level(LevelName{std::string_view{lvl}});
-  }
-  else
-  {
-    // Open up the menu and play demos on the background
-    m_game_state = GameState::in_menu;
-    ui_system.get_menu_manager()->set_visible(true);
-    this->play_random_demo();
-  }
-
-  return true;
+  // Boot into the menu or start a demo
+  return this->handle_post_init_game_startup(cmd_args);
 }
 
 //==============================================================================
@@ -428,6 +418,51 @@ void Engine::play_random_demo()
     LevelName{std::string_view{lvl_name}},
     std::move(frames)
   );
+}
+
+//==============================================================================
+bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
+{
+  GameSystem& game_system = get_module<GameSystem>();
+
+  if (std::string demo; should_play_demo(cmd_args, demo))
+  {
+    // Play one demo and then exit
+    std::string lvl_name;
+    std::vector<DemoDataFrame> frames;
+
+    if (!load_demo_from_file(demo, lvl_name, frames))
+    {
+      nc_crit("Could not start demo \"{}\", quitting game.", demo);
+      return false;
+    }
+
+    m_game_state = GameState::debug_playing_demo;
+
+    game_system.request_level_change
+    (
+      LevelName{std::string_view{lvl_name}},
+      std::move(frames)
+    );
+  }
+  else if (std::string lvl; should_play_level(cmd_args, lvl))
+  {
+    // Start a level
+    m_game_state = GameState::player_handled;
+    game_system.request_play_level(LevelName{std::string_view{lvl}});
+  }
+  else
+  {
+    // Open up the menu and play demos on the background
+    m_game_state = GameState::in_menu;
+
+    UserInterfaceSystem& ui_system = get_module<UserInterfaceSystem>();
+    ui_system.get_menu_manager()->set_visible(true); // Make the menu visible
+
+    this->play_random_demo();
+  }
+
+  return true;
 }
 
 //==============================================================================
@@ -583,7 +618,13 @@ u64 Engine::get_frame_idx() const
 //==============================================================================
 void Engine::pause(bool pause)
 {
-  CVars::time_speed = pause ? 0.0f : 1.0f;
+  m_paused = pause;
+}
+
+//==============================================================================
+bool Engine::is_game_paused() const
+{
+  return m_paused;
 }
 
 //==============================================================================
@@ -617,6 +658,74 @@ void Engine::on_level_end()
 bool Engine::should_quit() const
 {
   return m_should_quit;
+}
+
+//==============================================================================
+bool Engine::should_ammo_hp_hud_be_visible() const
+{
+  return m_game_state != GameState::in_menu;
+}
+
+//==============================================================================
+bool Engine::should_run_demo_proportional_speed() const
+{
+  return false;
+}
+
+//==============================================================================
+void Engine::on_menu_state_changed(bool opened)
+{
+  switch (m_game_state)
+  {
+    case GameState::debug_playing_demo:
+    {
+      // Don't care
+    }
+    break;
+
+    case GameState::in_menu:
+    {
+      // Don't care
+    }
+    break;
+
+    case GameState::player_handled:
+    {
+      // Pause the game
+      this->pause(opened);
+
+      // Do not forward mouse movement and keypresses to the player
+      InputSystem::get().lock_player_input(InputLockLayers::menu, opened);
+    }
+    break;
+  }
+}
+
+//==============================================================================
+void Engine::on_new_game_selected_from_menu(LevelName level)
+{
+  switch (m_game_state)
+  {
+    case GameState::in_menu:
+    case GameState::player_handled:
+    {
+      m_game_state = GameState::player_handled;
+      GameSystem::get().request_level_change(level);
+      UserInterfaceSystem::get().get_menu_manager()->set_visible(false);
+
+      if (this->is_game_paused())
+      {
+        this->pause(false);
+      }
+    }
+    break;
+  }
+}
+
+//==============================================================================
+bool Engine::is_menu_locked_visible() const
+{
+  return m_game_state == GameState::in_menu;
 }
 
 }

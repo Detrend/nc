@@ -32,6 +32,11 @@
 
 #include <engine/ui/user_interface_module.h>
 
+#ifdef NC_DEBUG_DRAW
+// Only for turning off the input when the cvar tweaking window is displayed.
+#include <engine/input/input_system.h>
+#endif
+
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
 
@@ -413,6 +418,12 @@ void GraphicsSystem::render()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 #ifdef NC_DEBUG_DRAW
+  // Do not forward inputs to the player if the cvar window is visible.
+  InputSystem::get().lock_player_input
+  (
+    InputLockLayers::cvars, CVars::display_debug_window
+  );
+
   if (CVars::display_debug_window)
   {
     draw_debug_window();

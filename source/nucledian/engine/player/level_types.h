@@ -4,6 +4,7 @@
 #include <common.h>
 #include <types.h>
 #include <metaprogramming.h>
+#include <token.h>
 
 #include <array>
 #include <format>

@@ -1,5 +1,6 @@
 #include <engine/ui/user_interface_module.h>
 #include <engine/core/engine_module_types.h>
+#include <engine/core/module_event.h>
 #include <engine/core/engine.h>
 
 #include <engine/player/player.h>
@@ -51,7 +52,11 @@ namespace nc
 
   void UserInterfaceSystem::draw_hud()
   {
-    ammo_display->draw();
+    if (get_engine().should_ammo_hp_hud_be_visible())
+    {
+      ammo_display->draw();
+    }
+
     menu->draw();
     screen_effect->draw();
   }
