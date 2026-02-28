@@ -51,7 +51,7 @@ void MapDynamics::on_map_rebuild_and_entities_created()
   for (TriggerID tid = 0; tid < trigger_cnt; ++tid)
   {
     const TriggerData& td = triggers[tid];
-    if (!td.type == TriggerData::wall)
+    if (td.type != TriggerData::wall)
     {
       continue;
     }
