@@ -1,0 +1,32 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=9 format=3 uid="uid://b6h3cxbdvlvht"]
+
+[ext_resource type="Resource" uid="uid://c0bfb1i38kqd" path="res://material_textures/_None.tres" id="1_fovd5"]
+[ext_resource type="Texture2D" uid="uid://3ciabrrgxam8" path="res://imgs/holes.png" id="3_4ms5t"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="4_26drt"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="5_x0boc"]
+[ext_resource type="Resource" uid="uid://cgeakf7jcliau" path="res://material_textures/holes.tres" id="6_ocqt6"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="7_qbudm"]
+
+[sub_resource type="Resource" id="Resource_csai5"]
+script = ExtResource("5_x0boc")
+priority = 8
+texture = ExtResource("6_ocqt6")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[sub_resource type="Resource" id="Resource_a6q66"]
+script = ExtResource("7_qbudm")
+priority = 8
+_placement_type = 9
+wall_length_range = Vector2(0, 0.5)
+texture = ExtResource("6_ocqt6")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[resource]
+script = ExtResource("4_26drt")
+preview = ExtResource("3_4ms5t")
+preview_scale = 4.0
+wall_default = SubResource("Resource_csai5")
+wall_rules = Array[ExtResource("7_qbudm")]([SubResource("Resource_a6q66")])
+floor = ExtResource("6_ocqt6")
+ceiling = ExtResource("1_fovd5")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"

@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://cgeakf7jcliau"]
 
-[ext_resource type="Texture2D" uid="uid://brjv5cweey3l6" path="res://imgs/meat_wall_4.png" id="1_bmwdx"]
+[ext_resource type="Texture2D" uid="uid://3ciabrrgxam8" path="res://imgs/holes.png" id="1_bmwdx"]
 [ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_78yoj"]
 
 [resource]
