@@ -669,7 +669,7 @@ bool Engine::should_ammo_hp_hud_be_visible() const
 //==============================================================================
 bool Engine::should_run_demo_proportional_speed() const
 {
-  return false;
+  return true;
 }
 
 //==============================================================================
