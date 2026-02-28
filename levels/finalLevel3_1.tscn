@@ -1,4 +1,4 @@
-[gd_scene load_steps=171 format=3 uid="uid://cxkhhxom0620j"]
+[gd_scene load_steps=174 format=3 uid="uid://cxkhhxom0620j"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_k4anw"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_yr043"]
@@ -17,6 +17,9 @@
 [ext_resource type="Resource" uid="uid://b1o66vcpfjatl" path="res://materials/lvl3/outside_wall.tres" id="10_2ot27"]
 [ext_resource type="PackedScene" uid="uid://2lt4yhe883yf" path="res://prefabs/Lights/AmbientLight.tscn" id="10_xlrat"]
 [ext_resource type="PackedScene" uid="uid://c36mdme0482de" path="res://materials/skyboxes/skybox_default.tscn" id="13_i1ig2"]
+[ext_resource type="Script" uid="uid://b8tkglirbwf1e" path="res://scripts/reactivity/ActivatorPool.gd" id="21_3u66w"]
+[ext_resource type="Script" uid="uid://bbt07sf8vceiw" path="res://scripts/reactivity/Activator.gd" id="22_2hfxr"]
+[ext_resource type="Script" uid="uid://cw0a2syvnfeio" path="res://scripts/reactivity/hooks/LevelTransition.gd" id="23_3by7o"]
 
 [sub_resource type="Resource" id="Resource_ctoo8"]
 script = ExtResource("4_1b4qq")
@@ -3256,3 +3259,39 @@ intensity = 0.15
 
 [node name="SkyBox" parent="." instance=ExtResource("13_i1ig2")]
 position = Vector2(71, 77)
+
+[node name="Activators" type="Node" parent="."]
+script = ExtResource("21_3u66w")
+
+[node name="Exit" type="Node" parent="Activators"]
+script = ExtResource("22_2hfxr")
+
+[node name="ActivatorHook_LevelTransition" type="Node" parent="Activators/Exit"]
+script = ExtResource("23_3by7o")
+destination = "level_final1"
+metadata/_custom_type_script = "uid://cw0a2syvnfeio"
+
+[node name="DoorCrissCrossArena" type="Node" parent="Activators"]
+script = ExtResource("22_2hfxr")
+
+[node name="CrissCrossLift1" type="Node" parent="Activators"]
+script = ExtResource("22_2hfxr")
+
+[node name="CrissCrossLift2" type="Node" parent="Activators"]
+script = ExtResource("22_2hfxr")
+
+[node name="CrissCrossLift3" type="Node" parent="Activators"]
+script = ExtResource("22_2hfxr")
+threshold = 4
+
+[node name="DoorBackTOStaircase" type="Node" parent="Activators"]
+script = ExtResource("22_2hfxr")
+
+[node name="DoorsInCave" type="Node" parent="Activators"]
+script = ExtResource("22_2hfxr")
+
+[node name="DoorToFinale" type="Node" parent="Activators"]
+script = ExtResource("22_2hfxr")
+
+[node name="DoorToExit" type="Node" parent="Activators"]
+script = ExtResource("22_2hfxr")
