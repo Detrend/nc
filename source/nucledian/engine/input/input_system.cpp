@@ -176,4 +176,10 @@ float InputSystem::get_sensitivity()
   return SENSITIVITY;
 }
 
+void InputSystem::unlock_player_input()
+{
+  m_disable_player_inputs = false;
+  SDL_SetRelativeMouseMode(m_disable_player_inputs ? SDL_FALSE : SDL_TRUE);
+}
+
 }

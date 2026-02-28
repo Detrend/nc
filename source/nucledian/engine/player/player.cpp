@@ -349,18 +349,18 @@ void Player::apply_acceleration(vec3 movement_direction, f32 delta)
 void Player::apply_deceleration(vec3 /*movement_direction*/, f32 delta_seconds)
 {
   // NOTE: Not sure what this is supposed to do, but it does not look ok.
-  // vec3 reverse_velocity = -normalize_or_zero(with_y(velocity, 0.0f));
-  // 
-  // //apply deceleration if reverse key is pressed or if directional/axis key is not pressed
-  // if (movement_direction.x == 0 || signbit(movement_direction.x) != signbit(velocity.x))
-  // {
-  //   velocity.x = velocity.x + (reverse_velocity.x * DECELERATION * delta_seconds);
-  // }
-  // 
-  // if (movement_direction.z == 0 || signbit(movement_direction.z) != signbit(velocity.z))
-  // {
-  //   velocity.z = velocity.z + (reverse_velocity.z * DECELERATION * delta_seconds);
-  // }
+   //vec3 reverse_velocity = -normalize_or_zero(with_y(velocity, 0.0f));
+   //
+   ////apply deceleration if reverse key is pressed or if directional/axis key is not pressed
+   //if (movement_direction.x == 0 || signbit(movement_direction.x) != signbit(velocity.x))
+   //{
+   //  velocity.x = velocity.x + (reverse_velocity.x * DECELERATION * delta_seconds);
+   //}
+   //
+   //if (movement_direction.z == 0 || signbit(movement_direction.z) != signbit(velocity.z))
+   //{
+   //  velocity.z = velocity.z + (reverse_velocity.z * DECELERATION * delta_seconds);
+   //}
 
   // Apply general deceleration
   f32 coeff = this->on_ground ? 1.0f : CVars::player_air_dec_coeff;
@@ -424,8 +424,18 @@ void Player::update_camera(f32 delta)
   camera.update_transform
   (
     this->get_position(), this->angle_yaw, this->angle_pitch,
-    PLAYER_EYE_HEIGHT + this->vertical_camera_offset
+    PLAYER_EYE_HEIGHT  + this->vertical_camera_offset
   );
+
+  if (!on_ground)
+  {
+    vertical_camera_offset = 0.0f;
+    camera.update_transform
+    (
+      this->get_position(), this->angle_yaw, this->angle_pitch,
+      PLAYER_EYE_HEIGHT
+    );
+  }
 }
 
 //==============================================================================
@@ -703,7 +713,7 @@ void Player::update
 
   // Has to happen even if dead because it calculates gravity
   this->calculate_gravity_velocity(delta);
-  this->apply_velocity(delta); 
+  this->apply_velocity(delta);   
   this->update_camera(delta); // should be after "apply_velocity"
 }
 

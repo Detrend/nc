@@ -39,6 +39,8 @@ public:
   void set_sensitivity(int step);
   float get_sensitivity();
 
+  void unlock_player_input();
+
 private:
   GameInputs m_current_inputs;
   GameInputs m_previous_inputs;
