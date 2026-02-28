@@ -222,18 +222,22 @@ namespace nc
 			cur_esc_pressed = true;
 		}
 
-    bool locked = get_engine().is_menu_locked_visible();
-		if (!locked && cur_esc_pressed && !prev_esc_pressed)
-		{
-			/*if (current_page == MAIN)
-			{*/
-			set_visible(!visible);
-			//}
-			//else
-			//{
-			//	current_page = MAIN;
-			//}
-		}
+    bool pressed = cur_esc_pressed && !prev_esc_pressed;
+    bool locked  = get_engine().is_menu_locked_visible();
+
+    if (pressed)
+    {
+      if (current_page != MenuPages::MAIN)
+      {
+        // Go back to menu
+        set_page(MenuPages::MAIN);
+      }
+      else if (!locked)
+      {
+        // Change visibility
+        set_visible(!visible);
+      }
+    }
 
 		if (!visible) {
 			return;
