@@ -1,4 +1,4 @@
-[gd_scene load_steps=183 format=3 uid="uid://cxkhhxom0620j"]
+[gd_scene load_steps=185 format=3 uid="uid://cxkhhxom0620j"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_k4anw"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_yr043"]
@@ -31,6 +31,8 @@
 [ext_resource type="PackedScene" uid="uid://3yx126jx5y0c" path="res://prefabs/PickUps/PlasmaRifle.tscn" id="29_tyucy"]
 [ext_resource type="PackedScene" uid="uid://guolywc6hufx" path="res://prefabs/PickUps/PlasmaAmmo.tscn" id="30_bs1my"]
 [ext_resource type="PackedScene" uid="uid://b8tr8d62bd5s2" path="res://prefabs/PickUps/HpBig.tscn" id="31_isihr"]
+[ext_resource type="PackedScene" uid="uid://hg6kt5ju3l3a" path="res://prefabs/Entities/Cultist.tscn" id="32_5rdpl"]
+[ext_resource type="PackedScene" uid="uid://dgu644cct1eeb" path="res://prefabs/Entities/Possessed.tscn" id="33_tyucy"]
 
 [sub_resource type="Resource" id="Resource_ctoo8"]
 script = ExtResource("4_1b4qq")
@@ -2639,7 +2641,7 @@ show_portal_arrow = true
 texture_filter = 1
 texture_repeat = 2
 position = Vector2(-100, -90)
-polygon = PackedVector2Array(-10, -20, 0, 0, -20, -20)
+polygon = PackedVector2Array(-8, -20, 0, 0, -20, -20)
 script = ExtResource("3_46kyr")
 data = SubResource("Resource_cm427")
 ceiling_height = 5.0
@@ -2730,7 +2732,7 @@ show_portal_arrow = true
 texture_filter = 1
 texture_repeat = 2
 position = Vector2(-120, -90)
-polygon = PackedVector2Array(-50, -60, -50, -20, -60, 0, -60, -80)
+polygon = PackedVector2Array(-52, -60, -52, -20, -60, 0, -60, -80)
 script = ExtResource("3_46kyr")
 data = SubResource("Resource_i5yxh")
 ceiling_height = 5.0
@@ -2741,7 +2743,7 @@ show_portal_arrow = true
 texture_filter = 1
 texture_repeat = 2
 position = Vector2(-120, -90)
-polygon = PackedVector2Array(-40, -20, -60, 0, -50, -20)
+polygon = PackedVector2Array(-40, -20, -60, 0, -52, -20)
 script = ExtResource("3_46kyr")
 data = SubResource("Resource_87irg")
 ceiling_height = 5.0
@@ -2766,7 +2768,7 @@ show_portal_arrow = true
 texture_filter = 1
 texture_repeat = 2
 position = Vector2(-40, -90)
-polygon = PackedVector2Array(-70, -20, -70, -60, -60, -80, -60, 0)
+polygon = PackedVector2Array(-68, -20, -68, -60, -60, -80, -60, 0)
 script = ExtResource("3_46kyr")
 data = SubResource("Resource_0ectu")
 ceiling_height = 5.0
@@ -2777,7 +2779,7 @@ show_portal_arrow = true
 texture_filter = 1
 texture_repeat = 2
 position = Vector2(-40, -90)
-polygon = PackedVector2Array(-80, -60, -80, -70, -60, -80, -70, -60)
+polygon = PackedVector2Array(-80, -60, -80, -72, -60, -80, -68, -60)
 script = ExtResource("3_46kyr")
 data = SubResource("Resource_rtu5y")
 ceiling_height = 5.0
@@ -2800,7 +2802,7 @@ show_portal_arrow = true
 texture_filter = 1
 texture_repeat = 2
 position = Vector2(-40, -90)
-polygon = PackedVector2Array(-80, -70, -120, -70, -140, -80, -60, -80)
+polygon = PackedVector2Array(-80, -72, -120, -72, -140, -80, -60, -80)
 script = ExtResource("3_46kyr")
 data = SubResource("Resource_i4on8")
 ceiling_height = 5.0
@@ -2811,7 +2813,7 @@ show_portal_arrow = true
 texture_filter = 1
 texture_repeat = 2
 position = Vector2(-40, -90)
-polygon = PackedVector2Array(-120, -60, -130, -60, -140, -80, -120, -70)
+polygon = PackedVector2Array(-120, -60, -132, -60, -140, -80, -120, -72)
 script = ExtResource("3_46kyr")
 data = SubResource("Resource_rl42o")
 ceiling_height = 5.0
@@ -2834,6 +2836,8 @@ show_portal_arrow = true
 [node name="Configuration" type="Node" parent="Sectors/Sector-7677g" node_paths=PackedStringArray("source")]
 script = ExtResource("13_n7g88")
 source = NodePath("../../../Activators/CrissCrossLift3")
+floor_mode = 2
+ceiling_mode = 2
 ceiling_height = 5.0
 
 [node name="Sector-7677t" type="Polygon2D" parent="Sectors" instance=ExtResource("2_yr043")]
@@ -2878,7 +2882,7 @@ texture_filter = 1
 texture_repeat = 2
 position = Vector2(-170, -160)
 color = Color(0.501961, 0, 0.196078, 1)
-polygon = PackedVector2Array(10, 0, 50, 0, 50, 10, 10, 10)
+polygon = PackedVector2Array(10, -2, 50, -2, 50, 10, 10, 10)
 script = ExtResource("3_46kyr")
 data = SubResource("Resource_quomt")
 floor_height = 5.0
@@ -2898,7 +2902,7 @@ texture_filter = 1
 texture_repeat = 2
 position = Vector2(-170, -150)
 color = Color(0.501961, 0, 0.196078, 1)
-polygon = PackedVector2Array(0, 0, 10, 0, 10, 40, 0, 40)
+polygon = PackedVector2Array(-2, 0, 10, 0, 10, 40, -2, 40)
 script = ExtResource("3_46kyr")
 data = SubResource("Resource_b8kc3")
 floor_height = 5.0
@@ -2918,7 +2922,7 @@ texture_filter = 1
 texture_repeat = 2
 position = Vector2(-120, -150)
 color = Color(0.501961, 0, 0.196078, 1)
-polygon = PackedVector2Array(0, 0, 10, 0, 10, 40, 0, 40)
+polygon = PackedVector2Array(0, 0, 12, 0, 12, 40, 0, 40)
 script = ExtResource("3_46kyr")
 data = SubResource("Resource_e1wco")
 floor_height = 5.0
@@ -3450,7 +3454,6 @@ script = ExtResource("22_2hfxr")
 
 [node name="CrissCrossLift3" type="Node" parent="Activators"]
 script = ExtResource("22_2hfxr")
-threshold = 4
 
 [node name="DoorBackTOStaircase" type="Node" parent="Activators"]
 script = ExtResource("22_2hfxr")
@@ -3538,3 +3541,32 @@ position = Vector2(75, -165)
 
 [node name="ShotgunAmmo6" parent="Entities" instance=ExtResource("28_5rdpl")]
 position = Vector2(-16, -165)
+
+[node name="Cultist" parent="Entities" instance=ExtResource("32_5rdpl")]
+position = Vector2(-140, -156)
+
+[node name="Trigger" type="Node" parent="Entities/Cultist" node_paths=PackedStringArray("target")]
+script = ExtResource("16_3u66w")
+target = NodePath("../../../Activators/CrissCrossLift2")
+
+[node name="Cultist2" parent="Entities" instance=ExtResource("32_5rdpl")]
+position = Vector2(-128, -156)
+
+[node name="Cultist3" parent="Entities" instance=ExtResource("32_5rdpl")]
+position = Vector2(-152, -156)
+
+[node name="Possessed" parent="Entities" instance=ExtResource("33_tyucy")]
+position = Vector2(-166, -142)
+
+[node name="Trigger" type="Node" parent="Entities/Possessed" node_paths=PackedStringArray("target")]
+script = ExtResource("16_3u66w")
+target = NodePath("../../../Activators/CrissCrossLift3")
+
+[node name="Possessed2" parent="Entities" instance=ExtResource("33_tyucy")]
+position = Vector2(-166, -120)
+
+[node name="Possessed3" parent="Entities" instance=ExtResource("33_tyucy")]
+position = Vector2(-114, -142)
+
+[node name="Possessed4" parent="Entities" instance=ExtResource("33_tyucy")]
+position = Vector2(-114, -118)
