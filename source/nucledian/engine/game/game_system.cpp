@@ -257,6 +257,20 @@ static vec3 load_json_position(const nlohmann::json& js, const cstr &field_name 
   return load_json_vector<3>(js[field_name]).xzy;
 }
 
+//==============================================================================
+static void load_empty_map
+(
+  MapSectors&     /*map*/,
+  SectorMapping&  mapping,
+  EntityRegistry& /*entities*/,
+  MapDynamics&    dynamics,
+  EntityID&       player_id
+)
+{
+  player_id = INVALID_ENTITY_ID;
+  mapping.on_map_rebuild();
+  dynamics.on_map_rebuild_and_entities_created();
+}
 
 //==============================================================================
 static void load_json_map
@@ -270,7 +284,6 @@ static void load_json_map
 )
 {
   using namespace map_building;
-
 
   std::ifstream f(get_full_level_path(level_name));
   nc_assert(f.is_open());
@@ -514,12 +527,29 @@ struct HotReloadData
   inline static f32  player_pitch    = 0.0f;
   inline static bool has_data        = false;
 };
-#endif
 
-constexpr cstr SAVE_DIR_RELATIVE = "save";
-constexpr cstr DEMO_DIR_RELATIVE = "demo";
-constexpr cstr SAVE_FILE_SUFFIX  = ".ncs";
-constexpr cstr DEMO_FILE_SUFFIX  = ".demo";
+//==============================================================================
+static void notify_hot_reload_post_map_build()
+{
+  if (HotReloadData::has_data)
+  {
+    if (Player* player = GameSystem::get().get_player())
+    {
+      player->hot_reload_set_pos_rot
+      (
+        HotReloadData::player_position,
+        HotReloadData::player_yaw,
+        HotReloadData::player_pitch
+      );
+    }
+
+    HotReloadData::player_position = VEC3_ZERO;
+    HotReloadData::player_yaw      = 0.0f;
+    HotReloadData::player_pitch    = 0.0f;
+    HotReloadData::has_data        = false;
+  }
+}
+#endif
 
 //==============================================================================
 EngineModuleId GameSystem::get_module_id()
@@ -596,13 +626,6 @@ void GameSystem::post_init()
 
     this->last_save_id = std::max(this->last_save_id, save_game.id);
   }
-
-  // Schedule the main menu demos
-  if (!this->schedule_next_demo())
-  {
-    // Load an empty level which creates a black background
-    this->request_level_change(Levels::TEST_LEVEL);
-  }
 }
 
 //==============================================================================
@@ -635,6 +658,50 @@ void GameSystem::pre_terminate()
     output.write(reinterpret_cast<char*>(&bytes[0]), bytes.size());
     output.flush();
     output.close();
+  }
+}
+
+//==============================================================================
+void GameSystem::frame_start()
+{
+  // MR says: We want this to happen at the frame start and
+  //          not on cleanup, because for the first frame of
+  //          the game there would be no level or entities.
+  //          This simplifies the stuff a lot as we do not have
+  //          to check everywhere if a level exists or not..
+  if (scheduled_state)
+  {
+    get_engine().send_event
+    (
+      ModuleEvent{.type = ModuleEventType::before_map_rebuild}
+    );
+
+    // Do the level transition
+    this->cleanup_map();
+
+    // Build the normal map
+    this->build_map(scheduled_state->level);
+
+    this->level_name = scheduled_state->level;
+
+    // Optionally install the demo?
+    if (scheduled_state->demo.size())
+    {
+      // Fucked up for now >:[
+    }
+
+    // Reset it
+    scheduled_state.reset();
+
+    // Fire an event
+    get_engine().send_event
+    (
+      ModuleEvent{.type = ModuleEventType::after_map_rebuild}
+    );
+
+#if NC_HOT_RELOAD
+    notify_hot_reload_post_map_build();
+#endif
   }
 }
 
@@ -774,17 +841,22 @@ void GameSystem::game_update(f32 delta)
     );
   }
 
-  if (game->is_level_completed && !level_completed_before)
-  {
-    // Callback level end
-    this->on_level_end();
-  }
+  // If the game finished by itself then some game system requested the next
+  // level.
+  // Now, the other systems have a chance to react to it and potentially
+  // overwrite the level that should play.
 
   bool is_finished = is_demo && journal.rover == journal.frames.size() - 1;
   if (is_finished && !demo_finished_before)
   {
     // Callback demo end
     this->on_demo_end();
+  }
+
+  if (game->is_level_completed && !level_completed_before)
+  {
+    // Callback level end
+    this->on_level_end();
   }
 
 #ifdef NC_IMGUI
@@ -795,70 +867,13 @@ void GameSystem::game_update(f32 delta)
 //==============================================================================
 void GameSystem::on_level_end()
 {
-  if (this->state == GameSystemState::player_handled)
-  {
-    // Get idx of this level
-    const LevelName& lvl = this->get_level_name();
-
-    // Start a next level
-    this->request_play_level();
-  }
+  get_engine().on_level_end();
 }
 
 //==============================================================================
 void GameSystem::on_demo_end()
 {
-  if (this->state == GameSystemState::playing_demos)
-  {
-    // Schedule a next demo
-    if (!this->schedule_next_demo())
-    {
-      // 
-    }
-  }
-}
-
-//==============================================================================
-bool GameSystem::schedule_next_demo()
-{
-  std::vector<std::string> demos = this->list_available_demos();
-  if (demos.empty())
-  {
-    return false;
-  }
-
-  constexpr u64 PRIME = 6969691; // What a nice prime
-
-  // Choose "randomly" one of the demos
-  u32 attempts_left = 4;
-  while (attempts_left-->0)
-  {
-    demo_rng_idx = (demo_rng_idx + PRIME) % demos.size();
-    const std::string& chosen_demo = demos[demo_rng_idx];
-
-    // And then load it
-    std::vector<u8> bytes;
-    if (!load_demo_from_file_into_bytes(chosen_demo, bytes))
-    {
-      continue;
-    }
-
-    DemoDataHeader header;
-    std::vector<DemoDataFrame> frames;
-
-    if (!load_demo_from_bytes(header, frames, bytes.data(), bytes.size()))
-    {
-      continue;
-    }
-
-    // All good?
-    this->request_level_change(header.level_name);
-    this->journal.reset_and_clear(JournalState::playing);
-    this->journal.frames = std::move(frames);
-    return true;
-  }
-
-  return false;
+  get_engine().on_demo_end();
 }
 
 //==============================================================================
@@ -891,30 +906,6 @@ void GameSystem::handle_hot_reload()
 #endif
 
 //==============================================================================
-#if NC_HOT_RELOAD
-static void notify_hot_reload_post_map_build()
-{
-  if (HotReloadData::has_data)
-  {
-    if (Player* player = GameSystem::get().get_player())
-    {
-      player->hot_reload_set_pos_rot
-      (
-        HotReloadData::player_position,
-        HotReloadData::player_yaw,
-        HotReloadData::player_pitch
-      );
-    }
-
-    HotReloadData::player_position = VEC3_ZERO;
-    HotReloadData::player_yaw      = 0.0f;
-    HotReloadData::player_pitch    = 0.0f;
-    HotReloadData::has_data        = false;
-  }
-}
-#endif
-
-//==============================================================================
 void GameSystem::on_event(ModuleEvent& event)
 {
   switch (event.type)
@@ -933,32 +924,7 @@ void GameSystem::on_event(ModuleEvent& event)
 
     case ModuleEventType::frame_start:
     {
-      // MR says: We want this to happen at the frame start and
-      //          not on cleanup, because for the first frame of
-      //          the game there would be no level or entities.
-      //          This simplifies the stuff a lot.
-      if (this->scheduled_level_id != INVALID_LEVEL_NAME)
-      {
-        get_engine().send_event
-        (
-          ModuleEvent{.type = ModuleEventType::before_map_rebuild}
-        );
-
-        // do level transition
-        this->cleanup_map();
-        this->build_map(this->scheduled_level_id);
-        this->level_name = this->scheduled_level_id;
-        this->scheduled_level_id = INVALID_LEVEL_NAME;
-
-        get_engine().send_event
-        (
-          ModuleEvent{.type = ModuleEventType::after_map_rebuild}
-        );
-
-#if NC_HOT_RELOAD
-        notify_hot_reload_post_map_build();
-#endif
-      }
+      this->frame_start();
     }
     break;
 
@@ -1002,6 +968,7 @@ SaveGameData GameSystem::save_game() const
   SaveGameData save;
 
   // Level name
+  /*
   const LevelName& lvl_name = this->get_level_name();
   nc_assert(lvl_name.size() <= SaveGameData::LVL_NAME_SIZE);
   std::memset(save.level_name, 0, sizeof(SaveGameData::level_name));
@@ -1010,6 +977,7 @@ SaveGameData GameSystem::save_game() const
   // Time and ID
   save.time = SaveGameData::Clock::now();
   save.id   = ++last_save_id;
+  */
   return save;
 }
 
@@ -1034,34 +1002,44 @@ LevelName GameSystem::get_level_name() const
 //==============================================================================
 void GameSystem::request_play_level(const LevelName& new_level)
 {
-  this->state = GameSystemState::player_handled;
   this->request_level_change(new_level);
   journal.reset_and_clear(DEFAULT_JOURNAL_STATE);
 }
 
 //==============================================================================
-void GameSystem::request_play_random_demos()
+void GameSystem::request_empty_level()
 {
-  if (this->state == GameSystemState::playing_demos)
+  this->scheduled_state = NextRequestedState
   {
-    // Early exit, we are already playing demos..
-    return;
-  }
-
-  if (!this->schedule_next_demo())
-  {
-    // TODO: Load an empty level
-    this->request_play_level(Levels::TEST_LEVEL);
-  }
+    .level = Levels::EMPTY_LEVEL,
+  };
 }
 
 //==============================================================================
-void GameSystem::request_level_change(const LevelName& new_level)
+void GameSystem::request_level_change
+(
+  const LevelName&             new_level,
+  std::vector<DemoDataFrame>&& frames
+)
 {
-  // Another level already scheduled.
-  nc_assert(this->scheduled_level_id == INVALID_LEVEL_NAME);
+  this->scheduled_state = NextRequestedState
+  {
+    .level = new_level,
+    .demo  = std::move(frames),
+  };
+}
 
-  this->scheduled_level_id = new_level;
+//==============================================================================
+void GameSystem::end_level_and_go_to_another_one_from_gamemode
+(
+  const LevelName& new_level
+)
+{
+  this->game->is_level_completed = true;
+  this->scheduled_state = NextRequestedState
+  {
+    .level = new_level,
+  };
 }
 
 //==============================================================================
@@ -1233,10 +1211,10 @@ void GameSystem::build_map(LevelName level)
 {
   nc_assert(!game->map && !game->mapping && !game->entities);
 
-  game->map        = std::make_unique<MapSectors>();
-  game->mapping    = std::make_unique<SectorMapping>(*game->map);
-  game->entities   = std::make_unique<EntityRegistry>();
-  game->dynamics   = std::make_unique<MapDynamics>
+  game->map      = std::make_unique<MapSectors>();
+  game->mapping  = std::make_unique<SectorMapping>(*game->map);
+  game->entities = std::make_unique<EntityRegistry>();
+  game->dynamics = std::make_unique<MapDynamics>
   (
     *game->map, *game->entities, *game->mapping
   );
@@ -1297,15 +1275,30 @@ void GameSystem::build_map(LevelName level)
   game->entities->add_listener(game->mapping.get());
   game->entities->add_listener(game->attachment.get());
 
-  map_helpers::load_json_map
-  (
-    level,
-    *game->map,
-    *game->mapping,
-    *game->entities,
-    *game->dynamics,
-    game->player_id
-  );
+  if (level != Levels::EMPTY_LEVEL)
+  {
+    map_helpers::load_json_map
+    (
+      level,
+      *game->map,
+      *game->mapping,
+      *game->entities,
+      *game->dynamics,
+      game->player_id
+    );
+  }
+  else
+  {
+    // Empty level for the menu
+    map_helpers::load_empty_map
+    (
+      *game->map,
+      *game->mapping,
+      *game->entities,
+      *game->dynamics,
+      game->player_id
+    );
+  }
 
   // Now snap all required entities to the floor
   game->entities->for_each(EntityTypes::all, [&](Entity& entity)
@@ -1454,34 +1447,6 @@ void GameSystem::handle_raycast_debug()
 }
 
 //==============================================================================
-/*static*/ std::vector<std::string> GameSystem::list_available_demos()
-{
-  namespace fs = std::filesystem;
-
-  std::vector<std::string> result;
-  fs::path demo_dir = DEMO_DIR_RELATIVE;
-
-  if (!fs::exists(demo_dir) || !fs::is_directory(demo_dir))
-  {
-    return result;
-  }
-
-  for (auto &entry : fs::directory_iterator(demo_dir))
-  {
-    if (entry.is_regular_file())
-    {
-      auto path = entry.path();
-      if (path.extension() == DEMO_FILE_SUFFIX)
-      {
-        result.push_back(path.filename().string());
-      }
-    }
-  }
-
-  return result;
-}
-
-//==============================================================================
 /*static*/ void GameSystem::save_demo_data
 (
   const std::string& lvl_name,
@@ -1525,51 +1490,6 @@ void GameSystem::handle_raycast_debug()
 }
 
 //==============================================================================
-/*static*/ bool GameSystem::load_demo_from_file_into_bytes
-(
-  const std::string& demo_name,
-  std::vector<u8>&   out
-)
-{
-  namespace fs = std::filesystem;
-
-#if DO_JOURNAL_CHECKS
-  nc_assert(false, "You are trying to load sanitization data into a demo file");
-#endif
-
-  fs::path demo_dir = DEMO_DIR_RELATIVE;
-  if (!fs::exists(demo_dir) || !fs::is_directory(demo_dir))
-  {
-    return false;
-  }
-
-  fs::path full_path = demo_dir / demo_name;
-  if (!fs::exists(full_path) || !fs::is_regular_file(full_path))
-  {
-    return false;
-  }
-
-  std::ifstream in(full_path, std::ios::binary);
-  if (!in)
-  {
-    return false;
-  }
-
-  in.seekg(0, std::ios::end);
-  std::streamsize size = in.tellg();
-  in.seekg(0, std::ios::beg);
-
-  out.resize(size);
-
-  if (!in.read(recast<char*>(out.data()), size))
-  {
-    return false;
-  }
-
-  return true;
-}
-
-//==============================================================================
 void GameSystem::handle_demo_debug()
 {
   if (ImGui::IsKeyReleased(ImGuiKey_F6))
@@ -1603,7 +1523,7 @@ void GameSystem::handle_demo_debug()
       {
         DemoDataHeader header;
 
-        const LevelName& lvl_name = this->get_level_name();
+        //const LevelName& lvl_name = this->get_level_name();
 
         std::memcpy
         (
@@ -1612,8 +1532,10 @@ void GameSystem::handle_demo_debug()
           DemoDataHeader::SIGNATURE_SIZE
         );
 
+        /*
         std::memset(header.level_name, 0, DemoDataHeader::LVL_NAME_SIZE);
         std::memcpy(header.level_name, lvl_name.data(), lvl_name.size());
+        */
 
         header.version = CURRENT_GAME_VERSION;
         header.num_frames = this->journal.frames.size();
@@ -1621,7 +1543,7 @@ void GameSystem::handle_demo_debug()
         std::vector<byte> bytes;
         bytes.resize(calc_size_for_demo_to_bytes(header));
         save_demo_to_bytes(header, journal.frames.data(), bytes.data());
-        save_demo_data(level_name, bytes.data(), bytes.size());
+        //save_demo_data(level_name, bytes.data(), bytes.size());
       }
 
       static int skip_to_idx = 0;
@@ -1650,32 +1572,25 @@ void GameSystem::handle_demo_debug()
     ImGui::Separator();
 
     ImGui::Text("Open demo:");
-    std::vector<std::string> available_demos = list_available_demos();
-    for (const std::string& demo : available_demos)
+    std::vector<std::string> available_demos = list_available_demo_files();
+
+    for (const std::string& demo_file : available_demos)
     {
-      if (ImGui::Button(demo.c_str()))
+      if (ImGui::Button(demo_file.c_str()))
       {
-        std::vector<byte> bytes;
-        if (!this->load_demo_from_file_into_bytes(demo, bytes))
-        {
-          continue;
-        }
-
-        DemoDataHeader header;
         std::vector<DemoDataFrame> frames;
-        if (!load_demo_from_bytes(header, frames, bytes.data(), bytes.size()))
+        std::string                level;
+
+        if (!load_demo_from_file(demo_file, level, frames))
         {
+          nc_warn("Failed to load a demo from the file \"{}\"", demo_file);
           continue;
         }
 
-        if (header.version != CURRENT_GAME_VERSION)
-        {
-          continue;
-        }
-
-        this->journal.reset(JournalState::playing);
-        this->journal.frames = std::move(frames);
-        this->request_level_change(header.level_name);
+        this->request_level_change
+        (
+          LevelName{std::string_view{level}}, std::move(frames)
+        );
       }
     }
   }

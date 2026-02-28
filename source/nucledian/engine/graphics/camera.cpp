@@ -16,7 +16,12 @@ namespace nc
 //==============================================================================
 Camera* Camera::get()
 {
-  return GameSystem::get().get_player()->get_camera();
+  if (Player* player = GameSystem::get().get_player())
+  {
+    return player->get_camera();
+  }
+
+  return nullptr;
 }
 
 //==============================================================================

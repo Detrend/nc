@@ -197,6 +197,12 @@ namespace nc
 		current_page = MAIN;
 	}
 
+  //===============================================================================================
+  void MenuManager::lock_visible(bool lock)
+  {
+    locked = lock;
+  }
+
 	//===============================================================================================
 
 	void MenuManager::update()
@@ -212,7 +218,7 @@ namespace nc
 			
 		}
 
-		if (cur_esc_pressed && !prev_esc_pressed)
+		if (!locked && cur_esc_pressed && !prev_esc_pressed)
 		{
 			/*if (current_page == MAIN)
 			{*/

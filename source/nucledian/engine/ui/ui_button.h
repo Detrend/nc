@@ -199,6 +199,7 @@ namespace nc
     vec2 get_normalized_mouse_pos();
 
     void set_visible(bool visibility);
+    void lock_visible(bool lock); // Will remain visible even if hitting ESC
     void update();
     void draw();
     void draw_cursor();
@@ -215,6 +216,7 @@ namespace nc
     MenuPages current_page = MenuPages::MAIN;
 
     bool visible = false;
+    bool locked  = false; // Can't change menu visibility
 
     bool cur_esc_pressed = false;
     bool prev_esc_pressed = false;

@@ -6,6 +6,8 @@
 
 #include <array>
 #include <cstring> // std::memcpy
+#include <filesystem>
+#include <fstream>
 
 namespace nc
 {
@@ -150,6 +152,104 @@ bool load_demo_from_bytes
 
   // All good on the demo front
   return true;
+}
+
+//==============================================================================
+static bool load_demo_from_file_into_bytes
+(
+  const std::string& demo_name,
+  std::vector<u8>&   out
+)
+{
+  namespace fs = std::filesystem;
+
+#if DO_JOURNAL_CHECKS
+  nc_assert(false, "You are trying to load sanitization data into a demo file");
+#endif
+
+  fs::path demo_dir = DEMO_DIR_RELATIVE;
+  if (!fs::exists(demo_dir) || !fs::is_directory(demo_dir))
+  {
+    return false;
+  }
+
+  fs::path full_path = demo_dir / demo_name;
+  if (!fs::exists(full_path) || !fs::is_regular_file(full_path))
+  {
+    return false;
+  }
+
+  std::ifstream in(full_path, std::ios::binary);
+  if (!in)
+  {
+    return false;
+  }
+
+  in.seekg(0, std::ios::end);
+  std::streamsize size = in.tellg();
+  in.seekg(0, std::ios::beg);
+
+  out.resize(size);
+
+  if (!in.read(recast<char*>(out.data()), size))
+  {
+    return false;
+  }
+
+  return true;
+}
+
+//==============================================================================
+bool load_demo_from_file
+(
+  const std::string&          file,
+  std::string&                level_name_out,
+  std::vector<DemoDataFrame>& frames_out
+)
+{
+  std::vector<u8> bytes;
+  if (!load_demo_from_file_into_bytes(file, bytes))
+  {
+    return false;
+  }
+
+  DemoDataHeader header;
+  if (!load_demo_from_bytes(header, frames_out, bytes.data(), bytes.size()))
+  {
+    return false;
+  }
+
+  level_name_out = header.level_name;
+
+  return true;
+}
+
+//==============================================================================
+std::vector<std::string> list_available_demo_files()
+{
+  namespace fs = std::filesystem;
+
+  std::vector<std::string> result;
+  fs::path demo_dir = DEMO_DIR_RELATIVE;
+
+  if (!fs::exists(demo_dir) || !fs::is_directory(demo_dir))
+  {
+    return result;
+  }
+
+  for (auto &entry : fs::directory_iterator(demo_dir))
+  {
+    if (entry.is_regular_file())
+    {
+      auto path = entry.path();
+      if (path.extension() == DEMO_FILE_SUFFIX)
+      {
+        result.push_back(path.filename().string());
+      }
+    }
+  }
+
+  return result;
 }
 
 }

@@ -20,6 +20,7 @@
 #include <unordered_set>
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace nc
 {
@@ -74,13 +75,6 @@ public:
   // demo or currently played level.
   void request_play_level(const LevelName& new_level);
 
-  // Starts playing past demos of the game. After one demo ends another is
-  // chosen randomly and starts playing instead.
-  void request_play_random_demos();
-
-  // Loads a demo and plays it
-  void request_play_demo(const std::string& demo_name);
-
   Player*                 get_player();
   EntityRegistry&         get_entities();
   MapDynamics&            get_map_dynamics();
@@ -105,9 +99,20 @@ public:
   // its position.
   void on_player_traversed_nc_portal(EntityID player, mat4 transform);
 
-private:
-  void request_level_change(const LevelName& new_level);
+  // Request a new level to play - an empty one.
+  // Comes in handy in the menu
+  void request_empty_level();
 
+  // If there is a demo or not
+  void request_level_change
+  (
+    const LevelName& new_level, std::vector<DemoDataFrame>&& frames = {}
+  );
+
+  // Called from the action trigger
+  void end_level_and_go_to_another_one_from_gamemode(const LevelName& new_level);
+
+private:
   // Clean up the current map, entities, mapping etc..
   void cleanup_map();
 
@@ -120,6 +125,8 @@ private:
   void post_init();
 
   void pre_terminate();
+
+  void frame_start();
 
   void game_update(f32 delta);
 
@@ -145,13 +152,6 @@ private:
     u8*                data,
     u64                data_size
   );
-
-  static std::vector<std::string> list_available_demos();
-
-  static bool load_demo_from_file_into_bytes
-  (
-    const std::string& path, std::vector<u8>& out
-  );
 #endif
 
 private:
@@ -160,14 +160,6 @@ private:
     none,      // None of the above
     recording, // Recording inputs into a journal
     playing,   // Playing the inputs from the journal
-  };
-
-  enum class GameSystemState : u8
-  {
-    none = 0,         // Only at the start of the game
-    playing_one_demo, // Playing one demo, returns to menu if ends
-    playing_demos,    // The demos play in the background, another starts playing if one ends
-    player_handled,   // Player is in control in the level
   };
 
 #ifdef NC_DEBUG_DRAW
@@ -189,14 +181,21 @@ private:
     void reset_and_clear(JournalState to_state);
   };
 
+  struct NextRequestedState
+  {
+    LevelName                  level;
+    std::vector<DemoDataFrame> demo;
+  };
+
   GamePtr         game;
   LevelName       level_name         = INVALID_LEVEL_NAME;
   LevelName       scheduled_level_id = INVALID_LEVEL_NAME;
   SaveDatabase    save_db;
   Journal         journal;
-  GameSystemState state = GameSystemState::none; // At the start of the game
   u64             demo_rng_idx = 0;
   mutable SaveID  last_save_id = 0;
+
+  std::optional<NextRequestedState> scheduled_state;
 };
 
 }

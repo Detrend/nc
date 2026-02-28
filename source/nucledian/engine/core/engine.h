@@ -51,12 +51,19 @@ public:
 
   void pause(bool pause);
 
+  // Called first before level end if a demo was playing
+  // menu:     schedule next demo
+  // gameplay: do nothing, gets handled by itself
+  // console:  end the game
   void on_demo_end();
+
   void on_level_end();
 
 private:
   bool should_quit() const;
   void build_map_and_sectors();
+  void play_random_demo();
+  void load_empty_level();
 
 private:
   using ModuleArray  = std::array<std::unique_ptr<IEngineModule>, 8>;
@@ -64,9 +71,9 @@ private:
 
   enum class GameState : u8
   {
-    in_menu,
-    player_handled,
-    debug_playing_demo,
+    in_menu,            // in menu, the demo is playing in the background
+    player_handled,     // the player is playing
+    debug_playing_demo, // running the demo from console
   };
 
 private:

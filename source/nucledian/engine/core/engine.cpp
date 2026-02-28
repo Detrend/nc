@@ -357,24 +357,77 @@ bool Engine::init(const CmdArgs& cmd_args)
   if (std::string demo; should_play_demo(cmd_args, demo))
   {
     // Play one demo and then exit
+    std::string lvl_name;
+    std::vector<DemoDataFrame> frames;
+
+    if (!load_demo_from_file(demo, lvl_name, frames))
+    {
+      return false;
+    }
+
     m_game_state = GameState::debug_playing_demo;
-    game_system.request_play_demo(demo);
+
+    game_system.request_level_change
+    (
+      LevelName{std::string_view{lvl_name}},
+      std::move(frames)
+    );
   }
   else if (std::string lvl; should_play_level(cmd_args, lvl))
   {
     // Start a level
     m_game_state = GameState::player_handled;
-    game_system.request_play_level(lvl);
+    game_system.request_play_level(LevelName{std::string_view{lvl}});
   }
   else
   {
     // Open up the menu and play demos on the background
     m_game_state = GameState::in_menu;
     ui_system.get_menu_manager()->set_visible(true);
-    game_system.request_play_random_demos();
+    this->play_random_demo();
   }
 
   return true;
+}
+
+//==============================================================================
+void Engine::play_random_demo()
+{
+  GameSystem& game_system = GameSystem::get();
+
+  std::vector<std::string> demos = list_available_demo_files();
+
+  if (demos.empty())
+  {
+    // Empty level = black screen in the menu
+    nc_warn("No demos available, playing empty level.");
+    game_system.request_empty_level();
+    return;
+  }
+
+  // Pick a random one
+  const std::string& demo = demos[std::rand() % demos.size()];
+
+  // Play one demo and then exit
+  std::string lvl_name;
+  std::vector<DemoDataFrame> frames;
+
+  if (!load_demo_from_file(demo, lvl_name, frames))
+  {
+    // Empty level = black screen in the menu
+    nc_warn(
+      "Failed to play a random demo from a file \"{}\", starting empty level.",
+      demo);
+    game_system.request_empty_level();
+    return;
+  }
+
+  // Demo loaded, play it
+  game_system.request_level_change
+  (
+    LevelName{std::string_view{lvl_name}},
+    std::move(frames)
+  );
 }
 
 //==============================================================================
@@ -528,10 +581,36 @@ u64 Engine::get_frame_idx() const
 }
 
 //==============================================================================
-
-void nc::Engine::pause(bool pause)
+void Engine::pause(bool pause)
 {
   CVars::time_speed = pause ? 0.0f : 1.0f;
+}
+
+//==============================================================================
+void Engine::on_demo_end()
+{
+  switch (m_game_state)
+  {
+    case GameState::in_menu:
+    {
+      // Schedule the next demo. This overwrites the requests of other systems
+      this->play_random_demo();
+    }
+    break;
+
+    case GameState::debug_playing_demo:
+    {
+      // Exit the game.. Will quit at the start of the next frame
+      m_should_quit = true;
+    }
+    break;
+  }
+}
+
+//==============================================================================
+void Engine::on_level_end()
+{
+  // Do nothing
 }
 
 //==============================================================================

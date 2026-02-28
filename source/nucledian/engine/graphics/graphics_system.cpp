@@ -677,7 +677,7 @@ static void draw_saves_menu()
     ImGui::Text("Save IDX[%d]", i);
     ImGui::Text("Save ID [%d]", static_cast<int>(save.id));
     ImGui::Text("Dirty: %s", dirty ? "T" : "F");
-    ImGui::Text("Level: %s", save.last_level.to_cstring().data());
+    //ImGui::Text("Level: %s", save.last_level.to_cstring().data());
 
 #ifdef NC_MSVC // localtime_s is platform specific
     ch::year_month_day date{ch::floor<ch::days>(save.time)};

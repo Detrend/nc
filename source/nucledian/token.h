@@ -169,6 +169,11 @@ namespace nc {
       }
     }
 
+    constexpr CompositeToken(cstr c_string)
+    : CompositeToken(std::string_view{c_string})
+    {
+      
+    }
 
     constexpr bool operator==(const CompositeToken other) const
     {

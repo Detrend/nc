@@ -17,7 +17,6 @@ namespace nc
 constexpr u64 CHAPTER_ID_LENGTH = 24;
 constexpr u64 LEVEL_NAME_LENGTH = 24;
 
-// TODO: Replace with static string.
 using ChapterID = Token;
 using LevelName = Token;
 
@@ -32,6 +31,7 @@ inline std::string get_full_level_path(const LevelName& level_name)
 
 namespace Levels
 {
+inline constexpr LevelName EMPTY_LEVEL("empty_level");
 inline constexpr LevelName TEST_LEVEL("level_test1");
 inline constexpr LevelName LEVEL_1("level_final1");
 inline constexpr LevelName LEVEL_2("level_final2");

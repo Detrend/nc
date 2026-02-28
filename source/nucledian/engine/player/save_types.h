@@ -28,8 +28,15 @@ enum evalue : GameVersion
 };
 }
 
-// Change this when the version of the game changes
-static constexpr GameVersion CURRENT_GAME_VERSION = GameVersions::demo_001;
+// ===========================================================================//
+// ! Change this when the version of the game changes !                       //
+constexpr GameVersion CURRENT_GAME_VERSION = GameVersions::demo_001;          //
+// ===========================================================================//
+
+constexpr cstr SAVE_DIR_RELATIVE = "save";
+constexpr cstr DEMO_DIR_RELATIVE = "demo";
+constexpr cstr SAVE_FILE_SUFFIX  = ".ncs";
+constexpr cstr DEMO_FILE_SUFFIX  = ".demo";
 
 // A set of data that persists between levels
 NC_PUSH_PACKED
@@ -86,6 +93,17 @@ struct DemoDataFrame
   f32                  delta;
 };
 NC_POP_PACKED
+
+// Loads a given demo from a file
+bool load_demo_from_file
+(
+  const std::string&          file,
+  std::string&                level_name_out,
+  std::vector<DemoDataFrame>& frames_out
+);
+
+// Returns a list of available demos
+std::vector<std::string> list_available_demo_files();
 
 u64 calc_size_for_demo_to_bytes
 (
