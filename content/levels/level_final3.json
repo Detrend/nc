@@ -4088,7 +4088,7 @@
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 20,
-			"portal_wall": 3,
+			"portal_wall": 4,
 			"wall_surfaces": [
 				[
 					{
@@ -4419,7 +4419,7 @@
 				41,
 				40
 			],
-			"portal_destination_wall": 3,
+			"portal_destination_wall": 4,
 			"portal_target": 18,
 			"portal_wall": 0,
 			"wall_surfaces": [
