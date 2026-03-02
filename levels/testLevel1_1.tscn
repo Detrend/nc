@@ -2605,6 +2605,10 @@ position = Vector2(51, -12)
 radius = 5.0
 height_offset = 1.9
 
+[node name="PointLight27" parent="Lights" instance=ExtResource("38_kivxp")]
+position = Vector2(65, 28)
+radius = 5.0
+
 [node name="PointLight8" parent="Lights" instance=ExtResource("38_kivxp")]
 position = Vector2(140, 40)
 radius = 5.0

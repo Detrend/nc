@@ -2110,6 +2110,11 @@ height_offset = 5.0
 [node name="PointLight11" parent="." instance=ExtResource("38_8hkti")]
 position = Vector2(-120, -70)
 
+[node name="PointLight15" parent="." instance=ExtResource("38_8hkti")]
+position = Vector2(-114, 37)
+radius = 10.0
+height_offset = 3.0
+
 [node name="PointLight12" parent="." instance=ExtResource("38_8hkti")]
 position = Vector2(-22, 16)
 
