@@ -538,6 +538,96 @@ int Mix_OpenAudioDevice(int frequency, Uint16 format, int nchannels, int chunksi
     return 0;
 }
 
+// [Nucledian]
+int Nucledian_Mix_OpenAudioDevice
+(
+  int                frequency,
+  Uint16             format,
+  int                nchannels,
+  int                chunksize,
+  const char*        device,
+  int                allowed_changes,
+  SDL_AudioDeviceID* device_id_out
+)
+{
+    int i;
+    SDL_AudioSpec desired;
+
+    /* This used to call SDL_OpenAudio(), which initializes the audio
+       subsystem if necessary. Since SDL_OpenAudioDevice() doesn't,
+       we have to handle this case here. */
+    if (!SDL_WasInit(SDL_INIT_AUDIO)) {
+        if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0) {
+            return -1;
+        }
+    }
+
+    /* If the mixer is already opened, increment open count */
+    if (audio_opened) {
+        if (format == mixer.format && nchannels == mixer.channels) {
+            ++audio_opened;
+            return 0;
+        }
+        while (audio_opened) {
+            Mix_CloseAudio();
+        }
+    }
+
+    /* Set the desired format and frequency */
+    desired.freq = frequency;
+    desired.format = format;
+    desired.channels = nchannels;
+    desired.samples = chunksize;
+    desired.callback = mix_channels;
+    desired.userdata = NULL;
+
+    /* Accept nearly any audio format */
+    if ((audio_device = SDL_OpenAudioDevice(device, 0, &desired, &mixer, allowed_changes)) == 0) {
+        return -1;
+    }
+#if 0
+    PrintFormat("Audio device", &mixer);
+#endif
+
+    if (device_id_out)
+    {
+      *device_id_out = audio_device;
+    }
+
+    num_channels = MIX_CHANNELS;
+    mix_channel = (struct _Mix_Channel *) SDL_malloc(num_channels * sizeof(struct _Mix_Channel));
+
+    /* Clear out the audio channels */
+    for (i = 0; i < num_channels; ++i) {
+        mix_channel[i].chunk = NULL;
+        mix_channel[i].playing = 0;
+        mix_channel[i].looping = 0;
+        mix_channel[i].volume = SDL_MIX_MAXVOLUME;
+        mix_channel[i].fade_volume = SDL_MIX_MAXVOLUME;
+        mix_channel[i].fade_volume_reset = SDL_MIX_MAXVOLUME;
+        mix_channel[i].fading = MIX_NO_FADING;
+        mix_channel[i].tag = -1;
+        mix_channel[i].expire = 0;
+        mix_channel[i].effects = NULL;
+        mix_channel[i].paused = 0;
+    }
+    Mix_VolumeMusic(SDL_MIX_MAXVOLUME);
+
+    _Mix_InitEffects();
+
+    add_chunk_decoder("WAVE");
+    add_chunk_decoder("AIFF");
+    add_chunk_decoder("VOC");
+
+    /* Initialize the music players */
+    open_music(&mixer);
+
+    audio_opened = 1;
+    SDL_PauseAudioDevice(audio_device, 0);
+    return 0;
+}
+// ~[Nucledian]
+
 /* Open the mixer with a certain desired audio format */
 int Mix_OpenAudio(int frequency, Uint16 format, int nchannels, int chunksize)
 {

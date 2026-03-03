@@ -56,6 +56,7 @@ namespace engine_utils
 [[maybe_unused]] constexpr cstr TEST_FILTER_PREFIX = "-test_filter=";
 [[maybe_unused]] constexpr cstr START_LEVEL_ARG    = "-start_level";
 [[maybe_unused]] constexpr cstr START_DEMO_ARG     = "-start_demo";
+[[maybe_unused]] constexpr cstr FAST_DEMO_ARG      = "-fast_demo";
 
 //==============================================================================
 static f32 duration_to_seconds(auto t1, auto t2)
@@ -76,6 +77,56 @@ static void limit_min_frametime(f32& frame_time)
   f32 min_time = 1.0f / min_fps;
 
   frame_time = std::min(frame_time, min_time);
+}
+
+//==============================================================================
+static bool contains_arg(const CmdArgs& cmd_args, cstr search_for)
+{
+  auto it = std::find_if(cmd_args.begin(), cmd_args.end(),
+  [&](const std::string& arg)
+  {
+    return arg == search_for;
+  });
+
+  return it != cmd_args.end();
+}
+
+//==============================================================================
+static bool contains_pair_of_args
+(
+  const CmdArgs& cmd_args, cstr search_for, std::string& out
+)
+{
+  auto it = std::find_if(cmd_args.begin(), cmd_args.end(),
+  [&](const std::string& arg)
+  {
+    return arg == search_for;
+  });
+
+  if (it == cmd_args.end())
+  {
+    return false;
+  }
+
+  if (std::next(it) == cmd_args.end())
+  {
+    return false;
+  }
+
+  out = *std::next(it);
+  return true;
+}
+
+//==============================================================================
+static bool should_play_demo(const CmdArgs& cmd_args, std::string& out_demo)
+{
+  return contains_pair_of_args(cmd_args, engine_utils::START_DEMO_ARG, out_demo);
+}
+
+//==============================================================================
+static bool should_play_level(const CmdArgs& cmd_args, std::string& out_lvl)
+{
+  return contains_pair_of_args(cmd_args, engine_utils::START_LEVEL_ARG, out_lvl);
 }
 
 //==============================================================================
@@ -310,44 +361,6 @@ void Engine::send_event(ModuleEvent&& event)
 }
 
 //==============================================================================
-static bool contains_pair_of_args
-(
-  const CmdArgs& cmd_args, cstr search_for, std::string& out
-)
-{
-  auto it = std::find_if(cmd_args.begin(), cmd_args.end(),
-  [&](const std::string& arg)
-  {
-    return arg == search_for;
-  });
-
-  if (it == cmd_args.end())
-  {
-    return false;
-  }
-
-  if (std::next(it) == cmd_args.end())
-  {
-    return false;
-  }
-
-  out = *std::next(it);
-  return true;
-}
-
-//==============================================================================
-static bool should_play_demo(const CmdArgs& cmd_args, std::string& out_demo)
-{
-  return contains_pair_of_args(cmd_args, engine_utils::START_DEMO_ARG, out_demo);
-}
-
-//==============================================================================
-static bool should_play_level(const CmdArgs& cmd_args, std::string& out_lvl)
-{
-  return contains_pair_of_args(cmd_args, engine_utils::START_LEVEL_ARG, out_lvl);
-}
-
-//==============================================================================
 bool Engine::init(const CmdArgs& cmd_args)
 {
   // init the modules here..
@@ -425,7 +438,13 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
 {
   GameSystem& game_system = get_module<GameSystem>();
 
-  if (std::string demo; should_play_demo(cmd_args, demo))
+  // Demo adjust speed
+  m_demo_adjust_speed = engine_utils::contains_arg
+  (
+    cmd_args, engine_utils::FAST_DEMO_ARG
+  );
+
+  if (std::string demo; engine_utils::should_play_demo(cmd_args, demo))
   {
     // Play one demo and then exit
     std::string lvl_name;
@@ -445,7 +464,7 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
       std::move(frames)
     );
   }
-  else if (std::string lvl; should_play_level(cmd_args, lvl))
+  else if (std::string lvl; engine_utils::should_play_level(cmd_args, lvl))
   {
     // Start a level
     m_game_state = GameState::player_handled;
@@ -576,18 +595,20 @@ void Engine::process_window_event(const SDL_Event& event)
     case SDL_QUIT:
     {
       this->request_quit();
-      break;
     }
+    break;
 
-    #ifdef NC_DEBUG_DRAW
+    case SDL_AUDIODEVICEADDED:
+    case SDL_AUDIODEVICEREMOVED:
+    {
+      // Forward audio device added/removed events so that we can respond
+      SoundSystem::get().process_sdl_event(event);
+    }
+    break;
+
+#ifdef NC_DEBUG_DRAW
     case SDL_KEYDOWN:
     {
-      if (event.key.keysym.scancode == SDL_SCANCODE_F1)
-      {
-        //CVars::time_speed = CVars::time_speed ? 0.0f : 1.0f;
-        //pause(CVars::time_speed ? 0.0f : 1.0f);
-      }
-
       if (event.key.keysym.scancode == SDL_SCANCODE_F4)
       {
         CVars::enable_top_down_debug = !CVars::enable_top_down_debug;
@@ -599,7 +620,7 @@ void Engine::process_window_event(const SDL_Event& event)
       }
       break;
     }
-    #endif
+#endif
   }
 }
 

@@ -76,16 +76,24 @@ public:
   void set_sound_volume(int step);
   void set_music_volume(int step);
 
+  void process_sdl_event(const SDL_Event& event);
+
 private:
   void terminate();
   void update(f32 delta_seconds);
   void on_channel_finished(int channel);
+
+  bool try_init();
+  bool terminate_impl();
 
 private:
   struct Helper;
   static constexpr u64 CHANNEL_COUNT = 64;
 
   using ChannelArray = std::array<u8, CHANNEL_COUNT>;
+
+  // Might not be working after a device gets disconnected
+  u32  device_id  = 0; // Internal SDL device ID
 
   f32 global_sound_volume = 1.0f;
   f32 global_music_volume = 1.0f;
@@ -102,6 +110,7 @@ private:
   // of doing that.
   std::atomic_bool    some_channel_was_just_stopped = false;
   std::atomic_uint8_t used_track = 0;
+  std::atomic_bool    terminated = true;
 
   struct ChannelInfo
   {

@@ -462,6 +462,13 @@ extern DECLSPEC int SDLCALL Mix_OpenAudio(int frequency, Uint16 format, int chan
  */
 extern DECLSPEC int SDLCALL Mix_OpenAudioDevice(int frequency, Uint16 format, int channels, int chunksize, const char* device, int allowed_changes);
 
+// [Nucledian]
+// MR says:
+// Our own open audio function with blackjack and hookers.
+// We need to output the device ID out.
+extern DECLSPEC int SDLCALL Nucledian_Mix_OpenAudioDevice(int frequency, Uint16 format, int channels, int chunksize, const char* device, int allowed_changes, SDL_AudioDeviceID* device_id_out);
+// ~[Nucledian]
+
 /**
  * Suspend or resume the whole audio output.
  *

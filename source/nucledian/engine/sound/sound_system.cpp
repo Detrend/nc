@@ -94,43 +94,12 @@ static void SDLCALL on_channel_finished(int channel)
 //==============================================================================
 bool SoundSystem::init()
 {
-  //Initialize SDL_mixer
-  if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 2048) < 0)
+  if (!try_init())
   {
-    nc_expect(false, "SDL_mixer could not initialize! SDL_mixer Error: {0}\n", Mix_GetError());
-    return false;
+    nc_warn("Failed to initialize sound during startup.");
   }
 
-  int ret = Mix_AllocateChannels(CHANNEL_COUNT);
-  bool ok = static_cast<u64>(ret) >= CHANNEL_COUNT;
-
-  if (!ok)
-  {
-    nc_assert(false, "Could not allocate that many channels?");
-    nc_log("SDL mixer failed to allocate {} channels", CHANNEL_COUNT);
-    return false;
-  }
-
-  // Set up the defaults for the freeing tracks
-  channels_to_free[0].fill(SoundHandle::INVALID_CHANNEL);
-  channels_to_free[1].fill(SoundHandle::INVALID_CHANNEL);
-
-  // Setup a callback
-  Mix_ChannelFinished(SoundSystem::Helper::on_channel_finished);
-
-  // Load sounds into chunks
-  for (SoundID id = 0; id < TOTAL_SOUND_CNT; ++id)
-  {
-    cstr path = SOUND_FILES[id];
-    Mix_Chunk* chunk = Mix_LoadWAV(path);
-    if (!chunk)
-    {
-      nc_warn("Failed to load sound \"{}\"", path);
-    }
-
-    g_loaded_sound_chunks[id] = chunk;
-  }
-
+  // Go on, do not kill the engine. The sound will not be working, but we are ok
   return true;
 }
 
@@ -163,7 +132,10 @@ void SoundSystem::set_sound_volume(int step)
 void SoundSystem::set_music_volume(int step)
 {
   global_music_volume = 1.0f / 9.0f * step;
-  Mix_VolumeMusic((int)(128.0f * global_music_volume));
+  if (!terminated)
+  {
+    Mix_VolumeMusic((int)(128.0f * global_music_volume));
+  }
 }
 
 //==============================================================================
@@ -172,14 +144,21 @@ void SoundSystem::play_oneshot(SoundID sound)
   play(sound);
 }
 
-
+//==============================================================================
 void SoundSystem::play_music(const std::string& track_name)
 {
+  if (terminated)
+  {
+    return;
+  }
+
   std::string path = std::format(NC_SOUND_DIRECTORY_CSTR "{}" NC_SOUND_TYPE, track_name);
-  if (Mix_Music* const music = Mix_LoadMUS(path.data())) {
+  if (Mix_Music* const music = Mix_LoadMUS(path.data()))
+  {
     Mix_PlayMusic(music, -1);
   }
-  else {
+  else
+  {
     nc_warn("Failed to load music \"{}\"", path);
   }
 }
@@ -188,6 +167,11 @@ void SoundSystem::play_music(const std::string& track_name)
 SoundHandle SoundSystem::play(SoundID sound, f32 volume /*= 1.0f*/)
 {
   using Channel = SoundHandle::Channel;
+
+  if (terminated)
+  {
+    return SoundHandle{SoundHandle::INVALID_CHANNEL, 0};
+  }
 
   nc_assert(sound < TOTAL_SOUND_CNT);
   nc_assert(volume >= 0.0f);
@@ -243,12 +227,20 @@ SoundHandle SoundSystem::play(SoundID sound, f32 volume /*= 1.0f*/)
 //==============================================================================
 void SoundSystem::terminate()
 {
-  Mix_Quit();
+  if (!terminated)
+  {
+    terminate_impl();
+  }
 }
 
 //==============================================================================
 void SoundSystem::update([[maybe_unused]] f32 delta_seconds)
 {
+  if (terminated)
+  {
+    return;
+  }
+
   bool expected = false;
   while (!some_channel_was_just_stopped.compare_exchange_strong(expected, true))
   {
@@ -276,6 +268,39 @@ void SoundSystem::update([[maybe_unused]] f32 delta_seconds)
 }
 
 //==============================================================================
+void SoundSystem::process_sdl_event(const SDL_Event& event)
+{
+  if (terminated)
+  {
+    bool added = event.type == SDL_AUDIODEVICEADDED;
+    if (added && event.adevice.iscapture == 0)
+    {
+      // Try init
+      if (!try_init())
+      {
+        nc_log("Failed to initialize sound system after adding a new device.");
+      }
+    }
+  }
+  else
+  {
+    bool removed = event.type == SDL_AUDIODEVICEREMOVED;
+    if (removed && !event.adevice.iscapture && event.adevice.which == device_id)
+    {
+      // Our audio device got removed, terminate
+      terminate_impl();
+      nc_log("Sound system terminated after removing the device.");
+
+      // And then try to initialize again with another device
+      if (!try_init())
+      {
+        nc_log("Sound system failed to initialize with other device after primary device removal");
+      }
+    }
+  }
+}
+
+//==============================================================================
 void SoundSystem::on_channel_finished(int channel)
 {
   nc_assert(channel >= 0 && channel < cast<int>(CHANNEL_COUNT));
@@ -284,6 +309,12 @@ void SoundSystem::on_channel_finished(int channel)
   while (!some_channel_was_just_stopped.compare_exchange_strong(expected, true))
   {
     // Spin and wait until it is not true
+  }
+
+  if (terminated)
+  {
+    // This might rarely happen
+    return;
   }
 
   // We have the guarantee that to_use does not change under our hands
@@ -297,6 +328,93 @@ void SoundSystem::on_channel_finished(int channel)
 
   // Free the lock
   some_channel_was_just_stopped.store(false);
+}
+
+//==============================================================================
+bool SoundSystem::try_init()
+{
+  nc_assert(terminated == true);
+
+  int retval = Nucledian_Mix_OpenAudioDevice
+  (
+    MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 2048,
+    nullptr, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE | SDL_AUDIO_ALLOW_CHANNELS_CHANGE,
+    &device_id
+  );
+
+  if (retval < 0)
+  {
+    device_id = 0;
+    nc_expect(false, "SDL_mixer could not initialize! SDL_mixer Error: {0}\n", Mix_GetError());
+    return false;
+  }
+
+  int ret = Mix_AllocateChannels(CHANNEL_COUNT);
+  bool ok = static_cast<u64>(ret) >= CHANNEL_COUNT;
+
+  if (!ok)
+  {
+    nc_assert(false, "Could not allocate that many channels?");
+    nc_log("SDL mixer failed to allocate {} channels", CHANNEL_COUNT);
+    return false;
+  }
+
+  terminated = false;
+
+  // Set up the defaults for the freeing tracks
+  channels_to_free[0].fill(SoundHandle::INVALID_CHANNEL);
+  channels_to_free[1].fill(SoundHandle::INVALID_CHANNEL);
+
+  // Setup a callback
+  Mix_ChannelFinished(SoundSystem::Helper::on_channel_finished);
+
+  // Load sounds into chunks
+  for (SoundID id = 0; id < TOTAL_SOUND_CNT; ++id)
+  {
+    cstr path = SOUND_FILES[id];
+    Mix_Chunk* chunk = Mix_LoadWAV(path);
+    if (!chunk)
+    {
+      nc_warn("Failed to load sound \"{}\"", path);
+    }
+
+    g_loaded_sound_chunks[id] = chunk;
+  }
+
+  return true;
+}
+
+//==============================================================================
+bool SoundSystem::terminate_impl()
+{
+  nc_assert(terminated == false);
+
+  bool expected = false;
+  while (!some_channel_was_just_stopped.compare_exchange_strong(expected, true))
+  {
+    // Spin and wait until the audio thread does not stop freeing the channels
+  }
+
+  // Store terminated
+  terminated.store(true);
+
+  // Unregister the callback
+  Mix_ChannelFinished(nullptr);
+
+  // Release the lock
+  some_channel_was_just_stopped.store(false);
+
+  // Free up the sound chunks
+  for (Mix_Chunk*& chunk : g_loaded_sound_chunks)
+  {
+    Mix_FreeChunk(chunk);
+    chunk = nullptr;
+  }
+
+  // Quit the mixer
+  Mix_Quit();
+
+  return true;
 }
 
 //==============================================================================
