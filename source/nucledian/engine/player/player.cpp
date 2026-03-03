@@ -285,22 +285,6 @@ void Player::handle_attack(PlayerSpecificInputs curr_input, PlayerSpecificInputs
 
     if (!is_melee && current_ammo[this->current_weapon] == 0)
     {
-      if (current_ammo[2] > 0) // Plasma gun
-      {
-        change_weapon(2);
-      }
-      else if (current_ammo[1] > 0) // Shotgun
-      {
-        change_weapon(1);
-      }
-      else if (current_ammo[3] > 0) // Nailgun?
-      {
-        change_weapon(4);
-      }
-      else
-      {
-        change_weapon(0);
-      }
       return;
     }
 
@@ -474,6 +458,27 @@ void Player::update_gun_anim(f32 delta)
       this->do_attack();
     }
   });
+
+  if (current_ammo[this->current_weapon] == 0 && weapon_fsm.get_state() == WeaponStates::idle)
+  {
+    if (current_ammo[2] > 0 && has_weapon(2)) // Plasma gun
+    {
+      change_weapon(2);
+    }
+    else if (current_ammo[1] > 0 && has_weapon(1)) // Shotgun
+    {
+      change_weapon(1);
+    }
+    else if (current_ammo[3] > 0 && has_weapon(3)) // Nailgun?
+    {
+      change_weapon(4);
+    }
+    else
+    {
+      change_weapon(0);
+    }
+    return;
+  }
 }
 
 //==============================================================================
