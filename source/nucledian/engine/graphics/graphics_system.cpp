@@ -192,6 +192,8 @@ bool GraphicsSystem::init()
     return false;
   }
 
+  SDL_SetWindowResizable(m_window, SDL_FALSE);
+
   // create opengl context
   m_gl_context = SDL_GL_CreateContext(m_window);
   if (!m_gl_context)
