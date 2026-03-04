@@ -57,14 +57,6 @@ public:
 
   bool is_game_paused() const;
 
-  // Called first before level end if a demo was playing
-  // menu:     schedule next demo
-  // gameplay: do nothing, gets handled by itself
-  // console:  end the game
-  void on_demo_end();
-
-  void on_level_end();
-
   bool should_ammo_hp_hud_be_visible() const;
 
   // Framerates of the recorded demo and the running system can be different.
@@ -78,6 +70,15 @@ public:
   bool is_menu_locked_visible() const;
 
 private:
+  // Called first before level end if a demo was playing
+  // menu:     schedule next demo
+  // gameplay: do nothing, gets handled by itself
+  // console:  end the game
+  void on_demo_end();
+
+  // Called when the level simulated in the game system ends
+  void on_level_end();
+
   // Called from the UI if the menu opens/closes
   void on_menu_state_changed(bool opened);
 
@@ -86,8 +87,14 @@ private:
   // Has to change the state
   void on_new_game_selected_from_menu(LevelName level);
 
+  // Has to change the state to playing
+  void on_next_level_selected_from_menu();
+
   bool should_quit() const;
+
   void play_random_demo();
+
+  void loop_current_demo();
 
   void on_event(const ModuleEvent& event);
 
@@ -100,17 +107,27 @@ private:
 
   enum class GameState : u8
   {
-    in_menu,            // in menu, the demo is playing in the background
-    player_handled,     // the player is playing
-    debug_playing_demo, // running the demo from console
+    menu,       // in menu, the demo is playing in the background
+    game,       // the player is playing
+    transition, // during the level transition, demo playing in background
+    debug_demo, // running the demo from console, debug
+  };
+
+  struct TransitionStateData
+  {
+    std::string next_level_name;
   };
 
 private:
   ModuleArray   m_modules;
   ModuleVector  m_module_init_order;
+
+  TransitionStateData m_transition_state;
+
   f32           m_delta_time = 0.0f; // last frame time in seconds
   u64           m_frame_idx = 0;     // index of a frame, currently only for debug
-  GameState     m_game_state = GameState::in_menu;
+  GameState     m_game_state = GameState::menu;
+
   bool          m_should_quit       : 1 = false;
   bool          m_demo_adjust_speed : 1 = true;
   bool          m_paused            : 1 = false;

@@ -335,6 +335,24 @@ void Engine::on_event(const ModuleEvent& event)
       this->on_new_game_selected_from_menu(event.new_game.level);
     }
     break;
+
+    case ModuleEventType::demo_ended:
+    {
+      this->on_demo_end();
+    }
+    break;
+
+    case ModuleEventType::level_ended:
+    {
+      this->on_level_end();
+    }
+    break;
+
+    case ModuleEventType::next_level_requested:
+    {
+      this->on_next_level_selected_from_menu();
+    }
+    break;
   }
 }
 
@@ -412,8 +430,8 @@ void Engine::play_random_demo()
   const std::string& demo = demos[std::rand() % demos.size()];
 
   // Play one demo and then exit
-  std::string lvl_name;
-  std::vector<DemoDataFrame> frames;
+  std::string    lvl_name;
+  DemoDataFrames frames;
 
   if (!load_demo_from_file(demo, lvl_name, frames))
   {
@@ -434,12 +452,24 @@ void Engine::play_random_demo()
 }
 
 //==============================================================================
+void Engine::loop_current_demo()
+{
+  // Play demo and go to the level transition state
+  GameSystem& game_system = GameSystem::get();
+
+  LevelName      lvl  = game_system.get_level_name();
+  DemoDataFrames demo = game_system.get_demo_frames(); // Intentional copy
+
+  game_system.request_level_change(lvl, std::move(demo));
+}
+
+//==============================================================================
 bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
 {
   GameSystem& game_system = get_module<GameSystem>();
 
   // Demo adjust speed
-  m_demo_adjust_speed = engine_utils::contains_arg
+  m_demo_adjust_speed = !engine_utils::contains_arg
   (
     cmd_args, engine_utils::FAST_DEMO_ARG
   );
@@ -447,8 +477,8 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
   if (std::string demo; engine_utils::should_play_demo(cmd_args, demo))
   {
     // Play one demo and then exit
-    std::string lvl_name;
-    std::vector<DemoDataFrame> frames;
+    std::string    lvl_name;
+    DemoDataFrames frames;
 
     if (!load_demo_from_file(demo, lvl_name, frames))
     {
@@ -456,7 +486,7 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
       return false;
     }
 
-    m_game_state = GameState::debug_playing_demo;
+    m_game_state = GameState::debug_demo;
 
     game_system.request_level_change
     (
@@ -467,13 +497,13 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
   else if (std::string lvl; engine_utils::should_play_level(cmd_args, lvl))
   {
     // Start a level
-    m_game_state = GameState::player_handled;
+    m_game_state = GameState::game;
     game_system.request_play_level(LevelName{std::string_view{lvl}});
   }
   else
   {
     // Open up the menu and play demos on the background
-    m_game_state = GameState::in_menu;
+    m_game_state = GameState::menu;
 
     UserInterfaceSystem& ui_system = get_module<UserInterfaceSystem>();
     ui_system.get_menu_manager()->set_visible(true); // Make the menu visible
@@ -653,14 +683,21 @@ void Engine::on_demo_end()
 {
   switch (m_game_state)
   {
-    case GameState::in_menu:
+    case GameState::menu:
     {
-      // Schedule the next demo. This overwrites the requests of other systems
+      // Schedule a next demo. This overwrites the requests of other systems
       this->play_random_demo();
     }
     break;
 
-    case GameState::debug_playing_demo:
+    case GameState::transition:
+    {
+      // Loop the demo once again
+      this->loop_current_demo();
+    }
+    break;
+
+    case GameState::debug_demo:
     {
       // Exit the game.. Will quit at the start of the next frame
       m_should_quit = true;
@@ -673,6 +710,25 @@ void Engine::on_demo_end()
 void Engine::on_level_end()
 {
   // Do nothing
+  switch (m_game_state)
+  {
+    case GameState::game:
+    {
+      // Change the state
+      m_game_state = GameState::transition;
+
+      // Store the next level (has to happen before calling loop_current_demo)
+      LevelName next_lvl_token = GameSystem::get().get_next_level_name();
+      m_transition_state.next_level_name = next_lvl_token.to_string();
+
+      // Enable level transition UI
+      UserInterfaceSystem::get().get_menu_manager()->set_transition_screen(true);
+
+      // Play the demo on the background
+      this->loop_current_demo();
+    }
+    break;
+  }
 }
 
 //==============================================================================
@@ -684,13 +740,24 @@ bool Engine::should_quit() const
 //==============================================================================
 bool Engine::should_ammo_hp_hud_be_visible() const
 {
-  return m_game_state != GameState::in_menu;
+  constexpr auto UI_INVISIBLE_STATES =
+  {
+    GameState::menu,       // In menu, we do not want to see the HUD
+    GameState::transition, // Nor in level transition screen
+  };
+
+  auto it = std::find
+  (
+    std::begin(UI_INVISIBLE_STATES), std::end(UI_INVISIBLE_STATES), m_game_state
+  );
+
+  return it == std::end(UI_INVISIBLE_STATES);
 }
 
 //==============================================================================
 bool Engine::should_run_demo_proportional_speed() const
 {
-  return true;
+  return m_demo_adjust_speed;
 }
 
 //==============================================================================
@@ -698,19 +765,19 @@ void Engine::on_menu_state_changed(bool opened)
 {
   switch (m_game_state)
   {
-    case GameState::debug_playing_demo:
+    case GameState::debug_demo:
     {
       // Don't care
     }
     break;
 
-    case GameState::in_menu:
+    case GameState::menu:
     {
       // Don't care
     }
     break;
 
-    case GameState::player_handled:
+    case GameState::game:
     {
       // Pause the game
       this->pause(opened);
@@ -727,10 +794,10 @@ void Engine::on_new_game_selected_from_menu(LevelName level)
 {
   switch (m_game_state)
   {
-    case GameState::in_menu:
-    case GameState::player_handled:
+    case GameState::menu:
+    case GameState::game:
     {
-      m_game_state = GameState::player_handled;
+      m_game_state = GameState::game;
       GameSystem::get().request_level_change(level);
       UserInterfaceSystem::get().get_menu_manager()->set_visible(false);
 
@@ -744,9 +811,26 @@ void Engine::on_new_game_selected_from_menu(LevelName level)
 }
 
 //==============================================================================
+void Engine::on_next_level_selected_from_menu()
+{
+  switch (m_game_state)
+  {
+    case GameState::transition:
+    {
+      m_game_state = GameState::game;
+
+      LevelName lvl = std::string_view{m_transition_state.next_level_name};
+      GameSystem::get().request_level_change(lvl);
+      UserInterfaceSystem::get().get_menu_manager()->set_transition_screen(false);
+    }
+    break;
+  }
+}
+
+//==============================================================================
 bool Engine::is_menu_locked_visible() const
 {
-  return m_game_state == GameState::in_menu;
+  return m_game_state == GameState::menu;
 }
 
 }

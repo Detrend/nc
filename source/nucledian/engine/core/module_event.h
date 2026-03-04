@@ -30,6 +30,10 @@ namespace ModuleEventType
     menu_closed,         // the menu was closed
 
     new_game_level_requested,
+    next_level_requested,  // player clicks "next" on transition screen
+
+    demo_ended,          // when the demo simulated in the game system ends
+    level_ended,         // when the level simulated in the game system ends
 
     pre_terminate,
     terminate,           // terminate the module

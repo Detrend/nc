@@ -94,12 +94,14 @@ struct DemoDataFrame
 };
 NC_POP_PACKED
 
+using DemoDataFrames = std::vector<DemoDataFrame>;
+
 // Loads a given demo from a file
 bool load_demo_from_file
 (
-  const std::string&          file,
-  std::string&                level_name_out,
-  std::vector<DemoDataFrame>& frames_out
+  const std::string& file,
+  std::string&       level_name_out,
+  DemoDataFrames&    frames_out
 );
 
 // Returns a list of available demos
@@ -119,10 +121,10 @@ void save_demo_to_bytes
 
 bool load_demo_from_bytes
 (
-  DemoDataHeader&             header_out,
-  std::vector<DemoDataFrame>& frames_out,
-  const byte*                 bytes_start,
-  u64                         bytes_cnt
+  DemoDataHeader& header_out,
+  DemoDataFrames& frames_out,
+  const byte*     bytes_start,
+  u64             bytes_cnt
 );
 
 void save_demo_to_file
