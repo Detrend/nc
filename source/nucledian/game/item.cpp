@@ -16,7 +16,7 @@
 namespace nc
 {
 
-constexpr f32 PICKUP_RADIUS = 0.4f;
+constexpr f32 PICKUP_RADIUS = 0.8f;
 constexpr f32 PICKUP_HEIGHT = 0.2f;
 
 constexpr u32 PICKUP_AMMO_CNTS[] = {0, 6, 12, 30};
