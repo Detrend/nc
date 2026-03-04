@@ -33,7 +33,7 @@
 		{
 			"hooks": [
 				{
-					"destination": "level_test1",
+					"destination": "level_final3",
 					"type": "level_transition"
 				}
 			],
