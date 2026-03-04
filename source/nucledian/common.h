@@ -74,6 +74,6 @@ inline void assert_fail_impl(const char* const expression_str, const logging::Lo
 #define NC_POP_PACKED  __pragma(pack(pop));
 
 //==============================================================================
-// Casting macros because I hate writing "static_cast" every fuckin time
+// Casting macros
 #define cast   static_cast
 #define recast reinterpret_cast
