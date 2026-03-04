@@ -1408,7 +1408,7 @@ const
 
     //This is a nasty hack to disallow us from going through walls
     //works at 100FPS
-    if (iterations_left < 1 && length(velocity.xz()) < 0.025f)
+    if (iterations_left < 1 && length(velocity.xz()) < 1.0f * delta_time)
     {
       velocity = vec3(0, velocity.y, 0);
       break;
