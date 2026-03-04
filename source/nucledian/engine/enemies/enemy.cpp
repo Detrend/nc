@@ -37,13 +37,17 @@ namespace nc
 {
 
 // These are the same for all enemies
-constexpr f32 SPOT_DISTANCE         = 1.0f;  // Player will get spotted if closer
+constexpr f32 SPOT_DISTANCE         = 1.0f;   // Player will get spotted if closer
 constexpr f32 ENEMY_FOV_DEG         = 100.0f; // Field of view
-constexpr f32 TARGET_STOP_DISTANCE  = 1.0f;  // How far do we keep from the target
-constexpr f32 PATH_POINT_ERASE_DIST = 0.25f; // Removes the path point if this close
+constexpr f32 TARGET_STOP_DISTANCE  = 1.0f;   // How far do we keep from the target
+constexpr f32 PATH_POINT_ERASE_DIST = 0.25f;  // Removes the path point if this close
 constexpr f32 ENEMY_GRAVITY         = 6.0f;
 constexpr f32 ENEMY_MELEE_RANGE     = 2.5f;
 constexpr f32 ENEMY_MELEE_EXPAND    = 0.1f;
+
+// MR says: Its better to keep these universal for all enemies in the demo.
+constexpr f32 ENEMY_STEP_HEIGHT = 0.66f;  // Step height, 66cm
+constexpr f32 ENEMY_DROP_HEIGHT = 1.0f;   // How much we are able to drop
 
 // Global only temporaly, this will be set per enemy type.
 constexpr ActorAnimStateFlag ENEMY_DIR8_STATES
@@ -221,7 +225,7 @@ void Enemy::handle_movement(f32 delta)
   world.move_character
   (
     position, this->velocity, portal_transform, delta, this->get_radius(),
-    this->get_height(), this->get_height() * 0.3f, collide_with, 0
+    this->get_height(), ENEMY_STEP_HEIGHT, collide_with, 0
   );
 
   this->facing = (portal_transform * vec4{this->facing, 0.0f}).xyz();
@@ -480,8 +484,8 @@ void Enemy::handle_ai_alert(f32 delta)
           this->follow_target_pos,
           this->get_radius(),
           this->get_height(),
-          this->get_height() * 0.5f,
-          this->get_height() * 0.5f,
+          ENEMY_STEP_HEIGHT,
+          ENEMY_DROP_HEIGHT,
           true,
           &nc_transform,
           &found_one
@@ -520,8 +524,8 @@ void Enemy::handle_ai_alert(f32 delta)
             15.0f,
             this->get_radius(),
             this->get_height(),
-            this->get_height() * 0.5f,
-            this->get_height() * 0.5f,
+            ENEMY_STEP_HEIGHT,
+            ENEMY_DROP_HEIGHT,
             this->rng,
             true,
             &nc_transform

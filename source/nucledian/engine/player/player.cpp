@@ -58,6 +58,7 @@ constexpr f32 PLAYER_HEIGHT      = 1.8f;
 constexpr f32 PLAYER_EYE_HEIGHT  = 1.65f;
 constexpr f32 PLAYER_RADIUS      = 0.25f;
 constexpr f32 MELEE_DAMAGE_RANGE = 2.25f;
+constexpr f32 PLAYER_STEP_HEIGHT_MUL = 0.3f; // Multiple of player's height
 
 //==============================================================================
 Player::Player(vec3 position, vec3 forward)
@@ -209,12 +210,14 @@ void Player::apply_velocity(f32 delta_seconds)
   vec3 position = this->get_position();
   vec3 prev_pos = position;
 
+  constexpr f32 STEP_HEIGHT = PLAYER_HEIGHT * PLAYER_STEP_HEIGHT_MUL;
+
   mat4 portal_transform = identity<mat4>();
   PhysLevel::CharacterCollisions collected_collisions;
   lvl.move_character
   (
     position, velocity, portal_transform, delta_seconds, PLAYER_RADIUS,
-    PLAYER_HEIGHT, PLAYER_HEIGHT * 0.3f, PLAYER_COLLIDERS,
+    PLAYER_HEIGHT, STEP_HEIGHT, PLAYER_COLLIDERS,
     PLAYER_REPORTING, &collected_collisions
   );
 
@@ -421,21 +424,16 @@ void Player::update_camera(f32 delta)
   f32 spd = CVars::camera_spring_update_speed;
   lerp_towards(this->vertical_camera_offset, 0.0f, delta * spd);
 
+  if (!on_ground)
+  {
+    vertical_camera_offset = 0.0f;
+  }
+
   camera.update_transform
   (
     this->get_position(), this->angle_yaw, this->angle_pitch,
     PLAYER_EYE_HEIGHT  + this->vertical_camera_offset
   );
-
-  if (!on_ground)
-  {
-    vertical_camera_offset = 0.0f;
-    camera.update_transform
-    (
-      this->get_position(), this->angle_yaw, this->angle_pitch,
-      PLAYER_EYE_HEIGHT
-    );
-  }
 }
 
 //==============================================================================

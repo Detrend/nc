@@ -204,8 +204,10 @@ void main()
     uint light_index = light_indices[data.offset + i];
     PointLight light = point_lights[light_index];
 
+#ifdef DO_SHADOWS
     if (is_in_shadow(position, sector_id, light))
         continue;
+#endif
 
     #define VOX_CNT 16
     position = round(position * VOX_CNT) / VOX_CNT;
