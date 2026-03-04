@@ -121,7 +121,7 @@ WeaponAnims WEAPON_ANIMS[] =
       // Attack
       WeaponAnim
       {
-        .frames_cnt = 9, .action_frame = 1, .time = 0.4f
+        .frames_cnt = 9, .action_frame = 1, .time = 0.2f
       },
     },
   },

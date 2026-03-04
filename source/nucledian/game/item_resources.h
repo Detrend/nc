@@ -11,8 +11,8 @@
   xx(shotgun,      pickup) \
   xx(plasma_rifle, pickup) \
   xx(nail_gun,     pickup) \
-  xx(shotgun_ammo, pickup) \
-  xx(plasma_ammo,  pickup) \
+  xx(shotgun_ammo, shotgun_pickup) \
+  xx(plasma_ammo,  plasma_pickup)  \
   xx(nail_ammo,    pickup)
 
 

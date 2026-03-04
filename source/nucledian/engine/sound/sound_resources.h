@@ -22,6 +22,8 @@
   xx(melee_hit,    0.1f)     \
   xx(ui_click,     0.1f)     \
   xx(shotgun,      0.1f)     \
+  xx(shotgun_pickup, 0.1f)   \
+  xx(plasma_pickup, 0.1f)    \
   xx(door,         0.1f)     \
   xx(button,       0.1f)
 

@@ -22,7 +22,7 @@ ProjectileStats PROJECTILE_STATS[] =
   // Plasma ball
   ProjectileStats
   {
-    .dmg_falloff = 0.05f, .speed = 20.0f, .radius = 0.2f, .damage = 35,
+    .dmg_falloff = 0.05f, .speed = 27.0f, .radius = 0.2f, .damage = 25,
     .bounce_cnt = 3, .sprite = "plasma_ball", .sprite_cnt = 1,
     .light_color = colors::BLUE,
     .hit_sprite = "plasma_ball_death",
