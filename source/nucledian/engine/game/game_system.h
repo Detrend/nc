@@ -69,7 +69,10 @@ public:
 
   SaveDatabase& get_save_game_db();
 
-  LevelName get_level_name() const;
+  LevelName get_level_name()      const;
+  LevelName get_next_level_name() const;
+
+  const DemoDataFrames& get_demo_frames() const;
 
   Player*                 get_player();
   EntityRegistry&         get_entities();
@@ -106,7 +109,7 @@ public:
   // If there is a demo or not
   void request_level_change
   (
-    const LevelName& new_level, std::vector<DemoDataFrame>&& frames = {}
+    const LevelName& new_level, DemoDataFrames&& frames = {}
   );
 
   // Called from the action trigger
@@ -164,12 +167,12 @@ private:
 
   struct Journal
   {
-    std::vector<DemoDataFrame> frames;
-    JournalState               state       = DEFAULT_JOURNAL_STATE;
-    u64                        rover       = 0;
-    bool                       paused      = false;
-    int                        skip_to     = -1;
-    f32                        extra_delta = 0.0f;
+    DemoDataFrames frames;
+    JournalState   state       = DEFAULT_JOURNAL_STATE;
+    u64            rover       = 0;
+    bool           paused      = false;
+    int            skip_to     = -1;
+    f32            extra_delta = 0.0f;
 
     void reset(JournalState to_state);
     void reset_and_clear(JournalState to_state);
@@ -177,8 +180,8 @@ private:
 
   struct NextRequestedState
   {
-    LevelName                  level;
-    std::vector<DemoDataFrame> demo;
+    LevelName      level;
+    DemoDataFrames demo;
   };
 
   GamePtr         game;

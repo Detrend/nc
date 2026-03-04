@@ -713,10 +713,10 @@ void GameSystem::frame_start()
 //==============================================================================
 static u64 calc_num_demo_frames_to_simulate
 (
-  f32                               frame_delta,
-  const std::vector<DemoDataFrame>& frames,
-  u64                               rover_idx,
-  f32&                              extra_delta
+  f32                   frame_delta,
+  const DemoDataFrames& frames,
+  u64                   rover_idx,
+  f32&                  extra_delta
 )
 {
   // Calculate proper number of frames to simulate to keep a pace
@@ -801,8 +801,8 @@ void GameSystem::game_update(f32 delta)
 
       nc_assert(journal.rover < journal.frames.size());
 
-      const std::vector<DemoDataFrame>& frames = journal.frames;
-      const DemoDataFrame& frame = frames[journal.rover];
+      const DemoDataFrames& frames = journal.frames;
+      const DemoDataFrame&  frame = frames[journal.rover];
 
       bool first_frame = !journal.rover;
       prev_inputs = first_frame ? empty_inputs : frames[journal.rover-1].inputs;
@@ -880,13 +880,19 @@ void GameSystem::on_level_end()
     this->save_current_demo();
   }
 
-  get_engine().on_level_end();
+  get_engine().send_event(ModuleEvent
+  {
+    .type = ModuleEventType::level_ended,
+  });
 }
 
 //==============================================================================
 void GameSystem::on_demo_end()
 {
-  get_engine().on_demo_end();
+  get_engine().send_event(ModuleEvent
+  {
+    .type = ModuleEventType::demo_ended,
+  });
 }
 
 //==============================================================================
@@ -1028,6 +1034,18 @@ LevelName GameSystem::get_level_name() const
 }
 
 //==============================================================================
+LevelName GameSystem::get_next_level_name() const
+{
+  return game->next_level_name;
+}
+
+//==============================================================================
+const DemoDataFrames& GameSystem::get_demo_frames() const
+{
+  return journal.frames;
+}
+
+//==============================================================================
 void GameSystem::request_play_level(const LevelName& new_level)
 {
   this->request_level_change(new_level);
@@ -1045,8 +1063,7 @@ void GameSystem::request_empty_level()
 //==============================================================================
 void GameSystem::request_level_change
 (
-  const LevelName&             new_level,
-  std::vector<DemoDataFrame>&& frames
+  const LevelName& new_level, DemoDataFrames&& frames
 )
 {
   this->scheduled_state = NextRequestedState
@@ -1063,10 +1080,7 @@ void GameSystem::end_level_and_go_to_another_one_from_gamemode
 )
 {
   this->game->is_level_completed = true;
-  this->scheduled_state = NextRequestedState
-  {
-    .level = new_level,
-  };
+  this->game->next_level_name    = new_level;
 }
 
 //==============================================================================

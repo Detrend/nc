@@ -101,10 +101,10 @@ void save_demo_to_bytes
 //==============================================================================
 bool load_demo_from_bytes
 (
-  DemoDataHeader&             header_out,
-  std::vector<DemoDataFrame>& frames_out,
-  const byte*                 bytes_start,
-  u64                         bytes_cnt
+  DemoDataHeader& header_out,
+  DemoDataFrames& frames_out,
+  const byte*     bytes_start,
+  u64             bytes_cnt
 )
 {
   if (bytes_cnt < sizeof(DemoDataHeader))
@@ -213,9 +213,9 @@ static void bytes_to_file
 //==============================================================================
 bool load_demo_from_file
 (
-  const std::string&          file,
-  std::string&                level_name_out,
-  std::vector<DemoDataFrame>& frames_out
+  const std::string& file,
+  std::string&       level_name_out,
+  DemoDataFrames&    frames_out
 )
 {
   std::vector<u8> bytes;

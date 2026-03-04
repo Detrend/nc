@@ -3,6 +3,7 @@
 
 #include <types.h>
 #include <engine/entity/entity_types.h>
+#include <engine/player/level_types.h>
 
 #include <memory> // std::unique_ptr
 
@@ -34,6 +35,7 @@ struct Game
   std::unique_ptr<EntityAttachment> attachment;
   u64                               frame_idx = 0;
   bool                              is_level_completed = false;
+  LevelName                         next_level_name    = INVALID_LEVEL_NAME;
 };
 
 }

@@ -191,6 +191,15 @@ namespace nc
 	}
 
 	//=============================================================================================
+  void MenuManager::set_transition_screen([[maybe_unused]]bool enabled)
+  {
+    // Finish this on yourself, Michal.
+    // This function will get called from the engine and UI has to respond.
+    // enabled == true  -> the level just ended and the transition screen can start appearing
+    // enabled == false -> the transition screen should end and be closed
+  }
+
+	//=============================================================================================
 
 	void MenuManager::set_visible(bool visibility)
 	{
