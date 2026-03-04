@@ -143,7 +143,7 @@ Enemy::Enemy(vec3 position, vec3 looking_dir, EnemyType tpe)
   this->appear = Appearance
   {
     .sprite    = std::format("{}_idle_0", ENEMY_TYPE_NAMES[this->type]),
-    .direction = this->facing,
+    .direction = this->get_facing_hor(),
     .scale     = 40.0f,
     .mode      = Appearance::SpriteMode::dir8,
     .pivot     = Appearance::PivotMode::bottom,
@@ -248,7 +248,7 @@ void Enemy::handle_movement(f32 delta)
 //==============================================================================
 void Enemy::handle_appearance(f32 delta)
 {
-  this->appear.direction = this->facing;
+  this->appear.direction = this->get_facing_hor();
 
   using Event   = AnimFSMEvents::evalue;
   using Trigger = ActorFSM::Trigger;
@@ -631,17 +631,20 @@ void Enemy::handle_ai_alert(f32 delta)
       this->velocity.x = this->velocity.z = 0.0f; // Stand on a spot
 
       // The direction has to be transformed if the target is behind a nc portal.
+      f32  target_height   = target->get_height();
+      vec3 ground_offset   = vec3{0.0f, target_height * 0.5f, 0.0f};
+      vec3 target_body_pos = this->follow_target_pos + ground_offset;
+
       vec3 rel_target_pos =
       (
-        current_path.target_transform_inv * vec4{this->follow_target_pos, 1.0f}
+        current_path.target_transform_inv * vec4{target_body_pos, 1.0f}
       ).xyz();
 
-      vec2 dir_to_target = normalize_or_zero(rel_target_pos.xz() - position_2d);
+      vec3 dir_to_target = normalize_or_zero(rel_target_pos - this->get_position());
 
-      // TODO: Make this 3 dimensional!
-      if (dir_to_target != VEC2_ZERO)
+      if (dir_to_target != VEC3_ZERO)
       {
-        this->facing = vec3{dir_to_target.x, 0.0f, dir_to_target.y};
+        this->facing = dir_to_target;
       }
       break;
     }
@@ -860,6 +863,20 @@ vec3 Enemy::get_eye_pos() const
 vec3 Enemy::get_facing() const
 {
   return this->facing;
+}
+
+//==============================================================================
+vec3 Enemy::get_facing_hor() const
+{
+  vec2 hor = this->get_facing_2d();
+  return vec3{hor.x, 0.0f, hor.y};
+}
+
+//==============================================================================
+vec2 Enemy::get_facing_2d() const
+{
+  vec2 hor = normalize_or(vec2{this->facing.x, this->facing.z}, VEC2_X);
+  return vec2{hor.x, hor.y};
 }
 
 //==============================================================================

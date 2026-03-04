@@ -33,8 +33,10 @@ public:
   const Appearance& get_appearance() const;
   const EnemyStats& get_stats()      const;
 
-  vec3 get_eye_pos() const;
-  vec3 get_facing()  const;
+  vec3 get_eye_pos()    const;
+  vec3 get_facing()     const;
+  vec3 get_facing_hor() const;
+  vec2 get_facing_2d()  const;
 
   void on_player_traversed_nc_portal(EntityID player, mat4 transform);
 

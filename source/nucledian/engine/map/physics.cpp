@@ -1188,6 +1188,13 @@ enum class CollectReportOnly
 };
 
 //==============================================================================
+enum class CheckHeight
+{
+  No,
+  Yes,
+};
+
+//==============================================================================
 struct EntityIdAndCoeff
 {
   EntityID id;
@@ -1195,11 +1202,16 @@ struct EntityIdAndCoeff
 };
 
 //==============================================================================
-template<CollectReportOnly Collect = CollectReportOnly::No>
+template
+<
+  CollectReportOnly Collect = CollectReportOnly::No,
+  CheckHeight DoCheckHeight = CheckHeight::No
+>
 struct CylCastEntityIntersector
 {
   EntityTypeMask                    report_only = 0;
   StackVector<EntityIdAndCoeff, 8>* collector   = nullptr;
+  f32                               height      = 0.0f;
 
   bool operator()
   (
@@ -1230,7 +1242,6 @@ struct CylCastEntityIntersector
   {
     vec3 pos = entity.get_position();
     f32  rad = entity.get_radius();
-    // f32  h   = entity.get_height();
 
     vec2 n_int = VEC2_ZERO;
     f32  c_int = FLT_MAX;
@@ -1242,6 +1253,21 @@ struct CylCastEntityIntersector
     if (!hit2d)
     {
       return false;
+    }
+
+    if constexpr (DoCheckHeight == CheckHeight::Yes)
+    {
+      f32 entity_h = entity.get_height();
+      f32 hit_height = ray_from.y + (ray_to.y - ray_from.y) * c_int;
+      f32 h_half = height * 0.5f;
+
+      nc_assert(height >= 0.0f);
+
+      if (hit_height + h_half < pos.y || hit_height - h_half > pos.y + entity_h)
+      {
+        // Under or above the entity
+        return false;
+      }
     }
     
     if constexpr (Collect == CollectReportOnly::Yes)
@@ -1292,8 +1318,15 @@ const
     );
   };
 
-  CylCastWallIntersector<StairWalkSettings::Disabled> wall_intersector(height);
-  CylCastEntityIntersector entity_intersector;
+  using EntityIntersector = CylCastEntityIntersector
+  <
+    CollectReportOnly::No, CheckHeight::Yes
+  >;
+
+  using WallIntersector = CylCastWallIntersector<StairWalkSettings::Disabled>;
+
+  WallIntersector   wall_intersector{.height = height};
+  EntityIntersector entity_intersector{.height = height};
 
   return phys_helpers::raycast_generic<vec3>
   (
