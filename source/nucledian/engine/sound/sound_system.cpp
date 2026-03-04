@@ -345,7 +345,7 @@ bool SoundSystem::try_init()
   if (retval < 0)
   {
     device_id = 0;
-    nc_expect(false, "SDL_mixer could not initialize! SDL_mixer Error: {0}\n", Mix_GetError());
+    nc_warn("SDL_mixer could not initialize! SDL_mixer Error: {0}\n", Mix_GetError());
     return false;
   }
 
@@ -355,7 +355,7 @@ bool SoundSystem::try_init()
   if (!ok)
   {
     nc_assert(false, "Could not allocate that many channels?");
-    nc_log("SDL mixer failed to allocate {} channels", CHANNEL_COUNT);
+    nc_warn("SDL mixer failed to allocate {} channels", CHANNEL_COUNT);
     return false;
   }
 
