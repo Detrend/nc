@@ -3782,7 +3782,7 @@
 					"activator": "MeatRoomIn",
 					"ceiling": 4.0,
 					"floor": 0.0,
-					"move_speed": 3.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 0.002,
@@ -4154,7 +4154,7 @@
 					"activator": "MeatRoomIn",
 					"ceiling": 4.0,
 					"floor": 0.0,
-					"move_speed": 2.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 0.002,
@@ -4211,7 +4211,7 @@
 					"activator": "MeatRoomIn",
 					"ceiling": 4.0,
 					"floor": 0.0,
-					"move_speed": 2.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 0.002,
@@ -4279,7 +4279,7 @@
 					"activator": "MeatRoomIn",
 					"ceiling": 4.0,
 					"floor": 0.0,
-					"move_speed": 2.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 0.002,
@@ -4347,7 +4347,7 @@
 					"activator": "MeatRoomIn",
 					"ceiling": 4.0,
 					"floor": 0.0,
-					"move_speed": 2.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 0.002,
@@ -4415,7 +4415,7 @@
 					"activator": "MeatRoomIn",
 					"ceiling": 4.0,
 					"floor": 0.0,
-					"move_speed": 2.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 0.002,
@@ -4483,7 +4483,7 @@
 					"activator": "MeatRoomOut",
 					"ceiling": 4.0,
 					"floor": 0.0,
-					"move_speed": 2.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 0.002,
@@ -4540,7 +4540,7 @@
 					"activator": "MeatRoomOut",
 					"ceiling": 4.0,
 					"floor": 0.0,
-					"move_speed": 2.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 0.002,
@@ -4608,7 +4608,7 @@
 					"activator": "MeatRoomOut",
 					"ceiling": 4.0,
 					"floor": 0.0,
-					"move_speed": 2.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 0.002,
@@ -4676,7 +4676,7 @@
 					"activator": "MeatRoomOut",
 					"ceiling": 4.0,
 					"floor": 0.0,
-					"move_speed": 2.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 0.002,
@@ -4744,7 +4744,7 @@
 					"activator": "MeatRoomOut",
 					"ceiling": 4.0,
 					"floor": 0.0,
-					"move_speed": 2.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 0.002,
@@ -4812,7 +4812,7 @@
 					"activator": "FacilityDoor",
 					"ceiling": 4.0,
 					"floor": 0.0,
-					"move_speed": 2.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 0.002,
@@ -4869,7 +4869,7 @@
 					"activator": "FacilityDoor",
 					"ceiling": 4.0,
 					"floor": 0.0,
-					"move_speed": 2.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 0.002,
@@ -4937,7 +4937,7 @@
 					"activator": "FacilityDoor",
 					"ceiling": 4.0,
 					"floor": 0.0,
-					"move_speed": 2.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 0.002,
@@ -5005,7 +5005,7 @@
 					"activator": "FacilityDoor",
 					"ceiling": 4.0,
 					"floor": 0.0,
-					"move_speed": 2.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 0.002,
@@ -5073,7 +5073,7 @@
 					"activator": "FacilityDoor",
 					"ceiling": 4.0,
 					"floor": 0.0,
-					"move_speed": 2.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 0.002,
@@ -6867,7 +6867,7 @@
 					"activator": "MeatRoomIn",
 					"ceiling": 4.0,
 					"floor": 0.0,
-					"move_speed": 3.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 0.002,
@@ -9423,7 +9423,7 @@
 					"activator": "MeatRoomOut",
 					"ceiling": 5.0,
 					"floor": 0.0,
-					"move_speed": 3.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 0.002,
@@ -15012,7 +15012,7 @@
 					"activator": "Elevator",
 					"ceiling": 20.0,
 					"floor": 8.0,
-					"move_speed": 2.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 20.0,
