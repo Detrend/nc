@@ -1346,7 +1346,7 @@ const
   // Note to self:
   // I thing that this might cause problems around smooth corners, but
   // it is questionable if such a case can happen in the game.
-  constexpr u32 MAX_ITERATIONS = 6;
+  constexpr u32 MAX_ITERATIONS = 12;
 
   // Note: we currently do not modify the velocity and that is not good.
   vec3 velocity = velocity_og * delta_time;
@@ -1403,6 +1403,14 @@ const
     // TODO: REMOVE THIS LATER!!! Assert prevention for Vojta demo
     if (!is_normal(hit.normal))
     {
+      break;
+    }
+
+    //This is a nasty hack to disallow us from going through walls
+    //works at 100FPS
+    if (iterations_left < 1 && length(velocity.xz()) < 0.025f)
+    {
+      velocity = vec3(0, velocity.y, 0);
       break;
     }
 
