@@ -200,6 +200,16 @@
 				15.1999998092651,
 				15.6000003814697,
 				5.1
+			],
+			"triggers": [
+				{
+					"activator": "CrissCrossLift2",
+					"can_turn_off": false,
+					"enemy_sensitive": false,
+					"player_sensitive": true,
+					"timeout": 0.0,
+					"while_alive": false
+				}
 			]
 		},
 		{
@@ -214,6 +224,16 @@
 				12.8000001907349,
 				15.6000003814697,
 				5.1
+			],
+			"triggers": [
+				{
+					"activator": "CrissCrossLift2",
+					"can_turn_off": false,
+					"enemy_sensitive": false,
+					"player_sensitive": true,
+					"timeout": 0.0,
+					"while_alive": false
+				}
 			]
 		},
 		{
