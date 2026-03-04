@@ -119,7 +119,7 @@ struct MapDynamics
     std::vector<u16>& out_values, f32 update_dt = 0.0f, bool notify = false
   );
 
-  void switch_wall_segment_trigger(SectorID sector, WallID wall, u8 segment);
+  bool switch_wall_segment_trigger(SectorID sector, WallID wall, u8 segment, bool& turned_on);
 
   struct RuntimeSegmentInfo
   {

@@ -322,12 +322,20 @@ void Player::handle_use(PlayerSpecificInputs curr_input, PlayerSpecificInputs pr
 
     if (hit.is_wall_hit())
     {
-      game.get_map_dynamics().switch_wall_segment_trigger
+      bool turned_on = false;
+
+      bool did_something = game.get_map_dynamics().switch_wall_segment_trigger
       (
         hit.hit.sector.sector_id,
         hit.hit.sector.wall_id,
-        hit.hit.sector.wall_segment_id
+        hit.hit.sector.wall_segment_id,
+        turned_on
       );
+
+      if (did_something)
+      {
+        SoundSystem::get().play_oneshot(Sounds::button);
+      }
     }
   }
 }

@@ -775,36 +775,38 @@ const
         .push_to(vertices_out);
     };
 
-    if (sector.floor_surface.should_show) {
-        const vec3 first_pt_grounded = with_y(first_pt, sector.floor_height);
-        for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
-        {
-            const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
-            const auto w1pos = this->walls[idx].pos;
-            const auto w2pos = this->walls[next_idx].pos;
-            const auto pt1 = vec3{ w1pos.x, sector.floor_height, w1pos.y };
-            const auto pt2 = vec3{ w2pos.x, sector.floor_height, w2pos.y };
+    if (sector.floor_surface.should_show)
+    {
+      const vec3 first_pt_grounded = with_y(first_pt, sector.floor_height);
+      for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
+      {
+        const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
+        const auto w1pos = this->walls[idx].pos;
+        const auto w2pos = this->walls[next_idx].pos;
+        const auto pt1 = vec3{ w1pos.x, sector.floor_height, w1pos.y };
+        const auto pt2 = vec3{ w2pos.x, sector.floor_height, w2pos.y };
 
-            // build floor triangle from the first point and 2 others
-            push_triangle(VEC3_Y, sector.floor_surface, first_pt_grounded, 0.0f, pt2, 0.0f, pt1, 0.0f);
-        }
+        // build floor triangle from the first point and 2 others
+        push_triangle(VEC3_Y, sector.floor_surface, first_pt_grounded, 0.0f, pt2, 0.0f, pt1, 0.0f);
+      }
     }
 
 
-    if (sector.ceil_surface.should_show) {
-        // then build ceiling
-        const vec3 first_pt_ceiled = with_y(first_pt, sector.ceil_height);
-        for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
-        {
-            const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
-            const auto w1pos = this->walls[idx].pos;
-            const auto w2pos = this->walls[next_idx].pos;
-            const auto pt1 = vec3{ w1pos.x, sector.ceil_height, w1pos.y };
-            const auto pt2 = vec3{ w2pos.x, sector.ceil_height, w2pos.y };
+    if (sector.ceil_surface.should_show)
+    {
+      // then build ceiling
+      const vec3 first_pt_ceiled = with_y(first_pt, sector.ceil_height);
+      for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
+      {
+        const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
+        const auto w1pos = this->walls[idx].pos;
+        const auto w2pos = this->walls[next_idx].pos;
+        const auto pt1 = vec3{ w1pos.x, sector.ceil_height, w1pos.y };
+        const auto pt2 = vec3{ w2pos.x, sector.ceil_height, w2pos.y };
 
-            // build floor triangle from the first point and 2 others
-            push_triangle(-VEC3_Y, sector.ceil_surface, first_pt_ceiled, 0.0f, pt1, 0.0f, pt2, 0.0f);
-        }
+        // build floor triangle from the first point and 2 others
+        push_triangle(-VEC3_Y, sector.ceil_surface, first_pt_ceiled, 0.0f, pt1, 0.0f, pt2, 0.0f);
+      }
     }
 
     // build walls

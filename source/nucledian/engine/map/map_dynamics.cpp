@@ -83,9 +83,9 @@ void MapDynamics::on_map_rebuild_and_entities_created()
 }
 
 //==============================================================================
-void MapDynamics::switch_wall_segment_trigger
+bool MapDynamics::switch_wall_segment_trigger
 (
-  SectorID sector, WallID wall, u8 segment
+  SectorID sector, WallID wall, u8 segment, bool& turned_on
 )
 {
   const SectorData& sd = map.sectors[sector];
@@ -96,7 +96,7 @@ void MapDynamics::switch_wall_segment_trigger
   auto it = segment_trigger_runtime.find(idx);
   if (it == segment_trigger_runtime.end())
   {
-    return;
+    return false;
   }
 
   RuntimeSegmentInfo& sinfo = it->second;
@@ -113,13 +113,20 @@ void MapDynamics::switch_wall_segment_trigger
     {
       sinfo.countdown = td.timeout;
     }
+
+    turned_on = true;
+    return true;
   }
   else if (td.can_turn_off)
   {
     // Turn off
     sinfo.triggered = false;
     sinfo.dirty = true;
+    turned_on = false;
+    return true;
   }
+
+  return false;
 }
 
 //==============================================================================

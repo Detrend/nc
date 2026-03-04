@@ -21,7 +21,9 @@
   xx(death,        0.1f)     \
   xx(melee_hit,    0.1f)     \
   xx(ui_click,     0.1f)     \
-  xx(shotgun,      0.1f)
+  xx(shotgun,      0.1f)     \
+  xx(door,         0.1f)     \
+  xx(button,       0.1f)
 
 #define NC_SOUND_DIRECTORY_CSTR "content/sound/"
 #define NC_SOUND_TYPE           ".wav"
