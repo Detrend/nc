@@ -794,7 +794,7 @@ mat4 PhysLevel::calc_portal_projection(const Portals& portals) const
 
   for (const auto&[wid, sid] : portals)
   {
-    transform = map.calc_portal_to_portal_projection(wid, sid) * transform;
+    transform = map.calc_portal_to_portal_projection(sid, wid) * transform;
   }
   return transform;
 }
