@@ -2193,7 +2193,7 @@
 			"alt_states": [
 				{
 					"activator": "CrissCrossLift1",
-					"ceiling": 7.0,
+					"ceiling": 7.5,
 					"floor": 5.0,
 					"move_speed": 1.0
 				}
@@ -3536,7 +3536,7 @@
 			"alt_states": [
 				{
 					"activator": "DoorToFinale",
-					"ceiling": 9.75,
+					"ceiling": 10.25,
 					"floor": 7.75,
 					"move_speed": 1.0
 				}
@@ -9735,7 +9735,7 @@
 			"alt_states": [
 				{
 					"activator": "DoorCrissCrossArena",
-					"ceiling": 12.5,
+					"ceiling": 13.0,
 					"floor": 10.5,
 					"move_speed": 1.0
 				}
