@@ -3616,7 +3616,7 @@
 			]
 		},
 		{
-			"ceiling": 9.75,
+			"ceiling": 10.5,
 			"ceiling_surface": {
 				"id": "wall_2",
 				"offset": [
@@ -3658,7 +3658,7 @@
 				[
 					{
 						"begin_height": 7.35,
-						"end_height": 9.75,
+						"end_height": 10.5,
 						"id": "wall_2",
 						"offset": [
 							0.0,
@@ -3688,7 +3688,7 @@
 					},
 					{
 						"begin_height": 7.751,
-						"end_height": 9.75,
+						"end_height": 10.5,
 						"id": "doors_middle",
 						"offset": [
 							0.0,
@@ -3704,7 +3704,7 @@
 				[
 					{
 						"begin_height": 7.35,
-						"end_height": 9.75,
+						"end_height": 10.5,
 						"id": "wall_2",
 						"offset": [
 							0.0,
@@ -3791,7 +3791,7 @@
 						"tile_rotations_count": 1
 					},
 					{
-						"begin_height": 9.75,
+						"begin_height": 10.5,
 						"end_height": 12.0,
 						"id": "mossy_rocks",
 						"offset": [
