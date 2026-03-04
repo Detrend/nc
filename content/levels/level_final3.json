@@ -198,7 +198,7 @@
 			"is_player": false,
 			"position": [
 				15.1999998092651,
-				15.6000003814697,
+				15.8000001907349,
 				5.1
 			],
 			"triggers": [
@@ -222,7 +222,7 @@
 			"is_player": false,
 			"position": [
 				12.8000001907349,
-				15.6000003814697,
+				15.8000001907349,
 				5.1
 			],
 			"triggers": [
@@ -246,7 +246,7 @@
 			"is_player": false,
 			"position": [
 				14.0,
-				15.6000003814697,
+				15.8000001907349,
 				5.1
 			],
 			"triggers": [
@@ -709,7 +709,7 @@
 			"position": [
 				-7.70000028610229,
 				10.3000001907349,
-				12.0
+				13.0
 			],
 			"radius": 10.0
 		},
@@ -725,7 +725,7 @@
 			"position": [
 				1.89999997615814,
 				10.1999998092651,
-				12.0
+				13.0
 			],
 			"radius": 10.0
 		},
@@ -1792,7 +1792,7 @@
 			17.0
 		],
 		[
-			20.1000003814697,
+			20.0,
 			17.0
 		],
 		[
@@ -1841,7 +1841,7 @@
 		],
 		[
 			12.0,
-			16.2000007629395
+			16.6000003814697
 		],
 		[
 			20.0,
@@ -1852,12 +1852,8 @@
 			19.0
 		],
 		[
-			20.0,
-			17.0
-		],
-		[
 			16.0,
-			16.2000007629395
+			16.6000003814697
 		],
 		[
 			22.0,
@@ -3828,7 +3824,7 @@
 			]
 		},
 		{
-			"ceiling": 12.5,
+			"ceiling": 13.5,
 			"ceiling_surface": {
 				"id": "rocks",
 				"offset": [
@@ -3877,7 +3873,7 @@
 				[
 					{
 						"begin_height": 7.0,
-						"end_height": 12.5,
+						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -3892,8 +3888,8 @@
 				],
 				[
 					{
-						"begin_height": 9.0,
-						"end_height": 12.5,
+						"begin_height": 10.0,
+						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -3909,7 +3905,7 @@
 				[
 					{
 						"begin_height": 7.0,
-						"end_height": 12.5,
+						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -3939,7 +3935,7 @@
 					},
 					{
 						"begin_height": 10.0,
-						"end_height": 12.5,
+						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -3955,7 +3951,7 @@
 				[
 					{
 						"begin_height": 7.0,
-						"end_height": 12.5,
+						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -3970,8 +3966,8 @@
 				],
 				[
 					{
-						"begin_height": 9.0,
-						"end_height": 12.5,
+						"begin_height": 10.0,
+						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -3987,7 +3983,7 @@
 				[
 					{
 						"begin_height": 7.0,
-						"end_height": 12.5,
+						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -4019,7 +4015,7 @@
 				[
 					{
 						"begin_height": 7.0,
-						"end_height": 12.5,
+						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -4035,7 +4031,7 @@
 				[
 					{
 						"begin_height": 12.0,
-						"end_height": 12.5,
+						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -4051,7 +4047,7 @@
 				[
 					{
 						"begin_height": 7.0,
-						"end_height": 12.5,
+						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -4083,7 +4079,7 @@
 			]
 		},
 		{
-			"ceiling": 12.5,
+			"ceiling": 13.5,
 			"ceiling_surface": {
 				"id": "rocks",
 				"offset": [
@@ -4125,7 +4121,7 @@
 				[
 					{
 						"begin_height": 10.5,
-						"end_height": 12.5,
+						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -4201,7 +4197,7 @@
 					},
 					{
 						"begin_height": 12.0,
-						"end_height": 12.5,
+						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -4217,7 +4213,7 @@
 				[
 					{
 						"begin_height": 10.5,
-						"end_height": 12.5,
+						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -4234,7 +4230,7 @@
 				[
 					{
 						"begin_height": 10.5,
-						"end_height": 12.5,
+						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -4250,7 +4246,7 @@
 			]
 		},
 		{
-			"ceiling": 12.5,
+			"ceiling": 13.5,
 			"ceiling_surface": {
 				"id": "rocks",
 				"offset": [
@@ -4292,7 +4288,7 @@
 				[
 					{
 						"begin_height": 10.5,
-						"end_height": 12.5,
+						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -4308,7 +4304,7 @@
 				[
 					{
 						"begin_height": 10.5,
-						"end_height": 12.5,
+						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -4325,7 +4321,7 @@
 				[
 					{
 						"begin_height": 10.5,
-						"end_height": 12.5,
+						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -4401,7 +4397,7 @@
 					},
 					{
 						"begin_height": 12.0,
-						"end_height": 12.5,
+						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -4417,7 +4413,7 @@
 			]
 		},
 		{
-			"ceiling": 9.0,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "rocks",
 				"offset": [
@@ -4458,7 +4454,7 @@
 				[
 					{
 						"begin_height": 7.0,
-						"end_height": 9.0,
+						"end_height": 10.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -4474,7 +4470,7 @@
 				[
 					{
 						"begin_height": 7.0,
-						"end_height": 9.0,
+						"end_height": 10.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -4491,7 +4487,7 @@
 				[
 					{
 						"begin_height": 7.0,
-						"end_height": 9.0,
+						"end_height": 10.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -4507,7 +4503,7 @@
 			]
 		},
 		{
-			"ceiling": 9.0,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "rocks",
 				"offset": [
@@ -4548,7 +4544,7 @@
 				[
 					{
 						"begin_height": 7.0,
-						"end_height": 9.0,
+						"end_height": 10.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -4564,7 +4560,7 @@
 				[
 					{
 						"begin_height": 7.0,
-						"end_height": 9.0,
+						"end_height": 10.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -4581,7 +4577,7 @@
 				[
 					{
 						"begin_height": 7.0,
-						"end_height": 9.0,
+						"end_height": 10.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -12853,8 +12849,8 @@
 				[
 					{
 						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "mossy_rocks",
+						"end_height": 3.0,
+						"id": "rocks",
 						"offset": [
 							0.0,
 							0.0
@@ -12866,22 +12862,7 @@
 						"tile_rotations_count": 1
 					}
 				],
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "mossy_rocks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
+				[],
 				[],
 				[
 					{
@@ -13363,7 +13344,7 @@
 				239,
 				238,
 				230,
-				244
+				229
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -13403,22 +13384,7 @@
 				],
 				[],
 				[],
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "mossy_rocks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
+				[],
 				[
 					{
 						"begin_height": 0.0,
@@ -13468,7 +13434,7 @@
 			"id": 129,
 			"points": [
 				241,
-				245,
+				244,
 				230,
 				238
 			],
@@ -13530,7 +13496,7 @@
 				222,
 				233,
 				230,
-				245
+				244
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -13611,9 +13577,9 @@
 			"id": 131,
 			"points": [
 				228,
-				246,
+				245,
 				242,
-				244
+				229
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -13652,22 +13618,7 @@
 					}
 				],
 				[],
-				[
-					{
-						"begin_height": 3.0,
-						"end_height": 5.0,
-						"id": "mossy_rocks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				]
+				[]
 			]
 		},
 		{
@@ -13700,10 +13651,10 @@
 			},
 			"id": 132,
 			"points": [
+				246,
 				247,
-				248,
 				242,
-				246
+				245
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -13790,11 +13741,11 @@
 			},
 			"id": 133,
 			"points": [
+				248,
 				249,
 				250,
-				251,
-				248,
-				247
+				247,
+				246
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 37,
@@ -13897,7 +13848,7 @@
 			},
 			"id": 134,
 			"points": [
-				252,
+				251,
 				235,
 				239,
 				243
@@ -13951,7 +13902,7 @@
 					"move_speed": 1.0
 				}
 			],
-			"ceiling": 10.0,
+			"ceiling": 7.0,
 			"ceiling_surface": {
 				"id": "rocks",
 				"offset": [
@@ -13980,7 +13931,7 @@
 			},
 			"id": 135,
 			"points": [
-				245,
+				244,
 				241,
 				225,
 				222
@@ -13992,7 +13943,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 10.0,
+						"end_height": 7.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14008,7 +13959,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 10.0,
+						"end_height": 7.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14024,7 +13975,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 10.0,
+						"end_height": 7.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14040,7 +13991,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 10.0,
+						"end_height": 7.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14064,7 +14015,7 @@
 					"move_speed": 1.0
 				}
 			],
-			"ceiling": 10.0,
+			"ceiling": 7.0,
 			"ceiling_surface": {
 				"id": "rocks",
 				"offset": [
@@ -14105,7 +14056,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 10.0,
+						"end_height": 7.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14121,7 +14072,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 10.0,
+						"end_height": 7.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14137,7 +14088,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 10.0,
+						"end_height": 7.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14153,7 +14104,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 10.0,
+						"end_height": 7.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14177,7 +14128,7 @@
 					"move_speed": 1.0
 				}
 			],
-			"ceiling": 10.0,
+			"ceiling": 7.0,
 			"ceiling_surface": {
 				"id": "rocks",
 				"offset": [
@@ -14218,7 +14169,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 10.0,
+						"end_height": 7.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14234,7 +14185,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 10.0,
+						"end_height": 7.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14250,7 +14201,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 10.0,
+						"end_height": 7.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14266,7 +14217,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 10.0,
+						"end_height": 7.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14311,10 +14262,10 @@
 			},
 			"id": 138,
 			"points": [
+				252,
 				253,
 				254,
-				255,
-				256
+				255
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 2,
@@ -14401,10 +14352,10 @@
 			},
 			"id": 139,
 			"points": [
+				256,
 				257,
-				258,
-				255,
-				254
+				254,
+				253
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -14476,10 +14427,10 @@
 			},
 			"id": 140,
 			"points": [
+				258,
 				259,
-				260,
-				255,
-				258
+				254,
+				257
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -14551,10 +14502,10 @@
 			},
 			"id": 141,
 			"points": [
+				260,
 				261,
-				262,
-				257,
-				254
+				256,
+				253
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -14626,10 +14577,10 @@
 			},
 			"id": 142,
 			"points": [
-				263,
-				264,
 				262,
-				261
+				263,
+				261,
+				260
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -14701,10 +14652,10 @@
 			},
 			"id": 143,
 			"points": [
-				265,
-				266,
 				264,
-				263
+				265,
+				263,
+				262
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -14776,10 +14727,10 @@
 			},
 			"id": 144,
 			"points": [
+				266,
 				267,
 				268,
-				269,
-				270
+				269
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 153,
@@ -14866,10 +14817,10 @@
 			},
 			"id": 145,
 			"points": [
+				270,
 				271,
-				272,
-				269,
-				268
+				268,
+				267
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -14986,10 +14937,10 @@
 			},
 			"id": 146,
 			"points": [
+				272,
 				273,
 				274,
-				275,
-				268
+				267
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 163,
@@ -15076,10 +15027,10 @@
 			},
 			"id": 147,
 			"points": [
-				276,
-				271,
-				268,
-				275
+				275,
+				270,
+				267,
+				274
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -15136,10 +15087,10 @@
 			},
 			"id": 148,
 			"points": [
+				276,
 				277,
 				278,
-				279,
-				275
+				274
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 159,
@@ -15226,10 +15177,10 @@
 			},
 			"id": 149,
 			"points": [
-				280,
-				276,
+				279,
 				275,
-				279
+				274,
+				278
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -15286,10 +15237,10 @@
 			},
 			"id": 150,
 			"points": [
+				280,
 				281,
-				282,
-				269,
-				279
+				268,
+				278
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 155,
@@ -15376,10 +15327,10 @@
 			},
 			"id": 151,
 			"points": [
-				272,
-				280,
+				271,
 				279,
-				269
+				278,
+				268
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -15444,10 +15395,10 @@
 			},
 			"id": 152,
 			"points": [
-				258,
 				257,
-				283,
-				284
+				256,
+				282,
+				283
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -15519,10 +15470,10 @@
 			},
 			"id": 153,
 			"points": [
-				285,
-				286,
 				284,
-				283
+				285,
+				283,
+				282
 			],
 			"portal_destination_wall": 3,
 			"portal_target": 144,
@@ -15632,10 +15583,10 @@
 			},
 			"id": 154,
 			"points": [
+				286,
+				258,
 				287,
-				259,
-				288,
-				289
+				288
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -15707,10 +15658,10 @@
 			},
 			"id": 155,
 			"points": [
-				290,
-				291,
 				289,
-				288
+				290,
+				288,
+				287
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 150,
@@ -15812,10 +15763,10 @@
 			},
 			"id": 156,
 			"points": [
-				292,
-				260,
+				291,
 				259,
-				287
+				258,
+				286
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -15887,10 +15838,10 @@
 			},
 			"id": 157,
 			"points": [
-				293,
-				294,
 				292,
-				287
+				293,
+				291,
+				286
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -15970,10 +15921,10 @@
 			},
 			"id": 158,
 			"points": [
-				266,
-				293,
-				295,
-				296
+				265,
+				292,
+				294,
+				295
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -16045,10 +15996,10 @@
 			},
 			"id": 159,
 			"points": [
-				297,
-				298,
 				296,
-				295
+				297,
+				295,
+				294
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 148,
@@ -16150,12 +16101,12 @@
 			},
 			"id": 160,
 			"points": [
-				265,
+				264,
+				298,
 				299,
-				300,
-				294,
 				293,
-				266
+				292,
+				265
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -16259,10 +16210,10 @@
 			},
 			"id": 161,
 			"points": [
-				301,
-				302,
 				300,
-				299
+				301,
+				299,
+				298
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -16417,10 +16368,10 @@
 			},
 			"id": 162,
 			"points": [
-				262,
-				264,
-				303,
-				304
+				261,
+				263,
+				302,
+				303
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -16492,10 +16443,10 @@
 			},
 			"id": 163,
 			"points": [
-				305,
-				306,
 				304,
-				303
+				305,
+				303,
+				302
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 146,

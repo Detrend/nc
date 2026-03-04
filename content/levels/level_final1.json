@@ -821,7 +821,7 @@
 			"position": [
 				-41.4000015258789,
 				26.0,
-				7.4
+				8.2
 			],
 			"radius": 7.0
 		},
@@ -1592,12 +1592,20 @@
 			16.8000011444092
 		],
 		[
-			7.20000028610229,
+			6.59999990463257,
+			13.6000003814697
+		],
+		[
+			6.40000009536743,
+			16.2000007629395
+		],
+		[
+			7.40000009536743,
 			13.8000001907349
 		],
 		[
-			7.0,
-			16.6000003814697
+			7.40000009536743,
+			16.3999996185303
 		],
 		[
 			8.0,
@@ -1614,6 +1622,22 @@
 		[
 			9.60000038146973,
 			17.3999996185303
+		],
+		[
+			10.8000001907349,
+			14.4000005722046
+		],
+		[
+			11.1999998092651,
+			17.2000007629395
+		],
+		[
+			13.6000003814697,
+			13.8000001907349
+		],
+		[
+			13.0,
+			17.0
 		],
 		[
 			17.8000011444092,
@@ -9784,7 +9808,7 @@
 				162
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 101,
+			"portal_target": 104,
 			"portal_wall": 0,
 			"wall_surfaces": [
 				[
@@ -10387,7 +10411,7 @@
 				[
 					{
 						"begin_height": 0.0,
-						"end_height": 1.0,
+						"end_height": 0.5,
 						"id": "red_wall_2",
 						"offset": [
 							0.0,
@@ -10613,7 +10637,7 @@
 				"tile_rotations_count": 1
 			},
 			"debug_name": "Sector-9254d",
-			"floor": 1.0,
+			"floor": 0.5,
 			"floor_surface": {
 				"id": "red_wall",
 				"offset": [
@@ -10639,8 +10663,8 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 1.0,
-						"end_height": 2.0,
+						"begin_height": 0.5,
+						"end_height": 1.0,
 						"id": "red_wall_2",
 						"offset": [
 							0.0,
@@ -10655,7 +10679,7 @@
 				],
 				[
 					{
-						"begin_height": 1.0,
+						"begin_height": 0.5,
 						"end_height": 6.0,
 						"id": "red_wall",
 						"offset": [
@@ -10685,6 +10709,96 @@
 						"tile_rotations_count": 1
 					}
 				],
+				[
+					{
+						"begin_height": 0.5,
+						"end_height": 6.0,
+						"id": "red_wall",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				]
+			]
+		},
+		{
+			"ceiling": 6.0,
+			"ceiling_surface": {
+				"id": "red_wall",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"debug_name": "Sector-9254d2",
+			"floor": 1.0,
+			"floor_surface": {
+				"id": "red_wall",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"id": 80,
+			"points": [
+				185,
+				186,
+				184,
+				183
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[
+					{
+						"begin_height": 1.0,
+						"end_height": 1.5,
+						"id": "red_wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 1.0,
+						"end_height": 6.0,
+						"id": "red_wall",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
 				[
 					{
 						"begin_height": 1.0,
@@ -10718,7 +10832,7 @@
 				"tile_rotations_count": 1
 			},
 			"debug_name": "Sector-9254e",
-			"floor": 2.0,
+			"floor": 1.5,
 			"floor_surface": {
 				"id": "meat_wall_2",
 				"offset": [
@@ -10731,12 +10845,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 80,
+			"id": 81,
 			"points": [
-				185,
+				187,
+				188,
 				186,
-				184,
-				183
+				185
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -10744,8 +10858,8 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 2.0,
-						"end_height": 3.0,
+						"begin_height": 1.5,
+						"end_height": 2.0,
 						"id": "meat_wall_2",
 						"offset": [
 							0.0,
@@ -10760,7 +10874,7 @@
 				],
 				[
 					{
-						"begin_height": 2.0,
+						"begin_height": 1.5,
 						"end_height": 8.0,
 						"id": "meat_wall_2",
 						"offset": [
@@ -10792,7 +10906,7 @@
 				],
 				[
 					{
-						"begin_height": 2.0,
+						"begin_height": 1.5,
 						"end_height": 8.0,
 						"id": "meat_wall_2",
 						"offset": [
@@ -10823,6 +10937,186 @@
 				"tile_rotations_count": 1
 			},
 			"debug_name": "Sector-9254f",
+			"floor": 2.0,
+			"floor_surface": {
+				"id": "meat_wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"id": 82,
+			"points": [
+				189,
+				190,
+				188,
+				187
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[
+					{
+						"begin_height": 2.0,
+						"end_height": 2.5,
+						"id": "meat_wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 2.0,
+						"end_height": 8.0,
+						"id": "meat_wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 2.0,
+						"end_height": 8.0,
+						"id": "meat_wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				]
+			]
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "meat_wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"debug_name": "Sector-9254f2",
+			"floor": 2.5,
+			"floor_surface": {
+				"id": "meat_wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"id": 83,
+			"points": [
+				191,
+				192,
+				190,
+				189
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[
+					{
+						"begin_height": 2.5,
+						"end_height": 3.0,
+						"id": "meat_wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 2.5,
+						"end_height": 8.0,
+						"id": "meat_wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 2.5,
+						"end_height": 8.0,
+						"id": "meat_wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				]
+			]
+		},
+		{
+			"ceiling": 8.0,
+			"ceiling_surface": {
+				"id": "meat_wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"debug_name": "Sector-9254f2a",
 			"floor": 3.0,
 			"floor_surface": {
 				"id": "meat_wall_2",
@@ -10836,18 +11130,33 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 81,
+			"id": 84,
 			"points": [
-				187,
-				188,
-				186,
-				185
+				193,
+				194,
+				192,
+				191
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
-				[],
+				[
+					{
+						"begin_height": 3.0,
+						"end_height": 3.5,
+						"id": "meat_wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
 				[
 					{
 						"begin_height": 3.0,
@@ -10884,7 +11193,7 @@
 			]
 		},
 		{
-			"ceiling": 8.0,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "meat_wall_2",
 				"offset": [
@@ -10898,7 +11207,7 @@
 				"tile_rotations_count": 1
 			},
 			"debug_name": "Sector-9254g",
-			"floor": 3.0,
+			"floor": 3.5,
 			"floor_surface": {
 				"id": "meat_wall_2",
 				"offset": [
@@ -10911,12 +11220,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 82,
+			"id": 85,
 			"points": [
-				189,
-				190,
-				188,
-				187
+				195,
+				196,
+				194,
+				193
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -10924,7 +11233,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 3.0,
+						"begin_height": 3.5,
 						"end_height": 4.0,
 						"id": "meat_wall_2",
 						"offset": [
@@ -10940,8 +11249,8 @@
 				],
 				[
 					{
-						"begin_height": 3.0,
-						"end_height": 8.0,
+						"begin_height": 3.5,
+						"end_height": 10.0,
 						"id": "meat_wall_2",
 						"offset": [
 							0.0,
@@ -10954,11 +11263,26 @@
 						"tile_rotations_count": 1
 					}
 				],
-				[],
 				[
 					{
-						"begin_height": 3.0,
-						"end_height": 8.0,
+						"begin_height": 8.0,
+						"end_height": 10.0,
+						"id": "meat_wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 3.5,
+						"end_height": 10.0,
 						"id": "meat_wall_2",
 						"offset": [
 							0.0,
@@ -11001,15 +11325,15 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 83,
+			"id": 86,
 			"points": [
-				191,
-				192,
-				193,
-				194,
-				195,
-				190,
-				189
+				197,
+				198,
+				199,
+				200,
+				201,
+				196,
+				195
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -11097,7 +11421,7 @@
 				],
 				[
 					{
-						"begin_height": 8.0,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "meat_wall_2",
 						"offset": [
@@ -11157,12 +11481,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 84,
+			"id": 87,
 			"points": [
-				196,
-				197,
-				195,
-				194
+				202,
+				203,
+				201,
+				200
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -11247,17 +11571,17 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 85,
+			"id": 88,
 			"points": [
-				198,
-				199,
-				200,
-				201,
-				202,
-				197,
-				196,
+				204,
+				205,
+				206,
+				207,
+				208,
 				203,
-				204
+				202,
+				209,
+				210
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -11481,15 +11805,15 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 86,
+			"id": 89,
 			"points": [
-				205,
-				206,
-				204,
-				203
+				211,
+				212,
+				210,
+				209
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 98,
+			"portal_target": 101,
 			"portal_wall": 0,
 			"wall_surfaces": [
 				[
@@ -11571,12 +11895,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 87,
+			"id": 90,
 			"points": [
 				172,
 				171,
-				200,
-				199
+				206,
+				205
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -11646,12 +11970,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 88,
+			"id": 91,
 			"points": [
-				207,
-				208,
-				192,
-				191
+				213,
+				214,
+				198,
+				197
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -11736,16 +12060,16 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 89,
+			"id": 92,
 			"points": [
-				209,
-				210,
-				211,
-				212,
-				213,
+				215,
+				216,
+				217,
+				218,
+				219,
+				220,
 				214,
-				208,
-				207
+				213
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -11879,16 +12203,16 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 90,
+			"id": 93,
 			"points": [
-				215,
-				216,
-				214,
-				213,
-				217,
-				218,
+				221,
+				222,
+				220,
 				219,
-				220
+				223,
+				224,
+				225,
+				226
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -12052,13 +12376,13 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 91,
+			"id": 94,
 			"points": [
-				221,
+				227,
+				228,
 				222,
-				216,
-				215,
-				223
+				221,
+				229
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -12129,12 +12453,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 92,
+			"id": 95,
 			"points": [
-				220,
-				224,
-				223,
-				215
+				226,
+				230,
+				229,
+				221
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -12204,12 +12528,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 93,
+			"id": 96,
 			"points": [
-				219,
 				225,
-				224,
-				220
+				231,
+				230,
+				226
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -12279,12 +12603,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 94,
+			"id": 97,
 			"points": [
-				218,
-				226,
-				225,
-				219
+				224,
+				232,
+				231,
+				225
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -12354,12 +12678,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 95,
+			"id": 98,
 			"points": [
-				217,
-				227,
-				226,
-				218
+				223,
+				233,
+				232,
+				224
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -12429,12 +12753,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 96,
+			"id": 99,
 			"points": [
-				213,
-				212,
-				227,
-				217
+				219,
+				218,
+				233,
+				223
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -12519,12 +12843,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 97,
+			"id": 100,
 			"points": [
+				234,
+				235,
 				228,
-				229,
-				222,
-				221
+				227
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -12609,16 +12933,16 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 98,
+			"id": 101,
 			"points": [
-				230,
-				231,
-				229,
-				228,
-				232
+				236,
+				237,
+				235,
+				234,
+				238
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 86,
+			"portal_target": 89,
 			"portal_wall": 0,
 			"wall_surfaces": [
 				[
@@ -12731,17 +13055,17 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 99,
+			"id": 102,
 			"points": [
-				233,
-				234,
-				235,
+				239,
+				240,
+				241,
 				45,
 				37,
 				36,
 				43,
-				236,
-				237
+				242,
+				243
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -12935,12 +13259,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 100,
+			"id": 103,
 			"points": [
-				238,
-				239,
-				234,
-				233
+				244,
+				245,
+				240,
+				239
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -13010,16 +13334,16 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 101,
+			"id": 104,
 			"points": [
-				240,
-				241,
-				242,
-				243,
-				244,
+				246,
+				247,
+				248,
+				249,
+				250,
+				251,
 				245,
-				239,
-				238
+				244
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 72,
@@ -13211,11 +13535,11 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 102,
+			"id": 105,
 			"points": [
-				246,
-				242,
-				241
+				252,
+				248,
+				247
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -13284,11 +13608,11 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 103,
+			"id": 106,
 			"points": [
-				246,
-				243,
-				242
+				252,
+				249,
+				248
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -13342,12 +13666,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 104,
+			"id": 107,
 			"points": [
-				247,
-				248,
-				245,
-				244
+				253,
+				254,
+				251,
+				250
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -13417,12 +13741,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 105,
+			"id": 108,
 			"points": [
-				249,
-				250,
-				248,
-				247
+				255,
+				256,
+				254,
+				253
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -13492,16 +13816,16 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 106,
+			"id": 109,
 			"points": [
-				251,
-				252,
-				253,
-				254,
-				255,
+				257,
+				258,
+				259,
+				260,
+				261,
+				262,
 				256,
-				250,
-				249
+				255
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -13678,12 +14002,12 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"id": 107,
+			"id": 110,
 			"points": [
-				257,
+				263,
+				264,
 				258,
-				252,
-				251
+				257
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -13768,12 +14092,12 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"id": 108,
+			"id": 111,
 			"points": [
-				258,
+				264,
+				265,
 				259,
-				253,
-				252
+				258
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -13858,12 +14182,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 109,
+			"id": 112,
 			"points": [
-				260,
+				266,
+				267,
 				261,
-				255,
-				254
+				260
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -13933,12 +14257,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 110,
+			"id": 113,
 			"points": [
-				262,
-				263,
-				261,
-				260
+				268,
+				269,
+				267,
+				266
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -14023,14 +14347,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 111,
+			"id": 114,
 			"points": [
-				264,
-				265,
-				266,
-				267,
-				268,
-				269,
 				270,
 				271,
 				272,
@@ -14041,8 +14359,14 @@
 				277,
 				278,
 				279,
-				262,
-				260
+				280,
+				281,
+				282,
+				283,
+				284,
+				285,
+				268,
+				266
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -14291,13 +14615,13 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 112,
+			"id": 115,
 			"points": [
-				280,
-				281,
-				282,
-				269,
-				268
+				286,
+				287,
+				288,
+				275,
+				274
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -14368,12 +14692,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 113,
+			"id": 116,
 			"points": [
-				283,
-				284,
-				281,
-				280
+				289,
+				290,
+				287,
+				286
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -14428,12 +14752,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 114,
+			"id": 117,
 			"points": [
-				285,
-				286,
-				265,
-				264
+				291,
+				292,
+				271,
+				270
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -14488,12 +14812,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 115,
+			"id": 118,
 			"points": [
-				287,
-				288,
-				286,
-				285
+				293,
+				294,
+				292,
+				291
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -14563,18 +14887,18 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 116,
+			"id": 119,
 			"points": [
-				289,
-				290,
-				291,
-				292,
-				282,
-				281,
-				284,
-				293,
+				295,
+				296,
+				297,
+				298,
 				288,
-				287
+				287,
+				290,
+				299,
+				294,
+				293
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -14718,14 +15042,14 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 117,
+			"id": 120,
 			"points": [
-				294,
-				295,
-				291,
-				290,
+				300,
+				301,
+				297,
 				296,
-				297
+				302,
+				303
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -14857,12 +15181,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 118,
+			"id": 121,
 			"points": [
+				304,
 				298,
-				292,
-				291,
-				295
+				297,
+				301
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -14932,12 +15256,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 119,
+			"id": 122,
 			"points": [
-				299,
-				300,
-				292,
-				298
+				305,
+				306,
+				298,
+				304
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -15007,16 +15331,16 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 120,
+			"id": 123,
 			"points": [
-				301,
-				302,
-				270,
-				269,
-				282,
-				292,
-				300,
-				303
+				307,
+				308,
+				276,
+				275,
+				288,
+				298,
+				306,
+				309
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -15165,12 +15489,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 121,
+			"id": 124,
 			"points": [
-				304,
-				305,
-				301,
-				303
+				310,
+				311,
+				307,
+				309
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -15178,9 +15502,9 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 12.0,
-						"end_height": 16.0,
-						"id": "red_wall",
+						"begin_height": 8.0,
+						"end_height": 9.0,
+						"id": "red_wall_2",
 						"offset": [
 							0.0,
 							0.0
@@ -15228,7 +15552,7 @@
 			]
 		},
 		{
-			"ceiling": 12.0,
+			"ceiling": 16.0,
 			"ceiling_surface": {
 				"id": "red_wall",
 				"offset": [
@@ -15242,7 +15566,7 @@
 				"tile_rotations_count": 1
 			},
 			"debug_name": "Sector-1865zf",
-			"floor": 8.0,
+			"floor": 9.0,
 			"floor_surface": {
 				"id": "red_wall",
 				"offset": [
@@ -15255,26 +15579,24 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 122,
+			"id": 125,
 			"points": [
-				306,
-				307,
-				308,
-				309,
-				305,
-				304
+				312,
+				313,
+				314,
+				315,
+				311,
+				310
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				[],
-				[],
-				[],
 				[
 					{
-						"begin_height": 8.0,
-						"end_height": 12.0,
+						"begin_height": 14.0,
+						"end_height": 16.0,
 						"id": "red_wall",
 						"offset": [
 							0.0,
@@ -15290,8 +15612,25 @@
 				[],
 				[
 					{
-						"begin_height": 8.0,
-						"end_height": 12.0,
+						"begin_height": 9.0,
+						"end_height": 16.0,
+						"id": "red_wall",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 9.0,
+						"end_height": 16.0,
 						"id": "red_wall",
 						"offset": [
 							0.0,
@@ -15307,7 +15646,7 @@
 			]
 		},
 		{
-			"ceiling": 12.0,
+			"ceiling": 14.0,
 			"ceiling_surface": {
 				"id": "red_wall",
 				"offset": [
@@ -15321,16 +15660,16 @@
 				"tile_rotations_count": 1
 			},
 			"debug_name": "Sector-1865zi",
-			"floor": 7.2,
+			"floor": 8.0,
 			"floor_surface": {
 				"show": false
 			},
-			"id": 123,
+			"id": 126,
 			"points": [
-				310,
-				311,
-				308,
-				307
+				316,
+				317,
+				314,
+				313
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -15348,8 +15687,8 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 7.2,
-						"end_height": 12.0,
+						"begin_height": 8.0,
+						"end_height": 14.0,
 						"id": "red_wall",
 						"offset": [
 							0.0,
@@ -15364,8 +15703,8 @@
 				],
 				[
 					{
-						"begin_height": 7.2,
-						"end_height": 8.0,
+						"begin_height": 8.0,
+						"end_height": 9.0,
 						"id": "red_wall",
 						"offset": [
 							0.0,
@@ -15380,8 +15719,8 @@
 				],
 				[
 					{
-						"begin_height": 7.2,
-						"end_height": 8.0,
+						"begin_height": 8.0,
+						"end_height": 9.0,
 						"id": "red_wall",
 						"offset": [
 							0.0,
@@ -15396,8 +15735,8 @@
 				],
 				[
 					{
-						"begin_height": 7.2,
-						"end_height": 8.0,
+						"begin_height": 8.0,
+						"end_height": 9.0,
 						"id": "red_wall",
 						"offset": [
 							0.0,
@@ -15413,7 +15752,7 @@
 			]
 		},
 		{
-			"ceiling": 12.0,
+			"ceiling": 16.0,
 			"ceiling_surface": {
 				"id": "red_wall",
 				"offset": [
@@ -15427,7 +15766,7 @@
 				"tile_rotations_count": 1
 			},
 			"debug_name": "Sector-1865zh",
-			"floor": 8.0,
+			"floor": 9.0,
 			"floor_surface": {
 				"id": "red_wall",
 				"offset": [
@@ -15440,12 +15779,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 124,
+			"id": 127,
 			"points": [
-				312,
-				310,
-				307,
-				306
+				318,
+				316,
+				313,
+				312
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -15453,8 +15792,24 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 8.0,
-						"end_height": 12.0,
+						"begin_height": 9.0,
+						"end_height": 16.0,
+						"id": "red_wall",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 14.0,
+						"end_height": 16.0,
 						"id": "red_wall",
 						"offset": [
 							0.0,
@@ -15468,11 +15823,10 @@
 					}
 				],
 				[],
-				[],
 				[
 					{
-						"begin_height": 8.0,
-						"end_height": 12.0,
+						"begin_height": 9.0,
+						"end_height": 16.0,
 						"id": "red_wall",
 						"offset": [
 							0.0,
@@ -15488,7 +15842,7 @@
 			]
 		},
 		{
-			"ceiling": 12.0,
+			"ceiling": 16.0,
 			"ceiling_surface": {
 				"id": "red_wall",
 				"offset": [
@@ -15502,7 +15856,7 @@
 				"tile_rotations_count": 1
 			},
 			"debug_name": "Sector-1865zg",
-			"floor": 8.0,
+			"floor": 9.0,
 			"floor_surface": {
 				"id": "red_wall",
 				"offset": [
@@ -15515,12 +15869,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 125,
+			"id": 128,
 			"points": [
-				311,
-				313,
-				309,
-				308
+				317,
+				319,
+				315,
+				314
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -15528,8 +15882,8 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 8.0,
-						"end_height": 12.0,
+						"begin_height": 9.0,
+						"end_height": 16.0,
 						"id": "red_wall",
 						"offset": [
 							0.0,
@@ -15544,8 +15898,8 @@
 				],
 				[
 					{
-						"begin_height": 8.0,
-						"end_height": 12.0,
+						"begin_height": 9.0,
+						"end_height": 16.0,
 						"id": "red_wall",
 						"offset": [
 							0.0,
@@ -15559,7 +15913,22 @@
 					}
 				],
 				[],
-				[]
+				[
+					{
+						"begin_height": 14.0,
+						"end_height": 16.0,
+						"id": "red_wall",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				]
 			]
 		},
 		{
@@ -15590,12 +15959,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 126,
+			"id": 129,
 			"points": [
-				314,
-				315,
-				297,
-				296
+				320,
+				321,
+				303,
+				302
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -15740,12 +16109,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 127,
+			"id": 130,
 			"points": [
-				316,
-				266,
-				265,
-				286
+				322,
+				272,
+				271,
+				292
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -15800,14 +16169,14 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 128,
+			"id": 131,
 			"points": [
-				316,
-				293,
-				284,
-				283,
-				267,
-				266
+				322,
+				299,
+				290,
+				289,
+				273,
+				272
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -15879,12 +16248,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 129,
+			"id": 132,
 			"points": [
-				283,
-				280,
-				268,
-				267
+				289,
+				286,
+				274,
+				273
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -15924,12 +16293,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 130,
+			"id": 133,
 			"points": [
-				288,
-				293,
-				316,
-				286
+				294,
+				299,
+				322,
+				292
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -15969,12 +16338,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 131,
+			"id": 134,
 			"points": [
-				279,
-				317,
-				263,
-				262
+				285,
+				323,
+				269,
+				268
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -16044,12 +16413,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 132,
+			"id": 135,
 			"points": [
-				278,
-				318,
-				317,
-				279
+				284,
+				324,
+				323,
+				285
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -16119,12 +16488,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 133,
+			"id": 136,
 			"points": [
-				277,
-				319,
-				318,
-				278
+				283,
+				325,
+				324,
+				284
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -16194,12 +16563,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 134,
+			"id": 137,
 			"points": [
-				276,
-				320,
-				319,
-				277
+				282,
+				326,
+				325,
+				283
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -16269,12 +16638,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 135,
+			"id": 138,
 			"points": [
-				275,
-				321,
-				320,
-				276
+				281,
+				327,
+				326,
+				282
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -16344,12 +16713,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 136,
+			"id": 139,
 			"points": [
-				274,
-				322,
-				321,
-				275
+				280,
+				328,
+				327,
+				281
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -16419,12 +16788,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 137,
+			"id": 140,
 			"points": [
-				273,
-				323,
-				322,
-				274
+				279,
+				329,
+				328,
+				280
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -16494,12 +16863,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 138,
+			"id": 141,
 			"points": [
-				272,
-				324,
-				323,
-				273
+				278,
+				330,
+				329,
+				279
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -16569,12 +16938,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 139,
+			"id": 142,
 			"points": [
-				271,
-				325,
-				324,
-				272
+				277,
+				331,
+				330,
+				278
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -16644,12 +17013,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 140,
+			"id": 143,
 			"points": [
-				270,
-				302,
-				325,
-				271
+				276,
+				308,
+				331,
+				277
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -16698,7 +17067,7 @@
 			"position": [
 				-40.0,
 				26.2000007629395,
-				7.4
+				8.2
 			],
 			"texture": "qwantani_night_puresky_1k",
 			"use_gamma_correction": false
