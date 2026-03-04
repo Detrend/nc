@@ -740,7 +740,7 @@ bool Engine::should_quit() const
 //==============================================================================
 bool Engine::should_ammo_hp_hud_be_visible() const
 {
-  constexpr auto UI_INVISIBLE_STATES =
+  const auto UI_INVISIBLE_STATES =
   {
     GameState::menu,       // In menu, we do not want to see the HUD
     GameState::transition, // Nor in level transition screen
