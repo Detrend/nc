@@ -1100,7 +1100,7 @@ source = NodePath("../../../Activators/CrissCrossLift1")
 floor_mode = 2
 floor_height = 5.0
 ceiling_mode = 2
-ceiling_height = 7.0
+ceiling_height = 7.5
 
 [node name="Sector-8852a" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_yr043")]
 position = Vector2(20, 10)
@@ -1227,7 +1227,7 @@ source = NodePath("../../../Activators/DoorToFinale")
 floor_mode = 2
 floor_height = 7.75
 ceiling_mode = 2
-ceiling_height = 9.75
+ceiling_height = 10.25
 
 [node name="Sector-8851k3a" parent="Sectors" instance=ExtResource("2_yr043")]
 position = Vector2(20, 10)
@@ -1912,7 +1912,7 @@ source = NodePath("../../../Activators/DoorCrissCrossArena")
 floor_mode = 2
 floor_height = 10.5
 ceiling_mode = 2
-ceiling_height = 12.5
+ceiling_height = 13.0
 
 [node name="Sector-8851v2a" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_yr043")]
 position = Vector2(20, 10)

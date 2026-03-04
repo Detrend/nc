@@ -1,4 +1,4 @@
-[gd_scene load_steps=181 format=3 uid="uid://ntcc2v6lwf2q"]
+[gd_scene load_steps=180 format=3 uid="uid://ntcc2v6lwf2q"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_qh6nn"]
 [ext_resource type="Script" uid="uid://b8tkglirbwf1e" path="res://scripts/reactivity/ActivatorPool.gd" id="2_dkf2s"]
@@ -18,7 +18,6 @@
 [ext_resource type="Resource" uid="uid://boupypkadrc5s" path="res://materials/lvl1/facility_room.tres" id="11_xgfn7"]
 [ext_resource type="Resource" uid="uid://cfqh4t2e67b3j" path="res://materials/lvl1/exit.tres" id="13_exjrj"]
 [ext_resource type="Resource" uid="uid://b2d6bfp27kao8" path="res://material_textures/composites/Button2_3D_gray.tres" id="18_5x42g"]
-[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/sector/Sector.gd" id="21_0vebr"]
 [ext_resource type="Resource" uid="uid://d2vj11fjtuqye" path="res://material_textures/composites/Button2b_3D_gray.tres" id="21_5x42g"]
 [ext_resource type="PackedScene" uid="uid://cpyr2arwj8evp" path="res://prefabs/Props/HangingBody1.tscn" id="23_ddl2b"]
 [ext_resource type="PackedScene" uid="uid://c76363mfckhet" path="res://prefabs/Props/HangingBody2.tscn" id="24_qk32x"]
@@ -1029,7 +1028,6 @@ sector_material = ExtResource("7_exjrj")
 [node name="Configuration" type="Node" parent="Sectors/Sector-76b" node_paths=PackedStringArray("source")]
 script = ExtResource("25_iogyf")
 source = NodePath("../../../Activators/MeatRoomIn")
-move_speed = 3.0
 ceiling_mode = 2
 ceiling_height = 2.0
 
@@ -1071,7 +1069,6 @@ sector_material = ExtResource("9_fdotx")
 [node name="Configuration" type="Node" parent="Sectors/Door/Sector-76a" node_paths=PackedStringArray("source")]
 script = ExtResource("25_iogyf")
 source = NodePath("../../../../Activators/MeatRoomIn")
-move_speed = 2.0
 ceiling_mode = 2
 ceiling_height = 2.0
 
@@ -1086,7 +1083,6 @@ sector_material = ExtResource("10_4o2xe")
 [node name="Configuration" type="Node" parent="Sectors/Door/Sector-76e" node_paths=PackedStringArray("source")]
 script = ExtResource("25_iogyf")
 source = NodePath("../../../../Activators/MeatRoomIn")
-move_speed = 2.0
 ceiling_mode = 2
 ceiling_height = 2.0
 
@@ -1101,7 +1097,6 @@ sector_material = ExtResource("11_8qlis")
 [node name="Configuration" type="Node" parent="Sectors/Door/Sector-76d" node_paths=PackedStringArray("source")]
 script = ExtResource("25_iogyf")
 source = NodePath("../../../../Activators/MeatRoomIn")
-move_speed = 2.0
 ceiling_mode = 2
 ceiling_height = 2.0
 
@@ -1116,7 +1111,6 @@ sector_material = ExtResource("11_8qlis")
 [node name="Configuration" type="Node" parent="Sectors/Door/Sector-76c" node_paths=PackedStringArray("source")]
 script = ExtResource("25_iogyf")
 source = NodePath("../../../../Activators/MeatRoomIn")
-move_speed = 2.0
 ceiling_mode = 2
 ceiling_height = 2.0
 
@@ -1131,7 +1125,6 @@ sector_material = ExtResource("10_4o2xe")
 [node name="Configuration" type="Node" parent="Sectors/Door/Sector-76b" node_paths=PackedStringArray("source")]
 script = ExtResource("25_iogyf")
 source = NodePath("../../../../Activators/MeatRoomIn")
-move_speed = 2.0
 ceiling_mode = 2
 ceiling_height = 2.0
 
@@ -1148,7 +1141,6 @@ sector_material = ExtResource("9_fdotx")
 [node name="Configuration" type="Node" parent="Sectors/Door3/Sector-76a" node_paths=PackedStringArray("source")]
 script = ExtResource("25_iogyf")
 source = NodePath("../../../../Activators/MeatRoomOut")
-move_speed = 2.0
 ceiling_mode = 2
 ceiling_height = 2.0
 
@@ -1163,7 +1155,6 @@ sector_material = ExtResource("10_4o2xe")
 [node name="Configuration" type="Node" parent="Sectors/Door3/Sector-76e" node_paths=PackedStringArray("source")]
 script = ExtResource("25_iogyf")
 source = NodePath("../../../../Activators/MeatRoomOut")
-move_speed = 2.0
 ceiling_mode = 2
 ceiling_height = 2.0
 
@@ -1178,7 +1169,6 @@ sector_material = ExtResource("11_8qlis")
 [node name="Configuration" type="Node" parent="Sectors/Door3/Sector-76d" node_paths=PackedStringArray("source")]
 script = ExtResource("25_iogyf")
 source = NodePath("../../../../Activators/MeatRoomOut")
-move_speed = 2.0
 ceiling_mode = 2
 ceiling_height = 2.0
 
@@ -1193,7 +1183,6 @@ sector_material = ExtResource("11_8qlis")
 [node name="Configuration" type="Node" parent="Sectors/Door3/Sector-76c" node_paths=PackedStringArray("source")]
 script = ExtResource("25_iogyf")
 source = NodePath("../../../../Activators/MeatRoomOut")
-move_speed = 2.0
 ceiling_mode = 2
 ceiling_height = 2.0
 
@@ -1208,7 +1197,6 @@ sector_material = ExtResource("10_4o2xe")
 [node name="Configuration" type="Node" parent="Sectors/Door3/Sector-76b" node_paths=PackedStringArray("source")]
 script = ExtResource("25_iogyf")
 source = NodePath("../../../../Activators/MeatRoomOut")
-move_speed = 2.0
 ceiling_mode = 2
 ceiling_height = 2.0
 
@@ -1225,7 +1213,6 @@ sector_material = ExtResource("9_fdotx")
 [node name="Configuration" type="Node" parent="Sectors/Door2/Sector-76a" node_paths=PackedStringArray("source")]
 script = ExtResource("25_iogyf")
 source = NodePath("../../../../Activators/FacilityDoor")
-move_speed = 2.0
 ceiling_mode = 2
 ceiling_height = 2.0
 
@@ -1240,7 +1227,6 @@ sector_material = ExtResource("10_4o2xe")
 [node name="Configuration" type="Node" parent="Sectors/Door2/Sector-76e" node_paths=PackedStringArray("source")]
 script = ExtResource("25_iogyf")
 source = NodePath("../../../../Activators/FacilityDoor")
-move_speed = 2.0
 ceiling_mode = 2
 ceiling_height = 2.0
 
@@ -1255,7 +1241,6 @@ sector_material = ExtResource("11_8qlis")
 [node name="Configuration" type="Node" parent="Sectors/Door2/Sector-76d" node_paths=PackedStringArray("source")]
 script = ExtResource("25_iogyf")
 source = NodePath("../../../../Activators/FacilityDoor")
-move_speed = 2.0
 ceiling_mode = 2
 ceiling_height = 2.0
 
@@ -1270,7 +1255,6 @@ sector_material = ExtResource("11_8qlis")
 [node name="Configuration" type="Node" parent="Sectors/Door2/Sector-76c" node_paths=PackedStringArray("source")]
 script = ExtResource("25_iogyf")
 source = NodePath("../../../../Activators/FacilityDoor")
-move_speed = 2.0
 ceiling_mode = 2
 ceiling_height = 2.0
 
@@ -1285,7 +1269,6 @@ sector_material = ExtResource("10_4o2xe")
 [node name="Configuration" type="Node" parent="Sectors/Door2/Sector-76b" node_paths=PackedStringArray("source")]
 script = ExtResource("25_iogyf")
 source = NodePath("../../../../Activators/FacilityDoor")
-move_speed = 2.0
 ceiling_mode = 2
 ceiling_height = 2.0
 
@@ -1467,7 +1450,6 @@ sector_material = ExtResource("7_exjrj")
 [node name="Configuration" type="Node" parent="Sectors/Sector-511s" node_paths=PackedStringArray("source")]
 script = ExtResource("25_iogyf")
 source = NodePath("../../../Activators/MeatRoomIn")
-move_speed = 3.0
 floor_mode = 2
 ceiling_mode = 2
 ceiling_height = 2.0
@@ -1703,7 +1685,6 @@ sector_material = ExtResource("7_exjrj")
 [node name="Configuration" type="Node" parent="Sectors/Sector-9254x" node_paths=PackedStringArray("source")]
 script = ExtResource("25_iogyf")
 source = NodePath("../../../Activators/MeatRoomOut")
-move_speed = 3.0
 ceiling_mode = 2
 ceiling_height = 2.5
 
@@ -1802,18 +1783,14 @@ floor_height = 0.25
 ceiling_height = 3.0
 sector_material = ExtResource("7_exjrj")
 
-[node name="Sector-9254d2" type="Polygon2D" parent="Sectors" instance=ExtResource("5_0vebr")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-9254d2" parent="Sectors" instance=ExtResource("5_0vebr")]
 position = Vector2(-10, -54)
 color = Color(0.93689734, 0.8732977, 0.89814126, 1)
 polygon = PackedVector2Array(-27, -15, -27, -28, -22, -27, -23, -14)
-script = ExtResource("21_0vebr")
 data = SubResource("Resource_vl30b")
 floor_height = 0.5
 ceiling_height = 3.0
 sector_material = ExtResource("7_exjrj")
-show_portal_arrow = true
 
 [node name="Sector-9254e" parent="Sectors" instance=ExtResource("5_0vebr")]
 position = Vector2(-10, -54)
@@ -1833,31 +1810,23 @@ floor_height = 1.0
 ceiling_height = 4.0
 sector_material = ExtResource("5_1m7e7")
 
-[node name="Sector-9254f2" type="Polygon2D" parent="Sectors" instance=ExtResource("5_0vebr")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-9254f2" parent="Sectors" instance=ExtResource("5_0vebr")]
 position = Vector2(-10, -54)
 color = Color(0.843676, 0.68612087, 0.74766564, 1)
 polygon = PackedVector2Array(-44.2, -17.6, -46, -32, -38, -33, -41, -17)
-script = ExtResource("21_0vebr")
 data = SubResource("Resource_27dc1")
 floor_height = 1.25
 ceiling_height = 4.0
 sector_material = ExtResource("5_1m7e7")
-show_portal_arrow = true
 
-[node name="Sector-9254f2a" type="Polygon2D" parent="Sectors" instance=ExtResource("5_0vebr")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-9254f2a" parent="Sectors" instance=ExtResource("5_0vebr")]
 position = Vector2(-10, -54)
 color = Color(0.8128419, 0.6242099, 0.6978941, 1)
 polygon = PackedVector2Array(-58, -15, -55, -31, -46, -32, -44.2, -17.6)
-script = ExtResource("21_0vebr")
 data = SubResource("Resource_tynsa")
 floor_height = 1.5
 ceiling_height = 4.0
 sector_material = ExtResource("5_1m7e7")
-show_portal_arrow = true
 
 [node name="Sector-9254g" parent="Sectors" instance=ExtResource("5_0vebr")]
 position = Vector2(-10, -54)
@@ -2181,7 +2150,6 @@ sector_material = ExtResource("9_qa4cw")
 [node name="Configuration" type="Node" parent="Sectors/Sector-1865z" node_paths=PackedStringArray("source")]
 script = ExtResource("25_iogyf")
 source = NodePath("../../../Activators/Elevator")
-move_speed = 2.0
 floor_mode = 2
 floor_height = 4.0
 ceiling_height = 10.0
