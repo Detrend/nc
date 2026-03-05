@@ -417,15 +417,15 @@
 	"pickups": [
 		{
 			"position": [
-				-7.5,
-				16.5,
+				-7.20000028610229,
+				16.1000003814697,
 				10.6
 			],
 			"type": 6
 		},
 		{
 			"position": [
-				-7.70000028610229,
+				-7.40000009536743,
 				10.9000005722046,
 				10.6
 			],
@@ -433,15 +433,15 @@
 		},
 		{
 			"position": [
-				1.60000002384186,
-				16.5,
+				1.20000004768372,
+				16.1000003814697,
 				10.6
 			],
 			"type": 5
 		},
 		{
 			"position": [
-				1.60000002384186,
+				1.30000007152557,
 				10.6999998092651,
 				10.6
 			],
@@ -13910,7 +13910,7 @@
 					"move_speed": 1.0
 				}
 			],
-			"ceiling": 7.0,
+			"ceiling": 8.0,
 			"ceiling_surface": {
 				"id": "rocks",
 				"offset": [
@@ -13951,7 +13951,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 7.0,
+						"end_height": 8.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -13967,7 +13967,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 7.0,
+						"end_height": 8.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -13983,7 +13983,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 7.0,
+						"end_height": 8.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -13999,7 +13999,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 7.0,
+						"end_height": 8.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14023,7 +14023,7 @@
 					"move_speed": 1.0
 				}
 			],
-			"ceiling": 7.0,
+			"ceiling": 8.0,
 			"ceiling_surface": {
 				"id": "rocks",
 				"offset": [
@@ -14064,7 +14064,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 7.0,
+						"end_height": 8.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14080,7 +14080,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 7.0,
+						"end_height": 8.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14096,7 +14096,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 7.0,
+						"end_height": 8.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14112,7 +14112,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 7.0,
+						"end_height": 8.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14136,7 +14136,7 @@
 					"move_speed": 1.0
 				}
 			],
-			"ceiling": 7.0,
+			"ceiling": 8.0,
 			"ceiling_surface": {
 				"id": "rocks",
 				"offset": [
@@ -14177,7 +14177,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 7.0,
+						"end_height": 8.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14193,7 +14193,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 7.0,
+						"end_height": 8.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14209,7 +14209,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 7.0,
+						"end_height": 8.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -14225,7 +14225,7 @@
 				[
 					{
 						"begin_height": 5.0,
-						"end_height": 7.0,
+						"end_height": 8.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
