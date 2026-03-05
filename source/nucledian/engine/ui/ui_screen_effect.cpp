@@ -1,5 +1,7 @@
 #include <engine/ui/ui_screen_effect.h>
 
+#include <engine/graphics/shaders/shaders.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>

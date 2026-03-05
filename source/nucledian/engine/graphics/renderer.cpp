@@ -740,6 +740,7 @@ void Renderer::render_entities(const CameraData& camera) const
 
   m_billboard_material.use();
   m_billboard_material.set_uniform(shaders::billboard::VIEW, camera.view);
+  m_billboard_material.set_uniform(shaders::billboard::PORTAL_DEST_TO_SRC, camera.portal_dest_to_src);
 
   const MeshHandle& texturable_quad = MeshManager::get().get_texturable_quad();
   glBindVertexArray(texturable_quad.get_vao());

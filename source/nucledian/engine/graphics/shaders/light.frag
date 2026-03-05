@@ -210,7 +210,9 @@ void main()
 #endif
 
     #define VOX_CNT 16
+#ifdef DO_LIGHT_VOXELS
     position = round(position * VOX_CNT) / VOX_CNT;
+#endif
 
     vec3 light_direction = light.position - position;
     float distance = length(light_direction);

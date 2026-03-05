@@ -1,5 +1,5 @@
+#pragma once
 #include <engine/graphics/resources/shader_program.h>
-#include <engine/graphics/shaders/shaders.h>
 
 namespace nc 
 {

@@ -4,6 +4,7 @@
 #include <engine/player/player.h>
 #include <glm/ext/matrix_transform.hpp>
 #include <engine/graphics/graphics_system.h>
+#include <engine/graphics/shaders/shaders.h>
 
 namespace nc
 {
