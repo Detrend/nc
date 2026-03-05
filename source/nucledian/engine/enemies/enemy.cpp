@@ -632,7 +632,7 @@ void Enemy::handle_ai_alert(f32 delta)
 
       // The direction has to be transformed if the target is behind a nc portal.
       f32  target_height   = target->get_height();
-      vec3 ground_offset   = vec3{0.0f, target_height * 0.5f, 0.0f};
+      vec3 ground_offset   = vec3{0.0f, target_height * 0.7f, 0.0f};
       vec3 target_body_pos = this->follow_target_pos + ground_offset;
 
       vec3 rel_target_pos =
@@ -640,7 +640,7 @@ void Enemy::handle_ai_alert(f32 delta)
         current_path.target_transform_inv * vec4{target_body_pos, 1.0f}
       ).xyz();
 
-      vec3 dir_to_target = normalize_or_zero(rel_target_pos - this->get_position());
+      vec3 dir_to_target = normalize_or_zero(rel_target_pos - this->get_attack_from_pos());
 
       if (dir_to_target != VEC3_ZERO)
       {
@@ -777,8 +777,8 @@ void Enemy::on_attack_trigger()
 {
   const EnemyStats& stats = this->get_stats();
 
-  vec3 dir  = this->facing;
-  vec3 from = this->get_position() + UP_DIR * stats.atk_height + dir * 0.3f;
+  vec3 dir  = this->get_facing();
+  vec3 from = this->get_attack_from_pos() + dir * 0.3f;
 
   if (stats.is_melee)
   {
@@ -851,6 +851,12 @@ const Appearance& Enemy::get_appearance() const
 const EnemyStats& Enemy::get_stats() const
 {
   return ENEMY_STATS[this->type];
+}
+
+//==============================================================================
+vec3 Enemy::get_attack_from_pos() const
+{
+  return this->get_position() + UP_DIR * this->get_stats().atk_height;
 }
 
 //==============================================================================
