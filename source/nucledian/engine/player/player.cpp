@@ -519,7 +519,7 @@ void Player::do_attack()
       {
         s32 dmg = PROJECTILE_STATS[WEAPON_STATS[weapon].projectile].damage;
         enemy->damage(dmg, this->get_id());
-        sound_system.play(Sounds::melee_hit);
+        sound_system.play_oneshot(Sounds::melee_hit);
       }
     }
   }
@@ -584,7 +584,7 @@ void Player::do_attack()
     this->alert_nearby_enemies(WEAPON_STATS[weapon].loudness_dist);
   }
 
-  sound_system.play(WEAPON_STATS[weapon].shoot_snd, 0.5f);
+  sound_system.play_oneshot(WEAPON_STATS[weapon].shoot_snd, 0.5f);
   time_since_shoot = 0.0f;
 }
 

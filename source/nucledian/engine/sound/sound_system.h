@@ -63,7 +63,7 @@ public:
   bool init();
 
   // Sound interface
-  void        play_oneshot(SoundID sound);
+  void        play_oneshot(SoundID sound, f32 volume = 1.0f);
   SoundHandle play(SoundID sound, f32 volume = 1.0f);
   bool        is_handle_valid(const SoundHandle& handle) const;
   
