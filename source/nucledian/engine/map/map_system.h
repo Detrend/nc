@@ -85,7 +85,6 @@ struct SectorSet
 // Describes how a surface should be rendered.
 struct SurfaceData
 {
-  TextureID texture_id           = INVALID_TEXTURE_ID;
   TextureID texture_id_default   = INVALID_TEXTURE_ID;
   TextureID texture_id_triggered = INVALID_TEXTURE_ID;
   f32       scale      = 1.0f;
@@ -117,21 +116,22 @@ struct WallSegmentData
     absolute_directions = 32
   };
 
-  struct Entry
-  {
-    // Surface used in this wall interval
-    SurfaceData surface;
-    // Height in absolute world coords, where this segment ends. It begins at the end of the previous entry
-    f32         end_height = +INFINITY;
-    vec3        end_up_tesselation  = vec3(0.0f, 0.0f, 0.0f);
-    vec3        end_down_tesselation  = vec3(0.0f, 0.0f, 0.0f);
-    vec3        begin_up_tesselation = vec3(0.0f, 0.0f, 0.0f);
-    vec3        begin_down_tesselation = vec3(0.0f, 0.0f, 0.0f);
-    Flags       flags = Flags::generate_all_faces;
-  };
-
   // Height intervals either for the floor-difference part of the wall (if this wall has a portal connecting two sectors), or for the whole wall (if there are no two neighbors)
-  std::vector<Entry> surfaces;
+
+  // Surface used in this wall interval
+  SurfaceData surface;
+  // Height in absolute world coords, where this segment ends. It begins at the end of the previous entry
+  f32         end_height = +INFINITY;
+  vec3        end_up_tesselation  = vec3(0.0f, 0.0f, 0.0f);
+  vec3        end_down_tesselation  = vec3(0.0f, 0.0f, 0.0f);
+  vec3        begin_up_tesselation = vec3(0.0f, 0.0f, 0.0f);
+  vec3        begin_down_tesselation = vec3(0.0f, 0.0f, 0.0f);
+  Flags       flags = Flags::generate_all_faces;
+};
+
+struct WallSegmentDynData
+{
+  bool triggered = false;
 };
 
 // Each sector is comprised of internal data
@@ -185,11 +185,12 @@ struct WallData
   // wall begins
   
   vec2            pos               = vec2{0};
-  SectorID        portal_sector_id  = INVALID_SECTOR_ID; // if is portal
-  WallRelID       nc_portal_wall_id = INVALID_WALL_REL_ID;
   f32             nc_portal_offset  = 0.0f; // offset from ground, only nc portals
+  SegmentID       first_segment     = INVALID_SEGMENT_ID;
+  SectorID        portal_sector_id  = INVALID_SECTOR_ID; // if is portal
   PortalRenderID  render_data_index = INVALID_PORTAL_RENDER_ID;
-  WallSegmentData surface;
+  WallRelID       nc_portal_wall_id = INVALID_WALL_REL_ID;
+  u8              segment_count     = 0;
 
   PortType get_portal_type() const;
 
@@ -240,12 +241,14 @@ struct MapSectors
   template<typename T>
   using column = std::vector<T>;
 
-  column<SectorData>        sectors;
-  column<SectorDynData> sectors_dynamic;
-  column<WallData>          walls;
-  column<Portal>            portals_render_data;
-  column<aabb3>             sector_bboxes;
-  StatGridAABB2<SectorID>   sector_grid;
+  column<SectorData>         sectors;
+  column<SectorDynData>      sectors_dynamic;
+  column<WallData>           walls;
+  column<WallSegmentData>    wall_segments;
+  column<WallSegmentDynData> wall_segments_dynamic;
+  column<Portal>             portals_render_data;
+  column<aabb3>              sector_bboxes;
+  StatGridAABB2<SectorID>    sector_grid;
 
   // TODO: Do not use the retarded std::function, find a better API alternative
   using TraverseVisitor = std::function<void(SectorID, Frustum2, WallID)>;
@@ -348,7 +351,7 @@ struct WallBuildData
   WallID          point_index = 0;
   WallRelID       nc_portal_point_index  = 0;
   SectorID        nc_portal_sector_index = INVALID_SECTOR_ID;
-  WallSegmentData surface;
+  std::vector<WallSegmentData> surface;
 };
 
 struct SectorBuildData

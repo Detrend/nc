@@ -71,16 +71,16 @@ namespace nc::map_helpers
 
 //==============================================================================
 static void make_sector_helper(
-  f32                                         in_floor_y,
-  f32                                         in_ceil_y,
-  const std::vector<u16>&                     points,
-  std::vector<map_building::SectorBuildData>& out,
-  int                                         portal_wall_id    = -1,
-  WallRelID                                   portal_wall_id_to = 0,
-  SectorID                                    portal_sector     = INVALID_SECTOR_ID,
-  const SurfaceData                           &floor_surface    = SurfaceData{},
-  const SurfaceData                           &ceiling_surface  = SurfaceData{},
-  const std::vector<WallSegmentData>          &wall_surfaces    = {}
+  f32                                              in_floor_y,
+  f32                                              in_ceil_y,
+  const std::vector<u16>&                          points,
+  std::vector<map_building::SectorBuildData>&      out,
+  int                                              portal_wall_id    = -1,
+  WallRelID                                        portal_wall_id_to = 0,
+  SectorID                                         portal_sector     = INVALID_SECTOR_ID,
+  const SurfaceData&                               floor_surface     = SurfaceData{},
+  const SurfaceData&                               ceiling_surface   = SurfaceData{},
+  const std::vector<std::vector<WallSegmentData>>& wall_surfaces     = {}
 )
 {
   std::vector<map_building::WallBuildData> walls;
@@ -94,7 +94,7 @@ static void make_sector_helper(
       .point_index            = p,
       .nc_portal_point_index  = is_portal ? portal_wall_id_to : INVALID_WALL_REL_ID,
       .nc_portal_sector_index = is_portal ? portal_sector     : INVALID_SECTOR_ID,
-      .surface                = wall_surfaces[i]
+      .surface                = std::move(wall_surfaces[i])
     });
   }
 
@@ -160,7 +160,6 @@ static SurfaceData load_json_surface(const nlohmann::json &js)
 
     return SurfaceData
     {
-      .texture_id = tid,
       .texture_id_default = tid,
       .texture_id_triggered = alt_tid,
       .scale = js["scale"],
@@ -199,7 +198,7 @@ static TriggerData load_json_trigger
 }
 
 //==============================================================================
-static WallSegmentData load_json_wall_surface
+static std::vector<WallSegmentData> load_json_wall_surface
 (
   const nlohmann::json& js,
   const ActivatorMap&   activators,
@@ -208,13 +207,13 @@ static WallSegmentData load_json_wall_surface
   WallRelID             wrelid
 )
 {
-  WallSegmentData ret;
+  std::vector<WallSegmentData> ret;
 
   u8 segment_idx = 0;
 
   for (auto&& js_entry : js)
   {
-    auto& entry = ret.surfaces.emplace_back();
+    WallSegmentData& entry = ret.emplace_back();
     entry.surface = load_json_surface(js_entry);
     entry.end_height = js_entry["end_height"];
     load_json_optional(entry.begin_up_tesselation.xzy, js_entry, "begin_up_direction", load_json_vector<3>);
@@ -337,18 +336,18 @@ static void load_json_map
       auto floor_surface   = load_json_surface(js_sector["floor_surface"]);
       auto ceiling_surface = load_json_surface(js_sector["ceiling_surface"]);
 
-      std::vector<WallSegmentData> wall_surfaces;
+      std::vector<std::vector<WallSegmentData>> wall_surfaces;
 
       // Surfaces
       WallRelID wrelid = 0;
       for (auto&& js_wall_surface : js_sector["wall_surfaces"])
       {
-        WallSegmentData sd = load_json_wall_surface
+        std::vector<WallSegmentData> sd = load_json_wall_surface
         (
           js_wall_surface, activator_map, trigger_table, sid, wrelid
         );
 
-        wall_surfaces.push_back(sd);
+        wall_surfaces.push_back(std::move(sd));
         wrelid += 1;
       }
 

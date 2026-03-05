@@ -710,9 +710,15 @@ const
     vec3        normal;
     f32         cumulative_wall_len;
     SurfaceData surface;
+    bool        triggered;
 
     void push_to(std::vector<f32>& vertices_out) const
     {
+      const TextureID textures[2] =
+      {
+        surface.texture_id_default, surface.texture_id_triggered
+      };
+
       vertices_out.push_back(position.x);
       vertices_out.push_back(position.y);
       vertices_out.push_back(position.z);
@@ -720,7 +726,7 @@ const
       vertices_out.push_back(normal.y);
       vertices_out.push_back(normal.z);
       vertices_out.push_back(cumulative_wall_len);
-      vertices_out.push_back(static_cast<f32>(surface.texture_id));
+      vertices_out.push_back(static_cast<f32>(textures[triggered]));
       vertices_out.push_back(surface.scale);
       vertices_out.push_back(surface.rotation);
       vertices_out.push_back(static_cast<f32>(surface.tile_rotations_count));
@@ -730,297 +736,327 @@ const
     }
   };
 
-  //==============================================================================
-  void MapSectors::sector_to_vertices(
-    SectorID           sector_id,
-    std::vector<f32>& vertices_out) const
+//==============================================================================
+void MapSectors::sector_to_vertices
+(
+  SectorID          sector_id,
+  std::vector<f32>& vertices_out
+)
+const
+{
+  nc_assert(sector_id < this->sectors.size());
+
+  const auto& sector     = this->sectors[sector_id];
+  const auto& sector_dyn = this->sectors_dynamic[sector_id];
+
+  // build the floor first from the first point
+  const auto first_wall_idx = sector.first_wall;
+  const auto last_wall_idx  = sector.last_wall;
+  const auto first_wall_pos = this->walls[first_wall_idx].pos;
+  const auto first_pt       = vec3{ first_wall_pos.x, 0.0f, first_wall_pos.y };
+  nc_assert(first_wall_idx < last_wall_idx);
+
+  auto push_triangle = [&]
+  (
+    vec3               normal,
+    const SurfaceData& surface,
+    vec3               a,
+    f32                a_length,
+    vec3               b,
+    f32                b_length,
+    vec3               c,
+    f32                c_length,
+    bool               triggered = false
+  )
   {
-    nc_assert(sector_id < this->sectors.size());
+    Vertex
+    {
+      .position = a,
+      .normal = normal,
+      .cumulative_wall_len = a_length,
+      .surface = surface,
+      .triggered = triggered,
+    }
+    .push_to(vertices_out);
+    Vertex
+    {
+      .position = b,
+      .normal = normal,
+      .cumulative_wall_len = b_length,
+      .surface = surface,
+      .triggered = triggered,
+    }
+    .push_to(vertices_out);
+    Vertex
+    {
+      .position = c,
+      .normal = normal,
+      .cumulative_wall_len = c_length,
+      .surface = surface,
+      .triggered = triggered,
+    }
+    .push_to(vertices_out);
+  };
 
-    const auto& sector     = this->sectors[sector_id];
-    const auto& sector_dyn = this->sectors_dynamic[sector_id];
+  if (sector.floor_surface.should_show)
+  {
+    const vec3 first_pt_grounded = with_y(first_pt, sector_dyn.floor_height);
+    for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
+    {
+      const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
+      const auto w1pos = this->walls[idx].pos;
+      const auto w2pos = this->walls[next_idx].pos;
+      const auto pt1 = vec3{ w1pos.x, sector_dyn.floor_height, w1pos.y };
+      const auto pt2 = vec3{ w2pos.x, sector_dyn.floor_height, w2pos.y };
 
-    // build the floor first from the first point
-    const auto first_wall_idx = sector.first_wall;
-    const auto last_wall_idx  = sector.last_wall;
-    const auto first_wall_pos = this->walls[first_wall_idx].pos;
-    const auto first_pt       = vec3{ first_wall_pos.x, 0.0f, first_wall_pos.y };
-    nc_assert(first_wall_idx < last_wall_idx);
+      // build floor triangle from the first point and 2 others
+      push_triangle(VEC3_Y, sector.floor_surface, first_pt_grounded, 0.0f, pt2, 0.0f, pt1, 0.0f);
+    }
+  }
 
+  if (sector.ceil_surface.should_show)
+  {
+    // then build ceiling
+    const vec3 first_pt_ceiled = with_y(first_pt, sector_dyn.ceil_height);
+    for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
+    {
+      const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
+      const auto w1pos = this->walls[idx].pos;
+      const auto w2pos = this->walls[next_idx].pos;
+      const auto pt1 = vec3{ w1pos.x, sector_dyn.ceil_height, w1pos.y };
+      const auto pt2 = vec3{ w2pos.x, sector_dyn.ceil_height, w2pos.y };
 
-    auto push_triangle = [&](vec3 normal, const SurfaceData& surface, vec3 a, f32 a_length, vec3 b, f32 b_length, vec3 c, f32 c_length) {
-        Vertex
-        {
-          .position = a,
-          .normal = normal,
-          .cumulative_wall_len = a_length,
-          .surface = surface,
-        }
-        .push_to(vertices_out);
-        Vertex
-        {
-          .position = b,
-          .normal = normal,
-          .cumulative_wall_len = b_length,
-          .surface = surface,
-        }
-        .push_to(vertices_out);
-        Vertex
-        {
-          .position = c,
-          .normal = normal,
-          .cumulative_wall_len = c_length,
-          .surface = surface,
-        }
-        .push_to(vertices_out);
+      // build floor triangle from the first point and 2 others
+      push_triangle(-VEC3_Y, sector.ceil_surface, first_pt_ceiled, 0.0f, pt1, 0.0f, pt2, 0.0f);
+    }
+  }
+
+  // build walls
+  f32 cumulative_wall_length = 0.0f;
+  for (WallID idx = first_wall_idx; idx < last_wall_idx; ++idx)
+  {
+    struct WallSegmentHeights
+    {
+      f32                    y1            = 0.0f;
+      f32                    y2            = 0.0f;
+      f32                    height_offset = 0.0f;
+      const WallSegmentData* surface       = nullptr;
+      bool                   triggered     = false;
     };
 
-    if (sector.floor_surface.should_show)
+    const auto& wall = this->walls[idx];
+
+    constexpr u8 MAX_WALL_SEGMENTS_COUNT = 32;
+    WallSegmentHeights wall_segment_heights[MAX_WALL_SEGMENTS_COUNT];
+    u8 num_wall_segments = 0;
+
+    auto add_wall_segments = [&](f32 begin_height, f32 end_height, f32 offset)
     {
-      const vec3 first_pt_grounded = with_y(first_pt, sector_dyn.floor_height);
-      for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
+      f32 last_end_height = begin_height;
+
+      SegmentID begin_segment = wall.first_segment;
+      SegmentID end_segment   = begin_segment + wall.segment_count;
+
+      for (SegmentID seg_id = begin_segment; seg_id < end_segment; ++seg_id)
       {
-        const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
-        const auto w1pos = this->walls[idx].pos;
-        const auto w2pos = this->walls[next_idx].pos;
-        const auto pt1 = vec3{ w1pos.x, sector_dyn.floor_height, w1pos.y };
-        const auto pt2 = vec3{ w2pos.x, sector_dyn.floor_height, w2pos.y };
+        const WallSegmentData& entry = wall_segments[seg_id];
+        bool is_last = seg_id == end_segment-1;
 
-        // build floor triangle from the first point and 2 others
-        push_triangle(VEC3_Y, sector.floor_surface, first_pt_grounded, 0.0f, pt2, 0.0f, pt1, 0.0f);
-      }
-    }
-
-
-    if (sector.ceil_surface.should_show)
-    {
-      // then build ceiling
-      const vec3 first_pt_ceiled = with_y(first_pt, sector_dyn.ceil_height);
-      for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
-      {
-        const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
-        const auto w1pos = this->walls[idx].pos;
-        const auto w2pos = this->walls[next_idx].pos;
-        const auto pt1 = vec3{ w1pos.x, sector_dyn.ceil_height, w1pos.y };
-        const auto pt2 = vec3{ w2pos.x, sector_dyn.ceil_height, w2pos.y };
-
-        // build floor triangle from the first point and 2 others
-        push_triangle(-VEC3_Y, sector.ceil_surface, first_pt_ceiled, 0.0f, pt1, 0.0f, pt2, 0.0f);
-      }
-    }
-
-    // build walls
-    f32 cumulative_wall_length = 0.0f;
-    for (WallID idx = first_wall_idx; idx < last_wall_idx; ++idx)
-    {
-      struct WallSegmentHeights
-      {
-        f32 y1 = 0.0f;
-        f32 y2 = 0.0f;
-        f32 height_offset = 0.0f;
-        const WallSegmentData::Entry* surface = nullptr;
-      };
-
-      const auto& wall = this->walls[idx];
-
-      constexpr u8 MAX_WALL_SEGMENTS_COUNT = 32;
-      WallSegmentHeights wall_segments[MAX_WALL_SEGMENTS_COUNT];
-      u8 num_wall_segments = 0;
-
-      auto add_wall_segments = [&](f32 begin_height, f32 end_height, f32 offset)
-      {
-        f32 last_end_height = begin_height;
-
-        for (const auto& entry : wall.surface.surfaces)
+        // Hack: stretch the last segment up, fixes the bug with invisible
+        // walls next to the opened doors.
+        f32 effective_height = is_last ? end_height : (entry.end_height + offset);
+        if (effective_height < begin_height)
         {
-          f32 effective_height = ((&entry == &wall.surface.surfaces[wall.surface.surfaces.size()-1]) ? end_height: entry.end_height + offset) ;
-
-          if (effective_height < begin_height)
-          {
-            continue;
-          }
-
-          nc_assert(num_wall_segments < (MAX_WALL_SEGMENTS_COUNT));
-
-          if (last_end_height >= end_height)
-          {
-            break;
-          }
-
-          auto& current = wall_segments[num_wall_segments];
-          const f32 current_end_height = min(effective_height, end_height);
-
-          current.y1 = last_end_height;
-          current.y2 = current_end_height;
-          current.height_offset = offset;
-          current.surface = &entry;
-
-          last_end_height = current_end_height;
-          ++num_wall_segments;
+          continue;
         }
-      };
 
-      if (wall.portal_sector_id == INVALID_SECTOR_ID)
+        nc_assert(num_wall_segments < (MAX_WALL_SEGMENTS_COUNT));
+
+        if (last_end_height >= end_height)
+        {
+          break;
+        }
+
+        auto& current = wall_segment_heights[num_wall_segments];
+        const f32 current_end_height = min(effective_height, end_height);
+
+        current.y1            = last_end_height;
+        current.y2            = current_end_height;
+        current.height_offset = offset;
+        current.surface       = &entry;
+        current.triggered     = wall_segments_dynamic[seg_id].triggered;
+
+        last_end_height = current_end_height;
+        ++num_wall_segments;
+      }
+    };
+
+    if (wall.portal_sector_id == INVALID_SECTOR_ID)
+    {
+      add_wall_segments(sector_dyn.floor_height, sector_dyn.ceil_height, 0.0f);
+    }
+    else
+    {
+      f32 step_height = 0.0f, ceil_add = 0.0f;
+      this->calc_step_height_of_portal(sector_id, idx, &step_height, &ceil_add);
+
+      f32 neighbor_floor_height = sector_dyn.floor_height + step_height;
+      f32 neighbor_ceil_height  = sector_dyn.ceil_height  + ceil_add;
+
+      f32 neighbor_bot_change, neighbor_top_change;
+      get_sector_shift_amount
+      (
+        walls[idx].portal_sector_id,
+        &neighbor_bot_change,
+        &neighbor_top_change
+      );
+
+      if (neighbor_floor_height >= sector_dyn.ceil_height || neighbor_ceil_height <= sector_dyn.floor_height)
       {
-        add_wall_segments(sector_dyn.floor_height, sector_dyn.ceil_height, 0.0f);
+        // no overlap, draw the full wall 
+        add_wall_segments(sector_dyn.floor_height, sector_dyn.ceil_height, neighbor_bot_change);
+      }
+      else if (neighbor_ceil_height >= sector_dyn.ceil_height && neighbor_floor_height <= sector_dyn.floor_height)
+      {
+        // no need to draw any wall
+        continue;
+      }
+      else if (neighbor_ceil_height >= sector_dyn.ceil_height && neighbor_floor_height > sector_dyn.floor_height)
+      {
+        // draw only bottom segment
+        add_wall_segments
+        (
+          sector_dyn.floor_height, neighbor_floor_height, neighbor_bot_change
+        );
+      }
+      else if (neighbor_ceil_height < sector_dyn.ceil_height && neighbor_floor_height <= sector_dyn.floor_height)
+      {
+        // draw only top segment
+        add_wall_segments
+        (
+          neighbor_ceil_height, sector_dyn.ceil_height, neighbor_top_change
+        );
       }
       else
       {
-        f32 step_height = 0.0f, ceil_add = 0.0f;
-        this->calc_step_height_of_portal(sector_id, idx, &step_height, &ceil_add);
-
-        f32 neighbor_floor_height = sector_dyn.floor_height + step_height;
-        f32 neighbor_ceil_height  = sector_dyn.ceil_height  + ceil_add;
-
-        f32 neighbor_bot_change, neighbor_top_change;
-        get_sector_shift_amount
+        // draw both top and bottom
+        add_wall_segments
         (
-          walls[idx].portal_sector_id,
-          &neighbor_bot_change,
-          &neighbor_top_change
+          sector_dyn.floor_height, neighbor_floor_height, neighbor_bot_change
         );
 
-        if (neighbor_floor_height >= sector_dyn.ceil_height || neighbor_ceil_height <= sector_dyn.floor_height)
-        {
-          // no overlap, draw the full wall 
-          add_wall_segments(sector_dyn.floor_height, sector_dyn.ceil_height, neighbor_bot_change);
-        }
-        else if (neighbor_ceil_height >= sector_dyn.ceil_height && neighbor_floor_height <= sector_dyn.floor_height)
-        {
-          // no need to draw any wall
-          continue;
-        }
-        else if (neighbor_ceil_height >= sector_dyn.ceil_height && neighbor_floor_height > sector_dyn.floor_height)
-        {
-          // draw only bottom segment
-          add_wall_segments
-          (
-            sector_dyn.floor_height, neighbor_floor_height, neighbor_bot_change
-          );
-        }
-        else if (neighbor_ceil_height < sector_dyn.ceil_height && neighbor_floor_height <= sector_dyn.floor_height)
-        {
-          // draw only top segment
-          add_wall_segments
-          (
-            neighbor_ceil_height, sector_dyn.ceil_height, neighbor_top_change
-          );
-        }
-        else
-        {
-          // draw both top and bottom
-          add_wall_segments
-          (
-            sector_dyn.floor_height, neighbor_floor_height, neighbor_bot_change
-          );
-
-          add_wall_segments
-          (
-            neighbor_ceil_height, sector_dyn.ceil_height, neighbor_top_change
-          );
-        }
+        add_wall_segments
+        (
+          neighbor_ceil_height, sector_dyn.ceil_height, neighbor_top_change
+        );
       }
+    }
       
-      const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
+    const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
       
-      const auto w1pos = this->walls[idx].pos;
-      const auto w2pos = this->walls[next_idx].pos;
+    const auto w1pos = this->walls[idx].pos;
+    const auto w2pos = this->walls[next_idx].pos;
       
-        const auto p1_to_p2        = w1pos != w2pos ? normalize(w2pos - w1pos) : vec2{ 1, 0 };
-        const quat wall_rotation(vec3(0, atan2f(p1_to_p2.y, p1_to_p2.x), 0));
-        const auto flp             = flipped(p1_to_p2);
-        const auto wall_normal     = vec3{ flp.x, 0.0f, flp.y };
-        const f32  end_wall_length = cumulative_wall_length + distance(w1pos, w2pos);
+    const auto p1_to_p2        = w1pos != w2pos ? normalize(w2pos - w1pos) : vec2{ 1, 0 };
+    const quat wall_rotation(vec3(0, atan2f(p1_to_p2.y, p1_to_p2.x), 0));
+    const auto flp             = flipped(p1_to_p2);
+    const auto wall_normal     = vec3{ flp.x, 0.0f, flp.y };
+    const f32  end_wall_length = cumulative_wall_length + distance(w1pos, w2pos);
       
-      for (u32 wall_i = 0; wall_i < num_wall_segments; ++wall_i)
+    for (u32 segment_idx = 0; segment_idx < num_wall_segments; ++segment_idx)
+    {
+      const WallSegmentHeights& current = wall_segment_heights[segment_idx];
+
+      if (!current.surface->surface.should_show)
       {
-            const WallSegmentHeights &current(wall_segments[wall_i]);
-            if (!current.surface->surface.should_show) {
-                continue;
-            }
-            vec3 bu_shift = current.surface->begin_up_tesselation;
-            vec3 bd_shift = current.surface->begin_down_tesselation;
-            vec3 eu_shift = current.surface->end_up_tesselation;
-            vec3 ed_shift = current.surface->end_down_tesselation;
-            if (!(current.surface->flags & WallSegmentData::Flags::absolute_directions)) {
-                bu_shift = bu_shift * wall_rotation;
-                bd_shift = bd_shift * wall_rotation;
-                eu_shift = eu_shift * wall_rotation;
-                ed_shift = ed_shift * wall_rotation;
-
-            }
-
-
-            const auto bd = vec3{ w1pos.x, current.y1, w1pos.y };
-            const auto ed = vec3{ w2pos.x, current.y1, w2pos.y };
-            const auto bu = vec3{ w1pos.x, current.y2, w1pos.y };
-            const auto eu = vec3{ w2pos.x, current.y2, w2pos.y };
-
-            const auto bd_shifted = bd + bd_shift;
-            const auto ed_shifted = ed + ed_shift;
-            const auto bu_shifted = bu + bu_shift;
-            const auto eu_shifted = eu + eu_shift;
-      
-            SurfaceData shifted_surface = current.surface->surface;
-            shifted_surface.offset.y -= current.height_offset * current.surface->surface.scale;
-
-            // first triangle
-            push_triangle(wall_normal, shifted_surface, bd_shifted, cumulative_wall_length, ed_shifted, end_wall_length, bu_shifted, cumulative_wall_length);
-            push_triangle(wall_normal, shifted_surface, bu_shifted, cumulative_wall_length, ed_shifted, end_wall_length, eu_shifted, end_wall_length);
-            
-
-            const float up_down_normal_mult   = ((current.surface->flags & WallSegmentData::Flags::flip_side_normals) ? -1.0f : 1.0f);
-            const float begin_end_normal_mult = ((current.surface->flags & WallSegmentData::Flags::flip_side_normals) ? -1.0f : 1.0f);
-
-            if (bu_shift != VEC3_ZERO) {
-                const vec3 up_normal = normalize(cross(bu_shift, (eu_shifted - bu_shifted)) * up_down_normal_mult);
-                const vec3 begin_normal = normalize(-cross(bu_shift, (bd - bu)) * begin_end_normal_mult);
-                const f32 len = length(bu_shift.xz());
-
-                if(current.surface->flags & WallSegmentData::Flags::generate_up_face)
-                    push_triangle(up_normal, shifted_surface, bu, cumulative_wall_length, bu_shifted, cumulative_wall_length, eu_shifted, end_wall_length);
-                if (current.surface->flags & WallSegmentData::Flags::generate_right_face)
-                    push_triangle(begin_normal, shifted_surface, bu_shifted, end_wall_length + len, bu, end_wall_length, bd, end_wall_length);
-            }
-            
-            if (eu_shift != VEC3_ZERO) {
-                const vec3 up_normal = normalize(cross(eu_shift, (eu_shifted - bu_shifted)) * up_down_normal_mult);
-                const vec3 end_normal = normalize(cross(eu_shift, (ed - eu)) * begin_end_normal_mult);
-                const f32 len = length(eu_shift.xz());
-
-                if (current.surface->flags & WallSegmentData::Flags::generate_up_face)
-                    push_triangle(up_normal, shifted_surface, bu, cumulative_wall_length, eu_shifted, end_wall_length, eu, end_wall_length);
-                if (current.surface->flags & WallSegmentData::Flags::generate_left_face)
-                    push_triangle(end_normal, shifted_surface, eu_shifted, cumulative_wall_length + len, ed, cumulative_wall_length, eu, cumulative_wall_length);
-            }
-            
-            
-            if (bd_shift != VEC3_ZERO) {
-                const vec3 down_normal = normalize(cross(bd_shift, (ed_shifted - bd_shifted)) * up_down_normal_mult);
-                const vec3 begin_normal = normalize(-cross(bu_shift, (bd - bu)) * begin_end_normal_mult);
-                const f32 len = length(bd_shift.xz());
-
-                if (current.surface->flags & WallSegmentData::Flags::generate_down_face)
-                    push_triangle(down_normal, shifted_surface, bd, cumulative_wall_length, ed, end_wall_length, ed_shifted, end_wall_length);
-                if (current.surface->flags & WallSegmentData::Flags::generate_right_face)
-                    push_triangle(begin_normal, shifted_surface, bd, end_wall_length, bd_shifted, end_wall_length + len, bu_shifted, end_wall_length + len);
-            }
-            
-            if (ed_shift != VEC3_ZERO) {
-                const vec3 down_normal = normalize(cross(ed_shift, (ed_shifted - bd_shifted)) * up_down_normal_mult);
-                const vec3 end_normal = normalize(cross(eu_shift, (ed - eu)) * begin_end_normal_mult);
-                const f32 len = length(ed_shift.xz());
-
-                if (current.surface->flags & WallSegmentData::Flags::generate_down_face)
-                    push_triangle(down_normal, shifted_surface, bd, cumulative_wall_length, ed_shifted, end_wall_length, bd_shifted, cumulative_wall_length);
-                if (current.surface->flags & WallSegmentData::Flags::generate_left_face)
-                    push_triangle(end_normal, shifted_surface, ed, cumulative_wall_length, eu_shifted, cumulative_wall_length + len, ed_shifted, cumulative_wall_length + len);
-            }
+        continue;
       }
-      
-      cumulative_wall_length = end_wall_length;
+
+      vec3 bu_shift = current.surface->begin_up_tesselation;
+      vec3 bd_shift = current.surface->begin_down_tesselation;
+      vec3 eu_shift = current.surface->end_up_tesselation;
+      vec3 ed_shift = current.surface->end_down_tesselation;
+
+      if (!(current.surface->flags & WallSegmentData::Flags::absolute_directions))
+      {
+        bu_shift = bu_shift * wall_rotation;
+        bd_shift = bd_shift * wall_rotation;
+        eu_shift = eu_shift * wall_rotation;
+        ed_shift = ed_shift * wall_rotation;
       }
+
+      const auto bd = vec3{ w1pos.x, current.y1, w1pos.y };
+      const auto ed = vec3{ w2pos.x, current.y1, w2pos.y };
+      const auto bu = vec3{ w1pos.x, current.y2, w1pos.y };
+      const auto eu = vec3{ w2pos.x, current.y2, w2pos.y };
+
+      const auto bd_shifted = bd + bd_shift;
+      const auto ed_shifted = ed + ed_shift;
+      const auto bu_shifted = bu + bu_shift;
+      const auto eu_shifted = eu + eu_shift;
+      
+      SurfaceData shifted_surface = current.surface->surface;
+      shifted_surface.offset.y -= current.height_offset * current.surface->surface.scale;
+
+      // first triangle
+      push_triangle(wall_normal, shifted_surface, bd_shifted, cumulative_wall_length, ed_shifted, end_wall_length, bu_shifted, cumulative_wall_length, current.triggered);
+      push_triangle(wall_normal, shifted_surface, bu_shifted, cumulative_wall_length, ed_shifted, end_wall_length, eu_shifted, end_wall_length, current.triggered);
+
+      const float up_down_normal_mult   = ((current.surface->flags & WallSegmentData::Flags::flip_side_normals) ? -1.0f : 1.0f);
+      const float begin_end_normal_mult = ((current.surface->flags & WallSegmentData::Flags::flip_side_normals) ? -1.0f : 1.0f);
+
+      if (bu_shift != VEC3_ZERO)
+      {
+        const vec3 up_normal = normalize(cross(bu_shift, (eu_shifted - bu_shifted)) * up_down_normal_mult);
+        const vec3 begin_normal = normalize(-cross(bu_shift, (bd - bu)) * begin_end_normal_mult);
+        const f32 len = length(bu_shift.xz());
+
+        if(current.surface->flags & WallSegmentData::Flags::generate_up_face)
+          push_triangle(up_normal, shifted_surface, bu, cumulative_wall_length, bu_shifted, cumulative_wall_length, eu_shifted, end_wall_length, current.triggered);
+        if (current.surface->flags & WallSegmentData::Flags::generate_right_face)
+          push_triangle(begin_normal, shifted_surface, bu_shifted, end_wall_length + len, bu, end_wall_length, bd, end_wall_length, current.triggered);
+      }
+
+      if (eu_shift != VEC3_ZERO)
+      {
+        const vec3 up_normal = normalize(cross(eu_shift, (eu_shifted - bu_shifted)) * up_down_normal_mult);
+        const vec3 end_normal = normalize(cross(eu_shift, (ed - eu)) * begin_end_normal_mult);
+        const f32 len = length(eu_shift.xz());
+
+        if (current.surface->flags & WallSegmentData::Flags::generate_up_face)
+          push_triangle(up_normal, shifted_surface, bu, cumulative_wall_length, eu_shifted, end_wall_length, eu, end_wall_length, current.triggered);
+        if (current.surface->flags & WallSegmentData::Flags::generate_left_face)
+          push_triangle(end_normal, shifted_surface, eu_shifted, cumulative_wall_length + len, ed, cumulative_wall_length, eu, cumulative_wall_length, current.triggered);
+      }
+
+      if (bd_shift != VEC3_ZERO)
+      {
+        const vec3 down_normal = normalize(cross(bd_shift, (ed_shifted - bd_shifted)) * up_down_normal_mult);
+        const vec3 begin_normal = normalize(-cross(bu_shift, (bd - bu)) * begin_end_normal_mult);
+        const f32 len = length(bd_shift.xz());
+
+        if (current.surface->flags & WallSegmentData::Flags::generate_down_face)
+          push_triangle(down_normal, shifted_surface, bd, cumulative_wall_length, ed, end_wall_length, ed_shifted, end_wall_length, current.triggered);
+        if (current.surface->flags & WallSegmentData::Flags::generate_right_face)
+          push_triangle(begin_normal, shifted_surface, bd, end_wall_length, bd_shifted, end_wall_length + len, bu_shifted, end_wall_length + len, current.triggered);
+      }
+
+      if (ed_shift != VEC3_ZERO)
+      {
+        const vec3 down_normal = normalize(cross(ed_shift, (ed_shifted - bd_shifted)) * up_down_normal_mult);
+        const vec3 end_normal = normalize(cross(eu_shift, (ed - eu)) * begin_end_normal_mult);
+        const f32 len = length(ed_shift.xz());
+
+        if (current.surface->flags & WallSegmentData::Flags::generate_down_face)
+          push_triangle(down_normal, shifted_surface, bd, cumulative_wall_length, ed_shifted, end_wall_length, bd_shifted, cumulative_wall_length, current.triggered);
+        if (current.surface->flags & WallSegmentData::Flags::generate_left_face)
+          push_triangle(end_normal, shifted_surface, ed, cumulative_wall_length, eu_shifted, cumulative_wall_length + len, ed_shifted, cumulative_wall_length + len, current.triggered);
+      }
+    }
+      
+    cumulative_wall_length = end_wall_length;
   }
+}
 
 //==============================================================================
 void MapSectors::calc_step_height_of_portal
@@ -1089,15 +1125,14 @@ u8 MapSectors::get_segment_idx_from_height(WallID wall_id, f32 ypos) const
     default_ceil_height = ssd.state_ceils[0];
   }
 
-  if (wall.surface.surfaces.empty())
+  if (wall.segment_count == 0)
   {
     return 0;
   }
 
-  nc_assert(wall.surface.surfaces.size() <= cast<u64>(255));
-  for (u8 idx = 0; idx < wall.surface.surfaces.size(); ++idx)
+  for (u8 idx = 0; idx < wall.segment_count; ++idx)
   {
-    const WallSegmentData::Entry& entry = wall.surface.surfaces[idx];
+    const WallSegmentData& entry = wall_segments[wall.first_segment + idx];
 
     bool is_bottom = entry.end_height < default_ceil_height;
     f32  shift     = is_bottom ? floor_shift : ceil_shift;
@@ -1109,7 +1144,7 @@ u8 MapSectors::get_segment_idx_from_height(WallID wall_id, f32 ypos) const
   }
 
   // Return the index of the last entry
-  return cast<u8>(wall.surface.surfaces.size() - 1);
+  return cast<u8>(wall.segment_count - 1);
 }
 
 //==============================================================================
@@ -1767,14 +1802,36 @@ int build_map
         nuclidean_wall_rel_idx = sector.points[wall_index].nc_portal_point_index;
       }
 
+      const std::vector<WallSegmentData>& surfaces = sectors[sector_id].points[wall_index].surface;
+
+      nc_assert(output.wall_segments.size() < MAX_SEGMENTS);
+
+      // Compute the index of the wall segment
+      SegmentID first_segment = cast<SegmentID>(output.wall_segments.size());
+      u8        segment_cnt   = cast<u8>(surfaces.size());
+
+      // Insert the static data
+      output.wall_segments.insert
+      (
+        output.wall_segments.end(), surfaces.begin(), surfaces.end()
+      );
+
+      // Insert the dynamic data
+      const WallSegmentDynData default_dyn_segment{.triggered = false};
+      output.wall_segments_dynamic.insert
+      (
+        output.wall_segments_dynamic.end(), segment_cnt, default_dyn_segment
+      );
+
       // Add a new wall
       output.walls.push_back(WallData
-        {
-          .pos = points[point_index],
-          .portal_sector_id = portal_with,
-          .nc_portal_wall_id = nuclidean_wall_rel_idx,
-          .surface = sector.points[wall_index].surface,
-        });
+      {
+        .pos               = points[point_index],
+        .first_segment     = first_segment,
+        .portal_sector_id  = portal_with,
+        .nc_portal_wall_id = nuclidean_wall_rel_idx,
+        .segment_count     = segment_cnt,
+      });
     }
   }
 

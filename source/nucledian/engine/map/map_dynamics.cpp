@@ -187,15 +187,24 @@ void MapDynamics::evaluate_activators
 
         if (notify && info.dirty)
         {
-          WallRelID wrelid = td.wall_type.wall;
+          const SectorData& sd     = map.sectors[td.wall_type.sector];
+          WallRelID         wrelid = td.wall_type.wall;
+          WallID            wid    = sd.first_wall + wrelid;
 
-          const SectorData& sd = map.sectors[td.wall_type.sector];
-          WallData& wd = map.walls[wrelid + sd.first_wall];
+          SegmentID seg_id = map.walls[wid].first_segment + td.wall_type.segment;
 
-          SurfaceData& ssd = wd.surface.surfaces[td.wall_type.segment].surface;
-          TextureID tids[2] = {ssd.texture_id_default, ssd.texture_id_triggered};
+          // Mark it as triggered
+          map.wall_segments_dynamic[seg_id].triggered = info.triggered;
 
-          ssd.texture_id = tids[info.triggered];
+          [[maybe_unused]]const SurfaceData& surface = map.wall_segments[seg_id].surface;
+          if (surface.texture_id_default != surface.texture_id_triggered)
+          {
+            nc_warn(
+              "Wall segment with no alt texture triggered."
+              "Sector: {}, wall rel: {}, wall abs: {}, seg rel: {}",
+              td.wall_type.sector, wrelid, wid, td.wall_type.segment
+            );
+          }
 
           if (sector_change_callback)
           {
