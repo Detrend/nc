@@ -178,14 +178,14 @@ void Enemy::update(f32 delta)
 
   if (this->state == EnemyAiState::dead)
   {
-    this->velocity = VEC3_ZERO;
+    this->velocity.x = this->velocity.z = 0.0f;
   }
   else
   {
     this->handle_ai(delta);
-    this->handle_movement(delta);
   }
 
+  this->handle_movement(delta);
   this->handle_appearance(delta);
 }
 
@@ -347,7 +347,8 @@ void Enemy::on_dying_anim_end()
   nc_assert(this->appear.mode == Appearance::SpriteMode::mono);
   registry.create_entity<Prop>
   (
-    this->get_position(), this->get_radius(), this->get_height(), this->appear
+    this->get_position(), this->get_radius(), this->get_height(),
+    this->appear, SectorSnapTypes::floor
   );
 
   registry.destroy_entity(this->get_id());
