@@ -35,6 +35,7 @@
 #include <types.h>
 #include <math/vector.h>
 #include <math/matrix.h>
+#include <math/utils.h>
 #include <intersect.h>
 #include <grid.h>
 #include <engine/graphics/resources/texture_id.h>
@@ -81,17 +82,6 @@ struct SectorSet
   std::vector<mat4>     transforms;
 };
 
-// Internal data of this map representation.
-struct SectorIntData
-{
-  // All indices are exclusive from top
-  // To get number of walls in a sector you use
-  // last_wall - first_wall
-  // If first_wall == last_wall then the sector has no walls
-  WallID first_wall = INVALID_WALL_ID; // [0..total_wall_count]
-  WallID last_wall  = INVALID_WALL_ID; // [first_wall..total_wall_count]
-};
-
 // Describes how a surface should be rendered.
 struct SurfaceData
 {
@@ -106,7 +96,7 @@ struct SurfaceData
   // How many different ways a texture tile is allowed to be randomly rotated
   u32       tile_rotations_count = 1;
   // Fixed step between the randomized tile rotation options (in radians)
-  float     tile_rotation_increment = 1.5707963267948966f;
+  f32       tile_rotation_increment = HALF_PI;
   // If false, skip generating the mesh entirely
   bool      should_show = true;
 };
@@ -147,15 +137,20 @@ struct WallSegmentData
 // Each sector is comprised of internal data
 struct SectorData
 {
-  SectorIntData int_data;
-  f32           floor_height  = 0.0f;
-  f32           ceil_height   = 0.0f;
-  SurfaceData   floor_surface;
-  SurfaceData   ceil_surface;
-  f32           state_floors[2]{}; // Heights for both OFF and ON states
-  f32           state_ceils [2]{};
-  f32           move_speed = 1.0f; // Speed of change betwen states, m/s
-  ActivatorID   activator = INVALID_ACTIVATOR_ID; // Only one activator owns us
+  // All indices are exclusive from top
+  // To get number of walls in a sector you use
+  // last_wall - first_wall
+  // If first_wall == last_wall then the sector has no walls
+  WallID      first_wall   = INVALID_WALL_ID; // [0..total_wall_count]
+  WallID      last_wall    = INVALID_WALL_ID; // [first_wall..total_wall_count]
+  f32         floor_height = 0.0f;
+  f32         ceil_height  = 0.0f;
+  SurfaceData floor_surface;
+  SurfaceData ceil_surface;
+  f32         state_floors[2]{}; // Heights for both OFF and ON states
+  f32         state_ceils [2]{};
+  f32         move_speed = 1.0f; // Speed of change betwen states, m/s
+  ActivatorID activator = INVALID_ACTIVATOR_ID; // Only one activator owns us
 
   // Calculates how much have the floor and ceiling moved compared to the
   // default state.

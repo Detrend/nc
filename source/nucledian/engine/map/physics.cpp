@@ -137,8 +137,8 @@ static CollisionHit raycast_generic
   {
     nc_assert(world.map.is_valid_sector_id(sector_id));
     const SectorData& sector     = world.map.sectors[sector_id];
-    const auto        begin_wall = sector.int_data.first_wall;
-    const auto        end_wall   = sector.int_data.last_wall;
+    const auto        begin_wall = sector.first_wall;
+    const auto        end_wall   = sector.last_wall;
     const auto&       bbox3      = world.map.sector_bboxes[sector_id];
 
     // Calculate approximate distance to the sector. If the closest
@@ -1797,8 +1797,8 @@ const
     nc_assert(map.is_valid_sector_id(sid));
     const SectorData& sd = map.sectors[sid];
 
-    WallID first_wall   = sd.int_data.first_wall;
-    WallID last_wall    = sd.int_data.last_wall;
+    WallID first_wall   = sd.first_wall;
+    WallID last_wall    = sd.last_wall;
 
     // Choose a point somewhere on the sector and follow that one
     vec2 center_point = VEC2_ZERO;

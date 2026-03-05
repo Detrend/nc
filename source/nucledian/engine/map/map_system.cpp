@@ -36,12 +36,12 @@ namespace map_helpers
 WallID next_wall(const MapSectors& map, SectorID sector, WallID wall)
 {
   nc_assert(sector < map.sectors.size());
-  nc_assert(wall < map.sectors[sector].int_data.last_wall);
+  nc_assert(wall < map.sectors[sector].last_wall);
   WallID next = wall + 1;
 
-  if (next == map.sectors[sector].int_data.last_wall)
+  if (next == map.sectors[sector].last_wall)
   {
-    next = map.sectors[sector].int_data.first_wall;
+    next = map.sectors[sector].first_wall;
   }
 
   return next;
@@ -51,7 +51,7 @@ WallID next_wall(const MapSectors& map, SectorID sector, WallID wall)
 WallID get_wall_id(const MapSectors& map, SectorID sector_id, WallRelID relative_wall_id)
 {
   nc_assert(sector_id < map.sectors.size());
-  const SectorIntData& sector_data = map.sectors[sector_id].int_data;
+  const SectorData& sector_data = map.sectors[sector_id];
 
   nc_assert(relative_wall_id < (sector_data.last_wall - sector_data.first_wall));
   const WallID wall_id = sector_data.first_wall + relative_wall_id;
@@ -72,7 +72,7 @@ WallID get_nc_opposing_wall(const MapSectors& map, SectorID sid, WallID wid)
 
   nc_assert(portal_sector != INVALID_SECTOR_ID);
 
-  return map.sectors[portal_sector].int_data.first_wall + rel_wall;
+  return map.sectors[portal_sector].first_wall + rel_wall;
 }
 
 //==============================================================================
@@ -81,10 +81,10 @@ template<typename F>
 bool for_each_portal(const MapSectors& map, SectorID sector_id, F&& lambda)
 {
   nc_assert(sector_id < map.sectors.size());
-  const auto& repr = map.sectors[sector_id].int_data;
+  const auto& sector = map.sectors[sector_id];
 
   bool at_least_one = false;
-  for (auto wid = repr.first_wall; wid < repr.last_wall; ++wid)
+  for (auto wid = sector.first_wall; wid < sector.last_wall; ++wid)
   {
     nc_assert(wid < map.walls.size());
 
@@ -103,9 +103,9 @@ template<typename F>
 void for_each_wall(const MapSectors& map, SectorID sector_id, F&& lambda)
 {
   nc_assert(sector_id < map.sectors.size());
-  const auto& repr = map.sectors[sector_id].int_data;
+  const auto& sector = map.sectors[sector_id];
 
-  for (auto wid = repr.first_wall; wid < repr.last_wall; ++wid)
+  for (auto wid = sector.first_wall; wid < sector.last_wall; ++wid)
   {
     nc_assert(wid < map.walls.size());
 
@@ -653,7 +653,7 @@ const
   nc_assert(wall.get_portal_type() == PortalType::non_euclidean);
 
   WallID wall_from2 = map_helpers::next_wall(*this, sector_from, wall_from1);
-  WallID wall_to1   = this->sectors[sector_to].int_data.first_wall + wall.nc_portal_wall_id;
+  WallID wall_to1   = this->sectors[sector_to].first_wall + wall.nc_portal_wall_id;
   WallID wall_to2   = map_helpers::next_wall(*this, sector_to, wall_to1);
 
   vec2 from_p1 = this->walls[wall_from1].pos;
@@ -737,12 +737,11 @@ const
   {
     nc_assert(sector_id < this->sectors.size());
 
-    const auto& sector      = this->sectors[sector_id];
-    const auto& sector_data = sector.int_data;
+    const auto& sector = this->sectors[sector_id];
 
     // build the floor first from the first point
-    const auto first_wall_idx = sector_data.first_wall;
-    const auto last_wall_idx  = sector_data.last_wall;
+    const auto first_wall_idx = sector.first_wall;
+    const auto last_wall_idx  = sector.last_wall;
     const auto first_wall_pos = this->walls[first_wall_idx].pos;
     const auto first_pt       = vec3{ first_wall_pos.x, 0.0f, first_wall_pos.y };
     nc_assert(first_wall_idx < last_wall_idx);
@@ -1113,8 +1112,8 @@ bool MapSectors::is_point_in_sector(vec2 pt, SectorID sector_id) const
 {
   nc_assert(this->is_valid_sector_id(sector_id));
   const SectorData& sector = this->sectors[sector_id];
-  const auto first = sector.int_data.first_wall;
-  const auto last = sector.int_data.last_wall;
+  const auto first = sector.first_wall;
+  const auto last = sector.last_wall;
   nc_assert(this->is_valid_wall_id(first));
   const auto p1 = this->walls[first].pos;
   for (WallID wall_index = first + 1; wall_index < last - 1; ++wall_index)
@@ -1135,8 +1134,8 @@ f32 MapSectors::distance_from_sector_2d(vec2 pt, SectorID sector_id) const
 
   const SectorData& sector = this->sectors[sector_id];
 
-  const auto first = sector.int_data.first_wall;
-  const auto last  = sector.int_data.last_wall;
+  const auto first = sector.first_wall;
+  const auto last  = sector.last_wall;
 
   // First, lets check for a direct intersection with all the triangles this
   // sector is composed of..
@@ -1308,7 +1307,7 @@ static void build_sector_grid_and_bboxes(MapSectors& map)
     const auto& sector = map.sectors[sid];
     aabb2 sector_aabb;
 
-    for (u64 id = sector.int_data.first_wall; id < sector.int_data.last_wall; ++id)
+    for (u64 id = sector.first_wall; id < sector.last_wall; ++id)
     {
       sector_aabb.insert_point(map.walls[id].pos);
     }
@@ -1698,9 +1697,9 @@ int build_map
 
     const u32 total_wall_count = static_cast<u32>(sector.points.size());
 
-    output_sector.int_data.first_wall = static_cast<WallID>(output.walls.size());
-    output_sector.int_data.last_wall = static_cast<WallID>(
-      output_sector.int_data.first_wall + total_wall_count);
+    output_sector.first_wall = static_cast<WallID>(output.walls.size());
+    output_sector.last_wall = static_cast<WallID>(
+      output_sector.first_wall + total_wall_count);
 
     // cycle through all walls and push them into the array
     nc_assert(sector.points.size() <= MAX_WALLS_PER_SECTOR);

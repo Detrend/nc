@@ -475,21 +475,20 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
   for (SectorID i = 0; i < map.sectors.size(); ++i)
   {
     const auto& sector = map.sectors[i];
-    const auto& repr = sector.int_data;
-    const s32 wall_count = repr.last_wall - repr.first_wall;
+    const s32 wall_count = sector.last_wall - sector.first_wall;
     nc_assert(wall_count >= 3);
 
     const bool is_visible = visible_sectors.is_visible(i);
     const vec3 color = (is_visible && show_visible_sectors) ? vec3{ 0.25f } : vec3{ colors::BLACK };
 
-    const auto& first_wall = map.walls[repr.first_wall];
+    const auto& first_wall = map.walls[sector.first_wall];
     vec2 avg_position = first_wall.pos;
 
     for (WallID index = 1; index < wall_count; ++index)
     {
       WallID next_index = (index + 1) % wall_count;
-      WallID index_in_arr = repr.first_wall + index;
-      WallID next_in_arr = repr.first_wall + next_index;
+      WallID index_in_arr = sector.first_wall + index;
+      WallID next_in_arr = sector.first_wall + next_index;
       nc_assert(index_in_arr < map.walls.size());
       nc_assert(next_in_arr < map.walls.size());
 
@@ -538,17 +537,16 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
       // render the sector shape into stencil buffer
       {
         const auto& sector = map.sectors[sector_id];
-        const auto& repr = sector.int_data;
-        const s32 wall_count = repr.last_wall - repr.first_wall;
+        const s32 wall_count = sector.last_wall - sector.first_wall;
         nc_assert(wall_count >= 3);
 
-        const auto& first_wall = map.walls[repr.first_wall];
+        const auto& first_wall = map.walls[sector.first_wall];
 
         for (WallID index = 1; index < wall_count; ++index)
         {
           WallID next_index = (index + 1) % wall_count;
-          WallID index_in_arr = repr.first_wall + index;
-          WallID next_in_arr = repr.first_wall + next_index;
+          WallID index_in_arr = sector.first_wall + index;
+          WallID next_in_arr = sector.first_wall + next_index;
           nc_assert(index_in_arr < map.walls.size());
           nc_assert(next_in_arr < map.walls.size());
 
@@ -603,15 +601,14 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
   {
     constexpr color4 PORTAL_TYPES_COLORS[3] = {colors::WHITE, colors::RED, colors::GREEN};
 
-    auto& repr = sector.int_data;
-    const s32 wall_count = repr.last_wall - repr.first_wall;
+    const s32 wall_count = sector.last_wall - sector.first_wall;
     nc_assert(wall_count >= 0);
 
     for (WallRelID index = 0; index < wall_count; ++index)
     {
       WallRelID next_index   = (index + 1) % wall_count;
-      WallID    index_in_arr = repr.first_wall + index;
-      WallID    next_in_arr  = repr.first_wall + next_index;
+      WallID    index_in_arr = sector.first_wall + index;
+      WallID    next_in_arr  = sector.first_wall + next_index;
       nc_assert(index_in_arr < map.walls.size());
       nc_assert(next_in_arr < map.walls.size());
 

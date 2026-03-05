@@ -1454,7 +1454,7 @@ void GameSystem::handle_raycast_debug()
         {
           SectorID  sid    = hit.hit.sector.sector_id;
           WallID    wid    = hit.hit.sector.wall_id;
-          int       wrelid = wid - lvl.map.sectors[sid].int_data.first_wall;
+          int       wrelid = wid - lvl.map.sectors[sid].first_wall;
           ImGui::Text("Hit type: wall");
           ImGui::Text("Sector:   %d", cast<int>(sid));
           ImGui::Text("Wall:     %d", cast<int>(wid));

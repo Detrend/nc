@@ -89,8 +89,8 @@ bool MapDynamics::switch_wall_segment_trigger
 )
 {
   const SectorData& sd = map.sectors[sector];
-  nc_assert(wall >= sd.int_data.first_wall && wall < sd.int_data.last_wall);
-  WallRelID wrelid = cast<WallRelID>(wall - sd.int_data.first_wall);
+  nc_assert(wall >= sd.first_wall && wall < sd.last_wall);
+  WallRelID wrelid = cast<WallRelID>(wall - sd.first_wall);
 
   u32 idx = sector_wall_segment_to_u32(sector, wrelid, segment);
   auto it = segment_trigger_runtime.find(idx);
@@ -190,7 +190,7 @@ void MapDynamics::evaluate_activators
           WallRelID wrelid = td.wall_type.wall;
 
           const SectorData& sd = map.sectors[td.wall_type.sector];
-          WallData& wd = map.walls[wrelid + sd.int_data.first_wall];
+          WallData& wd = map.walls[wrelid + sd.first_wall];
 
           SurfaceData& ssd = wd.surface.surfaces[td.wall_type.segment].surface;
           TextureID tids[2] = {ssd.texture_id_default, ssd.texture_id_triggered};
