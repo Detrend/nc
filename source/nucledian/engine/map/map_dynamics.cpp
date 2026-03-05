@@ -243,7 +243,8 @@ void MapDynamics::update(f32 delta)
     // Update affected sectors
     for (SectorID sid : activators[activator_id].affected_sectors)
     {
-      SectorData& sector = map.sectors[sid];
+      SectorData&    sector     = map.sectors[sid];
+      SectorDynData& sector_dyn = map.sectors_dynamic[sid];
 
       const f32 desired_floor    = sector.state_floors[is_on];
       const f32 desired_ceil     = sector.state_ceils[is_on];
@@ -251,15 +252,15 @@ void MapDynamics::update(f32 delta)
 
       bool changed = false;
 
-      if (sector.floor_height != desired_floor && change_per_frame != 0)
+      if (sector_dyn.floor_height != desired_floor && change_per_frame != 0)
       {
-        lerp_towards(sector.floor_height, desired_floor, change_per_frame);
+        lerp_towards(sector_dyn.floor_height, desired_floor, change_per_frame);
         changed = true;
       }
 
-      if (sector.ceil_height != desired_ceil && change_per_frame != 0)
+      if (sector_dyn.ceil_height != desired_ceil && change_per_frame != 0)
       {
-        lerp_towards(sector.ceil_height, desired_ceil, change_per_frame);
+        lerp_towards(sector_dyn.ceil_height, desired_ceil, change_per_frame);
         changed = true;
       }
 

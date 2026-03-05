@@ -661,8 +661,8 @@ const
   vec2 to_p1   = this->walls[wall_to1].pos;
   vec2 to_p2   = this->walls[wall_to2].pos;
 
-  f32 from_floor_height = this->sectors[sector_from].floor_height;
-  f32 to_floor_height   = this->sectors[sector_to].floor_height;
+  f32 from_floor_height = this->sectors_dynamic[sector_from].floor_height;
+  f32 to_floor_height   = this->sectors_dynamic[sector_to].floor_height;
 
   nc_assert(from_p1 != from_p2, "Retarded wall");
   nc_assert(to_p1   != to_p2,   "Retarded wall");
@@ -737,7 +737,8 @@ const
   {
     nc_assert(sector_id < this->sectors.size());
 
-    const auto& sector = this->sectors[sector_id];
+    const auto& sector     = this->sectors[sector_id];
+    const auto& sector_dyn = this->sectors_dynamic[sector_id];
 
     // build the floor first from the first point
     const auto first_wall_idx = sector.first_wall;
@@ -776,14 +777,14 @@ const
 
     if (sector.floor_surface.should_show)
     {
-      const vec3 first_pt_grounded = with_y(first_pt, sector.floor_height);
+      const vec3 first_pt_grounded = with_y(first_pt, sector_dyn.floor_height);
       for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
       {
         const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
         const auto w1pos = this->walls[idx].pos;
         const auto w2pos = this->walls[next_idx].pos;
-        const auto pt1 = vec3{ w1pos.x, sector.floor_height, w1pos.y };
-        const auto pt2 = vec3{ w2pos.x, sector.floor_height, w2pos.y };
+        const auto pt1 = vec3{ w1pos.x, sector_dyn.floor_height, w1pos.y };
+        const auto pt2 = vec3{ w2pos.x, sector_dyn.floor_height, w2pos.y };
 
         // build floor triangle from the first point and 2 others
         push_triangle(VEC3_Y, sector.floor_surface, first_pt_grounded, 0.0f, pt2, 0.0f, pt1, 0.0f);
@@ -794,14 +795,14 @@ const
     if (sector.ceil_surface.should_show)
     {
       // then build ceiling
-      const vec3 first_pt_ceiled = with_y(first_pt, sector.ceil_height);
+      const vec3 first_pt_ceiled = with_y(first_pt, sector_dyn.ceil_height);
       for (WallID idx = first_wall_idx + 1; idx < last_wall_idx - 1; ++idx)
       {
         const auto next_idx = map_helpers::next_wall(*this, sector_id, idx);
         const auto w1pos = this->walls[idx].pos;
         const auto w2pos = this->walls[next_idx].pos;
-        const auto pt1 = vec3{ w1pos.x, sector.ceil_height, w1pos.y };
-        const auto pt2 = vec3{ w2pos.x, sector.ceil_height, w2pos.y };
+        const auto pt1 = vec3{ w1pos.x, sector_dyn.ceil_height, w1pos.y };
+        const auto pt2 = vec3{ w2pos.x, sector_dyn.ceil_height, w2pos.y };
 
         // build floor triangle from the first point and 2 others
         push_triangle(-VEC3_Y, sector.ceil_surface, first_pt_ceiled, 0.0f, pt1, 0.0f, pt2, 0.0f);
@@ -861,44 +862,48 @@ const
 
       if (wall.portal_sector_id == INVALID_SECTOR_ID)
       {
-        add_wall_segments(sector.floor_height, sector.ceil_height, 0.0f);
+        add_wall_segments(sector_dyn.floor_height, sector_dyn.ceil_height, 0.0f);
       }
       else
       {
         f32 step_height = 0.0f, ceil_add = 0.0f;
         this->calc_step_height_of_portal(sector_id, idx, &step_height, &ceil_add);
 
-        f32 neighbor_floor_height = sector.floor_height + step_height;
-        f32 neighbor_ceil_height  = sector.ceil_height  + ceil_add;
+        f32 neighbor_floor_height = sector_dyn.floor_height + step_height;
+        f32 neighbor_ceil_height  = sector_dyn.ceil_height  + ceil_add;
 
-        const SectorData& neighbor = sectors[walls[idx].portal_sector_id];
         f32 neighbor_bot_change, neighbor_top_change;
-        neighbor.get_shift_amount(&neighbor_bot_change, &neighbor_top_change);
+        get_sector_shift_amount
+        (
+          walls[idx].portal_sector_id,
+          &neighbor_bot_change,
+          &neighbor_top_change
+        );
 
-        if (neighbor_floor_height >= sector.ceil_height || neighbor_ceil_height <= sector.floor_height)
+        if (neighbor_floor_height >= sector_dyn.ceil_height || neighbor_ceil_height <= sector_dyn.floor_height)
         {
           // no overlap, draw the full wall 
-          add_wall_segments(sector.floor_height, sector.ceil_height, neighbor_bot_change);
+          add_wall_segments(sector_dyn.floor_height, sector_dyn.ceil_height, neighbor_bot_change);
         }
-        else if (neighbor_ceil_height >= sector.ceil_height && neighbor_floor_height <= sector.floor_height)
+        else if (neighbor_ceil_height >= sector_dyn.ceil_height && neighbor_floor_height <= sector_dyn.floor_height)
         {
           // no need to draw any wall
           continue;
         }
-        else if (neighbor_ceil_height >= sector.ceil_height && neighbor_floor_height > sector.floor_height)
+        else if (neighbor_ceil_height >= sector_dyn.ceil_height && neighbor_floor_height > sector_dyn.floor_height)
         {
           // draw only bottom segment
           add_wall_segments
           (
-            sector.floor_height, neighbor_floor_height, neighbor_bot_change
+            sector_dyn.floor_height, neighbor_floor_height, neighbor_bot_change
           );
         }
-        else if (neighbor_ceil_height < sector.ceil_height && neighbor_floor_height <= sector.floor_height)
+        else if (neighbor_ceil_height < sector_dyn.ceil_height && neighbor_floor_height <= sector_dyn.floor_height)
         {
           // draw only top segment
           add_wall_segments
           (
-            neighbor_ceil_height, sector.ceil_height, neighbor_top_change
+            neighbor_ceil_height, sector_dyn.ceil_height, neighbor_top_change
           );
         }
         else
@@ -906,12 +911,12 @@ const
           // draw both top and bottom
           add_wall_segments
           (
-            sector.floor_height, neighbor_floor_height, neighbor_bot_change
+            sector_dyn.floor_height, neighbor_floor_height, neighbor_bot_change
           );
 
           add_wall_segments
           (
-            neighbor_ceil_height, sector.ceil_height, neighbor_top_change
+            neighbor_ceil_height, sector_dyn.ceil_height, neighbor_top_change
           );
         }
       }
@@ -1031,13 +1036,13 @@ const
   nc_assert(this->is_valid_wall_id(wall));
   nc_assert(step_opt || ceil_opt);
 
-  const SectorData& sd = this->sectors[sector];
-  const WallData&   wd = this->walls[wall];
+  const SectorDynData& sd = this->sectors_dynamic[sector];
+  const WallData&      wd = this->walls[wall];
 
   nc_assert(wd.is_portal());
   nc_assert(this->is_valid_sector_id(wd.portal_sector_id));
 
-  const SectorData& other = this->sectors[wd.portal_sector_id];
+  const SectorDynData& other = this->sectors_dynamic[wd.portal_sector_id];
 
   f32 my_floor_y    = sd.floor_height;
   f32 my_ceil_y     = sd.ceil_height;
@@ -1080,7 +1085,7 @@ u8 MapSectors::get_segment_idx_from_height(WallID wall_id, f32 ypos) const
   if (wall.is_portal())
   {
     const SectorData& ssd = sectors[wall.portal_sector_id];
-    ssd.get_shift_amount(&floor_shift, &ceil_shift);
+    get_sector_shift_amount(wall.portal_sector_id, &floor_shift, &ceil_shift);
     default_ceil_height = ssd.state_ceils[0];
   }
 
@@ -1105,6 +1110,29 @@ u8 MapSectors::get_segment_idx_from_height(WallID wall_id, f32 ypos) const
 
   // Return the index of the last entry
   return cast<u8>(wall.surface.surfaces.size() - 1);
+}
+
+//==============================================================================
+void MapSectors::get_sector_shift_amount
+(
+  SectorID sid, f32* bottom, f32* top
+) const
+{
+  nc_assert(is_valid_sector_id(sid));
+  nc_assert(bottom || top);
+
+  const SectorData&    sd  = sectors[sid];
+  const SectorDynData& sdd = sectors_dynamic[sid];
+
+  if (bottom)
+  {
+    *bottom = sdd.floor_height - sd.state_floors[0];
+  }
+
+  if (top)
+  {
+    *top = sdd.ceil_height - sd.state_ceils[0];
+  }
 }
 
 //==============================================================================
@@ -1171,23 +1199,7 @@ f32 MapSectors::distance_from_sector_2d(vec2 pt, SectorID sector_id) const
 }
 
 //==============================================================================
-void SectorData::get_shift_amount(f32* bottom, f32* top) const
-{
-  nc_assert(bottom || top);
-
-  if (bottom)
-  {
-    *bottom = floor_height - state_floors[0];
-  }
-
-  if (top)
-  {
-    *top = ceil_height - state_ceils[0];
-  }
-}
-
-//==============================================================================
-f32 SectorData::get_sector_height() const
+f32 SectorDynData::get_sector_height() const
 {
   return ceil_height - floor_height;
 }
@@ -1304,7 +1316,8 @@ static void build_sector_grid_and_bboxes(MapSectors& map)
   // and now insert all the visible_sectors
   for (SectorID sid = 0; sid < map.sectors.size(); ++sid)
   {
-    const auto& sector = map.sectors[sid];
+    const auto& sector     = map.sectors[sid];
+    const auto& sector_dyn = map.sectors_dynamic[sid];
     aabb2 sector_aabb;
 
     for (u64 id = sector.first_wall; id < sector.last_wall; ++id)
@@ -1313,8 +1326,8 @@ static void build_sector_grid_and_bboxes(MapSectors& map)
     }
 
     aabb3 bbox3{};
-    bbox3.min = vec3{sector_aabb.min.x, sector.floor_height, sector_aabb.min.y};
-    bbox3.max = vec3{sector_aabb.max.x, sector.floor_height, sector_aabb.max.y};
+    bbox3.min = vec3{sector_aabb.min.x, sector_dyn.floor_height, sector_aabb.min.y};
+    bbox3.max = vec3{sector_aabb.max.x, sector_dyn.floor_height, sector_aabb.max.y};
 
     map.sector_bboxes.push_back(bbox3);
     map.sector_grid.insert(sector_aabb, sid);
@@ -1546,8 +1559,8 @@ static std::tuple<vec3, f32, vec3> compute_pos_rotation_scale
   WallID            wall_id
 )
 {
-  f32 floor_height = map.sectors[sector_id].floor_height;
-  f32 ceil_height  = map.sectors[sector_id].ceil_height;
+  f32 floor_height = map.sectors_dynamic[sector_id].floor_height;
+  f32 ceil_height  = map.sectors_dynamic[sector_id].ceil_height;
 
   f32 above_floor = 0.0f, above_ceil = 0.0f;
   map.calc_step_height_of_portal(sector_id, wall_id, &above_floor, &above_ceil);
@@ -1671,9 +1684,12 @@ int build_map
   for (SectorID sector_id = 0; sector_id < temp_sectors.size(); ++sector_id)
   {
     auto&& sector = temp_sectors[sector_id];
-    SectorData& output_sector = output.sectors.emplace_back();
-    output_sector.floor_height = sector.floor_y[0];
-    output_sector.ceil_height  = sector.ceil_y [0];
+
+    SectorData&    output_sector     = output.sectors.emplace_back();
+    SectorDynData& output_sector_dyn = output.sectors_dynamic.emplace_back();
+
+    output_sector_dyn.floor_height = sector.floor_y[0];
+    output_sector_dyn.ceil_height  = sector.ceil_y [0];
     output_sector.state_floors[0] = output_sector.state_floors[1] = 0.0f;
     output_sector.state_ceils [0] = output_sector.state_ceils [1] = 0.0f;
     output_sector.activator = sector.activator;

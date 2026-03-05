@@ -137,24 +137,31 @@ struct WallSegmentData
 // Each sector is comprised of internal data
 struct SectorData
 {
+  static constexpr u64 NUM_SECTOR_STATES = 2;
+
   // All indices are exclusive from top
   // To get number of walls in a sector you use
   // last_wall - first_wall
   // If first_wall == last_wall then the sector has no walls
-  WallID      first_wall   = INVALID_WALL_ID; // [0..total_wall_count]
-  WallID      last_wall    = INVALID_WALL_ID; // [first_wall..total_wall_count]
-  f32         floor_height = 0.0f;
-  f32         ceil_height  = 0.0f;
   SurfaceData floor_surface;
   SurfaceData ceil_surface;
-  f32         state_floors[2]{}; // Heights for both OFF and ON states
-  f32         state_ceils [2]{};
+  f32         state_floors[NUM_SECTOR_STATES]{}; // Heights for both OFF and ON states
+  f32         state_ceils [NUM_SECTOR_STATES]{};
   f32         move_speed = 1.0f; // Speed of change betwen states, m/s
+  WallID      first_wall   = INVALID_WALL_ID; // [0..total_wall_count]
+  WallID      last_wall    = INVALID_WALL_ID; // [first_wall..total_wall_count]
   ActivatorID activator = INVALID_ACTIVATOR_ID; // Only one activator owns us
 
   // Calculates how much have the floor and ceiling moved compared to the
   // default state.
   void get_shift_amount(f32* out_floor, f32* out_ceil) const;
+};
+
+// Sector data that is not static and has to be stored in saves.
+struct SectorDynData
+{
+  f32 floor_height = 0.0f;
+  f32 ceil_height  = 0.0f;
 
   // Calculates the current height of the sector from floor to ceiling.
   // Negative if ceiling is under the floor (which should never happen!)
@@ -233,11 +240,12 @@ struct MapSectors
   template<typename T>
   using column = std::vector<T>;
 
-  column<SectorData>      sectors;
-  column<WallData>        walls;
-  column<Portal>          portals_render_data;
-  column<aabb3>           sector_bboxes;
-  StatGridAABB2<SectorID> sector_grid;
+  column<SectorData>        sectors;
+  column<SectorDynData> sectors_dynamic;
+  column<WallData>          walls;
+  column<Portal>            portals_render_data;
+  column<aabb3>             sector_bboxes;
+  StatGridAABB2<SectorID>   sector_grid;
 
   // TODO: Do not use the retarded std::function, find a better API alternative
   using TraverseVisitor = std::function<void(SectorID, Frustum2, WallID)>;
@@ -311,6 +319,11 @@ struct MapSectors
 
   // Returns the index of the wall segment in this height.
   u8 get_segment_idx_from_height(WallID wall, f32 y_height) const;
+
+  void get_sector_shift_amount
+  (
+    SectorID sid, f32* out_floor, f32* out_ceil
+  ) const;
 
   bool is_point_in_sector(vec2 pt, SectorID sector)      const;
   f32  distance_from_sector_2d(vec2 pt, SectorID sector) const;

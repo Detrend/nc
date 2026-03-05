@@ -1227,8 +1227,8 @@ static bool recalc_snap_entity_height
     // Avoid matrix multiplications and inversions
     f32 offset = entity.get_snap_offset();
 
-    const SectorData& sd = map.sectors[sid];
-    const f32 heights[2] = {sd.ceil_height - offset, sd.floor_height + offset};
+    const SectorDynData& sdd = map.sectors_dynamic[sid];
+    const f32 heights[2] = {sdd.ceil_height - offset, sdd.floor_height + offset};
 
     f32 height   = heights[to_floor];
     f32 t_height = t[1].y * height + t[3].y;
