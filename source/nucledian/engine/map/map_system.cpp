@@ -833,7 +833,7 @@ const
 
         for (const auto& entry : wall.surface.surfaces)
         {
-          f32 effective_height = entry.end_height + offset;
+          f32 effective_height = ((&entry == &wall.surface.surfaces[wall.surface.surfaces.size()-1]) ? end_height: entry.end_height + offset) ;
 
           if (effective_height < begin_height)
           {
