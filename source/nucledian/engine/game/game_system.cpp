@@ -233,7 +233,8 @@ static std::vector<WallSegmentData> load_json_wall_surface
 
     if (js_entry.contains("triggers"))
     {
-      for (const auto& js_trigger : js_entry["triggers"]) {
+      for (const auto& js_trigger : js_entry["triggers"])
+      {
         TriggerData td = load_json_trigger(js_trigger, activators);
         td.type = TriggerData::wall;
         td.wall_type.sector = sid;

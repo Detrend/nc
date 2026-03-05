@@ -131,7 +131,9 @@ struct WallSegmentData
 
 struct WallSegmentDynData
 {
-  bool triggered = false;
+  f32  countdown     = 0.0f;
+  bool triggered : 1 = false;
+  bool dirty     : 1 = false;
 };
 
 // Each sector is comprised of internal data
@@ -145,12 +147,12 @@ struct SectorData
   // If first_wall == last_wall then the sector has no walls
   SurfaceData floor_surface;
   SurfaceData ceil_surface;
-  f32         state_floors[NUM_SECTOR_STATES]{}; // Heights for both OFF and ON states
+  f32         state_floors[NUM_SECTOR_STATES]{};   // Heights for both OFF and ON states
   f32         state_ceils [NUM_SECTOR_STATES]{};
-  f32         move_speed = 1.0f; // Speed of change betwen states, m/s
-  WallID      first_wall   = INVALID_WALL_ID; // [0..total_wall_count]
-  WallID      last_wall    = INVALID_WALL_ID; // [first_wall..total_wall_count]
-  ActivatorID activator = INVALID_ACTIVATOR_ID; // Only one activator owns us
+  f32         move_speed = 1.0f;                   // Speed of change betwen states, m/s
+  WallID      first_wall   = INVALID_WALL_ID;      // [0..total_wall_count]
+  WallID      last_wall    = INVALID_WALL_ID;      // [first_wall..total_wall_count]
+  ActivatorID activator    = INVALID_ACTIVATOR_ID; // Only one activator owns us
 
   // Calculates how much have the floor and ceiling moved compared to the
   // default state.

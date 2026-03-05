@@ -75,16 +75,15 @@ struct TriggerData
   }
 };
 
-class IActivatorHook {
+class IActivatorHook
+{
 public:
-  
   using SerializedData = nlohmann::json;
   
   virtual ~IActivatorHook(){}
 
   virtual void load(const SerializedData& data) = 0;
-
-  virtual void on_activated_update(const f32 delta) { (void)delta; }
+  virtual void on_activated_update([[maybe_unused]]const f32 delta) {}
   virtual void on_activated_start(){}
   virtual void on_activated_end(){}
 };
@@ -121,25 +120,16 @@ struct MapDynamics
 
   bool switch_wall_segment_trigger(SectorID sector, WallID wall, u8 segment, bool& turned_on);
 
-  struct RuntimeSegmentInfo
-  {
-    f32       countdown = 0.0f;
-    bool      triggered = false;
-    TriggerID trigger   = INVALID_TRIGGER_ID;
-    bool      dirty     = false;
-  };
+  SegmentID segment_id_from_trigger(const TriggerData& td) const;
 
   using SectorChangeCallback = std::function<void(SectorID)>;
   using ActivatorList        = std::vector<std::vector<SectorID>>;
-  using SegmentRuntimeMap    = std::unordered_map<u32, RuntimeSegmentInfo>;
+  using SegmentRuntimeMap    = std::unordered_map<u32, TriggerID>;
 
   // Bindings to the remaining systems
   MapSectors&     map;
   EntityRegistry& registry;
   SectorMapping&  mapping;
-
-  // This has to be saved and loaded from the savefile
-  SegmentRuntimeMap segment_trigger_runtime;
 
   // Set these before calling on_map_rebuild_and_entities_created
   // No need to save/load
