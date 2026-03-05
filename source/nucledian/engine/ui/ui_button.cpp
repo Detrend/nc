@@ -74,7 +74,7 @@ namespace nc
 
 	void UiButton::on_click()
 	{
-		SoundSystem::get().play(Sounds::ui_click, 1.0f);
+		SoundSystem::get().play_oneshot(Sounds::ui_click, 1.0f);
 		func();
 	}
 

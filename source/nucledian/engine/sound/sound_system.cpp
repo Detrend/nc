@@ -139,9 +139,9 @@ void SoundSystem::set_music_volume(int step)
 }
 
 //==============================================================================
-void SoundSystem::play_oneshot(SoundID sound)
+void SoundSystem::play_oneshot(SoundID sound, f32 volume /*= 1.0f*/)
 {
-  play(sound);
+  play(sound, volume);
 }
 
 //==============================================================================
