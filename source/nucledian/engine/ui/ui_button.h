@@ -1,7 +1,6 @@
 #pragma once
 #include <engine/ui/ui_texture.h>
 #include <engine/graphics/graphics_system.h>
-#include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/resources/shader_program.h>
 #include <engine/graphics/resources/texture.h>
 

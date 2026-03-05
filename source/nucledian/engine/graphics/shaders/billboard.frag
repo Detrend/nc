@@ -3,7 +3,8 @@ constexpr const char* FRAGMENT_SOURCE = R"(
 #version 430 core
 #extension GL_NV_gpu_shader5 : enable
 
-in vec3 position;
+in vec3 position; // Unused
+in vec3 stitched_position;
 in vec3 normal;
 in vec2 uv;
 
@@ -23,7 +24,7 @@ void main()
   if (color.a < 0.95f)
     discard;
 
-  g_position.xyz = position;
+  g_position.xyz = stitched_position;
   // 4-th component of position is used for specular strength
   g_position.w = 0.0f;
   // 4-th component of normal is used to determine if pixel is a billboard

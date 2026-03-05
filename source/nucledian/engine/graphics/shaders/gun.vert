@@ -4,7 +4,8 @@ constexpr const char* VERTEX_SOURCE = R"(
 layout(location = 0) in vec3 a_position;
 layout(location = 1) in vec2 a_uv;
 
-out vec3 position;
+out vec3 position; // Unused
+out vec3 stitched_position;
 out vec3 normal;
 out vec2 uv;
 
@@ -19,6 +20,7 @@ void main()
 {
   gl_Position = projection * view * vec4(a_position, 1.0f);
   position = (transform * vec4(vec3(0.0f), 1.0f)).xyz;
+  stitched_position = (transform * vec4(vec3(0.0f), 1.0f)).xyz;
   normal = (transform * vec4(0.0f, 0.0f, 1.0f, 0.0f)).xyz;
   uv = (a_uv * texture_size + texture_pos) / atlas_size;
 }
