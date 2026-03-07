@@ -18,6 +18,11 @@
   xx(ricochet,     0.1f)     \
   xx(pickup,       0.1f)     \
   xx(hurt,         0.1f)     \
+  xx(player_hurt,  0.1f)     \
+  xx(possessed_hurt, 0.1f)   \
+  xx(possessed_die,0.1f)     \
+  xx(cultist_hurt, 0.1f)     \
+  xx(cultist_die,  0.1f)     \
   xx(death,        0.1f)     \
   xx(melee_hit,    0.1f)     \
   xx(ui_click,     0.1f)     \

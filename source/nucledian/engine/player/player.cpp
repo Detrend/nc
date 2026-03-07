@@ -675,6 +675,9 @@ void Player::damage(int damage)
     this->die();
     get_engine().get_module<UserInterfaceSystem>().get_ui_screen_effect()->did_damage(200);
   }
+  else {
+      SoundSystem::get().play_oneshot(Sounds::player_hurt);
+  }
 }
 
 //==============================================================================

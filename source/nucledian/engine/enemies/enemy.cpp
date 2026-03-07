@@ -12,6 +12,9 @@
 #include <engine/map/physics.h>
 #include <engine/entity/entity_system.h>
 
+#include <engine/sound/sound_system.h>
+#include <engine/sound/sound_resources.h>
+
 #include <game/projectiles.h> // ProjectileTypes
 #include <game/projectile.h>
 #include <game/enemies.h>     // ENEMY_STATS
@@ -54,6 +57,17 @@ constexpr f32 ENEMY_DROP_HEIGHT = 1.0f;   // How much we are able to drop
 constexpr ActorAnimStateFlag ENEMY_DIR8_STATES
   = ActorAnimStatesFlags::all
   & ~(ActorAnimStatesFlags::dying | ActorAnimStatesFlags::dead);
+
+
+
+static constexpr SoundID ENEMY_HURT_SOUND_BY_TYPE[] = { Sounds::cultist_hurt, Sounds::possessed_hurt };
+static constexpr SoundID ENEMY_DIE_SOUND_BY_TYPE[] = { Sounds::cultist_die, Sounds::possessed_die };
+
+static_assert(ARRAY_LENGTH(ENEMY_DIE_SOUND_BY_TYPE) == ARRAY_LENGTH(ENEMY_HURT_SOUND_BY_TYPE));
+static_assert(EnemyTypes::cultist == 0);
+static_assert(EnemyTypes::possessed == 1);
+static_assert(EnemyTypes::count == ARRAY_LENGTH(ENEMY_HURT_SOUND_BY_TYPE));
+
 
 namespace sprites
 {
@@ -331,6 +345,10 @@ void Enemy::damage(int damage, EntityID from_who)
     // Die only once
     this->die();
   }
+  else if(damage > 0) {
+      const f32 volume = 0.3f + ((std::rand()*0.4f) / RAND_MAX);
+      SoundSystem::get().play_oneshot(ENEMY_HURT_SOUND_BY_TYPE[type], volume);
+  }
 }
 
 //==============================================================================
@@ -338,6 +356,7 @@ void Enemy::die()
 {
   this->state = EnemyAiState::dead;
   this->anim_fsm.set_state(ActorAnimStates::dying);
+  SoundSystem::get().play_oneshot(ENEMY_DIE_SOUND_BY_TYPE[type]);
 }
 
 //==============================================================================
