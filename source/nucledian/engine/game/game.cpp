@@ -5,6 +5,7 @@
 // Entity types
 #include <engine/player/player.h>
 #include <engine/enemies/enemy.h>
+#include <engine/sound/sound_emitter.h>
 #include <game/projectile.h>
 #include <game/particle.h>
 
@@ -50,6 +51,12 @@ void Game::update
   entities->for_each<Particle>([&](Particle& particle)
   {
     particle.update(dt);
+  });
+
+  // Handle sound
+  entities->for_each<SoundEmitter>([&](SoundEmitter& sound)
+  {
+    sound.update(dt);
   });
 
   // And update the map

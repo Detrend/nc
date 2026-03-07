@@ -14,6 +14,8 @@
 #include <engine/map/map_system.h>
 #include <engine/map/physics.h>
 
+#include <engine/graphics/debug/gizmo.h>
+
 #include <intersect.h>
 
 namespace nc
@@ -32,9 +34,9 @@ SoundEmitter::SoundEmitter
   SoundID sound,
   f32     range,
   f32     volume,
-  bool    loop
-)
-: Entity(position, 0.0f)
+  [[maybe_unused]]bool loop // Not implemented for now as we can't stop the sound
+)                           // when the entity gets destroyed because the ctor
+: Entity(position, 0.0f)    // does not get called.
 , m_range(range)
 , m_volume(volume)
 {
@@ -110,7 +112,7 @@ SoundEmitter::SoundEmitter
   f32 new_vol    = (1.0f - clamp(total_dist / m_range, 0.0f, 1.0f)) * m_volume;
 
   // Spawn the sound proxy
-  m_handle = SoundSystem::get().play(sound, new_vol, loop);
+  m_handle = SoundSystem::get().play(sound, new_vol, false);
 }
 
 //==============================================================================
@@ -203,10 +205,20 @@ f32 SoundEmitter::calc_dist_to_listener() const
     // Increase the distance
     total_dist += distance(prev_pos, this_pos);
 
+#ifdef NC_DEBUG_DRAW
+    // Debug
+    Gizmo::create_line_2d("Sounds", this_pos.xz(), prev_pos.xz(), colors::PINK);
+#endif
+
     // Transform by the portal
     mat4 portal_trans = map.calc_portal_to_portal_projection(sector, wall);
     prev_pos = (portal_trans * vec4{this_pos, 1.0f}).xyz();
   }
+
+#ifdef NC_DEBUG_DRAW
+  // Debug
+  Gizmo::create_line_2d("Sounds", listener_pos.xz(), prev_pos.xz(), colors::PINK);
+#endif
 
   total_dist += distance(prev_pos, listener_pos);
 
