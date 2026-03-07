@@ -268,12 +268,16 @@ void Player::apply_velocity(f32 delta_seconds)
     }
   }
 
-  // Notify the game that we traversed through a portal
-  if (portal_transform != identity<mat4>())
+  // Report moving through portals
+  for (const PhysLevel::PortalSector& portal : collected_collisions.portals)
   {
+    WallID   wid   = portal.wall_id;
+    SectorID sid   = portal.sector_id;
+    mat4     trans = lvl.map.calc_portal_to_portal_projection(sid, wid);
+
     GameHelpers::get().on_player_traversed_nc_portal
     (
-      this->get_id(), portal_transform
+      this->get_id(), portal_transform, sid, wid
     );
   }
 }

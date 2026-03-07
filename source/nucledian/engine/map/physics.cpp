@@ -1474,6 +1474,15 @@ const
   const auto ray_to   = (position + velocity).xz();
   this->ray_cast_2d(ray_from, ray_to, 0, &portals);
 
+  // Store the list of traversed portals
+  if (colls_opt)
+  {
+    colls_opt->portals.insert
+    (
+      colls_opt->portals.end(), portals.begin(), portals.end()
+    );
+  }
+
   // Now that we have the portals stored we iterate them and transform our
   // position/direction with the portals
   transform_out = identity<mat4>();

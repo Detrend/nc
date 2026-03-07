@@ -98,11 +98,19 @@ void GameHelpers::play_3d_sound
 }
 
 //==============================================================================
-void GameHelpers::on_player_traversed_nc_portal(EntityID player, mat4 transform)
+void GameHelpers::on_player_traversed_nc_portal
+(
+  EntityID player, mat4 transform, SectorID sid, WallID wid
+)
 {
   m_game.entities->for_each<Enemy>([&](Enemy& enemy)
   {
     enemy.on_player_traversed_nc_portal(player, transform);
+  });
+
+  m_game.entities->for_each<SoundEmitter>([&](SoundEmitter& sound)
+  {
+    sound.on_player_traversed_nc_portal(player, sid, wid);
   });
 }
 

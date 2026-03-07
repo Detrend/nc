@@ -5,6 +5,7 @@
 #include <game/game_types.h>
 #include <engine/entity/entity_types.h>
 #include <engine/sound/sound_types.h>
+#include <engine/map/map_types.h>
 
 #include <math/vector.h>
 #include <math/matrix.h>
@@ -43,7 +44,10 @@ public:
 
   // Called by player after it traverses through a nuclidean portal and changes
   // its position.
-  void on_player_traversed_nc_portal(EntityID player, mat4 transform);
+  void on_player_traversed_nc_portal
+  (
+    EntityID player, mat4 transform, SectorID sid, WallID wid
+  );
 
 private:
 	Game& m_game;

@@ -200,6 +200,7 @@ struct PhysLevel
     SmallVector<WallCollision> walls;
     SmallVector<SectorID>      floors;
     SmallVector<SectorID>      ceilings;
+    SmallVector<PortalSector>  portals;
   };
 
   // Moves the "entity" with the given position, velocity and direction and checks
