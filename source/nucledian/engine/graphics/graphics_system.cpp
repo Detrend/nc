@@ -27,6 +27,7 @@
 #include <engine/entity/entity_type_definitions.h>
 
 #include <engine/game/game_system.h>
+#include <engine/game/game_helpers.h>
 #include <engine/player/level_types.h>
 #include <engine/player/player.h>
 
@@ -373,8 +374,7 @@ void GraphicsSystem::update([[maybe_unused]]f32 delta_seconds)
 //==============================================================================
 static void grab_render_gun_props(RenderGunProperties& props)
 {
-  GameSystem& game = GameSystem::get();
-  const Player* player = game.get_player();
+  const Player* player = GameHelpers::get().get_player();
 
   if (player)
   {
@@ -901,7 +901,7 @@ void GraphicsSystem::handle_light_debug()
       }
 
       ImGui::Separator();
-      Player* p = GameSystem::get().get_player();
+      Player* p = GameHelpers::get().get_player();
       if (p)
       {
         f32 dist = length(p->get_position() - light_test->get_position());

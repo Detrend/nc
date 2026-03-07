@@ -6,6 +6,7 @@
 #include <engine/graphics/entities/prop.h>
 #include <engine/core/engine.h>
 #include <engine/game/game_system.h>
+#include <engine/game/game_helpers.h>
 #include <engine/player/player.h>
 #include <engine/map/map_system.h>
 #include <engine/map/physics.h>
@@ -359,7 +360,7 @@ bool Enemy::is_my_turn_for_visibility_query() const
 {
   constexpr u64 CHECK_PER_FRAMES = 32; // Once per 32 frames
 
-  u64 frame_idx = GameSystem::get().get_frame_idx();
+  u64 frame_idx = GameHelpers::get().get_frame_idx();
   u64 my_idx    = this->get_id().idx;
   return (frame_idx % CHECK_PER_FRAMES) == (my_idx % CHECK_PER_FRAMES);
 }
@@ -367,7 +368,7 @@ bool Enemy::is_my_turn_for_visibility_query() const
 //==============================================================================
 void Enemy::handle_ai_idle(f32 /*delta*/)
 {
-  auto& game = GameSystem::get();
+  auto game = GameHelpers::get();
 
   Player* player = game.get_player();
   this->velocity = VEC3_ZERO;
@@ -819,17 +820,17 @@ void Enemy::on_attack_trigger()
     mat4 rot1 = rotate(identity<mat4>(), deg2rad( 3.0f), UP_DIR);
     mat4 rot2 = rotate(identity<mat4>(), deg2rad(-3.0f), UP_DIR);
 
-    GameSystem::get().spawn_projectile
+    GameHelpers::get().spawn_projectile
     (
       stats.projectile, from, dir, this->get_id()
     );
 
-    GameSystem::get().spawn_projectile
+    GameHelpers::get().spawn_projectile
     (
       stats.projectile, from, rot1 * vec4{dir, 0.0f}, this->get_id()
     );
 
-    GameSystem::get().spawn_projectile
+    GameHelpers::get().spawn_projectile
     (
       stats.projectile, from, rot2 * vec4{dir, 0.0f}, this->get_id()
     );

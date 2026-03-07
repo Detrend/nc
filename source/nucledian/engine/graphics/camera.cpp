@@ -2,7 +2,7 @@
 #include <engine/graphics/camera.h>
 
 #include <engine/player/player.h>
-#include <engine/game/game_system.h>
+#include <engine/game/game_helpers.h>
 
 #include <math/utils.h>
 #include <math/lingebra.h>
@@ -16,7 +16,7 @@ namespace nc
 //==============================================================================
 Camera* Camera::get()
 {
-  if (Player* player = GameSystem::get().get_player())
+  if (Player* player = GameHelpers::get().get_player())
   {
     return player->get_camera();
   }

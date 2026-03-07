@@ -3,6 +3,7 @@
 #include <cvars.h>
 
 #include <engine/game/game_system.h>
+#include <engine/game/game_helpers.h>
 #include <engine/player/player.h>
 
 #include <engine/core/engine.h>
@@ -532,7 +533,7 @@ static void notify_hot_reload_post_map_build()
 {
   if (HotReloadData::has_data)
   {
-    if (Player* player = GameSystem::get().get_player())
+    if (Player* player = GameHelpers::get().get_player())
     {
       player->hot_reload_set_pos_rot
       (
@@ -916,7 +917,7 @@ void GameSystem::handle_hot_reload()
 {
   if (ImGui::IsKeyReleased(ImGuiKey_F5))
   {
-    if (Player* player = get_player())
+    if (Player* player = GameHelpers::get().get_player())
     {
       player->hot_reload_get_pos_rot
       (
@@ -930,7 +931,7 @@ void GameSystem::handle_hot_reload()
   }
   else if (ImGui::IsKeyReleased(ImGuiKey_F7))
   {
-    if (Player* player = get_player())
+    if (Player* player = GameHelpers::get().get_player())
     {
       HotReloadData::has_data = false;
       this->request_level_change(this->get_level_name());
@@ -968,12 +969,6 @@ void GameSystem::on_event(ModuleEvent& event)
     }
     break;
   }
-}
-
-//==========================================================
-Player* GameSystem::get_player()
-{
-  return this->get_entities().get_entity<Player>(game->player_id);
 }
 
 //==============================================================================
@@ -1100,78 +1095,7 @@ const SectorMapping& GameSystem::get_sector_mapping() const
 //==============================================================================
 PhysLevel GameSystem::get_level() const
 {
-  return PhysLevel
-  {
-    .entities = this->get_entities(),
-    .map      = this->get_map(),
-    .mapping  = this->get_sector_mapping(),
-  };
-}
-
-//==============================================================================
-Projectile* GameSystem::spawn_projectile
-(
-  ProjectileType type, vec3 from, vec3 dir, EntityID author
-)
-{
-  // Spawn projectile
-  Projectile* projectile = get_entities().create_entity<Projectile>
-  (
-    from, dir, author, type 
-  );
-
-  if (vec3 light_col = PROJECTILE_STATS[type].light_color; light_col != VEC3_ZERO)
-  {
-    // And its light
-    PointLight* light = get_entities().create_entity<PointLight>
-    (
-      from, 3.0f, 2.5f, 1.15f, light_col
-    );
-
-    // And attach it
-    get_attachment_mgr().attach_entity
-    (
-      light->get_id(), projectile->get_id(), EntityAttachmentFlags::all
-    );
-  }
-
-  return projectile;
-}
-
-//==============================================================================
-void GameSystem::play_3d_sound
-(
-  vec3 position, SoundID sound, f32 distance, f32 volume
-)
-{
-  Player* player = this->get_player();
-  if (!player)
-  {
-    return;
-  }
-
-  nc_assert(player->get_camera());
-
-  f32 dist_vol = this->get_level().calc_3d_sound_volume
-  (
-    player->get_camera()->get_position(),
-    position,
-    distance
-  );
-
-  if (dist_vol > 0.0f)
-  {
-    SoundSystem::get().play(sound, volume * dist_vol);
-  }
-}
-
-//==============================================================================
-void GameSystem::on_player_traversed_nc_portal(EntityID player, mat4 transform)
-{
-  get_entities().for_each<Enemy>([&](Enemy& enemy)
-  {
-    enemy.on_player_traversed_nc_portal(player, transform);
-  });
+	return get_game_helpers().get_level();
 }
 
 //==============================================================================
@@ -1188,9 +1112,10 @@ const EntityAttachment& GameSystem::get_attachment_mgr() const
 }
 
 //==============================================================================
-u64 GameSystem::get_frame_idx() const
+GameHelpers GameSystem::get_game_helpers() const
 {
-  return game->frame_idx;
+	nc_assert(this->game);
+	return GameHelpers(*this->game);
 }
 
 //==============================================================================
@@ -1374,7 +1299,7 @@ void GameSystem::Journal::reset_and_clear(GameSystem::JournalState to_state)
 #ifdef NC_DEBUG_DRAW
 void GameSystem::handle_raycast_debug()
 {
-  Player* player = this->get_player();
+  Player* player = GameHelpers::get().get_player();
 
   if (player && player->get_camera() && CVars::debug_player_raycasts)
   {

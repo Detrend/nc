@@ -2,6 +2,7 @@
 #include <game/projectile.h>
 
 #include <engine/game/game_system.h>
+#include <engine/game/game_helpers.h>
 
 #include <engine/entity/entity_type_definitions.h>
 #include <engine/map/physics.h>
@@ -101,7 +102,7 @@ void Projectile::update(f32 dt)
         if (m_hit_cnt_remaining)
         {
           // play the ricochet snd
-          GameSystem::get().play_3d_sound
+          GameHelpers::get().play_3d_sound
           (
             position, Sounds::ricochet, 32.0f, 0.3f
           );

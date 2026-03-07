@@ -33,6 +33,7 @@ struct SectorMapping;
 struct PhysLevel;
 struct Game;
 struct PlayerSpecificInputs;
+class  GameHelpers;
 class  EntityRegistry;
 class  Player;
 class  EntityAttachment;
@@ -74,7 +75,6 @@ public:
 
   const DemoDataFrames& get_demo_frames() const;
 
-  Player*                 get_player();
   EntityRegistry&         get_entities();
   MapDynamics&            get_map_dynamics();
   const EntityRegistry&   get_entities()       const;
@@ -83,20 +83,7 @@ public:
   PhysLevel               get_level()          const;
   EntityAttachment&       get_attachment_mgr();
   const EntityAttachment& get_attachment_mgr() const;
-
-  u64 get_frame_idx() const;
-
-  // Helper for creating projectiles
-  Projectile* spawn_projectile
-  (
-    ProjectileType type, vec3 point, vec3 dir, EntityID author
-  );
-
-  void play_3d_sound(vec3 position, SoundID sound, f32 distance, f32 volume);
-
-  // Called by player after it traverses through a nuclidean portal and changes
-  // its position.
-  void on_player_traversed_nc_portal(EntityID player, mat4 transform);
+	GameHelpers             get_game_helpers()   const;
 
   // Request a new level to play - an empty one.
   // Comes in handy in the menu

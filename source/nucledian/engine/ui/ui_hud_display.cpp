@@ -1,6 +1,6 @@
 #include <engine/ui/ui_hud_display.h>
 #include <engine/core/engine.h>
-#include <engine/game/game_system.h>
+#include <engine/game/game_helpers.h>
 #include <engine/player/player.h>
 #include <glm/ext/matrix_transform.hpp>
 #include <engine/graphics/graphics_system.h>
@@ -59,7 +59,7 @@ namespace nc
   void UiHudDisplay::update()
   {
     // Player might not exist in an empty level in menu
-    if (Player* player = get_engine().get_module<GameSystem>().get_player())
+    if (Player* player = GameHelpers::get().get_player())
     {
       display_ammo   = player->get_current_weapon_ammo();
       display_health = player->get_health();

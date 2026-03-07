@@ -14,6 +14,7 @@
 #include <engine/entity/sector_mapping.h>
 
 #include <engine/game/game_system.h>
+#include <engine/game/game_helpers.h>
 #include <engine/entity/entity_system.h>
 #include <engine/enemies/enemy.h>
 
@@ -270,7 +271,7 @@ void Player::apply_velocity(f32 delta_seconds)
   // Notify the game that we traversed through a portal
   if (portal_transform != identity<mat4>())
   {
-    GameSystem::get().on_player_traversed_nc_portal
+    GameHelpers::get().on_player_traversed_nc_portal
     (
       this->get_id(), portal_transform
     );
@@ -562,7 +563,7 @@ void Player::do_attack()
       vec3 spreaded_dir = normalize(vec3{rx, ry, 1.0f});
       vec3 adjusted_dir = dir_base * spreaded_dir;
 
-      GameSystem::get().spawn_projectile
+      GameHelpers::get().spawn_projectile
       (
         WEAPON_STATS[weapon].projectile, from, adjusted_dir, this->get_id()
       );

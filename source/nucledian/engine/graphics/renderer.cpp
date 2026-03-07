@@ -22,6 +22,7 @@
 #include <engine/core/engine.h>
 #include <engine/map/map_system.h>
 #include <engine/game/game_system.h>
+#include <engine/game/game_helpers.h>
 #include <engine/appearance.h>
 
 #include <array>
@@ -883,7 +884,7 @@ const
   mat4 view       = translation(trans) * scaling(scale);
   mat4 projection = ortho(0.0f, win_size.x, win_size.y, 0.0f, -1.0f, 1.0f);
 
-  const vec2 player_position = ((Entity*)GameSystem::get().get_player())->get_position().xy;
+  const vec2 player_position = ((Entity*)GameHelpers::get().get_player())->get_position().xy;
   const SectorID sector_id = GameSystem::get().get_map().get_sector_from_point(player_position);
 
   glBindVertexArray(texturable_quad.get_vao());
