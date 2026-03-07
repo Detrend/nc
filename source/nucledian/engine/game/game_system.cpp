@@ -1188,11 +1188,19 @@ void GameSystem::build_map(LevelName level)
 
   game->dynamics->sector_change_callback = [](SectorID sector)
   {
+    const MapSectors&    map      = GameSystem::get().get_map();
+    const SectorMapping& mapping  = GameSystem::get().get_sector_mapping();
+
     // Rebuild the sector geometry
     GraphicsSystem::get().mark_sector_dirty(sector);
 
-    const MapSectors&     map      = GameSystem::get().get_map();
-    const SectorMapping&  mapping  = GameSystem::get().get_sector_mapping();
+    // Rebuild the geometry for surroundings as well
+    map.for_each_portal_of_sector(sector, [&](WallID wall)
+    {
+      const WallData& wd = map.walls[wall];
+      nc_assert(map.is_valid_sector_id(wd.portal_sector_id));
+      GraphicsSystem::get().mark_sector_dirty(wd.portal_sector_id);
+    });
 
     EntityRegistry& registry = GameSystem::get().get_entities();
 

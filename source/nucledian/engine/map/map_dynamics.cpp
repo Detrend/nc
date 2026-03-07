@@ -7,6 +7,9 @@
 #include <engine/entity/entity_system.h>
 #include <engine/entity/entity_type_definitions.h>
 
+#include <engine/sound/sound_emitter.h>
+#include <engine/sound/sound_resources.h>
+
 #include <math/lingebra.h>
 #include <math/utils.h>
 
@@ -32,6 +35,16 @@ MapDynamics::MapDynamics
 }
 
 //==============================================================================
+MapDynamics::~MapDynamics()
+{
+  // Kill all sounds
+  for (SectorID sid = 0; sid < cast<SectorID>(sector_sounds.size()); ++sid)
+  {
+    this->on_sector_moving_changed(sid, false);
+  }
+}
+
+//==============================================================================
 void MapDynamics::on_map_rebuild_and_entities_created()
 {
   nc_assert(triggers.size() <= MAX_TRIGGERS);
@@ -39,6 +52,9 @@ void MapDynamics::on_map_rebuild_and_entities_created()
   // Map sectors to their activators
   nc_assert(map.sectors.size() < MAX_SECTORS);
   nc_assert(std::ranges::all_of(activators, [](const ActivatorData& activator)->bool { return activator.affected_sectors.empty(); }));
+
+  moving_sectors.resize(map.sectors.size(), false);
+  sector_sounds.resize(map.sectors.size(), INVALID_ENTITY_ID);
 
   SectorID sector_cnt = cast<SectorID>(map.sectors.size());
   for (SectorID sid = 0; sid < sector_cnt; ++sid)
@@ -62,6 +78,51 @@ SegmentID MapDynamics::segment_id_from_trigger(const TriggerData& td) const
   const WallData&   wd = map.walls[sd.first_wall + td.wall_type.wall];
 
   return wd.first_segment + td.wall_type.segment;
+}
+
+//==============================================================================
+void MapDynamics::on_sector_moving_changed(SectorID sid, bool started_moving)
+{
+  if (started_moving)
+  {
+    nc_assert(sector_sounds[sid] == INVALID_ENTITY_ID);
+
+    vec2 avg_pos_2d = VEC2_ZERO;
+    map.for_each_wall_of_sector(sid, [&](WallID wall)
+    {
+      avg_pos_2d += map.walls[wall].pos;
+    });
+    avg_pos_2d /= map.sectors[sid].last_wall - map.sectors[sid].first_wall;
+
+    f32 floor = map.sectors_dynamic[sid].floor_height;
+    f32 roof  = map.sectors_dynamic[sid].ceil_height;
+    f32 avg_h = (floor + roof) * 0.5f;
+
+    vec3 sound_pos = vec3{avg_pos_2d.x, avg_h, avg_pos_2d.y};
+
+    SoundEmitter* emitter = registry.create_entity<SoundEmitter>
+    (
+      sound_pos, Sounds::door, 20.0f, 0.2f, true
+    );
+
+    nc_assert(emitter);
+
+    sector_sounds[sid] = emitter->get_id();
+  }
+  else
+  {
+    // Kill the entity if it exists
+    EntityID id = sector_sounds[sid];
+    if (id != INVALID_ENTITY_ID)
+    {
+      if (SoundEmitter* emitter = registry.get_entity<SoundEmitter>(id))
+      {
+        emitter->kill();
+      }
+    }
+
+    sector_sounds[sid] = INVALID_ENTITY_ID;
+  }
 }
 
 //==============================================================================
@@ -236,31 +297,31 @@ void MapDynamics::update(f32 delta)
       const f32 desired_ceil     = sector.state_ceils[is_on];
       const f32 change_per_frame = delta * sector.move_speed;
 
-      bool changed = false;
+      bool moved = false;
 
       if (sector_dyn.floor_height != desired_floor && change_per_frame != 0)
       {
         lerp_towards(sector_dyn.floor_height, desired_floor, change_per_frame);
-        changed = true;
+        moved = true;
       }
 
       if (sector_dyn.ceil_height != desired_ceil && change_per_frame != 0)
       {
         lerp_towards(sector_dyn.ceil_height, desired_ceil, change_per_frame);
-        changed = true;
+        moved = true;
       }
 
-      if (changed && sector_change_callback)
+      if (moved && sector_change_callback)
       {
         // The sector changed.. Notify potential listener.
         sector_change_callback(sid);
+      }
 
-        // Mark the surrounding sectors as dirty as well
-        map.for_each_portal_of_sector(sid, [&](WallID wid)
-        {
-          nc_assert(map.walls[wid].portal_sector_id != INVALID_SECTOR_ID);
-          sector_change_callback(map.walls[wid].portal_sector_id);
-        });
+      if (moving_sectors[sid] != moved)
+      {
+        // Notify that it started/stopped moving
+        on_sector_moving_changed(sid, moved);
+        moving_sectors[sid] = moved;
       }
     }
 

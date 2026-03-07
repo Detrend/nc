@@ -34,9 +34,9 @@ SoundEmitter::SoundEmitter
   SoundID sound,
   f32     range,
   f32     volume,
-  [[maybe_unused]]bool loop // Not implemented for now as we can't stop the sound
-)                           // when the entity gets destroyed because the ctor
-: Entity(position, 0.0f)    // does not get called.
+  bool    loop 
+)
+: Entity(position, 0.0f)
 , m_range(range)
 , m_volume(volume)
 {
@@ -112,7 +112,7 @@ SoundEmitter::SoundEmitter
   f32 new_vol    = (1.0f - clamp(total_dist / m_range, 0.0f, 1.0f)) * m_volume;
 
   // Spawn the sound proxy
-  m_handle = SoundSystem::get().play(sound, new_vol, false);
+  m_handle = SoundSystem::get().play(sound, new_vol, loop);
 }
 
 //==============================================================================
@@ -231,7 +231,7 @@ void SoundEmitter::update([[maybe_unused]]f32 delta)
   if (!m_handle.is_valid())
   {
     // Destroy ourselves
-    GameSystem::get().get_entities().destroy_entity(this->get_id());
+    this->kill();
     return;
   }
 
@@ -242,6 +242,17 @@ void SoundEmitter::update([[maybe_unused]]f32 delta)
 
   // And set it
   m_handle.set_volume(new_vol);
+}
+
+//==============================================================================
+void SoundEmitter::kill()
+{
+  if (m_handle.is_valid())
+  {
+    m_handle.kill();
+  }
+
+  GameSystem::get().get_entities().destroy_entity(this->get_id());
 }
 
 }

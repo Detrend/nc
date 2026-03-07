@@ -29,6 +29,9 @@ public:
   // Updates the volume of the sound, kills it if necessary
   void update(f32 delta);
 
+  // Stops the sound
+  void kill();
+
   void on_player_traversed_nc_portal(EntityID player, SectorID sid, WallID wid);
 
 private:

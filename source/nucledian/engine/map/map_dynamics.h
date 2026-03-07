@@ -109,6 +109,8 @@ struct MapDynamics
 {
   MapDynamics(MapSectors& map, EntityRegistry& registry, SectorMapping& mapping);
 
+  ~MapDynamics();
+
   void on_map_rebuild_and_entities_created();
 
   void update(f32 delta);
@@ -121,6 +123,8 @@ struct MapDynamics
   bool switch_wall_segment_trigger(SectorID sector, WallID wall, u8 segment, bool& turned_on);
 
   SegmentID segment_id_from_trigger(const TriggerData& td) const;
+
+  void on_sector_moving_changed(SectorID sector, bool started_moving);
 
   using SectorChangeCallback = std::function<void(SectorID)>;
   using ActivatorList        = std::vector<std::vector<SectorID>>;
@@ -135,6 +139,8 @@ struct MapDynamics
   // No need to save/load
   std::vector<TriggerData>   triggers;
   std::vector<ActivatorData> activators;
+  std::vector<EntityID>      sector_sounds; // Active sounds for moving sectors
+  std::vector<bool>          moving_sectors;
 
   SectorChangeCallback  sector_change_callback;
 };
