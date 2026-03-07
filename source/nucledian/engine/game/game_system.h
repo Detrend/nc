@@ -9,7 +9,6 @@
 #include <engine/entity/entity_types.h>
 #include <engine/player/level_types.h>
 #include <engine/player/save_types.h>
-#include <engine/sound/sound_types.h>
 
 #include <engine/input/game_input.h>
 #include <game/game_types.h>
