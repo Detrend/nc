@@ -35,6 +35,7 @@
 #include <types.h>
 #include <math/vector.h>
 #include <math/matrix.h>
+#include <math/utils.h>
 #include <intersect.h>
 #include <grid.h>
 #include <engine/graphics/resources/texture_id.h>
@@ -81,21 +82,9 @@ struct SectorSet
   std::vector<mat4>     transforms;
 };
 
-// Internal data of this map representation.
-struct SectorIntData
-{
-  // All indices are exclusive from top
-  // To get number of walls in a sector you use
-  // last_wall - first_wall
-  // If first_wall == last_wall then the sector has no walls
-  WallID first_wall = INVALID_WALL_ID; // [0..total_wall_count]
-  WallID last_wall  = INVALID_WALL_ID; // [first_wall..total_wall_count]
-};
-
 // Describes how a surface should be rendered.
 struct SurfaceData
 {
-  TextureID texture_id           = INVALID_TEXTURE_ID;
   TextureID texture_id_default   = INVALID_TEXTURE_ID;
   TextureID texture_id_triggered = INVALID_TEXTURE_ID;
   f32       scale      = 1.0f;
@@ -106,7 +95,7 @@ struct SurfaceData
   // How many different ways a texture tile is allowed to be randomly rotated
   u32       tile_rotations_count = 1;
   // Fixed step between the randomized tile rotation options (in radians)
-  float     tile_rotation_increment = 1.5707963267948966f;
+  f32       tile_rotation_increment = HALF_PI;
   // If false, skip generating the mesh entirely
   bool      should_show = true;
 };
@@ -127,39 +116,54 @@ struct WallSegmentData
     absolute_directions = 32
   };
 
-  struct Entry
-  {
-    // Surface used in this wall interval
-    SurfaceData surface;
-    // Height in absolute world coords, where this segment ends. It begins at the end of the previous entry
-    f32         end_height = +INFINITY;
-    vec3        end_up_tesselation  = vec3(0.0f, 0.0f, 0.0f);
-    vec3        end_down_tesselation  = vec3(0.0f, 0.0f, 0.0f);
-    vec3        begin_up_tesselation = vec3(0.0f, 0.0f, 0.0f);
-    vec3        begin_down_tesselation = vec3(0.0f, 0.0f, 0.0f);
-    Flags       flags = Flags::generate_all_faces;
-  };
-
   // Height intervals either for the floor-difference part of the wall (if this wall has a portal connecting two sectors), or for the whole wall (if there are no two neighbors)
-  std::vector<Entry> surfaces;
+
+  // Surface used in this wall interval
+  SurfaceData surface;
+  // Height in absolute world coords, where this segment ends. It begins at the end of the previous entry
+  f32         end_height = +INFINITY;
+  vec3        end_up_tesselation  = vec3(0.0f, 0.0f, 0.0f);
+  vec3        end_down_tesselation  = vec3(0.0f, 0.0f, 0.0f);
+  vec3        begin_up_tesselation = vec3(0.0f, 0.0f, 0.0f);
+  vec3        begin_down_tesselation = vec3(0.0f, 0.0f, 0.0f);
+  Flags       flags = Flags::generate_all_faces;
+};
+
+struct WallSegmentDynData
+{
+  f32  countdown     = 0.0f;
+  bool triggered : 1 = false;
+  bool dirty     : 1 = false;
 };
 
 // Each sector is comprised of internal data
 struct SectorData
 {
-  SectorIntData int_data;
-  f32           floor_height  = 0.0f;
-  f32           ceil_height   = 0.0f;
-  SurfaceData   floor_surface;
-  SurfaceData   ceil_surface;
-  f32           state_floors[2]{}; // Heights for both OFF and ON states
-  f32           state_ceils [2]{};
-  f32           move_speed = 1.0f; // Speed of change betwen states, m/s
-  ActivatorID   activator = INVALID_ACTIVATOR_ID; // Only one activator owns us
+  static constexpr u64 NUM_SECTOR_STATES = 2;
+
+  // All indices are exclusive from top
+  // To get number of walls in a sector you use
+  // last_wall - first_wall
+  // If first_wall == last_wall then the sector has no walls
+  SurfaceData floor_surface;
+  SurfaceData ceil_surface;
+  f32         state_floors[NUM_SECTOR_STATES]{};   // Heights for both OFF and ON states
+  f32         state_ceils [NUM_SECTOR_STATES]{};
+  f32         move_speed = 1.0f;                   // Speed of change betwen states, m/s
+  WallID      first_wall   = INVALID_WALL_ID;      // [0..total_wall_count]
+  WallID      last_wall    = INVALID_WALL_ID;      // [first_wall..total_wall_count]
+  ActivatorID activator    = INVALID_ACTIVATOR_ID; // Only one activator owns us
 
   // Calculates how much have the floor and ceiling moved compared to the
   // default state.
   void get_shift_amount(f32* out_floor, f32* out_ceil) const;
+};
+
+// Sector data that is not static and has to be stored in saves.
+struct SectorDynData
+{
+  f32 floor_height = 0.0f;
+  f32 ceil_height  = 0.0f;
 
   // Calculates the current height of the sector from floor to ceiling.
   // Negative if ceiling is under the floor (which should never happen!)
@@ -183,11 +187,12 @@ struct WallData
   // wall begins
   
   vec2            pos               = vec2{0};
-  SectorID        portal_sector_id  = INVALID_SECTOR_ID; // if is portal
-  WallRelID       nc_portal_wall_id = INVALID_WALL_REL_ID;
   f32             nc_portal_offset  = 0.0f; // offset from ground, only nc portals
+  SegmentID       first_segment     = INVALID_SEGMENT_ID;
+  SectorID        portal_sector_id  = INVALID_SECTOR_ID; // if is portal
   PortalRenderID  render_data_index = INVALID_PORTAL_RENDER_ID;
-  WallSegmentData surface;
+  WallRelID       nc_portal_wall_id = INVALID_WALL_REL_ID;
+  u8              segment_count     = 0;
 
   PortType get_portal_type() const;
 
@@ -238,11 +243,14 @@ struct MapSectors
   template<typename T>
   using column = std::vector<T>;
 
-  column<SectorData>      sectors;
-  column<WallData>        walls;
-  column<Portal>          portals_render_data;
-  column<aabb3>           sector_bboxes;
-  StatGridAABB2<SectorID> sector_grid;
+  column<SectorData>         sectors;
+  column<SectorDynData>      sectors_dynamic;
+  column<WallData>           walls;
+  column<WallSegmentData>    wall_segments;
+  column<WallSegmentDynData> wall_segments_dynamic;
+  column<Portal>             portals_render_data;
+  column<aabb3>              sector_bboxes;
+  StatGridAABB2<SectorID>    sector_grid;
 
   // TODO: Do not use the retarded std::function, find a better API alternative
   using TraverseVisitor = std::function<void(SectorID, Frustum2, WallID)>;
@@ -317,6 +325,11 @@ struct MapSectors
   // Returns the index of the wall segment in this height.
   u8 get_segment_idx_from_height(WallID wall, f32 y_height) const;
 
+  void get_sector_shift_amount
+  (
+    SectorID sid, f32* out_floor, f32* out_ceil
+  ) const;
+
   bool is_point_in_sector(vec2 pt, SectorID sector)      const;
   f32  distance_from_sector_2d(vec2 pt, SectorID sector) const;
 
@@ -340,7 +353,7 @@ struct WallBuildData
   WallID          point_index = 0;
   WallRelID       nc_portal_point_index  = 0;
   SectorID        nc_portal_sector_index = INVALID_SECTOR_ID;
-  WallSegmentData surface;
+  std::vector<WallSegmentData> surface;
 };
 
 struct SectorBuildData

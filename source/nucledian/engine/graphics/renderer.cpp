@@ -471,8 +471,8 @@ void Renderer::push_sector_to_ssbo(SectorID sector_id, WallID enter_portal, cons
   (
     SectorGPU
     {
-      .floor_y = map.sectors[sector_id].floor_height * y_scale + y_trans,
-      .ceil_y = map.sectors[sector_id].ceil_height * y_scale + y_trans,
+      .floor_y = map.sectors_dynamic[sector_id].floor_height * y_scale + y_trans,
+      .ceil_y = map.sectors_dynamic[sector_id].ceil_height * y_scale + y_trans,
       .walls_offset = walls_offset,
       .walls_count = walls_count,
     }

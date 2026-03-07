@@ -137,8 +137,8 @@ static CollisionHit raycast_generic
   {
     nc_assert(world.map.is_valid_sector_id(sector_id));
     const SectorData& sector     = world.map.sectors[sector_id];
-    const auto        begin_wall = sector.int_data.first_wall;
-    const auto        end_wall   = sector.int_data.last_wall;
+    const auto        begin_wall = sector.first_wall;
+    const auto        end_wall   = sector.last_wall;
     const auto&       bbox3      = world.map.sector_bboxes[sector_id];
 
     // Calculate approximate distance to the sector. If the closest
@@ -445,7 +445,7 @@ static bool calc_path_raw
         return;
       }
 
-      const SectorData& next_sd = map.sectors[next_sector];
+      const SectorDynData& next_sd = map.sectors_dynamic[next_sector];
       f32 sector_height = next_sd.ceil_height - next_sd.floor_height;
       if (sector_height <= height)
       {
@@ -885,11 +885,11 @@ static bool intersect_wall_3d
     }
   }
 
-  const SectorData& sd  = map.sectors[sid];
-  const SectorData& sd2 = map.sectors[w1.portal_sector_id];
+  const SectorDynData& sdd  = map.sectors_dynamic[sid];
+  const SectorDynData& sdd2 = map.sectors_dynamic[w1.portal_sector_id];
 
-  f32 top = std::min(sd.ceil_height,  sd2.ceil_height);
-  f32 bot = std::max(sd.floor_height, sd2.floor_height);
+  f32 top = std::min(sdd.ceil_height,  sdd2.ceil_height);
+  f32 bot = std::max(sdd.floor_height, sdd2.floor_height);
   f32 y   = ray_from.y + (ray_to.y - ray_from.y) * temp_c;
 
   if (y <= bot || y >= top)
@@ -936,9 +936,10 @@ static bool intersect_sector_3d_height
     return false;
   }
 
-  const SectorData& sector = map.sectors[sid];
-  const f32  fy  = sector.floor_height + y_floor_add;
-  const f32  cy  = sector.ceil_height  - y_ceil_sub;
+  const SectorDynData& sector_dyn = map.sectors_dynamic[sid];
+
+  const f32  fy  = sector_dyn.floor_height + y_floor_add;
+  const f32  cy  = sector_dyn.ceil_height  - y_ceil_sub;
   const vec3 dir = to - from;
 
   const f32 min_c = -(y_floor_add + y_ceil_sub) / length(to - from);
@@ -1080,7 +1081,7 @@ struct CylCastWallIntersector
 
     const WallData&   w1 = map.walls[wid1];
     const WallData&   w2 = map.walls[wid2];
-    const SectorData& sc = map.sectors[sid];
+    const SectorDynData& sc = map.sectors_dynamic[sid];
 
     const f32 floor_y = sc.floor_height;
     const f32 ceil_y  = sc.ceil_height;
@@ -1511,12 +1512,12 @@ const
     const mat4     trans = nearby_sectors.transforms[i];
 
     nc_assert(map.is_valid_sector_id(sid));
-    const SectorData& sd = map.sectors[sid];
+    const SectorDynData& sdd = map.sectors_dynamic[sid];
 
     vec3 pos_rel = (trans * vec4{position, 1.0f}).xyz();
 
     // Process floors
-    f32 step_up = sd.floor_height - pos_rel.y;
+    f32 step_up = sdd.floor_height - pos_rel.y;
     if (step_up <= max_step_height && step_up >= highest_floor)
     {
       if (step_up > highest_floor)
@@ -1529,7 +1530,7 @@ const
     }
 
     // Process ceils
-    f32 from_ceil = (sd.ceil_height - height) - pos_rel.y;
+    f32 from_ceil = (sdd.ceil_height - height) - pos_rel.y;
     if (from_ceil <= lowest_ceil)
     {
       if (from_ceil < lowest_ceil)
@@ -1797,8 +1798,8 @@ const
     nc_assert(map.is_valid_sector_id(sid));
     const SectorData& sd = map.sectors[sid];
 
-    WallID first_wall   = sd.int_data.first_wall;
-    WallID last_wall    = sd.int_data.last_wall;
+    WallID first_wall   = sd.first_wall;
+    WallID last_wall    = sd.last_wall;
 
     // Choose a point somewhere on the sector and follow that one
     vec2 center_point = VEC2_ZERO;
@@ -1897,10 +1898,10 @@ const
       return 0.0f;
     }
 
-    const SectorData& sd = map.sectors[sid];
+    const SectorDynData& sdd = map.sectors_dynamic[sid];
 
-    f32 floor_h = sd.floor_height;
-    f32 ceil_h  = sd.ceil_height;
+    f32 floor_h = sdd.floor_height;
+    f32 ceil_h  = sdd.ceil_height;
 
     f32 floor_h_rel = inv_t[1][1] * floor_h + inv_t[3][1];
     f32 ceil_h_rel  = inv_t[1][1] * ceil_h  + inv_t[3][1];
@@ -1977,7 +1978,7 @@ const
       SectorID neighbor = map.walls[this_wall].portal_sector_id;
       nc_assert(map.is_valid_sector_id(neighbor));
 
-      if (map.sectors[neighbor].get_sector_height() < sector_height_threshold)
+      if (map.sectors_dynamic[neighbor].get_sector_height() < sector_height_threshold)
       {
         // The sector is not tall enough, maybe a closed door?
         return;

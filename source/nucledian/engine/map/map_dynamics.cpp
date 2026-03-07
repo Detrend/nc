@@ -19,16 +19,6 @@ namespace nc
 {
 
 //==============================================================================
-static u32 sector_wall_segment_to_u32(SectorID sid, WallRelID wrelid, u8 segment)
-{
-  static_assert(sizeof(sid)     == 2);
-  static_assert(sizeof(wrelid)  == 1);
-  static_assert(sizeof(segment) == 1);
-
-  return (u32{sid} << 16) | (u32{wrelid} << 8) | segment;
-}
-
-//==============================================================================
 MapDynamics::MapDynamics
 (
   MapSectors&     the_map,
@@ -45,25 +35,6 @@ MapDynamics::MapDynamics
 void MapDynamics::on_map_rebuild_and_entities_created()
 {
   nc_assert(triggers.size() <= MAX_TRIGGERS);
-  TriggerID trigger_cnt = cast<TriggerID>(triggers.size());
-
-  // Create a mapping of runtime trigger states
-  for (TriggerID tid = 0; tid < trigger_cnt; ++tid)
-  {
-    const TriggerData& td = triggers[tid];
-    if (td.type != TriggerData::wall)
-    {
-      continue;
-    }
-
-    u32 idx = sector_wall_segment_to_u32
-    (
-      td.wall_type.sector, td.wall_type.wall, td.wall_type.segment
-    );
-
-    nc_assert(!segment_trigger_runtime.contains(idx));
-    segment_trigger_runtime.insert({idx, RuntimeSegmentInfo{.trigger = tid}});
-  }
 
   // Map sectors to their activators
   nc_assert(map.sectors.size() < MAX_SECTORS);
@@ -83,46 +54,64 @@ void MapDynamics::on_map_rebuild_and_entities_created()
 }
 
 //==============================================================================
+SegmentID MapDynamics::segment_id_from_trigger(const TriggerData& td) const
+{
+  nc_assert(td.type == TriggerData::wall);
+
+  const SectorData& sd = map.sectors[td.wall_type.sector];
+  const WallData&   wd = map.walls[sd.first_wall + td.wall_type.wall];
+
+  return wd.first_segment + td.wall_type.segment;
+}
+
+//==============================================================================
 bool MapDynamics::switch_wall_segment_trigger
 (
   SectorID sector, WallID wall, u8 segment, bool& turned_on
 )
 {
   const SectorData& sd = map.sectors[sector];
-  nc_assert(wall >= sd.int_data.first_wall && wall < sd.int_data.last_wall);
-  WallRelID wrelid = cast<WallRelID>(wall - sd.int_data.first_wall);
+  nc_assert(wall >= sd.first_wall && wall < sd.last_wall);
+  WallRelID wrelid = cast<WallRelID>(wall - sd.first_wall);
 
-  u32 idx = sector_wall_segment_to_u32(sector, wrelid, segment);
-  auto it = segment_trigger_runtime.find(idx);
-  if (it == segment_trigger_runtime.end())
+  auto it = std::ranges::find_if(triggers, [&](const TriggerData& td)
+  {
+    return td.type == TriggerData::wall
+      && td.wall_type.sector == sector
+      && td.wall_type.wall == wrelid
+      && td.wall_type.segment == segment;
+  });
+
+  if (it == triggers.end())
   {
     return false;
   }
 
-  RuntimeSegmentInfo& sinfo = it->second;
-  nc_assert(sinfo.trigger != INVALID_TRIGGER_ID);
-  const TriggerData& td = triggers[sinfo.trigger];
+  const TriggerData& td = *it;
+  SegmentID seg_id = segment_id_from_trigger(td);
+
+  WallSegmentDynData& sinfo = map.wall_segments_dynamic[seg_id];
 
   if (!sinfo.triggered)
   {
     // Turn on and set cooldown potentially
     sinfo.triggered = true;
-    sinfo.dirty = true;
+    sinfo.dirty     = true;
+    turned_on       = true;
 
     if (td.has_timeout())
     {
       sinfo.countdown = td.timeout;
     }
 
-    turned_on = true;
     return true;
   }
   else if (td.can_turn_off)
   {
     // Turn off
     sinfo.triggered = false;
-    sinfo.dirty = true;
-    turned_on = false;
+    sinfo.dirty     = true;
+    turned_on       = false;
     return true;
   }
 
@@ -165,15 +154,8 @@ void MapDynamics::evaluate_activators
       // Handle walls
       case TriggerData::wall:
       {
-        const u32 idx = sector_wall_segment_to_u32
-        (
-          td.wall_type.sector,
-          td.wall_type.wall,
-          td.wall_type.segment
-        );
-
-        nc_assert(segment_trigger_runtime.contains(idx));
-        RuntimeSegmentInfo& info = segment_trigger_runtime[idx];
+        SegmentID seg_id = segment_id_from_trigger(td);
+        WallSegmentDynData& info = map.wall_segments_dynamic[seg_id];
 
         if (td.has_timeout() && info.triggered)
         {
@@ -187,15 +169,19 @@ void MapDynamics::evaluate_activators
 
         if (notify && info.dirty)
         {
-          WallRelID wrelid = td.wall_type.wall;
+          [[maybe_unused]]const SectorData&  sd      = map.sectors[td.wall_type.sector];
+          [[maybe_unused]]WallRelID          wrelid  = td.wall_type.wall;
+          [[maybe_unused]]WallID             wid     = sd.first_wall + wrelid;
+          [[maybe_unused]]const SurfaceData& surface = map.wall_segments[seg_id].surface;
 
-          const SectorData& sd = map.sectors[td.wall_type.sector];
-          WallData& wd = map.walls[wrelid + sd.int_data.first_wall];
-
-          SurfaceData& ssd = wd.surface.surfaces[td.wall_type.segment].surface;
-          TextureID tids[2] = {ssd.texture_id_default, ssd.texture_id_triggered};
-
-          ssd.texture_id = tids[info.triggered];
+          if (surface.texture_id_default != surface.texture_id_triggered)
+          {
+            nc_warn(
+              "Wall segment with no alt texture triggered."
+              "Sector: {}, wall rel: {}, wall abs: {}, seg rel: {}",
+              td.wall_type.sector, wrelid, wid, td.wall_type.segment
+            );
+          }
 
           if (sector_change_callback)
           {
@@ -243,7 +229,8 @@ void MapDynamics::update(f32 delta)
     // Update affected sectors
     for (SectorID sid : activators[activator_id].affected_sectors)
     {
-      SectorData& sector = map.sectors[sid];
+      SectorData&    sector     = map.sectors[sid];
+      SectorDynData& sector_dyn = map.sectors_dynamic[sid];
 
       const f32 desired_floor    = sector.state_floors[is_on];
       const f32 desired_ceil     = sector.state_ceils[is_on];
@@ -251,15 +238,15 @@ void MapDynamics::update(f32 delta)
 
       bool changed = false;
 
-      if (sector.floor_height != desired_floor && change_per_frame != 0)
+      if (sector_dyn.floor_height != desired_floor && change_per_frame != 0)
       {
-        lerp_towards(sector.floor_height, desired_floor, change_per_frame);
+        lerp_towards(sector_dyn.floor_height, desired_floor, change_per_frame);
         changed = true;
       }
 
-      if (sector.ceil_height != desired_ceil && change_per_frame != 0)
+      if (sector_dyn.ceil_height != desired_ceil && change_per_frame != 0)
       {
-        lerp_towards(sector.ceil_height, desired_ceil, change_per_frame);
+        lerp_towards(sector_dyn.ceil_height, desired_ceil, change_per_frame);
         changed = true;
       }
 

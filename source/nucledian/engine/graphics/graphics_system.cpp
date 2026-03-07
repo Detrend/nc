@@ -929,13 +929,13 @@ void GraphicsSystem::handle_sector_height_debug()
       if (modify != -1)
       {
         ImGui::Text("Selected sector %d", modify);
-        SectorData& sd = map.sectors[modify];
+        SectorDynData& sdd = map.sectors_dynamic[modify];
 
         bool changed = false;
 
-        changed |= ImGui::DragFloat("Floor height", &sd.floor_height, 0.01f, 0.0f, 100.0f);
-        changed |= ImGui::DragFloat("Ceil height",  &sd.ceil_height,  0.01f, 0.0f, 100.0f);
-        sd.ceil_height = max(sd.floor_height + 0.1f, sd.ceil_height);
+        changed |= ImGui::DragFloat("Floor height", &sdd.floor_height, 0.01f, 0.0f, 100.0f);
+        changed |= ImGui::DragFloat("Ceil height",  &sdd.ceil_height,  0.01f, 0.0f, 100.0f);
+        sdd.ceil_height = max(sdd.floor_height + 0.1f, sdd.ceil_height);
 
         if (changed)
         {
