@@ -72,6 +72,8 @@ public:
   SectorSnapType    get_snap_type()   const;
   f32               get_snap_offset() const;
 
+	bool              should_be_tracked_in_sector_mapping() const;
+
   // =============================================
   //              Utility
   // =============================================

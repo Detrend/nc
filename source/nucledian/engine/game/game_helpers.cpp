@@ -11,7 +11,7 @@
 
 #include <engine/player/player.h>
 
-#include <engine/sound/sound_system.h>
+#include <engine/sound/sound_emitter.h>
 #include <engine/enemies/enemy.h>
 
 #include <game/projectile.h>
@@ -91,28 +91,10 @@ Projectile* GameHelpers::spawn_projectile
 //==============================================================================
 void GameHelpers::play_3d_sound
 (
-  vec3 position, SoundID sound, f32 distance, f32 volume
+  vec3 pos, SoundID sound, f32 distance, f32 volume
 )
 {
-  Player* player = this->get_player();
-  if (!player)
-  {
-    return;
-  }
-
-  nc_assert(player->get_camera());
-
-  f32 dist_vol = this->get_level().calc_3d_sound_volume
-  (
-    player->get_camera()->get_position(),
-    position,
-    distance
-  );
-
-  if (dist_vol > 0.0f)
-  {
-    SoundSystem::get().play(sound, volume * dist_vol);
-  }
+  m_game.entities->create_entity<SoundEmitter>(pos, sound, distance, volume);
 }
 
 //==============================================================================

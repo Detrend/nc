@@ -219,21 +219,6 @@ void TopDownDebugRenderer::draw_entities()
   auto& game = GameSystem::get();
   auto& ecs  = game.get_entities();
 
-  constexpr vec4 ENTITY_TYPE_COLORS[]
-  {
-    colors::WHITE,  // player
-    colors::ORANGE, // enemy
-    colors::GREEN,  // pickup
-    colors::TEAL,   // projectile
-    colors::BLACK,  // ambient_light (we don't need to see them)
-    colors::BLACK,  // directional_light (we don't need to see them)
-    colors::YELLOW, // point_light
-    colors::PINK,   // prop
-    colors::BLACK,  // sky_box (we don't need to see them)
-    colors::BLUE,   // particle
-  };
-  static_assert(ARRAY_LENGTH(ENTITY_TYPE_COLORS) == EntityTypes::count);
-
   ecs.for_each(this->entities_to_render, [&](Entity& entity)
   {
     EntityID   id     = entity.get_id();

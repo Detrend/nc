@@ -350,7 +350,12 @@ static CollisionHit raycast_generic
 //==============================================================================
 // Returns true if the path was found. If no path found then returns false and
 // some path that tried getting to the target.
-template<typename OutPointsVector, typename OutTransformsVector>
+template
+<
+  typename OutPointsVector,
+  typename OutTransformsVector,
+  typename OutNcPortalVector
+>
 static bool calc_path_raw
 (
   const PhysLevel&     lvl,
@@ -362,6 +367,7 @@ static bool calc_path_raw
   f32                  step_down,
   OutPointsVector&     points,
   OutTransformsVector& transforms,
+  OutNcPortalVector&   nc_portals,
   f32                  max_len = 0.0f
 )
 {
@@ -536,6 +542,12 @@ static bool calc_path_raw
       (
         prev_point.prev_sector, prev_point.wall_index
       );
+
+      nc_portals.push_back(PhysLevel::PortalSector
+      {
+        .wall_id   = prev_point.wall_index,
+        .sector_id = prev_point.prev_sector,
+      });
     }
 
     points.push_back(prev_point.point);
@@ -1710,8 +1722,9 @@ std::vector<vec3> PhysLevel::calc_path_relative
 )
 const
 {
-  StackVector<vec3, 20> points;
-  StackVector<mat4, 20> transforms;
+  StackVector<vec3, 20>         points;
+  StackVector<mat4, 20>         transforms;
+  StackVector<PortalSector, 20> unused;
 
   // Calculate the path
   bool found = phys_helpers::calc_path_raw
@@ -1724,7 +1737,8 @@ const
     step_up,
     step_down,
     points,
-    transforms
+    transforms,
+    unused
   );
 
   if (found_path_opt)
@@ -1742,16 +1756,16 @@ const
 
   std::vector<vec3> final_path;
 
-  mat4 accumulated_t = identity<mat4>();
-  for (u64 i = 0; i < points.size(); ++i)
-  {
-    accumulated_t = transforms[i] * accumulated_t;
-    mat4 inv_t = inverse(accumulated_t);
-    final_path.push_back((inv_t * vec4{points[i], 1.0f}).xyz());
-  }
-
   if (nc_transform_opt)
   {
+    mat4 accumulated_t = identity<mat4>();
+    for (u64 i = 0; i < points.size(); ++i)
+    {
+      accumulated_t = transforms[i] * accumulated_t;
+      mat4 inv_t = inverse(accumulated_t);
+      final_path.push_back((inv_t * vec4{points[i], 1.0f}).xyz());
+    }
+
     *nc_transform_opt = accumulated_t;
   }
 
@@ -1849,6 +1863,36 @@ const
 }
 
 //==============================================================================
+bool PhysLevel::calc_path_and_list_nc_portals
+(
+  vec3                       start_pos,
+  vec3                       end_pos,
+  std::vector<PortalSector>& portals_out,
+  f32                        range
+)
+const
+{
+  // TODO: Cleanup these
+  StackVector<vec3, 12> pts_unused;
+  StackVector<mat4, 12> transforms_unused;
+
+  return phys_helpers::calc_path_raw
+  (
+    *this,
+    start_pos,
+    end_pos,
+    0.0f,
+    0.0f,
+    FLT_MAX,
+    FLT_MAX,
+    pts_unused,
+    transforms_unused,
+    portals_out,
+    range
+  );
+}
+
+//==============================================================================
 f32 PhysLevel::calc_3d_sound_volume
 (
 	vec3 camera_pos, vec3 sound_pos, f32 sound_distance
@@ -1859,6 +1903,7 @@ const
 
   StackVector<vec3, 20> points;
   StackVector<mat4, 20> transforms;
+  StackVector<PortalSector, 20> portals;
 
   // Calculate the path
   phys_helpers::calc_path_raw
@@ -1872,6 +1917,7 @@ const
     1000.0f,
     points,
     transforms,
+    portals,
     sound_distance * 1.5f
   );
 

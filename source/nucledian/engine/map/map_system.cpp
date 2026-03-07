@@ -1193,6 +1193,12 @@ bool MapSectors::is_point_in_sector(vec2 pt, SectorID sector_id) const
 //==============================================================================
 f32 MapSectors::distance_from_sector_2d(vec2 pt, SectorID sector_id) const
 {
+  return distance(closest_point_of_sector_2d(pt, sector_id), pt);
+}
+
+//==============================================================================
+vec2 MapSectors::closest_point_of_sector_2d(vec2 pt, SectorID sector_id) const
+{
   nc_assert(this->is_valid_sector_id(sector_id));
 
   const SectorData& sector = this->sectors[sector_id];
@@ -1214,23 +1220,30 @@ f32 MapSectors::distance_from_sector_2d(vec2 pt, SectorID sector_id) const
     if (intersect::point_triangle(pt, p1, p2, p3))
     {
       // The point is inside the sector.. Return distance 0
-      return 0.0f;
+      return pt;
     }
   }
 
   // No direct triangle intersection? Then measure the distance from all the
   // edges and take the minimal one.. This will be always more than 0
-  f32 min_dist = FLT_MAX;
+  f32  min_dist = FLT_MAX;
+  vec2 min_pt   = VEC2_ZERO;
   for (WallID wall_index = first; wall_index < last; ++wall_index)
   {
     WallID next_index = map_helpers::next_wall(*this, sector_id, wall_index);
 
     const auto p_a = this->walls[wall_index].pos;
     const auto p_b = this->walls[next_index].pos;
-    min_dist = std::min(dist::point_line_2d(pt, p_a, p_b), min_dist);
+    vec2 closest = dist::closest_point_on_the_line(pt, p_a, p_b);
+    f32  dist    = distance2(closest, pt);
+    if (dist < min_dist)
+    {
+      min_dist = dist;
+      min_pt   = closest;
+    }
   }
 
-  return min_dist;
+  return min_pt;
 }
 
 //==============================================================================

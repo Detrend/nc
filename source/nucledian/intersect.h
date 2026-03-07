@@ -259,6 +259,9 @@ namespace nc::dist
 template<typename TVec>
 f32 point_aabb(TVec pt, const aabb<f32, TVec::length()>& bbox);
 
+// Calculates the closest point to the line and returns it
+vec2 closest_point_on_the_line(vec2 pt, vec2 line_start, vec2 line_end);
+
 // Calculates distance between point and a 2D segment
 f32 point_line_2d(vec2 pt, vec2 line_start, vec2 line_end);
 

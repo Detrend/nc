@@ -153,10 +153,6 @@ struct SectorData
   WallID      first_wall   = INVALID_WALL_ID;      // [0..total_wall_count]
   WallID      last_wall    = INVALID_WALL_ID;      // [first_wall..total_wall_count]
   ActivatorID activator    = INVALID_ACTIVATOR_ID; // Only one activator owns us
-
-  // Calculates how much have the floor and ceiling moved compared to the
-  // default state.
-  void get_shift_amount(f32* out_floor, f32* out_ceil) const;
 };
 
 // Sector data that is not static and has to be stored in saves.
@@ -330,8 +326,9 @@ struct MapSectors
     SectorID sid, f32* out_floor, f32* out_ceil
   ) const;
 
-  bool is_point_in_sector(vec2 pt, SectorID sector)      const;
-  f32  distance_from_sector_2d(vec2 pt, SectorID sector) const;
+  bool is_point_in_sector(vec2 pt, SectorID sector)         const;
+  f32  distance_from_sector_2d(vec2 pt, SectorID sector)    const;
+  vec2 closest_point_of_sector_2d(vec2 pt, SectorID sector) const;
 
   bool is_valid_sector_id(SectorID id) const;
   bool is_valid_wall_id(WallID id)     const;

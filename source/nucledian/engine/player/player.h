@@ -48,6 +48,7 @@ public:
     f32                  delta_seconds
   );
 
+  const Camera* get_camera() const;
   Camera* get_camera();
   int     get_health()     const;
   int     get_max_health() const;
@@ -56,9 +57,10 @@ public:
   s32     get_ammo(WeaponType weapon)     const;
   s32     get_max_ammo(WeaponType weapon) const;
 
-  vec3  get_look_direction();
-  f32   get_view_height();
-  vec3& get_velocity();
+  vec3    get_look_direction() const;
+  vec3    get_eye_pos()        const;
+  f32     get_view_height()    const;
+  vec3&   get_velocity();
 
   WeaponType get_equipped_weapon()         const;
   bool       has_weapon(WeaponType weapon) const;

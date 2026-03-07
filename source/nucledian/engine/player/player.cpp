@@ -717,6 +717,12 @@ Camera* Player::get_camera()
 }
 
 //==============================================================================
+const Camera* Player::get_camera() const
+{
+  return const_cast<Player*>(this)->get_camera();
+}
+
+//==============================================================================
 void Player::update
 (
   PlayerSpecificInputs curr_input,
@@ -747,14 +753,20 @@ void Player::update
 }
 
 //==============================================================================
-vec3 Player::get_look_direction()
+vec3 Player::get_look_direction() const
 {
   //looking direction
   return angleAxis(angle_yaw, VEC3_Y) * angleAxis(angle_pitch, VEC3_X) * -VEC3_Z;
 }
 
 //==============================================================================
-f32 Player::get_view_height()
+vec3 Player::get_eye_pos() const
+{
+  return this->get_camera()->get_position();
+}
+
+//==============================================================================
+f32 Player::get_view_height() const
 {
   return this->view_height;
 }

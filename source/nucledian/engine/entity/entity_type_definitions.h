@@ -33,6 +33,7 @@ namespace EntityTypes
     prop,
     sky_box,
     particle,
+		sound_emitter,
     // - //
     count,  // <- total number of entity types
     all = EntityType(-1),
@@ -61,8 +62,25 @@ constexpr cstr ENTITY_TYPE_NAMES[]
   "prop",
   "sky_box",
   "particle",
+	"sound_emitter",
 };
 static_assert(ARRAY_LENGTH(ENTITY_TYPE_NAMES) == EntityTypes::count);
+
+constexpr vec4 ENTITY_TYPE_COLORS[]
+{
+	colors::WHITE,  // player
+	colors::ORANGE, // enemy
+	colors::GREEN,  // pickup
+	colors::TEAL,   // projectile
+	colors::BLACK,  // ambient_light (we don't need to see them)
+	colors::BLACK,  // directional_light (we don't need to see them)
+	colors::YELLOW, // point_light
+	colors::PINK,   // prop
+	colors::BLACK,  // sky_box (we don't need to see them)
+	colors::BLUE,   // particle
+	colors::RED,    // sound emitter
+};
+static_assert(ARRAY_LENGTH(ENTITY_TYPE_COLORS) == EntityTypes::count);
 
 namespace EntityTypeFlags
 {
@@ -78,8 +96,10 @@ namespace EntityTypeFlags
     prop              = entity_type_to_mask(EntityTypes::prop),
     sky_box           = entity_type_to_mask(EntityTypes::sky_box),
     particle          = entity_type_to_mask(EntityTypes::particle),
+    sound_emitter     = entity_type_to_mask(EntityTypes::sound_emitter),
   };
 }
+static_assert(EntityTypes::count < 64);
 
 }
 

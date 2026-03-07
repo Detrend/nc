@@ -190,6 +190,8 @@
     <ClCompile Include="..\source\nucledian\engine\game\game.cpp" />
     <ClCompile Include="..\source\nucledian\rng.cpp" />
     <ClCompile Include="..\source\nucledian\engine\game\game_helpers.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\sound\sound_emitter.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\sound\sound_handle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -383,6 +385,8 @@
     <ClInclude Include="..\source\nucledian\engine\game\game.h" />
     <ClInclude Include="..\source\nucledian\rng.h" />
     <ClInclude Include="..\source\nucledian\engine\game\game_helpers.h" />
+    <ClInclude Include="..\source\nucledian\engine\sound\sound_emitter.h" />
+    <ClInclude Include="..\source\nucledian\engine\sound\sound_handle.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\anim_state_machine.inl" />

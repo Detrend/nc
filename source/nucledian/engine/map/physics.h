@@ -268,6 +268,15 @@ struct PhysLevel
     mat4* nc_transform_opt = nullptr
   ) const;
 
+  bool calc_path_and_list_nc_portals
+  (
+    vec3                       start_pos,
+    vec3                       end_pos,
+    std::vector<PortalSector>& portals_out,
+    f32                        range
+  )
+  const;
+
   // Calculates the loudness of the sound in 3D world.
   // Returns a value in [0, 1] interval.
   f32 calc_3d_sound_volume
