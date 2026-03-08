@@ -28,6 +28,8 @@ public:
 	// Returns the frame index of the currently running level. Resets after the
 	// level change.
   u64 get_frame_idx() const;
+  
+  f64 get_time_since_start() const;
 
   PhysLevel get_level() const;
 
@@ -51,6 +53,28 @@ public:
 
 private:
 	Game& m_game;
+};
+
+
+
+struct ActionTimestamp
+{
+  template<typename TFunc>
+  inline bool do_if_elapsed(const f32 required_elapsed_time, const TFunc& to_perform)
+  {
+  	const f64 current_timestamp = GameHelpers::get().get_time_since_start();
+  	const f64 current_elapsed_time = current_timestamp - last_performed_timestamp;
+  	if (current_elapsed_time < required_elapsed_time) 
+  	{
+  		return false;
+  	}
+  	last_performed_timestamp = current_timestamp;
+  	to_perform();
+  	return true;
+  }
+
+private:
+  f64 last_performed_timestamp = -INFINITY;
 };
 
 }

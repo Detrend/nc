@@ -42,6 +42,12 @@ u64 GameHelpers::get_frame_idx() const
 }
 
 //==============================================================================
+f64 GameHelpers::get_time_since_start() const
+{
+    return m_game.time_since_start;
+}
+
+//==============================================================================
 Player* GameHelpers::get_player()
 {
   return m_game.entities->get_entity<Player>(m_game.player_id);

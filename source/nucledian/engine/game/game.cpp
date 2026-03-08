@@ -38,6 +38,8 @@ void Game::update
   PlayerSpecificInputs prev_input
 )
 {
+  time_since_start += dt;
+
   // Handle the player first
   entities->for_each<Player>([&](Player& player)
   {

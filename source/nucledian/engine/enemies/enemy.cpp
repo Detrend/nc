@@ -12,6 +12,7 @@
 #include <engine/map/physics.h>
 #include <engine/entity/entity_system.h>
 
+#include<engine/game/game_helpers.h>
 #include <engine/sound/sound_system.h>
 #include <engine/sound/sound_resources.h>
 
@@ -48,6 +49,8 @@ constexpr f32 PATH_POINT_ERASE_DIST = 0.25f;  // Removes the path point if this 
 constexpr f32 ENEMY_GRAVITY         = 6.0f;
 constexpr f32 ENEMY_MELEE_RANGE     = 2.5f;
 constexpr f32 ENEMY_MELEE_EXPAND    = 0.1f;
+
+constexpr f32 SOUND_RANGE           = 30.0f;  // Default range used for all 3D sounds emitted by an enemy
 
 // MR says: Its better to keep these universal for all enemies in the demo.
 constexpr f32 ENEMY_STEP_HEIGHT = 0.66f;  // Step height, 66cm
@@ -350,8 +353,10 @@ void Enemy::damage(int damage, EntityID from_who)
     this->die();
   }
   else if(damage > 0) {
-      const f32 volume = 0.3f + ((std::rand()*0.4f) / RAND_MAX);
-      SoundSystem::get().play_oneshot(ENEMY_SOUNDS_BY_TYPE[type].hurt, volume);
+    hurt_sound_timestamp.do_if_elapsed(0.8f, [this]() 
+    {
+      GameHelpers::get().play_3d_sound(this->get_position(), ENEMY_SOUNDS_BY_TYPE[type].hurt, SOUND_RANGE, 1.0f);
+    });
   }
 }
 
@@ -360,7 +365,7 @@ void Enemy::die()
 {
   this->state = EnemyAiState::dead;
   this->anim_fsm.set_state(ActorAnimStates::dying);
-  SoundSystem::get().play_oneshot(ENEMY_SOUNDS_BY_TYPE[type].die);
+  GameHelpers::get().play_3d_sound(this->get_position(), ENEMY_SOUNDS_BY_TYPE[type].die, SOUND_RANGE, 1.0f);
 }
 
 //==============================================================================
@@ -640,7 +645,8 @@ void Enemy::handle_ai_alert(f32 delta)
         (
           stats.atk_delay_min, stats.atk_delay_max
         );
-        SoundSystem::get().play_oneshot(ENEMY_SOUNDS_BY_TYPE[type].attack);
+        GameHelpers::get().play_3d_sound(this->get_position(), ENEMY_SOUNDS_BY_TYPE[type].attack, SOUND_RANGE, 1.0f);
+        //SoundSystem::get().play_oneshot(ENEMY_SOUNDS_BY_TYPE[type].attack);
       }
 
       if (this->anim_fsm.get_state() != desired_state)

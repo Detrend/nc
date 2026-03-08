@@ -36,6 +36,7 @@ struct Game
   std::unique_ptr<MapDynamics>      dynamics;
   std::unique_ptr<EntityAttachment> attachment;
   u64                               frame_idx = 0;
+  f64                               time_since_start = 0.0;
   bool                              is_level_completed = false;
   LevelName                         next_level_name    = INVALID_LEVEL_NAME;
 };

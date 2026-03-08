@@ -11,6 +11,7 @@
 #include <game/game_types.h> // EnemyType
 #include <game/enemies.h>
 #include <rng.h>
+#include <engine/game/game_helpers.h>
 
 namespace nc
 {
@@ -97,6 +98,7 @@ private:
   float        time_until_attack     = 3.0f;
   int          health                = 0;
   bool         can_see_target : 1    = false;
+  ActionTimestamp hurt_sound_timestamp;
 };
 
 }
