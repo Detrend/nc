@@ -109,9 +109,9 @@ struct MapDynamics
 {
   MapDynamics(MapSectors& map, EntityRegistry& registry, SectorMapping& mapping);
 
-  ~MapDynamics();
-
   void on_map_rebuild_and_entities_created();
+
+  void on_destroy();
 
   void update(f32 delta);
 

@@ -35,7 +35,7 @@ MapDynamics::MapDynamics
 }
 
 //==============================================================================
-MapDynamics::~MapDynamics()
+void MapDynamics::on_destroy()
 {
   // Kill all sounds
   for (SectorID sid = 0; sid < cast<SectorID>(sector_sounds.size()); ++sid)

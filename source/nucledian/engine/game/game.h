@@ -27,11 +27,13 @@ struct Game
     PlayerSpecificInputs previous_inputs
   );
 
+  ~Game();
+
   EntityID                          player_id = INVALID_ENTITY_ID;
   std::unique_ptr<MapSectors>       map;
+  std::unique_ptr<EntityRegistry>   entities;
   std::unique_ptr<SectorMapping>    mapping;
   std::unique_ptr<MapDynamics>      dynamics;
-  std::unique_ptr<EntityRegistry>   entities;
   std::unique_ptr<EntityAttachment> attachment;
   u64                               frame_idx = 0;
   bool                              is_level_completed = false;
