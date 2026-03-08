@@ -3,6 +3,9 @@ credits:
 hurt: https://freesound.org/people/micahlg/
 player_hurt, possessed_hurt: https://freesound.org/people/micahlg/sounds/413182/
 cultist_hurt, cultist_die: https://freesound.org/people/Piement_infernal/sounds/772689/
+possessed_die: https://freesound.org/people/Artninja/sounds/762701/ , https://freesound.org/people/Piement_infernal/sounds/772689/ , https://freesound.org/people/LucasDuff/sounds/555066/
+possessed_attack: https://freesound.org/people/Artninja/sounds/811961/ , https://freesound.org/people/Artninja/sounds/762701/
+cultist_attack: MuseScore MS Basic - boy soprano
 pickup: https://freesound.org/people/IENBA/sounds/762911/
 shotgun: https://freesound.org/people/DTheTech/sounds/734057/
 door: https://freesound.org/people/Slanesh/sounds/31769/
