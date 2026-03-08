@@ -59,14 +59,18 @@ constexpr ActorAnimStateFlag ENEMY_DIR8_STATES
   & ~(ActorAnimStatesFlags::dying | ActorAnimStatesFlags::dead);
 
 
+static constexpr struct {
+    SoundID hurt;
+    SoundID die;
+    SoundID attack;
+} ENEMY_SOUNDS_BY_TYPE[] = {
+    {.hurt = Sounds::cultist_hurt, .die = Sounds::cultist_die, .attack = Sounds::cultist_attack},
+    {.hurt = Sounds::possessed_hurt, .die = Sounds::possessed_die, .attack = Sounds::possessed_attack},
+};
 
-static constexpr SoundID ENEMY_HURT_SOUND_BY_TYPE[] = { Sounds::cultist_hurt, Sounds::possessed_hurt };
-static constexpr SoundID ENEMY_DIE_SOUND_BY_TYPE[] = { Sounds::cultist_die, Sounds::possessed_die };
-
-static_assert(ARRAY_LENGTH(ENEMY_DIE_SOUND_BY_TYPE) == ARRAY_LENGTH(ENEMY_HURT_SOUND_BY_TYPE));
 static_assert(EnemyTypes::cultist == 0);
 static_assert(EnemyTypes::possessed == 1);
-static_assert(EnemyTypes::count == ARRAY_LENGTH(ENEMY_HURT_SOUND_BY_TYPE));
+static_assert(EnemyTypes::count == ARRAY_LENGTH(ENEMY_SOUNDS_BY_TYPE));
 
 
 namespace sprites
@@ -347,7 +351,7 @@ void Enemy::damage(int damage, EntityID from_who)
   }
   else if(damage > 0) {
       const f32 volume = 0.3f + ((std::rand()*0.4f) / RAND_MAX);
-      SoundSystem::get().play_oneshot(ENEMY_HURT_SOUND_BY_TYPE[type], volume);
+      SoundSystem::get().play_oneshot(ENEMY_SOUNDS_BY_TYPE[type].hurt, volume);
   }
 }
 
@@ -356,7 +360,7 @@ void Enemy::die()
 {
   this->state = EnemyAiState::dead;
   this->anim_fsm.set_state(ActorAnimStates::dying);
-  SoundSystem::get().play_oneshot(ENEMY_DIE_SOUND_BY_TYPE[type]);
+  SoundSystem::get().play_oneshot(ENEMY_SOUNDS_BY_TYPE[type].die);
 }
 
 //==============================================================================
@@ -636,6 +640,7 @@ void Enemy::handle_ai_alert(f32 delta)
         (
           stats.atk_delay_min, stats.atk_delay_max
         );
+        SoundSystem::get().play_oneshot(ENEMY_SOUNDS_BY_TYPE[type].attack);
       }
 
       if (this->anim_fsm.get_state() != desired_state)
