@@ -27,7 +27,7 @@ struct Game
     PlayerSpecificInputs previous_inputs
   );
 
-  ~Game();
+  void on_destroy();
 
   EntityID                          player_id = INVALID_ENTITY_ID;
   std::unique_ptr<MapSectors>       map;

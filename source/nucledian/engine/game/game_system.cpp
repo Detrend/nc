@@ -1121,7 +1121,12 @@ GameHelpers GameSystem::get_game_helpers() const
 //==============================================================================
 void GameSystem::cleanup_map()
 {
-  game.reset();
+  if (game)
+  {
+    game->on_destroy();
+    game.reset();
+  }
+
   game = std::make_unique<Game>();
 }
 
