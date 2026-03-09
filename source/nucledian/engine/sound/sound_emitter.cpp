@@ -238,7 +238,8 @@ void SoundEmitter::update([[maybe_unused]]f32 delta)
   f32 total_dist = this->calc_dist_to_listener();
 
   // Now that we have the total distance we can calculate the volume
-  f32 new_vol = (1.0f - clamp(total_dist / m_range, 0.0f, 1.0f)) * m_volume;
+  f32 strength = (1.0f - clamp(total_dist / m_range, 0.0f, 1.0f));
+  f32 new_vol = strength * strength * m_volume;
 
   // And set it
   m_handle.set_volume(new_vol);
