@@ -187,6 +187,22 @@ namespace nc
 
   //======================================================================================
 
+  class NextLevelPage
+  {
+  public:
+    NextLevelPage();
+    ~NextLevelPage();
+
+    void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
+    void draw(ShaderProgramHandle button_material, GLuint VAO);
+  private:
+    void next_level_func();
+
+    UiButton* next_level_button;
+  };
+
+  //======================================================================================
+
   class MenuManager
   {
   public:
@@ -211,10 +227,12 @@ namespace nc
     LoadGamePage* load_game_page = nullptr;
     NewGamePage* new_game_page = nullptr;
     QuitGamePage* quit_game_page = nullptr;
+    NextLevelPage* next_level_page = nullptr;
 
     MenuPages current_page = MenuPages::MAIN;
 
     bool visible = false;
+    bool isTransition = false;
 
     bool cur_esc_pressed = false;
     bool prev_esc_pressed = false;

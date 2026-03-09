@@ -117,6 +117,7 @@ namespace nc
 		load_game_page = new LoadGamePage();
 		new_game_page = new NewGamePage();
 		quit_game_page = new QuitGamePage();
+		next_level_page = new NextLevelPage();
 
 		vec2 vertices[] = { vec2(-1, 1), vec2(0, 0),
 				vec2(-1, -1), vec2(0, 1),
@@ -153,6 +154,7 @@ namespace nc
 		delete options_page;
 		delete load_game_page;
 		delete new_game_page;
+		delete next_level_page;
 
 		glDeleteBuffers(1, &VAO);
 		glDeleteBuffers(1, &VBO);
@@ -194,10 +196,7 @@ namespace nc
 	//=============================================================================================
   void MenuManager::set_transition_screen([[maybe_unused]]bool enabled)
   {
-    // Finish this on yourself, Michal.
-    // This function will get called from the engine and UI has to respond.
-    // enabled == true  -> the level just ended and the transition screen can start appearing
-    // enabled == false -> the transition screen should end and be closed
+		isTransition = enabled;
   }
 
 	//=============================================================================================
@@ -222,6 +221,13 @@ namespace nc
 
 	void MenuManager::update()
 	{
+		if (isTransition)
+		{
+			vec2 mouse_pos = get_normalized_mouse_pos();
+			next_level_page->update(mouse_pos, prev_mousestate, cur_mousestate);
+		}
+
+
 		prev_esc_pressed = cur_esc_pressed;
 		cur_esc_pressed = false;
 
@@ -282,6 +288,12 @@ namespace nc
 
 	void MenuManager::draw()
 	{
+		if (isTransition)
+		{
+			next_level_page->draw(button_material, VAO);
+			draw_cursor();
+		}
+
 		if (!visible)
 		{
 			return;
@@ -387,6 +399,62 @@ namespace nc
 
 	//=============================================================================================
 
+	NextLevelPage::NextLevelPage()
+	{
+		next_level_button = new UiButton("ui_next_level", vec2(0.0f, -0.7f), vec2(0.45f, 0.1f), std::bind(&NextLevelPage::next_level_func, this));
+	}
+
+	NextLevelPage::~NextLevelPage()
+	{
+		delete next_level_button;
+	}
+
+	void NextLevelPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
+	{
+		UiButton* hover_over_button = nullptr;
+
+		next_level_button->set_hover(false);
+
+		if (next_level_button->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = next_level_button;
+		}
+
+		if (hover_over_button != nullptr)
+		{
+			hover_over_button->set_hover(true);
+
+			if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+			{
+				hover_over_button->on_click();
+			}
+		}
+	}
+
+	void NextLevelPage::draw(ShaderProgramHandle button_material, GLuint VAO)
+	{
+		button_material.use();
+
+		glBindVertexArray(VAO);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+
+		glDisable(GL_DEPTH_TEST);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		next_level_button->draw(button_material);
+
+		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glBindVertexArray(0);
+	}
+
 	void MainMenuPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
 	{
 		UiButton* hover_over_button = nullptr;
@@ -477,7 +545,6 @@ namespace nc
 		//save_button->draw(button_material);
 		quit_button->draw(button_material);
 
-
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 
@@ -485,6 +552,14 @@ namespace nc
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glBindVertexArray(0);
+	}
+
+	void NextLevelPage::next_level_func()
+	{
+		get_engine().send_event(ModuleEvent
+			{
+				.type = ModuleEventType::next_level_requested,
+			});
 	}
 
 	//==============================================================================================
