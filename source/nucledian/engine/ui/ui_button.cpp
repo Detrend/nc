@@ -510,8 +510,8 @@ namespace nc
 		u32 display_count = enemy_count;
 
 		vec2 position = vec2(0.75f, 0.3f);
-		vec2 posDif = vec2(-0.08f, 0.0f);
-		vec2 scale = vec2(0.042f, 0.01f);
+		vec2 posDif = vec2(-0.06f, 0.0f);
+		vec2 scale = vec2(0.042f, 0.1f);
 
 		const TextureManager& manager = TextureManager::get();
 		const TextureHandle& texture = manager["ui_font"];
