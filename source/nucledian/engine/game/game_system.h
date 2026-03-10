@@ -101,6 +101,14 @@ public:
   // Called from the action trigger
   void end_level_and_go_to_another_one_from_gamemode(const LevelName& new_level);
 
+  void increment_enemy_count() { enemy_count++; }
+  void increment_kill_count() { kill_count++; }
+
+  void reset_enemy_count() { enemy_count = kill_count = 0; }
+
+  u32 get_enemy_count() { return enemy_count; }
+  u32 get_kill_count() { return kill_count; }
+
 private:
   // Clean up the current map, entities, mapping etc..
   void cleanup_map();
@@ -179,6 +187,9 @@ private:
   mutable SaveID  last_save_id = 0;
 
   std::optional<NextRequestedState> scheduled_state;
+
+  u32 enemy_count = 0;
+  u32 kill_count = 0;
 };
 
 }

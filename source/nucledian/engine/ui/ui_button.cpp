@@ -9,6 +9,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <engine/entity/entity_system.h>
+#include <engine/entity/entity_type_definitions.h>
+#include <engine/enemies/enemy.h>
+#include <engine/game/game_helpers.h>
 #include <engine/core/engine.h>
 #include <engine/game/game_system.h>
 #include <engine/input/input_system.h>
@@ -197,6 +201,13 @@ namespace nc
   void MenuManager::set_transition_screen([[maybe_unused]]bool enabled)
   {
 		isTransition = enabled;
+		if (isTransition)
+		{
+			[[maybe_unused]] f64 time = GameHelpers::get().get_time_since_start();
+			u32 enemies = get_engine().get_module<GameSystem>().get_enemy_count();
+			u32 kills = get_engine().get_module<GameSystem>().get_kill_count();
+			next_level_page->set_kill_stats(enemies, kills);
+		}
   }
 
 	//=============================================================================================
@@ -225,6 +236,7 @@ namespace nc
 		{
 			vec2 mouse_pos = get_normalized_mouse_pos();
 			next_level_page->update(mouse_pos, prev_mousestate, cur_mousestate);
+			return;
 		}
 
 
@@ -292,6 +304,7 @@ namespace nc
 		{
 			next_level_page->draw(button_material, VAO);
 			draw_cursor();
+			return;
 		}
 
 		if (!visible)
@@ -453,6 +466,12 @@ namespace nc
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glBindVertexArray(0);
+	}
+
+	void NextLevelPage::set_kill_stats(u32 enemy_count, u32 kill_count)
+	{
+		this->enemy_count = enemy_count;
+		this->kill_count = kill_count;
 	}
 
 	void MainMenuPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)

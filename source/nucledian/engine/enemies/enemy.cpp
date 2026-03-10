@@ -366,6 +366,7 @@ void Enemy::die()
   this->state = EnemyAiState::dead;
   this->anim_fsm.set_state(ActorAnimStates::dying);
   GameHelpers::get().play_3d_sound(this->get_position(), ENEMY_SOUNDS_BY_TYPE[type].die, SOUND_RANGE, 1.0f);
+  get_engine().get_module<GameSystem>().increment_kill_count();
 }
 
 //==============================================================================
