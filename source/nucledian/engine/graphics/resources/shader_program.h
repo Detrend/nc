@@ -27,6 +27,7 @@ public:
   friend class TextureManager;
   friend class OptionsPage;
   friend class UiScreenEffect;
+  friend class NextLevelPage;
 
   explicit ShaderProgramHandle(const char* compute_source);
   ShaderProgramHandle(const char* vertex_source, const char* fragment_source);

@@ -372,6 +372,7 @@ namespace nc
 		button_material.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas().get_size());
 		button_material.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
 		button_material.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
+		button_material.set_uniform(shaders::ui_button::HOVER, false);
 
 		glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -412,14 +413,17 @@ namespace nc
 
 	//=============================================================================================
 
-	NextLevelPage::NextLevelPage()
+	NextLevelPage::NextLevelPage() :
+		digit_material(shaders::ui_text::VERTEX_SOURCE, shaders::ui_text::FRAGMENT_SOURCE)
 	{
-		next_level_button = new UiButton("ui_next_level", vec2(0.0f, -0.7f), vec2(0.45f, 0.1f), std::bind(&NextLevelPage::next_level_func, this));
+		next_level_button = new UiButton("ui_next_level", vec2(0.0f, -0.8f), vec2(0.45f, 0.1f), std::bind(&NextLevelPage::next_level_func, this));
+		kills_text = new UiButton("ui_kills", vec2(-0.3f, 0.3f), vec2(0.45f, 0.1f), std::bind(&NextLevelPage::do_nothing, this));
 	}
 
 	NextLevelPage::~NextLevelPage()
 	{
 		delete next_level_button;
+		delete kills_text;
 	}
 
 	void NextLevelPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
@@ -457,6 +461,7 @@ namespace nc
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+		kills_text->draw(button_material);
 		next_level_button->draw(button_material);
 
 		glDisable(GL_BLEND);
@@ -466,12 +471,138 @@ namespace nc
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glBindVertexArray(0);
+
+		draw_stats(digit_material, VAO);
 	}
 
 	void NextLevelPage::set_kill_stats(u32 enemy_count, u32 kill_count)
 	{
 		this->enemy_count = enemy_count;
 		this->kill_count = kill_count;
+	}
+
+	void NextLevelPage::draw_stats(ShaderProgramHandle digit_material, GLuint VAO)
+	{
+		digit_material.use();
+
+		glBindVertexArray(VAO);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+
+		glDisable(GL_DEPTH_TEST);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		draw_kill_count(digit_material);
+		// unbind
+		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glBindVertexArray(0);
+	}
+
+	void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
+	{
+		int display_count = enemy_count;
+
+		vec2 position = vec2(0.8f, 0.3f);
+		vec2 posDif = vec2(-0.06f, 0.0f) / 0.7f;
+		vec2 scale = vec2(0.03f, 0.07f) / 0.7f;
+
+		const TextureManager& manager = TextureManager::get();
+		const TextureHandle& texture = manager["ui_font"];
+
+		do //DRAW ENEMY COUNT
+		{
+			glActiveTexture(GL_TEXTURE0);
+
+			glm::mat4 trans_mat = glm::mat4(1.0f);
+			vec2 translate = position;
+			trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+			trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
+
+			const glm::mat4 final_trans = trans_mat;
+
+			int digit = display_count % 10;
+			digit += 48;
+
+			digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+			digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+			digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+			digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+			digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
+			digit_material.set_uniform(shaders::ui_text::HEIGHT, 16.0f);
+			digit_material.set_uniform(shaders::ui_text::WIDTH, 8.0f);
+
+			glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+			display_count = display_count / 10;
+			position += posDif;
+
+		} while (display_count > 0);
+
+		// DRAW SEPERATING '/'
+		glActiveTexture(GL_TEXTURE0);
+
+		glm::mat4 trans_mat = glm::mat4(1.0f);
+		vec2 translate = position;
+		trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+		trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
+
+		const glm::mat4 final_trans = trans_mat;
+
+		int digit = '/';
+
+		digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+		digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+		digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+		digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+		digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
+		digit_material.set_uniform(shaders::ui_text::HEIGHT, 16.0f);
+		digit_material.set_uniform(shaders::ui_text::WIDTH, 8.0f);
+
+		glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		display_count = display_count / 10;
+		position += posDif;
+
+		display_count = kill_count;
+
+		do //DRAW KILL COUNT
+		{
+			glActiveTexture(GL_TEXTURE0);
+
+			glm::mat4 trans_mat = glm::mat4(1.0f);
+			vec2 translate = position;
+			trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+			trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
+
+			const glm::mat4 final_trans = trans_mat;
+
+			int digit = display_count % 10;
+			digit += 48;
+
+			digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+			digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+			digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+			digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+			digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
+			digit_material.set_uniform(shaders::ui_text::HEIGHT, 16.0f);
+			digit_material.set_uniform(shaders::ui_text::WIDTH, 8.0f);
+
+			glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+			display_count = display_count / 10;
+			position += posDif;
+
+		} while (display_count > 0);
 	}
 
 	void MainMenuPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)

@@ -196,13 +196,19 @@ namespace nc
     void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
     void draw(ShaderProgramHandle button_material, GLuint VAO);
     void set_kill_stats(u32 enemy_count, u32 kill_count);
+    void draw_stats(ShaderProgramHandle digit_material, GLuint VAO);
+    void draw_kill_count(ShaderProgramHandle digit_material);
   private:
-    void next_level_func();
+    const ShaderProgramHandle digit_material;
 
+    void next_level_func();
+    void do_nothing() {}
+
+    UiButton* kills_text;
     UiButton* next_level_button;
 
-    u32 enemy_count;
-    u32 kill_count;
+    u32 enemy_count = 0;
+    u32 kill_count = 0;
   };
 
   //======================================================================================
