@@ -509,7 +509,7 @@ namespace nc
 	{
 		int display_count = enemy_count;
 
-		vec2 position = vec2(0.8f, 0.3f);
+		vec2 position = vec2(0.75f, 0.3f);
 		vec2 posDif = vec2(-0.06f, 0.0f) / 0.7f;
 		vec2 scale = vec2(0.03f, 0.07f) / 0.7f;
 
