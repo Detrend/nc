@@ -510,8 +510,8 @@ namespace nc
 		int display_count = enemy_count;
 
 		vec2 position = vec2(0.75f, 0.3f);
-		vec2 posDif = vec2(-0.06f, 0.0f) / 0.7f;
-		vec2 scale = vec2(0.03f, 0.07f) / 0.7f;
+		vec2 posDif = vec2(-0.08f, 0.0f);
+		vec2 scale = vec2(0.042f, 0.01f);
 
 		const TextureManager& manager = TextureManager::get();
 		const TextureHandle& texture = manager["ui_font"];
@@ -556,7 +556,7 @@ namespace nc
 
 		const glm::mat4 final_trans = trans_mat;
 
-		int digit = '/';
+		int digit = 47; // = '/'
 
 		digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
 		digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
