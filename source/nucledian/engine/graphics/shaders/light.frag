@@ -6,6 +6,7 @@ constexpr const char* FRAGMENT_SOURCE = R"(
 #define TILE_SIZE_Y 16
 
 #define LIGHT_BANDS 48
+#define DO_SHADOWS
 
 struct DirLight
 {
@@ -89,8 +90,11 @@ float get_intersection_t(vec2 ray_origin, vec2 ray_direction, vec2 wall_p0, vec2
   if (abs(denominator) < 0.0001f)
     return -1.0f;
 
-  float ray_t  = cross(wall_origin - ray_origin, wall_direction) / denominator;
-  float wall_t = cross(wall_origin - ray_origin, ray_direction ) / denominator;
+  vec2 diff = wall_origin - ray_origin;
+  float inv_denominator = 1.0f / denominator;
+
+  float ray_t  = cross(diff, wall_direction) * inv_denominator;
+  float wall_t = cross(diff, ray_direction ) * inv_denominator;
 
   // intersection occurs outside of wall this wall segment
   if (wall_t < 0.0f || wall_t > 1.0f || ray_t <= 0.0001f)
@@ -121,10 +125,14 @@ bool is_in_shadow(vec3 position, uint start_sector_id, PointLight light)
     for (uint i = 0; i < sector.walls_count; ++i)
     {
       WallData wall = walls[sector.walls_offset + i];
-      float t = get_intersection_t(ray_origin.xz, ray_direction.xz, wall.start, wall.end);
 
-      // hit point is further away on ray than previous hit points (prevents going backwards)
-      if (t > ray_t + 0.01f)
+      vec2 wall_normal = unpackSnorm2x16(wall.packed_normal);
+      // wall is facing oposite direction, we can skip it
+      if (dot(wall_normal, ray_direction.xz) > 0.0f)
+        continue;
+
+      float t = get_intersection_t(ray_origin.xz, ray_direction.xz, wall.start, wall.end);
+      if (t > ray_t)
       {
         wall_index = i;
         ray_t = t;
@@ -204,6 +212,12 @@ void main()
     uint light_index = light_indices[data.offset + i];
     PointLight light = point_lights[light_index];
 
+    vec3 light_direction = light.position - position;
+    float distance_squared = dot(light_direction, light_direction);
+
+    if (distance_squared >= light.radius * light.radius)
+      continue;
+
 #ifdef DO_SHADOWS
     if (is_in_shadow(position, sector_id, light))
         continue;
@@ -214,9 +228,8 @@ void main()
     position = round(position * VOX_CNT) / VOX_CNT;
 #endif
 
-    vec3 light_direction = light.position - position;
-    float distance = length(light_direction);
-    light_direction = normalize(light_direction);
+    float distance = sqrt(distance_squared);
+    light_direction /= distance;
 
     float angle = dot(stitched_normal, light_direction) + float(billboard);
 
@@ -224,8 +237,8 @@ void main()
 
     vec3 diffuse = max(angle, 0.0f) * albedo;
 
-    vec3 reflect_direction = reflect(-light_direction, stitched_normal);
-    vec3 specular = specular_strength * pow(max(dot(view_direction, reflect_direction), 0.0f), shininess) * vec3(1.0f);
+    vec3 half_direction = normalize(light_direction + view_direction);
+    vec3 specular = specular_strength * pow(max(dot(stitched_normal, half_direction), 0.0f), shininess) * vec3(1.0f);
 
     final_color += (diffuse + specular) * light.color * light.intensity * attenuation;
   }
