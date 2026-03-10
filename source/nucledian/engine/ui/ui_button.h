@@ -196,8 +196,8 @@ namespace nc
     void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
     void draw(ShaderProgramHandle button_material, GLuint VAO);
     void set_kill_stats(u32 enemy_count, u32 kill_count);
-    void draw_stats(ShaderProgramHandle digit_material, GLuint VAO);
-    void draw_kill_count(ShaderProgramHandle digit_material);
+    void draw_stats(GLuint VAO);
+    void draw_kill_count();
   private:
     const ShaderProgramHandle digit_material;
 

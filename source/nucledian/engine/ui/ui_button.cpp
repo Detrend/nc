@@ -472,7 +472,7 @@ namespace nc
 		glDisableVertexAttribArray(1);
 		glBindVertexArray(0);
 
-		draw_stats(digit_material, VAO);
+		draw_stats(VAO);
 	}
 
 	void NextLevelPage::set_kill_stats(u32 enemies, u32 kills)
@@ -481,7 +481,7 @@ namespace nc
 		kill_count = kills;
 	}
 
-	void NextLevelPage::draw_stats(ShaderProgramHandle digit_material, GLuint VAO)
+	void NextLevelPage::draw_stats(GLuint VAO)
 	{
 		digit_material.use();
 
@@ -494,7 +494,7 @@ namespace nc
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		draw_kill_count(digit_material);
+		draw_kill_count();
 		// unbind
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
@@ -505,7 +505,7 @@ namespace nc
 		glBindVertexArray(0);
 	}
 
-	void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
+	void NextLevelPage::draw_kill_count()
 	{
 		u32 display_count = enemy_count;
 
