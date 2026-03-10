@@ -203,9 +203,14 @@ namespace nc
 
     void next_level_func();
     void do_nothing() {}
+    void menu_func();
 
     UiButton* kills_text;
+    UiButton* level_text;
+    UiButton* demo_text;
+    UiButton* completed_text;
     UiButton* next_level_button;
+    UiButton* menu_button;
 
     u32 enemy_count = 0;
     u32 kill_count = 0;

@@ -417,24 +417,44 @@ namespace nc
 		digit_material(shaders::ui_text::VERTEX_SOURCE, shaders::ui_text::FRAGMENT_SOURCE)
 	{
 		next_level_button = new UiButton("ui_next_level", vec2(0.0f, -0.8f), vec2(0.45f, 0.1f), std::bind(&NextLevelPage::next_level_func, this));
+		menu_button = new UiButton("ui_menu", vec2(0.0f, -0.8f), vec2(0.18f, 0.1f), std::bind(&NextLevelPage::menu_func, this));
 		kills_text = new UiButton("ui_kills", vec2(-0.3f, 0.3f), vec2(0.45f, 0.1f), std::bind(&NextLevelPage::do_nothing, this));
+		level_text = new UiButton("ui_level", vec2(0.0f, 0.8f), vec2(0.225f, 0.1f), std::bind(&NextLevelPage::do_nothing, this));
+		demo_text = new UiButton("ui_demo", vec2(0.0f, 0.8f), vec2(0.18f, 0.1f), std::bind(&NextLevelPage::do_nothing, this));
+		completed_text = new UiButton("ui_completed", vec2(0.0f, 0.6f), vec2(0.38f, 0.1f), std::bind(&NextLevelPage::do_nothing, this));
 	}
 
 	NextLevelPage::~NextLevelPage()
 	{
 		delete next_level_button;
 		delete kills_text;
+		delete demo_text;
+		delete level_text;
+		delete completed_text;
+		delete menu_button;
 	}
 
 	void NextLevelPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
 	{
 		UiButton* hover_over_button = nullptr;
 
-		next_level_button->set_hover(false);
-
-		if (next_level_button->is_point_in_rec(mouse_pos))
+		if (get_engine().get_module<GameSystem>().get_level_name() != Levels::LEVEL_3)
 		{
-			hover_over_button = next_level_button;
+			next_level_button->set_hover(false);
+
+			if (next_level_button->is_point_in_rec(mouse_pos))
+			{
+				hover_over_button = next_level_button;
+			}
+		}
+		else
+		{
+			menu_button->set_hover(false);
+
+			if (menu_button->is_point_in_rec(mouse_pos))
+			{
+				hover_over_button = menu_button;
+			}
 		}
 
 		if (hover_over_button != nullptr)
@@ -462,7 +482,18 @@ namespace nc
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		kills_text->draw(button_material);
-		next_level_button->draw(button_material);
+		if (get_engine().get_module<GameSystem>().get_level_name() == Levels::LEVEL_3)
+		{
+			demo_text->draw(button_material);
+			menu_button->draw(button_material);
+		}
+		else
+		{
+			level_text->draw(button_material);
+			next_level_button->draw(button_material);
+		}		
+		completed_text->draw(button_material);
+		
 
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
@@ -712,6 +743,11 @@ namespace nc
 			{
 				.type = ModuleEventType::next_level_requested,
 			});
+	}
+
+	void NextLevelPage::menu_func()
+	{
+		
 	}
 
 	//==============================================================================================
