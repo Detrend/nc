@@ -353,6 +353,12 @@ void Engine::on_event(const ModuleEvent& event)
       this->on_next_level_selected_from_menu();
     }
     break;
+
+    case ModuleEventType::main_menu_requested:
+    {
+      this->go_to_main_menu();
+    }
+    break;
   }
 }
 
@@ -512,6 +518,19 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
   }
 
   return true;
+}
+
+//============================================================================
+
+void Engine::go_to_main_menu()
+{
+  m_game_state = GameState::menu;
+
+  UserInterfaceSystem& ui_system = get_module<UserInterfaceSystem>();
+  ui_system.get_menu_manager()->set_visible(true); // Make the menu visible
+  UserInterfaceSystem::get().get_menu_manager()->set_transition_screen(false);
+
+  this->play_random_demo();
 }
 
 //==============================================================================

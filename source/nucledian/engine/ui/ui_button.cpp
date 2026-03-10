@@ -741,13 +741,16 @@ namespace nc
 	{
 		get_engine().send_event(ModuleEvent
 			{
-				.type = ModuleEventType::next_level_requested,
+				.type = ModuleEventType::next_level_requested
 			});
 	}
 
 	void NextLevelPage::menu_func()
 	{
-		
+		get_engine().send_event(ModuleEvent
+			{
+				.type = ModuleEventType::main_menu_requested
+			});
 	}
 
 	//==============================================================================================

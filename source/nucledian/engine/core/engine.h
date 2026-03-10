@@ -101,6 +101,8 @@ private:
   // Either boots into the menu after the start (default) or plays a demo.
   bool handle_post_init_game_startup(const CmdArgs& args);
 
+  void go_to_main_menu();
+
 private:
   using ModuleArray  = std::array<std::unique_ptr<IEngineModule>, 8>;
   using ModuleVector = std::vector<IEngineModule*>;

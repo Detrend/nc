@@ -31,6 +31,7 @@ namespace ModuleEventType
 
     new_game_level_requested,
     next_level_requested,  // player clicks "next" on transition screen
+    main_menu_requested,  // player clicks "menu" on transition screen
 
     demo_ended,          // when the demo simulated in the game system ends
     level_ended,         // when the level simulated in the game system ends
