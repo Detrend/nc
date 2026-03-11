@@ -2,6 +2,7 @@ credits:
 166508__yoyodaman234__concrete-footstep-2.wav: https://freesound.org/people/Yoyodaman234/sounds/166508/
 hurt: https://freesound.org/people/micahlg/
 player_hurt, possessed_hurt: https://freesound.org/people/micahlg/sounds/413182/
+death: https://freesound.org/people/marc3122/sounds/556976/
 cultist_hurt, cultist_die: https://freesound.org/people/Piement_infernal/sounds/772689/
 possessed_die: https://freesound.org/people/Artninja/sounds/762701/ , https://freesound.org/people/Piement_infernal/sounds/772689/ , https://freesound.org/people/LucasDuff/sounds/555066/
 possessed_attack: https://freesound.org/people/Artninja/sounds/811961/ , https://freesound.org/people/Artninja/sounds/762701/
