@@ -13,14 +13,14 @@ layout(location = 1) uniform vec2 atlas_size;
 layout(location = 2) uniform vec2 texture_pos;
 layout(location = 3) uniform vec2 texture_size;
 layout(location = 4) uniform int character;
-layout(location = 5) uniform float width;
-layout(location = 6) uniform float height;
+layout(location = 5) uniform int width;
+layout(location = 6) uniform int height;
 
 void main(void) {
 	gl_Position = transformationMatrix * vec4(position, 0.0, 1.0);
 
-	float texX = mod(character, int(width));
-    float texY = character / int(width);
+	float texX = mod(character, width);
+    float texY = character / width;
 	
 	vec2 n_uv = a_uv;
 

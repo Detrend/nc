@@ -155,8 +155,8 @@ namespace nc
       digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
       digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
       digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
-      digit_shader.set_uniform(shaders::ui_text::HEIGHT, 16.0f);
-      digit_shader.set_uniform(shaders::ui_text::WIDTH, 8.0f);
+      digit_shader.set_uniform(shaders::ui_text::HEIGHT, 16);
+      digit_shader.set_uniform(shaders::ui_text::WIDTH, 8);
 
       glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -214,8 +214,8 @@ namespace nc
       digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
       digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
       digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
-      digit_shader.set_uniform(shaders::ui_text::HEIGHT, 16.0f);
-      digit_shader.set_uniform(shaders::ui_text::WIDTH, 8.0f);
+      digit_shader.set_uniform(shaders::ui_text::HEIGHT, 16);
+      digit_shader.set_uniform(shaders::ui_text::WIDTH, 8);
 
       glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -304,8 +304,8 @@ namespace nc
 
     digit_shader.set_uniform(shaders::ui_text::CHARACTER, crosshair);
 
-    digit_shader.set_uniform(shaders::ui_text::HEIGHT, 1.0f);
-    digit_shader.set_uniform(shaders::ui_text::WIDTH, 10.0f);
+    digit_shader.set_uniform(shaders::ui_text::HEIGHT, 1);
+    digit_shader.set_uniform(shaders::ui_text::WIDTH, 10);
 
     glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
