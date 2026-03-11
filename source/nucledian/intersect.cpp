@@ -1010,7 +1010,7 @@ Frustum2 Frustum2::from_point_and_portal(vec2 point, vec2 a, vec2 b)
     // refactored properly.
     // Not related to CLOSE_COMPARE by any means, they just have the same value,
     // but there is no corelation between them.
-    constexpr f32 HACK_NUM = 0.001f;
+    constexpr f32 HACK_NUM = ALMOST_FULL_ANGLE;
 
     new_frustum.angle     = HACK_NUM;
     new_frustum.direction = dir_out;
@@ -1349,6 +1349,52 @@ bool test_segment(unit_test::TestCtx& /*ctx*/)
   }
 }
 NC_UNIT_TEST(test_segment)->name("Segment segment intersection");
+
+bool test_frustum_from_point_and_portal(unit_test::TestCtx& /*ctx*/)
+{
+  struct Input
+  {
+    vec2 point;
+    vec2 a;
+    vec2 b;
+  };
+
+  constexpr Input INPUTS[]
+  {
+    Input{vec2{0, 0}, vec2{1, 0},  vec2{-1, 0}},
+    Input{vec2{0, 0}, vec2{0, -1}, vec2{0, 1}},
+    Input{vec2{0, 1}, vec2{0, -1}, vec2{0, 1}},
+  };
+
+  constexpr Frustum2 OUTPUTS[]
+  {
+    Frustum2{vec2{0},    vec2{0, 1}, Frustum2::ALMOST_FULL_ANGLE},
+    Frustum2{vec2{0},    vec2{1, 0}, Frustum2::ALMOST_FULL_ANGLE},
+    Frustum2{vec2{0, 1}, vec2{1, 0}, Frustum2::ALMOST_FULL_ANGLE},
+  };
+
+  auto cmp = [](const Frustum2& a, const Frustum2& b)
+  {
+    return a.center == b.center
+      && is_zero(a.direction - b.direction, 0.001f)
+      && is_zero(a.angle     - b.angle,     0.001f);
+  };
+
+  static_assert(ARRAY_LENGTH(INPUTS) == ARRAY_LENGTH(OUTPUTS));
+  constexpr u64 cnt = ARRAY_LENGTH(INPUTS);
+
+  for (u64 i = 0; i < cnt; ++i)
+  {
+    const Input&    input  = INPUTS[i];
+    const Frustum2& output = OUTPUTS[i];
+    Frustum2 result = Frustum2::from_point_and_portal(input.point, input.a, input.b);
+    //NC_TEST_ASSERT(cmp(result, output));
+    NC_TEST_ASSERT(result == output);
+  }
+
+  NC_TEST_SUCCESS;
+}
+NC_UNIT_TEST(test_frustum_from_point_and_portal)->name("Frustum from point and portal");
 
 }
 #endif

@@ -18,8 +18,9 @@ namespace nc
 // as 360 degree.
 struct Frustum2
 {
-  static constexpr f32 EMPTY_ANGLE = 1.0f;
-  static constexpr f32 FULL_ANGLE  = 0.0f;
+  static constexpr f32 EMPTY_ANGLE       = 1.0f;
+  static constexpr f32 FULL_ANGLE        = 0.0f;
+  static constexpr f32 ALMOST_FULL_ANGLE = 0.001f;
 
   vec2 center    = vec2{0};     // a center point of the frustum
   vec2 direction = vec2{0, 1};  // a direction in which it is facing, has to be normalized
