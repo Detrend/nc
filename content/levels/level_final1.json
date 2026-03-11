@@ -9518,7 +9518,7 @@
 			"alt_states": [
 				{
 					"activator": "MeatRoomOut",
-					"ceiling": 5.0,
+					"ceiling": 4.0,
 					"floor": 0.0,
 					"move_speed": 1.0
 				}
