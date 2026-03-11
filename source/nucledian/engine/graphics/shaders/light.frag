@@ -166,7 +166,7 @@ void main()
 
   vec4 g_normal_sample = texture(g_normal, uv);
   vec3 normal = g_normal_sample.xyz;
-  // 4-th component of normal is used to determine if pixel should be lit
+  // 4-th component of normal is used to determine if pixel should is a billboard
   bool billboard = g_normal_sample.w == 0.0f;
 
   // zero for billboards
