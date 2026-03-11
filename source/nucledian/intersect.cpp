@@ -970,13 +970,11 @@ f32 Frustum2::angle_difference(const Frustum2& other) const
 }
 
 //==============================================================================
-/**
-+ point{ x = 11.9542952 y = -14.2328987 r = 11.9542952 ... }	glm::vec<2, float, 0>
-+to_a{ x = -0.951572061 y = 0.307425737 r = -0.951572061 ... }	glm::vec<2, float, 0>
-+to_b{ x = 0.951565325 y = -0.307446599 r = 0.951565325 ... }	glm::vec<2, float, 0>
-/**/
 Frustum2 Frustum2::from_point_and_portal(vec2 point, vec2 a, vec2 b)
 {
+  constexpr f32 CLOSE_COMPARE = 0.001f;
+  nc_assert(!is_zero(a - b, CLOSE_COMPARE));
+
   auto new_frustum = Frustum2
   {
     .center = point,
@@ -984,28 +982,46 @@ Frustum2 Frustum2::from_point_and_portal(vec2 point, vec2 a, vec2 b)
     .angle = FULL_ANGLE,
   };
 
-  if (point == a || point == b)
+  vec2 to_a = normalize_or_zero(a - point);
+  vec2 to_b = normalize_or_zero(b - point);
+
+  // This ensures we will jump to the middle if we are on a point boundary
+  if (to_a == VEC2_ZERO)
   {
-    return new_frustum;
+    to_a = -to_b;
+  }
+  else if (to_b == VEC2_ZERO)
+  {
+    to_b = -to_a;
   }
 
-  const auto to_a = normalize(a - point);
-  const auto to_b = normalize(b - point);
-
-  if (dot(to_a, to_b) == -1.0f)
+  if (is_zero(to_a + to_b, CLOSE_COMPARE))
   {
-    // stuck in the wall, return empty frustum
-    new_frustum.angle = 1.0f;
-    new_frustum.direction = vec2{ to_a.y, to_a.x };
+    // Create an (almost) 180 degree frustum and point it in the direction we
+    // are facing.
+    vec2 a_to_b  = normalize(b - a);
+    vec2 dir_out = -flipped(a_to_b);
 
-    nc_assert(new_frustum.is_empty());
+    // This is a hack.
+    // In theory, this should be equal to 0, which would mean it is a 180 degree
+    // frustum. However, the rest of the system would then treat it as a full
+    // frustum, which would potentially lead to an infinite loop in map_system
+    // visibility query. We do not want that. Lets fix it this way until it is
+    // refactored properly.
+    // Not related to CLOSE_COMPARE by any means, they just have the same value,
+    // but there is no corelation between them.
+    constexpr f32 HACK_NUM = 0.001f;
+
+    new_frustum.angle     = HACK_NUM;
+    new_frustum.direction = dir_out;
 
     return new_frustum;
   }
 
   new_frustum.direction = normalize(to_a + to_b);
-  new_frustum.angle = dot(to_a, new_frustum.direction);
+  new_frustum.angle     = dot(to_a, new_frustum.direction);
   nc_assert(new_frustum.angle >= 0.0f);
+
   return new_frustum;
 }
 
