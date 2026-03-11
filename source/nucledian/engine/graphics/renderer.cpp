@@ -455,7 +455,7 @@ void Renderer::push_sector_to_ssbo(SectorID sector_id, WallID enter_portal, cons
   for (WallGPU& wall_data : walls_data)
   {
     const vec2 direction     = wall_data.end - wall_data.start;
-    const vec2 normal        = vec2(-direction.y, direction.x);
+    const vec2 normal        = normalize(vec2(-direction.y, direction.x));
     const u32  packed_normal = packSnorm2x16(normal);
 
     wall_data.packed_normal = packed_normal;
