@@ -116,13 +116,10 @@ bool is_in_shadow(vec3 position, uint start_sector_id, PointLight light)
 
   for (int i = 0; i < MAX_LIGHT_TRAVERSE_SECTORS; ++i)
   {
-    if (current_sector_id == light.sector_id)
-      return false;
-
     SectorData sector = sectors[current_sector_id];
-    uint wall_index;
 
-    for (uint i = 0; i < sector.walls_count; ++i)
+    uint wall_index;
+    for (uint i = 0; i < sector.walls_count && current_sector_id != light.sector_id; ++i)
     {
       WallData wall = walls[sector.walls_offset + i];
 
@@ -144,8 +141,11 @@ bool is_in_shadow(vec3 position, uint start_sector_id, PointLight light)
     
     // check if ray collides with floor or ceiling
     float ray_hit_y = ray_origin.y + ray_t * ray_direction.y;
-    if (ray_hit_y < sector.floor_y || ray_hit_y > sector.ceil_y)
+    if (ray_hit_y < sector.floor_y - 0.01f || ray_hit_y > sector.ceil_y + 0.01f)
       return true;
+
+    if (current_sector_id == light.sector_id)
+      return false;
 
     // wall is solid wall (not a portal)
     if (wall.destination_sector == INVALID_WALL_ID)
