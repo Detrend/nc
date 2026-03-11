@@ -140,7 +140,7 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 [sub_resource type="Resource" id="Resource_n6mx2"]
 script = ExtResource("4_1b4qq")
 floor_height = 7.35
-ceiling_height = 9.75
+ceiling_height = 10.5
 material = ExtResource("7_yr043")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
@@ -868,21 +868,21 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 [sub_resource type="Resource" id="Resource_quomt"]
 script = ExtResource("4_1b4qq")
 floor_height = 5.0
-ceiling_height = 7.0
+ceiling_height = 8.0
 material = ExtResource("9_yr043")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_b8kc3"]
 script = ExtResource("4_1b4qq")
 floor_height = 5.0
-ceiling_height = 7.0
+ceiling_height = 8.0
 material = ExtResource("9_yr043")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_e1wco"]
 script = ExtResource("4_1b4qq")
 floor_height = 5.0
-ceiling_height = 7.0
+ceiling_height = 8.0
 material = ExtResource("9_yr043")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
@@ -1235,7 +1235,7 @@ color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(0, -80, 20, -80, 20, -64, 0, -64)
 data = SubResource("Resource_n6mx2")
 floor_height = 7.35
-ceiling_height = 9.75
+ceiling_height = 10.5
 sector_material = ExtResource("7_yr043")
 
 [node name="Sector-8851k3b" parent="Sectors" instance=ExtResource("2_yr043")]
@@ -2397,7 +2397,7 @@ color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(10, -6, 50, -6, 50, 10, 10, 10)
 data = SubResource("Resource_quomt")
 floor_height = 5.0
-ceiling_height = 7.0
+ceiling_height = 8.0
 sector_material = ExtResource("9_yr043")
 
 [node name="Configuration" type="Node" parent="Sectors/Sector-9515" node_paths=PackedStringArray("source")]
@@ -2413,7 +2413,7 @@ color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(-2, 0, 10, 0, 10, 40, -2, 40)
 data = SubResource("Resource_b8kc3")
 floor_height = 5.0
-ceiling_height = 7.0
+ceiling_height = 8.0
 sector_material = ExtResource("9_yr043")
 
 [node name="Configuration" type="Node" parent="Sectors/Sector-8473" node_paths=PackedStringArray("source")]
@@ -2429,7 +2429,7 @@ color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(0, 0, 12, 0, 12, 40, 0, 40)
 data = SubResource("Resource_e1wco")
 floor_height = 5.0
-ceiling_height = 7.0
+ceiling_height = 8.0
 sector_material = ExtResource("9_yr043")
 
 [node name="Configuration" type="Node" parent="Sectors/Sector-7795" node_paths=PackedStringArray("source")]
@@ -2760,7 +2760,12 @@ height_offset = 0.5
 
 [node name="PointLight13" parent="Lights" instance=ExtResource("9_locqg")]
 position = Vector2(306, 25)
-intensity = 0.3
+color = Color(0, 1, 0, 1)
+radius = 5.0
+
+[node name="PointLight16" parent="Lights" instance=ExtResource("9_locqg")]
+position = Vector2(227, 22)
+color = Color(0, 1, 0, 1)
 radius = 5.0
 
 [node name="PointLight6" parent="Lights" instance=ExtResource("9_locqg")]
@@ -2785,7 +2790,7 @@ placement_mode = 1
 height_offset = 0.5
 
 [node name="PointLight14" parent="Lights" instance=ExtResource("9_locqg")]
-position = Vector2(219, 45)
+position = Vector2(177, 59)
 color = Color(0, 1, 1, 1)
 intensity = 0.3
 radius = 10.0
@@ -2796,6 +2801,27 @@ height_offset = 0.5
 position = Vector2(-19, -101)
 color = Color(0, 1, 1, 1)
 radius = 10.0
+placement_mode = 1
+height_offset = 0.5
+
+[node name="PointLight12" parent="Lights" instance=ExtResource("9_locqg")]
+position = Vector2(-209, -203)
+color = Color(0, 1, 0, 1)
+radius = 5.0
+placement_mode = 1
+height_offset = 0.5
+
+[node name="PointLight17" parent="Lights" instance=ExtResource("9_locqg")]
+position = Vector2(29, -61)
+color = Color(0, 1, 0, 1)
+radius = 5.0
+placement_mode = 1
+height_offset = 0.5
+
+[node name="PointLight15" parent="Lights" instance=ExtResource("9_locqg")]
+position = Vector2(57, -29)
+color = Color(0, 1, 0, 1)
+radius = 5.0
 placement_mode = 1
 height_offset = 0.5
 
@@ -2888,16 +2914,16 @@ position = Vector2(109, 8)
 position = Vector2(116, 2)
 
 [node name="HpBig3" parent="Entities" instance=ExtResource("31_isihr")]
-position = Vector2(-175, -75)
+position = Vector2(-172, -79)
 
 [node name="HpBig4" parent="Entities" instance=ExtResource("31_isihr")]
-position = Vector2(-86, -184)
+position = Vector2(-92, -180)
 
 [node name="ShotgunAmmo3" parent="Entities" instance=ExtResource("28_5rdpl")]
-position = Vector2(-105, -75)
+position = Vector2(-108, -78)
 
 [node name="ShotgunAmmo4" parent="Entities" instance=ExtResource("28_5rdpl")]
-position = Vector2(-196, -184)
+position = Vector2(-192, -182)
 
 [node name="HpBig5" parent="Entities" instance=ExtResource("31_isihr")]
 position = Vector2(-216, -205)
@@ -2924,16 +2950,16 @@ position = Vector2(315, 16)
 position = Vector2(222, 21)
 
 [node name="HpBig9" parent="Entities" instance=ExtResource("31_isihr")]
-position = Vector2(77, -109)
+position = Vector2(74, -109)
 
 [node name="HpBig10" parent="Entities" instance=ExtResource("31_isihr")]
-position = Vector2(-16, -107)
+position = Vector2(-13, -107)
 
 [node name="PlasmaAmmo6" parent="Entities" instance=ExtResource("30_bs1my")]
-position = Vector2(75, -165)
+position = Vector2(72, -161)
 
 [node name="ShotgunAmmo6" parent="Entities" instance=ExtResource("28_5rdpl")]
-position = Vector2(-16, -165)
+position = Vector2(-12, -161)
 
 [node name="Cultist" parent="Entities" instance=ExtResource("32_5rdpl")]
 position = Vector2(-140, -158)
@@ -3000,17 +3026,9 @@ rotation = -1.596761
 position = Vector2(340, 24)
 rotation = -1.7766241
 
-[node name="Possessed8" parent="Entities" instance=ExtResource("33_tyucy")]
-position = Vector2(357, 24)
-rotation = -1.6578455
-
 [node name="Possessed9" parent="Entities" instance=ExtResource("33_tyucy")]
 position = Vector2(290, 23)
 rotation = 1.9374985
-
-[node name="Possessed10" parent="Entities" instance=ExtResource("33_tyucy")]
-position = Vector2(272, 23)
-rotation = 1.3941778
 
 [node name="Cultist5" parent="Entities" instance=ExtResource("32_5rdpl")]
 position = Vector2(315, -3)
@@ -3018,9 +3036,6 @@ rotation = -3.11479
 
 [node name="Cultist6" parent="Entities" instance=ExtResource("32_5rdpl")]
 position = Vector2(314, 47)
-
-[node name="Possessed11" parent="Entities" instance=ExtResource("33_tyucy")]
-position = Vector2(314, 63)
 
 [node name="Cultist7" parent="Entities" instance=ExtResource("32_5rdpl")]
 position = Vector2(-10, -119)
@@ -3040,7 +3055,3 @@ rotation = 1.448698
 
 [node name="Possessed13" parent="Entities" instance=ExtResource("33_tyucy")]
 position = Vector2(31, -188)
-
-[node name="Possessed12" parent="Entities" instance=ExtResource("33_tyucy")]
-position = Vector2(316, -18)
-rotation = 2.8586638
