@@ -128,21 +128,32 @@ void SoundSystem::play_oneshot(SoundID sound, f32 volume, SoundLayer layer)
 }
 
 //==============================================================================
-void SoundSystem::play_music(const std::string& track_name)
+void SoundSystem::play_music(const Token track_name)
 {
   if (terminated)
   {
     return;
   }
 
-  std::string path = std::format(NC_SOUND_DIRECTORY_CSTR "{}" NC_SOUND_TYPE, track_name);
-  if (Mix_Music* const music = Mix_LoadMUS(path.data()))
+  
+  if ((track_name == this->current_music_name) && Mix_PlayingMusic()) {
+      return;
+  }
+  current_music_name = track_name;
+
+  Mix_Music* const og_music_track = this->current_music_track;
+
+  const auto path = track_name.to_cstring_enclosed(NC_SOUND_DIRECTORY_CSTR, NC_MUSIC_TYPE);
+  if ((this->current_music_track = Mix_LoadMUS(path.data())))
   {
-    Mix_PlayMusic(music, -1);
+    Mix_PlayMusic(this->current_music_track, -1);
+    if (og_music_track) {
+        Mix_FreeMusic(og_music_track);
+    }
   }
   else
   {
-    nc_warn("Failed to load music \"{}\"", path);
+    nc_warn("Failed to load music \"{}\"", path.data());
   }
 }
 
