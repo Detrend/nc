@@ -751,6 +751,10 @@ void Player::update
   else
   {
     time_since_death += delta;
+    if (curr_input.keys & 1 << PlayerKeyInputs::use)
+    {
+      get_engine().get_module<GameSystem>().request_level_change(get_engine().get_module<GameSystem>().get_level_name());
+    }
   }
 
   // Has to happen even if dead because it calculates gravity
