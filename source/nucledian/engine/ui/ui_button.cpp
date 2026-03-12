@@ -123,10 +123,10 @@ namespace nc
 		quit_game_page = new QuitGamePage();
 		next_level_page = new NextLevelPage();
 
-		vec2 vertices[] = { vec2(-1, 1), vec2(0, 0),
-				vec2(-1, -1), vec2(0, 1),
-				vec2(1, 1), vec2(1, 0),
-				vec2(1, -1), vec2(1, 1) };
+		vec2 vertices[] = { vec2(-1.0f, 1.0f), vec2(0.0f, 0.015f),
+			vec2(-1.0f, -1.0f), vec2(0.0f, 1.0f - 0.015f),
+			vec2(1.0f, 1.0f), vec2(1.0f, 0.015f),
+			vec2(1.0f, -1.0f), vec2(1.0f, 1.0f - 0.015f) };
 
 		glGenBuffers(1, &VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);

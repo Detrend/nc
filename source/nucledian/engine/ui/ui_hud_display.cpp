@@ -27,10 +27,10 @@ namespace nc
 
   void UiHudDisplay::init()
   {
-    vec2 vertices[] = { vec2(-1, 1), vec2(0, 0),
-        vec2(-1, -1), vec2(0, 1),
-        vec2(1, 1), vec2(1, 0),
-        vec2(1, -1), vec2(1, 1) };
+    vec2 vertices[] = { vec2(-1.0f, 1.0f), vec2(0.0f, 0.015f),
+      vec2(-1.0f, -1.0f), vec2(0.0f, 1.0f - 0.015f),
+      vec2(1.0f, 1.0f), vec2(1.0f, 0.015f),
+      vec2(1.0f, -1.0f), vec2(1.0f, 1.0f - 0.015f) };
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -127,7 +127,7 @@ namespace nc
 
     bool first = true;
 
-    std::vector<vec2> positionHealth = { vec2(-0.68f, -0.8f), vec2(-0.74f, -0.8f), vec2(-0.8f, -0.8f) };
+    std::vector<vec2> positionHealth = { vec2(-0.68f, -0.78f), vec2(-0.74f, -0.78f), vec2(-0.8f, -0.78f) };
     vec2 scale = vec2(0.03f, 0.07f);
 
     const TextureManager& manager = TextureManager::get();
@@ -179,7 +179,7 @@ namespace nc
 
     bool first = true;
 
-    std::vector<vec2> positionsAmmo = { vec2(0.8f, -0.8f) , vec2(0.74f, -0.8f), vec2(0.68f, -0.8f) };
+    std::vector<vec2> positionsAmmo = { vec2(0.8f, -0.78f) , vec2(0.74f, -0.78f), vec2(0.68f, -0.78f) };
     vec2 scale = vec2(0.03f, 0.07f);
 
     const TextureManager& manager = TextureManager::get();
@@ -302,9 +302,9 @@ namespace nc
     digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
     digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
 
-    digit_shader.set_uniform(shaders::ui_text::CHARACTER, crosshair);
+    digit_shader.set_uniform(shaders::ui_text::CHARACTER, crosshair + 10);
 
-    digit_shader.set_uniform(shaders::ui_text::HEIGHT, 1);
+    digit_shader.set_uniform(shaders::ui_text::HEIGHT, 2);
     digit_shader.set_uniform(shaders::ui_text::WIDTH, 10);
 
     glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
