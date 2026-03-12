@@ -122,9 +122,9 @@ void SoundSystem::set_music_volume(int step)
 }
 
 //==============================================================================
-void SoundSystem::play_oneshot(SoundID sound, f32 volume /*= 1.0f*/)
+void SoundSystem::play_oneshot(SoundID sound, f32 volume, SoundLayer layer)
 {
-  play(sound, volume);
+  play(sound, volume, false, layer);
 }
 
 //==============================================================================
@@ -149,12 +149,17 @@ void SoundSystem::play_music(const std::string& track_name)
 //==============================================================================
 SoundHandle SoundSystem::play
 (
-  SoundID sound, f32 volume /*= 1.0f*/, bool loop /*= false*/
+  SoundID sound, f32 volume, bool loop, SoundLayer layer
 )
 {
   using Channel = SoundHandle::Channel;
 
   if (terminated)
+  {
+    return SoundHandle{SoundHandle::INVALID_CHANNEL, 0};
+  }
+
+  if (!this->is_layer_enabled(layer))
   {
     return SoundHandle{SoundHandle::INVALID_CHANNEL, 0};
   }
@@ -252,6 +257,47 @@ void SoundSystem::update([[maybe_unused]] f32 delta_seconds)
     channels_to_free[free_track][i] = SoundHandle::INVALID_CHANNEL; 
   }
   channels_to_free_cnt[free_track] = 0; // reset
+
+  // Handle the game layer
+  this->enable_layer(SoundLayers::game, get_engine().is_level_sound_enabled());
+}
+
+//==============================================================================
+bool SoundSystem::is_layer_enabled(SoundLayer layer) const
+{
+  return !!(this->enabled_layers & (1 << layer));
+}
+
+//==============================================================================
+void SoundSystem::enable_layer(SoundLayer layer, bool enable)
+{
+  if (this->is_layer_enabled(layer) == enable)
+  {
+    // Do nothing, already set
+    return;
+  }
+
+  if (!enable)
+  {
+    // Turn off the sounds already playing in this layer..
+    for (u64 i = 0; i < CHANNEL_COUNT; ++i)
+    {
+      if (this->channels[i].layer == layer && !this->channels[i].is_free)
+      {
+        // The callback to "on_channel_finished" will clean it up
+        Mix_HaltChannel(cast<int>(i));
+      }
+    }
+  }
+
+  if (enable)
+  {
+    this->enabled_layers |= (1 << layer);
+  }
+  else
+  {
+    this->enabled_layers &= ~(1 << layer);
+  }
 }
 
 //==============================================================================

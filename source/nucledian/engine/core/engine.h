@@ -69,6 +69,11 @@ public:
   // with pressing of a keybind
   bool is_menu_locked_visible() const;
 
+  // True if the level sounds (shooting, monsters or player) should be hearable.
+  // In certain situations (like playing replay on the background or in menu)
+  // we do not want the level sound.
+  bool is_level_sound_enabled() const;
+
 private:
   // Called first before level end if a demo was playing
   // menu:     schedule next demo

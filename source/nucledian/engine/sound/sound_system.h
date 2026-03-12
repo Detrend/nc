@@ -18,6 +18,19 @@
 namespace nc
 {
 
+using SoundLayer = u8;
+namespace SoundLayers
+{
+  enum evalue : SoundLayer
+  {
+    game,
+    ui,
+    // - //
+    count,
+    none = count,
+  };
+};
+
 // ************************************************************************** //
 //                              SOUND SYSTEM                                  //
 // ************************************************************************** //
@@ -30,8 +43,8 @@ public:
   bool init();
 
   // Sound interface
-  void        play_oneshot(SoundID sound, f32 volume = 1.0f);
-  SoundHandle play(SoundID sound, f32 volume = 1.0f, bool loop = false);
+  void        play_oneshot(SoundID sound, f32 volume = 1.0f, SoundLayer layer = SoundLayers::game);
+  SoundHandle play(SoundID sound, f32 volume = 1.0f, bool loop = false, SoundLayer layer = SoundLayers::game);
   bool        is_handle_valid(const SoundHandle& handle) const;
   
   void        play_music(const std::string& track_name);
@@ -44,6 +57,9 @@ public:
   void set_music_volume(int step);
 
   void process_sdl_event(const SDL_Event& event);
+
+  void enable_layer(SoundLayer layer, bool enable);
+  bool is_layer_enabled(SoundLayer layer) const;
 
 private:
   void terminate();
@@ -79,10 +95,14 @@ private:
   std::atomic_uint8_t used_track = 0;
   std::atomic_bool    terminated = true;
 
+  // All
+  u8 enabled_layers = (1 << SoundLayers::game) | (1 << SoundLayers::ui);
+
   struct ChannelInfo
   {
-    bool is_free    = true;
-    u16  generation = 0;
+    bool       is_free    = true;
+    SoundLayer layer      = SoundLayers::none;
+    u16        generation = 0;
   };
   ChannelInfo channels[CHANNEL_COUNT]{};
 };
