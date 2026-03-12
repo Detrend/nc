@@ -53,7 +53,7 @@ public:
   // small will result in losing a lot of depth buffer precision in the long
   // distance, which causes a flicering.
   static constexpr f32 NEAR = 0.001f;
-  static constexpr f32 FAR = 128.0f;
+  static constexpr f32 FAR  = 128.0f;
 
   Renderer(u32 window_w, u32 window_h);
 
