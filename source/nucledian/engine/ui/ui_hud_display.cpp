@@ -302,9 +302,9 @@ namespace nc
     digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
     digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
 
-    digit_shader.set_uniform(shaders::ui_text::CHARACTER, crosshair);
+    digit_shader.set_uniform(shaders::ui_text::CHARACTER, crosshair + 10);
 
-    digit_shader.set_uniform(shaders::ui_text::HEIGHT, 1);
+    digit_shader.set_uniform(shaders::ui_text::HEIGHT, 2);
     digit_shader.set_uniform(shaders::ui_text::WIDTH, 10);
 
     glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
