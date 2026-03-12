@@ -1153,9 +1153,11 @@ struct CylCastWallIntersector
         window_from_y -= step_height;
       }
 
+      bool can_fit = window_to_y >= window_from_y;
+
       // Check if we can pass through the free window to the other sector
       f32 hit_y = ray_from.y + (ray_to.y - ray_from.y) * out_c;
-      if (hit_y < window_from_y || hit_y > window_to_y)
+      if ((hit_y < window_from_y || hit_y > window_to_y) || !can_fit)
       {
         // We hit the solid wall, not the window.. exit
         return true;
@@ -1368,7 +1370,7 @@ const
 
   NC_SCOPE_PROFILER(MoveCharacter)
 
-  auto sector_intersector = [height]
+  auto sector_intersector = [height, max_step_height]
   (
     const MapSectors& map,
     vec3              ray_from,
@@ -1382,10 +1384,34 @@ const
   {
     // Note: this might be problematic if we accidentlly get just slightly under
     // the floor. That can even happen due to f32 inaccuraccies.
-    return intersect_sector_3d_height
+    bool hit = intersect_sector_3d_height
     (
       map, ray_from, ray_to, expand, 0, height, sid, out_c, out_n
     );
+
+    if (!hit)
+    {
+      return false;
+    }
+
+    // NOTE: This is a quite desperate fix for the bug that allowed the player
+    // to fit into windows he should not fit into..
+    // It ignores the collision with the sector and relies that we will instead
+    // collide with the wall ahead of it.
+    // Note that it might work poorly with nc-portals.
+    vec3 contact = ray_from + (ray_to - ray_from) * out_c;
+    const SectorDynData& sdd = map.sectors_dynamic[sid];
+
+    bool can_fit = sdd.get_sector_height() >= height;
+
+    bool can_step_up = (sdd.floor_height - max_step_height < contact.y)
+      && (sdd.ceil_height - height > contact.y);
+    if (!can_fit || !can_step_up)
+    {
+      return false;
+    }
+
+    return true;
   };
 
   // We limit the amount of iterations.
