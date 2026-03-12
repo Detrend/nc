@@ -83,10 +83,12 @@ namespace nc
     void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
 
+    void go_back();
     void level_1_func();
     void level_2_func();
     void level_3_func();
 
+    UiButton* go_back_button = nullptr;
     UiButton* level_1_button = nullptr;
     UiButton* level_2_button = nullptr;
     UiButton* level_3_button = nullptr;
@@ -123,6 +125,8 @@ namespace nc
     void set_crosshair_less();
     void set_crosshair_more();
 
+    void go_back();
+
     UiButton* sound_text = nullptr;
     UiButton* music_text = nullptr;
     UiButton* sensitivity_text = nullptr;
@@ -138,6 +142,8 @@ namespace nc
     UiButton* sensitivity_more = nullptr;
     UiButton* crosshair_less = nullptr;
     UiButton* crosshair_more = nullptr;
+
+    UiButton* go_back_button = nullptr;
 
     bool isWindowed = true;
 
@@ -162,9 +168,15 @@ namespace nc
   class LoadGamePage
   {
   public:
+    LoadGamePage();
+    ~LoadGamePage();
+
     void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
     void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
+    void go_back();
+
+    UiButton* go_back_button = nullptr;
   };
 
   //======================================================================================
