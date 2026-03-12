@@ -747,17 +747,21 @@ void Renderer::render_entities(const CameraData& camera) const
   glBindVertexArray(texturable_quad.get_vao());
   glActiveTexture(GL_TEXTURE0);
 
-  const mat3 camera_rotation = transpose(mat3(camera.view));
+  vec3 camera_position_rel = (inverse(camera.view) * vec4{VEC3_ZERO, 1.0f}).xyz();
+
+  // Old billboard rotation that relied on rotation of the camera.
+  /*
   // Extracting X and Y components from the forward vector.
   const float yaw = atan2(-camera_rotation[2][0], -camera_rotation[2][2]);
   const mat4 rotation_horizontal = eulerAngleY(yaw);
   const mat4 rotation_full = mat4
   {
-    vec4{-camera_rotation[0], 0},
-    vec4{camera_rotation[1],  0},
-    vec4{-camera_rotation[2], 0},
-    vec4{0, 0, 0, 1}
+  vec4{-camera_rotation[0], 0},
+  vec4{camera_rotation[1],  0},
+  vec4{-camera_rotation[2], 0},
+  vec4{0, 0, 0, 1}
   };
+  */
 
   for (u64 l = cast<u64>(ResLifetime::Level); l <= cast<u64>(ResLifetime::Game); ++l)
   {
@@ -783,6 +787,30 @@ void Renderer::render_entities(const CameraData& camera) const
         (
           appearance, camera
         );
+
+        vec3 to_camera_dir   = normalize_or(position - camera_position_rel, VEC3_X);
+        vec2 to_camera_2     = normalize_or(to_camera_dir.xz(), VEC2_X);
+        vec3 to_camera_hor   = vec3{to_camera_2.x, 0.0f, to_camera_2.y};
+        vec3 to_camera_right = vec3{to_camera_2.y, 0.0f, -to_camera_2.x};
+        vec3 to_camera_up    = UP_DIR;
+
+        const mat3 camera_rotation = transpose(mat3(camera.view));
+
+        const mat4 rotation_horizontal = mat4
+        {
+          vec4{to_camera_right, 0.0f},
+          vec4{to_camera_up,    0.0f},
+          vec4{to_camera_hor,   0.0f},
+          vec4{VEC3_ZERO,       1.0f}
+        };
+
+        const mat4 rotation_full = mat4
+        {
+          vec4{-camera_rotation[0], 0},
+          vec4{camera_rotation[1],  0},
+          vec4{-camera_rotation[2], 0},
+          vec4{0, 0, 0, 1}
+        };
 
         m_billboard_material.set_uniform(shaders::billboard::TEXTURE_POS, texture.get_pos());
         m_billboard_material.set_uniform(shaders::billboard::TEXTURE_SIZE, texture.get_size());
