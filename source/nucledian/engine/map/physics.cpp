@@ -1,6 +1,7 @@
 // Project Nucledian Source File
 #include <engine/map/physics.h>
 
+#include <cvars.h>
 #include <engine/map/map_system.h>
 #include <engine/entity/entity_system.h>
 #include <engine/entity/sector_mapping.h>
@@ -86,9 +87,9 @@ static CollisionHit raycast_generic
   EntityTypeMask      ent_types,
   PhysLevel::Portals* out_portals,
   WallID              ignore_portal,
-  WallHitLambda       wall_intersect,
-  SectorHitLambda     sector_intersect,
-  EntityHitLambda     entity_intersect
+  WallHitLambda&&     wall_intersect,
+  SectorHitLambda&&   sector_intersect,
+  EntityHitLambda&&   entity_intersect
 )
 {
   NC_SCOPE_PROFILER(Raycast)
@@ -319,7 +320,9 @@ static CollisionHit raycast_generic
     const CollisionHit hit = raycast_generic<TVec>
     (
       world, new_from, new_to, expand, ent_types, out_portals, wall_to_ignore,
-      wall_intersect, sector_intersect, entity_intersect
+      std::forward<WallHitLambda>(wall_intersect),
+      std::forward<SectorHitLambda>(sector_intersect),
+      std::forward<EntityHitLambda>(entity_intersect)
     );
 
     if (hit)
@@ -1030,6 +1033,115 @@ const
 }
 
 //==============================================================================
+// Checks only the surrounding walls and calculates the penetration vector
+// with each one. The largest penetration is then returned.
+struct StabilizeWallIntersector
+{
+  f32  player_height          = 0.0f;
+  f32  step_height            = 0.0f;
+  vec3 penetration_vector_out = VEC3_ZERO;
+
+  bool operator()
+  (
+    const MapSectors& map,
+    vec3              ray_from,
+    vec3              ray_to,
+    f32               expand,
+    WallID            wid1,
+    WallID            wid2,
+    SectorID          sid,
+    f32&              out_c,
+    vec3&             out_n,
+    bool&             out_nc_hit
+  )
+  {
+    return this->check
+    (
+      map, ray_from, ray_to, expand, wid1, wid2, sid, out_c, out_n, out_nc_hit
+    );
+  }
+
+  bool check
+  (
+    const MapSectors& map,
+    vec3              position,
+    vec3              position_again,
+    f32               expand,
+    WallID            wid1,
+    WallID            wid2,
+    SectorID          sid,
+    f32&              out_c,
+    vec3&             out_n,
+    bool&             out_nc_hit
+  )
+  {
+    nc_assert(expand > 0.0f);
+    nc_assert(position == position_again);
+
+    // Reset to default state EVERY TIME
+    out_n      = VEC3_ZERO;
+    out_c      = FLT_MAX;
+    out_nc_hit = false;
+
+    const WallData&      w1 = map.walls[wid1];
+    const WallData&      w2 = map.walls[wid2];
+    const SectorDynData& sc = map.sectors_dynamic[sid];
+
+    const f32 floor_y = sc.floor_height;
+    const f32 ceil_y  = sc.ceil_height;
+
+    vec2 p1 = w1.pos;
+    vec2 p2 = w2.pos;
+
+    f32 dist_2d = dist::point_line_2d(position.xz(), p1, p2);
+    f32 pdepth  = expand - dist_2d;
+    if (pdepth <= 0.0f)
+    {
+      return false;
+    }
+
+    vec2 closest_pt  = dist::closest_point_on_the_line(position.xz(), p1, p2);
+    vec2 dir_towards = closest_pt - position.xz();
+
+    if (dir_towards == VEC2_ZERO)
+    {
+      // Pick arbitrary direction out
+      dir_towards = flipped(p2 - p1);
+    }
+
+    bool is_hit = true;
+    if (w1.is_portal())
+    {
+      f32 step_up, ceil_down;
+      map.calc_step_height_of_portal(sid, wid1, &step_up, &ceil_down);
+      f32 pstart = floor_y + step_up;
+      f32 pend   = ceil_y  + ceil_down;
+
+      bool can_fit = (pend - pstart) >= player_height;
+      if (can_fit && (position.y > pstart - step_height && position.y + player_height < pend))
+      {
+        is_hit = false;
+      }
+    }
+
+    // We hit in 2D, check 3D
+    if (is_hit)
+    {
+      if (pdepth > length(penetration_vector_out))
+      {
+        nc_assert(dir_towards != VEC2_ZERO);
+        vec3 dir_3d = vec3{dir_towards.x, 0.0f, dir_towards.y};
+        penetration_vector_out = -normalize(dir_3d) * pdepth;
+      }
+
+      return false;
+    }
+
+    return false;
+  };
+};
+
+//==============================================================================
 enum class StairWalkSettings
 {
   Enabled,
@@ -1351,6 +1463,46 @@ const
 }
 
 //==============================================================================
+static bool handle_portal_traversal_between_positions
+(
+  const PhysLevel&                lvl,
+  vec3                            position1,
+  vec3                            position2,
+  mat4&                           transform_out,
+  PhysLevel::CharacterCollisions* colls_opt
+)
+{
+  // Then handle nuclidean portal transitions - check which portals
+  // we have traversed through and store them.
+  PhysLevel::Portals portals;
+  const auto ray_from = position1.xz();
+  const auto ray_to   = position2.xz();
+  lvl.ray_cast_2d(ray_from, ray_to, 0, &portals);
+
+  // Store the list of traversed portals
+  if (colls_opt)
+  {
+    colls_opt->portals.insert
+    (
+      colls_opt->portals.end(), portals.begin(), portals.end()
+    );
+  }
+
+  // Now that we have the portals stored we iterate them and transform our
+  // position/direction with the portals
+  if (portals.size())
+  {
+    for (const auto&[wid, sid] : portals)
+    {
+      const auto pp_trans = lvl.map.calc_portal_to_portal_projection(sid, wid);
+      transform_out = pp_trans * transform_out;
+    }
+  }
+
+  return portals.size();
+}
+
+//==============================================================================
 void PhysLevel::move_character
 (
   vec3&                           position,
@@ -1414,6 +1566,14 @@ const
     return true;
   };
 
+  auto bruh_sector_intersector = []
+  (
+    const MapSectors&, vec3, vec3, f32, SectorID, f32&, vec3&
+  )
+  {
+    return false;
+  };
+
   // We limit the amount of iterations.
   // Note to self:
   // I thing that this might cause problems around smooth corners, but
@@ -1442,6 +1602,7 @@ const
       &report_only
     );
 
+    // Then move
     CollisionHit hit = phys_helpers::raycast_generic<vec3>
     (
       *this, ray_from, ray_to, radius, colliders, nullptr,
@@ -1495,45 +1656,76 @@ const
 
   // Then handle nuclidean portal transitions - check which portals
   // we have traversed through and store them.
-  Portals portals;
-  const auto ray_from = position.xz();
-  const auto ray_to   = (position + velocity).xz();
-  this->ray_cast_2d(ray_from, ray_to, 0, &portals);
-
-  // Store the list of traversed portals
-  if (colls_opt)
-  {
-    colls_opt->portals.insert
-    (
-      colls_opt->portals.end(), portals.begin(), portals.end()
-    );
-  }
-
-  // Now that we have the portals stored we iterate them and transform our
-  // position/direction with the portals
   transform_out = identity<mat4>();
-  if (portals.size())
-  {
-    for (const auto&[wid, sid] : portals)
-    {
-      const auto pp_trans = map.calc_portal_to_portal_projection(sid, wid);
-      transform_out = pp_trans * transform_out;
-    }
 
+  bool did_something = handle_portal_traversal_between_positions
+  (
+    *this, position, position + velocity, transform_out, colls_opt
+  );
+
+  if (did_something)
+  {
     velocity_og = (transform_out * vec4{velocity_og, 0.0f}).xyz();
     position    = (transform_out * vec4{position,    1.0f}).xyz();
     velocity    = (transform_out * vec4{velocity,    0.0f}).xyz();
   }
 
-  // Note: this is questionable.. Do we add the velocity now, or before we
-  // transform it? This might be a source of a potential problem in the future,
-  // but for now it seems to be ok.
-  // Answer: this is actually ok, as we modify the velocity with the portal
-  // transform matrix. Unless?
+  // Add the position first time
   position += velocity;
+
+  if (CVars::character_physics_stabilize)
+  {
+    // Stabilize after positioning..
+    vec3 original_pos = position;
+    u32  stabilize_iterations_left = MAX_ITERATIONS;
+
+    while(stabilize_iterations_left-->0)
+    {
+      StabilizeWallIntersector bruh_intersector
+      {
+        .player_height = height,
+        .step_height   = max_step_height,
+      };
+
+      CollisionHit hit = phys_helpers::raycast_generic<vec3>
+      (
+        *this, position, position, radius, colliders, nullptr, INVALID_WALL_ID,
+        bruh_intersector, bruh_sector_intersector, &intersect_entity_empty<vec3>
+      );
+
+      if (bruh_intersector.penetration_vector_out == VEC3_ZERO)
+      {
+        break;
+      }
+
+      position += bruh_intersector.penetration_vector_out;
+    }
+
+    mat4 another_transform = identity<mat4>();
+    did_something = handle_portal_traversal_between_positions
+    (
+      *this, original_pos, position, another_transform, colls_opt
+    );
+
+    if (did_something)
+    {
+      velocity_og = (another_transform * vec4{velocity_og, 0.0f}).xyz();
+      position    = (another_transform * vec4{position,    1.0f}).xyz();
+      velocity    = (another_transform * vec4{velocity,    0.0f}).xyz();
+      transform_out = another_transform * transform_out;
+    }
+  }
 
   // Can't be 1 because then we were sometimes able to climb extra high stairs.
   constexpr f32 DIST_COEFF = 0.9999f;
+
+  // MR says: This fixes the vibrations around the corners, but at what cost?
+  /*
+  if (delta_time > 0.0f)
+  {
+    velocity_og = velocity / delta_time;
+  }
+  */
 
   // Iterate the sectors and check if we touch them
   SectorSet nearby_sectors;

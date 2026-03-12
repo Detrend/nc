@@ -213,6 +213,9 @@ void Player::apply_velocity(f32 delta_seconds)
 
   constexpr f32 STEP_HEIGHT = PLAYER_HEIGHT * PLAYER_STEP_HEIGHT_MUL;
 
+  // MR says: hotfix for the physics bug that caused player to float
+  velocity.y = clamp(velocity.y, -30.0f, 30.0f);
+
   mat4 portal_transform = identity<mat4>();
   PhysLevel::CharacterCollisions collected_collisions;
   lvl.move_character
