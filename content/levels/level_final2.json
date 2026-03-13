@@ -17305,7 +17305,7 @@
 				],
 				[
 					{
-						"begin_height": 5.25,
+						"begin_height": 5.0,
 						"end_height": 5.5,
 						"id": "bricks_1",
 						"offset": [
@@ -17338,7 +17338,7 @@
 			]
 		},
 		{
-			"ceiling": 5.25,
+			"ceiling": 5.0,
 			"ceiling_surface": {
 				"id": "wall_2",
 				"offset": [
@@ -17379,7 +17379,7 @@
 				[
 					{
 						"begin_height": 2.0,
-						"end_height": 5.25,
+						"end_height": 5.0,
 						"id": "bricks_1",
 						"offset": [
 							0.0,
@@ -17395,7 +17395,7 @@
 				[
 					{
 						"begin_height": 2.0,
-						"end_height": 5.25,
+						"end_height": 5.0,
 						"id": "bricks_1",
 						"offset": [
 							0.0,
@@ -17427,7 +17427,7 @@
 				[
 					{
 						"begin_height": 2.0,
-						"end_height": 5.25,
+						"end_height": 5.0,
 						"id": "bricks_1",
 						"offset": [
 							0.0,
