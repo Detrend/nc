@@ -16854,7 +16854,7 @@
 			]
 		},
 		{
-			"ceiling": 4.0,
+			"ceiling": 4.5,
 			"ceiling_surface": {
 				"id": "wall_2",
 				"offset": [
@@ -16896,7 +16896,7 @@
 				[
 					{
 						"begin_height": 1.5,
-						"end_height": 4.0,
+						"end_height": 4.5,
 						"id": "wall",
 						"offset": [
 							0.0,
@@ -16912,7 +16912,7 @@
 				[
 					{
 						"begin_height": 1.501,
-						"end_height": 4.0,
+						"end_height": 4.5,
 						"id": "doors_middle",
 						"offset": [
 							0.0,
@@ -16928,7 +16928,7 @@
 				[
 					{
 						"begin_height": 1.5,
-						"end_height": 4.0,
+						"end_height": 4.5,
 						"id": "wall",
 						"offset": [
 							0.0,
@@ -17048,22 +17048,7 @@
 						"tile_rotations_count": 1
 					}
 				],
-				[
-					{
-						"begin_height": 4.0,
-						"end_height": 4.5,
-						"id": "wall",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
+				[],
 				[
 					{
 						"begin_height": 1.5,
