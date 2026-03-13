@@ -145,6 +145,7 @@ void Player::calculate_wish_velocity(PlayerSpecificInputs input, f32 delta_secon
   if (wants_jump && can_jump)
   {
     this->velocity.y = CVars::player_jump_force;
+    SoundSystem::get().play_oneshot(Sounds::player_jump);
   }
 }
 
