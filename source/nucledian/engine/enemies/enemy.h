@@ -99,6 +99,7 @@ private:
   int          health                = 0;
   bool         can_see_target : 1    = false;
   ActionTimestamp hurt_sound_timestamp;
+  ActionTimestamp move_sound_timestamp;
 };
 
 }

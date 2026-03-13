@@ -50,7 +50,10 @@ constexpr f32 ENEMY_GRAVITY         = 6.0f;
 constexpr f32 ENEMY_MELEE_RANGE     = 2.5f;
 constexpr f32 ENEMY_MELEE_EXPAND    = 0.1f;
 
-constexpr f32 SOUND_RANGE           = 30.0f;  // Default range used for all 3D sounds emitted by an enemy
+constexpr f32 SOUND_RANGE           = 25.0f;  // Default range used for all 3D sounds emitted by an enemy
+constexpr f32 ALERT_SOUND_RANGE     = 45.0f;  // Range used for the alert 3D sounds emitted by an enemy
+
+constexpr f32 HURT_SOUND_INTERVAL_SECONDS = 0.8f; // Minimal interval between two instances of hurt sound being played by a specific enemy
 
 // MR says: Its better to keep these universal for all enemies in the demo.
 constexpr f32 ENEMY_STEP_HEIGHT = 0.66f;  // Step height, 66cm
@@ -66,9 +69,12 @@ static constexpr struct {
     SoundID hurt;
     SoundID die;
     SoundID attack;
+    SoundID alert;
+    SoundID move;
+    f32     move_interval_seconds;
 } ENEMY_SOUNDS_BY_TYPE[] = {
-    {.hurt = Sounds::cultist_hurt, .die = Sounds::cultist_die, .attack = Sounds::cultist_attack},
-    {.hurt = Sounds::possessed_hurt, .die = Sounds::possessed_die, .attack = Sounds::possessed_attack},
+    {.hurt = Sounds::cultist_hurt, .die = Sounds::cultist_die, .attack = Sounds::cultist_attack, .alert = Sounds::cultist_alert, .move = Sounds::cultist_move, .move_interval_seconds =1.3f},
+    {.hurt = Sounds::possessed_hurt, .die = Sounds::possessed_die, .attack = Sounds::possessed_attack, .alert = Sounds::possessed_alert, .move = Sounds::possessed_move, .move_interval_seconds =1.1f},
 };
 
 static_assert(EnemyTypes::cultist == 0);
@@ -265,6 +271,13 @@ void Enemy::handle_movement(f32 delta)
     current_path.target_transform_inv
       = portal_transform * current_path.target_transform_inv;
   }
+
+  if (anim_fsm.get_state() == ActorAnimStates::walk) {
+      const auto& sound = ENEMY_SOUNDS_BY_TYPE[type];
+      if (move_sound_timestamp.try_consume(sound.move_interval_seconds)) {
+          GameHelpers::get().play_3d_sound(this->get_position(), sound.move, SOUND_RANGE, 1.0f);
+      }
+  }
 }
 
 //==============================================================================
@@ -338,6 +351,7 @@ void Enemy::damage(int damage, EntityID from_who)
 
   if (attacker && retreat_chance >= rng.next(0.0f, 1.0f))
   {
+    if (this->state != EnemyAiState::alert) GameHelpers::get().play_3d_sound(this->get_position(), ENEMY_SOUNDS_BY_TYPE[type].alert, ALERT_SOUND_RANGE, 1.0f);
     this->state = EnemyAiState::alert;
     this->target_id = from_who;
     this->can_see_target = false;
@@ -353,10 +367,9 @@ void Enemy::damage(int damage, EntityID from_who)
     this->die();
   }
   else if(damage > 0) {
-    hurt_sound_timestamp.do_if_elapsed(0.8f, [this]() 
-    {
+    if(hurt_sound_timestamp.try_consume(HURT_SOUND_INTERVAL_SECONDS)){
       GameHelpers::get().play_3d_sound(this->get_position(), ENEMY_SOUNDS_BY_TYPE[type].hurt, SOUND_RANGE, 1.0f);
-    });
+    }
   }
 }
 
@@ -435,6 +448,7 @@ void Enemy::handle_ai_idle(f32 /*delta*/)
 
   if (transition_to_alert)
   {
+    if(this->state != EnemyAiState::alert) GameHelpers::get().play_3d_sound(this->get_position(), ENEMY_SOUNDS_BY_TYPE[type].alert, ALERT_SOUND_RANGE, 1.0f);
     this->state          = EnemyAiState::alert;
     this->target_id      = player->get_id();
     this->can_see_target = true;

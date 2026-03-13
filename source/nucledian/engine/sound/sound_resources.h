@@ -22,9 +22,13 @@
   xx(possessed_attack, 0.1f) \
   xx(possessed_hurt, 0.1f)   \
   xx(possessed_die,0.1f)     \
+  xx(possessed_alert,0.1f)   \
+  xx(possessed_move,0.1f)   \
   xx(cultist_attack, 0.1f)   \
   xx(cultist_hurt, 0.1f)     \
   xx(cultist_die,  0.1f)     \
+  xx(cultist_alert,  0.1f)   \
+  xx(cultist_move,  0.1f)   \
   xx(death,        0.1f)     \
   xx(melee_hit,    0.1f)     \
   xx(ui_click,     0.1f)     \
@@ -36,6 +40,7 @@
 
 #define NC_SOUND_DIRECTORY_CSTR "content/sound/"
 #define NC_SOUND_TYPE           ".wav"
+#define NC_MUSIC_TYPE           ".mp3"
 #define NC_REGISTER_SOUND_ENUM(name, _pitch_not_used) name,
 #define NC_REGISTER_SOUND_PATH(name, _pitch_not_used) NC_SOUND_DIRECTORY_CSTR #name NC_SOUND_TYPE ,
 #define NC_REGISTER_SOUND_PITCH(_name_not_used, pitch) pitch,

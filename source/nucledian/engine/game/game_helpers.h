@@ -59,8 +59,7 @@ private:
 
 struct ActionTimestamp
 {
-  template<typename TFunc>
-  inline bool do_if_elapsed(const f32 required_elapsed_time, const TFunc& to_perform)
+  inline bool try_consume(const f32 required_elapsed_time)
   {
   	const f64 current_timestamp = GameHelpers::get().get_time_since_start();
   	const f64 current_elapsed_time = current_timestamp - last_performed_timestamp;
@@ -69,7 +68,6 @@ struct ActionTimestamp
   		return false;
   	}
   	last_performed_timestamp = current_timestamp;
-  	to_perform();
   	return true;
   }
 
