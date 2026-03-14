@@ -3,6 +3,7 @@ credits:
 hurt: https://freesound.org/people/micahlg/
 player_hurt, possessed_hurt: https://freesound.org/people/micahlg/sounds/413182/
 player_jump: https://freesound.org/people/pekena_larva/sounds/667290/
+mellee_hit: https://freesound.org/people/Walking.With.Microphones/sounds/624396/
 death: https://freesound.org/people/marc3122/sounds/556976/
 cultist_hurt, cultist_die: https://freesound.org/people/Piement_infernal/sounds/772689/
 cultist_attack: https://freesound.org/people/spookymodem/sounds/249819/ , MuseScore MS Basic - boy soprano
