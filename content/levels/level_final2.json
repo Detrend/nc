@@ -18789,7 +18789,7 @@
 						"triggers": [
 							{
 								"activator": "ActivatorDoor",
-								"can_turn_off": true,
+								"can_turn_off": false,
 								"enemy_sensitive": false,
 								"player_sensitive": true,
 								"timeout": 1000000.0,
