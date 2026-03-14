@@ -739,9 +739,15 @@ void Renderer::render_entities(const CameraData& camera) const
           const vec3 light_pos = t * vec4{ world_pos, 1.0f };
           const vec3 stich_pos = camera.portal_dest_to_src * vec4(light_pos, 1.0f);
 
+          SectorID light_sector_id = GameSystem::get().get_map().get_sector_from_point(light_pos.xz());
+          if (light_sector_id == INVALID_SECTOR_ID)
+          { 
+            light_sector_id = entity_sector_id;
+          }
+
           const size_t light_gpu_index = m_point_light_ssbo.push_back
           (
-            light->get_gpu_data(light_pos, stich_pos, entity_sector_id)
+            light->get_gpu_data(light_pos, stich_pos, light_sector_id)
           );
 
           m_light_gpu_data_indices.emplace

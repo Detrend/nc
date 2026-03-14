@@ -7,7 +7,7 @@ constexpr const char* FRAGMENT_SOURCE = R"(
 
 #define LIGHT_BANDS 48
 #define DO_SHADOWS
-// #define PIXEL_DEBUG
+#define PIXEL_DEBUG
 
 struct DirLight
 {
