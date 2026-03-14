@@ -506,7 +506,7 @@ static void load_json_map
 
 
   if (data.contains("music")) {
-    SoundSystem::get().play_music(data["music"]);
+    SoundSystem::get().play_music(Token(data["music"]));
   }
   else {
     SoundSystem::get().play_music("music_ambient"); // just to not have to reexport all levels, will be later removed

@@ -137,6 +137,9 @@ struct CVars
   NC_REGISTER_CVAR(bool, light_debug,           false, "Light debugging.");
   NC_REGISTER_CVAR(bool, sector_height_debug,   false, "Sector movement debug.");
   NC_REGISTER_CVAR(bool, invisibility,          false, "Makes the player invisible to enemies.");
+  NC_REGISTER_CVAR(bool, billboard_cam_rot,     true,  "True = rotate billboards with camera, False = rotate to the camera");
+
+  NC_REGISTER_CVAR(bool, character_physics_stabilize, true, "Extra stabilization iterations for character physics.");
 
   NC_REGISTER_CVAR_RANGED(f32, fps_limit, 60.0f, 1.0f, 512.0f,
     "FPS limit if the \"has_fps_limit\" is turned on");

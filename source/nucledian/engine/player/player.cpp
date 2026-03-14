@@ -145,6 +145,7 @@ void Player::calculate_wish_velocity(PlayerSpecificInputs input, f32 delta_secon
   if (wants_jump && can_jump)
   {
     this->velocity.y = CVars::player_jump_force;
+    SoundSystem::get().play_oneshot(Sounds::player_jump);
   }
 }
 
@@ -212,6 +213,9 @@ void Player::apply_velocity(f32 delta_seconds)
   vec3 prev_pos = position;
 
   constexpr f32 STEP_HEIGHT = PLAYER_HEIGHT * PLAYER_STEP_HEIGHT_MUL;
+
+  // MR says: hotfix for the physics bug that caused player to float
+  velocity.y = clamp(velocity.y, -30.0f, 30.0f);
 
   mat4 portal_transform = identity<mat4>();
   PhysLevel::CharacterCollisions collected_collisions;
@@ -751,6 +755,10 @@ void Player::update
   else
   {
     time_since_death += delta;
+    if (curr_input.keys & 1 << PlayerKeyInputs::use)
+    {
+      get_engine().get_module<GameSystem>().request_level_change(get_engine().get_module<GameSystem>().get_level_name());
+    }
   }
 
   // Has to happen even if dead because it calculates gravity

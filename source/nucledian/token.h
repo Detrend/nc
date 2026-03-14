@@ -189,17 +189,38 @@ namespace nc {
       return storage;
     }
 
+    constexpr char* write_to_buffer(char* buffer) const
+    {
+        for (size_t t = 0; t < TTokenCount; ++t) {
+            char*const end = storage[t].write_to_buffer(buffer);
+            const bool is_finished = (end < buffer + BasicToken::MAX_LENGTH);
+            buffer = end;
+            if (is_finished) break;
+        }
+        return buffer;
+    }
+
     constexpr auto to_cstring() const
     {
       std::array<char, MAX_LENGTH + 1> ret{};
 
-      for (size_t t = 0; t < TTokenCount; ++t) {
-        char* const start = ret.data() + t * BasicToken::MAX_LENGTH;
-        const auto end = storage[t].write_to_buffer(start);
-        if (end < start + BasicToken::MAX_LENGTH)
-          break;
-      }
+      write_to_buffer(ret.data());
       return ret;
+    }
+
+    template<size_t TPrefixSize, size_t TPostfixSize>
+    constexpr auto to_cstring_enclosed(const char(&prefix)[TPrefixSize], const char(&postfix)[TPostfixSize]) const {
+        std::array<char, MAX_LENGTH + (TPrefixSize - 1) + (TPostfixSize - 1) + 1> ret{};
+        char* buf = ret.data();
+
+        for (const char* p = prefix; *p;) *(buf++) = *(p++);
+
+        buf = write_to_buffer(buf);
+
+        for (const char* p = postfix; *p;) *(buf++) = *(p++);
+        *buf = '\0';
+
+        return ret;
     }
 
     constexpr std::string to_string() const
@@ -244,5 +265,7 @@ namespace nc {
   // Declare our standard token to carry up to 24 chars
   using Token = CompositeToken<2>;
 
+  constexpr Token TT("abcdef");
+  constexpr auto TEST = TT.to_cstring();//("aa_", "_bbb");
 
 }

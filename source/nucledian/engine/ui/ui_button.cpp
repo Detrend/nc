@@ -78,7 +78,7 @@ namespace nc
 
 	void UiButton::on_click()
 	{
-		SoundSystem::get().play_oneshot(Sounds::ui_click, 1.0f);
+		SoundSystem::get().play_oneshot(Sounds::ui_click, 1.0f, SoundLayers::ui);
 		func();
 	}
 
@@ -123,10 +123,10 @@ namespace nc
 		quit_game_page = new QuitGamePage();
 		next_level_page = new NextLevelPage();
 
-		vec2 vertices[] = { vec2(-1, 1), vec2(0, 0),
-				vec2(-1, -1), vec2(0, 1),
-				vec2(1, 1), vec2(1, 0),
-				vec2(1, -1), vec2(1, 1) };
+		vec2 vertices[] = { vec2(-1.0f, 1.0f), vec2(0.0f, 0.015f),
+			vec2(-1.0f, -1.0f), vec2(0.0f, 1.0f - 0.015f),
+			vec2(1.0f, 1.0f), vec2(1.0f, 0.015f),
+			vec2(1.0f, -1.0f), vec2(1.0f, 1.0f - 0.015f) };
 
 		glGenBuffers(1, &VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -285,6 +285,7 @@ namespace nc
 			options_page->update(mouse_pos, prev_mousestate, cur_mousestate);
 			break;
 		case nc::LOAD:
+			load_game_page->update(mouse_pos, prev_mousestate, cur_mousestate);
 			break;
 		case nc::SAVE:
 			break;
@@ -324,6 +325,7 @@ namespace nc
 			options_page->draw(button_material, VAO);
 			break;
 		case nc::LOAD:
+			load_game_page->draw(button_material, VAO);
 			break;
 		case nc::SAVE:
 			break;
@@ -566,8 +568,8 @@ namespace nc
 			digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
 			digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
 			digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
-			digit_material.set_uniform(shaders::ui_text::HEIGHT, 16.0f);
-			digit_material.set_uniform(shaders::ui_text::WIDTH, 8.0f);
+			digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
+			digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
 
 			glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -595,8 +597,8 @@ namespace nc
 			digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
 			digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
 			digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
-			digit_material.set_uniform(shaders::ui_text::HEIGHT, 16.0f);
-			digit_material.set_uniform(shaders::ui_text::WIDTH, 8.0f);
+			digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
+			digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
 
 			glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -626,8 +628,8 @@ namespace nc
 			digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
 			digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
 			digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
-			digit_material.set_uniform(shaders::ui_text::HEIGHT, 16.0f);
-			digit_material.set_uniform(shaders::ui_text::WIDTH, 8.0f);
+			digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
+			digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
 
 			glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -680,6 +682,7 @@ namespace nc
 	{
 		UiButton* hover_over_button = nullptr;
 
+		go_back_button->set_hover(false);
 		level_1_button->set_hover(false);
 		level_2_button->set_hover(false);
 		level_3_button->set_hover(false);
@@ -695,6 +698,10 @@ namespace nc
 		else if (level_3_button->is_point_in_rec(mouse_pos))
 		{
 			hover_over_button = level_3_button;
+		}
+		else if (go_back_button->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = go_back_button;
 		}
 
 		if (hover_over_button != nullptr)
@@ -791,6 +798,7 @@ namespace nc
 
 	NewGamePage::NewGamePage()
 	{
+		go_back_button = new UiButton("ui_back", vec2(0.0f, 0.40f), vec2(0.45f, 0.1f), std::bind(&NewGamePage::go_back, this));
 		level_1_button = new UiButton("ui_level1", vec2(0.0f, 0.15f), vec2(0.45f, 0.1f), std::bind(&NewGamePage::level_1_func, this));
 		level_2_button = new UiButton("ui_level2", vec2(0.0f, -0.1f), vec2(0.45f, 0.1f), std::bind(&NewGamePage::level_2_func, this));
 		level_3_button = new UiButton("ui_level3", vec2(0.0f, -0.35f), vec2(0.45f, 0.1f), std::bind(&NewGamePage::level_3_func, this));
@@ -802,6 +810,7 @@ namespace nc
 		delete level_1_button;
 		delete level_2_button;
 		delete level_3_button;
+		delete go_back_button;
 	}
 
 	//==============================================================================================
@@ -821,6 +830,7 @@ namespace nc
 		level_1_button->draw(button_material);
 		level_2_button->draw(button_material);
 		level_3_button->draw(button_material);
+		go_back_button->draw(button_material);
 
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
@@ -899,6 +909,8 @@ namespace nc
 		crosshair_less->draw(button_material);
 		crosshair_more->draw(button_material);
 
+		go_back_button->draw(button_material);
+
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 
@@ -942,8 +954,8 @@ namespace nc
 			digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
 			digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
 			digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
-			digit_shader.set_uniform(shaders::ui_text::HEIGHT, 16.0f);
-			digit_shader.set_uniform(shaders::ui_text::WIDTH, 8.0f);
+			digit_shader.set_uniform(shaders::ui_text::HEIGHT, 16);
+			digit_shader.set_uniform(shaders::ui_text::WIDTH, 8);
 
 			glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -1010,7 +1022,11 @@ namespace nc
 
 	void OptionsPage::set_crosshair_less()
 	{
-		crosshairStep = (crosshairStep - 1) % 10;
+		crosshairStep = (crosshairStep - 1);
+		if (crosshairStep < 0)
+		{
+			crosshairStep = 9;
+		}
 		get_engine().get_module<UserInterfaceSystem>().get_hud()->set_crosshair(crosshairStep);
 	}
 
@@ -1038,6 +1054,8 @@ namespace nc
 		sensitivity_more = new UiButton("ui_arrow_right", vec2(0.5f, -0.1f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_sensitivity_more, this));
 		crosshair_less = new UiButton("ui_arrow_left", vec2(0.3f, -0.35f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_crosshair_less, this));
 		crosshair_more = new UiButton("ui_arrow_right", vec2(0.5f, -0.35f), vec2(0.05f, 0.1f), std::bind(&OptionsPage::set_crosshair_more, this));
+
+		go_back_button = new UiButton("ui_back", vec2(-0.3f, 0.65f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::go_back, this));
 	}
 
 	OptionsPage::~OptionsPage()
@@ -1055,6 +1073,7 @@ namespace nc
 		delete sensitivity_more;
 		delete crosshair_less;
 		delete crosshair_more;
+		delete go_back_button;
 	}
 
 	//==============================================================================================
@@ -1076,6 +1095,8 @@ namespace nc
 
 		crosshair_less->set_hover(false);
 		crosshair_more->set_hover(false);
+
+		go_back_button->set_hover(false);
 
 		if (isWindowed)
 		{
@@ -1125,6 +1146,10 @@ namespace nc
 		{
 			hover_over_button = crosshair_more;
 		}
+		else if (go_back_button->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = go_back_button;
+		}
 
 		if (hover_over_button != nullptr)
 		{
@@ -1137,15 +1162,77 @@ namespace nc
 		}
 	}
 
+	LoadGamePage::LoadGamePage()
+	{
+		go_back_button = new UiButton("ui_back", vec2(0.0f, 0.15f), vec2(0.45f, 0.1f), std::bind(&LoadGamePage::go_back, this));
+	}
+
+	LoadGamePage::~LoadGamePage()
+	{
+		delete go_back_button;
+	}
+
 	//==============================================================================================
 	void LoadGamePage::update([[maybe_unused]] vec2 mouse_pos, [[maybe_unused]] u32 prev_mouse, [[maybe_unused]] u32 cur_mouse)
 	{
+		go_back_button->set_hover(false);
+		UiButton* hover_over_button = nullptr;
+
+		if (go_back_button->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = go_back_button;
+		}
+
+		if (hover_over_button != nullptr)
+		{
+			hover_over_button->set_hover(true);
+
+			if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+			{
+				hover_over_button->on_click();
+			}
+		}
+		
 	}
 
 	//==============================================================================================
 	void LoadGamePage::draw([[maybe_unused]] ShaderProgramHandle button_material, [[maybe_unused]] GLuint VAO)
 	{
+		button_material.use();
 
+		glBindVertexArray(VAO);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+
+		glDisable(GL_DEPTH_TEST);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		go_back_button->draw(button_material);
+
+		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glBindVertexArray(0);
+	}
+
+	void LoadGamePage::go_back()
+	{
+		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MAIN);
+	}
+
+	void OptionsPage::go_back()
+	{
+		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MAIN);
+	}
+
+	void NewGamePage::go_back()
+	{
+		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MAIN);
 	}
 
 	//==============================================================================================

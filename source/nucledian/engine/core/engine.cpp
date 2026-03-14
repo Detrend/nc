@@ -852,4 +852,22 @@ bool Engine::is_menu_locked_visible() const
   return m_game_state == GameState::menu;
 }
 
+//==============================================================================
+bool Engine::is_level_sound_enabled() const
+{
+  switch (m_game_state)
+  {
+    case GameState::menu:       [[fallthrough]];
+    case GameState::transition:
+    {
+      return false;
+    }
+
+    default:
+    {
+      return true;
+    }
+  }
+}
+
 }

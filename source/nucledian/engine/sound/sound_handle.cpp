@@ -53,8 +53,10 @@ void SoundHandle::set_paused(bool should_be_paused)
 //==============================================================================
 void SoundHandle::kill()
 {
-  nc_assert(is_valid());
-  Mix_HaltChannel(this->channel);
+  if (this->is_valid())
+  {
+    Mix_HaltChannel(this->channel);
+  }
 }
 
 //==============================================================================

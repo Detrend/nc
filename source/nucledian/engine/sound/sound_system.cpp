@@ -122,39 +122,55 @@ void SoundSystem::set_music_volume(int step)
 }
 
 //==============================================================================
-void SoundSystem::play_oneshot(SoundID sound, f32 volume /*= 1.0f*/)
+void SoundSystem::play_oneshot(SoundID sound, f32 volume, SoundLayer layer)
 {
-  play(sound, volume);
+  play(sound, volume, false, layer);
 }
 
 //==============================================================================
-void SoundSystem::play_music(const std::string& track_name)
+void SoundSystem::play_music(const Token track_name)
 {
   if (terminated)
   {
     return;
   }
 
-  std::string path = std::format(NC_SOUND_DIRECTORY_CSTR "{}" NC_SOUND_TYPE, track_name);
-  if (Mix_Music* const music = Mix_LoadMUS(path.data()))
+  
+  if ((track_name == this->current_music_name) && Mix_PlayingMusic()) {
+      return;
+  }
+  current_music_name = track_name;
+
+  Mix_Music* const og_music_track = this->current_music_track;
+
+  const auto path = track_name.to_cstring_enclosed(NC_SOUND_DIRECTORY_CSTR, NC_MUSIC_TYPE);
+  if ((this->current_music_track = Mix_LoadMUS(path.data())))
   {
-    Mix_PlayMusic(music, -1);
+    Mix_PlayMusic(this->current_music_track, -1);
+    if (og_music_track) {
+        Mix_FreeMusic(og_music_track);
+    }
   }
   else
   {
-    nc_warn("Failed to load music \"{}\"", path);
+    nc_warn("Failed to load music \"{}\"", path.data());
   }
 }
 
 //==============================================================================
 SoundHandle SoundSystem::play
 (
-  SoundID sound, f32 volume /*= 1.0f*/, bool loop /*= false*/
+  SoundID sound, f32 volume, bool loop, SoundLayer layer
 )
 {
   using Channel = SoundHandle::Channel;
 
   if (terminated)
+  {
+    return SoundHandle{SoundHandle::INVALID_CHANNEL, 0};
+  }
+
+  if (!this->is_layer_enabled(layer))
   {
     return SoundHandle{SoundHandle::INVALID_CHANNEL, 0};
   }
@@ -252,6 +268,47 @@ void SoundSystem::update([[maybe_unused]] f32 delta_seconds)
     channels_to_free[free_track][i] = SoundHandle::INVALID_CHANNEL; 
   }
   channels_to_free_cnt[free_track] = 0; // reset
+
+  // Handle the game layer
+  this->enable_layer(SoundLayers::game, get_engine().is_level_sound_enabled());
+}
+
+//==============================================================================
+bool SoundSystem::is_layer_enabled(SoundLayer layer) const
+{
+  return !!(this->enabled_layers & (1 << layer));
+}
+
+//==============================================================================
+void SoundSystem::enable_layer(SoundLayer layer, bool enable)
+{
+  if (this->is_layer_enabled(layer) == enable)
+  {
+    // Do nothing, already set
+    return;
+  }
+
+  if (!enable)
+  {
+    // Turn off the sounds already playing in this layer..
+    for (u64 i = 0; i < CHANNEL_COUNT; ++i)
+    {
+      if (this->channels[i].layer == layer && !this->channels[i].is_free)
+      {
+        // The callback to "on_channel_finished" will clean it up
+        Mix_HaltChannel(cast<int>(i));
+      }
+    }
+  }
+
+  if (enable)
+  {
+    this->enabled_layers |= (1 << layer);
+  }
+  else
+  {
+    this->enabled_layers &= ~(1 << layer);
+  }
 }
 
 //==============================================================================
