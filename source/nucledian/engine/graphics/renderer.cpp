@@ -207,6 +207,19 @@ void Renderer::update_sector_ssbos() const
 }
 
 //==============================================================================
+void Renderer::update_sector_heights(SectorID sector_id) const
+{
+  const MapSectors& map = GameSystem::get().get_map();
+  const f32 heights[2] =
+  {
+    map.sectors_dynamic[sector_id].floor_height,
+    map.sectors_dynamic[sector_id].ceil_height,
+  };
+  // Update only floor_y and ceil_y (first 8 bytes of SectorGPU)
+  m_sectors_ssbo.update_gpu_item_bytes(sector_id, 0, heights, sizeof(heights));
+}
+
+//==============================================================================
 std::pair<bool, size_t> Renderer::EntityRedundancyChecker::check_redundant(u64 id, vec3 pos)
 {
   auto it = registry.find(id);

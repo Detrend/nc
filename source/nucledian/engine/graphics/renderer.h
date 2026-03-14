@@ -68,6 +68,7 @@ public:
   const ShaderProgramHandle& get_solid_material() const;
 
   void update_sector_ssbos() const;
+  void update_sector_heights(SectorID sector_id) const;
 
 private:
   using Portal = Portal;
