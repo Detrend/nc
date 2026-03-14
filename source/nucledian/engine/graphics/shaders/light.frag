@@ -17,12 +17,13 @@ struct DirLight
 
 struct PointLight
 {
-  vec3  position;
-  float intensity;
-  vec3  color;
-  float radius;
-  float falloff;
-  uint  sector_id;
+    vec3  position;
+    float intensity;
+    vec3  stitched_position;
+    float radius;
+    vec3  color;
+    float falloff;
+    uint  sector_id;
 };
 
 struct TileData
@@ -43,9 +44,9 @@ struct WallData
 {
   vec2 start;
   vec2 end;
-  // TODO: useless, remove
   uint packed_normal;
-  uint destination_sector;
+  uint destination;
+  uint portal_matrix_index;
 };
 
 in vec2 uv;
@@ -53,23 +54,35 @@ in vec2 uv;
 out vec4 out_color;
 
 layout(binding = 0) uniform sampler2D  g_position;
-layout(binding = 1) uniform sampler2D  g_normal;
-layout(binding = 2) uniform sampler2D  g_stitched_normal;
-layout(binding = 3) uniform sampler2D  g_albedo;
-layout(binding = 4) uniform usampler2D g_sector;
+layout(binding = 1) uniform sampler2D  g_stitched_position;
+layout(binding = 2) uniform sampler2D  g_normal;
+layout(binding = 3) uniform sampler2D  g_stitched_normal;
+layout(binding = 4) uniform sampler2D  g_albedo;
+layout(binding = 5) uniform usampler2D g_sector;
 
 layout(location = 0) uniform vec3  view_position;
 layout(location = 1) uniform uint  num_dir_lights;
 layout(location = 2) uniform uint  num_tiles_x;
 layout(location = 3) uniform float ambient_strength;
+layout(location = 4) uniform uint  num_sectors;
+layout(location = 5) uniform uint  num_walls;
 
-layout(std430, binding = 0) readonly buffer dir_lights_buffer  { DirLight   dir_lights[];    };
-layout(std430, binding = 1) readonly buffer point_light_buffer { PointLight point_lights[];  };
-layout(std430, binding = 2) readonly buffer light_index_buffer { uint       light_indices[]; };
-layout(std430, binding = 3) readonly buffer tile_data_buffer   { TileData   tile_data[];     };
-layout(std430, binding = 4) readonly buffer sector_data_buffer { SectorData sectors[];       };
-layout(std430, binding = 5) readonly buffer sector_map_buffer  { uint       sector_map[];    };
-layout(std430, binding = 6) readonly buffer wall_data_buffer   { WallData   walls[];         };
+layout(std430, binding = 0) readonly buffer dir_lights_buffer       { DirLight   dir_lights[];       };
+layout(std430, binding = 1) readonly buffer point_light_buffer      { PointLight point_lights[];     };
+layout(std430, binding = 2) readonly buffer light_index_buffer      { uint       light_indices[];    };
+layout(std430, binding = 3) readonly buffer tile_data_buffer        { TileData   tile_data[];        };
+layout(std430, binding = 4) readonly buffer sector_data_buffer      { SectorData sectors[];          };
+layout(std430, binding = 5) readonly buffer wall_data_buffer        { WallData   walls[];            };
+layout(std430, binding = 6) readonly buffer portal_matricies_buffer { mat4       portal_matricies[]; };
+layout(std430, binding = 7) readonly buffer sector_matricies_buffer { mat4       sector_matricies[]; };
+
+bool out_of_range_sectors = false;
+bool out_of_range_walls = false;
+bool invalid_wall_id = false;
+bool max_hops_reached = false;
+bool debug_pixel = false;
+
+vec4 out_value = vec4(0.0, 0.0, 0.0, 0.0);
 
 float cross(vec2 a, vec2 b)
 {
@@ -82,12 +95,13 @@ float cross(vec2 a, vec2 b)
 float get_intersection_t(vec2 ray_origin, vec2 ray_direction, vec2 wall_p0, vec2 wall_p1)
 {
   vec2 wall_origin = wall_p0;
-  vec2 wall_direction = wall_p1 - wall_p0;
+  float wall_length = distance(wall_p1, wall_p0);
+  vec2 wall_direction = normalize(wall_p1 - wall_p0);
 
   float denominator = cross(ray_direction, wall_direction);
 
   // rays are parallel
-  if (abs(denominator) < 0.0001f)
+  if (abs(denominator) < 0.001f)
     return -1.0f;
 
   vec2 diff = wall_origin - ray_origin;
@@ -96,36 +110,62 @@ float get_intersection_t(vec2 ray_origin, vec2 ray_direction, vec2 wall_p0, vec2
   float ray_t  = cross(diff, wall_direction) * inv_denominator;
   float wall_t = cross(diff, ray_direction ) * inv_denominator;
 
-  // intersection occurs outside of wall this wall segment
-  if (wall_t < 0.0f || wall_t > 1.0f || ray_t <= 0.0001f)
+  // intersection occurs outside of this wall segment
+  if (wall_t < -0.001f || wall_t > wall_length + 0.001f)
     return -1.0f;
 
   return ray_t;
 }
 
-bool is_in_shadow(vec3 position, uint start_sector_id, PointLight light)
+bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, uint start_matrix_id, PointLight light)
 {
+  if (start_sector_id == light.sector_id)
+      return false;
+
   const uint INVALID_WALL_ID = 65535;
   const uint MAX_LIGHT_TRAVERSE_SECTORS = 32;
 
+  vec3 ray_stitched_origin = stitched_position;
   vec3 ray_origin = position;
-  vec3 ray_direction = light.position - position;
-
+  vec3 ray_stitched_direction = normalize(light.stitched_position - stitched_position);
+  vec3 ray_direction = mat3(inverse(sector_matricies[start_matrix_id])) * ray_stitched_direction;
+  
   uint current_sector_id = start_sector_id;
-  float ray_t = 0.0f;
+  float ray_t = -0.001f;
 
-  for (int i = 0; i < MAX_LIGHT_TRAVERSE_SECTORS; ++i)
+  for (int hop = 0; hop < MAX_LIGHT_TRAVERSE_SECTORS; ++hop)
   {
     SectorData sector = sectors[current_sector_id];
+    uint wall_index = INVALID_WALL_ID;
 
-    uint wall_index;
-    for (uint i = 0; i < sector.walls_count && current_sector_id != light.sector_id; ++i)
+    if (current_sector_id == light.sector_id)
     {
+      // check if ray collides with floor or ceiling
+      float ray_hit_y = ray_origin.y + ray_t * ray_direction.y;
+      if (ray_hit_y < sector.floor_y - 0.001f || ray_hit_y > sector.ceil_y + 0.001f)
+        return true;
+
+      return false;
+    }
+
+    if (current_sector_id >= num_sectors)
+    {
+      out_of_range_sectors = true;
+      return false;
+    }
+
+    for (uint i = 0; i < sector.walls_count; ++i)
+    {
+      if (sector.walls_offset + i >= num_walls)
+      {
+        out_of_range_walls = true;
+        return false;
+      }
       WallData wall = walls[sector.walls_offset + i];
 
       vec2 wall_normal = unpackSnorm2x16(wall.packed_normal);
-      // wall is facing oposite direction, we can skip it
-      if (dot(wall_normal, ray_direction.xz) > 0.0f)
+      // wall is facing opposite direction, we can skip it
+      if (dot(wall_normal, ray_direction.xz) > 0.001f)
         continue;
 
       float t = get_intersection_t(ray_origin.xz, ray_direction.xz, wall.start, wall.end);
@@ -137,24 +177,32 @@ bool is_in_shadow(vec3 position, uint start_sector_id, PointLight light)
       }
     }
 
-    WallData wall = walls[sector.walls_offset + wall_index];
-    
+    if (wall_index == INVALID_WALL_ID)
+    {
+      invalid_wall_id = true;
+      return false;
+    }
+
     // check if ray collides with floor or ceiling
     float ray_hit_y = ray_origin.y + ray_t * ray_direction.y;
-    if (ray_hit_y < sector.floor_y - 0.01f || ray_hit_y > sector.ceil_y + 0.01f)
+    if (ray_hit_y < sector.floor_y - 0.001f || ray_hit_y > sector.ceil_y + 0.001f)
       return true;
-
-    if (current_sector_id == light.sector_id)
-      return false;
+   
+    WallData wall = walls[sector.walls_offset + wall_index];
 
     // wall is solid wall (not a portal)
-    if (wall.destination_sector == INVALID_WALL_ID)
+    if (wall.destination == INVALID_WALL_ID)
       return true;
 
-    current_sector_id = wall.destination_sector;
+    current_sector_id = wall.destination;
+
+    mat4 portal_matrix = inverse(portal_matricies[wall.portal_matrix_index]);
+    ray_origin = (portal_matrix * vec4(ray_origin, 1.0f)).xyz;
+    ray_direction = mat3(portal_matrix) * ray_direction;
   }
 
-  return true;
+  max_hops_reached = true;
+  return false;
 }
 
 void main()
@@ -163,6 +211,10 @@ void main()
   vec3 position = g_position_sample.xyz;
   // 4-th component of position is used for specular strength
   float specular_strength = g_position_sample.w;
+
+  vec4 g_stitched_position_sample = texture(g_stitched_position, uv);
+  vec3 stitched_position = g_stitched_position_sample.xyz;
+  uint matrix_id = floatBitsToUint(g_stitched_position_sample.w);
 
   vec4 g_normal_sample = texture(g_normal, uv);
   vec3 normal = g_normal_sample.xyz;
@@ -174,18 +226,10 @@ void main()
   vec3 albedo = texture(g_albedo, uv).rgb;
 
   uint sector_id = texture(g_sector, uv).x;
-  for (uint remmaped_id = 0; remmaped_id < sector_map.length(); ++remmaped_id)
-  {
-    if (sector_id == sector_map[remmaped_id])
-    {
-      sector_id = remmaped_id;
-      break;
-    }
-  }
 
-  int shininess = 128;
-
-  vec3 view_direction = normalize(view_position - position);
+  const int shininess = 128;
+  
+  vec3 view_direction = normalize(view_position - stitched_position);
   vec3 final_color = ambient_strength * albedo;
 
   // directional lights
@@ -210,40 +254,55 @@ void main()
   for (int i = 0; i < data.count; i++)
   {
     uint light_index = light_indices[data.offset + i];
+
     PointLight light = point_lights[light_index];
 
-    vec3 light_direction = light.position - position;
+#define VOX_CNT 16
+#ifdef DO_LIGHT_VOXELS
+    stitched_position = round(stitched_position * VOX_CNT) / VOX_CNT;
+#endif
+
+    vec3 light_direction = light.stitched_position - stitched_position;
     float distance_squared = dot(light_direction, light_direction);
 
     if (distance_squared >= light.radius * light.radius)
       continue;
 
-#ifdef DO_SHADOWS
-    if (is_in_shadow(position, sector_id, light))
-        continue;
-#endif
-
-    #define VOX_CNT 16
-#ifdef DO_LIGHT_VOXELS
-    position = round(position * VOX_CNT) / VOX_CNT;
-#endif
-
     float distance = sqrt(distance_squared);
     light_direction /= distance;
-
     float angle = dot(stitched_normal, light_direction) + float(billboard);
+    if (angle <= 0.0f)
+      continue;
 
-    float attenuation = pow(max(light.radius - distance, 0.0f) / light.radius, light.falloff);
+#ifdef DO_SHADOWS
+    if (is_in_shadow(position, stitched_position, sector_id, matrix_id, light))
+      continue;
+#endif
+
 
     vec3 diffuse = max(angle, 0.0f) * albedo;
 
     vec3 half_direction = normalize(light_direction + view_direction);
     vec3 specular = specular_strength * pow(max(dot(stitched_normal, half_direction), 0.0f), shininess) * vec3(1.0f);
 
+    float attenuation = pow(max(light.radius - distance, 0.0f) / light.radius, light.falloff);
     final_color += (diffuse + specular) * light.color * light.intensity * attenuation;
   }
   
-  out_color = vec4(final_color, 1.0f);
+  if (out_value != vec4(0.0, 0.0, 0.0, 0.0))
+    out_color = out_value;
+  else if (debug_pixel)
+    out_color = vec4(1.0, 1.0, 0.0, 1.0);
+  else if (out_of_range_sectors)
+    out_color = vec4(1.0, 0.0, 0.0, 1.0);
+  else if (out_of_range_walls)
+    out_color = vec4(0.0, 1.0, 0.0, 1.0);
+  else if (invalid_wall_id)
+    out_color = vec4(0.0, 0.0, 1.0, 1.0);
+  else if (max_hops_reached)
+    out_color = vec4(1.0, 0.0, 1.0, 1.0);
+  else
+    out_color = vec4(final_color, 1.0f);
 }
 
 )";

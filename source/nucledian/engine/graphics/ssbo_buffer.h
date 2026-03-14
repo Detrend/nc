@@ -19,6 +19,7 @@ public:
   void resize(size_t new_capacity);
   void clear();
   size_t push_back(T&& value);
+  size_t push_back(const T& value);
   void extend(std::vector<T>&& elements);
   void update_gpu_data(bool reset_capacity = false);
   template <typename UnaryOp>

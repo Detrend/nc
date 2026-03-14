@@ -45,6 +45,16 @@ inline size_t SSBOBuffer<T>::push_back(T&& value)
 
 //==============================================================================
 template<typename T>
+inline size_t SSBOBuffer<T>::push_back(const T& value)
+{
+  buffer.push_back(value);
+  m_size++;
+
+  return m_size - 1;
+}
+
+//==============================================================================
+template<typename T>
 inline void SSBOBuffer<T>::extend(std::vector<T>&& elements)
 {
   buffer.insert

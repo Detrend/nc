@@ -1054,6 +1054,8 @@ void GraphicsSystem::create_sector_meshes()
     );
     m_sector_meshes.push_back(mesh);
   }
+
+  m_renderer->update_sector_ssbos();
 }
 
 //==============================================================================

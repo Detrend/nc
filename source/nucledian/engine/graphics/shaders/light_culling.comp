@@ -14,8 +14,9 @@ struct PointLight
 {
     vec3  position;
     float intensity;
-    vec3  color;
+    vec3  stitched_position;
     float radius;
+    vec3  color;
     float falloff;
     uint  sector_id;
 };
@@ -108,7 +109,7 @@ void main()
   {
     PointLight light = lights[light_index];
         
-    vec3 light_pos_view = (view * vec4(light.position, 1.0)).xyz;
+    vec3 light_pos_view = (view * vec4(light.stitched_position, 1.0)).xyz;
     float light_radius = calculate_light_radius(light);
 
     bool is_light_visible = true;

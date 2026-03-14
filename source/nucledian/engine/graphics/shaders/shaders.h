@@ -38,8 +38,9 @@ namespace nc
       inline constexpr Uniform<3, vec2> ATLAS_SIZE;
       inline constexpr Uniform<4, vec2> TEXTURE_POS;
       inline constexpr Uniform<5, vec2> TEXTURE_SIZE;
-      inline constexpr Uniform<6, u32>  STICHED_SECTOR_ID;
+      inline constexpr Uniform<6, u32>  SECTOR_ID;
       inline constexpr Uniform<7, mat4> PORTAL_DEST_TO_SRC;
+      inline constexpr Uniform<8, u32>  MATRIX_ID;
     }
 
     namespace gun
@@ -53,6 +54,7 @@ namespace nc
       inline constexpr Uniform<3, vec2> ATLAS_SIZE;
       inline constexpr Uniform<4, vec2> TEXTURE_POS;
       inline constexpr Uniform<5, vec2> TEXTURE_SIZE;
+      inline constexpr Uniform<8, u32>  MATRIX_ID;
     }
 
     // Lighting pass.
@@ -65,6 +67,8 @@ namespace nc
       inline constexpr Uniform<1, u32>  NUM_DIR_LIGHTS;
       inline constexpr Uniform<2, u32>  NUM_TILES_X;
       inline constexpr Uniform<3, f32>  AMBIENT_STRENGTH;
+      inline constexpr Uniform<4, u32>  NUM_SECTORS;
+      inline constexpr Uniform<5, u32>  NUM_WALLS;
     }
 
     // Sector rendering.
@@ -79,6 +83,7 @@ namespace nc
       inline constexpr Uniform<3, vec2> LEVEL_ATLAS_SIZE;
       inline constexpr Uniform<4, mat4> PORTAL_DEST_TO_SRC;
       inline constexpr Uniform<5, u32>  SECTOR_ID;
+      inline constexpr Uniform<6, u32>  MATRIX_ID;
     }
 
     namespace light_culling

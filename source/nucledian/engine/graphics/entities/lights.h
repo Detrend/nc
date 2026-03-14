@@ -54,11 +54,12 @@ struct PointLightGPU
 {
   vec3   position;
   f32    intensity;
-  color3 color;
+  vec3   stitched_position;
   f32    radius;
+  color3 color;
   f32    falloff;
   u32    sector_id;
-  f32    _padding[2];
+  f32    _padding[3];
 };
 
 class PointLight : public Entity
@@ -95,7 +96,7 @@ public:
     const color3& color = colors::WHITE
   );
 
-  PointLightGPU get_gpu_data(const vec3& position, u32 stitched_sector_id) const;
+  PointLightGPU get_gpu_data(const vec3& position, const vec3& stitched_position, u32 sector_id) const;
 };
 
 }

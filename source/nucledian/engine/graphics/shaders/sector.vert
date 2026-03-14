@@ -24,9 +24,9 @@ flat out float  tile_rotations_count;
 flat out float  tile_rotation_increment;
 flat out vec2   texture_offset;
 
-layout(location = 0) uniform mat4   view;
-layout(location = 1) uniform mat4   projection;
-layout(location = 4) uniform mat4   portal_dest_to_src;
+layout(location = 0) uniform mat4 view;
+layout(location = 1) uniform mat4 projection;
+layout(location = 4) uniform mat4 portal_dest_to_src;
 
 void main()
 {
