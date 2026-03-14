@@ -7,6 +7,7 @@ constexpr const char* FRAGMENT_SOURCE = R"(
 
 #define LIGHT_BANDS 48
 #define DO_SHADOWS
+// #define PIXEL_DEBUG
 
 struct DirLight
 {
@@ -81,8 +82,6 @@ bool out_of_range_walls = false;
 bool invalid_wall_id = false;
 bool max_hops_reached = false;
 bool debug_pixel = false;
-
-vec4 out_value = vec4(0.0, 0.0, 0.0, 0.0);
 
 float cross(vec2 a, vec2 b)
 {
@@ -230,7 +229,7 @@ void main()
   vec3 albedo = texture(g_albedo, uv).rgb;
   uint sector_id = texture(g_sector, uv).x;
 
-  #define VOX_CNT 16
+#define VOX_CNT 16
 #ifdef DO_LIGHT_VOXELS
   position = round(position * VOX_CNT) / VOX_CNT;
   stitched_position = round(stitched_position * VOX_CNT) / VOX_CNT;
@@ -292,9 +291,8 @@ void main()
     final_color += (diffuse + specular) * light.color * light.intensity * attenuation;
   }
   
-  if (out_value != vec4(0.0, 0.0, 0.0, 0.0))
-    out_color = out_value;
-  else if (debug_pixel)
+#ifdef PIXEL_DEBUG
+  if (debug_pixel)
     out_color = vec4(1.0, 1.0, 0.0, 1.0);
   else if (out_of_range_sectors)
     out_color = vec4(1.0, 0.0, 0.0, 1.0);
@@ -306,6 +304,9 @@ void main()
     out_color = vec4(1.0, 0.0, 1.0, 1.0);
   else
     out_color = vec4(final_color, 1.0f);
+#else
+  out_color = vec4(final_color, 1.0f);
+#endif
 }
 
 )";
