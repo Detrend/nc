@@ -198,7 +198,7 @@ bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, u
 
     mat4 portal_matrix = inverse(portal_matricies[wall.portal_matrix_index]);
     ray_origin = (portal_matrix * vec4(ray_origin, 1.0f)).xyz;
-    ray_direction = mat3(portal_matrix) * ray_direction;
+    ray_direction = normalize(mat3(portal_matrix) * ray_direction);
   }
 
   max_hops_reached = true;
@@ -221,14 +221,23 @@ void main()
   // 4-th component of normal is used to determine if pixel should is a billboard
   bool billboard = g_normal_sample.w == 0.0f;
 
+  vec4 g_stitched_normal_sample = texture(g_stitched_normal, uv);
   // zero for billboards
-  vec3 stitched_normal = texture(g_stitched_normal, uv).xyz;
-  vec3 albedo = texture(g_albedo, uv).rgb;
+  vec3 stitched_normal = g_stitched_normal_sample.xyz;
+  // 4-th component of stitched_normal is used to determine if shadows are enabled
+  bool enable_shadows = g_stitched_normal_sample.w == 1.0f;
 
+  vec3 albedo = texture(g_albedo, uv).rgb;
   uint sector_id = texture(g_sector, uv).x;
 
+  #define VOX_CNT 16
+#ifdef DO_LIGHT_VOXELS
+  position = round(position * VOX_CNT) / VOX_CNT;
+  stitched_position = round(stitched_position * VOX_CNT) / VOX_CNT;
+#endif
+
   const int shininess = 128;
-  
+
   vec3 view_direction = normalize(view_position - stitched_position);
   vec3 final_color = ambient_strength * albedo;
 
@@ -244,7 +253,7 @@ void main()
 
     final_color += (diffuse + specular) * dir_lights[i].color * dir_lights[i].intensity;
   }
-  
+
   // point lights
   uvec2 tile_coords = uvec2(gl_FragCoord.xy) / uvec2(TILE_SIZE_X, TILE_SIZE_Y);
   uint tile_index = tile_coords.y * num_tiles_x + tile_coords.x;
@@ -256,11 +265,6 @@ void main()
     uint light_index = light_indices[data.offset + i];
 
     PointLight light = point_lights[light_index];
-
-#define VOX_CNT 16
-#ifdef DO_LIGHT_VOXELS
-    stitched_position = round(stitched_position * VOX_CNT) / VOX_CNT;
-#endif
 
     vec3 light_direction = light.stitched_position - stitched_position;
     float distance_squared = dot(light_direction, light_direction);
@@ -275,10 +279,9 @@ void main()
       continue;
 
 #ifdef DO_SHADOWS
-    if (is_in_shadow(position, stitched_position, sector_id, matrix_id, light))
+    if (enable_shadows && is_in_shadow(position, stitched_position, sector_id, matrix_id, light))
       continue;
 #endif
-
 
     vec3 diffuse = max(angle, 0.0f) * albedo;
 

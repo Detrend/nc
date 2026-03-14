@@ -330,7 +330,7 @@ void Renderer::create_g_buffers(u32 width, u32 height)
   m_g_position          = create_g_buffer(GL_RGBA32F    , attachments[0], width, height);
   m_g_stitched_position = create_g_buffer(GL_RGBA32F    , attachments[1], width, height);
   m_g_normal            = create_g_buffer(GL_RGBA8_SNORM, attachments[2], width, height);
-  m_g_stitched_normal   = create_g_buffer(GL_RGB8_SNORM , attachments[3], width, height);
+  m_g_stitched_normal   = create_g_buffer(GL_RGBA8_SNORM, attachments[3], width, height);
   m_g_albedo            = create_g_buffer(GL_RGBA8      , attachments[4], width, height);
   m_g_sector            = create_g_buffer(GL_R32UI      , attachments[5], width, height);
   glDrawBuffers(static_cast<GLsizei>(attachments.size()), attachments.data());
@@ -732,6 +732,7 @@ void Renderer::render_entities(const CameraData& camera) const
     const TextureAtlas& atlas = TextureManager::get().get_atlas(cast<ResLifetime>(l));
     glBindTexture(GL_TEXTURE_2D, atlas.handle);
     m_billboard_material.set_uniform(shaders::billboard::ATLAS_SIZE, atlas.get_size());
+    m_billboard_material.set_uniform(shaders::billboard::ENABLE_SHADOWS, false);
 
     for (const auto& [entity, render_data] : group)
     {
@@ -861,14 +862,15 @@ const
   glBindVertexArray(texturable_quad.get_vao());
 
   m_gun_material.use();
-  m_gun_material.set_uniform(sb::TRANSFORM,    transform);
-  m_gun_material.set_uniform(sb::VIEW,         view);
-  m_gun_material.set_uniform(sb::PROJECTION,   projection);
-  m_gun_material.set_uniform(sb::ATLAS_SIZE,   texture.get_atlas().get_size());
-  m_gun_material.set_uniform(sb::TEXTURE_POS,  texture.get_pos());
-  m_gun_material.set_uniform(sb::TEXTURE_SIZE, texture.get_size());
-  m_gun_material.set_uniform(sb::SECTOR_ID,    static_cast<u32>(sector_id));
-  m_gun_material.set_uniform(sb::MATRIX_ID,    matrix_id);
+  m_gun_material.set_uniform(sb::TRANSFORM,      transform);
+  m_gun_material.set_uniform(sb::VIEW,           view);
+  m_gun_material.set_uniform(sb::PROJECTION,     projection);
+  m_gun_material.set_uniform(sb::ATLAS_SIZE,     texture.get_atlas().get_size());
+  m_gun_material.set_uniform(sb::TEXTURE_POS,    texture.get_pos());
+  m_gun_material.set_uniform(sb::TEXTURE_SIZE,   texture.get_size());
+  m_gun_material.set_uniform(sb::SECTOR_ID,      static_cast<u32>(sector_id));
+  m_gun_material.set_uniform(sb::MATRIX_ID,      matrix_id);
+  m_gun_material.set_uniform(sb::ENABLE_SHADOWS, true);
 
   glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
   glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());

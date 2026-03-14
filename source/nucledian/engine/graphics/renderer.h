@@ -33,8 +33,8 @@ public:
 
   // WARNING: Keep value of this constant same as MAX_LIGHTS_PER_TILE in light_culling.comp.
   static constexpr size_t MAX_LIGHTS_PER_TILE = 16;
-  static constexpr size_t LIGHT_CULLING_TILE_SIZE_X = 8;
-  static constexpr size_t LIGHT_CULLING_TILE_SIZE_Y = 8;
+  static constexpr size_t LIGHT_CULLING_TILE_SIZE_X = 16;
+  static constexpr size_t LIGHT_CULLING_TILE_SIZE_Y = 16;
 
   static constexpr size_t MAX_SECTORS = 1024;
   static constexpr size_t MAX_WALLS = MAX_SECTORS * 8;

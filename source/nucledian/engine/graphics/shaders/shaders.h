@@ -41,6 +41,7 @@ namespace nc
       inline constexpr Uniform<6, u32>  SECTOR_ID;
       inline constexpr Uniform<7, mat4> PORTAL_DEST_TO_SRC;
       inline constexpr Uniform<8, u32>  MATRIX_ID;
+      inline constexpr Uniform<9, bool> ENABLE_SHADOWS;
     }
 
     namespace gun
@@ -54,7 +55,10 @@ namespace nc
       inline constexpr Uniform<3, vec2> ATLAS_SIZE;
       inline constexpr Uniform<4, vec2> TEXTURE_POS;
       inline constexpr Uniform<5, vec2> TEXTURE_SIZE;
+      inline constexpr Uniform<6, u32>  SECTOR_ID;
+      inline constexpr Uniform<7, mat4> PORTAL_DEST_TO_SRC;
       inline constexpr Uniform<8, u32>  MATRIX_ID;
+      inline constexpr Uniform<9, bool> ENABLE_SHADOWS;
     }
 
     // Lighting pass.
