@@ -195,6 +195,11 @@ bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, u
 
     current_sector_id = wall.destination;
 
+    // check if ray can pass through the portal opening
+    SectorData dest_sector = sectors[current_sector_id];
+    if (ray_hit_y < dest_sector.floor_y - 0.001f || ray_hit_y > dest_sector.ceil_y + 0.001f)
+      return true;
+
     mat4 portal_matrix = inverse(portal_matricies[wall.portal_matrix_index]);
     ray_origin = (portal_matrix * vec4(ray_origin, 1.0f)).xyz;
     ray_direction = normalize(mat3(portal_matrix) * ray_direction);
