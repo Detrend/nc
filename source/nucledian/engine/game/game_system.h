@@ -133,19 +133,19 @@ private:
 
   void save_current_demo();
 
-#ifdef NC_EDITOR
-  void handle_hot_reload();
-#endif
-
-#ifdef NC_DEBUG_DRAW
-  void handle_raycast_debug();
-
   static void save_demo_data
   (
     const std::string& lvl_name,
     u8*                data,
     u64                data_size
   );
+
+#ifdef NC_EDITOR
+  void handle_hot_reload();
+#endif
+
+#ifdef NC_DEBUG_DRAW
+  void handle_raycast_debug();
 #endif
 
 private:
