@@ -7,7 +7,7 @@ constexpr const char* FRAGMENT_SOURCE = R"(
 
 #define LIGHT_BANDS 48
 #define DO_SHADOWS
-#define PIXEL_DEBUG
+// #define PIXEL_DEBUG
 
 struct DirLight
 {
@@ -118,9 +118,6 @@ float get_intersection_t(vec2 ray_origin, vec2 ray_direction, vec2 wall_p0, vec2
 
 bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, uint start_matrix_id, PointLight light)
 {
-  if (start_sector_id == light.sector_id)
-      return false;
-
   const uint INVALID_WALL_ID = 65535;
   const uint MAX_LIGHT_TRAVERSE_SECTORS = 32;
 

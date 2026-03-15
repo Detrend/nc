@@ -81,6 +81,7 @@ void SectorMapping::on_entity_destroy(EntityID id)
         transform_list.erase(t_it);
 
         removed_at_least_one = true;
+        break;
       }
     }
 

@@ -351,8 +351,6 @@ const
   };
 
   // Perform a floodfill from the given point
-  // NOTE: this algorithm assumes that we do not visit the same sectors through
-  // different NC portals twice. In such case it might not work properly.
   SectorSet        visited;
   std::queue<Item> to_visit;
 
@@ -366,7 +364,7 @@ const
 
   if (!start_cnt)
   {
-    // We are outside all sectors..
+    // We are outside all sectors
     return;
   }
 
@@ -374,9 +372,9 @@ const
   for (u64 i = 0; i < std::min(MAX_START_SECTORS, start_cnt); ++i)
   {
     mat4     trans = identity<mat4>();
-    SectorID sid   = start_sectors[i];
+    SectorID sid = start_sectors[i];
 
-    to_visit.push(Item{sid, pos, range, trans});
+    to_visit.push(Item{ sid, pos, range, trans });
     visited.sectors.push_back(sid);
     visited.transforms.push_back(trans);
   }
@@ -384,55 +382,79 @@ const
   // Then go on
   while (!to_visit.empty())
   {
-    auto[sid, pt, r, trans] = to_visit.front();
+    auto [sid, pt, r, trans] = to_visit.front();
     to_visit.pop();
 
     map_helpers::for_each_portal(*this, sid, [&](WallID wid)
-    {
-      const WallData& wd  = this->walls[wid];
-      const WallData& wd2 = this->walls[map_helpers::next_wall(*this, sid, wid)];
-      if (!wd.is_portal())
       {
-        // It is not a portal
-        return;
-      }
-
-      SectorID neighbor = wd.portal_sector_id;
-      auto vis_b = visited.sectors.begin();
-      auto vis_e = visited.sectors.end();
-      if (std::find(vis_b, vis_e, neighbor) != vis_e)
-      {
-        // This sector was already visited
-        return;
-      }
-
-      // Not visited? Then let's visit it.
-      // Calculate the absolute transform of the sector relative to us.
-      if (wd.get_portal_type() == PortalType::non_euclidean) [[unlikely]]
-      {
-        if (f32 d = dist::point_line_2d(pt, wd.pos, wd2.pos); d <= r)
+        const WallData& wd = this->walls[wid];
+        const WallData& wd2 = this->walls[map_helpers::next_wall(*this, sid, wid)];
+        if (!wd.is_portal())
         {
-          vec2 midpt    = (wd.pos + wd2.pos) * 0.5f;
+          // It is not a portal
+          return;
+        }
+
+        SectorID neighbor = wd.portal_sector_id;
+
+        // 1. Pre-calculate the proposed path values before checking if we've visited
+        mat4 proposed_trans = trans;
+        vec2 proposed_pt = pt;
+        f32  proposed_r = r;
+
+        if (wd.get_portal_type() == PortalType::non_euclidean) [[unlikely]]
+        {
+          f32 d = dist::point_line_2d(pt, wd.pos, wd2.pos);
+          if (d > r) return; // Light doesn't reach
+
+          vec2 midpt = (wd.pos + wd2.pos) * 0.5f;
           mat4 relative = this->calc_portal_to_portal_projection(sid, wid);
 
-          mat4 full_trans = relative * trans;
-          vec2 tpt = (relative * vec4{midpt.x, 0.0f, midpt.y, 1.0f}).xz();
-
-          to_visit.push(Item{neighbor, tpt, r-d, full_trans});
-          visited.sectors.push_back(neighbor);
-          visited.transforms.push_back(full_trans);
+          proposed_trans = relative * trans;
+          proposed_pt = (relative * vec4{ midpt.x, 0.0f, midpt.y, 1.0f }).xz();
+          proposed_r = r - d * 0.5f;
         }
-      }
-      else
-      {
-        if (dist::point_line_2d(pt, wd.pos, wd2.pos) <= r)
+        else
         {
-          to_visit.push(Item{neighbor, pt, r, trans});
-          visited.sectors.push_back(neighbor);
-          visited.transforms.push_back(trans);
+          if (dist::point_line_2d(pt, wd.pos, wd2.pos) > r) return; // Light doesn't reach
         }
-      }
-    });
+
+        // 2. Check if this sector was already visited WITH THIS SPECIFIC MATRIX
+        bool already_visited = false;
+        for (size_t i = 0; i < visited.sectors.size(); ++i)
+        {
+          if (visited.sectors[i] == neighbor)
+          {
+            // Compare matrices with a small epsilon to account for floating-point drift
+            bool matrix_match = true;
+            for (int col = 0; col < 4; ++col) {
+              for (int row = 0; row < 4; ++row) {
+                if (std::abs(visited.transforms[i][col][row] - proposed_trans[col][row]) > 0.001f) {
+                  matrix_match = false;
+                  break;
+                }
+              }
+              if (!matrix_match) break;
+            }
+
+            if (matrix_match)
+            {
+              already_visited = true;
+              break;
+            }
+          }
+        }
+
+        if (already_visited)
+        {
+          return; // We already mapped this exact reality/path of the sector
+        }
+
+        // 3. Not visited with this transform? Then let's visit it!
+        to_visit.push(Item{ neighbor, proposed_pt, proposed_r, proposed_trans });
+        visited.sectors.push_back(neighbor);
+        visited.transforms.push_back(proposed_trans);
+      });
   }
 
   // Move it from the visited list to output
