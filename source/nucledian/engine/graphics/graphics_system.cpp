@@ -60,6 +60,7 @@
 #include <utility>
 #include <format>
 #include <numeric> // std::iota
+#include <set>
 
 #ifdef NC_DEBUG_DRAW
 #include <chrono>
@@ -394,6 +395,72 @@ static void grab_render_gun_props(RenderGunProperties& props)
 }
 
 //==============================================================================
+struct WallDataTemp
+{
+  SectorID  sid;
+  WallRelID wrelid;
+
+  u32 as_u32() const
+  {
+    return cast<u32>(sid) << 8 | cast<u32>(wrelid);
+  }
+
+  bool operator<(const WallDataTemp& other) const
+  {
+    return this->as_u32() < other.as_u32();
+  }
+};
+static void get_visible_walls
+(
+  const MapSectors& map, std::set<WallDataTemp>& out, const VisibilityTree& tree
+)
+{
+  for (const auto&[sid, frustums] : tree.sectors)
+  {
+    WallID first_wall = map.sectors[sid].first_wall;
+    WallID last_wall  = map.sectors[sid].last_wall;
+
+    for (WallID wid = first_wall; wid < last_wall; ++wid)
+    {
+      WallID wnext = map_helpers::next_wall(map, sid, wid);
+      vec2 p1 = map.walls[wid].pos;
+      vec2 p2 = map.walls[wnext].pos;
+      for (const Frustum2& f : frustums.frustum_slots)
+      {
+        if (f != INVALID_FRUSTUM)
+        {
+          if (f.intersects_segment(p1, p2))
+          {
+            WallRelID wrelid = cast<WallRelID>(wid - first_wall);
+            out.insert(WallDataTemp{sid, wrelid});
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  for (const VisibilityTree& child : tree.children)
+  {
+    get_visible_walls(map, out, child);
+  }
+}
+
+//==============================================================================
+static void get_unique_sectors(std::set<SectorID>& out, const VisibilityTree& tree)
+{
+  for (const auto&[sid, _] : tree.sectors)
+  {
+    out.insert(sid);
+  }
+
+  for (const auto& child : tree.children)
+  {
+    get_unique_sectors(out, child);
+  }
+}
+
+//==============================================================================
 void GraphicsSystem::render()
 {
   NC_SCOPE_PROFILER(Render)
@@ -459,6 +526,35 @@ void GraphicsSystem::render()
     m_renderer->render(visible_sectors, gun_props);
 
     get_engine().get_module<UserInterfaceSystem>().draw_hud();
+  }
+
+  // Debug num pixels visible
+  {
+    if (ImGui::Begin("Megatexture debug"))
+    {
+      std::set<SectorID> unique_sectors;
+      get_unique_sectors(unique_sectors, visible_sectors);
+
+      std::set<WallDataTemp> visible_walls;
+      get_visible_walls(GameSystem::get().get_map(), visible_walls, visible_sectors);
+
+      int visible_pixels = 0;
+      for (SectorID sid : unique_sectors)
+      {
+        for (const stbrp_rect& rect : m_sector_megatexture_info[sid])
+        {
+          visible_pixels += rect.w * rect.h;
+        }
+      }
+
+      ImGui::Text("Num unique sectors visible: %d", cast<int>(unique_sectors.size()));
+      ImGui::Text("Num walls visible:          %d", cast<int>(visible_walls.size()));
+      ImGui::Separator();
+      ImGui::Text("Num naive pixels visible:   %d",  visible_pixels);
+      ImGui::Text("Num naive pixels visible:   %dK", (int)ceil(visible_pixels / 1000.0f));
+      ImGui::Text("Num naive pixels visible:   %dM", (int)ceil(visible_pixels / 1'000'000.0f));
+    }
+    ImGui::End();
   }
 
 #ifdef NC_IMGUI
@@ -1044,8 +1140,18 @@ void GraphicsSystem::create_sector_meshes()
 
   m_sector_meshes.clear();
   m_dirty_sectors.clear();
+  m_sector_megatexture_info.clear();
+
   m_sector_meshes.reserve(map.sectors.size());
   m_dirty_sectors.resize(map.sectors.size(), false);
+
+  f32 total_surface = 0.0f;
+
+  std::vector<stbrp_rect>          rects;
+  std::vector<std::pair<u64, u64>> cnts;
+
+  constexpr f32 px_per_m  = 32;
+  constexpr f32 px_per_m2 = px_per_m * px_per_m;
 
   for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)
   {
@@ -1059,9 +1165,162 @@ void GraphicsSystem::create_sector_meshes()
       static_cast<u32>(vertices.size())
     );
     m_sector_meshes.push_back(mesh);
+
+    aabb2 bbox;
+    f32   wall_len = 0.0f;
+
+    f32  floor_min = map.sectors[sector_id].state_floors[0];
+    f32  ceil_max  = map.sectors[sector_id].state_ceils[0];
+    f32  height    = ceil_max - floor_min;
+
+    nc_assert(height > 0.0f);
+
+    u64 cnt = 0;
+    u64 idx = rects.size();
+
+    vec2 last_pt = map.walls[map.sectors[sector_id].first_wall].pos;
+    WallRelID wrelid = 0;
+    map.for_each_wall_of_sector(sector_id, [&](WallID wid)
+    {
+      WallID wid_next = map_helpers::next_wall(map, sector_id, wid);
+
+      vec2 pt1 = map.walls[wid].pos;
+      vec2 pt2 = map.walls[wid_next].pos;
+
+      bbox.insert_point(pt1);
+      wall_len += distance(last_pt, pt1);
+
+      f32 len = distance(pt1, pt2);
+
+      if (map.walls[wid].is_portal())
+      {
+        f32 step_up, ceil_up;
+        map.calc_step_height_of_portal(sector_id, wid, &step_up, &ceil_up);
+
+        if (step_up > 0.0f)
+        {
+          rects.push_back(stbrp_rect
+          {
+            .id = cast<int>(wrelid),
+            .w  = cast<int>(ceil(len     * px_per_m)),
+            .h  = cast<int>(ceil(step_up * px_per_m)),
+          });
+
+          total_surface += ceil(len) * ceil(step_up);
+          cnt += 1;
+        }
+
+        if (ceil_up < 0.0f)
+        {
+          rects.push_back(stbrp_rect
+          {
+            .id = cast<int>(wrelid),
+            .w  = cast<int>(ceil(len      * px_per_m)),
+            .h  = cast<int>(ceil(-ceil_up * px_per_m)),
+          });
+
+          total_surface += ceil(len) * ceil(-ceil_up);
+          cnt += 1;
+        }
+      }
+      else
+      {
+        rects.push_back(stbrp_rect
+        {
+          .id = cast<int>(wrelid),
+          .w  = cast<int>(ceil(len    * px_per_m)),
+          .h  = cast<int>(ceil(height * px_per_m)),
+        });
+
+        total_surface += ceil(len) * ceil(height);
+        cnt += 1;
+      }
+
+      last_pt = pt1;
+
+      wrelid += 1;
+    });
+    vec2 bbox_size = bbox.max - bbox.min;
+
+    total_surface += bbox_size.x * bbox_size.y * 2.0f;
+
+    // Floor
+    rects.push_back(stbrp_rect
+    {
+      .id = -1,
+      .w  = cast<int>(ceil(bbox_size.x * px_per_m)),
+      .h  = cast<int>(ceil(bbox_size.y * px_per_m)),
+    });
+    cnt += 1;
+
+    // Ceiling
+    rects.push_back(stbrp_rect
+    {
+      .id = -2,
+      .w  = cast<int>(ceil(bbox_size.x * px_per_m)),
+      .h  = cast<int>(ceil(bbox_size.y * px_per_m)),
+    });
+    cnt += 1;
+
+    cnts.push_back({idx, cnt});
   }
 
   m_renderer->update_sector_ssbos();
+
+  f32 total_px = total_surface * px_per_m2;
+  f32 total_mb = ((total_px * 4.0f) / 1024.0f) / 1024.0f;
+
+  int target_width  = 1024;
+  int target_height = 1024;
+
+  while (true)
+  {
+    stbrp_context context;
+    std::vector<stbrp_node> nodes(target_width);
+
+    stbrp_init_target(&context, target_width, target_height, nodes.data(), static_cast<int>(nodes.size()));
+    stbrp_pack_rects(&context, rects.data(), static_cast<int>(rects.size()));
+
+    bool all_packed = true;
+    for (const auto& rect : rects)
+    {
+      if (rect.was_packed == 0)
+      {
+        all_packed = false;
+        break;
+      }
+    }
+    if (all_packed)
+      break;
+
+    if (target_height < target_width)
+      target_height += 512;
+    else
+      target_width += 512;
+  }
+
+  m_sector_megatexture_info.resize(map.sectors.size());
+  for (u64 ii = 0; ii < cnts.size(); ++ii)
+  {
+    auto[idx, cnt] = cnts[ii];
+
+    for (u64 i = 0; i < cnt; ++i)
+    {
+      m_sector_megatexture_info[ii].push_back(rects[idx+i]);
+    }
+  }
+
+  int final_size = target_width * target_height;
+
+  nc_log("===========================================================");
+  nc_log("              Megatexture log");
+  nc_log("Total surface area of all sectors:   {:.2f}m2", total_surface);
+  nc_log("Optimisic num pixels in all sectors: {:.2f}",   total_px);
+  nc_log("Optimisic size of megatexture:       {:.2f}MB", total_mb);
+  nc_log("");
+  nc_log("Megatexture size is:   {}x{}", target_width, target_height);
+  nc_log("Megatexture memory is: {:.2f}MB", ((final_size * 4) / 1024.0f) / 1024.0f);
+  nc_log("===========================================================");
 }
 
 //==============================================================================

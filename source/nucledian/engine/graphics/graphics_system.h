@@ -13,6 +13,8 @@
 
 #include <game/game_types.h>
 
+#include <stb/stb_rect_pack.h>
+
 #include <vector>
 #include <string>
 
@@ -97,6 +99,13 @@ private:
   RendererPtr             m_renderer = nullptr;
   std::vector<MeshHandle> m_sector_meshes;
   std::vector<bool>       m_dirty_sectors;
+
+  struct Info
+  {
+    u64 flag;
+  };
+
+  std::vector<std::vector<stbrp_rect>> m_sector_megatexture_info;
 
 #ifdef NC_DEBUG_DRAW
   using DebugRendererPtr = std::unique_ptr<class TopDownDebugRenderer>;
