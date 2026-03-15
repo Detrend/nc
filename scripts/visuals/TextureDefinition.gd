@@ -38,3 +38,5 @@ func resolve(out: TexturingResult, begin_height: float, end_height: float, ctx: 
 		info.is_wall = true
 		info.begin_height = begin_height
 		info.end_height = end_height
+
+func _to_string() -> String: return "tex(%s)"%id
