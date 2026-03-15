@@ -39,6 +39,7 @@
   xx(plasma_equip, 0.1f)     \
   xx(shotgun_equip, 0.1f)    \
   xx(mellee_equip, 0.1f)     \
+  xx(out_of_ammo, 0.1f)      \
   xx(door,         0.1f)     \
   xx(button,       0.1f)
 

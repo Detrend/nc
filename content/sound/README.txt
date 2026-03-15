@@ -19,6 +19,7 @@ door: https://freesound.org/people/Slanesh/sounds/31769/
 plasma_equip: https://freesound.org/people/jobro/sounds/35678/ , https://freesound.org/people/TampaJoey/sounds/588734/
 shotgun_equip: https://freesound.org/people/TampaJoey/sounds/588732/
 mellee_equip: https://freesound.org/people/Takimeko/sounds/846612/
+out_of_ammo: https://freesound.org/people/SoundBiterSFX/sounds/732208/
 
 button:
 https://freesound.org/people/Mihacappy/sounds/827346/
