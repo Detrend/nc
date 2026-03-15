@@ -69,6 +69,8 @@ namespace nc
     UiButton* load_button = nullptr;
     UiButton* save_button = nullptr;
     UiButton* quit_button = nullptr;
+
+    UiButton* nuclidean_text = nullptr;
   };
 
   //======================================================================================
