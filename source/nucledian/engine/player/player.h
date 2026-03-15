@@ -116,7 +116,6 @@ private:
   f32 time_since_start      = 0.0f;
   f32 air_time              = 0.0f;
   f32 time_since_death      = 0.0f;
-  ActionTimestamp out_of_ammo_sound_timestamp;
 
   // Bit flags for the weapons owned
   WeaponFlags owned_weapons  = 0;

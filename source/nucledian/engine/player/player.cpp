@@ -156,24 +156,21 @@ void Player::calculate_gravity_velocity(f32 delta_seconds)
 }
 
 //==========================================================================
-void Player::handle_weapon_change(PlayerSpecificInputs input, PlayerSpecificInputs /*prev_input*/)
+void Player::handle_weapon_change(PlayerSpecificInputs input, PlayerSpecificInputs prev_input)
 {
   for (WeaponType i = 0; i < WeaponTypes::count; ++i)
   {
     PlayerKeyFlags weapon_flag = 1 << (PlayerKeyInputs::weapon_0 + i);
 
     const bool owns_weapon  = this->has_weapon(i);
-    const bool wants_weapon = input.keys & weapon_flag;
+    const bool wants_weapon = (input.keys & weapon_flag) && (!(prev_input.keys & weapon_flag));
     
     
     if (owns_weapon && wants_weapon && current_weapon != i)
     {
       // Accept only the first one if multiple keys are pressed
       if ((WEAPON_STATS[i].ammo != AmmoTypes::melee) && (current_ammo[i] <= 0)) {
-        static constexpr float OUT_OF_AMMO_SOUND_INTERVAL_seconds = 1.0f;
-        if(out_of_ammo_sound_timestamp.try_consume(OUT_OF_AMMO_SOUND_INTERVAL_seconds)){
-          SoundSystem::get().play_oneshot(Sounds::out_of_ammo);
-        }
+        SoundSystem::get().play_oneshot(Sounds::out_of_ammo);
       }
       else {
         this->change_weapon(i);
