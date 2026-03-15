@@ -141,6 +141,7 @@ private:
   GLuint m_g_stitched_normal   = 0;
   GLuint m_g_albedo            = 0;
   GLuint m_g_sector            = 0;
+  GLuint m_megatex_handle      = 0;
 
   void destroy_g_buffers();
   void create_g_buffers(u32 w, u32 h);

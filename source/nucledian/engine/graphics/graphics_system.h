@@ -10,6 +10,7 @@
 #include <engine/core/engine_module_id.h>
 #include <engine/graphics/resources/model.h>
 #include <engine/map/map_types.h>            // SectorID
+#include <engine/map/map_system.h>            // SectorID
 
 #include <game/game_types.h>
 
@@ -74,6 +75,8 @@ public:
 
   SDL_Window* get_window();
 
+  GLuint megatex_handle = 0;
+
 private:
   void update(f32 delta_seconds);
   void render();
@@ -105,7 +108,7 @@ private:
     u64 flag;
   };
 
-  std::vector<std::vector<stbrp_rect>> m_sector_megatexture_info;
+  std::vector<SectorMegatexData> m_sector_megatexture_info;
 
 #ifdef NC_DEBUG_DRAW
   using DebugRendererPtr = std::unique_ptr<class TopDownDebugRenderer>;

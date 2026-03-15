@@ -338,7 +338,7 @@ const MeshHandle& GraphicsSystem::get_and_update_sector_mesh(SectorID sid)
   if (m_dirty_sectors[sid])
   {
     std::vector<f32> vertices;
-    GameSystem::get().get_map().sector_to_vertices(sid, vertices);
+    GameSystem::get().get_map().sector_to_vertices(sid, vertices, m_sector_megatexture_info[sid]);
 
     MeshManager::get().recreate_sector
     (
@@ -539,13 +539,6 @@ void GraphicsSystem::render()
       get_visible_walls(GameSystem::get().get_map(), visible_walls, visible_sectors);
 
       int visible_pixels = 0;
-      for (SectorID sid : unique_sectors)
-      {
-        for (const stbrp_rect& rect : m_sector_megatexture_info[sid])
-        {
-          visible_pixels += rect.w * rect.h;
-        }
-      }
 
       ImGui::Text("Num unique sectors visible: %d", cast<int>(unique_sectors.size()));
       ImGui::Text("Num walls visible:          %d", cast<int>(visible_walls.size()));
@@ -1144,6 +1137,7 @@ void GraphicsSystem::create_sector_meshes()
 
   m_sector_meshes.reserve(map.sectors.size());
   m_dirty_sectors.resize(map.sectors.size(), false);
+  m_sector_megatexture_info.resize(map.sectors.size());
 
   f32 total_surface = 0.0f;
 
@@ -1155,17 +1149,6 @@ void GraphicsSystem::create_sector_meshes()
 
   for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)
   {
-    vertices.clear();
-    map.sector_to_vertices(sector_id, vertices);
-
-    const auto mesh = mesh_manager.create_sector
-    (
-      ResLifetime::Level,
-      vertices.data(),
-      static_cast<u32>(vertices.size())
-    );
-    m_sector_meshes.push_back(mesh);
-
     aabb2 bbox;
     f32   wall_len = 0.0f;
 
@@ -1192,49 +1175,15 @@ void GraphicsSystem::create_sector_meshes()
 
       f32 len = distance(pt1, pt2);
 
-      if (map.walls[wid].is_portal())
+      rects.push_back(stbrp_rect
       {
-        f32 step_up, ceil_up;
-        map.calc_step_height_of_portal(sector_id, wid, &step_up, &ceil_up);
+        .id = cast<int>(wrelid),
+        .w  = cast<int>(ceil(len    * px_per_m)),
+        .h  = cast<int>(ceil(height * px_per_m)),
+      });
 
-        if (step_up > 0.0f)
-        {
-          rects.push_back(stbrp_rect
-          {
-            .id = cast<int>(wrelid),
-            .w  = cast<int>(ceil(len     * px_per_m)),
-            .h  = cast<int>(ceil(step_up * px_per_m)),
-          });
-
-          total_surface += ceil(len) * ceil(step_up);
-          cnt += 1;
-        }
-
-        if (ceil_up < 0.0f)
-        {
-          rects.push_back(stbrp_rect
-          {
-            .id = cast<int>(wrelid),
-            .w  = cast<int>(ceil(len      * px_per_m)),
-            .h  = cast<int>(ceil(-ceil_up * px_per_m)),
-          });
-
-          total_surface += ceil(len) * ceil(-ceil_up);
-          cnt += 1;
-        }
-      }
-      else
-      {
-        rects.push_back(stbrp_rect
-        {
-          .id = cast<int>(wrelid),
-          .w  = cast<int>(ceil(len    * px_per_m)),
-          .h  = cast<int>(ceil(height * px_per_m)),
-        });
-
-        total_surface += ceil(len) * ceil(height);
-        cnt += 1;
-      }
+      total_surface += ceil(len) * ceil(height);
+      cnt += 1;
 
       last_pt = pt1;
 
@@ -1264,8 +1213,6 @@ void GraphicsSystem::create_sector_meshes()
 
     cnts.push_back({idx, cnt});
   }
-
-  m_renderer->update_sector_ssbos();
 
   f32 total_px = total_surface * px_per_m2;
   f32 total_mb = ((total_px * 4.0f) / 1024.0f) / 1024.0f;
@@ -1306,7 +1253,34 @@ void GraphicsSystem::create_sector_meshes()
 
     for (u64 i = 0; i < cnt; ++i)
     {
-      m_sector_megatexture_info[ii].push_back(rects[idx+i]);
+      stbrp_rect& rect = rects[idx+i];
+      vec2 from = vec2{rect.x, rect.y};
+      vec2 to   = from + vec2{rect.w, rect.h};
+
+      m_sector_megatexture_info[ii].walls.resize(map.sectors[ii].last_wall - map.sectors[ii].first_wall);
+
+      switch (rect.id)
+      {
+        // Floor
+        case -1:
+        {
+          m_sector_megatexture_info[ii].floor = aabb2{from, to};
+        }
+        break;
+
+        // Ceil
+        case -2:
+        {
+          m_sector_megatexture_info[ii].ceiling = aabb2{from, to};
+        }
+        break;
+
+        default:
+        {
+          m_sector_megatexture_info[ii].walls[rect.id] = aabb2{from, to};
+        }
+        break;
+      }
     }
   }
 
@@ -1321,6 +1295,30 @@ void GraphicsSystem::create_sector_meshes()
   nc_log("Megatexture size is:   {}x{}", target_width, target_height);
   nc_log("Megatexture memory is: {:.2f}MB", ((final_size * 4) / 1024.0f) / 1024.0f);
   nc_log("===========================================================");
+
+  for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)
+  {
+    vertices.clear();
+    map.sector_to_vertices(sector_id, vertices, m_sector_megatexture_info[sector_id]);
+
+    const auto mesh = mesh_manager.create_sector
+    (
+      ResLifetime::Level,
+      vertices.data(),
+      static_cast<u32>(vertices.size())
+    );
+    m_sector_meshes.push_back(mesh);
+  }
+
+  m_renderer->update_sector_ssbos();
+
+  glGenTextures(1, &megatex_handle);
+  glBindTexture(GL_TEXTURE_2D, megatex_handle);
+
+  glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA32F, target_width, target_height);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
 //==============================================================================

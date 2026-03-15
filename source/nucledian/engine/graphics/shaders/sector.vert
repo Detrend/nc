@@ -10,6 +10,7 @@ layout (location = 5) in float  a_texture_rotation;
 layout (location = 6) in float  a_tile_rotations_count;
 layout (location = 7) in float  a_tile_rotation_increment;
 layout (location = 8) in vec2   a_texture_offset;
+layout (location = 9) in vec2   a_megatex_uv;
 
 out vec3  position;
 out vec3  stitched_position;
@@ -23,6 +24,7 @@ flat out float  texture_rotation;
 flat out float  tile_rotations_count;
 flat out float  tile_rotation_increment;
 flat out vec2   texture_offset;
+     out vec2   megatex_uv;
 
 layout(location = 0) uniform mat4 view;
 layout(location = 1) uniform mat4 projection;
@@ -46,6 +48,7 @@ void main()
   tile_rotations_count = a_tile_rotations_count;
   tile_rotation_increment = a_tile_rotation_increment;
   texture_offset = a_texture_offset;
+  megatex_uv = a_megatex_uv;
 }
 
 )";

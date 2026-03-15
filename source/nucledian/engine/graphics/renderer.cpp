@@ -117,6 +117,16 @@ const
     .portal_dest_to_src = mat4(1.0f),
   };
 
+  float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+
+  glClearTexImage(
+    GraphicsSystem::get().megatex_handle,        // texture id
+    0,              // mip level
+    GL_RGBA,        // format
+    GL_FLOAT,       // type
+    clearColor      // data
+  );
+
   do_geometry_pass(camera_data, gun_data);
   update_ssbos();
   do_ligh_culling_pass(camera_data);
@@ -527,6 +537,16 @@ void Renderer::render_sectors(const CameraData& camera) const
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, level_atlas.handle);
 
+  glBindImageTexture(
+    7,              // binding unit
+    GraphicsSystem::get().megatex_handle,            // texture id
+    0,              // mip level
+    GL_FALSE,       // layered
+    0,              // layer
+    GL_WRITE_ONLY,  // access
+    GL_RGBA32F      // format
+  );
+
   m_sector_material.use();
   m_sector_material.set_uniform(shaders::sector::VIEW, camera.view);
   m_sector_material.set_uniform(shaders::sector::PORTAL_DEST_TO_SRC, camera.portal_dest_to_src);
@@ -547,6 +567,7 @@ void Renderer::render_sectors(const CameraData& camera) const
   }
 
   glBindVertexArray(0);
+  glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 }
 
 //==============================================================================

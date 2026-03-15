@@ -76,6 +76,13 @@ struct VisibilityTree
   bool is_visible(SectorID id) const;
 };
 
+struct SectorMegatexData
+{
+  aabb2              floor  {};
+  aabb2              ceiling{};
+  std::vector<aabb2> walls;
+};
+
 struct SectorSet
 {
   std::vector<SectorID> sectors;
@@ -304,7 +311,8 @@ struct MapSectors
   void sector_to_vertices
   (
     SectorID           sector_id,
-    std::vector<f32>&  vertices_out
+    std::vector<f32>&  vertices_out,
+    const SectorMegatexData& megatex
   ) const;
 
   // Calculates the height of the step between two sectors.

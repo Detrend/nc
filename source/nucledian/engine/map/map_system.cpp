@@ -711,6 +711,7 @@ const
     f32         cumulative_wall_len;
     SurfaceData surface;
     bool        triggered;
+    vec2        megatex;
 
     void push_to(std::vector<f32>& vertices_out) const
     {
@@ -733,6 +734,8 @@ const
       vertices_out.push_back(static_cast<f32>(surface.tile_rotation_increment));
       vertices_out.push_back(surface.offset.x);
       vertices_out.push_back(surface.offset.y);
+      vertices_out.push_back(megatex.x);
+      vertices_out.push_back(megatex.y);
     }
   };
 
@@ -740,7 +743,8 @@ const
 void MapSectors::sector_to_vertices
 (
   SectorID          sector_id,
-  std::vector<f32>& vertices_out
+  std::vector<f32>& vertices_out,
+  const SectorMegatexData& megatex
 )
 const
 {
@@ -766,6 +770,9 @@ const
     f32                b_length,
     vec3               c,
     f32                c_length,
+    vec2               mega_a,
+    vec2               mega_b,
+    vec2               mega_c,
     bool               triggered = false
   )
   {
@@ -776,6 +783,7 @@ const
       .cumulative_wall_len = a_length,
       .surface = surface,
       .triggered = triggered,
+      .megatex = mega_a,
     }
     .push_to(vertices_out);
     Vertex
@@ -785,6 +793,7 @@ const
       .cumulative_wall_len = b_length,
       .surface = surface,
       .triggered = triggered,
+      .megatex = mega_b,
     }
     .push_to(vertices_out);
     Vertex
@@ -794,9 +803,16 @@ const
       .cumulative_wall_len = c_length,
       .surface = surface,
       .triggered = triggered,
+      .megatex = mega_c,
     }
     .push_to(vertices_out);
   };
+
+  aabb2 bbox_fc;
+  for_each_wall_of_sector(sector_id, [&](WallID wid)
+  {
+    bbox_fc.insert_point(walls[wid].pos);
+  });
 
   if (sector.floor_surface.should_show)
   {
@@ -809,8 +825,20 @@ const
       const auto pt1 = vec3{ w1pos.x, sector_dyn.floor_height, w1pos.y };
       const auto pt2 = vec3{ w2pos.x, sector_dyn.floor_height, w2pos.y };
 
+      vec2 a = pt1.xz();
+      vec2 b = pt2.xz();
+      vec2 c = first_pt_grounded.xz();
+
+      vec2 ca = (a - bbox_fc.min) / (bbox_fc.max - bbox_fc.min);
+      vec2 cb = (b - bbox_fc.min) / (bbox_fc.max - bbox_fc.min);
+      vec2 cc = (c - bbox_fc.min) / (bbox_fc.max - bbox_fc.min);
+
+      vec2 coa = mix(megatex.floor.min, megatex.floor.max, ca);
+      vec2 cob = mix(megatex.floor.min, megatex.floor.max, cb);
+      vec2 coc = mix(megatex.floor.min, megatex.floor.max, cc);
+
       // build floor triangle from the first point and 2 others
-      push_triangle(VEC3_Y, sector.floor_surface, first_pt_grounded, 0.0f, pt2, 0.0f, pt1, 0.0f);
+      push_triangle(VEC3_Y, sector.floor_surface, first_pt_grounded, 0.0f, pt2, 0.0f, pt1, 0.0f, coa, cob, coc);
     }
   }
 
@@ -826,8 +854,20 @@ const
       const auto pt1 = vec3{ w1pos.x, sector_dyn.ceil_height, w1pos.y };
       const auto pt2 = vec3{ w2pos.x, sector_dyn.ceil_height, w2pos.y };
 
+      vec2 a = pt1.xz();
+      vec2 b = pt2.xz();
+      vec2 c = first_pt_ceiled.xz();
+
+      vec2 ca = (a - bbox_fc.min) / (bbox_fc.max - bbox_fc.min);
+      vec2 cb = (b - bbox_fc.min) / (bbox_fc.max - bbox_fc.min);
+      vec2 cc = (c - bbox_fc.min) / (bbox_fc.max - bbox_fc.min);
+
+      vec2 coa = mix(megatex.floor.min, megatex.floor.max, ca);
+      vec2 cob = mix(megatex.floor.min, megatex.floor.max, cb);
+      vec2 coc = mix(megatex.floor.min, megatex.floor.max, cc);
+
       // build floor triangle from the first point and 2 others
-      push_triangle(-VEC3_Y, sector.ceil_surface, first_pt_ceiled, 0.0f, pt1, 0.0f, pt2, 0.0f);
+      push_triangle(-VEC3_Y, sector.ceil_surface, first_pt_ceiled, 0.0f, pt1, 0.0f, pt2, 0.0f, coa, cob, coc);
     }
   }
 
@@ -835,6 +875,8 @@ const
   f32 cumulative_wall_length = 0.0f;
   for (WallID idx = first_wall_idx; idx < last_wall_idx; ++idx)
   {
+    WallRelID wrelid = cast<WallRelID>(idx - first_wall_idx);
+
     struct WallSegmentHeights
     {
       f32                    y1            = 0.0f;
@@ -990,17 +1032,28 @@ const
       const auto bu = vec3{ w1pos.x, current.y2, w1pos.y };
       const auto eu = vec3{ w2pos.x, current.y2, w2pos.y };
 
+      aabb2 bbx_wall = megatex.walls[wrelid];
+      f32 cch1 = mix(bbx_wall.min.y, bbx_wall.max.y, (current.y1 - bbx_wall.min.y) / (bbx_wall.max.y - bbx_wall.min.y));
+      f32 cch2 = mix(bbx_wall.min.y, bbx_wall.max.y, (current.y2 - bbx_wall.min.y) / (bbx_wall.max.y - bbx_wall.min.y));
+      f32 ccl  = bbx_wall.min.x;
+      f32 ccr  = bbx_wall.max.x;
+
       const auto bd_shifted = bd + bd_shift;
       const auto ed_shifted = ed + ed_shift;
       const auto bu_shifted = bu + bu_shift;
       const auto eu_shifted = eu + eu_shift;
+
+      vec2 bd_mc = vec2{ccl, cch1};
+      vec2 ed_mc = vec2{ccr, cch1};
+      vec2 bu_mc = vec2{ccl, cch2};
+      vec2 eu_mc = vec2{ccr, cch2};
       
       SurfaceData shifted_surface = current.surface->surface;
       shifted_surface.offset.y -= current.height_offset * current.surface->surface.scale;
 
       // first triangle
-      push_triangle(wall_normal, shifted_surface, bd_shifted, cumulative_wall_length, ed_shifted, end_wall_length, bu_shifted, cumulative_wall_length, current.triggered);
-      push_triangle(wall_normal, shifted_surface, bu_shifted, cumulative_wall_length, ed_shifted, end_wall_length, eu_shifted, end_wall_length, current.triggered);
+      push_triangle(wall_normal, shifted_surface, bd_shifted, cumulative_wall_length, ed_shifted, end_wall_length, bu_shifted, cumulative_wall_length, bd_mc, ed_mc, bu_mc, current.triggered);
+      push_triangle(wall_normal, shifted_surface, bu_shifted, cumulative_wall_length, ed_shifted, end_wall_length, eu_shifted, end_wall_length, bu_mc, ed_mc, eu_mc, current.triggered);
 
       const float up_down_normal_mult   = ((current.surface->flags & WallSegmentData::Flags::flip_side_normals) ? -1.0f : 1.0f);
       const float begin_end_normal_mult = ((current.surface->flags & WallSegmentData::Flags::flip_side_normals) ? -1.0f : 1.0f);
@@ -1012,9 +1065,9 @@ const
         const f32 len = length(bu_shift.xz());
 
         if(current.surface->flags & WallSegmentData::Flags::generate_up_face)
-          push_triangle(up_normal, shifted_surface, bu, cumulative_wall_length, bu_shifted, cumulative_wall_length, eu_shifted, end_wall_length, current.triggered);
+          push_triangle(up_normal, shifted_surface, bu, cumulative_wall_length, bu_shifted, cumulative_wall_length, eu_shifted, end_wall_length, VEC2_ZERO, VEC2_ZERO, VEC2_ZERO, current.triggered);
         if (current.surface->flags & WallSegmentData::Flags::generate_right_face)
-          push_triangle(begin_normal, shifted_surface, bu_shifted, end_wall_length + len, bu, end_wall_length, bd, end_wall_length, current.triggered);
+          push_triangle(begin_normal, shifted_surface, bu_shifted, end_wall_length + len, bu, end_wall_length, bd, end_wall_length, VEC2_ZERO, VEC2_ZERO, VEC2_ZERO, current.triggered);
       }
 
       if (eu_shift != VEC3_ZERO)
@@ -1024,9 +1077,9 @@ const
         const f32 len = length(eu_shift.xz());
 
         if (current.surface->flags & WallSegmentData::Flags::generate_up_face)
-          push_triangle(up_normal, shifted_surface, bu, cumulative_wall_length, eu_shifted, end_wall_length, eu, end_wall_length, current.triggered);
+          push_triangle(up_normal, shifted_surface, bu, cumulative_wall_length, eu_shifted, end_wall_length, eu, end_wall_length, VEC2_ZERO, VEC2_ZERO, VEC2_ZERO,current.triggered);
         if (current.surface->flags & WallSegmentData::Flags::generate_left_face)
-          push_triangle(end_normal, shifted_surface, eu_shifted, cumulative_wall_length + len, ed, cumulative_wall_length, eu, cumulative_wall_length, current.triggered);
+          push_triangle(end_normal, shifted_surface, eu_shifted, cumulative_wall_length + len, ed, cumulative_wall_length, eu, cumulative_wall_length, VEC2_ZERO, VEC2_ZERO, VEC2_ZERO,current.triggered);
       }
 
       if (bd_shift != VEC3_ZERO)
@@ -1036,9 +1089,9 @@ const
         const f32 len = length(bd_shift.xz());
 
         if (current.surface->flags & WallSegmentData::Flags::generate_down_face)
-          push_triangle(down_normal, shifted_surface, bd, cumulative_wall_length, ed, end_wall_length, ed_shifted, end_wall_length, current.triggered);
+          push_triangle(down_normal, shifted_surface, bd, cumulative_wall_length, ed, end_wall_length, ed_shifted, end_wall_length, VEC2_ZERO, VEC2_ZERO, VEC2_ZERO, current.triggered);
         if (current.surface->flags & WallSegmentData::Flags::generate_right_face)
-          push_triangle(begin_normal, shifted_surface, bd, end_wall_length, bd_shifted, end_wall_length + len, bu_shifted, end_wall_length + len, current.triggered);
+          push_triangle(begin_normal, shifted_surface, bd, end_wall_length, bd_shifted, end_wall_length + len, bu_shifted, end_wall_length + len, VEC2_ZERO, VEC2_ZERO, VEC2_ZERO, current.triggered);
       }
 
       if (ed_shift != VEC3_ZERO)
@@ -1048,9 +1101,9 @@ const
         const f32 len = length(ed_shift.xz());
 
         if (current.surface->flags & WallSegmentData::Flags::generate_down_face)
-          push_triangle(down_normal, shifted_surface, bd, cumulative_wall_length, ed_shifted, end_wall_length, bd_shifted, cumulative_wall_length, current.triggered);
+          push_triangle(down_normal, shifted_surface, bd, cumulative_wall_length, ed_shifted, end_wall_length, bd_shifted, cumulative_wall_length, VEC2_ZERO, VEC2_ZERO, VEC2_ZERO, current.triggered);
         if (current.surface->flags & WallSegmentData::Flags::generate_left_face)
-          push_triangle(end_normal, shifted_surface, ed, cumulative_wall_length, eu_shifted, cumulative_wall_length + len, ed_shifted, cumulative_wall_length + len, current.triggered);
+          push_triangle(end_normal, shifted_surface, ed, cumulative_wall_length, eu_shifted, cumulative_wall_length + len, ed_shifted, cumulative_wall_length + len, VEC2_ZERO, VEC2_ZERO, VEC2_ZERO, current.triggered);
       }
     }
       

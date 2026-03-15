@@ -268,10 +268,11 @@ void MeshManager::populate_sector_mesh(MeshHandle& mesh, const f32* data, u32 co
    *  1 float  per texture tile rotations count
    *  1 float  per texture tile rotation increment
    *  2 floats per texture offset
+   *  2 floats per megatexture offset
    * -------------------------------------
-   * 14 floats total
+   * 16 floats total
    */
-  constexpr u32 VERTEX_SIZE = 14;
+  constexpr u32 VERTEX_SIZE = 16;
 
   mesh.m_vertex_count = count / VERTEX_SIZE;
 
@@ -311,6 +312,9 @@ void MeshManager::populate_sector_mesh(MeshHandle& mesh, const f32* data, u32 co
   // texture offset attribute
   glVertexAttribPointer(8, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(12 * sizeof(f32)));
   glEnableVertexAttribArray(8);
+  // megatexture coords
+  glVertexAttribPointer(9, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(14 * sizeof(f32)));
+  glEnableVertexAttribArray(9);
 
   glBindVertexArray(0);
 }

@@ -21,6 +21,7 @@ flat in float texture_rotation;
 flat in float tile_rotations_count;
 flat in float tile_rotation_increment;
 flat in vec2 texture_offset;
+in      vec2 megatex_uv;
 
 layout(location = 0) out vec4 g_position;
 layout(location = 1) out vec4 g_stitched_position;
@@ -41,6 +42,8 @@ layout(std430, binding = 0) buffer texture_buffer {
     TextureData textures[];
 };
 
+layout(binding = 7, rgba32f) uniform image2D megatex;
+
 // copypasted from: https://stackoverflow.com/questions/12964279/whats-the-origin-of-this-glsl-rand-one-liner
 float rand(vec2 co){
   return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
@@ -60,6 +63,8 @@ void main()
   float rand_value = floor(rand(rand_seed) * tile_rotations_count);
   // based on the random value we got, randomize the tile rotation
   float actual_rotation = texture_rotation + (rand_value * tile_rotation_increment);
+
+  imageStore(megatex, (ivec2)megatex_uv, vec4(1.0, 1.0, 1.0, 1.0));
   
   // floor uv is mirrored
   if (normal.y > 0.0f) uv.x *= -1.0f;
