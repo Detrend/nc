@@ -164,11 +164,20 @@ void Player::handle_weapon_change(PlayerSpecificInputs input, PlayerSpecificInpu
 
     const bool owns_weapon  = this->has_weapon(i);
     const bool wants_weapon = input.keys & weapon_flag;
-
+    
+    
     if (owns_weapon && wants_weapon && current_weapon != i)
     {
       // Accept only the first one if multiple keys are pressed
-      this->change_weapon(i);
+      if ((WEAPON_STATS[i].ammo != AmmoTypes::melee) && (current_ammo[i] <= 0)) {
+        static constexpr float OUT_OF_AMMO_SOUND_INTERVAL_seconds = 1.0f;
+        if(out_of_ammo_sound_timestamp.try_consume(OUT_OF_AMMO_SOUND_INTERVAL_seconds)){
+          SoundSystem::get().play_oneshot(Sounds::out_of_ammo);
+        }
+      }
+      else {
+        this->change_weapon(i);
+      }
       break;
     }
   }
@@ -476,6 +485,7 @@ void Player::update_gun_anim(f32 delta)
 
   if (current_ammo[this->current_weapon] == 0 && weapon_fsm.get_state() == WeaponStates::idle)
   {
+    SoundSystem::get().play_oneshot(Sounds::out_of_ammo);
     if (current_ammo[2] > 0 && has_weapon(2)) // Plasma gun
     {
       change_weapon(2);
@@ -605,6 +615,8 @@ void Player::change_weapon(WeaponType new_weapon)
 
   this->weapon_fsm.set_state(WeaponStates::idle);
   this->weapon_fsm.clear();
+
+  SoundSystem::get().play_oneshot(WEAPON_STATS[new_weapon].equip_sound);
 
   const WeaponAnims& anim_set = WEAPON_ANIMS[this->current_weapon];
 

@@ -3,6 +3,7 @@ credits:
 hurt: https://freesound.org/people/micahlg/
 player_hurt, possessed_hurt: https://freesound.org/people/micahlg/sounds/413182/
 player_jump: https://freesound.org/people/pekena_larva/sounds/667290/
+mellee_hit: https://freesound.org/people/Walking.With.Microphones/sounds/624396/
 death: https://freesound.org/people/marc3122/sounds/556976/
 cultist_hurt, cultist_die: https://freesound.org/people/Piement_infernal/sounds/772689/
 cultist_attack: https://freesound.org/people/spookymodem/sounds/249819/ , MuseScore MS Basic - boy soprano
@@ -15,7 +16,10 @@ possessed_move: https://freesound.org/people/sqeeeek/sounds/326543/ , https://fr
 pickup: https://freesound.org/people/IENBA/sounds/762911/
 shotgun: https://freesound.org/people/DTheTech/sounds/734057/
 door: https://freesound.org/people/Slanesh/sounds/31769/
-
+plasma_equip: https://freesound.org/people/jobro/sounds/35678/ , https://freesound.org/people/TampaJoey/sounds/588734/
+shotgun_equip: https://freesound.org/people/TampaJoey/sounds/588732/
+mellee_equip: https://freesound.org/people/Takimeko/sounds/846612/
+out_of_ammo: https://freesound.org/people/SoundBiterSFX/sounds/732208/
 
 button:
 https://freesound.org/people/Mihacappy/sounds/827346/

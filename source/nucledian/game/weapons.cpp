@@ -22,6 +22,7 @@ WeaponStats WEAPON_STATS[] =
     .rate_of_fire = 1.0f, .ammo = AmmoTypes::melee,
     .projectile_cnt = 1, .hold_to_fire = false,
     .shoot_snd = Sounds::hurt,
+    .equip_sound = Sounds::mellee_equip,
     .loudness_dist = 0.0f,
   },
 
@@ -32,6 +33,7 @@ WeaponStats WEAPON_STATS[] =
     .rate_of_fire = 1.0f, .ammo = AmmoTypes::slugs,
     .projectile_cnt = 10, .hold_to_fire = false,
     .shoot_snd = Sounds::shotgun,
+    .equip_sound = Sounds::shotgun_equip,
     .loudness_dist = 30.0f,
     .spread_amount = 0.15f,
     .flash_color   = colors::ORANGE,
@@ -44,6 +46,7 @@ WeaponStats WEAPON_STATS[] =
     .rate_of_fire = 0.5f, .ammo = AmmoTypes::plasma,
     .projectile_cnt = 1, .hold_to_fire = true,
     .shoot_snd = Sounds::plasma_rifle,
+    .equip_sound = Sounds::plasma_equip,
     .loudness_dist = 20.0f,
     .flash_color   = colors::WHITE,
   },

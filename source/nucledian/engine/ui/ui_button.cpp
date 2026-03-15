@@ -401,6 +401,7 @@ namespace nc
 		options_button = new UiButton(o_text, vec2(0.0f, -0.1f), vec2(0.45f, 0.1f), std::bind(&MainMenuPage::options_func, this));
 		load_button = new UiButton(lg_text, vec2(0.0f, -0.35f), vec2(0.45f, 0.1f), std::bind(&MainMenuPage::load_game_func, this));
 		quit_button = new UiButton(q_text, vec2(0.0f, -0.6f), vec2(0.45f, 0.1f), std::bind(&MainMenuPage::quit_func, this));
+		nuclidean_text = new UiButton("ui_nuclidean", vec2(0.0f, 0.5f), vec2(0.4f, 0.1f), std::bind(&MainMenuPage::quit_func, this));
 	}
 
 	//============================================================================================
@@ -411,6 +412,7 @@ namespace nc
 		delete options_button;
 		delete load_button;
 		delete quit_button;
+		delete nuclidean_text;
 	}
 
 	//=============================================================================================
@@ -734,6 +736,7 @@ namespace nc
 		load_button->draw(button_material);
 		//save_button->draw(button_material);
 		quit_button->draw(button_material);
+		nuclidean_text->draw(button_material);
 
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);

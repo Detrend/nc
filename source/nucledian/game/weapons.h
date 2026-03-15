@@ -53,6 +53,7 @@ struct WeaponStats
   s32            projectile_cnt = 1; // per shot
   bool           hold_to_fire   = false;
   SoundID        shoot_snd      = INVALID_SOUND;
+  SoundID        equip_sound    = INVALID_SOUND;
   f32            loudness_dist  = 20.0f;
   f32            spread_amount  = 0.0f;
   color3         flash_color    = VEC3_ZERO;
