@@ -606,6 +606,8 @@ void Player::change_weapon(WeaponType new_weapon)
   this->weapon_fsm.set_state(WeaponStates::idle);
   this->weapon_fsm.clear();
 
+  SoundSystem::get().play_oneshot(WEAPON_STATS[new_weapon].equip_sound);
+
   const WeaponAnims& anim_set = WEAPON_ANIMS[this->current_weapon];
 
   for (u8 state : {WeaponStates::idle, WeaponStates::attack})

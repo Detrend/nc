@@ -36,6 +36,9 @@
   xx(shotgun,      0.1f)     \
   xx(shotgun_pickup, 0.1f)   \
   xx(plasma_pickup, 0.1f)    \
+  xx(plasma_equip, 0.1f)     \
+  xx(shotgun_equip, 0.1f)    \
+  xx(mellee_equip, 0.1f)     \
   xx(door,         0.1f)     \
   xx(button,       0.1f)
 
