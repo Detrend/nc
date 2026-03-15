@@ -358,6 +358,12 @@ void GraphicsSystem::mark_sector_dirty(SectorID sid)
 }
 
 //==============================================================================
+void GraphicsSystem::update_sector_heights(SectorID sector)
+{
+  m_renderer->update_sector_heights(sector);
+}
+
+//==============================================================================
 const ShaderProgramHandle& GraphicsSystem::get_solid_material() const
 {
   return m_renderer->get_solid_material();
@@ -1054,6 +1060,8 @@ void GraphicsSystem::create_sector_meshes()
     );
     m_sector_meshes.push_back(mesh);
   }
+
+  m_renderer->update_sector_ssbos();
 }
 
 //==============================================================================

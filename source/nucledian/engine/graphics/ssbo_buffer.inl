@@ -45,6 +45,16 @@ inline size_t SSBOBuffer<T>::push_back(T&& value)
 
 //==============================================================================
 template<typename T>
+inline size_t SSBOBuffer<T>::push_back(const T& value)
+{
+  buffer.push_back(value);
+  m_size++;
+
+  return m_size - 1;
+}
+
+//==============================================================================
+template<typename T>
 inline void SSBOBuffer<T>::extend(std::vector<T>&& elements)
 {
   buffer.insert
@@ -112,6 +122,34 @@ template<typename T>
 inline T& SSBOBuffer<T>::get_buffer_item(size_t index)
 {
   return buffer[index];
+}
+
+//==============================================================================
+template<typename T>
+inline void SSBOBuffer<T>::update_gpu_item(size_t index, const T& value)
+{
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_handle);
+  glBufferSubData
+  (
+    GL_SHADER_STORAGE_BUFFER,
+    index * sizeof(T),
+    sizeof(T),
+    &value
+  );
+}
+
+//==============================================================================
+template<typename T>
+inline void SSBOBuffer<T>::update_gpu_item_bytes(size_t index, size_t byte_offset, const void* data, size_t byte_count)
+{
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_handle);
+  glBufferSubData
+  (
+    GL_SHADER_STORAGE_BUFFER,
+    index * sizeof(T) + byte_offset,
+    byte_count,
+    data
+  );
 }
 
 //==============================================================================

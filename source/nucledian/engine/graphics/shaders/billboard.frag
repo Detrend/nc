@@ -3,20 +3,23 @@ constexpr const char* FRAGMENT_SOURCE = R"(
 #version 430 core
 #extension GL_NV_gpu_shader5 : enable
 
-in vec3 position; // Unused
+in vec3 position;
 in vec3 stitched_position;
 in vec3 normal;
 in vec2 uv;
 
 layout(location = 0) out vec4 g_position;
-layout(location = 1) out vec4 g_normal;
-layout(location = 2) out vec3 g_stitched_normal;
-layout(location = 3) out vec4 g_albedo;
-layout(location = 4) out uint g_sector;
+layout(location = 1) out vec4 g_stitched_position;
+layout(location = 2) out vec4 g_normal;
+layout(location = 3) out vec4 g_stitched_normal;
+layout(location = 4) out vec4 g_albedo;
+layout(location = 5) out uint g_sector;
 
 layout(binding = 0) uniform sampler2D sampler;
 
 layout(location = 6) uniform uint sector_id;
+layout(location = 8) uniform uint matrix_id;
+layout(location = 9) uniform bool enable_shadows;
 
 void main()
 {
@@ -24,12 +27,15 @@ void main()
   if (color.a < 0.95f)
     discard;
 
-  g_position.xyz = stitched_position;
+  g_position.xyz = position;
   // 4-th component of position is used for specular strength
   g_position.w = 0.0f;
+  g_stitched_position = vec4(stitched_position, uintBitsToFloat(matrix_id));
   // 4-th component of normal is used to determine if pixel is a billboard
   g_normal = vec4(normal, 0.0f);
-  g_stitched_normal = vec3(0.0f, 0.0f, 0.0f);
+  g_stitched_normal.xyz = vec3(0.0f, 0.0f, 0.0f);
+  // 4-th component of stitched_normal is used to determine if shadows are enabled
+  g_stitched_normal.w = enable_shadows ? 1.0f: 0.0f;
   g_albedo = color;
   g_sector = sector_id;
 }

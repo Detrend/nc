@@ -1203,6 +1203,9 @@ void GameSystem::build_map(LevelName level)
     // Rebuild the sector geometry
     GraphicsSystem::get().mark_sector_dirty(sector);
 
+    // Update sector height on the GPU
+    GraphicsSystem::get().update_sector_heights(sector);
+
     // Rebuild the geometry for surroundings as well
     map.for_each_portal_of_sector(sector, [&](WallID wall)
     {

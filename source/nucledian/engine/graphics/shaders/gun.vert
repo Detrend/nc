@@ -4,7 +4,7 @@ constexpr const char* VERTEX_SOURCE = R"(
 layout(location = 0) in vec3 a_position;
 layout(location = 1) in vec2 a_uv;
 
-out vec3 position; // Unused
+out vec3 position;
 out vec3 stitched_position;
 out vec3 normal;
 out vec2 uv;

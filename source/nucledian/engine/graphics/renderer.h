@@ -33,11 +33,12 @@ public:
 
   // WARNING: Keep value of this constant same as MAX_LIGHTS_PER_TILE in light_culling.comp.
   static constexpr size_t MAX_LIGHTS_PER_TILE = 16;
-  static constexpr size_t LIGHT_CULLING_TILE_SIZE_X = 8;
-  static constexpr size_t LIGHT_CULLING_TILE_SIZE_Y = 8;
+  static constexpr size_t LIGHT_CULLING_TILE_SIZE_X = 16;
+  static constexpr size_t LIGHT_CULLING_TILE_SIZE_Y = 16;
 
   static constexpr size_t MAX_SECTORS = 1024;
   static constexpr size_t MAX_WALLS = MAX_SECTORS * 8;
+  static constexpr size_t MAX_PORTALS = MAX_SECTORS * 4;
 
   struct CameraData
   {
@@ -65,6 +66,9 @@ public:
   ) const;
 
   const ShaderProgramHandle& get_solid_material() const;
+
+  void update_sector_ssbos() const;
+  void update_sector_heights(SectorID sector_id) const;
 
 private:
   using Portal = Portal;
@@ -97,6 +101,8 @@ private:
     vec2 end;
     u32  packed_normal;
     u32  destination;
+    u32  portal_matrix_index;
+    u32  _padding;
   };
 
   mat4  m_default_projection;
@@ -118,21 +124,23 @@ private:
   mutable SSBOBuffer<u32>        m_light_tiles_ssbo;
   mutable SSBOBuffer<u32>        m_light_counter_ssbo;
 
-  mutable SSBOBuffer<DirLightGPU>   m_dir_light_ssbo   { MAX_DIR_LIGHTS           };
-  mutable SSBOBuffer<PointLightGPU> m_point_light_ssbo { MAX_VISIBLE_POINT_LIGHTS };
-  mutable SSBOBuffer<SectorGPU>     m_sectors_ssbo     { MAX_SECTORS              };
-  mutable SSBOBuffer<u32>           m_sector_map_ssbo  { MAX_SECTORS              };
-  mutable SSBOBuffer<WallGPU>       m_walls_ssbo       { MAX_WALLS                };
+  mutable SSBOBuffer<DirLightGPU>   m_dir_light_ssbo        { MAX_DIR_LIGHTS           };
+  mutable SSBOBuffer<PointLightGPU> m_point_light_ssbo      { MAX_VISIBLE_POINT_LIGHTS };
+  mutable SSBOBuffer<SectorGPU>     m_sectors_ssbo          { MAX_SECTORS              };
+  mutable SSBOBuffer<WallGPU>       m_walls_ssbo            { MAX_WALLS                };
+  mutable SSBOBuffer<mat4>          m_portal_matricies_ssbo { MAX_PORTALS              };
+  mutable SSBOBuffer<mat4>          m_sector_matricies_ssbo { MAX_SECTORS              };
 
-  mutable std::unordered_map<u32, u32> m_sector_id_map;
+  mutable std::vector<mat4> m_sector_matricies;;
   mutable std::unordered_map<u64, size_t> m_light_gpu_data_indices;
 
-  GLuint m_g_buffer          = 0;
-  GLuint m_g_position        = 0;
-  GLuint m_g_normal          = 0;
-  GLuint m_g_stitched_normal = 0;
-  GLuint m_g_albedo          = 0;
-  GLuint m_g_sector          = 0;
+  GLuint m_g_buffer            = 0;
+  GLuint m_g_position          = 0;
+  GLuint m_g_stitched_position = 0;
+  GLuint m_g_normal            = 0;
+  GLuint m_g_stitched_normal   = 0;
+  GLuint m_g_albedo            = 0;
+  GLuint m_g_sector            = 0;
 
   void destroy_g_buffers();
   void create_g_buffers(u32 w, u32 h);
@@ -142,10 +150,6 @@ private:
   void do_ligh_culling_pass(const CameraData& camera) const;
   void do_lighting_pass(const vec3& view_position) const;
 
-  u32 get_stitched_sector_id(SectorID sector_id, WallID portal_id) const;
-  u64 get_stitched_entity_id(u32 stitched_sector_id, u32 entity_id) const;
-
-  void push_sector_to_ssbo(SectorID sector_id, WallID enter_portal, const mat4& transform) const;
   void update_ssbos() const;
 
   void render_sectors(const CameraData& camera)  const;

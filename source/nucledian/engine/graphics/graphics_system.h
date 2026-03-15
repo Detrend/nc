@@ -64,6 +64,7 @@ public:
   // then it is recomputed.
   const MeshHandle& get_and_update_sector_mesh(SectorID sector);
   void              mark_sector_dirty(SectorID sector);
+  void              update_sector_heights(SectorID sector);
 
   const ShaderProgramHandle& get_solid_material() const;
 
