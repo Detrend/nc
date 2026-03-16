@@ -1264,7 +1264,7 @@ namespace nc
 	//==============================================================================================
 	QuitGamePage::QuitGamePage()
 	{
-		yes_button = new UiButton("ui_yes", vec2(0.0f, 0.1f), vec2(0.3f, 0.066f), std::bind(&QuitGamePage::yes_func, this));
+		yes_button = new UiButton("ui_yes", vec2(0.0f, 0.05f), vec2(0.3f, 0.066f), std::bind(&QuitGamePage::yes_func, this));
 		no_button = new UiButton("ui_no", vec2(0.0f, -0.1f), vec2(0.3f, 0.066f), std::bind(&QuitGamePage::no_func, this));
 	}
 
