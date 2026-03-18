@@ -443,7 +443,7 @@
     <ResourceCompile Include="nucledian.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\content\icon.ico" />
+    <Image Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
