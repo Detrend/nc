@@ -6,10 +6,28 @@
 
 ---
 
+### Ako pisat do tohoto dokumentu:
+- Mozem komentovat cokolvek tym, ze pridam novy riadok pred ktory sa podpisem
+- Priklad:
+- MR: Toto je sposob ako zanechat komentar. Z formy je jasne, ze sa jedna priamo o komentar
+- Pokial nekomentujem uz existujuci navrh, ale zakladam vlastny, tak ho oznacim hviezdickou
+- Priklad:
+- * Jakub by mal mat zakazane submitovat kod bez zatvoriek na novom riadku
+- Hviezdicka znamena, ze to je random navrh, o ktorom neprebehla ziadna diskusia
+- Netreba pisat podpis koho navrh to je
+  - Jednak pretoze nieje podstatne kto je autor, ale co je obsah
+  - Druhak pretoze sa to da zistit z github historie
+- Ked sa dohodneme, ze skutocne tuto zmenu chceme, tak sa hviezdicka odstrani
+- To neznamena, ze na kazdu jednu blbost co chceme zmenit do hry musite pisat navrh a cakat kym sa o nom pobavime
+- Pokial sa jedna o jednoduchu zmenu, tak kludne ju sprav okamzite sam - no gatekeeping
+- Ale niekde je pomyslena hranica - pokial je to prilis komplexna zmena, tak by sa o nej malo pobavit viacej ludi
+
+---
+
 ### Jaro & Art
 - Jarovi by pomohlo pridavat art jednoduchsie do hry
 - Diskutovali sme na pive a neprebrali sme do hlbky
-- **Treba prebrat o co presne by islo**
+- Treba prebrat o co presne by islo
 
 ---
 
@@ -82,3 +100,7 @@
 - Mozno by sme chceli mat free demo verziu a potom platenu full verziu?
 - Paci sa nam cena okolo 20€
 - Pre predstavu - Dusk a Hrot, ktore si obe pytaju 20€, maju avg. playtime 5 & 7 hodin
+
+---
+
+### 
