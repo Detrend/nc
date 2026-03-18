@@ -389,6 +389,7 @@
     <ClInclude Include="..\source\nucledian\engine\sound\sound_handle.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\settings.cfg" />
     <None Include="..\source\nucledian\anim_state_machine.inl" />
     <None Include="..\source\nucledian\engine\core\engine.inl" />
     <None Include="..\source\nucledian\engine\entity\entity_tests.inl" />

@@ -21,6 +21,11 @@
 #include <engine/core/module_event.h>
 #include <engine/graphics/shaders/shaders.h>
 
+#include <fstream>
+#include <filesystem>
+#include <string>
+#include <json/json.hpp>
+
 namespace nc
 {
 	UiButton::UiButton(const char* texture_name, vec2 position, vec2 scale, std::function<void(void)> func)
@@ -151,6 +156,11 @@ namespace nc
 	}
 
 	//============================================================================================
+
+	void MenuManager::post_init()
+	{
+		options_page->laod_settings();
+	}
 
 	MenuManager::~MenuManager()
 	{
@@ -994,6 +1004,68 @@ namespace nc
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 		glBindVertexArray(0);
+	}
+
+	void OptionsPage::laod_settings()
+	{
+		std::ifstream f("settings.cfg");
+		if (!f.is_open())
+		{
+			nc_warn("Failed to load settings");
+		}
+		auto data = nlohmann::json::parse(f);
+		
+		try
+		{
+			for (s32 sound_setting : data["sound"])
+			{
+				if (sound_setting < 0)
+				{
+					sound_setting == 0;
+				}
+				soundStep = min(9, sound_setting);
+				get_engine().get_module<SoundSystem>().set_sound_volume(soundStep);
+			}
+
+			for (s32 music_setting : data["music"])
+			{
+				if (music_setting < 0)
+				{
+					music_setting == 0;
+				}
+				musicStep = min(9, music_setting);
+				get_engine().get_module<SoundSystem>().set_music_volume(musicStep);
+			}
+
+			for (s32 sensitivity_setting : data["sensitivity"])
+			{
+				if (sensitivity_setting < 1)
+				{
+					sensitivity_setting == 1;
+				}
+				sensitivityStep = min(9, sensitivity_setting);
+				get_engine().get_module<InputSystem>().set_sensitivity(sensitivityStep);
+			}
+
+			for (s32 crosshair_setting : data["crosshair"])
+			{
+				if (crosshair_setting < 0)
+				{
+					crosshair_setting == 0;
+				}
+				crosshairStep = min(9, crosshair_setting);
+				get_engine().get_module<UserInterfaceSystem>().get_hud()->set_crosshair(crosshairStep);
+			}
+
+			for (bool fullscreen_setting : data["fullscreen"])
+			{
+				if (fullscreen_setting)
+				{
+					set_fullscreen();
+				}
+			}
+		}
+		catch(int){}
 	}
 
 	void OptionsPage::set_windowed()

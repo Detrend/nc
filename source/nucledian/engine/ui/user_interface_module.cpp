@@ -66,6 +66,7 @@ namespace nc
     switch (event.type)
     {
     case ModuleEventType::post_init:
+      menu->post_init();
       break;
     case ModuleEventType::game_update:
       ammo_display->update();
