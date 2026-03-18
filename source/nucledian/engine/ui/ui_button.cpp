@@ -1028,7 +1028,7 @@ namespace nc
 			{
 				if (sound_setting < 0)
 				{
-					sound_setting == 0;
+					sound_setting = 0;
 				}
 				soundStep = min(9, sound_setting);
 				get_engine().get_module<SoundSystem>().set_sound_volume(soundStep);
@@ -1038,7 +1038,7 @@ namespace nc
 			{
 				if (music_setting < 0)
 				{
-					music_setting == 0;
+					music_setting = 0;
 				}
 				musicStep = min(9, music_setting);
 				get_engine().get_module<SoundSystem>().set_music_volume(musicStep);
@@ -1048,7 +1048,7 @@ namespace nc
 			{
 				if (sensitivity_setting < 1)
 				{
-					sensitivity_setting == 1;
+					sensitivity_setting = 1;
 				}
 				sensitivityStep = min(10, sensitivity_setting);
 				get_engine().get_module<InputSystem>().set_sensitivity(sensitivityStep);
@@ -1058,7 +1058,7 @@ namespace nc
 			{
 				if (crosshair_setting < 0)
 				{
-					crosshair_setting == 0;
+					crosshair_setting = 0;
 				}
 				crosshairStep = min(9, crosshair_setting);
 				get_engine().get_module<UserInterfaceSystem>().get_hud()->set_crosshair(crosshairStep);
