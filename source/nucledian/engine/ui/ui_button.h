@@ -105,6 +105,7 @@ namespace nc
     ~OptionsPage();
 
     void laod_settings();
+    void save_settings();
     void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
     void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
@@ -249,6 +250,7 @@ namespace nc
     void draw();
     void draw_cursor();
     void post_init();
+    void on_exit();
 
   private:
     const ShaderProgramHandle button_material;

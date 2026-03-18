@@ -183,6 +183,13 @@ namespace nc
 
 	//=============================================================================================
 
+	void MenuManager::on_exit()
+	{
+		options_page->save_settings();
+	}
+
+	//=============================================================================================
+
 	vec2 MenuManager::get_normalized_mouse_pos()
 	{
 		int mouse_x, mouse_y;
@@ -1043,7 +1050,7 @@ namespace nc
 				{
 					sensitivity_setting == 1;
 				}
-				sensitivityStep = min(9, sensitivity_setting);
+				sensitivityStep = min(10, sensitivity_setting);
 				get_engine().get_module<InputSystem>().set_sensitivity(sensitivityStep);
 			}
 
@@ -1066,6 +1073,25 @@ namespace nc
 			}
 		}
 		catch(int){}
+	}
+
+	void OptionsPage::save_settings()
+	{
+		std::ofstream f("settings.cfg");
+		if (!f.is_open())
+		{
+			nc_warn("Failed to write settings");
+		}
+		nlohmann::json data;
+
+		data["sound"] = soundStep;
+		data["music"] = musicStep;
+		data["sensitivity"] = sensitivityStep;
+		data["crosshair"] = crosshairStep;
+		data["fullscreen"] = !isWindowed;
+
+		f << data;
+		f.close();
 	}
 
 	void OptionsPage::set_windowed()
@@ -1404,6 +1430,8 @@ namespace nc
 	//==============================================================================================
 	void QuitGamePage::yes_func()
 	{
+		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->on_exit();
+
 		get_engine().request_quit();
 	}
 
