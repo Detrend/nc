@@ -186,7 +186,7 @@ void InputSystem::lock_player_input(InputLockLayer layer, bool lock)
   }
 
   // Switch
-  SDL_SetRelativeMouseMode(disabled_now ? SDL_FALSE : SDL_TRUE);
+  SDL_SetRelativeMouseMode(lock ? SDL_FALSE : SDL_TRUE);
 }
 
 //==============================================================================
