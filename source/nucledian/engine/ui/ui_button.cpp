@@ -418,7 +418,7 @@ namespace nc
 		options_button = new UiButton(o_text, vec2(0.0f, 0.0f), vec2(0.3f, 0.066f), std::bind(&MainMenuPage::options_func, this));
 		load_button = new UiButton(lg_text, vec2(0.0f, -0.15f), vec2(0.3f, 0.066f), std::bind(&MainMenuPage::load_game_func, this));
 		quit_button = new UiButton(q_text, vec2(0.0f, -0.3f), vec2(0.3f, 0.066f), std::bind(&MainMenuPage::quit_func, this));
-		nuclidean_text = new UiButton("ui_nuclidean", vec2(0.0f, 0.5f), vec2(0.4f, 0.1f), std::bind(&MainMenuPage::quit_func, this));
+		nuclidean_text = new UiButton("ui_nuclidean", vec2(0.0f, 0.5f), vec2(0.42f, 0.1f), std::bind(&MainMenuPage::quit_func, this));
 	}
 
 	//============================================================================================
