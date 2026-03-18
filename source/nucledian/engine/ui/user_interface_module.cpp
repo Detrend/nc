@@ -80,6 +80,7 @@ namespace nc
     case ModuleEventType::cleanup:
       break;
     case ModuleEventType::terminate:
+      menu->on_exit();
       break;
     default:
       break;
