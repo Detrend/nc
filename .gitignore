@@ -5,6 +5,9 @@
 **/x64
 *.vcxproj.user
 
+# ignore visual studio aps resource files: https://learn.microsoft.com/en-us/cpp/windows/resource-files-visual-studio?view=msvc-170
+*.aps
+
 # ignore imgui configuration
 imgui.ini
 /projects/nucledian.vcxproj.filters.orig
