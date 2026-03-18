@@ -12,7 +12,7 @@
 - MR: Toto je sposob ako zanechat komentar. Z formy je jasne, ze sa jedna priamo o komentar
 - Pokial nekomentujem uz existujuci navrh, ale zakladam vlastny, tak ho oznacim hviezdickou
 - Priklad:
-- * Jakub by mal mat zakazane submitovat kod bez zatvoriek na novom riadku
+- *Jakub by mal mat zakazane submitovat kod bez zatvoriek na novom riadku
 - Hviezdicka znamena, ze to je random navrh, o ktorom neprebehla ziadna diskusia
 - Netreba pisat podpis koho navrh to je
   - Jednak pretoze nieje podstatne kto je autor, ale co je obsah
