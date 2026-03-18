@@ -387,6 +387,7 @@
     <ClInclude Include="..\source\nucledian\engine\game\game_helpers.h" />
     <ClInclude Include="..\source\nucledian\engine\sound\sound_emitter.h" />
     <ClInclude Include="..\source\nucledian\engine\sound\sound_handle.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\source\nucledian\anim_state_machine.inl" />
@@ -437,6 +438,12 @@
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="nc.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="nucledian.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\content\icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
