@@ -3,9 +3,11 @@
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/resources/shader_program.h>
 #include <engine/graphics/resources/texture.h>
+#include <engine/game/game_system.h>
 
 #include <vector>
 #include <functional>
+#include <string>
 
 namespace nc
 {
@@ -24,6 +26,7 @@ namespace nc
   class UiButton
   {
   public:
+    UiButton();
     UiButton(const char* texture_name, vec2 position, vec2 scale, std::function<void(void)> func);
     bool is_point_in_rec(vec2 point);
 
@@ -32,18 +35,33 @@ namespace nc
 
     void set_hover(bool hover);
 
-    void on_click();
+    virtual void on_click();
 
-    void draw(ShaderProgramHandle button_material); // Draw takes the shader to modify its uniforms
+    virtual void draw(ShaderProgramHandle button_material); // Draw takes the shader to modify its uniforms
 
-  private:
+  protected:
     const char* texture_name;
     vec2 position;
     vec2 scale;
     bool isHover = false;
+
+  private:
     std::function<void(void)> func;
   };
+  //======================================================================================
+  
+  class UiLoadGameButton : public UiButton
+  {
+  public:
+    UiLoadGameButton(nc::GameSystem::SaveDbEntry& save_entry, vec2 position, vec2 scale);
 
+    void on_click() override;
+    void draw(ShaderProgramHandle button_material, GLuint VAO) override;
+
+  private:
+    nc::GameSystem::SaveDbEntry& save;
+  };
+  
   //======================================================================================
 
   class MainMenuPage
@@ -175,12 +193,14 @@ namespace nc
     LoadGamePage();
     ~LoadGamePage();
 
+    void update_saves();
     void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
     void draw(ShaderProgramHandle button_material, GLuint VAO);
   private:
     void go_back();
 
     UiButton* go_back_button = nullptr;
+    std::vector<UiLoadGameButton*> load_game_buttons;
   };
 
   //======================================================================================
@@ -251,6 +271,8 @@ namespace nc
     void draw_cursor();
     void post_init();
     void on_exit();
+
+    void update_saves();
 
   private:
     const ShaderProgramHandle button_material;

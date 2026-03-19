@@ -9,12 +9,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <engine/game/game_system.h>
 #include <engine/entity/entity_system.h>
 #include <engine/entity/entity_type_definitions.h>
 #include <engine/enemies/enemy.h>
 #include <engine/game/game_helpers.h>
 #include <engine/core/engine.h>
-#include <engine/game/game_system.h>
 #include <engine/input/input_system.h>
 #include <engine/sound/sound_system.h>
 #include <engine/sound/sound_resources.h>
@@ -28,6 +28,10 @@
 
 namespace nc
 {
+	UiButton::UiButton()
+	{
+	}
+
 	UiButton::UiButton(const char* texture_name, vec2 position, vec2 scale, std::function<void(void)> func)
 	{
 		this->texture_name = texture_name;
@@ -798,6 +802,7 @@ namespace nc
 
 	void MainMenuPage::load_game_func()
 	{
+		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->update_saves();
 		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(LOAD);
 	}
 
@@ -1288,12 +1293,43 @@ namespace nc
 
 	LoadGamePage::LoadGamePage()
 	{
-		go_back_button = new UiButton("ui_back", vec2(0.0f, 0.15f), vec2(0.3f, 0.066f), std::bind(&LoadGamePage::go_back, this));
+		go_back_button = new UiButton("ui_back", vec2(0.0f, 0.45f), vec2(0.3f, 0.066f), std::bind(&LoadGamePage::go_back, this));
 	}
 
 	LoadGamePage::~LoadGamePage()
 	{
 		delete go_back_button;
+
+		for (auto load_game_button : load_game_buttons)
+		{
+			delete load_game_button;
+		}
+		load_game_buttons.clear();
+	}
+
+	void LoadGamePage::update_saves()
+	{
+		for (auto load_game_button : load_game_buttons)
+		{
+			delete load_game_button;
+		}
+		load_game_buttons.clear();
+		nc::GameSystem::SaveDatabase& save_db = get_engine().get_module<GameSystem>().get_save_game_db();
+
+		vec2 pos = vec2(0.0f, 0.15f);
+		vec2 stepPos = vec2(0.0f, -0.15f);
+		vec2 letter_scale = vec2(0.0165f, 0.033f);
+
+		for (auto& save : save_db)
+		{
+			load_game_buttons.push_back(new UiLoadGameButton(save, pos, letter_scale));
+			pos += stepPos;
+		}
+	}
+
+	void MenuManager::update_saves()
+	{
+		load_game_page->update_saves();
 	}
 
 	//==============================================================================================
@@ -1439,5 +1475,26 @@ namespace nc
 	void QuitGamePage::no_func()
 	{
 		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MAIN);
+	}
+
+	//==============================================================================================
+
+	UiLoadGameButton::UiLoadGameButton(nc::GameSystem::SaveDbEntry& save_entry, vec2 position, vec2 scale) :
+		save(save_entry)
+	{
+		this->position = position;
+		this->scale = scale;
+		
+	}
+
+	void UiLoadGameButton::on_click()
+	{
+		get_engine().get_module<GameSystem>().load_game(save.data);
+	}
+
+	//==============================================================================================
+
+	void UiLoadGameButton::draw(ShaderProgramHandle button_material, GLuint VAO)
+	{
 	}
 }
