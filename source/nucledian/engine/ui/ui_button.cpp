@@ -122,7 +122,8 @@ namespace nc
 	//============================================================================================
 
 	MenuManager::MenuManager() :
-		button_material(shaders::ui_button::VERTEX_SOURCE, shaders::ui_button::FRAGMENT_SOURCE)
+		button_material(shaders::ui_button::VERTEX_SOURCE, shaders::ui_button::FRAGMENT_SOURCE),
+		digit_material(shaders::ui_text::VERTEX_SOURCE, shaders::ui_text::FRAGMENT_SOURCE)
 	{
 
 		main_menu_page = new MainMenuPage();
@@ -324,7 +325,7 @@ namespace nc
 	{
 		if (isTransition)
 		{
-			next_level_page->draw(button_material, VAO);
+			next_level_page->draw(button_material, digit_material, VAO);
 			draw_cursor();
 			return;
 		}
@@ -438,8 +439,7 @@ namespace nc
 
 	//=============================================================================================
 
-	NextLevelPage::NextLevelPage() :
-		digit_material(shaders::ui_text::VERTEX_SOURCE, shaders::ui_text::FRAGMENT_SOURCE)
+	NextLevelPage::NextLevelPage()
 	{
 		next_level_button = new UiButton("ui_next_level", vec2(0.0f, -0.8f), vec2(0.3f, 0.066f), std::bind(&NextLevelPage::next_level_func, this));
 		menu_button = new UiButton("ui_menu", vec2(0.0f, -0.8f), vec2(0.12f, 0.066f), std::bind(&NextLevelPage::menu_func, this));
@@ -493,7 +493,7 @@ namespace nc
 		}
 	}
 
-	void NextLevelPage::draw(ShaderProgramHandle button_material, GLuint VAO)
+	void NextLevelPage::draw(ShaderProgramHandle button_material, ShaderProgramHandle digit_material, GLuint VAO)
 	{
 		button_material.use();
 
@@ -528,7 +528,7 @@ namespace nc
 		glDisableVertexAttribArray(1);
 		glBindVertexArray(0);
 
-		draw_stats(VAO);
+		draw_stats(digit_material, VAO);
 	}
 
 	void NextLevelPage::set_kill_stats(u32 enemies, u32 kills)
@@ -537,7 +537,7 @@ namespace nc
 		kill_count = kills;
 	}
 
-	void NextLevelPage::draw_stats(GLuint VAO)
+	void NextLevelPage::draw_stats(ShaderProgramHandle digit_material, GLuint VAO)
 	{
 		digit_material.use();
 
@@ -550,7 +550,7 @@ namespace nc
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		draw_kill_count();
+		draw_kill_count(digit_material);
 		// unbind
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
@@ -561,13 +561,13 @@ namespace nc
 		glBindVertexArray(0);
 	}
 
-	void NextLevelPage::draw_kill_count()
+	void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
 	{
 		u32 display_count = enemy_count;
 
 		vec2 position = vec2(0.75f, 0.3f);
-		vec2 posDif = vec2(-0.08f, 0.0f);
-		vec2 scale = vec2(0.042f, 0.1f);
+		vec2 posDif = vec2(-0.06f, 0.0f);
+		vec2 scale = vec2(0.0277f, 0.066f);
 
 		const TextureManager& manager = TextureManager::get();
 		const TextureHandle& texture = manager["ui_font"];
@@ -1316,7 +1316,7 @@ namespace nc
 		load_game_buttons.clear();
 		nc::GameSystem::SaveDatabase& save_db = get_engine().get_module<GameSystem>().get_save_game_db();
 
-		vec2 pos = vec2(0.0f, 0.15f);
+		vec2 pos = vec2(0.0f, -0.5f);
 		vec2 stepPos = vec2(0.0f, -0.15f);
 		vec2 letter_scale = vec2(0.0165f, 0.033f);
 
@@ -1496,5 +1496,6 @@ namespace nc
 
 	void UiLoadGameButton::draw(ShaderProgramHandle button_material, GLuint VAO)
 	{
+
 	}
 }

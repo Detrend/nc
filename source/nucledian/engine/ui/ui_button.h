@@ -56,7 +56,7 @@ namespace nc
     UiLoadGameButton(nc::GameSystem::SaveDbEntry& save_entry, vec2 position, vec2 scale);
 
     void on_click() override;
-    void draw(ShaderProgramHandle button_material, GLuint VAO) override;
+    void draw(ShaderProgramHandle button_material, GLuint VAO);
 
   private:
     nc::GameSystem::SaveDbEntry& save;
@@ -230,12 +230,11 @@ namespace nc
     ~NextLevelPage();
 
     void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
-    void draw(ShaderProgramHandle button_material, GLuint VAO);
+    void draw(ShaderProgramHandle button_material, ShaderProgramHandle digit_material, GLuint VAO);
     void set_kill_stats(u32 enemies, u32 kills);
-    void draw_stats(GLuint VAO);
-    void draw_kill_count();
+    void draw_stats(ShaderProgramHandle digit_material, GLuint VAO);
+    void draw_kill_count(ShaderProgramHandle digit_material);
   private:
-    const ShaderProgramHandle digit_material;
 
     void next_level_func();
     void do_nothing() {}
@@ -276,6 +275,7 @@ namespace nc
 
   private:
     const ShaderProgramHandle button_material;
+    const ShaderProgramHandle digit_material;
 
     MainMenuPage* main_menu_page = nullptr;
     OptionsPage* options_page = nullptr;
