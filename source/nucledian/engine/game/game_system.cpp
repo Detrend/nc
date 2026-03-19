@@ -1001,16 +1001,16 @@ SaveGameData GameSystem::save_game() const
   SaveGameData save;
 
   // Level name
-  /*
+  
   const LevelName& lvl_name = this->get_level_name();
-  nc_assert(lvl_name.size() <= SaveGameData::LVL_NAME_SIZE);
+  nc_assert(lvl_name.to_cstring().size() <= SaveGameData::LVL_NAME_SIZE);
   std::memset(save.level_name, 0, sizeof(SaveGameData::level_name));
-  std::memcpy(save.level_name, lvl_name.data(), lvl_name.size() * sizeof(char));
-
+  std::memcpy(save.level_name, lvl_name.to_cstring().data(), lvl_name.to_cstring().size() * sizeof(char));
+  
   // Time and ID
   save.time = SaveGameData::Clock::now();
   save.id   = ++last_save_id;
-  */
+  /**/
   return save;
 }
 
