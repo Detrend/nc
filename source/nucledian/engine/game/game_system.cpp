@@ -645,7 +645,7 @@ void GameSystem::pre_terminate()
 
     std::string filename = std::format
     (
-      "{}/save{}.{}", SAVE_DIR_RELATIVE, save.id, SAVE_FILE_SUFFIX
+      "{}/save{}{}", SAVE_DIR_RELATIVE, save.id, SAVE_FILE_SUFFIX
     );
 
     std::ofstream output;
