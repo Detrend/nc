@@ -55,6 +55,20 @@
 
 ---
 
+### Data Driven Design
+- Momentalne je milion veci hardcoded v C++
+- Vo vela pripadoch je to ok a "fanaticky" prepisovat vsetko do dat nicomu nepomoze
+- Ale niektore veci su predsa len lepsie ked su nadefinovane v datach
+- Napr. typy nepriatelov, dlzky ich animacii, ich animacne stavy atd..
+- Cize pre jednoduchu zmenu alebo pridanie nepriatela nieje treba prekompilovat hru
+- Taktiez umoznuje modabilitu ak to implementujeme spravne
+- Vznika problem toho, ze vzdy musi byt nieco napisane aj v kode
+- Napr. pokial chcem unikatne chovanie pre specifickeho nepriatela, tak si ho musim nakodit a potom zapnut v datach
+- Cize pure 100% data only nikdy nefunguje a je uplne zbytocne sa o neho snazit
+- Ale mat veci, ktore casto pridavame a modifikujeme definovane v datach je desirable
+
+---
+
 ### Linux Port
 - Chceme
 
