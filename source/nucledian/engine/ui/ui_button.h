@@ -56,7 +56,7 @@ namespace nc
     UiLoadGameButton(nc::GameSystem::SaveDbEntry& save_entry, vec2 position, vec2 scale);
 
     void on_click() override;
-    void draw(ShaderProgramHandle button_material, GLuint VAO);
+    void draw(ShaderProgramHandle digit_material, GLuint VAO);
 
   private:
     nc::GameSystem::SaveDbEntry& save;
@@ -195,7 +195,7 @@ namespace nc
 
     void update_saves();
     void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
-    void draw(ShaderProgramHandle button_material, GLuint VAO);
+    void draw(ShaderProgramHandle button_material, ShaderProgramHandle digit_material, GLuint VAO);
   private:
     void go_back();
 

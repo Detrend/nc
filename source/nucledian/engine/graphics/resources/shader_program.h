@@ -28,6 +28,7 @@ public:
   friend class OptionsPage;
   friend class UiScreenEffect;
   friend class NextLevelPage;
+  friend class UiLoadGameButton;
 
   explicit ShaderProgramHandle(const char* compute_source);
   ShaderProgramHandle(const char* vertex_source, const char* fragment_source);

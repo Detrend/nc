@@ -347,7 +347,7 @@ namespace nc
 			options_page->draw(button_material, VAO);
 			break;
 		case nc::LOAD:
-			load_game_page->draw(button_material, VAO);
+			load_game_page->draw(button_material, digit_material, VAO);
 			break;
 		case nc::SAVE:
 			break;
@@ -593,6 +593,7 @@ namespace nc
 			digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
 			digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
 			digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
+			digit_material.set_uniform(shaders::ui_text::HOVER, false);
 
 			glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -622,6 +623,7 @@ namespace nc
 			digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
 			digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
 			digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
+			digit_material.set_uniform(shaders::ui_text::HOVER, false);
 
 			glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -653,6 +655,7 @@ namespace nc
 			digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
 			digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
 			digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
+			digit_material.set_uniform(shaders::ui_text::HOVER, false);
 
 			glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -982,6 +985,7 @@ namespace nc
 			digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
 			digit_shader.set_uniform(shaders::ui_text::HEIGHT, 16);
 			digit_shader.set_uniform(shaders::ui_text::WIDTH, 8);
+			digit_shader.set_uniform(shaders::ui_text::HOVER, false);
 
 			glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -1005,6 +1009,7 @@ namespace nc
 		digit_shader.set_uniform(shaders::ui_text::CHARACTER, crosshairStep + 11);
 		digit_shader.set_uniform(shaders::ui_text::HEIGHT, 2);
 		digit_shader.set_uniform(shaders::ui_text::WIDTH, 11);
+		digit_shader.set_uniform(shaders::ui_text::HOVER, false);
 
 		glBindTexture(GL_TEXTURE_2D, texture_c.get_atlas().handle);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -1316,13 +1321,13 @@ namespace nc
 		load_game_buttons.clear();
 		nc::GameSystem::SaveDatabase& save_db = get_engine().get_module<GameSystem>().get_save_game_db();
 
-		vec2 pos = vec2(0.0f, -0.5f);
-		vec2 stepPos = vec2(0.0f, -0.15f);
-		vec2 letter_scale = vec2(0.0165f, 0.033f);
+		vec2 pos = vec2(-0.0f, 0.3f);
+		vec2 stepPos = vec2(0.0f, -0.1f);
+		vec2 scale = vec2(0.5f, 0.033f);
 
 		for (auto& save : save_db)
 		{
-			load_game_buttons.push_back(new UiLoadGameButton(save, pos, letter_scale));
+			load_game_buttons.push_back(new UiLoadGameButton(save, pos, scale));
 			pos += stepPos;
 		}
 	}
@@ -1336,11 +1341,25 @@ namespace nc
 	void LoadGamePage::update([[maybe_unused]] vec2 mouse_pos, [[maybe_unused]] u32 prev_mouse, [[maybe_unused]] u32 cur_mouse)
 	{
 		go_back_button->set_hover(false);
+		for (auto& button : load_game_buttons)
+		{
+			button->set_hover(false);
+		}
+
 		UiButton* hover_over_button = nullptr;
 
 		if (go_back_button->is_point_in_rec(mouse_pos))
 		{
 			hover_over_button = go_back_button;
+		}
+
+		for (auto& button : load_game_buttons)
+		{
+			if (button->is_point_in_rec(mouse_pos))
+			{
+				hover_over_button = button;
+				break;
+			}
 		}
 
 		if (hover_over_button != nullptr)
@@ -1356,7 +1375,7 @@ namespace nc
 	}
 
 	//==============================================================================================
-	void LoadGamePage::draw([[maybe_unused]] ShaderProgramHandle button_material, [[maybe_unused]] GLuint VAO)
+	void LoadGamePage::draw([[maybe_unused]] ShaderProgramHandle button_material, ShaderProgramHandle digit_material, [[maybe_unused]] GLuint VAO)
 	{
 		button_material.use();
 
@@ -1370,6 +1389,30 @@ namespace nc
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		go_back_button->draw(button_material);
+
+		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glBindVertexArray(0);
+
+		digit_material.use();
+
+		glBindVertexArray(VAO);
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+
+		glDisable(GL_DEPTH_TEST);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		for (auto& button : load_game_buttons)
+		{
+			button->draw(digit_material, VAO);
+		}
 
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
@@ -1490,12 +1533,50 @@ namespace nc
 	void UiLoadGameButton::on_click()
 	{
 		get_engine().get_module<GameSystem>().load_game(save.data);
+		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_visible(false);
+		
 	}
 
 	//==============================================================================================
 
-	void UiLoadGameButton::draw(ShaderProgramHandle button_material, GLuint VAO)
+	void UiLoadGameButton::draw(ShaderProgramHandle digit_material, GLuint VAO)
 	{
+		nc::SaveGameData::SaveTime time = save.data.time;
 
+		std::string text = std::format("{:%Y-%m-%d %H:%M}", time);
+
+		const TextureManager& manager = TextureManager::get();
+		const TextureHandle& texture = manager["ui_font"];
+
+		vec2 final_pos = position - vec2(0.5f, 0.0f);
+		vec2 step = vec2(0.033f, 0.0f);
+
+		for (size_t c = 0; c < text.size(); c++)
+		{
+			glActiveTexture(GL_TEXTURE0);
+
+			glm::mat4 trans_mat = glm::mat4(1.0f);
+			vec2 translate = final_pos;
+			trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+			trans_mat = glm::scale(trans_mat, glm::vec3(0.0165f, 0.033f, 1));
+
+			const glm::mat4 final_trans = trans_mat;
+
+			int digit = int(text[c]);
+
+			digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+			digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+			digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+			digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+			digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
+			digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
+			digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
+			digit_material.set_uniform(shaders::ui_text::HOVER, isHover);
+
+			glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+			final_pos += step;
+		}
 	}
 }

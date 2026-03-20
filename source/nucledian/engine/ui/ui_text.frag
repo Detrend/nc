@@ -4,12 +4,18 @@ constexpr const char* FRAGMENT_SOURCE = R"(
       
 in vec2 uv;
       
+layout(location = 7) uniform bool hover = false;
+
 out vec4 FragColor;
 
 uniform sampler2D sampler;
 
 void main(void) {
     FragColor = texture(sampler, uv);
+    if(hover)
+    {
+        FragColor.xyz *= 0.5;
+    }
 }
 
 )";
