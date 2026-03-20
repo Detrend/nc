@@ -468,24 +468,28 @@
     <LibraryPath>$(SolutionDir)lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)bin_temp\$(ProjectName)_$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
+    <TargetName>NUCLIDEAN</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">
     <IncludePath>$(SolutionDir)source\libs\;$(SolutionDir)source\nucledian\;$(SolutionDir)source\libs\SDL2\include\;$(SolutionDir)source\libs\benchmark\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)bin_temp\$(ProjectName)_$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
+    <TargetName>NUCLIDEAN</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)source\libs\;$(SolutionDir)source\nucledian\;$(SolutionDir)source\libs\SDL2\include\;$(SolutionDir)source\libs\benchmark\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)bin_temp\$(ProjectName)_$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
+    <TargetName>NUCLIDEAN</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">
     <IncludePath>$(SolutionDir)source\libs\;$(SolutionDir)source\nucledian\;$(SolutionDir)source\libs\SDL2\include\;$(SolutionDir)source\libs\benchmark\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)bin_temp\$(ProjectName)_$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
+    <TargetName>NUCLIDEAN</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
