@@ -115,6 +115,7 @@ private:
   const ShaderProgramHandle m_sector_material;
   const ShaderProgramHandle m_light_culling_shader;
   const ShaderProgramHandle m_sky_box_material;
+  const ShaderProgramHandle m_pixel_light_shader;
 
   mutable EntityRedundancyChecker m_light_checker;
   mutable EntityRedundancyChecker m_entity_checker;
@@ -150,6 +151,8 @@ private:
   void do_geometry_pass(const CameraData& camera, const RenderGunProperties& gun) const;
   void do_ligh_culling_pass(const CameraData& camera) const;
   void do_lighting_pass(const vec3& view_position) const;
+
+  void do_pixel_lighting_pass(const CameraData& camera, const VisibilityTree& tree) const;
 
   void update_ssbos() const;
 

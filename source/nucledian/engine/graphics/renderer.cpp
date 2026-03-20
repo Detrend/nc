@@ -25,8 +25,11 @@
 #include <engine/game/game_helpers.h>
 #include <engine/appearance.h>
 
+#include <imgui/imgui.h>
+
 #include <array>
 #include <unordered_set>
+#include <set>
 
 namespace nc
 {
@@ -40,6 +43,7 @@ Renderer::Renderer(u32 win_w, u32 win_h)
 , m_sector_material(shaders::sector::VERTEX_SOURCE, shaders::sector::FRAGMENT_SOURCE)
 , m_light_culling_shader(shaders::light_culling::COMPUTE_SOURCE)
 , m_sky_box_material(shaders::sky_box::VERTEX_SOURCE, shaders::sky_box::FRAGMENT_SOURCE)
+, m_pixel_light_shader(shaders::pixel_light::VERTEX_SOURCE, shaders::pixel_light::FRAGMENT_SOURCE)
 , m_window_size(win_w, win_h)
 {
   this->create_g_buffers(win_w, win_h);
@@ -127,10 +131,85 @@ const
     clearColor      // data
   );
 
+  // WIP
+  do_pixel_lighting_pass(camera_data, visibility_tree);
+
   do_geometry_pass(camera_data, gun_data);
   update_ssbos();
   do_ligh_culling_pass(camera_data);
   do_lighting_pass(camera_data.position);
+
+  // DEBUG: count white pixels in megatex
+  if (ImGui::Begin("Num visible pixels"))
+  {
+    static int count = 0;
+    if (ImGui::Button("Recalculate"))
+    {
+      glBindTexture(GL_TEXTURE_2D, GraphicsSystem::get().megatex_handle);
+      GLint w = 0, h = 0;
+      glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH,  &w);
+      glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
+
+      std::vector<float> px(w * h * 4);
+      glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, px.data());
+
+      count = 0;
+      for (int i = 0; i < w * h; ++i)
+        if (px[i*4] >= 1.f && px[i*4+1] >= 1.f && px[i*4+2] >= 1.f)
+          ++count;
+    }
+
+    ImGui::Text("Number of visible pixels: %d",  count);
+    ImGui::Text("Number of visible pixels: %dK", (int)ceil(count / 1000.0f));
+
+    ImGui::Separator();
+
+    if (ImGui::Button("Blit"))
+    {
+      auto& gfx = GraphicsSystem::get();
+
+      GLint w = 0, h = 0;
+      glBindTexture(GL_TEXTURE_2D, gfx.megatex_handle);
+      glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH,  &w);
+      glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
+
+      glCopyImageSubData(
+        gfx.megatex_handle,       // src texture
+        GL_TEXTURE_2D, 0,         // src target, mip level
+        0, 0, 0,                  // src x, y, z
+        gfx.megatex_input_handle, // dst texture
+        GL_TEXTURE_2D, 0,         // dst target, mip level
+        0, 0, 0,                  // dst x, y, z
+        w, h, 1                   // width, height, depth
+      );
+    }
+
+    if (ImGui::Button("Clear"))
+    {
+      const float zeros[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+      glClearTexImage(
+        GraphicsSystem::get().megatex_input_handle,
+        0,        // mip level
+        GL_RGBA,  // format
+        GL_FLOAT, // type
+        zeros
+      );
+    }
+  }
+  ImGui::End();
+
+  if (ImGui::Begin("Pixel Light Megatex"))
+  {
+    auto& gfx = GraphicsSystem::get();
+    ImVec2 avail = ImGui::GetContentRegionAvail();
+    float aspect = (gfx.megatex_height > 0)
+      ? (float)gfx.megatex_width / (float)gfx.megatex_height
+      : 1.0f;
+    ImVec2 img_size = { avail.x, avail.x / aspect };
+    ImGui::Image((ImTextureID)(intptr_t)gfx.megatex_input_handle, img_size, ImVec2(0,1), ImVec2(1,0));
+  }
+  ImGui::End();
+
 
   m_dir_light_ssbo.clear();
   m_point_light_ssbo.clear();
@@ -454,6 +533,105 @@ void Renderer::do_ligh_culling_pass(const CameraData& camera) const
 }
 
 //==============================================================================
+void get_sectors(std::set<SectorID>& out, const VisibilityTree& tree)
+{
+  for (const auto[sid, _] : tree.sectors)
+  {
+    out.insert(sid);
+  }
+
+  for (const auto& subtree : tree.children)
+  {
+    get_sectors(out, subtree);
+  }
+}
+
+//==============================================================================
+void Renderer::do_pixel_lighting_pass
+(
+  [[maybe_unused]]const CameraData& camera,
+  [[maybe_unused]]const VisibilityTree& tree
+)
+const
+{
+  auto& gfx = GraphicsSystem::get();
+  const MapSectors& map = GameSystem::get().get_map();
+
+  std::set<SectorID> sectors_to_render;
+  get_sectors(sectors_to_render, tree);
+
+  glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_fbo);
+  glViewport(0, 0, gfx.megatex_width, gfx.megatex_height);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  m_pixel_light_shader.use();
+
+  const vec2 megatex_size = vec2(gfx.megatex_width, gfx.megatex_height);
+  m_pixel_light_shader.set_uniform(shaders::pixel_light::MEGATEX_SIZE, megatex_size);
+
+  // Bind a dummy VAO — core profile requires one even when vertex data
+  // comes entirely from gl_VertexID.
+  const MeshHandle screen_quad = MeshManager::get().get_screen_quad();
+  glBindVertexArray(screen_quad.get_vao());
+
+  // Only floors
+  for (SectorID sid : sectors_to_render)
+  {
+    MegatexPartId floor_id = map.sectors[sid].floor_megatex_id;
+    MegatexPartId ceil_id  = map.sectors[sid].ceil_megatex_id;
+
+    const auto& part_floor = gfx.megatex_parts[floor_id];
+    const auto& part_ceil  = gfx.megatex_parts[ceil_id];
+
+    // floor
+    {
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::FROM,  cast<vec2>(part_floor.megatex_coord_1));
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::TO,    cast<vec2>(part_floor.megatex_coord_2));
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::COLOR, vec3{1.0f, 0.0f, 0.0f});
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP00,  part_floor.wpos_00);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP10,  part_floor.wpos_10);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP01,  part_floor.wpos_01);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP11,  part_floor.wpos_11);
+      glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
+    // ceil
+    {
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::FROM,  cast<vec2>(part_ceil.megatex_coord_1));
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::TO,    cast<vec2>(part_ceil.megatex_coord_2));
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::COLOR, vec3{0.0f, 0.0f, 1.0f});
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP00,  part_ceil.wpos_00);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP10,  part_ceil.wpos_10);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP01,  part_ceil.wpos_01);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP11,  part_ceil.wpos_11);
+      glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
+    // all walls
+    {
+      map.for_each_wall_of_sector(sid, [&](WallID wid)
+      {
+        MegatexPartId wall_id = map.walls[wid].megatex_id;
+        const auto&   part    = gfx.megatex_parts[wall_id];
+
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::FROM,  cast<vec2>(part.megatex_coord_1));
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::TO,    cast<vec2>(part.megatex_coord_2));
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::COLOR, vec3{0.0f, 1.0f, 0.0f});
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::WP00,  part.wpos_00);
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::WP10,  part.wpos_10);
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::WP01,  part.wpos_01);
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::WP11,  part.wpos_11);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+      });
+    }
+  }
+
+  glBindVertexArray(0);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glViewport(0, 0, m_window_size.x, m_window_size.y);
+}
+
+//==============================================================================
 void Renderer::do_lighting_pass(const vec3& view_position) const
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -464,8 +642,7 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, m_g_stitched_position);
   glActiveTexture(GL_TEXTURE2);
-  glBindTexture(GL_TEXTURE_2D, m_g_normal);
-  glActiveTexture(GL_TEXTURE3);
+  glBindTexture(GL_TEXTURE_2D, m_g_normal); glActiveTexture(GL_TEXTURE3);
   glBindTexture(GL_TEXTURE_2D, m_g_stitched_normal);
   glActiveTexture(GL_TEXTURE4);
   glBindTexture(GL_TEXTURE_2D, m_g_albedo);
@@ -536,6 +713,8 @@ void Renderer::render_sectors(const CameraData& camera) const
   glBindTexture(GL_TEXTURE_2D, game_atlas.handle);
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, level_atlas.handle);
+  glActiveTexture(GL_TEXTURE2);
+  glBindTexture(GL_TEXTURE_2D, GraphicsSystem::get().megatex_input_handle);
 
   glBindImageTexture(
     7,              // binding unit

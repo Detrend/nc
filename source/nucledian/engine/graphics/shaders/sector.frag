@@ -3,6 +3,8 @@ constexpr const char* FRAGMENT_SOURCE = R"(
 #version 430 core
 #extension GL_NV_gpu_shader5 : enable
 
+layout(early_fragment_tests) in;
+
 struct TextureData {
   vec2 pos;
   vec2 size;
@@ -32,6 +34,7 @@ layout(location = 5) out uint g_sector;
 
 layout(binding = 0) uniform sampler2D game_atlas_sampler;
 layout(binding = 1) uniform sampler2D level_atlas_sampler;
+layout(binding = 2) uniform sampler2D megatex_input;
 
 layout(location = 2) uniform vec2 game_atlas_size;
 layout(location = 3) uniform vec2 level_atlas_size;
@@ -64,6 +67,7 @@ void main()
   // based on the random value we got, randomize the tile rotation
   float actual_rotation = texture_rotation + (rand_value * tile_rotation_increment);
 
+  // This line
   imageStore(megatex, (ivec2)megatex_uv, vec4(1.0, 1.0, 1.0, 1.0));
   
   // floor uv is mirrored
@@ -88,8 +92,8 @@ void main()
   } else{
     color = texture(level_atlas_sampler, uv);
   }
-  if (color.a < 0.95f)
-    discard;
+  //if (color.a < 0.95f)
+  //  discard;
 
   // Position G-bugger works in camera local space in order to overcome portals space discontinuity.
   g_position.xyz = position;
@@ -102,7 +106,8 @@ void main()
   g_stitched_normal.xyz = normalize(stitched_normal);
   // 4-th component of stitched_normal is used to determine if shadows are enabled
   g_stitched_normal.w = 1.0f;
-  g_albedo = color;
+  vec4 megatex_value = texelFetch(megatex_input, (ivec2)megatex_uv, 0);
+  g_albedo = color + megatex_value;
   g_sector = sector_id;
 }
 

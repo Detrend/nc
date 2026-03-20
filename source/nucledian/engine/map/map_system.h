@@ -73,8 +73,7 @@ struct VisibilityTree
   bool is_visible(SectorID id, u64& depth) const;
 
   // Same as above but without outputting the depth
-  bool is_visible(SectorID id) const;
-};
+  bool is_visible(SectorID id) const; };
 
 struct SectorMegatexData
 {
@@ -160,6 +159,9 @@ struct SectorData
   WallID      first_wall   = INVALID_WALL_ID;      // [0..total_wall_count]
   WallID      last_wall    = INVALID_WALL_ID;      // [first_wall..total_wall_count]
   ActivatorID activator    = INVALID_ACTIVATOR_ID; // Only one activator owns us
+
+  MegatexPartId floor_megatex_id = INVALID_MEGATEX_ID;
+  MegatexPartId ceil_megatex_id  = INVALID_MEGATEX_ID;
 };
 
 // Sector data that is not static and has to be stored in saves.
@@ -196,6 +198,7 @@ struct WallData
   PortalRenderID  render_data_index = INVALID_PORTAL_RENDER_ID;
   WallRelID       nc_portal_wall_id = INVALID_WALL_REL_ID;
   u8              segment_count     = 0;
+  MegatexPartId   megatex_id        = INVALID_MEGATEX_ID;
 
   PortType get_portal_type() const;
 

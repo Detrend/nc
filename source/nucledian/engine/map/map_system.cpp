@@ -806,6 +806,7 @@ const
       .megatex = mega_c,
     }
     .push_to(vertices_out);
+    nc_log("{}:[[{}, {}], [{}, {}], [{}, {}]]", sector_id, mega_a.x, mega_a.y, mega_b.x, mega_b.y, mega_c.x, mega_c.y);
   };
 
   aabb2 bbox_fc;
@@ -838,7 +839,7 @@ const
       vec2 coc = mix(megatex.floor.min, megatex.floor.max, cc);
 
       // build floor triangle from the first point and 2 others
-      push_triangle(VEC3_Y, sector.floor_surface, first_pt_grounded, 0.0f, pt2, 0.0f, pt1, 0.0f, coa, cob, coc);
+      push_triangle(VEC3_Y, sector.floor_surface, first_pt_grounded, 0.0f, pt2, 0.0f, pt1, 0.0f, coc, cob, coa);
     }
   }
 
@@ -862,12 +863,12 @@ const
       vec2 cb = (b - bbox_fc.min) / (bbox_fc.max - bbox_fc.min);
       vec2 cc = (c - bbox_fc.min) / (bbox_fc.max - bbox_fc.min);
 
-      vec2 coa = mix(megatex.floor.min, megatex.floor.max, ca);
-      vec2 cob = mix(megatex.floor.min, megatex.floor.max, cb);
-      vec2 coc = mix(megatex.floor.min, megatex.floor.max, cc);
+      vec2 coa = mix(megatex.ceiling.min, megatex.ceiling.max, ca);
+      vec2 cob = mix(megatex.ceiling.min, megatex.ceiling.max, cb);
+      vec2 coc = mix(megatex.ceiling.min, megatex.ceiling.max, cc);
 
       // build floor triangle from the first point and 2 others
-      push_triangle(-VEC3_Y, sector.ceil_surface, first_pt_ceiled, 0.0f, pt1, 0.0f, pt2, 0.0f, coa, cob, coc);
+      push_triangle(-VEC3_Y, sector.ceil_surface, first_pt_ceiled, 0.0f, pt1, 0.0f, pt2, 0.0f, coc, coa, cob);
     }
   }
 
@@ -1033,8 +1034,8 @@ const
       const auto eu = vec3{ w2pos.x, current.y2, w2pos.y };
 
       aabb2 bbx_wall = megatex.walls[wrelid];
-      f32 cch1 = mix(bbx_wall.min.y, bbx_wall.max.y, (current.y1 - bbx_wall.min.y) / (bbx_wall.max.y - bbx_wall.min.y));
-      f32 cch2 = mix(bbx_wall.min.y, bbx_wall.max.y, (current.y2 - bbx_wall.min.y) / (bbx_wall.max.y - bbx_wall.min.y));
+      f32 cch1 = mix(bbx_wall.min.y, bbx_wall.max.y, (current.y1 - sector_dyn.floor_height) / (sector_dyn.ceil_height - sector_dyn.floor_height));
+      f32 cch2 = mix(bbx_wall.min.y, bbx_wall.max.y, (current.y2 - sector_dyn.floor_height) / (sector_dyn.ceil_height - sector_dyn.floor_height));
       f32 ccl  = bbx_wall.min.x;
       f32 ccr  = bbx_wall.max.x;
 

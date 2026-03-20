@@ -75,6 +75,23 @@ namespace nc
       inline constexpr Uniform<5, u32>  NUM_WALLS;
     }
 
+    // Pixel lighting pass.
+    namespace pixel_light
+    {
+      #include <engine/graphics/shaders/pixel_light.vert>
+      #include <engine/graphics/shaders/pixel_light.frag>
+
+      inline constexpr Uniform<0, vec2> FROM;
+      inline constexpr Uniform<1, vec2> TO;
+      inline constexpr Uniform<2, vec2> MEGATEX_SIZE;
+      inline constexpr Uniform<3, vec3> COLOR;
+      inline constexpr Uniform<4, vec3> WP00;
+      inline constexpr Uniform<5, vec3> WP10;
+      inline constexpr Uniform<6, vec3> WP01;
+      inline constexpr Uniform<7, vec3> WP11;
+      inline constexpr Uniform<8, u32>  NUM_LIGHTS;
+    }
+
     // Sector rendering.
     namespace sector
     {
