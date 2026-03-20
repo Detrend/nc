@@ -1029,6 +1029,7 @@ namespace nc
 		if (!f.is_open())
 		{
 			nc_warn("Failed to load settings");
+			return;
 		}
 		auto data = nlohmann::json::parse(f);
 		
