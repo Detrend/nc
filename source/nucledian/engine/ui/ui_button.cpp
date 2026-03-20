@@ -1411,7 +1411,7 @@ namespace nc
 
 		for (auto& button : load_game_buttons)
 		{
-			button->draw(digit_material, VAO);
+			button->draw(digit_material);
 		}
 
 		glDisable(GL_BLEND);
@@ -1539,7 +1539,7 @@ namespace nc
 
 	//==============================================================================================
 
-	void UiLoadGameButton::draw(ShaderProgramHandle digit_material, GLuint VAO)
+	void UiLoadGameButton::draw(ShaderProgramHandle digit_material)
 	{
 		nc::SaveGameData::SaveTime time = save.data.time;
 

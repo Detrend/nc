@@ -56,7 +56,7 @@ namespace nc
     UiLoadGameButton(nc::GameSystem::SaveDbEntry& save_entry, vec2 position, vec2 scale);
 
     void on_click() override;
-    void draw(ShaderProgramHandle digit_material, GLuint VAO);
+    void draw(ShaderProgramHandle digit_material);
 
   private:
     nc::GameSystem::SaveDbEntry& save;
