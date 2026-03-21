@@ -107,7 +107,7 @@ void main()
   // 4-th component of stitched_normal is used to determine if shadows are enabled
   g_stitched_normal.w = 1.0f;
   vec4 megatex_value = texelFetch(megatex_input, (ivec2)megatex_uv, 0);
-  g_albedo = color + megatex_value;
+  g_albedo = color * vec4(megatex_value.xyz, 1.0f);
   g_sector = sector_id;
 }
 

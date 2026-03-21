@@ -7,6 +7,7 @@ constexpr const char* FRAGMENT_SOURCE = R"(
 
 #define LIGHT_BANDS 48
 #define DO_SHADOWS
+//#define DO_LIGHT
 // #define PIXEL_DEBUG
 
 struct DirLight
@@ -305,7 +306,8 @@ void main()
   else
     out_color = vec4(final_color, 1.0f);
 #else
-  out_color = vec4(final_color, 1.0f);
+  //out_color = vec4(final_color, 1.0f);
+  out_color = vec4(albedo, 1.0f);
 #endif
 }
 

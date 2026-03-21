@@ -89,6 +89,7 @@ public:
     vec3  wpos_10; // world pos at local(1,0)
     vec3  wpos_01; // world pos at local(0,1)
     vec3  wpos_11; // world pos at local(1,1)
+    vec3  normal;
   };
   std::vector<InspectMegatex> megatex_parts;
 

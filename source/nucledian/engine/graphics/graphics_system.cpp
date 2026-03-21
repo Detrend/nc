@@ -1145,7 +1145,7 @@ void GraphicsSystem::create_sector_meshes()
   std::vector<stbrp_rect>          rects;
   std::vector<std::pair<u64, u64>> cnts;
 
-  constexpr f32 px_per_m  = 32;
+  constexpr f32 px_per_m  = 8;
   constexpr f32 px_per_m2 = px_per_m * px_per_m;
 
   for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)
@@ -1271,6 +1271,7 @@ void GraphicsSystem::create_sector_meshes()
           ref.wpos_10 = vec3{bmax.x, height, bmin.z};
           ref.wpos_01 = vec3{bmin.x, height, bmax.z};
           ref.wpos_11 = vec3{bmax.x, height, bmax.z};
+          ref.normal  = UP_DIR;
           map.sectors[ii].floor_megatex_id = mpart;
         }
         break;
@@ -1286,6 +1287,7 @@ void GraphicsSystem::create_sector_meshes()
           ref.wpos_10 = vec3{bmax.x, height, bmin.z};
           ref.wpos_01 = vec3{bmin.x, height, bmax.z};
           ref.wpos_11 = vec3{bmax.x, height, bmax.z};
+          ref.normal  = -UP_DIR;
           map.sectors[ii].ceil_megatex_id = mpart;
         }
         break;
@@ -1301,11 +1303,13 @@ void GraphicsSystem::create_sector_meshes()
 
           vec2 coord1 = map.walls[wid].pos;
           vec2 coord2 = map.walls[next_wid].pos;
+          vec2 norm   = normalize(flipped(coord2 - coord1));
 
           ref.wpos_00 = vec3{coord1.x, height1, coord1.y};
           ref.wpos_10 = vec3{coord2.x, height1, coord2.y};
           ref.wpos_01 = vec3{coord1.x, height2, coord1.y};
           ref.wpos_11 = vec3{coord2.x, height2, coord2.y};
+          ref.normal  = vec3{norm.x, 0.0f, norm.y};
 
           map.walls[wid].megatex_id = mpart;
         }

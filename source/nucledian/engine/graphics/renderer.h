@@ -125,12 +125,13 @@ private:
   mutable SSBOBuffer<u32>        m_light_tiles_ssbo;
   mutable SSBOBuffer<u32>        m_light_counter_ssbo;
 
-  mutable SSBOBuffer<DirLightGPU>   m_dir_light_ssbo        { MAX_DIR_LIGHTS           };
-  mutable SSBOBuffer<PointLightGPU> m_point_light_ssbo      { MAX_VISIBLE_POINT_LIGHTS };
-  mutable SSBOBuffer<SectorGPU>     m_sectors_ssbo          { MAX_SECTORS              };
-  mutable SSBOBuffer<WallGPU>       m_walls_ssbo            { MAX_WALLS                };
-  mutable SSBOBuffer<mat4>          m_portal_matricies_ssbo { MAX_PORTALS              };
-  mutable SSBOBuffer<mat4>          m_sector_matricies_ssbo { MAX_SECTORS              };
+  mutable SSBOBuffer<DirLightGPU>   m_dir_light_ssbo         { MAX_DIR_LIGHTS           };
+  mutable SSBOBuffer<PointLightGPU> m_point_light_ssbo       { MAX_VISIBLE_POINT_LIGHTS };
+  mutable SSBOBuffer<PointLightGPU> m_point_light_pixel_ssbo { MAX_VISIBLE_POINT_LIGHTS };
+  mutable SSBOBuffer<SectorGPU>     m_sectors_ssbo           { MAX_SECTORS              };
+  mutable SSBOBuffer<WallGPU>       m_walls_ssbo             { MAX_WALLS                };
+  mutable SSBOBuffer<mat4>          m_portal_matricies_ssbo  { MAX_PORTALS              };
+  mutable SSBOBuffer<mat4>          m_sector_matricies_ssbo  { MAX_SECTORS              };
 
   mutable std::vector<mat4> m_sector_matricies;;
   mutable std::unordered_map<u64, size_t> m_light_gpu_data_indices;

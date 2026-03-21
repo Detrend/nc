@@ -9,9 +9,11 @@ layout(location = 4) uniform vec3 u_wp00;
 layout(location = 5) uniform vec3 u_wp10;
 layout(location = 6) uniform vec3 u_wp01;
 layout(location = 7) uniform vec3 u_wp11;
+layout(location = 9) uniform vec3 u_norm;
 
 out vec2 uv;
 out vec3 wp;
+out vec3 normal;
 
 void main()
 {
@@ -28,7 +30,8 @@ void main()
   vec3 wp_bottom = mix(u_wp00, u_wp10, local.x);
   vec3 wp_top    = mix(u_wp01, u_wp11, local.x);
   wp             = mix(wp_bottom, wp_top, local.y);
-  uv          = local;
+  uv             = local;
+  normal         = u_norm;
   gl_Position = vec4(ndc, 0.0, 1.0);
 }
 

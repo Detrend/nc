@@ -81,15 +81,19 @@ namespace nc
       #include <engine/graphics/shaders/pixel_light.vert>
       #include <engine/graphics/shaders/pixel_light.frag>
 
-      inline constexpr Uniform<0, vec2> FROM;
-      inline constexpr Uniform<1, vec2> TO;
-      inline constexpr Uniform<2, vec2> MEGATEX_SIZE;
-      inline constexpr Uniform<3, vec3> COLOR;
-      inline constexpr Uniform<4, vec3> WP00;
-      inline constexpr Uniform<5, vec3> WP10;
-      inline constexpr Uniform<6, vec3> WP01;
-      inline constexpr Uniform<7, vec3> WP11;
-      inline constexpr Uniform<8, u32>  NUM_LIGHTS;
+      inline constexpr Uniform<0,  vec2> FROM;
+      inline constexpr Uniform<1,  vec2> TO;
+      inline constexpr Uniform<2,  vec2> MEGATEX_SIZE;
+      inline constexpr Uniform<3,  vec3> COLOR;
+      inline constexpr Uniform<4,  vec3> WP00;
+      inline constexpr Uniform<5,  vec3> WP10;
+      inline constexpr Uniform<6,  vec3> WP01;
+      inline constexpr Uniform<7,  vec3> WP11;
+      inline constexpr Uniform<8,  u32>  NUM_LIGHTS;
+      inline constexpr Uniform<9,  vec3> NORMAL;
+      inline constexpr Uniform<10, u32>  NUM_SECTORS;
+      inline constexpr Uniform<11, u32>  NUM_WALLS;
+      inline constexpr Uniform<12, u32>  SECTOR_ID;
     }
 
     // Sector rendering.

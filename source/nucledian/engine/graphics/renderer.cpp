@@ -557,6 +557,14 @@ const
   auto& gfx = GraphicsSystem::get();
   const MapSectors& map = GameSystem::get().get_map();
 
+  glPushDebugGroup
+  (
+    GL_DEBUG_SOURCE_APPLICATION,
+    0,
+    -1,
+    "PixelLightingPass"
+  );
+
   std::set<SectorID> sectors_to_render;
   get_sectors(sectors_to_render, tree);
 
@@ -568,6 +576,13 @@ const
 
   const vec2 megatex_size = vec2(gfx.megatex_width, gfx.megatex_height);
   m_pixel_light_shader.set_uniform(shaders::pixel_light::MEGATEX_SIZE, megatex_size);
+  m_pixel_light_shader.set_uniform(shaders::pixel_light::NUM_SECTORS,  m_sectors_ssbo.gpu_size_u32());
+  m_pixel_light_shader.set_uniform(shaders::pixel_light::NUM_WALLS,    m_walls_ssbo.gpu_size_u32());
+
+  m_sectors_ssbo.bind(1);
+  m_walls_ssbo.bind(2);
+  m_portal_matricies_ssbo.bind(3);
+  m_sector_matricies_ssbo.bind(4);
 
   // Bind a dummy VAO — core profile requires one even when vertex data
   // comes entirely from gl_VertexID.
@@ -583,27 +598,53 @@ const
     const auto& part_floor = gfx.megatex_parts[floor_id];
     const auto& part_ceil  = gfx.megatex_parts[ceil_id];
 
+    m_pixel_light_shader.set_uniform(shaders::pixel_light::SECTOR_ID, cast<u32>(sid));
+
+    // gather light info
+    m_point_light_pixel_ssbo.clear();
+
+    // Push back all lights
+    const auto& mapping = GameSystem::get().get_sector_mapping();
+    mapping.for_each_in_sector<PointLight>(sid, [&](EntityID id, mat4 t)
+    {
+      PointLight* light = GameSystem::get().get_entities().get_entity<PointLight>(id);
+      nc_assert(light);
+
+      vec3 pos = (t * vec4(light->get_position(), 1.0f)).xyz();
+      SectorID light_sid = map.get_sector_from_point(light->get_position());
+      m_point_light_pixel_ssbo.push_back(light->get_gpu_data(pos, pos, light_sid));
+    });
+
+    // gpu data there
+    m_point_light_pixel_ssbo.update_gpu_data();
+    m_point_light_pixel_ssbo.bind(0);
+
+    // set num lights
+    m_pixel_light_shader.set_uniform(shaders::pixel_light::NUM_LIGHTS, m_point_light_pixel_ssbo.gpu_size_u32());
+
     // floor
     {
-      m_pixel_light_shader.set_uniform(shaders::pixel_light::FROM,  cast<vec2>(part_floor.megatex_coord_1));
-      m_pixel_light_shader.set_uniform(shaders::pixel_light::TO,    cast<vec2>(part_floor.megatex_coord_2));
-      m_pixel_light_shader.set_uniform(shaders::pixel_light::COLOR, vec3{1.0f, 0.0f, 0.0f});
-      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP00,  part_floor.wpos_00);
-      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP10,  part_floor.wpos_10);
-      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP01,  part_floor.wpos_01);
-      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP11,  part_floor.wpos_11);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::FROM,   cast<vec2>(part_floor.megatex_coord_1));
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::TO,     cast<vec2>(part_floor.megatex_coord_2));
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::COLOR,  vec3{1.0f, 0.0f, 0.0f});
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP00,   part_floor.wpos_00);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP10,   part_floor.wpos_10);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP01,   part_floor.wpos_01);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP11,   part_floor.wpos_11);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::NORMAL, part_floor.normal);
       glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
     // ceil
     {
-      m_pixel_light_shader.set_uniform(shaders::pixel_light::FROM,  cast<vec2>(part_ceil.megatex_coord_1));
-      m_pixel_light_shader.set_uniform(shaders::pixel_light::TO,    cast<vec2>(part_ceil.megatex_coord_2));
-      m_pixel_light_shader.set_uniform(shaders::pixel_light::COLOR, vec3{0.0f, 0.0f, 1.0f});
-      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP00,  part_ceil.wpos_00);
-      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP10,  part_ceil.wpos_10);
-      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP01,  part_ceil.wpos_01);
-      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP11,  part_ceil.wpos_11);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::FROM,   cast<vec2>(part_ceil.megatex_coord_1));
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::TO,     cast<vec2>(part_ceil.megatex_coord_2));
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::COLOR,  vec3{0.0f, 0.0f, 1.0f});
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP00,   part_ceil.wpos_00);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP10,   part_ceil.wpos_10);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP01,   part_ceil.wpos_01);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP11,   part_ceil.wpos_11);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::NORMAL, part_ceil.normal);
       glDrawArrays(GL_TRIANGLES, 0, 6);
     }
 
@@ -614,13 +655,14 @@ const
         MegatexPartId wall_id = map.walls[wid].megatex_id;
         const auto&   part    = gfx.megatex_parts[wall_id];
 
-        m_pixel_light_shader.set_uniform(shaders::pixel_light::FROM,  cast<vec2>(part.megatex_coord_1));
-        m_pixel_light_shader.set_uniform(shaders::pixel_light::TO,    cast<vec2>(part.megatex_coord_2));
-        m_pixel_light_shader.set_uniform(shaders::pixel_light::COLOR, vec3{0.0f, 1.0f, 0.0f});
-        m_pixel_light_shader.set_uniform(shaders::pixel_light::WP00,  part.wpos_00);
-        m_pixel_light_shader.set_uniform(shaders::pixel_light::WP10,  part.wpos_10);
-        m_pixel_light_shader.set_uniform(shaders::pixel_light::WP01,  part.wpos_01);
-        m_pixel_light_shader.set_uniform(shaders::pixel_light::WP11,  part.wpos_11);
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::FROM,   cast<vec2>(part.megatex_coord_1));
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::TO,     cast<vec2>(part.megatex_coord_2));
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::COLOR,  vec3{0.0f, 1.0f, 0.0f});
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::WP00,   part.wpos_00);
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::WP10,   part.wpos_10);
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::WP01,   part.wpos_01);
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::WP11,   part.wpos_11);
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::NORMAL, part.normal);
         glDrawArrays(GL_TRIANGLES, 0, 6);
       });
     }
@@ -629,6 +671,8 @@ const
   glBindVertexArray(0);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   glViewport(0, 0, m_window_size.x, m_window_size.y);
+
+  glPopDebugGroup();
 }
 
 //==============================================================================
