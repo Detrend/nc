@@ -1,5 +1,3 @@
-constexpr const char* VERTEX_SOURCE = R"(
-
 #version 430 core
 layout(location = 0) in vec3 a_position;
 layout(location = 0) in vec3 a_normal;
@@ -18,5 +16,3 @@ void main()
 
   gl_Position = position.xyww;
 }
-
-)";

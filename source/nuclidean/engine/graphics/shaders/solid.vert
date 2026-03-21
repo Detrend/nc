@@ -1,4 +1,3 @@
-constexpr const char* VERTEX_SOURCE = R"(
 
 #version 430 core
 layout(location = 0) in vec3 a_position;
@@ -17,5 +16,3 @@ void main()
   normal = mat3(transpose(inverse(transform))) * a_normal;
   position = (transform * vec4(a_position, 1.0f)).xyz;
 }
-
-)";

@@ -1,4 +1,3 @@
-constexpr const char* FRAGMENT_SOURCE = R"(
 
 // note: this shader is obsolete and may not work properly
 
@@ -33,5 +32,3 @@ void main()
   g_stitched_normal.w = 0.0f;
   g_albedo = color;
 }
-
-)";

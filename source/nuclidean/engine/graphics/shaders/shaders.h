@@ -18,8 +18,8 @@ namespace nc
     // Solid geometry.
     namespace solid
     {
-      #include <engine/graphics/shaders/solid.vert>
-      #include <engine/graphics/shaders/solid.frag>
+      inline constexpr const char* VERTEX_FILE   = "engine/graphics/shaders/solid.vert";
+      inline constexpr const char* FRAGMENT_FILE = "engine/graphics/shaders/solid.frag";
 
       inline constexpr Uniform<0, mat4>   TRANSFORM;
       inline constexpr Uniform<1, mat4>   VIEW;
@@ -30,8 +30,8 @@ namespace nc
 
     namespace billboard
     {
-      #include <engine/graphics/shaders/billboard.vert>
-      #include <engine/graphics/shaders/billboard.frag>
+      inline constexpr const char* VERTEX_FILE   = "engine/graphics/shaders/billboard.vert";
+      inline constexpr const char* FRAGMENT_FILE = "engine/graphics/shaders/billboard.frag";
 
       inline constexpr Uniform<0, mat4> TRANSFORM;
       inline constexpr Uniform<1, mat4> VIEW;
@@ -47,8 +47,8 @@ namespace nc
 
     namespace gun
     {
-      #include <engine/graphics/shaders/gun.vert>
-      #include <engine/graphics/shaders/billboard.frag>
+      inline constexpr const char* VERTEX_FILE   = "engine/graphics/shaders/gun.vert";
+      inline constexpr const char* FRAGMENT_FILE = "engine/graphics/shaders/billboard.frag";
 
       inline constexpr Uniform<0, mat4> TRANSFORM;
       inline constexpr Uniform<1, mat4> VIEW;
@@ -65,8 +65,8 @@ namespace nc
     // Lighting pass.
     namespace light
     {
-      #include <engine/graphics/shaders/light.vert>
-      #include <engine/graphics/shaders/light.frag>
+      inline constexpr const char* VERTEX_FILE   = "engine/graphics/shaders/light.vert";
+      inline constexpr const char* FRAGMENT_FILE = "engine/graphics/shaders/light.frag";
 
       inline constexpr Uniform<0, vec3> VIEW_POSITION;
       inline constexpr Uniform<1, u32>  NUM_DIR_LIGHTS;
@@ -80,8 +80,8 @@ namespace nc
     // Sector rendering.
     namespace sector
     {
-      #include <engine/graphics/shaders/sector.vert>
-      #include <engine/graphics/shaders/sector.frag>
+      inline constexpr const char* VERTEX_FILE   = "engine/graphics/shaders/sector.vert";
+      inline constexpr const char* FRAGMENT_FILE = "engine/graphics/shaders/sector.frag";
 
       inline constexpr Uniform<0, mat4> VIEW;
       inline constexpr Uniform<1, mat4> PROJECTION;
@@ -94,7 +94,7 @@ namespace nc
 
     namespace light_culling
     {
-      #include <engine/graphics/shaders/light_culling.comp>
+      inline constexpr const char* COMPUTE_FILE = "engine/graphics/shaders/light_culling.comp";
 
       inline constexpr Uniform<0, mat4> VIEW;
       inline constexpr Uniform<1, mat4> INV_PROJECTION;
@@ -105,8 +105,8 @@ namespace nc
 
     namespace ui_button
     {
-      #include <engine/ui/ui_button.vert>
-      #include <engine/ui/ui_button.frag>
+      inline constexpr const char* VERTEX_FILE   = "engine/ui/ui_button.vert";
+      inline constexpr const char* FRAGMENT_FILE = "engine/ui/ui_button.frag";
 
       inline constexpr Uniform<0, mat4> TRANSFORM;
 
@@ -119,8 +119,8 @@ namespace nc
 
     namespace ui_text
     {
-      #include <engine/ui/ui_text.vert>
-      #include <engine/ui/ui_text.frag>
+      inline constexpr const char* VERTEX_FILE   = "engine/ui/ui_text.vert";
+      inline constexpr const char* FRAGMENT_FILE = "engine/ui/ui_text.frag";
 
       inline constexpr Uniform<0, mat4> TRANSFORM;
 
@@ -136,8 +136,8 @@ namespace nc
 
     namespace sky_box
     {
-      #include <engine/graphics/shaders/sky_box.vert>
-      #include <engine/graphics/shaders/sky_box.frag>
+      inline constexpr const char* VERTEX_FILE   = "engine/graphics/shaders/sky_box.vert";
+      inline constexpr const char* FRAGMENT_FILE = "engine/graphics/shaders/sky_box.frag";
 
       inline constexpr Uniform<0, mat4> VIEW;
       inline constexpr Uniform<1, mat4> PROJECTION;

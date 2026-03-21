@@ -16,8 +16,8 @@ namespace nc
 
 //============================================================================================
 MenuManager::MenuManager() :
-  button_material(shaders::ui_button::VERTEX_SOURCE, shaders::ui_button::FRAGMENT_SOURCE),
-  digit_material(shaders::ui_text::VERTEX_SOURCE, shaders::ui_text::FRAGMENT_SOURCE)
+  button_material(ShaderProgramHandle::from_files(shaders::ui_button::VERTEX_FILE, shaders::ui_button::FRAGMENT_FILE)),
+  digit_material(ShaderProgramHandle::from_files(shaders::ui_text::VERTEX_FILE, shaders::ui_text::FRAGMENT_FILE))
 {
 
   main_menu_page = new MainMenuPage();

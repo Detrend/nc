@@ -955,7 +955,7 @@ void OptionsPage::shadow_off()
 
 //=============================================================================================
 OptionsPage::OptionsPage() :
-  digit_shader(shaders::ui_text::VERTEX_SOURCE, shaders::ui_text::FRAGMENT_SOURCE)
+  digit_shader(ShaderProgramHandle::from_files(shaders::ui_text::VERTEX_FILE, shaders::ui_text::FRAGMENT_FILE))
 {
   sound_text = new UiButton("ui_sound", vec2(-0.3f, 0.30f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::do_nothing, this));
   music_text = new UiButton("ui_music", vec2(-0.3f, 0.15f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::do_nothing, this));

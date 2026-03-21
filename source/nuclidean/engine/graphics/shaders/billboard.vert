@@ -1,5 +1,3 @@
-constexpr const char* VERTEX_SOURCE = R"(
-
 #version 430 core
 layout(location = 0) in vec3 a_position;
 layout(location = 1) in vec2 a_uv;
@@ -32,5 +30,3 @@ void main()
   stitched_shading_position = (portal_dest_to_src * transform * vec4(vec3(0.0f), 1.0f)).xyz;
   shading_position          = (transform * vec4(vec3(0.0f), 1.0f)).xyz;
 }
-
-)";

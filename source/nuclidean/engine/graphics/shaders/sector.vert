@@ -1,5 +1,3 @@
-constexpr const char* VERTEX_SOURCE = R"(
-
 #version 430 core
 layout (location = 0) in vec3   a_position;
 layout (location = 1) in vec3   a_normal;
@@ -47,5 +45,3 @@ void main()
   tile_rotation_increment = a_tile_rotation_increment;
   texture_offset = a_texture_offset;
 }
-
-)";
