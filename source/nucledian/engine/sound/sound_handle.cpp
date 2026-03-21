@@ -13,15 +13,15 @@ namespace nc::sound_helpers
 {
 
 //==============================================================================
-static int volume_from01(f32 volume01)
+static int sound_volume_from01(f32 volume01)
 {
-  return static_cast<int>(clamp(volume01, 0.0f, 1.0f) * MIX_MAX_VOLUME); 
+  return static_cast<int>(clamp(volume01 * SoundSystem::get().get_sound_volume(), 0.0f, 1.0f) * MIX_MAX_VOLUME);
 }
 
 //==============================================================================
-static f32 volume_to01(int mixer_volume)
+static f32 sound_volume_to01(int mixer_volume)
 {
-  return clamp(static_cast<f32>(mixer_volume) / MIX_MAX_VOLUME, 0.0f, 1.0f);
+  return clamp(static_cast<f32>(mixer_volume) / (MIX_MAX_VOLUME * SoundSystem::get().get_sound_volume()), 0.0f, 1.0f);
 }
 
 }
@@ -66,7 +66,7 @@ void SoundHandle::set_volume(f32 volume01)
   {
     [[maybe_unused]] int ret = Mix_Volume
     (
-      channel, sound_helpers::volume_from01(volume01)
+      channel, sound_helpers::sound_volume_from01(volume01)
     );
     nc_assert(ret >= 0);
   }
@@ -92,7 +92,7 @@ float SoundHandle::get_volume() const
   {
     const int ret = Mix_Volume(this->channel, -1);
     nc_assert(ret >= 0);
-    return sound_helpers::volume_to01(ret);
+    return sound_helpers::sound_volume_to01(ret);
   }
 
   return 0.0f;
