@@ -59,11 +59,24 @@ ivec2 noise2(ivec2 p)
   return ivec2(max(int(h1), 0), max(int(h2), 0));
 }
 
+float triangleArea(vec3 a, vec3 b, vec3 c)
+{
+  return 0.5 * length(cross(b - a, c - a));
+}
+
+float quadArea(vec3 v0, vec3 v1, vec3 v2, vec3 v3)
+{
+  // Split quad into two triangles: (v0, v1, v2) and (v0, v2, v3)
+  float area1 = triangleArea(v0, v1, v2);
+  float area2 = triangleArea(v0, v2, v3);
+  return area1 + area2;
+}
+
 bool out_of_bounds = false;
 
 void main()
 {
-  const uint num_samples_from_each = 32;
+  const uint num_samples_from_each = 12;
 
   vec3 sum = vec3(0.0);
 
@@ -83,13 +96,19 @@ void main()
     // Sample random points on the surface of the object
     MegatexPart part = megatex_parts[part_id];
 
+    vec3 part_n = part.normal;
+    if (dot(-normal, part_n) < 0.0f)
+    {
+      continue;
+    }
+
     // Always positive, good
     ivec2 size_px = part.megatex_coord_2 - part.megatex_coord_1 + ivec2(1);
 
     ivec2 from = part.megatex_coord_1;
     ivec2 to   = part.megatex_coord_2;
 
-    vec3 sample_sum = vec3(0.0f);
+    vec3 part_sum = vec3(0.0f);
     float weight = 0.0f;
 
     for (uint sample_idx = 0; sample_idx < num_samples_from_each; ++sample_idx)
@@ -114,20 +133,18 @@ void main()
       vec3 wp_top       = mix(part.wpos_01, part.wpos_11, uv_coords.x);
       vec3 wp_of_sample = mix(wp_bottom, wp_top, uv_coords.y);
 
-      vec3  dir   = normalize(wp_of_sample - wp);
-      float angle = max(dot(normal, dir), 0.0f);
-      float dist  = distance(wp_of_sample, wp);
-      float range = max(smple.x, max(smple.y, smple.z)) * 3.1415;
-      float coeff = max(range - dist, 0.0f) / range;
+      vec3  dir    = normalize(wp_of_sample - wp);
+      float angle1 = max(dot(normal, dir), 0.0f);
+      float angle2 = max(dot(-normal, part_n), 0.0f);
+      float dist   = distance(wp_of_sample, wp);
+      float attenuation = 1.0f / (dist * dist);
 
-      sample_sum += smple * (max(range - dist, 0.0) / max(range, 0.00001)) * angle;
+      part_sum += smple * attenuation * angle1 * angle2;
     }
 
     // average it out
-    sample_sum /= float(num_samples_from_each);
-    //sample_sum /= max(weight, 0.0001);
-
-    sum += sample_sum;
+    float part_area = quadArea(part.wpos_00, part.wpos_10, part.wpos_01, part.wpos_11);
+    sum += (part_sum / float(num_samples_from_each)) * part_area;
   }
 
   vec3 final_color = vec3(0.0, 0.0, 0.0);
@@ -137,7 +154,7 @@ void main()
   }
   else
   {
-    final_color = (og_color * 1.0f + sum * 1.0) * 0.1f;
+    final_color = (og_color * 1.0f + sum * 0.0) * 0.1f;
   }
   //vec3 final_color = og_color;
   out_color = vec4(final_color, 1.0f);

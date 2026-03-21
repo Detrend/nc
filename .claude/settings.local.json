@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__10xEditor__list_editors",
+      "mcp__10xEditor__get_project_files",
+      "mcp__10xEditor__get_selection",
+      "mcp__10xEditor__get_current_file",
+      "mcp__10xEditor__read_current_buffer",
+      "mcp__10xEditor__edit_range",
+      "mcp__10xEditor__get_cursor_position",
+      "mcp__10xEditor__find_file_by_name",
+      "mcp__10xEditor__search_in_project",
+      "mcp__10xEditor__build_project",
+      "mcp__10xEditor__get_build_status"
+    ]
+  }
+}

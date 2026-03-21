@@ -817,12 +817,18 @@ const
     // Update the inner SSBO
     m_megatex_indices_ssbo.clear();
 
+    auto push_sector_to_ssbo = [&](SectorID sector_id)
+    {
+      map.for_each_wall_of_sector(sid, [&](WallID wid)
+      {
+        m_megatex_indices_ssbo.push_back(map.walls[wid].megatex_id);
+      });
+      m_megatex_indices_ssbo.push_back(map.sectors[sector_id].floor_megatex_id);
+      m_megatex_indices_ssbo.push_back(map.sectors[sector_id].ceil_megatex_id);
+    };
+
     MegatexPartId part_floor = map.sectors[sid].floor_megatex_id;
     MegatexPartId part_ceil  = map.sectors[sid].ceil_megatex_id;
-
-    // Push floor & ceil
-    m_megatex_indices_ssbo.push_back(part_floor);
-    m_megatex_indices_ssbo.push_back(part_ceil);
 
     // To the render list
     // Floor
@@ -843,13 +849,20 @@ const
     map.for_each_wall_of_sector(sid, [&](WallID wid)
     {
       MegatexPartId part_wall = map.walls[wid].megatex_id;
-      m_megatex_indices_ssbo.push_back(part_wall);
-
       parts_to_render.push_back(MegatexPartAndId
       {
         .part = gfx.megatex_parts[part_wall],
         .id   = part_wall,
       });
+    });
+
+    // Us
+    push_sector_to_ssbo(sid);
+
+    // Other sectors around
+    map.for_each_portal_of_sector(sid, [&](WallID wid)
+    {
+      push_sector_to_ssbo(map.walls[wid].portal_sector_id);
     });
 
     m_megatex_indices_ssbo.update_gpu_data();

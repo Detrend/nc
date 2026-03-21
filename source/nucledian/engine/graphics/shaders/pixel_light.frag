@@ -202,9 +202,6 @@ void main()
     vec3 light_direction = light.stitched_position - stitched_position;
     float distance_squared = dot(light_direction, light_direction);
 
-    if (distance_squared >= light.radius * light.radius)
-      continue;
-
     float distance = sqrt(distance_squared);
     light_direction /= distance;
 
@@ -229,8 +226,8 @@ void main()
 
     float diffuse = max(angle, 0.0f);
 
-    float attenuation = pow(max(light.radius - distance, 0.0f) / light.radius, light.falloff);
-    final_color += diffuse * light.color * light.intensity * attenuation * shadow_coeff * light.radius;
+    float attenuation = 1.0f / distance_squared;
+    final_color += diffuse * light.color * 2.0f * light.radius * attenuation * shadow_coeff;
   }
 
 /*

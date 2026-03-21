@@ -399,6 +399,10 @@
     <None Include="..\source\nucledian\engine\graphics\shaders\billboard.vert" />
     <None Include="..\source\nucledian\engine\graphics\shaders\light.frag" />
     <None Include="..\source\nucledian\engine\graphics\shaders\light.vert" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\pixel_gi.frag" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\pixel_gi.vert" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\pixel_light.frag" />
+    <None Include="..\source\nucledian\engine\graphics\shaders\pixel_light.vert" />
     <None Include="..\source\nucledian\engine\graphics\shaders\sector.frag" />
     <None Include="..\source\nucledian\engine\graphics\shaders\sector.vert" />
     <None Include="..\source\nucledian\engine\graphics\shaders\sky_box.frag" />
