@@ -10,6 +10,8 @@
 #include <optional>
 #include <utility>
 #include <span>
+#include <string>
+#include <vector>
 
 namespace nc
 {
@@ -32,6 +34,15 @@ public:
   explicit ShaderProgramHandle(const char* compute_source);
   ShaderProgramHandle(const char* vertex_source, const char* fragment_source);
 
+  // Create a program by reading GLSL sources from disk.
+  // Paths are relative to the shader source root (see set_shader_root).
+  static ShaderProgramHandle from_files(const char* vert_path, const char* frag_path);
+  static ShaderProgramHandle from_file (const char* comp_path);
+
+  // Set the directory that is prepended to all relative shader paths.
+  // Must be called once before any from_files / from_file call.
+  static void set_shader_root(std::string root);
+
   bool is_valid() const;
   operator bool() const;
 
@@ -46,8 +57,18 @@ private:
   ShaderProgramHandle() {}
   explicit ShaderProgramHandle(std::initializer_list<std::pair<const char*, GLenum>> shader_sources);
 
-  std::optional<GLuint> compile_shader(const char* source, GLenum type) const;
-  std::optional<GLuint> link_program(std::span<const GLuint> shaders) const;
+  // Attempt to recompile from the given source files and swap the program handle.
+  // Returns true on success (old handle replaced), false on error (old handle kept).
+  bool try_reload(const std::vector<std::string>& file_paths);
+
+  // log_only = true  → log the error with nc_crit, do not abort (used by hot-reload)
+  // log_only = false → nc_expect(false, ...) which aborts (used by initial load)
+  std::optional<GLuint> compile_shader(const char* source, GLenum type, bool log_only = false) const;
+  std::optional<GLuint> link_program(std::span<const GLuint> shaders, bool log_only = false) const;
+
+  // Read a source file relative to the shader root and return its contents.
+  // Returns an empty optional on I/O error.
+  static std::optional<std::string> read_shader_file(const char* relative_path);
 
   template<GLint location, typename T>
   void set_uniform(Uniform<location, T> uniform, const T& value) const;

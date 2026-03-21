@@ -13,8 +13,10 @@
 #include <math/vector.h>
 #include <math/matrix.h>
 
-#include <unordered_map>
+#include <filesystem>
 #include <memory>
+#include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace nc
@@ -105,17 +107,31 @@ private:
     u32  _padding;
   };
 
+  // Tracks one shader program together with the source files it was built from,
+  // so that the hot-reload loop can detect changes and recompile.
+  struct ShaderEntry
+  {
+    ShaderProgramHandle*                      handle;
+    std::vector<std::string>                  file_paths;
+    std::filesystem::file_time_type           last_write_time;
+  };
+
   mat4  m_default_projection;
   ivec2 m_window_size;
-  
-  const ShaderProgramHandle m_solid_material;
-  const ShaderProgramHandle m_billboard_material;
-  const ShaderProgramHandle m_gun_material;
-  const ShaderProgramHandle m_light_material;
-  const ShaderProgramHandle m_sector_material;
-  const ShaderProgramHandle m_light_culling_shader;
-  const ShaderProgramHandle m_sky_box_material;
-  const ShaderProgramHandle m_pixel_light_shader;
+
+  // Shader members are mutable so the hot-reload helper (called from the
+  // const render() method) can swap their underlying OpenGL handles.
+  mutable ShaderProgramHandle m_solid_material;
+  mutable ShaderProgramHandle m_billboard_material;
+  mutable ShaderProgramHandle m_gun_material;
+  mutable ShaderProgramHandle m_light_material;
+  mutable ShaderProgramHandle m_sector_material;
+  mutable ShaderProgramHandle m_light_culling_shader;
+  mutable ShaderProgramHandle m_sky_box_material;
+  mutable ShaderProgramHandle m_pixel_light_shader;
+
+  // Registry used by the hot-reload loop.
+  mutable std::vector<ShaderEntry> m_shader_entries;
 
   mutable EntityRedundancyChecker m_light_checker;
   mutable EntityRedundancyChecker m_entity_checker;
@@ -148,6 +164,14 @@ private:
   void destroy_g_buffers();
   void create_g_buffers(u32 w, u32 h);
   void recompute_projection(u32 screen_w, u32 screen_h, f32 vertical_fov);
+
+  // Register a shader for hot-reload monitoring.
+  void register_shader(ShaderProgramHandle& handle,
+                       std::initializer_list<const char*> paths);
+
+  // Check each registered shader's source files for modifications and
+  // recompile any that have changed.  Called at the top of render().
+  void check_shader_hot_reload() const;
 
   void do_geometry_pass(const CameraData& camera, const RenderGunProperties& gun) const;
   void do_ligh_culling_pass(const CameraData& camera) const;

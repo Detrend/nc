@@ -1,4 +1,3 @@
-constexpr const char* VERTEX_SOURCE = R"(
 
 #version 430 core
 
@@ -34,5 +33,3 @@ void main()
   normal         = u_norm;
   gl_Position = vec4(ndc, 0.0, 1.0);
 }
-
-)";

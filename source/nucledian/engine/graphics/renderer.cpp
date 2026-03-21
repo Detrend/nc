@@ -28,22 +28,92 @@
 #include <imgui/imgui.h>
 
 #include <array>
+#include <filesystem>
 #include <unordered_set>
 #include <set>
 
 namespace nc
 {
 
+// Returns the <root>/source/nucledian/ prefix used to resolve relative shader paths.
+static const std::string& renderer_shader_root()
+{
+  static const std::string root = []()
+  {
+    // renderer.cpp lives at <root>/source/nucledian/engine/graphics/renderer.cpp
+    // Go up 3 directory components (strip filename + engine/graphics) to reach <root>/source/nucledian/
+    std::string path = __FILE__;
+    std::replace(path.begin(), path.end(), '\\', '/');
+    for (int i = 0; i < 3; ++i)
+    {
+      const auto pos = path.rfind('/');
+      if (pos != std::string::npos)
+        path.resize(pos);
+    }
+    return path + "/";
+  }();
+  return root;
+}
+
+// Returns the newest last_write_time across all source files of an entry.
+static std::filesystem::file_time_type newest_write_time(const std::vector<std::string>& file_paths)
+{
+  auto newest = std::filesystem::file_time_type::min();
+  for (const auto& rel : file_paths)
+  {
+    std::error_code ec;
+    const auto t = std::filesystem::last_write_time(renderer_shader_root() + rel, ec);
+    if (!ec && t > newest)
+      newest = t;
+  }
+  return newest;
+}
+
+//==============================================================================
+void Renderer::register_shader(ShaderProgramHandle& handle,
+                               std::initializer_list<const char*> paths)
+{
+  ShaderEntry entry;
+  entry.handle = &handle;
+  for (const char* p : paths)
+    entry.file_paths.emplace_back(p);
+
+  // Seed the write time so the first hot-reload check does not false-trigger.
+  entry.last_write_time = newest_write_time(entry.file_paths);
+  m_shader_entries.push_back(std::move(entry));
+}
+
+//==============================================================================
+void Renderer::check_shader_hot_reload() const
+{
+  for (auto& entry : m_shader_entries)
+  {
+    const auto newest = newest_write_time(entry.file_paths);
+    if (newest <= entry.last_write_time)
+      continue;
+
+    if (entry.handle->try_reload(entry.file_paths))
+    {
+      entry.last_write_time = newest;
+      nc_log("Shader hot-reloaded: {}", entry.file_paths[0]);
+    }
+    else
+    {
+      nc_crit("Shader hot-reload failed: {}", entry.file_paths[0]);
+    }
+  }
+}
+
 //==============================================================================
 Renderer::Renderer(u32 win_w, u32 win_h)
-: m_solid_material(shaders::solid::VERTEX_SOURCE, shaders::solid::FRAGMENT_SOURCE)
-, m_billboard_material(shaders::billboard::VERTEX_SOURCE, shaders::billboard::FRAGMENT_SOURCE)
-, m_gun_material(shaders::gun::VERTEX_SOURCE, shaders::gun::FRAGMENT_SOURCE)
-, m_light_material(shaders::light::VERTEX_SOURCE, shaders::light::FRAGMENT_SOURCE)
-, m_sector_material(shaders::sector::VERTEX_SOURCE, shaders::sector::FRAGMENT_SOURCE)
-, m_light_culling_shader(shaders::light_culling::COMPUTE_SOURCE)
-, m_sky_box_material(shaders::sky_box::VERTEX_SOURCE, shaders::sky_box::FRAGMENT_SOURCE)
-, m_pixel_light_shader(shaders::pixel_light::VERTEX_SOURCE, shaders::pixel_light::FRAGMENT_SOURCE)
+: m_solid_material(ShaderProgramHandle::from_files(shaders::solid::VERTEX_FILE, shaders::solid::FRAGMENT_FILE))
+, m_billboard_material(ShaderProgramHandle::from_files(shaders::billboard::VERTEX_FILE, shaders::billboard::FRAGMENT_FILE))
+, m_gun_material(ShaderProgramHandle::from_files(shaders::gun::VERTEX_FILE, shaders::gun::FRAGMENT_FILE))
+, m_light_material(ShaderProgramHandle::from_files(shaders::light::VERTEX_FILE, shaders::light::FRAGMENT_FILE))
+, m_sector_material(ShaderProgramHandle::from_files(shaders::sector::VERTEX_FILE, shaders::sector::FRAGMENT_FILE))
+, m_light_culling_shader(ShaderProgramHandle::from_file(shaders::light_culling::COMPUTE_FILE))
+, m_sky_box_material(ShaderProgramHandle::from_files(shaders::sky_box::VERTEX_FILE, shaders::sky_box::FRAGMENT_FILE))
+, m_pixel_light_shader(ShaderProgramHandle::from_files(shaders::pixel_light::VERTEX_FILE, shaders::pixel_light::FRAGMENT_FILE))
 , m_window_size(win_w, win_h)
 {
   this->create_g_buffers(win_w, win_h);
@@ -78,6 +148,16 @@ Renderer::Renderer(u32 win_w, u32 win_h)
     m_light_tiles_ssbo = SSBOBuffer<u32>(num_tiles * 2);
     m_light_counter_ssbo = SSBOBuffer<u32>(1);
   }
+
+  // Register all shader programs for hot-reload monitoring.
+  register_shader(m_solid_material,        {shaders::solid::VERTEX_FILE,        shaders::solid::FRAGMENT_FILE});
+  register_shader(m_billboard_material,    {shaders::billboard::VERTEX_FILE,    shaders::billboard::FRAGMENT_FILE});
+  register_shader(m_gun_material,          {shaders::gun::VERTEX_FILE,          shaders::gun::FRAGMENT_FILE});
+  register_shader(m_light_material,        {shaders::light::VERTEX_FILE,        shaders::light::FRAGMENT_FILE});
+  register_shader(m_sector_material,       {shaders::sector::VERTEX_FILE,       shaders::sector::FRAGMENT_FILE});
+  register_shader(m_light_culling_shader,  {shaders::light_culling::COMPUTE_FILE});
+  register_shader(m_sky_box_material,      {shaders::sky_box::VERTEX_FILE,      shaders::sky_box::FRAGMENT_FILE});
+  register_shader(m_pixel_light_shader,    {shaders::pixel_light::VERTEX_FILE,  shaders::pixel_light::FRAGMENT_FILE});
 }
 
 //==============================================================================
@@ -109,6 +189,8 @@ void Renderer::render
 )
 const
 {
+  check_shader_hot_reload();
+
   const Camera* camera = Camera::get();
   if (!camera)
     return;
@@ -579,6 +661,12 @@ const
   m_pixel_light_shader.set_uniform(shaders::pixel_light::NUM_SECTORS,  m_sectors_ssbo.gpu_size_u32());
   m_pixel_light_shader.set_uniform(shaders::pixel_light::NUM_WALLS,    m_walls_ssbo.gpu_size_u32());
 
+  EntityRegistry& registry = GameSystem::get().get_entities();
+  registry.for_each<AmbientLight>([this](AmbientLight& ambient)
+  {
+    m_pixel_light_shader.set_uniform(shaders::pixel_light::AMBIENT_STRENGTH, ambient.strength);
+  });
+
   m_sectors_ssbo.bind(1);
   m_walls_ssbo.bind(2);
   m_portal_matricies_ssbo.bind(3);
@@ -611,7 +699,7 @@ const
       nc_assert(light);
 
       vec3 pos = (t * vec4(light->get_position(), 1.0f)).xyz();
-      SectorID light_sid = map.get_sector_from_point(light->get_position());
+      SectorID light_sid = map.get_sector_from_point(light->get_position().xz());
       m_point_light_pixel_ssbo.push_back(light->get_gpu_data(pos, pos, light_sid));
     });
 

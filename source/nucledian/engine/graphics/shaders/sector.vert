@@ -1,4 +1,3 @@
-constexpr const char* VERTEX_SOURCE = R"(
 
 #version 430 core
 layout (location = 0) in vec3   a_position;
@@ -50,5 +49,3 @@ void main()
   texture_offset = a_texture_offset;
   megatex_uv = a_megatex_uv;
 }
-
-)";

@@ -1,4 +1,3 @@
-constexpr const char* FRAGMENT_SOURCE = R"(
 
 #version 430 core
 in vec3 world_position;
@@ -49,5 +48,3 @@ void main()
   g_stitched_normal.w = 0.0f;
   g_sector = 0u;
 }
-
-)";

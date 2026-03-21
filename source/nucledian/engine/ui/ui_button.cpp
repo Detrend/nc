@@ -113,7 +113,7 @@ namespace nc
 	//============================================================================================
 
 	MenuManager::MenuManager() :
-		button_material(shaders::ui_button::VERTEX_SOURCE, shaders::ui_button::FRAGMENT_SOURCE)
+		button_material(ShaderProgramHandle::from_files(shaders::ui_button::VERTEX_FILE, shaders::ui_button::FRAGMENT_FILE))
 	{
 
 		main_menu_page = new MainMenuPage();
@@ -418,7 +418,7 @@ namespace nc
 	//=============================================================================================
 
 	NextLevelPage::NextLevelPage() :
-		digit_material(shaders::ui_text::VERTEX_SOURCE, shaders::ui_text::FRAGMENT_SOURCE)
+		digit_material(ShaderProgramHandle::from_files(shaders::ui_text::VERTEX_FILE, shaders::ui_text::FRAGMENT_FILE))
 	{
 		next_level_button = new UiButton("ui_next_level", vec2(0.0f, -0.8f), vec2(0.45f, 0.1f), std::bind(&NextLevelPage::next_level_func, this));
 		menu_button = new UiButton("ui_menu", vec2(0.0f, -0.8f), vec2(0.18f, 0.1f), std::bind(&NextLevelPage::menu_func, this));
@@ -1040,7 +1040,7 @@ namespace nc
 	}
 
 	OptionsPage::OptionsPage() :
-		digit_shader(shaders::ui_text::VERTEX_SOURCE, shaders::ui_text::FRAGMENT_SOURCE)
+		digit_shader(ShaderProgramHandle::from_files(shaders::ui_text::VERTEX_FILE, shaders::ui_text::FRAGMENT_FILE))
 	{
 		sound_text = new UiButton("ui_sound", vec2(-0.3f, 0.40f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));
 		music_text = new UiButton("ui_music", vec2(-0.3f, 0.15f), vec2(0.45f, 0.1f), std::bind(&OptionsPage::do_nothing, this));

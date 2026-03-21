@@ -1,4 +1,3 @@
-constexpr const char* VERTEX_SOURCE = R"(
 
 #version 430 core
 layout(location = 0) in vec3 a_position;
@@ -24,5 +23,3 @@ void main()
   normal = (transform * vec4(0.0f, 0.0f, 1.0f, 0.0f)).xyz;
   uv = (a_uv * texture_size + texture_pos) / atlas_size;
 }
-
-)";

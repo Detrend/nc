@@ -1145,7 +1145,7 @@ void GraphicsSystem::create_sector_meshes()
   std::vector<stbrp_rect>          rects;
   std::vector<std::pair<u64, u64>> cnts;
 
-  constexpr f32 px_per_m  = 8;
+  constexpr f32 px_per_m  = 16;
   constexpr f32 px_per_m2 = px_per_m * px_per_m;
 
   for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)

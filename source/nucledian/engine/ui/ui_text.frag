@@ -1,4 +1,3 @@
-constexpr const char* FRAGMENT_SOURCE = R"(
 
 #version 430 core
       
@@ -11,5 +10,3 @@ uniform sampler2D sampler;
 void main(void) {
     FragColor = texture(sampler, uv);
 }
-
-)";

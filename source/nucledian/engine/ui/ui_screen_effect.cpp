@@ -10,7 +10,7 @@ namespace nc
 {
 
 UiScreenEffect::UiScreenEffect():
-	shader(shaders::ui_button::VERTEX_SOURCE, shaders::ui_button::FRAGMENT_SOURCE)
+	shader(ShaderProgramHandle::from_files(shaders::ui_button::VERTEX_FILE, shaders::ui_button::FRAGMENT_FILE))
 {
   init();
 }

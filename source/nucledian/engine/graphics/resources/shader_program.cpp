@@ -1,14 +1,151 @@
 #include <common.h>
+#include <logging.h>
 #include <math/lingebra.h>
 #include <engine/graphics/resources/shader_program.h>
 
 #include <glad/glad.h>
 
+#include <filesystem>
+#include <fstream>
 #include <iostream>
+#include <sstream>
+#include <string>
 #include <vector>
 
 namespace nc
 {
+
+// ---------------------------------------------------------------------------
+// Shader source root – derived once from __FILE__ so the binary always finds
+// the source tree regardless of the working directory.
+// ---------------------------------------------------------------------------
+static std::string g_shader_root;
+
+static std::string compute_default_shader_root()
+{
+  // __FILE__ is the absolute path to this .cpp file.
+  // It lives at: <root>/source/nucledian/engine/graphics/resources/shader_program.cpp
+  // Going up 4 levels (strip filename + engine/graphics/resources) reaches <root>/source/nucledian/
+  std::string path = __FILE__;
+  std::replace(path.begin(), path.end(), '\\', '/');
+  for (int i = 0; i < 4; ++i)
+  {
+    const auto pos = path.rfind('/');
+    if (pos != std::string::npos)
+      path.resize(pos);
+  }
+  return path + "/";
+}
+
+//==============================================================================
+void ShaderProgramHandle::set_shader_root(std::string root)
+{
+  std::replace(root.begin(), root.end(), '\\', '/');
+  if (!root.empty() && root.back() != '/')
+    root += '/';
+  g_shader_root = std::move(root);
+}
+
+//==============================================================================
+std::optional<std::string> ShaderProgramHandle::read_shader_file(const char* relative_path)
+{
+  if (g_shader_root.empty())
+    g_shader_root = compute_default_shader_root();
+
+  const std::string full_path = g_shader_root + relative_path;
+  std::ifstream file(full_path);
+  if (!file.is_open())
+  {
+    nc_crit("ShaderProgramHandle: cannot open shader file '{}'", full_path);
+    return std::nullopt;
+  }
+  std::ostringstream ss;
+  ss << file.rdbuf();
+  return ss.str();
+}
+
+//==============================================================================
+ShaderProgramHandle ShaderProgramHandle::from_files(const char* vert_path, const char* frag_path)
+{
+  const auto vert = read_shader_file(vert_path);
+  const auto frag = read_shader_file(frag_path);
+  if (!vert || !frag)
+    return ShaderProgramHandle();
+
+  return ShaderProgramHandle(vert->c_str(), frag->c_str());
+}
+
+//==============================================================================
+ShaderProgramHandle ShaderProgramHandle::from_file(const char* comp_path)
+{
+  const auto comp = read_shader_file(comp_path);
+  if (!comp)
+    return ShaderProgramHandle();
+
+  return ShaderProgramHandle(comp->c_str());
+}
+
+//==============================================================================
+bool ShaderProgramHandle::try_reload(const std::vector<std::string>& file_paths)
+{
+  std::vector<std::string> sources;
+  sources.reserve(file_paths.size());
+  for (const auto& path : file_paths)
+  {
+    const auto src = read_shader_file(path.c_str());
+    if (!src)
+      return false;
+    sources.push_back(*src);
+  }
+
+  // Determine shader types from file extensions
+  auto get_type = [](const std::string& path) -> GLenum
+  {
+    if (path.size() >= 5 && path.substr(path.size() - 5) == ".vert") return GL_VERTEX_SHADER;
+    if (path.size() >= 5 && path.substr(path.size() - 5) == ".frag") return GL_FRAGMENT_SHADER;
+    if (path.size() >= 5 && path.substr(path.size() - 5) == ".comp") return GL_COMPUTE_SHADER;
+    return GL_VERTEX_SHADER;
+  };
+
+  std::vector<GLuint> shaders;
+  shaders.reserve(sources.size());
+
+  auto delete_shaders = [&shaders]()
+  {
+    for (GLuint s : shaders)
+      glDeleteShader(s);
+  };
+
+  bool compile_error = false;
+  for (size_t i = 0; i < sources.size(); ++i)
+  {
+    const GLenum type = get_type(file_paths[i]);
+    const auto shader = compile_shader(sources[i].c_str(), type, /*log_only=*/true);
+    if (!shader)
+    {
+      compile_error = true;
+      continue;
+    }
+    shaders.push_back(*shader);
+  }
+
+  if (compile_error)
+  {
+    delete_shaders();
+    return false;
+  }
+
+  const auto new_program = link_program(shaders, /*log_only=*/true);
+  delete_shaders();
+  if (!new_program)
+    return false;
+
+  if (m_shader_program != 0)
+    glDeleteProgram(m_shader_program);
+
+  m_shader_program = *new_program;
+  return true;
+}
 
 //==============================================================================
 ShaderProgramHandle::ShaderProgramHandle(const char* compute_source)
@@ -85,7 +222,7 @@ ShaderProgramHandle::ShaderProgramHandle(std::initializer_list<std::pair<const c
 }
 
 //==============================================================================
-std::optional<GLuint> ShaderProgramHandle::compile_shader(const char* source, GLenum type) const
+std::optional<GLuint> ShaderProgramHandle::compile_shader(const char* source, GLenum type, bool log_only) const
 {
   const GLuint shader = glCreateShader(type);
   glShaderSource(shader, 1, &source, nullptr);
@@ -99,8 +236,11 @@ std::optional<GLuint> ShaderProgramHandle::compile_shader(const char* source, GL
     glGetShaderInfoLog(shader, sizeof(info_log), nullptr, info_log);
     glDeleteShader(shader);
 
-    std::string message =  "Shader compile error: " + std::string(info_log);
-    nc_expect(false, "{0}", message);
+    const std::string message = "Shader compile error: " + std::string(info_log);
+    if (log_only)
+      nc_crit("{}", message);
+    else
+      nc_expect(false, "{0}", message);
     return std::nullopt;
   }
 
@@ -108,7 +248,7 @@ std::optional<GLuint> ShaderProgramHandle::compile_shader(const char* source, GL
 }
 
 //==============================================================================
-std::optional<GLuint> ShaderProgramHandle::link_program(std::span<const GLuint> shaders) const
+std::optional<GLuint> ShaderProgramHandle::link_program(std::span<const GLuint> shaders, bool log_only) const
 {
   const GLuint shader_program = glCreateProgram();
   for (GLuint shader : shaders)
@@ -125,8 +265,11 @@ std::optional<GLuint> ShaderProgramHandle::link_program(std::span<const GLuint> 
     glGetProgramInfoLog(shader_program, sizeof(info_log), nullptr, info_log);
     glDeleteProgram(shader_program);
 
-    std::string message = "Shader link error: " + std::string(info_log);
-    nc_expect(false, "{0}", message);
+    const std::string message = "Shader link error: " + std::string(info_log);
+    if (log_only)
+      nc_crit("{}", message);
+    else
+      nc_expect(false, "{0}", message);
     return std::nullopt;
   }
 

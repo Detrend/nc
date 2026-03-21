@@ -1,4 +1,3 @@
-constexpr const char* FRAGMENT_SOURCE = R"(
 
 #version 430 core
 #extension GL_NV_gpu_shader5 : enable
@@ -110,5 +109,3 @@ void main()
   g_albedo = color * vec4(megatex_value.xyz, 1.0f);
   g_sector = sector_id;
 }
-
-)";

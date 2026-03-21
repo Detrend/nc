@@ -1,4 +1,3 @@
-constexpr const char* VERTEX_SOURCE = R"(
 
 #version 430 core
 
@@ -18,5 +17,3 @@ void main(void) {
 	uv = (a_uv * texture_size + texture_pos) / atlas_size;
 }
 
-
-)";

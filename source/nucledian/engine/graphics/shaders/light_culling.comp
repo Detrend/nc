@@ -1,4 +1,3 @@
-constexpr const char* COMPUTE_SOURCE = R"(
 
 #version 430 core
 
@@ -154,5 +153,3 @@ void main()
     }
   }
 }
-
-)";

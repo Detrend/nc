@@ -1,4 +1,3 @@
-constexpr const char* FRAGMENT_SOURCE = R"(
 
 #version 430 core
       
@@ -21,5 +20,3 @@ void main(void) {
 
     FragColor *= color;
 }
-
-)";

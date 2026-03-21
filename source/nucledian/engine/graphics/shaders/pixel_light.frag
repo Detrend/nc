@@ -1,4 +1,3 @@
-constexpr const char* FRAGMENT_SOURCE = R"(
 
 #version 430 core
 
@@ -39,6 +38,7 @@ layout(location = 8) uniform uint u_num_lights;
 layout(location = 10) uniform uint num_sectors;
 layout(location = 11) uniform uint num_walls;
 layout(location = 12) uniform uint sector_id;
+layout(location = 13) uniform float ambient_strength;
 
 layout(std430, binding = 0) readonly buffer point_light_buffer      { PointLight point_lights[];     };
 layout(std430, binding = 1) readonly buffer sector_data_buffer      { SectorData sectors[];          };
@@ -51,6 +51,7 @@ bool out_of_range_walls = false;
 bool invalid_wall_id = false;
 bool max_hops_reached = false;
 bool debug_pixel = false;
+vec3 col_out_debug = vec3(0.0f);
 
 float cross(vec2 a, vec2 b)
 {
@@ -85,18 +86,18 @@ float get_intersection_t(vec2 ray_origin, vec2 ray_direction, vec2 wall_p0, vec2
   return ray_t;
 }
 
-bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, PointLight light)
+float shadow_coeff(vec3 position, vec3 light_pos_stitched, uint start_sector_id, PointLight light)
 {
   if (start_sector_id == light.sector_id)
-    return false;
+  {
+    return 1.0f;
+  }
 
   const uint INVALID_WALL_ID = 65535;
   const uint MAX_LIGHT_TRAVERSE_SECTORS = 32;
 
-  vec3 ray_stitched_origin = stitched_position;
   vec3 ray_origin = position;
-  vec3 ray_stitched_direction = normalize(light.stitched_position - stitched_position);
-  vec3 ray_direction = ray_stitched_direction;
+  vec3 ray_direction = normalize(light_pos_stitched - position);
   
   uint current_sector_id = start_sector_id;
   float ray_t = -0.001f;
@@ -111,15 +112,17 @@ bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, P
       // check if ray collides with floor or ceiling
       float ray_hit_y = ray_origin.y + ray_t * ray_direction.y;
       if (ray_hit_y < sector.floor_y - 0.001f || ray_hit_y > sector.ceil_y + 0.001f)
-        return true;
+      {
+        return 0.0f;
+      }
 
-      return false;
+      return 1.0f;
     }
 
     if (current_sector_id >= num_sectors)
     {
       out_of_range_sectors = true;
-      return false;
+      return 0.0f;
     }
 
     for (uint i = 0; i < sector.walls_count; ++i)
@@ -127,7 +130,7 @@ bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, P
       if (sector.walls_offset + i >= num_walls)
       {
         out_of_range_walls = true;
-        return false;
+        return 0.0f;
       }
       WallData wall = walls[sector.walls_offset + i];
 
@@ -148,19 +151,23 @@ bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, P
     if (wall_index == INVALID_WALL_ID)
     {
       invalid_wall_id = true;
-      return false;
+      return 0.0f;
     }
 
     // check if ray collides with floor or ceiling
     float ray_hit_y = ray_origin.y + ray_t * ray_direction.y;
     if (ray_hit_y < sector.floor_y - 0.001f || ray_hit_y > sector.ceil_y + 0.001f)
-      return true;
+    {
+      return 0.0f;
+    }
    
     WallData wall = walls[sector.walls_offset + wall_index];
 
     // wall is solid wall (not a portal)
     if (wall.destination == INVALID_WALL_ID)
-      return true;
+    {
+      return 0.0f;
+    }
 
     current_sector_id = wall.destination;
 
@@ -170,14 +177,18 @@ bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, P
   }
 
   max_hops_reached = true;
-  return false;
+  return 0.0f;
 }
 
 out vec4 out_color;
 
+float rand(vec2 co) {
+  return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
 void main()
 {
-  vec3 final_color = vec3(0.0);
+  vec3 final_color = vec3(ambient_strength);
   vec3 position = wp + normal * 0.1f;
   vec3 color = vec3(0.0);
 
@@ -196,24 +207,62 @@ void main()
 
     float distance = sqrt(distance_squared);
     light_direction /= distance;
+
     float angle = dot(stitched_normal, light_direction);
     if (angle <= 0.0f)
-    continue;
-
-#define ABC
-#ifdef ABC
-    if (is_in_shadow(position, stitched_position, sector_id, light))
       continue;
-#endif
+
+
+    const int   num_samples = 4;
+    const float shadow_d    = 0.15f;
+
+    float accum = 0.0f;
+    for (int s = 0; s < num_samples; ++s)
+    {
+      float off_x = rand(gl_FragCoord.xy + vec2(float(s)) * vec2(11.3f, 5.0f)) * 2.0f - 1.0f;
+      float off_y = rand(gl_FragCoord.xy + vec2(float(s)) * vec2(31.0f, 7.3f)) * 2.0f - 1.0f;
+      float off_z = rand(gl_FragCoord.xy + vec2(float(s)) * vec2(20.1f, 2.8f)) * 2.0f - 1.0f;
+      vec3  offset = vec3(off_x, off_y, off_z);
+      accum += shadow_coeff(position, light.stitched_position + offset * shadow_d, sector_id, light);
+    }
+    float shadow_coeff = accum / float(num_samples);
 
     float diffuse = max(angle, 0.0f);
 
     float attenuation = pow(max(light.radius - distance, 0.0f) / light.radius, light.falloff);
-    final_color += diffuse * light.color * light.intensity * attenuation;
+    final_color += diffuse * light.color * light.intensity * attenuation * shadow_coeff;
   }
+
+/*
+  if (u_num_lights == 0)
+  {
+    col_out_debug += vec3(1.0, 0.0, 0.0);
+  }
+  else if (u_num_lights == 1)
+  {
+    col_out_debug += vec3(0.0, 1.0, 0.0);
+  }
+  else if (u_num_lights == 2)
+  {
+    col_out_debug += vec3(0.0, 0.0, 1.0);
+  }
+  else if (u_num_lights == 3)
+  {
+    col_out_debug += vec3(1.0, 1.0, 0.0);
+  }
+  else if (u_num_lights == 4)
+  {
+    col_out_debug += vec3(0.0, 1.0, 1.0);
+  }
+  else
+  {
+    col_out_debug += vec3(1.0, 1.0, 1.0);
+  }
+*/
 
 //#define PIXEL_DEBUG
 #ifdef PIXEL_DEBUG
+/*
 if (debug_pixel)
   out_color = vec4(1.0, 1.0, 0.0, 1.0);
 else if (out_of_range_sectors)
@@ -226,9 +275,9 @@ else if (max_hops_reached)
   out_color = vec4(1.0, 0.0, 1.0, 1.0);
 else
   out_color = vec4(final_color, 1.0f);
+*/
+  out_color = vec4(col_out_debug, 1.0f);
 #else
   out_color = vec4(final_color, 1.0f);
 #endif
 }
-
-)";
