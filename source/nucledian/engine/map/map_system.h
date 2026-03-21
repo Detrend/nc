@@ -46,6 +46,23 @@
 namespace nc
 {
 
+// layout430 compatible
+struct MegatexPart
+{
+  ivec2 megatex_coord_1;
+  ivec2 megatex_coord_2;
+  vec3  wpos_00; // world pos at local(0,0)
+  f32   padd0;
+  vec3  wpos_10; // world pos at local(1,0)
+  f32   padd1;
+  vec3  wpos_01; // world pos at local(0,1)
+  f32   padd2;
+  vec3  wpos_11; // world pos at local(1,1)
+  f32   padd3;
+  vec3  normal;
+  f32   padd4;
+};
+
 // This data structure lets us check which sectors and their parts are visible
 // and which are not.
 // Can be used for occlusion culling or detecting visible regions by AI

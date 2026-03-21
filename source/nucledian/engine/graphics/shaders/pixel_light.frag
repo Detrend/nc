@@ -213,8 +213,8 @@ void main()
       continue;
 
 
-    const int   num_samples = 4;
-    const float shadow_d    = 0.15f;
+    const int   num_samples = 1;
+    const float shadow_d    = 0.0f;
 
     float accum = 0.0f;
     for (int s = 0; s < num_samples; ++s)
@@ -230,7 +230,7 @@ void main()
     float diffuse = max(angle, 0.0f);
 
     float attenuation = pow(max(light.radius - distance, 0.0f) / light.radius, light.falloff);
-    final_color += diffuse * light.color * light.intensity * attenuation * shadow_coeff;
+    final_color += diffuse * light.color * light.intensity * attenuation * shadow_coeff * light.radius;
   }
 
 /*

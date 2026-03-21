@@ -18,13 +18,13 @@ struct DirLight
 
 struct PointLight
 {
-    vec3  position;
-    float intensity;
-    vec3  stitched_position;
-    float radius;
-    vec3  color;
-    float falloff;
-    uint  sector_id;
+  vec3  position;
+  float intensity;
+  vec3  stitched_position;
+  float radius;
+  vec3  color;
+  float falloff;
+  uint  sector_id;
 };
 
 struct TileData

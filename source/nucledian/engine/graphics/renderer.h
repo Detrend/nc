@@ -9,6 +9,7 @@
 #include <engine/graphics/resources/texture.h>
 #include <engine/graphics/resources/shader_program.h>
 #include <engine/map/map_types.h>
+#include <engine/map/map_system.h>
 
 #include <math/vector.h>
 #include <math/matrix.h>
@@ -41,6 +42,7 @@ public:
   static constexpr size_t MAX_SECTORS = 1024;
   static constexpr size_t MAX_WALLS = MAX_SECTORS * 8;
   static constexpr size_t MAX_PORTALS = MAX_SECTORS * 4;
+  static constexpr size_t MAX_MEGATEX_PARTS = 1024 * 8;
 
   struct CameraData
   {
@@ -129,6 +131,7 @@ private:
   mutable ShaderProgramHandle m_light_culling_shader;
   mutable ShaderProgramHandle m_sky_box_material;
   mutable ShaderProgramHandle m_pixel_light_shader;
+  mutable ShaderProgramHandle m_pixel_gi_shader;
 
   // Registry used by the hot-reload loop.
   mutable std::vector<ShaderEntry> m_shader_entries;
@@ -140,11 +143,13 @@ private:
   mutable SSBOBuffer<u32>        m_light_index_ssbo;
   mutable SSBOBuffer<u32>        m_light_tiles_ssbo;
   mutable SSBOBuffer<u32>        m_light_counter_ssbo;
+  mutable SSBOBuffer<u32>        m_megatex_indices_ssbo { 512 };
 
   mutable SSBOBuffer<DirLightGPU>   m_dir_light_ssbo         { MAX_DIR_LIGHTS           };
   mutable SSBOBuffer<PointLightGPU> m_point_light_ssbo       { MAX_VISIBLE_POINT_LIGHTS };
   mutable SSBOBuffer<PointLightGPU> m_point_light_pixel_ssbo { MAX_VISIBLE_POINT_LIGHTS };
   mutable SSBOBuffer<SectorGPU>     m_sectors_ssbo           { MAX_SECTORS              };
+  mutable SSBOBuffer<MegatexPart>   m_megatex_ssbo           { MAX_MEGATEX_PARTS        };
   mutable SSBOBuffer<WallGPU>       m_walls_ssbo             { MAX_WALLS                };
   mutable SSBOBuffer<mat4>          m_portal_matricies_ssbo  { MAX_PORTALS              };
   mutable SSBOBuffer<mat4>          m_sector_matricies_ssbo  { MAX_SECTORS              };

@@ -81,17 +81,7 @@ public:
   u32    megatex_width        = 0;
   u32    megatex_height       = 0;
 
-  struct InspectMegatex
-  {
-    ivec2 megatex_coord_1;
-    ivec2 megatex_coord_2;
-    vec3  wpos_00; // world pos at local(0,0)
-    vec3  wpos_10; // world pos at local(1,0)
-    vec3  wpos_01; // world pos at local(0,1)
-    vec3  wpos_11; // world pos at local(1,1)
-    vec3  normal;
-  };
-  std::vector<InspectMegatex> megatex_parts;
+  std::vector<MegatexPart> megatex_parts;
 
 private:
   void update(f32 delta_seconds);

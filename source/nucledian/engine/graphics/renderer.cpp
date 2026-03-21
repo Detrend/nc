@@ -114,6 +114,7 @@ Renderer::Renderer(u32 win_w, u32 win_h)
 , m_light_culling_shader(ShaderProgramHandle::from_file(shaders::light_culling::COMPUTE_FILE))
 , m_sky_box_material(ShaderProgramHandle::from_files(shaders::sky_box::VERTEX_FILE, shaders::sky_box::FRAGMENT_FILE))
 , m_pixel_light_shader(ShaderProgramHandle::from_files(shaders::pixel_light::VERTEX_FILE, shaders::pixel_light::FRAGMENT_FILE))
+, m_pixel_gi_shader(ShaderProgramHandle::from_files(shaders::pixel_gi::VERTEX_FILE, shaders::pixel_gi::FRAGMENT_FILE))
 , m_window_size(win_w, win_h)
 {
   this->create_g_buffers(win_w, win_h);
@@ -158,6 +159,7 @@ Renderer::Renderer(u32 win_w, u32 win_h)
   register_shader(m_light_culling_shader,  {shaders::light_culling::COMPUTE_FILE});
   register_shader(m_sky_box_material,      {shaders::sky_box::VERTEX_FILE,      shaders::sky_box::FRAGMENT_FILE});
   register_shader(m_pixel_light_shader,    {shaders::pixel_light::VERTEX_FILE,  shaders::pixel_light::FRAGMENT_FILE});
+  register_shader(m_pixel_gi_shader,       {shaders::pixel_gi::VERTEX_FILE,  shaders::pixel_gi::FRAGMENT_FILE});
 }
 
 //==============================================================================
@@ -318,6 +320,7 @@ void Renderer::update_sector_ssbos() const
   m_sectors_ssbo.clear();
   m_walls_ssbo.clear();
   m_portal_matricies_ssbo.clear();
+  m_megatex_ssbo.clear();
 
   m_portal_matricies_ssbo.push_back(mat4(1.0f));
 
@@ -372,9 +375,15 @@ void Renderer::update_sector_ssbos() const
     );
   }
 
+  for (const MegatexPart& part : GraphicsSystem::get().megatex_parts)
+  {
+    m_megatex_ssbo.push_back(part);
+  }
+
   m_sectors_ssbo.update_gpu_data();
   m_walls_ssbo.update_gpu_data();
   m_portal_matricies_ssbo.update_gpu_data();
+  m_megatex_ssbo.update_gpu_data();
 }
 
 //==============================================================================
@@ -644,7 +653,7 @@ const
     GL_DEBUG_SOURCE_APPLICATION,
     0,
     -1,
-    "PixelLightingPass"
+    "PixelLightingPass - First wave"
   );
 
   std::set<SectorID> sectors_to_render;
@@ -683,8 +692,8 @@ const
     MegatexPartId floor_id = map.sectors[sid].floor_megatex_id;
     MegatexPartId ceil_id  = map.sectors[sid].ceil_megatex_id;
 
-    const auto& part_floor = gfx.megatex_parts[floor_id];
-    const auto& part_ceil  = gfx.megatex_parts[ceil_id];
+    const MegatexPart& part_floor = gfx.megatex_parts[floor_id];
+    const auto& part_ceil = gfx.megatex_parts[ceil_id];
 
     m_pixel_light_shader.set_uniform(shaders::pixel_light::SECTOR_ID, cast<u32>(sid));
 
@@ -753,6 +762,116 @@ const
         m_pixel_light_shader.set_uniform(shaders::pixel_light::NORMAL, part.normal);
         glDrawArrays(GL_TRIANGLES, 0, 6);
       });
+    }
+  }
+
+  glBindVertexArray(0);
+
+  glPopDebugGroup();
+
+  // PART 2
+  glPushDebugGroup
+  (
+    GL_DEBUG_SOURCE_APPLICATION,
+    0,
+    -1,
+    "PixelLightingPass - Second wave"
+  );
+
+  // Blit megatex_input_handle -> megatex_handle
+  glCopyImageSubData(
+    gfx.megatex_input_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
+    gfx.megatex_handle,       GL_TEXTURE_2D, 0, 0, 0, 0,
+    static_cast<GLsizei>(gfx.megatex_width),
+    static_cast<GLsizei>(gfx.megatex_height),
+    1
+  );
+
+  // Set the target
+  glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_fbo);
+  glViewport(0, 0, gfx.megatex_width, gfx.megatex_height);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  // Use the GI shader
+  m_pixel_gi_shader.use();
+  m_megatex_ssbo.bind(0);
+  m_pixel_gi_shader.set_uniform(shaders::pixel_gi::MEGATEX_SIZE, megatex_size);
+
+  // Bind dummy VAO
+  glBindVertexArray(screen_quad.get_vao());
+
+  // Read from megatex_handle, write to megatex_input_handle once again
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, gfx.megatex_handle);
+
+  for (SectorID sid : sectors_to_render)
+  {
+    struct MegatexPartAndId
+    {
+      MegatexPart   part;
+      MegatexPartId id;
+    };
+
+    std::vector<MegatexPartAndId> parts_to_render;
+
+    // Update the inner SSBO
+    m_megatex_indices_ssbo.clear();
+
+    MegatexPartId part_floor = map.sectors[sid].floor_megatex_id;
+    MegatexPartId part_ceil  = map.sectors[sid].ceil_megatex_id;
+
+    // Push floor & ceil
+    m_megatex_indices_ssbo.push_back(part_floor);
+    m_megatex_indices_ssbo.push_back(part_ceil);
+
+    // To the render list
+    // Floor
+    parts_to_render.push_back(MegatexPartAndId
+    {
+      .part = gfx.megatex_parts[part_floor],
+      .id   = part_floor,
+    });
+
+    // Ceil
+    parts_to_render.push_back(MegatexPartAndId
+    {
+      .part = gfx.megatex_parts[part_ceil],
+      .id   = part_ceil,
+    });
+
+    // Push the walls
+    map.for_each_wall_of_sector(sid, [&](WallID wid)
+    {
+      MegatexPartId part_wall = map.walls[wid].megatex_id;
+      m_megatex_indices_ssbo.push_back(part_wall);
+
+      parts_to_render.push_back(MegatexPartAndId
+      {
+        .part = gfx.megatex_parts[part_wall],
+        .id   = part_wall,
+      });
+    });
+
+    m_megatex_indices_ssbo.update_gpu_data();
+    m_megatex_indices_ssbo.bind(1);
+    m_pixel_gi_shader.set_uniform(shaders::pixel_gi::NUM_INDICES, m_megatex_indices_ssbo.gpu_size_u32());
+
+    // Now we can render
+    for (const MegatexPartAndId& pair : parts_to_render)
+    {
+      m_pixel_gi_shader.set_uniform(shaders::pixel_gi::MY_PART_ID, pair.id);
+
+      m_pixel_gi_shader.set_uniform(shaders::pixel_gi::FROM, cast<vec2>(pair.part.megatex_coord_1));
+      m_pixel_gi_shader.set_uniform(shaders::pixel_gi::TO,   cast<vec2>(pair.part.megatex_coord_2));
+
+      m_pixel_gi_shader.set_uniform(shaders::pixel_gi::WP00, pair.part.wpos_00);
+      m_pixel_gi_shader.set_uniform(shaders::pixel_gi::WP10, pair.part.wpos_10);
+      m_pixel_gi_shader.set_uniform(shaders::pixel_gi::WP01, pair.part.wpos_01);
+      m_pixel_gi_shader.set_uniform(shaders::pixel_gi::WP11, pair.part.wpos_11);
+
+      m_pixel_gi_shader.set_uniform(shaders::pixel_gi::NORMAL, pair.part.normal);
+
+      glDrawArrays(GL_TRIANGLES, 0, 6);
     }
   }
 

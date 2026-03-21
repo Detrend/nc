@@ -1250,11 +1250,12 @@ void GraphicsSystem::create_sector_meshes()
       stbrp_rect& rect = rects[idx+i];
       vec2 from = vec2{rect.x, rect.y};
       vec2 to   = from + vec2{rect.w, rect.h};
+      nc_assert(rect.w > 0 && rect.h > 0);
 
       m_sector_megatexture_info[ii].walls.resize(map.sectors[ii].last_wall - map.sectors[ii].first_wall);
 
       MegatexPartId   mpart = cast<MegatexPartId>(megatex_parts.size());
-      InspectMegatex& ref = megatex_parts.emplace_back();
+      MegatexPart& ref = megatex_parts.emplace_back();
       ref.megatex_coord_1 = cast<ivec2>(from);
       ref.megatex_coord_2 = cast<ivec2>(to);
 
