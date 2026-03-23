@@ -1374,11 +1374,13 @@ namespace nc
 			hover_over_button = page_up_button;
 		}
 
-		for (auto& button : load_game_buttons)
+		for (size_t i = 0 + page * PAGE_SIZE;
+			i < load_game_buttons.size() && i < (page + 1) * PAGE_SIZE;
+			i++)
 		{
-			if (button->is_point_in_rec(mouse_pos))
+			if (load_game_buttons[i]->is_point_in_rec(mouse_pos))
 			{
-				hover_over_button = button;
+				hover_over_button = load_game_buttons[i];
 				break;
 			}
 		}
