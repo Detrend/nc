@@ -1569,6 +1569,10 @@ namespace nc
 
 	void UiLoadGameButton::on_click()
 	{
+		get_engine().send_event(ModuleEvent
+			{
+				.type = ModuleEventType::new_game_level_requested,
+			});
 		get_engine().get_module<GameSystem>().load_game(save.data);
 		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_visible(false);
 		
