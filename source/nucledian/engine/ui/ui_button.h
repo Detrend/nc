@@ -198,8 +198,17 @@ namespace nc
     void draw(ShaderProgramHandle button_material, ShaderProgramHandle digit_material, GLuint VAO);
   private:
     void go_back();
+    void page_up();
+    void page_down();
+
+    const s32 PAGE_SIZE = 8;
+
+    s32 page = 0;
 
     UiButton* go_back_button = nullptr;
+    UiButton* page_up_button = nullptr;
+    UiButton* page_down_button = nullptr;
+
     std::vector<UiLoadGameButton*> load_game_buttons;
   };
 

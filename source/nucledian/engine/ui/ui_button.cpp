@@ -1299,12 +1299,16 @@ namespace nc
 
 	LoadGamePage::LoadGamePage()
 	{
-		go_back_button = new UiButton("ui_back", vec2(0.0f, 0.45f), vec2(0.3f, 0.066f), std::bind(&LoadGamePage::go_back, this));
+		go_back_button = new UiButton("ui_back", vec2(0.0f, 0.6f), vec2(0.3f, 0.066f), std::bind(&LoadGamePage::go_back, this));
+		page_up_button = new UiButton("ui_arrow_down", vec2(0.0f, -0.55f), vec2(0.045f, 0.03f), std::bind(&LoadGamePage::page_up, this));
+		page_down_button = new UiButton("ui_arrow_up", vec2(0.0f, 0.45f), vec2(0.045f, 0.03f), std::bind(&LoadGamePage::page_down, this));
 	}
 
 	LoadGamePage::~LoadGamePage()
 	{
 		delete go_back_button;
+		delete page_down_button;
+		delete page_up_button;
 
 		for (auto load_game_button : load_game_buttons)
 		{
@@ -1330,7 +1334,13 @@ namespace nc
 		{
 			load_game_buttons.push_back(new UiLoadGameButton(save, pos, scale));
 			pos += stepPos;
+			if (pos.y < -0.41f)
+			{
+				pos = vec2(-0.0f, 0.3f);
+			}
 		}
+
+		page = 0;
 	}
 
 	void MenuManager::update_saves()
@@ -1342,6 +1352,8 @@ namespace nc
 	void LoadGamePage::update([[maybe_unused]] vec2 mouse_pos, [[maybe_unused]] u32 prev_mouse, [[maybe_unused]] u32 cur_mouse)
 	{
 		go_back_button->set_hover(false);
+		page_down_button->set_hover(false);
+		page_up_button->set_hover(false);
 		for (auto& button : load_game_buttons)
 		{
 			button->set_hover(false);
@@ -1352,6 +1364,14 @@ namespace nc
 		if (go_back_button->is_point_in_rec(mouse_pos))
 		{
 			hover_over_button = go_back_button;
+		}
+		else if (page_down_button->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = page_down_button;
+		}
+		else if (page_up_button->is_point_in_rec(mouse_pos))
+		{
+			hover_over_button = page_up_button;
 		}
 
 		for (auto& button : load_game_buttons)
@@ -1390,6 +1410,8 @@ namespace nc
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		go_back_button->draw(button_material);
+		page_down_button->draw(button_material);
+		page_up_button->draw(button_material);
 
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
@@ -1410,9 +1432,11 @@ namespace nc
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		for (auto& button : load_game_buttons)
+		for (size_t i = 0 + page * PAGE_SIZE;
+			i < load_game_buttons.size() && i < (page + 1) * PAGE_SIZE; 
+			i++)
 		{
-			button->draw(digit_material);
+			load_game_buttons[i]->draw(digit_material);
 		}
 
 		glDisable(GL_BLEND);
@@ -1427,6 +1451,16 @@ namespace nc
 	void LoadGamePage::go_back()
 	{
 		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MAIN);
+	}
+
+	void LoadGamePage::page_up()
+	{
+		page = min(page + 1, (s32)load_game_buttons.size() / PAGE_SIZE);
+	}
+
+	void LoadGamePage::page_down()
+	{
+		page = max(0, page - 1);
 	}
 
 	void OptionsPage::go_back()
