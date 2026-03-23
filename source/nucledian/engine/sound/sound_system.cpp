@@ -109,6 +109,19 @@ void SoundSystem::on_event(ModuleEvent& event)
 void SoundSystem::set_sound_volume(int step)
 {
   global_sound_volume = (1.0f / 9.0f * step) * (1.0f / 9.0f * step);
+  for (SoundHandle::Channel i = 0; i < CHANNEL_COUNT; ++i)
+  {
+    if (! channels[i].is_free)
+    {
+      Mix_Volume(i, (int)(128.0f * global_music_volume));
+    }
+  }
+}
+
+//==============================================================================
+float SoundSystem::get_sound_volume()
+{
+  return global_sound_volume;
 }
 
 //==============================================================================

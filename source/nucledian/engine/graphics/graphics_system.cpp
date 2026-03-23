@@ -84,7 +84,7 @@ static void display_fps_as_title(SDL_Window* window)
   const auto fps_number = 1.0f / delta_time;
   const auto title_str  = std::format
   (
-    "Nucledian Game. FPS: {:.2f}, Dt: {:.2f}ms", fps_number, delta_time * 1000.0f
+    "Nuclidean Game. FPS: {:.2f}, Dt: {:.2f}ms", fps_number, delta_time * 1000.0f
   );
 
   SDL_SetWindowTitle(window, title_str.c_str());
@@ -159,7 +159,7 @@ bool GraphicsSystem::init()
   // init SDL
   constexpr auto SDL_INIT_FLAGS = SDL_INIT_VIDEO | SDL_INIT_EVENTS;
   constexpr u32  SDL_WIN_FLAGS = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED;
-  constexpr cstr WINDOW_NAME = "Nuclidean";
+  constexpr cstr WINDOW_NAME = "N U C L I D E A N";
   constexpr auto WIN_POS = SDL_WINDOWPOS_UNDEFINED;
 
   if (SDL_Init(SDL_INIT_FLAGS) < 0)

@@ -58,6 +58,7 @@ public:
   void on_event(ModuleEvent& event) override;
 
   void set_sound_volume(int step);
+  float get_sound_volume();
   void set_music_volume(int step);
 
   void process_sdl_event(const SDL_Event& event);
