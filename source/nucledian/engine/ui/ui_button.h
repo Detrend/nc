@@ -268,21 +268,20 @@ namespace nc
     MenuManager();
     ~MenuManager();
 
+    
     void set_page(MenuPages page);
-
-    vec2 get_normalized_mouse_pos();
-
     void set_transition_screen(bool enabled);
     void set_visible(bool visibility);
     void update();
     void draw();
-    void draw_cursor();
     void post_init();
     void on_exit();
-
     void update_saves();
 
   private:
+    void draw_cursor();
+    vec2 get_normalized_mouse_pos();
+
     const ShaderProgramHandle button_material;
     const ShaderProgramHandle digit_material;
 

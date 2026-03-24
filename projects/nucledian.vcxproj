@@ -159,7 +159,6 @@
     <ClCompile Include="..\source\nucledian\engine\ui\ui_button.cpp" />
     <ClCompile Include="..\source\nucledian\game\item.cpp" />
     <ClCompile Include="..\source\nucledian\game\item_resources.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\ui\ui_texture.cpp" />
     <ClCompile Include="..\source\nucledian\engine\ui\user_interface_module.cpp" />
     <ClCompile Include="..\source\nucledian\game\particle.cpp" />
     <ClCompile Include="..\source\nucledian\game\projectile.cpp" />
@@ -334,7 +333,6 @@
     <ClInclude Include="..\source\nucledian\game\game_types.h" />
     <ClInclude Include="..\source\nucledian\game\item.h" />
     <ClInclude Include="..\source\nucledian\game\item_resources.h" />
-    <ClInclude Include="..\source\nucledian\engine\ui\ui_texture.h" />
     <ClInclude Include="..\source\nucledian\engine\ui\user_interface_module.h" />
     <ClInclude Include="..\source\nucledian\game\particle.h" />
     <ClInclude Include="..\source\nucledian\game\projectile.h" />

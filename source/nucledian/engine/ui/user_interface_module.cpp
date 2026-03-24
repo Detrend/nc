@@ -28,7 +28,7 @@ namespace nc
   bool UserInterfaceSystem::init()
   {
     menu = new MenuManager();
-    ammo_display = new UiHudDisplay();
+    hud_display = new UiHudDisplay();
     screen_effect = new UiScreenEffect();
 
     return true;
@@ -36,7 +36,7 @@ namespace nc
 
   UserInterfaceSystem::~UserInterfaceSystem()
   {
-    delete ammo_display;
+    delete hud_display;
     delete menu;
   }
 
@@ -54,7 +54,7 @@ namespace nc
   {
     if (get_engine().should_ammo_hp_hud_be_visible())
     {
-      ammo_display->draw();
+      hud_display->draw();
     }
 
     menu->draw();
@@ -69,7 +69,7 @@ namespace nc
       menu->post_init();
       break;
     case ModuleEventType::game_update:
-      ammo_display->update();
+      hud_display->update();
       menu->update();
       screen_effect->update(event.update.dt);
       break;
