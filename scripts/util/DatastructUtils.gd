@@ -65,3 +65,17 @@ static func fill_array_with(arr: Array, value: Variant, count: int)->Array:
 		arr[t] = value
 		t += 1
 	return arr
+
+static func is_array_like(node)->bool:
+	return (node is Array
+			or node is PackedByteArray
+			or node is PackedColorArray
+			or node is PackedFloat32Array
+			or node is PackedFloat64Array
+			or node is PackedInt32Array
+			or node is PackedInt64Array
+			or node is PackedStringArray
+			or node is PackedVector2Array
+			or node is PackedVector3Array
+			or node is PackedVector4Array
+	)

@@ -40,8 +40,39 @@ static func vec2_to_array(v: Vector2)->PackedFloat32Array:
 static func vec3_to_array(v: Vector3)->PackedFloat32Array:
 	return [v.x, v.y, v.z]
 	
+static func vec4_to_array(v: Vector4)->PackedFloat32Array:
+	return [v.x, v.y, v.z, v.w]
+	
+static func vec2i_to_array(v: Vector2i)->PackedInt64Array:
+	return [v.x, v.y]
+	
+static func vec3i_to_array(v: Vector3i)->PackedInt64Array:
+	return [v.x, v.y, v.z]
+	
+static func vec4i_to_array(v: Vector4i)->PackedInt64Array:
+	return [v.x, v.y, v.z, v.w]
+	
 static func vec2_from_array(arr: PackedFloat32Array)->Vector2:
 	return Vector2(arr[0],arr[1])
 	
 static func vec3_from_array(arr: PackedFloat32Array)->Vector3:
 	return Vector3(arr[0],arr[1],arr[2])
+
+static func sanitize_json_object(root):
+	if root is Vector2:	return vec2_to_array(root as Vector2)
+	if root is Vector3:	return vec3_to_array(root as Vector3)
+	if root is Vector4:	return vec4_to_array(root as Vector4)
+	if root is Vector2i:	return vec2i_to_array(root as Vector2i)
+	if root is Vector3i:	return vec3i_to_array(root as Vector3i)
+	if root is Vector4i:	return vec4i_to_array(root as Vector4i)
+	if root is Dictionary:
+		var ret : Dictionary = {}
+		for k in root:
+			ret[sanitize_json_object(k)] = sanitize_json_object(root[k])
+		return ret
+	if DatastructUtils.is_array_like(root):
+		var ret : Array = []
+		for item in root:
+			ret.append(sanitize_json_object(item))
+		return ret
+	return root
