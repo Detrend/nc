@@ -101,7 +101,7 @@ private:
   std::atomic_bool    terminated = true;
 
   // All
-  u8 enabled_layers = (1 << SoundLayers::game) | (1 << SoundLayers::ui);
+  u8 enabled_layers = (1 << SoundLayers::ui); //`SoundLayers::game` only gets enabled when we start the game, @see `SoundSystem::update()`
 
   Token               current_music_name;
   Mix_Music*          current_music_track;
