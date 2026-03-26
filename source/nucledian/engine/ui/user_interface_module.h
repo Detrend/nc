@@ -23,11 +23,10 @@ namespace nc
     bool init();
     ~UserInterfaceSystem();
 
+    void draw();
+
     MenuManager* get_menu_manager();
     UiScreenEffect* get_ui_screen_effect();
-
-    void draw_hud();
-
     UiHudDisplay* get_hud() { return hud_display; }
 
   private:
