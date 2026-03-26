@@ -458,7 +458,7 @@ void GraphicsSystem::render()
   {
     m_renderer->render(visible_sectors, gun_props);
 
-    get_engine().get_module<UserInterfaceSystem>().draw_hud();
+    get_engine().get_module<UserInterfaceSystem>().draw();
   }
 
 #ifdef NC_IMGUI

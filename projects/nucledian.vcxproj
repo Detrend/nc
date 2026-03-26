@@ -319,6 +319,7 @@
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\texture_id.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\debug\top_down_debug.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\shaders\uniform.h" />
+    <ClInclude Include="..\source\nucledian\engine\map\map_dynamics_hooks.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
     <ClInclude Include="..\source\nucledian\engine\map\physics.h" />
     <ClInclude Include="..\source\nucledian\engine\player\level_types.h" />

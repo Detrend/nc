@@ -50,7 +50,7 @@ namespace nc
     return screen_effect;
   }
 
-  void UserInterfaceSystem::draw_hud()
+  void UserInterfaceSystem::draw()
   {
     if (get_engine().should_ammo_hp_hud_be_visible())
     {

@@ -1546,8 +1546,6 @@ namespace nc
 	//==============================================================================================
 	void QuitGamePage::yes_func()
 	{
-		//get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->on_exit();
-
 		get_engine().request_quit();
 	}
 
