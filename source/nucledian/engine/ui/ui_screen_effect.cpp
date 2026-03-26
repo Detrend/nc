@@ -15,20 +15,28 @@ UiScreenEffect::UiScreenEffect():
   init();
 }
 
+//===========================================================================================
+
 void UiScreenEffect::did_damage([[maybe_unused] ]int damage)
 {
+  // final color is determined by how big the damage is
   damage *= 2;
   time_since_last_dmg = time_since_last_dmg - damage / 100.0f;
-  //time_since_last_dmg = 0.0f;
 }
+
+//===========================================================================================
 
 void UiScreenEffect::did_pickup()
 {
+  // resets pickup timer
   time_since_last_pickup = 0.0f;
 }
 
+//===========================================================================================
+
 void UiScreenEffect::init()
 {
+  //creation of VAO and VBO
   vec2 vertices[] = { vec2(-1, 1), vec2(0, 0),
     vec2(-1, -1), vec2(0, 1),
     vec2(1, 1), vec2(1, 0),
@@ -56,14 +64,19 @@ void UiScreenEffect::init()
   glBindVertexArray(0);
 }
 
+//===========================================================================================
+
 void UiScreenEffect::update(float delta)
 {
   time_since_last_dmg = min(time_since_last_dmg + delta, MAX_DMG_FLASH_DURATION);
   time_since_last_pickup = min(time_since_last_pickup + delta, MAX_PICKUP_FLASH_DURATION);
 }
 
+//===========================================================================================
+
 void UiScreenEffect::draw()
 {
+  //init shader
   shader.use();
 
   glBindVertexArray(VAO);
@@ -86,11 +99,13 @@ void UiScreenEffect::draw()
 
   const glm::mat4 final_trans = trans_mat;
 
+  //set uniforms
   shader.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
   shader.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas().get_size());
   shader.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
   shader.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
 
+  //determine color of flash -> red (damage) has priority
   if ((MAX_DMG_FLASH_DURATION - time_since_last_dmg) == 0)
   {
     shader.set_uniform(shaders::ui_button::COLOR, vec4(1.0f, 1.0f, 0.0f, (MAX_PICKUP_FLASH_DURATION - time_since_last_pickup)/ MAX_PICKUP_FLASH_DURATION));
@@ -103,6 +118,7 @@ void UiScreenEffect::draw()
   glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
+  //unbind
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
 

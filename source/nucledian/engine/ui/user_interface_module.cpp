@@ -20,11 +20,13 @@ namespace nc
     return EngineModule::user_interface_system;
   }
 
+  //===========================================================================================
   UserInterfaceSystem& UserInterfaceSystem::get()
   {
     return get_engine().get_module<UserInterfaceSystem>();
   }
 
+  //===========================================================================================
   bool UserInterfaceSystem::init()
   {
     menu = new MenuManager();
@@ -34,21 +36,27 @@ namespace nc
     return true;
   }
 
+  //===========================================================================================
   UserInterfaceSystem::~UserInterfaceSystem()
   {
     delete hud_display;
     delete menu;
   }
+  //===========================================================================================
 
   MenuManager* UserInterfaceSystem::get_menu_manager()
   {
     return menu;
   }
 
+  //===========================================================================================
+
   UiScreenEffect* UserInterfaceSystem::get_ui_screen_effect()
   {
     return screen_effect;
   }
+
+  //===========================================================================================
 
   void UserInterfaceSystem::draw()
   {
@@ -60,6 +68,8 @@ namespace nc
     menu->draw();
     screen_effect->draw();
   }
+
+  //===========================================================================================
 
   void UserInterfaceSystem::on_event(ModuleEvent& event)
   {

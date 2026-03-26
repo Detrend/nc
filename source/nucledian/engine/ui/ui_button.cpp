@@ -24,6 +24,7 @@
 #include <fstream>
 #include <filesystem>
 #include <string>
+#include <format>
 #include <json/json.hpp>
 
 namespace nc
@@ -31,6 +32,8 @@ namespace nc
 	UiButton::UiButton()
 	{
 	}
+
+	//=============================================================================================
 
 	UiButton::UiButton(const char* texture_name, vec2 position, vec2 scale, std::function<void(void)> func)
 	{
@@ -49,11 +52,13 @@ namespace nc
 		vec2 start = position - scale;
 		vec2 end = position + scale;
 
+		// x coords
 		if (point.x < start.x || point.x > end.x)
 		{
 			return false;
 		}
 
+		// y coords
 		if (point.y < start.y || point.y > end.y)
 		{
 			return false;
@@ -102,6 +107,7 @@ namespace nc
 
 		glActiveTexture(GL_TEXTURE0);
 
+		// calculate uniforms
 		glm::mat4 trans_mat = glm::mat4(1.0f);
 		vec2 translate = position;
 		trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
@@ -109,6 +115,7 @@ namespace nc
 
 		const glm::mat4 final_trans = trans_mat;
 
+		// set shader uniforms
 		button_material.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
 		button_material.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas().get_size());
 		button_material.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
@@ -133,6 +140,7 @@ namespace nc
 		quit_game_page = new QuitGamePage();
 		next_level_page = new NextLevelPage();
 
+		// Create VAO and VBO
 		vec2 vertices[] = { vec2(-1.0f, 1.0f), vec2(0.0f, 0.015f),
 			vec2(-1.0f, -1.0f), vec2(0.0f, 1.0f - 0.015f),
 			vec2(1.0f, 1.0f), vec2(1.0f, 0.015f),
@@ -166,6 +174,8 @@ namespace nc
 	{
 		options_page->laod_settings();
 	}
+
+	//=============================================================================================
 
 	MenuManager::~MenuManager()
 	{
@@ -225,7 +235,7 @@ namespace nc
 		isTransition = enabled;
 		if (isTransition)
 		{
-			[[maybe_unused]] f64 time = GameHelpers::get().get_time_since_start();
+			[[maybe_unused]] f64 time = GameHelpers::get().get_time_since_start(); // time stat is something we might want to add in the future
 			u32 enemies = get_engine().get_module<GameSystem>().get_enemy_count();
 			u32 kills = get_engine().get_module<GameSystem>().get_kill_count();
 			next_level_page->set_kill_stats(enemies, kills);
@@ -254,6 +264,7 @@ namespace nc
 
 	void MenuManager::update()
 	{
+		// transition screen?
 		if (isTransition)
 		{
 			vec2 mouse_pos = get_normalized_mouse_pos();
@@ -261,7 +272,7 @@ namespace nc
 			return;
 		}
 
-
+		// ESC pressed?
 		prev_esc_pressed = cur_esc_pressed;
 		cur_esc_pressed = false;
 
@@ -275,6 +286,7 @@ namespace nc
     bool pressed = cur_esc_pressed && !prev_esc_pressed;
     bool locked  = get_engine().is_menu_locked_visible();
 
+		// check if we want to change menu visibility or just swap to main menu
     if (pressed)
     {
       if (current_page != MenuPages::MAIN)
@@ -295,6 +307,7 @@ namespace nc
 
 		vec2 mouse_pos = get_normalized_mouse_pos();
 
+		// call to render current page itself
 		switch (current_page)
 		{
 		case nc::MAIN:
@@ -323,6 +336,7 @@ namespace nc
 
 	void MenuManager::draw()
 	{
+		// transition?
 		if (isTransition)
 		{
 			next_level_page->draw(button_material, digit_material, VAO);
@@ -365,6 +379,7 @@ namespace nc
 
 	void MenuManager::draw_cursor()
 	{
+		// shader init
 		button_material.use();
 
 		glBindVertexArray(VAO);
@@ -378,6 +393,7 @@ namespace nc
 
 		vec2 pos = get_normalized_mouse_pos();
 
+		// texture
 		const char* cursor_tex = "ui_cursor";
 
 		const TextureManager& manager = TextureManager::get();
@@ -385,6 +401,7 @@ namespace nc
 
 		glActiveTexture(GL_TEXTURE0);
 
+		// getting shader uniforms
 		glm::mat4 trans_mat = glm::mat4(1.0f);
 		vec2 translate = pos + vec2(0.015, -0.02);
 		trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
@@ -392,14 +409,18 @@ namespace nc
 
 		const glm::mat4 final_trans = trans_mat;
 
+		// setting shader uniforms
 		button_material.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
 		button_material.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas().get_size());
 		button_material.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
 		button_material.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
 		button_material.set_uniform(shaders::ui_button::HOVER, false);
 
+		// draw
 		glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		// shader unbinding
 
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
@@ -449,6 +470,8 @@ namespace nc
 		completed_text = new UiButton("ui_completed", vec2(0.0f, 0.6f), vec2(0.253f, 0.066f), std::bind(&NextLevelPage::do_nothing, this));
 	}
 
+	//=============================================================================================
+
 	NextLevelPage::~NextLevelPage()
 	{
 		delete next_level_button;
@@ -459,8 +482,11 @@ namespace nc
 		delete menu_button;
 	}
 
+	//=============================================================================================
+
 	void NextLevelPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
 	{
+		// determines wheter next_level or back_to_menu button should be updated
 		UiButton* hover_over_button = nullptr;
 
 		if (get_engine().get_module<GameSystem>().get_level_name() != Levels::LEVEL_3)
@@ -493,8 +519,11 @@ namespace nc
 		}
 	}
 
+	//=============================================================================================
+
 	void NextLevelPage::draw(ShaderProgramHandle button_material, ShaderProgramHandle digit_material, GLuint VAO)
 	{
+		// shader init
 		button_material.use();
 
 		glBindVertexArray(VAO);
@@ -506,6 +535,7 @@ namespace nc
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+		// determines wheter next_level or back_to_menu button should be rendered
 		kills_text->draw(button_material);
 		if (get_engine().get_module<GameSystem>().get_level_name() == Levels::LEVEL_3)
 		{
@@ -519,7 +549,7 @@ namespace nc
 		}		
 		completed_text->draw(button_material);
 		
-
+		// shader unbinding
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 
@@ -531,14 +561,19 @@ namespace nc
 		draw_stats(digit_material, VAO);
 	}
 
+	//=============================================================================================
+
 	void NextLevelPage::set_kill_stats(u32 enemies, u32 kills)
 	{
 		enemy_count = enemies;
 		kill_count = kills;
 	}
 
+	//=============================================================================================
+
 	void NextLevelPage::draw_stats(ShaderProgramHandle digit_material, GLuint VAO)
 	{
+		// shader init
 		digit_material.use();
 
 		glBindVertexArray(VAO);
@@ -551,6 +586,7 @@ namespace nc
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		draw_kill_count(digit_material);
+
 		// unbind
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
@@ -561,8 +597,11 @@ namespace nc
 		glBindVertexArray(0);
 	}
 
+	//=============================================================================================
+
 	void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
 	{
+		// renders numbers char by char from right to left
 		u32 display_count = enemy_count;
 
 		vec2 position = vec2(0.75f, 0.3f);
@@ -572,7 +611,7 @@ namespace nc
 		const TextureManager& manager = TextureManager::get();
 		const TextureHandle& texture = manager["ui_font"];
 
-		do //DRAW ENEMY COUNT
+		do //DRAW TOTAL ENEMY COUNT
 		{
 			glActiveTexture(GL_TEXTURE0);
 
@@ -584,8 +623,9 @@ namespace nc
 			const glm::mat4 final_trans = trans_mat;
 
 			int digit = display_count % 10;
-			digit += 48;
+			digit += 48; // + '0'
 
+			//setting shader
 			digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
 			digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
 			digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
@@ -614,8 +654,9 @@ namespace nc
 
 			const glm::mat4 final_trans = trans_mat;
 
-			int digit = 47; // = '/'
+			int digit = (int)'/';
 
+			// setting shader uniforms
 			digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
 			digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
 			digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
@@ -646,8 +687,9 @@ namespace nc
 			const glm::mat4 final_trans = trans_mat;
 
 			int digit = display_count % 10;
-			digit += 48;
+			digit += 48; // + '0'
 
+			//setting shader uniforms
 			digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
 			digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
 			digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
@@ -666,8 +708,12 @@ namespace nc
 		} while (display_count > 0);
 	}
 
+	//=============================================================================================
+
 	void MainMenuPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
 	{
+		//update buttons and determine which (one) button can be pressed based on mouse position
+
 		UiButton* hover_over_button = nullptr;
 
 		new_game_button->set_hover(false);
@@ -706,6 +752,7 @@ namespace nc
 	//==============================================================================================
 	void NewGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
 	{
+		//update buttons and determine which (one) button can be pressed based on mouse position
 		UiButton* hover_over_button = nullptr;
 
 		go_back_button->set_hover(false);
@@ -744,6 +791,7 @@ namespace nc
 	//==============================================================================================
 	void MainMenuPage::draw(ShaderProgramHandle button_material, GLuint VAO)
 	{
+		//shader init
 		button_material.use();
 
 		glBindVertexArray(VAO);
@@ -762,6 +810,7 @@ namespace nc
 		quit_button->draw(button_material);
 		nuclidean_text->draw(button_material);
 
+		//unbind
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 
@@ -771,6 +820,8 @@ namespace nc
 		glBindVertexArray(0);
 	}
 
+	//=============================================================================================
+
 	void NextLevelPage::next_level_func()
 	{
 		get_engine().send_event(ModuleEvent
@@ -778,6 +829,8 @@ namespace nc
 				.type = ModuleEventType::next_level_requested
 			});
 	}
+
+	//=============================================================================================
 
 	void NextLevelPage::menu_func()
 	{
@@ -833,6 +886,7 @@ namespace nc
 	}
 
 	//==============================================================================================
+
 	NewGamePage::~NewGamePage()
 	{
 		delete level_1_button;
@@ -842,8 +896,10 @@ namespace nc
 	}
 
 	//==============================================================================================
+
 	void NewGamePage::draw(ShaderProgramHandle button_material, GLuint VAO)
 	{
+		//shader init
 		button_material.use();
 
 		glBindVertexArray(VAO);
@@ -860,6 +916,7 @@ namespace nc
 		level_3_button->draw(button_material);
 		go_back_button->draw(button_material);
 
+		//unbind
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 
@@ -900,6 +957,7 @@ namespace nc
 	//============================================================================================
 	void OptionsPage::draw([[maybe_unused]] ShaderProgramHandle button_material, [[maybe_unused]] GLuint VAO)
 	{
+		//shader init
 		button_material.use();
 
 		glBindVertexArray(VAO);
@@ -939,6 +997,7 @@ namespace nc
 
 		go_back_button->draw(button_material);
 
+		//unbind
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 
@@ -947,12 +1006,9 @@ namespace nc
 		glDisableVertexAttribArray(1);
 		glBindVertexArray(0);
 		
-		// rendering of values
-
+		// rendering of settings values
+		// shader init
 		digit_shader.use();
-
-		std::vector<vec2> positions = { vec2(0.4f, 0.30f), vec2(0.4f, 0.15f), vec2(0.4f, 0.0f)};
-		std::vector<int> steps = { soundStep, musicStep, sensitivityStep - 1}; //sensitivity step is 1 - 10, but we can draw only 0 - 9
 
 		glBindVertexArray(VAO);
 		glEnableVertexAttribArray(0);
@@ -962,6 +1018,10 @@ namespace nc
 
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		// rendering itself
+		std::vector<vec2> positions = { vec2(0.4f, 0.30f), vec2(0.4f, 0.15f), vec2(0.4f, 0.0f)};
+		std::vector<int> steps = { soundStep, musicStep, sensitivityStep - 1}; //sensitivity step is 1 - 10, but we can draw only 0 - 9
 
 		const TextureManager& manager = TextureManager::get();
 		const TextureHandle& texture = manager["ui_font"];
@@ -978,6 +1038,7 @@ namespace nc
 
 			int digit = steps[i] + 48;
 
+			//set uniforms
 			digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
 			digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
 			digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
@@ -1002,6 +1063,7 @@ namespace nc
 
 		const glm::mat4 final_trans = trans_mat;
 
+		// set uniforms
 		digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
 		digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture_c.get_atlas().get_size());
 		digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture_c.get_pos());
@@ -1014,6 +1076,7 @@ namespace nc
 		glBindTexture(GL_TEXTURE_2D, texture_c.get_atlas().handle);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
+		// unbind
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 
@@ -1023,11 +1086,14 @@ namespace nc
 		glBindVertexArray(0);
 	}
 
+	//=============================================================================================
+
 	void OptionsPage::laod_settings()
 	{
 		std::ifstream f("settings.cfg");
 		if (!f.is_open())
 		{
+			// we skip loading settings and use base values
 			nc_warn("Failed to load settings");
 			return;
 		}
@@ -1086,6 +1152,7 @@ namespace nc
 		catch(int){}
 	}
 
+	//=============================================================================================
 	void OptionsPage::save_settings()
 	{
 		std::ofstream f("settings.cfg");
@@ -1105,12 +1172,16 @@ namespace nc
 		f.close();
 	}
 
+	//=============================================================================================
+
 	void OptionsPage::set_windowed()
 	{
 		SDL_Window* window = get_engine().get_module<GraphicsSystem>().get_window();
 		SDL_SetWindowFullscreen(window, 0);
 		isWindowed = true;
 	}
+
+	//=============================================================================================
 
 	void OptionsPage::set_fullscreen()
 	{
@@ -1119,11 +1190,15 @@ namespace nc
 		isWindowed = false;
 	}
 
+	//=============================================================================================
+
 	void OptionsPage::set_sensitivity_less()
 	{
 		sensitivityStep = max(1, sensitivityStep - 1);
 		get_engine().get_module<InputSystem>().set_sensitivity(sensitivityStep);
 	}
+
+	//=============================================================================================
 
 	void OptionsPage::set_sensitivity_more()
 	{
@@ -1131,11 +1206,15 @@ namespace nc
 		get_engine().get_module<InputSystem>().set_sensitivity(sensitivityStep);
 	}
 
+	//=============================================================================================
+
 	void OptionsPage::set_sound_less()
 	{
 		soundStep = max(0, soundStep - 1);
 		get_engine().get_module<SoundSystem>().set_sound_volume(soundStep);
 	}
+
+	//=============================================================================================
 
 	void OptionsPage::set_sound_more()
 	{
@@ -1143,17 +1222,23 @@ namespace nc
 		get_engine().get_module<SoundSystem>().set_sound_volume(soundStep);
 	}
 
+	//=============================================================================================
+
 	void OptionsPage::set_music_less()
 	{
 		musicStep = max(0, musicStep - 1);
 		get_engine().get_module<SoundSystem>().set_music_volume(musicStep);
 	}
 
+	//=============================================================================================
+
 	void OptionsPage::set_music_more()
 	{
 		musicStep = min(9, musicStep + 1);
 		get_engine().get_module<SoundSystem>().set_music_volume(musicStep);
 	}
+
+	//=============================================================================================
 
 	void OptionsPage::set_crosshair_less()
 	{
@@ -1165,11 +1250,15 @@ namespace nc
 		get_engine().get_module<UserInterfaceSystem>().get_hud()->set_crosshair(crosshairStep);
 	}
 
+	//=============================================================================================
+
 	void OptionsPage::set_crosshair_more()
 	{
 		crosshairStep = (crosshairStep + 1) % 10;
 		get_engine().get_module<UserInterfaceSystem>().get_hud()->set_crosshair(crosshairStep);
 	}
+
+	//=============================================================================================
 
 	OptionsPage::OptionsPage() :
 		digit_shader(shaders::ui_text::VERTEX_SOURCE, shaders::ui_text::FRAGMENT_SOURCE)
@@ -1193,6 +1282,8 @@ namespace nc
 		go_back_button = new UiButton("ui_back", vec2(-0.3f, 0.45f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::go_back, this));
 	}
 
+	//=============================================================================================
+
 	OptionsPage::~OptionsPage()
 	{
 		delete sound_text;
@@ -1214,6 +1305,7 @@ namespace nc
 	//==============================================================================================
 	void OptionsPage::update([[maybe_unused]] vec2 mouse_pos, [[maybe_unused]] u32 prev_mouse, [[maybe_unused]] u32 cur_mouse)
 	{
+		//update buttons and determine which (one) button can be pressed based on mouse position
 		UiButton* hover_over_button = nullptr;
 
 		fullscreen_button->set_hover(false);
@@ -1297,12 +1389,16 @@ namespace nc
 		}
 	}
 
+	//=============================================================================================
+
 	LoadGamePage::LoadGamePage()
 	{
 		go_back_button = new UiButton("ui_back", vec2(0.0f, 0.6f), vec2(0.3f, 0.066f), std::bind(&LoadGamePage::go_back, this));
 		page_up_button = new UiButton("ui_arrow_down", vec2(0.0f, -0.55f), vec2(0.045f, 0.03f), std::bind(&LoadGamePage::page_up, this));
 		page_down_button = new UiButton("ui_arrow_up", vec2(0.0f, 0.45f), vec2(0.045f, 0.03f), std::bind(&LoadGamePage::page_down, this));
 	}
+
+	//=============================================================================================
 
 	LoadGamePage::~LoadGamePage()
 	{
@@ -1317,19 +1413,26 @@ namespace nc
 		load_game_buttons.clear();
 	}
 
+	//=============================================================================================
+
 	void LoadGamePage::update_saves()
 	{
+		//delete buttons
 		for (auto load_game_button : load_game_buttons)
 		{
 			delete load_game_button;
 		}
 		load_game_buttons.clear();
+
+		// get save db
 		nc::GameSystem::SaveDatabase& save_db = get_engine().get_module<GameSystem>().get_save_game_db();
 
+		// starting pos for first button and steps for next
 		vec2 pos = vec2(-0.0f, 0.3f);
 		vec2 stepPos = vec2(0.0f, -0.1f);
 		vec2 scale = vec2(0.5f, 0.033f);
 
+		// create buttons
 		for (auto& save : save_db)
 		{
 			load_game_buttons.push_back(new UiLoadGameButton(save, pos, scale));
@@ -1343,6 +1446,8 @@ namespace nc
 		page = 0;
 	}
 
+	//=============================================================================================
+
 	void MenuManager::update_saves()
 	{
 		load_game_page->update_saves();
@@ -1351,6 +1456,7 @@ namespace nc
 	//==============================================================================================
 	void LoadGamePage::update([[maybe_unused]] vec2 mouse_pos, [[maybe_unused]] u32 prev_mouse, [[maybe_unused]] u32 cur_mouse)
 	{
+		//update buttons and determine which (one) button can be pressed based on mouse position
 		go_back_button->set_hover(false);
 		page_down_button->set_hover(false);
 		page_up_button->set_hover(false);
@@ -1400,6 +1506,7 @@ namespace nc
 	//==============================================================================================
 	void LoadGamePage::draw([[maybe_unused]] ShaderProgramHandle button_material, ShaderProgramHandle digit_material, [[maybe_unused]] GLuint VAO)
 	{
+		//shader init
 		button_material.use();
 
 		glBindVertexArray(VAO);
@@ -1411,10 +1518,12 @@ namespace nc
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+		// render scrolling and go back buttons
 		go_back_button->draw(button_material);
 		page_down_button->draw(button_material);
 		page_up_button->draw(button_material);
 
+		//unbind
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 
@@ -1423,6 +1532,7 @@ namespace nc
 		glDisableVertexAttribArray(1);
 		glBindVertexArray(0);
 
+		//shader init
 		digit_material.use();
 
 		glBindVertexArray(VAO);
@@ -1434,6 +1544,7 @@ namespace nc
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+		//render load game buttons
 		for (size_t i = 0 + page * PAGE_SIZE;
 			i < load_game_buttons.size() && i < (page + 1) * PAGE_SIZE; 
 			i++)
@@ -1441,6 +1552,7 @@ namespace nc
 			load_game_buttons[i]->draw(digit_material);
 		}
 
+		//unbind
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 
@@ -1450,26 +1562,33 @@ namespace nc
 		glBindVertexArray(0);
 	}
 
+	//=============================================================================================
+
 	void LoadGamePage::go_back()
 	{
 		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MAIN);
 	}
 
+	//=============================================================================================
 	void LoadGamePage::page_up()
 	{
 		page = min(page + 1, (s32)load_game_buttons.size() / PAGE_SIZE);
 	}
 
+	//=============================================================================================
 	void LoadGamePage::page_down()
 	{
 		page = max(0, page - 1);
 	}
+
+	//=============================================================================================
 
 	void OptionsPage::go_back()
 	{
 		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MAIN);
 	}
 
+	//=============================================================================================
 	void NewGamePage::go_back()
 	{
 		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MAIN);
@@ -1492,6 +1611,7 @@ namespace nc
 	//==============================================================================================
 	void QuitGamePage::update([[maybe_unused]] vec2 mouse_pos, [[maybe_unused]] u32 prev_mouse, [[maybe_unused]] u32 cur_mouse)
 	{
+		//update buttons and determine which (one) button can be pressed based on mouse position
 		UiButton* hover_over_button = nullptr;
 
 		yes_button->set_hover(false);
@@ -1520,6 +1640,7 @@ namespace nc
 	//==============================================================================================
 	void QuitGamePage::draw([[maybe_unused]] ShaderProgramHandle button_material, [[maybe_unused]] GLuint VAO)
 	{
+		//shader init
 		button_material.use();
 
 		glBindVertexArray(VAO);
@@ -1534,6 +1655,7 @@ namespace nc
 		yes_button->draw(button_material);
 		no_button->draw(button_material);
 
+		//unbind
 		glDisable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 
@@ -1565,6 +1687,7 @@ namespace nc
 		
 	}
 
+	//=============================================================================================
 	void UiLoadGameButton::on_click()
 	{
 		get_engine().send_event(ModuleEvent
@@ -1580,15 +1703,16 @@ namespace nc
 
 	void UiLoadGameButton::draw(ShaderProgramHandle digit_material)
 	{
+		// draw button, the text is save time
 		nc::SaveGameData::SaveTime time = save.data.time;
 
 		std::string text = std::format("{:%Y-%m-%d %H:%M}", time);
 
-		const TextureManager& manager = TextureManager::get();
-		const TextureHandle& texture = manager["ui_font"];
-
 		vec2 final_pos = position - vec2(0.5f, 0.0f);
 		vec2 step = vec2(0.033f, 0.0f);
+
+		const TextureManager& manager = TextureManager::get();
+		const TextureHandle& texture = manager["ui_font"];
 
 		for (size_t c = 0; c < text.size(); c++)
 		{
@@ -1603,6 +1727,7 @@ namespace nc
 
 			int digit = int(text[c]);
 
+			//set uniforms
 			digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
 			digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
 			digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
