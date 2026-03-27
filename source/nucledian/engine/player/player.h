@@ -150,6 +150,8 @@ private:
 
   s32 current_ammo[4] = {-1, 0, 30, 0}; // We start with nothing
   static_assert(ARRAY_LENGTH(current_ammo) == ARRAY_LENGTH(MAX_AMMO));
+
+  WeaponType weapon_buffer = INVALID_WEAPON_TYPE;
 };
 
 }

@@ -158,25 +158,58 @@ void Player::calculate_gravity_velocity(f32 delta_seconds)
 //==========================================================================
 void Player::handle_weapon_change(PlayerSpecificInputs input, PlayerSpecificInputs prev_input)
 {
+  // CREATE A SWAP WEAPON BUFFER
+  if (this->weapon_fsm.get_state() != WeaponStates::idle)
+  {
+    for (WeaponType i = 0; i < WeaponTypes::count; ++i)
+    {
+      PlayerKeyFlags weapon_flag = 1 << (PlayerKeyInputs::weapon_0 + i);
+
+      const bool owns_weapon = this->has_weapon(i);
+      const bool wants_weapon = (input.keys & weapon_flag) && (!(prev_input.keys & weapon_flag));
+
+      if (!wants_weapon || !owns_weapon || current_ammo[i] == 0)
+      {
+        continue;
+      }
+
+      weapon_buffer = i;
+      return;
+    }
+    return;
+  }
+
+  //SWAP WEAPONS BASED ON INPUT
   for (WeaponType i = 0; i < WeaponTypes::count; ++i)
   {
     PlayerKeyFlags weapon_flag = 1 << (PlayerKeyInputs::weapon_0 + i);
 
     const bool owns_weapon  = this->has_weapon(i);
     const bool wants_weapon = (input.keys & weapon_flag) && (!(prev_input.keys & weapon_flag));
-    
-    
+
     if (owns_weapon && wants_weapon && current_weapon != i)
     {
       // Accept only the first one if multiple keys are pressed
-      if ((WEAPON_STATS[i].ammo != AmmoTypes::melee) && (current_ammo[i] <= 0)) {
+      if (current_ammo[i] == 0) {
         SoundSystem::get().play_oneshot(Sounds::out_of_ammo);
       }
       else {
         this->change_weapon(i);
+        weapon_buffer = INVALID_WEAPON_TYPE;
       }
       break;
     }
+  }
+  
+  //USE A SWAP WEAPON BUFFER
+  if (weapon_buffer != INVALID_WEAPON_TYPE)
+  {
+    if (current_weapon != weapon_buffer)
+    {
+      this->change_weapon(weapon_buffer);
+    }
+    weapon_buffer = INVALID_WEAPON_TYPE;
+    return;
   }
 }
 
@@ -374,20 +407,6 @@ void Player::apply_acceleration(vec3 movement_direction, f32 delta)
 //==============================================================================
 void Player::apply_deceleration(vec3 /*movement_direction*/, f32 delta_seconds)
 {
-  // NOTE: Not sure what this is supposed to do, but it does not look ok.
-   //vec3 reverse_velocity = -normalize_or_zero(with_y(velocity, 0.0f));
-   //
-   ////apply deceleration if reverse key is pressed or if directional/axis key is not pressed
-   //if (movement_direction.x == 0 || signbit(movement_direction.x) != signbit(velocity.x))
-   //{
-   //  velocity.x = velocity.x + (reverse_velocity.x * DECELERATION * delta_seconds);
-   //}
-   //
-   //if (movement_direction.z == 0 || signbit(movement_direction.z) != signbit(velocity.z))
-   //{
-   //  velocity.z = velocity.z + (reverse_velocity.z * DECELERATION * delta_seconds);
-   //}
-
   // Apply general deceleration
   f32 coeff = this->on_ground ? 1.0f : CVars::player_air_dec_coeff;
   f32 reverse_len   = CVars::player_deceleration * delta_seconds * coeff;
