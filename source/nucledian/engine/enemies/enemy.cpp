@@ -538,7 +538,7 @@ void Enemy::handle_ai_alert(f32 delta)
       
         rel_target_pos_ =
         (
-          inverse(ext_transform) * vec4 { this->follow_target_pos, 1.0f }
+          inverse(ext_transform) * vec4 { rel_target_pos_, 1.0f }
           ).xyz();
       }
       
