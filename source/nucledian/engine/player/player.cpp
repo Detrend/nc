@@ -179,7 +179,7 @@ void Player::handle_weapon_change(PlayerSpecificInputs input, PlayerSpecificInpu
     return;
   }
 
-  //SWAP WEAPONS BASED ON INPUT
+  //SWAP WEAPONS BASED ON CURRENT INPUT
   for (WeaponType i = 0; i < WeaponTypes::count; ++i)
   {
     PlayerKeyFlags weapon_flag = 1 << (PlayerKeyInputs::weapon_0 + i);
@@ -216,6 +216,8 @@ void Player::handle_weapon_change(PlayerSpecificInputs input, PlayerSpecificInpu
 //==============================================================================
 bool Player::get_attack_state(PlayerSpecificInputs curr_input, PlayerSpecificInputs prev_input, f32)
 {
+
+
   PlayerKeyFlags flag = (1 << PlayerKeyInputs::primary);
   bool holding_now  = curr_input.keys & flag;
   bool holding_prev = prev_input.keys & flag;
@@ -512,7 +514,7 @@ void Player::update_gun_anim(f32 delta)
     }
     else if (current_ammo[3] > 0 && has_weapon(3)) // Nailgun?
     {
-      change_weapon(4);
+      change_weapon(3);
     }
     else
     {
