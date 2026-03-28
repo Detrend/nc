@@ -540,7 +540,7 @@ static void draw_cvar_row(const std::string& name, const CVar& cvar)
 #endif
 
   auto& range_list = CVars::get_cvar_ranges();
-  auto  it = range_list.find(name);
+  auto  it = range_list.find(CVarName(name));
 
   const auto& range = it != range_list.end() ? it->second : CVars::DEFAULT_RANGE;
 
@@ -557,8 +557,9 @@ static void draw_cvar_bar()
   using CategoryMap = std::map<std::string, std::vector<CVarPair>>;
 
   CategoryMap cvar_categories;
-  for (const auto& [name, cvar] : cvar_list)
+  for (const auto& [name_token, cvar] : cvar_list)
   {
+    auto name = name_token.to_string();
     // find the first "." in the name and decide it's category based on that
     if (u64 idx = name.find('.'); idx != std::string::npos && idx >= 1)
     {

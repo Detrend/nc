@@ -11,50 +11,101 @@
 namespace nc {
 
 
+  /// <summary>
+  /// Namespace containing charset policies that can be used by our Tokens
+  /// </summary>
+  namespace token_policies {
+
+    // Always use this policy unless there is a very good reason not to
+    struct Chars_Default {
+      //These are the chars that can be stored in a token
+      static constexpr const char chars[] = "abcdefghijklmnopqrstuvwxyz0123456789_"; 
+
+      //These chars can be used to initialize a token, but they will get converted into their equivalent at the same index of the `chars` array
+      static constexpr const char alt[]   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    };
+
+    // Supports additional `.` and ` ` chars needed by our cvars
+    struct Chars_CVar {
+      static constexpr const char chars[] = "abcdefghijklmnopqrstuvwxyz0123456789_. ";
+      static constexpr const char alt[]   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    };
+  }
+
+
+
+
+
+  namespace token_helpers {
+    static consteval auto make_char_to_code_table(const std::string& chars_list, const std::string& alt_chars_list)
+    {
+      if (alt_chars_list.size() > chars_list.size()) {
+        throw new std::exception("Alt chars list must not be bigger than chars_list!");
+      }
+
+      std::array<u8, 256> ret = {};
+      for (char t = 0; t < chars_list.size(); ++t) {
+        ret[chars_list[t]] = t + 1;
+        if (t < alt_chars_list.size()) {
+          ret[alt_chars_list[t]] = t + 1;
+        }
+      }
+      return ret;
+    }
+
+    static consteval size_t compute_max_token_length(const u64 chars_count) {
+      u64 max = ULLONG_MAX;
+      size_t ret = 0;
+      for (; max > chars_count; max /= chars_count) {
+        ++ret;
+      }
+      return ret;
+    }
+  }
+
+
 
   /// <summary>
-  /// String of <= 12 characters in range /_a-z0-9/ (alphanumeric and '_', case-insensitive) compressed into a single 64-bit number.
+  /// String of typically <= 12 characters in range /_a-z0-9/ (alphanumeric and '_', case-insensitive) compressed into a single 64-bit number.
   /// Very fast to pass around and compare against each other.
+  /// Charset can be customized by providing a token_policy. The more chars are supported, the fewer of them can fit inside a single token.
   /// 
   /// All of its operations are supposed to be constexpr-friendly.
   /// </summary>
+  template<typename TPermittedChars = token_policies::Chars_Default>
   struct BasicToken {
+
+    static constexpr auto PERMITTED_CHARS = TPermittedChars::chars;
+
+    static constexpr u64 BASE = std::string(PERMITTED_CHARS).size() + 1;
+
+    // a single BasicToken can contain at most this many chars
+    static constexpr size_t MAX_LENGTH = token_helpers::compute_max_token_length(BASE);
 
   private:
 
-    static constexpr u64 ALPHA_START = 1; // Start from 1 so that getting at 0 code can mean end of string
-    static constexpr u64 NUMBERS_START = ALPHA_START + 'z' - 'a' + 1;
-    static constexpr u64 SPECIAL_START = NUMBERS_START + ('9' - '0') + 1; // only 1 special character that we support is '_'
-
-    static constexpr u64 MAX_CHAR_CODE = SPECIAL_START;
-    static constexpr u64 BASE = MAX_CHAR_CODE + 1; // We interpret the u64 backing field as a string of digits encoded in this base
+    static constexpr auto CHAR_TO_CODE = token_helpers::make_char_to_code_table(TPermittedChars::chars, TPermittedChars::alt);
 
 
     static constexpr u64 char_to_code(const char c)
     {
-      if ('a' <= c && c <= 'z') return ALPHA_START + (c - 'a');
-      if ('A' <= c && c <= 'Z') return ALPHA_START + (c - 'A');
-      if ('0' <= c && c <= '9') return NUMBERS_START + (c - '0');
-      if (c == '_') return SPECIAL_START;
-      throw std::exception("Unsupported token character!"); //ideally this would be an assert, but those seem to behave problematically in constexpr context
+      const u8 ret = CHAR_TO_CODE[c];
+      if (!ret) {
+        throw std::exception("Unsupported token character!"); //ideally this would be an assert, but those seem to behave problematically in constexpr context
+      }
+      return ret;
     }
 
     static constexpr char code_to_char(const u64 t)
     {
-      if (ALPHA_START <= t && t < NUMBERS_START) return static_cast<char>(t - ALPHA_START + 'a');
-      if (NUMBERS_START <= t && t < SPECIAL_START) return static_cast<char>(t - NUMBERS_START + '0');
-      if (SPECIAL_START == t) return '_';
-      throw std::exception("Invalid token code!");
+      if ((t - 1) >= BASE) {
+        throw std::exception("Invalid token code!");
+      }
+      return PERMITTED_CHARS[static_cast<u8>(t - 1)];
     }
 
 
   public:
-
-    static constexpr const char PERMITTED_CHARS[] = "abcdefghijklmnopqrstuvwxyz0123456789_";
-
-    // a single BasicToken can contain at most this many chars
-    static constexpr size_t MAX_LENGTH = 12;
-
 
     constexpr BasicToken() : raw(0) {}
 
@@ -85,6 +136,8 @@ namespace nc {
     {
       return get_raw() != other.get_raw();
     }
+
+    constexpr auto operator<=>(const BasicToken&) const = default;
 
 
     constexpr char* write_to_buffer(char* buffer) const
@@ -123,20 +176,21 @@ namespace nc {
 
   };
 
-
-
   /// <summary>
   /// Fixed-size string of characters in range /_a-z0-9/ (alphanumeric and '_', case-insensitive) compressed into a single 64-bit number.
   /// Very fast to pass around and compare against each other.
+  /// Charset can be customized by providing a token_policy. The more chars are supported, the fewer of them can fit inside a single token.
   /// 
   /// All of its operations are supposed to be constexpr-friendly.
   /// 
-  /// Max number of chars is `TTokenCount * BasicToken::MAX_LENGTH`
+  /// Max number of chars is `TTokenCount * BasicToken<TPermittedChars>::MAX_LENGTH`
   /// </summary>
-  template<size_t TTokenCount>
+  template<size_t TTokenCount, typename TPermittedChars=token_policies::Chars_Default>
   struct CompositeToken {
 
-    static constexpr size_t MAX_LENGTH = TTokenCount * BasicToken::MAX_LENGTH;
+    using Segment = BasicToken<TPermittedChars>;
+
+    static constexpr size_t MAX_LENGTH = TTokenCount * Segment::MAX_LENGTH;
 
     constexpr CompositeToken() : storage{} {}
     constexpr CompositeToken(const CompositeToken& other) : storage(other.storage) {}
@@ -146,7 +200,7 @@ namespace nc {
       return *this;
     }
 
-    constexpr CompositeToken(const BasicToken& other) : storage{ other } {}
+    constexpr CompositeToken(const Segment& other) : storage{ other } {}
 
 
     template<typename size_t TOtherTokenCount, typename _sfinae_guard = std::enable_if<(TOtherTokenCount < TTokenCount), char>::type>
@@ -162,10 +216,10 @@ namespace nc {
       if (str.size() > MAX_LENGTH) throw std::exception("String too big for a token!");
 
       for (size_t t = 0; t < TTokenCount; ++t) {
-        const size_t start = t * BasicToken::MAX_LENGTH;
+        const size_t start = t * Segment::MAX_LENGTH;
         if (start >= str.size()) break;
-        const size_t count = (start + BasicToken::MAX_LENGTH >= str.size()) ? (str.size() - start) : BasicToken::MAX_LENGTH;
-        storage[t] = BasicToken(str.substr(start, count));
+        const size_t count = (start + Segment::MAX_LENGTH >= str.size()) ? (str.size() - start) : Segment::MAX_LENGTH;
+        storage[t] = Segment(str.substr(start, count));
       }
     }
 
@@ -175,17 +229,29 @@ namespace nc {
       
     }
 
-    constexpr bool operator==(const CompositeToken other) const
+    constexpr bool operator==(const CompositeToken& other) const
     {
       return storage == other.storage;
     }
 
-    constexpr bool operator!=(const CompositeToken other) const
+    constexpr bool operator!=(const CompositeToken& other) const
     {
       return storage != other.storage;
     }
 
-    constexpr const std::array<BasicToken, TTokenCount>& get_storage() const {
+    constexpr std::strong_ordering operator<=>(const CompositeToken& other) const
+    {
+      for (size_t t = 0; t < TTokenCount; ++t) {
+        auto ret = (storage[t] <=> other.storage[t]);
+        if (ret != std::strong_ordering::equal) {
+          return ret;
+        }
+      }
+      return std::strong_ordering::equal;
+    }
+
+
+    constexpr const std::array<Segment, TTokenCount>& get_storage() const {
       return storage;
     }
 
@@ -193,7 +259,7 @@ namespace nc {
     {
         for (size_t t = 0; t < TTokenCount; ++t) {
             char*const end = storage[t].write_to_buffer(buffer);
-            const bool is_finished = (end < buffer + BasicToken::MAX_LENGTH);
+            const bool is_finished = (end < buffer + Segment::MAX_LENGTH);
             buffer = end;
             if (is_finished) break;
         }
@@ -232,25 +298,25 @@ namespace nc {
 
 
   private:
-    std::array<BasicToken, TTokenCount> storage;
+    std::array<Segment, TTokenCount> storage;
   };
 
 }
-  template<>
-  struct std::hash<nc::BasicToken>
+  template<typename TPermittedChars>
+  struct std::hash<nc::BasicToken<TPermittedChars>>
   {
-    std::size_t operator()(const nc::BasicToken& token) const noexcept
+    std::size_t operator()(const nc::BasicToken<TPermittedChars>& token) const noexcept
     {
       return std::hash<nc::u64>{}(token.get_raw());
     }
   };
   
-  template<size_t TTokenCount>
-  struct std::hash<nc::CompositeToken<TTokenCount>>
+  template<size_t TTokenCount, typename TPermittedChars>
+  struct std::hash<nc::CompositeToken<TTokenCount, TPermittedChars>>
   {
-    std::size_t operator()(const nc::CompositeToken<TTokenCount>& token) const noexcept
+    std::size_t operator()(const nc::CompositeToken<TTokenCount, TPermittedChars>& token) const noexcept
     {
-      using hasher = std::hash<nc::BasicToken>;
+      using hasher = std::hash<nc::CompositeToken<TTokenCount, TPermittedChars>::Segment>;
       const auto& segments(token.get_storage());
       size_t ret = hasher{}(segments[0]);
       for (size_t t = 1; t < TTokenCount; ++t) {
@@ -264,8 +330,4 @@ namespace nc {
 namespace nc {
   // Declare our standard token to carry up to 24 chars
   using Token = CompositeToken<2>;
-
-  constexpr Token TT("abcdef");
-  constexpr auto TEST = TT.to_cstring();//("aa_", "_bbb");
-
 }
