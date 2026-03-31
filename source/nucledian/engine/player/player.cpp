@@ -330,6 +330,14 @@ void Player::apply_velocity(f32 delta_seconds)
 //==============================================================================
 void Player::handle_attack(PlayerSpecificInputs curr_input, PlayerSpecificInputs prev_input, f32 dt)
 {
+  // Gun cannot fire while raising
+  const f32 max_gun_change = CVars::gun_change_time;
+  if (time_since_gun_change < max_gun_change)
+  {
+    return;
+  }
+
+  //Try do the actual attack
   bool did_attack = this->get_attack_state(curr_input, prev_input, dt);
 
   if (did_attack && this->weapon_fsm.get_state() == WeaponStates::idle)
