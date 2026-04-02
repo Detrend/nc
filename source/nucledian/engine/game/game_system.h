@@ -101,6 +101,7 @@ public:
   // Called from the action trigger
   void end_level_and_go_to_another_one_from_gamemode(const LevelName& new_level);
 
+  // map stats, use in level transition
   void increment_enemy_count() { enemy_count++; }
   void increment_kill_count() { kill_count++; }
 

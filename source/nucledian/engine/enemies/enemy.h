@@ -27,6 +27,8 @@ public:
   void post_init();
 
   void update(f32 delta);
+
+  // Take damage, save inflictor
   void damage(int damage, EntityID from_who);
 
   vec3&             get_velocity();
