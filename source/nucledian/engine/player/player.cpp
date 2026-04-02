@@ -216,8 +216,6 @@ void Player::handle_weapon_change(PlayerSpecificInputs input, PlayerSpecificInpu
 //==============================================================================
 bool Player::get_attack_state(PlayerSpecificInputs curr_input, PlayerSpecificInputs prev_input, f32)
 {
-
-
   PlayerKeyFlags flag = (1 << PlayerKeyInputs::primary);
   bool holding_now  = curr_input.keys & flag;
   bool holding_prev = prev_input.keys & flag;
