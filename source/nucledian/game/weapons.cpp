@@ -20,7 +20,7 @@ WeaponStats WEAPON_STATS[] =
   {
     .projectile = ProjectileTypes::wrench,
     .rate_of_fire = 1.0f, .ammo = AmmoTypes::melee,
-    .projectile_cnt = 1, .hold_to_fire = false,
+    .projectile_cnt = 1, .hold_to_fire = true,
     .shoot_snd = Sounds::hurt,
     .equip_sound = Sounds::mellee_equip,
     .loudness_dist = 0.0f,
@@ -31,7 +31,7 @@ WeaponStats WEAPON_STATS[] =
   {
     .projectile = ProjectileTypes::shotgun_slug,
     .rate_of_fire = 1.0f, .ammo = AmmoTypes::slugs,
-    .projectile_cnt = 10, .hold_to_fire = false,
+    .projectile_cnt = 10, .hold_to_fire = true,
     .shoot_snd = Sounds::shotgun,
     .equip_sound = Sounds::shotgun_equip,
     .loudness_dist = 30.0f,

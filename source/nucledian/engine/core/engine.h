@@ -8,6 +8,8 @@
 
 #include <engine/core/is_engine_module.h>
 
+#include <token.h>
+
 #include <array>
 #include <memory>
 #include <vector>
@@ -22,10 +24,7 @@ struct ModuleEvent;
 class  IEngineModule;
 struct MapSectors;
 
-// Forward declare token and level names so that we do not have to include them
-template<size_t TTokenCount>
-struct CompositeToken;
-using Token = CompositeToken<2>;
+
 using LevelName = Token;
 
 using CmdArgs = std::vector<std::string>;

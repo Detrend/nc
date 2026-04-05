@@ -2,7 +2,6 @@
 
 #include <engine/core/engine_module.h>
 #include <engine/core/engine_module_id.h>
-#include <engine/ui/ui_texture.h>
 #include <engine/ui/ui_button.h>
 #include <engine/ui/ui_screen_effect.h>
 
@@ -24,20 +23,15 @@ namespace nc
     bool init();
     ~UserInterfaceSystem();
 
+    void draw();
+
     MenuManager* get_menu_manager();
     UiScreenEffect* get_ui_screen_effect();
-
-    void draw_hud();
-
-    UiHudDisplay* get_hud() { return ammo_display; }
+    UiHudDisplay* get_hud() { return hud_display; }
 
   private:
     MenuManager* menu;
-    UiHudDisplay* ammo_display;
+    UiHudDisplay* hud_display;
     UiScreenEffect* screen_effect;
-
-    std::vector<GuiTexture> ui_elements;
-
-    int display_health = 0;
   };
 }

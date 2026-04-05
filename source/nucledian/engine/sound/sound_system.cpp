@@ -108,13 +108,26 @@ void SoundSystem::on_event(ModuleEvent& event)
 //==============================================================================
 void SoundSystem::set_sound_volume(int step)
 {
-  global_sound_volume = 1.0f / 9.0f * step;
+  global_sound_volume = (1.0f / 9.0f * step) * (1.0f / 9.0f * step);
+  for (SoundHandle::Channel i = 0; i < CHANNEL_COUNT; ++i)
+  {
+    if (! channels[i].is_free)
+    {
+      Mix_Volume(i, (int)(128.0f * global_music_volume));
+    }
+  }
+}
+
+//==============================================================================
+float SoundSystem::get_sound_volume()
+{
+  return global_sound_volume;
 }
 
 //==============================================================================
 void SoundSystem::set_music_volume(int step)
 {
-  global_music_volume = 1.0f / 9.0f * step;
+  global_music_volume = (1.0f / 9.0f * step) * (1.0f / 9.0f * step);
   if (!terminated)
   {
     Mix_VolumeMusic((int)(128.0f * global_music_volume));
@@ -144,7 +157,8 @@ void SoundSystem::play_music(const Token track_name)
   Mix_Music* const og_music_track = this->current_music_track;
 
   const auto path = track_name.to_cstring_enclosed(NC_SOUND_DIRECTORY_CSTR, NC_MUSIC_TYPE);
-  if ((this->current_music_track = Mix_LoadMUS(path.data())))
+  this->current_music_track = Mix_LoadMUS(path.data());
+  if (this->current_music_track)
   {
     Mix_PlayMusic(this->current_music_track, -1);
     if (og_music_track) {

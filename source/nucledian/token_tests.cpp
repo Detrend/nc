@@ -34,7 +34,7 @@ namespace nc {
 
     do_test("");
 
-    static const std::string CHARS(BasicToken::PERMITTED_CHARS);
+    static const std::string CHARS(BasicToken<>::PERMITTED_CHARS);
 
     // test all repetitions of a single char
     for (auto c : CHARS) {
@@ -61,7 +61,7 @@ namespace nc {
 
 
 
-  NC_UNIT_TEST(basic_token_test<BasicToken>)->name("token_basic_test");
+  NC_UNIT_TEST(basic_token_test<BasicToken<>>)->name("token_basic_test");
   NC_UNIT_TEST(basic_token_test<CompositeToken<2>>)->name("token2_test");
   NC_UNIT_TEST(basic_token_test<CompositeToken<3>>)->name("token3_test");
 

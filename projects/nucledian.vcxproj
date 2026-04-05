@@ -35,7 +35,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
+    <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <CLRSupport>false</CLRSupport>
@@ -159,7 +159,6 @@
     <ClCompile Include="..\source\nucledian\engine\ui\ui_button.cpp" />
     <ClCompile Include="..\source\nucledian\game\item.cpp" />
     <ClCompile Include="..\source\nucledian\game\item_resources.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\ui\ui_texture.cpp" />
     <ClCompile Include="..\source\nucledian\engine\ui\user_interface_module.cpp" />
     <ClCompile Include="..\source\nucledian\game\particle.cpp" />
     <ClCompile Include="..\source\nucledian\game\projectile.cpp" />
@@ -320,6 +319,7 @@
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\texture_id.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\debug\top_down_debug.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\shaders\uniform.h" />
+    <ClInclude Include="..\source\nucledian\engine\map\map_dynamics_hooks.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
     <ClInclude Include="..\source\nucledian\engine\map\physics.h" />
     <ClInclude Include="..\source\nucledian\engine\player\level_types.h" />
@@ -334,7 +334,6 @@
     <ClInclude Include="..\source\nucledian\game\game_types.h" />
     <ClInclude Include="..\source\nucledian\game\item.h" />
     <ClInclude Include="..\source\nucledian\game\item_resources.h" />
-    <ClInclude Include="..\source\nucledian\engine\ui\ui_texture.h" />
     <ClInclude Include="..\source\nucledian\engine\ui\user_interface_module.h" />
     <ClInclude Include="..\source\nucledian\game\particle.h" />
     <ClInclude Include="..\source\nucledian\game\projectile.h" />
@@ -387,8 +386,10 @@
     <ClInclude Include="..\source\nucledian\engine\game\game_helpers.h" />
     <ClInclude Include="..\source\nucledian\engine\sound\sound_emitter.h" />
     <ClInclude Include="..\source\nucledian\engine\sound\sound_handle.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\settings.cfg" />
     <None Include="..\source\nucledian\anim_state_machine.inl" />
     <None Include="..\source\nucledian\engine\core\engine.inl" />
     <None Include="..\source\nucledian\engine\entity\entity_tests.inl" />
@@ -438,6 +439,12 @@
   <ItemGroup>
     <Natvis Include="nc.natvis" />
   </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="nucledian.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon.ico" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings" />
@@ -460,24 +467,28 @@
     <LibraryPath>$(SolutionDir)lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)bin_temp\$(ProjectName)_$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
+    <TargetName>NUCLIDEAN</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">
     <IncludePath>$(SolutionDir)source\libs\;$(SolutionDir)source\nucledian\;$(SolutionDir)source\libs\SDL2\include\;$(SolutionDir)source\libs\benchmark\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)bin_temp\$(ProjectName)_$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
+    <TargetName>NUCLIDEAN</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)source\libs\;$(SolutionDir)source\nucledian\;$(SolutionDir)source\libs\SDL2\include\;$(SolutionDir)source\libs\benchmark\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)bin_temp\$(ProjectName)_$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
+    <TargetName>NUCLIDEAN</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">
     <IncludePath>$(SolutionDir)source\libs\;$(SolutionDir)source\nucledian\;$(SolutionDir)source\libs\SDL2\include\;$(SolutionDir)source\libs\benchmark\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)bin_temp\$(ProjectName)_$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
+    <TargetName>NUCLIDEAN</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -512,7 +523,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NC_$(Configuration);_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NC_$(Configuration);NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <TreatWarningAsError>true</TreatWarningAsError>
