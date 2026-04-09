@@ -1,4 +1,4 @@
-#include <engine/ui/user_interface_module.h>
+#include <engine/ui/user_interface_system.h>
 
 #include <engine/graphics/resources/res_lifetime.h>
 

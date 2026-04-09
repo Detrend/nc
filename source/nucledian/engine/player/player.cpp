@@ -20,7 +20,7 @@
 
 #include <engine/graphics/graphics_system.h> // RenderGunProperties
 
-#include <engine/ui/user_interface_module.h>
+#include <engine/ui/user_interface_system.h>
 #include <engine/ui/ui_screen_effect.h>
 
 // Sound

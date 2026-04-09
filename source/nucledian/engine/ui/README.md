@@ -3,7 +3,7 @@
 
 *user_interface_module.h*
 
-**UserInterfaceSystem** servers as a wrapper for all UI elements, these being **MenuManager**, **Heads-Up Display** (HUD) and **ScreenEffect**.
+**UserInterfaceSystem** manages all UI elements, these being **MenuManager**, **Heads-Up Display** (HUD) and **ScreenEffect**.
 
 Being an IEngineModule, it inherits on_event() method, however draw() method has to be publicly accessible as it has to be called from GraphicsSystem to be rendered, as to be called after GLClearBuffer() and before GLSwapBuffers().
 

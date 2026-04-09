@@ -31,7 +31,7 @@
 #include <engine/player/level_types.h>
 #include <engine/player/player.h>
 
-#include <engine/ui/user_interface_module.h>
+#include <engine/ui/user_interface_system.h>
 
 #ifdef NC_DEBUG_DRAW
 // Only for turning off the input when the cvar tweaking window is displayed.
