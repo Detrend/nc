@@ -1,3 +1,4 @@
+# Node2D that copies worldspace position of some other Node2D 
 extends Node2D
 
 @export var target : Node2D

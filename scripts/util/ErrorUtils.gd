@@ -1,3 +1,5 @@
+# This file contains helper functions for easy reporting of errors
+
 extends Object
 class_name ErrorUtils
 

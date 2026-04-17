@@ -1,3 +1,7 @@
+# This file contains helper functions that operate on Nodes
+#
+# E.g. functions for lookup of parent/child nodes based on their type can be found here
+
 extends Object
 class_name NodeUtils
 

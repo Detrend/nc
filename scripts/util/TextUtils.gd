@@ -1,15 +1,17 @@
+# This file contains functions that operate on strings or help with serialization to text-based formats like e.g. JSON
+
 class_name TextUtils
 
 static func substring(s: String, begin: int, end_exclusive: int)->String:
 	return s.substr(begin, end_exclusive - begin)
 
-static func recursive_array_tostring(arr: Array, separator :String = ", ", stringifier : Callable = Callable())->String:
+static func recursive_array_tostring(arr, separator :String = ", ", stringifier : Callable = Callable())->String:
 	var ret : String = "["
 	var is_first :bool = true
 	for item in arr:
 		if! is_first: ret += separator
 		is_first = false
-		if item is Array:
+		if DatastructUtils.is_array_like(item):
 			ret += recursive_array_tostring(item, separator, stringifier)
 		else:
 			if stringifier:

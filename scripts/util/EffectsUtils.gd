@@ -1,3 +1,5 @@
+# This file contains helper functions related to visual effects
+
 extends Object
 class_name EffectsUtils
 

@@ -1,3 +1,5 @@
+# Helpers related to coroutines
+
 extends Object
 class_name CoroutineUtils
 
@@ -9,7 +11,24 @@ static func forget_and_fire_after_seconds(this: Node, seconds: float, callback: 
 	await wait_for_seconds(this, seconds);
 	callback.call()
 
-
+## Adapter that allows writing C#-like generator functions using GDScript's coroutine feature
+## 
+## To create a generator, extend this class and implement function _impl(some_args...). Inside the function, you can `await _yield(some_value)`
+## Then create an instance of the generator as DerivedGeneratorClass.new([args...])
+## e.g. like this:
+##	class RangeGenerator:
+## 		extends Generator
+##
+##		func _impl(from: int, to_exclusive: int)->int:
+##			for i in Vector2i(from, to_exclusive): await _yield(i)
+##
+##	# usage:
+##	var range := RangeGenerator.new(0, 5)
+##	for i in range: 		# iterate over the generator like normal
+##		print("%d"i) 		# prints `1234`
+##
+## These generator instances are quite heavyweight - use them only if it helps make the code more simple 
+##   and straightforward (e.g. some kinds of infinite datastructures) and there won't be more than just a few invocations per frame
 class Generator:
 	var Current:
 		get: return _current_value
@@ -25,9 +44,13 @@ class Generator:
 		else:
 			_on_next_signal.emit()
 		return _did_yield
+
+	func _iter_init(arg): return MoveNext()
+	func _iter_next(arg): return MoveNext()
+	func _iter_get(arg): return Current
 		
 		
-	func _init(args: Array=[])->void:
+	func _init(...args : Array)->void:
 		self._args = args
 		
 	var _args;
@@ -42,9 +65,9 @@ class Generator:
 		_did_yield = true
 		return _on_next_signal;
 		
-	func take_first(count: int)->Generator: return GeneratorHelpers.TakeFirst.new([self, count])
-	func where(predicate: Callable)->Generator: return GeneratorHelpers.Where.new([self, predicate])
-	func select(transform: Callable)->Generator: return GeneratorHelpers.Select.new([self, transform])
+	func take_first(count: int)->Generator: return GeneratorHelpers.TakeFirst.new(self, count)
+	func where(predicate: Callable)->Generator: return GeneratorHelpers.Where.new(self, predicate)
+	func select(transform: Callable)->Generator: return GeneratorHelpers.Select.new(self, transform)
 	func to_array(array: Array = [])->Array:
 		while(self.MoveNext()): array.append(self.Current);
 		return array;

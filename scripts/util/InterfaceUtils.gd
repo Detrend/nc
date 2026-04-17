@@ -1,3 +1,5 @@
+# This file contains helper functions to be used when emulating the concept of interfaces/abstract classes (which are not directly supported by GDScript)
+
 extends Object
 class_name InterfaceUtils
 
