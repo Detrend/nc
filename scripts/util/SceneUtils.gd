@@ -1,4 +1,4 @@
-# This file contains helper functions that are related to Scene management
+## This file contains helper functions that are related to Scene management
 
 extends Object
 class_name SceneUtils

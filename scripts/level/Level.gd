@@ -1,29 +1,39 @@
+## Standalone level for the game Nucledian.
+##
+## Must be present as the root node of any scene containing [Sector]s or similar nodes.
+## 
+## Contains global level configuration.  
+## Also is responsible for processing input events and sending them to their target [Sector]s.
+
 @tool
 class_name Level
 extends Node2D
 
 var config : EditorConfig = load("res://config.tres") as EditorConfig
+## Edittime option - how to visualize the sectors? (E.g. based on their floor/ceiling height or their texturing material)
 @export var coloring_mode: EditorConfig.SectorColoringMode = EditorConfig.SectorColoringMode.Floor
 
-var max_snapping_distance : float:
-	get: return config.max_snapping_distance
-@export_tool_button("Snap points") var snap_points_tool_button = _snap_points
-@export var auto_heights:bool = true
-
+## Default music to play when starting the level
 @export var music : String
 
+## Multiply level dimensions by this on export (height is Z) 
 @export var export_scale : Vector3 = Vector3(1.0, 1.0, 1.0)
+## Offset all [Sector]s and [Thing]s by this on export
 @export var export_offset : Vector2 = Vector2.ZERO
+## Scale all textures by this on export
 @export var export_texture_scale : float = 1.0
+## Scale all texture extrudes (@see [ExtrudedTexture]) by this
 @export var export_texture_extrude_scale : float = 1.0
+## Path where to save the exported JSON file
 @export var export_path : String = ""
+## Perform level export
 @export_tool_button("Export level") var export_level_tool_button = export_level
 
 
-static var SECTOR_PREFAB : Resource = load("res://prefabs/Sector.tscn")
+static var SECTOR_PREFAB : Resource:
+	get: return load("res://prefabs/Sector.tscn")
 static var TRIANGULATED_MULTISECTOR_PREFAB : Resource:
 	get: return load("res://prefabs/TriangulatedMultisector.tscn")
-static var STAIR_MAKER_PREFAB : Resource = load("res://prefabs/StairMaker.tscn")
 
 
 var _editor_plugin : EditorPlugin:
@@ -39,11 +49,12 @@ func get_undo_redo_raw()->UndoRedo:
 	if not ret: print("Level::get_undo_redo_raw()... no unre: {0}".format([unre.get_object_history_id(self)]))
 	return ret
 
+## Nodes in the [Level] can await this signal to perform an action with at the end of a frame update, after everyone's inputs etc. had been processed
 signal every_frame_signal()
 
 
 func _process(delta: float) -> void:
-	#if ! Engine.is_editor_hint(): return
+	if ! Engine.is_editor_hint(): return
 	_handle_selections()
 	_handle_input()
 	_handle_new_sector_creation()
@@ -61,7 +72,7 @@ func _find_connection(connections: Array, c: Callable)->int:
 	
 func _ready() -> void:
 	if ! Engine.is_editor_hint(): 
-		export_level()
+		export_level() # If we are in the game, perform a level export instead of operating normally
 		return
 	config.on_cosmetics_changed.connect(_update_sector_visuals)
 	await self.every_frame_signal
@@ -110,10 +121,6 @@ func get_editable_polygons() -> Array[EditablePolygon]:
 	return ret
 
 
-func _snap_points()->void:
-	for s in get_editable_polygons():
-		s._snap_points()
-	
 
 func find_nearest_point(pos: Vector2, max_snapping_distance: float, to_skip: Sector)->SectorPoint:
 	var other_points : Array[SectorPoint] = []
@@ -188,7 +195,7 @@ func make_add_sector_command(prefab: Resource, position: Vector2, points: Packed
 	ret.name = name if not name.is_empty() else generate_random_name(prefab)
 	ret.position = position
 	ret.points = points
-	ret.data = nearest_point._sector.data.duplicate() if (self.auto_heights and nearest_point) else null
+	ret.data = nearest_point._sector.data.duplicate() if nearest_point else null ## if there is a sector nearby, copy its config for this sector
 	return ret
 
 func add_sector(command: AddSectorCommand, unre: EditorUndoRedoManager = null)->EditablePolygon:	

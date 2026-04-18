@@ -1,10 +1,12 @@
-# This file contains functions that operate on strings or help with serialization to text-based formats like e.g. JSON
+## This file contains functions that operate on strings or help with serialization to text-based formats like e.g. JSON
 
 class_name TextUtils
 
+## Create a substring from the start and end index
 static func substring(s: String, begin: int, end_exclusive: int)->String:
 	return s.substr(begin, end_exclusive - begin)
 
+## Dump an array to a string, for debugging purposes
 static func recursive_array_tostring(arr, separator :String = ", ", stringifier : Callable = Callable())->String:
 	var ret : String = "["
 	var is_first :bool = true
@@ -36,30 +38,41 @@ static func extract_file_name_from_path(path: String)->String:
 	if dot_idx < slash_idx: dot_idx = path.length() - 1
 	return substring(path, slash_idx, dot_idx)
 
+
+## Convert a builtin Vector to an array that's ready for JSON serialization
 static func vec2_to_array(v: Vector2)->PackedFloat32Array:
 	return [v.x, v.y]
 	
+## Convert a builtin Vector to an array that's ready for JSON serialization
 static func vec3_to_array(v: Vector3)->PackedFloat32Array:
 	return [v.x, v.y, v.z]
 	
+## Convert a builtin Vector to an array that's ready for JSON serialization
 static func vec4_to_array(v: Vector4)->PackedFloat32Array:
 	return [v.x, v.y, v.z, v.w]
 	
+## Convert a builtin Vector to an array that's ready for JSON serialization
 static func vec2i_to_array(v: Vector2i)->PackedInt64Array:
 	return [v.x, v.y]
 	
+## Convert a builtin Vector to an array that's ready for JSON serialization
 static func vec3i_to_array(v: Vector3i)->PackedInt64Array:
 	return [v.x, v.y, v.z]
 	
+## Convert a builtin Vector to an array that's ready for JSON serialization
 static func vec4i_to_array(v: Vector4i)->PackedInt64Array:
 	return [v.x, v.y, v.z, v.w]
 	
+## Convert a builtin Vector to an array that's ready for JSON serialization
 static func vec2_from_array(arr: PackedFloat32Array)->Vector2:
 	return Vector2(arr[0],arr[1])
 	
+## Convert a builtin Vector to an array that's ready for JSON serialization
 static func vec3_from_array(arr: PackedFloat32Array)->Vector3:
 	return Vector3(arr[0],arr[1],arr[2])
 
+
+## Convert an object to something that is safe for serializing to JSON
 static func sanitize_json_object(root):
 	if root is Vector2:	return vec2_to_array(root as Vector2)
 	if root is Vector3:	return vec3_to_array(root as Vector3)
@@ -77,4 +90,6 @@ static func sanitize_json_object(root):
 		for item in root:
 			ret.append(sanitize_json_object(item))
 		return ret
+	if (typeof(root) == TYPE_OBJECT) || (typeof(root) == TYPE_SIGNAL) || (typeof(root) == TYPE_CALLABLE):
+		ErrorUtils.report_error("Sanitizing JSON object - object of unexpected type: '{0}'".format([root]))
 	return root

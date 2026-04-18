@@ -1,4 +1,4 @@
-# Helpers related to coroutines
+## Helpers related to coroutines
 
 extends Object
 class_name CoroutineUtils

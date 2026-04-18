@@ -1,3 +1,4 @@
+## Helpers related to datastructures like Arrays, Dictionaries etc.
 extends Object
 class_name DatastructUtils
 
@@ -66,7 +67,9 @@ static func fill_array_with(arr: Array, value: Variant, count: int)->Array:
 		t += 1
 	return arr
 
+## Returns [constant true] if the node is derived from any Array-like, e.g. [Array], [PackedInt32Array] or any other PackedArray type
 static func is_array_like(node)->bool:
+	var type := typeof(node)
 	return (node is Array
 			or node is PackedByteArray
 			or node is PackedColorArray

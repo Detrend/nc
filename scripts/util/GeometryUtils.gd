@@ -1,4 +1,4 @@
-# This file contains helper functions related to geometry or vector maths
+## This file contains helper functions related to geometry or vector maths
 
 class_name GeometryUtils
 
