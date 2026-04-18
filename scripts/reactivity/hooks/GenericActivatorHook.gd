@@ -1,8 +1,14 @@
+## Generic hook that carries arbitrary user-provided tree of data.
+##
+## Use this for rapid prototyping only.
 @tool
 class_name ActivatorHook_Generic
 extends IActivatorHook
 
+## Constant string uniquely identifying this type of activator hook
 @export var type : String
+
+## Data to be exported for this activator hook
 @export var data : Dictionary[String, Variant]
 
 func get_type()->String: return type

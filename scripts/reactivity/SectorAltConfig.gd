@@ -1,14 +1,16 @@
+## Specifies alternative floor/ceiling config that the parent [Sector] can be switched to through an [Activator].
 @tool
 class_name SectorAltConfig
 extends Node
 
+## Switch to this alt config when this [Activator] is enabled.
 @export var source : Activator
 
 enum ComputationMode{
 	Ignore, Relative, Absolute
 }
 
-## in metres per second
+## How fast floor and ceiling shall move to the default/alt position, in m/s.
 @export var move_speed : float = 1.0
 @export var floor_mode : ComputationMode = ComputationMode.Ignore
 @export var floor_height : float
@@ -17,6 +19,7 @@ enum ComputationMode{
 
 var _parent_sector : Sector:
 	get: return (get_parent() as Sector)
+
 
 func get_floor_height()->float:
 	return _get_some_height_helper(_parent_sector.floor_height, floor_height, floor_mode)

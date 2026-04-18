@@ -1,3 +1,4 @@
+## Convenient facade for a single point of an [EditablePolygon]
 class_name SectorPoint
 
 var _sector: EditablePolygon
@@ -7,6 +8,7 @@ func _init(sector : EditablePolygon, idx : int) -> void:
 	_sector = sector
 	_idx = idx
 
+## Worldspace position of the point
 var global_position : Vector2:
 	get: return _sector.get_point_position(_idx)
 	set(value): 
