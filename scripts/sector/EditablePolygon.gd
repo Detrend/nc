@@ -9,6 +9,12 @@ var is_editable : bool = true
 
 var config : EditorConfig = load("res://config.tres") as EditorConfig
 
+func get_data()-> SectorProperties: 
+	@warning_ignore("unsafe_property_access") ## all classes derived from this must have [member data] 
+	return self.data
+func set_data(new_data : SectorProperties)-> void:
+	@warning_ignore("unsafe_property_access") ## all classes derived from this must have [member data] 
+	self.data = new_data
 
 var _level : Level:
 	get: 
