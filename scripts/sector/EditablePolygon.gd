@@ -1,3 +1,12 @@
+## Polygon in the game world. Can be edited by the user and listen to input events from its root [Level].
+##
+## Base class for [Sector] and [TriangulatedMultisector]. [br]
+## Contains all the shared fancy editing stuff (loop-cut, extrude, etc.), base logic for handling input events etc. .
+## [br]
+## Special behaviors: 										[br]
+##  - Connected drag - hold 'Q' while moving a point			[br]
+##  - Loop cut - hold 'C' while adding two points				[br]
+##  - Extrude  - hold 'X' while adding a point				[br]
 @tool
 extends Polygon2D
 class_name EditablePolygon
@@ -16,6 +25,7 @@ func set_data(new_data : SectorProperties)-> void:
 	@warning_ignore("unsafe_property_access") ## all classes derived from this must have [member data] 
 	self.data = new_data
 
+## Root [Level] where this [Sector] resides in
 var _level : Level:
 	get: 
 		if not _level: _level = get_tree().edited_scene_root as Level
@@ -24,33 +34,42 @@ var _level : Level:
 	set(val):
 		_level = val
 
-func get_own_prefab()->Resource:
-	return null
+## Cannonical prefab for creating instances of the derived type
+func get_own_prefab()->PackedScene:
+	return InterfaceUtils.report_not_implemented_error(get_own_prefab)
 
+## Undo history manager linked to this object (userfriendly editor facade)
 func get_undo_redo()->EditorUndoRedoManager: 
 	return _level._editor_plugin.get_undo_redo()
+## Undo history manager linked to this object (raw low-level object)
 func get_undo_redo_raw()->UndoRedo: 
 	var unre := get_undo_redo()
 	return unre.get_history_undo_redo(unre.get_object_history_id(self))
 	
 
+## Event fired every frame when this object is selected by the user or when it gets deselected (can be checked by [member self] not being in [param _selected_list])
 func _selected_update(_selected_list: Array[Node])->void:
 	self._manage_points()
-	
+
+## Event fired when this polygon is being edited through another polygon's drag action.	
 func _alt_mode_drag_update()->void:
 	self._manage_points()
 
+## Event fired when this node gets selected, if it's the only one selected
 func _on_sole_selected()->void:
+	# If we are not editable, make sure an editable parent is selected instead
+	#  (this way e.g. clicking generated children of a [TriangulatedMultisector] results in selecting their parent)
 	if not is_editable:
-		var editable_ancestor : Node = NodeUtils.get_ancestor_by_predicate(self, func(n:Node): return (n is EditablePolygon) and n.is_editable)
-		#print("Selected a non-editable node (ancestor: {0})".format([editable_ancestor]))
+		var editable_ancestor : Node = NodeUtils.get_ancestor_by_predicate(self, func(n:Node): return (n is EditablePolygon) and (n as EditablePolygon).is_editable)
 		if editable_ancestor: 
 			NodeUtils.set_selection([editable_ancestor])
-	pass
 
+## Event fired when this node gets unselected, if it was the only one selected
 func _on_sole_unselected()->void:
 	pass
 
+## Event fired on all selected nodes whenever an input action occurs.
+## Check for input state by calling methods on [member _level] - like [method Level.is_mouse_down] etc. 
 func _on_selected_input(selected_list: Array[Node])->void:
 	if selected_list.size() == 1:
 		if _level.is_mouse_down(MOUSE_BUTTON_LEFT):
@@ -60,21 +79,33 @@ func _on_selected_input(selected_list: Array[Node])->void:
 		elif _level.is_mouse_up(MOUSE_BUTTON_RIGHT):
 			on_editing_finish(false)
 
-
+## Event fired whenever the left mouse button gets pressed down while this node is the only one selected
 func on_editing_start()->void:
-	NodeUtils.try_send_message_to_ancestor(self, 'on_descendant_editing_start', [self])
+	on_descendant_editing_start_base(self, null)
 
+## Event fired whenever the left mouse button gets pressed up while this node is the only one selected
+## [param _start_was_called_first] is [constant true] IFF there was a pair call to [method on_editing_start] before this
 func on_editing_finish(_start_was_called_first : bool)->void:
-	NodeUtils.try_send_message_to_ancestor(self, 'on_descendant_editing_finish', [self, _start_was_called_first])
+	on_descendant_editing_finish_base(self, null, _start_was_called_first)
 
 
 static func on_descendant_editing_start_base(this: Node, _ancestor: Node)->void:
 	NodeUtils.try_send_message_to_ancestor(this, 'on_descendant_editing_start', [this])
+	
+## Event fired when a (sub)child node has just started being edited			[br]
+## Is allowed to be defined even on nodes that don't derive from [EditablePolygon] - e.g. on [StairMaker],
+##  typically to enforce some invariant on its subchildren
 func on_descendant_editing_start(_ancestor: Node)->void:
 	on_descendant_editing_start_base(self, _ancestor)
 
+## Base implementation of [method on_descendant_editing_finish] which passes the message upwards. 
+## Can be called by non-[EditablePolygon] implementors instead of calling [method super.on_descendant_editing_finish]
 static func on_descendant_editing_finish_base(this: Node, _ancestor: Node, _start_was_called_first: bool)->void:
 	NodeUtils.try_send_message_to_ancestor(this, 'on_descendant_editing_finish', [this, _start_was_called_first])
+	
+## Event fired when a (sub)child node has just finished being edited			[br]
+## Is allowed to be defined even on nodes that don't derive from [EditablePolygon] - e.g. on [StairMaker],
+##  typically to enforce some invariant on its subchildren
 func on_descendant_editing_finish(_ancestor: Node, _start_was_called_first: bool):
 	on_descendant_editing_finish_base(self, _ancestor, _start_was_called_first)
 
@@ -98,10 +129,7 @@ func _manage_points()->void:
 	if !is_just_being_edited() :
 		var did_change :bool = do_postprocess(points)
 		if did_change:
-			#print(get_full_name())
-			#print("before: {0}".format([points]))
 			self.polygon = points
-			#print("after:  {0}".format([self.polygon]))
 		
 	last_points = points
 	_notify_wall_attachments_that_their_parent_is_being_edited()
@@ -120,15 +148,18 @@ func do_postprocess(_points: PackedVector2Array)->bool:
 func _update_visuals() -> void:
 	pass
 
+## Get an array of references to this polygon's points. Shouldn't be used on hot paths.
 func get_points() -> Array[SectorPoint]:
 	var ret : Array[SectorPoint] = []
 	for i in range(self.polygon.size()):
 		ret.append(SectorPoint.new(self, i))
 	return ret
 
+## Get how many points this [EditablePolygon] has.
 func get_points_count() -> int:
 	return self.polygon.size() 
 	
+## Get worldspace position of the point at specified index
 func get_point_position(idx: int)->Vector2:
 	var points := self.polygon
 	var og := idx
@@ -138,6 +169,8 @@ func get_point_position(idx: int)->Vector2:
 		ErrorUtils.report_warning("{0}: idx {1} of {2}".format([self.get_full_name(), og, points.size()]))
 	return point_pos_relative_to_absolute(points[idx])
 	
+## Set worldspace position of the point at specified index. 
+## Do not use this when it makes sense to use [method set_point_positions] instead.
 func set_point_position(idx: int, absolute: Vector2)->void:
 	var points := self.polygon
 	if idx < 0: idx += points.size()
@@ -145,27 +178,39 @@ func set_point_position(idx: int, absolute: Vector2)->void:
 	points[idx] = self.point_pos_absolute_to_relative(absolute)
 	self.polygon = points
 	
+## Get array of worldspace positions of the [EditablePolygon]'s points
 func get_point_positions()->PackedVector2Array:
 	return DatastructUtils.modify_in_place(self.polygon, point_pos_relative_to_absolute)
 	
+## Set all the [EditablePolygon]'s points at once to specified worldspace positions 
 func set_point_positions(positions_gets_consumed: PackedVector2Array)->void:
 	self.polygon = DatastructUtils.modify_in_place(positions_gets_consumed, point_pos_relative_to_absolute)
 	
+# Get start point of the specified wall
 func get_wall_begin(idx: int)->Vector2:
 	return get_point_position(idx)
+	
+# Get end point of the specified wall
 func get_wall_end(idx: int)->Vector2:
 	var point_idx := idx + 1
 	return get_point_position(point_idx)
 
+## Get direction of the specified wall
 func get_wall_direction(idx: int)->Vector2:
 	return get_wall_end(idx) - get_wall_begin(idx)
 
+## How many walls (including passthrough ones) does this [EditablePolygon] have
 func get_walls_count()->int:
 	return get_points_count()
 	
+## Convert a position from this [EditablePolygon]'s localspace to worldspace
 func point_pos_relative_to_absolute(point: Vector2)-> Vector2:
+	assert(self.rotation == 0)
+	assert(self.scale == Vector2.ONE)
 	return _get_snapped_to_grid(point + self.global_position)
 func point_pos_absolute_to_relative(point: Vector2)->Vector2:
+	assert(self.rotation == 0)
+	assert(self.scale == Vector2.ONE)
 	return _get_snapped_to_grid(point) - self.global_position
 	
 	
@@ -186,12 +231,12 @@ func _snap_points()->void:
 	_snap_points_to_grid()
 	return
 	for p in self.get_points():
-		var to_snap = _level.find_nearest_point(p.global_position, _level.max_snapping_distance, self)
+		var to_snap := _level.find_nearest_point(p.global_position, _level.max_snapping_distance, self)
 		if to_snap and (p.global_position != to_snap.global_position):
 			print("snap {0} -> {1} (distance: {2})".format([p, to_snap, p.global_position.distance_to(to_snap.global_position)]))
 			p.global_position = to_snap.global_position
 
-
+## Check if specified point is inside this [EditablePolygon]
 func contains_point(p: Vector2, inclusive: bool = true)->bool:
 	var sgn :float= sign(GeometryUtils.line_vs_point(get_wall_begin(0), get_wall_end(0) - get_wall_begin(0), p))
 	if sgn == 0 and !inclusive: return false
@@ -202,7 +247,7 @@ func contains_point(p: Vector2, inclusive: bool = true)->bool:
 			if ! inclusive: return false
 		else:
 			if sgn == 0:
-				sgn == current_sign
+				sgn = current_sign
 			if sgn != current_sign:
 				return false
 		i += 1
@@ -265,7 +310,7 @@ func do_alt_mode_retire(_current_points: PackedVector2Array)->void:
 	self.polygon = _current_points # make sure this sector has the new polygon and not the old one resulting from the undo
 
 	unre.create_action("Multimove ({0} points / {1} sectors)".format([alt_mode_affected_points.size() + 1, alt_mode_saved_configurations.size()]))
-	for sector in alt_mode_saved_configurations.keys():
+	for sector in alt_mode_saved_configurations:
 		#print("adding redo for {0}: {1}".format([sector.get_full_name(), sector.polygon]))
 		unre.add_do_property(sector, 'polygon', sector.polygon)
 		unre.add_do_method(sector, 'on_editing_finish', false)
@@ -313,7 +358,7 @@ func _alt_mode_snap(current_points: PackedVector2Array)->void:
 		else:
 			for p in alt_mode_affected_points:
 				p.global_position = self.get_point_position(alt_mode_selected_idx)
-			for s in alt_mode_saved_configurations.keys():
+			for s in alt_mode_saved_configurations:
 				if s != self:
 					s._alt_mode_drag_update()
 	
@@ -333,6 +378,7 @@ static func _find_the_single_added_point(current_points: PackedVector2Array, las
 		i += 1
 	return last_points.size()
 
+## Generate a name from the new [EditablePolygon] created as a result of the loop-cut action
 func get_loop_cut_product_name(original_name: String)->String:
 	var last_letter := original_name.unicode_at(original_name.length() - 1)
 	var a_ord := "a".unicode_at(0)
@@ -372,7 +418,7 @@ func _perform_loop_cut(first_entered_point: int, second_entered_point: int, poin
 	new_sector_command.child_idx = self.get_index() + 1
 	var new_sector := _level.add_sector(new_sector_command, unre)
 	new_sector.global_position = self.global_position
-	new_sector.data = self.data.duplicate()
+	new_sector.set_data(self.get_data().duplicate() as SectorProperties)
 	unre.add_do_property(self, 'polygon', points_to_keep)
 	unre.add_undo_property(self, 'polygon', original_points)
 	unre.add_do_method(self, 'on_editing_finish', false)
@@ -383,7 +429,7 @@ func _perform_loop_cut(first_entered_point: int, second_entered_point: int, poin
 	NodeUtils.set_selection([new_sector])
 
 func _perform_extrusion(idx: int, points: PackedVector2Array)->void:
-	var original_points := points.duplicate()
+	# var original_points := points.duplicate()
 	
 	points.remove_at(idx)
 
@@ -395,7 +441,7 @@ func _perform_extrusion(idx: int, points: PackedVector2Array)->void:
 
 	var points_to_keep := points.duplicate()
 
-	var prefab_to_use: Resource = get_own_prefab() if GeometryUtils.is_convex_polygon(points_to_give) else Level.TRIANGULATED_MULTISECTOR_PREFAB
+	var prefab_to_use: PackedScene = get_own_prefab() if GeometryUtils.is_convex_polygon(points_to_give) else Level.TRIANGULATED_MULTISECTOR_PREFAB
 		
 	#get_undo_redo_raw().undo() # remove the add-point polygon action from history
 
@@ -403,17 +449,17 @@ func _perform_extrusion(idx: int, points: PackedVector2Array)->void:
 	var history := unre.get_history_undo_redo(unre.get_object_history_id(self))
 	while history.get_history_count() > 0:
 		var current_action := history.get_current_action_name()
-		print("undoing: '{0}'".format([history.get_current_action_name()]))
+		#print("undoing: '{0}'".format([history.get_current_action_name()]))
 		history.undo()
 		if current_action == "Insert Point": break
-	print("current action: '{0}'".format([history.get_current_action_name()]))
-	var extrude_action_name = "Extrude ({0}[{1}..{2}])".format([get_full_name(), a, b])
+	#print("current action: '{0}'".format([history.get_current_action_name()]))
+	var extrude_action_name := "Extrude ({0}[{1}..{2}])".format([get_full_name(), a, b])
 	unre.create_action(extrude_action_name)
 	var new_sector_command := _level.make_add_sector_command(prefab_to_use, self.global_position, points_to_give, get_loop_cut_product_name(original_name), get_parent())
 	new_sector_command.child_idx = self.get_index() + 1
 	var new_sector := _level.add_sector(new_sector_command, unre)
 	new_sector.global_position = self.global_position
-	new_sector.data = self.data.duplicate()
+	new_sector.set_data(self.get_data().duplicate() as SectorProperties)
 	unre.add_do_property(self, 'polygon', points_to_keep)
 	unre.add_undo_property(self, 'polygon', points_to_keep)
 	unre.add_do_method(self, 'on_editing_finish', false)
@@ -424,10 +470,10 @@ func _perform_extrusion(idx: int, points: PackedVector2Array)->void:
 	await _level.every_frame_signal
 	if history.get_current_action_name() == extrude_action_name:
 		return
-	print("on next frame...")
+	#print("on next frame...")
 	while history.get_history_count() > 0:
 		var current_action := history.get_current_action_name()
-		print("undoing: '{0}'".format([history.get_current_action_name()]))
+		#print("undoing: '{0}'".format([history.get_current_action_name()]))
 		history.undo()
 		if current_action == extrude_action_name: break
 	
@@ -485,15 +531,8 @@ static func find_nearest_point(v: Vector2, others: Array[SectorPoint], tolerance
 	return ret	
 
 
-
 func get_full_name()->String:
-	var ret : Array[String] = []
-	var node : Node= self
-	while (node != null) and (node is not Level):
-		ret.append(node.name)
-		node = node.get_parent()
-	ret.reverse()
-	return DatastructUtils.string_concat(ret, "::")
+	return NodeUtils.get_full_name(self, "::", func(n: Node)->bool: return n is Level)
 
 static func get_all_editable(parent: Node, ret : Array[EditablePolygon] = [], flags: NodeUtils.LOOKUP_FLAGS = NodeUtils.LOOKUP_FLAGS.RECURSIVE)->Array[EditablePolygon]:
 	ret = NodeUtils.get_children_by_predicate(parent, func(n: Node): return n is EditablePolygon and (n as EditablePolygon).is_editable, ret, flags)

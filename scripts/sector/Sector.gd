@@ -4,6 +4,8 @@
 ##  leading from one of its wall segments into a wall segment of another [Sector]
 ## [br]
 ## Also can have [Trigger]s attached to it as child nodes.   [br][br]
+## To create a new [Sector], just hold Ctrl+Shift and LeftMouseClick in the game world [br]
+## [br] 
 ## @see [Trigger]   [br]
 ## @see [SectorAltConfig]   [br]
 ## @see [WallTextureOverride]   
@@ -99,9 +101,13 @@ var _visualizer_line : Line2D:
 
 
 @export_group("")
+@warning_ignore("unused_private_class_variable")
 @export_tool_button("Add Step Trigger") var _add_trigger_tool_button = func()->void: NodeUtils.instantiate_child_by_type_and_select(self, Trigger, "Trigger")
+@warning_ignore("unused_private_class_variable")
 @export_tool_button("Add Wall Trigger") var _add_wall_trigger_tool_button = func()->void: NodeUtils.instantiate_child_and_select(self, load("res://prefabs/WallAttachments/WallButton.tscn"), "Button")
+@warning_ignore("unused_private_class_variable")
 @export_tool_button("Add Alternative Config") var _add_alt_config_tool_button = _add_alt_config
+@warning_ignore("unused_private_class_variable")
 @export_tool_button("Add Wall Texture Override") var _add_wall_texture_override_tool_button = func()->void: NodeUtils.instantiate_child_and_select(self, load("res://prefabs/WallAttachments/WallTextureOverride.tscn"), "TextureOverride")
 
 
@@ -110,7 +116,7 @@ func _add_alt_config()->void:
 	child.floor_height = self.floor_height
 	child.ceiling_height = self.ceiling_height
 
-func get_own_prefab()->Resource:
+func get_own_prefab()->PackedScene:
 	return Level.SECTOR_PREFAB
 
 # to make sure update_visuals() isn't called from some setter at the very beginning before config and scene is even set up 
@@ -304,7 +310,7 @@ func is_convex()->bool:
 #region GETTERS
 
 static func get_sectors(this: Node, ret : Array[Sector] = [], include_uneditable: bool = false, lookup_flags: NodeUtils.LOOKUP_FLAGS = NodeUtils.LOOKUP_FLAGS.RECURSIVE):
-	ret = NodeUtils.get_children_by_predicate(this, func(n:Node)->bool: return n is Sector and (include_uneditable || n.is_editable), ret, lookup_flags)
+	ret = NodeUtils.get_children_by_predicate(this, func(n:Node)->bool: return n is Sector and (include_uneditable || (n as Sector).is_editable), ret, lookup_flags)
 	return ret
 
 

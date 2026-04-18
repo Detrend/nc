@@ -19,7 +19,7 @@ extends EditablePolygon
 
 @export_tool_button("Bake") var dissolve_tool_button = do_dissolve
 
-func get_own_prefab()->Resource:
+func get_own_prefab()->PackedScene:
 	return Level.TRIANGULATED_MULTISECTOR_PREFAB
 
 var _generated_parent : Node2D:
