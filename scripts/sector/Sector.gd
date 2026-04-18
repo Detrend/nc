@@ -1,27 +1,41 @@
+## Single sector in the game world. Required to be convex.
+##
+## Defines a floor/ceiling height (runtime-changeable via [SectorAltConfig] child), texturing configuration and optionally a single portal
+##  leading from one of its wall segments into a wall segment of another [Sector]
+## [br]
+## Also can have [Trigger]s attached to it as child nodes.   [br][br]
+## @see [Trigger]   [br]
+## @see [SectorAltConfig]   [br]
+## @see [WallTextureOverride]   
 @tool
 class_name Sector
 extends EditablePolygon
 
+## Data object of this sector
 @export var data : SectorProperties = SectorProperties.new()
+
+## Reference to [member data.floor_height]
 @export var floor_height : float:
 	get: return data.floor_height
 	set(val): 
 		data.floor_height = val
 		_update_visuals()
 		
+## Reference to [member data.ceiling_height]
 @export var ceiling_height : float:
 	get: return data.ceiling_height
 	set(val): 
 		data.ceiling_height = val
 		_update_visuals()
 
+## Reference to [member data.material]
 @export var sector_material : SectorMaterial:
 	get: return data.material
 	set(val):
 		data.material = val
 		_update_visuals()
 
-
+## If [constant true], this [Sector] will be skipped during export.
 @export var exclude_from_export : bool = false:
 	get: return exclude_from_export
 	set(val): 
@@ -30,46 +44,56 @@ extends EditablePolygon
 
 
 @export_group("Portal")
-
-@export var portal_destination : Sector = null:
-	get: return portal_destination
-	set(value):
-		portal_destination = value
-		_update_visuals()
-		
-@export var enable_portal : bool = true:
+## Single portal that connects this [Sector] with another arbitrary sector, creating non-euclidean level geometry.
+## [br]
+## Each [Sector] is allowed to only have a single portal
+@export_custom(PROPERTY_HINT_GROUP_ENABLE, "") var enable_portal : bool = false:
 	get: return enable_portal
 	set(value):
 		enable_portal = value
 		_update_visuals()
 		
+## [Sector] where the portal leads to.
+@export var portal_destination : Sector = null:
+	get: return portal_destination
+	set(value):
+		portal_destination = value
+		_update_visuals()
+
+## Index of this [Sector]'s wall where the portal begins
 @export var portal_wall : int:
 	get: return portal_wall
 	set(value): 
 		portal_wall = value if polygon.size() <= 0 else ((value + polygon.size()) % polygon.size())
 		_update_visuals()
-		
+
+## Index of the wall in [member portal_destination] where the portal ends
 @export var portal_destination_wall: int:
 	get: return portal_destination_wall
 	set(value): 
 		portal_destination_wall = value if !(portal_destination and portal_destination.get_points_count()>0) else ((value + portal_destination.get_points_count()) % portal_destination.get_points_count())
 		_update_visuals()
 		
+## If enabled, create a corresponding second portal that leads from destination to this [Sector]. [br]
+## Currently must always be [constant true], one-directional portals crash the game.
 @export var is_portal_bidirectional : bool = true:
 	get: return is_portal_bidirectional
 	set(value):
 		is_portal_bidirectional = value
 		_update_visuals()
 		
-@export var show_portal_arrow : bool = false:
+## If enabled, draw a debug line connecting the portal's origin and destination walls
+@export var show_portal_arrow : bool = true:
 	get: return show_portal_arrow
 	set(value):
 		show_portal_arrow = value
 		_update_visuals()
 
+## Check whether this [Sector] has a valid portal originating from it.
 func has_portal()-> bool: return enable_portal and portal_destination != null and portal_destination.is_visible_in_tree()
 
 
+## Line for visualizing the portal connection, used when [member show_portal_arrow] is enabled
 var _visualizer_line : Line2D:
 	get: return get_node_or_null("VisualizerLine")
 
@@ -79,7 +103,6 @@ var _visualizer_line : Line2D:
 @export_tool_button("Add Wall Trigger") var _add_wall_trigger_tool_button = func()->void: NodeUtils.instantiate_child_and_select(self, load("res://prefabs/WallAttachments/WallButton.tscn"), "Button")
 @export_tool_button("Add Alternative Config") var _add_alt_config_tool_button = _add_alt_config
 @export_tool_button("Add Wall Texture Override") var _add_wall_texture_override_tool_button = func()->void: NodeUtils.instantiate_child_and_select(self, load("res://prefabs/WallAttachments/WallTextureOverride.tscn"), "TextureOverride")
-#@export_tool_button("Add Wall Trigger") var _add_wall_texture_override_tool_button = func()->void: NodeUtils.instantiate_child_and_select(self, load("res://prefabs/WallAttachments/WallTextureOverride.tscn"), "TextureOverride")
 
 
 func _add_alt_config()->void:
@@ -120,11 +143,11 @@ func _alt_mode_drag_update()->void:
 	super._alt_mode_drag_update()
 	_update_visuals()
 
-
+## Cleanup this [Sector]'s points after the user finished editing it.
 func do_postprocess(points: PackedVector2Array)->bool:
 	var did_change :bool = false
-	did_change = did_change or self._remove_duplicit_points (points)
-	did_change = did_change or self._ensure_points_clockwise(points)
+	did_change = did_change or self._remove_duplicit_points (points) ## There might be multiple identical points next to each other in the points array
+	did_change = did_change or self._ensure_points_clockwise(points) ## Make sure the points aren't counter-clockwise
 	return did_change
 
 func _visualize_polygon()->void:
@@ -200,6 +223,7 @@ func _ensure_points_clockwise(points: PackedVector2Array)->bool:
 
 #region SANITY_CHECKS
 
+## Perform all available sanity checks on all individual [Sectors] in the [Level]
 static func sanity_check_all(level: Level, all_sectors: Array[Sector])->void:
 	print("\tCheck - trivial")
 	for s in all_sectors:
@@ -255,7 +279,7 @@ static func sanity_check_all(level: Level, all_sectors: Array[Sector])->void:
 					ErrorUtils.report_warning("Portal lengths not matching: {0}[{1}] -> {2}[{3}] ({4} m vs {5} m)"
 						.format([s.get_full_name(), s.portal_wall, s.portal_destination.get_full_name(), s.portal_destination_wall, portal_length_in, portal_length_out]))
 
-
+## Check if this [Sector] is convex. Non-convex [Sectors] are invalid and have to be fixed by the user before exporting.
 func is_convex()->bool:
 	return Geometry2D.decompose_polygon_in_convex(self.polygon).size() == 1
 	
