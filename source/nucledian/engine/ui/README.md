@@ -3,16 +3,18 @@
 
 *user_interface_module.h*
 
-**UserInterfaceSystem** manages all UI elements, these being **MenuManager**, **Heads-Up Display** (HUD) and **ScreenEffect**.
+**UserInterfaceSystem** manages UI screens, these being **MenuManager**, **Heads-Up Display** (HUD) and **ScreenEffect**.
 
 Being an IEngineModule, it inherits on_event() method, however draw() method has to be publicly accessible as it has to be called from GraphicsSystem to be rendered, as to be called after GLClearBuffer() and before GLSwapBuffers().
 
 ## MenuManager
-*ui_button.h*
+*ui_menu_manager.h*
 
 **MenuManager** handles rendering and interactions of main menu which appears at the start of the game and when player presses ESC during gameplay. **MenuManager** also handles rendering of cursor and mouse input.
 
 ### Pages
+*ui_menu_page.h*
+
 The menu is separated into pages, each page being a whole that can be shown one at a time. These pages then contain graphics and buttons that can be interracted with.
 
  - **MainMenuPage**: main hub between other pages
@@ -28,6 +30,8 @@ The menu is separated into pages, each page being a whole that can be shown one 
   - **NextLavelPage**: intermission between levels, includes button that requests engine to transition to next level or to transition to menu if it was the last level
 
 ### UiButton
+*ui_button.h*
+
 UiButtons are interactive elements in menus.
 
 **UiButton** has these properties:
@@ -42,10 +46,13 @@ All buttons are rendered using a single *VAO*. This *VAO* and button properties 
  ### UiLoadGameButton
 : UiButton
 
+*ui_button.h*
+
 Button specialized for loading of game and rendering text that represents the save file. Because of this, the button does not include *texture_name* or *func* and is rendered using *ui_text* shader.
 
 ## Heads-Up Display (HUD)
 *ui_hud_display.h*
+
 The *Heads-Up Display* conveys gameplay information to the player, the information beeing health amount and ammo count for currently held weapon. These values are read from current *Player* instance.
 
 Rendering is done using *ui_button* shader for graphics and *ui_text* shader for values.
