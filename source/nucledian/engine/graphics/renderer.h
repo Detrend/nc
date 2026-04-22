@@ -70,6 +70,8 @@ public:
   void update_sector_ssbos() const;
   void update_sector_heights(SectorID sector_id) const;
 
+  void set_shadows(bool shadows);
+
 private:
   using Portal = Portal;
 
@@ -141,6 +143,8 @@ private:
   GLuint m_g_stitched_normal   = 0;
   GLuint m_g_albedo            = 0;
   GLuint m_g_sector            = 0;
+
+  bool m_shadows = true;
 
   void destroy_g_buffers();
   void create_g_buffers(u32 w, u32 h);

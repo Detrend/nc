@@ -73,6 +73,7 @@ namespace nc
       inline constexpr Uniform<3, f32>  AMBIENT_STRENGTH;
       inline constexpr Uniform<4, u32>  NUM_SECTORS;
       inline constexpr Uniform<5, u32>  NUM_WALLS;
+      inline constexpr Uniform<6, bool> DO_SHADOWS;
     }
 
     // Sector rendering.
