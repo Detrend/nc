@@ -883,7 +883,7 @@ namespace nc
 		crosshair_less = new UiButton("ui_arrow_left", vec2(0.3f, -0.15f), vec2(0.033f, 0.066f), std::bind(&OptionsPage::set_crosshair_less, this));
 		crosshair_more = new UiButton("ui_arrow_right", vec2(0.5f, -0.15f), vec2(0.033f, 0.066f), std::bind(&OptionsPage::set_crosshair_more, this));
 
-		go_back_button = new UiButton("ui_back", vec2(-0.3f, 0.42f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::go_back, this));
+		go_back_button = new UiButton("ui_back", vec2(-0.3f, 0.45f), vec2(0.28f, 0.066f), std::bind(&OptionsPage::go_back, this));
 	}
 
 	//=============================================================================================
