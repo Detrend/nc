@@ -1,7 +1,6 @@
 // Project Nuclidean Source File
 #pragma once
 
-// MR says:
 // This is a primary data representation of the map during runtime
 // of the game. It is supposed to be fully static (no adding/removing
 // of sectors during runtime).
@@ -16,19 +15,6 @@
 // enemy-player visibility checking.
 // The data of walls and sectors is tightly packed together in an
 // array for cache-friendly traversal.
-// It should be possible to fully derive the level geometry from
-// this data representation.
-
-// INTERNAL vs EXTERNAL data:
-// Several parts of this code work with internal/external sector/wall
-// data.
-// Internal data is a set of data generated during building of the
-// map from other type of data. Do not touch internal data.
-// External data is a set of data associated with walls/sectors
-// that can be shared with other map representation (editor for
-// example). These are never changed during building of the sector.
-// If you want to associate some data with each sector/wall, then
-// put it into external data.
 
 #include <engine/map/map_types.h>
 
