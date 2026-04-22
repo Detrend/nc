@@ -248,7 +248,6 @@ struct MapSectors
   column<aabb3>              sector_bboxes;
   StatGridAABB2<SectorID>    sector_grid;
 
-  // TODO: Do not use the retarded std::function, find a better API alternative
   using TraverseVisitor = std::function<void(SectorID, Frustum2, WallID)>;
   using WallVisitor     = std::function<void(WallID)>;
   // Traverses the sector system in a BFS order and calls the visitor

@@ -664,8 +664,8 @@ const
   f32 from_floor_height = this->sectors_dynamic[sector_from].floor_height;
   f32 to_floor_height   = this->sectors_dynamic[sector_to].floor_height;
 
-  nc_assert(from_p1 != from_p2, "Retarded wall");
-  nc_assert(to_p1   != to_p2,   "Retarded wall");
+  nc_assert(from_p1 != from_p2, "Illegal wall");
+  nc_assert(to_p1   != to_p2,   "Illegal wall");
 
   auto calc_wall_space_2_world_space = [](vec2 p1, vec2 p2, f32 h) -> mat4
   {
@@ -1094,7 +1094,7 @@ const
     my_ceil_y  = transform[3].y + transform[1].y * my_ceil_y;
   }
 
-  nc_assert(my_floor_y < my_ceil_y); // Check if something hasn't fucked up
+  nc_assert(my_floor_y < my_ceil_y); // Check if something haven't broken
 
   // How much we have to step up
   if (step_opt)

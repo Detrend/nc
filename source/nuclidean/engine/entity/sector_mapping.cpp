@@ -124,24 +124,6 @@ void SectorMapping::on_entity_create(EntityID id, vec3 pos, f32 rad, f32 /*h*/)
     sectors_to_entities.entities[sector].push_back(id);
     sectors_to_entities.transforms[sector].push_back(transform);
   }
-
-  // This is the old sector mapping that maps the entity only to one sector - the
-  // one its pivot is inside of. Use this for debugging or if the above version
-  // fucks up.
-  /*
-  SectorID sector = map.get_sector_from_point(pos.xz());
-  if (sector != INVALID_SECTOR_ID)
-  {
-    entities_to_sectors.emplace
-    (
-      id,
-      SectorsAndTransforms{.transforms = {mat4{1.0f}}, .sectors = {sector}}
-    );
-
-    sectors_to_entities.entities[sector].push_back(id);
-    sectors_to_entities.transforms[sector].push_back(mat4{1.0f});
-  }
-  */
 }
 
 }

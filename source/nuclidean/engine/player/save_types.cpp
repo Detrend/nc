@@ -109,7 +109,7 @@ bool load_demo_from_bytes
 {
   if (bytes_cnt < sizeof(DemoDataHeader))
   {
-    // Size is retarded apparently
+    // Reading something we are not supposed to..
     return false;
   }
 
@@ -138,11 +138,11 @@ bool load_demo_from_bytes
 
   if (required_size != bytes_cnt)
   {
-    // What the fuck
+    // What?
     return false;
   }
 
-  // Memcpy the fuck out of it
+  // Memcpy it
   frames_out.resize(header_out.num_frames);
   std::memcpy
   (
