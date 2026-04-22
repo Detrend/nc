@@ -1,3 +1,9 @@
+<div align="center">
+
+[![Windows Build](https://github.com/Detrend/nc/actions/workflows/build.yml/badge.svg)](https://github.com/Detrend/nc/actions/workflows/build.yml)
+
+<div align="left">
+
 ## Project Nuclidean – Retro Doom-Style FPS
 NUCLIDEAN is a fast-paced, retro-inspired FPS in the spirit of Doom, built from scratch in C++. What started as a university project is evolving into a full commercial release planned for Steam.
 
