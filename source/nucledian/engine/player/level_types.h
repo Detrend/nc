@@ -37,6 +37,7 @@ inline constexpr LevelName TEST_LEVEL("level_test1");
 inline constexpr LevelName LEVEL_1("level_final1");
 inline constexpr LevelName LEVEL_2("level_final2");
 inline constexpr LevelName LEVEL_3("level_final3");
+inline constexpr LevelName DEBUG_LEVEL("debug_level");
 }
 
 static auto LevelsDB = std::to_array
@@ -45,6 +46,7 @@ static auto LevelsDB = std::to_array
   Levels::LEVEL_1,
   Levels::LEVEL_2,
   Levels::LEVEL_3,
+  Levels::DEBUG_LEVEL,
 });
 
 

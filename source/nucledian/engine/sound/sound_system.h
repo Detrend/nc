@@ -58,6 +58,7 @@ public:
   void on_event(ModuleEvent& event) override;
 
   void set_sound_volume(int step);
+  float get_sound_volume();
   void set_music_volume(int step);
 
   void process_sdl_event(const SDL_Event& event);
@@ -100,7 +101,7 @@ private:
   std::atomic_bool    terminated = true;
 
   // All
-  u8 enabled_layers = (1 << SoundLayers::game) | (1 << SoundLayers::ui);
+  u8 enabled_layers = (1 << SoundLayers::ui); //`SoundLayers::game` only gets enabled when we start the game, @see `SoundSystem::update()`
 
   Token               current_music_name;
   Mix_Music*          current_music_track;

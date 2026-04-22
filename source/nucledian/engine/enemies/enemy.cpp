@@ -512,7 +512,39 @@ void Enemy::handle_ai_alert(f32 delta)
       // Recompute the path if needed
       bool no_path  = current_path.points.empty();
       vec2 last_pt2 = current_path.target_pt_world_space.xz();
-      if (no_path || distance(last_pt2, this->follow_target_pos.xz()) > 5.0f)
+
+      vec3 rel_target_pos_ =
+      (
+        current_path.target_transform_inv * vec4{ this->follow_target_pos, 1.0f }
+        ).xyz();
+
+      // We calculate continuation of current path to see how far the player actually is
+      // if they move through a portal, the transform will be modified
+      f32 dist = distance(last_pt2, rel_target_pos_.xz());
+      if (!no_path && dist > 5.0f)
+      {
+        mat4 ext_transform = identity<mat4>();
+        bool found_ext;
+        std::vector<vec3> path_extension_points = lvl.calc_path_relative(
+        current_path.target_pt_world_space,
+        this->follow_target_pos,
+        this->get_radius(),
+        this->get_height(),
+        ENEMY_STEP_HEIGHT,
+        ENEMY_DROP_HEIGHT,
+        true,
+        &ext_transform,
+        &found_ext);
+      
+        rel_target_pos_ =
+        (
+          inverse(ext_transform) * vec4 { rel_target_pos_, 1.0f }
+          ).xyz();
+      }
+      
+
+      if (no_path || distance(last_pt2, rel_target_pos_.xz()) > 5.0f)
+      //if (no_path || distance(last_pt2, this->follow_target_pos.xz()) > 5.0f)
       {
         // Portal transform of the path
         mat4 nc_transform = identity<mat4>();

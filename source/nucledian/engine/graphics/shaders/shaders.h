@@ -128,6 +128,7 @@ namespace nc
       inline constexpr Uniform<4, s32> CHARACTER;
       inline constexpr Uniform<5, s32> WIDTH;
       inline constexpr Uniform<6, s32> HEIGHT;
+      inline constexpr Uniform<7, bool> HOVER;
       
     }
 

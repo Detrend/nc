@@ -118,16 +118,14 @@ float get_intersection_t(vec2 ray_origin, vec2 ray_direction, vec2 wall_p0, vec2
 
 bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, uint start_matrix_id, PointLight light)
 {
-  if (start_sector_id == light.sector_id)
-      return false;
-
   const uint INVALID_WALL_ID = 65535;
   const uint MAX_LIGHT_TRAVERSE_SECTORS = 32;
 
   vec3 ray_stitched_origin = stitched_position;
   vec3 ray_origin = position;
   vec3 ray_stitched_direction = normalize(light.stitched_position - stitched_position);
-  vec3 ray_direction = mat3(inverse(sector_matricies[start_matrix_id])) * ray_stitched_direction;
+  mat4 stitched_to_local = inverse(sector_matricies[start_matrix_id]);
+  vec3 ray_direction = mat3(stitched_to_local) * ray_stitched_direction;
   
   uint current_sector_id = start_sector_id;
   float ray_t = -0.001f;
@@ -139,7 +137,16 @@ bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, u
 
     if (current_sector_id == light.sector_id)
     {
-      // check if ray collides with floor or ceiling
+      // Verify correct portal instance by transforming stitched position
+      // back to local space and comparing against the light's world position.
+      // Same instance: light_local == light.position
+      // Wrong instance: portal rotation/translation makes them differ
+      vec3 light_local = (stitched_to_local * vec4(light.stitched_position, 1.0)).xyz;
+      vec3 diff = light_local - light.position;
+      if (dot(diff, diff) > 0.01)
+        return true; // wrong portal instance
+
+      // correct instance - check floor/ceiling collision
       float ray_hit_y = ray_origin.y + ray_t * ray_direction.y;
       if (ray_hit_y < sector.floor_y - 0.001f || ray_hit_y > sector.ceil_y + 0.001f)
         return true;
@@ -195,9 +202,15 @@ bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, u
 
     current_sector_id = wall.destination;
 
+    // check if ray can pass through the portal opening
+    SectorData dest_sector = sectors[current_sector_id];
+    if (ray_hit_y < dest_sector.floor_y - 0.001f || ray_hit_y > dest_sector.ceil_y + 0.001f)
+      return true;
+
     mat4 portal_matrix = inverse(portal_matricies[wall.portal_matrix_index]);
     ray_origin = (portal_matrix * vec4(ray_origin, 1.0f)).xyz;
     ray_direction = normalize(mat3(portal_matrix) * ray_direction);
+    stitched_to_local = portal_matrix * stitched_to_local;
   }
 
   max_hops_reached = true;

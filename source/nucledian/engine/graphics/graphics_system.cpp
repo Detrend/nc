@@ -31,7 +31,7 @@
 #include <engine/player/level_types.h>
 #include <engine/player/player.h>
 
-#include <engine/ui/user_interface_module.h>
+#include <engine/ui/user_interface_system.h>
 
 #ifdef NC_DEBUG_DRAW
 // Only for turning off the input when the cvar tweaking window is displayed.
@@ -84,7 +84,7 @@ static void display_fps_as_title(SDL_Window* window)
   const auto fps_number = 1.0f / delta_time;
   const auto title_str  = std::format
   (
-    "Nucledian Game. FPS: {:.2f}, Dt: {:.2f}ms", fps_number, delta_time * 1000.0f
+    "Nuclidean Game. FPS: {:.2f}, Dt: {:.2f}ms", fps_number, delta_time * 1000.0f
   );
 
   SDL_SetWindowTitle(window, title_str.c_str());
@@ -159,7 +159,7 @@ bool GraphicsSystem::init()
   // init SDL
   constexpr auto SDL_INIT_FLAGS = SDL_INIT_VIDEO | SDL_INIT_EVENTS;
   constexpr u32  SDL_WIN_FLAGS = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED;
-  constexpr cstr WINDOW_NAME = "Nuclidean";
+  constexpr cstr WINDOW_NAME = "N U C L I D E A N";
   constexpr auto WIN_POS = SDL_WINDOWPOS_UNDEFINED;
 
   if (SDL_Init(SDL_INIT_FLAGS) < 0)
@@ -458,7 +458,7 @@ void GraphicsSystem::render()
   {
     m_renderer->render(visible_sectors, gun_props);
 
-    get_engine().get_module<UserInterfaceSystem>().draw_hud();
+    get_engine().get_module<UserInterfaceSystem>().draw();
   }
 
 #ifdef NC_IMGUI
@@ -540,7 +540,7 @@ static void draw_cvar_row(const std::string& name, const CVar& cvar)
 #endif
 
   auto& range_list = CVars::get_cvar_ranges();
-  auto  it = range_list.find(name);
+  auto  it = range_list.find(CVarName(name));
 
   const auto& range = it != range_list.end() ? it->second : CVars::DEFAULT_RANGE;
 
@@ -557,8 +557,9 @@ static void draw_cvar_bar()
   using CategoryMap = std::map<std::string, std::vector<CVarPair>>;
 
   CategoryMap cvar_categories;
-  for (const auto& [name, cvar] : cvar_list)
+  for (const auto& [name_token, cvar] : cvar_list)
   {
+    auto name = name_token.to_string();
     // find the first "." in the name and decide it's category based on that
     if (u64 idx = name.find('.'); idx != std::string::npos && idx >= 1)
     {

@@ -42,6 +42,7 @@ public:
   GameInputs get_inputs() const;
   GameInputs get_prev_inputs() const;
 
+  // Sensitivity funcs
   void  set_sensitivity(int step);
   float get_sensitivity();
 

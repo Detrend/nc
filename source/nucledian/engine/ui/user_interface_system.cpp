@@ -1,4 +1,4 @@
-#include <engine/ui/user_interface_module.h>
+#include <engine/ui/user_interface_system.h>
 #include <engine/core/engine_module_types.h>
 #include <engine/core/module_event.h>
 #include <engine/core/engine.h>
@@ -20,46 +20,56 @@ namespace nc
     return EngineModule::user_interface_system;
   }
 
+  //===========================================================================================
   UserInterfaceSystem& UserInterfaceSystem::get()
   {
     return get_engine().get_module<UserInterfaceSystem>();
   }
 
+  //===========================================================================================
   bool UserInterfaceSystem::init()
   {
     menu = new MenuManager();
-    ammo_display = new UiHudDisplay();
+    hud_display = new UiHudDisplay();
     screen_effect = new UiScreenEffect();
 
     return true;
   }
 
+  //===========================================================================================
   UserInterfaceSystem::~UserInterfaceSystem()
   {
-    delete ammo_display;
+    delete hud_display;
     delete menu;
   }
+  //===========================================================================================
 
   MenuManager* UserInterfaceSystem::get_menu_manager()
   {
     return menu;
   }
 
+  //===========================================================================================
+
   UiScreenEffect* UserInterfaceSystem::get_ui_screen_effect()
   {
     return screen_effect;
   }
 
-  void UserInterfaceSystem::draw_hud()
+  //===========================================================================================
+
+  void UserInterfaceSystem::draw()
   {
     if (get_engine().should_ammo_hp_hud_be_visible())
     {
-      ammo_display->draw();
+      hud_display->draw();
     }
 
     menu->draw();
     screen_effect->draw();
   }
+
+  //===========================================================================================
 
   void UserInterfaceSystem::on_event(ModuleEvent& event)
   {
@@ -69,7 +79,7 @@ namespace nc
       menu->post_init();
       break;
     case ModuleEventType::game_update:
-      ammo_display->update();
+      hud_display->update();
       menu->update();
       screen_effect->update(event.update.dt);
       break;

@@ -19,7 +19,7 @@
 #include <engine/input/input_system.h>
 #include <engine/game/game_system.h>
 #include <engine/sound/sound_system.h>
-#include <engine/ui/user_interface_module.h>
+#include <engine/ui/user_interface_system.h>
 
 #ifdef NC_BENCHMARK
 #include <benchmark/benchmark.h>

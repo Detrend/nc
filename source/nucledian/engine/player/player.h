@@ -76,20 +76,45 @@ public:
 #endif
 
 private:
+  // apply wish velocity
   void apply_velocity(f32 delta_seconds);
+
+  // attack based on input
   void handle_attack(PlayerSpecificInputs input, PlayerSpecificInputs prev_input, f32 delta_seconds);
+
+  // use (E) raycast
   void handle_use(PlayerSpecificInputs input, PlayerSpecificInputs prev_input, f32 delta_seconds);
+
+  // swap weapon based on input
   void handle_weapon_change(PlayerSpecificInputs input, PlayerSpecificInputs prev_input);
+
+  // create movement vector from input
   void calculate_wish_velocity(PlayerSpecificInputs input, f32 delta_seconds);
+
+  // change y velocity based on gravity
   void calculate_gravity_velocity(f32 delta_seconds);
+
   bool get_attack_state(PlayerSpecificInputs curInput, PlayerSpecificInputs prevInput, f32 delta_seconds);
+
+  // change velocity vector based on movement_direction
   void apply_acceleration(vec3 movement_direction, f32 delta_seconds);
+
+  // decelerate
   void apply_deceleration(vec3 movement_direction, f32 delta_seconds);
+
   void update_gun_sway(f32 delta);
+
   void update_camera(f32 delta);
+
+  // update gun animation state
   void update_gun_anim(f32 delta);
+
+  // attack with current weapon 
   void do_attack();
+
+  // swap weapons
   void change_weapon(WeaponType new_weapon);
+
   void handle_pickup(PickUp& pickup);
 
 	// Alerts enemies close to the player
@@ -150,6 +175,8 @@ private:
 
   s32 current_ammo[4] = {-1, 0, 30, 0}; // We start with nothing
   static_assert(ARRAY_LENGTH(current_ammo) == ARRAY_LENGTH(MAX_AMMO));
+
+  WeaponType weapon_buffer = INVALID_WEAPON_TYPE;
 };
 
 }

@@ -27,6 +27,7 @@
 #include <config.h>
 #include <common.h>
 #include <metaprogramming.h>
+#include <token.h>
 
 #include <variant>
 #include <string>
@@ -45,8 +46,8 @@ namespace nc
 static inline _type _name{_default_value};                                  \
 static inline bool NC_TOKENJOIN(_cvar_definition, _name) = []()             \
 {                                                                           \
-  nc_assert(!::nc::CVars::get_cvar_list().contains(#_name));                \
-  ::nc::CVars::get_cvar_list().insert({#_name, ::nc::CVar{&_name, _desc}}); \
+  nc_assert(!::nc::CVars::get_cvar_list().contains(::nc::CVarName(#_name)));                \
+  ::nc::CVars::get_cvar_list().insert({::nc::CVarName(#_name), ::nc::CVar{&_name, _desc}}); \
   return true;                                                              \
 }();
 
@@ -59,7 +60,7 @@ NC_REGISTER_CVAR_EXTERNAL_CPP_IMPL(_name, _desc, __LINE__)
 static inline bool NC_TOKENJOIN(_cvar_range_definition, _name) = []()                        \
 {                                                                                            \
   nc_assert(_range_min <= _range_max);                                                       \
-  ::nc::CVars::get_cvar_ranges().insert({#_name, ::nc::CVarRange{_range_min, _range_max}});  \
+  ::nc::CVars::get_cvar_ranges().insert({::nc::CVarName(#_name), ::nc::CVarRange{_range_min, _range_max}});  \
   return true;                                                                               \
 }();                                                                                         \
 NC_REGISTER_CVAR(_type, _name, _default_value, _desc)
@@ -71,8 +72,8 @@ NC_REGISTER_CVAR_EXTERNAL_CPP_RANGED(_name, _range_min, _range_max, _desc, __LIN
 #define NC_REGISTER_CVAR_EXTERNAL_CPP_IMPL(_name, _desc, _line)             \
 static inline bool NC_TOKENJOIN(_cvar_definition, _line) = []()          \
 {                                                                           \
-  nc_assert(!::nc::CVars::get_cvar_list().contains(#_name));                \
-  ::nc::CVars::get_cvar_list().insert({#_name, ::nc::CVar{&_name, _desc}}); \
+  nc_assert(!::nc::CVars::get_cvar_list().contains(::nc::CVarName(#_name)));                \
+  ::nc::CVars::get_cvar_list().insert({::nc::CVarName(#_name), ::nc::CVar{&_name, _desc}}); \
   return true;                                                              \
 }();
 
@@ -80,7 +81,7 @@ static inline bool NC_TOKENJOIN(_cvar_definition, _line) = []()          \
 static inline bool NC_TOKENJOIN(_cvar_range_definition, _line) = []()                          \
 {                                                                                              \
   nc_assert(_range_min <= _range_max);                                                         \
-  ::nc::CVars::get_cvar_ranges().insert({#_name, ::nc::CVarRange{_range_min, _range_max}});    \
+  ::nc::CVars::get_cvar_ranges().insert({::nc::CVarName(#_name), ::nc::CVarRange{_range_min, _range_max}});    \
   return true;                                                                                 \
 }();                                                                                           \
 NC_REGISTER_CVAR_EXTERNAL_CPP_IMPL(_name, _desc, _line)
@@ -103,20 +104,22 @@ NC_REGISTER_CVAR(_type, _name, _default_value, _desc)
 
 #endif
 
+  using CVarName = CompositeToken<3, token_policies::Chars_CVar>;
+
 struct CVar
 {
   using VariantPtr = std::variant<s32*, f32*, bool*, std::string*>;
   VariantPtr ptr;
   cstr       desc;
 };
-using CVarList = std::map<std::string, CVar>;
+using CVarList = std::map<CVarName, CVar>;
 
 struct CVarRange
 {
   f32 min = 0.0f;
   f32 max = 0.0f;
 };
-using CVarRanges = std::map<std::string, CVarRange>;
+using CVarRanges = std::map<CVarName, CVarRange>;
 
 struct CVars
 {

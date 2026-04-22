@@ -152,15 +152,16 @@
     <ClCompile Include="..\source\nucledian\engine\map\map_dynamics_hooks.cpp" />
     <ClCompile Include="..\source\nucledian\engine\map\physics.cpp" />
     <ClCompile Include="..\source\nucledian\engine\sound\sound_system.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\ui\ui_button.cpp" />
     <ClCompile Include="..\source\nucledian\engine\ui\ui_hud_display.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\ui\ui_menu_page.cpp" />
     <ClCompile Include="..\source\nucledian\engine\ui\ui_screen_effect.cpp" />
     <ClCompile Include="..\source\nucledian\game\enemies.cpp" />
     <ClCompile Include="..\source\nucledian\game\entity_attachment_manager.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\ui\ui_button.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\ui\ui_menu_manager.cpp" />
     <ClCompile Include="..\source\nucledian\game\item.cpp" />
     <ClCompile Include="..\source\nucledian\game\item_resources.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\ui\ui_texture.cpp" />
-    <ClCompile Include="..\source\nucledian\engine\ui\user_interface_module.cpp" />
+    <ClCompile Include="..\source\nucledian\engine\ui\user_interface_system.cpp" />
     <ClCompile Include="..\source\nucledian\game\particle.cpp" />
     <ClCompile Include="..\source\nucledian\game\projectile.cpp" />
     <ClCompile Include="..\source\nucledian\engine\graphics\resources\texture.cpp" />
@@ -320,22 +321,24 @@
     <ClInclude Include="..\source\nucledian\engine\graphics\resources\texture_id.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\debug\top_down_debug.h" />
     <ClInclude Include="..\source\nucledian\engine\graphics\shaders\uniform.h" />
+    <ClInclude Include="..\source\nucledian\engine\map\map_dynamics_hooks.h" />
     <ClInclude Include="..\source\nucledian\engine\map\map_types.h" />
     <ClInclude Include="..\source\nucledian\engine\map\physics.h" />
     <ClInclude Include="..\source\nucledian\engine\player\level_types.h" />
     <ClInclude Include="..\source\nucledian\engine\sound\sound_resources.h" />
     <ClInclude Include="..\source\nucledian\engine\sound\sound_system.h" />
     <ClInclude Include="..\source\nucledian\engine\sound\sound_types.h" />
+    <ClInclude Include="..\source\nucledian\engine\ui\ui_button.h" />
     <ClInclude Include="..\source\nucledian\engine\ui\ui_hud_display.h" />
+    <ClInclude Include="..\source\nucledian\engine\ui\ui_menu_page.h" />
     <ClInclude Include="..\source\nucledian\engine\ui\ui_screen_effect.h" />
     <ClInclude Include="..\source\nucledian\game\enemies.h" />
     <ClInclude Include="..\source\nucledian\game\entity_attachment_manager.h" />
-    <ClInclude Include="..\source\nucledian\engine\ui\ui_button.h" />
+    <ClInclude Include="..\source\nucledian\engine\ui\ui_menu_manager.h" />
     <ClInclude Include="..\source\nucledian\game\game_types.h" />
     <ClInclude Include="..\source\nucledian\game\item.h" />
     <ClInclude Include="..\source\nucledian\game\item_resources.h" />
-    <ClInclude Include="..\source\nucledian\engine\ui\ui_texture.h" />
-    <ClInclude Include="..\source\nucledian\engine\ui\user_interface_module.h" />
+    <ClInclude Include="..\source\nucledian\engine\ui\user_interface_system.h" />
     <ClInclude Include="..\source\nucledian\game\particle.h" />
     <ClInclude Include="..\source\nucledian\game\projectile.h" />
     <ClInclude Include="..\source\nucledian\game\projectiles.h" />
@@ -468,24 +471,28 @@
     <LibraryPath>$(SolutionDir)lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)bin_temp\$(ProjectName)_$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
+    <TargetName>NUCLIDEAN</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">
     <IncludePath>$(SolutionDir)source\libs\;$(SolutionDir)source\nucledian\;$(SolutionDir)source\libs\SDL2\include\;$(SolutionDir)source\libs\benchmark\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)bin_temp\$(ProjectName)_$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
+    <TargetName>NUCLIDEAN</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir)source\libs\;$(SolutionDir)source\nucledian\;$(SolutionDir)source\libs\SDL2\include\;$(SolutionDir)source\libs\benchmark\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)bin_temp\$(ProjectName)_$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
+    <TargetName>NUCLIDEAN</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profiling|x64'">
     <IncludePath>$(SolutionDir)source\libs\;$(SolutionDir)source\nucledian\;$(SolutionDir)source\libs\SDL2\include\;$(SolutionDir)source\libs\benchmark\include\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)bin_temp\$(ProjectName)_$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
+    <TargetName>NUCLIDEAN</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

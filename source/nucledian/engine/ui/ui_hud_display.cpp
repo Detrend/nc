@@ -27,6 +27,7 @@ namespace nc
 
   void UiHudDisplay::init()
   {
+    //create VAO and VBO
     vec2 vertices[] = { vec2(-1.0f, 1.0f), vec2(0.0f, 0.015f),
       vec2(-1.0f, -1.0f), vec2(0.0f, 1.0f - 0.015f),
       vec2(1.0f, 1.0f), vec2(1.0f, 0.015f),
@@ -91,6 +92,7 @@ namespace nc
 
   void UiHudDisplay::draw_digits()
   {
+    //shader init
     digit_shader.use();
 
     glBindVertexArray(VAO);
@@ -104,7 +106,7 @@ namespace nc
 
     draw_ammo();
     draw_health();
-    draw_crosshair();
+    draw_crosshair(); //crosshair is handled using the same shader
 
     // unbind
     glDisable(GL_BLEND);
@@ -116,8 +118,11 @@ namespace nc
     glBindVertexArray(0);
   }
 
+  //===========================================================================================
+
   void UiHudDisplay::draw_health()
   {
+    // draw health from right to left
     int health = display_health;
 
     if (health < 0)
@@ -125,7 +130,7 @@ namespace nc
       health = 0;
     }
 
-    bool first = true;
+    bool first = true; // to always render a char
 
     std::vector<vec2> positionHealth = { vec2(-0.68f, -0.78f), vec2(-0.74f, -0.78f), vec2(-0.8f, -0.78f) };
     vec2 scale = vec2(0.03f, 0.07f);
@@ -143,13 +148,14 @@ namespace nc
       const glm::mat4 final_trans = trans_mat;
 
       int digit = health % 10;
-      digit += 48;
+      digit += 48; //= '+'
 
       if (!first && health == 0)
       {
-        digit = 32;
+        digit = 32; //= ' '
       }
 
+      // set uniforms
       digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
       digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
       digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
@@ -157,6 +163,7 @@ namespace nc
       digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
       digit_shader.set_uniform(shaders::ui_text::HEIGHT, 16);
       digit_shader.set_uniform(shaders::ui_text::WIDTH, 8);
+      digit_shader.set_uniform(shaders::ui_text::HOVER, false);
 
       glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -177,7 +184,7 @@ namespace nc
       ammo = 0;
     }
 
-    bool first = true;
+    bool first = true; // to always render a char
 
     std::vector<vec2> positionsAmmo = { vec2(0.8f, -0.78f) , vec2(0.74f, -0.78f), vec2(0.68f, -0.78f) };
     vec2 scale = vec2(0.03f, 0.07f);
@@ -197,18 +204,19 @@ namespace nc
       const glm::mat4 final_trans = trans_mat;
 
       int digit = ammo % 10;
-      digit += 48;
+      digit += 48; //= '0'
 
-      if (first && display_ammo == -1)
+      if (first && display_ammo == -1) //if melee, we don't want to use ammo count
       {
         digit = '-';
       }
 
       if (!first && ammo == 0)
       {
-        digit = 32;
+        digit = 32; // = ' '
       }
 
+      //set uniforms
       digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
       digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
       digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
@@ -216,6 +224,7 @@ namespace nc
       digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
       digit_shader.set_uniform(shaders::ui_text::HEIGHT, 16);
       digit_shader.set_uniform(shaders::ui_text::WIDTH, 8);
+      digit_shader.set_uniform(shaders::ui_text::HOVER, false);
 
       glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
       glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -260,6 +269,7 @@ namespace nc
       const TextureManager& manager2 = TextureManager::get();
       const TextureHandle& texture2 = manager2[texts[i]];
 
+      //set uniforms
       text_shader.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
       text_shader.set_uniform(shaders::ui_button::ATLAS_SIZE, texture2.get_atlas().get_size());
       text_shader.set_uniform(shaders::ui_button::TEXTURE_POS, texture2.get_pos());
@@ -277,6 +287,8 @@ namespace nc
     glDisableVertexAttribArray(1);
     glBindVertexArray(0);
   }
+
+  //===========================================================================================
 
   void UiHudDisplay::draw_crosshair()
   {
@@ -297,6 +309,8 @@ namespace nc
     trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
 
     const glm::mat4 final_trans = trans_mat;
+
+    // set uniforms
     digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
     digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
     digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
@@ -306,6 +320,7 @@ namespace nc
 
     digit_shader.set_uniform(shaders::ui_text::HEIGHT, 2);
     digit_shader.set_uniform(shaders::ui_text::WIDTH, 11);
+    digit_shader.set_uniform(shaders::ui_text::HOVER, false);
 
     glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
