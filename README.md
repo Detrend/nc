@@ -34,14 +34,17 @@ This approach allows us to:
 - Retro-style rendering inspired by classic FPS games
 - Custom physics and collision detection
 - Custom renderer with fast occlusion culling that handles up to 30 shadow-casting lights and renders recursive portals
-- Enemies that can pathfind and shoot at the player
+- Enemies that can pathfind in non-euclidean environment and attack the player
 
 Even though we programmed most of the game and engine by ourselves, we used the following libraries:
-- SDL3 for OS-independent window handling
-- ImGui for debug visualization
-- NlohmannJson for JSON parsing
+- SDL for OS-independent window handling
+- SDL mixer for sound system
+- ImGui for debug ui visualizations
+- Nlohmann Json for JSON parsing
 - GLM for 3D game math
-- GLEW for OpenGL bindings
+- GLAD for OpenGL bindings
+- STB image for texture loading
+- Google Benchmark for micro benchmarks
 
 ---
 
