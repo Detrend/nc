@@ -77,7 +77,7 @@ namespace nc::debug_helpers
 {
 
 //==============================================================================
-#ifdef NC_PROFILING
+#ifdef NC_DEBUG_DRAW
 static void display_fps_as_title(SDL_Window* window)
 {
   const auto delta_time = get_engine().get_delta_time();

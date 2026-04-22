@@ -48,7 +48,7 @@ inline void assert_fail_impl(const char* const expression_str, const logging::Lo
 #ifdef NC_ASSERTS
 #   define nc_assert(expr, ...) nc_expect(expr, __VA_ARGS__)
 #else
-#   define nc_assert(expr, ...) do_nothing(expr); // So we do not receive warnings for unused variables on builds where assert does nothing.
+#   define nc_assert(expr, ...) ::nc::do_nothing(expr); // So we do not receive warnings for unused variables on builds where assert does nothing.
 #endif
 
 
