@@ -107,15 +107,19 @@ namespace nc
     void set_crosshair_less();
     void set_crosshair_more();
 
+    void shadow_on();
+    void shadow_off();
+
     void go_back();
 
     // text
     UiButton* sound_text = nullptr;
     UiButton* music_text = nullptr;
     UiButton* sensitivity_text = nullptr;
-    UiButton* fullscreen_button = nullptr;
-    UiButton* windowed_button = nullptr;
+    
     UiButton* crosshair_text = nullptr;
+    UiButton* shadow_text = nullptr;
+    
 
     // buttons
     UiButton* sound_volume_less = nullptr;
@@ -129,6 +133,11 @@ namespace nc
 
     UiButton* go_back_button = nullptr;
 
+    UiButton* fullscreen_button = nullptr;
+    UiButton* windowed_button = nullptr;
+    UiButton* shadow_on_button = nullptr;
+    UiButton* shadow_off_button = nullptr;
+
     // settings properties
     bool isWindowed = true;
 
@@ -136,6 +145,7 @@ namespace nc
     int musicStep = 9;
     int sensitivityStep = 4;
     int crosshairStep = 1;
+    bool isShadows = true;
   };
 
   //======================================================================================

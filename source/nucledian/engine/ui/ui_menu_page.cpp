@@ -541,6 +541,7 @@ namespace nc
 		music_text->draw(button_material);
 		sensitivity_text->draw(button_material);
 		crosshair_text->draw(button_material);
+		shadow_text->draw(button_material);
 
 		if (isWindowed)
 		{
@@ -549,6 +550,15 @@ namespace nc
 		else
 		{
 			fullscreen_button->draw(button_material);
+		}
+
+		if (isShadows)
+		{
+			shadow_on_button->draw(button_material);
+		}
+		else
+		{
+			shadow_off_button->draw(button_material);
 		}
 
 		sound_volume_less->draw(button_material);
@@ -716,6 +726,18 @@ namespace nc
 					set_fullscreen();
 				}
 			}
+
+			for (bool shadow_setting : data["shadows"])
+			{
+				if (shadow_setting)
+				{
+					shadow_on();
+				}
+				else
+				{
+					shadow_off();
+				}
+			}
 		}
 		catch (int) {}
 	}
@@ -735,6 +757,7 @@ namespace nc
 		data["sensitivity"] = sensitivityStep;
 		data["crosshair"] = crosshairStep;
 		data["fullscreen"] = !isWindowed;
+		data["shadows"] = isShadows;
 
 		f << data;
 		f.close();
@@ -826,6 +849,16 @@ namespace nc
 		get_engine().get_module<UserInterfaceSystem>().get_hud()->set_crosshair(crosshairStep);
 	}
 
+	void OptionsPage::shadow_on()
+	{
+		isShadows = true;
+	}
+
+	void OptionsPage::shadow_off()
+	{
+		isShadows = false;
+	}
+
 	//=============================================================================================
 
 	OptionsPage::OptionsPage() :
@@ -835,8 +868,11 @@ namespace nc
 		music_text = new UiButton("ui_music", vec2(-0.3f, 0.15f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::do_nothing, this));
 		sensitivity_text = new UiButton("ui_sensitivity", vec2(-0.3f, 0.0f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::do_nothing, this));
 		crosshair_text = new UiButton("ui_crosshair_text", vec2(-0.3f, -0.15f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::do_nothing, this));
-		fullscreen_button = new UiButton("ui_fullscreen", vec2(0.3f, -0.3f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::set_windowed, this));
-		windowed_button = new UiButton("ui_windowed", vec2(0.3f, -0.3f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::set_fullscreen, this));
+		shadow_text = new UiButton("ui_shadows", vec2(-0.3f, -0.3f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::do_nothing, this));
+		shadow_on_button = new UiButton("ui_on", vec2(0.3f, -0.3f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::shadow_off, this));
+		shadow_off_button = new UiButton("ui_off", vec2(0.3f, -0.3f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::shadow_on, this));
+		fullscreen_button = new UiButton("ui_fullscreen", vec2(0.3f, -0.45f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::set_windowed, this));
+		windowed_button = new UiButton("ui_windowed", vec2(0.3f, -0.45f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::set_fullscreen, this));
 
 		sound_volume_less = new UiButton("ui_arrow_left", vec2(0.3f, 0.30f), vec2(0.033f, 0.066f), std::bind(&OptionsPage::set_sound_less, this));
 		sound_volume_more = new UiButton("ui_arrow_right", vec2(0.5f, 0.30f), vec2(0.033f, 0.066f), std::bind(&OptionsPage::set_sound_more, this));
@@ -847,7 +883,7 @@ namespace nc
 		crosshair_less = new UiButton("ui_arrow_left", vec2(0.3f, -0.15f), vec2(0.033f, 0.066f), std::bind(&OptionsPage::set_crosshair_less, this));
 		crosshair_more = new UiButton("ui_arrow_right", vec2(0.5f, -0.15f), vec2(0.033f, 0.066f), std::bind(&OptionsPage::set_crosshair_more, this));
 
-		go_back_button = new UiButton("ui_back", vec2(-0.3f, 0.45f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::go_back, this));
+		go_back_button = new UiButton("ui_back", vec2(-0.3f, 0.42f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::go_back, this));
 	}
 
 	//=============================================================================================
@@ -893,6 +929,9 @@ namespace nc
 
 		go_back_button->set_hover(false);
 
+		shadow_on_button->set_hover(false);
+		shadow_off_button->set_hover(false);
+
 		if (isWindowed)
 		{
 			if (windowed_button->is_point_in_rec(mouse_pos))
@@ -900,7 +939,6 @@ namespace nc
 				hover_over_button = windowed_button;
 			}
 		}
-
 		else
 		{
 			if (fullscreen_button->is_point_in_rec(mouse_pos))
@@ -908,6 +946,22 @@ namespace nc
 				hover_over_button = fullscreen_button;
 			}
 		}
+
+		if (isShadows)
+		{
+			if (shadow_on_button->is_point_in_rec(mouse_pos))
+			{
+				hover_over_button = shadow_on_button;
+			}
+		}
+		else
+		{
+			if (shadow_off_button->is_point_in_rec(mouse_pos))
+			{
+				hover_over_button = shadow_off_button;
+			}
+		}
+
 
 		if (sound_volume_less->is_point_in_rec(mouse_pos))
 		{
