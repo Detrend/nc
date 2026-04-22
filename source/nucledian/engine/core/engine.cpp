@@ -37,10 +37,12 @@
 
 #include <SDL.h>   // SDL_Event
 
-#include <ranges>   // std::views::reverse
-#include <chrono>   // std::chrono::high_resolution_clock
-#include <cstdlib>  // std::rand
-#include <iterator> // std::next
+#include <ranges>     // std::views::reverse
+#include <chrono>     // std::chrono::high_resolution_clock
+#include <cstdlib>    // std::rand
+#include <iterator>   // std::next
+#include <filesystem> // std::current_path
+#include <cctype>     // std::tolower
 
 namespace nc
 {
@@ -127,6 +129,41 @@ static bool should_play_demo(const CmdArgs& cmd_args, std::string& out_demo)
 static bool should_play_level(const CmdArgs& cmd_args, std::string& out_lvl)
 {
   return contains_pair_of_args(cmd_args, engine_utils::START_LEVEL_ARG, out_lvl);
+}
+
+//==============================================================================
+// Changes the current directory if the game is run from the /bin/[cfg]
+static void change_current_directory_if_necessary()
+{
+  namespace fs = std::filesystem;
+
+  std::string current_path = fs::current_path().make_preferred().generic_string();
+
+  // Replace the windows/linux path separators to "/" always
+  std::replace
+  (
+    current_path.begin(), current_path.end(),
+    cast<char>(fs::path::preferred_separator), '/'
+  );
+
+  // Make it lowercase
+  for (char& character : current_path)
+  {
+    character = cast<char>(std::tolower(character));
+  }
+
+  // Search for the first "/bin" from the right..
+  if (auto it = current_path.rfind("/bin"); it != std::string::npos)
+  {
+    // Found the "/bin" somewhere on the path..
+    std::string new_path = current_path.substr(0, it);
+    fs::current_path(fs::path{new_path});
+    nc_log("Changed the path from \"{}\" to \"{}\"", current_path, new_path);
+  }
+  else
+  {
+    nc_log("Current path remains unchanged.");
+  }
 }
 
 //==============================================================================
@@ -270,6 +307,12 @@ Engine& get_engine()
 //==============================================================================
 int init_engine_and_run_game(const CmdArgs& args)
 {
+  // This makes sure that the current directory is in the root of the workspace
+  // and "content" and "demo" dirs are directly in the current directory.
+  // Changing the current directory might be necessary only if the user runs the
+  // game directly from the "bin/[cfg]" directory.
+  engine_utils::change_current_directory_if_necessary();
+
   [[maybe_unused]] bool exit_after_benchmarks_and_tests = false;
 
 #ifdef NC_BENCHMARK
