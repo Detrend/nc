@@ -397,10 +397,12 @@
     </Link>
     <PostBuildEvent />
     <PreBuildEvent>
-      <Command>xcopy "$(SolutionDir)content\*.*" "$(SolutionDir)bin\$(Configuration)\content\" /E /I /Y /D</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>Copy content folder to bin.</Message>
+      <Message>
+      </Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">
