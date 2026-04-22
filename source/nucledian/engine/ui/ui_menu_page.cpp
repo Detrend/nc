@@ -552,7 +552,7 @@ namespace nc
 			fullscreen_button->draw(button_material);
 		}
 
-		if (isShadows)
+		if (is_shadows)
 		{
 			shadow_on_button->draw(button_material);
 		}
@@ -757,7 +757,7 @@ namespace nc
 		data["sensitivity"] = sensitivityStep;
 		data["crosshair"] = crosshairStep;
 		data["fullscreen"] = !isWindowed;
-		data["shadows"] = isShadows;
+		data["shadows"] = is_shadows;
 
 		f << data;
 		f.close();
@@ -851,12 +851,14 @@ namespace nc
 
 	void OptionsPage::shadow_on()
 	{
-		isShadows = true;
+		is_shadows = true;
+		get_engine().get_module<GraphicsSystem>().set_shadows(is_shadows);
 	}
 
 	void OptionsPage::shadow_off()
 	{
-		isShadows = false;
+		is_shadows = false;
+		get_engine().get_module<GraphicsSystem>().set_shadows(is_shadows);
 	}
 
 	//=============================================================================================
@@ -947,7 +949,7 @@ namespace nc
 			}
 		}
 
-		if (isShadows)
+		if (is_shadows)
 		{
 			if (shadow_on_button->is_point_in_rec(mouse_pos))
 			{

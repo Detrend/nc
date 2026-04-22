@@ -1076,5 +1076,10 @@ SDL_Window* GraphicsSystem::get_window()
 {
   return m_window;
 }
+//==============================================================================
+void GraphicsSystem::set_shadows(bool shadows)
+{
+  m_renderer->set_shadows(shadows);
+}
 
 }

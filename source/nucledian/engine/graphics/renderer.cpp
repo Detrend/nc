@@ -219,6 +219,13 @@ void Renderer::update_sector_heights(SectorID sector_id) const
   m_sectors_ssbo.update_gpu_item_bytes(sector_id, 0, heights, sizeof(heights));
 }
 
+
+//===============================================================================
+void Renderer::set_shadows(bool shadows)
+{
+  m_shadows = shadows;
+}
+
 //==============================================================================
 std::pair<bool, size_t> Renderer::EntityRedundancyChecker::check_redundant(u64 id, vec3 pos)
 {
@@ -482,6 +489,7 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   m_light_material.set_uniform(shaders::light::NUM_TILES_X, static_cast<u32>(num_tiles_x));
   m_light_material.set_uniform(shaders::light::NUM_SECTORS, m_sectors_ssbo.gpu_size_u32());
   m_light_material.set_uniform(shaders::light::NUM_WALLS, m_walls_ssbo.gpu_size_u32());
+  m_light_material.set_uniform(shaders::light::DO_SHADOWS, m_shadows);
 
   EntityRegistry& registry = GameSystem::get().get_entities();
   registry.for_each<AmbientLight>([this](AmbientLight& ambient)

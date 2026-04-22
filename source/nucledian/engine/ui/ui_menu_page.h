@@ -145,7 +145,7 @@ namespace nc
     int musicStep = 9;
     int sensitivityStep = 4;
     int crosshairStep = 1;
-    bool isShadows = true;
+    bool is_shadows = true;
   };
 
   //======================================================================================

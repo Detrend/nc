@@ -71,6 +71,7 @@ public:
   vec2 get_window_size();
 
   SDL_Window* get_window();
+  void set_shadows(bool shadows);
 
 private:
   void update(f32 delta_seconds);

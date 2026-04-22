@@ -67,6 +67,7 @@ layout(location = 2) uniform uint  num_tiles_x;
 layout(location = 3) uniform float ambient_strength;
 layout(location = 4) uniform uint  num_sectors;
 layout(location = 5) uniform uint  num_walls;
+layout(location = 6) uniform bool  do_shadows = true;
 
 layout(std430, binding = 0) readonly buffer dir_lights_buffer       { DirLight   dir_lights[];       };
 layout(std430, binding = 1) readonly buffer point_light_buffer      { PointLight point_lights[];     };
@@ -291,8 +292,8 @@ void main()
       continue;
 
 #ifdef DO_SHADOWS
-    if (enable_shadows && is_in_shadow(position, stitched_position, sector_id, matrix_id, light))
-      continue;
+    if (do_shadows && enable_shadows && is_in_shadow(position, stitched_position, sector_id, matrix_id, light)) 
+    continue;
 #endif
 
     vec3 diffuse = max(angle, 0.0f) * albedo;
