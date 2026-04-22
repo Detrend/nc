@@ -6,7 +6,7 @@ constexpr const char* FRAGMENT_SOURCE = R"(
 #define TILE_SIZE_Y 16
 
 #define LIGHT_BANDS 48
-#define DO_SHADOWS
+// #define DO_SHADOWS
 // #define PIXEL_DEBUG
 
 struct DirLight
@@ -291,10 +291,8 @@ void main()
     if (angle <= 0.0f)
       continue;
 
-#ifdef DO_SHADOWS
     if (do_shadows && enable_shadows && is_in_shadow(position, stitched_position, sector_id, matrix_id, light)) 
     continue;
-#endif
 
     vec3 diffuse = max(angle, 0.0f) * albedo;
 
