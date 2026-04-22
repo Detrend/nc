@@ -42,8 +42,8 @@ void main()
   // 4-th component of position is used for specular strength
   g_position.w = 0.0f;
   g_stitched_position = vec4(world_position, uintBitsToFloat(0u));
-  // 4-th component of normal is used to determine if pixel should be lit
-  g_normal = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+  // 4-th component of normal is used to determine if pixel is a billboard
+  g_normal = vec4(0.0f, 0.0f, 0.0f, 1.0f);
   g_stitched_normal.xyz = vec3(0.0f, 0.0f, 0.0f);
   // 4-th component of stitched_normal is used to determine if shadows are enabled
   g_stitched_normal.w = 0.0f;

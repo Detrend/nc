@@ -1019,6 +1019,7 @@ void Renderer::render_portal_to_color(const CameraData& camera, u8 recursion) co
 
   render_sectors(camera);
   render_entities(camera);
+  render_sky_box(camera);
 }
 
 //==============================================================================
