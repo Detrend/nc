@@ -1,4 +1,4 @@
-// Project Nucledian Source File
+// Project Nuclidean Source File
 
 // Info: basic types used along the whole codebase,
 // both in engine and in the game

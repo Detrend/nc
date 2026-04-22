@@ -1,4 +1,4 @@
-// Project Nucledian Source File
+// Project Nuclidean Source File
 #include <math/utils.h>
 
 #include <cmath>     // std::floor

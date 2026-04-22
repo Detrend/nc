@@ -1,4 +1,4 @@
-// Project Nucledian Source File
+// Project Nuclidean Source File
 #include <game/item.h>
 #include <cvars.h>
 

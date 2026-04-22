@@ -1,4 +1,4 @@
-// Project Nucledian Source File
+// Project Nuclidean Source File
 #include <game/projectile.h>
 
 #include <engine/game/game_system.h>

@@ -1,4 +1,4 @@
-// Project Nucledian Source File
+// Project Nuclidean Source File
 #include <game/item_resources.h>
 
 #include <engine/sound/sound_resources.h>

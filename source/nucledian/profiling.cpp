@@ -1,4 +1,4 @@
-// Project Nucledian Source File
+// Project Nuclidean Source File
 #include <profiling.h>
 
 #ifdef NC_PROFILING

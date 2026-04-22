@@ -1,4 +1,4 @@
-// Project Nucledian Source File
+// Project Nuclidean Source File
 #include <game/particle.h>
 
 #include <engine/entity/entity_type_definitions.h>

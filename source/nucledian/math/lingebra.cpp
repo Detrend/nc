@@ -1,4 +1,4 @@
-// Project Nucledian Source File
+// Project Nuclidean Source File
 #include <math/lingebra.h>
 
 #include <math/utils.h>
