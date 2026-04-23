@@ -3,38 +3,38 @@
 
 namespace nc
 {
-	class UiScreenEffect
-	{
-		public:
-			UiScreenEffect();
-			
-			void update(float delta);
+  class UiScreenEffect
+  {
+    public:
+      UiScreenEffect();
+      
+      void update(float delta);
 
-			void draw();
+      void draw();
 
-			// call when player receives damage
-			void did_damage(int damage);
+      // call when player receives damage
+      void did_damage(int damage);
 
-			// call when player picks up an item
-			void did_pickup();
+      // call when player picks up an item
+      void did_pickup();
 
-		private:
-			
-			void init();
+    private:
+      
+      void init();
 
-			// consts
-			const f32 MAX_DMG_FLASH_DURATION = 2.0f;
-			const f32 MAX_PICKUP_FLASH_DURATION = 0.25f;
+      // consts
+      const f32 MAX_DMG_FLASH_DURATION = 2.0f;
+      const f32 MAX_PICKUP_FLASH_DURATION = 0.25f;
 
-			// properties
-			f32 time_since_last_dmg = MAX_DMG_FLASH_DURATION;
-			f32 time_since_last_pickup = MAX_PICKUP_FLASH_DURATION;
-	
-			//openGL
-			GLuint VAO;
-			GLuint VBO;
+      // properties
+      f32 time_since_last_dmg = MAX_DMG_FLASH_DURATION;
+      f32 time_since_last_pickup = MAX_PICKUP_FLASH_DURATION;
+  
+      //openGL
+      GLuint VAO;
+      GLuint VBO;
 
-			const ShaderProgramHandle shader;
-	};
+      const ShaderProgramHandle shader;
+  };
 
 }

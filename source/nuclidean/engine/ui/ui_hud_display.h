@@ -3,35 +3,35 @@
 
 namespace nc 
 {
-	class UiHudDisplay
-	{
-	public:
-		UiHudDisplay();
-		~UiHudDisplay();
+  class UiHudDisplay
+  {
+  public:
+    UiHudDisplay();
+    ~UiHudDisplay();
 
-		void update();
+    void update();
 
-		void draw();
-		
-		void set_crosshair(int val);
+    void draw();
+    
+    void set_crosshair(int val);
 
-	private:
-		void init();
+  private:
+    void init();
 
-		void draw_digits();
-		void draw_health();
-		void draw_ammo();
-		void draw_texts();
-		void draw_crosshair();
+    void draw_digits();
+    void draw_health();
+    void draw_ammo();
+    void draw_texts();
+    void draw_crosshair();
 
-		int display_ammo = 0;
-		int display_health = 0;
-		int crosshair = 1;
+    int display_ammo = 0;
+    int display_health = 0;
+    int crosshair = 1;
 
-		GLuint VAO;
-		GLuint VBO;
+    GLuint VAO;
+    GLuint VBO;
 
-		const ShaderProgramHandle digit_shader;
-		const ShaderProgramHandle text_shader;
-	};
+    const ShaderProgramHandle digit_shader;
+    const ShaderProgramHandle text_shader;
+  };
 }
