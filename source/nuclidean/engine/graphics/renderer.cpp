@@ -777,9 +777,8 @@ void Renderer::render_entities(const CameraData& camera) const
         //const ResLifetime lifetime = texture.get_lifetime();
         //groups[lifetime].insert(entity);
 
-				// TODO: This causes enemies to disappear in certain situations.
-        //if (m_entity_checker.check_redundant(id.as_u32(), camera_pos).first)
-        if (true)
+		// TODO: This causes enemies to disappear in certain situations.
+        if (m_entity_checker.check_redundant(id.as_u32(), camera_pos).first)
         {
           auto& group = groups[cast<u64>(ResLifetime::Game)];
           EntityRenderData& render_data = group[id.as_u32()];
@@ -1020,6 +1019,7 @@ void Renderer::render_portal_to_color(const CameraData& camera, u8 recursion) co
 
   render_sectors(camera);
   render_entities(camera);
+  render_sky_box(camera);
 }
 
 //==============================================================================
