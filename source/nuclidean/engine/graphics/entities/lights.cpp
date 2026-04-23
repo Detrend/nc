@@ -1,3 +1,4 @@
+// Project Nuclidean Source File
 #include <engine/graphics/entities/lights.h>
 
 #include <common.h>
