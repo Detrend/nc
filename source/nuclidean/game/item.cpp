@@ -58,7 +58,7 @@ static WeaponType weapon_type_from_pickup_type(PickupType type)
 }
 
 //==============================================================================
-PickUp::PickUp(vec3 position, PickupType my_type, bool on_floor)
+Pickup::Pickup(vec3 position, PickupType my_type, bool on_floor)
 : Entity(position, PICKUP_RADIUS, PICKUP_HEIGHT)
 , type(my_type)
 , snap_to_floor(on_floor)
@@ -77,13 +77,13 @@ PickUp::PickUp(vec3 position, PickupType my_type, bool on_floor)
 }
 
 //==============================================================================
-EntityType PickUp::get_type_static()
+EntityType Pickup::get_type_static()
 {
   return EntityTypes::pickup;
 }
 
 //==============================================================================
-bool PickUp::pickup(Player& player)
+bool Pickup::pick_up(Player& player)
 {
   bool picked_up = false;
 
@@ -128,40 +128,40 @@ bool PickUp::pickup(Player& player)
 }
 
 //==============================================================================
-bool PickUp::snaps_to_floor() const
+bool Pickup::snaps_to_floor() const
 {
   return this->snap_to_floor;
 }
 
 //==============================================================================
-bool PickUp::is_heal() const
+bool Pickup::is_heal() const
 {
   return this->type == PickupTypes::hp_small
     || this->type == PickupTypes::hp_big;
 }
 
 //==============================================================================
-bool PickUp::is_weapon() const
+bool Pickup::is_weapon() const
 {
   return this->type >= PickupTypes::first_weapon
     && this->type <= PickupTypes::last_weapon;
 }
 
 //==============================================================================
-bool PickUp::is_ammo() const
+bool Pickup::is_ammo() const
 {
   return this->type >= PickupTypes::first_ammo
     && this->type <= PickupTypes::last_ammo;
 }
 
 //==============================================================================
-const Appearance& PickUp::get_appearance() const
+const Appearance& Pickup::get_appearance() const
 {
-  return const_cast<PickUp*>(this)->get_appearance();
+  return const_cast<Pickup*>(this)->get_appearance();
 }
 
 //==============================================================================
-Appearance& PickUp::get_appearance()
+Appearance& Pickup::get_appearance()
 {
   return appear;
 }

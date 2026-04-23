@@ -304,7 +304,7 @@ void Player::apply_velocity(f32 delta_seconds)
   {
     if (report_id.type == EntityTypes::pickup)
     {
-      PickUp* pickup = ecs.get_entity<PickUp>(report_id);
+      Pickup* pickup = ecs.get_entity<Pickup>(report_id);
       nc_assert(pickup);
 
       this->handle_pickup(*pickup);
@@ -656,9 +656,9 @@ void Player::change_weapon(WeaponType new_weapon)
 }
 
 //==============================================================================
-void Player::handle_pickup(PickUp& pickup)
+void Player::handle_pickup(Pickup& pickup)
 {
-  if (pickup.pickup(*this))
+  if (pickup.pick_up(*this))
   {
     EntityRegistry&      ecs = GameSystem::get().get_entities();
     UserInterfaceSystem& ui  = get_engine().get_module<UserInterfaceSystem>();

@@ -23,7 +23,7 @@ namespace nc
 // Forward declare, we do not want to include
 struct PlayerSpecificInputs;
 struct RenderGunProperties;
-class  PickUp;
+class  Pickup;
 }
 
 namespace nc
@@ -115,7 +115,7 @@ private:
   // swap weapons
   void change_weapon(WeaponType new_weapon);
 
-  void handle_pickup(PickUp& pickup);
+  void handle_pickup(Pickup& pickup);
 
 	// Alerts enemies close to the player
 	void alert_nearby_enemies(f32 distance);
