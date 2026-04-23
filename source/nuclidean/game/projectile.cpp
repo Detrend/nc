@@ -75,11 +75,11 @@ void Projectile::update(f32 dt)
   f32 r = this->get_radius();
   f32 h = this->get_height();
 
-	// TODO: Player can't hit himself right now
-	bool player_authored = m_author.type == EntityTypes::player;
+  // TODO: Player can't hit himself right now
+  bool player_authored = m_author.type == EntityTypes::player;
   EntityTypeMask COLLIDE_WITH = player_authored
-		? (EntityTypeFlags::enemy)
-		: (EntityTypeFlags::enemy | EntityTypeFlags::player);
+    ? (EntityTypeFlags::enemy)
+    : (EntityTypeFlags::enemy | EntityTypeFlags::player);
 
   bool was_entity_hit   = false;
 

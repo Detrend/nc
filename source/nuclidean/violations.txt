@@ -1,0 +1,3388 @@
+Scanning C++ files under: c:\code\nc\source\nuclidean
+
+--------------------------------------------------------------------------
+FORMATTING VIOLATIONS
+--------------------------------------------------------------------------
+
+  intersect.h
+    line 68     [Tab character — use spaces]
+           	static constexpr u64 FRUSTUM_SLOT_CNT = 4;
+
+  logging.cpp
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #include "logging.h"
+    line 34     [Opening '{' on same line as 'for']
+                   for (auto& kv : to_register) {
+    line 49     [Opening '{' on same line as 'for']
+                   for (auto& f : bucket->second) {
+
+  logging.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+    line 46     [Tab character — use spaces]
+           #define nc_log(...)		                NC_LOG_GENERIC(nc::logging::LoggingSeverity::message, __VA_ARGS__)
+    line 47     [Tab character — use spaces]
+           #define nc_warn(...)	                NC_LOG_GENERIC(nc::logging::LoggingSeverity::warning, __VA_ARGS__)
+    line 48     [Tab character — use spaces]
+           #define nc_crit(...)	                NC_LOG_GENERIC(nc::logging::LoggingSeverity::error, __VA_ARGS__)
+
+  metaprogramming.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           /**
+
+  token.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+    line 11     [Opening '{' on same line as 'namespace']
+           namespace nc {
+    line 17     [Opening '{' on same line as 'namespace']
+             namespace token_policies {
+    line 20     [Opening '{' on same line as 'struct']
+               struct Chars_Default {
+    line 29     [Opening '{' on same line as 'struct']
+               struct Chars_CVar {
+    line 39     [Opening '{' on same line as 'namespace']
+             namespace token_helpers {
+    line 42     [Opening '{' on same line as 'if']
+                 if (alt_chars_list.size() > chars_list.size()) {
+    line 47     [Opening '{' on same line as 'for']
+                 for (char t = 0; t < chars_list.size(); ++t) {
+    line 49     [Opening '{' on same line as 'if']
+                   if (t < alt_chars_list.size()) {
+    line 59     [Opening '{' on same line as 'for']
+                 for (; max > chars_count; max /= chars_count) {
+    line 76     [Opening '{' on same line as 'struct']
+             struct BasicToken {
+    line 93     [Opening '{' on same line as 'if']
+                 if (!ret) {
+    line 101    [Opening '{' on same line as 'if']
+                 if ((t - 1) >= BASE) {
+    line 118    [Opening '{' on same line as 'for']
+                 for (size_t t = str.size(); t-- > 0;) {
+    line 145    [Opening '{' on same line as 'for']
+                 for (u64 t = raw; t > 0; t /= BASE) {
+    line 189    [Opening '{' on same line as 'struct']
+             struct CompositeToken {
+    line 218    [Opening '{' on same line as 'for']
+                 for (size_t t = 0; t < TTokenCount; ++t) {
+    line 244    [Opening '{' on same line as 'for']
+                 for (size_t t = 0; t < TTokenCount; ++t) {
+    line 246    [Opening '{' on same line as 'if']
+                   if (ret != std::strong_ordering::equal) {
+    line 260    [Opening '{' on same line as 'for']
+                   for (size_t t = 0; t < TTokenCount; ++t) {
+    line 322    [Opening '{' on same line as 'for']
+                 for (size_t t = 1; t < TTokenCount; ++t) {
+    line 330    [Opening '{' on same line as 'namespace']
+           namespace nc {
+
+  token_tests.cpp
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #include<config.h>
+    line 11     [Opening '{' on same line as 'namespace']
+           namespace nc {
+    line 27     [Opening '{' on same line as 'if']
+                   if(str != result){                                              \
+    line 40     [Opening '{' on same line as 'for']
+               for (auto c : CHARS) {
+    line 41     [Opening '{' on same line as 'for']
+                 for (size_t t = 1; t <= MAX_LENGTH; ++t) {
+    line 48     [Opening '{' on same line as 'for']
+               for (size_t test_idx = 0; test_idx < 100'000; ++test_idx){
+
+  engine\core\engine.cpp
+    line 76     [Tab character — use spaces]
+           	constexpr f32 DEFAULT_MIN = 20.0f;
+    line 78     [Tab character — use spaces]
+           	f32 min_fps  = CVars::has_min_fps ? CVars::fps_min : DEFAULT_MIN;
+
+  engine\core\resources.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+
+  engine\enemies\enemy.cpp
+    line 68     [Opening '{' on same line as 'struct']
+           static constexpr struct {
+    line 275    [Opening '{' on same line as 'if']
+             if (anim_fsm.get_state() == ActorAnimStates::walk) {
+    line 277    [Opening '{' on same line as 'if']
+                 if (move_sound_timestamp.try_consume(sound.move_interval_seconds)) {
+    line 369    [Opening '{' on same line as 'if']
+             else if(damage > 0) {
+    line 370    [Opening '{' on same line as 'if']
+               if(hurt_sound_timestamp.try_consume(HURT_SOUND_INTERVAL_SECONDS)){
+
+  engine\entity\entity.cpp
+    line 189    [Tab character — use spaces]
+           	switch (this->get_type())
+    line 190    [Tab character — use spaces]
+           	{
+    line 191    [Tab character — use spaces]
+           		case EntityTypes::sky_box:           [[fallthrough]];
+    line 192    [Tab character — use spaces]
+           		case EntityTypes::directional_light: [[fallthrough]];
+    line 193    [Tab character — use spaces]
+           		case EntityTypes::sound_emitter:
+    line 194    [Tab character — use spaces]
+           		{
+    line 195    [Tab character — use spaces]
+           			return false;
+    line 196    [Tab character — use spaces]
+           		}
+    line 198    [Tab character — use spaces]
+           		default:
+    line 199    [Tab character — use spaces]
+           		{
+    line 200    [Tab character — use spaces]
+           			return true;
+    line 201    [Tab character — use spaces]
+           		}
+    line 202    [Tab character — use spaces]
+           	}
+
+  engine\entity\entity.h
+    line 75     [Tab character — use spaces]
+           	bool              should_be_tracked_in_sector_mapping() const;
+
+  engine\entity\entity_type_definitions.h
+    line 36     [Tab character — use spaces]
+           		sound_emitter,
+    line 65     [Tab character — use spaces]
+           	"sound_emitter",
+    line 71     [Tab character — use spaces]
+           	colors::WHITE,  // player
+    line 72     [Tab character — use spaces]
+           	colors::ORANGE, // enemy
+    line 73     [Tab character — use spaces]
+           	colors::GREEN,  // pickup
+    line 74     [Tab character — use spaces]
+           	colors::TEAL,   // projectile
+    line 75     [Tab character — use spaces]
+           	colors::BLACK,  // ambient_light (we don't need to see them)
+    line 76     [Tab character — use spaces]
+           	colors::BLACK,  // directional_light (we don't need to see them)
+    line 77     [Tab character — use spaces]
+           	colors::YELLOW, // point_light
+    line 78     [Tab character — use spaces]
+           	colors::PINK,   // prop
+    line 79     [Tab character — use spaces]
+           	colors::BLACK,  // sky_box (we don't need to see them)
+    line 80     [Tab character — use spaces]
+           	colors::BLUE,   // particle
+    line 81     [Tab character — use spaces]
+           	colors::RED,    // sound emitter
+
+  engine\game\game_helpers.cpp
+    line 28     [Tab character — use spaces]
+           	return GameSystem::get().get_game_helpers();
+
+  engine\game\game_helpers.h
+    line 24     [Tab character — use spaces]
+           	static GameHelpers get();
+    line 26     [Tab character — use spaces]
+           	GameHelpers(Game& game);
+    line 28     [Tab character — use spaces]
+           	// Returns the frame index of the currently running level. Resets after the
+    line 29     [Tab character — use spaces]
+           	// level change.
+    line 36     [Tab character — use spaces]
+           	// Returns the pointer to the player
+    line 55     [Tab character — use spaces]
+           	Game& m_game;
+    line 64     [Tab character — use spaces]
+             	const f64 current_timestamp = GameHelpers::get().get_time_since_start();
+    line 65     [Tab character — use spaces]
+             	const f64 current_elapsed_time = current_timestamp - last_performed_timestamp;
+    line 66     [Tab character — use spaces]
+             	if (current_elapsed_time < required_elapsed_time) 
+    line 67     [Tab character — use spaces]
+             	{
+    line 68     [Tab character — use spaces]
+             		return false;
+    line 69     [Tab character — use spaces]
+             	}
+    line 70     [Tab character — use spaces]
+             	last_performed_timestamp = current_timestamp;
+    line 71     [Tab character — use spaces]
+             	return true;
+
+  engine\game\game_system.cpp
+    line 121    [Opening '{' on same line as 'for']
+             for (u32 t = 0; t < TSize; ++t) {
+    line 132    [Opening '{' on same line as 'if']
+             if (js.contains(key)) {
+    line 141    [Opening '{' on same line as 'if']
+             if (js.contains(key)) {
+    line 150    [Opening '{' on same line as 'if']
+             if (const bool should_show = js["show"]) {
+    line 311    [Opening '{' on same line as 'for']
+                 for (const auto& hook_js : js_activator["hooks"]) {
+    line 364    [Opening '{' on same line as 'for']
+                   for (auto&& js_alt_state : js_sector["alt_states"]) {
+    line 508    [Opening '{' on same line as 'if']
+             if (data.contains("music")) {
+    line 511    [Opening '{' on same line as 'else']
+             else {
+    line 1102   [Tab character — use spaces]
+           	return get_game_helpers().get_level();
+    line 1121   [Tab character — use spaces]
+           	nc_assert(this->game);
+    line 1122   [Tab character — use spaces]
+           	return GameHelpers(*this->game);
+    line 1333   [Tab character — use spaces]
+    line 1336   [Tab character — use spaces]
+    line 1368   [Tab character — use spaces]
+
+  engine\game\game_system.h
+    line 85     [Tab character — use spaces]
+           	GameHelpers             get_game_helpers()   const;
+
+  engine\graphics\gl_types.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+
+  engine\graphics\graphics_system.h
+    line 30     [Tab character — use spaces]
+           	const vec3& position;
+    line 31     [Tab character — use spaces]
+           	const mat4& view;
+    line 32     [Tab character — use spaces]
+           	const mat4& projection;
+    line 33     [Tab character — use spaces]
+           	const VisibilityTree& vis_tree;
+
+  engine\graphics\renderer.cpp
+    line 780    [Tab character — use spaces]
+           		// TODO: This causes enemies to disappear in certain situations.
+
+  engine\graphics\ssbo_buffer.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+
+  engine\graphics\debug\gizmo.cpp
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #include <engine/graphics/debug/gizmo.h>
+
+  engine\graphics\debug\gizmo.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+
+  engine\graphics\entities\lights.cpp
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #include <engine/graphics/entities/lights.h>
+
+  engine\graphics\entities\lights.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+
+  engine\graphics\entities\sky_box.cpp
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #include "sky_box.h"
+
+  engine\graphics\entities\sky_box.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+
+  engine\graphics\resources\mesh.cpp
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #include <engine/graphics/resources/mesh.h>
+
+  engine\graphics\resources\mesh.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+
+  engine\graphics\resources\model.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+
+  engine\graphics\resources\res_lifetime.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+
+  engine\graphics\resources\shader_program.cpp
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #include <common.h>
+
+  engine\graphics\resources\shader_program.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+
+  engine\graphics\resources\texture.cpp
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #include <engine/graphics/resources/texture.h>
+
+  engine\graphics\resources\texture.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+
+  engine\graphics\resources\texture_id.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+
+  engine\graphics\shaders\shaders.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+
+  engine\map\map_dynamics.cpp
+    line 331    [Opening '{' on same line as 'if']
+               if (is_on || activeness_did_change) {
+    line 332    [Opening '{' on same line as 'for']
+                 for (const std::unique_ptr<IActivatorHook>& hook : activator.hooks) {
+
+  engine\map\map_dynamics_hooks.cpp
+    line 23     [Opening '{' on same line as 'if']
+               if (hook_type == "level_transition") {
+
+  engine\map\map_dynamics_hooks.h
+    line 24     [Opening '{' on same line as 'class']
+             class ActivatorHook_LevelTransition : public IActivatorHook {
+
+  engine\map\physics.cpp
+    line 1840   [Tab character — use spaces]
+           	const vec3 h_offset = -UP_DIR * neg_height;
+    line 1843   [Tab character — use spaces]
+           	f32 remaining_distance = total_distance;
+    line 2125   [Tab character — use spaces]
+           	vec3 camera_pos, vec3 sound_pos, f32 sound_distance
+
+  engine\map\physics.h
+    line 162    [Tab character — use spaces]
+           	// Casts a 3D ray and reports the first thing it hits
+    line 171    [Tab character — use spaces]
+           	// Casts a cylinder shape between two points and checks if it intersects something
+    line 172    [Tab character — use spaces]
+           	// in the world.
+    line 223    [Tab character — use spaces]
+           	// Moves a non-character physics object in the level. The object bounces around
+    line 224    [Tab character — use spaces]
+           	// and collides with other objects. The collision detection is continuous and
+
+  engine\player\map_object.cpp
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #include <engine/player/map_object.h>
+
+  engine\player\map_object.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+    line 7      [Opening '{' on same line as 'namespace']
+           namespace nc {
+
+  engine\player\player.cpp
+    line 193    [Opening '{' on same line as 'if']
+                 if (current_ammo[i] == 0) {
+    line 196    [Opening '{' on same line as 'else']
+                 else {
+    line 718    [Opening '{' on same line as 'else']
+             else {
+
+  engine\player\player.h
+    line 120    [Tab character — use spaces]
+           	// Alerts enemies close to the player
+    line 121    [Tab character — use spaces]
+           	void alert_nearby_enemies(f32 distance);
+
+  engine\sound\sound_system.cpp
+    line 152    [Opening '{' on same line as 'if']
+             if ((track_name == this->current_music_name) && Mix_PlayingMusic()) {
+    line 164    [Opening '{' on same line as 'if']
+               if (og_music_track) {
+
+  engine\ui\ui_button.cpp
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+    line 17     [Tab character — use spaces]
+           	UiButton::UiButton()
+    line 18     [Tab character — use spaces]
+           	{
+    line 19     [Tab character — use spaces]
+           	}
+    line 21     [Tab character — use spaces]
+           	//=============================================================================================
+    line 23     [Tab character — use spaces]
+           	UiButton::UiButton(const char* texture_name, vec2 position, vec2 scale, std::function<void(void)> func)
+    line 24     [Tab character — use spaces]
+           	{
+    line 25     [Tab character — use spaces]
+           		this->texture_name = texture_name;
+    line 27     [Tab character — use spaces]
+           		this->position = position;
+    line 28     [Tab character — use spaces]
+           		this->scale = scale;
+    line 29     [Tab character — use spaces]
+           		this->func = func;
+    line 31     [Tab character — use spaces]
+           	}
+    line 33     [Tab character — use spaces]
+           	//================================================================================================
+    line 35     [Tab character — use spaces]
+           	bool UiButton::is_point_in_rec(vec2 point)
+    line 36     [Tab character — use spaces]
+           	{
+    line 37     [Tab character — use spaces]
+           		vec2 start = position - scale;
+    line 38     [Tab character — use spaces]
+           		vec2 end = position + scale;
+    line 40     [Tab character — use spaces]
+           		// x coords
+    line 41     [Tab character — use spaces]
+           		if (point.x < start.x || point.x > end.x)
+    line 42     [Tab character — use spaces]
+           		{
+    line 43     [Tab character — use spaces]
+           			return false;
+    line 44     [Tab character — use spaces]
+           		}
+    line 46     [Tab character — use spaces]
+           		// y coords
+    line 47     [Tab character — use spaces]
+           		if (point.y < start.y || point.y > end.y)
+    line 48     [Tab character — use spaces]
+           		{
+    line 49     [Tab character — use spaces]
+           			return false;
+    line 50     [Tab character — use spaces]
+           		}
+    line 52     [Tab character — use spaces]
+           		return true;
+    line 53     [Tab character — use spaces]
+           	}
+    line 55     [Tab character — use spaces]
+           	//===================================================================================================
+    line 57     [Tab character — use spaces]
+           	vec2 UiButton::get_position()
+    line 58     [Tab character — use spaces]
+           	{
+    line 59     [Tab character — use spaces]
+           		return position;
+    line 60     [Tab character — use spaces]
+           	}
+    line 62     [Tab character — use spaces]
+           	//======================================================================================================
+    line 64     [Tab character — use spaces]
+           	vec2 UiButton::get_scale()
+    line 65     [Tab character — use spaces]
+           	{
+    line 66     [Tab character — use spaces]
+           		return scale;
+    line 67     [Tab character — use spaces]
+           	}
+    line 69     [Tab character — use spaces]
+           	//==============================================================================================
+    line 71     [Tab character — use spaces]
+           	void UiButton::set_hover(bool hover)
+    line 72     [Tab character — use spaces]
+           	{
+    line 73     [Tab character — use spaces]
+           		isHover = hover;
+    line 74     [Tab character — use spaces]
+           	}
+    line 76     [Tab character — use spaces]
+           	//==============================================================================================
+    line 78     [Tab character — use spaces]
+           	void UiButton::on_click()
+    line 79     [Tab character — use spaces]
+           	{
+    line 80     [Tab character — use spaces]
+           		SoundSystem::get().play_oneshot(Sounds::ui_click, 1.0f, SoundLayers::ui);
+    line 81     [Tab character — use spaces]
+           		func();
+    line 82     [Tab character — use spaces]
+           	}
+    line 84     [Tab character — use spaces]
+           	//====================================================================================================
+    line 86     [Tab character — use spaces]
+           	void UiButton::draw([[maybe_unused]] const ShaderProgramHandle button_material)
+    line 87     [Tab character — use spaces]
+           	{
+    line 88     [Tab character — use spaces]
+           		button_material.use();
+    line 90     [Tab character — use spaces]
+           		const TextureManager& manager = TextureManager::get();
+    line 91     [Tab character — use spaces]
+           		const TextureHandle& texture = manager[texture_name];
+    line 93     [Tab character — use spaces]
+           		glActiveTexture(GL_TEXTURE0);
+    line 95     [Tab character — use spaces]
+           		// calculate uniforms
+    line 96     [Tab character — use spaces]
+           		glm::mat4 trans_mat = glm::mat4(1.0f);
+    line 97     [Tab character — use spaces]
+           		vec2 translate = position;
+    line 98     [Tab character — use spaces]
+           		trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+    line 99     [Tab character — use spaces]
+           		trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
+    line 101    [Tab character — use spaces]
+           		const glm::mat4 final_trans = trans_mat;
+    line 103    [Tab character — use spaces]
+           		// set shader uniforms
+    line 104    [Tab character — use spaces]
+           		button_material.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
+    line 105    [Tab character — use spaces]
+           		button_material.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas().get_size());
+    line 106    [Tab character — use spaces]
+           		button_material.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
+    line 107    [Tab character — use spaces]
+           		button_material.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
+    line 108    [Tab character — use spaces]
+           		button_material.set_uniform(shaders::ui_button::HOVER, isHover);
+    line 110    [Tab character — use spaces]
+           		glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    line 111    [Tab character — use spaces]
+           		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    line 112    [Tab character — use spaces]
+           	}
+    line 114    [Tab character — use spaces]
+           	//==========================================================================================
+    line 116    [Tab character — use spaces]
+           	UiLoadGameButton::UiLoadGameButton(nc::GameSystem::SaveDbEntry& save_entry, vec2 position, vec2 scale) :
+    line 117    [Tab character — use spaces]
+           		save(save_entry)
+    line 118    [Tab character — use spaces]
+           	{
+    line 119    [Tab character — use spaces]
+           		this->position = position;
+    line 120    [Tab character — use spaces]
+           		this->scale = scale;
+    line 122    [Tab character — use spaces]
+           	}
+    line 124    [Tab character — use spaces]
+           	//=============================================================================================
+    line 125    [Tab character — use spaces]
+           	void UiLoadGameButton::on_click()
+    line 126    [Tab character — use spaces]
+           	{
+    line 127    [Tab character — use spaces]
+           		get_engine().send_event(ModuleEvent
+    line 128    [Tab character — use spaces]
+           			{
+    line 129    [Tab character — use spaces]
+           				.type = ModuleEventType::new_game_level_requested,
+    line 130    [Tab character — use spaces]
+           			});
+    line 131    [Tab character — use spaces]
+           		get_engine().get_module<GameSystem>().load_game(save.data);
+    line 132    [Tab character — use spaces]
+           		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_visible(false);
+    line 134    [Tab character — use spaces]
+           	}
+    line 136    [Tab character — use spaces]
+           	//==============================================================================================
+    line 138    [Tab character — use spaces]
+           	void UiLoadGameButton::draw(ShaderProgramHandle digit_material)
+    line 139    [Tab character — use spaces]
+           	{
+    line 140    [Tab character — use spaces]
+           		// draw button, the text is save time
+    line 141    [Tab character — use spaces]
+           		nc::SaveGameData::SaveTime time = save.data.time;
+    line 143    [Tab character — use spaces]
+           		std::string text = std::format("{:%Y-%m-%d %H:%M}", time);
+    line 145    [Tab character — use spaces]
+           		vec2 final_pos = position - vec2(0.5f, 0.0f);
+    line 146    [Tab character — use spaces]
+           		vec2 step = vec2(0.033f, 0.0f);
+    line 148    [Tab character — use spaces]
+           		const TextureManager& manager = TextureManager::get();
+    line 149    [Tab character — use spaces]
+           		const TextureHandle& texture = manager["ui_font"];
+    line 151    [Tab character — use spaces]
+           		for (size_t c = 0; c < text.size(); c++)
+    line 152    [Tab character — use spaces]
+           		{
+    line 153    [Tab character — use spaces]
+           			glActiveTexture(GL_TEXTURE0);
+    line 155    [Tab character — use spaces]
+           			glm::mat4 trans_mat = glm::mat4(1.0f);
+    line 156    [Tab character — use spaces]
+           			vec2 translate = final_pos;
+    line 157    [Tab character — use spaces]
+           			trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+    line 158    [Tab character — use spaces]
+           			trans_mat = glm::scale(trans_mat, glm::vec3(0.0165f, 0.033f, 1));
+    line 160    [Tab character — use spaces]
+           			const glm::mat4 final_trans = trans_mat;
+    line 162    [Tab character — use spaces]
+           			int digit = int(text[c]);
+    line 164    [Tab character — use spaces]
+           			//set uniforms
+    line 165    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+    line 166    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+    line 167    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+    line 168    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+    line 169    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
+    line 170    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
+    line 171    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
+    line 172    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::HOVER, isHover);
+    line 174    [Tab character — use spaces]
+           			glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    line 175    [Tab character — use spaces]
+           			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    line 177    [Tab character — use spaces]
+           			final_pos += step;
+    line 178    [Tab character — use spaces]
+           		}
+    line 179    [Tab character — use spaces]
+           	}
+
+  engine\ui\ui_button.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+
+  engine\ui\ui_hud_display.cpp
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #include <engine/ui/ui_hud_display.h>
+
+  engine\ui\ui_hud_display.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+    line 6      [Tab character — use spaces]
+           	class UiHudDisplay
+    line 7      [Tab character — use spaces]
+           	{
+    line 8      [Tab character — use spaces]
+           	public:
+    line 9      [Tab character — use spaces]
+           		UiHudDisplay();
+    line 10     [Tab character — use spaces]
+           		~UiHudDisplay();
+    line 12     [Tab character — use spaces]
+           		void update();
+    line 14     [Tab character — use spaces]
+           		void draw();
+    line 15     [Tab character — use spaces]
+    line 16     [Tab character — use spaces]
+           		void set_crosshair(int val);
+    line 18     [Tab character — use spaces]
+           	private:
+    line 19     [Tab character — use spaces]
+           		void init();
+    line 21     [Tab character — use spaces]
+           		void draw_digits();
+    line 22     [Tab character — use spaces]
+           		void draw_health();
+    line 23     [Tab character — use spaces]
+           		void draw_ammo();
+    line 24     [Tab character — use spaces]
+           		void draw_texts();
+    line 25     [Tab character — use spaces]
+           		void draw_crosshair();
+    line 27     [Tab character — use spaces]
+           		int display_ammo = 0;
+    line 28     [Tab character — use spaces]
+           		int display_health = 0;
+    line 29     [Tab character — use spaces]
+           		int crosshair = 1;
+    line 31     [Tab character — use spaces]
+           		GLuint VAO;
+    line 32     [Tab character — use spaces]
+           		GLuint VBO;
+    line 34     [Tab character — use spaces]
+           		const ShaderProgramHandle digit_shader;
+    line 35     [Tab character — use spaces]
+           		const ShaderProgramHandle text_shader;
+    line 36     [Tab character — use spaces]
+           	};
+
+  engine\ui\ui_menu_manager.cpp
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #include <engine/ui/user_interface_system.h>
+    line 21     [Tab character — use spaces]
+           	//============================================================================================
+    line 23     [Tab character — use spaces]
+           	MenuManager::MenuManager() :
+    line 24     [Tab character — use spaces]
+           		button_material(shaders::ui_button::VERTEX_SOURCE, shaders::ui_button::FRAGMENT_SOURCE),
+    line 25     [Tab character — use spaces]
+           		digit_material(shaders::ui_text::VERTEX_SOURCE, shaders::ui_text::FRAGMENT_SOURCE)
+    line 26     [Tab character — use spaces]
+           	{
+    line 28     [Tab character — use spaces]
+           		main_menu_page = new MainMenuPage();
+    line 29     [Tab character — use spaces]
+           		options_page = new OptionsPage();
+    line 30     [Tab character — use spaces]
+           		load_game_page = new LoadGamePage();
+    line 31     [Tab character — use spaces]
+           		new_game_page = new NewGamePage();
+    line 32     [Tab character — use spaces]
+           		quit_game_page = new QuitGamePage();
+    line 33     [Tab character — use spaces]
+           		next_level_page = new NextLevelPage();
+    line 35     [Tab character — use spaces]
+           		// Create VAO and VBO
+    line 36     [Tab character — use spaces]
+           		vec2 vertices[] = { vec2(-1.0f, 1.0f), vec2(0.0f, 0.015f),
+    line 37     [Tab character — use spaces]
+           			vec2(-1.0f, -1.0f), vec2(0.0f, 1.0f - 0.015f),
+    line 38     [Tab character — use spaces]
+           			vec2(1.0f, 1.0f), vec2(1.0f, 0.015f),
+    line 39     [Tab character — use spaces]
+           			vec2(1.0f, -1.0f), vec2(1.0f, 1.0f - 0.015f) };
+    line 41     [Tab character — use spaces]
+           		glGenBuffers(1, &VBO);
+    line 42     [Tab character — use spaces]
+           		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    line 43     [Tab character — use spaces]
+           		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 4, &vertices, GL_STATIC_DRAW);
+    line 45     [Tab character — use spaces]
+           		glGenVertexArrays(1, &VAO);
+    line 47     [Tab character — use spaces]
+           		glBindVertexArray(VAO);
+    line 49     [Tab character — use spaces]
+           		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    line 50     [Tab character — use spaces]
+           		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 4, &vertices, GL_STATIC_DRAW);
+    line 51     [Tab character — use spaces]
+           		// position
+    line 52     [Tab character — use spaces]
+           		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+    line 53     [Tab character — use spaces]
+           		glEnableVertexAttribArray(0);
+    line 54     [Tab character — use spaces]
+           		// uvs
+    line 55     [Tab character — use spaces]
+           		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+    line 56     [Tab character — use spaces]
+           		glEnableVertexAttribArray(1);
+    line 58     [Tab character — use spaces]
+           		glDisableVertexAttribArray(0);
+    line 59     [Tab character — use spaces]
+           		glBindBuffer(GL_ARRAY_BUFFER, 0);
+    line 60     [Tab character — use spaces]
+           		glBindVertexArray(0);
+    line 61     [Tab character — use spaces]
+           	}
+    line 63     [Tab character — use spaces]
+           	//============================================================================================
+    line 65     [Tab character — use spaces]
+           	void MenuManager::post_init()
+    line 66     [Tab character — use spaces]
+           	{
+    line 67     [Tab character — use spaces]
+           		options_page->laod_settings();
+    line 68     [Tab character — use spaces]
+           	}
+    line 70     [Tab character — use spaces]
+           	//=============================================================================================
+    line 72     [Tab character — use spaces]
+           	MenuManager::~MenuManager()
+    line 73     [Tab character — use spaces]
+           	{
+    line 74     [Tab character — use spaces]
+           		delete main_menu_page;
+    line 75     [Tab character — use spaces]
+           		delete options_page;
+    line 76     [Tab character — use spaces]
+           		delete load_game_page;
+    line 77     [Tab character — use spaces]
+           		delete new_game_page;
+    line 78     [Tab character — use spaces]
+           		delete next_level_page;
+    line 80     [Tab character — use spaces]
+           		glDeleteBuffers(1, &VAO);
+    line 81     [Tab character — use spaces]
+           		glDeleteBuffers(1, &VBO);
+    line 82     [Tab character — use spaces]
+           	}
+    line 84     [Tab character — use spaces]
+           	//==============================================================================================
+    line 86     [Tab character — use spaces]
+           	void MenuManager::set_page(MenuPages page)
+    line 87     [Tab character — use spaces]
+           	{
+    line 88     [Tab character — use spaces]
+           		current_page = page;
+    line 89     [Tab character — use spaces]
+           	}
+    line 91     [Tab character — use spaces]
+           	//=============================================================================================
+    line 93     [Tab character — use spaces]
+           	void MenuManager::on_exit()
+    line 94     [Tab character — use spaces]
+           	{
+    line 95     [Tab character — use spaces]
+           		options_page->save_settings();
+    line 96     [Tab character — use spaces]
+           	}
+    line 98     [Tab character — use spaces]
+           	//=============================================================================================
+    line 100    [Tab character — use spaces]
+           	vec2 MenuManager::get_normalized_mouse_pos()
+    line 101    [Tab character — use spaces]
+           	{
+    line 102    [Tab character — use spaces]
+           		int mouse_x, mouse_y;
+    line 104    [Tab character — use spaces]
+           		uint32 state = SDL_GetMouseState(&mouse_x, &mouse_y);
+    line 106    [Tab character — use spaces]
+           		prev_mousestate = cur_mousestate;
+    line 107    [Tab character — use spaces]
+           		cur_mousestate = state;
+    line 109    [Tab character — use spaces]
+           		vec2 dimensions = get_engine().get_module<GraphicsSystem>().get_window_size();
+    line 111    [Tab character — use spaces]
+           		f32 width = dimensions.x;
+    line 112    [Tab character — use spaces]
+           		f32 height = dimensions.y;
+    line 114    [Tab character — use spaces]
+           		f32 half_width = width / 2.0f;
+    line 115    [Tab character — use spaces]
+           		f32 half_height = height / 2.0f;
+    line 117    [Tab character — use spaces]
+           		//normalize between <0, 2>, then minus one to move it to <-1, 1>
+    line 118    [Tab character — use spaces]
+           		f32 norm_x = mouse_x / half_width - 1.0f;
+    line 119    [Tab character — use spaces]
+           		f32 norm_y = mouse_y / half_height - 1.0f;
+    line 121    [Tab character — use spaces]
+           		return vec2(norm_x, -norm_y);
+    line 122    [Tab character — use spaces]
+           	}
+    line 124    [Tab character — use spaces]
+           	//=============================================================================================
+    line 127    [Tab character — use spaces]
+           		isTransition = enabled;
+    line 128    [Tab character — use spaces]
+           		if (isTransition)
+    line 129    [Tab character — use spaces]
+           		{
+    line 130    [Tab character — use spaces]
+           			[[maybe_unused]] f64 time = GameHelpers::get().get_time_since_start(); // time stat is something we might want to add in the future
+    line 131    [Tab character — use spaces]
+           			u32 enemies = get_engine().get_module<GameSystem>().get_enemy_count();
+    line 132    [Tab character — use spaces]
+           			u32 kills = get_engine().get_module<GameSystem>().get_kill_count();
+    line 133    [Tab character — use spaces]
+           			next_level_page->set_kill_stats(enemies, kills);
+    line 134    [Tab character — use spaces]
+           		}
+    line 137    [Tab character — use spaces]
+           	//=============================================================================================
+    line 139    [Tab character — use spaces]
+           	void MenuManager::set_visible(bool visibility)
+    line 140    [Tab character — use spaces]
+           	{
+    line 151    [Tab character — use spaces]
+           		visible = visibility;
+    line 152    [Tab character — use spaces]
+           		current_page = MAIN;
+    line 153    [Tab character — use spaces]
+           	}
+    line 155    [Tab character — use spaces]
+           	//===============================================================================================
+    line 157    [Tab character — use spaces]
+           	void MenuManager::update()
+    line 158    [Tab character — use spaces]
+           	{
+    line 159    [Tab character — use spaces]
+           		// transition screen?
+    line 160    [Tab character — use spaces]
+           		if (isTransition)
+    line 161    [Tab character — use spaces]
+           		{
+    line 162    [Tab character — use spaces]
+           			vec2 mouse_pos = get_normalized_mouse_pos();
+    line 163    [Tab character — use spaces]
+           			next_level_page->update(mouse_pos, prev_mousestate, cur_mousestate);
+    line 164    [Tab character — use spaces]
+           			return;
+    line 165    [Tab character — use spaces]
+           		}
+    line 167    [Tab character — use spaces]
+           		// ESC pressed?
+    line 168    [Tab character — use spaces]
+           		prev_esc_pressed = cur_esc_pressed;
+    line 169    [Tab character — use spaces]
+           		cur_esc_pressed = false;
+    line 171    [Tab character — use spaces]
+           		int size;
+    line 172    [Tab character — use spaces]
+           		const Uint8* keyboard = SDL_GetKeyboardState(&size);
+    line 173    [Tab character — use spaces]
+           		if (keyboard[SDL_SCANCODE_ESCAPE])
+    line 174    [Tab character — use spaces]
+           		{
+    line 175    [Tab character — use spaces]
+           			cur_esc_pressed = true;
+    line 176    [Tab character — use spaces]
+           		}
+    line 181    [Tab character — use spaces]
+           		// check if we want to change menu visibility or just swap to main menu
+    line 196    [Tab character — use spaces]
+           		if (!visible) {
+    line 196    [Opening '{' on same line as 'if']
+           		if (!visible) {
+    line 197    [Tab character — use spaces]
+           			return;
+    line 198    [Tab character — use spaces]
+           		}
+    line 200    [Tab character — use spaces]
+           		vec2 mouse_pos = get_normalized_mouse_pos();
+    line 202    [Tab character — use spaces]
+           		// call to render current page itself
+    line 203    [Tab character — use spaces]
+           		switch (current_page)
+    line 204    [Tab character — use spaces]
+           		{
+    line 205    [Tab character — use spaces]
+           		case nc::MAIN:
+    line 206    [Tab character — use spaces]
+           			main_menu_page->update(mouse_pos, prev_mousestate, cur_mousestate);
+    line 207    [Tab character — use spaces]
+           			break;
+    line 208    [Tab character — use spaces]
+           		case nc::NEW_GAME:
+    line 209    [Tab character — use spaces]
+           			new_game_page->update(mouse_pos, prev_mousestate, cur_mousestate);
+    line 210    [Tab character — use spaces]
+           			break;
+    line 211    [Tab character — use spaces]
+           		case nc::OPTIONS:
+    line 212    [Tab character — use spaces]
+           			options_page->update(mouse_pos, prev_mousestate, cur_mousestate);
+    line 213    [Tab character — use spaces]
+           			break;
+    line 214    [Tab character — use spaces]
+           		case nc::LOAD:
+    line 215    [Tab character — use spaces]
+           			load_game_page->update(mouse_pos, prev_mousestate, cur_mousestate);
+    line 216    [Tab character — use spaces]
+           			break;
+    line 217    [Tab character — use spaces]
+           		case nc::SAVE:
+    line 218    [Tab character — use spaces]
+           			break;
+    line 219    [Tab character — use spaces]
+           		case nc::QUIT:
+    line 220    [Tab character — use spaces]
+           			quit_game_page->update(mouse_pos, prev_mousestate, cur_mousestate);
+    line 221    [Tab character — use spaces]
+           			break;
+    line 222    [Tab character — use spaces]
+           		default:
+    line 223    [Tab character — use spaces]
+           			break;
+    line 224    [Tab character — use spaces]
+           		}
+    line 225    [Tab character — use spaces]
+           	}
+    line 227    [Tab character — use spaces]
+           	//============================================================================================
+    line 229    [Tab character — use spaces]
+           	void MenuManager::draw()
+    line 230    [Tab character — use spaces]
+           	{
+    line 231    [Tab character — use spaces]
+           		// transition?
+    line 232    [Tab character — use spaces]
+           		if (isTransition)
+    line 233    [Tab character — use spaces]
+           		{
+    line 234    [Tab character — use spaces]
+           			next_level_page->draw(button_material, digit_material, VAO);
+    line 235    [Tab character — use spaces]
+           			draw_cursor();
+    line 236    [Tab character — use spaces]
+           			return;
+    line 237    [Tab character — use spaces]
+           		}
+    line 239    [Tab character — use spaces]
+           		if (!visible)
+    line 240    [Tab character — use spaces]
+           		{
+    line 241    [Tab character — use spaces]
+           			return;
+    line 242    [Tab character — use spaces]
+           		}
+    line 244    [Tab character — use spaces]
+           		switch (current_page)
+    line 245    [Tab character — use spaces]
+           		{
+    line 246    [Tab character — use spaces]
+           		case nc::MAIN:
+    line 247    [Tab character — use spaces]
+           			main_menu_page->draw(button_material, VAO);
+    line 248    [Tab character — use spaces]
+           			break;
+    line 249    [Tab character — use spaces]
+           		case nc::NEW_GAME:
+    line 250    [Tab character — use spaces]
+           			new_game_page->draw(button_material, VAO);
+    line 251    [Tab character — use spaces]
+           			break;
+    line 252    [Tab character — use spaces]
+           		case nc::OPTIONS:
+    line 253    [Tab character — use spaces]
+           			options_page->draw(button_material, VAO);
+    line 254    [Tab character — use spaces]
+           			break;
+    line 255    [Tab character — use spaces]
+           		case nc::LOAD:
+    line 256    [Tab character — use spaces]
+           			load_game_page->draw(button_material, digit_material, VAO);
+    line 257    [Tab character — use spaces]
+           			break;
+    line 258    [Tab character — use spaces]
+           		case nc::SAVE:
+    line 259    [Tab character — use spaces]
+           			break;
+    line 260    [Tab character — use spaces]
+           		case nc::QUIT:
+    line 261    [Tab character — use spaces]
+           			quit_game_page->draw(button_material, VAO);
+    line 262    [Tab character — use spaces]
+           			break;
+    line 263    [Tab character — use spaces]
+           		default:
+    line 264    [Tab character — use spaces]
+           			break;
+    line 265    [Tab character — use spaces]
+           		}
+    line 267    [Tab character — use spaces]
+           		draw_cursor();
+    line 268    [Tab character — use spaces]
+           	}
+    line 270    [Tab character — use spaces]
+           	//==============================================================================================
+    line 272    [Tab character — use spaces]
+           	void MenuManager::draw_cursor()
+    line 273    [Tab character — use spaces]
+           	{
+    line 274    [Tab character — use spaces]
+           		// shader init
+    line 275    [Tab character — use spaces]
+           		button_material.use();
+    line 277    [Tab character — use spaces]
+           		glBindVertexArray(VAO);
+    line 278    [Tab character — use spaces]
+           		glEnableVertexAttribArray(0);
+    line 279    [Tab character — use spaces]
+           		glEnableVertexAttribArray(1);
+    line 281    [Tab character — use spaces]
+           		glDisable(GL_DEPTH_TEST);
+    line 283    [Tab character — use spaces]
+           		glEnable(GL_BLEND);
+    line 284    [Tab character — use spaces]
+           		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    line 286    [Tab character — use spaces]
+           		vec2 pos = get_normalized_mouse_pos();
+    line 288    [Tab character — use spaces]
+           		// texture
+    line 289    [Tab character — use spaces]
+           		const char* cursor_tex = "ui_cursor";
+    line 291    [Tab character — use spaces]
+           		const TextureManager& manager = TextureManager::get();
+    line 292    [Tab character — use spaces]
+           		const TextureHandle& texture = manager[cursor_tex];
+    line 294    [Tab character — use spaces]
+           		glActiveTexture(GL_TEXTURE0);
+    line 296    [Tab character — use spaces]
+           		// getting shader uniforms
+    line 297    [Tab character — use spaces]
+           		glm::mat4 trans_mat = glm::mat4(1.0f);
+    line 298    [Tab character — use spaces]
+           		vec2 translate = pos + vec2(0.015, -0.02);
+    line 299    [Tab character — use spaces]
+           		trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+    line 300    [Tab character — use spaces]
+           		trans_mat = glm::scale(trans_mat, glm::vec3(0.015f, 0.02f, 1));
+    line 302    [Tab character — use spaces]
+           		const glm::mat4 final_trans = trans_mat;
+    line 304    [Tab character — use spaces]
+           		// setting shader uniforms
+    line 305    [Tab character — use spaces]
+           		button_material.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
+    line 306    [Tab character — use spaces]
+           		button_material.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas().get_size());
+    line 307    [Tab character — use spaces]
+           		button_material.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
+    line 308    [Tab character — use spaces]
+           		button_material.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
+    line 309    [Tab character — use spaces]
+           		button_material.set_uniform(shaders::ui_button::HOVER, false);
+    line 311    [Tab character — use spaces]
+           		// draw
+    line 312    [Tab character — use spaces]
+           		glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    line 313    [Tab character — use spaces]
+           		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    line 315    [Tab character — use spaces]
+           		// shader unbinding
+    line 317    [Tab character — use spaces]
+           		glDisable(GL_BLEND);
+    line 318    [Tab character — use spaces]
+           		glEnable(GL_DEPTH_TEST);
+    line 320    [Tab character — use spaces]
+           		glBindTexture(GL_TEXTURE_2D, 0);
+    line 321    [Tab character — use spaces]
+           		glDisableVertexAttribArray(0);
+    line 322    [Tab character — use spaces]
+           		glDisableVertexAttribArray(1);
+    line 323    [Tab character — use spaces]
+           		glBindVertexArray(0);
+    line 324    [Tab character — use spaces]
+           	}
+    line 326    [Tab character — use spaces]
+           	//=============================================================================================
+    line 329    [Tab character — use spaces]
+           	void MenuManager::update_saves()
+    line 330    [Tab character — use spaces]
+           	{
+    line 331    [Tab character — use spaces]
+           		load_game_page->update_saves();
+    line 332    [Tab character — use spaces]
+           	}
+    line 334    [Tab character — use spaces]
+           	//==============================================================================================
+
+  engine\ui\ui_menu_manager.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+
+  engine\ui\ui_menu_page.cpp
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+    line 31     [Tab character — use spaces]
+           	NextLevelPage::NextLevelPage()
+    line 32     [Tab character — use spaces]
+           	{
+    line 33     [Tab character — use spaces]
+           		next_level_button = new UiButton("ui_next_level", vec2(0.0f, -0.8f), vec2(0.3f, 0.066f), std::bind(&NextLevelPage::next_level_func, this));
+    line 34     [Tab character — use spaces]
+           		menu_button = new UiButton("ui_menu", vec2(0.0f, -0.8f), vec2(0.12f, 0.066f), std::bind(&NextLevelPage::menu_func, this));
+    line 35     [Tab character — use spaces]
+           		kills_text = new UiButton("ui_kills", vec2(-0.3f, 0.3f), vec2(0.30f, 0.066f), std::bind(&NextLevelPage::do_nothing, this));
+    line 36     [Tab character — use spaces]
+           		level_text = new UiButton("ui_level", vec2(0.0f, 0.8f), vec2(0.15f, 0.066f), std::bind(&NextLevelPage::do_nothing, this));
+    line 37     [Tab character — use spaces]
+           		demo_text = new UiButton("ui_demo", vec2(0.0f, 0.8f), vec2(0.12f, 0.066f), std::bind(&NextLevelPage::do_nothing, this));
+    line 38     [Tab character — use spaces]
+           		completed_text = new UiButton("ui_completed", vec2(0.0f, 0.6f), vec2(0.253f, 0.066f), std::bind(&NextLevelPage::do_nothing, this));
+    line 39     [Tab character — use spaces]
+           	}
+    line 41     [Tab character — use spaces]
+           	//=============================================================================================
+    line 43     [Tab character — use spaces]
+           	NextLevelPage::~NextLevelPage()
+    line 44     [Tab character — use spaces]
+           	{
+    line 45     [Tab character — use spaces]
+           		delete next_level_button;
+    line 46     [Tab character — use spaces]
+           		delete kills_text;
+    line 47     [Tab character — use spaces]
+           		delete demo_text;
+    line 48     [Tab character — use spaces]
+           		delete level_text;
+    line 49     [Tab character — use spaces]
+           		delete completed_text;
+    line 50     [Tab character — use spaces]
+           		delete menu_button;
+    line 51     [Tab character — use spaces]
+           	}
+    line 53     [Tab character — use spaces]
+           	//=============================================================================================
+    line 55     [Tab character — use spaces]
+           	void NextLevelPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
+    line 56     [Tab character — use spaces]
+           	{
+    line 57     [Tab character — use spaces]
+           		// determines wheter next_level or back_to_menu button should be updated
+    line 58     [Tab character — use spaces]
+           		UiButton* hover_over_button = nullptr;
+    line 60     [Tab character — use spaces]
+           		if (get_engine().get_module<GameSystem>().get_level_name() != Levels::LEVEL_3)
+    line 61     [Tab character — use spaces]
+           		{
+    line 62     [Tab character — use spaces]
+           			next_level_button->set_hover(false);
+    line 64     [Tab character — use spaces]
+           			if (next_level_button->is_point_in_rec(mouse_pos))
+    line 65     [Tab character — use spaces]
+           			{
+    line 66     [Tab character — use spaces]
+           				hover_over_button = next_level_button;
+    line 67     [Tab character — use spaces]
+           			}
+    line 68     [Tab character — use spaces]
+           		}
+    line 69     [Tab character — use spaces]
+           		else
+    line 70     [Tab character — use spaces]
+           		{
+    line 71     [Tab character — use spaces]
+           			menu_button->set_hover(false);
+    line 73     [Tab character — use spaces]
+           			if (menu_button->is_point_in_rec(mouse_pos))
+    line 74     [Tab character — use spaces]
+           			{
+    line 75     [Tab character — use spaces]
+           				hover_over_button = menu_button;
+    line 76     [Tab character — use spaces]
+           			}
+    line 77     [Tab character — use spaces]
+           		}
+    line 79     [Tab character — use spaces]
+           		if (hover_over_button != nullptr)
+    line 80     [Tab character — use spaces]
+           		{
+    line 81     [Tab character — use spaces]
+           			hover_over_button->set_hover(true);
+    line 83     [Tab character — use spaces]
+           			if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    line 84     [Tab character — use spaces]
+           			{
+    line 85     [Tab character — use spaces]
+           				hover_over_button->on_click();
+    line 86     [Tab character — use spaces]
+           			}
+    line 87     [Tab character — use spaces]
+           		}
+    line 88     [Tab character — use spaces]
+           	}
+    line 90     [Tab character — use spaces]
+           	//=============================================================================================
+    line 92     [Tab character — use spaces]
+           	void NextLevelPage::draw(ShaderProgramHandle button_material, ShaderProgramHandle digit_material, GLuint VAO)
+    line 93     [Tab character — use spaces]
+           	{
+    line 94     [Tab character — use spaces]
+           		// shader init
+    line 95     [Tab character — use spaces]
+           		button_material.use();
+    line 97     [Tab character — use spaces]
+           		glBindVertexArray(VAO);
+    line 98     [Tab character — use spaces]
+           		glEnableVertexAttribArray(0);
+    line 99     [Tab character — use spaces]
+           		glEnableVertexAttribArray(1);
+    line 101    [Tab character — use spaces]
+           		glDisable(GL_DEPTH_TEST);
+    line 103    [Tab character — use spaces]
+           		glEnable(GL_BLEND);
+    line 104    [Tab character — use spaces]
+           		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    line 106    [Tab character — use spaces]
+           		// determines wheter next_level or back_to_menu button should be rendered
+    line 107    [Tab character — use spaces]
+           		kills_text->draw(button_material);
+    line 108    [Tab character — use spaces]
+           		if (get_engine().get_module<GameSystem>().get_level_name() == Levels::LEVEL_3)
+    line 109    [Tab character — use spaces]
+           		{
+    line 110    [Tab character — use spaces]
+           			demo_text->draw(button_material);
+    line 111    [Tab character — use spaces]
+           			menu_button->draw(button_material);
+    line 112    [Tab character — use spaces]
+           		}
+    line 113    [Tab character — use spaces]
+           		else
+    line 114    [Tab character — use spaces]
+           		{
+    line 115    [Tab character — use spaces]
+           			level_text->draw(button_material);
+    line 116    [Tab character — use spaces]
+           			next_level_button->draw(button_material);
+    line 117    [Tab character — use spaces]
+           		}
+    line 118    [Tab character — use spaces]
+           		completed_text->draw(button_material);
+    line 120    [Tab character — use spaces]
+           		// shader unbinding
+    line 121    [Tab character — use spaces]
+           		glDisable(GL_BLEND);
+    line 122    [Tab character — use spaces]
+           		glEnable(GL_DEPTH_TEST);
+    line 124    [Tab character — use spaces]
+           		glBindTexture(GL_TEXTURE_2D, 0);
+    line 125    [Tab character — use spaces]
+           		glDisableVertexAttribArray(0);
+    line 126    [Tab character — use spaces]
+           		glDisableVertexAttribArray(1);
+    line 127    [Tab character — use spaces]
+           		glBindVertexArray(0);
+    line 129    [Tab character — use spaces]
+           		draw_stats(digit_material, VAO);
+    line 130    [Tab character — use spaces]
+           	}
+    line 132    [Tab character — use spaces]
+           	//=============================================================================================
+    line 134    [Tab character — use spaces]
+           	void NextLevelPage::set_kill_stats(u32 enemies, u32 kills)
+    line 135    [Tab character — use spaces]
+           	{
+    line 136    [Tab character — use spaces]
+           		enemy_count = enemies;
+    line 137    [Tab character — use spaces]
+           		kill_count = kills;
+    line 138    [Tab character — use spaces]
+           	}
+    line 140    [Tab character — use spaces]
+           	//=============================================================================================
+    line 142    [Tab character — use spaces]
+           	void NextLevelPage::draw_stats(ShaderProgramHandle digit_material, GLuint VAO)
+    line 143    [Tab character — use spaces]
+           	{
+    line 144    [Tab character — use spaces]
+           		// shader init
+    line 145    [Tab character — use spaces]
+           		digit_material.use();
+    line 147    [Tab character — use spaces]
+           		glBindVertexArray(VAO);
+    line 148    [Tab character — use spaces]
+           		glEnableVertexAttribArray(0);
+    line 149    [Tab character — use spaces]
+           		glEnableVertexAttribArray(1);
+    line 151    [Tab character — use spaces]
+           		glDisable(GL_DEPTH_TEST);
+    line 153    [Tab character — use spaces]
+           		glEnable(GL_BLEND);
+    line 154    [Tab character — use spaces]
+           		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    line 156    [Tab character — use spaces]
+           		draw_kill_count(digit_material);
+    line 158    [Tab character — use spaces]
+           		// unbind
+    line 159    [Tab character — use spaces]
+           		glDisable(GL_BLEND);
+    line 160    [Tab character — use spaces]
+           		glEnable(GL_DEPTH_TEST);
+    line 162    [Tab character — use spaces]
+           		glBindTexture(GL_TEXTURE_2D, 0);
+    line 163    [Tab character — use spaces]
+           		glDisableVertexAttribArray(0);
+    line 164    [Tab character — use spaces]
+           		glDisableVertexAttribArray(1);
+    line 165    [Tab character — use spaces]
+           		glBindVertexArray(0);
+    line 166    [Tab character — use spaces]
+           	}
+    line 168    [Tab character — use spaces]
+           	//=============================================================================================
+    line 170    [Tab character — use spaces]
+           	void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
+    line 171    [Tab character — use spaces]
+           	{
+    line 172    [Tab character — use spaces]
+           		// renders numbers char by char from right to left
+    line 173    [Tab character — use spaces]
+           		u32 display_count = enemy_count;
+    line 175    [Tab character — use spaces]
+           		vec2 position = vec2(0.75f, 0.3f);
+    line 176    [Tab character — use spaces]
+           		vec2 posDif = vec2(-0.06f, 0.0f);
+    line 177    [Tab character — use spaces]
+           		vec2 scale = vec2(0.0277f, 0.066f);
+    line 179    [Tab character — use spaces]
+           		const TextureManager& manager = TextureManager::get();
+    line 180    [Tab character — use spaces]
+           		const TextureHandle& texture = manager["ui_font"];
+    line 182    [Tab character — use spaces]
+           		do //DRAW TOTAL ENEMY COUNT
+    line 183    [Tab character — use spaces]
+           		{
+    line 184    [Tab character — use spaces]
+           			glActiveTexture(GL_TEXTURE0);
+    line 186    [Tab character — use spaces]
+           			glm::mat4 trans_mat = glm::mat4(1.0f);
+    line 187    [Tab character — use spaces]
+           			vec2 translate = position;
+    line 188    [Tab character — use spaces]
+           			trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+    line 189    [Tab character — use spaces]
+           			trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
+    line 191    [Tab character — use spaces]
+           			const glm::mat4 final_trans = trans_mat;
+    line 193    [Tab character — use spaces]
+           			int digit = display_count % 10;
+    line 194    [Tab character — use spaces]
+           			digit += 48; // + '0'
+    line 196    [Tab character — use spaces]
+           			//setting shader
+    line 197    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+    line 198    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+    line 199    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+    line 200    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+    line 201    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
+    line 202    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
+    line 203    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
+    line 204    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::HOVER, false);
+    line 206    [Tab character — use spaces]
+           			glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    line 207    [Tab character — use spaces]
+           			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    line 209    [Tab character — use spaces]
+           			display_count = display_count / 10;
+    line 210    [Tab character — use spaces]
+           			position += posDif;
+    line 212    [Tab character — use spaces]
+           		} while (display_count > 0);
+    line 214    [Tab character — use spaces]
+           		// DRAW SEPERATING '/'
+    line 215    [Tab character — use spaces]
+           		{
+    line 216    [Tab character — use spaces]
+           			glActiveTexture(GL_TEXTURE0);
+    line 218    [Tab character — use spaces]
+           			glm::mat4 trans_mat = glm::mat4(1.0f);
+    line 219    [Tab character — use spaces]
+           			vec2 translate = position;
+    line 220    [Tab character — use spaces]
+           			trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+    line 221    [Tab character — use spaces]
+           			trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
+    line 223    [Tab character — use spaces]
+           			const glm::mat4 final_trans = trans_mat;
+    line 225    [Tab character — use spaces]
+           			int digit = (int)'/';
+    line 227    [Tab character — use spaces]
+           			// setting shader uniforms
+    line 228    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+    line 229    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+    line 230    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+    line 231    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+    line 232    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
+    line 233    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
+    line 234    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
+    line 235    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::HOVER, false);
+    line 237    [Tab character — use spaces]
+           			glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    line 238    [Tab character — use spaces]
+           			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    line 240    [Tab character — use spaces]
+           			display_count = display_count / 10;
+    line 241    [Tab character — use spaces]
+           			position += posDif;
+    line 243    [Tab character — use spaces]
+           			display_count = kill_count;
+    line 244    [Tab character — use spaces]
+           		}
+    line 246    [Tab character — use spaces]
+           		do //DRAW KILL COUNT
+    line 247    [Tab character — use spaces]
+           		{
+    line 248    [Tab character — use spaces]
+           			glActiveTexture(GL_TEXTURE0);
+    line 250    [Tab character — use spaces]
+           			glm::mat4 trans_mat = glm::mat4(1.0f);
+    line 251    [Tab character — use spaces]
+           			vec2 translate = position;
+    line 252    [Tab character — use spaces]
+           			trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+    line 253    [Tab character — use spaces]
+           			trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
+    line 255    [Tab character — use spaces]
+           			const glm::mat4 final_trans = trans_mat;
+    line 257    [Tab character — use spaces]
+           			int digit = display_count % 10;
+    line 258    [Tab character — use spaces]
+           			digit += 48; // + '0'
+    line 260    [Tab character — use spaces]
+           			//setting shader uniforms
+    line 261    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+    line 262    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+    line 263    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+    line 264    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+    line 265    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
+    line 266    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
+    line 267    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
+    line 268    [Tab character — use spaces]
+           			digit_material.set_uniform(shaders::ui_text::HOVER, false);
+    line 270    [Tab character — use spaces]
+           			glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    line 271    [Tab character — use spaces]
+           			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    line 273    [Tab character — use spaces]
+           			display_count = display_count / 10;
+    line 274    [Tab character — use spaces]
+           			position += posDif;
+    line 276    [Tab character — use spaces]
+           		} while (display_count > 0);
+    line 277    [Tab character — use spaces]
+           	}
+    line 279    [Tab character — use spaces]
+           	//=============================================================================================
+    line 281    [Tab character — use spaces]
+           	void MainMenuPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
+    line 282    [Tab character — use spaces]
+           	{
+    line 283    [Tab character — use spaces]
+           		//update buttons and determine which (one) button can be pressed based on mouse position
+    line 285    [Tab character — use spaces]
+           		UiButton* hover_over_button = nullptr;
+    line 287    [Tab character — use spaces]
+           		new_game_button->set_hover(false);
+    line 288    [Tab character — use spaces]
+           		options_button->set_hover(false);
+    line 289    [Tab character — use spaces]
+           		load_button->set_hover(false);
+    line 290    [Tab character — use spaces]
+           		quit_button->set_hover(false);
+    line 292    [Tab character — use spaces]
+           		if (new_game_button->is_point_in_rec(mouse_pos))
+    line 293    [Tab character — use spaces]
+           		{
+    line 294    [Tab character — use spaces]
+           			hover_over_button = new_game_button;
+    line 295    [Tab character — use spaces]
+           		}
+    line 296    [Tab character — use spaces]
+           		else if (options_button->is_point_in_rec(mouse_pos))
+    line 297    [Tab character — use spaces]
+           		{
+    line 298    [Tab character — use spaces]
+           			hover_over_button = options_button;
+    line 299    [Tab character — use spaces]
+           		}
+    line 300    [Tab character — use spaces]
+           		else if (load_button->is_point_in_rec(mouse_pos))
+    line 301    [Tab character — use spaces]
+           		{
+    line 302    [Tab character — use spaces]
+           			hover_over_button = load_button;
+    line 303    [Tab character — use spaces]
+           		}
+    line 304    [Tab character — use spaces]
+           		else if (quit_button->is_point_in_rec(mouse_pos))
+    line 305    [Tab character — use spaces]
+           		{
+    line 306    [Tab character — use spaces]
+           			hover_over_button = quit_button;
+    line 307    [Tab character — use spaces]
+           		}
+    line 309    [Tab character — use spaces]
+           		if (hover_over_button != nullptr)
+    line 310    [Tab character — use spaces]
+           		{
+    line 311    [Tab character — use spaces]
+           			hover_over_button->set_hover(true);
+    line 313    [Tab character — use spaces]
+           			if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    line 314    [Tab character — use spaces]
+           			{
+    line 315    [Tab character — use spaces]
+           				hover_over_button->on_click();
+    line 316    [Tab character — use spaces]
+           			}
+    line 317    [Tab character — use spaces]
+           		}
+    line 318    [Tab character — use spaces]
+           	}
+    line 320    [Tab character — use spaces]
+           	//==============================================================================================
+    line 321    [Tab character — use spaces]
+           	void NewGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
+    line 322    [Tab character — use spaces]
+           	{
+    line 323    [Tab character — use spaces]
+           		//update buttons and determine which (one) button can be pressed based on mouse position
+    line 324    [Tab character — use spaces]
+           		UiButton* hover_over_button = nullptr;
+    line 326    [Tab character — use spaces]
+           		go_back_button->set_hover(false);
+    line 327    [Tab character — use spaces]
+           		level_1_button->set_hover(false);
+    line 328    [Tab character — use spaces]
+           		level_2_button->set_hover(false);
+    line 329    [Tab character — use spaces]
+           		level_3_button->set_hover(false);
+    line 331    [Tab character — use spaces]
+           		if (level_1_button->is_point_in_rec(mouse_pos))
+    line 332    [Tab character — use spaces]
+           		{
+    line 333    [Tab character — use spaces]
+           			hover_over_button = level_1_button;
+    line 334    [Tab character — use spaces]
+           		}
+    line 335    [Tab character — use spaces]
+           		else if (level_2_button->is_point_in_rec(mouse_pos))
+    line 336    [Tab character — use spaces]
+           		{
+    line 337    [Tab character — use spaces]
+           			hover_over_button = level_2_button;
+    line 338    [Tab character — use spaces]
+           		}
+    line 339    [Tab character — use spaces]
+           		else if (level_3_button->is_point_in_rec(mouse_pos))
+    line 340    [Tab character — use spaces]
+           		{
+    line 341    [Tab character — use spaces]
+           			hover_over_button = level_3_button;
+    line 342    [Tab character — use spaces]
+           		}
+    line 343    [Tab character — use spaces]
+           		else if (go_back_button->is_point_in_rec(mouse_pos))
+    line 344    [Tab character — use spaces]
+           		{
+    line 345    [Tab character — use spaces]
+           			hover_over_button = go_back_button;
+    line 346    [Tab character — use spaces]
+           		}
+    line 348    [Tab character — use spaces]
+           		if (hover_over_button != nullptr)
+    line 349    [Tab character — use spaces]
+           		{
+    line 350    [Tab character — use spaces]
+           			hover_over_button->set_hover(true);
+    line 352    [Tab character — use spaces]
+           			if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    line 353    [Tab character — use spaces]
+           			{
+    line 354    [Tab character — use spaces]
+           				hover_over_button->on_click();
+    line 355    [Tab character — use spaces]
+           			}
+    line 356    [Tab character — use spaces]
+           		}
+    line 357    [Tab character — use spaces]
+           	}
+    line 359    [Tab character — use spaces]
+           	//==============================================================================================
+    line 360    [Tab character — use spaces]
+           	void MainMenuPage::draw(ShaderProgramHandle button_material, GLuint VAO)
+    line 361    [Tab character — use spaces]
+           	{
+    line 362    [Tab character — use spaces]
+           		//shader init
+    line 363    [Tab character — use spaces]
+           		button_material.use();
+    line 365    [Tab character — use spaces]
+           		glBindVertexArray(VAO);
+    line 366    [Tab character — use spaces]
+           		glEnableVertexAttribArray(0);
+    line 367    [Tab character — use spaces]
+           		glEnableVertexAttribArray(1);
+    line 369    [Tab character — use spaces]
+           		glDisable(GL_DEPTH_TEST);
+    line 371    [Tab character — use spaces]
+           		glEnable(GL_BLEND);
+    line 372    [Tab character — use spaces]
+           		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    line 374    [Tab character — use spaces]
+           		new_game_button->draw(button_material);
+    line 375    [Tab character — use spaces]
+           		options_button->draw(button_material);
+    line 376    [Tab character — use spaces]
+           		load_button->draw(button_material);
+    line 377    [Tab character — use spaces]
+           		//save_button->draw(button_material);
+    line 378    [Tab character — use spaces]
+           		quit_button->draw(button_material);
+    line 379    [Tab character — use spaces]
+           		nuclidean_text->draw(button_material);
+    line 381    [Tab character — use spaces]
+           		//unbind
+    line 382    [Tab character — use spaces]
+           		glDisable(GL_BLEND);
+    line 383    [Tab character — use spaces]
+           		glEnable(GL_DEPTH_TEST);
+    line 385    [Tab character — use spaces]
+           		glBindTexture(GL_TEXTURE_2D, 0);
+    line 386    [Tab character — use spaces]
+           		glDisableVertexAttribArray(0);
+    line 387    [Tab character — use spaces]
+           		glDisableVertexAttribArray(1);
+    line 388    [Tab character — use spaces]
+           		glBindVertexArray(0);
+    line 389    [Tab character — use spaces]
+           	}
+    line 391    [Tab character — use spaces]
+           	//=============================================================================================
+    line 393    [Tab character — use spaces]
+           	void NextLevelPage::next_level_func()
+    line 394    [Tab character — use spaces]
+           	{
+    line 395    [Tab character — use spaces]
+           		get_engine().send_event(ModuleEvent
+    line 396    [Tab character — use spaces]
+           			{
+    line 397    [Tab character — use spaces]
+           				.type = ModuleEventType::next_level_requested
+    line 398    [Tab character — use spaces]
+           			});
+    line 399    [Tab character — use spaces]
+           	}
+    line 401    [Tab character — use spaces]
+           	//=============================================================================================
+    line 403    [Tab character — use spaces]
+           	void NextLevelPage::menu_func()
+    line 404    [Tab character — use spaces]
+           	{
+    line 405    [Tab character — use spaces]
+           		get_engine().send_event(ModuleEvent
+    line 406    [Tab character — use spaces]
+           			{
+    line 407    [Tab character — use spaces]
+           				.type = ModuleEventType::main_menu_requested
+    line 408    [Tab character — use spaces]
+           			});
+    line 409    [Tab character — use spaces]
+           	}
+    line 411    [Tab character — use spaces]
+           	//==============================================================================================
+    line 413    [Tab character — use spaces]
+           	void MainMenuPage::new_game_func()
+    line 414    [Tab character — use spaces]
+           	{
+    line 415    [Tab character — use spaces]
+           		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(NEW_GAME);
+    line 416    [Tab character — use spaces]
+           	}
+    line 418    [Tab character — use spaces]
+           	//==============================================================================================
+    line 420    [Tab character — use spaces]
+           	void MainMenuPage::options_func()
+    line 421    [Tab character — use spaces]
+           	{
+    line 422    [Tab character — use spaces]
+           		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(OPTIONS);
+    line 423    [Tab character — use spaces]
+           	}
+    line 425    [Tab character — use spaces]
+           	//================================================================================================
+    line 427    [Tab character — use spaces]
+           	void MainMenuPage::load_game_func()
+    line 428    [Tab character — use spaces]
+           	{
+    line 429    [Tab character — use spaces]
+           		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->update_saves();
+    line 430    [Tab character — use spaces]
+           		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(LOAD);
+    line 431    [Tab character — use spaces]
+           	}
+    line 433    [Tab character — use spaces]
+           	//==============================================================================================
+    line 435    [Tab character — use spaces]
+           	void MainMenuPage::save_game_func()
+    line 436    [Tab character — use spaces]
+           	{
+    line 437    [Tab character — use spaces]
+           	}
+    line 439    [Tab character — use spaces]
+           	//================================================================================================
+    line 441    [Tab character — use spaces]
+           	void MainMenuPage::quit_func()
+    line 442    [Tab character — use spaces]
+           	{
+    line 443    [Tab character — use spaces]
+           		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(QUIT);
+    line 444    [Tab character — use spaces]
+           	}
+    line 446    [Tab character — use spaces]
+           	//============================================================================================
+    line 448    [Tab character — use spaces]
+           	NewGamePage::NewGamePage()
+    line 449    [Tab character — use spaces]
+           	{
+    line 450    [Tab character — use spaces]
+           		go_back_button = new UiButton("ui_back", vec2(0.0f, 0.3f), vec2(0.3f, 0.066f), std::bind(&NewGamePage::go_back, this));
+    line 451    [Tab character — use spaces]
+           		level_1_button = new UiButton("ui_level1", vec2(0.0f, 0.15f), vec2(0.3f, 0.066f), std::bind(&NewGamePage::level_1_func, this));
+    line 452    [Tab character — use spaces]
+           		level_2_button = new UiButton("ui_level2", vec2(0.0f, 0.0f), vec2(0.3f, 0.066f), std::bind(&NewGamePage::level_2_func, this));
+    line 453    [Tab character — use spaces]
+           		level_3_button = new UiButton("ui_level3", vec2(0.0f, -0.15f), vec2(0.3f, 0.066f), std::bind(&NewGamePage::level_3_func, this));
+    line 454    [Tab character — use spaces]
+           	}
+    line 456    [Tab character — use spaces]
+           	//==============================================================================================
+    line 458    [Tab character — use spaces]
+           	NewGamePage::~NewGamePage()
+    line 459    [Tab character — use spaces]
+           	{
+    line 460    [Tab character — use spaces]
+           		delete level_1_button;
+    line 461    [Tab character — use spaces]
+           		delete level_2_button;
+    line 462    [Tab character — use spaces]
+           		delete level_3_button;
+    line 463    [Tab character — use spaces]
+           		delete go_back_button;
+    line 464    [Tab character — use spaces]
+           	}
+    line 466    [Tab character — use spaces]
+           	//==============================================================================================
+    line 468    [Tab character — use spaces]
+           	void NewGamePage::draw(ShaderProgramHandle button_material, GLuint VAO)
+    line 469    [Tab character — use spaces]
+           	{
+    line 470    [Tab character — use spaces]
+           		//shader init
+    line 471    [Tab character — use spaces]
+           		button_material.use();
+    line 473    [Tab character — use spaces]
+           		glBindVertexArray(VAO);
+    line 474    [Tab character — use spaces]
+           		glEnableVertexAttribArray(0);
+    line 475    [Tab character — use spaces]
+           		glEnableVertexAttribArray(1);
+    line 477    [Tab character — use spaces]
+           		glDisable(GL_DEPTH_TEST);
+    line 479    [Tab character — use spaces]
+           		glEnable(GL_BLEND);
+    line 480    [Tab character — use spaces]
+           		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    line 482    [Tab character — use spaces]
+           		level_1_button->draw(button_material);
+    line 483    [Tab character — use spaces]
+           		level_2_button->draw(button_material);
+    line 484    [Tab character — use spaces]
+           		level_3_button->draw(button_material);
+    line 485    [Tab character — use spaces]
+           		go_back_button->draw(button_material);
+    line 487    [Tab character — use spaces]
+           		//unbind
+    line 488    [Tab character — use spaces]
+           		glDisable(GL_BLEND);
+    line 489    [Tab character — use spaces]
+           		glEnable(GL_DEPTH_TEST);
+    line 491    [Tab character — use spaces]
+           		glBindTexture(GL_TEXTURE_2D, 0);
+    line 492    [Tab character — use spaces]
+           		glDisableVertexAttribArray(0);
+    line 493    [Tab character — use spaces]
+           		glDisableVertexAttribArray(1);
+    line 494    [Tab character — use spaces]
+           		glBindVertexArray(0);
+    line 495    [Tab character — use spaces]
+           	}
+    line 497    [Tab character — use spaces]
+           	//==============================================================================================
+    line 498    [Tab character — use spaces]
+           	static void level_func(LevelName lvl)
+    line 499    [Tab character — use spaces]
+           	{
+    line 500    [Tab character — use spaces]
+           		get_engine().send_event(ModuleEvent
+    line 501    [Tab character — use spaces]
+           			{
+    line 502    [Tab character — use spaces]
+           				.type = ModuleEventType::new_game_level_requested,
+    line 503    [Tab character — use spaces]
+           				.new_game = EventNewGame{.level = lvl},
+    line 504    [Tab character — use spaces]
+           			});
+    line 505    [Tab character — use spaces]
+           	}
+    line 507    [Tab character — use spaces]
+           	//==============================================================================================
+    line 508    [Tab character — use spaces]
+           	void NewGamePage::level_1_func()
+    line 509    [Tab character — use spaces]
+           	{
+    line 510    [Tab character — use spaces]
+           		level_func(Levels::LEVEL_1);
+    line 511    [Tab character — use spaces]
+           	}
+    line 513    [Tab character — use spaces]
+           	//==============================================================================================
+    line 514    [Tab character — use spaces]
+           	void NewGamePage::level_2_func()
+    line 515    [Tab character — use spaces]
+           	{
+    line 516    [Tab character — use spaces]
+           		level_func(Levels::LEVEL_2);
+    line 517    [Tab character — use spaces]
+           	}
+    line 519    [Tab character — use spaces]
+           	//==============================================================================================
+    line 520    [Tab character — use spaces]
+           	void NewGamePage::level_3_func()
+    line 521    [Tab character — use spaces]
+           	{
+    line 522    [Tab character — use spaces]
+           		level_func(Levels::LEVEL_3);
+    line 523    [Tab character — use spaces]
+           	}
+    line 525    [Tab character — use spaces]
+           	//============================================================================================
+    line 526    [Tab character — use spaces]
+           	void OptionsPage::draw([[maybe_unused]] ShaderProgramHandle button_material, [[maybe_unused]] GLuint VAO)
+    line 527    [Tab character — use spaces]
+           	{
+    line 528    [Tab character — use spaces]
+           		//shader init
+    line 529    [Tab character — use spaces]
+           		button_material.use();
+    line 531    [Tab character — use spaces]
+           		glBindVertexArray(VAO);
+    line 532    [Tab character — use spaces]
+           		glEnableVertexAttribArray(0);
+    line 533    [Tab character — use spaces]
+           		glEnableVertexAttribArray(1);
+    line 535    [Tab character — use spaces]
+           		glDisable(GL_DEPTH_TEST);
+    line 537    [Tab character — use spaces]
+           		glEnable(GL_BLEND);
+    line 538    [Tab character — use spaces]
+           		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    line 540    [Tab character — use spaces]
+           		sound_text->draw(button_material);
+    line 541    [Tab character — use spaces]
+           		music_text->draw(button_material);
+    line 542    [Tab character — use spaces]
+           		sensitivity_text->draw(button_material);
+    line 543    [Tab character — use spaces]
+           		crosshair_text->draw(button_material);
+    line 544    [Tab character — use spaces]
+           		shadow_text->draw(button_material);
+    line 546    [Tab character — use spaces]
+           		if (isWindowed)
+    line 547    [Tab character — use spaces]
+           		{
+    line 548    [Tab character — use spaces]
+           			windowed_button->draw(button_material);
+    line 549    [Tab character — use spaces]
+           		}
+    line 550    [Tab character — use spaces]
+           		else
+    line 551    [Tab character — use spaces]
+           		{
+    line 552    [Tab character — use spaces]
+           			fullscreen_button->draw(button_material);
+    line 553    [Tab character — use spaces]
+           		}
+    line 555    [Tab character — use spaces]
+           		if (is_shadows)
+    line 556    [Tab character — use spaces]
+           		{
+    line 557    [Tab character — use spaces]
+           			shadow_on_button->draw(button_material);
+    line 558    [Tab character — use spaces]
+           		}
+    line 559    [Tab character — use spaces]
+           		else
+    line 560    [Tab character — use spaces]
+           		{
+    line 561    [Tab character — use spaces]
+           			shadow_off_button->draw(button_material);
+    line 562    [Tab character — use spaces]
+           		}
+    line 564    [Tab character — use spaces]
+           		sound_volume_less->draw(button_material);
+    line 565    [Tab character — use spaces]
+           		sound_volume_more->draw(button_material);
+    line 567    [Tab character — use spaces]
+           		music_volume_less->draw(button_material);
+    line 568    [Tab character — use spaces]
+           		music_volume_more->draw(button_material);
+    line 570    [Tab character — use spaces]
+           		sensitivity_more->draw(button_material);
+    line 571    [Tab character — use spaces]
+           		sensitivity_less->draw(button_material);
+    line 573    [Tab character — use spaces]
+           		crosshair_less->draw(button_material);
+    line 574    [Tab character — use spaces]
+           		crosshair_more->draw(button_material);
+    line 576    [Tab character — use spaces]
+           		go_back_button->draw(button_material);
+    line 578    [Tab character — use spaces]
+           		//unbind
+    line 579    [Tab character — use spaces]
+           		glDisable(GL_BLEND);
+    line 580    [Tab character — use spaces]
+           		glEnable(GL_DEPTH_TEST);
+    line 582    [Tab character — use spaces]
+           		glBindTexture(GL_TEXTURE_2D, 0);
+    line 583    [Tab character — use spaces]
+           		glDisableVertexAttribArray(0);
+    line 584    [Tab character — use spaces]
+           		glDisableVertexAttribArray(1);
+    line 585    [Tab character — use spaces]
+           		glBindVertexArray(0);
+    line 587    [Tab character — use spaces]
+           		// rendering of settings values
+    line 588    [Tab character — use spaces]
+           		// shader init
+    line 589    [Tab character — use spaces]
+           		digit_shader.use();
+    line 591    [Tab character — use spaces]
+           		glBindVertexArray(VAO);
+    line 592    [Tab character — use spaces]
+           		glEnableVertexAttribArray(0);
+    line 593    [Tab character — use spaces]
+           		glEnableVertexAttribArray(1);
+    line 595    [Tab character — use spaces]
+           		glDisable(GL_DEPTH_TEST);
+    line 597    [Tab character — use spaces]
+           		glEnable(GL_BLEND);
+    line 598    [Tab character — use spaces]
+           		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    line 600    [Tab character — use spaces]
+           		// rendering itself
+    line 601    [Tab character — use spaces]
+           		std::vector<vec2> positions = { vec2(0.4f, 0.30f), vec2(0.4f, 0.15f), vec2(0.4f, 0.0f) };
+    line 602    [Tab character — use spaces]
+           		std::vector<int> steps = { soundStep, musicStep, sensitivityStep - 1 }; //sensitivity step is 1 - 10, but we can draw only 0 - 9
+    line 604    [Tab character — use spaces]
+           		const TextureManager& manager = TextureManager::get();
+    line 605    [Tab character — use spaces]
+           		const TextureHandle& texture = manager["ui_font"];
+    line 607    [Tab character — use spaces]
+           		// draw numbers in the menu
+    line 608    [Tab character — use spaces]
+           		for (size_t i = 0; i < positions.size(); i++)
+    line 609    [Tab character — use spaces]
+           		{
+    line 610    [Tab character — use spaces]
+           			glm::mat4 trans_mat = glm::mat4(1.0f);
+    line 611    [Tab character — use spaces]
+           			vec2 translate = positions[i];
+    line 612    [Tab character — use spaces]
+           			trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+    line 613    [Tab character — use spaces]
+           			trans_mat = glm::scale(trans_mat, glm::vec3(0.033f, 0.066f, 1));
+    line 615    [Tab character — use spaces]
+           			const glm::mat4 final_trans = trans_mat;
+    line 617    [Tab character — use spaces]
+           			int digit = steps[i] + 48;
+    line 619    [Tab character — use spaces]
+           			//set uniforms
+    line 620    [Tab character — use spaces]
+           			digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+    line 621    [Tab character — use spaces]
+           			digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+    line 622    [Tab character — use spaces]
+           			digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+    line 623    [Tab character — use spaces]
+           			digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+    line 624    [Tab character — use spaces]
+           			digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
+    line 625    [Tab character — use spaces]
+           			digit_shader.set_uniform(shaders::ui_text::HEIGHT, 16);
+    line 626    [Tab character — use spaces]
+           			digit_shader.set_uniform(shaders::ui_text::WIDTH, 8);
+    line 627    [Tab character — use spaces]
+           			digit_shader.set_uniform(shaders::ui_text::HOVER, false);
+    line 629    [Tab character — use spaces]
+           			glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    line 630    [Tab character — use spaces]
+           			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    line 631    [Tab character — use spaces]
+           		}
+    line 633    [Tab character — use spaces]
+           		//Draw crosshair in menu
+    line 634    [Tab character — use spaces]
+           		// vec2(0.4f, -0.15f)
+    line 635    [Tab character — use spaces]
+           		const TextureHandle& texture_c = manager["ui_crosshair"];
+    line 637    [Tab character — use spaces]
+           		glm::mat4 trans_mat = glm::mat4(1.0f);
+    line 638    [Tab character — use spaces]
+           		vec2 translate = vec2(0.4f, -0.15f);
+    line 639    [Tab character — use spaces]
+           		trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+    line 640    [Tab character — use spaces]
+           		trans_mat = glm::scale(trans_mat, glm::vec3(0.04f, 0.066f, 1));
+    line 642    [Tab character — use spaces]
+           		const glm::mat4 final_trans = trans_mat;
+    line 644    [Tab character — use spaces]
+           		// set uniforms
+    line 645    [Tab character — use spaces]
+           		digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+    line 646    [Tab character — use spaces]
+           		digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture_c.get_atlas().get_size());
+    line 647    [Tab character — use spaces]
+           		digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture_c.get_pos());
+    line 648    [Tab character — use spaces]
+           		digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture_c.get_size());
+    line 649    [Tab character — use spaces]
+           		digit_shader.set_uniform(shaders::ui_text::CHARACTER, crosshairStep + 11);
+    line 650    [Tab character — use spaces]
+           		digit_shader.set_uniform(shaders::ui_text::HEIGHT, 2);
+    line 651    [Tab character — use spaces]
+           		digit_shader.set_uniform(shaders::ui_text::WIDTH, 11);
+    line 652    [Tab character — use spaces]
+           		digit_shader.set_uniform(shaders::ui_text::HOVER, false);
+    line 654    [Tab character — use spaces]
+           		glBindTexture(GL_TEXTURE_2D, texture_c.get_atlas().handle);
+    line 655    [Tab character — use spaces]
+           		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    line 657    [Tab character — use spaces]
+           		// unbind
+    line 658    [Tab character — use spaces]
+           		glDisable(GL_BLEND);
+    line 659    [Tab character — use spaces]
+           		glEnable(GL_DEPTH_TEST);
+    line 661    [Tab character — use spaces]
+           		glBindTexture(GL_TEXTURE_2D, 0);
+    line 662    [Tab character — use spaces]
+           		glDisableVertexAttribArray(0);
+    line 663    [Tab character — use spaces]
+           		glDisableVertexAttribArray(1);
+    line 664    [Tab character — use spaces]
+           		glBindVertexArray(0);
+    line 665    [Tab character — use spaces]
+           	}
+    line 667    [Tab character — use spaces]
+           	//=============================================================================================
+    line 669    [Tab character — use spaces]
+           	void OptionsPage::laod_settings()
+    line 670    [Tab character — use spaces]
+           	{
+    line 671    [Tab character — use spaces]
+           		std::ifstream f("settings.cfg");
+    line 672    [Tab character — use spaces]
+           		if (!f.is_open())
+    line 673    [Tab character — use spaces]
+           		{
+    line 674    [Tab character — use spaces]
+           			// we skip loading settings and use base values
+    line 675    [Tab character — use spaces]
+           			nc_warn("Failed to load settings");
+    line 676    [Tab character — use spaces]
+           			return;
+    line 677    [Tab character — use spaces]
+           		}
+    line 678    [Tab character — use spaces]
+           		auto data = nlohmann::json::parse(f);
+    line 680    [Tab character — use spaces]
+           		try
+    line 681    [Tab character — use spaces]
+           		{
+    line 682    [Tab character — use spaces]
+           			for (s32 sound_setting : data["sound"])
+    line 683    [Tab character — use spaces]
+           			{
+    line 684    [Tab character — use spaces]
+           				if (sound_setting < 0)
+    line 685    [Tab character — use spaces]
+           				{
+    line 686    [Tab character — use spaces]
+           					sound_setting = 0;
+    line 687    [Tab character — use spaces]
+           				}
+    line 688    [Tab character — use spaces]
+           				soundStep = min(9, sound_setting);
+    line 689    [Tab character — use spaces]
+           				get_engine().get_module<SoundSystem>().set_sound_volume(soundStep);
+    line 690    [Tab character — use spaces]
+           			}
+    line 692    [Tab character — use spaces]
+           			for (s32 music_setting : data["music"])
+    line 693    [Tab character — use spaces]
+           			{
+    line 694    [Tab character — use spaces]
+           				if (music_setting < 0)
+    line 695    [Tab character — use spaces]
+           				{
+    line 696    [Tab character — use spaces]
+           					music_setting = 0;
+    line 697    [Tab character — use spaces]
+           				}
+    line 698    [Tab character — use spaces]
+           				musicStep = min(9, music_setting);
+    line 699    [Tab character — use spaces]
+           				get_engine().get_module<SoundSystem>().set_music_volume(musicStep);
+    line 700    [Tab character — use spaces]
+           			}
+    line 702    [Tab character — use spaces]
+           			for (s32 sensitivity_setting : data["sensitivity"])
+    line 703    [Tab character — use spaces]
+           			{
+    line 704    [Tab character — use spaces]
+           				if (sensitivity_setting < 1)
+    line 705    [Tab character — use spaces]
+           				{
+    line 706    [Tab character — use spaces]
+           					sensitivity_setting = 1;
+    line 707    [Tab character — use spaces]
+           				}
+    line 708    [Tab character — use spaces]
+           				sensitivityStep = min(10, sensitivity_setting);
+    line 709    [Tab character — use spaces]
+           				get_engine().get_module<InputSystem>().set_sensitivity(sensitivityStep);
+    line 710    [Tab character — use spaces]
+           			}
+    line 712    [Tab character — use spaces]
+           			for (s32 crosshair_setting : data["crosshair"])
+    line 713    [Tab character — use spaces]
+           			{
+    line 714    [Tab character — use spaces]
+           				if (crosshair_setting < 0)
+    line 715    [Tab character — use spaces]
+           				{
+    line 716    [Tab character — use spaces]
+           					crosshair_setting = 0;
+    line 717    [Tab character — use spaces]
+           				}
+    line 718    [Tab character — use spaces]
+           				crosshairStep = min(9, crosshair_setting);
+    line 719    [Tab character — use spaces]
+           				get_engine().get_module<UserInterfaceSystem>().get_hud()->set_crosshair(crosshairStep);
+    line 720    [Tab character — use spaces]
+           			}
+    line 722    [Tab character — use spaces]
+           			for (bool fullscreen_setting : data["fullscreen"])
+    line 723    [Tab character — use spaces]
+           			{
+    line 724    [Tab character — use spaces]
+           				if (fullscreen_setting)
+    line 725    [Tab character — use spaces]
+           				{
+    line 726    [Tab character — use spaces]
+           					set_fullscreen();
+    line 727    [Tab character — use spaces]
+           				}
+    line 728    [Tab character — use spaces]
+           			}
+    line 730    [Tab character — use spaces]
+           			for (bool shadow_setting : data["shadows"])
+    line 731    [Tab character — use spaces]
+           			{
+    line 732    [Tab character — use spaces]
+           				if (shadow_setting)
+    line 733    [Tab character — use spaces]
+           				{
+    line 734    [Tab character — use spaces]
+           					shadow_on();
+    line 735    [Tab character — use spaces]
+           				}
+    line 736    [Tab character — use spaces]
+           				else
+    line 737    [Tab character — use spaces]
+           				{
+    line 738    [Tab character — use spaces]
+           					shadow_off();
+    line 739    [Tab character — use spaces]
+           				}
+    line 740    [Tab character — use spaces]
+           			}
+    line 741    [Tab character — use spaces]
+           		}
+    line 742    [Tab character — use spaces]
+           		catch (int) {}
+    line 743    [Tab character — use spaces]
+           	}
+    line 745    [Tab character — use spaces]
+           	//=============================================================================================
+    line 746    [Tab character — use spaces]
+           	void OptionsPage::save_settings()
+    line 747    [Tab character — use spaces]
+           	{
+    line 748    [Tab character — use spaces]
+           		std::ofstream f("settings.cfg");
+    line 749    [Tab character — use spaces]
+           		if (!f.is_open())
+    line 750    [Tab character — use spaces]
+           		{
+    line 751    [Tab character — use spaces]
+           			nc_warn("Failed to write settings");
+    line 752    [Tab character — use spaces]
+           		}
+    line 753    [Tab character — use spaces]
+           		nlohmann::json data;
+    line 755    [Tab character — use spaces]
+           		data["sound"] = soundStep;
+    line 756    [Tab character — use spaces]
+           		data["music"] = musicStep;
+    line 757    [Tab character — use spaces]
+           		data["sensitivity"] = sensitivityStep;
+    line 758    [Tab character — use spaces]
+           		data["crosshair"] = crosshairStep;
+    line 759    [Tab character — use spaces]
+           		data["fullscreen"] = !isWindowed;
+    line 760    [Tab character — use spaces]
+           		data["shadows"] = is_shadows;
+    line 762    [Tab character — use spaces]
+           		f << data;
+    line 763    [Tab character — use spaces]
+           		f.close();
+    line 764    [Tab character — use spaces]
+           	}
+    line 766    [Tab character — use spaces]
+           	//=============================================================================================
+    line 768    [Tab character — use spaces]
+           	void OptionsPage::set_windowed()
+    line 769    [Tab character — use spaces]
+           	{
+    line 770    [Tab character — use spaces]
+           		SDL_Window* window = get_engine().get_module<GraphicsSystem>().get_window();
+    line 771    [Tab character — use spaces]
+           		SDL_SetWindowFullscreen(window, 0);
+    line 772    [Tab character — use spaces]
+           		isWindowed = true;
+    line 773    [Tab character — use spaces]
+           	}
+    line 775    [Tab character — use spaces]
+           	//=============================================================================================
+    line 777    [Tab character — use spaces]
+           	void OptionsPage::set_fullscreen()
+    line 778    [Tab character — use spaces]
+           	{
+    line 779    [Tab character — use spaces]
+           		SDL_Window* window = get_engine().get_module<GraphicsSystem>().get_window();
+    line 780    [Tab character — use spaces]
+           		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+    line 781    [Tab character — use spaces]
+           		isWindowed = false;
+    line 782    [Tab character — use spaces]
+           	}
+    line 784    [Tab character — use spaces]
+           	//=============================================================================================
+    line 786    [Tab character — use spaces]
+           	void OptionsPage::set_sensitivity_less()
+    line 787    [Tab character — use spaces]
+           	{
+    line 788    [Tab character — use spaces]
+           		sensitivityStep = max(1, sensitivityStep - 1);
+    line 789    [Tab character — use spaces]
+           		get_engine().get_module<InputSystem>().set_sensitivity(sensitivityStep);
+    line 790    [Tab character — use spaces]
+           	}
+    line 792    [Tab character — use spaces]
+           	//=============================================================================================
+    line 794    [Tab character — use spaces]
+           	void OptionsPage::set_sensitivity_more()
+    line 795    [Tab character — use spaces]
+           	{
+    line 796    [Tab character — use spaces]
+           		sensitivityStep = min(10, sensitivityStep + 1);
+    line 797    [Tab character — use spaces]
+           		get_engine().get_module<InputSystem>().set_sensitivity(sensitivityStep);
+    line 798    [Tab character — use spaces]
+           	}
+    line 800    [Tab character — use spaces]
+           	//=============================================================================================
+    line 802    [Tab character — use spaces]
+           	void OptionsPage::set_sound_less()
+    line 803    [Tab character — use spaces]
+           	{
+    line 804    [Tab character — use spaces]
+           		soundStep = max(0, soundStep - 1);
+    line 805    [Tab character — use spaces]
+           		get_engine().get_module<SoundSystem>().set_sound_volume(soundStep);
+    line 806    [Tab character — use spaces]
+           	}
+    line 808    [Tab character — use spaces]
+           	//=============================================================================================
+    line 810    [Tab character — use spaces]
+           	void OptionsPage::set_sound_more()
+    line 811    [Tab character — use spaces]
+           	{
+    line 812    [Tab character — use spaces]
+           		soundStep = min(9, soundStep + 1);
+    line 813    [Tab character — use spaces]
+           		get_engine().get_module<SoundSystem>().set_sound_volume(soundStep);
+    line 814    [Tab character — use spaces]
+           	}
+    line 816    [Tab character — use spaces]
+           	//=============================================================================================
+    line 818    [Tab character — use spaces]
+           	void OptionsPage::set_music_less()
+    line 819    [Tab character — use spaces]
+           	{
+    line 820    [Tab character — use spaces]
+           		musicStep = max(0, musicStep - 1);
+    line 821    [Tab character — use spaces]
+           		get_engine().get_module<SoundSystem>().set_music_volume(musicStep);
+    line 822    [Tab character — use spaces]
+           	}
+    line 824    [Tab character — use spaces]
+           	//=============================================================================================
+    line 826    [Tab character — use spaces]
+           	void OptionsPage::set_music_more()
+    line 827    [Tab character — use spaces]
+           	{
+    line 828    [Tab character — use spaces]
+           		musicStep = min(9, musicStep + 1);
+    line 829    [Tab character — use spaces]
+           		get_engine().get_module<SoundSystem>().set_music_volume(musicStep);
+    line 830    [Tab character — use spaces]
+           	}
+    line 832    [Tab character — use spaces]
+           	//=============================================================================================
+    line 834    [Tab character — use spaces]
+           	void OptionsPage::set_crosshair_less()
+    line 835    [Tab character — use spaces]
+           	{
+    line 836    [Tab character — use spaces]
+           		crosshairStep = (crosshairStep - 1);
+    line 837    [Tab character — use spaces]
+           		if (crosshairStep < 0)
+    line 838    [Tab character — use spaces]
+           		{
+    line 839    [Tab character — use spaces]
+           			crosshairStep = 9;
+    line 840    [Tab character — use spaces]
+           		}
+    line 841    [Tab character — use spaces]
+           		get_engine().get_module<UserInterfaceSystem>().get_hud()->set_crosshair(crosshairStep);
+    line 842    [Tab character — use spaces]
+           	}
+    line 844    [Tab character — use spaces]
+           	//=============================================================================================
+    line 846    [Tab character — use spaces]
+           	void OptionsPage::set_crosshair_more()
+    line 847    [Tab character — use spaces]
+           	{
+    line 848    [Tab character — use spaces]
+           		crosshairStep = (crosshairStep + 1) % 10;
+    line 849    [Tab character — use spaces]
+           		get_engine().get_module<UserInterfaceSystem>().get_hud()->set_crosshair(crosshairStep);
+    line 850    [Tab character — use spaces]
+           	}
+    line 852    [Tab character — use spaces]
+           	void OptionsPage::shadow_on()
+    line 853    [Tab character — use spaces]
+           	{
+    line 854    [Tab character — use spaces]
+           		is_shadows = true;
+    line 855    [Tab character — use spaces]
+           		get_engine().get_module<GraphicsSystem>().set_shadows(is_shadows);
+    line 856    [Tab character — use spaces]
+           	}
+    line 858    [Tab character — use spaces]
+           	void OptionsPage::shadow_off()
+    line 859    [Tab character — use spaces]
+           	{
+    line 860    [Tab character — use spaces]
+           		is_shadows = false;
+    line 861    [Tab character — use spaces]
+           		get_engine().get_module<GraphicsSystem>().set_shadows(is_shadows);
+    line 862    [Tab character — use spaces]
+           	}
+    line 864    [Tab character — use spaces]
+           	//=============================================================================================
+    line 866    [Tab character — use spaces]
+           	OptionsPage::OptionsPage() :
+    line 867    [Tab character — use spaces]
+           		digit_shader(shaders::ui_text::VERTEX_SOURCE, shaders::ui_text::FRAGMENT_SOURCE)
+    line 868    [Tab character — use spaces]
+           	{
+    line 869    [Tab character — use spaces]
+           		sound_text = new UiButton("ui_sound", vec2(-0.3f, 0.30f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::do_nothing, this));
+    line 870    [Tab character — use spaces]
+           		music_text = new UiButton("ui_music", vec2(-0.3f, 0.15f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::do_nothing, this));
+    line 871    [Tab character — use spaces]
+           		sensitivity_text = new UiButton("ui_sensitivity", vec2(-0.3f, 0.0f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::do_nothing, this));
+    line 872    [Tab character — use spaces]
+           		crosshair_text = new UiButton("ui_crosshair_text", vec2(-0.3f, -0.15f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::do_nothing, this));
+    line 873    [Tab character — use spaces]
+           		shadow_text = new UiButton("ui_shadows", vec2(-0.3f, -0.3f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::do_nothing, this));
+    line 874    [Tab character — use spaces]
+           		shadow_on_button = new UiButton("ui_on", vec2(0.3f, -0.3f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::shadow_off, this));
+    line 875    [Tab character — use spaces]
+           		shadow_off_button = new UiButton("ui_off", vec2(0.3f, -0.3f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::shadow_on, this));
+    line 876    [Tab character — use spaces]
+           		fullscreen_button = new UiButton("ui_fullscreen", vec2(0.3f, -0.45f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::set_windowed, this));
+    line 877    [Tab character — use spaces]
+           		windowed_button = new UiButton("ui_windowed", vec2(0.3f, -0.45f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::set_fullscreen, this));
+    line 879    [Tab character — use spaces]
+           		sound_volume_less = new UiButton("ui_arrow_left", vec2(0.3f, 0.30f), vec2(0.033f, 0.066f), std::bind(&OptionsPage::set_sound_less, this));
+    line 880    [Tab character — use spaces]
+           		sound_volume_more = new UiButton("ui_arrow_right", vec2(0.5f, 0.30f), vec2(0.033f, 0.066f), std::bind(&OptionsPage::set_sound_more, this));
+    line 881    [Tab character — use spaces]
+           		music_volume_less = new UiButton("ui_arrow_left", vec2(0.3f, 0.15f), vec2(0.033f, 0.066f), std::bind(&OptionsPage::set_music_less, this));
+    line 882    [Tab character — use spaces]
+           		music_volume_more = new UiButton("ui_arrow_right", vec2(0.5f, 0.15f), vec2(0.033f, 0.066f), std::bind(&OptionsPage::set_music_more, this));
+    line 883    [Tab character — use spaces]
+           		sensitivity_less = new UiButton("ui_arrow_left", vec2(0.3f, 0.0f), vec2(0.033f, 0.066f), std::bind(&OptionsPage::set_sensitivity_less, this));
+    line 884    [Tab character — use spaces]
+           		sensitivity_more = new UiButton("ui_arrow_right", vec2(0.5f, 0.0f), vec2(0.033f, 0.066f), std::bind(&OptionsPage::set_sensitivity_more, this));
+    line 885    [Tab character — use spaces]
+           		crosshair_less = new UiButton("ui_arrow_left", vec2(0.3f, -0.15f), vec2(0.033f, 0.066f), std::bind(&OptionsPage::set_crosshair_less, this));
+    line 886    [Tab character — use spaces]
+           		crosshair_more = new UiButton("ui_arrow_right", vec2(0.5f, -0.15f), vec2(0.033f, 0.066f), std::bind(&OptionsPage::set_crosshair_more, this));
+    line 888    [Tab character — use spaces]
+           		go_back_button = new UiButton("ui_back", vec2(-0.3f, 0.45f), vec2(0.28f, 0.066f), std::bind(&OptionsPage::go_back, this));
+    line 889    [Tab character — use spaces]
+           	}
+    line 891    [Tab character — use spaces]
+           	//=============================================================================================
+    line 893    [Tab character — use spaces]
+           	OptionsPage::~OptionsPage()
+    line 894    [Tab character — use spaces]
+           	{
+    line 895    [Tab character — use spaces]
+           		delete sound_text;
+    line 896    [Tab character — use spaces]
+           		delete music_text;
+    line 897    [Tab character — use spaces]
+           		delete sensitivity_text;
+    line 898    [Tab character — use spaces]
+           		delete fullscreen_button;
+    line 899    [Tab character — use spaces]
+           		delete windowed_button;
+    line 900    [Tab character — use spaces]
+           		delete sound_volume_less;
+    line 901    [Tab character — use spaces]
+           		delete sound_volume_more;
+    line 902    [Tab character — use spaces]
+           		delete music_volume_less;
+    line 903    [Tab character — use spaces]
+           		delete music_volume_more;
+    line 904    [Tab character — use spaces]
+           		delete sensitivity_less;
+    line 905    [Tab character — use spaces]
+           		delete sensitivity_more;
+    line 906    [Tab character — use spaces]
+           		delete crosshair_less;
+    line 907    [Tab character — use spaces]
+           		delete crosshair_more;
+    line 908    [Tab character — use spaces]
+           		delete go_back_button;
+    line 909    [Tab character — use spaces]
+           	}
+    line 911    [Tab character — use spaces]
+           	//==============================================================================================
+    line 912    [Tab character — use spaces]
+           	void OptionsPage::update([[maybe_unused]] vec2 mouse_pos, [[maybe_unused]] u32 prev_mouse, [[maybe_unused]] u32 cur_mouse)
+    line 913    [Tab character — use spaces]
+           	{
+    line 914    [Tab character — use spaces]
+           		//update buttons and determine which (one) button can be pressed based on mouse position
+    line 915    [Tab character — use spaces]
+           		UiButton* hover_over_button = nullptr;
+    line 917    [Tab character — use spaces]
+           		fullscreen_button->set_hover(false);
+    line 918    [Tab character — use spaces]
+           		windowed_button->set_hover(false);
+    line 920    [Tab character — use spaces]
+           		sound_volume_less->set_hover(false);
+    line 921    [Tab character — use spaces]
+           		sound_volume_more->set_hover(false);
+    line 923    [Tab character — use spaces]
+           		music_volume_less->set_hover(false);
+    line 924    [Tab character — use spaces]
+           		music_volume_more->set_hover(false);
+    line 926    [Tab character — use spaces]
+           		sensitivity_less->set_hover(false);
+    line 927    [Tab character — use spaces]
+           		sensitivity_more->set_hover(false);
+    line 929    [Tab character — use spaces]
+           		crosshair_less->set_hover(false);
+    line 930    [Tab character — use spaces]
+           		crosshair_more->set_hover(false);
+    line 932    [Tab character — use spaces]
+           		go_back_button->set_hover(false);
+    line 934    [Tab character — use spaces]
+           		shadow_on_button->set_hover(false);
+    line 935    [Tab character — use spaces]
+           		shadow_off_button->set_hover(false);
+    line 937    [Tab character — use spaces]
+           		if (isWindowed)
+    line 938    [Tab character — use spaces]
+           		{
+    line 939    [Tab character — use spaces]
+           			if (windowed_button->is_point_in_rec(mouse_pos))
+    line 940    [Tab character — use spaces]
+           			{
+    line 941    [Tab character — use spaces]
+           				hover_over_button = windowed_button;
+    line 942    [Tab character — use spaces]
+           			}
+    line 943    [Tab character — use spaces]
+           		}
+    line 944    [Tab character — use spaces]
+           		else
+    line 945    [Tab character — use spaces]
+           		{
+    line 946    [Tab character — use spaces]
+           			if (fullscreen_button->is_point_in_rec(mouse_pos))
+    line 947    [Tab character — use spaces]
+           			{
+    line 948    [Tab character — use spaces]
+           				hover_over_button = fullscreen_button;
+    line 949    [Tab character — use spaces]
+           			}
+    line 950    [Tab character — use spaces]
+           		}
+    line 952    [Tab character — use spaces]
+           		if (is_shadows)
+    line 953    [Tab character — use spaces]
+           		{
+    line 954    [Tab character — use spaces]
+           			if (shadow_on_button->is_point_in_rec(mouse_pos))
+    line 955    [Tab character — use spaces]
+           			{
+    line 956    [Tab character — use spaces]
+           				hover_over_button = shadow_on_button;
+    line 957    [Tab character — use spaces]
+           			}
+    line 958    [Tab character — use spaces]
+           		}
+    line 959    [Tab character — use spaces]
+           		else
+    line 960    [Tab character — use spaces]
+           		{
+    line 961    [Tab character — use spaces]
+           			if (shadow_off_button->is_point_in_rec(mouse_pos))
+    line 962    [Tab character — use spaces]
+           			{
+    line 963    [Tab character — use spaces]
+           				hover_over_button = shadow_off_button;
+    line 964    [Tab character — use spaces]
+           			}
+    line 965    [Tab character — use spaces]
+           		}
+    line 968    [Tab character — use spaces]
+           		if (sound_volume_less->is_point_in_rec(mouse_pos))
+    line 969    [Tab character — use spaces]
+           		{
+    line 970    [Tab character — use spaces]
+           			hover_over_button = sound_volume_less;
+    line 971    [Tab character — use spaces]
+           		}
+    line 972    [Tab character — use spaces]
+           		else if (sound_volume_more->is_point_in_rec(mouse_pos))
+    line 973    [Tab character — use spaces]
+           		{
+    line 974    [Tab character — use spaces]
+           			hover_over_button = sound_volume_more;
+    line 975    [Tab character — use spaces]
+           		}
+    line 976    [Tab character — use spaces]
+           		else if (music_volume_less->is_point_in_rec(mouse_pos))
+    line 977    [Tab character — use spaces]
+           		{
+    line 978    [Tab character — use spaces]
+           			hover_over_button = music_volume_less;
+    line 979    [Tab character — use spaces]
+           		}
+    line 980    [Tab character — use spaces]
+           		else if (music_volume_more->is_point_in_rec(mouse_pos))
+    line 981    [Tab character — use spaces]
+           		{
+    line 982    [Tab character — use spaces]
+           			hover_over_button = music_volume_more;
+    line 983    [Tab character — use spaces]
+           		}
+    line 984    [Tab character — use spaces]
+           		else if (sensitivity_less->is_point_in_rec(mouse_pos))
+    line 985    [Tab character — use spaces]
+           		{
+    line 986    [Tab character — use spaces]
+           			hover_over_button = sensitivity_less;
+    line 987    [Tab character — use spaces]
+           		}
+    line 988    [Tab character — use spaces]
+           		else if (sensitivity_more->is_point_in_rec(mouse_pos))
+    line 989    [Tab character — use spaces]
+           		{
+    line 990    [Tab character — use spaces]
+           			hover_over_button = sensitivity_more;
+    line 991    [Tab character — use spaces]
+           		}
+    line 992    [Tab character — use spaces]
+           		else if (crosshair_less->is_point_in_rec(mouse_pos))
+    line 993    [Tab character — use spaces]
+           		{
+    line 994    [Tab character — use spaces]
+           			hover_over_button = crosshair_less;
+    line 995    [Tab character — use spaces]
+           		}
+    line 996    [Tab character — use spaces]
+           		else if (crosshair_more->is_point_in_rec(mouse_pos))
+    line 997    [Tab character — use spaces]
+           		{
+    line 998    [Tab character — use spaces]
+           			hover_over_button = crosshair_more;
+    line 999    [Tab character — use spaces]
+           		}
+    line 1000   [Tab character — use spaces]
+           		else if (go_back_button->is_point_in_rec(mouse_pos))
+    line 1001   [Tab character — use spaces]
+           		{
+    line 1002   [Tab character — use spaces]
+           			hover_over_button = go_back_button;
+    line 1003   [Tab character — use spaces]
+           		}
+    line 1005   [Tab character — use spaces]
+           		if (hover_over_button != nullptr)
+    line 1006   [Tab character — use spaces]
+           		{
+    line 1007   [Tab character — use spaces]
+           			hover_over_button->set_hover(true);
+    line 1009   [Tab character — use spaces]
+           			if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    line 1010   [Tab character — use spaces]
+           			{
+    line 1011   [Tab character — use spaces]
+           				hover_over_button->on_click();
+    line 1012   [Tab character — use spaces]
+           			}
+    line 1013   [Tab character — use spaces]
+           		}
+    line 1014   [Tab character — use spaces]
+           	}
+    line 1016   [Tab character — use spaces]
+           	//=============================================================================================
+    line 1018   [Tab character — use spaces]
+           	LoadGamePage::LoadGamePage()
+    line 1019   [Tab character — use spaces]
+           	{
+    line 1020   [Tab character — use spaces]
+           		go_back_button = new UiButton("ui_back", vec2(0.0f, 0.6f), vec2(0.3f, 0.066f), std::bind(&LoadGamePage::go_back, this));
+    line 1021   [Tab character — use spaces]
+           		page_up_button = new UiButton("ui_arrow_down", vec2(0.0f, -0.55f), vec2(0.045f, 0.03f), std::bind(&LoadGamePage::page_up, this));
+    line 1022   [Tab character — use spaces]
+           		page_down_button = new UiButton("ui_arrow_up", vec2(0.0f, 0.45f), vec2(0.045f, 0.03f), std::bind(&LoadGamePage::page_down, this));
+    line 1023   [Tab character — use spaces]
+           	}
+    line 1025   [Tab character — use spaces]
+           	//=============================================================================================
+    line 1027   [Tab character — use spaces]
+           	LoadGamePage::~LoadGamePage()
+    line 1028   [Tab character — use spaces]
+           	{
+    line 1029   [Tab character — use spaces]
+           		delete go_back_button;
+    line 1030   [Tab character — use spaces]
+           		delete page_down_button;
+    line 1031   [Tab character — use spaces]
+           		delete page_up_button;
+    line 1033   [Tab character — use spaces]
+           		for (auto load_game_button : load_game_buttons)
+    line 1034   [Tab character — use spaces]
+           		{
+    line 1035   [Tab character — use spaces]
+           			delete load_game_button;
+    line 1036   [Tab character — use spaces]
+           		}
+    line 1037   [Tab character — use spaces]
+           		load_game_buttons.clear();
+    line 1038   [Tab character — use spaces]
+           	}
+    line 1040   [Tab character — use spaces]
+           	//=============================================================================================
+    line 1042   [Tab character — use spaces]
+           	void LoadGamePage::update_saves()
+    line 1043   [Tab character — use spaces]
+           	{
+    line 1044   [Tab character — use spaces]
+           		//delete buttons
+    line 1045   [Tab character — use spaces]
+           		for (auto load_game_button : load_game_buttons)
+    line 1046   [Tab character — use spaces]
+           		{
+    line 1047   [Tab character — use spaces]
+           			delete load_game_button;
+    line 1048   [Tab character — use spaces]
+           		}
+    line 1049   [Tab character — use spaces]
+           		load_game_buttons.clear();
+    line 1051   [Tab character — use spaces]
+           		// get save db
+    line 1052   [Tab character — use spaces]
+           		nc::GameSystem::SaveDatabase& save_db = get_engine().get_module<GameSystem>().get_save_game_db();
+    line 1054   [Tab character — use spaces]
+           		// starting pos for first button and steps for next
+    line 1055   [Tab character — use spaces]
+           		vec2 pos = vec2(-0.0f, 0.3f);
+    line 1056   [Tab character — use spaces]
+           		vec2 stepPos = vec2(0.0f, -0.1f);
+    line 1057   [Tab character — use spaces]
+           		vec2 scale = vec2(0.5f, 0.033f);
+    line 1059   [Tab character — use spaces]
+           		// create buttons
+    line 1060   [Tab character — use spaces]
+           		for (auto& save : save_db)
+    line 1061   [Tab character — use spaces]
+           		{
+    line 1062   [Tab character — use spaces]
+           			load_game_buttons.push_back(new UiLoadGameButton(save, pos, scale));
+    line 1063   [Tab character — use spaces]
+           			pos += stepPos;
+    line 1064   [Tab character — use spaces]
+           			if (pos.y < -0.41f)
+    line 1065   [Tab character — use spaces]
+           			{
+    line 1066   [Tab character — use spaces]
+           				pos = vec2(-0.0f, 0.3f);
+    line 1067   [Tab character — use spaces]
+           			}
+    line 1068   [Tab character — use spaces]
+           		}
+    line 1070   [Tab character — use spaces]
+           		page = 0;
+    line 1071   [Tab character — use spaces]
+           	}
+    line 1073   [Tab character — use spaces]
+           	//==============================================================================================
+    line 1074   [Tab character — use spaces]
+           	void LoadGamePage::update([[maybe_unused]] vec2 mouse_pos, [[maybe_unused]] u32 prev_mouse, [[maybe_unused]] u32 cur_mouse)
+    line 1075   [Tab character — use spaces]
+           	{
+    line 1076   [Tab character — use spaces]
+           		//update buttons and determine which (one) button can be pressed based on mouse position
+    line 1077   [Tab character — use spaces]
+           		go_back_button->set_hover(false);
+    line 1078   [Tab character — use spaces]
+           		page_down_button->set_hover(false);
+    line 1079   [Tab character — use spaces]
+           		page_up_button->set_hover(false);
+    line 1080   [Tab character — use spaces]
+           		for (auto& button : load_game_buttons)
+    line 1081   [Tab character — use spaces]
+           		{
+    line 1082   [Tab character — use spaces]
+           			button->set_hover(false);
+    line 1083   [Tab character — use spaces]
+           		}
+    line 1085   [Tab character — use spaces]
+           		UiButton* hover_over_button = nullptr;
+    line 1087   [Tab character — use spaces]
+           		if (go_back_button->is_point_in_rec(mouse_pos))
+    line 1088   [Tab character — use spaces]
+           		{
+    line 1089   [Tab character — use spaces]
+           			hover_over_button = go_back_button;
+    line 1090   [Tab character — use spaces]
+           		}
+    line 1091   [Tab character — use spaces]
+           		else if (page_down_button->is_point_in_rec(mouse_pos))
+    line 1092   [Tab character — use spaces]
+           		{
+    line 1093   [Tab character — use spaces]
+           			hover_over_button = page_down_button;
+    line 1094   [Tab character — use spaces]
+           		}
+    line 1095   [Tab character — use spaces]
+           		else if (page_up_button->is_point_in_rec(mouse_pos))
+    line 1096   [Tab character — use spaces]
+           		{
+    line 1097   [Tab character — use spaces]
+           			hover_over_button = page_up_button;
+    line 1098   [Tab character — use spaces]
+           		}
+    line 1100   [Tab character — use spaces]
+           		for (size_t i = 0 + page * PAGE_SIZE;
+    line 1101   [Tab character — use spaces]
+           			i < load_game_buttons.size() && i < (page + 1) * PAGE_SIZE;
+    line 1102   [Tab character — use spaces]
+           			i++)
+    line 1103   [Tab character — use spaces]
+           		{
+    line 1104   [Tab character — use spaces]
+           			if (load_game_buttons[i]->is_point_in_rec(mouse_pos))
+    line 1105   [Tab character — use spaces]
+           			{
+    line 1106   [Tab character — use spaces]
+           				hover_over_button = load_game_buttons[i];
+    line 1107   [Tab character — use spaces]
+           				break;
+    line 1108   [Tab character — use spaces]
+           			}
+    line 1109   [Tab character — use spaces]
+           		}
+    line 1111   [Tab character — use spaces]
+           		if (hover_over_button != nullptr)
+    line 1112   [Tab character — use spaces]
+           		{
+    line 1113   [Tab character — use spaces]
+           			hover_over_button->set_hover(true);
+    line 1115   [Tab character — use spaces]
+           			if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    line 1116   [Tab character — use spaces]
+           			{
+    line 1117   [Tab character — use spaces]
+           				hover_over_button->on_click();
+    line 1118   [Tab character — use spaces]
+           			}
+    line 1119   [Tab character — use spaces]
+           		}
+    line 1121   [Tab character — use spaces]
+           	}
+    line 1123   [Tab character — use spaces]
+           	//==============================================================================================
+    line 1124   [Tab character — use spaces]
+           	void LoadGamePage::draw([[maybe_unused]] ShaderProgramHandle button_material, ShaderProgramHandle digit_material, [[maybe_unused]] GLuint VAO)
+    line 1125   [Tab character — use spaces]
+           	{
+    line 1126   [Tab character — use spaces]
+           		//shader init
+    line 1127   [Tab character — use spaces]
+           		button_material.use();
+    line 1129   [Tab character — use spaces]
+           		glBindVertexArray(VAO);
+    line 1130   [Tab character — use spaces]
+           		glEnableVertexAttribArray(0);
+    line 1131   [Tab character — use spaces]
+           		glEnableVertexAttribArray(1);
+    line 1133   [Tab character — use spaces]
+           		glDisable(GL_DEPTH_TEST);
+    line 1135   [Tab character — use spaces]
+           		glEnable(GL_BLEND);
+    line 1136   [Tab character — use spaces]
+           		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    line 1138   [Tab character — use spaces]
+           		// render scrolling and go back buttons
+    line 1139   [Tab character — use spaces]
+           		go_back_button->draw(button_material);
+    line 1140   [Tab character — use spaces]
+           		page_down_button->draw(button_material);
+    line 1141   [Tab character — use spaces]
+           		page_up_button->draw(button_material);
+    line 1143   [Tab character — use spaces]
+           		//unbind
+    line 1144   [Tab character — use spaces]
+           		glDisable(GL_BLEND);
+    line 1145   [Tab character — use spaces]
+           		glEnable(GL_DEPTH_TEST);
+    line 1147   [Tab character — use spaces]
+           		glBindTexture(GL_TEXTURE_2D, 0);
+    line 1148   [Tab character — use spaces]
+           		glDisableVertexAttribArray(0);
+    line 1149   [Tab character — use spaces]
+           		glDisableVertexAttribArray(1);
+    line 1150   [Tab character — use spaces]
+           		glBindVertexArray(0);
+    line 1152   [Tab character — use spaces]
+           		//shader init
+    line 1153   [Tab character — use spaces]
+           		digit_material.use();
+    line 1155   [Tab character — use spaces]
+           		glBindVertexArray(VAO);
+    line 1156   [Tab character — use spaces]
+           		glEnableVertexAttribArray(0);
+    line 1157   [Tab character — use spaces]
+           		glEnableVertexAttribArray(1);
+    line 1159   [Tab character — use spaces]
+           		glDisable(GL_DEPTH_TEST);
+    line 1161   [Tab character — use spaces]
+           		glEnable(GL_BLEND);
+    line 1162   [Tab character — use spaces]
+           		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    line 1164   [Tab character — use spaces]
+           		//render load game buttons
+    line 1165   [Tab character — use spaces]
+           		for (size_t i = 0 + page * PAGE_SIZE;
+    line 1166   [Tab character — use spaces]
+           			i < load_game_buttons.size() && i < (page + 1) * PAGE_SIZE;
+    line 1167   [Tab character — use spaces]
+           			i++)
+    line 1168   [Tab character — use spaces]
+           		{
+    line 1169   [Tab character — use spaces]
+           			load_game_buttons[i]->draw(digit_material);
+    line 1170   [Tab character — use spaces]
+           		}
+    line 1172   [Tab character — use spaces]
+           		//unbind
+    line 1173   [Tab character — use spaces]
+           		glDisable(GL_BLEND);
+    line 1174   [Tab character — use spaces]
+           		glEnable(GL_DEPTH_TEST);
+    line 1176   [Tab character — use spaces]
+           		glBindTexture(GL_TEXTURE_2D, 0);
+    line 1177   [Tab character — use spaces]
+           		glDisableVertexAttribArray(0);
+    line 1178   [Tab character — use spaces]
+           		glDisableVertexAttribArray(1);
+    line 1179   [Tab character — use spaces]
+           		glBindVertexArray(0);
+    line 1180   [Tab character — use spaces]
+           	}
+    line 1182   [Tab character — use spaces]
+           	//=============================================================================================
+    line 1184   [Tab character — use spaces]
+           	void LoadGamePage::go_back()
+    line 1185   [Tab character — use spaces]
+           	{
+    line 1186   [Tab character — use spaces]
+           		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MAIN);
+    line 1187   [Tab character — use spaces]
+           	}
+    line 1189   [Tab character — use spaces]
+           	//=============================================================================================
+    line 1190   [Tab character — use spaces]
+           	void LoadGamePage::page_up()
+    line 1191   [Tab character — use spaces]
+           	{
+    line 1192   [Tab character — use spaces]
+           		page = min(page + 1, (s32)load_game_buttons.size() / PAGE_SIZE);
+    line 1193   [Tab character — use spaces]
+           	}
+    line 1195   [Tab character — use spaces]
+           	//=============================================================================================
+    line 1196   [Tab character — use spaces]
+           	void LoadGamePage::page_down()
+    line 1197   [Tab character — use spaces]
+           	{
+    line 1198   [Tab character — use spaces]
+           		page = max(0, page - 1);
+    line 1199   [Tab character — use spaces]
+           	}
+    line 1201   [Tab character — use spaces]
+           	//=============================================================================================
+    line 1203   [Tab character — use spaces]
+           	void OptionsPage::go_back()
+    line 1204   [Tab character — use spaces]
+           	{
+    line 1205   [Tab character — use spaces]
+           		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MAIN);
+    line 1206   [Tab character — use spaces]
+           	}
+    line 1208   [Tab character — use spaces]
+           	//=============================================================================================
+    line 1209   [Tab character — use spaces]
+           	void NewGamePage::go_back()
+    line 1210   [Tab character — use spaces]
+           	{
+    line 1211   [Tab character — use spaces]
+           		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MAIN);
+    line 1212   [Tab character — use spaces]
+           	}
+    line 1214   [Tab character — use spaces]
+           	//==============================================================================================
+    line 1215   [Tab character — use spaces]
+           	QuitGamePage::QuitGamePage()
+    line 1216   [Tab character — use spaces]
+           	{
+    line 1217   [Tab character — use spaces]
+           		yes_button = new UiButton("ui_yes", vec2(0.0f, 0.05f), vec2(0.3f, 0.066f), std::bind(&QuitGamePage::yes_func, this));
+    line 1218   [Tab character — use spaces]
+           		no_button = new UiButton("ui_no", vec2(0.0f, -0.1f), vec2(0.3f, 0.066f), std::bind(&QuitGamePage::no_func, this));
+    line 1219   [Tab character — use spaces]
+           	}
+    line 1221   [Tab character — use spaces]
+           	//==============================================================================================
+    line 1222   [Tab character — use spaces]
+           	QuitGamePage::~QuitGamePage()
+    line 1223   [Tab character — use spaces]
+           	{
+    line 1224   [Tab character — use spaces]
+           		delete yes_button;
+    line 1225   [Tab character — use spaces]
+           		delete no_button;
+    line 1226   [Tab character — use spaces]
+           	}
+    line 1228   [Tab character — use spaces]
+           	//==============================================================================================
+    line 1229   [Tab character — use spaces]
+           	void QuitGamePage::update([[maybe_unused]] vec2 mouse_pos, [[maybe_unused]] u32 prev_mouse, [[maybe_unused]] u32 cur_mouse)
+    line 1230   [Tab character — use spaces]
+           	{
+    line 1231   [Tab character — use spaces]
+           		//update buttons and determine which (one) button can be pressed based on mouse position
+    line 1232   [Tab character — use spaces]
+           		UiButton* hover_over_button = nullptr;
+    line 1234   [Tab character — use spaces]
+           		yes_button->set_hover(false);
+    line 1235   [Tab character — use spaces]
+           		no_button->set_hover(false);
+    line 1237   [Tab character — use spaces]
+           		if (yes_button->is_point_in_rec(mouse_pos))
+    line 1238   [Tab character — use spaces]
+           		{
+    line 1239   [Tab character — use spaces]
+           			hover_over_button = yes_button;
+    line 1240   [Tab character — use spaces]
+           		}
+    line 1241   [Tab character — use spaces]
+           		else if (no_button->is_point_in_rec(mouse_pos))
+    line 1242   [Tab character — use spaces]
+           		{
+    line 1243   [Tab character — use spaces]
+           			hover_over_button = no_button;
+    line 1244   [Tab character — use spaces]
+           		}
+    line 1246   [Tab character — use spaces]
+           		if (hover_over_button != nullptr)
+    line 1247   [Tab character — use spaces]
+           		{
+    line 1248   [Tab character — use spaces]
+           			hover_over_button->set_hover(true);
+    line 1250   [Tab character — use spaces]
+           			if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    line 1251   [Tab character — use spaces]
+           			{
+    line 1252   [Tab character — use spaces]
+           				hover_over_button->on_click();
+    line 1253   [Tab character — use spaces]
+           			}
+    line 1254   [Tab character — use spaces]
+           		}
+    line 1255   [Tab character — use spaces]
+           	}
+    line 1257   [Tab character — use spaces]
+           	//==============================================================================================
+    line 1258   [Tab character — use spaces]
+           	void QuitGamePage::draw([[maybe_unused]] ShaderProgramHandle button_material, [[maybe_unused]] GLuint VAO)
+    line 1259   [Tab character — use spaces]
+           	{
+    line 1260   [Tab character — use spaces]
+           		//shader init
+    line 1261   [Tab character — use spaces]
+           		button_material.use();
+    line 1263   [Tab character — use spaces]
+           		glBindVertexArray(VAO);
+    line 1264   [Tab character — use spaces]
+           		glEnableVertexAttribArray(0);
+    line 1265   [Tab character — use spaces]
+           		glEnableVertexAttribArray(1);
+    line 1267   [Tab character — use spaces]
+           		glDisable(GL_DEPTH_TEST);
+    line 1269   [Tab character — use spaces]
+           		glEnable(GL_BLEND);
+    line 1270   [Tab character — use spaces]
+           		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    line 1272   [Tab character — use spaces]
+           		yes_button->draw(button_material);
+    line 1273   [Tab character — use spaces]
+           		no_button->draw(button_material);
+    line 1275   [Tab character — use spaces]
+           		//unbind
+    line 1276   [Tab character — use spaces]
+           		glDisable(GL_BLEND);
+    line 1277   [Tab character — use spaces]
+           		glEnable(GL_DEPTH_TEST);
+    line 1279   [Tab character — use spaces]
+           		glBindTexture(GL_TEXTURE_2D, 0);
+    line 1280   [Tab character — use spaces]
+           		glDisableVertexAttribArray(0);
+    line 1281   [Tab character — use spaces]
+           		glDisableVertexAttribArray(1);
+    line 1282   [Tab character — use spaces]
+           		glBindVertexArray(0);
+    line 1283   [Tab character — use spaces]
+           	}
+    line 1285   [Tab character — use spaces]
+           	//==============================================================================================
+    line 1286   [Tab character — use spaces]
+           	void QuitGamePage::yes_func()
+    line 1287   [Tab character — use spaces]
+           	{
+    line 1288   [Tab character — use spaces]
+           		get_engine().request_quit();
+    line 1289   [Tab character — use spaces]
+           	}
+    line 1291   [Tab character — use spaces]
+           	//==============================================================================================
+    line 1292   [Tab character — use spaces]
+           	void QuitGamePage::no_func()
+    line 1293   [Tab character — use spaces]
+           	{
+    line 1294   [Tab character — use spaces]
+           		get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MAIN);
+    line 1295   [Tab character — use spaces]
+           	}
+    line 1297   [Tab character — use spaces]
+           	//===========================================================================================
+    line 1299   [Tab character — use spaces]
+           	MainMenuPage::MainMenuPage()
+    line 1300   [Tab character — use spaces]
+           	{
+    line 1301   [Tab character — use spaces]
+           		const char* ng_text = "ui_new_game";
+    line 1302   [Tab character — use spaces]
+           		const char* o_text = "ui_options";
+    line 1303   [Tab character — use spaces]
+           		const char* lg_text = "ui_load_game";
+    line 1304   [Tab character — use spaces]
+           		const char* q_text = "ui_quit";
+    line 1306   [Tab character — use spaces]
+           		new_game_button = new UiButton(ng_text, vec2(0.0f, 0.15f), vec2(0.3f, 0.066f), std::bind(&MainMenuPage::new_game_func, this));
+    line 1307   [Tab character — use spaces]
+           		options_button = new UiButton(o_text, vec2(0.0f, 0.0f), vec2(0.3f, 0.066f), std::bind(&MainMenuPage::options_func, this));
+    line 1308   [Tab character — use spaces]
+           		load_button = new UiButton(lg_text, vec2(0.0f, -0.15f), vec2(0.3f, 0.066f), std::bind(&MainMenuPage::load_game_func, this));
+    line 1309   [Tab character — use spaces]
+           		quit_button = new UiButton(q_text, vec2(0.0f, -0.3f), vec2(0.3f, 0.066f), std::bind(&MainMenuPage::quit_func, this));
+    line 1310   [Tab character — use spaces]
+           		nuclidean_text = new UiButton("ui_nuclidean", vec2(0.0f, 0.5f), vec2(0.42f, 0.1f), std::bind(&MainMenuPage::quit_func, this));
+    line 1311   [Tab character — use spaces]
+           	}
+    line 1313   [Tab character — use spaces]
+           	//============================================================================================
+    line 1315   [Tab character — use spaces]
+           	MainMenuPage::~MainMenuPage()
+    line 1316   [Tab character — use spaces]
+           	{
+    line 1317   [Tab character — use spaces]
+           		delete new_game_button;
+    line 1318   [Tab character — use spaces]
+           		delete options_button;
+    line 1319   [Tab character — use spaces]
+           		delete load_button;
+    line 1320   [Tab character — use spaces]
+           		delete quit_button;
+    line 1321   [Tab character — use spaces]
+           		delete nuclidean_text;
+    line 1322   [Tab character — use spaces]
+           	}
+
+  engine\ui\ui_menu_page.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+
+  engine\ui\ui_screen_effect.cpp
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #include <engine/ui/ui_screen_effect.h>
+    line 13     [Tab character — use spaces]
+           	shader(shaders::ui_button::VERTEX_SOURCE, shaders::ui_button::FRAGMENT_SOURCE)
+
+  engine\ui\ui_screen_effect.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+    line 6      [Tab character — use spaces]
+           	class UiScreenEffect
+    line 7      [Tab character — use spaces]
+           	{
+    line 8      [Tab character — use spaces]
+           		public:
+    line 9      [Tab character — use spaces]
+           			UiScreenEffect();
+    line 10     [Tab character — use spaces]
+    line 11     [Tab character — use spaces]
+           			void update(float delta);
+    line 13     [Tab character — use spaces]
+           			void draw();
+    line 15     [Tab character — use spaces]
+           			// call when player receives damage
+    line 16     [Tab character — use spaces]
+           			void did_damage(int damage);
+    line 18     [Tab character — use spaces]
+           			// call when player picks up an item
+    line 19     [Tab character — use spaces]
+           			void did_pickup();
+    line 21     [Tab character — use spaces]
+           		private:
+    line 22     [Tab character — use spaces]
+    line 23     [Tab character — use spaces]
+           			void init();
+    line 25     [Tab character — use spaces]
+           			// consts
+    line 26     [Tab character — use spaces]
+           			const f32 MAX_DMG_FLASH_DURATION = 2.0f;
+    line 27     [Tab character — use spaces]
+           			const f32 MAX_PICKUP_FLASH_DURATION = 0.25f;
+    line 29     [Tab character — use spaces]
+           			// properties
+    line 30     [Tab character — use spaces]
+           			f32 time_since_last_dmg = MAX_DMG_FLASH_DURATION;
+    line 31     [Tab character — use spaces]
+           			f32 time_since_last_pickup = MAX_PICKUP_FLASH_DURATION;
+    line 32     [Tab character — use spaces]
+    line 33     [Tab character — use spaces]
+           			//openGL
+    line 34     [Tab character — use spaces]
+           			GLuint VAO;
+    line 35     [Tab character — use spaces]
+           			GLuint VBO;
+    line 37     [Tab character — use spaces]
+           			const ShaderProgramHandle shader;
+    line 38     [Tab character — use spaces]
+           	};
+
+  engine\ui\user_interface_system.cpp
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #include <engine/ui/user_interface_system.h>
+
+  engine\ui\user_interface_system.h
+    line 1      [First line must be exactly: '// Project Nuclidean Source File']
+           #pragma once
+
+  game\projectile.cpp
+    line 78     [Tab character — use spaces]
+           	// TODO: Player can't hit himself right now
+    line 79     [Tab character — use spaces]
+           	bool player_authored = m_author.type == EntityTypes::player;
+    line 81     [Tab character — use spaces]
+           		? (EntityTypeFlags::enemy)
+    line 82     [Tab character — use spaces]
+           		: (EntityTypeFlags::enemy | EntityTypeFlags::player);
+
+  game\projectile.h
+    line 34     [Tab character — use spaces]
+           	u32      m_hit_cnt_remaining;
+
+--------------------------------------------------------------------------
+FILES WITH VIOLATIONS
+--------------------------------------------------------------------------
+  engine\core\engine.cpp                          2 violations
+  engine\core\resources.h                         1 violation
+  engine\enemies\enemy.cpp                        5 violations
+  engine\entity\entity.cpp                        13 violations
+  engine\entity\entity.h                          1 violation
+  engine\entity\entity_type_definitions.h         13 violations
+  engine\game\game_helpers.cpp                    1 violation
+  engine\game\game_helpers.h                      14 violations
+  engine\game\game_system.cpp                     14 violations
+  engine\game\game_system.h                       1 violation
+  engine\graphics\debug\gizmo.cpp                 1 violation
+  engine\graphics\debug\gizmo.h                   1 violation
+  engine\graphics\entities\lights.cpp             1 violation
+  engine\graphics\entities\lights.h               1 violation
+  engine\graphics\entities\sky_box.cpp            1 violation
+  engine\graphics\entities\sky_box.h              1 violation
+  engine\graphics\gl_types.h                      1 violation
+  engine\graphics\graphics_system.h               4 violations
+  engine\graphics\renderer.cpp                    1 violation
+  engine\graphics\resources\mesh.cpp              1 violation
+  engine\graphics\resources\mesh.h                1 violation
+  engine\graphics\resources\model.h               1 violation
+  engine\graphics\resources\res_lifetime.h        1 violation
+  engine\graphics\resources\shader_program.cpp    1 violation
+  engine\graphics\resources\shader_program.h      1 violation
+  engine\graphics\resources\texture.cpp           1 violation
+  engine\graphics\resources\texture.h             1 violation
+  engine\graphics\resources\texture_id.h          1 violation
+  engine\graphics\shaders\shaders.h               1 violation
+  engine\graphics\ssbo_buffer.h                   1 violation
+  engine\map\map_dynamics.cpp                     2 violations
+  engine\map\map_dynamics_hooks.cpp               1 violation
+  engine\map\map_dynamics_hooks.h                 1 violation
+  engine\map\physics.cpp                          3 violations
+  engine\map\physics.h                            5 violations
+  engine\player\map_object.cpp                    1 violation
+  engine\player\map_object.h                      2 violations
+  engine\player\player.cpp                        3 violations
+  engine\player\player.h                          2 violations
+  engine\sound\sound_system.cpp                   2 violations
+  engine\ui\ui_button.cpp                         122 violations
+  engine\ui\ui_button.h                           1 violation
+  engine\ui\ui_hud_display.cpp                    1 violation
+  engine\ui\ui_hud_display.h                      25 violations
+  engine\ui\ui_menu_manager.cpp                   225 violations
+  engine\ui\ui_menu_manager.h                     1 violation
+  engine\ui\ui_menu_page.cpp                      1043 violations
+  engine\ui\ui_menu_page.h                        1 violation
+  engine\ui\ui_screen_effect.cpp                  2 violations
+  engine\ui\ui_screen_effect.h                    27 violations
+  engine\ui\user_interface_system.cpp             1 violation
+  engine\ui\user_interface_system.h               1 violation
+  game\projectile.cpp                             4 violations
+  game\projectile.h                               1 violation
+  intersect.h                                     1 violation
+  logging.cpp                                     3 violations
+  logging.h                                       4 violations
+  metaprogramming.h                               1 violation
+  token.h                                         22 violations
+  token_tests.cpp                                 6 violations
+
+  60 file(s) with violations  |  1602 total

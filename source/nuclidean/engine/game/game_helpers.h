@@ -21,19 +21,19 @@ class  Player;
 class GameHelpers
 {
 public:
-	static GameHelpers get();
+  static GameHelpers get();
 
-	GameHelpers(Game& game);
+  GameHelpers(Game& game);
 
-	// Returns the frame index of the currently running level. Resets after the
-	// level change.
+  // Returns the frame index of the currently running level. Resets after the
+  // level change.
   u64 get_frame_idx() const;
   
   f64 get_time_since_start() const;
 
   PhysLevel get_level() const;
 
-	// Returns the pointer to the player
+  // Returns the pointer to the player
   Player* get_player();
 
   // Helper for creating projectiles
@@ -52,7 +52,7 @@ public:
   );
 
 private:
-	Game& m_game;
+  Game& m_game;
 };
 
 
@@ -61,14 +61,14 @@ struct ActionTimestamp
 {
   inline bool try_consume(const f32 required_elapsed_time)
   {
-  	const f64 current_timestamp = GameHelpers::get().get_time_since_start();
-  	const f64 current_elapsed_time = current_timestamp - last_performed_timestamp;
-  	if (current_elapsed_time < required_elapsed_time) 
-  	{
-  		return false;
-  	}
-  	last_performed_timestamp = current_timestamp;
-  	return true;
+    const f64 current_timestamp = GameHelpers::get().get_time_since_start();
+    const f64 current_elapsed_time = current_timestamp - last_performed_timestamp;
+    if (current_elapsed_time < required_elapsed_time) 
+    {
+      return false;
+    }
+    last_performed_timestamp = current_timestamp;
+    return true;
   }
 
 private:

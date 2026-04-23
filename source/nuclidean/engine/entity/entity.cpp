@@ -186,20 +186,20 @@ f32 Entity::get_snap_offset() const
 //==============================================================================
 bool Entity::should_be_tracked_in_sector_mapping() const
 {
-	switch (this->get_type())
-	{
-		case EntityTypes::sky_box:           [[fallthrough]];
-		case EntityTypes::directional_light: [[fallthrough]];
-		case EntityTypes::sound_emitter:
-		{
-			return false;
-		}
+  switch (this->get_type())
+  {
+    case EntityTypes::sky_box:           [[fallthrough]];
+    case EntityTypes::directional_light: [[fallthrough]];
+    case EntityTypes::sound_emitter:
+    {
+      return false;
+    }
 
-		default:
-		{
-			return true;
-		}
-	}
+    default:
+    {
+      return true;
+    }
+  }
 }
 
 }

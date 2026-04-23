@@ -777,7 +777,7 @@ void Renderer::render_entities(const CameraData& camera) const
         //const ResLifetime lifetime = texture.get_lifetime();
         //groups[lifetime].insert(entity);
 
-		// TODO: This causes enemies to disappear in certain situations.
+        // TODO: This causes enemies to disappear in certain situations.
         if (m_entity_checker.check_redundant(id.as_u32(), camera_pos).first)
         {
           auto& group = groups[cast<u64>(ResLifetime::Game)];

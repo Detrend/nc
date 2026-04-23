@@ -25,7 +25,7 @@ namespace nc
 //==============================================================================
 /*static*/ GameHelpers GameHelpers::get()
 {
-	return GameSystem::get().get_game_helpers();
+  return GameSystem::get().get_game_helpers();
 }
 
 //==============================================================================

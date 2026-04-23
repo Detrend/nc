@@ -43,12 +43,8 @@ void    unregister_logging_output       (LoggingSeverity severity, const Logging
 
 #define NC_LOG_GENERIC(severity, ...)   nc::logging::log_message_impl((severity), std::format("" __VA_ARGS__), CAPTURE_CURRENT_LOGGING_CONTEXT())
 
-#define nc_log(...)		                NC_LOG_GENERIC(nc::logging::LoggingSeverity::message, __VA_ARGS__)
-#define nc_warn(...)	                NC_LOG_GENERIC(nc::logging::LoggingSeverity::warning, __VA_ARGS__)
-#define nc_crit(...)	                NC_LOG_GENERIC(nc::logging::LoggingSeverity::error, __VA_ARGS__)
-
-
-
-
+#define nc_log(...)  NC_LOG_GENERIC(nc::logging::LoggingSeverity::message, __VA_ARGS__)
+#define nc_warn(...) NC_LOG_GENERIC(nc::logging::LoggingSeverity::warning, __VA_ARGS__)
+#define nc_crit(...) NC_LOG_GENERIC(nc::logging::LoggingSeverity::error, __VA_ARGS__)
 
 }

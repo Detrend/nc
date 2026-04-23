@@ -159,7 +159,7 @@ struct PhysLevel
     Portals*       out_portals = nullptr      // list of portals the ray went through
   ) const;
 
-	// Casts a 3D ray and reports the first thing it hits
+  // Casts a 3D ray and reports the first thing it hits
   CollisionHit ray_cast_3d
   (
     vec3           ray_start,                 // point to cast from
@@ -168,8 +168,8 @@ struct PhysLevel
     Portals*       out_portals = nullptr      // list of portals the ray went through
   ) const;
 
-	// Casts a cylinder shape between two points and checks if it intersects something
-	// in the world.
+  // Casts a cylinder shape between two points and checks if it intersects something
+  // in the world.
   CollisionHit cylinder_cast_3d
   (
     vec3           ray_start,                 // point to cast from
@@ -220,8 +220,8 @@ struct PhysLevel
     CharacterCollisions* collisions_opt = nullptr
   ) const;
 
-	// Moves a non-character physics object in the level. The object bounces around
-	// and collides with other objects. The collision detection is continuous and
+  // Moves a non-character physics object in the level. The object bounces around
+  // and collides with other objects. The collision detection is continuous and
   // therefore can be used for simulation of projectiles.
   // All objects have a cylinder-like collider with radius and a height
   void move_particle

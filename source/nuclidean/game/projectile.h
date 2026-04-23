@@ -31,7 +31,7 @@ private:
 private:
   EntityID m_author = INVALID_ENTITY_ID;
   vec3     m_velocity;
-	u32      m_hit_cnt_remaining;
+  u32      m_hit_cnt_remaining;
   f32      m_lifetime = 0.0f;
 
   Appearance     m_appear;

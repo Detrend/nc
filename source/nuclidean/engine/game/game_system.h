@@ -82,7 +82,7 @@ public:
   PhysLevel               get_level()          const;
   EntityAttachment&       get_attachment_mgr();
   const EntityAttachment& get_attachment_mgr() const;
-	GameHelpers             get_game_helpers()   const;
+  GameHelpers             get_game_helpers()   const;
 
   // Request a new level to play - an empty one.
   // Comes in handy in the menu

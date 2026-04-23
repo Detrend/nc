@@ -1837,10 +1837,10 @@ const
   nc_assert(bounce >= 0.0f, "Invalid range.");
   nc_assert(hit_cnt > 0, "Hit cnt must be 1 or more");
 
-	const vec3 h_offset = -UP_DIR * neg_height;
+  const vec3 h_offset = -UP_DIR * neg_height;
 
   f32 total_distance     = length(velocity_og) * delta_time;
-	f32 remaining_distance = total_distance;
+  f32 remaining_distance = total_distance;
 
   u32 max_iterations = 12;
 
@@ -2122,7 +2122,7 @@ const
 //==============================================================================
 f32 PhysLevel::calc_3d_sound_volume
 (
-	vec3 camera_pos, vec3 sound_pos, f32 sound_distance
+  vec3 camera_pos, vec3 sound_pos, f32 sound_distance
 )
 const
 {

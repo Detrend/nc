@@ -27,10 +27,10 @@ struct Portal;
 
 struct CameraData
 {
-	const vec3& position;
-	const mat4& view;
-	const mat4& projection;
-	const VisibilityTree& vis_tree;
+  const vec3& position;
+  const mat4& view;
+  const mat4& projection;
+  const VisibilityTree& vis_tree;
 };
 
 struct RenderGunProperties

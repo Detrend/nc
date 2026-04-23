@@ -1099,7 +1099,7 @@ const SectorMapping& GameSystem::get_sector_mapping() const
 //==============================================================================
 PhysLevel GameSystem::get_level() const
 {
-	return get_game_helpers().get_level();
+  return get_game_helpers().get_level();
 }
 
 //==============================================================================
@@ -1118,8 +1118,8 @@ const EntityAttachment& GameSystem::get_attachment_mgr() const
 //==============================================================================
 GameHelpers GameSystem::get_game_helpers() const
 {
-	nc_assert(this->game);
-	return GameHelpers(*this->game);
+  nc_assert(this->game);
+  return GameHelpers(*this->game);
 }
 
 //==============================================================================
@@ -1330,10 +1330,10 @@ void GameSystem::handle_raycast_debug()
 
       static f32 ray_len = 10.0f;
       ImGui::SliderFloat("Ray lenght", &ray_len, 1.0f, 25.0f);
-	
+  
       const vec3 eye_pos  = camera->get_position();
       const vec3 look_dir = camera->get_forward();
-	
+  
       const vec3 ray_start = eye_pos;
       const vec3 ray_end   = eye_pos + look_dir * ray_len;
 
@@ -1365,7 +1365,7 @@ void GameSystem::handle_raycast_debug()
           }
         }
       }
-	
+  
       ImGui::Separator();
 
       CollisionHit hit = lvl.cylinder_cast_3d

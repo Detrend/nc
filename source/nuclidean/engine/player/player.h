@@ -117,8 +117,8 @@ private:
 
   void handle_pickup(Pickup& pickup);
 
-	// Alerts enemies close to the player
-	void alert_nearby_enemies(f32 distance);
+  // Alerts enemies close to the player
+  void alert_nearby_enemies(f32 distance);
 
   vec3 velocity = VEC3_ZERO; // forward/back - left/right velocity
   static inline f32 view_height = 0.5f;

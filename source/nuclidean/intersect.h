@@ -65,7 +65,7 @@ constexpr Frustum2 INVALID_FRUSTUM = Frustum2{vec2{0}, vec2{0}, Frustum2::EMPTY_
 // A set of frustums
 struct FrustumBuffer
 {
-	static constexpr u64 FRUSTUM_SLOT_CNT = 4;
+  static constexpr u64 FRUSTUM_SLOT_CNT = 4;
   using FrustumArray = std::array<Frustum2, FRUSTUM_SLOT_CNT>;
 
   FrustumArray frustum_slots;
