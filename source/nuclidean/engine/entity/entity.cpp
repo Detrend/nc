@@ -130,7 +130,7 @@ Appearance* Entity::get_appearance()
   {
     case EntityTypes::enemy:      return &this->as<Enemy>()->get_appearance();
     case EntityTypes::projectile: return this->as<Projectile>()->get_appearance();
-    case EntityTypes::pickup:     return &this->as<PickUp>()->get_appearance();
+    case EntityTypes::pickup:     return &this->as<Pickup>()->get_appearance();
     case EntityTypes::prop:       return &this->as<Prop>()->get_appearance();
     case EntityTypes::particle:   return this->as<Particle>()->get_appearance();
     default:                      return nullptr;

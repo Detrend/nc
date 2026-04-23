@@ -14,10 +14,10 @@ namespace nc
 
 class Player;
 
-class PickUp : public Entity
+class Pickup : public Entity
 {
 public:
-  PickUp(vec3 position, PickupType type, bool snap_to_floor = true);
+  Pickup(vec3 position, PickupType type, bool snap_to_floor = true);
 
   static EntityType get_type_static();
 
@@ -25,7 +25,7 @@ public:
   // Should return true and apply the specific effect or return false and
   // do nothing.
   // Is automatically destroyed after returning true.
-  bool pickup(Player& player);
+  bool pick_up(Player& player);
 
   // Should the pickup lie on the floor, or levitate in the air?
   // If true then the pickup changes height with the floors it lies on.

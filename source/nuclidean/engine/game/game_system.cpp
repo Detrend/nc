@@ -435,7 +435,7 @@ static void load_json_map
     const vec3 position = load_json_position(js_pickup);
     const PickupTypes::evalue pickup_type = static_cast<PickupTypes::evalue>(js_pickup["type"]);
 
-    Entity* pickup = entities.create_entity<PickUp>(position, pickup_type);
+    Entity* pickup = entities.create_entity<Pickup>(position, pickup_type);
 
     if (js_pickup.contains("triggers"))
     {
