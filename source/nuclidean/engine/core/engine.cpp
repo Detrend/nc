@@ -137,33 +137,50 @@ static void change_current_directory_if_necessary()
 {
   namespace fs = std::filesystem;
 
-  std::string current_path = fs::current_path().make_preferred().generic_string();
+  std::string curr_path = fs::current_path().make_preferred().generic_string();
+  std::string old_path     = curr_path;
 
-  // Replace the windows/linux path separators to "/" always
+  // Replace the windows/linux path separators to "/". It could have been much
+  // simpler if the "make_preferred" was not designed by idiots from a committee
+  // and accepted a correct separator instead of deciding by itself whats best
+  // for you.
   std::replace
   (
-    current_path.begin(), current_path.end(),
+    curr_path.begin(), curr_path.end(),
     cast<char>(fs::path::preferred_separator), '/'
   );
 
   // Make it lowercase
-  for (char& character : current_path)
+  for (char& character : curr_path)
   {
     character = cast<char>(std::tolower(character));
   }
 
-  // Search for the first "/bin" from the right..
-  if (auto it = current_path.rfind("/bin"); it != std::string::npos)
+  // Now check if the directory contains "content" folder. If not jump up a
+  // directory.
+  for (u32 i = 0; i < 3; ++i) // Max 3 jumps up
   {
-    // Found the "/bin" somewhere on the path..
-    std::string new_path = current_path.substr(0, it);
-    fs::current_path(fs::path{new_path});
-    nc_log("Changed the path from \"{}\" to \"{}\"", current_path, new_path);
+    if (fs::is_directory(fs::path{curr_path} / "content"))
+    {
+      // Found the content path, set "current_path" is a correct directory to
+      // run the game from.
+      fs::current_path(fs::path{curr_path});
+      nc_log("Set the current path to \"{}\" from \"{}\"", curr_path, old_path);
+      break;
+    }
+
+    // Jump up
+    if (auto it = curr_path.rfind("/"))
+    {
+      curr_path = curr_path.substr(0, it);
+    }
+    else
+    {
+      break;
+    }
   }
-  else
-  {
-    nc_log("Current path remains unchanged.");
-  }
+
+  nc_log("Current path remained unchanged as \"{}\"", curr_path);
 }
 
 //==============================================================================
