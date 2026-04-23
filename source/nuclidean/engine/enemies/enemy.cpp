@@ -915,12 +915,6 @@ void Enemy::on_attack_trigger()
 }
 
 //==============================================================================
-vec3& Enemy::get_velocity()
-{
-  return this->velocity;
-}
-
-//==============================================================================
 const Appearance& Enemy::get_appearance() const
 {
   return this->appear;

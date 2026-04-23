@@ -823,12 +823,6 @@ f32 Player::get_view_height() const
 }
 
 //==============================================================================
-vec3& Player::get_velocity()
-{
-  return this->velocity;
-}
-
-//==============================================================================
 WeaponType Player::get_equipped_weapon() const
 {
   return this->current_weapon;
