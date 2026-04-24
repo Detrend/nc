@@ -31,7 +31,6 @@ public:
   // Take damage, save inflictor
   void damage(int damage, EntityID from_who);
 
-  vec3&             get_velocity();
   Appearance&       get_appearance();
   const Appearance& get_appearance() const;
   const EnemyStats& get_stats()      const;

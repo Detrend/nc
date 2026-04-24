@@ -61,7 +61,6 @@ public:
   vec3    get_look_direction() const;
   vec3    get_eye_pos()        const;
   f32     get_view_height()    const;
-  vec3&   get_velocity();
 
   WeaponType get_equipped_weapon()         const;
   bool       has_weapon(WeaponType weapon) const;
