@@ -1,6 +1,24 @@
 // Project Nuclidean Source File
 #pragma once
-
+/**
+ * This file contains definition of Token - compressed, fixed-size string-like object with value semantics and limited charset, 
+ * which should be used instead of std::string whenever applicable throught the game.
+ * 
+ * Token doesn't allocate anything, is trivially copyiable, comparable (both for `==` and `<`) and hashable.
+ * Default parametrization supports only lowercase aphanumeric characters and the '_' char.
+ * You can create custom token types with different charsets, by defining a custom token_policy and passing that as the TPermittedChars type parameter to CompositeToken
+ *  - see e.g. token_policies::Chars_Default for insipration. Keep in mind, that the more characters are supported, the fewer characters can fit in the Token.
+ * 
+ * For most cases, the default `Token` alias (declared at the bottom of the file) should be sufficient. Custom token types should be used only with good justification.
+ * 
+ * You can construct a Token from various types of strings during runtime. If you are constructing from a string literal,
+ *  please use the Token::Const("some_text") factory function to ensure a compilation error when the literal is too long or contains unsupported characters.
+ * 
+ * For interfacing with code that requires passing a C-string, use the `.to_cstring()` function - that will return an std::array suffiecient enought to fit the null-terminated string.
+ * There is also .to_cstring_enclosed(), which allows passing additional prefix and postfix string literals.
+ *   Use it e.g. like this: Token::Const("cultist_die").to_cstring_enclosed("content/sound/", ".mp3) // returns an std::array<char,> containing "content/sound/cultist_die.mp3\0".
+ * The .to_string() function can allocate and thus should be used only when absolutely necessary.
+ */
 #include<types.h>
 #include<string>
 #include<string_view>
@@ -36,7 +54,11 @@ namespace nc {
 
 
 
-
+  /// <summary>
+  /// Helper functions internally used by Token-related structures.
+  /// 
+  /// Mainly exists to workaround dumb C++ rules (a static consteval function cannot be called inside the class definition that defines it).
+  /// </summary>
   namespace token_helpers {
     static consteval auto make_char_to_code_table(const std::string& chars_list, const std::string& alt_chars_list)
     {
@@ -203,6 +225,10 @@ namespace nc {
 
     constexpr CompositeToken(const Segment& other) : storage{ other } {}
 
+    template<size_t TSize>
+    static consteval CompositeToken Const(const char(&literal)[TSize]) {
+      return CompositeToken(literal);
+    }
 
     template<typename size_t TOtherTokenCount, typename _sfinae_guard = std::enable_if<(TOtherTokenCount < TTokenCount), char>::type>
     constexpr CompositeToken(const CompositeToken<TOtherTokenCount>& other) : storage{ }
