@@ -6,14 +6,9 @@
 
 #include <SDL.h>
 
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 
 #include <engine/game/game_system.h>
-#include <engine/entity/entity_system.h>
-#include <engine/entity/entity_type_definitions.h>
-#include <engine/game/game_helpers.h>
 #include <engine/core/engine.h>
 #include <engine/input/input_system.h>
 #include <engine/sound/sound_system.h>
@@ -22,7 +17,6 @@
 #include <engine/graphics/graphics_system.h>
 
 #include <fstream>
-#include <string>
 #include <format>
 #include <json/json.hpp>
 
