@@ -7,10 +7,6 @@
 #include <engine/ui/ui_button.h>
 #include <engine/ui/ui_menu_page.h>
 
-#include <vector>
-#include <functional>
-#include <string>
-
 namespace nc
 {
   class MenuManager
@@ -35,7 +31,7 @@ namespace nc
     // tells LoadGamePage to update saves
     void update_saves();
 
-    void set_page(MenuPages page);
+    void set_page(MenuPage page);
 
   private:
     void draw_cursor();
@@ -55,7 +51,7 @@ namespace nc
     QuitGamePage* quit_game_page = nullptr;
     NextLevelPage* next_level_page = nullptr;
 
-    MenuPages current_page = MenuPages::MAIN;
+    MenuPage current_page = MenuPage::main_page;
 
     // properties
     bool visible = false;

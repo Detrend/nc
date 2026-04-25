@@ -84,7 +84,7 @@ namespace nc
 
   //==============================================================================================
 
-  void MenuManager::set_page(MenuPages page)
+  void MenuManager::set_page(MenuPage page)
   {
     current_page = page;
   }
@@ -150,7 +150,7 @@ namespace nc
     }
 
     visible = visibility;
-    current_page = MAIN;
+    current_page = MenuPage::main_page;
   }
 
   //===============================================================================================
@@ -182,10 +182,10 @@ namespace nc
     // check if we want to change menu visibility or just swap to main menu
     if (pressed)
     {
-      if (current_page != MenuPages::MAIN)
+      if (current_page != MenuPage::main_page)
       {
         // Go back to menu
-        set_page(MenuPages::MAIN);
+        set_page(MenuPage::main_page);
       }
       else if (!locked)
       {
@@ -203,21 +203,21 @@ namespace nc
     // call to render current page itself
     switch (current_page)
     {
-    case nc::MAIN:
+    case MenuPage::main_page:
       main_menu_page->update(mouse_pos, prev_mousestate, cur_mousestate);
       break;
-    case nc::NEW_GAME:
+    case MenuPage::new_game:
       new_game_page->update(mouse_pos, prev_mousestate, cur_mousestate);
       break;
-    case nc::OPTIONS:
+    case MenuPage::options:
       options_page->update(mouse_pos, prev_mousestate, cur_mousestate);
       break;
-    case nc::LOAD:
+    case MenuPage::load:
       load_game_page->update(mouse_pos, prev_mousestate, cur_mousestate);
       break;
-    case nc::SAVE:
+    case MenuPage::save:
       break;
-    case nc::QUIT:
+    case MenuPage::quit:
       quit_game_page->update(mouse_pos, prev_mousestate, cur_mousestate);
       break;
     default:
@@ -244,21 +244,21 @@ namespace nc
 
     switch (current_page)
     {
-    case nc::MAIN:
+    case MenuPage::main_page:
       main_menu_page->draw(button_material, VAO);
       break;
-    case nc::NEW_GAME:
+    case MenuPage::new_game:
       new_game_page->draw(button_material, VAO);
       break;
-    case nc::OPTIONS:
+    case MenuPage::options:
       options_page->draw(button_material, VAO);
       break;
-    case nc::LOAD:
+    case MenuPage::load:
       load_game_page->draw(button_material, digit_material, VAO);
       break;
-    case nc::SAVE:
+    case MenuPage::save:
       break;
-    case nc::QUIT:
+    case MenuPage::quit:
       quit_game_page->draw(button_material, VAO);
       break;
     default:
