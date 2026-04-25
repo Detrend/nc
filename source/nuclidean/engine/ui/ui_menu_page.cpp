@@ -162,7 +162,7 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
   u32 display_count = enemy_count;
 
   vec2 position = vec2(0.75f, 0.3f);
-  vec2 posDif = vec2(-0.06f, 0.0f);
+  vec2 pos_dif = vec2(-0.06f, 0.0f);
   vec2 scale = vec2(0.0277f, 0.066f);
 
   const TextureManager& manager = TextureManager::get();
@@ -196,7 +196,7 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     display_count = display_count / 10;
-    position += posDif;
+    position += pos_dif;
 
   } while (display_count > 0);
 
@@ -227,7 +227,7 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     display_count = display_count / 10;
-    position += posDif;
+    position += pos_dif;
 
     display_count = kill_count;
   }
@@ -260,7 +260,7 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     display_count = display_count / 10;
-    position += posDif;
+    position += pos_dif;
 
   } while (display_count > 0);
 }
@@ -521,7 +521,7 @@ void OptionsPage::draw(ShaderProgramHandle button_material, GLuint VAO)
   crosshair_text->draw(button_material);
   shadow_text->draw(button_material);
 
-  if (isWindowed)
+  if (is_windowed)
   {
     windowed_button->draw(button_material);
   }
@@ -733,7 +733,7 @@ void OptionsPage::save_settings()
   data["music"] = music_step;
   data["sensitivity"] = sensitivity_step;
   data["crosshair"] = crosshair_step;
-  data["fullscreen"] = !isWindowed;
+  data["fullscreen"] = !is_windowed;
   data["shadows"] = is_shadows;
 
   f << data;
@@ -745,7 +745,7 @@ void OptionsPage::set_windowed()
 {
   SDL_Window* window = get_engine().get_module<GraphicsSystem>().get_window();
   SDL_SetWindowFullscreen(window, 0);
-  isWindowed = true;
+  is_windowed = true;
 }
 
 //=============================================================================================
@@ -753,7 +753,7 @@ void OptionsPage::set_fullscreen()
 {
   SDL_Window* window = get_engine().get_module<GraphicsSystem>().get_window();
   SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
-  isWindowed = false;
+  is_windowed = false;
 }
 
 //=============================================================================================
@@ -901,7 +901,7 @@ void OptionsPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   shadow_on_button->set_hover(false);
   shadow_off_button->set_hover(false);
 
-  if (isWindowed)
+  if (is_windowed)
   {
     if (windowed_button->is_point_in_rec(mouse_pos))
     {
@@ -1017,14 +1017,14 @@ void LoadGamePage::update_saves()
 
   // starting pos for first button and steps for next
   vec2 pos = vec2(-0.0f, 0.3f);
-  vec2 stepPos = vec2(0.0f, -0.1f);
+  vec2 step_pos = vec2(0.0f, -0.1f);
   vec2 scale = vec2(0.5f, 0.033f);
 
   // create buttons
   for (auto& save : save_db)
   {
     load_game_buttons.push_back(new UiLoadGameButton(save, pos, scale));
-    pos += stepPos;
+    pos += step_pos;
     if (pos.y < -0.41f)
     {
       pos = vec2(-0.0f, 0.3f);

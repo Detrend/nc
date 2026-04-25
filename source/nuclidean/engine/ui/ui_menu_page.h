@@ -137,7 +137,7 @@ private:
   UiButton* shadow_off_button = nullptr;
 
   // settings properties
-  bool isWindowed = true;
+  bool is_windowed = true;
 
   int sound_step = 9;
   int music_step = 9;
