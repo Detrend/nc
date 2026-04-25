@@ -409,7 +409,7 @@ const
   const GLuint clear_value = 0;
   glClearBufferuiv(GL_COLOR, 5, &clear_value);
 
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
   GizmoManager::get().draw_gizmos();
 #endif
 

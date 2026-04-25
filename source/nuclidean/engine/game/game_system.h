@@ -141,11 +141,11 @@ private:
     u64                data_size
   );
 
-#ifdef NC_EDITOR
+#if NC_EDITOR
   void handle_hot_reload();
 #endif
 
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
   void handle_raycast_debug();
 #endif
 

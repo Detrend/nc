@@ -3,7 +3,7 @@
 
 #include <config.h>
 
-#ifdef NC_PROFILING
+#if NC_PROFILING
 
 #include <types.h>           // u32, f32
 #include <metaprogramming.h> // NC_TOKENJOIN

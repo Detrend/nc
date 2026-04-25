@@ -3,7 +3,7 @@
 
 #include <config.h>
 
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
 
 #include <math/vector.h>
 #include <engine/graphics/resources/mesh.h>

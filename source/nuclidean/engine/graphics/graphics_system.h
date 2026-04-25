@@ -81,7 +81,7 @@ private:
   void query_visibility(VisibilityTree& out) const;
   void create_sector_meshes();
 
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
   void render_map_top_down(const VisibilityTree& visible);
   void draw_debug_window();
   void handle_light_debug();
@@ -99,7 +99,7 @@ private:
   std::vector<MeshHandle> m_sector_meshes;
   std::vector<bool>       m_dirty_sectors;
 
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
   using DebugRendererPtr = std::unique_ptr<class TopDownDebugRenderer>;
   DebugRendererPtr m_debug_renderer = nullptr;
 #endif

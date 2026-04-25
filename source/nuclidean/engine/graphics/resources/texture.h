@@ -11,14 +11,14 @@
 #include <engine/graphics/resources/texture_id.h>
 
 // Ignore unused variable in debug code on clang
-#ifdef NC_COMPILER_CLANG
+#if NC_COMPILER_CLANG
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-but-set-variable"
 #endif
 
 #include <stb/stb_rect_pack.h>
 
-#ifdef NC_COMPILER_CLANG
+#if NC_COMPILER_CLANG
 #pragma clang diagnostic pop
 #endif
 

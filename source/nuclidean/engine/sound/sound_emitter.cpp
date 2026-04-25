@@ -205,7 +205,7 @@ f32 SoundEmitter::calc_dist_to_listener() const
     // Increase the distance
     total_dist += distance(prev_pos, this_pos);
 
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
     // Debug
     Gizmo::create_line_2d("Sounds", this_pos.xz(), prev_pos.xz(), colors::PINK);
 #endif
@@ -215,7 +215,7 @@ f32 SoundEmitter::calc_dist_to_listener() const
     prev_pos = (portal_trans * vec4{this_pos, 1.0f}).xyz();
   }
 
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
   // Debug
   Gizmo::create_line_2d("Sounds", listener_pos.xz(), prev_pos.xz(), colors::PINK);
 #endif

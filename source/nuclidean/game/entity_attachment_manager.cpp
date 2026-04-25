@@ -105,7 +105,7 @@ void EntityAttachment::attach_entity
   nc_assert(m_registry.get_entity(child_id)  != nullptr);
   nc_assert(m_registry.get_entity(parent_id) != nullptr);
 
-#ifdef NC_ASSERTS
+#if NC_ASSERTS
   // Check if this would not create a cyclic hierarchy
   EntityID parent = this->get_entity_parent(parent_id);
   while (parent != INVALID_ENTITY_ID)

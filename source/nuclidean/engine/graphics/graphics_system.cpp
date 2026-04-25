@@ -33,7 +33,7 @@
 
 #include <engine/ui/user_interface_system.h>
 
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
 // Only for turning off the input when the cvar tweaking window is displayed.
 #include <engine/input/input_system.h>
 #endif
@@ -41,7 +41,7 @@
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
 
-#ifdef NC_IMGUI
+#if NC_IMGUI
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_sdl2.h>
@@ -61,7 +61,7 @@
 #include <format>
 #include <numeric> // std::iota
 
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
 #include <chrono>
 
 // Only for "draw_export_menu"
@@ -77,7 +77,7 @@ namespace nc::debug_helpers
 {
 
 //==============================================================================
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
 static void display_fps_as_title(SDL_Window* window)
 {
   const auto delta_time = get_engine().get_delta_time();
@@ -92,7 +92,7 @@ static void display_fps_as_title(SDL_Window* window)
 #endif
 
 //==============================================================================
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
 static void APIENTRY gl_debug_message(
   GLenum /*source*/, GLenum /*type*/, GLuint /*id*/, GLenum severity,
   GLsizei /*length*/, const GLchar* message, const void* /*userParam*/)
@@ -123,7 +123,7 @@ namespace nc
 {
 
 //==============================================================================
-#ifdef NC_IMGUI
+#if NC_IMGUI
 static void imgui_start_frame()
 {
   ImGui_ImplOpenGL3_NewFrame();
@@ -209,7 +209,7 @@ bool GraphicsSystem::init()
     return false;
   }
 
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
   glDebugMessageCallback(&debug_helpers::gl_debug_message, nullptr);
@@ -228,7 +228,7 @@ bool GraphicsSystem::init()
   TextureManager::get().load_directory(ResLifetime::Game, "content/textures");
 
   // init imgui
-#ifdef NC_IMGUI
+#if NC_IMGUI
   ImGui::CreateContext();
   ImPlot::CreateContext();
 
@@ -252,7 +252,7 @@ void GraphicsSystem::on_event(ModuleEvent& event)
     {
       m_renderer = std::make_unique<Renderer>(m_window_width, m_window_height);
 
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
       m_debug_renderer = std::make_unique<TopDownDebugRenderer>(m_window_width, m_window_height);
 #endif
     }
@@ -287,7 +287,7 @@ void GraphicsSystem::on_event(ModuleEvent& event)
 //==============================================================================
 void GraphicsSystem::terminate()
 {
-#ifdef NC_IMGUI
+#if NC_IMGUI
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplSDL2_Shutdown();
   ImPlot::DestroyContext();
@@ -372,7 +372,7 @@ const ShaderProgramHandle& GraphicsSystem::get_solid_material() const
 //==============================================================================
 void GraphicsSystem::update([[maybe_unused]]f32 delta_seconds)
 {
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
   GizmoManager::get().update_ttls(delta_seconds);
 #endif
 }
@@ -411,12 +411,12 @@ void GraphicsSystem::render()
     m_window_width  = u_width;
     m_window_height = u_height;
     m_renderer->on_window_resized(m_window_width, m_window_height);
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
     m_debug_renderer->on_window_resized(m_window_width, m_window_height);
 #endif
   }
 
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
   // Note that this call can take up to 200 microseconds
   debug_helpers::display_fps_as_title(m_window);
 #endif
@@ -425,7 +425,7 @@ void GraphicsSystem::render()
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
   // Do not forward inputs to the player if the cvar window is visible.
   InputSystem::get().lock_player_input
   (
@@ -447,7 +447,7 @@ void GraphicsSystem::render()
   RenderGunProperties gun_props;
   grab_render_gun_props(gun_props);
 
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
   if (CVars::enable_top_down_debug)
   {
     // Top down rendering for easier debugging
@@ -461,13 +461,13 @@ void GraphicsSystem::render()
     get_engine().get_module<UserInterfaceSystem>().draw();
   }
 
-#ifdef NC_IMGUI
+#if NC_IMGUI
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
   imgui_start_frame(); // start a new frame just after rendering the old one
 #endif
 
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
   m_debug_renderer->post_render();
 #endif
 
@@ -475,7 +475,7 @@ void GraphicsSystem::render()
 }
 
 //==============================================================================
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
 static void draw_cvar_type_and_input(f32* flt, const CVarRange& range)
 {
   ImGui::TableNextColumn();
@@ -526,7 +526,7 @@ static void draw_cvar_type_and_input(bool* bl, const CVarRange&)
 //==============================================================================
 static void draw_cvar_row(const std::string& name, const CVar& cvar)
 {
-#ifdef NC_COMPILER_CLANG
+#if NC_COMPILER_CLANG
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wformat-security"
 #endif
@@ -535,7 +535,7 @@ static void draw_cvar_row(const std::string& name, const CVar& cvar)
   ImGui::Text(name.c_str());
   ImGui::SetItemTooltip(cvar.desc);
 
-#ifdef NC_COMPILER_CLANG
+#if NC_COMPILER_CLANG
 #pragma clang diagnostic pop
 #endif
 
@@ -768,7 +768,7 @@ static void draw_export_menu()
 }
 
 //==============================================================================
-#ifdef NC_PROFILING
+#if NC_PROFILING
 enum class MainPlotType
 {
   delta_time = 0,
@@ -1021,7 +1021,7 @@ void GraphicsSystem::draw_debug_window()
         ImGui::EndTabItem();
       }
 
-#ifdef NC_PROFILING
+#if NC_PROFILING
       if (ImGui::BeginTabItem("Profiling"))
       {
         draw_profiling();

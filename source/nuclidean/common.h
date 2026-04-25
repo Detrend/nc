@@ -35,7 +35,7 @@ inline void assert_fail_impl(const char* const expression_str, const logging::Lo
   }
 
   logging::log_message_impl(logging::LoggingSeverity::error, actual_message, logging_ctx);
-#ifdef NC_COMPILER_MSVC
+#if NC_COMPILER_MSVC
   __debugbreak();
 #endif
   abort();
@@ -45,7 +45,7 @@ inline void assert_fail_impl(const char* const expression_str, const logging::Lo
 #   define nc_expect(expr, ...) do { if(!(expr)) nc::assert_fail_impl(STRINGIFY(expr), CAPTURE_CURRENT_LOGGING_CONTEXT(), std::format("" __VA_ARGS__));} while(false)
 
 //==============================================================================
-#ifdef NC_ASSERTS
+#if NC_ASSERTS
 #   define nc_assert(expr, ...) nc_expect(expr, __VA_ARGS__)
 #else
 #   define nc_assert(expr, ...) ::nc::do_nothing(expr); // So we do not receive warnings for unused variables on builds where assert does nothing.

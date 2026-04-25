@@ -21,14 +21,14 @@
 #include <engine/sound/sound_system.h>
 #include <engine/ui/user_interface_system.h>
 
-#ifdef NC_BENCHMARK
+#if NC_BENCHMARK
 #include <benchmark/benchmark.h>
 #include <algorithm>
 #endif
 
 #include <profiling.h>
 
-#ifdef NC_TESTS
+#if NC_TESTS
 #include <unit_test.h>
 #include <format>
 #include <iostream>
@@ -126,10 +126,12 @@ static bool should_play_demo(const CmdArgs& cmd_args, std::string& out_demo)
 }
 
 //==============================================================================
+#if !NC_IS_DEPLOY
 static bool should_play_level(const CmdArgs& cmd_args, std::string& out_lvl)
 {
   return contains_pair_of_args(cmd_args, engine_utils::START_LEVEL_ARG, out_lvl);
 }
+#endif
 
 //==============================================================================
 // Changes the current directory if the game is run from the /bin/[cfg]
@@ -184,7 +186,7 @@ static void change_current_directory_if_necessary()
 }
 
 //==============================================================================
-#ifdef NC_BENCHMARK
+#if NC_BENCHMARK
 static bool execute_benchmarks_if_required(const std::vector<std::string>& args)
 {
   auto benchmark_arg_it = std::find_if(
@@ -230,7 +232,7 @@ static bool execute_benchmarks_if_required(const std::vector<std::string>& args)
 #endif
 
 //==============================================================================
-#ifdef NC_TESTS
+#if NC_TESTS
 //==============================================================================
 static std::string find_text_filter_regex(const std::vector<std::string>& args)
 {
@@ -332,7 +334,7 @@ int init_engine_and_run_game(const CmdArgs& args)
 
   [[maybe_unused]] bool exit_after_benchmarks_and_tests = false;
 
-#ifdef NC_BENCHMARK
+#if NC_BENCHMARK
   if (engine_utils::execute_benchmarks_if_required(args))
   {
     // only benchmark run, exit
@@ -340,7 +342,7 @@ int init_engine_and_run_game(const CmdArgs& args)
   }
 #endif
 
-#ifdef NC_TESTS
+#if NC_TESTS
   if (engine_utils::execute_unit_tests_if_required(args))
   {
     // running only tests, exit
@@ -607,7 +609,7 @@ void Engine::run()
   {
     auto current_time = std::chrono::high_resolution_clock::now();
     f32 frame_time = eu::duration_to_seconds(previous_time, current_time);
-#ifdef NC_PROFILING
+#if NC_PROFILING
     Profiler::get().new_frame(m_frame_idx, frame_time);
     NC_SCOPE_PROFILER(FullFrame)
 #endif
@@ -717,7 +719,7 @@ void Engine::process_window_event(const SDL_Event& event)
     }
     break;
 
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
     case SDL_KEYDOWN:
     {
       if (event.key.keysym.scancode == SDL_SCANCODE_F4)

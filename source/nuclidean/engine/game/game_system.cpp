@@ -45,7 +45,7 @@
 
 #include <math/lingebra.h>
 
-#ifdef NC_IMGUI
+#if NC_IMGUI
 #include <imgui/imgui.h> // for hot reload
 #endif
 
@@ -758,11 +758,11 @@ void GameSystem::game_update(f32 delta)
 {
   NC_SCOPE_PROFILER(GameSystemUpdate)
 
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
   this->handle_raycast_debug();
 #endif
 
-#ifdef NC_EDITOR
+#if NC_EDITOR
   this->handle_hot_reload();
 #endif
 
@@ -916,7 +916,7 @@ void GameSystem::save_current_demo()
 }
 
 //==============================================================================
-#ifdef NC_EDITOR
+#if NC_EDITOR
 void GameSystem::handle_hot_reload()
 {
   if (ImGui::IsKeyReleased(ImGuiKey_F5))
@@ -1316,7 +1316,7 @@ void GameSystem::Journal::reset_and_clear(GameSystem::JournalState to_state)
 }
 
 //==============================================================================
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
 void GameSystem::handle_raycast_debug()
 {
   Player* player = GameHelpers::get().get_player();

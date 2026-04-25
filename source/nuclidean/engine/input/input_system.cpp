@@ -106,7 +106,7 @@ void InputSystem::update_window_and_pump_messages()
 
   while (SDL_PollEvent(&event))
   {
-#ifdef NC_IMGUI
+#if NC_IMGUI
     // this needs to be done so that ImGui can handle keyboard input or clicking
     // on buttons/checkboxes
     ImGui_ImplSDL2_ProcessEvent(&event);

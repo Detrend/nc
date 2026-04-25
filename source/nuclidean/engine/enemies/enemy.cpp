@@ -33,7 +33,7 @@
 #include <map>
 #include <format>
 
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
 #include <engine/graphics/debug/gizmo.h>
 #endif
 
@@ -730,7 +730,7 @@ void Enemy::handle_ai_alert(f32 delta)
   }
 
   // Debug draw path points
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
   {
     for (u64 i = 0; i < current_path.points.size(); ++i)
     {

@@ -3,7 +3,7 @@
 
 #include <common.h>
 
-#ifdef NC_TESTS
+#if NC_TESTS
 #include <unit_test.h>
 #include <engine/map/map_system.h>
 #include <engine/entity/sector_mapping.h>

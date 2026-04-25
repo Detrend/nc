@@ -1,7 +1,7 @@
 // Project Nuclidean Source File
 #include<config.h>
 
-#ifdef NC_TESTS
+#if NC_TESTS
 
 #include <token.h>
 #include<unit_test.h>

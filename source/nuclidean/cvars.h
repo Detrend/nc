@@ -36,7 +36,7 @@
 namespace nc
 {
 
-#ifndef NC_BAKED_CVARS
+#if !NC_BAKED_CVARS
 
 // Defined as empty if cvars are not constexpr
 #define NC_CVARS_CONSTEXPR

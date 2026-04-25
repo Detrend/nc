@@ -11,7 +11,7 @@
 #include <set>          // std::set
 #include <string>       // string for formatting
 
-#ifdef NC_TESTS
+#if NC_TESTS
 #include <unit_test.h>  // NC_UNIT_TEST
 #include <logging.h>    // nc_warn in tests
 #endif
@@ -514,7 +514,7 @@ template class StatGridAABB2<void*>;
 
 }
 
-#ifdef NC_TESTS
+#if NC_TESTS
 //============================================================================//
 //                          FORMATING FOR TESTS                               //
 //============================================================================//

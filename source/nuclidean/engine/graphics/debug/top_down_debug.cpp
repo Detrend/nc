@@ -1,7 +1,7 @@
 // Project Nuclidean Source File
 #include <engine/graphics/debug/top_down_debug.h>
 
-#ifdef NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW
 
 #include <common.h>
 #include <metaprogramming.h>

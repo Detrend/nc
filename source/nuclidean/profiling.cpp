@@ -1,7 +1,7 @@
 // Project Nuclidean Source File
 #include <profiling.h>
 
-#ifdef NC_PROFILING
+#if NC_PROFILING
 
 #include <common.h>
 #include <string>

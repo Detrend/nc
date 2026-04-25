@@ -10,7 +10,7 @@
 #include <math/vector.h>
 #include <math/lingebra.h>
 
-#ifdef NC_TESTS
+#if NC_TESTS
 #include <unit_test.h>
 #endif
 
@@ -1331,7 +1331,7 @@ f32 segment_segment_2d
 
 }
 
-#ifdef NC_TESTS
+#if NC_TESTS
 namespace nc
 {
 

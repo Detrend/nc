@@ -132,7 +132,7 @@ const Entity* EntityRegistry::get_entity(EntityID id) const
 
 }
 
-#ifdef NC_TESTS
+#if NC_TESTS
 #include <engine/entity/entity_tests.inl>
 #endif
 

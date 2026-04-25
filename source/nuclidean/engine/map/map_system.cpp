@@ -21,7 +21,7 @@
 #include <cmath>    // std::acos
 #include <utility>  // std::pair
 
-#ifdef NC_BENCHMARK
+#if NC_BENCHMARK
 #include <benchmark/benchmark.h>
 #include <numbers>
 #endif
