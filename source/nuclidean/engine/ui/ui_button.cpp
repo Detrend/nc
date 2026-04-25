@@ -75,7 +75,7 @@ void UiButton::on_click()
 }
 
 //====================================================================================================
-void UiButton::draw([[maybe_unused]] const ShaderProgramHandle button_material)
+void UiButton::draw(const ShaderProgramHandle button_material)
 {
   button_material.use();
 

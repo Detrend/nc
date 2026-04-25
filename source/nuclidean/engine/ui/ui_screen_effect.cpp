@@ -17,7 +17,7 @@ init();
 }
 
 //===========================================================================================
-void UiScreenEffect::did_damage([[maybe_unused] ]int damage)
+void UiScreenEffect::did_damage(int damage)
 {
 // final color is determined by how big the damage is
 damage *= 2;
