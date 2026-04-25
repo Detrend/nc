@@ -12,7 +12,7 @@ namespace EngineModule
   {
     graphics_system = 0,
     input_system,
-    entity_system,
+    game_system,
     sound_system,
     user_interface_system,
     // -- //

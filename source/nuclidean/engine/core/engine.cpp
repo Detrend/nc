@@ -560,12 +560,14 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
       std::move(frames)
     );
   }
+#if !NC_IS_DEPLOY
   else if (std::string lvl; engine_utils::should_play_level(cmd_args, lvl))
   {
     // Start a level
     m_game_state = GameState::game;
     game_system.request_play_level(LevelName{std::string_view{lvl}});
   }
+#endif
   else
   {
     // Open up the menu and play demos on the background
