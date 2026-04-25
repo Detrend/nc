@@ -8,6 +8,8 @@
 #include <engine/core/engine.h>
 #include <engine/core/module_event.h>
 #include <engine/graphics/shaders/shaders.h>
+#include <engine/graphics/graphics_system.h>
+
 
 namespace nc
 {

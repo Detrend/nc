@@ -19,6 +19,7 @@
 #include <engine/sound/sound_system.h>
 #include <engine/core/module_event.h>
 #include <engine/graphics/shaders/shaders.h>
+#include <engine/graphics/graphics_system.h>
 
 #include <fstream>
 #include <string>
