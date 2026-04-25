@@ -34,21 +34,18 @@ UserInterfaceSystem::~UserInterfaceSystem()
   delete menu;
 }
 //===========================================================================================
-
 MenuManager* UserInterfaceSystem::get_menu_manager()
 {
   return menu;
 }
 
 //===========================================================================================
-
 UiScreenEffect* UserInterfaceSystem::get_ui_screen_effect()
 {
   return screen_effect;
 }
 
 //===========================================================================================
-
 void UserInterfaceSystem::draw()
 {
   if (get_engine().should_ammo_hp_hud_be_visible())
@@ -61,7 +58,6 @@ void UserInterfaceSystem::draw()
 }
 
 //===========================================================================================
-
 void UserInterfaceSystem::on_event(ModuleEvent& event)
 {
   switch (event.type)
