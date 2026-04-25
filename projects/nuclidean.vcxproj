@@ -231,7 +231,6 @@
     <ClInclude Include="..\source\nuclidean\engine\core\engine_module.h" />
     <ClInclude Include="..\source\nuclidean\engine\core\engine_module_id.h" />
     <ClInclude Include="..\source\nuclidean\engine\core\engine_module_types.h" />
-    <ClInclude Include="..\source\nuclidean\engine\core\event_journal.h" />
     <ClInclude Include="..\source\nuclidean\engine\core\is_engine_module.h" />
     <ClInclude Include="..\source\nuclidean\engine\core\module_event.h" />
     <ClInclude Include="..\source\nuclidean\engine\core\resources.h" />
@@ -277,7 +276,6 @@
     <None Include="..\source\nuclidean\anim_state_machine.inl" />
     <None Include="..\source\nuclidean\engine\core\engine.inl" />
     <None Include="..\source\nuclidean\engine\entity\entity_tests.inl" />
-    <None Include="..\source\nuclidean\engine\graphics\resources\mesh.inl" />
     <None Include="..\source\nuclidean\engine\graphics\resources\model.inl" />
     <None Include="..\source\nuclidean\engine\graphics\resources\shader_program.inl" />
     <None Include="..\source\nuclidean\engine\graphics\shaders\billboard.frag" />

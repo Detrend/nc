@@ -144,18 +144,6 @@ const Appearance* Entity::get_appearance() const
 }
 
 //==============================================================================
-Physics* Entity::get_physics()
-{
-  return nullptr;
-}
-
-//==============================================================================
-const Physics* Entity::get_physics() const
-{
-  return const_cast<Entity*>(this)->get_physics();
-}
-
-//==============================================================================
 SectorSnapType Entity::get_snap_type() const
 {
   switch (this->get_type())
@@ -181,25 +169,6 @@ f32 Entity::get_snap_offset() const
   }
 
   return 0.0f;
-}
-
-//==============================================================================
-bool Entity::should_be_tracked_in_sector_mapping() const
-{
-  switch (this->get_type())
-  {
-    case EntityTypes::sky_box:           [[fallthrough]];
-    case EntityTypes::directional_light: [[fallthrough]];
-    case EntityTypes::sound_emitter:
-    {
-      return false;
-    }
-
-    default:
-    {
-      return true;
-    }
-  }
 }
 
 }

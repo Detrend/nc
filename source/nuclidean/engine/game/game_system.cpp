@@ -555,7 +555,7 @@ static void notify_hot_reload_post_map_build()
 //==============================================================================
 EngineModuleId GameSystem::get_module_id()
 {
-  return EngineModule::entity_system;
+  return EngineModule::game_system;
 }
 
 //==============================================================================

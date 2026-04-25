@@ -3,6 +3,8 @@
 ### Map System / Sector System
 The sector system is defined in the file [map_system.h](map_system.h).
 
+Note that the sector system is not an engine module, but a set of systems that are owned and controlled from the game system.
+
 Each level is composed of a set of "sectors". Each sector is a convex 2D polygon made of "walls". Each wall is made of 2 points and shares one point with the next wall of the sector and one point with a previous wall of the sector. A wall can be also shared between two sectors. This shared wall is called "portal". Portals can be both "normal" and "non-euclidean".
 - Normal portal - just a wall shared between 2 sectors. The wall is not rendered and objects can walk through it to the other sector.
 - Non-euclidean portal - is literally a portal and traversing it will seamlessly teleport an object to other part of the map. Non-euclidean portals are always paired, meaning that traversing through one side of the portal will teleport an object to other one. These portals are also rendered in a special way to make them look like they are normal portals and not an illusion.

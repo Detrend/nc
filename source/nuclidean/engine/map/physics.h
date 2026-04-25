@@ -25,16 +25,6 @@ class  Rng;
 namespace nc
 {
 
-// Physics component. Not sure if we are ever gonna use it
-struct Physics
-{
-  vec3           velocity;
-  EntityTypeMask collide_with;  // types of entities we collide with
-  EntityTypeMask report_only;   // do not collide, but report the collisions
-  f32            max_step_height = 0.0f;
-  f32            bounce          = 0.0f;
-};
-
 // Return value of the raycast. Can be a sector hit or
 // entity hit.
 struct CollisionHit

@@ -104,7 +104,7 @@ NC_REGISTER_CVAR(_type, _name, _default_value, _desc)
 
 #endif
 
-  using CVarName = CompositeToken<3, token_policies::Chars_CVar>;
+using CVarName = CompositeToken<3, token_policies::Chars_CVar>;
 
 struct CVar
 {

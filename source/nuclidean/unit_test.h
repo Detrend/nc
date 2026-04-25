@@ -7,6 +7,7 @@
 
 #include <vector>
 
+// Contains utilities for creating unit tests.
 namespace nc::unit_test
 {
 

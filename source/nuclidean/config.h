@@ -18,6 +18,9 @@
 
 #if defined(NC_Deploy)
 #define NC_BAKED_CVARS
+#define NC_IS_DEPLOY 1
+#else
+#define NC_IS_DEPLOY 0
 #endif
 
 #if defined(__clang__)
