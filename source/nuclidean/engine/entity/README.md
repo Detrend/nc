@@ -46,3 +46,10 @@ Examples of such systems are [sector mapping](sector_mapping.h) and [entity atta
 Implemented in [entity_attachment_manager.h](../../game/entity_attachment_manager.h).
 
 Allows attaching entities onto each other. The attached entity inherits position changes of its parent entity. Optionally, it can also get destroyed if the parent entity dies.
+
+#### Entity Components
+Although our entity system is not a Entity Component System or a Unity-like component system, we still have some traces of components for systems where they are necessary. This allows us to add similar features to more entity types at once.
+
+Used components:
+- [`Appearance`](../appearance.h) - Component that determines properties of the sprite the entity has. This includes exact sprite name, its size or how does it rotate with camera.
+- `Snap type` - How does entity react to moving floors/ceilings within its sector. For example, dead bodies of enemies should stick to the floor.
