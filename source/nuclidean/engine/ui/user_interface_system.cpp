@@ -4,100 +4,89 @@
 #include <engine/core/module_event.h>
 #include <engine/core/engine.h>
 
-#include <engine/player/player.h>
-#include <engine/game/game_system.h>
-
-#include <stb/stb_image.h>
-#include <glad/glad.h>
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 namespace nc
 {
-  EngineModuleId nc::UserInterfaceSystem::get_module_id()
+EngineModuleId nc::UserInterfaceSystem::get_module_id()
+{
+  return EngineModule::user_interface_system;
+}
+
+//===========================================================================================
+UserInterfaceSystem& UserInterfaceSystem::get()
+{
+  return get_engine().get_module<UserInterfaceSystem>();
+}
+
+//===========================================================================================
+bool UserInterfaceSystem::init()
+{
+  menu = new MenuManager();
+  hud_display = new UiHudDisplay();
+  screen_effect = new UiScreenEffect();
+
+  return true;
+}
+
+//===========================================================================================
+UserInterfaceSystem::~UserInterfaceSystem()
+{
+  delete hud_display;
+  delete menu;
+}
+//===========================================================================================
+
+MenuManager* UserInterfaceSystem::get_menu_manager()
+{
+  return menu;
+}
+
+//===========================================================================================
+
+UiScreenEffect* UserInterfaceSystem::get_ui_screen_effect()
+{
+  return screen_effect;
+}
+
+//===========================================================================================
+
+void UserInterfaceSystem::draw()
+{
+  if (get_engine().should_ammo_hp_hud_be_visible())
   {
-    return EngineModule::user_interface_system;
+    hud_display->draw();
   }
 
-  //===========================================================================================
-  UserInterfaceSystem& UserInterfaceSystem::get()
+  menu->draw();
+  screen_effect->draw();
+}
+
+//===========================================================================================
+
+void UserInterfaceSystem::on_event(ModuleEvent& event)
+{
+  switch (event.type)
   {
-    return get_engine().get_module<UserInterfaceSystem>();
-  }
-
-  //===========================================================================================
-  bool UserInterfaceSystem::init()
-  {
-    menu = new MenuManager();
-    hud_display = new UiHudDisplay();
-    screen_effect = new UiScreenEffect();
-
-    return true;
-  }
-
-  //===========================================================================================
-  UserInterfaceSystem::~UserInterfaceSystem()
-  {
-    delete hud_display;
-    delete menu;
-  }
-  //===========================================================================================
-
-  MenuManager* UserInterfaceSystem::get_menu_manager()
-  {
-    return menu;
-  }
-
-  //===========================================================================================
-
-  UiScreenEffect* UserInterfaceSystem::get_ui_screen_effect()
-  {
-    return screen_effect;
-  }
-
-  //===========================================================================================
-
-  void UserInterfaceSystem::draw()
-  {
-    if (get_engine().should_ammo_hp_hud_be_visible())
-    {
-      hud_display->draw();
-    }
-
-    menu->draw();
-    screen_effect->draw();
-  }
-
-  //===========================================================================================
-
-  void UserInterfaceSystem::on_event(ModuleEvent& event)
-  {
-    switch (event.type)
-    {
-    case ModuleEventType::post_init:
-      menu->post_init();
-      break;
-    case ModuleEventType::game_update:
-      hud_display->update();
-      menu->update();
-      screen_effect->update(event.update.dt);
-      break;
-    case ModuleEventType::render:
-      //draw();
+  case ModuleEventType::post_init:
+    menu->post_init();
+    break;
+  case ModuleEventType::game_update:
+    hud_display->update();
+    menu->update();
+    screen_effect->update(event.update.dt);
+    break;
+  case ModuleEventType::render:
+    //draw();
       
-      break;
-    case ModuleEventType::cleanup:
-      break;
-    case ModuleEventType::terminate:
-      menu->on_exit();
-      break;
-    default:
-      break;
-    }
+    break;
+  case ModuleEventType::cleanup:
+    break;
+  case ModuleEventType::terminate:
+    menu->on_exit();
+    break;
+  default:
+    break;
   }
-
+}
 }
 
 
