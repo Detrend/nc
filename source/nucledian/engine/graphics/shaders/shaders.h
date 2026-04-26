@@ -103,16 +103,17 @@ namespace nc
       inline constexpr const char* VERTEX_FILE   = "engine/graphics/shaders/pixel_gi.vert";
       inline constexpr const char* FRAGMENT_FILE = "engine/graphics/shaders/pixel_gi.frag";
 
-      inline constexpr Uniform<0, vec2> FROM;
-      inline constexpr Uniform<1, vec2> TO;
-      inline constexpr Uniform<2, vec3> WP00;
-      inline constexpr Uniform<3, vec3> WP10;
-      inline constexpr Uniform<4, vec3> WP01;
-      inline constexpr Uniform<5, vec3> WP11;
-      inline constexpr Uniform<6, vec3> NORMAL;
-      inline constexpr Uniform<7, vec2> MEGATEX_SIZE;
-      inline constexpr Uniform<8, u32>  NUM_INDICES;
-      inline constexpr Uniform<9, u32>  MY_PART_ID;
+      inline constexpr Uniform<0,  vec2> FROM;
+      inline constexpr Uniform<1,  vec2> TO;
+      inline constexpr Uniform<2,  vec3> WP00;
+      inline constexpr Uniform<3,  vec3> WP10;
+      inline constexpr Uniform<4,  vec3> WP01;
+      inline constexpr Uniform<5,  vec3> WP11;
+      inline constexpr Uniform<6,  vec3> NORMAL;
+      inline constexpr Uniform<7,  vec2> MEGATEX_SIZE;
+      inline constexpr Uniform<8,  u32>  NUM_INDICES;
+      inline constexpr Uniform<9,  u32>  MY_PART_ID;
+      inline constexpr Uniform<10, vec2> GAME_ATLAS_SIZE;
     }
 
     // Sector rendering.

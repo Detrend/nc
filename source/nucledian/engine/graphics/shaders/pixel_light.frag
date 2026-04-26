@@ -182,13 +182,14 @@ float shadow_coeff(vec3 position, vec3 light_pos_stitched, uint start_sector_id,
 
 out vec4 out_color;
 
-float rand(vec2 co) {
+float rand(vec2 co)
+{
   return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
 void main()
 {
-  vec3 final_color = vec3(ambient_strength);
+  vec3 final_color = vec3(ambient_strength) * 0.0f;
   vec3 position = wp + normal * 0.1f;
   vec3 color = vec3(0.0);
 
@@ -213,6 +214,7 @@ void main()
     const int   num_samples = 1;
     const float shadow_d    = 0.0f;
 
+    // soft shadows
     float accum = 0.0f;
     for (int s = 0; s < num_samples; ++s)
     {
@@ -227,7 +229,8 @@ void main()
     float diffuse = max(angle, 0.0f);
 
     float attenuation = 1.0f / distance_squared;
-    final_color += diffuse * light.color * 2.0f * light.radius * attenuation * shadow_coeff;
+    float intensity = light.radius;
+    final_color += diffuse * light.color * intensity * attenuation * shadow_coeff;
   }
 
 /*

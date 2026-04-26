@@ -1273,6 +1273,11 @@ void GraphicsSystem::create_sector_meshes()
           ref.wpos_01 = vec3{bmin.x, height, bmax.z};
           ref.wpos_11 = vec3{bmax.x, height, bmax.z};
           ref.normal  = UP_DIR;
+          ref.texture_id = map.sectors[ii].floor_surface.texture_id_default;
+          ref.texture_scale = map.sectors[ii].floor_surface.scale;
+          ref.cumulative_wall_len_start = 0.0f;
+          ref.texture_offset_x = map.sectors[ii].floor_surface.offset.x;
+          ref.texture_offset_y = map.sectors[ii].floor_surface.offset.y;
           map.sectors[ii].floor_megatex_id = mpart;
         }
         break;
@@ -1289,6 +1294,11 @@ void GraphicsSystem::create_sector_meshes()
           ref.wpos_01 = vec3{bmin.x, height, bmax.z};
           ref.wpos_11 = vec3{bmax.x, height, bmax.z};
           ref.normal  = -UP_DIR;
+          ref.texture_id = map.sectors[ii].ceil_surface.texture_id_default;
+          ref.texture_scale = map.sectors[ii].ceil_surface.scale;
+          ref.cumulative_wall_len_start = 0.0f;
+          ref.texture_offset_x = map.sectors[ii].ceil_surface.offset.x;
+          ref.texture_offset_y = map.sectors[ii].ceil_surface.offset.y;
           map.sectors[ii].ceil_megatex_id = mpart;
         }
         break;
@@ -1311,6 +1321,32 @@ void GraphicsSystem::create_sector_meshes()
           ref.wpos_01 = vec3{coord1.x, height2, coord1.y};
           ref.wpos_11 = vec3{coord2.x, height2, coord2.y};
           ref.normal  = vec3{norm.x, 0.0f, norm.y};
+
+          // inefective af
+          f32 cum_len = 0.0f; // funny variable name
+          vec2 prev_pos = map.walls[map.sectors[ii].first_wall].pos;
+          for (int iidx = 0; iidx <= rect.id; ++iidx)
+          {
+            WallID wdd = cast<WallID>(map.sectors[ii].first_wall + iidx);
+            vec2 p = map.walls[wdd].pos;
+            cum_len += distance(prev_pos, p);
+            prev_pos = p;
+          }
+
+          // just copy it from the first segment..
+          SegmentID seg_id = map.walls[wid].first_segment;
+          if (map.walls[wid].segment_count > 0)
+          {
+            ref.texture_id    = map.wall_segments[seg_id].surface.texture_id_default;
+            ref.texture_scale = map.wall_segments[seg_id].surface.scale;
+            ref.cumulative_wall_len_start = cum_len;
+            ref.texture_offset_x = map.wall_segments[seg_id].surface.offset.x;
+            ref.texture_offset_y = map.wall_segments[seg_id].surface.offset.y;
+          }
+          else
+          {
+            [[maybe_unused]]int a = 17;
+          }
 
           map.walls[wid].megatex_id = mpart;
         }
@@ -1380,7 +1416,7 @@ void GraphicsSystem::create_sector_meshes()
   glGenTextures(1, &megatex_handle);
   glBindTexture(GL_TEXTURE_2D, megatex_handle);
 
-  glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA32F, target_width, target_height);
+  glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA16F, target_width, target_height);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -1389,7 +1425,7 @@ void GraphicsSystem::create_sector_meshes()
   glGenTextures(1, &megatex_input_handle);
   glBindTexture(GL_TEXTURE_2D, megatex_input_handle);
 
-  glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA32F, target_width, target_height);
+  glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA16F, target_width, target_height);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

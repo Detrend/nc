@@ -792,10 +792,15 @@ const
   glViewport(0, 0, gfx.megatex_width, gfx.megatex_height);
   glClear(GL_COLOR_BUFFER_BIT);
 
+  const auto& game_atlas = TextureManager::get().get_atlas(ResLifetime::Game);
+  const vec2 game_atlas_size = game_atlas.get_size();
+
   // Use the GI shader
   m_pixel_gi_shader.use();
   m_megatex_ssbo.bind(0);
-  m_pixel_gi_shader.set_uniform(shaders::pixel_gi::MEGATEX_SIZE, megatex_size);
+  m_textures_ssbo.bind(2);
+  m_pixel_gi_shader.set_uniform(shaders::pixel_gi::MEGATEX_SIZE,    megatex_size);
+  m_pixel_gi_shader.set_uniform(shaders::pixel_gi::GAME_ATLAS_SIZE, game_atlas_size);
 
   // Bind dummy VAO
   glBindVertexArray(screen_quad.get_vao());
@@ -803,6 +808,8 @@ const
   // Read from megatex_handle, write to megatex_input_handle once again
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, gfx.megatex_handle);
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, game_atlas.handle);
 
   for (SectorID sid : sectors_to_render)
   {

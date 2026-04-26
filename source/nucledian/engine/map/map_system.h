@@ -52,15 +52,15 @@ struct MegatexPart
   ivec2 megatex_coord_1;
   ivec2 megatex_coord_2;
   vec3  wpos_00; // world pos at local(0,0)
-  f32   padd0;
+  f32   texture_id = -1.0f;
   vec3  wpos_10; // world pos at local(1,0)
-  f32   padd1;
+  f32   texture_scale = 1.0f;
   vec3  wpos_01; // world pos at local(0,1)
-  f32   padd2;
+  f32   cumulative_wall_len_start = 0.0f;
   vec3  wpos_11; // world pos at local(1,1)
-  f32   padd3;
+  f32   texture_offset_x = 0.0f;
   vec3  normal;
-  f32   padd4;
+  f32   texture_offset_y = 0.0f;
 };
 
 // This data structure lets us check which sectors and their parts are visible
