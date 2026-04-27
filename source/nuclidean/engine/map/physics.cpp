@@ -399,22 +399,22 @@ static bool calc_path_raw
     }
   };
 
-  SectorID startID = map.get_sector_from_point(start_pos.xz);
-  SectorID endID   = map.get_sector_from_point(end_pos.xz);
-  if (startID == INVALID_SECTOR_ID || endID == INVALID_SECTOR_ID)
+  SectorID start_id = map.get_sector_from_point(start_pos.xz);
+  SectorID end_id   = map.get_sector_from_point(end_pos.xz);
+  if (start_id == INVALID_SECTOR_ID || end_id == INVALID_SECTOR_ID)
   {
     // MR says: Hotfix for the case when the enemy or player are outside of the
     // map and therefore "get_sector_from_point" returns invalid sector ID.
     return false;
   }
 
-  SectorID curID = startID;
+  SectorID cur_id = start_id;
   std::priority_queue<CurPoint> fringe;
   std::map<SectorID, PrevPoint> visited;
 
   visited.insert
   ({
-    startID, PrevPoint
+    start_id, PrevPoint
     {
       INVALID_SECTOR_ID,
       INVALID_WALL_ID,
@@ -423,29 +423,29 @@ static bool calc_path_raw
     }
   });
 
-  fringe.push({startID, 0});
+  fringe.push({start_id, 0});
 
   while (fringe.size())
   {
     // Get sector from queue
     CurPoint cur = fringe.top();
-    curID = cur.index;
+    cur_id = cur.index;
     f32 cur_dist = cur.dist;
     fringe.pop();
 
     // Found path, end search
-    if (curID == endID)
+    if (cur_id == end_id)
     {
       break;
     }
 
-    map.for_each_portal_of_sector(curID, [&](WallID wall1_idx)
+    map.for_each_portal_of_sector(cur_id, [&](WallID wall1_idx)
     {
       const auto next_sector = map.walls[wall1_idx].portal_sector_id;
       nc_assert(next_sector != INVALID_SECTOR_ID);
 
       f32 step_size;
-      map.calc_step_height_of_portal(curID, wall1_idx, &step_size);
+      map.calc_step_height_of_portal(cur_id, wall1_idx, &step_size);
       if (step_size > step_up || step_size < -step_down)
       {
         // We would either have to make step that is too high, or drop down
@@ -464,7 +464,7 @@ static bool calc_path_raw
 
       if (!visited.contains(next_sector))
       {
-        const auto wall2_idx = map_helpers::next_wall(map, curID, wall1_idx);
+        const auto wall2_idx = map_helpers::next_wall(map, cur_id, wall1_idx);
 
         // const bool is_nuclidean = walls[wall1_idx].get_portal_type() == PortalType::non_euclidean;       
         auto p1 = map.walls[wall1_idx].pos;
@@ -488,9 +488,9 @@ static bool calc_path_raw
           p2 -= wall_dir * radius;
           p1_to_p2 = p2 - p1;
           // Get a previous position, but also with portal transformation
-          vec3 prev_post = visited[curID].point;
-          WallID prev_wall = visited[curID].wall_index;
-          SectorID prev_sector = visited[curID].prev_sector;
+          vec3 prev_post = visited[cur_id].point;
+          WallID prev_wall = visited[cur_id].wall_index;
+          SectorID prev_sector = visited[cur_id].prev_sector;
           if (prev_wall != INVALID_WALL_ID && map.walls[prev_wall].get_portal_type() == PortalType::non_euclidean)
           {
             mat4 transformation = map.calc_portal_to_portal_projection(prev_sector, prev_wall);
@@ -512,7 +512,7 @@ static bool calc_path_raw
             ({
               next_sector, PrevPoint
               {
-                curID,
+                cur_id,
                 wall1_idx,
                 vec3(projection.x, 0, projection.y),
                 cur_dist + segment_dist
@@ -528,12 +528,12 @@ static bool calc_path_raw
 
   PrevPoint prev_point;
 
-  bool found_path = curID == endID;
+  bool found_path = cur_id == end_id;
 
   // reconstruct the path in reverse order
   while (true)
   {
-    prev_point = visited[curID];
+    prev_point = visited[cur_id];
     mat4 transform = identity<mat4>();
     bool valid = prev_point.wall_index != INVALID_SECTOR_ID;
     if (valid && map.walls[prev_point.wall_index].is_nc_portal())
@@ -556,13 +556,13 @@ static bool calc_path_raw
     points.push_back(prev_point.point);
     transforms.push_back(transform);
 
-    if (curID == startID)
+    if (cur_id == start_id)
     {
       break;
     }
     else
     {
-      curID = prev_point.prev_sector;
+      cur_id = prev_point.prev_sector;
     }
   }
 
