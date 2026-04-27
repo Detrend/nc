@@ -44,8 +44,8 @@
   xx(button,       0.1f)
 
 #define NC_SOUND_DIRECTORY_CSTR "content/sound/"
-#define NC_SOUND_TYPE           ".wav"
-#define NC_MUSIC_TYPE           ".mp3"
+#define NC_SOUND_TYPE           ".wav" // all sounds are .wav
+#define NC_MUSIC_TYPE           ".mp3" // all music files are .mp3
 #define NC_REGISTER_SOUND_ENUM(name, _pitch_not_used) name,
 #define NC_REGISTER_SOUND_PATH(name, _pitch_not_used) NC_SOUND_DIRECTORY_CSTR #name NC_SOUND_TYPE ,
 #define NC_REGISTER_SOUND_PITCH(_name_not_used, pitch) pitch,

@@ -45,6 +45,7 @@ Even though we programmed most of the game and engine by ourselves, we used the 
 - GLAD for OpenGL bindings
 - STB image for texture loading
 - Google Benchmark for micro benchmarks
+- Godot Engine for level editor (see the branch [`editor-main`](https://github.com/Detrend/nc/tree/editor-main))
 
 ---
 
