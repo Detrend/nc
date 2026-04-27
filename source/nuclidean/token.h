@@ -27,16 +27,19 @@
 
 #include "math/utils.h"
 
+
 namespace nc {
 
 
   /// <summary>
   /// Namespace containing charset policies that can be used by our Tokens
   /// </summary>
-  namespace token_policies {
+  namespace token_policies 
+  {
 
     // Always use this policy unless there is a very good reason not to
-    struct Chars_Default {
+    struct Chars_Default 
+    {
       //These are the chars that can be stored in a token
       static constexpr const char chars[] = "abcdefghijklmnopqrstuvwxyz0123456789_"; 
 
@@ -45,11 +48,13 @@ namespace nc {
     };
 
     // Supports additional `.` and ` ` chars needed by our cvars
-    struct Chars_CVar {
+    struct Chars_CVar 
+    {
       static constexpr const char chars[] = "abcdefghijklmnopqrstuvwxyz0123456789_. ";
       static constexpr const char alt[]   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     };
-  }
+
+  } // namespace token_policies
 
 
 
@@ -59,7 +64,9 @@ namespace nc {
   /// 
   /// Mainly exists to workaround dumb C++ rules (a static consteval function cannot be called inside the class definition that defines it).
   /// </summary>
-  namespace token_helpers {
+  namespace token_helpers 
+  {
+
     static consteval auto make_char_to_code_table(const std::string& chars_list, const std::string& alt_chars_list)
     {
       if (alt_chars_list.size() > chars_list.size()) {
@@ -76,7 +83,8 @@ namespace nc {
       return ret;
     }
 
-    static consteval size_t compute_max_token_length(const u64 chars_count) {
+    static consteval size_t compute_max_token_length(const u64 chars_count) 
+    {
       u64 max = ULLONG_MAX;
       size_t ret = 0;
       for (; max > chars_count; max /= chars_count) {
@@ -84,7 +92,7 @@ namespace nc {
       }
       return ret;
     }
-  }
+  } // namespace token_helpers
 
 
 
@@ -96,7 +104,8 @@ namespace nc {
   /// All of its operations are supposed to be constexpr-friendly.
   /// </summary>
   template<typename TPermittedChars = token_policies::Chars_Default>
-  struct BasicToken {
+  struct BasicToken 
+  {
 
     static constexpr auto PERMITTED_CHARS = TPermittedChars::chars;
 
@@ -113,17 +122,13 @@ namespace nc {
     static constexpr u64 char_to_code(const char c)
     {
       const u8 ret = CHAR_TO_CODE[c];
-      if (!ret) {
-        throw std::exception("Unsupported token character!"); //ideally this would be an assert, but those seem to behave problematically in constexpr context
-      }
+      if (!ret) throw std::exception("Unsupported token character!"); //ideally this would be an assert, but those seem to behave problematically in constexpr context
       return ret;
     }
 
     static constexpr char code_to_char(const u64 t)
     {
-      if ((t - 1) >= BASE) {
-        throw std::exception("Invalid token code!");
-      }
+      if ((t - 1) >= BASE) throw std::exception("Invalid token code!");
       return PERMITTED_CHARS[static_cast<u8>(t - 1)];
     }
 
@@ -138,7 +143,8 @@ namespace nc {
     {
       if (str.size() > MAX_LENGTH) throw std::exception("String too big for a token!");
 
-      for (size_t t = str.size(); t-- > 0;) {
+      for (size_t t = str.size(); t-- > 0;) 
+      {
         raw = raw * BASE + char_to_code(str[t]);
       }
     }
@@ -165,7 +171,8 @@ namespace nc {
 
     constexpr char* write_to_buffer(char* buffer) const
     {
-      for (u64 t = raw; t > 0; t /= BASE) {
+      for (u64 t = raw; t > 0; t /= BASE) 
+      {
         *(buffer++) = code_to_char(t % BASE);
       }
       *buffer = '\0';
@@ -197,7 +204,7 @@ namespace nc {
   private:
     u64 raw;
 
-  };
+  }; // struct BasicToken
 
   /// <summary>
   /// Fixed-size string of characters in range /_a-z0-9/ (alphanumeric and '_', case-insensitive) compressed into a single 64-bit number.
@@ -209,7 +216,8 @@ namespace nc {
   /// Max number of chars is `TTokenCount * BasicToken<TPermittedChars>::MAX_LENGTH`
   /// </summary>
   template<size_t TTokenCount, typename TPermittedChars=token_policies::Chars_Default>
-  struct CompositeToken {
+  struct CompositeToken 
+  {
 
     using Segment = BasicToken<TPermittedChars>;
 
@@ -226,14 +234,16 @@ namespace nc {
     constexpr CompositeToken(const Segment& other) : storage{ other } {}
 
     template<size_t TSize>
-    static consteval CompositeToken Const(const char(&literal)[TSize]) {
+    static consteval CompositeToken Const(const char(&literal)[TSize]) 
+    {
       return CompositeToken(literal);
     }
 
     template<typename size_t TOtherTokenCount, typename _sfinae_guard = std::enable_if<(TOtherTokenCount < TTokenCount), char>::type>
-    constexpr CompositeToken(const CompositeToken<TOtherTokenCount>& other) : storage{ }
+    constexpr CompositeToken(const CompositeToken<TOtherTokenCount>& other) : storage {}
     {
-      for (size_t t = 0; t < TOtherTokenCount; ++t) storage[t] = other.get_storage()[t];
+      storage = other.get_storage();
+      //for (size_t t = 0; t < TOtherTokenCount; ++t) storage[t] = other.get_storage()[t];
     }
 
 
@@ -242,7 +252,8 @@ namespace nc {
     {
       if (str.size() > MAX_LENGTH) throw std::exception("String too big for a token!");
 
-      for (size_t t = 0; t < TTokenCount; ++t) {
+      for (size_t t = 0; t < TTokenCount; ++t) 
+      {
         const size_t start = t * Segment::MAX_LENGTH;
         if (start >= str.size()) break;
         const size_t count = (start + Segment::MAX_LENGTH >= str.size()) ? (str.size() - start) : Segment::MAX_LENGTH;
@@ -251,10 +262,8 @@ namespace nc {
     }
 
     constexpr CompositeToken(cstr c_string)
-    : CompositeToken(std::string_view{c_string})
-    {
-      
-    }
+     : CompositeToken(std::string_view{c_string})
+    {}
 
     constexpr bool operator==(const CompositeToken& other) const
     {
@@ -268,9 +277,11 @@ namespace nc {
 
     constexpr std::strong_ordering operator<=>(const CompositeToken& other) const
     {
-      for (size_t t = 0; t < TTokenCount; ++t) {
+      for (size_t t = 0; t < TTokenCount; ++t) 
+      {
         auto ret = (storage[t] <=> other.storage[t]);
-        if (ret != std::strong_ordering::equal) {
+        if (ret != std::strong_ordering::equal) 
+        {
           return ret;
         }
       }
@@ -284,7 +295,8 @@ namespace nc {
 
     constexpr char* write_to_buffer(char* buffer) const
     {
-        for (size_t t = 0; t < TTokenCount; ++t) {
+        for (size_t t = 0; t < TTokenCount; ++t) 
+        {
             char*const end = storage[t].write_to_buffer(buffer);
             const bool is_finished = (end < buffer + Segment::MAX_LENGTH);
             buffer = end;
@@ -302,7 +314,8 @@ namespace nc {
     }
 
     template<size_t TPrefixSize, size_t TPostfixSize>
-    constexpr auto to_cstring_enclosed(const char(&prefix)[TPrefixSize], const char(&postfix)[TPostfixSize]) const {
+    constexpr auto to_cstring_enclosed(const char(&prefix)[TPrefixSize], const char(&postfix)[TPostfixSize]) const 
+    {
         std::array<char, MAX_LENGTH + (TPrefixSize - 1) + (TPostfixSize - 1) + 1> ret{};
         char* buf = ret.data();
 
@@ -322,13 +335,12 @@ namespace nc {
     }
 
 
-
-
   private:
     std::array<Segment, TTokenCount> storage;
-  };
+  }; // struct CompositeToken
 
-}
+} //namespace nc
+
   template<typename TPermittedChars>
   struct std::hash<nc::BasicToken<TPermittedChars>>
   {
@@ -346,7 +358,8 @@ namespace nc {
       using hasher = std::hash<nc::CompositeToken<TTokenCount, TPermittedChars>::Segment>;
       const auto& segments(token.get_storage());
       size_t ret = hasher{}(segments[0]);
-      for (size_t t = 1; t < TTokenCount; ++t) {
+      for (size_t t = 1; t < TTokenCount; ++t) 
+      {
         ret = nc::hash_combine(ret, hasher{}(segments[t]));
       }
       return ret;
