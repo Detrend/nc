@@ -13,7 +13,7 @@
 // allow us to randomly change a pitch of certain sounds within some bounds.
 // For now we support only the .wav sound format.
 #define NC_SOUNDS(xx)        \
-  xx(nail_gun,     0.1f)     \
+  /*xx(nail_gun,     0.1f) */\
   xx(plasma_rifle, 0.1f)     \
   xx(ricochet,     0.1f)     \
   xx(pickup,       0.1f)     \
