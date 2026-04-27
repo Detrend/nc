@@ -242,8 +242,6 @@ bool GraphicsSystem::init()
 }
 
 //==============================================================================
-PointLight* light_test;
-
 void GraphicsSystem::on_event(ModuleEvent& event)
 {
   switch (event.type)
@@ -319,7 +317,7 @@ void GraphicsSystem::query_visibility(VisibilityTree& tree) const
   const vec3 pos = camera->get_position();
   const vec3 dir = camera->get_forward();
 
-  f32 aspect = static_cast<f32>(m_window_width) / m_window_height;
+  f32 aspect = cast<f32>(m_window_width) / m_window_height;
 
   const f32 horizontal_fov = 2.0f * atan(tan(FOV / 2.0f) * aspect);
   const f32 vertical_fov   = FOV;
@@ -403,8 +401,8 @@ void GraphicsSystem::render()
 
   nc_assert(width >= 0 && height >= 0, "WTF?");
 
-  u32 u_width  = static_cast<u32>(width);
-  u32 u_height = static_cast<u32>(height);
+  u32 u_width  = cast<u32>(width);
+  u32 u_height = cast<u32>(height);
 
   if (u_width != m_window_width || u_height != m_window_height)
   {
@@ -495,7 +493,7 @@ static void draw_cvar_type_and_input(s32* num, const CVarRange& rn)
 
   ImGui::TableNextColumn();
   ImGui::PushID(num);
-  ImGui::SliderInt("", num, static_cast<s32>(rn.min), static_cast<s32>(rn.max));
+  ImGui::SliderInt("", num, cast<s32>(rn.min), cast<s32>(rn.max));
   ImGui::PopID();
 }
 
@@ -695,7 +693,7 @@ static void draw_saves_menu()
     namespace ch = std::chrono;
 
     ImGui::Text("Save IDX[%d]", i);
-    ImGui::Text("Save ID [%d]", static_cast<int>(save.id));
+    ImGui::Text("Save ID [%d]", cast<int>(save.id));
     ImGui::Text("Dirty: %s", dirty ? "T" : "F");
     //ImGui::Text("Level: %s", save.last_level.to_cstring().data());
 
@@ -883,6 +881,8 @@ void draw_profiling()
 #endif
 
 //==============================================================================
+PointLight* light_test;
+
 void GraphicsSystem::handle_light_debug()
 {
   if (CVars::light_debug)
@@ -1057,7 +1057,7 @@ void GraphicsSystem::create_sector_meshes()
     (
       ResLifetime::Level,
       vertices.data(),
-      static_cast<u32>(vertices.size())
+      cast<u32>(vertices.size())
     );
     m_sector_meshes.push_back(mesh);
   }

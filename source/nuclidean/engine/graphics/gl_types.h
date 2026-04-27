@@ -2,6 +2,7 @@
 #pragma once
 
 #include <cstddef>
+#include <types.h>
 
 using GLuint = unsigned int;
 using GLint = int;

@@ -143,7 +143,7 @@ void ShaderProgramHandle::use() const
 //==============================================================================
 void ShaderProgramHandle::dispatch(size_t group_x, size_t group_y, size_t group_z, bool sync) const
 {
-  glDispatchCompute(static_cast<GLuint>(group_x), static_cast<GLuint>(group_y), static_cast<GLuint>(group_z));
+  glDispatchCompute(cast<GLuint>(group_x), cast<GLuint>(group_y), cast<GLuint>(group_z));
 
   if (sync)
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);

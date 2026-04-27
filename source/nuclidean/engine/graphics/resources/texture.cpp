@@ -234,6 +234,7 @@ TextureManager::EquirectangularMapMap& TextureManager::get_equirectangular_maps(
     return m_level_equirectangular_maps;
 }
 
+//==============================================================================
 const TextureManager::EquirectangularMapMap& TextureManager::get_equirectangular_maps(ResLifetime lifetime) const
 {
   nc_assert(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
@@ -282,6 +283,7 @@ void TextureManager::create_error_texture()
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+//==============================================================================
 std::string TextureManager::get_name(const std::string& path) const
 {
   const size_t last_separator_pos = path.find_last_of("/\\");
@@ -293,14 +295,17 @@ std::string TextureManager::get_name(const std::string& path) const
 }
 
 //==============================================================================
-void nc::TextureManager::load_texture(const std::string& path)
+void TextureManager::load_texture(const std::string& path)
 {
+  // TODO: use error texture when loading fails
+
   int width, height, channels;
   unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
   if (data == nullptr)
   {
     nc_crit("Cannot load image \"{}\": {}", path, stbi_failure_reason());
     stbi_image_free(data);
+    return;
   }
 
   GLenum format = 0;
@@ -312,11 +317,12 @@ void nc::TextureManager::load_texture(const std::string& path)
   {
     nc_crit("Cannot load image \"{}\": {}", path, "Texture format not supported.");
     stbi_image_free(data);
+    return;
   }
 
   m_load_rects.push_back(stbrp_rect
   {
-    .id = static_cast<int>(m_load_rects.size()),
+    .id = cast<int>(m_load_rects.size()),
     .w = width,
     .h = height,
     .x = 0,
@@ -373,8 +379,8 @@ void TextureManager::finish_load(ResLifetime lifetime)
     stbrp_context context;
     std::vector<stbrp_node> nodes(target_width);
 
-    stbrp_init_target(&context, target_width, target_height, nodes.data(), static_cast<int>(nodes.size()));
-    stbrp_pack_rects(&context, m_load_rects.data(), static_cast<int>(m_load_rects.size()));
+    stbrp_init_target(&context, target_width, target_height, nodes.data(), cast<int>(nodes.size()));
+    stbrp_pack_rects(&context, m_load_rects.data(), cast<int>(m_load_rects.size()));
 
     bool all_packed = true;
     for (const auto& rect : m_load_rects)
@@ -433,7 +439,7 @@ void TextureManager::finish_load(ResLifetime lifetime)
       rect.w,
       rect.h,
       m_generation,
-      static_cast<TextureID>(m_textures.size())
+      cast<TextureID>(m_textures.size())
     );
 
     atlas.textures.emplace(load_data.name, handle);

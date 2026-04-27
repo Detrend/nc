@@ -205,10 +205,10 @@ MeshHandle MeshManager::create(ResLifetime lifetime, const f32* data, u32 count,
   glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vbo);
   glBufferData(GL_ARRAY_BUFFER, count * sizeof(f32), data, GL_STATIC_DRAW);
   //position attribute
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(f32), reinterpret_cast<void*>(0));
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(f32), recast<void*>(0));
   glEnableVertexAttribArray(0);
   // normal attribute
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(f32), reinterpret_cast<void*>(3 * sizeof(f32)));
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(f32), recast<void*>(3 * sizeof(f32)));
   glEnableVertexAttribArray(1);
 
   glBindVertexArray(0);
@@ -240,10 +240,10 @@ MeshHandle MeshManager::create_texturable(ResLifetime lifetime, const f32* data,
   glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vbo);
   glBufferData(GL_ARRAY_BUFFER, count * sizeof(f32), data, GL_STATIC_DRAW);
   //position attribute
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), reinterpret_cast<void*>(0));
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), recast<void*>(0));
   glEnableVertexAttribArray(0);
   // UVs attribute
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), reinterpret_cast<void*>(3 * sizeof(f32)));
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(f32), recast<void*>(3 * sizeof(f32)));
   glEnableVertexAttribArray(1);
 
   glBindVertexArray(0);
@@ -286,31 +286,31 @@ void MeshManager::populate_sector_mesh(MeshHandle& mesh, const f32* data, u32 co
   glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vbo);
   glBufferData(GL_ARRAY_BUFFER, count * sizeof(f32), data, GL_STATIC_DRAW);
   //position attribute
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(0));
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), recast<void*>(0));
   glEnableVertexAttribArray(0);
   // normal attribute
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(3 * sizeof(f32)));
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), recast<void*>(3 * sizeof(f32)));
   glEnableVertexAttribArray(1);
   // cumulative wall length attribute
-  glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(6 * sizeof(f32)));
+  glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), recast<void*>(6 * sizeof(f32)));
   glEnableVertexAttribArray(2);
   // texture id attribute
-  glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(7 * sizeof(f32)));
+  glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), recast<void*>(7 * sizeof(f32)));
   glEnableVertexAttribArray(3);
   // texture scale attribute
-  glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(8 * sizeof(f32)));
+  glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), recast<void*>(8 * sizeof(f32)));
   glEnableVertexAttribArray(4);
   // texture rotation attribute
-  glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(9 * sizeof(f32)));
+  glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), recast<void*>(9 * sizeof(f32)));
   glEnableVertexAttribArray(5);
   // texture tile rotations count attribute
-  glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(10 * sizeof(f32)));
+  glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), recast<void*>(10 * sizeof(f32)));
   glEnableVertexAttribArray(6);
   // texture tile rotation increment attribute
-  glVertexAttribPointer(7, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(11 * sizeof(f32)));
+  glVertexAttribPointer(7, 1, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), recast<void*>(11 * sizeof(f32)));
   glEnableVertexAttribArray(7);
   // texture offset attribute
-  glVertexAttribPointer(8, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), reinterpret_cast<void*>(12 * sizeof(f32)));
+  glVertexAttribPointer(8, 2, GL_FLOAT, GL_FALSE, VERTEX_SIZE * sizeof(f32), recast<void*>(12 * sizeof(f32)));
   glEnableVertexAttribArray(8);
 
   glBindVertexArray(0);
@@ -380,8 +380,8 @@ void MeshManager::unload(ResLifetime lifetime)
     }
   }
 
-  glDeleteVertexArrays(static_cast<GLsizei>(vao_to_delete.size()), vao_to_delete.data());
-  glDeleteBuffers(static_cast<GLsizei>(vbo_to_delete.size()), vbo_to_delete.data());
+  glDeleteVertexArrays(cast<GLsizei>(vao_to_delete.size()), vao_to_delete.data());
+  glDeleteBuffers(cast<GLsizei>(vbo_to_delete.size()), vbo_to_delete.data());
   storage.clear();
 
   if (lifetime == ResLifetime::Game)

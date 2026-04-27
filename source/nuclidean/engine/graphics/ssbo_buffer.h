@@ -3,7 +3,7 @@
 
 #include <types.h>
 
-#include <engine\graphics\gl_types.h>
+#include <engine/graphics/gl_types.h>
 
 #include <vector>
 
@@ -55,7 +55,7 @@ private:
   size_t m_size     = 0;
   GLuint m_handle   = 0;
 
-  std::vector<T> buffer;
+  std::vector<T> m_buffer;
 };
 
 }

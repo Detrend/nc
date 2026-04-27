@@ -27,15 +27,7 @@ Camera* Camera::get()
 //==============================================================================
 void Camera::update_transform(vec3 position, f32 yaw, f32 pitch)
 {
-  m_position = position;
-  m_yaw = yaw;
-  m_pitch = pitch;
-
-  // taken from handle rotation
-  m_yaw = rem_euclid(m_yaw, 2.0f * PI);
-  m_pitch = clamp(m_pitch, -HALF_PI + 0.001f, HALF_PI - 0.001f);
-
-  m_forward = angleAxis(m_yaw, VEC3_Y) * angleAxis(m_pitch, VEC3_X) * -VEC3_Z;
+  update_transform(position, yaw, pitch, 0.0f);
 }
 
 //==============================================================================

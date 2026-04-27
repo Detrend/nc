@@ -490,7 +490,7 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
       );
     }
 
-    avg_position = avg_position / static_cast<f32>(wall_count);
+    avg_position = avg_position / cast<f32>(wall_count);
     if (show_sector_ids)
     {
       const auto sector_color = is_visible ? colors::WHITE : colors::PINK;

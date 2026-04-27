@@ -1,4 +1,5 @@
 #include <engine/graphics/ssbo_buffer.h>
+#include <common.h>
 
 #include <glad/glad.h>
 
@@ -30,14 +31,14 @@ inline void SSBOBuffer<T>::clear()
 {
   m_gpu_size = 0;
   m_size = 0;
-  buffer.clear();
+  m_buffer.clear();
 }
 
 //==============================================================================
 template<typename T>
 inline size_t SSBOBuffer<T>::push_back(T&& value)
 {
-  buffer.push_back(value);
+  m_buffer.push_back(value);
   m_size++;
 
   return m_size - 1;
@@ -47,7 +48,7 @@ inline size_t SSBOBuffer<T>::push_back(T&& value)
 template<typename T>
 inline size_t SSBOBuffer<T>::push_back(const T& value)
 {
-  buffer.push_back(value);
+  m_buffer.push_back(value);
   m_size++;
 
   return m_size - 1;
@@ -57,9 +58,9 @@ inline size_t SSBOBuffer<T>::push_back(const T& value)
 template<typename T>
 inline void SSBOBuffer<T>::extend(std::vector<T>&& elements)
 {
-  buffer.insert
+  m_buffer.insert
   (
-    buffer.end(), 
+    m_buffer.end(), 
     std::make_move_iterator(elements.begin()), 
     std::make_move_iterator(elements.end())
   );
@@ -75,15 +76,15 @@ inline void SSBOBuffer<T>::update_gpu_data(bool reset_capacity)
   (
     GL_SHADER_STORAGE_BUFFER,
     m_gpu_size * sizeof(T),
-    buffer.size() * sizeof(T),
-    buffer.data()
+    m_buffer.size() * sizeof(T),
+    m_buffer.data()
   );
 
   m_gpu_size = m_size;
-  buffer.clear();
+  m_buffer.clear();
   if (reset_capacity)
   {
-    buffer.shrink_to_fit();
+    m_buffer.shrink_to_fit();
   }
 }
 
@@ -92,7 +93,7 @@ template<typename T>
 template<typename UnaryOp>
 inline void SSBOBuffer<T>::update_gpu_data(UnaryOp op, bool reset_capacity)
 {
-  for (T& element : buffer)
+  for (T& element : m_buffer)
   {
     op(element);
   }
@@ -114,14 +115,14 @@ inline void SSBOBuffer<T>::update_gpu_data_with(const std::vector<T>& elements)
   );
 
   m_size += elements.size();
-  m_gpu_size = m_size;;
+  m_gpu_size = m_size;
 }
 
 //==============================================================================
 template<typename T>
 inline T& SSBOBuffer<T>::get_buffer_item(size_t index)
 {
-  return buffer[index];
+  return m_buffer[index];
 }
 
 //==============================================================================
@@ -184,21 +185,21 @@ inline size_t SSBOBuffer<T>::size() const
 template<typename T>
 inline u32 SSBOBuffer<T>::capacity_u32() const
 {
-  return static_cast<u32>(capacity());
+  return cast<u32>(capacity());
 }
 
 //==============================================================================
 template<typename T>
 inline u32 SSBOBuffer<T>::gpu_size_u32() const
 {
-  return static_cast<u32>(gpu_size());
+  return cast<u32>(gpu_size());
 }
 
 //==============================================================================
 template<typename T>
 inline u32 SSBOBuffer<T>::size_u32() const
 {
-  return static_cast<u32>(size());
+  return cast<u32>(size());
 }
 
 }

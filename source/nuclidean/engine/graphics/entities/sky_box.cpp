@@ -1,6 +1,5 @@
 // Project Nuclidean Source File
-#include "sky_box.h"
-
+#include <engine/graphics/entities/sky_box.h>
 #include <engine/entity/entity_type_definitions.h>
 
 namespace nc

@@ -92,7 +92,7 @@ public:
   (
     const vec3&   position,   // Position of the light in the world
     f32           radius,     // Radius of the light in meters
-    f32           intentsity, // Intensity of the light [0, inf)
+    f32           intensity,  // Intensity of the light [0, inf)
     f32           falloff,    // How does the light intensity change with distance
     const color3& color = colors::WHITE
   );

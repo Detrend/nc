@@ -104,8 +104,8 @@ private:
   DebugRendererPtr m_debug_renderer = nullptr;
 #endif
 
-  u32 m_window_width  = static_cast<u32>(WINDOW_WIDTH);
-  u32 m_window_height = static_cast<u32>(WINDOW_HEIGHT);
+  u32 m_window_width  = cast<u32>(WINDOW_WIDTH);
+  u32 m_window_height = cast<u32>(WINDOW_HEIGHT);
 };
 
 }

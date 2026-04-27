@@ -8,8 +8,6 @@
 
 #include <engine/graphics/gl_types.h>
 
-class EquirectangularMapHandle;
-
 namespace nc
 {
 

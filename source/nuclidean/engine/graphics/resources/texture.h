@@ -127,7 +127,7 @@ private:
   std::string get_name(const std::string& path) const;
   /**
    * Loads texture from the file. After loading all textures of a specified lifetime, you must call
-   * TextureManager::finih_load which will actually load the textures.
+   * TextureManager::finish_load which will actually load the textures.
    */
   void load_texture(const std::string& path);
   void load_equirectangular_map(const std::string& path, ResLifetime lifetime);

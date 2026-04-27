@@ -16,7 +16,7 @@ namespace nc
 {
 
 // Light-weight shader handle.
-struct ShaderProgramHandle
+class ShaderProgramHandle
 {
 public:
   friend class GizmoManager;
