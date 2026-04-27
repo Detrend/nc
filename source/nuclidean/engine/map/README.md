@@ -41,6 +41,8 @@ Each activator has a set of triggers associated with it. If the number of active
 
 Each sector can have 2 predefined dynamic states - ON and OFF, and can be associated with an activator. Each one of these states can have an arbitrary floor height and ceiling height. If an activator of a given sector becomes active then the sector starts transitioning into the ON state. If the activator becomes inactive then the sector starts transitioning back to the OFF state. This way, elevators or moving doors can be implemented.
 
+Activators can also have arbitrary game logic attached to them via a list of `IActivatorHook`s. These hooks receive update when their parent `Activator`'s state changes and can perform various things like e.g. starting level transition, periodically damaging whatever entity is activating their `Activator` (e.g. by standing in a specific `Sector`) etc. . 
+
 #### Sector Mapping
 Allows efficient spacial queries for enities. Maintains a mapping `sector id` -> `list of entities` and `entity id` -> `list of sectors` which allow us to quickly query a list of sectors an entity is inside of, or a list of entities that are at least partially within a sector. The mapping has to change only if an entity moves or gets destroyed/created.
 
