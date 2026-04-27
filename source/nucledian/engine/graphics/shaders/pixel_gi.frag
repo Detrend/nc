@@ -1,5 +1,17 @@
 #version 430 core
 
+#define MAX_PARTS 512
+#define BALANCE_SAMPLING_BY_SOLID_ANGLE 1
+#define NUM_SAMPLES_PER_PIXEL_WHEN_NOT_BALANCING 6
+#define NUM_SAMPLES_TOTAL_WHEN_BALANCING 128
+#define DEBUG_DRAW 1
+#define CULL_INVISIBLE_PIXELS 1
+
+bool out_of_bounds = false;
+bool out_of_parts  = false;
+bool no_samples    = false;
+bool not_visible   = false;
+
 struct MegatexPart
 {
   ivec2 megatex_coord_1;
@@ -39,6 +51,7 @@ layout(std430, binding = 2) readonly buffer texture_buffer { TextureData texture
 
 layout(binding = 0) uniform sampler2D megatex_input;
 layout(binding = 1) uniform sampler2D game_atlas_sampler;
+layout(binding = 2) uniform sampler2D megatex_mask;
 
 out vec4 out_color;
 
@@ -78,6 +91,45 @@ vec3 fetch_part_surface_texture(MegatexPart part, vec2 uv_coords)
   tex_uv = (tex_uv * texture_data.size + texture_data.pos) / game_atlas_size;
 
   return texture(game_atlas_sampler, tex_uv).rgb;
+}
+
+float signed_solid_angle(vec3 p, vec3 a, vec3 b, vec3 c)
+{
+	// Vectors from point to triangle vertices
+	vec3 va = a - p;
+	vec3 vb = b - p;
+	vec3 vc = c - p;
+
+	// Lengths
+	float la = length(va);
+	float lb = length(vb);
+	float lc = length(vc);
+
+	// Triple product (signed volume)
+	float numerator = dot(va, cross(vb, vc));
+
+	// Denominator
+	float denominator =
+		la * lb * lc +
+		dot(va, vb) * lc +
+		dot(vb, vc) * la +
+		dot(vc, va) * lb;
+
+	// atan2 gives correct sign and stability
+	return 2.0 * atan(numerator, denominator);
+}
+
+float calc_part_signed_angle(MegatexPart part)
+{
+  float signed_angle = 0.0f;
+  signed_angle += signed_solid_angle(wp, part.wpos_00, part.wpos_01, part.wpos_10);
+  signed_angle += signed_solid_angle(wp, part.wpos_01, part.wpos_11, part.wpos_10);
+  if (part.normal.y > 0.5)
+  {
+    // floor
+    signed_angle *= -1.0f;
+  }
+  return signed_angle;
 }
 
 float rand(vec2 co)
@@ -121,13 +173,73 @@ float quadArea(vec3 v0, vec3 v1, vec3 v2, vec3 v3)
   return area1 + area2;
 }
 
-bool out_of_bounds = false;
-
 void main()
 {
-  const uint  num_samples_from_each = 8;
-  const uint  total_sample_budget   = 128;
   const float one_over_pi = 1.0 / 3.141692;
+  const float max_signed_angle = 3.141592f * 2.0f;
+
+  float angles_per_part[MAX_PARTS] = float[MAX_PARTS](0.0f);
+
+  vec3 mask_value = texture(megatex_mask, gl_FragCoord.xy / u_megatex_size).xyz;
+#if DEBUG_DRAW
+  /*
+  if (mask_value.r <= 0.0f)
+  {
+    not_visible = true;
+  }
+  */
+#endif
+
+#if CULL_INVISIBLE_PIXELS
+  if (mask_value.r <= 0.0f)
+  {
+    out_color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+    return;
+  }
+#endif
+
+#if DEBUG_DRAW
+  if (num_indices > MAX_PARTS)
+  {
+    out_of_parts = true;
+  }
+#endif
+
+  // calculate samples per part
+  float angle_sum = 0.0f;
+  for (int i = 0; i < num_indices; ++i)
+  {
+    uint part_id = megatex_indices[i];
+    if (part_id == my_part_id)
+    {
+      // Skip us
+      continue;
+    }
+
+    // Sample random points on the surface of the object
+    MegatexPart part = megatex_parts[part_id];
+
+    if (part.texture_id < 0.0f)
+    {
+      continue;
+    }
+
+    vec3 part_n = part.normal;
+    if (dot(-normal, part_n) < 0.0f)
+    {
+      continue;
+    }
+
+    float signed_angle = calc_part_signed_angle(part);
+    if (signed_angle < 0.0f)
+    {
+      continue;
+    }
+
+    float solid_angle = signed_angle / max_signed_angle;
+    angles_per_part[i] = solid_angle;
+    angle_sum += solid_angle;
+  }
 
   vec3 sum = vec3(0.0);
   int  num_samples_total = 0;
@@ -165,11 +277,28 @@ void main()
     ivec2 from = part.megatex_coord_1;
     ivec2 to   = part.megatex_coord_2;
 
-    vec3 part_sum = vec3(0.0f);
-
+    vec3  part_sum  = vec3(0.0f);
     float part_area = quadArea(part.wpos_00, part.wpos_10, part.wpos_01, part.wpos_11);
 
-    for (uint sample_idx = 0; sample_idx < num_samples_from_each; ++sample_idx)
+#if BALANCE_SAMPLING_BY_SOLID_ANGLE
+    float this_part_angle = angles_per_part[i];
+    int num_samples_for_this_part = int((this_part_angle / angle_sum) * NUM_SAMPLES_TOTAL_WHEN_BALANCING);
+#else
+    angle_sum = 1.0f;
+    float this_part_angle = 1.0f;
+    int num_samples_for_this_part = NUM_SAMPLES_PER_PIXEL_WHEN_NOT_BALANCING;
+#endif
+
+#if DEBUG_DRAW
+    /*
+    if (num_samples_for_this_part > 0)
+    {
+      no_samples = true;
+    }
+    */
+#endif
+
+    for (uint sample_idx = 0; sample_idx < num_samples_for_this_part; ++sample_idx)
     {
       // Always positive, ok
       ivec2 coords_out_of_bounds = noise2(ivec2(part_id, sample_idx * 41) + frag_idx * ivec2(1001, 387));
@@ -202,7 +331,7 @@ void main()
       float dist   = distance(wp_of_sample, wp);
       float attenuation = 1.0f / (dist * dist);
 
-      part_sum += smple * albedo * part_area * attenuation * angle1 * angle2;
+      part_sum += smple * albedo * attenuation * angle1 * angle2 * part_area * angle_sum / this_part_angle;
       num_samples_total += 1;
     }
 
@@ -210,9 +339,19 @@ void main()
     sum += part_sum;
   }
 
-  sum = sum * one_over_pi * 1.0 / num_samples_total;
+#if DEBUG_DRAW
+#if BALANCE_SAMPLING_BY_SOLID_ANGLE
+  if (num_samples_total > NUM_SAMPLES_TOTAL_WHEN_BALANCING)
+  {
+    out_of_bounds = true;
+  }
+#endif
+#endif
+
+  sum = sum * one_over_pi / num_samples_total;
 
   vec3 final_color = vec3(0.0, 0.0, 0.0);
+#if DEBUG_DRAW
   if (false)
   {
     final_color = fetch_part_surface_texture(megatex_parts[my_part_id], uv);
@@ -221,9 +360,22 @@ void main()
   {
     final_color = vec3(1.0, 0.0, 0.0);
   }
-  else
+  else if (no_samples)
   {
-    final_color = (og_color * 1.0f + sum * 10.0) * 1.0f;
+    final_color = vec3(0.0, 0.0, 1.0);
+  }
+  else if (out_of_parts)
+  {
+    final_color = vec3(1.0, 0.0, 1.0);
+  }
+  else if (not_visible)
+  {
+    final_color = vec3(0.0, 1.0, 0.0);
+  }
+  else
+#endif
+  {
+    final_color = (og_color * 1.0f + sum * 1.0) * 1.0f;
   }
   out_color = vec4(final_color, 1.0f);
 }

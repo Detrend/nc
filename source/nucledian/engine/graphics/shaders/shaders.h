@@ -95,6 +95,7 @@ namespace nc
       inline constexpr Uniform<11, u32>  NUM_WALLS;
       inline constexpr Uniform<12, u32>  SECTOR_ID;
       inline constexpr Uniform<13, f32>  AMBIENT_STRENGTH;
+      inline constexpr Uniform<14, vec3> CAMERA_POS;
     }
 
     // Pixel GI lighting pass

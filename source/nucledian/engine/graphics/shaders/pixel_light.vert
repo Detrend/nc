@@ -13,6 +13,10 @@ layout(location = 9) uniform vec3 u_norm;
 out vec2 uv;
 out vec3 wp;
 out vec3 normal;
+out vec3 wp00;
+out vec3 wp01;
+out vec3 wp10;
+out vec3 wp11;
 
 void main()
 {
@@ -21,6 +25,11 @@ void main()
     vec2(0, 0), vec2(1, 0), vec2(1, 1),
     vec2(0, 0), vec2(1, 1), vec2(0, 1)
   );
+
+  wp00 = u_wp00;
+  wp01 = u_wp01;
+  wp10 = u_wp10;
+  wp11 = u_wp11;
 
   vec2 local = corners[gl_VertexID];
   vec2 pixel = mix(u_from, u_to, local);

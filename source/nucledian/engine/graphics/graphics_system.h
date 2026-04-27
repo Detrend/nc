@@ -77,6 +77,7 @@ public:
 
   GLuint megatex_handle       = 0;
   GLuint megatex_input_handle = 0;
+  GLuint megatex_mask_handle  = 0;
   GLuint megatex_fbo          = 0;
   u32    megatex_width        = 0;
   u32    megatex_height       = 0;

@@ -205,16 +205,6 @@ const
     .portal_dest_to_src = mat4(1.0f),
   };
 
-  float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-
-  glClearTexImage(
-    GraphicsSystem::get().megatex_handle,        // texture id
-    0,              // mip level
-    GL_RGBA,        // format
-    GL_FLOAT,       // type
-    clearColor      // data
-  );
-
   // WIP
   do_pixel_lighting_pass(camera_data, visibility_tree);
 
@@ -291,6 +281,18 @@ const
       : 1.0f;
     ImVec2 img_size = { avail.x, avail.x / aspect };
     ImGui::Image((ImTextureID)(intptr_t)gfx.megatex_input_handle, img_size, ImVec2(0,1), ImVec2(1,0));
+  }
+  ImGui::End();
+
+  if (ImGui::Begin("Megatex Mask"))
+  {
+    auto& gfx = GraphicsSystem::get();
+    ImVec2 avail = ImGui::GetContentRegionAvail();
+    float aspect = (gfx.megatex_height > 0)
+      ? (float)gfx.megatex_width / (float)gfx.megatex_height
+      : 1.0f;
+    ImVec2 img_size = { avail.x, avail.x / aspect };
+    ImGui::Image((ImTextureID)(intptr_t)gfx.megatex_mask_handle, img_size, ImVec2(0,1), ImVec2(1,0));
   }
   ImGui::End();
 
@@ -576,6 +578,16 @@ void Renderer::do_geometry_pass
 )
 const
 {
+  float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+
+  glClearTexImage(
+    GraphicsSystem::get().megatex_mask_handle,        // texture id
+    0,              // mip level
+    GL_RGBA,        // format
+    GL_FLOAT,       // type
+    clearColor      // data
+  );
+
   glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   
@@ -648,6 +660,24 @@ const
   auto& gfx = GraphicsSystem::get();
   const MapSectors& map = GameSystem::get().get_map();
 
+  const float clear_color[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+
+  glClearTexImage(
+    GraphicsSystem::get().megatex_handle,        // texture id
+    0,              // mip level
+    GL_RGBA,        // format
+    GL_FLOAT,       // type
+    clear_color     // data
+  );
+
+  glClearTexImage(
+    GraphicsSystem::get().megatex_input_handle,  // texture id
+    0,              // mip level
+    GL_RGBA,        // format
+    GL_FLOAT,       // type
+    clear_color     // data
+  );
+
   glPushDebugGroup
   (
     GL_DEBUG_SOURCE_APPLICATION,
@@ -669,6 +699,7 @@ const
   m_pixel_light_shader.set_uniform(shaders::pixel_light::MEGATEX_SIZE, megatex_size);
   m_pixel_light_shader.set_uniform(shaders::pixel_light::NUM_SECTORS,  m_sectors_ssbo.gpu_size_u32());
   m_pixel_light_shader.set_uniform(shaders::pixel_light::NUM_WALLS,    m_walls_ssbo.gpu_size_u32());
+  m_pixel_light_shader.set_uniform(shaders::pixel_light::CAMERA_POS,   camera.position);
 
   EntityRegistry& registry = GameSystem::get().get_entities();
   registry.for_each<AmbientLight>([this](AmbientLight& ambient)
@@ -810,6 +841,8 @@ const
   glBindTexture(GL_TEXTURE_2D, gfx.megatex_handle);
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, game_atlas.handle);
+  glActiveTexture(GL_TEXTURE2);
+  glBindTexture(GL_TEXTURE_2D, gfx.megatex_mask_handle);
 
   for (SectorID sid : sectors_to_render)
   {
@@ -819,6 +852,7 @@ const
       MegatexPartId id;
     };
 
+    std::unordered_set<SectorID>  pushed_already;
     std::vector<MegatexPartAndId> parts_to_render;
 
     // Update the inner SSBO
@@ -826,6 +860,13 @@ const
 
     auto push_sector_to_ssbo = [&](SectorID sector_id)
     {
+      if (pushed_already.contains(sector_id))
+      {
+        return;
+      }
+
+      pushed_already.insert(sector_id);
+
       map.for_each_wall_of_sector(sid, [&](WallID wid)
       {
         m_megatex_indices_ssbo.push_back(map.walls[wid].megatex_id);
@@ -870,6 +911,10 @@ const
     map.for_each_portal_of_sector(sid, [&](WallID wid)
     {
       push_sector_to_ssbo(map.walls[wid].portal_sector_id);
+      map.for_each_portal_of_sector(map.walls[wid].portal_sector_id, [&](WallID wid2)
+      {
+        push_sector_to_ssbo(map.walls[wid2].portal_sector_id);
+      });
     });
 
     m_megatex_indices_ssbo.update_gpu_data();
@@ -989,12 +1034,12 @@ void Renderer::render_sectors(const CameraData& camera) const
 
   glBindImageTexture(
     7,              // binding unit
-    GraphicsSystem::get().megatex_handle,            // texture id
+    GraphicsSystem::get().megatex_mask_handle, // texture id
     0,              // mip level
     GL_FALSE,       // layered
     0,              // layer
     GL_WRITE_ONLY,  // access
-    GL_RGBA32F      // format
+    GL_R8           // format
   );
 
   m_sector_material.use();

@@ -32,6 +32,10 @@ struct WallData
 in vec2 uv;
 in vec3 wp;
 in vec3 normal;
+in vec3 wp00;
+in vec3 wp01;
+in vec3 wp10;
+in vec3 wp11;
 
 layout(location = 3) uniform vec3 u_color;
 layout(location = 8) uniform uint u_num_lights;
@@ -39,6 +43,7 @@ layout(location = 10) uniform uint num_sectors;
 layout(location = 11) uniform uint num_walls;
 layout(location = 12) uniform uint sector_id;
 layout(location = 13) uniform float ambient_strength;
+layout(location = 14) uniform vec3  camera_pos;
 
 layout(std430, binding = 0) readonly buffer point_light_buffer      { PointLight point_lights[];     };
 layout(std430, binding = 1) readonly buffer sector_data_buffer      { SectorData sectors[];          };
@@ -53,7 +58,7 @@ bool max_hops_reached = false;
 bool debug_pixel = false;
 vec3 col_out_debug = vec3(0.0f);
 
-float cross(vec2 a, vec2 b)
+float cross2(vec2 a, vec2 b)
 {
   return a.x * b.y - a.y * b.x;
 }
@@ -67,7 +72,7 @@ float get_intersection_t(vec2 ray_origin, vec2 ray_direction, vec2 wall_p0, vec2
   float wall_length = distance(wall_p1, wall_p0);
   vec2 wall_direction = normalize(wall_p1 - wall_p0);
 
-  float denominator = cross(ray_direction, wall_direction);
+  float denominator = cross2(ray_direction, wall_direction);
 
   // rays are parallel
   if (abs(denominator) < 0.001f)
@@ -76,8 +81,8 @@ float get_intersection_t(vec2 ray_origin, vec2 ray_direction, vec2 wall_p0, vec2
   vec2 diff = wall_origin - ray_origin;
   float inv_denominator = 1.0f / denominator;
 
-  float ray_t  = cross(diff, wall_direction) * inv_denominator;
-  float wall_t = cross(diff, ray_direction ) * inv_denominator;
+  float ray_t  = cross2(diff, wall_direction) * inv_denominator;
+  float wall_t = cross2(diff, ray_direction ) * inv_denominator;
 
   // intersection occurs outside of this wall segment
   if (wall_t < -0.001f || wall_t > wall_length + 0.001f)
@@ -187,6 +192,32 @@ float rand(vec2 co)
   return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
+float signed_solid_angle(vec3 p, vec3 a, vec3 b, vec3 c)
+{
+	// Vectors from point to triangle vertices
+	vec3 va = a - p;
+	vec3 vb = b - p;
+	vec3 vc = c - p;
+
+	// Lengths
+	float la = length(va);
+	float lb = length(vb);
+	float lc = length(vc);
+
+	// Triple product (signed volume)
+	float numerator = dot(va, cross(vb, vc));
+
+	// Denominator
+	float denominator =
+		la * lb * lc +
+		dot(va, vb) * lc +
+		dot(vb, vc) * la +
+		dot(vc, va) * lb;
+
+	// atan2 gives correct sign and stability
+	return 2.0 * atan(numerator, denominator);
+}
+
 void main()
 {
   vec3 final_color = vec3(ambient_strength) * 0.0f;
@@ -233,6 +264,16 @@ void main()
     final_color += diffuse * light.color * intensity * attenuation * shadow_coeff;
   }
 
+  /*
+  float signed_angle = 0.0f;
+  signed_angle += signed_solid_angle(camera_pos, wp00, wp01, wp10);
+  signed_angle += signed_solid_angle(camera_pos, wp01, wp11, wp10);
+  if (normal.y > 0.5)
+  {
+    // floor
+    signed_angle *= -1.0f;
+  }
+  */
 /*
   if (u_num_lights == 0)
   {
@@ -279,5 +320,6 @@ else
   out_color = vec4(col_out_debug, 1.0f);
 #else
   out_color = vec4(final_color, 1.0f);
+  //out_color = vec4(vec3(max(signed_angle, 0.0f)), 1.0f);
 #endif
 }

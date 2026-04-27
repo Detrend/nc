@@ -44,11 +44,38 @@ layout(std430, binding = 0) buffer texture_buffer {
     TextureData textures[];
 };
 
-layout(binding = 7, rgba32f) uniform image2D megatex;
+layout(binding = 7, r8) uniform image2D megatex;
 
 // copypasted from: https://stackoverflow.com/questions/12964279/whats-the-origin-of-this-glsl-rand-one-liner
-float rand(vec2 co){
+float rand(vec2 co)
+{
   return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+float signed_solid_angle(vec3 p, vec3 a, vec3 b, vec3 c)
+{
+	// Vectors from point to triangle vertices
+	vec3 va = a - p;
+	vec3 vb = b - p;
+	vec3 vc = c - p;
+
+	// Lengths
+	float la = length(va);
+	float lb = length(vb);
+	float lc = length(vc);
+
+	// Triple product (signed volume)
+	float numerator = dot(va, cross(vb, vc));
+
+	// Denominator
+	float denominator =
+		la * lb * lc +
+		dot(va, vb) * lc +
+		dot(vb, vc) * la +
+		dot(vc, va) * lb;
+
+	// atan2 gives correct sign and stability
+	return 2.0 * atan(numerator, denominator);
 }
 
 void main()

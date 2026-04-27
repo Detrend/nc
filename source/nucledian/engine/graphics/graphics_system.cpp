@@ -1412,6 +1412,15 @@ void GraphicsSystem::create_sector_meshes()
 
   m_renderer->update_sector_ssbos();
 
+  // Mask
+  glGenTextures(1, &megatex_mask_handle);
+  glBindTexture(GL_TEXTURE_2D, megatex_mask_handle);
+
+  glTexStorage2D(GL_TEXTURE_2D, 1, GL_R8, target_width, target_height);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
   // Output
   glGenTextures(1, &megatex_handle);
   glBindTexture(GL_TEXTURE_2D, megatex_handle);
