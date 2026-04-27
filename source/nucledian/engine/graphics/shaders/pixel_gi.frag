@@ -3,7 +3,7 @@
 #define MAX_PARTS 512
 #define BALANCE_SAMPLING_BY_SOLID_ANGLE 1
 #define NUM_SAMPLES_PER_PIXEL_WHEN_NOT_BALANCING 6
-#define NUM_SAMPLES_TOTAL_WHEN_BALANCING 128
+#define NUM_SAMPLES_TOTAL_WHEN_BALANCING 256
 #define DEBUG_DRAW 1
 #define CULL_INVISIBLE_PIXELS 1
 
@@ -375,7 +375,7 @@ void main()
   else
 #endif
   {
-    final_color = (og_color * 1.0f + sum * 1.0) * 1.0f;
+    final_color = (og_color * 0.0f + sum * 1.0) * 1.0f;
   }
   out_color = vec4(final_color, 1.0f);
 }

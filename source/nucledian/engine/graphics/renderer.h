@@ -132,6 +132,7 @@ private:
   mutable ShaderProgramHandle m_sky_box_material;
   mutable ShaderProgramHandle m_pixel_light_shader;
   mutable ShaderProgramHandle m_pixel_gi_shader;
+  mutable ShaderProgramHandle m_pixel_denoise_shader;
 
   // Registry used by the hot-reload loop.
   mutable std::vector<ShaderEntry> m_shader_entries;
