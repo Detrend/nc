@@ -1,11 +1,15 @@
+## Cosmetic-only entity that does nothing, just displays a nice looking bilboard.
 @tool
 class_name Prop
 extends Thing
 
+## Horizontal size of the bilboard
 @export var radius : float
+## Vertical size of the bilboard
 @export var height : float
 
 @export_group("Appearance")
+## Identifier by which the game can lookup the sprite
 @export var sprite_name : String
 @export var direction: Vector3 = Vector3.ZERO
 @export var sprite_scale: float = 1.0

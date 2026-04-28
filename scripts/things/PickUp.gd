@@ -2,6 +2,7 @@
 extends Thing
 class_name PickUp
 
+## Which in-game pickup type is represented by this. DO NOT MODIFY THIS outside the prefabs
 enum PickUpType{
 	HpSmall,
 	HpBig,
@@ -13,7 +14,9 @@ enum PickUpType{
 	NailAmmo
 }
 
+## DO NOT MODIFY THESE outside the specific [PickUp] prefab
 @export_group("Internal")
+## Which in-game pickup type is represented by this. DO NOT MODIFY THIS outside the prefabs
 @export var type_id : PickUpType = PickUpType.HpSmall
 
 func get_export_category()->String: return "pickups"

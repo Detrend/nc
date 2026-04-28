@@ -49,6 +49,7 @@ extends EditablePolygon
 ## Single portal that connects this [Sector] with another arbitrary sector, creating non-euclidean level geometry.
 ## [br]
 ## Each [Sector] is allowed to only have a single portal
+## TODO: deprecate this way of defining portals and implement a new one using [WallAttachment]s
 @export_custom(PROPERTY_HINT_GROUP_ENABLE, "") var enable_portal : bool = false:
 	get: return enable_portal
 	set(value):

@@ -1,3 +1,4 @@
+## Player's starting position - must exist exactly once in a level
 @tool
 extends Entity
 class_name PlayerPosition

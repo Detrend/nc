@@ -1,7 +1,12 @@
+## Base class for all objects that get attached to a specifc [Sector] wall.
+##
+## Objects derived from this have to be assigned to a [Sector] as its child nodes.
+## The user can drag them around in the level editor - they attach to the sector's wall closest to their position.
 @tool
 class_name WallAttachment
 extends Node2D
 
+## Find the [Sector] to whose wall this object is attached
 func find_sector(parent: EditablePolygon = null)->Sector:
 	if not parent: 
 		parent = get_parent()
@@ -20,7 +25,7 @@ func find_sector(parent: EditablePolygon = null)->Sector:
 				return s
 	return null
 
-
+## Find index of the sector wall to which this object is attached
 func find_wall(parent_sector : Sector)->int:
 	var pos := self.global_position
 	var min_distance_sqr := INF

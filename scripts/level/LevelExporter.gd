@@ -376,7 +376,7 @@ func process_things_in_sector(sector: Sector, export_things: Dictionary)->void:
 		if current.placement_mode == Things.PlacementMode.Floor: height = sector.floor_height + current.height_offset
 		elif current.placement_mode == Things.PlacementMode.Ceiling: height = sector.ceiling_height - current.height_offset
 		elif current.placement_mode == Things.PlacementMode.Absolute: height = current.height_offset
-		else: ErrorUtils.report_error("Invalid placement_mode '{0}' for thing {1}".format([current.placement_mode, current]))
+		else: ErrorUtils.report_error("Invalid placement_mode '{0}' for a standalone Thing '{1}'".format([current.placement_mode, current.get_full_name()]))
 		
 		process_a_thing(current, sector, pos, height, export_things)
 		

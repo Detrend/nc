@@ -1,7 +1,10 @@
+## Defines the level's skybox. So far only single skybox is supported.
+## Its position is insignificant as it globally affects the whole level.
 @tool
 class_name SkyBox
 extends Thing
 
+## Id of the skybox texture
 @export var texture : String
 @export var exposure : float = 1.0
 @export var use_gamma_correction : bool = false
