@@ -9,11 +9,14 @@
 
 // Possible improvements:
 // [x] Debug that shows from where we sample.. Effectively another megatex.
+// [x] Fix the number of samples we give to the parts.. Some parts receive 0
 // [ ] Importance sampling based on the angle to the object as well.
 //     For now, we do importance sampling based only on the solid angle size,
 //     which is good, but giving more importance to objects with normals facing
 //     us will definitely help.
 // [ ] Sample triangles/quads uniformly with regards to their projection onto POV
+// [ ] Parts that do not have any textures (empty walls for example) get added
+//     to the pipeline.. Fix this.
 
 bool out_of_bounds = false;
 bool out_of_parts  = false;
@@ -142,6 +145,39 @@ float calc_part_signed_angle(MegatexPart part)
   return signed_angle;
 }
 
+// Assigns importance number to each part. Then we allocate the number of samples
+// proportionally to the importance of each part.
+float calc_part_importance(uint part_id)
+{
+  if (part_id == my_part_id)
+  {
+    // Skip us
+    return 0.0f;
+  }
+
+  MegatexPart part = megatex_parts[part_id];
+
+  if (part.texture_id < 0.0f)
+  {
+    // Does not have any textures..
+    return 0.0f;
+  }
+
+  vec3 part_n = part.normal;
+  if (dot(-normal, part_n) < 0.0f)
+  {
+    return 0.0f;
+  }
+
+  float signed_angle = calc_part_signed_angle(part);
+  if (signed_angle < 0.0f)
+  {
+    return 0.0f;
+  }
+
+  return signed_angle;
+}
+
 float rand(vec2 co)
 {
   return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
@@ -160,6 +196,21 @@ uint hash(uint x)
 uint hash(ivec2 v)
 {
   return hash(uint(v.x) * 0x1f1f1f1fU ^ uint(v.y));
+}
+
+float hash_3d(ivec3 p)
+{
+  uint x = uint(p.x);
+  uint y = uint(p.y);
+  uint z = uint(p.z);
+
+  uint h = x * 0x8da6b343u ^ y * 0xd8163841u ^ z * 0xcb1ab31fu;
+
+  h ^= (h >> 13);
+  h *= 0x85ebca6bu;
+  h ^= (h >> 16);
+
+  return float(h) / float(0xffffffffu);
 }
 
 ivec2 noise2(ivec2 p)
@@ -188,18 +239,10 @@ void main()
   const float one_over_pi = 1.0 / 3.141692;
   const float max_signed_angle = 3.141592f * 2.0f;
 
-  float angles_per_part[MAX_PARTS] = float[MAX_PARTS](0.0f);
+  float importance_per_part[MAX_PARTS] = float[MAX_PARTS](0.0f);
 
-  //imageStore(megatex_debug, ivec2(gl_FragCoord.xy), vec4(1.0, 0.0, 0.0, 0.5));
+  //imageStore(megatex_debug, ivec2(gl_FragCoord.xy), vec4(vec3(hash_2d(ivec2(gl_FragCoord.xy))), 1.0));
   vec3 mask_value = texture(megatex_mask, gl_FragCoord.xy / u_megatex_size).xyz;
-#if DEBUG_DRAW
-  /*
-  if (mask_value.r <= 0.0f)
-  {
-    not_visible = true;
-  }
-  */
-#endif
 
 #if CULL_INVISIBLE_PIXELS
   if (mask_value.r <= 0.0f)
@@ -217,39 +260,12 @@ void main()
 #endif
 
   // calculate samples per part
-  float angle_sum = 0.0f;
+  float importance_sum = 0.0f;
   for (int i = 0; i < num_indices; ++i)
   {
-    uint part_id = megatex_indices[i];
-    if (part_id == my_part_id)
-    {
-      // Skip us
-      continue;
-    }
-
-    // Sample random points on the surface of the object
-    MegatexPart part = megatex_parts[part_id];
-
-    if (part.texture_id < 0.0f)
-    {
-      continue;
-    }
-
-    vec3 part_n = part.normal;
-    if (dot(-normal, part_n) < 0.0f)
-    {
-      continue;
-    }
-
-    float signed_angle = calc_part_signed_angle(part);
-    if (signed_angle < 0.0f)
-    {
-      continue;
-    }
-
-    float solid_angle = signed_angle / max_signed_angle;
-    angles_per_part[i] = solid_angle;
-    angle_sum += solid_angle;
+    float importance = calc_part_importance(megatex_indices[i]);
+    importance_per_part[i] = importance;
+    importance_sum += importance;
   }
 
   vec3 sum = vec3(0.0);
@@ -262,25 +278,11 @@ void main()
   for (int i = 0; i < num_indices; ++i)
   {
     uint part_id = megatex_indices[i];
-    if (part_id == my_part_id)
-    {
-      // Skip us
-      continue;
-    }
 
     // Sample random points on the surface of the object
     MegatexPart part = megatex_parts[part_id];
 
-    if (part.texture_id < 0.0f)
-    {
-      continue;
-    }
-
     vec3 part_n = part.normal;
-    if (dot(-normal, part_n) < 0.0f)
-    {
-      continue;
-    }
 
     // Always positive, good
     ivec2 size_px = part.megatex_coord_2 - part.megatex_coord_1 + ivec2(1);
@@ -292,11 +294,18 @@ void main()
     float part_area = quadArea(part.wpos_00, part.wpos_10, part.wpos_01, part.wpos_11);
 
 #if BALANCE_SAMPLING_BY_SOLID_ANGLE
-    float this_part_angle = angles_per_part[i];
-    int num_samples_for_this_part = int((this_part_angle / angle_sum) * NUM_SAMPLES_TOTAL_WHEN_BALANCING);
+    float this_part_importance      = importance_per_part[i];
+    float importance_coeff          = this_part_importance/ importance_sum;
+    float num_samples_floating      = importance_coeff * NUM_SAMPLES_TOTAL_WHEN_BALANCING;
+    int   num_samples_for_this_part = int(num_samples_floating);
+    float rem = fract(num_samples_floating);
+    if (hash_3d(ivec3(ivec2(gl_FragCoord.xy), i)) < rem)
+    {
+      num_samples_for_this_part += 1;
+    }
 #else
-    angle_sum = 1.0f;
-    float this_part_angle = 1.0f;
+    importance_sum = 1.0f;
+    float this_part_importance = 1.0f;
     int num_samples_for_this_part = NUM_SAMPLES_PER_PIXEL_WHEN_NOT_BALANCING;
 #endif
 
@@ -342,7 +351,7 @@ void main()
       float dist   = distance(wp_of_sample, wp);
       float attenuation = 1.0f / (dist * dist);
 
-      part_sum += smple * albedo * attenuation * angle1 * angle2 * part_area * angle_sum / this_part_angle;
+      part_sum += smple * albedo * attenuation * angle1 * angle2 * part_area * importance_sum / this_part_importance;
       num_samples_total += 1;
     }
 
@@ -352,14 +361,14 @@ void main()
 
 #if DEBUG_DRAW
 #if BALANCE_SAMPLING_BY_SOLID_ANGLE
-  if (num_samples_total > NUM_SAMPLES_TOTAL_WHEN_BALANCING)
+  if (num_samples_total > NUM_SAMPLES_TOTAL_WHEN_BALANCING * 1.5f)
   {
     out_of_bounds = true;
   }
 #endif
 #endif
 
-  sum = sum * one_over_pi / num_samples_total;
+  sum = sum * one_over_pi / max(num_samples_total, 1); // prevent division by 0
 
   vec3 final_color = vec3(0.0, 0.0, 0.0);
 #if DEBUG_DRAW
@@ -369,7 +378,7 @@ void main()
   }
   else if (out_of_bounds)
   {
-    final_color = vec3(1.0, 0.0, 0.0);
+    final_color = vec3(0.0, 1.0, 1.0); // cyan
   }
   else if (no_samples)
   {
