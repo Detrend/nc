@@ -3,9 +3,10 @@
 #define MAX_PARTS 1024
 #define BALANCE_SAMPLING_BY_SOLID_ANGLE 1
 #define NUM_SAMPLES_PER_PIXEL_WHEN_NOT_BALANCING 6
-#define NUM_SAMPLES_TOTAL_WHEN_BALANCING 128
+#define NUM_SAMPLES_TOTAL_WHEN_BALANCING 32
 #define DEBUG_DRAW 1
 #define CULL_INVISIBLE_PIXELS 1
+#define INSPECTED_PART 390
 
 // Possible improvements:
 // [x] Debug that shows from where we sample.. Effectively another megatex.
@@ -175,12 +176,14 @@ float calc_part_importance(uint part_id)
     return 0.0f;
   }
 
-  return signed_angle;
-}
+  vec3 wp_of_part = (part.wpos_00 + part.wpos_10 + part.wpos_01 + part.wpos_11) * 0.25f;
 
-float rand(vec2 co)
-{
-  return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
+  vec3  dir    = normalize(wp_of_part - wp); // direction to the sample
+  float angle1 = max(dot(normal, dir),  0.0f);  // angle 
+  float angle2 = max(dot(part_n, -dir), 0.0f);
+
+  return signed_angle * angle1 * angle2;
+  //return signed_angle;
 }
 
 uint hash(uint x)
@@ -234,6 +237,79 @@ float quadArea(vec3 v0, vec3 v1, vec3 v2, vec3 v3)
   return area1 + area2;
 }
 
+vec2 hash_4d_to_2d(ivec4 p)
+{
+  uvec4 u = uvec4(p);
+
+  uint h1 = u.x * 0x8da6b343u ^ u.y * 0xd8163841u ^ u.z * 0xcb1ab31fu ^ u.w * 0x165667b1u;
+  uint h2 = u.x * 0xa24baedfu ^ u.y * 0x9fb21c65u ^ u.z * 0x5be0cd19u ^ u.w * 0x27d4eb2fu;
+
+  // mix h1
+  h1 ^= (h1 >> 16);
+  h1 *= 0x7feb352du;
+  h1 ^= (h1 >> 15);
+  h1 *= 0x846ca68bu;
+  h1 ^= (h1 >> 16);
+
+  // mix h2
+  h2 ^= (h2 >> 15);
+  h2 *= 0x2c1b3c6du;
+  h2 ^= (h2 >> 12);
+  h2 *= 0x297a2d39u;
+  h2 ^= (h2 >> 15);
+
+  return vec2(
+    float(h1) / float(0xffffffffu),
+    float(h2) / float(0xffffffffu)
+  );
+}
+
+// input:
+  // sample_idx
+  // part_id
+// output:
+  // wp_of_sample
+  // albedo
+  // sample
+void sample_from_part(int sample_idx, uint part_id, out vec3 wp_of_sample, out vec3 albedo, out vec3 smple)
+{
+  // Sample random points on the surface of the object
+  MegatexPart part = megatex_parts[part_id];
+  ivec2 frag_idx = ivec2(gl_FragCoord.xy);
+
+  // Always positive, good
+  ivec2 size_px = part.megatex_coord_2 - part.megatex_coord_1 + ivec2(1);
+
+  ivec2 from = part.megatex_coord_1;
+
+  ivec4 seed        = ivec4(ivec2(part_id, sample_idx * 41), frag_idx * ivec2(1001, 387));
+  vec2  uv_coords   = hash_4d_to_2d(seed);
+  ivec2 true_coords = from + ivec2(uv_coords * size_px);
+
+  if (uv_coords.x < 0 || uv_coords.x > 1 || uv_coords.y < 0 || uv_coords.y > 1)
+  {
+    out_of_bounds = true;
+  }
+
+  smple = texelFetch(megatex_input, true_coords, 0).xyz;
+
+#if INSPECTED_PART
+  if (my_part_id == INSPECTED_PART)
+  {
+    imageStore(megatex_debug, ivec2(true_coords), vec4(0.0, 0.0, 1.0, 1.0));
+  }
+#endif
+
+  vec3 wp_bottom    = mix(part.wpos_00, part.wpos_10, uv_coords.x);
+  vec3 wp_top       = mix(part.wpos_01, part.wpos_11, uv_coords.x);
+
+  // This is the world position of the pixel we are sampling
+  wp_of_sample = mix(wp_bottom, wp_top, uv_coords.y);
+
+  // Now calculate the UV of the texture that is on the wall
+  albedo = fetch_part_surface_texture(part, uv_coords);
+}
+
 void main()
 {
   const float one_over_pi = 1.0 / 3.141692;
@@ -241,7 +317,12 @@ void main()
 
   float importance_per_part[MAX_PARTS] = float[MAX_PARTS](0.0f);
 
-  //imageStore(megatex_debug, ivec2(gl_FragCoord.xy), vec4(vec3(hash_2d(ivec2(gl_FragCoord.xy))), 1.0));
+#if INSPECTED_PART
+  if (my_part_id == INSPECTED_PART)
+  {
+    imageStore(megatex_debug, ivec2(gl_FragCoord.xy), vec4(1.0, 0.0, 0.0, 1.0));
+  }
+#endif
   vec3 mask_value = texture(megatex_mask, gl_FragCoord.xy / u_megatex_size).xyz;
 
 #if CULL_INVISIBLE_PIXELS
@@ -279,16 +360,7 @@ void main()
   {
     uint part_id = megatex_indices[i];
 
-    // Sample random points on the surface of the object
     MegatexPart part = megatex_parts[part_id];
-
-    vec3 part_n = part.normal;
-
-    // Always positive, good
-    ivec2 size_px = part.megatex_coord_2 - part.megatex_coord_1 + ivec2(1);
-
-    ivec2 from = part.megatex_coord_1;
-    ivec2 to   = part.megatex_coord_2;
 
     vec3  part_sum  = vec3(0.0f);
     float part_area = quadArea(part.wpos_00, part.wpos_10, part.wpos_01, part.wpos_11);
@@ -309,45 +381,17 @@ void main()
     int num_samples_for_this_part = NUM_SAMPLES_PER_PIXEL_WHEN_NOT_BALANCING;
 #endif
 
-#if DEBUG_DRAW
-    /*
-    if (num_samples_for_this_part > 0)
+    for (int sample_idx = 0; sample_idx < num_samples_for_this_part; ++sample_idx)
     {
-      no_samples = true;
-    }
-    */
-#endif
-
-    for (uint sample_idx = 0; sample_idx < num_samples_for_this_part; ++sample_idx)
-    {
-      // Always positive, ok
-      ivec2 coords_out_of_bounds = noise2(ivec2(part_id, sample_idx * 41) + frag_idx * ivec2(1001, 387));
-      ivec2 cnt = coords_out_of_bounds / size_px;
-
-      ivec2 vec2_coords = coords_out_of_bounds - cnt * size_px;
-
-      vec2  uv_coords   = vec2(vec2_coords) / vec2(size_px);
-      ivec2 true_coords = from + vec2_coords; // Sample this
-
-      if (uv_coords.x < 0 || uv_coords.x > 1 || uv_coords.y < 0 || uv_coords.y > 1)
-      {
-        out_of_bounds = true;
-      }
-
-      vec3 smple = texelFetch(megatex_input, true_coords, 0).xyz;
-
-      vec3 wp_bottom    = mix(part.wpos_00, part.wpos_10, uv_coords.x);
-      vec3 wp_top       = mix(part.wpos_01, part.wpos_11, uv_coords.x);
-
-      // This is the world position of the pixel we are sampling
-      vec3 wp_of_sample = mix(wp_bottom, wp_top, uv_coords.y);
-
-      // Now calculate the UV of the texture that is on the wall
-      vec3 albedo = fetch_part_surface_texture(part, uv_coords);
+      // Sample the part
+      vec3 albedo;
+      vec3 wp_of_sample;
+      vec3 smple;
+      sample_from_part(sample_idx, part_id, wp_of_sample, albedo, smple);
 
       vec3  dir    = normalize(wp_of_sample - wp); // direction to the sample
       float angle1 = max(dot(normal, dir),  0.0f);  // angle 
-      float angle2 = max(dot(part_n, -dir), 0.0f);
+      float angle2 = max(dot(part.normal, -dir), 0.0f);
       float dist   = distance(wp_of_sample, wp);
       float attenuation = 1.0f / (dist * dist);
 
@@ -395,7 +439,7 @@ void main()
   else
 #endif
   {
-    final_color = (og_color * 0.0f + sum * 1.0) * 1.0f;
+    final_color = (og_color * 1.0f + sum * 0.0) * 1.0f;
   }
   out_color = vec4(final_color, 1.0f);
 }
