@@ -580,14 +580,14 @@ void Renderer::do_geometry_pass
 )
 const
 {
-  float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+  float clear_color[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
   glClearTexImage(
     GraphicsSystem::get().megatex_mask_handle,        // texture id
     0,              // mip level
     GL_RGBA,        // format
     GL_FLOAT,       // type
-    clearColor      // data
+    clear_color      // data
   );
 
   glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
@@ -678,6 +678,14 @@ const
     GL_RGBA,        // format
     GL_FLOAT,       // type
     clear_color     // data
+  );
+
+  glClearTexImage(
+    GraphicsSystem::get().megatex_debug_handle,        // texture id
+    0,              // mip level
+    GL_RGBA,        // format
+    GL_FLOAT,       // type
+    clear_color      // data
   );
 
   glPushDebugGroup
@@ -845,6 +853,16 @@ const
   glBindTexture(GL_TEXTURE_2D, game_atlas.handle);
   glActiveTexture(GL_TEXTURE2);
   glBindTexture(GL_TEXTURE_2D, gfx.megatex_mask_handle);
+
+  glBindImageTexture(
+    3,              // binding unit
+    GraphicsSystem::get().megatex_debug_handle, // texture id
+    0,              // mip level
+    GL_FALSE,       // layered
+    0,              // layer
+    GL_WRITE_ONLY,  // access
+    GL_RGBA8        // format
+  );
 
   for (SectorID sid : sectors_to_render)
   {
@@ -1127,13 +1145,12 @@ void Renderer::render_sectors(const CameraData& camera) const
   const auto& sectors_to_render = camera.vis_tree.sectors;
 
   const auto& game_atlas = TextureManager::get().get_atlas(ResLifetime::Game);
-  const auto& level_atlas = TextureManager::get().get_atlas(ResLifetime::Level);
 
   m_textures_ssbo.bind(0);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, game_atlas.handle);
   glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D, level_atlas.handle);
+  glBindTexture(GL_TEXTURE_2D, GraphicsSystem::get().megatex_debug_handle);
   glActiveTexture(GL_TEXTURE2);
   glBindTexture(GL_TEXTURE_2D, GraphicsSystem::get().megatex_input_handle);
 

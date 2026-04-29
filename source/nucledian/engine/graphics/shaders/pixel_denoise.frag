@@ -10,7 +10,7 @@ flat in ivec2 from_px;
 flat in ivec2 to_px;
 
 #define GRID_N 10
-#define DO_DENOISE 1
+#define DO_DENOISE 0
 
 void main()
 {
@@ -26,6 +26,12 @@ void main()
     for (int j = max(my_coord.y - GRID_N, from_px.y); j <= min(my_coord.y + GRID_N, to_px.y); ++j) // vertical
     {
       ivec2 coord  = ivec2(i, j);
+      vec3 mask_value = texture(megatex_mask, coord / u_megatex_size).xyz;
+      if (mask_value.r <= 0.0f)
+      {
+        continue;
+      }
+
       float weight = sqrt(GRID_N * GRID_N) - distance(coord, my_coord) + 1.0f;
       vec3  color = texture(megatex, coord / u_megatex_size).xyz;
       sum += color * weight;
@@ -33,7 +39,7 @@ void main()
     }
   }
 
-  out_color = vec4(sum / num_samples, 1.0f);
+  out_color = vec4(sum / max(num_samples, 0.0001f), 1.0f);
 #else
   out_color = vec4(og_color, 1.0f);
 #endif

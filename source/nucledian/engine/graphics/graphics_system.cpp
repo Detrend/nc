@@ -194,7 +194,7 @@ bool GraphicsSystem::init()
     return false;
   }
 
-  SDL_SetWindowResizable(m_window, SDL_FALSE);
+  //SDL_SetWindowResizable(m_window, SDL_FALSE);
 
   // create opengl context
   m_gl_context = SDL_GL_CreateContext(m_window);
@@ -1417,6 +1417,15 @@ void GraphicsSystem::create_sector_meshes()
   glBindTexture(GL_TEXTURE_2D, megatex_mask_handle);
 
   glTexStorage2D(GL_TEXTURE_2D, 1, GL_R8, target_width, target_height);
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+  // Debug
+  glGenTextures(1, &megatex_debug_handle);
+  glBindTexture(GL_TEXTURE_2D, megatex_debug_handle);
+
+  glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, target_width, target_height);
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

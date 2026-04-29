@@ -144,7 +144,7 @@ private:
   mutable SSBOBuffer<u32>        m_light_index_ssbo;
   mutable SSBOBuffer<u32>        m_light_tiles_ssbo;
   mutable SSBOBuffer<u32>        m_light_counter_ssbo;
-  mutable SSBOBuffer<u32>        m_megatex_indices_ssbo { 512 };
+  mutable SSBOBuffer<u32>        m_megatex_indices_ssbo { 1024 };
 
   mutable SSBOBuffer<DirLightGPU>   m_dir_light_ssbo         { MAX_DIR_LIGHTS           };
   mutable SSBOBuffer<PointLightGPU> m_point_light_ssbo       { MAX_VISIBLE_POINT_LIGHTS };

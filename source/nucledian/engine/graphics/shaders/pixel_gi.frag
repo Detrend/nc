@@ -1,11 +1,19 @@
 #version 430 core
 
-#define MAX_PARTS 512
+#define MAX_PARTS 1024
 #define BALANCE_SAMPLING_BY_SOLID_ANGLE 1
 #define NUM_SAMPLES_PER_PIXEL_WHEN_NOT_BALANCING 6
-#define NUM_SAMPLES_TOTAL_WHEN_BALANCING 256
+#define NUM_SAMPLES_TOTAL_WHEN_BALANCING 128
 #define DEBUG_DRAW 1
 #define CULL_INVISIBLE_PIXELS 1
+
+// Possible improvements:
+// [x] Debug that shows from where we sample.. Effectively another megatex.
+// [ ] Importance sampling based on the angle to the object as well.
+//     For now, we do importance sampling based only on the solid angle size,
+//     which is good, but giving more importance to objects with normals facing
+//     us will definitely help.
+// [ ] Sample triangles/quads uniformly with regards to their projection onto POV
 
 bool out_of_bounds = false;
 bool out_of_parts  = false;
@@ -52,6 +60,8 @@ layout(std430, binding = 2) readonly buffer texture_buffer { TextureData texture
 layout(binding = 0) uniform sampler2D megatex_input;
 layout(binding = 1) uniform sampler2D game_atlas_sampler;
 layout(binding = 2) uniform sampler2D megatex_mask;
+
+layout(binding = 3, rgba8) uniform image2D megatex_debug;
 
 out vec4 out_color;
 
@@ -180,6 +190,7 @@ void main()
 
   float angles_per_part[MAX_PARTS] = float[MAX_PARTS](0.0f);
 
+  //imageStore(megatex_debug, ivec2(gl_FragCoord.xy), vec4(1.0, 0.0, 0.0, 0.5));
   vec3 mask_value = texture(megatex_mask, gl_FragCoord.xy / u_megatex_size).xyz;
 #if DEBUG_DRAW
   /*

@@ -32,7 +32,7 @@ layout(location = 4) out vec4 g_albedo;
 layout(location = 5) out uint g_sector;
 
 layout(binding = 0) uniform sampler2D game_atlas_sampler;
-layout(binding = 1) uniform sampler2D level_atlas_sampler;
+layout(binding = 1) uniform sampler2D megatex_debug;
 layout(binding = 2) uniform sampler2D megatex_input;
 
 layout(location = 2) uniform vec2 game_atlas_size;
@@ -44,7 +44,7 @@ layout(std430, binding = 0) buffer texture_buffer {
     TextureData textures[];
 };
 
-layout(binding = 7, r8) uniform image2D megatex;
+layout(binding = 7, r8) uniform image2D megatex_mask;
 
 // copypasted from: https://stackoverflow.com/questions/12964279/whats-the-origin-of-this-glsl-rand-one-liner
 float rand(vec2 co)
@@ -94,7 +94,7 @@ void main()
   float actual_rotation = texture_rotation + (rand_value * tile_rotation_increment);
 
   // This line
-  imageStore(megatex, (ivec2)megatex_uv, vec4(1.0, 1.0, 1.0, 1.0));
+  imageStore(megatex_mask, (ivec2)megatex_uv, vec4(1.0, 1.0, 1.0, 1.0));
   
   // floor uv is mirrored
   if (normal.y > 0.0f) uv.x *= -1.0f;
@@ -112,12 +112,7 @@ void main()
   // compute atlas uv
   uv = (uv * texture_data.size + texture_data.pos) / atlas_size;
 
-  vec4 color;
-  if (use_game_atlas) {
-    color = texture(game_atlas_sampler, uv);
-  } else{
-    color = texture(level_atlas_sampler, uv);
-  }
+  vec4 color = texture(game_atlas_sampler, uv);
   //if (color.a < 0.95f)
   //  discard;
 
@@ -133,7 +128,8 @@ void main()
   // 4-th component of stitched_normal is used to determine if shadows are enabled
   g_stitched_normal.w = 1.0f;
   vec4 megatex_value = texelFetch(megatex_input, (ivec2)megatex_uv, 0);
-  g_albedo = color * vec4(megatex_value.xyz, 1.0f);
+  vec4 debug_value   = texelFetch(megatex_debug, (ivec2)megatex_uv, 0);
+  g_albedo = color * vec4(megatex_value.xyz, 1.0f) + debug_value;
 
   //g_albedo = vec4(megatex_value.xyz, 1.0f);
   g_sector = sector_id;
