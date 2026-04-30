@@ -76,7 +76,7 @@ public:
   ~OptionsPage();
 
   // Reads "settings.cfg" and changes settings accordingly
-  void laod_settings();
+  void load_settings();
 
   // Saves settings to "settings.cfg"
   void save_settings();

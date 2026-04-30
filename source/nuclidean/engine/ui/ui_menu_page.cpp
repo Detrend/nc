@@ -643,7 +643,7 @@ void OptionsPage::draw(ShaderProgramHandle button_material, GLuint VAO)
 }
 
 //=============================================================================================
-void OptionsPage::laod_settings()
+void OptionsPage::load_settings()
 {
   std::ifstream f("settings.cfg");
   if (!f.is_open())
