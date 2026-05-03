@@ -9,7 +9,7 @@ out vec4  out_color;
 flat in ivec2 from_px;
 flat in ivec2 to_px;
 
-#define GRID_N 10
+#define GRID_N 8
 #define DO_DENOISE 0
 
 void main()
@@ -32,7 +32,8 @@ void main()
         continue;
       }
 
-      float weight = sqrt(GRID_N * GRID_N) - distance(coord, my_coord) + 1.0f;
+      //float weight = sqrt(GRID_N * GRID_N) - distance(coord, my_coord) + 1.0f;
+      float weight = 1.0f;
       vec3  color = texture(megatex, coord / u_megatex_size).xyz;
       sum += color * weight;
       num_samples += weight;

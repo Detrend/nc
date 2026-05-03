@@ -406,6 +406,7 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
     ImGui::Separator();
     ImGui::Checkbox("Show visible sectors", &this->show_visible_sectors);
     ImGui::Checkbox("Show sector frustums", &this->show_sector_frustums);
+    ImGui::Checkbox("Show sector entity radius", &this->show_entity_radius);
     ImGui::Checkbox("Show sector IDs",      &this->show_sector_ids);
     ImGui::Checkbox("Show entity IDs",      &this->show_entity_ids);
     ImGui::Checkbox("Show sector grid",     &this->show_sector_grid);
@@ -648,7 +649,10 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
   }
 
   // render entities
-  this->draw_entities();
+  if (this->show_entity_radius)
+  {
+    this->draw_entities();
+  }
 
   // render the custom objects
   this->draw_custom_objects();

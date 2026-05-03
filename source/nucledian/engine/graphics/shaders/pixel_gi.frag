@@ -1,12 +1,13 @@
 #version 430 core
 
-#define MAX_PARTS 1024
-#define BALANCE_SAMPLING_BY_SOLID_ANGLE 1
-#define NUM_SAMPLES_PER_PIXEL_WHEN_NOT_BALANCING 6
-#define NUM_SAMPLES_TOTAL_WHEN_BALANCING 32
-#define DEBUG_DRAW 1
+#define MAX_PARTS 128
+#define NUM_SAMPLES_TOTAL_WHEN_BALANCING 128
+#define DEBUG_DRAW 0
 #define CULL_INVISIBLE_PIXELS 1
-#define INSPECTED_PART 390
+#define INSPECTED_PART 0
+#define HIGHLIGHT_THOSE_WHO_SAMPLE_FROM_THIS_PART 0
+//#define HIGHLIGHT_THOSE_SAMPLED_FROM_THIS_PART 391
+#define HIGHLIGHT_THOSE_SAMPLED_FROM_THIS_PART 0
 
 // Possible improvements:
 // [x] Debug that shows from where we sample.. Effectively another megatex.
@@ -15,8 +16,9 @@
 //     For now, we do importance sampling based only on the solid angle size,
 //     which is good, but giving more importance to objects with normals facing
 //     us will definitely help.
-// [ ] Sample triangles/quads uniformly with regards to their projection onto POV
-// [ ] Parts that do not have any textures (empty walls for example) get added
+// [ ] Sample triangles/quads uniformly with regards to their projection onto
+//     POV - arvo sampling?
+// [x] Parts that do not have any textures (empty walls for example) get added
 //     to the pipeline.. Fix this.
 
 bool out_of_bounds = false;
@@ -47,10 +49,12 @@ struct TextureData
   float in_game_atlas;
 };
 
+in smooth vec2 uv;
+in smooth vec3 wp;
+in smooth vec3 normal;
 
-in vec2 uv;
-in vec3 wp;
-in vec3 normal;
+in flat uint num_good_indices;
+in flat uint good_indices[26];
 
 layout(location = 7)  uniform vec2 u_megatex_size;
 layout(location = 8)  uniform uint num_indices;
@@ -130,7 +134,7 @@ float signed_solid_angle(vec3 p, vec3 a, vec3 b, vec3 c)
 		dot(vc, va) * lb;
 
 	// atan2 gives correct sign and stability
-	return 2.0 * atan(numerator, denominator);
+	return 2.0 * atan(numerator, denominator); // this consumes about 4FPS
 }
 
 float calc_part_signed_angle(MegatexPart part)
@@ -138,37 +142,19 @@ float calc_part_signed_angle(MegatexPart part)
   float signed_angle = 0.0f;
   signed_angle += signed_solid_angle(wp, part.wpos_00, part.wpos_01, part.wpos_10);
   signed_angle += signed_solid_angle(wp, part.wpos_01, part.wpos_11, part.wpos_10);
-  if (part.normal.y > 0.5)
-  {
-    // floor
-    signed_angle *= -1.0f;
-  }
+  float mul_by = float(part.normal.y < 0.5f) * 2.0f - 1.0f;
+  signed_angle *= mul_by;
   return signed_angle;
 }
 
 // Assigns importance number to each part. Then we allocate the number of samples
 // proportionally to the importance of each part.
+// Approximately 30FPS can be gained by optimizing the shit out of this..
 float calc_part_importance(uint part_id)
 {
-  if (part_id == my_part_id)
-  {
-    // Skip us
-    return 0.0f;
-  }
-
   MegatexPart part = megatex_parts[part_id];
 
-  if (part.texture_id < 0.0f)
-  {
-    // Does not have any textures..
-    return 0.0f;
-  }
-
   vec3 part_n = part.normal;
-  if (dot(-normal, part_n) < 0.0f)
-  {
-    return 0.0f;
-  }
 
   float signed_angle = calc_part_signed_angle(part);
   if (signed_angle < 0.0f)
@@ -317,8 +303,20 @@ void main()
 
   float importance_per_part[MAX_PARTS] = float[MAX_PARTS](0.0f);
 
+#if HIGHLIGHT_THOSE_SAMPLED_FROM_THIS_PART
+  if (my_part_id == HIGHLIGHT_THOSE_SAMPLED_FROM_THIS_PART)
+  {
+    imageStore(megatex_debug, ivec2(gl_FragCoord.xy), vec4(1.0, 0.0, 0.0, 1.0));
+  }
+#endif
 #if INSPECTED_PART
   if (my_part_id == INSPECTED_PART)
+  {
+    imageStore(megatex_debug, ivec2(gl_FragCoord.xy), vec4(1.0, 0.0, 0.0, 1.0));
+  }
+#endif
+#if HIGHLIGHT_THOSE_WHO_SAMPLE_FROM_THIS_PART
+  if (my_part_id == HIGHLIGHT_THOSE_WHO_SAMPLE_FROM_THIS_PART)
   {
     imageStore(megatex_debug, ivec2(gl_FragCoord.xy), vec4(1.0, 0.0, 0.0, 1.0));
   }
@@ -342,11 +340,27 @@ void main()
 
   // calculate samples per part
   float importance_sum = 0.0f;
-  for (int i = 0; i < num_indices; ++i)
+  for (int i = 0; i < num_good_indices; ++i)
   {
-    float importance = calc_part_importance(megatex_indices[i]);
+    float importance = calc_part_importance(good_indices[i]);
+#if HIGHLIGHT_THOSE_WHO_SAMPLE_FROM_THIS_PART
+    if (good_indices[i] == HIGHLIGHT_THOSE_WHO_SAMPLE_FROM_THIS_PART)
+    {
+      imageStore(megatex_debug, ivec2(gl_FragCoord.xy), vec4(1.0, 0.0, 1.0, 0.5));
+    }
+#endif
     importance_per_part[i] = importance;
     importance_sum += importance;
+#if HIGHLIGHT_THOSE_SAMPLED_FROM_THIS_PART
+    if (my_part_id == HIGHLIGHT_THOSE_SAMPLED_FROM_THIS_PART)
+    {
+      MegatexPart part = megatex_parts[good_indices[i]];
+      for (int x = part.megatex_coord_1.x; x < part.megatex_coord_2.x; ++x)
+        for (int y = part.megatex_coord_1.y; y < part.megatex_coord_2.y; ++y)
+          if (mod(x + y, 7) == 0)
+            imageStore(megatex_debug, ivec2(x, y), vec4(0.0, 0.0, 1.0, 0.5));
+    }
+#endif
   }
 
   vec3 sum = vec3(0.0);
@@ -356,18 +370,17 @@ void main()
 
   ivec2 frag_idx = ivec2(gl_FragCoord.xy);
 
-  for (int i = 0; i < num_indices; ++i)
+  for (int i = 0; i < num_good_indices; ++i)
   {
-    uint part_id = megatex_indices[i];
+    uint part_id = good_indices[i];
 
     MegatexPart part = megatex_parts[part_id];
 
     vec3  part_sum  = vec3(0.0f);
     float part_area = quadArea(part.wpos_00, part.wpos_10, part.wpos_01, part.wpos_11);
 
-#if BALANCE_SAMPLING_BY_SOLID_ANGLE
     float this_part_importance      = importance_per_part[i];
-    float importance_coeff          = this_part_importance/ importance_sum;
+    float importance_coeff          = this_part_importance / importance_sum;
     float num_samples_floating      = importance_coeff * NUM_SAMPLES_TOTAL_WHEN_BALANCING;
     int   num_samples_for_this_part = int(num_samples_floating);
     float rem = fract(num_samples_floating);
@@ -375,11 +388,6 @@ void main()
     {
       num_samples_for_this_part += 1;
     }
-#else
-    importance_sum = 1.0f;
-    float this_part_importance = 1.0f;
-    int num_samples_for_this_part = NUM_SAMPLES_PER_PIXEL_WHEN_NOT_BALANCING;
-#endif
 
     for (int sample_idx = 0; sample_idx < num_samples_for_this_part; ++sample_idx)
     {
@@ -404,12 +412,10 @@ void main()
   }
 
 #if DEBUG_DRAW
-#if BALANCE_SAMPLING_BY_SOLID_ANGLE
   if (num_samples_total > NUM_SAMPLES_TOTAL_WHEN_BALANCING * 1.5f)
   {
     out_of_bounds = true;
   }
-#endif
 #endif
 
   sum = sum * one_over_pi / max(num_samples_total, 1); // prevent division by 0

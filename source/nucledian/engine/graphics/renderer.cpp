@@ -664,6 +664,13 @@ const
 
   const float clear_color[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
+  static float query_dist = 15.0f;
+  if (ImGui::Begin("Dbg"))
+  {
+    ImGui::SliderFloat("query distance", &query_dist, 1.0f, 20.0f);
+  }
+  ImGui::End();
+
   glClearTexImage(
     GraphicsSystem::get().megatex_handle,        // texture id
     0,              // mip level
@@ -888,8 +895,13 @@ const
 
       pushed_already.insert(sector_id);
 
-      map.for_each_wall_of_sector(sid, [&](WallID wid)
+      map.for_each_wall_of_sector(sector_id, [&](WallID wid)
       {
+        if (map.walls[wid].segment_count <= 0)
+        {
+          return;
+        }
+
         m_megatex_indices_ssbo.push_back(map.walls[wid].megatex_id);
       });
 
@@ -918,6 +930,12 @@ const
     // Push the walls
     map.for_each_wall_of_sector(sid, [&](WallID wid)
     {
+      if (map.walls[wid].segment_count <= 0)
+      {
+        // do not render invisible segments
+        return;
+      }
+
       MegatexPartId part_wall = map.walls[wid].megatex_id;
       parts_to_render.push_back(MegatexPartAndId
       {
@@ -940,7 +958,7 @@ const
     center /= num;
 
     SectorSet query_sectors;
-    map.query_nearby_sectors_short_distance(center, 15.0f, query_sectors);
+    map.query_nearby_sectors_short_distance(center, query_dist, query_sectors);
 
     for (u64 i = 0; i < query_sectors.sectors.size(); ++i)
     {

@@ -81,6 +81,7 @@ void AnimFSM<NS, GOTO, ST, TT>::update(f32 delta, Functor&& func)
     else
     {
       this->time = next_time;
+      nc_assert(this->time >= 0.0f && this->time <= this->state_lengths[this->state]);
       delta = 0.0f;
     }
 
