@@ -182,11 +182,12 @@ bool MapDynamics::switch_wall_segment_trigger
 //==============================================================================
 void MapDynamics::evaluate_activators
 (
-  std::vector<u16>& activator_values, f32 delta, bool notify
+  std::vector<u16>& activator_values, f32 delta, bool notify, std::vector<ActivatorHookArg>* const out_info /* = nullptr*/
 )
 {
   nc_assert(triggers.size() <= MAX_TRIGGERS);
   nc_assert(activator_values.size() == activators.size());
+  nc_assert((!out_info) || (out_info->size() == activators.size()));
 
   TriggerID trigger_cnt = cast<TriggerID>(triggers.size());
 
@@ -208,6 +209,7 @@ void MapDynamics::evaluate_activators
           const bool player = td.player_sensitive && (id.type == EntityTypes::player);
           const bool enemy  = td.enemy_sensitive && (id.type == EntityTypes::enemy);
           activator_value += (player || enemy);
+          if (out_info) (*out_info)[td.activator].entities.emplace_back(id);
         });
       }
       break;
@@ -260,7 +262,10 @@ void MapDynamics::evaluate_activators
       case TriggerData::entity:
       {
         bool exists = registry.get_entity(td.entity_type.entity);
-        activator_value += (exists == td.while_alive);
+        if (exists == td.while_alive) {
+          ++activator_value;
+          if (out_info) (*out_info)[td.activator].entities.emplace_back(td.entity_type.entity);
+        }
       }
       break;
     }
@@ -274,9 +279,10 @@ void MapDynamics::update(f32 delta)
   nc_assert(activators.size() <= MAX_ACTIVATORS);
   ActivatorID activator_cnt = cast<ActivatorID>(activators.size());
   std::vector<u16> activator_values(activator_cnt, 0);
+  std::vector<ActivatorHookArg> activator_hook_args(activator_cnt, ActivatorHookArg{.delta = delta});
 
   // Iterate triggers
-  evaluate_activators(activator_values, delta, true);
+  evaluate_activators(activator_values, delta, true, &activator_hook_args);
 
   // Iterate activators
   for (ActivatorID activator_id = 0; activator_id < activator_cnt; ++activator_id)
@@ -284,6 +290,7 @@ void MapDynamics::update(f32 delta)
     ActivatorData& activator = activators[activator_id];
     u16 threshold = activator.threshold;
     u16 value     = activator_values[activator_id];
+    ActivatorHookArg& arg = activator_hook_args[activator_id];
 
     bool is_on = value >= threshold;
 
@@ -331,11 +338,11 @@ void MapDynamics::update(f32 delta)
     if (is_on || activeness_did_change) {
       for (const std::unique_ptr<IActivatorHook>& hook : activator.hooks) {
         if (activeness_did_change && is_on)
-          hook->on_activated_start();
+          hook->on_activated_start(arg);
         if(is_on)
-          hook->on_activated_update(delta);
+          hook->on_activated_update(arg);
         if (activeness_did_change && (!is_on))
-          hook->on_activated_end();
+          hook->on_activated_end(arg);
       }
     }
 

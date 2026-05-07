@@ -26,10 +26,19 @@ namespace nc
 
     virtual void load(const SerializedData& data);
 
-    virtual void on_activated_start() override;
+    virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args) override;
 
   private:
     LevelName destination;
   };
 
+  class ActivatorHook_Jumppad : public IActivatorHook {
+  public:
+    virtual void load(const SerializedData& data);
+
+    virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args) override;
+
+  private:
+    vec3 direction;
+  };
 }
