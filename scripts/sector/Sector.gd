@@ -92,6 +92,11 @@ extends EditablePolygon
 		show_portal_arrow = value
 		_update_visuals()
 
+@export var portal_wall_length: float:
+	get: return get_wall_direction(portal_wall).length()
+@export var portal_destination_wall_length: float:
+	get: return portal_destination.get_wall_direction(portal_destination_wall).length() if portal_destination else -1
+
 ## Check whether this [Sector] has a valid portal originating from it.
 func has_portal()-> bool: return enable_portal and portal_destination != null and portal_destination.is_visible_in_tree()
 
