@@ -1,0 +1,77 @@
+// Project Nuclidean Source File
+#include <game/enemies.h>
+#include <game/projectiles.h>
+
+namespace nc
+{
+
+EnemyStats ENEMY_STATS[] =
+{
+  // Cultist
+  EnemyStats
+  {
+    .move_speed = 2.5f,
+    .projectile = ProjectileTypes::fire_ball,
+    .max_hp     = 80,
+    .height     = 2.25f,
+    .eye_height = 2.0f,
+    .atk_height = 1.6f,
+    .radius     = 0.35f,
+    .atk_delay_min = 0.5f,
+    .atk_delay_max = 2.5f,
+    .state_sprite_cnt
+    {
+      1,  // idle
+      16, // walk
+      45, // attack
+      1,  // dead
+      20, // dying
+    },
+    .state_sprite_len
+    {
+      1.0f,
+      1.25f,
+      1.5f,
+      2.0f,
+      1.6f,
+    },
+    .attack_frame = 26,
+    .infight_chance = 0.05f // 5%
+  },
+
+  // Possessed
+  EnemyStats
+  {
+    .move_speed    = 4.0f,
+    .projectile    = ProjectileTypes::possessed_fist,
+    .max_hp        = 200,
+    .height        = 2.25f,
+    .eye_height    = 2.0f,
+    .atk_height    = 1.6f,
+    .radius        = 0.4f,
+    .atk_delay_min = 0.2f,
+    .atk_delay_max = 0.4f,
+    .state_sprite_cnt
+    {
+      1,  // idle
+      16, // walk
+      23, // attack
+      1,  // dead
+      24, // dying
+    },
+    .state_sprite_len
+    {
+      1.0f,
+      1.0f,
+      1.5f,
+      2.0f,
+      1.6f,
+    },
+    .attack_frame = 7,
+    .is_melee = true,
+    .infight_chance = 0.0f,
+  },
+};
+static_assert(ARRAY_LENGTH(ENEMY_STATS) == EnemyTypes::count);
+
+}

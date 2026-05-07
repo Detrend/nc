@@ -1,6 +1,6 @@
 #include <config.h>
 
-#ifdef NC_COMPILER_CLANG
+#if NC_COMPILER_CLANG
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-but-set-variable"
 
@@ -11,6 +11,6 @@
 #define STB_RECT_PACK_IMPLEMENTATION
 #include "stb_rect_pack.h"
 
-#ifdef NC_COMPILER_CLANG
+#if NC_COMPILER_CLANG
 #pragma clang diagnostic pop
 #endif
