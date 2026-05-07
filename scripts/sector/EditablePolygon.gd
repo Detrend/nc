@@ -182,9 +182,13 @@ func set_point_position(idx: int, absolute: Vector2)->void:
 func get_point_positions()->PackedVector2Array:
 	return DatastructUtils.modify_in_place(self.polygon, point_pos_relative_to_absolute)
 	
+## Get array of worldspace positions of the [EditablePolygon]'s points
+func get_point_positions_paranoid()->PackedVector2Array:
+	return DatastructUtils.modify_in_place(self.polygon, point_pos_relative_to_absolute_paranoid)
+	
 ## Set all the [EditablePolygon]'s points at once to specified worldspace positions 
 func set_point_positions(positions_gets_consumed: PackedVector2Array)->void:
-	self.polygon = DatastructUtils.modify_in_place(positions_gets_consumed, point_pos_relative_to_absolute)
+	self.polygon = DatastructUtils.modify_in_place(positions_gets_consumed, point_pos_absolute_to_relative)
 	
 # Get start point of the specified wall
 func get_wall_begin(idx: int)->Vector2:
@@ -213,6 +217,8 @@ func point_pos_absolute_to_relative(point: Vector2)->Vector2:
 	assert(self.scale == Vector2.ONE)
 	return _get_snapped_to_grid(point) - self.global_position
 	
+func point_pos_relative_to_absolute_paranoid(point: Vector2)->Vector2:
+	return self.global_transform * point
 	
 func _get_snapped_to_grid(pos: Vector2)->Vector2:
 		# compute as much as possible with float vars because floats use 64-bit precision unlike Vector2's x,y fields
@@ -532,8 +538,25 @@ static func find_nearest_point(v: Vector2, others: Array[SectorPoint], tolerance
 
 
 func get_full_name()->String:
-	return NodeUtils.get_full_name(self, "::", func(n: Node)->bool: return n is Level)
+	return NodeUtils.get_full_name(self, "::")# func(n: Node)->bool: return n is Level)
 
 static func get_all_editable(parent: Node, ret : Array[EditablePolygon] = [], flags: NodeUtils.LOOKUP_FLAGS = NodeUtils.LOOKUP_FLAGS.RECURSIVE)->Array[EditablePolygon]:
 	ret = NodeUtils.get_children_by_predicate(parent, func(n: Node): return n is EditablePolygon and (n as EditablePolygon).is_editable, ret, flags)
 	return ret
+
+
+
+@export_tool_button("Apply parent rotation") var apply_rotation_tool_button = func()->void:
+	if get_parent() is Node2D: apply_ancestor_rotation(get_parent())
+
+
+static func apply_ancestor_rotation(root: Node2D)->void:
+	if root.rotation == 0.0: return
+	var descendants : Array[EditablePolygon]
+	descendants = NodeUtils.get_descendants_of_type(root, EditablePolygon, descendants)
+	var worldspace_points : Array[PackedVector2Array] = []
+	for poly in descendants:
+		worldspace_points.append(poly.get_point_positions_paranoid())
+	root.rotation = 0.0
+	for i in descendants.size():
+		descendants[i].set_point_positions(worldspace_points[i])
