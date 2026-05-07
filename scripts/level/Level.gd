@@ -327,6 +327,7 @@ func _handle_triangulation_command(selected: Array[Node])->void:
 		for sel in selected_multisectors:
 			sel.do_triangulate()
 
+signal on_selection_change(new_selection: Array[Node]);
 
 var last_selection : Array[Node]
 var current_selection : Array[Node]
@@ -334,12 +335,15 @@ func _handle_selections()->void:
 	if last_selection == null: last_selection = []
 	@warning_ignore("shadowed_variable")
 	var current_selection : Array[Node] = []
-	NodeUtils.get_selected_nodes_of_type(Node, current_selection)
+	current_selection = NodeUtils.get_selected_nodes_of_type(Node, current_selection)
 	self.current_selection = current_selection
 	if last_selection.size() == 1 and ( current_selection.size() != 1 or current_selection[0] != last_selection[0]) and last_selection[0] and last_selection[0] is EditablePolygon:
 		(last_selection[0] as EditablePolygon)._on_sole_unselected()
 	if current_selection.size() == 1 and ( last_selection.size() != 1 or last_selection[0] != current_selection[0]) and current_selection[0] and current_selection[0] is EditablePolygon:
 		(current_selection[0] as EditablePolygon)._on_sole_selected()
+	
+	if current_selection != last_selection:
+		on_selection_change.emit(current_selection)
 	
 	const SELECTED_UPDATE_METHOD_NAME :String = "_selected_update"
 	for last in last_selection:

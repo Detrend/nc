@@ -95,7 +95,18 @@ extends EditablePolygon
 @export var portal_wall_length: float:
 	get: return get_wall_direction(portal_wall).length()
 @export var portal_destination_wall_length: float:
-	get: return portal_destination.get_wall_direction(portal_destination_wall).length() if portal_destination else -1
+	get: return portal_destination.get_wall_direction(portal_destination_wall).length() if portal_destination else -1.0
+
+@warning_ignore("unused_private_class_variable")
+@export_tool_button("Link portal") var _link_with_portal_on_click = func()->void:
+	print("Portal link - now select the other Sector");
+	var selected :Array[Node] = await _level.on_selection_change
+	if selected.size() != 1: return ErrorUtils.report_error("Must select exactly 1 other Sector!")
+	if selected[0] is not Sector: return ErrorUtils.report_error("Selected object is not a Sector!")
+	if selected[0] == self: return ErrorUtils.report_error("Cannot link with itself!")
+	portal_destination = selected[0]
+	print("Linked {0} with {1}".format([self.get_full_name(), portal_destination.get_full_name()]))
+	
 
 ## Check whether this [Sector] has a valid portal originating from it.
 func has_portal()-> bool: return enable_portal and portal_destination != null and portal_destination.is_visible_in_tree()
@@ -110,11 +121,11 @@ var _visualizer_line : Line2D:
 @warning_ignore("unused_private_class_variable")
 @export_tool_button("Add Step Trigger") var _add_trigger_tool_button = func()->void: NodeUtils.instantiate_child_by_type_and_select(self, Trigger, "Trigger")
 @warning_ignore("unused_private_class_variable")
-@export_tool_button("Add Wall Trigger") var _add_wall_trigger_tool_button = func()->void: NodeUtils.instantiate_child_and_select(self, load("res://prefabs/WallAttachments/WallButton.tscn"), "Button")
+@export_tool_button("Add Wall Trigger") var _add_wall_trigger_tool_button = func()->void: NodeUtils.instantiate_child_and_select(self, load("res://prefabs/WallAttachments/WallButton.tscn") as PackedScene, "Button")
 @warning_ignore("unused_private_class_variable")
 @export_tool_button("Add Alternative Config") var _add_alt_config_tool_button = _add_alt_config
 @warning_ignore("unused_private_class_variable")
-@export_tool_button("Add Wall Texture Override") var _add_wall_texture_override_tool_button = func()->void: NodeUtils.instantiate_child_and_select(self, load("res://prefabs/WallAttachments/WallTextureOverride.tscn"), "TextureOverride")
+@export_tool_button("Add Wall Texture Override") var _add_wall_texture_override_tool_button = func()->void: NodeUtils.instantiate_child_and_select(self, load("res://prefabs/WallAttachments/WallTextureOverride.tscn") as PackedScene, "TextureOverride")
 
 
 func _add_alt_config()->void:
@@ -296,6 +307,7 @@ func is_convex()->bool:
 	return Geometry2D.decompose_polygon_in_convex(self.polygon).size() == 1
 	
 	# algorithm copypasted from: https://www.geeksforgeeks.org/dsa/check-if-given-polygon-is-a-convex-polygon-or-not/
+	@warning_ignore("unreachable_code")
 	var previous_sign : float = 0
 	var points_count := get_points_count()
 	var i: int = 1
