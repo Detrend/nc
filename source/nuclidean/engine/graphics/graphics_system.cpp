@@ -193,7 +193,7 @@ bool GraphicsSystem::init()
     return false;
   }
 
-  SDL_SetWindowResizable(m_window, SDL_FALSE);
+  SDL_SetWindowResizable(m_window, get_engine().is_editor_mode() ? SDL_TRUE : SDL_FALSE);
 
   // create opengl context
   m_gl_context = SDL_GL_CreateContext(m_window);

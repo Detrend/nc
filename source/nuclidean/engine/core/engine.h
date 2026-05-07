@@ -73,6 +73,8 @@ public:
   // we do not want the level sound.
   bool is_level_sound_enabled() const;
 
+  bool is_editor_mode() const;
+
 private:
   // Called first before level end if a demo was playing
   // menu:     schedule next demo
@@ -137,6 +139,7 @@ private:
   bool          m_should_quit       : 1 = false;
   bool          m_demo_adjust_speed : 1 = true;
   bool          m_paused            : 1 = false;
+  bool          m_editor_mode       : 1 = false;
 };
 
 Engine& get_engine();

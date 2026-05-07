@@ -59,6 +59,7 @@ namespace engine_utils
 [[maybe_unused]] constexpr cstr START_LEVEL_ARG    = "-start_level";
 [[maybe_unused]] constexpr cstr START_DEMO_ARG     = "-start_demo";
 [[maybe_unused]] constexpr cstr FAST_DEMO_ARG      = "-fast_demo";
+[[maybe_unused]] constexpr cstr EDITOR_MODE_ARG    = "-editor_mode"; // sets up bunch of minor stuff to make it more pleasant to use the game for preview when editing a level
 
 //==============================================================================
 static f32 duration_to_seconds(auto t1, auto t2)
@@ -449,6 +450,12 @@ void Engine::send_event(ModuleEvent&& event)
 //==============================================================================
 bool Engine::init(const CmdArgs& cmd_args)
 {
+  this->m_editor_mode = engine_utils::contains_arg(cmd_args, engine_utils::EDITOR_MODE_ARG);
+  if (this->is_editor_mode()) {
+    CVars::has_fps_limit = true;
+    CVars::fps_limit = 30.0f;
+  }
+
   // init the modules here..
   #define INIT_MODULE(_module_class, ...)                     \
   {                                                           \
@@ -932,6 +939,12 @@ bool Engine::is_level_sound_enabled() const
       return true;
     }
   }
+}
+
+//==============================================================================
+bool Engine::is_editor_mode() const 
+{ 
+  return m_editor_mode; 
 }
 
 }

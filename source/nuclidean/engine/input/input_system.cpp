@@ -6,6 +6,7 @@
 #include <engine/core/engine.h>
 
 #include <imgui/imgui_impl_sdl2.h>
+#include <engine/ui/user_interface_system.h>
 
 #include <SDL2/include/SDL.h>
 
@@ -185,8 +186,9 @@ void InputSystem::lock_player_input(InputLockLayer layer, bool lock)
     return;
   }
 
+  const bool should_lock = get_engine().is_editor_mode() ? UserInterfaceSystem::get().get_menu_manager()->get_is_visible() : lock;
   // Switch
-  SDL_SetRelativeMouseMode(lock ? SDL_FALSE : SDL_TRUE);
+  SDL_SetRelativeMouseMode(should_lock ? SDL_FALSE : SDL_TRUE);
 }
 
 //==============================================================================
