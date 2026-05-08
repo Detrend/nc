@@ -1,4 +1,4 @@
-[gd_scene load_steps=168 format=3 uid="uid://dsay4j34k3qty"]
+[gd_scene load_steps=257 format=3 uid="uid://dsay4j34k3qty"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_1nrge"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_bdnqo"]
@@ -688,6 +688,426 @@ script = ExtResource("5_c05cs")
 material = ExtResource("4_843cm")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
+[sub_resource type="Resource" id="Resource_261ch"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_0b5k7"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_j2t6o"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_em26r"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_w1rrj"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_n75bg"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_hx4oo"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_rclok"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_c54in"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_vlner"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_vbpfj"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_iwhso"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_ogo4b"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_tf4a5"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_ncqx1"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_iw7k3"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_klln4"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_x7mcd"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_njnba"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_bn4q2"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_8ow76"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_henl7"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_ex82b"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_q20ho"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_34rch"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_0fvvy"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_ja81k"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_i5vll"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_gdi7k"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_eyavm"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_hqe3k"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_gnlmd"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_tkunq"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_66up2"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_yde0q"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_x58c3"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_lc6bk"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_tydk3"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_tv4eq"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_pb5eg"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_bgrs7"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_kuuup"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_ab4f0"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_8h6u7"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_ojglk"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_18ijq"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_1hhj7"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_8ouss"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_2tpy1"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_5th3n"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_cilmh"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_awp4f"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_vu87t"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_4uaus"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_nsfwv"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_qgh4c"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_a7by7"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_u5rpm"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_fl5lh"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_ku4ei"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_crr37"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_31oq2"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_vdn4l"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_fcyoa"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_y1a2e"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_a2jvn"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_lp7mv"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_trfgu"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_wqkqs"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_o6ncu"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_y6yrq"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_ego61"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_rqmkh"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_1ivqw"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_phgqe"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_o71vi"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_8ujfx"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_wdkcu"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_jffl8"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_voi7b"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_eqbxd"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_cgmb3"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_67e5s"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_6cswk"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
 [sub_resource type="Resource" id="Resource_4mn31"]
 script = ExtResource("5_c05cs")
 material = ExtResource("4_843cm")
@@ -804,6 +1224,31 @@ material = ExtResource("4_843cm")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_pxysd"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_0gmml"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_pbhn1"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_sk1cs"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_3xuur"]
+script = ExtResource("5_c05cs")
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_p3nwk"]
 script = ExtResource("5_c05cs")
 material = ExtResource("4_843cm")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
@@ -2452,6 +2897,1031 @@ sector_material = ExtResource("4_843cm")
 portal_wall_length = 30.0
 portal_destination_wall_length = -1.0
 
+[node name="Sector-1793w2" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(200, 8, 210, 8, 260, 8, 267, 8, 293, 8, 300, 8, 300, 42, 260.08633, 42, 210, 42, 200, 42, 195, 40, 195, 10)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_261ch")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2y" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(210, 5, 260, 5, 260, 8, 210, 8)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_0b5k7")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 50.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2y2" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(200, 0, 200, -15, 246, -16, 254, -16, 256, -16, 263, -16, 297, -15, 297, -5, 297, 0, 290, 5, 260, 5, 210, 5)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_j2t6o")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 15.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2y2d" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(263, -31, 297, -31, 297, -15, 263, -16)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_em26r")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 34.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2y2c" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(256, -31, 263, -31, 263, -16, 256, -16)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_w1rrj")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 7.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2y2e" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(263, -40, 293, -40, 297, -31, 263, -31, 256, -31)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_n75bg")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 30.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2y2b" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(246, -31, 254, -30.8, 254, -16, 246, -16)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_hx4oo")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 8.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2y2f" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(200, -31, 204, -40, 246, -40, 254, -30.8, 246, -31)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_rclok")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 9.848858
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2y2a" type="Polygon2D" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(200, -30.8, 246, -31, 246, -16, 200, -15)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_c54in")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+enable_portal = true
+portal_destination = NodePath("../Sector-1793w2t")
+portal_wall = 3
+portal_destination_wall = 1
+portal_wall_length = 16.0
+portal_destination_wall_length = 16.0
+
+[node name="Sector-1793w2x" type="Polygon2D" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(267, 7, 293, 7, 293, 8, 267, 8)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_vlner")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+enable_portal = true
+portal_destination = NodePath("../Sector-7459")
+portal_destination_wall = 5
+portal_wall_length = 26.0
+portal_destination_wall_length = 26.0
+
+[node name="Sector-1793w2f" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(300, -39, 310, -40, 320, -40, 330, -39, 330, -20, 330, -10, 330, 0, 330, 50, 330, 60, 330, 70, 330, 89, 320, 90, 310, 90, 300, 89, 300, 80, 300, 70, 300, 42, 300, 8, 300, -5, 300, -15)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_vbpfj")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.049875
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(310, -42, 320, -42, 320, -40, 310, -40)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_iwhso")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3a" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(300, -42, 300, -70, 303, -70, 309, -70, 310, -70, 320, -70, 326, -65, 326, -60, 326, -50, 326, -45, 320, -42, 310, -42, 309, -42, 304, -42)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_ogo4b")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 28.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3c" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(310, -73, 320, -73, 320, -70, 310, -70)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_tf4a5")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3c2" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(304, -80, 326, -80, 320, -73, 310, -73)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_ncqx1")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 22.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3c2a" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(304, -112, 310, -120, 320, -120, 326, -112, 326, -80, 304, -80)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_iw7k3")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3c2b" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(310, -123, 320, -123, 320, -120, 310, -120)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_klln4")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3c2c" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(280, -150, 350, -150, 320, -123, 310, -123)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_x7mcd")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 70.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3c2d" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(280, -164, 300, -164, 330, -164, 350, -164, 350, -150, 280, -150)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_njnba")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 20.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3c2g" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(280, -190, 300, -210, 300, -190, 300, -164, 280, -164)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_bn4q2")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 28.284271
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3c2e" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(300, -190, 330, -190, 330, -164, 300, -164)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_8ow76")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 30.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3c2f" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(350, -190, 350, -164, 330, -164, 330, -190, 330, -210)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_henl7")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 26.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3b" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(330, -60, 330, -50, 326, -50, 326, -60)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_ex82b")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3d" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(340, -90, 340, -80, 340, -60, 340, -50, 332, -50, 330, -50, 330, -60, 330, -90)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_q20ho")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3f" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(360, -100, 360, -90, 360, -80, 340, -80, 340, -90, 350, -100)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_34rch")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3g" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(363, -100, 363, -90, 360, -90, 360, -100)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_0fvvy")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3h" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(369, -100, 369, -87, 369, -80, 363, -80, 363, -90, 363, -100)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_ja81k")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 13.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3q" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(375, -100, 384, -100, 389, -100, 398, -100, 403, -100, 405, -98, 405, -87, 401, -87, 399, -87, 391, -87, 389, -87, 381, -87, 379, -87, 371, -87, 369, -87, 369, -100)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_i5vll")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 9.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3t" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(389, -102, 398, -102, 398, -100, 389, -100)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_gdi7k")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 9.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3u" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(388, -110, 399, -110, 399, -102, 398, -102, 389, -102, 388, -102)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_eyavm")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 11.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3r" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(74, -30)
+polygon = PackedVector2Array(371, -102, 380, -102, 380, -100, 371, -100)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_hqe3k")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 9.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3s" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(74, -30)
+polygon = PackedVector2Array(370, -102, 370, -110, 381, -110, 381, -102, 380, -102, 371, -102)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_gnlmd")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 8.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3i" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(371, -87, 371, -80, 369, -80, 369, -87)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_tkunq")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 7.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3j" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(379, -87, 379, -80, 371, -80, 371, -87)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_66up2")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 7.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3k" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(381, -87, 381, -80, 379, -80, 379, -87)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_yde0q")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 7.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3l" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(389, -87, 389, -80, 381, -80, 381, -87)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_x58c3")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 7.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3m" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(391, -87, 391, -80, 389, -80, 389, -87)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_lc6bk")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 7.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3n" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(399, -87, 399, -80, 391, -80, 391, -87)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_tydk3")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 7.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3o" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(401, -87, 401, -80, 399, -80, 399, -87)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_tv4eq")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 7.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3p" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(405, -87, 405, -80, 401, -80, 401, -87)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_pb5eg")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 7.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3e" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(342, -60, 342, -50, 340, -50, 340, -60)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_bgrs7")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3v" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(350, -70, 360, -70, 360, -60, 360, -50, 342, -50, 342, -60)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_kuuup")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3w" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(403, -70, 403, -60, 399, -60, 390, -60, 386, -60, 377.17102, -60.000008, 373, -60, 364, -60, 360, -60, 360, -70)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_ab4f0")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3w2" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(399, -58, 390, -58, 390, -60, 399, -60)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_8h6u7")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 9.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3w2a" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(400, -58, 400, -50, 389, -50, 389, -58, 390, -58, 399, -58)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_ojglk")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 8.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3z" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(386, -58, 377, -58, 377.17102, -60.000008, 386, -60)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_18ijq")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 9.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3za" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(387, -58, 387, -50, 376, -50, 376, -58, 377, -58, 386, -58)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_1hhj7")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 8.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3x" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(373, -58, 364, -58, 364, -60, 373, -60)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_8ouss")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 9.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f3y" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(374, -58, 374, -50, 363, -50, 363, -58, 364, -58, 373, -58)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_2tpy1")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 8.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f2" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(320, 92, 310, 92, 310, 90, 320, 90)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_5th3n")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f2a" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(330, 94, 330, 110, 330, 140, 300, 140, 300, 94, 310, 92, 320, 92)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_cilmh")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 16.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f2e" type="Polygon2D" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(400, 110, 403, 120, 403, 130, 400, 140, 330, 140, 330, 110, 370, 110, 390, 110)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_awp4f")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+enable_portal = true
+portal_destination = NodePath("../Sector-318")
+portal_wall = 6
+portal_destination_wall = 4
+portal_wall_length = 20.0
+portal_destination_wall_length = 20.0
+
+[node name="Sector-1793w2f2b" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(330, 160, 320, 170, 300, 170, 300, 140, 330, 140)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_vu87t")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 14.142136
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f2d" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(330, 180, 330, 210, 330, 220, 330, 240, 330, 247, 320, 250, 310, 250, 300, 248, 300, 210, 300, 180, 300, 170, 320, 170)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_4uaus")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 30.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f2i" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(320, 253, 310, 253, 310, 250, 320, 250)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_nsfwv")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f2j" type="Polygon2D" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(329, 260, 301, 260, 310, 253, 320, 253)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_qgh4c")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+enable_portal = true
+portal_destination = NodePath("../Sector-1793w2f3a")
+portal_wall_length = 28.0
+portal_destination_wall_length = 28.0
+
+[node name="Sector-1793w2f2h" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(285, 207, 274, 195, 281, 184, 300, 180, 300, 210)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_a7by7")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 16.27882
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f2g" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(334, 220, 334, 240, 330, 240, 330, 220)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_u5rpm")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 20.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f2f" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(400, 180, 400, 185, 400, 205, 400, 210, 330, 210, 330, 180)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_fl5lh")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 5.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2f2c" type="Polygon2D" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(230, 170, 227, 160, 227, 150, 230, 140, 300, 140, 300, 170, 260, 170, 240, 170)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_ku4ei")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+enable_portal = true
+portal_destination = NodePath("../Sector-1793w2f2f")
+portal_wall = 6
+portal_destination_wall = 1
+portal_wall_length = 20.0
+portal_destination_wall_length = 20.0
+
+[node name="Sector-1793w2z" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -15)
+polygon = PackedVector2Array(297, -20, 297, -30, 300, -30, 300, -20)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_crr37")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2n" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(332, 60, 332, 70, 330, 70, 330, 60)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_31oq2")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2o" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(332, -10, 332, -20, 332, -30, 350, -40, 350, -38, 350, -10, 350, 60, 350, 90, 332, 80, 332, 70, 332, 60, 332, 50, 332, 0)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_vdn4l")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2o2" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(330, 50, 330, 0, 332, 0, 332, 50)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_fcyoa")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 50.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2u" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(360, 70, 360, 90, 350, 90, 350, 60)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_y1a2e")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 20.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2v" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(370, 70, 370, 90, 360, 90, 360, 70)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_a2jvn")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 20.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2w" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(380, 60, 380, 90, 370, 90, 370, 70)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_lp7mv")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 30.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2q" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(360, -38, 360, -20, 350, -10, 350, -38)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_trfgu")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 18.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2r" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(370, -38, 370, -20, 360, -20, 360, -38)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_wqkqs")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 18.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2s" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(380, -38, 380, -10, 370, -20, 370, -38)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_o6ncu")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 28.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2t" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(400, -30, 400, -16, 400, 0, 400, 80, 380, 90, 380, 60, 380, -10, 380, -40)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_y6yrq")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 14.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2p" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(74, -26)
+polygon = PackedVector2Array(376, -14, 376, 56, 366, 66, 356, 66, 346, 56, 346, -14, 356, -24, 366, -24)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_ego61")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 70.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2m" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(332, -20, 332, -10, 330, -10, 330, -20)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_rqmkh")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2g" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(297, 80, 297, 70, 300, 70, 300, 80)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_1ivqw")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2h" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(295, 86, 260, 86, 260, 60, 297, 60, 297, 70, 297, 80)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_phgqe")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 35.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2k" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(210, 86, 210, 60, 260, 60, 260, 86)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_o71vi")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 26.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2l" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(220, 50, 260, 50, 260, 60, 210, 60)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_8ujfx")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 40.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2a" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(260, 45, 210, 45, 210, 42, 260.08633, 42)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_wdkcu")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 50.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2b" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(260, 45, 260, 50, 220, 50, 204, 50, 210, 45)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_jffl8")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 5.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2i" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(210, 60, 204, 60, 204, 50, 220, 50)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_voi7b")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 6.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2j" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(210, 86, 204, 83, 204, 60, 210, 60)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_eqbxd")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 6.708204
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2c" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(290, 45, 297, 50, 288, 50, 260, 50, 260, 45)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_cgmb3")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 8.602325
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2e" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(288, 60, 260, 60, 260, 50, 288, 50)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_67e5s")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 28.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-1793w2d" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -30)
+polygon = PackedVector2Array(297, 60, 288, 60, 288, 50, 297, 50)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_6cswk")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 9.0
+portal_destination_wall_length = -1.0
+
 [node name="Sector-1793s" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
 texture_filter = 1
 texture_repeat = 2
@@ -2738,6 +4208,70 @@ data = SubResource("Resource_pxysd")
 ceiling_height = 1.5
 sector_material = ExtResource("4_843cm")
 portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-7459" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(258, -91)
+polygon = PackedVector2Array(-1.9297485, -8.107391, 0.070251465, -30.107391, 24.070251, -45.10739, 62.07025, -36.10739, 65, -13, 48, 9, 22, 9)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_0gmml")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+enable_portal = true
+portal_wall_length = 22.090721
+portal_destination_wall_length = -1.0
+
+[node name="Sector-318" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(300, 190)
+polygon = PackedVector2Array(0, 0, 10, 0, 10, 30, 0, 30, 0, 25, 0, 5)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_pbhn1")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-318b" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(300, 190)
+polygon = PackedVector2Array(20, 0, 40, 0, 50, 0, 50, 30, 10, 30, 10, 0)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_sk1cs")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 20.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-318c" type="Polygon2D" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(300, 190)
+polygon = PackedVector2Array(60, 0, 60, 5, 60, 25, 60, 30, 50, 30, 50, 0)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_3xuur")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+enable_portal = true
+portal_destination = NodePath("../Sector-1793w2f2g")
+portal_wall = 1
+portal_wall_length = 20.0
+portal_destination_wall_length = 20.0
+
+[node name="Sector-318a" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(300, 190)
+polygon = PackedVector2Array(20, -5, 40, -5, 40, 0, 20, 0)
+script = ExtResource("3_d3v4h")
+data = SubResource("Resource_p3nwk")
+ceiling_height = 1.5
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 20.0
 portal_destination_wall_length = -1.0
 
 [node name="Entities" type="Node2D" parent="."]
