@@ -1338,7 +1338,7 @@ source = NodePath("../../../Activators/DoorToExit")
 floor_mode = 2
 floor_height = 7.5
 ceiling_mode = 2
-ceiling_height = 10.0
+ceiling_height = 10.5
 
 [node name="Sector-8851k3j" parent="Sectors" instance=ExtResource("2_yr043")]
 position = Vector2(20, -20)
@@ -1373,7 +1373,7 @@ source = NodePath("../../../Activators/DoorBackTOStaircase")
 floor_mode = 2
 floor_height = 7.75
 ceiling_mode = 2
-ceiling_height = 9.75
+ceiling_height = 10.25
 
 [node name="Sector-8851k2a" parent="Sectors" instance=ExtResource("2_yr043")]
 position = Vector2(20, 10)
@@ -2914,16 +2914,16 @@ position = Vector2(109, 8)
 position = Vector2(116, 2)
 
 [node name="HpBig3" parent="Entities" instance=ExtResource("31_isihr")]
-position = Vector2(-172, -79)
+position = Vector2(-165, -80)
 
 [node name="HpBig4" parent="Entities" instance=ExtResource("31_isihr")]
-position = Vector2(-92, -180)
+position = Vector2(-96, -180)
 
 [node name="ShotgunAmmo3" parent="Entities" instance=ExtResource("28_5rdpl")]
-position = Vector2(-108, -78)
+position = Vector2(-116, -79)
 
 [node name="ShotgunAmmo4" parent="Entities" instance=ExtResource("28_5rdpl")]
-position = Vector2(-192, -182)
+position = Vector2(-185, -179)
 
 [node name="HpBig5" parent="Entities" instance=ExtResource("31_isihr")]
 position = Vector2(-216, -205)
