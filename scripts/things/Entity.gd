@@ -42,6 +42,7 @@ func _get_forward_direction()->Vector3:
 	return Vector3(rot.x, rot.y, 0.0)
 
 
+@export_group("")
 ## Create a new [Trigger] attached to this [Entity]
 @export_tool_button("Add Trigger") var _add_trigger_tool_button = func()->void: NodeUtils.instantiate_child_by_type_and_select(self, Trigger, "Trigger")
 

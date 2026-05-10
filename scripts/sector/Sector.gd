@@ -106,6 +106,7 @@ extends EditablePolygon
 	if selected[0] == self: return ErrorUtils.report_error("Cannot link with itself!")
 	portal_destination = selected[0]
 	print("Linked {0} with {1}".format([self.get_full_name(), portal_destination.get_full_name()]))
+	NodeUtils.set_selection([self])
 	
 
 ## Check whether this [Sector] has a valid portal originating from it.
