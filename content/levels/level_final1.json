@@ -2838,7 +2838,7 @@
 			2.20000004768372
 		],
 		[
-			-35.7000007629395,
+			-35.2999992370605,
 			2.20000004768372
 		],
 		[
@@ -2954,7 +2954,7 @@
 			7.0
 		],
 		[
-			-35.7000007629395,
+			-35.2999992370605,
 			2.29999995231628
 		],
 		[
@@ -4438,7 +4438,7 @@
 			8.19999980926514
 		],
 		[
-			-29.3999996185303,
+			-29.0,
 			8.19999980926514
 		],
 		[
@@ -9245,14 +9245,6 @@
 			]
 		},
 		{
-			"alt_states": [
-				{
-					"activator": "ActivatorDoorCircle",
-					"ceiling": 20.0,
-					"floor": 13.0,
-					"move_speed": 1.0
-				}
-			],
 			"ceiling": 20.0,
 			"ceiling_surface": {
 				"id": "floor2",
@@ -9267,7 +9259,7 @@
 				"tile_rotations_count": 2
 			},
 			"debug_name": "Sectors::Sector-1793l17",
-			"floor": 14.99,
+			"floor": 15.0,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -9292,54 +9284,9 @@
 			"portal_wall": -1,
 			"wall_surfaces": [
 				[],
-				[
-					{
-						"begin_height": 14.99,
-						"end_height": 15.0,
-						"id": "wall3",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 14.99,
-						"end_height": 15.0,
-						"id": "wall3",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 14.99,
-						"end_height": 15.0,
-						"id": "wall3",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				]
+				[],
+				[],
+				[]
 			]
 		},
 		{
@@ -9478,6 +9425,14 @@
 			]
 		},
 		{
+			"alt_states": [
+				{
+					"activator": "ActivatorDoorCircle",
+					"ceiling": 20.0,
+					"floor": 13.0,
+					"move_speed": 1.0
+				}
+			],
 			"ceiling": 20.0,
 			"ceiling_surface": {
 				"id": "floor2",
@@ -9492,7 +9447,7 @@
 				"tile_rotations_count": 2
 			},
 			"debug_name": "Sectors::Sector-1793l13",
-			"floor": 15.0,
+			"floor": 14.99,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -9517,9 +9472,54 @@
 			"portal_wall": -1,
 			"wall_surfaces": [
 				[],
-				[],
-				[],
-				[]
+				[
+					{
+						"begin_height": 14.99,
+						"end_height": 15.0,
+						"id": "wall3",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 14.99,
+						"end_height": 15.0,
+						"id": "wall3",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 14.99,
+						"end_height": 15.0,
+						"id": "wall3",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				]
 			]
 		},
 		{
@@ -9730,7 +9730,7 @@
 				[
 					{
 						"begin_height": 0.0,
-						"end_height": 14.99,
+						"end_height": 15.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -9936,7 +9936,7 @@
 				[
 					{
 						"begin_height": 0.0,
-						"end_height": 15.0,
+						"end_height": 14.99,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -13112,7 +13112,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.5,
+						"end_height": 10.1,
 						"id": "wall3",
 						"offset": [
 							0.0,
@@ -13443,7 +13443,7 @@
 				"tile_rotations_count": 2
 			},
 			"debug_name": "Sectors::Sector-1793x2j",
-			"floor": 10.5,
+			"floor": 10.1,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -13473,8 +13473,8 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 10.5,
-						"end_height": 13.0,
+						"begin_height": 10.1,
+						"end_height": 13.2,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -13490,7 +13490,7 @@
 				[],
 				[
 					{
-						"begin_height": 10.5,
+						"begin_height": 10.1,
 						"end_height": 16.0,
 						"id": "bricks",
 						"offset": [
@@ -13506,7 +13506,7 @@
 				],
 				[
 					{
-						"begin_height": 10.5,
+						"begin_height": 10.1,
 						"end_height": 16.0,
 						"id": "bricks",
 						"offset": [
@@ -13524,7 +13524,7 @@
 				[],
 				[
 					{
-						"begin_height": 10.5,
+						"begin_height": 10.1,
 						"end_height": 14.0,
 						"id": "bricks",
 						"offset": [
@@ -13540,7 +13540,7 @@
 				],
 				[
 					{
-						"begin_height": 10.5,
+						"begin_height": 10.1,
 						"end_height": 14.0,
 						"id": "bricks",
 						"offset": [
@@ -13571,7 +13571,7 @@
 				"tile_rotations_count": 2
 			},
 			"debug_name": "Sectors::Sector-1793x2m",
-			"floor": 13.0,
+			"floor": 13.2,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -13598,7 +13598,7 @@
 				[],
 				[
 					{
-						"begin_height": 13.0,
+						"begin_height": 13.2,
 						"end_height": 16.0,
 						"id": "bricks",
 						"offset": [
@@ -13615,7 +13615,7 @@
 				[],
 				[
 					{
-						"begin_height": 13.0,
+						"begin_height": 13.2,
 						"end_height": 16.0,
 						"id": "bricks",
 						"offset": [
@@ -13687,7 +13687,22 @@
 						"tile_rotations_count": 1
 					}
 				],
-				[],
+				[
+					{
+						"begin_height": 13.0,
+						"end_height": 13.2,
+						"id": "wall3",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
 				[
 					{
 						"begin_height": 13.0,
@@ -18769,7 +18784,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.5,
+						"end_height": 10.1,
 						"id": "wall3",
 						"offset": [
 							0.0,
@@ -18860,7 +18875,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.5,
+						"end_height": 10.1,
 						"id": "wall3",
 						"offset": [
 							0.0,
