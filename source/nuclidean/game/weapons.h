@@ -57,6 +57,8 @@ struct WeaponStats
   f32            loudness_dist  = 20.0f;
   f32            spread_amount  = 0.0f;
   color3         flash_color    = VEC3_ZERO;
+  f32            recoil_coeff      = 1.0f; // multiplies the default recoil amount
+  f32            recoil_time_coeff = 1.0f; // multiplies the default recoil time
 };
 
 struct WeaponAnim
