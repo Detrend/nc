@@ -27,12 +27,28 @@ namespace nc
   }
 
 
-  void ActivatorHook_LevelTransition::load(const SerializedData& data) {
+  void ActivatorHook_LevelTransition::load(const SerializedData& data) 
+  {
     this->destination = std::string_view(data["destination"]);
   }
-  void ActivatorHook_LevelTransition::on_activated_start() {
+  void ActivatorHook_LevelTransition::on_activated_start([[maybe_unused]] const ActivatorHookArg& args)
+  {
     GameSystem& gs = GameSystem::get();
     gs.end_level_and_go_to_another_one_from_gamemode(destination);
+  }
+
+
+  void ActivatorHook_Jumppad::load(const SerializedData& data) 
+  {
+    const auto& vec_js = data["direction"];
+    this->direction = vec3(vec_js[0], vec_js[2], vec_js[1]);
+  }
+  void ActivatorHook_Jumppad::on_activated_start(const ActivatorHookArg& args)
+  {
+    for (const auto& entity_id : args.entities) {
+      Entity *const entity = GameSystem::get().get_entities().get_entity(entity_id);
+      (void)entity;
+    }
   }
 
 }

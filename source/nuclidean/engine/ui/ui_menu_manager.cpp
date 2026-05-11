@@ -141,6 +141,12 @@ void MenuManager::set_visible(bool visibility)
   current_page = MenuPage::main_page;
 }
 
+//=============================================================================================
+bool MenuManager::get_is_visible() const 
+{
+  return is_visible;
+}
+
 //===============================================================================================
 void MenuManager::update()
 {

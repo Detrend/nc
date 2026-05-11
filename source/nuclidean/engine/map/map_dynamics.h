@@ -75,18 +75,24 @@ struct TriggerData
   }
 };
 
+struct ActivatorHookArg {
+  f32 delta;
+  std::vector<EntityID> entities;
+};
 class IActivatorHook
 {
 public:
+
   using SerializedData = nlohmann::json;
   
   virtual ~IActivatorHook(){}
 
   virtual void load(const SerializedData& data) = 0;
-  virtual void on_activated_update([[maybe_unused]]const f32 delta) {}
-  virtual void on_activated_start(){}
-  virtual void on_activated_end(){}
+  virtual void on_activated_update([[maybe_unused]]const ActivatorHookArg & args) {}
+  virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args){}
+  virtual void on_activated_end([[maybe_unused]] const ActivatorHookArg& args){}
 };
+
 
 struct ActivatorData
 {
@@ -117,7 +123,7 @@ struct MapDynamics
 
   void evaluate_activators
   (
-    std::vector<u16>& out_values, f32 update_dt = 0.0f, bool notify = false
+    std::vector<u16>& out_values, f32 update_dt = 0.0f, bool notify = false, std::vector<ActivatorHookArg> *const out_info = nullptr
   );
 
   bool switch_wall_segment_trigger(SectorID sector, WallID wall, u8 segment, bool& turned_on);
