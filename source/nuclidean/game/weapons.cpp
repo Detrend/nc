@@ -24,7 +24,7 @@ WeaponStats WEAPON_STATS[] =
     .shoot_snd = Sounds::hurt,
     .equip_sound = Sounds::mellee_equip,
     .loudness_dist = 0.0f,
-    .recoil_coeff  = 0.3f,
+    .recoil_coeff  = -0.1f,
     .recoil_time_coeff = 1.0f,
   },
 
@@ -39,7 +39,7 @@ WeaponStats WEAPON_STATS[] =
     .loudness_dist = 30.0f,
     .spread_amount = 0.15f,
     .flash_color   = colors::ORANGE,
-    .recoil_coeff  = 2.0f,
+    .recoil_coeff  = 1.0f,
     .recoil_time_coeff = 1.4f,
   },
 
