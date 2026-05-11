@@ -29,6 +29,24 @@ class  Pickup;
 namespace nc
 {
 
+// All data stored inline so they are trivially serializable
+template<typename T, u8 StackSize>
+struct ViewBobStack
+{
+  struct Bob
+  {
+    T   offset{};
+    f32 time_left = 0.0f;
+    f32 time_max  = 1.0f;
+    f32 time_in   = 0.0f;
+  };
+  std::array<Bob, StackSize> bobs{};
+
+  bool push_one(T offset, f32 time, f32 time_in = 0.0f);
+  void update(f32 delta);
+  T    get_sum() const;
+};
+
 class Player : public Entity
 {
 public:
@@ -60,7 +78,6 @@ public:
 
   vec3    get_look_direction() const;
   vec3    get_eye_pos()        const;
-  f32     get_view_height()    const;
 
   WeaponType get_equipped_weapon()         const;
   bool       has_weapon(WeaponType weapon) const;
@@ -119,9 +136,14 @@ private:
   // Alerts enemies close to the player
   void alert_nearby_enemies(f32 distance);
 
-  vec3 velocity = VEC3_ZERO; // forward/back - left/right velocity
-  static inline f32 view_height = 0.5f;
+  // Value interpolated in the [0, 1] interval
+  // 0 when not moving or in air otherwise 1
+  f32 calc_camera_sway_coeff() const;
 
+  // Gun/camera sway in x/y directions
+  vec2 calc_sway_amount() const;
+
+  vec3 velocity    = VEC3_ZERO; // forward/back - left/right velocity
   vec3 forward     = VEC3_ZERO;
   f32  angle_pitch = 0.0f; //UP-DOWN
   f32  angle_yaw   = 0.0f; //LET-RIGHT
@@ -140,6 +162,9 @@ private:
   f32 time_since_start      = 0.0f;
   f32 air_time              = 0.0f;
   f32 time_since_death      = 0.0f;
+
+  ViewBobStack<vec2, 10> rotation_offsets; // camera rotation offsets
+  ViewBobStack<f32,  6>  position_offsets; // camera y-pos offsets
 
   // Bit flags for the weapons owned
   WeaponFlags owned_weapons  = 0;

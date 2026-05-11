@@ -62,6 +62,60 @@ constexpr f32 MELEE_DAMAGE_RANGE = 2.25f;
 constexpr f32 PLAYER_STEP_HEIGHT_MUL = 0.3f; // Multiple of player's height
 
 //==============================================================================
+template<typename T, u8 StackSize>
+bool ViewBobStack<T, StackSize>::push_one(T offset, f32 time, f32 time_in)
+{
+  for (u8 i = 0; i < StackSize; ++i)
+  {
+    if (bobs[i].time_left <= 0.0f)
+    {
+      bobs[i].offset    = offset;
+      bobs[i].time_left = time;
+      bobs[i].time_max  = time;
+      bobs[i].time_in   = time_in;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+//==============================================================================
+template<typename T, u8 StackSize>
+void ViewBobStack<T, StackSize>::update(f32 delta)
+{
+  for (u8 i = 0; i < StackSize; ++i)
+  {
+    bobs[i].time_left = max(0.0f, bobs[i].time_left-delta);
+  }
+}
+
+//==============================================================================
+template<typename T, u8 StackSize>
+T ViewBobStack<T, StackSize>::get_sum() const
+{
+  T sum{};
+
+  for (const Bob& bob : bobs)
+  {
+    nc_assert(bob.time_max > 0.0f);
+    f32 coeff = 0.0f;
+    if (bob.time_max - bob.time_left < bob.time_in)
+    {
+      coeff = (bob.time_max - bob.time_left) / bob.time_in;
+    }
+    else
+    {
+      coeff = (bob.time_left - bob.time_in) / (bob.time_max - bob.time_in);
+    }
+
+    sum += bob.offset * coeff;
+  }
+
+  return sum;
+}
+
+//==============================================================================
 Player::Player(vec3 position, vec3 forward)
 : Base(position, PLAYER_RADIUS, PLAYER_HEIGHT)
 , angle_yaw(atan2f(forward.z, -forward.x) + HALF_PI) // MR says: no idea if it's ok
@@ -70,7 +124,7 @@ Player::Player(vec3 position, vec3 forward)
 , current_weapon(WeaponTypes::wrench)
 , weapon_fsm(0)
 {
-  this->camera.update_transform(position, angle_yaw, angle_pitch, view_height);
+  this->camera.update_transform(position, angle_yaw, angle_pitch, 0.0f, 0.0f);
 
   // Has to be called to set-up the FSM
   this->change_weapon(this->get_equipped_weapon());
@@ -145,6 +199,7 @@ void Player::calculate_wish_velocity(PlayerSpecificInputs input, f32 delta_secon
   if (wants_jump && can_jump)
   {
     this->velocity.y = CVars::player_jump_force;
+    this->rotation_offsets.push_one(vec2{0, deg2rad(1.0f)} * CVars::player_jump_offset_coeff, 0.3f, 0.05f);
     SoundSystem::get().play_oneshot(Sounds::player_jump);
   }
 }
@@ -449,6 +504,9 @@ void Player::update_gun_sway(f32 delta)
 //==============================================================================
 void Player::update_camera(f32 delta)
 {
+  this->rotation_offsets.update(delta);
+  this->position_offsets.update(delta);
+
   if (!alive)
   {
     dead_camera_offset -= delta * 1.0f;
@@ -463,7 +521,7 @@ void Player::update_camera(f32 delta)
 
     camera.update_transform
     (
-      this->get_position(), this->angle_yaw, this->angle_pitch,
+      this->get_position(), this->angle_yaw, this->angle_pitch, 0.0f,
       dead_camera_offset + this->vertical_camera_offset
     );
 
@@ -479,11 +537,19 @@ void Player::update_camera(f32 delta)
     vertical_camera_offset = 0.0f;
   }
 
-  camera.update_transform
-  (
-    this->get_position(), this->angle_yaw, this->angle_pitch,
-    PLAYER_EYE_HEIGHT  + this->vertical_camera_offset
-  );
+  vec2 sway = this->calc_sway_amount() * this->calc_camera_sway_coeff();
+
+  f32 roll_coeff = dot(this->velocity.xz(), flipped(normalize_or_zero(this->forward.xz())));
+
+  vec2 camera_rot_offset = this->rotation_offsets.get_sum();
+  f32  camera_y_offset   = this->position_offsets.get_sum();
+  vec3 pos   = this->get_position();
+  f32  yaw   = this->angle_yaw   + camera_rot_offset.x;
+  f32  pitch = this->angle_pitch + camera_rot_offset.y;
+  f32  roll  = deg2rad(roll_coeff * CVars::player_head_side_coeff_during_strafe);
+  f32  y_off = PLAYER_EYE_HEIGHT + this->vertical_camera_offset + sway.y * CVars::player_head_bob_y_coeff + camera_y_offset * CVars::player_head_move_y_coeff;
+
+  camera.update_transform(pos, yaw, pitch, roll, y_off);
 }
 
 //==============================================================================
@@ -622,6 +688,12 @@ void Player::do_attack()
     }
   }
 
+  // Do a camera recoil
+  constexpr f32 IN_TIME_COEFF = 0.1f;
+  f32  recoil_amount = WEAPON_STATS[weapon].recoil_coeff      * CVars::player_recoil_degree;
+  f32  recoil_time   = WEAPON_STATS[weapon].recoil_time_coeff * CVars::player_recoil_time;
+  this->rotation_offsets.push_one(vec2{0, deg2rad(recoil_amount)}, recoil_time, recoil_time * IN_TIME_COEFF);
+
   if (WEAPON_STATS[weapon].loudness_dist > 0.0f)
   {
     this->alert_nearby_enemies(WEAPON_STATS[weapon].loudness_dist);
@@ -700,6 +772,32 @@ void Player::alert_nearby_enemies(f32 distance)
 }
 
 //==============================================================================
+f32 Player::calc_camera_sway_coeff() const
+{
+  const f32 fadein_time = max(CVars::gun_sway_move_fadein_time, 0.001f);
+  const f32 fadein_air  = max(CVars::gun_sway_air_time, 0.001f);
+
+  // Movement
+  f32 movement_coeff = moving_time / fadein_time;
+
+  // Air
+  f32 air_coeff = 1.0f - air_time / fadein_air;
+
+  return movement_coeff * air_coeff;
+}
+
+//==============================================================================
+vec2 Player::calc_sway_amount() const
+{
+  const f32 sway_speed = CVars::gun_sway_speed;
+
+  f32 max_x = sin(sway_speed * time_since_start);
+  f32 max_y = sin(sway_speed * time_since_start * 2.0f);
+
+  return vec2{max_x, max_y};
+}
+
+//==============================================================================
 void Player::damage(int damage)
 {
   if (!alive)
@@ -715,8 +813,14 @@ void Player::damage(int damage)
     this->die();
     get_engine().get_module<UserInterfaceSystem>().get_ui_screen_effect()->did_damage(200);
   }
-  else {
-      SoundSystem::get().play_oneshot(Sounds::player_hurt);
+  else
+  {
+    f32  coeff  = clamp(damage / 100.0f, 0.0f, 1.0f);
+    f32  angle  = rng.next(0.0f, PI2);
+    vec2 offset = vec2{deg2rad(cos(angle)), deg2rad(sin(angle))} * coeff * CVars::player_hurt_shake_coeff;
+    this->rotation_offsets.push_one(offset, 0.2f, 0.1f);
+
+    SoundSystem::get().play_oneshot(Sounds::player_hurt);
   }
 }
 
@@ -817,12 +921,6 @@ vec3 Player::get_eye_pos() const
 }
 
 //==============================================================================
-f32 Player::get_view_height() const
-{
-  return this->view_height;
-}
-
-//==============================================================================
 WeaponType Player::get_equipped_weapon() const
 {
   return this->current_weapon;
@@ -833,14 +931,10 @@ void Player::get_gun_props(RenderGunProperties& props_out) const
 {
   const f32 death_limit    = 2.0f;
   const f32 max_gun_change = CVars::gun_change_time;
-  const f32 sway_speed     = CVars::gun_sway_speed;
   const f32 sway_amount    = CVars::gun_sway_amount;
-  const f32 fadein_time    = std::max(CVars::gun_sway_move_fadein_time, 0.001f);
-  const f32 fadein_air     = std::max(CVars::gun_sway_air_time, 0.001f);
 
   // Normal sway
-  f32 max_x = std::sin(sway_speed * time_since_start);
-  f32 max_y = std::sin(sway_speed * time_since_start * 2.0f);
+  vec2 default_sway = this->calc_sway_amount();
 
   // Gun change
   f32 gun_change_bounded = std::min(max_gun_change, time_since_gun_change);
@@ -851,17 +945,11 @@ void Player::get_gun_props(RenderGunProperties& props_out) const
 
   vec2 gun_change_offset = vec2{0.0f, min(death_limit, (1.0f - gun_change_coeff + time_since_death))};
 
-  // Movement
-  f32 movement_coeff = moving_time / fadein_time;
+  f32 total_coeff = this->calc_camera_sway_coeff();
 
-  // Air
-  f32 air_coeff = 1.0f - air_time / fadein_air;
+  vec2 sway = default_sway * total_coeff * sway_amount + gun_change_offset;
 
-  f32 total_coeff = movement_coeff * air_coeff;
-
-  vec2 sway = vec2{max_x, max_y} * total_coeff * sway_amount + gun_change_offset;
-
-  props_out.sway   = sway;
+  props_out.sway = sway;
 
   if (this->current_weapon != INVALID_WEAPON_TYPE)
   {

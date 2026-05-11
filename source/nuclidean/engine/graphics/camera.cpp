@@ -25,30 +25,28 @@ Camera* Camera::get()
 }
 
 //==============================================================================
-void Camera::update_transform(vec3 position, f32 yaw, f32 pitch)
+void Camera::update_transform(vec3 position, f32 yaw, f32 pitch, f32 roll)
 {
-  update_transform(position, yaw, pitch, 0.0f);
+  update_transform(position, yaw, pitch, roll, 0.0f);
 }
 
 //==============================================================================
-void Camera::update_transform(vec3 position, f32 yaw, f32 pitch, f32 y_offset)
+void Camera::update_transform(vec3 position, f32 yaw, f32 pitch, f32 roll, f32 y_offset)
 {
   m_position = position;
   m_position.y += y_offset;
-  m_yaw = yaw;
-  m_pitch = pitch;
-
   // taken from handle rotation
-  m_yaw = rem_euclid(m_yaw, 2.0f * PI);
-  m_pitch = clamp(m_pitch, -HALF_PI + 0.001f, HALF_PI - 0.001f);
+  yaw   = rem_euclid(yaw, 2.0f * PI);
+  pitch = clamp(pitch, -HALF_PI + 0.001f, HALF_PI - 0.001f);
 
-  m_forward = angleAxis(m_yaw, VEC3_Y) * angleAxis(m_pitch, VEC3_X) * -VEC3_Z;
+  m_up      = angleAxis(yaw, VEC3_Y) * angleAxis(roll,  VEC3_Z) *  VEC3_Y;
+  m_forward = angleAxis(yaw, VEC3_Y) * angleAxis(pitch, VEC3_X) * -VEC3_Z;
 }
 
 //==============================================================================
 mat4 Camera::get_view() const
 {
-  return lookAt(m_position, m_position + m_forward, VEC3_Y);
+  return lookAt(m_position, m_position + m_forward, m_up);
 }
 
 //==============================================================================
