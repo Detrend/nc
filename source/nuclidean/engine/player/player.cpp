@@ -621,14 +621,22 @@ void Player::do_attack()
       (
         hit.hit.entity.entity_id
       );
-
       nc_assert(target);
+
+      vec3 hit_pos = from + dir * MELEE_DAMAGE_RANGE * hit.coeff;
 
       if (Enemy* enemy = target->as<Enemy>())
       {
         s32 dmg = PROJECTILE_STATS[WEAPON_STATS[weapon].projectile].damage;
         enemy->damage(dmg, this->get_id());
         sound_system.play_oneshot(Sounds::melee_hit);
+
+        // Spawn blood particles
+        GameSystem::get().get_entities().create_entity<Particle>
+        (
+          hit_pos, "blood_splatter2",
+          4, 0.3f, colors::BLACK, 0.0f, 24.0f
+        );
       }
     }
   }
