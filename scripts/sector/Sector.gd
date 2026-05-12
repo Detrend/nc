@@ -30,6 +30,12 @@ extends EditablePolygon
 		data.ceiling_height = val
 		_update_visuals()
 
+@export var damage : int:
+	get: return data.damage
+	set(val):
+		data.damage = val
+		_update_visuals()
+
 ## Reference to [member data.material]
 @export var sector_material : SectorMaterial:
 	get: return data.material
