@@ -2123,7 +2123,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851",
 			"floor": 5.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2143,9 +2144,9 @@
 				1,
 				2
 			],
-			"portal_destination_wall": 2,
-			"portal_target": 94,
-			"portal_wall": 2,
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -2219,7 +2220,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8852",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8852",
 			"floor": 5.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2294,7 +2296,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8852a",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8852a",
 			"floor": 5.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2315,9 +2318,9 @@
 				4,
 				3
 			],
-			"portal_destination_wall": 3,
-			"portal_target": 138,
-			"portal_wall": 0,
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -2399,7 +2402,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851a",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851a",
 			"floor": 5.25,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2504,7 +2508,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851b",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851b",
 			"floor": 5.5,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2609,7 +2614,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851c",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851c",
 			"floor": 5.75,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2714,7 +2720,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851d",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851d",
 			"floor": 6.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2819,7 +2826,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851e",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851e",
 			"floor": 6.25,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2924,7 +2932,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851f",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851f",
 			"floor": 6.5,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3029,7 +3038,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851g",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851g",
 			"floor": 6.75,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3134,7 +3144,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851h",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851h",
 			"floor": 7.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3239,7 +3250,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851i",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851i",
 			"floor": 7.25,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3344,7 +3356,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851j",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851j",
 			"floor": 7.5,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3449,7 +3462,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851k",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851k",
 			"floor": 7.75,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3562,7 +3576,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851k3",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851k3",
 			"floor": 7.75,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3637,7 +3652,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851k3a",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851k3a",
 			"floor": 7.35,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3741,7 +3757,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851k3b",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851k3b",
 			"floor": 7.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -3845,7 +3862,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851k3c",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851k3c",
 			"floor": 7.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -4100,7 +4118,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851k3h",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851k3h",
 			"floor": 10.5,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -4123,8 +4142,8 @@
 				42
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 20,
-			"portal_wall": 4,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -4267,7 +4286,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851k3g",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851k3g",
 			"floor": 10.5,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -4290,8 +4310,8 @@
 				50
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 21,
-			"portal_wall": 1,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -4434,7 +4454,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851k3f",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851k3f",
 			"floor": 7.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -4455,9 +4476,9 @@
 				41,
 				40
 			],
-			"portal_destination_wall": 4,
-			"portal_target": 18,
-			"portal_wall": 0,
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -4524,7 +4545,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851k3e",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851k3e",
 			"floor": 7.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -4545,9 +4567,9 @@
 				37,
 				36
 			],
-			"portal_destination_wall": 1,
-			"portal_target": 19,
-			"portal_wall": 0,
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -4614,7 +4636,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851k3d",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851k3d",
 			"floor": 7.5,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -4712,7 +4735,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851k3i",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851k3i",
 			"floor": 7.5,
 			"floor_surface": {
 				"id": "wall_2",
@@ -4787,7 +4811,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851k3j",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851k3j",
 			"floor": 7.5,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5028,7 +5053,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851k2",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851k2",
 			"floor": 7.75,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5103,7 +5129,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851k2a",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851k2a",
 			"floor": 7.75,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5287,7 +5314,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851k2c",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851k2c",
 			"floor": 7.75,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5377,7 +5405,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851k2b",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851k2b",
 			"floor": 7.75,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5399,8 +5428,8 @@
 				71
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 70,
-			"portal_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -5467,7 +5496,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851l",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851l",
 			"floor": 8.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5572,7 +5602,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851m",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851m",
 			"floor": 8.25,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5677,7 +5708,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851n",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851n",
 			"floor": 8.5,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5782,7 +5814,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851o",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851o",
 			"floor": 8.75,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5901,7 +5934,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851p",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851p",
 			"floor": 9.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -6020,7 +6054,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851p2",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851p2",
 			"floor": 9.5,
 			"floor_surface": {
 				"id": "wall_2",
@@ -6044,9 +6079,9 @@
 				81,
 				79
 			],
-			"portal_destination_wall": 2,
-			"portal_target": 35,
-			"portal_wall": 0,
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -6116,7 +6151,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-view",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-view",
 			"floor": 9.5,
 			"floor_surface": {
 				"id": "wall_2",
@@ -6138,8 +6174,8 @@
 				92
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 34,
-			"portal_wall": 2,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[],
 				[
@@ -6197,7 +6233,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viex",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viex",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "moss",
@@ -6364,7 +6401,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-viex2",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viex2",
 			"floor": 5.0,
 			"floor_surface": {
 				"id": "moss",
@@ -6386,9 +6424,9 @@
 				95,
 				94
 			],
-			"portal_destination_wall": 1,
-			"portal_target": 133,
-			"portal_wall": 0,
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -6462,7 +6500,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey",
 			"floor": 0.5,
 			"floor_surface": {
 				"id": "moss",
@@ -6532,7 +6571,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2",
 			"floor": 1.25,
 			"floor_surface": {
 				"id": "moss",
@@ -6600,7 +6640,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2f",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2f",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "moss",
@@ -6666,7 +6707,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2g",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2g",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "moss",
@@ -6747,7 +6789,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2c",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2c",
 			"floor": 3.0,
 			"floor_surface": {
 				"id": "moss",
@@ -6785,7 +6828,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2h",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2h",
 			"floor": 3.0,
 			"floor_surface": {
 				"id": "moss",
@@ -6821,7 +6865,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2n",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2n",
 			"floor": 3.0,
 			"floor_surface": {
 				"id": "moss",
@@ -6891,7 +6936,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2o",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2o",
 			"floor": 3.0,
 			"floor_surface": {
 				"id": "moss",
@@ -6957,7 +7003,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2p",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2p",
 			"floor": 3.25,
 			"floor_surface": {
 				"id": "moss",
@@ -7023,7 +7070,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2q",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2q",
 			"floor": 3.25,
 			"floor_surface": {
 				"id": "moss",
@@ -7089,7 +7137,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2r",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2r",
 			"floor": 3.25,
 			"floor_surface": {
 				"id": "moss",
@@ -7155,7 +7204,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2s",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2s",
 			"floor": 3.25,
 			"floor_surface": {
 				"id": "moss",
@@ -7257,7 +7307,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2t",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2t",
 			"floor": 3.0,
 			"floor_surface": {
 				"id": "moss",
@@ -7338,7 +7389,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2l",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2l",
 			"floor": 3.0,
 			"floor_surface": {
 				"id": "moss",
@@ -7419,7 +7471,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2m",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2m",
 			"floor": 3.25,
 			"floor_surface": {
 				"id": "moss",
@@ -7485,7 +7538,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2u",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2u",
 			"floor": 3.25,
 			"floor_surface": {
 				"id": "moss",
@@ -7553,7 +7607,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2w",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2w",
 			"floor": 3.25,
 			"floor_surface": {
 				"id": "moss",
@@ -7619,7 +7674,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2x",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2x",
 			"floor": 3.25,
 			"floor_surface": {
 				"id": "moss",
@@ -7685,7 +7741,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2v",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2v",
 			"floor": 3.25,
 			"floor_surface": {
 				"id": "moss",
@@ -7751,7 +7808,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2i",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2i",
 			"floor": 3.0,
 			"floor_surface": {
 				"id": "moss",
@@ -7802,7 +7860,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2j",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2j",
 			"floor": 3.0,
 			"floor_surface": {
 				"id": "moss",
@@ -7868,7 +7927,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2y",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2y",
 			"floor": 8.285,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -7927,7 +7987,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2y2",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2y2",
 			"floor": 8.22,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -7984,7 +8045,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2y2a",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2y2a",
 			"floor": 8.165,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -8056,7 +8118,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2y2b",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2y2b",
 			"floor": 8.17,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -8123,7 +8186,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2y2c",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2y2c",
 			"floor": 8.28,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -8182,7 +8246,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2y2d",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2y2d",
 			"floor": 8.43,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -8232,7 +8297,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2y2e",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2y2e",
 			"floor": 8.39,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -8289,7 +8355,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2y2f",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2y2f",
 			"floor": 8.195,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -8361,7 +8428,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2y2g",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2y2g",
 			"floor": 8.25,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -8403,7 +8471,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2z",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2z",
 			"floor": 8.45,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -8443,7 +8512,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2k",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2k",
 			"floor": 3.0,
 			"floor_surface": {
 				"id": "moss",
@@ -8524,7 +8594,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2b",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2b",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "moss",
@@ -8548,8 +8619,8 @@
 				104
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 28,
-			"portal_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -8624,7 +8695,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2a",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2a",
 			"floor": 1.6,
 			"floor_surface": {
 				"id": "moss",
@@ -8705,7 +8777,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2d",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2d",
 			"floor": 1.0,
 			"floor_surface": {
 				"id": "moss",
@@ -8769,7 +8842,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viey2e",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viey2e",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "moss",
@@ -8850,7 +8924,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-viez",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-viez",
 			"floor": 1.0,
 			"floor_surface": {
 				"id": "moss",
@@ -8940,7 +9015,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851q",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851q",
 			"floor": 9.25,
 			"floor_surface": {
 				"id": "wall_2",
@@ -9059,7 +9135,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851r",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851r",
 			"floor": 9.5,
 			"floor_surface": {
 				"id": "wall_2",
@@ -9164,7 +9241,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851s",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851s",
 			"floor": 9.75,
 			"floor_surface": {
 				"id": "wall_2",
@@ -9269,7 +9347,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851t",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851t",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -9374,7 +9453,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851u",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851u",
 			"floor": 10.25,
 			"floor_surface": {
 				"id": "wall_2",
@@ -9479,7 +9559,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851v",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851v",
 			"floor": 10.5,
 			"floor_surface": {
 				"id": "wall_2",
@@ -9603,7 +9684,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851v3",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851v3",
 			"floor": 10.5,
 			"floor_surface": {
 				"id": "wall_2",
@@ -9761,7 +9843,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851v2",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851v2",
 			"floor": 10.5,
 			"floor_surface": {
 				"id": "wall_2",
@@ -9836,7 +9919,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851v2a",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851v2a",
 			"floor": 10.5,
 			"floor_surface": {
 				"id": "wall_2",
@@ -9857,9 +9941,9 @@
 				175,
 				174
 			],
-			"portal_destination_wall": 2,
-			"portal_target": 113,
-			"portal_wall": 0,
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -9941,7 +10025,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851w",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851w",
 			"floor": 10.75,
 			"floor_surface": {
 				"id": "wall_2",
@@ -10046,7 +10131,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851x",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851x",
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -10151,7 +10237,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851y",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851y",
 			"floor": 11.25,
 			"floor_surface": {
 				"id": "wall_2",
@@ -10256,7 +10343,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851z",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851z",
 			"floor": 11.5,
 			"floor_surface": {
 				"id": "wall_2",
@@ -10361,7 +10449,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851za",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851za",
 			"floor": 11.75,
 			"floor_surface": {
 				"id": "wall_2",
@@ -10466,7 +10555,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851zb",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851zb",
 			"floor": 12.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -10571,7 +10661,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851zc",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851zc",
 			"floor": 12.25,
 			"floor_surface": {
 				"id": "wall_2",
@@ -10676,7 +10767,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851zd",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851zd",
 			"floor": 12.5,
 			"floor_surface": {
 				"id": "wall_2",
@@ -10781,7 +10873,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851ze",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851ze",
 			"floor": 12.75,
 			"floor_surface": {
 				"id": "wall_2",
@@ -10886,7 +10979,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851zf",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851zf",
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -10991,7 +11085,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8851zg",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8851zg",
 			"floor": 13.25,
 			"floor_surface": {
 				"id": "wall_2",
@@ -11011,9 +11106,9 @@
 				197,
 				196
 			],
-			"portal_destination_wall": 2,
-			"portal_target": 0,
-			"portal_wall": 2,
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -11070,7 +11165,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-5822",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-5822",
 			"floor": 5.0,
 			"floor_surface": {
 				"id": "holes",
@@ -11106,7 +11202,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-5822a",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-5822a",
 			"floor": 4.6,
 			"floor_surface": {
 				"id": "holes",
@@ -11157,7 +11254,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-5822b",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-5822b",
 			"floor": 3.5,
 			"floor_surface": {
 				"id": "holes",
@@ -11238,7 +11336,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-5822c",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-5822c",
 			"floor": 4.0,
 			"floor_surface": {
 				"id": "holes",
@@ -11289,7 +11388,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-5822d",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-5822d",
 			"floor": 4.7,
 			"floor_surface": {
 				"id": "holes",
@@ -11340,7 +11440,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-5822e",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-5822e",
 			"floor": 3.5,
 			"floor_surface": {
 				"id": "holes",
@@ -11423,7 +11524,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-5823",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-5823",
 			"floor": 5.0,
 			"floor_surface": {
 				"id": "holes",
@@ -11459,7 +11561,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-5822a2",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-5822a2",
 			"floor": 4.6,
 			"floor_surface": {
 				"id": "holes",
@@ -11510,7 +11613,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-5822b2",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-5822b2",
 			"floor": 3.5,
 			"floor_surface": {
 				"id": "holes",
@@ -11591,7 +11695,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-5822c2",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-5822c2",
 			"floor": 4.0,
 			"floor_surface": {
 				"id": "holes",
@@ -11642,7 +11747,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-5822d2",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-5822d2",
 			"floor": 4.7,
 			"floor_surface": {
 				"id": "holes",
@@ -11693,7 +11799,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-5822e2",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-5822e2",
 			"floor": 3.5,
 			"floor_surface": {
 				"id": "holes",
@@ -11776,7 +11883,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-5824",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-5824",
 			"floor": 5.0,
 			"floor_surface": {
 				"id": "holes",
@@ -11812,7 +11920,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-5822a3",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-5822a3",
 			"floor": 4.6,
 			"floor_surface": {
 				"id": "holes",
@@ -11863,7 +11972,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-5822b3",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-5822b3",
 			"floor": 3.5,
 			"floor_surface": {
 				"id": "holes",
@@ -11944,7 +12054,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-5822c3",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-5822c3",
 			"floor": 4.0,
 			"floor_surface": {
 				"id": "holes",
@@ -11995,7 +12106,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-5822d3",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-5822d3",
 			"floor": 4.7,
 			"floor_surface": {
 				"id": "holes",
@@ -12046,7 +12158,8 @@
 			"ceiling_surface": {
 				"show": false
 			},
-			"debug_name": "Sector-5822e3",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-5822e3",
 			"floor": 3.5,
 			"floor_surface": {
 				"id": "holes",
@@ -12138,7 +12251,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677",
 			"floor": 3.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -12160,8 +12274,8 @@
 				214
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 83,
-			"portal_wall": 2,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[],
 				[
@@ -12213,7 +12327,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677a",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677a",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -12303,7 +12418,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677h",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677h",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -12348,7 +12464,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677q",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677q",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -12406,7 +12523,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677i",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677i",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -12526,7 +12644,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677n",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677n",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -12601,7 +12720,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677l",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677l",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -12676,7 +12796,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677m",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677m",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -12751,7 +12872,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677b",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677b",
 			"floor": 3.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -12826,7 +12948,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677c",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677c",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -12850,9 +12973,9 @@
 				231,
 				232
 			],
-			"portal_destination_wall": 1,
-			"portal_target": 125,
-			"portal_wall": 5,
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -12952,7 +13075,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677o",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677o",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -13012,7 +13136,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677p",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677p",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -13070,7 +13195,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677d",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677d",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -13094,9 +13220,9 @@
 				238,
 				239
 			],
-			"portal_destination_wall": 5,
-			"portal_target": 122,
-			"portal_wall": 1,
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -13196,7 +13322,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677j",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677j",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -13256,7 +13383,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677r",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677r",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -13331,7 +13459,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677e",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677e",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -13425,7 +13554,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677k",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677k",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -13485,7 +13615,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677s",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677s",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -13568,7 +13699,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677g",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677g",
 			"floor": 3.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -13643,7 +13775,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677t",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677t",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -13733,7 +13866,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677u",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677u",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -13756,8 +13890,8 @@
 				246
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 37,
-			"portal_wall": 1,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -13840,7 +13974,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7677f",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7677f",
 			"floor": 3.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -13923,7 +14058,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9515",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9515",
 			"floor": 5.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -14036,7 +14172,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-8473",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-8473",
 			"floor": 5.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -14149,7 +14286,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7795",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7795",
 			"floor": 5.0,
 			"floor_surface": {
 				"id": "rocks_with_pebbles",
@@ -14254,7 +14392,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7397",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7397",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "moss",
@@ -14276,8 +14415,8 @@
 				255
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 2,
-			"portal_wall": 3,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -14344,7 +14483,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7397a",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7397a",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "moss",
@@ -14419,7 +14559,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7397d",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7397d",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "moss",
@@ -14494,7 +14635,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7397b",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7397b",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "moss",
@@ -14569,7 +14711,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7397c",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7397c",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "moss",
@@ -14644,7 +14787,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7397e",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7397e",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "moss",
@@ -14719,7 +14863,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -14741,8 +14886,8 @@
 				269
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 153,
-			"portal_wall": 3,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -14809,7 +14954,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780m",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780m",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -14929,7 +15075,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780p",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780p",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -14951,8 +15098,8 @@
 				267
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 163,
-			"portal_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -15019,7 +15166,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780s",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780s",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -15079,7 +15227,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780o",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780o",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -15101,8 +15250,8 @@
 				274
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 159,
-			"portal_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -15169,7 +15318,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780r",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780r",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -15229,7 +15379,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780n",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780n",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -15251,8 +15402,8 @@
 				278
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 155,
-			"portal_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -15319,7 +15470,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780q",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780q",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -15387,7 +15539,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780a",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780a",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -15462,7 +15615,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780h",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780h",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -15483,9 +15637,9 @@
 				283,
 				282
 			],
-			"portal_destination_wall": 3,
-			"portal_target": 144,
-			"portal_wall": 0,
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -15575,7 +15729,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780d",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780d",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -15650,7 +15805,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780k",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780k",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -15672,8 +15828,8 @@
 				287
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 150,
-			"portal_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -15755,7 +15911,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780e",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780e",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "moss",
@@ -15830,7 +15987,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780g",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780g",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "moss",
@@ -15913,7 +16071,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780c",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780c",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -15988,7 +16147,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780j",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780j",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -16010,8 +16170,8 @@
 				294
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 148,
-			"portal_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
@@ -16093,7 +16253,8 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780f",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780f",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "moss",
@@ -16202,7 +16363,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780l",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780l",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -16360,7 +16522,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780b",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780b",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -16435,7 +16598,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-9780i",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-9780i",
 			"floor": 2.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -16457,8 +16621,8 @@
 				302
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 146,
-			"portal_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{

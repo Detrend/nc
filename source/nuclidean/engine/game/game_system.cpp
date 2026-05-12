@@ -74,6 +74,7 @@ namespace nc::map_helpers
 static void make_sector_helper(
   f32                                              in_floor_y,
   f32                                              in_ceil_y,
+  s32                                              damage,
   const std::vector<u16>&                          points,
   std::vector<map_building::SectorBuildData>&      out,
   int                                              portal_wall_id    = -1,
@@ -106,6 +107,7 @@ static void make_sector_helper(
     .ceil_y        = { in_ceil_y,  in_ceil_y  },
     .floor_surface = floor_surface,
     .ceil_surface  = ceiling_surface,
+    .damage        = damage
   });
 }
 
@@ -326,6 +328,7 @@ static void load_json_map
     {
       const f32 floor = js_sector["floor"];
       const f32 ceil = js_sector["ceiling"];
+      const s32 damage = js_sector["damage"];
 
       const SectorID portal_sector = js_sector["portal_target"];
       const int portal_wall = js_sector["portal_wall"];
@@ -355,7 +358,7 @@ static void load_json_map
         wrelid += 1;
       }
 
-      make_sector_helper(floor, ceil, point_indices, sectors, portal_wall, portal_destination_wall, portal_sector, floor_surface, ceiling_surface, wall_surfaces);
+      make_sector_helper(floor, ceil, damage ,point_indices, sectors, portal_wall, portal_destination_wall, portal_sector, floor_surface, ceiling_surface, wall_surfaces);
       map_building::SectorBuildData& build_data = sectors.back();
 
       // Multiple states
