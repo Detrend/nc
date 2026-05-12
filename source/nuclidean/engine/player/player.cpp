@@ -787,6 +787,27 @@ f32 Player::calc_camera_sway_coeff() const
 }
 
 //==============================================================================
+void Player::handle_floor_damage(f32 delta)
+{
+  time += delta;
+  const f32 INTERVAL = 0.25f;
+
+  if (time >= INTERVAL)
+  {
+    time -= INTERVAL;
+    SectorID sid = get_engine().get_map().get_sector_from_point(this->get_position().xz());
+    nc_assert(get_engine().get_map().is_valid_sector_id(sid));
+
+    const SectorDynData& sdd = get_engine().get_map().sectors_dynamic[sid];
+    const SectorData& sd = get_engine().get_map().sectors[sid];
+    if (sd.damage > 0 && this->get_position().y < sdd.floor_height + 0.1f)
+    {
+      this->damage((s32)(sd.damage * INTERVAL));
+    }
+  }
+}
+
+//==============================================================================
 vec2 Player::calc_sway_amount() const
 {
   const f32 sway_speed = CVars::gun_sway_speed;
@@ -891,6 +912,7 @@ void Player::update
     this->handle_attack(curr_input, prev_input, delta);
     this->handle_use(curr_input, prev_input, delta);
     this->calculate_wish_velocity(curr_input, delta);
+    this->handle_floor_damage(delta);
   }
   else
   {

@@ -140,6 +140,8 @@ private:
   // 0 when not moving or in air otherwise 1
   f32 calc_camera_sway_coeff() const;
 
+  void handle_floor_damage(f32 delta);
+
   // Gun/camera sway in x/y directions
   vec2 calc_sway_amount() const;
 
@@ -169,6 +171,9 @@ private:
   // Bit flags for the weapons owned
   WeaponFlags owned_weapons  = 0;
   WeaponType  current_weapon = 0;
+
+  // time for floor damage calculations
+  f32 time = 0.0f;
 
   Rng rng;
 
