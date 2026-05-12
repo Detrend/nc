@@ -687,6 +687,32 @@ static mat4 calc_billboard_rotation
 }
 
 //==============================================================================
+static f32 calc_light_radius_mod(const PointLight& light)
+{
+  f32 cycle_len = light.intensity_cycle_len;
+  if (cycle_len <= 0.0f)
+  {
+    return 1.0f;
+  }
+
+  auto string = light.intensity_string.to_cstring();
+  u64 len = strlen(&string[0]);;
+  if (len <= 1)
+  {
+    return 1.0f;
+  }
+
+  f64 time_since_start = GameHelpers::get().get_time_since_start();
+
+  f32 fraction = cast<f32>(fmod(time_since_start, cast<f64>(light.intensity_cycle_len)));
+  u32 string_idx = cast<u32>(len * fraction / cycle_len);
+  nc_assert(string_idx < len);
+
+  char character = clamp(string[string_idx], 'a', 'z'); // a = 100% intensity, z = 0% intensity
+  return 1.0f - (character - 'a') / cast<f32>('z' - 'a');
+}
+
+//==============================================================================
 void Renderer::render_entities(const CameraData& camera) const
 {
   constexpr f32 BILLBOARD_TEXTURE_SCALE = 1.0f / 2048.0f;
@@ -744,9 +770,10 @@ void Renderer::render_entities(const CameraData& camera) const
             light_sector_id = entity_sector_id;
           }
 
+          f32 radius_mod = calc_light_radius_mod(*light);
           const size_t light_gpu_index = m_point_light_ssbo.push_back
           (
-            light->get_gpu_data(light_pos, stich_pos, light_sector_id)
+            light->get_gpu_data(light_pos, stich_pos, light_sector_id, radius_mod)
           );
 
           m_light_gpu_data_indices.emplace

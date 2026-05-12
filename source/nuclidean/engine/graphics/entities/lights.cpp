@@ -79,14 +79,14 @@ PointLight::PointLight
 }
 
 //==============================================================================
-PointLightGPU PointLight::get_gpu_data(const vec3& position, const vec3& stitched_position, u32 sector_id) const
+PointLightGPU PointLight::get_gpu_data(const vec3& position, const vec3& stitched_position, u32 sector_id, f32 radius_mod) const
 {
   return PointLightGPU
   {
     .position          = position,
     .intensity         = intensity,
     .stitched_position = stitched_position,
-    .radius            = radius,
+    .radius            = radius * radius_mod,
     .color             = color,
     .falloff           = falloff,
     .sector_id         = sector_id,

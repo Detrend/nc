@@ -3,6 +3,7 @@
 
 #include <types.h>
 #include <math/vector.h>
+#include <token.h>
 
 #include <engine/entity/entity.h>
 #include <engine/entity/entity_types.h>
@@ -82,6 +83,9 @@ public:
   f32            snap_offset = 0.0f;
   SectorSnapType snap        = 0;
 
+  Token intensity_string;           // We can achieve light flicker with this
+  f32   intensity_cycle_len = 0.0f; // Duration of one cycle
+
   // Recomputes the radius of the light from the parameters above and sets it
   // as the entity radius.
   // Do this after you change some of the light parameters or else it will not
@@ -97,7 +101,7 @@ public:
     const color3& color = colors::WHITE
   );
 
-  PointLightGPU get_gpu_data(const vec3& position, const vec3& stitched_position, u32 sector_id) const;
+  PointLightGPU get_gpu_data(const vec3& position, const vec3& stitched_position, u32 sector_id, f32 radius_mod = 1.0f) const;
 };
 
 }

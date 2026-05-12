@@ -84,6 +84,13 @@ Projectile* GameHelpers::spawn_projectile
       from, 3.0f, 2.5f, 1.15f, light_col
     );
 
+    // Flashing lights
+    if (PROJECTILE_STATS[type].light_string)
+    {
+      light->intensity_cycle_len = PROJECTILE_STATS[type].light_cycle_len;
+      light->intensity_string    = PROJECTILE_STATS[type].light_string;
+    }
+
     // And attach it
     m_game.attachment->attach_entity
     (

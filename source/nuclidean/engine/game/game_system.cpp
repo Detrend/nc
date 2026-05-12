@@ -490,7 +490,18 @@ static void load_json_map
       ? cast<f32>(js_light["falloff"])
       : 1.0f;
 
-    entities.create_entity<PointLight>(position, radius, intensity, falloff, color);
+    PointLight* light = entities.create_entity<PointLight>(position, radius, intensity, falloff, color);
+
+    if (js_light.contains("light_string"))
+    {
+      std::string string = js_light["light_string"];
+      light->intensity_string = Token{};
+    }
+
+    if (js_light.contains("cycle_length"))
+    {
+      light->intensity_cycle_len = js_light["cycle_length"];
+    }
   }
   for (auto&& js_light : data["ambient_lights"])
   {

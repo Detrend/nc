@@ -44,6 +44,8 @@ struct ProjectileStats
   u8   sprite_cnt     = 0;
   f32  anim_len       = 0.0f;
   vec3 light_color    = VEC3_ZERO;
+  f32  light_cycle_len = 0.0f;
+  cstr light_string   = nullptr;
   cstr hit_sprite     = nullptr;
   u8   hit_sprite_cnt = 0;
   f32  hit_sprite_len = 0.0f;
