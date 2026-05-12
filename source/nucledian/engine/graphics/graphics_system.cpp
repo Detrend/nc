@@ -1145,9 +1145,6 @@ void GraphicsSystem::create_sector_meshes()
   std::vector<stbrp_rect>          rects;
   std::vector<std::pair<u64, u64>> cnts;
 
-  constexpr f32 px_per_m  = 16;
-  constexpr f32 px_per_m2 = px_per_m * px_per_m;
-
   for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)
   {
     f32 floor_min = map.sectors[sector_id].state_floors[0];
@@ -1172,8 +1169,8 @@ void GraphicsSystem::create_sector_meshes()
       rects.push_back(stbrp_rect
       {
         .id = cast<int>(wrelid),
-        .w  = cast<int>(ceil(len    * px_per_m)),
-        .h  = cast<int>(ceil(height * px_per_m)),
+        .w  = cast<int>(ceil(len    * PX_PER_M)),
+        .h  = cast<int>(ceil(height * PX_PER_M)),
       });
 
       total_surface += ceil(len) * ceil(height);
@@ -1191,8 +1188,8 @@ void GraphicsSystem::create_sector_meshes()
     rects.push_back(stbrp_rect
     {
       .id = -1,
-      .w  = cast<int>(ceil(bbox_size.x * px_per_m)),
-      .h  = cast<int>(ceil(bbox_size.y * px_per_m)),
+      .w  = cast<int>(ceil(bbox_size.x * PX_PER_M)),
+      .h  = cast<int>(ceil(bbox_size.y * PX_PER_M)),
     });
     cnt += 1;
 
@@ -1200,15 +1197,15 @@ void GraphicsSystem::create_sector_meshes()
     rects.push_back(stbrp_rect
     {
       .id = -2,
-      .w  = cast<int>(ceil(bbox_size.x * px_per_m)),
-      .h  = cast<int>(ceil(bbox_size.y * px_per_m)),
+      .w  = cast<int>(ceil(bbox_size.x * PX_PER_M)),
+      .h  = cast<int>(ceil(bbox_size.y * PX_PER_M)),
     });
     cnt += 1;
 
     cnts.push_back({idx, cnt});
   }
 
-  f32 total_px = total_surface * px_per_m2;
+  f32 total_px = total_surface * PX_PER_M2;
   f32 total_mb = ((total_px * 4.0f) / 1024.0f) / 1024.0f;
 
   int target_width  = 1024;

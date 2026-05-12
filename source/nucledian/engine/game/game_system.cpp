@@ -163,9 +163,12 @@ static SurfaceData load_json_surface(const nlohmann::json &js)
     {
       .texture_id_default = tid,
       .texture_id_triggered = alt_tid,
-      .scale = js["scale"],
-      .rotation = js["rotation"],
-      .offset = load_json_vector<2>(js["offset"]),
+      //.scale = js["scale"],
+      //.rotation = js["rotation"],
+      //.offset = load_json_vector<2>(js["offset"]),
+      .scale    = 64.0f / GraphicsSystem::PX_PER_M,
+      .rotation = 0.0f,
+      .offset   = VEC2_ZERO,
       .tile_rotations_count = js["tile_rotations_count"],
       .tile_rotation_increment = js["tile_rotation_increment"],
       .should_show = true
@@ -318,7 +321,12 @@ static void load_json_map
 
     for (auto&& js_point : data["points"])
     {
-      points.emplace_back(load_json_vector<2>(js_point));
+      vec2 pt = load_json_vector<2>(js_point);
+      // lock onto the grid
+      //pt *= GraphicsSystem::PX_PER_M;
+      //pt = round(pt);
+      //pt /= GraphicsSystem::PX_PER_M;
+      points.emplace_back(pt);
     }
 
     SectorID sid = 0;

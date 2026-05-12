@@ -242,8 +242,8 @@ void main()
       continue;
 
 
-    const int   num_samples = 1;
-    const float shadow_d    = 0.0f;
+    const int   num_samples = 4;
+    const float shadow_d    = 0.2f;
 
     // soft shadows
     float accum = 0.0f;
@@ -255,7 +255,8 @@ void main()
       vec3  offset = vec3(off_x, off_y, off_z);
       accum += shadow_coeff(position, light.stitched_position + offset * shadow_d, sector_id, light);
     }
-    float shadow_coeff = accum / float(num_samples);
+    //float shadow_coeff = accum / float(num_samples);
+    float shadow_coeff = 1.0f;
 
     float diffuse = max(angle, 0.0f);
 
@@ -319,7 +320,7 @@ else
 */
   out_color = vec4(col_out_debug, 1.0f);
 #else
-  out_color = vec4(final_color, 1.0f);
-  //out_color = vec4(vec3(max(signed_angle, 0.0f)), 1.0f);
+  //out_color = vec4(final_color, 1.0f);
+  out_color = vec4(vec3(1.0f), 1.0f);
 #endif
 }

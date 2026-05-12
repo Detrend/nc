@@ -32,7 +32,7 @@ void main()
   wp11 = u_wp11;
 
   vec2 local = corners[gl_VertexID];
-  vec2 pixel = mix(u_from, u_to, local);
+  vec2 pixel = mix(u_from-vec2(0.0f, 0.0f), u_to-vec2(0.0f, 0.0f), local);
   vec2 ndc   = (pixel / u_megatex_size) * 2.0 - 1.0;
 
   vec3 wp_bottom = mix(u_wp00, u_wp10, local.x);

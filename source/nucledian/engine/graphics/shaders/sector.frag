@@ -94,7 +94,15 @@ void main()
   float actual_rotation = texture_rotation + (rand_value * tile_rotation_increment);
 
   // This line
-  imageStore(megatex_mask, (ivec2)megatex_uv, vec4(1.0, 1.0, 1.0, 1.0));
+  {
+    ivec2 mguv = ivec2(megatex_uv-vec2(0.5f));
+    /*
+    for (int i = -1; i <= 1; ++i)
+      for (int j = -1; j <= 1; ++j)
+        imageStore(megatex_mask, mguv + ivec2(i, j), vec4(1.0, 1.0, 1.0, 1.0));
+    */
+    imageStore(megatex_mask, mguv, vec4(1.0, 1.0, 1.0, 1.0));
+  }
   
   // floor uv is mirrored
   if (normal.y > 0.0f) uv.x *= -1.0f;
@@ -127,7 +135,7 @@ void main()
   g_stitched_normal.xyz = normalize(stitched_normal);
   // 4-th component of stitched_normal is used to determine if shadows are enabled
   g_stitched_normal.w = 1.0f;
-  vec4 megatex_value = texelFetch(megatex_input, (ivec2)megatex_uv, 0);
+  vec4 megatex_value = texelFetch(megatex_input, ivec2(megatex_uv+vec2(0.5f)), 0);
   vec4 debug_value   = texelFetch(megatex_debug, (ivec2)megatex_uv, 0);
   g_albedo = color * vec4(megatex_value.xyz, 1.0f) + debug_value;
 
