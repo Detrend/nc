@@ -19,11 +19,10 @@
 #include <game/projectiles.h> // ProjectileTypes
 #include <game/projectile.h>
 #include <game/enemies.h>     // ENEMY_STATS
+#include <game/particle.h>    // Particle
 
 #include <math/lingebra.h>
 #include <math/utils.h>
-
-#include <cstdlib> // std::rand
 
 #include <engine/graphics/resources/texture.h>
 
@@ -889,6 +888,15 @@ void Enemy::on_attack_trigger()
       {
         enemy->damage(hit_dmg, this->get_id());
       }
+
+      vec3 hit_pos = from + dir * ENEMY_MELEE_RANGE * hit.coeff;
+
+      // Spawn blood particles
+      GameSystem::get().get_entities().create_entity<Particle>
+      (
+        hit_pos, "blood_splatter2",
+        4, 0.3f, colors::BLACK, 0.0f, 24.0f
+      );
     }
   }
   else
