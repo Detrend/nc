@@ -195,9 +195,9 @@ private:
 
   Camera camera;
 
-  static constexpr s32 MAX_AMMO[4] = {-1, 20, 48, 96};
+  static constexpr s32 MAX_AMMO[4] = {-1, 20, 60, 20};
 
-  s32 current_ammo[4] = {-1, 0, 30, 0}; // We start with nothing
+  s32 current_ammo[4] = {-1, 0, 0, 0}; // We start with nothing
   static_assert(ARRAY_LENGTH(current_ammo) == ARRAY_LENGTH(MAX_AMMO));
 
   WeaponType weapon_buffer = INVALID_WEAPON_TYPE;
