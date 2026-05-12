@@ -172,7 +172,7 @@ Enemy::Enemy(vec3 position, vec3 looking_dir, EnemyType tpe)
   {
     .sprite    = std::format("{}_idle_0", ENEMY_TYPE_NAMES[this->type]),
     .direction = this->get_facing_hor(),
-    .scale     = 40.0f,
+    .scale     = 31.25f,
     .mode      = Appearance::SpriteMode::dir8,
     .pivot     = Appearance::PivotMode::bottom,
   };
