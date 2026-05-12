@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://t1cowha8gphl"]
+[gd_scene load_steps=3 format=3 uid="uid://t1cowha8gphl"]
 
 [ext_resource type="Script" uid="uid://ch4bt1j0u2kcf" path="res://addons/ncedit/export_dock/export_button.gd" id="1_dtwd3"]
+[ext_resource type="Script" uid="uid://bb60no31dfnl4" path="res://addons/ncedit/export_dock/extrude_length_override_lbl.gd" id="2_82hsx"]
 
 [node name="ExportDock" type="HBoxContainer"]
 anchors_preset = 15
@@ -15,4 +16,13 @@ size_flags_horizontal = 3
 text = "Export Level"
 script = ExtResource("1_dtwd3")
 
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "extrude: "
+
+[node name="ExtrudeLengthOverrideLbl" type="SpinBox" parent="."]
+layout_mode = 2
+script = ExtResource("2_82hsx")
+
 [connection signal="pressed" from="ExportButton" to="ExportButton" method="_on_pressed"]
+[connection signal="value_changed" from="ExtrudeLengthOverrideLbl" to="ExtrudeLengthOverrideLbl" method="_on_value_changed"]

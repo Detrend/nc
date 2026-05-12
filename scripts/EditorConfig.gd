@@ -30,6 +30,7 @@ var _gridsnap_step_inv_impl : float
 
 @export var dissolve_removes_self : bool = false
 @export var extrude_factor : float = 0.2
+@export var extrude_absolute_override : float = 1.0
 		
 ## How pressing '+' or '-' alters the floor/ceiling height (chosen by current level's coloring mode)
 @export var floor_height_increment : float = 0.1
