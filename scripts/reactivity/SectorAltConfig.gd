@@ -48,3 +48,24 @@ func do_export(ret : Dictionary = {})->Dictionary:
 
 static func get_alt_configs_for_node(parent: Node, ret: Array[SectorAltConfig] = []) -> Array[SectorAltConfig]:
 	return NodeUtils.get_children_by_predicate(parent, func(n:Node)->bool: return n is SectorAltConfig and (n as SectorAltConfig).is_active(), ret)
+
+
+
+@warning_ignore("unused_private_class_variable")
+@export_tool_button("Swap Heights") var _swap_alt_configs_btn = func()->void:
+	var sector := get_parent() as Sector
+	if not sector:
+		ErrorUtils.report_error("Cannot swap - AltConfig '{0}' is not child of a Sector".format([NodeUtils.get_full_name(self)]))
+		return
+	var og_floor := sector.floor_height
+	var og_ceiling := sector.ceiling_height
+	var new_floor := self.get_floor_height()
+	var new_ceiling := self.get_ceiling_height()
+	sector.floor_height = new_floor
+	sector.ceiling_height = new_ceiling
+	self.floor_mode = SectorAltConfig.ComputationMode.Absolute
+	self.floor_height = og_floor
+	self.ceiling_mode = SectorAltConfig.ComputationMode.Absolute
+	self.ceiling_height = og_ceiling
+			
+			
