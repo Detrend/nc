@@ -855,8 +855,11 @@ void Enemy::on_attack_trigger()
 {
   const EnemyStats& stats = this->get_stats();
 
-  vec3 dir  = this->get_facing();
-  vec3 from = this->get_attack_from_pos() + dir * 0.3f;
+  vec3 dir       = this->get_facing();
+  vec3 ahead_dir = dir * 0.3f;
+  vec3 from_pos  = this->get_attack_from_pos();
+
+  vec3 from = GameHelpers::get().calc_shoot_from_pos(from_pos, ahead_dir, dir);
 
   if (stats.is_melee)
   {

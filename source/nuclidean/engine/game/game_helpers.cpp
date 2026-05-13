@@ -54,6 +54,33 @@ Player* GameHelpers::get_player()
 }
 
 //==============================================================================
+vec3 GameHelpers::calc_shoot_from_pos
+(
+  vec3 from_pos, vec3 ahead_dir, vec3& dir
+)
+{
+  // Raycast ahead of us
+  PhysLevel::Portals portals_traversed;
+  CollisionHit hit = get_level().ray_cast_3d
+  (
+    from_pos,
+    from_pos + ahead_dir,
+    PhysLevel::COLLIDE_NONE,
+    &portals_traversed
+  );
+
+  vec3 from = from_pos + ahead_dir * (hit ? hit.coeff : 1.0f);
+  if (portals_traversed.size())
+  {
+    mat4 transform = get_level().calc_portal_projection(portals_traversed);
+    from = (transform * vec4{from, 1.0f}).xyz();
+    dir  = (transform * vec4{dir,  0.0f}).xyz();
+  }
+
+  return from;
+}
+
+//==============================================================================
 PhysLevel GameHelpers::get_level() const
 {
   return PhysLevel
