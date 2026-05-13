@@ -9,6 +9,11 @@
 			"hooks": [],
 			"name": "Arena1_Trap_Part2",
 			"threshold": 2
+		},
+		{
+			"hooks": [],
+			"name": "Arena1_Finished",
+			"threshold": 6
 		}
 	],
 	"ambient_lights": [
@@ -65,28 +70,28 @@
 		{
 			"entity_type": -1,
 			"forward": [
-				-0.999385416507721,
-				-0.0350548475980759,
+				0.999269902706146,
+				-0.0382053405046463,
 				0.0
 			],
 			"is_player": true,
 			"position": [
-				-71.5999984741211,
-				7.59999990463257,
+				6.0,
+				11.7999992370605,
 				0.1
 			]
 		},
 		{
 			"entity_type": 1,
 			"forward": [
-				0.904749155044556,
-				0.425944834947586,
+				0.897836446762085,
+				0.440329104661942,
 				0.0
 			],
 			"is_player": false,
 			"position": [
-				-88.5999984741211,
-				4.20000028610229,
+				-88.4000015258789,
+				3.60000014305115,
 				-9.9
 			],
 			"triggers": [
@@ -94,6 +99,7 @@
 					"activator": "Arena1_Trap_Part2",
 					"can_turn_off": false,
 					"enemy_sensitive": true,
+					"increment": 1,
 					"player_sensitive": false,
 					"timeout": 0.0,
 					"while_alive": false
@@ -118,6 +124,7 @@
 					"activator": "Arena1_Trap_Part2",
 					"can_turn_off": false,
 					"enemy_sensitive": true,
+					"increment": 1,
 					"player_sensitive": false,
 					"timeout": 0.0,
 					"while_alive": false
@@ -133,9 +140,29 @@
 			],
 			"is_player": false,
 			"position": [
-				-75.4000091552734,
-				-5.59999990463257,
+				-75.8000106811523,
+				-5.6000018119812,
 				-9.3
+			],
+			"triggers": [
+				{
+					"activator": "Arena1_Trap",
+					"can_turn_off": false,
+					"enemy_sensitive": true,
+					"increment": -1,
+					"player_sensitive": false,
+					"timeout": 0.0,
+					"while_alive": false
+				},
+				{
+					"activator": "Arena1_Finished",
+					"can_turn_off": false,
+					"enemy_sensitive": true,
+					"increment": 1,
+					"player_sensitive": false,
+					"timeout": 0.0,
+					"while_alive": false
+				}
 			]
 		},
 		{
@@ -150,6 +177,26 @@
 				-76.5999984741211,
 				-3.19999694824219,
 				-9.3
+			],
+			"triggers": [
+				{
+					"activator": "Arena1_Trap",
+					"can_turn_off": false,
+					"enemy_sensitive": true,
+					"increment": -1,
+					"player_sensitive": false,
+					"timeout": 0.0,
+					"while_alive": false
+				},
+				{
+					"activator": "Arena1_Finished",
+					"can_turn_off": false,
+					"enemy_sensitive": true,
+					"increment": 1,
+					"player_sensitive": false,
+					"timeout": 0.0,
+					"while_alive": false
+				}
 			]
 		},
 		{
@@ -161,9 +208,29 @@
 			],
 			"is_player": false,
 			"position": [
-				-78.2000045776367,
-				-7.59999990463257,
-				-9.3
+				-93.6000061035156,
+				26.2000007629395,
+				-9.75
+			],
+			"triggers": [
+				{
+					"activator": "Arena1_Trap",
+					"can_turn_off": false,
+					"enemy_sensitive": true,
+					"increment": -1,
+					"player_sensitive": false,
+					"timeout": 0.0,
+					"while_alive": false
+				},
+				{
+					"activator": "Arena1_Finished",
+					"can_turn_off": false,
+					"enemy_sensitive": true,
+					"increment": 1,
+					"player_sensitive": false,
+					"timeout": 0.0,
+					"while_alive": false
+				}
 			]
 		},
 		{
@@ -175,9 +242,29 @@
 			],
 			"is_player": false,
 			"position": [
-				-81.3999938964844,
-				-4.99999713897705,
-				-9.3
+				-93.4000091552734,
+				22.2000026702881,
+				-9.75
+			],
+			"triggers": [
+				{
+					"activator": "Arena1_Trap",
+					"can_turn_off": false,
+					"enemy_sensitive": true,
+					"increment": -1,
+					"player_sensitive": false,
+					"timeout": 0.0,
+					"while_alive": false
+				},
+				{
+					"activator": "Arena1_Finished",
+					"can_turn_off": false,
+					"enemy_sensitive": true,
+					"increment": 1,
+					"player_sensitive": false,
+					"timeout": 0.0,
+					"while_alive": false
+				}
 			]
 		},
 		{
@@ -189,14 +276,108 @@
 			],
 			"is_player": false,
 			"position": [
-				-79.6000061035156,
-				-3.0,
-				-9.3
+				-89.7999954223633,
+				7.00000333786011,
+				-9.75
+			],
+			"triggers": [
+				{
+					"activator": "Arena1_Trap",
+					"can_turn_off": false,
+					"enemy_sensitive": true,
+					"increment": -1,
+					"player_sensitive": false,
+					"timeout": 0.0,
+					"while_alive": false
+				},
+				{
+					"activator": "Arena1_Finished",
+					"can_turn_off": false,
+					"enemy_sensitive": true,
+					"increment": 1,
+					"player_sensitive": false,
+					"timeout": 0.0,
+					"while_alive": false
+				}
+			]
+		},
+		{
+			"entity_type": 1,
+			"forward": [
+				0.904749155044556,
+				0.425944834947586,
+				0.0
+			],
+			"is_player": false,
+			"position": [
+				-91.4000091552734,
+				9.80000019073486,
+				-9.75
+			],
+			"triggers": [
+				{
+					"activator": "Arena1_Trap",
+					"can_turn_off": false,
+					"enemy_sensitive": true,
+					"increment": -1,
+					"player_sensitive": false,
+					"timeout": 0.0,
+					"while_alive": false
+				},
+				{
+					"activator": "Arena1_Finished",
+					"can_turn_off": false,
+					"enemy_sensitive": true,
+					"increment": 1,
+					"player_sensitive": false,
+					"timeout": 0.0,
+					"while_alive": false
+				}
 			]
 		}
 	],
 	"music": "",
 	"pickups": [
+		{
+			"position": [
+				3.60000014305115,
+				23.8000011444092,
+				0.1
+			],
+			"type": 6
+		},
+		{
+			"position": [
+				6.20000028610229,
+				23.8000011444092,
+				0.1
+			],
+			"type": 6
+		},
+		{
+			"position": [
+				-96.4000015258789,
+				-0.400000005960464,
+				16.1
+			],
+			"type": 2
+		},
+		{
+			"position": [
+				-69.5999984741211,
+				4.20000028610229,
+				-9.9
+			],
+			"type": 6
+		},
+		{
+			"position": [
+				-69.8000030517578,
+				5.0,
+				-9.9
+			],
+			"type": 6
+		},
 		{
 			"position": [
 				-70.0,
@@ -231,9 +412,33 @@
 		},
 		{
 			"position": [
+				-76.0,
+				-6.0,
+				-9.3
+			],
+			"type": 6
+		},
+		{
+			"position": [
+				-77.4000015258789,
+				-3.20000004768372,
+				-9.3
+			],
+			"type": 6
+		},
+		{
+			"position": [
+				-74.5999984741211,
+				26.3999996185303,
+				-10.4
+			],
+			"type": 1
+		},
+		{
+			"position": [
 				-75.8000030517578,
 				24.6000003814697,
-				-9.9
+				-10.4
 			],
 			"type": 6
 		},
@@ -241,7 +446,7 @@
 			"position": [
 				-74.4000015258789,
 				24.3999996185303,
-				-9.9
+				-10.4
 			],
 			"type": 6
 		},
@@ -249,41 +454,41 @@
 			"position": [
 				-75.0,
 				25.8000011444092,
-				-9.9
+				-10.4
 			],
 			"type": 6
 		},
 		{
 			"position": [
-				-30.2000007629395,
-				80.4000015258789,
-				0.1
+				-93.5999984741211,
+				26.3999996185303,
+				-9.75
 			],
-			"type": 6
+			"type": 0
 		},
 		{
 			"position": [
-				-28.3999996185303,
-				80.2000045776367,
-				0.1
+				-93.2000045776367,
+				22.0,
+				-9.75
 			],
-			"type": 6
+			"type": 0
 		},
 		{
 			"position": [
-				-26.0,
-				80.0,
-				0.1
+				-89.8000030517578,
+				7.0,
+				-9.75
 			],
-			"type": 6
+			"type": 0
 		},
 		{
 			"position": [
-				-22.8000011444092,
-				80.4000015258789,
-				0.1
+				-91.2000045776367,
+				9.80000019073486,
+				-9.75
 			],
-			"type": 3
+			"type": 6
 		}
 	],
 	"point_lights": [
@@ -471,7 +676,7 @@
 		],
 		[
 			-9.60000038146973,
-			19.6000003814697
+			20.0
 		],
 		[
 			-9.60000038146973,
@@ -490,43 +695,43 @@
 			18.3999996185303
 		],
 		[
-			-0.800000011920929,
-			19.6000003814697
+			19.6000003814697,
+			20.0
 		],
 		[
-			-0.800000011920929,
+			19.6000003814697,
 			20.8000011444092
 		],
 		[
-			-4.40000009536743,
+			5.59999990463257,
 			20.8000011444092
 		],
 		[
-			-6.0,
+			4.0,
 			20.8000011444092
 		],
 		[
-			-4.40000009536743,
+			5.59999990463257,
 			21.6000003814697
 		],
 		[
-			-6.0,
+			4.0,
 			21.6000003814697
 		],
 		[
-			-2.79999995231628,
+			7.20000028610229,
 			24.8000011444092
 		],
 		[
-			-7.59999990463257,
+			2.40000009536743,
 			24.8000011444092
 		],
 		[
-			-7.59999990463257,
+			2.40000009536743,
 			21.6000003814697
 		],
 		[
-			-2.79999995231628,
+			7.20000028610229,
 			21.6000003814697
 		],
 		[
@@ -615,7 +820,7 @@
 		],
 		[
 			-42.7999992370605,
-			20.0
+			19.6000003814697
 		],
 		[
 			-42.7999992370605,
@@ -627,7 +832,7 @@
 		],
 		[
 			-43.2000007629395,
-			20.0
+			19.6000003814697
 		],
 		[
 			-43.2000007629395,
@@ -1074,6 +1279,38 @@
 			0.600000023841858
 		],
 		[
+			-75.5999984741211,
+			14.8000001907349
+		],
+		[
+			-73.5999984741211,
+			11.0
+		],
+		[
+			-72.5999984741211,
+			9.80000019073486
+		],
+		[
+			-73.4000015258789,
+			12.0
+		],
+		[
+			-75.4000015258789,
+			15.6000003814697
+		],
+		[
+			-77.5999984741211,
+			13.8000001907349
+		],
+		[
+			-79.2000045776367,
+			15.8000001907349
+		],
+		[
+			-78.5999984741211,
+			13.4000005722046
+		],
+		[
 			-90.0,
 			16.0
 		],
@@ -1090,56 +1327,32 @@
 			16.3999996185303
 		],
 		[
-			-75.5999984741211,
-			14.8000001907349
-		],
-		[
-			-79.2000045776367,
-			15.8000001907349
-		],
-		[
-			-77.2000045776367,
-			13.4000005722046
-		],
-		[
-			-73.4000015258789,
-			12.0
-		],
-		[
-			-84.8000030517578,
-			14.0
-		],
-		[
-			-78.2000045776367,
-			13.0
-		],
-		[
-			-84.4000015258789,
-			15.1999998092651
-		],
-		[
-			-74.2000045776367,
-			8.19999980926514
-		],
-		[
-			-72.5999984741211,
+			-75.4000015258789,
 			9.80000019073486
 		],
 		[
+			-75.8000030517578,
+			8.80000019073486
+		],
+		[
 			-75.0,
+			9.60000038146973
+		],
+		[
+			-74.4000015258789,
+			10.4000005722046
+		],
+		[
+			-76.2000045776367,
 			9.40000057220459
 		],
 		[
-			-75.8000030517578,
-			9.0
+			-90.5999984741211,
+			18.0
 		],
 		[
 			-76.5999984741211,
 			22.8000011444092
-		],
-		[
-			-77.4000015258789,
-			25.3999996185303
 		],
 		[
 			-78.0,
@@ -1150,52 +1363,112 @@
 			28.8000011444092
 		],
 		[
-			-91.8000030517578,
-			19.6000003814697
+			-92.4000015258789,
+			27.3999996185303
 		],
 		[
-			-90.5999984741211,
-			18.0
+			-92.4000015258789,
+			25.2000007629395
 		],
 		[
-			-84.2000045776367,
-			17.3999996185303
+			-92.2000045776367,
+			23.3999996185303
 		],
 		[
-			-80.8000030517578,
-			19.2000007629395
-		],
-		[
-			-84.8000030517578,
-			1.60000002384186
-		],
-		[
-			-70.8000030517578,
-			3.20000004768372
-		],
-		[
-			-71.2000045776367,
-			5.40000009536743
-		],
-		[
-			-72.5999984741211,
-			5.20000028610229
-		],
-		[
-			-73.8000030517578,
-			6.20000028610229
-		],
-		[
-			-87.4000015258789,
-			5.80000019073486
+			-77.4000015258789,
+			25.3999996185303
 		],
 		[
 			-84.0,
 			16.6000003814697
 		],
 		[
-			-75.8000030517578,
-			19.8000011444092
+			-84.4000015258789,
+			15.1999998092651
+		],
+		[
+			-84.2000045776367,
+			17.3999996185303
+		],
+		[
+			-92.0,
+			21.2000007629395
+		],
+		[
+			-91.8000030517578,
+			19.6000003814697
+		],
+		[
+			-80.8000030517578,
+			19.2000007629395
+		],
+		[
+			-70.5999984741211,
+			3.20000004768372
+		],
+		[
+			-71.0,
+			4.20000028610229
+		],
+		[
+			-71.8000030517578,
+			4.0
+		],
+		[
+			-84.8000030517578,
+			1.60000002384186
+		],
+		[
+			-73.0,
+			4.0
+		],
+		[
+			-73.8000030517578,
+			4.20000028610229
+		],
+		[
+			-74.8000030517578,
+			4.80000019073486
+		],
+		[
+			-75.2000045776367,
+			5.80000019073486
+		],
+		[
+			-87.4000015258789,
+			5.80000019073486
+		],
+		[
+			-75.4000015258789,
+			6.59999990463257
+		],
+		[
+			-75.5999984741211,
+			7.59999990463257
+		],
+		[
+			-88.0,
+			6.80000019073486
+		],
+		[
+			-89.2000045776367,
+			8.60000038146973
+		],
+		[
+			-89.8000030517578,
+			9.40000057220459
+		],
+		[
+			-90.8000030517578,
+			11.0
+		],
+		[
+			-91.2000045776367,
+			11.6000003814697
+		],
+		[
+			-84.8000030517578,
+			14.0
 		],
 		[
 			-80.4000015258789,
@@ -1204,10 +1477,6 @@
 		[
 			-79.0,
 			16.6000003814697
-		],
-		[
-			-75.4000015258789,
-			15.6000003814697
 		],
 		[
 			-91.8000030517578,
@@ -1230,6 +1499,22 @@
 			30.3999996185303
 		],
 		[
+			-92.4000015258789,
+			19.2000007629395
+		],
+		[
+			-92.4000015258789,
+			18.2000007629395
+		],
+		[
+			-92.2000045776367,
+			17.8000011444092
+		],
+		[
+			-92.0,
+			19.3999996185303
+		],
+		[
 			-70.4000015258789,
 			9.19999980926514
 		],
@@ -1240,6 +1525,50 @@
 		[
 			-72.0,
 			9.80000019073486
+		],
+		[
+			-73.4000015258789,
+			9.19999980926514
+		],
+		[
+			-74.0,
+			8.60000038146973
+		],
+		[
+			-74.2000045776367,
+			8.19999980926514
+		],
+		[
+			-74.2000045776367,
+			7.59999990463257
+		],
+		[
+			-74.0,
+			6.80000019073486
+		],
+		[
+			-73.8000030517578,
+			6.20000028610229
+		],
+		[
+			-73.5999984741211,
+			5.59999990463257
+		],
+		[
+			-73.2000045776367,
+			5.40000009536743
+		],
+		[
+			-72.5999984741211,
+			5.20000028610229
+		],
+		[
+			-72.0,
+			5.20000028610229
+		],
+		[
+			-71.2000045776367,
+			5.40000009536743
 		],
 		[
 			-70.4000015258789,
@@ -1294,7 +1623,7 @@
 			-0.800000011920929
 		],
 		[
-			-93.2000045776367,
+			-93.0,
 			4.80000019073486
 		],
 		[
@@ -1306,8 +1635,8 @@
 			-1.20000004768372
 		],
 		[
-			-89.0,
-			-3.60000014305115
+			-88.8000030517578,
+			-3.40000009536743
 		],
 		[
 			-87.5999984741211,
@@ -1334,12 +1663,12 @@
 			-1.80000007152557
 		],
 		[
-			-80.0,
-			-1.60000002384186
+			-78.5999984741211,
+			-2.60000014305115
 		],
 		[
-			-76.2000045776367,
-			-9.0
+			-76.4000015258789,
+			-7.40000009536743
 		],
 		[
 			-73.4000015258789,
@@ -1348,14 +1677,6 @@
 		[
 			-75.4000015258789,
 			-1.80000007152557
-		],
-		[
-			-83.8000030517578,
-			-3.20000004768372
-		],
-		[
-			-80.0,
-			-10.4000005722046
 		],
 		[
 			-77.0,
@@ -1382,180 +1703,84 @@
 			22.8000011444092
 		],
 		[
-			-15.1999998092651,
-			82.2000045776367
+			-92.0,
+			12.6000003814697
 		],
 		[
-			-9.19999980926514,
-			75.4000015258789
+			-91.5999984741211,
+			11.6000003814697
 		],
 		[
-			-9.19999980926514,
-			99.4000015258789
+			-92.4000015258789,
+			12.6000003814697
 		],
 		[
-			-31.8000011444092,
-			84.5999984741211
+			-92.4000015258789,
+			11.6000003814697
 		],
 		[
-			-40.0,
-			76.5999984741211
+			-91.0,
+			11.0
 		],
 		[
-			-17.2000007629395,
-			80.2000045776367
+			-90.0,
+			9.19999980926514
 		],
 		[
-			-31.0,
-			84.8000030517578
+			-89.4000015258789,
+			8.40000057220459
 		],
 		[
-			-15.6000003814697,
-			82.5999984741211
+			-88.2000045776367,
+			6.59999990463257
 		],
 		[
-			-15.6000003814697,
-			83.0
+			-92.5999984741211,
+			23.3999996185303
 		],
 		[
-			-33.6000022888184,
-			86.8000030517578
+			-92.4000015258789,
+			21.2000007629395
 		],
 		[
-			-39.6000022888184,
-			99.0
+			-92.8000030517578,
+			27.3999996185303
 		],
 		[
-			-33.2000007629395,
-			87.2000045776367
+			-92.8000030517578,
+			25.2000007629395
 		],
 		[
-			-33.2000007629395,
-			87.5999984741211
+			-94.4000015258789,
+			27.6000003814697
 		],
 		[
-			-17.2000007629395,
-			91.2000045776367
+			-94.4000015258789,
+			25.0
 		],
 		[
-			-17.6000003814697,
-			91.0
+			-94.2000045776367,
+			23.3999996185303
 		],
 		[
-			-16.3999996185303,
-			83.4000015258789
+			-94.0,
+			21.0
 		],
 		[
-			-16.6000003814697,
-			91.2000045776367
+			-91.2000045776367,
+			7.59999990463257
 		],
 		[
-			-31.3999996185303,
-			85.0
+			-90.0,
+			5.59999990463257
 		],
 		[
-			-30.3999996185303,
-			85.5999984741211
+			-92.8000030517578,
+			10.6000003814697
 		],
 		[
-			-31.0,
-			85.2000045776367
-		],
-		[
-			-18.0,
-			80.5999984741211
-		],
-		[
-			-16.0,
-			83.0
-		],
-		[
-			-16.6000003814697,
-			94.0
-		],
-		[
-			-32.2000007629395,
-			87.8000030517578
-		],
-		[
-			-29.8000011444092,
-			92.5999984741211
-		],
-		[
-			-30.3999996185303,
-			93.2000045776367
-		],
-		[
-			-29.3999996185303,
-			92.5999984741211
-		],
-		[
-			-29.0,
-			92.2000045776367
-		],
-		[
-			-18.3999996185303,
-			81.4000015258789
-		],
-		[
-			-17.8000011444092,
-			91.4000015258789
-		],
-		[
-			-18.3999996185303,
-			91.4000015258789
-		],
-		[
-			-27.8000011444092,
-			95.2000045776367
-		],
-		[
-			-18.3999996185303,
-			94.2000045776367
-		],
-		[
-			-17.8000011444092,
-			94.2000045776367
-		],
-		[
-			-17.6000003814697,
-			94.5999984741211
-		],
-		[
-			-28.6000003814697,
-			95.4000015258789
-		],
-		[
-			-32.7999992370605,
-			87.4000015258789
-		],
-		[
-			-17.2000007629395,
-			94.0
-		],
-		[
-			-17.6000003814697,
-			80.5999984741211
-		],
-		[
-			-18.0,
-			81.0
-		],
-		[
-			-27.2000007629395,
-			94.4000015258789
-		],
-		[
-			-27.6000003814697,
-			94.8000030517578
-		],
-		[
-			-30.0,
-			93.0
-		],
-		[
-			-28.2000007629395,
-			95.2000045776367
+			-91.4000015258789,
+			8.40000057220459
 		]
 	],
 	"sectors": [
@@ -1719,8 +1944,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					}
 				],
 				[
@@ -1870,7 +2095,7 @@
 					{
 						"begin_height": 0.0,
 						"end_height": 0.1,
-						"id": "wall3",
+						"id": "floor1",
 						"offset": [
 							0.0,
 							0.0
@@ -1878,8 +2103,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					},
 					{
 						"begin_height": 4.0,
@@ -1892,8 +2117,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					}
 				],
 				[
@@ -1916,7 +2141,7 @@
 					{
 						"begin_height": 0.0,
 						"end_height": 0.1,
-						"id": "wall3",
+						"id": "floor1",
 						"offset": [
 							0.0,
 							0.0
@@ -1924,8 +2149,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					},
 					{
 						"begin_height": 4.0,
@@ -1938,8 +2163,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					}
 				],
 				[
@@ -2163,7 +2388,7 @@
 					{
 						"begin_height": 0.0,
 						"end_height": 0.1,
-						"id": "wall3",
+						"id": "floor1",
 						"offset": [
 							0.0,
 							0.0
@@ -2171,8 +2396,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					},
 					{
 						"begin_height": 4.0,
@@ -2185,8 +2410,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					}
 				],
 				[
@@ -2393,7 +2618,7 @@
 					{
 						"begin_height": 0.0,
 						"end_height": 0.1,
-						"id": "wall3",
+						"id": "floor1",
 						"offset": [
 							0.0,
 							0.0
@@ -2401,8 +2626,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					},
 					{
 						"begin_height": 4.0,
@@ -2415,8 +2640,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					}
 				],
 				[
@@ -2914,7 +3139,7 @@
 				[
 					{
 						"begin_height": 0.0,
-						"end_height": 1.0,
+						"end_height": 1.2,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -2937,8 +3162,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					}
 				],
 				[
@@ -3040,7 +3265,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Node2D::Node2D3::Sector-7207l",
-			"floor": 1.0,
+			"floor": 1.2,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -3069,7 +3294,7 @@
 				[],
 				[
 					{
-						"begin_height": 1.0,
+						"begin_height": 1.2,
 						"end_height": 3.0,
 						"id": "bricks",
 						"offset": [
@@ -3085,7 +3310,7 @@
 				],
 				[
 					{
-						"begin_height": 1.0,
+						"begin_height": 1.2,
 						"end_height": 3.0,
 						"id": "bricks",
 						"offset": [
@@ -3101,7 +3326,7 @@
 				],
 				[
 					{
-						"begin_height": 1.0,
+						"begin_height": 1.2,
 						"end_height": 3.0,
 						"id": "bricks",
 						"offset": [
@@ -3118,7 +3343,7 @@
 				[],
 				[
 					{
-						"begin_height": 1.0,
+						"begin_height": 1.2,
 						"end_height": 3.0,
 						"id": "bricks",
 						"offset": [
@@ -3150,7 +3375,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Node2D::Node2D3::Sector-7207m",
-			"floor": 1.0,
+			"floor": 1.2,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -3177,7 +3402,7 @@
 				[],
 				[
 					{
-						"begin_height": 1.0,
+						"begin_height": 1.2,
 						"end_height": 3.0,
 						"id": "bricks",
 						"offset": [
@@ -3194,7 +3419,7 @@
 				[],
 				[
 					{
-						"begin_height": 1.0,
+						"begin_height": 1.2,
 						"end_height": 3.0,
 						"id": "bricks",
 						"offset": [
@@ -3303,7 +3528,7 @@
 				[
 					{
 						"begin_height": 0.0,
-						"end_height": 1.0,
+						"end_height": 1.2,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -3326,8 +3551,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					}
 				],
 				[
@@ -3923,7 +4148,7 @@
 				[
 					{
 						"begin_height": 0.0,
-						"end_height": 1.0,
+						"end_height": 1.2,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -3946,8 +4171,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					}
 				],
 				[
@@ -4017,7 +4242,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Node2D::Node2D2::Sector-7207c2c",
-			"floor": 1.0,
+			"floor": 1.2,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -4043,7 +4268,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 1.0,
+						"begin_height": 1.2,
 						"end_height": 3.0,
 						"id": "bricks",
 						"offset": [
@@ -4059,7 +4284,7 @@
 				],
 				[
 					{
-						"begin_height": 1.0,
+						"begin_height": 1.2,
 						"end_height": 3.0,
 						"id": "bricks",
 						"offset": [
@@ -4076,7 +4301,7 @@
 				[],
 				[
 					{
-						"begin_height": 1.0,
+						"begin_height": 1.2,
 						"end_height": 3.0,
 						"id": "bricks",
 						"offset": [
@@ -7500,7 +7725,7 @@
 					{
 						"begin_height": 0.0,
 						"end_height": 0.1,
-						"id": "wall3",
+						"id": "floor1",
 						"offset": [
 							0.0,
 							0.0
@@ -7508,8 +7733,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					},
 					{
 						"begin_height": 3.0,
@@ -7522,8 +7747,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					}
 				],
 				[
@@ -7833,7 +8058,7 @@
 					{
 						"begin_height": 0.0,
 						"end_height": 0.1,
-						"id": "wall3",
+						"id": "floor1",
 						"offset": [
 							0.0,
 							0.0
@@ -7841,8 +8066,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					},
 					{
 						"begin_height": 3.0,
@@ -8050,8 +8275,6 @@
 				163,
 				164,
 				165,
-				165,
-				166,
 				166
 			],
 			"portal_destination_wall": 2,
@@ -8090,39 +8313,7 @@
 						"tile_rotations_count": 1
 					}
 				],
-				[
-					{
-						"begin_height": 17.0,
-						"end_height": 20.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
 				[],
-				[
-					{
-						"begin_height": 17.0,
-						"end_height": 20.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
 				[
 					{
 						"begin_height": 17.0,
@@ -8898,7 +9089,7 @@
 					{
 						"begin_height": 17.0,
 						"end_height": 17.15,
-						"id": "wall3",
+						"id": "floor1",
 						"offset": [
 							0.0,
 							0.0
@@ -8906,8 +9097,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					},
 					{
 						"begin_height": 19.0,
@@ -8928,7 +9119,7 @@
 					{
 						"begin_height": 17.0,
 						"end_height": 17.15,
-						"id": "wall3",
+						"id": "floor1",
 						"offset": [
 							0.0,
 							0.0
@@ -8936,8 +9127,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					},
 					{
 						"begin_height": 19.0,
@@ -9473,8 +9664,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					}
 				],
 				[
@@ -9606,16 +9797,34 @@
 				192,
 				193,
 				194,
-				195
+				195,
+				196
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
+				[],
 				[
 					{
 						"begin_height": -10.0,
-						"end_height": 0.0,
+						"end_height": -9.8,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": 30.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -9632,7 +9841,7 @@
 				[
 					{
 						"begin_height": -10.0,
-						"end_height": 0.5,
+						"end_height": 0.3,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -9644,8 +9853,7 @@
 						"tile_rotation_increment": 1.5707963267949,
 						"tile_rotations_count": 1
 					}
-				],
-				[]
+				]
 			]
 		},
 		{
@@ -9679,8 +9887,8 @@
 			},
 			"id": 103,
 			"points": [
-				196,
 				197,
+				192,
 				198,
 				199
 			],
@@ -9688,6 +9896,7 @@
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
+				[],
 				[
 					{
 						"begin_height": -10.0,
@@ -9705,8 +9914,22 @@
 					}
 				],
 				[],
-				[],
-				[]
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": 0.3,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				]
 			]
 		},
 		{
@@ -9742,19 +9965,17 @@
 			"points": [
 				200,
 				201,
-				198,
-				197,
-				202
+				202,
+				203
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
-				[],
 				[
 					{
 						"begin_height": -10.0,
-						"end_height": 0.3,
+						"end_height": 0.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -9767,7 +9988,6 @@
 						"tile_rotations_count": 1
 					}
 				],
-				[],
 				[],
 				[
 					{
@@ -9784,7 +10004,8 @@
 						"tile_rotation_increment": 1.5707963267949,
 						"tile_rotations_count": 1
 					}
-				]
+				],
+				[]
 			]
 		},
 		{
@@ -9818,37 +10039,21 @@
 			},
 			"id": 105,
 			"points": [
-				203,
 				204,
 				205,
-				206
+				206,
+				207
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
-				[
-					{
-						"begin_height": -10.0,
-						"end_height": 0.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
 				[],
 				[
 					{
 						"begin_height": -10.0,
-						"end_height": 0.3,
-						"id": "bricks",
+						"end_height": -9.82,
+						"id": "floor1",
 						"offset": [
 							0.0,
 							0.0
@@ -9857,7 +10062,23 @@
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
+						"tile_rotations_count": 4
+					}
+				],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": -9.81,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					}
 				],
 				[]
@@ -9896,30 +10117,12 @@
 			"points": [
 				205,
 				204,
-				199,
-				198
+				208
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
-				[],
-				[
-					{
-						"begin_height": -10.0,
-						"end_height": 30.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
 				[],
 				[
 					{
@@ -9936,7 +10139,8 @@
 						"tile_rotation_increment": 1.5707963267949,
 						"tile_rotations_count": 1
 					}
-				]
+				],
+				[]
 			]
 		},
 		{
@@ -9970,69 +10174,15 @@
 			},
 			"id": 107,
 			"points": [
-				207,
-				208,
 				209,
-				210,
-				211,
-				212,
-				195,
-				213,
-				214
+				200,
+				203,
+				210
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
-				[
-					{
-						"begin_height": -9.99,
-						"end_height": 30.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": -10.0,
-						"end_height": 30.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": -10.0,
-						"end_height": 30.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
 				[
 					{
 						"begin_height": -10.0,
@@ -10051,22 +10201,6 @@
 				],
 				[],
 				[],
-				[
-					{
-						"begin_height": -10.0,
-						"end_height": -0.2,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
 				[]
 			]
 		},
@@ -10101,18 +10235,19 @@
 			},
 			"id": 108,
 			"points": [
+				211,
 				212,
-				192,
-				195
+				213
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
+				[],
 				[
 					{
 						"begin_height": -10.0,
-						"end_height": 0.0,
+						"end_height": 30.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -10125,7 +10260,6 @@
 						"tile_rotations_count": 1
 					}
 				],
-				[],
 				[]
 			]
 		},
@@ -10160,10 +10294,11 @@
 			},
 			"id": 109,
 			"points": [
-				215,
-				216,
-				217,
-				218
+				192,
+				197,
+				204,
+				207,
+				193
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -10172,8 +10307,8 @@
 				[],
 				[
 					{
-						"begin_height": -8.0,
-						"end_height": 30.0,
+						"begin_height": -10.0,
+						"end_height": 0.3,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -10186,11 +10321,12 @@
 						"tile_rotations_count": 1
 					}
 				],
+				[],
 				[
 					{
 						"begin_height": -10.0,
-						"end_height": 0.0,
-						"id": "bricks",
+						"end_height": -9.8,
+						"id": "floor1",
 						"offset": [
 							0.0,
 							0.0
@@ -10199,7 +10335,7 @@
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
+						"tile_rotations_count": 4
 					}
 				],
 				[]
@@ -10236,10 +10372,11 @@
 			},
 			"id": 110,
 			"points": [
+				211,
+				213,
+				214,
 				215,
-				218,
-				219,
-				220
+				216
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -10249,7 +10386,37 @@
 				[
 					{
 						"begin_height": -10.0,
-						"end_height": 0.0,
+						"end_height": -9.85,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					},
+					{
+						"begin_height": -9.849,
+						"end_height": 30.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": 30.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -10265,7 +10432,7 @@
 				[],
 				[
 					{
-						"begin_height": -9.99,
+						"begin_height": -10.0,
 						"end_height": 30.0,
 						"id": "bricks",
 						"offset": [
@@ -10312,10 +10479,10 @@
 			},
 			"id": 111,
 			"points": [
-				221,
-				195,
-				202,
-				197
+				217,
+				203,
+				218,
+				198
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -10373,9 +10540,9 @@
 			},
 			"id": 112,
 			"points": [
-				195,
-				221,
-				213
+				203,
+				217,
+				219
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -10432,12 +10599,12 @@
 			},
 			"id": 113,
 			"points": [
-				222,
-				207,
-				214,
-				223,
-				224,
-				225
+				210,
+				216,
+				215,
+				220,
+				221,
+				209
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -10445,7 +10612,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": -10.0,
+						"begin_height": -10.49,
 						"end_height": 30.0,
 						"id": "bricks",
 						"offset": [
@@ -10463,7 +10630,21 @@
 				[
 					{
 						"begin_height": -10.0,
-						"end_height": -0.2,
+						"end_height": -9.85,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					},
+					{
+						"begin_height": -9.849,
+						"end_height": 30.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -10476,11 +10657,26 @@
 						"tile_rotations_count": 1
 					}
 				],
-				[],
 				[
 					{
 						"begin_height": -10.0,
-						"end_height": 0.3,
+						"end_height": 30.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": 0.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -10527,20 +10723,21 @@
 			},
 			"id": 114,
 			"points": [
-				220,
-				219,
+				210,
 				203,
-				206
+				219,
+				222
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				[],
+				[],
 				[
 					{
 						"begin_height": -10.0,
-						"end_height": 0.0,
+						"end_height": -0.2,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -10553,7 +10750,6 @@
 						"tile_rotations_count": 1
 					}
 				],
-				[],
 				[]
 			]
 		},
@@ -10588,12 +10784,9 @@
 			},
 			"id": 115,
 			"points": [
-				193,
-				226,
-				220,
-				206,
-				201,
-				200
+				223,
+				224,
+				225
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -10601,23 +10794,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": -10.0,
-						"end_height": 0.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": -10.0,
+						"begin_height": -8.0,
 						"end_height": 30.0,
 						"id": "bricks",
 						"offset": [
@@ -10631,12 +10808,11 @@
 						"tile_rotations_count": 1
 					}
 				],
-				[],
 				[
 					{
 						"begin_height": -10.0,
-						"end_height": 0.3,
-						"id": "bricks",
+						"end_height": -9.9,
+						"id": "floor1",
 						"offset": [
 							0.0,
 							0.0
@@ -10645,10 +10821,9 @@
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
+						"tile_rotations_count": 4
 					}
 				],
-				[],
 				[]
 			]
 		},
@@ -10683,9 +10858,930 @@
 			},
 			"id": 116,
 			"points": [
-				200,
-				194,
-				193
+				226,
+				223,
+				225,
+				227
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": -9.89,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				],
+				[]
+			]
+		},
+		{
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Generated::_15",
+			"floor": -10.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 117,
+			"points": [
+				226,
+				227,
+				228
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": -9.88,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				],
+				[]
+			]
+		},
+		{
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Generated::_16",
+			"floor": -10.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 118,
+			"points": [
+				226,
+				228,
+				229
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": -9.87,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				],
+				[]
+			]
+		},
+		{
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Generated::_17",
+			"floor": -10.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 119,
+			"points": [
+				226,
+				229,
+				230,
+				231
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": -9.86,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": -9.99,
+						"end_height": 30.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				]
+			]
+		},
+		{
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Generated::_18",
+			"floor": -10.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 120,
+			"points": [
+				231,
+				230,
+				232
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": -9.85,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				],
+				[]
+			]
+		},
+		{
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Generated::_19",
+			"floor": -10.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 121,
+			"points": [
+				231,
+				232,
+				233
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": -9.84,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				],
+				[]
+			]
+		},
+		{
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Generated::_20",
+			"floor": -10.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 122,
+			"points": [
+				231,
+				233,
+				205,
+				208
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": -9.83,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				],
+				[],
+				[]
+			]
+		},
+		{
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Generated::_21",
+			"floor": -10.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 123,
+			"points": [
+				231,
+				208,
+				199,
+				234
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": 0.3,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": 30.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				]
+			]
+		},
+		{
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Generated::_22",
+			"floor": -10.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 124,
+			"points": [
+				235,
+				234,
+				199,
+				198
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": -9.85,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					},
+					{
+						"begin_height": -9.849,
+						"end_height": 30.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[],
+				[]
+			]
+		},
+		{
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Generated::_23",
+			"floor": -10.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 125,
+			"points": [
+				236,
+				235,
+				198,
+				237
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": 30.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": -9.85,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					},
+					{
+						"begin_height": -9.849,
+						"end_height": 30.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				]
+			]
+		},
+		{
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Generated::_24",
+			"floor": -10.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 126,
+			"points": [
+				238,
+				237,
+				198,
+				239
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": 30.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[],
+				[]
+			]
+		},
+		{
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Generated::_25",
+			"floor": -10.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 127,
+			"points": [
+				210,
+				222,
+				240,
+				241,
+				196
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": -0.2,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": 0.3,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[]
+			]
+		},
+		{
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Generated::_26",
+			"floor": -10.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 128,
+			"points": [
+				201,
+				242,
+				238,
+				239,
+				202
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": 0.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": -9.85,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					},
+					{
+						"begin_height": -8.0,
+						"end_height": 30.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": 0.5,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[]
+			]
+		},
+		{
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Generated::_27",
+			"floor": -10.0,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 129,
+			"points": [
+				218,
+				239,
+				198
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -10726,7 +11822,7 @@
 				"tile_rotations_count": 2
 			},
 			"damage": 0,
-			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Generated::_15",
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Generated::_28",
 			"floor": -10.0,
 			"floor_surface": {
 				"id": "floor1",
@@ -10740,12 +11836,12 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 117,
+			"id": 130,
 			"points": [
-				223,
-				221,
-				197,
-				224
+				240,
+				217,
+				198,
+				241
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -10802,7 +11898,7 @@
 				"tile_rotations_count": 2
 			},
 			"damage": 0,
-			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Generated::_16",
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Generated::_29",
 			"floor": -10.0,
 			"floor_surface": {
 				"id": "floor1",
@@ -10816,11 +11912,11 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 118,
+			"id": 131,
 			"points": [
-				199,
-				222,
-				225
+				195,
+				210,
+				196
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -10847,6 +11943,14 @@
 			]
 		},
 		{
+			"alt_states": [
+				{
+					"activator": "Arena1_Trap",
+					"ceiling": 30.0,
+					"floor": -8.5,
+					"move_speed": 1.0
+				}
+			],
 			"ceiling": 30.0,
 			"ceiling_surface": {
 				"id": "floor2",
@@ -10861,8 +11965,8 @@
 				"tile_rotations_count": 2
 			},
 			"damage": 0,
-			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Generated::_17",
-			"floor": -10.0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Parkour::Sector-962",
+			"floor": 0.5,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -10875,33 +11979,182 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 119,
+			"id": 132,
 			"points": [
-				199,
-				225,
-				196
+				218,
+				203,
+				202,
+				239
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
 				[],
-				[
-					{
-						"begin_height": -10.0,
-						"end_height": 0.3,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
+				[],
+				[],
+				[]
+			]
+		},
+		{
+			"alt_states": [
+				{
+					"activator": "Arena1_Trap",
+					"ceiling": 30.0,
+					"floor": -9.2,
+					"move_speed": 1.0
+				}
+			],
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
 				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Parkour::Sector-8485",
+			"floor": -0.2,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 133,
+			"points": [
+				222,
+				219,
+				217,
+				240
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[],
+				[],
+				[]
+			]
+		},
+		{
+			"alt_states": [
+				{
+					"activator": "Arena1_Trap",
+					"ceiling": 30.0,
+					"floor": -7.7,
+					"move_speed": 1.0
+				}
+			],
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Parkour::Sector-3221",
+			"floor": 0.3,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 134,
+			"points": [
+				196,
+				241,
+				198,
+				192
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[],
+				[],
+				[]
+			]
+		},
+		{
+			"alt_states": [
+				{
+					"activator": "Arena1_Trap",
+					"ceiling": 30.0,
+					"floor": -8.7,
+					"move_speed": 1.0
+				}
+			],
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Parkour::Sector-2252",
+			"floor": 0.3,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 135,
+			"points": [
+				197,
+				199,
+				208,
+				204
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[],
+				[],
 				[]
 			]
 		},
@@ -10934,15 +12187,15 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 120,
+			"id": 136,
 			"points": [
-				216,
-				215,
-				227,
-				228
+				223,
+				226,
+				243,
+				244
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 121,
+			"portal_target": 137,
 			"portal_wall": 2,
 			"wall_surfaces": [
 				[],
@@ -11025,15 +12278,15 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 121,
+			"id": 137,
 			"points": [
-				229,
-				230,
-				210,
-				209
+				245,
+				246,
+				212,
+				211
 			],
 			"portal_destination_wall": 2,
-			"portal_target": 120,
+			"portal_target": 136,
 			"portal_wall": 0,
 			"wall_surfaces": [
 				[
@@ -11116,15 +12369,15 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 122,
+			"id": 138,
 			"points": [
-				193,
-				192,
-				212,
-				211,
+				201,
+				200,
+				209,
+				221,
 				172,
 				171,
-				226
+				242
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -11136,6 +12389,20 @@
 				[
 					{
 						"begin_height": 0.0,
+						"end_height": 20.01,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					},
+					{
+						"begin_height": 22.5,
 						"end_height": 30.0,
 						"id": "bricks",
 						"offset": [
@@ -11185,15 +12452,7 @@
 			]
 		},
 		{
-			"alt_states": [
-				{
-					"activator": "Arena1_Trap",
-					"ceiling": 30.0,
-					"floor": -8.5,
-					"move_speed": 1.0
-				}
-			],
-			"ceiling": 30.0,
+			"ceiling": 22.5,
 			"ceiling_surface": {
 				"id": "floor2",
 				"offset": [
@@ -11207,8 +12466,8 @@
 				"tile_rotations_count": 2
 			},
 			"damage": 0,
-			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Sector-962",
-			"floor": 0.5,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Sector-7207c3b",
+			"floor": 20.0,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -11221,33 +12480,93 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 123,
+			"id": 139,
 			"points": [
-				202,
-				195,
-				194,
-				200
+				247,
+				248,
+				249,
+				250
 			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_destination_wall": 1,
+			"portal_target": 166,
+			"portal_wall": 0,
 			"wall_surfaces": [
-				[],
-				[],
-				[],
-				[]
+				[
+					{
+						"begin_height": 20.0,
+						"end_height": 22.5,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 20.0,
+						"end_height": 22.5,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 20.0,
+						"end_height": 20.01,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				],
+				[
+					{
+						"begin_height": 20.0,
+						"end_height": 22.5,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				]
 			]
 		},
 		{
 			"alt_states": [
 				{
 					"activator": "Arena1_Trap",
-					"ceiling": 30.0,
-					"floor": -9.2,
+					"ceiling": 22.5,
+					"floor": 22.49,
 					"move_speed": 1.0
 				}
 			],
-			"ceiling": 30.0,
+			"ceiling": 22.5,
 			"ceiling_surface": {
 				"id": "floor2",
 				"offset": [
@@ -11261,8 +12580,8 @@
 				"tile_rotations_count": 2
 			},
 			"damage": 0,
-			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Sector-8485",
-			"floor": -0.2,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Sector-7207c3c",
+			"floor": 20.01,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -11275,128 +12594,50 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 124,
+			"id": 140,
 			"points": [
-				214,
-				213,
+				249,
+				172,
 				221,
-				223
+				250
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
-				[],
-				[],
-				[],
-				[]
-			]
-		},
-		{
-			"alt_states": [
-				{
-					"activator": "Arena1_Trap",
-					"ceiling": 30.0,
-					"floor": -8.7,
-					"move_speed": 1.0
-				}
-			],
-			"ceiling": 30.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
+				[
+					{
+						"begin_height": 20.01,
+						"end_height": 22.5,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
 				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Sector-3221",
-			"floor": 0.3,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
+				[],
+				[
+					{
+						"begin_height": 20.01,
+						"end_height": 22.5,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
 				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 125,
-			"points": [
-				225,
-				224,
-				197,
-				196
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[],
-				[],
-				[]
-			]
-		},
-		{
-			"alt_states": [
-				{
-					"activator": "Arena1_Trap",
-					"ceiling": 30.0,
-					"floor": -8.7,
-					"move_speed": 1.0
-				}
-			],
-			"ceiling": 30.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Sector-2252",
-			"floor": 0.3,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 126,
-			"points": [
-				198,
-				201,
-				206,
-				205
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[],
-				[],
 				[]
 			]
 		},
@@ -11437,17 +12678,24 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 127,
+			"id": 141,
 			"points": [
-				231,
-				232,
-				233,
-				204,
-				203,
-				219,
-				218,
-				217,
-				234
+				251,
+				252,
+				253,
+				194,
+				254,
+				255,
+				256,
+				257,
+				258,
+				259,
+				260,
+				261,
+				262,
+				263,
+				264,
+				265
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -11501,6 +12749,13 @@
 						"tile_rotations_count": 1
 					}
 				],
+				[],
+				[],
+				[],
+				[],
+				[],
+				[],
+				[],
 				[],
 				[],
 				[],
@@ -11560,6 +12815,7 @@
 								"activator": "Arena1_Trap",
 								"can_turn_off": false,
 								"enemy_sensitive": false,
+								"increment": 6,
 								"player_sensitive": true,
 								"timeout": 0.0,
 								"while_alive": false
@@ -11583,7 +12839,7 @@
 				],
 				[
 					{
-						"begin_height": 4.0,
+						"begin_height": 5.0,
 						"end_height": 30.0,
 						"id": "bricks",
 						"offset": [
@@ -11600,6 +12856,938 @@
 			]
 		},
 		{
+			"alt_states": [
+				{
+					"activator": "Arena1_Finished",
+					"ceiling": 30.0,
+					"floor": -9.1,
+					"move_speed": 1.0
+				}
+			],
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::StairsUp::ExitSectos2",
+			"floor": -9.9,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 142,
+			"points": [
+				225,
+				224,
+				264,
+				263
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[
+					{
+						"begin_height": -8.0,
+						"end_height": 30.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.9,
+						"end_height": 0.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.9,
+						"end_height": -9.89,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				]
+			]
+		},
+		{
+			"alt_states": [
+				{
+					"activator": "Arena1_Finished",
+					"ceiling": 30.0,
+					"floor": -8.28,
+					"move_speed": 1.0
+				}
+			],
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::StairsUp::ExitSectos",
+			"floor": -9.89,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 143,
+			"points": [
+				227,
+				225,
+				263,
+				262
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[],
+				[
+					{
+						"begin_height": -9.89,
+						"end_height": 0.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.89,
+						"end_height": -9.88,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				]
+			]
+		},
+		{
+			"alt_states": [
+				{
+					"activator": "Arena1_Finished",
+					"ceiling": 30.0,
+					"floor": -7.46,
+					"move_speed": 1.0
+				}
+			],
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::StairsUp::ExitSectot2a",
+			"floor": -9.88,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 144,
+			"points": [
+				228,
+				227,
+				262,
+				261
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[],
+				[
+					{
+						"begin_height": -9.88,
+						"end_height": 0.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.88,
+						"end_height": -9.87,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				]
+			]
+		},
+		{
+			"alt_states": [
+				{
+					"activator": "Arena1_Finished",
+					"ceiling": 30.0,
+					"floor": -6.64,
+					"move_speed": 1.0
+				}
+			],
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::StairsUp::ExitSectot2",
+			"floor": -9.87,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 145,
+			"points": [
+				229,
+				228,
+				261,
+				260
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[],
+				[
+					{
+						"begin_height": -9.87,
+						"end_height": 0.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.87,
+						"end_height": -9.86,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				]
+			]
+		},
+		{
+			"alt_states": [
+				{
+					"activator": "Arena1_Finished",
+					"ceiling": 30.0,
+					"floor": -5.82,
+					"move_speed": 1.0
+				}
+			],
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::StairsUp::ExitSectot",
+			"floor": -9.86,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 146,
+			"points": [
+				230,
+				229,
+				260,
+				259
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[],
+				[
+					{
+						"begin_height": -9.86,
+						"end_height": 0.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.86,
+						"end_height": -9.85,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				]
+			]
+		},
+		{
+			"alt_states": [
+				{
+					"activator": "Arena1_Finished",
+					"ceiling": 30.0,
+					"floor": -5.0,
+					"move_speed": 1.0
+				}
+			],
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::StairsUp::ExitSectoz",
+			"floor": -9.85,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 147,
+			"points": [
+				232,
+				230,
+				259,
+				258
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[],
+				[
+					{
+						"begin_height": -9.85,
+						"end_height": 0.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.85,
+						"end_height": -9.84,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				]
+			]
+		},
+		{
+			"alt_states": [
+				{
+					"activator": "Arena1_Finished",
+					"ceiling": 30.0,
+					"floor": -4.18,
+					"move_speed": 1.0
+				}
+			],
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::StairsUp::ExitSectoy",
+			"floor": -9.84,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 148,
+			"points": [
+				233,
+				232,
+				258,
+				257
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[],
+				[
+					{
+						"begin_height": -9.84,
+						"end_height": 0.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.84,
+						"end_height": -9.83,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				]
+			]
+		},
+		{
+			"alt_states": [
+				{
+					"activator": "Arena1_Finished",
+					"ceiling": 30.0,
+					"floor": -3.36,
+					"move_speed": 1.0
+				}
+			],
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::StairsUp::ExitSectou",
+			"floor": -9.83,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 149,
+			"points": [
+				205,
+				233,
+				257,
+				256
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[],
+				[
+					{
+						"begin_height": -9.83,
+						"end_height": 0.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.83,
+						"end_height": -9.82,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				]
+			]
+		},
+		{
+			"alt_states": [
+				{
+					"activator": "Arena1_Finished",
+					"ceiling": 30.0,
+					"floor": -2.54,
+					"move_speed": 1.0
+				}
+			],
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::StairsUp::ExitSectox",
+			"floor": -9.82,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 150,
+			"points": [
+				206,
+				205,
+				256,
+				255
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[],
+				[
+					{
+						"begin_height": -9.82,
+						"end_height": 0.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.82,
+						"end_height": -9.81,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				]
+			]
+		},
+		{
+			"alt_states": [
+				{
+					"activator": "Arena1_Finished",
+					"ceiling": 30.0,
+					"floor": -1.72,
+					"move_speed": 1.0
+				}
+			],
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::StairsUp::ExitSectow",
+			"floor": -9.81,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 151,
+			"points": [
+				207,
+				206,
+				255,
+				254
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[],
+				[
+					{
+						"begin_height": -9.81,
+						"end_height": 0.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.81,
+						"end_height": -9.8,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				]
+			]
+		},
+		{
+			"alt_states": [
+				{
+					"activator": "Arena1_Finished",
+					"ceiling": 30.0,
+					"floor": -0.899999999999998,
+					"move_speed": 1.0
+				}
+			],
+			"ceiling": 30.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::StairsUp::ExitSectov",
+			"floor": -9.8,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 152,
+			"points": [
+				193,
+				207,
+				254,
+				194
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[],
+				[
+					{
+						"begin_height": -9.8,
+						"end_height": 0.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[]
+			]
+		},
+		{
+			"alt_states": [
+				{
+					"activator": "Arena1_Finished",
+					"ceiling": 4.0,
+					"floor": 0.0,
+					"move_speed": 1.0
+				}
+			],
 			"ceiling": 0.01,
 			"ceiling_surface": {
 				"id": "floor2",
@@ -11628,12 +13816,12 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 128,
+			"id": 153,
 			"points": [
-				235,
-				236,
-				237,
-				238
+				266,
+				267,
+				268,
+				269
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -11676,7 +13864,7 @@
 			]
 		},
 		{
-			"ceiling": 4.0,
+			"ceiling": 5.0,
 			"ceiling_surface": {
 				"id": "floor2",
 				"offset": [
@@ -11704,12 +13892,12 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 129,
+			"id": 154,
 			"points": [
-				237,
-				231,
-				234,
-				238
+				268,
+				251,
+				265,
+				269
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -11718,7 +13906,7 @@
 				[
 					{
 						"begin_height": 0.0,
-						"end_height": 4.0,
+						"end_height": 5.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -11735,7 +13923,7 @@
 				[
 					{
 						"begin_height": 0.0,
-						"end_height": 4.0,
+						"end_height": 5.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -11751,7 +13939,7 @@
 				[
 					{
 						"begin_height": 0.01,
-						"end_height": 4.0,
+						"end_height": 5.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -11795,12 +13983,12 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 130,
+			"id": 155,
 			"points": [
-				239,
-				240,
-				236,
-				235
+				270,
+				271,
+				267,
+				266
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -11901,12 +14089,13 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 131,
+			"id": 156,
 			"points": [
-				241,
-				217,
-				216,
-				242
+				272,
+				264,
+				224,
+				223,
+				273
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -11926,6 +14115,22 @@
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
 						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": -9.9,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
 					}
 				],
 				[],
@@ -12000,12 +14205,12 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 132,
+			"id": 157,
 			"points": [
-				220,
-				243,
-				244,
-				215
+				231,
+				274,
+				275,
+				226
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -12076,12 +14281,12 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 133,
+			"id": 158,
 			"points": [
-				245,
-				246,
-				244,
-				243
+				276,
+				277,
+				275,
+				274
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -12158,6 +14363,7 @@
 								"activator": "Arena1_Trap_Part2",
 								"can_turn_off": false,
 								"enemy_sensitive": false,
+								"increment": 1,
 								"player_sensitive": true,
 								"timeout": 0.0,
 								"while_alive": false
@@ -12242,16 +14448,16 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 134,
+			"id": 159,
 			"points": [
-				247,
-				248,
-				249,
-				250,
-				251,
-				246,
-				245,
-				252
+				278,
+				279,
+				280,
+				281,
+				282,
+				277,
+				276,
+				283
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -12409,12 +14615,12 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 135,
+			"id": 160,
 			"points": [
-				253,
-				254,
-				249,
-				248
+				284,
+				285,
+				280,
+				279
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -12485,15 +14691,15 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 136,
+			"id": 161,
 			"points": [
-				255,
-				256,
-				254,
-				253
+				286,
+				287,
+				285,
+				284
 			],
 			"portal_destination_wall": 2,
-			"portal_target": 137,
+			"portal_target": 162,
 			"portal_wall": 0,
 			"wall_surfaces": [
 				[
@@ -12591,18 +14797,17 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 137,
+			"id": 162,
 			"points": [
-				257,
-				258,
-				259,
-				260
+				288,
+				289,
+				290,
+				291
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 136,
+			"portal_target": 161,
 			"portal_wall": 2,
 			"wall_surfaces": [
-				[],
 				[
 					{
 						"begin_height": -9.4,
@@ -12650,82 +14855,7 @@
 						"tile_rotation_increment": 1.5707963267949,
 						"tile_rotations_count": 1
 					}
-				]
-			]
-		},
-		{
-			"ceiling": -5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
 				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Sector-4950f",
-			"floor": -9.4,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 138,
-			"points": [
-				261,
-				262,
-				258,
-				257
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[
-					{
-						"begin_height": -9.4,
-						"end_height": -5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": -9.4,
-						"end_height": -5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
 				[
 					{
 						"begin_height": -9.4,
@@ -12749,11 +14879,11 @@
 				{
 					"activator": "Arena1_Trap",
 					"ceiling": -8.0,
-					"floor": -10.0,
+					"floor": -10.5,
 					"move_speed": 1.0
 				}
 			],
-			"ceiling": -9.99,
+			"ceiling": -10.49,
 			"ceiling_surface": {
 				"id": "floor2",
 				"offset": [
@@ -12768,7 +14898,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::DoorSector-1947",
-			"floor": -10.0,
+			"floor": -10.5,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -12781,12 +14911,12 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 4
 			},
-			"id": 139,
+			"id": 163,
 			"points": [
-				263,
-				208,
-				207,
-				264
+				292,
+				216,
+				210,
+				293
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -12794,8 +14924,8 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": -10.0,
-						"end_height": -9.99,
+						"begin_height": -10.5,
+						"end_height": -10.49,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -12808,11 +14938,26 @@
 						"tile_rotations_count": 1
 					}
 				],
-				[],
 				[
 					{
-						"begin_height": -10.0,
-						"end_height": -9.99,
+						"begin_height": -10.5,
+						"end_height": -10.0,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				],
+				[
+					{
+						"begin_height": -10.5,
+						"end_height": -10.49,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -12844,1494 +14989,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Sector-1947a",
-			"floor": -10.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 140,
-			"points": [
-				265,
-				266,
-				267,
-				263,
-				264,
-				268
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[
-					{
-						"begin_height": -10.0,
-						"end_height": -7.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": -10.0,
-						"end_height": -7.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": -10.0,
-						"end_height": -7.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": -9.99,
-						"end_height": -7.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": -10.0,
-						"end_height": -7.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": -10.0,
-						"end_height": -7.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_0",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 141,
-			"points": [
-				269,
-				270,
-				271
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_1",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 142,
-			"points": [
-				272,
-				273,
-				270,
-				274,
-				275
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_2",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 143,
-			"points": [
-				276,
-				269,
-				271,
-				277
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[],
-				[],
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_3",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 144,
-			"points": [
-				270,
-				269,
-				274
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_4",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 145,
-			"points": [
-				273,
-				272,
-				278
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_5",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 146,
-			"points": [
-				279,
-				273,
-				278
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_6",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 147,
-			"points": [
-				279,
-				278,
-				280,
-				281
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[],
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_7",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 148,
-			"points": [
-				282,
-				283,
-				284,
-				285
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_8",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 149,
-			"points": [
-				275,
-				286,
-				272
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_9",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 150,
-			"points": [
-				287,
-				288,
-				275,
-				274,
-				289
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_10",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 151,
-			"points": [
-				285,
-				284,
-				290,
-				277,
-				271,
-				291
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[],
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_11",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 152,
-			"points": [
-				279,
-				292,
-				287,
-				293,
-				294
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[],
-				[],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_12",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 153,
-			"points": [
-				295,
-				293,
-				287,
-				296
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_13",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 154,
-			"points": [
-				297,
-				284,
-				283,
-				298,
-				299,
-				287
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[],
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_14",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 155,
-			"points": [
-				300,
-				301,
-				302,
-				303,
-				279,
-				304
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[],
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_15",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 156,
-			"points": [
-				281,
-				305,
-				292,
-				279
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_16",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 157,
-			"points": [
-				303,
-				306,
-				291,
-				271
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_17",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 158,
-			"points": [
-				303,
-				271,
-				279
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_18",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 159,
-			"points": [
-				274,
-				307,
-				289
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_19",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 160,
-			"points": [
-				287,
-				289,
-				308,
-				297
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_20",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 161,
-			"points": [
-				309,
-				296,
-				287,
-				299,
-				301
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[],
-				[],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_21",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 162,
-			"points": [
-				310,
-				309,
-				301,
-				300
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[],
-				[],
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_22",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 163,
-			"points": [
-				293,
-				311,
-				294
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[
-					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_23",
-			"floor": 0.0,
+			"floor": -10.5,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -14346,64 +15004,101 @@
 			},
 			"id": 164,
 			"points": [
-				279,
 				294,
-				304
+				295,
+				296,
+				292,
+				293,
+				297
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
-				[],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 5.0,
-			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Generated::_24",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "floor1",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
-			},
-			"id": 165,
-			"points": [
-				300,
-				304,
-				312
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[],
 				[
 					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
+						"begin_height": -10.5,
+						"end_height": -7.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -10.5,
+						"end_height": -7.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -10.5,
+						"end_height": -7.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -10.49,
+						"end_height": -7.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -10.5,
+						"end_height": -7.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -10.5,
+						"end_height": -7.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -14419,7 +15114,15 @@
 			]
 		},
 		{
-			"ceiling": 5.0,
+			"alt_states": [
+				{
+					"activator": "Arena1_Trap",
+					"ceiling": -9.84,
+					"floor": -9.85,
+					"move_speed": 1.0
+				}
+			],
+			"ceiling": -8.0,
 			"ceiling_surface": {
 				"id": "floor2",
 				"offset": [
@@ -14433,8 +15136,84 @@
 				"tile_rotations_count": 2
 			},
 			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Node2D::Sector-4571",
-			"floor": 0.0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Sector-7916",
+			"floor": -9.85,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 165,
+			"points": [
+				242,
+				298,
+				299,
+				238
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[
+					{
+						"begin_height": -9.85,
+						"end_height": -8.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": -9.85,
+						"end_height": -8.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[]
+			]
+		},
+		{
+			"ceiling": -8.0,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Sector-7916a",
+			"floor": -10.0,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -14449,19 +15228,19 @@
 			},
 			"id": 166,
 			"points": [
-				276,
-				307,
-				274,
-				269
+				298,
+				300,
+				301,
+				299
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 168,
-			"portal_wall": 0,
+			"portal_target": 139,
+			"portal_wall": 1,
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
+						"begin_height": -10.0,
+						"end_height": -8.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -14474,13 +15253,66 @@
 						"tile_rotations_count": 1
 					}
 				],
-				[],
-				[],
-				[]
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": -8.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": -8.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -10.0,
+						"end_height": -9.85,
+						"id": "floor1",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 4
+					}
+				]
 			]
 		},
 		{
-			"ceiling": 5.0,
+			"alt_states": [
+				{
+					"activator": "Arena1_Trap_Part2",
+					"ceiling": -7.0,
+					"floor": -9.85,
+					"move_speed": 1.0
+				}
+			],
+			"ceiling": -9.849,
 			"ceiling_surface": {
 				"id": "floor2",
 				"offset": [
@@ -14494,8 +15326,8 @@
 				"tile_rotations_count": 2
 			},
 			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Node2D::Sector-4571b",
-			"floor": 0.0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Sector-6883",
+			"floor": -9.85,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -14510,21 +15342,36 @@
 			},
 			"id": 167,
 			"points": [
-				284,
-				297,
-				308,
-				290
+				237,
+				302,
+				303,
+				236
 			],
-			"portal_destination_wall": 2,
-			"portal_target": 171,
-			"portal_wall": 2,
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
-				[],
+				[
+					{
+						"begin_height": -9.85,
+						"end_height": -9.849,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
 				[],
 				[
 					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
+						"begin_height": -9.85,
+						"end_height": -9.849,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -14541,7 +15388,15 @@
 			]
 		},
 		{
-			"ceiling": 5.0,
+			"alt_states": [
+				{
+					"activator": "Arena1_Trap_Part2",
+					"ceiling": -7.0,
+					"floor": -9.85,
+					"move_speed": 1.0
+				}
+			],
+			"ceiling": -9.849,
 			"ceiling_surface": {
 				"id": "floor2",
 				"offset": [
@@ -14555,8 +15410,8 @@
 				"tile_rotations_count": 2
 			},
 			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Node2D4::Sector-4571",
-			"floor": 0.0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Sector-6884",
+			"floor": -9.85,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -14571,19 +15426,19 @@
 			},
 			"id": 168,
 			"points": [
-				311,
-				312,
+				235,
 				304,
-				294
+				305,
+				234
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 166,
-			"portal_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
+						"begin_height": -9.85,
+						"end_height": -9.849,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -14597,12 +15452,35 @@
 					}
 				],
 				[],
-				[],
+				[
+					{
+						"begin_height": -9.85,
+						"end_height": -9.849,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
 				[]
 			]
 		},
 		{
-			"ceiling": 5.0,
+			"alt_states": [
+				{
+					"activator": "Arena1_Trap_Part2",
+					"ceiling": -7.0,
+					"floor": -9.85,
+					"move_speed": 1.0
+				}
+			],
+			"ceiling": -9.849,
 			"ceiling_surface": {
 				"id": "floor2",
 				"offset": [
@@ -14616,8 +15494,8 @@
 				"tile_rotations_count": 2
 			},
 			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Node2D4::Sector-4571b",
-			"floor": 0.0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Sector-6885",
+			"floor": -9.85,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -14632,21 +15510,36 @@
 			},
 			"id": 169,
 			"points": [
-				296,
-				309,
-				310,
-				295
+				215,
+				306,
+				307,
+				220
 			],
-			"portal_destination_wall": 2,
-			"portal_target": 173,
-			"portal_wall": 2,
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
-				[],
+				[
+					{
+						"begin_height": -9.85,
+						"end_height": -9.849,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
 				[],
 				[
 					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
+						"begin_height": -9.85,
+						"end_height": -9.849,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -14663,7 +15556,15 @@
 			]
 		},
 		{
-			"ceiling": 5.0,
+			"alt_states": [
+				{
+					"activator": "Arena1_Trap_Part2",
+					"ceiling": -7.0,
+					"floor": -9.85,
+					"move_speed": 1.0
+				}
+			],
+			"ceiling": -9.849,
 			"ceiling_surface": {
 				"id": "floor2",
 				"offset": [
@@ -14677,8 +15578,8 @@
 				"tile_rotations_count": 2
 			},
 			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Node2D2::Sector-4571",
-			"floor": 0.0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Sector-6886",
+			"floor": -9.85,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -14693,19 +15594,19 @@
 			},
 			"id": 170,
 			"points": [
-				305,
-				288,
-				287,
-				292
+				213,
+				308,
+				309,
+				214
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 172,
-			"portal_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
+						"begin_height": -9.85,
+						"end_height": -9.849,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -14719,12 +15620,27 @@
 					}
 				],
 				[],
-				[],
+				[
+					{
+						"begin_height": -9.85,
+						"end_height": -9.849,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
 				[]
 			]
 		},
 		{
-			"ceiling": 5.0,
+			"ceiling": -6.5,
 			"ceiling_surface": {
 				"id": "floor2",
 				"offset": [
@@ -14738,8 +15654,8 @@
 				"tile_rotations_count": 2
 			},
 			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Node2D2::Sector-4571b",
-			"floor": 0.0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Sector-6886a",
+			"floor": -9.85,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -14754,21 +15670,19 @@
 			},
 			"id": 171,
 			"points": [
-				278,
-				272,
-				286,
-				280
+				310,
+				311,
+				309,
+				308
 			],
-			"portal_destination_wall": 2,
-			"portal_target": 167,
-			"portal_wall": 2,
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
-				[],
-				[],
 				[
 					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
+						"begin_height": -9.85,
+						"end_height": -6.5,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -14781,11 +15695,58 @@
 						"tile_rotations_count": 1
 					}
 				],
-				[]
+				[
+					{
+						"begin_height": -9.85,
+						"end_height": -6.5,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.849,
+						"end_height": -6.5,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.85,
+						"end_height": -6.5,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				]
 			]
 		},
 		{
-			"ceiling": 5.0,
+			"ceiling": -6.5,
 			"ceiling_surface": {
 				"id": "floor2",
 				"offset": [
@@ -14799,8 +15760,8 @@
 				"tile_rotations_count": 2
 			},
 			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Node2D3::Sector-4571",
-			"floor": 0.0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Sector-6885a",
+			"floor": -9.85,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -14815,19 +15776,19 @@
 			},
 			"id": 172,
 			"points": [
-				306,
-				282,
-				285,
-				291
+				312,
+				313,
+				307,
+				306
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 170,
-			"portal_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
+						"begin_height": -9.85,
+						"end_height": -6.5,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -14840,13 +15801,58 @@
 						"tile_rotations_count": 1
 					}
 				],
-				[],
-				[],
-				[]
+				[
+					{
+						"begin_height": -9.85,
+						"end_height": -6.5,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.849,
+						"end_height": -6.5,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.85,
+						"end_height": -6.5,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				]
 			]
 		},
 		{
-			"ceiling": 5.0,
+			"ceiling": -6.5,
 			"ceiling_surface": {
 				"id": "floor2",
 				"offset": [
@@ -14860,8 +15866,8 @@
 				"tile_rotations_count": 2
 			},
 			"damage": 0,
-			"debug_name": "TriangulatedMultisector-6302::Node2D3::Sector-4571b",
-			"floor": 0.0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Sector-6884a",
+			"floor": -9.85,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -14876,21 +15882,19 @@
 			},
 			"id": 173,
 			"points": [
-				301,
-				299,
-				298,
-				302
+				314,
+				315,
+				305,
+				304
 			],
-			"portal_destination_wall": 2,
-			"portal_target": 169,
-			"portal_wall": 2,
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
 			"wall_surfaces": [
-				[],
-				[],
 				[
 					{
-						"begin_height": 0.0,
-						"end_height": 5.0,
+						"begin_height": -9.85,
+						"end_height": -6.5,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -14903,7 +15907,160 @@
 						"tile_rotations_count": 1
 					}
 				],
-				[]
+				[
+					{
+						"begin_height": -9.85,
+						"end_height": -6.5,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.849,
+						"end_height": -6.5,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.85,
+						"end_height": -6.5,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				]
+			]
+		},
+		{
+			"ceiling": -6.5,
+			"ceiling_surface": {
+				"id": "floor2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 3.14159265358979,
+				"tile_rotations_count": 2
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Node2D::Node2D::Arena1_MainMultisector::Sector-6883a",
+			"floor": -9.85,
+			"floor_surface": {
+				"id": "floor1",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 4
+			},
+			"id": 174,
+			"points": [
+				302,
+				316,
+				317,
+				303
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[
+					{
+						"begin_height": -9.85,
+						"end_height": -6.5,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.85,
+						"end_height": -6.5,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.85,
+						"end_height": -6.5,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": -9.849,
+						"end_height": -6.5,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				]
 			]
 		}
 	]
