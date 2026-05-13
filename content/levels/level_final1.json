@@ -109,6 +109,11 @@
 			],
 			"name": "ActivatorExit",
 			"threshold": 1
+		},
+		{
+			"hooks": [],
+			"name": "ActivatorTrap",
+			"threshold": 1
 		}
 	],
 	"ambient_lights": [
@@ -32307,6 +32312,14 @@
 			]
 		},
 		{
+			"alt_states": [
+				{
+					"activator": "ActivatorTrap",
+					"ceiling": 12.0,
+					"floor": 11.99,
+					"move_speed": 1.0
+				}
+			],
 			"ceiling": 12.0,
 			"ceiling_surface": {
 				"id": "floor2",
@@ -32614,6 +32627,16 @@
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
+			"triggers": [
+				{
+					"activator": "ActivatorTrap",
+					"can_turn_off": false,
+					"enemy_sensitive": false,
+					"player_sensitive": true,
+					"timeout": 0.0,
+					"while_alive": false
+				}
+			],
 			"wall_surfaces": [
 				[
 					{
@@ -32742,6 +32765,16 @@
 			"portal_destination_wall": 4,
 			"portal_target": 346,
 			"portal_wall": 6,
+			"triggers": [
+				{
+					"activator": "ActivatorTrap",
+					"can_turn_off": false,
+					"enemy_sensitive": false,
+					"player_sensitive": true,
+					"timeout": 0.0,
+					"while_alive": false
+				}
+			],
 			"wall_surfaces": [
 				[
 					{
@@ -32898,6 +32931,16 @@
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
+			"triggers": [
+				{
+					"activator": "ActivatorTrap",
+					"can_turn_off": false,
+					"enemy_sensitive": false,
+					"player_sensitive": true,
+					"timeout": 0.0,
+					"while_alive": false
+				}
+			],
 			"wall_surfaces": [
 				[
 					{
@@ -32983,6 +33026,16 @@
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
+			"triggers": [
+				{
+					"activator": "ActivatorTrap",
+					"can_turn_off": false,
+					"enemy_sensitive": false,
+					"player_sensitive": true,
+					"timeout": 0.0,
+					"while_alive": false
+				}
+			],
 			"wall_surfaces": [
 				[],
 				[
@@ -33530,6 +33583,16 @@
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
+			"triggers": [
+				{
+					"activator": "ActivatorTrap",
+					"can_turn_off": false,
+					"enemy_sensitive": false,
+					"player_sensitive": true,
+					"timeout": 0.0,
+					"while_alive": false
+				}
+			],
 			"wall_surfaces": [
 				[
 					{
@@ -33730,6 +33793,16 @@
 			"portal_destination_wall": 6,
 			"portal_target": 285,
 			"portal_wall": 1,
+			"triggers": [
+				{
+					"activator": "ActivatorTrap",
+					"can_turn_off": false,
+					"enemy_sensitive": false,
+					"player_sensitive": true,
+					"timeout": 0.0,
+					"while_alive": false
+				}
+			],
 			"wall_surfaces": [
 				[
 					{
@@ -33857,6 +33930,16 @@
 			"portal_destination_wall": 1,
 			"portal_target": 284,
 			"portal_wall": 6,
+			"triggers": [
+				{
+					"activator": "ActivatorTrap",
+					"can_turn_off": false,
+					"enemy_sensitive": false,
+					"player_sensitive": true,
+					"timeout": 0.0,
+					"while_alive": false
+				}
+			],
 			"wall_surfaces": [
 				[
 					{
