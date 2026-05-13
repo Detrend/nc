@@ -212,20 +212,6 @@
 			]
 		},
 		{
-			"entity_type": 1,
-			"forward": [
-				0.219177603721619,
-				0.975685000419617,
-				0.0
-			],
-			"is_player": false,
-			"position": [
-				-19.8000011444092,
-				-28.6000003814697,
-				10.1
-			]
-		},
-		{
 			"entity_type": 0,
 			"forward": [
 				-0.586922228336334,
@@ -237,20 +223,6 @@
 				-4.90000009536743,
 				-12.5,
 				12.1
-			]
-		},
-		{
-			"entity_type": 1,
-			"forward": [
-				0.242384269833565,
-				0.970180332660675,
-				0.0
-			],
-			"is_player": false,
-			"position": [
-				-8.19999980926514,
-				-19.8999996185303,
-				10.2
 			]
 		},
 		{
@@ -498,34 +470,6 @@
 			"position": [
 				-45.9000015258789,
 				8.30000019073486,
-				10.1
-			]
-		},
-		{
-			"entity_type": 1,
-			"forward": [
-				0.902737736701965,
-				0.430191308259964,
-				0.0
-			],
-			"is_player": false,
-			"position": [
-				-42.0,
-				-9.60000038146973,
-				10.1
-			]
-		},
-		{
-			"entity_type": 1,
-			"forward": [
-				-0.117891788482666,
-				0.993026435375214,
-				0.0
-			],
-			"is_player": false,
-			"position": [
-				-38.4000015258789,
-				-21.2000007629395,
 				10.1
 			]
 		},
@@ -821,20 +765,6 @@
 				-53.2999992370605,
 				21.6000003814697,
 				9.8
-			]
-		},
-		{
-			"entity_type": 1,
-			"forward": [
-				0.31299677491188,
-				-0.949754178524017,
-				0.0
-			],
-			"is_player": false,
-			"position": [
-				-52.1000022888184,
-				28.2000007629395,
-				10.1
 			]
 		}
 	],
@@ -1273,8 +1203,10 @@
 				1.0,
 				1.0
 			],
+			"cycle_length": 2.75,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "azzbbzbbbzbbbzzaaaaaaaaa",
 			"position": [
 				7.30000019073486,
 				3.0,
@@ -1289,8 +1221,10 @@
 				0.0,
 				1.0
 			],
+			"cycle_length": 0.75,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "zzzzxlbbdhlquxzzzzzzzzzz",
 			"position": [
 				18.2000007629395,
 				2.70000004768372,
@@ -1321,8 +1255,10 @@
 				1.0,
 				1.0
 			],
+			"cycle_length": 2.75,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "azzbbzbbbzbbbzzaaaaaaaaa",
 			"position": [
 				5.09999990463257,
 				1.80000007152557,
@@ -1353,8 +1289,10 @@
 				1.0,
 				1.0
 			],
+			"cycle_length": 1.0,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "zytnhdbchntxzzzzzzzzzzzz",
 			"position": [
 				-11.1999998092651,
 				0.5,
@@ -1369,8 +1307,10 @@
 				1.0,
 				1.0
 			],
+			"cycle_length": 1.0,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "achouyzzzzzzzzzzzzzyuohc",
 			"position": [
 				-13.5,
 				-1.80000007152557,
@@ -1385,8 +1325,10 @@
 				1.0,
 				1.0
 			],
+			"cycle_length": 1.0,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "zzzzzzzzzzzzzytnhcbdhnty",
 			"position": [
 				-15.8000001907349,
 				0.600000023841858,
@@ -1401,8 +1343,10 @@
 				1.0,
 				1.0
 			],
+			"cycle_length": 1.0,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "zzzzzzzytmgcbdiotyzzzzzz",
 			"position": [
 				-13.5,
 				2.79999995231628,
@@ -1417,8 +1361,10 @@
 				0.0,
 				1.0
 			],
+			"cycle_length": 1.0,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "abbdefggggfeeeeeeffffdcb",
 			"position": [
 				-18.6000003814697,
 				-28.5,
@@ -1545,8 +1491,10 @@
 				1.0,
 				1.0
 			],
+			"cycle_length": 1.6,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "zzzzzzzbbbbbbdfimpsvyzzz",
 			"position": [
 				-33.7999992370605,
 				5.5,
@@ -1865,8 +1813,10 @@
 				0.0,
 				1.0
 			],
+			"cycle_length": 2.1,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "eeddcccddefggggfedddddee",
 			"position": [
 				-19.5,
 				16.3000011444092,
@@ -1929,8 +1879,10 @@
 				0.0,
 				1.0
 			],
+			"cycle_length": 1.33,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "abcdfghhgfedcccddeffedcb",
 			"position": [
 				-26.3999996185303,
 				10.0,
@@ -10223,7 +10175,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793l17",
-			"floor": 15.0,
+			"floor": 14.0,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -10249,7 +10201,22 @@
 			"wall_surfaces": [
 				[],
 				[],
-				[],
+				[
+					{
+						"begin_height": 14.0,
+						"end_height": 15.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
 				[]
 			]
 		},
@@ -10269,7 +10236,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793l16",
-			"floor": 15.0,
+			"floor": 14.0,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -10295,7 +10262,22 @@
 			"wall_surfaces": [
 				[],
 				[],
-				[],
+				[
+					{
+						"begin_height": 14.0,
+						"end_height": 15.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
 				[]
 			]
 		},
@@ -10315,7 +10297,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793l15",
-			"floor": 15.0,
+			"floor": 14.0,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -10341,7 +10323,22 @@
 			"wall_surfaces": [
 				[],
 				[],
-				[],
+				[
+					{
+						"begin_height": 14.0,
+						"end_height": 15.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
 				[]
 			]
 		},
@@ -10361,7 +10358,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793l14",
-			"floor": 15.0,
+			"floor": 14.0,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -10387,7 +10384,22 @@
 			"wall_surfaces": [
 				[],
 				[],
-				[],
+				[
+					{
+						"begin_height": 14.0,
+						"end_height": 15.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
 				[]
 			]
 		},
@@ -10396,7 +10408,7 @@
 				{
 					"activator": "ActivatorDoorCircle",
 					"ceiling": 20.0,
-					"floor": 13.0,
+					"floor": 12.0,
 					"move_speed": 1.0
 				}
 			],
@@ -10415,7 +10427,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793l13",
-			"floor": 14.99,
+			"floor": 13.99,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -10442,8 +10454,8 @@
 				[],
 				[
 					{
-						"begin_height": 14.99,
-						"end_height": 15.0,
+						"begin_height": 13.99,
+						"end_height": 14.0,
 						"id": "wall3",
 						"offset": [
 							0.0,
@@ -10458,9 +10470,9 @@
 				],
 				[
 					{
-						"begin_height": 14.99,
+						"begin_height": 13.99,
 						"end_height": 15.0,
-						"id": "wall3",
+						"id": "bricks",
 						"offset": [
 							0.0,
 							0.0
@@ -10468,14 +10480,14 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 0.0,
+						"tile_rotation_increment": 1.5707963267949,
 						"tile_rotations_count": 1
 					}
 				],
 				[
 					{
-						"begin_height": 14.99,
-						"end_height": 15.0,
+						"begin_height": 13.99,
+						"end_height": 14.0,
 						"id": "wall3",
 						"offset": [
 							0.0,
@@ -10506,7 +10518,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793l12",
-			"floor": 15.0,
+			"floor": 14.0,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -10532,7 +10544,22 @@
 			"wall_surfaces": [
 				[],
 				[],
-				[],
+				[
+					{
+						"begin_height": 14.0,
+						"end_height": 15.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
 				[]
 			]
 		},
@@ -10552,7 +10579,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793l11",
-			"floor": 15.0,
+			"floor": 14.0,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -10578,7 +10605,22 @@
 			"wall_surfaces": [
 				[],
 				[],
-				[],
+				[
+					{
+						"begin_height": 14.0,
+						"end_height": 15.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
 				[]
 			]
 		},
@@ -10598,7 +10640,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793l10",
-			"floor": 15.0,
+			"floor": 14.0,
 			"floor_surface": {
 				"id": "floor1",
 				"offset": [
@@ -10624,7 +10666,22 @@
 			"wall_surfaces": [
 				[],
 				[],
-				[],
+				[
+					{
+						"begin_height": 14.0,
+						"end_height": 15.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					}
+				],
 				[]
 			]
 		},
@@ -10702,7 +10759,7 @@
 				[
 					{
 						"begin_height": 0.0,
-						"end_height": 15.0,
+						"end_height": 14.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -10806,7 +10863,7 @@
 				[
 					{
 						"begin_height": 0.0,
-						"end_height": 15.0,
+						"end_height": 14.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -10910,7 +10967,7 @@
 				[
 					{
 						"begin_height": 0.0,
-						"end_height": 14.99,
+						"end_height": 13.99,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -11014,7 +11071,7 @@
 				[
 					{
 						"begin_height": 0.0,
-						"end_height": 15.0,
+						"end_height": 14.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -11118,7 +11175,7 @@
 				[
 					{
 						"begin_height": 0.0,
-						"end_height": 15.0,
+						"end_height": 14.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -11222,7 +11279,7 @@
 				[
 					{
 						"begin_height": 0.0,
-						"end_height": 15.0,
+						"end_height": 14.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -11326,7 +11383,7 @@
 				[
 					{
 						"begin_height": 0.0,
-						"end_height": 15.0,
+						"end_height": 14.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -11430,7 +11487,7 @@
 				[
 					{
 						"begin_height": 0.0,
-						"end_height": 15.0,
+						"end_height": 14.0,
 						"id": "bricks",
 						"offset": [
 							0.0,
@@ -23531,7 +23588,7 @@
 					"activator": "ActivatorDoorCircle",
 					"ceiling": 12.0,
 					"floor": 10.0,
-					"move_speed": 3.0
+					"move_speed": 1.0
 				}
 			],
 			"ceiling": 10.001,
