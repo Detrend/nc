@@ -23,6 +23,8 @@ extends Thing
 @export_range(0.0, 24.0) var curve_quantization : int = 24
 ## How long does the single cycle of the animation take
 @export var cycle_duration_seconds : float = 1.0
+@export var cycle_offset_start_seconds : float = 0.0
+@export_range(0.0, 1.0) var cycle_offset_range : float = 0.0
 
 func get_export_category()->String: return "point_lights"
 
@@ -36,7 +38,7 @@ func custom_export(_s: Sector, output: Dictionary)->void:
 	if should_animate:
 		output['light_string'] = _curve_to_light_string(curve, curve_quantization)
 		output['cycle_length'] = cycle_duration_seconds
-	
+		output['cycle_offset'] = cycle_offset_start_seconds + NodeUtils.compute_node_hash01(self) * cycle_offset_range * cycle_duration_seconds  
 
 static func _curve_to_light_string(curve: Curve, point_count : int = 24)->String:
 	const RANGE = "zyxwvutsrqponmlkjihgfedcba"
