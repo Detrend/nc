@@ -38,13 +38,14 @@ func custom_export(_s: Sector, output: Dictionary)->void:
 		output['cycle_length'] = cycle_duration_seconds
 	
 
-static func _curve_to_light_string(curve: Curve, point_count : int = 24)->String:
+func _curve_to_light_string(curve: Curve, point_count : int = 24)->String:
 	const RANGE = "zyxwvutsrqponmlkjihgfedcba"
 	var ret : String = ""
 	for i in point_count:
 		var t : float = curve.min_domain + ((float(i) / point_count) * curve.get_domain_range())
 		var value := (curve.sample(t) / curve.get_value_range()) - curve.min_value
 		assert( 0.0 <= value and value <= 1.0)
+		# print("{0} ... {1}".format([NodeUtils.get_full_name(self), value]) )
 		var idx := value * (RANGE.length() - 1)
 		ret += RANGE[idx]
 	return ret
