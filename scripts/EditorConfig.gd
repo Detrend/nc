@@ -106,6 +106,7 @@ var _gridsnap_step_inv_impl : float
 @export var excluded_sector_color : Color = Color(1, 1, 1, 0.3):
 	get: return excluded_sector_color
 	set(val): excluded_sector_color = val; on_cosmetics_changed.emit()
+@export var debug_print_level_ids : bool = false
 
 signal on_cosmetics_changed()
 
