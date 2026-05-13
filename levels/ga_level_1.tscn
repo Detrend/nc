@@ -1,4 +1,4 @@
-[gd_scene load_steps=402 format=3 uid="uid://dsay4j34k3qty"]
+[gd_scene load_steps=450 format=3 uid="uid://dsay4j34k3qty"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_1nrge"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_bdnqo"]
@@ -367,56 +367,56 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_3y5oq"]
 script = ExtResource("5_c05cs")
-floor_height = 15.0
+floor_height = 14.0
 ceiling_height = 20.0
 material = ExtResource("4_843cm")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_46ykw"]
 script = ExtResource("5_c05cs")
-floor_height = 15.0
+floor_height = 14.0
 ceiling_height = 20.0
 material = ExtResource("4_843cm")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_bh7hj"]
 script = ExtResource("5_c05cs")
-floor_height = 15.0
+floor_height = 14.0
 ceiling_height = 20.0
 material = ExtResource("4_843cm")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_h22nr"]
 script = ExtResource("5_c05cs")
-floor_height = 15.0
+floor_height = 14.0
 ceiling_height = 20.0
 material = ExtResource("4_843cm")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_gvuip"]
 script = ExtResource("5_c05cs")
-floor_height = 14.99
+floor_height = 13.99
 ceiling_height = 20.0
 material = ExtResource("4_843cm")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_iuwt7"]
 script = ExtResource("5_c05cs")
-floor_height = 15.0
+floor_height = 14.0
 ceiling_height = 20.0
 material = ExtResource("4_843cm")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_24avm"]
 script = ExtResource("5_c05cs")
-floor_height = 15.0
+floor_height = 14.0
 ceiling_height = 20.0
 material = ExtResource("4_843cm")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_wde0x"]
 script = ExtResource("5_c05cs")
-floor_height = 15.0
+floor_height = 14.0
 ceiling_height = 20.0
 material = ExtResource("4_843cm")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
@@ -2682,6 +2682,122 @@ ceiling_height = 18.0
 material = ExtResource("4_843cm")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
+[sub_resource type="Curve" id="Curve_k52hm"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.24336283, 0), 0.0, 0.0, 0, 0, Vector2(0.75663716, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="Curve" id="Curve_84rap"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.2522124, 1), 0.0, 0.0, 0, 0, Vector2(0.50442475, 0), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="Curve" id="Curve_536nw"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.2522124, 0), 0.0, 0.0, 0, 0, Vector2(0.48672563, 1), 0.0, 0.0, 0, 0, Vector2(0.75221235, 0), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="Curve" id="Curve_g73go"]
+_data = [Vector2(0.50442475, 0), 0.0, 0.0, 0, 0, Vector2(0.7477876, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_2hmp0"]
+
+[sub_resource type="Curve" id="Curve_upg8e"]
+
+[sub_resource type="Curve" id="Curve_houqo"]
+
+[sub_resource type="Curve" id="Curve_4mn31"]
+
+[sub_resource type="Curve" id="Curve_qm6fi"]
+
+[sub_resource type="Curve" id="Curve_itcm3"]
+
+[sub_resource type="Curve" id="Curve_7ue4s"]
+
+[sub_resource type="Curve" id="Curve_b1mm8"]
+_data = [Vector2(0.25663716, 0), 0.0, 0.0, 0, 0, Vector2(0.25664717, 0.9887641), 0.0, 0.0, 0, 0, Vector2(0.460177, 0.9887641), 0.0, 0.0, 0, 0, Vector2(0.9115044, 0), 0.0, 0.0, 0, 0]
+point_count = 4
+
+[sub_resource type="Curve" id="Curve_toxxf"]
+
+[sub_resource type="Curve" id="Curve_0p2um"]
+
+[sub_resource type="Curve" id="Curve_1fu5u"]
+
+[sub_resource type="Curve" id="Curve_ub6p1"]
+
+[sub_resource type="Curve" id="Curve_c6tgh"]
+
+[sub_resource type="Curve" id="Curve_du6ej"]
+
+[sub_resource type="Curve" id="Curve_bdf85"]
+
+[sub_resource type="Curve" id="Curve_x646j"]
+
+[sub_resource type="Curve" id="Curve_dfyjn"]
+
+[sub_resource type="Curve" id="Curve_0uaer"]
+
+[sub_resource type="Curve" id="Curve_is3sa"]
+
+[sub_resource type="Curve" id="Curve_lao15"]
+
+[sub_resource type="Curve" id="Curve_xehlr"]
+
+[sub_resource type="Curve" id="Curve_0doug"]
+
+[sub_resource type="Curve" id="Curve_ruyqr"]
+
+[sub_resource type="Curve" id="Curve_a6do4"]
+
+[sub_resource type="Curve" id="Curve_obqwd"]
+
+[sub_resource type="Curve" id="Curve_ys8hm"]
+
+[sub_resource type="Curve" id="Curve_6kpey"]
+
+[sub_resource type="Curve" id="Curve_s3soq"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.31858408, 0.764045), 0.0, 0.0, 0, 0, Vector2(0.4955752, 0.8764045), 0.0, 0.0, 0, 0, Vector2(0.7920354, 0.82022476), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="Curve" id="Curve_djg1y"]
+
+[sub_resource type="Curve" id="Curve_4rho2"]
+
+[sub_resource type="Curve" id="Curve_7mtg1"]
+
+[sub_resource type="Curve" id="Curve_0gpxc"]
+
+[sub_resource type="Curve" id="Curve_7trh4"]
+_data = [Vector2(0.022123896, 1), 0.0, 0.0, 0, 0, Vector2(0.03097345, 0.011235952), 0.0, 0.0, 0, 0, Vector2(0.11946903, 0), 0.0, 0.0, 0, 0, Vector2(0.11947903, 0.97752815), 0.0, 0.0, 0, 0, Vector2(0.17699115, 1), 0.0, 0.0, 0, 0, Vector2(0.19026549, 0), 0.0, 0.0, 0, 0, Vector2(0.24778761, 0), 0.0, 0.0, 0, 0, Vector2(0.24779761, 0.9887641), 0.0, 0.0, 0, 0, Vector2(0.34070796, 1), 0.0, 0.0, 0, 0, Vector2(0.34955752, 0), 0.0, 0.0, 0, 0, Vector2(0.40265483, 0), 0.0, 0.0, 0, 0, Vector2(0.4115044, 1), 0.0, 0.0, 0, 0, Vector2(0.5176991, 0.9887641), 0.0, 0.0, 0, 0, Vector2(0.51770914, 0), 0.0, 0.0, 0, 0, Vector2(0.59292036, 0), 0.0, 0.0, 0, 0, Vector2(0.5973451, 1), 0.0, 0.0, 0, 0]
+point_count = 16
+
+[sub_resource type="Curve" id="Curve_w10iq"]
+_data = [Vector2(0.14159292, 0), 0.0, 0.0, 0, 0, Vector2(0.26106197, 1), 0.0, 0.0, 0, 0, Vector2(0.6017699, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="Curve" id="Curve_xq5et"]
+
+[sub_resource type="Curve" id="Curve_e5ofo"]
+
+[sub_resource type="Curve" id="Curve_rplu3"]
+
+[sub_resource type="Curve" id="Curve_hvko6"]
+
+[sub_resource type="Curve" id="Curve_jfrqf"]
+
+[sub_resource type="Curve" id="Curve_qka34"]
+
+[sub_resource type="Curve" id="Curve_rtuce"]
+
+[sub_resource type="Curve" id="Curve_acq4m"]
+
+[sub_resource type="Curve" id="Curve_grj2i"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.26548672, 0.75280905), 0.0, 0.0, 0, 0, Vector2(0.54867256, 0.94382024), 0.0, 0.0, 0, 0, Vector2(0.7743363, 0.8314607), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 5
+
+[sub_resource type="Curve" id="Curve_kpnd3"]
+_data = [Vector2(0, 0.8539326), 0.0, 0.6836645, 0, 0, Vector2(0.2256637, 0.9325843), 0.0, 0.0, 0, 0, Vector2(0.5221239, 0.764045), 0.0, 0.0, 0, 0, Vector2(0.78318584, 0.9101124), 0.0, 0.0, 0, 0, Vector2(1, 0.8539326), 0.0, 0.0, 0, 0]
+point_count = 5
+
 [node name="Root" type="Node2D"]
 script = ExtResource("1_1nrge")
 music = "music_ambient"
@@ -3258,7 +3374,7 @@ position = Vector2(70, -30)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(50, 17, 57, 10, 58, 12, 52, 18)
 data = SubResource("Resource_3y5oq")
-floor_height = 15.0
+floor_height = 14.0
 ceiling_height = 20.0
 portal_wall_length = 9.899495
 portal_destination_wall_length = -1.0
@@ -3268,7 +3384,7 @@ position = Vector2(70, -30)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(57, 10, 73, 10, 72, 12, 58, 12)
 data = SubResource("Resource_46ykw")
-floor_height = 15.0
+floor_height = 14.0
 ceiling_height = 20.0
 portal_wall_length = 16.0
 portal_destination_wall_length = -1.0
@@ -3278,7 +3394,7 @@ position = Vector2(70, -30)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(73, 10, 80, 17, 78, 18, 72, 12)
 data = SubResource("Resource_bh7hj")
-floor_height = 15.0
+floor_height = 14.0
 ceiling_height = 20.0
 portal_wall_length = 9.899495
 portal_destination_wall_length = -1.0
@@ -3288,7 +3404,7 @@ position = Vector2(70, -30)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(80, 17, 80, 33, 78, 32, 78, 18)
 data = SubResource("Resource_h22nr")
-floor_height = 15.0
+floor_height = 14.0
 ceiling_height = 20.0
 portal_wall_length = 16.0
 portal_destination_wall_length = -1.0
@@ -3298,7 +3414,7 @@ position = Vector2(70, -30)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(80, 33, 73, 40, 72, 38, 78, 32)
 data = SubResource("Resource_gvuip")
-floor_height = 14.99
+floor_height = 13.99
 ceiling_height = 20.0
 portal_wall_length = 9.899495
 portal_destination_wall_length = -1.0
@@ -3307,7 +3423,7 @@ portal_destination_wall_length = -1.0
 script = ExtResource("5_4rivd")
 source = NodePath("../../../Activators/ActivatorDoorCircle")
 floor_mode = 2
-floor_height = 13.0
+floor_height = 12.0
 ceiling_height = 20.0
 
 [node name="Sector-1793l12" parent="Sectors" instance=ExtResource("2_bdnqo")]
@@ -3315,7 +3431,7 @@ position = Vector2(70, -30)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(73, 40, 57, 40, 58, 38, 72, 38)
 data = SubResource("Resource_iuwt7")
-floor_height = 15.0
+floor_height = 14.0
 ceiling_height = 20.0
 portal_wall_length = 16.0
 portal_destination_wall_length = -1.0
@@ -3325,7 +3441,7 @@ position = Vector2(70, -30)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(57, 40, 50, 33, 52, 32, 58, 38)
 data = SubResource("Resource_24avm")
-floor_height = 15.0
+floor_height = 14.0
 ceiling_height = 20.0
 portal_wall_length = 9.899495
 portal_destination_wall_length = -1.0
@@ -3335,7 +3451,7 @@ position = Vector2(70, -30)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(50, 33, 50, 17, 52, 18, 52, 32)
 data = SubResource("Resource_wde0x")
-floor_height = 15.0
+floor_height = 14.0
 ceiling_height = 20.0
 portal_wall_length = 16.0
 portal_destination_wall_length = -1.0
@@ -4878,7 +4994,6 @@ portal_destination_wall_length = -1.0
 [node name="Configuration" type="Node" parent="Sectors/Sector-1793w3" node_paths=PackedStringArray("source")]
 script = ExtResource("5_4rivd")
 source = NodePath("../../../Activators/ActivatorDoorCircle")
-move_speed = 3.0
 floor_mode = 2
 floor_height = 10.0
 ceiling_mode = 2
@@ -5825,6 +5940,13 @@ ceiling_height = 12.0
 portal_wall_length = 10.0
 portal_destination_wall_length = -1.0
 
+[node name="Configuration" type="Node" parent="Sectors/Sector-1793w2f2" node_paths=PackedStringArray("source")]
+script = ExtResource("5_4rivd")
+source = NodePath("../../../Activators/ActivatorTrap")
+floor_mode = 2
+floor_height = 11.99
+ceiling_height = 12.0
+
 [node name="Sector-1793w2f2k" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -26)
 color = Color(0.501961, 0, 0.196078, 1)
@@ -5864,6 +5986,10 @@ ceiling_height = 15.0
 portal_wall_length = 16.0
 portal_destination_wall_length = -1.0
 
+[node name="Trigger" type="Node" parent="Sectors/Sector-1793w2f2a" node_paths=PackedStringArray("target")]
+script = ExtResource("7_4rivd")
+target = NodePath("../../../Activators/ActivatorTrap")
+
 [node name="Sector-1793w2f2e" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -26)
 color = Color(0.501961, 0, 0.196078, 1)
@@ -5878,6 +6004,10 @@ portal_destination_wall = 4
 portal_wall_length = 20.0
 portal_destination_wall_length = 20.0
 
+[node name="Trigger" type="Node" parent="Sectors/Sector-1793w2f2e" node_paths=PackedStringArray("target")]
+script = ExtResource("7_4rivd")
+target = NodePath("../../../Activators/ActivatorTrap")
+
 [node name="Sector-1793w2f2b" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -26)
 color = Color(0.501961, 0, 0.196078, 1)
@@ -5888,6 +6018,10 @@ ceiling_height = 15.0
 portal_wall_length = 14.142136
 portal_destination_wall_length = -1.0
 
+[node name="Trigger" type="Node" parent="Sectors/Sector-1793w2f2b" node_paths=PackedStringArray("target")]
+script = ExtResource("7_4rivd")
+target = NodePath("../../../Activators/ActivatorTrap")
+
 [node name="Sector-1793w2f2d" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -26)
 color = Color(0.501961, 0, 0.196078, 1)
@@ -5897,6 +6031,10 @@ floor_height = 10.0
 ceiling_height = 15.0
 portal_wall_length = 30.016663
 portal_destination_wall_length = -1.0
+
+[node name="Trigger" type="Node" parent="Sectors/Sector-1793w2f2d" node_paths=PackedStringArray("target")]
+script = ExtResource("7_4rivd")
+target = NodePath("../../../Activators/ActivatorTrap")
 
 [node name="Sector-1793w2f2i" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -26)
@@ -5959,6 +6097,10 @@ ceiling_height = 15.0
 portal_wall_length = 16.27882
 portal_destination_wall_length = -1.0
 
+[node name="Trigger" type="Node" parent="Sectors/Sector-1793w2f2h" node_paths=PackedStringArray("target")]
+script = ExtResource("7_4rivd")
+target = NodePath("../../../Activators/ActivatorTrap")
+
 [node name="Sector-1793w2f2g" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(75, -26)
 color = Color(0.501961, 0, 0.196078, 1)
@@ -5979,6 +6121,10 @@ ceiling_height = 15.0
 portal_wall_length = 5.0
 portal_destination_wall_length = -1.0
 
+[node name="Trigger" type="Node" parent="Sectors/Sector-1793w2f2f" node_paths=PackedStringArray("target")]
+script = ExtResource("7_4rivd")
+target = NodePath("../../../Activators/ActivatorTrap")
+
 [node name="Sector-1793w2f2c" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -26)
 color = Color(0.501961, 0, 0.196078, 1)
@@ -5992,6 +6138,10 @@ portal_wall = 6
 portal_destination_wall = 1
 portal_wall_length = 20.0
 portal_destination_wall_length = 20.0
+
+[node name="Trigger" type="Node" parent="Sectors/Sector-1793w2f2c" node_paths=PackedStringArray("target")]
+script = ExtResource("7_4rivd")
+target = NodePath("../../../Activators/ActivatorTrap")
 
 [node name="Sector-1793w2z" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -15)
@@ -7132,6 +7282,7 @@ position = Vector2(49, 125)
 rotation = -0.62725216
 
 [node name="Possessed5" parent="Entities" instance=ExtResource("11_yf5a1")]
+visible = false
 position = Vector2(82, 199)
 rotation = 2.89677
 
@@ -7140,6 +7291,7 @@ position = Vector2(125, 200)
 rotation = 2.8477685
 
 [node name="Possessed7" parent="Entities" instance=ExtResource("11_yf5a1")]
+visible = false
 position = Vector2(198, 286)
 rotation = 2.9206212
 
@@ -7286,6 +7438,7 @@ position = Vector2(439, -19)
 position = Vector2(439, -1)
 
 [node name="Possessed13" parent="Entities" instance=ExtResource("11_yf5a1")]
+visible = false
 position = Vector2(420, 96)
 rotation = 2.015501
 
@@ -7302,6 +7455,7 @@ position = Vector2(453, 170)
 rotation = 1.918547
 
 [node name="Possessed17" parent="Entities" instance=ExtResource("11_yf5a1")]
+visible = false
 position = Vector2(384, 212)
 rotation = -3.023426
 
@@ -7342,6 +7496,7 @@ position = Vector2(580, -207)
 rotation = -0.79632264
 
 [node name="Possessed19" parent="Entities" instance=ExtResource("11_yf5a1")]
+visible = false
 position = Vector2(521, -282)
 rotation = 0.3183467
 
@@ -7379,254 +7534,320 @@ position = Vector2(306, -118)
 [node name="PointLight" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(135, 18)
 radius = 15.0
+should_animate = true
+curve = SubResource("Curve_k52hm")
 placement_mode = 1
 
 [node name="PointLight2" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(112, -5)
 radius = 15.0
+should_animate = true
+curve = SubResource("Curve_84rap")
 placement_mode = 1
 
 [node name="PointLight3" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(135, -28)
 radius = 15.0
+should_animate = true
+curve = SubResource("Curve_536nw")
 placement_mode = 1
 
 [node name="PointLight4" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(158, -6)
 radius = 15.0
+should_animate = true
+curve = SubResource("Curve_g73go")
 placement_mode = 1
 
 [node name="PointLight5" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(209, -90)
 radius = 10.0
+curve = SubResource("Curve_2hmp0")
 placement_mode = 1
 
 [node name="PointLight6" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(51, -90)
 radius = 10.0
+curve = SubResource("Curve_upg8e")
 placement_mode = 1
 
 [node name="PointLight7" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(50, 81)
 radius = 10.0
+curve = SubResource("Curve_houqo")
 placement_mode = 1
 
 [node name="PointLight8" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(221, 81)
 radius = 10.0
+curve = SubResource("Curve_4mn31")
 placement_mode = 1
 
 [node name="PointLight19" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(310, -4)
 radius = 10.0
+curve = SubResource("Curve_qm6fi")
 placement_mode = 1
 
 [node name="PointLight22" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(287, 37)
 radius = 5.0
+curve = SubResource("Curve_itcm3")
 placement_mode = 1
 
 [node name="PointLight23" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(307, -54)
+curve = SubResource("Curve_7ue4s")
 placement_mode = 1
 
 [node name="PointLight24" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(338, -55)
+should_animate = true
+curve = SubResource("Curve_b1mm8")
+cycle_duration_seconds = 1.6
 placement_mode = 1
 
 [node name="PointLight32" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(382, -88)
+curve = SubResource("Curve_toxxf")
 placement_mode = 1
 
 [node name="PointLight33" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(444, -86)
+curve = SubResource("Curve_0p2um")
 placement_mode = 1
 
 [node name="PointLight34" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(437, -132)
+curve = SubResource("Curve_1fu5u")
 placement_mode = 1
 
 [node name="PointLight38" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(360, -210)
+curve = SubResource("Curve_ub6p1")
 placement_mode = 1
 
 [node name="PointLight39" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(410, -210)
+curve = SubResource("Curve_c6tgh")
 placement_mode = 1
 
 [node name="PointLight21" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(437, -8)
 radius = 10.0
+curve = SubResource("Curve_du6ej")
 placement_mode = 1
 
 [node name="PointLight20" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(382, -8)
 radius = 10.0
+curve = SubResource("Curve_bdf85")
 placement_mode = 1
 
 [node name="PointLight35" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(573, -255)
 radius = 10.0
+curve = SubResource("Curve_x646j")
 placement_mode = 1
 
 [node name="PointLight36" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(564, -315)
 color = Color(1, 1, 0, 1)
 radius = 2.0
+curve = SubResource("Curve_dfyjn")
 placement_mode = 1
 
 [node name="PointLight58" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(385, -148)
 color = Color(1, 1, 0, 1)
+curve = SubResource("Curve_0uaer")
 placement_mode = 1
 
 [node name="PointLight37" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(385, -222)
 color = Color(0, 1, 0, 1)
 radius = 1.0
+curve = SubResource("Curve_is3sa")
 placement_mode = 1
 
 [node name="PointLight28" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(325, 130)
 radius = 10.0
+curve = SubResource("Curve_lao15")
 placement_mode = 1
 
 [node name="PointLight29" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(435, 100)
 radius = 10.0
+curve = SubResource("Curve_xehlr")
 placement_mode = 1
 
 [node name="PointLight30" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(431, 170)
 radius = 10.0
+curve = SubResource("Curve_0doug")
 placement_mode = 1
 
 [node name="PointLight31" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(330, 192)
 color = Color(0, 1, 0, 1)
 radius = 2.0
+curve = SubResource("Curve_ruyqr")
 placement_mode = 1
 
 [node name="PointLight47" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(-172, 37)
 intensity = 0.3
 radius = 5.0
+curve = SubResource("Curve_a6do4")
 placement_mode = 1
 height_offset = 1.0
 
 [node name="PointLight14" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(105, 185)
 radius = 10.0
+curve = SubResource("Curve_obqwd")
 placement_mode = 1
 
 [node name="PointLight15" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(212, 145)
 radius = 5.0
+curve = SubResource("Curve_ys8hm")
 placement_mode = 1
 
 [node name="PointLight16" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(125, 266)
 radius = 5.0
+curve = SubResource("Curve_6kpey")
 placement_mode = 1
 
 [node name="PointLight27" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(186, 285)
 color = Color(1, 0, 0, 1)
 radius = 5.0
+should_animate = true
+curve = SubResource("Curve_s3soq")
 placement_mode = 1
 
 [node name="PointLight17" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(125, 285)
 radius = 5.0
+curve = SubResource("Curve_djg1y")
 placement_mode = 1
 
 [node name="PointLight18" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(5, 299)
 radius = 5.0
+curve = SubResource("Curve_4rho2")
 placement_mode = 1
 
 [node name="PointLight26" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(12, 249)
 color = Color(0, 1, 0, 1)
 radius = 1.0
+curve = SubResource("Curve_7mtg1")
 placement_mode = 1
 
 [node name="PointLight53" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(39.75, 296)
 color = Color(0, 1, 0, 1)
 radius = 1.0
-placement_mode = 1
-
-[node name="PointLight10" parent="Lights" instance=ExtResource("11_07md0")]
-position = Vector2(-73, -30)
-radius = 7.5
+curve = SubResource("Curve_0gpxc")
 placement_mode = 1
 
 [node name="PointLight48" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(-51, -18)
 radius = 7.5
+should_animate = true
+curve = SubResource("Curve_7trh4")
+cycle_duration_seconds = 2.75
+placement_mode = 1
+
+[node name="PointLight49" parent="Lights" instance=ExtResource("11_07md0")]
+position = Vector2(-73, -30)
+radius = 7.5
+should_animate = true
+curve = SubResource("Curve_7trh4")
+cycle_duration_seconds = 2.75
 placement_mode = 1
 
 [node name="PointLight11" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(-182, -27)
 color = Color(1, 0, 0, 1)
 radius = 2.0
+should_animate = true
+curve = SubResource("Curve_w10iq")
+cycle_duration_seconds = 0.75
 placement_mode = 1
 
 [node name="PointLight12" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(-124, -20)
 color = Color(1, 0, 0, 1)
+curve = SubResource("Curve_xq5et")
 placement_mode = 1
 
 [node name="PointLight54" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(385, 61)
 color = Color(0, 0, 1, 1)
 radius = 2.0
+curve = SubResource("Curve_e5ofo")
 placement_mode = 1
 
 [node name="PointLight57" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(438, 58)
 color = Color(0, 0, 1, 1)
 radius = 2.0
+curve = SubResource("Curve_rplu3")
 height_offset = 1.5
 
 [node name="PointLight55" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(404.5, 35)
 color = Color(0, 0, 1, 1)
 radius = 2.0
+curve = SubResource("Curve_hvko6")
 placement_mode = 1
 
 [node name="PointLight56" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(404.5, -45)
 color = Color(0, 0, 1, 1)
 radius = 2.0
+curve = SubResource("Curve_jfrqf")
 placement_mode = 1
 
 [node name="PointLight46" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(-120, -20)
 color = Color(1, 0, 0, 1)
+curve = SubResource("Curve_qka34")
 placement_mode = 1
 
 [node name="PointLight13" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(5, -6)
 color = Color(1, 0, 0, 1)
+curve = SubResource("Curve_rtuce")
 placement_mode = 1
 
 [node name="PointLight44" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(9.5, -6)
 color = Color(1, 0, 0, 1)
+curve = SubResource("Curve_acq4m")
 placement_mode = 1
 
 [node name="PointLight25" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(264, -100)
 color = Color(1, 0, 0, 1)
 radius = 8.0
+should_animate = true
+curve = SubResource("Curve_grj2i")
+cycle_duration_seconds = 1.33
 height_offset = 2.0
 
 [node name="PointLight40" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(195, -163)
 color = Color(1, 0, 0, 1)
 radius = 8.0
+should_animate = true
+curve = SubResource("Curve_kpnd3")
+cycle_duration_seconds = 2.1
 placement_mode = 1
 
 [node name="AmbientLight" parent="Lights" instance=ExtResource("7_bdnqo")]
@@ -7703,3 +7924,6 @@ script = ExtResource("9_4g5ls")
 script = ExtResource("15_07md0")
 destination = "level_final2"
 metadata/_custom_type_script = "uid://cw0a2syvnfeio"
+
+[node name="ActivatorTrap" type="Node" parent="Activators"]
+script = ExtResource("9_4g5ls")
