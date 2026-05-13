@@ -10,7 +10,7 @@ class_name Thing
 @export var placement_mode: Things.PlacementMode = Things.PlacementMode.Floor:
 	get: return placement_mode
 	set(val):
-		if val == Things.PlacementMode.Nested && not(get_parent() is Thing):
+		if val == Things.PlacementMode.Nested and (is_inside_tree() and not(get_parent() is Thing)):
 			ErrorUtils.report_error("Cannot assign Nested placement to a Thing that isn't nested!")
 			return
 		placement_mode = val
