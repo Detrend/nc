@@ -119,8 +119,12 @@ void MenuManager::set_transition_screen(bool enabled)
   {
     // [[maybe_unused]] f64 time = GameHelpers::get().get_time_since_start(); // time stat is something we might want to add in the future
     u32 enemies = get_engine().get_module<GameSystem>().get_enemy_count();
-    u32 kills = get_engine().get_module<GameSystem>().get_kill_count();
+    u32 kills = get_engine().get_module<GameSystem>().get_kill_count();   
     next_level_page->set_kill_stats(enemies, kills);
+
+    u32 secrets = get_engine().get_module<GameSystem>().get_secret_count();
+    u32 revealed = get_engine().get_module<GameSystem>().get_revealed_count();
+    next_level_page->set_secret_stats(secrets, revealed);
   }
 }
 

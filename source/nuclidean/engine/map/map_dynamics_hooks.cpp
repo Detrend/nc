@@ -59,12 +59,12 @@ namespace nc
     }
   }
 
-  void ActivatorHook_Secret::load(const SerializedData& args)
+  void ActivatorHook_Secret::load([[maybe_unused]] const SerializedData& args)
   {
     get_engine().get_module<GameSystem>().increment_secret_count();
   }
 
-  void ActivatorHook_Secret::on_activated_start(const ActivatorHookArg& args)
+  void ActivatorHook_Secret::on_activated_start([[maybe_unused]] const ActivatorHookArg& args)
   {
     if (!revealed)
     {

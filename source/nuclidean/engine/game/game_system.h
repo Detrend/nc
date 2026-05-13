@@ -113,6 +113,8 @@ public:
 
   u32 get_enemy_count() { return enemy_count; }
   u32 get_kill_count() { return kill_count; }
+  u32 get_secret_count() { return secret_count; }
+  u32 get_revealed_count() { return revealed_count; }
 
 private:
   // Clean up the current map, entities, mapping etc..

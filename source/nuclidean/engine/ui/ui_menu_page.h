@@ -219,6 +219,7 @@ public:
 
   // set values to be rendered
   void set_kill_stats(u32 enemies, u32 kills);
+  void set_secret_stats(u32 secrets, u32 revealed);
 
 private:
   // draw the stats (kills so far)
@@ -244,6 +245,9 @@ private:
 
   u32 enemy_count = 0;
   u32 kill_count = 0;
+
+  u32 secret_count = 0;
+  u32 revealed_count = 0;
 };
 
 }
