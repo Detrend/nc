@@ -46,7 +46,7 @@ constexpr f32 ENEMY_FOV_DEG         = 100.0f; // Field of view
 constexpr f32 TARGET_STOP_DISTANCE  = 1.0f;   // How far do we keep from the target
 constexpr f32 PATH_POINT_ERASE_DIST = 0.25f;  // Removes the path point if this close
 constexpr f32 ENEMY_GRAVITY         = 6.0f;
-constexpr f32 ENEMY_MELEE_RANGE     = 2.5f;
+constexpr f32 ENEMY_MELEE_RANGE     = 1.8f;
 constexpr f32 ENEMY_MELEE_EXPAND    = 0.1f;
 
 constexpr f32 SOUND_RANGE           = 25.0f;  // Default range used for all 3D sounds emitted by an enemy
