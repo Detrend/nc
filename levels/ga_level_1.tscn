@@ -1,4 +1,4 @@
-[gd_scene load_steps=450 format=3 uid="uid://dsay4j34k3qty"]
+[gd_scene load_steps=453 format=3 uid="uid://dsay4j34k3qty"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_1nrge"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_bdnqo"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://d1u512ud4vhrt" path="res://scripts/reactivity/SectorAltConfig.gd" id="5_4rivd"]
 [ext_resource type="Script" uid="uid://cft80p5qydrwt" path="res://scripts/sector/SectorProperties.gd" id="5_c05cs"]
 [ext_resource type="Script" uid="uid://crfvtueim4q0s" path="res://scripts/reactivity/Trigger.gd" id="7_4rivd"]
+[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/sector/Sector.gd" id="7_536nw"]
 [ext_resource type="PackedScene" uid="uid://2lt4yhe883yf" path="res://prefabs/Lights/AmbientLight.tscn" id="7_bdnqo"]
 [ext_resource type="PackedScene" uid="uid://guolywc6hufx" path="res://prefabs/PickUps/PlasmaAmmo.tscn" id="8_k52hm"]
 [ext_resource type="PackedScene" uid="uid://cn044shocju7e" path="res://prefabs/WallAttachments/WallButton.tscn" id="8_rfdhl"]
@@ -21,6 +22,7 @@
 [ext_resource type="PackedScene" uid="uid://hg6kt5ju3l3a" path="res://prefabs/Entities/Cultist.tscn" id="13_upg8e"]
 [ext_resource type="Script" uid="uid://cw0a2syvnfeio" path="res://scripts/reactivity/hooks/LevelTransition.gd" id="15_07md0"]
 [ext_resource type="PackedScene" uid="uid://brvpsjb10qgr1" path="res://prefabs/PickUps/ShotgunAmmo.tscn" id="16_houqo"]
+[ext_resource type="Script" uid="uid://b4kfisxjy2hq4" path="res://scripts/reactivity/hooks/SecretHook.gd" id="23_g73go"]
 
 [sub_resource type="Resource" id="Resource_ctoo8"]
 script = ExtResource("5_c05cs")
@@ -121,6 +123,13 @@ material = ExtResource("4_843cm")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_s3soq"]
+script = ExtResource("5_c05cs")
+floor_height = 9.5
+ceiling_height = 13.0
+material = ExtResource("4_843cm")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_f7duh"]
 script = ExtResource("5_c05cs")
 floor_height = 9.5
 ceiling_height = 13.0
@@ -3009,11 +3018,29 @@ portal_destination_wall_length = -1.0
 [node name="Sector-1793v2d" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -50)
 color = Color(0.501961, 0, 0.196078, 1)
-polygon = PackedVector2Array(-142, 30, -144, 30, -150, 30, -150, 10, -100, 10, -100, 30, -120, 30, -122, 30)
+polygon = PackedVector2Array(-142, 30, -144, 30, -150, 30, -150, 10, -130, 10, -130, 30)
 data = SubResource("Resource_s3soq")
 floor_height = 9.5
 ceiling_height = 13.0
 portal_wall_length = 2.0
+portal_destination_wall_length = -1.0
+
+[node name="Trigger" type="Node" parent="Sectors/Sector-1793v2d" node_paths=PackedStringArray("target")]
+script = ExtResource("7_4rivd")
+target = NodePath("../../../Activators/ActivatorSecret")
+
+[node name="Sector-1793v2d2" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(70, -50)
+color = Color(0.501961, 0, 0.196078, 1)
+polygon = PackedVector2Array(-100, 10, -100, 30, -120, 30, -122, 30, -130, 30, -130, 10)
+script = ExtResource("7_536nw")
+data = SubResource("Resource_f7duh")
+floor_height = 9.5
+ceiling_height = 13.0
+sector_material = ExtResource("4_843cm")
+portal_wall_length = 20.0
 portal_destination_wall_length = -1.0
 
 [node name="Sector-1793v2a" parent="Sectors" instance=ExtResource("2_bdnqo")]
@@ -3368,6 +3395,10 @@ floor_height = 15.0
 ceiling_height = 20.0
 portal_wall_length = 14.0
 portal_destination_wall_length = -1.0
+
+[node name="Trigger" type="Node" parent="Sectors/Sector-1793l" node_paths=PackedStringArray("target")]
+script = ExtResource("7_4rivd")
+target = NodePath("../../../Activators/ActivatorSecret2")
 
 [node name="Sector-1793l17" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -30)
@@ -3806,6 +3837,10 @@ floor_height = 12.0
 ceiling_height = 15.0
 portal_wall_length = 9.0
 portal_destination_wall_length = -1.0
+
+[node name="Trigger" type="Node" parent="Sectors/Sector-1793x4l" node_paths=PackedStringArray("target")]
+script = ExtResource("7_4rivd")
+target = NodePath("../../../Activators/ActivatorSecret3")
 
 [node name="Sector-1793x4j" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -30)
@@ -7927,3 +7962,24 @@ metadata/_custom_type_script = "uid://cw0a2syvnfeio"
 
 [node name="ActivatorTrap" type="Node" parent="Activators"]
 script = ExtResource("9_4g5ls")
+
+[node name="ActivatorSecret" type="Node" parent="Activators"]
+script = ExtResource("9_4g5ls")
+
+[node name="ActivatorHook_Secret" type="Node" parent="Activators/ActivatorSecret"]
+script = ExtResource("23_g73go")
+metadata/_custom_type_script = "uid://b4kfisxjy2hq4"
+
+[node name="ActivatorSecret2" type="Node" parent="Activators"]
+script = ExtResource("9_4g5ls")
+
+[node name="ActivatorHook_Secret" type="Node" parent="Activators/ActivatorSecret2"]
+script = ExtResource("23_g73go")
+metadata/_custom_type_script = "uid://b4kfisxjy2hq4"
+
+[node name="ActivatorSecret3" type="Node" parent="Activators"]
+script = ExtResource("9_4g5ls")
+
+[node name="ActivatorHook_Secret" type="Node" parent="Activators/ActivatorSecret3"]
+script = ExtResource("23_g73go")
+metadata/_custom_type_script = "uid://b4kfisxjy2hq4"
