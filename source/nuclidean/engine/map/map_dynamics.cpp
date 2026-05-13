@@ -194,8 +194,8 @@ void MapDynamics::evaluate_activators
   // Now iterate all triggers
   for (TriggerID trigger_id = 0; trigger_id < trigger_cnt; ++trigger_id)
   {
+    s32 activator_value = 0;
     const TriggerData& td = triggers[trigger_id];
-    u16& activator_value = activator_values[td.activator];
 
     switch (td.type)
     {
@@ -208,7 +208,7 @@ void MapDynamics::evaluate_activators
         {
           const bool player = td.player_sensitive && (id.type == EntityTypes::player);
           const bool enemy  = td.enemy_sensitive && (id.type == EntityTypes::enemy);
-          activator_value += (player || enemy);
+          activator_value += (player || enemy) * td.increment;
           if (out_info) (*out_info)[td.activator].entities.emplace_back(id);
         });
       }
@@ -254,7 +254,7 @@ void MapDynamics::evaluate_activators
           info.dirty = false;
         }
 
-        activator_value += info.triggered;
+        activator_value += info.triggered * td.increment;
       }
       break;
 
@@ -262,13 +262,20 @@ void MapDynamics::evaluate_activators
       case TriggerData::entity:
       {
         bool exists = registry.get_entity(td.entity_type.entity);
-        if (exists == td.while_alive) {
-          ++activator_value;
-          if (out_info) (*out_info)[td.activator].entities.emplace_back(td.entity_type.entity);
+        if (exists == td.while_alive)
+        {
+          activator_value += td.increment;
+          if (out_info)
+          {
+            (*out_info)[td.activator].entities.emplace_back(td.entity_type.entity);
+          }
         }
       }
       break;
     }
+
+    u16& value = activator_values[td.activator];
+    value = cast<u16>(clamp(cast<s32>(value) + activator_value, 0, (1 << 16) - 1));
   }
 }
 

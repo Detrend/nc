@@ -197,6 +197,11 @@ static TriggerData load_json_trigger
   td.enemy_sensitive  = load_json_flag(js, "enemy_sensitive");
   td.while_alive      = load_json_flag(js, "while_alive");
 
+  if (js.contains("increment"))
+  {
+    td.increment = js["increment"];
+  }
+
   return td;
 }
 

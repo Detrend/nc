@@ -43,6 +43,7 @@ struct TriggerData
   f32  timeout = 0.0f;
 
   // Can be turned off manually? By leaving (sector) or triggering again (wall)
+  s8   increment            = 1;     // How much should be activator value incremented
   bool can_turn_off     : 1 = false; // Can be turned back off manually
   bool player_sensitive : 1 = true;  // Triggers by player
   bool enemy_sensitive  : 1 = false; // Triggers by enemy
