@@ -59,7 +59,7 @@ constexpr f32 PLAYER_HEIGHT      = 1.8f;
 constexpr f32 PLAYER_EYE_HEIGHT  = 1.65f;
 constexpr f32 PLAYER_RADIUS      = 0.25f;
 constexpr f32 MELEE_DAMAGE_RANGE = 2.25f;
-constexpr f32 PLAYER_STEP_HEIGHT_MUL = 0.3f; // Multiple of player's height
+constexpr f32 PLAYER_STEP_HEIGHT = 0.9f; // 90cm
 
 //==============================================================================
 template<typename T, u8 StackSize>
@@ -312,8 +312,6 @@ void Player::apply_velocity(f32 delta_seconds)
   vec3 position = this->get_position();
   vec3 prev_pos = position;
 
-  constexpr f32 STEP_HEIGHT = PLAYER_HEIGHT * PLAYER_STEP_HEIGHT_MUL;
-
   // MR says: hotfix for the physics bug that caused player to float
   velocity.y = clamp(velocity.y, -30.0f, 30.0f);
 
@@ -322,7 +320,7 @@ void Player::apply_velocity(f32 delta_seconds)
   lvl.move_character
   (
     position, velocity, portal_transform, delta_seconds, PLAYER_RADIUS,
-    PLAYER_HEIGHT, STEP_HEIGHT, PLAYER_COLLIDERS,
+    PLAYER_HEIGHT, PLAYER_STEP_HEIGHT, PLAYER_COLLIDERS,
     PLAYER_REPORTING, &collected_collisions
   );
 
