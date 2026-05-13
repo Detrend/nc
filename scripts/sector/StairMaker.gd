@@ -8,6 +8,8 @@ extends Node2D
 ## If true, affect all recursive subchildren, otherwise just direct Sector children
 @export var is_recursive : bool = false
 
+@export var target_alt_configs : bool = false
+
 @export_group("Floor")
 ## If enabled, [member Sector.floor_height] of children [Sector]s will be managed by this [StairMaker]
 @export_custom(PROPERTY_HINT_GROUP_ENABLE, "") var set_floor : bool = false:
@@ -100,14 +102,11 @@ func on_descendant_editing_finish(_ancestor: Node, _start_was_called_first: bool
 	EditablePolygon.on_descendant_editing_finish_base(self, _ancestor, _start_was_called_first)
 	_do_apply()
 
-func _do_apply_thing(begin: float, increment: float, end: float, to_set : String, should_use_curve : bool, curve: Curve)->void:
+func _do_apply_thing(begin: float, increment: float, end: float, to_set : StringName, should_use_curve : bool, curve: Curve)->void:
 	if (! should_use_curve) || (curve == null):
 		var current := begin
 		for s in _stair_segments:
-			if s is Sector:
-				s.set(to_set, current)
-			else:
-				s.data.set(to_set, current)
+			_do_set_thing(s, to_set, current)
 			current += increment
 	else:
 		var segments := _stair_segments
@@ -116,11 +115,17 @@ func _do_apply_thing(begin: float, increment: float, end: float, to_set : String
 		for s in segments:
 			var t :float = curve.sample(current *segments_count_inv)
 			var value :float = lerp(begin, end, t)
-			if s is Sector:
-				s.set(to_set, value)
-			else:
-				s.data.set(to_set, value)
+			_do_set_thing(s, to_set, value)
 			current += 1
+
+func _do_set_thing(s: Node, to_set : StringName, value: float)->void:
+	if target_alt_configs:
+		var alt_config := NodeUtils.get_child_of_type(s, SectorAltConfig) as SectorAltConfig
+		if alt_config: alt_config.set(to_set, value)	
+	elif s is Sector:
+		(s as Sector).set(to_set, value)
+	else:
+		s.data.set(to_set, value)
 
 
 func _do_apply()->void:
