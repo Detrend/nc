@@ -105,10 +105,16 @@ public:
   void increment_enemy_count() { enemy_count++; }
   void increment_kill_count() { kill_count++; }
 
+  void increment_secret_count() { secret_count++; }
+  void increment_revealed_count() { revealed_count++; }
+
   void reset_enemy_count() { enemy_count = kill_count = 0; }
+  void reset_secret_count() { secret_count = revealed_count = 0; }
 
   u32 get_enemy_count() { return enemy_count; }
   u32 get_kill_count() { return kill_count; }
+  u32 get_secret_count() { return secret_count; }
+  u32 get_revealed_count() { return revealed_count; }
 
 private:
   // Clean up the current map, entities, mapping etc..
@@ -191,6 +197,9 @@ private:
 
   u32 enemy_count = 0;
   u32 kill_count = 0;
+
+  u32 secret_count = 0;
+  u32 revealed_count = 0;
 };
 
 }

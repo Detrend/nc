@@ -128,6 +128,12 @@ void NextLevelPage::set_kill_stats(u32 enemies, u32 kills)
   kill_count = kills;
 }
 
+void NextLevelPage::set_secret_stats(u32 secrets, u32 revealed)
+{
+  secret_count = secrets;
+  revealed_count = revealed;
+}
+
 //=============================================================================================
 void NextLevelPage::draw_stats(ShaderProgramHandle digit_material, GLuint VAO)
 {
