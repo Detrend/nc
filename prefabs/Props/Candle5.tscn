@@ -1,7 +1,12 @@
-[gd_scene load_steps=3 format=3 uid="uid://sxwn2wmj6jav"]
+[gd_scene load_steps=5 format=3 uid="uid://sxwn2wmj6jav"]
 
 [ext_resource type="Script" uid="uid://bvy2sc6knx1r2" path="res://scripts/things/Prop.gd" id="1_cm8st"]
 [ext_resource type="Texture2D" uid="uid://cisjmk3qux0w3" path="res://imgs/props/candle_5.png" id="2_cm8st"]
+[ext_resource type="PackedScene" uid="uid://ctwevapidummr" path="res://prefabs/Lights/PointLight.tscn" id="3_de5ph"]
+
+[sub_resource type="Curve" id="Curve_de5ph"]
+_data = [Vector2(0, 0.91391766), 0.0, 0.0, 0, 0, Vector2(0.07861636, 0.50566834), 0.0, 0.0, 0, 0, Vector2(0.16981134, 0.5793575), 0.0, 0.0, 0, 0, Vector2(0.19496855, 0.77618587), 0.0, 0.0, 0, 0, Vector2(0.29454926, 0.6290633), 0.0, 0.0, 0, 0, Vector2(0.35744232, 0.8497472), 0.0, 0.0, 0, 0, Vector2(0.4496855, 0.3895979), 0.0, 0.0, 0, 0, Vector2(0.5104822, 0.6384541), 0.0, 0.0, 0, 0, Vector2(0.6132075, 0.8935709), 0.0, 0.0, 0, 0, Vector2(0.7442348, 0.36455572), 0.0, 0.0, 0, 0, Vector2(1, 0.9217433), 0.0, 0.0, 0, 0]
+point_count = 11
 
 [node name="Candle5" type="Node2D"]
 scale = Vector2(2.1301146, 2.1301146)
@@ -18,3 +23,19 @@ z_index = 999
 texture_filter = 1
 scale = Vector2(0.04088975, 0.04088975)
 texture = ExtResource("2_cm8st")
+
+[node name="PointLight" parent="." instance=ExtResource("3_de5ph")]
+scale = Vector2(0.10605363, 0.10605363)
+color = Color(0.7529846, 0.68165106, 0.30768907, 1)
+radius = 1.5
+should_animate = true
+curve = SubResource("Curve_de5ph")
+cycle_duration_seconds = 3.0
+cycle_offset_range = 1.0
+placement_mode = 3
+height_offset = 0.2
+
+[node name="Icon" parent="PointLight" index="0"]
+visible = false
+
+[editable path="PointLight"]
