@@ -56,6 +56,9 @@ public:
 
   static EntityType get_type_static();
 
+  // clear ui effects from taking damage
+  void post_init();
+
   void damage(int damage);
   void heal(u32 how_much);
   void die();

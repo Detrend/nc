@@ -328,7 +328,13 @@ static void load_json_map
     {
       const f32 floor = js_sector["floor"];
       const f32 ceil = js_sector["ceiling"];
-      const s32 damage = js_sector["damage"];
+
+      s32 damage = 0;
+      if (js_sector.contains("damage"))
+      {
+        damage = js_sector["damage"];
+      }
+     
 
       const SectorID portal_sector = js_sector["portal_target"];
       const int portal_wall = js_sector["portal_wall"];

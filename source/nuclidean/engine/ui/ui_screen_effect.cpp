@@ -32,6 +32,13 @@ time_since_last_pickup = 0.0f;
 }
 
 //===========================================================================================
+void UiScreenEffect::clear_effect()
+{
+  time_since_last_dmg = MAX_DMG_FLASH_DURATION;
+  time_since_last_pickup = MAX_PICKUP_FLASH_DURATION;
+}
+
+//===========================================================================================
 void UiScreenEffect::init()
 {
 //creation of VAO and VBO
