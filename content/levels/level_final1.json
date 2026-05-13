@@ -1273,8 +1273,10 @@
 				1.0,
 				1.0
 			],
+			"cycle_length": 2.75,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "azzbbzbbbzbbbzzaaaaaaaaa",
 			"position": [
 				7.30000019073486,
 				3.0,
@@ -1289,8 +1291,10 @@
 				0.0,
 				1.0
 			],
+			"cycle_length": 0.75,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "zzzzxlbbdhlquxzzzzzzzzzz",
 			"position": [
 				18.2000007629395,
 				2.70000004768372,
@@ -1321,8 +1325,10 @@
 				1.0,
 				1.0
 			],
+			"cycle_length": 2.75,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "azzbbzbbbzbbbzzaaaaaaaaa",
 			"position": [
 				5.09999990463257,
 				1.80000007152557,
@@ -1353,8 +1359,10 @@
 				1.0,
 				1.0
 			],
+			"cycle_length": 1.0,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "zytnhdbchntxzzzzzzzzzzzz",
 			"position": [
 				-11.1999998092651,
 				0.5,
@@ -1369,8 +1377,10 @@
 				1.0,
 				1.0
 			],
+			"cycle_length": 1.0,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "achouyzzzzzzzzzzzzzyuohc",
 			"position": [
 				-13.5,
 				-1.80000007152557,
@@ -1385,8 +1395,10 @@
 				1.0,
 				1.0
 			],
+			"cycle_length": 1.0,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "zzzzzzzzzzzzzytnhcbdhnty",
 			"position": [
 				-15.8000001907349,
 				0.600000023841858,
@@ -1401,8 +1413,10 @@
 				1.0,
 				1.0
 			],
+			"cycle_length": 1.0,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "zzzzzzzytmgcbdiotyzzzzzz",
 			"position": [
 				-13.5,
 				2.79999995231628,
@@ -1417,8 +1431,10 @@
 				0.0,
 				1.0
 			],
+			"cycle_length": 1.0,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "abbdefggggfeeeeeeffffdcb",
 			"position": [
 				-18.6000003814697,
 				-28.5,
@@ -1545,8 +1561,10 @@
 				1.0,
 				1.0
 			],
+			"cycle_length": 1.6,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "zzzzzzzbbbbbbdfimpsvyzzz",
 			"position": [
 				-33.7999992370605,
 				5.5,
@@ -1865,8 +1883,10 @@
 				0.0,
 				1.0
 			],
+			"cycle_length": 2.1,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "eeddcccddefggggfedddddee",
 			"position": [
 				-19.5,
 				16.3000011444092,
@@ -1929,8 +1949,10 @@
 				0.0,
 				1.0
 			],
+			"cycle_length": 1.33,
 			"falloff": 1.0,
 			"intensity": 1.0,
+			"light_string": "abcdfghhgfedcccddeffedcb",
 			"position": [
 				-26.3999996185303,
 				10.0,
