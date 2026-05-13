@@ -21,7 +21,8 @@ namespace nc
   std::unique_ptr<IActivatorHook> create_hook_by_type(const std::string& hook_type);
 
 
-  class ActivatorHook_LevelTransition : public IActivatorHook {
+  class ActivatorHook_LevelTransition : public IActivatorHook 
+  {
   public:
 
     virtual void load(const SerializedData& data);
@@ -32,7 +33,8 @@ namespace nc
     LevelName destination;
   };
 
-  class ActivatorHook_Jumppad : public IActivatorHook {
+  class ActivatorHook_Jumppad : public IActivatorHook 
+  {
   public:
     virtual void load(const SerializedData& data);
 
@@ -40,5 +42,15 @@ namespace nc
 
   private:
     vec3 direction;
+  };
+
+  class ActivatorHook_Secret : public IActivatorHook
+  {
+  public:
+    virtual void load(const SerializedData& data);
+
+    virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args) override;
+  private:
+    bool revealed = false;
   };
 }

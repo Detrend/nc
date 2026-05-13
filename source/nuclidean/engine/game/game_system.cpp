@@ -289,6 +289,7 @@ static void load_json_map
   using namespace map_building;
 
   get_engine().get_module<GameSystem>().reset_enemy_count();
+  get_engine().get_module<GameSystem>().reset_secret_count();
 
   std::ifstream f(get_full_level_path(level_name));
   nc_assert(f.is_open());
