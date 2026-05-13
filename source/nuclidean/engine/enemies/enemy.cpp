@@ -267,8 +267,7 @@ void Enemy::handle_movement(f32 delta)
     }
 
     // The target inverse has to be recomputed as well
-    current_path.target_transform_inv
-      = portal_transform * current_path.target_transform_inv;
+    this->on_self_or_target_traversed_nc_portal();
   }
 
   if (anim_fsm.get_state() == ActorAnimStates::walk) {
@@ -970,15 +969,28 @@ vec2 Enemy::get_facing_2d() const
 }
 
 //==============================================================================
-void Enemy::on_player_traversed_nc_portal(EntityID /*player*/, mat4 transform)
+void Enemy::on_self_or_target_traversed_nc_portal()
+{
+  if (Entity* target = GameSystem::get().get_entities().get_entity(this->target_id))
+  {
+    PhysLevel lvl = GameSystem::get().get_level();
+    vec3 from = this->get_position();
+    vec3 to   = target->get_position();
+
+    mat4 trans = lvl.calc_relative_transform_from_self_to_target(from, to);
+    current_path.target_transform_inv = inverse(trans);
+  }
+}
+
+//==============================================================================
+void Enemy::on_player_traversed_nc_portal(EntityID player_id, mat4 /*transform*/)
 {
   // Modify the target transform inv
   // This fixes the bug due to which the enemy suddenly turns around if the
   // player traverses portal during his shooting animation
-  if (this->state != EnemyAiState::idle)
+  if (this->state != EnemyAiState::idle && this->target_id == player_id)
   {
-    current_path.target_transform_inv
-      = inverse(transform) * current_path.target_transform_inv;
+    this->on_self_or_target_traversed_nc_portal();
   }
 }
 

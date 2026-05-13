@@ -576,6 +576,7 @@ static bool calc_path_raw
   // Reverse the path
   std::reverse(points.begin(), points.end());
   std::reverse(transforms.begin(), transforms.end());
+  std::reverse(nc_portals.begin(), nc_portals.end());
 
   // Last point and no transform
   if (found_path)
@@ -2301,6 +2302,43 @@ const
       });
     });
   }
+}
+
+//==============================================================================
+mat4 PhysLevel::calc_relative_transform_from_self_to_target
+(
+  vec3 self, vec3 target, f32 max_dist
+)
+const
+{
+  nc_assert(max_dist > 0.0f);
+  mat4 transform = identity<mat4>();
+
+  StackVector<vec3, 20> _;
+  StackVector<mat4, 20> __;
+  Portals               portals;
+
+  bool found = phys_helpers::calc_path_raw
+  (
+    *this,   // lvl
+    self,    // start_pos
+    target,  // end_pos
+    0.01f,   // radius
+    0.01f,   // height
+    1000.0f, // step up
+    1000.0f, // step down
+    _,       // points
+    __,      // transforms
+    portals, // nc_portals
+    max_dist // max_len
+  );
+
+  if (!found)
+  {
+    return identity<mat4>();
+  }
+
+  return calc_portal_projection(portals);
 }
 
 }

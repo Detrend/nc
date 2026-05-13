@@ -44,6 +44,8 @@ public:
   void on_player_traversed_nc_portal(EntityID player, mat4 transform);
 
 private:
+  void on_self_or_target_traversed_nc_portal();
+
   void handle_ai(f32 delta);
   void handle_movement(f32 delta);
   void handle_appearance(f32 delta);

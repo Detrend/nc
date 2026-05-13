@@ -287,6 +287,12 @@ struct PhysLevel
     f32                        step_up   = FLT_MAX,
     f32                        step_down = FLT_MAX
   ) const;
+
+  // Performance heavy
+  mat4 calc_relative_transform_from_self_to_target
+  (
+    vec3 self, vec3 target, f32 max_dist = 40.0f
+  ) const;
 };
 
 }
