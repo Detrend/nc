@@ -85,6 +85,7 @@ public:
 
   Token intensity_string;           // We can achieve light flicker with this
   f32   intensity_cycle_len = 0.0f; // Duration of one cycle
+  f32   intensity_cycle_offset = 0.0f;
 
   // Recomputes the radius of the light from the parameters above and sets it
   // as the entity radius.

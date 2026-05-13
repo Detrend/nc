@@ -508,6 +508,11 @@ static void load_json_map
     {
       light->intensity_cycle_len = js_light["cycle_length"];
     }
+
+    if (js_light.contains("cycle_offset"))
+    {
+      light->intensity_cycle_offset = js_light["cycle_offset"];
+    }
   }
   for (auto&& js_light : data["ambient_lights"])
   {
