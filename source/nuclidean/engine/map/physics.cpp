@@ -957,7 +957,8 @@ static bool intersect_sector_3d_height
   const f32  cy  = sector_dyn.ceil_height  - y_ceil_sub;
   const vec3 dir = to - from;
 
-  const f32 min_c = -(y_floor_add + y_ceil_sub) / length(to - from);
+  //const f32 min_c = -(y_floor_add + y_ceil_sub) / length(to - from);
+  const f32 min_c = 0.0f;
   const f32 max_c = 1.0f;
 
   for (auto[floor_y, normal] : {std::pair{fy, UP_DIR}, std::pair{cy, -UP_DIR}})
@@ -1225,7 +1226,8 @@ struct CylCastWallIntersector
     );
 
     // Reset the hit if too far behind us
-    f32 min_coeff = -0.25f * expand / length(ray_to - ray_from);
+    //f32 min_coeff = -0.25f * expand / length(ray_to - ray_from);
+    f32 min_coeff = 0.0f;
     if (hit && out_c_2d < min_coeff)
     {
       hit      = false;
