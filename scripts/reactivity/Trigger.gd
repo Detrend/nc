@@ -6,6 +6,9 @@ extends Node
 ## [Activator] whose value will be modified by this [Trigger]
 @export var target : Activator
 
+## Value to be added to the [Activator] while this [Trigger] is active
+@export_range(-128, 127) var increment : int = 1
+
 ## In seconds, how long this trigger will remain active after player interacted with it. 0 for infinite.
 @export var timeout : float = 0.0
 
@@ -27,6 +30,7 @@ func do_export(out : Dictionary = {})->Dictionary:
 		ErrorUtils.report_error("No target defined for activator {0}".format([NodeUtils.get_full_name(self)]))
 		return out
 	out["activator"] = target.get_activator_name()
+	out["increment"] = increment
 	out["timeout"] = timeout
 	out["can_turn_off"] = can_turn_off
 	out["player_sensitive"] = player_sensitive
