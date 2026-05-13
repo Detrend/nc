@@ -1,4 +1,4 @@
-[gd_scene load_steps=122 format=3 uid="uid://qa2w68k6j6h2"]
+[gd_scene load_steps=127 format=3 uid="uid://qa2w68k6j6h2"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_1o0vd"]
 [ext_resource type="Script" uid="uid://b8tkglirbwf1e" path="res://scripts/reactivity/ActivatorPool.gd" id="2_b0a4w"]
@@ -15,13 +15,16 @@
 [ext_resource type="Script" uid="uid://d3f0i3y2s53si" path="res://scripts/sector/StairMaker.gd" id="11_et0pd"]
 [ext_resource type="PackedScene" uid="uid://3yx126jx5y0c" path="res://prefabs/PickUps/PlasmaRifle.tscn" id="11_krcvx"]
 [ext_resource type="PackedScene" uid="uid://guolywc6hufx" path="res://prefabs/PickUps/PlasmaAmmo.tscn" id="12_coai7"]
+[ext_resource type="PackedScene" uid="uid://boc0o07telgjh" path="res://levels/newLevel2_components/corridor4_start_segment.tscn" id="12_yvvru"]
 [ext_resource type="Script" uid="uid://crfvtueim4q0s" path="res://scripts/reactivity/Trigger.gd" id="13_et0pd"]
-[ext_resource type="Script" uid="uid://0kbske84jb5g" path="res://scripts/sector/TriangulatedMultisector.gd" id="13_l7qbx"]
 [ext_resource type="Script" uid="uid://d1u512ud4vhrt" path="res://scripts/reactivity/SectorAltConfig.gd" id="13_py677"]
 [ext_resource type="PackedScene" uid="uid://dgu644cct1eeb" path="res://prefabs/Entities/Possessed.tscn" id="17_3611k"]
 [ext_resource type="PackedScene" uid="uid://b8tr8d62bd5s2" path="res://prefabs/PickUps/HpBig.tscn" id="18_b0a4w"]
 [ext_resource type="PackedScene" uid="uid://1dbhovgj17my" path="res://prefabs/PickUps/Shotgun.tscn" id="19_et0pd"]
 [ext_resource type="PackedScene" uid="uid://cm0wgegxiipjw" path="res://prefabs/PickUps/HpSmall.tscn" id="20_yvvru"]
+[ext_resource type="PackedScene" uid="uid://mwrf1vplbdod" path="res://levels/newLevel2_components/faux_arena_1.tscn" id="23_l7qbx"]
+[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/sector/Sector.gd" id="24_s7cq3"]
+[ext_resource type="PackedScene" uid="uid://hg6kt5ju3l3a" path="res://prefabs/Entities/Cultist.tscn" id="25_i76wg"]
 
 [sub_resource type="Resource" id="Resource_koi1o"]
 script = ExtResource("4_coai7")
@@ -629,6 +632,18 @@ material = ExtResource("3_krcvx")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_rkl05"]
+script = ExtResource("4_coai7")
+ceiling_height = 5.0
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_cx621"]
+script = ExtResource("4_coai7")
+ceiling_height = 5.0
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_aq578"]
 script = ExtResource("4_coai7")
 ceiling_height = 5.0
 material = ExtResource("3_krcvx")
@@ -1686,15 +1701,18 @@ ceiling_height = 5.0
 portal_wall_length = 4.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7380b" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+[node name="Sector-7380b" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
 position = Vector2(-96.005066, 43.85193)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-49, 10, -49, -6, -7, -6, -7, 10)
 data = SubResource("Resource_x0wix")
 ceiling_height = 5.0
+enable_portal = true
+portal_destination = NodePath("../../../Corridor4/Begin")
+portal_destination_wall = 2
 portal_wall_length = 16.0
-portal_destination_wall_length = -1.0
+portal_destination_wall_length = 16.0
 
 [node name="Sector-3079" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-105.005066, 57.85193)
@@ -1966,6 +1984,7 @@ portal_wall_length = 9.219544
 portal_destination_wall_length = -1.0
 
 [node name="Corridor4" type="Node2D" parent="Sectors/Node2D"]
+position = Vector2(9, 0)
 
 [node name="Begin" parent="Sectors/Node2D/Corridor4" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
 position = Vector2(658, -40)
@@ -1973,20 +1992,212 @@ color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(-54, 10, -54, -6, -50, -6, -50, 10)
 data = SubResource("Resource_8al0g")
 ceiling_height = 5.0
-enable_portal = true
 portal_destination = NodePath("../../Corridor3_Arena1/Arena1_MainMultisector/Sector-7380b")
 portal_wall = 2
 portal_wall_length = 16.0
 portal_destination_wall_length = 16.0
 
-[node name="TriangulatedMultisector-554" type="Polygon2D" parent="Sectors/Node2D/Corridor4" instance=ExtResource("6_eukjm")]
-z_index = 11
-z_as_relative = false
-position = Vector2(596.0747, -39.070976)
-color = Color(0.243137, 0.254902, 0.623529, 0.454902)
-polygon = PackedVector2Array(-14.074707, -6.9290237, 7.925293, -6.9290237, 7.925293, 9.070976, -14.074707, 9.070976, -20.074707, 17.070976, -22.074707, 23.070976, -38.074707, 23.070976, -36.074707, 17.070976, -32.074707, 7.0709763, -24.074707, 1.0709763, -32.074707, -4.9290237, -36.074707, -14.929024, -38.074707, -20.929024, -22.074707, -20.929024, -20.074707, -14.929024)
-script = ExtResource("13_l7qbx")
+[node name="StartSegment" parent="Sectors/Node2D/Corridor4" instance=ExtResource("12_yvvru")]
+
+[node name="FakeHallway" type="Node2D" parent="Sectors/Node2D/Corridor4"]
+
+[node name="Segment5" parent="Sectors/Node2D/Corridor4/FakeHallway" instance=ExtResource("12_yvvru")]
+position = Vector2(0, -180)
+
+[node name="TriangulatedMultisector-554" parent="Sectors/Node2D/Corridor4/FakeHallway/Segment5" index="0"]
+polygon = PackedVector2Array(-14.074707, -6.9290237, 7.925293, -6.9290237, 7.925293, 9.070976, -14.074707, 9.070976, -22.074707, 19.070976, -24.074707, 27.070976, -46.074707, 27.070976, -44.074707, 19.070976, -39.074707, 11.070984, -51.074707, 9.070984, -51.074707, -6.929016, -39.074707, -8.929016, -44.074707, -16.929024, -46.074707, -24.929024, -24.074707, -24.929024, -22.074707, -16.929024)
+
+[node name="_0" parent="Sectors/Node2D/Corridor4/FakeHallway/Segment5" index="1" node_paths=PackedStringArray("portal_destination")]
+enable_portal = true
+portal_destination = NodePath("../../Segment7/_1")
+portal_destination_wall = 2
+portal_destination_wall_length = 22.0
+
+[node name="Begin" parent="Sectors/Node2D/Corridor4/FakeHallway/Segment5" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
+position = Vector2(658, -40)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(-54, 10, -54, -6, -50, -6, -50, 10)
+data = SubResource("Resource_8al0g")
+ceiling_height = 5.0
+enable_portal = true
+portal_destination = NodePath("../../Corridor3_FauxArena/Connector")
+portal_wall = 2
+portal_destination_wall = 3
+portal_wall_length = 16.0
+portal_destination_wall_length = 16.0
+
+[node name="Corridor3_FauxArena" parent="Sectors/Node2D/Corridor4/FakeHallway" instance=ExtResource("23_l7qbx")]
+position = Vector2(695, -438)
+
+[node name="Connector" parent="Sectors/Node2D/Corridor4/FakeHallway/Corridor3_FauxArena" instance=ExtResource("2_eukjm")]
+position = Vector2(168.85034, -40.11682)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(1.1496582, -5.8831787, 5.149658, -5.8831787, 5.149658, 10.116821, 1.1496582, 10.116821)
 data = SubResource("Resource_rkl05")
+ceiling_height = 5.0
+portal_wall_length = 4.0
+portal_destination_wall_length = -1.0
+
+[node name="Segment3" parent="Sectors/Node2D/Corridor4/FakeHallway" instance=ExtResource("12_yvvru")]
+position = Vector2(0, -120)
+
+[node name="Begin" parent="Sectors/Node2D/Corridor4/FakeHallway/Segment3" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
+position = Vector2(658, -40)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(-54, 10, -54, -6, -50, -6, -50, 10)
+data = SubResource("Resource_8al0g")
+ceiling_height = 5.0
+enable_portal = true
+portal_destination = NodePath("../../Corridor3_FauxArena2/Connector")
+portal_wall = 2
+portal_destination_wall = 3
+portal_wall_length = 16.0
+portal_destination_wall_length = 16.0
+
+[node name="Corridor3_FauxArena2" parent="Sectors/Node2D/Corridor4/FakeHallway" instance=ExtResource("23_l7qbx")]
+position = Vector2(695, -274)
+
+[node name="Connector" parent="Sectors/Node2D/Corridor4/FakeHallway/Corridor3_FauxArena2" instance=ExtResource("2_eukjm")]
+position = Vector2(168.85034, -40.11682)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(1.1496582, -5.8831787, 5.149658, -5.8831787, 5.149658, 10.116821, 1.1496582, 10.116821)
+data = SubResource("Resource_rkl05")
+ceiling_height = 5.0
+portal_wall_length = 4.0
+portal_destination_wall_length = -1.0
+
+[node name="Segment2" parent="Sectors/Node2D/Corridor4/FakeHallway" instance=ExtResource("12_yvvru")]
+position = Vector2(0, -60)
+
+[node name="Begin" parent="Sectors/Node2D/Corridor4/FakeHallway/Segment2" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
+position = Vector2(658, -40)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(-54, 10, -54, -6, -50, -6, -50, 10)
+data = SubResource("Resource_8al0g")
+ceiling_height = 5.0
+enable_portal = true
+portal_destination = NodePath("../../Corridor3_FauxArena3/Connector")
+portal_wall = 2
+portal_destination_wall = 3
+portal_wall_length = 16.0
+portal_destination_wall_length = 16.0
+
+[node name="Corridor3_FauxArena3" parent="Sectors/Node2D/Corridor4/FakeHallway" instance=ExtResource("23_l7qbx")]
+position = Vector2(857, -416)
+
+[node name="Connector" parent="Sectors/Node2D/Corridor4/FakeHallway/Corridor3_FauxArena3" instance=ExtResource("2_eukjm")]
+position = Vector2(168.85034, -40.11682)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(1.1496582, -5.8831787, 5.149658, -5.8831787, 5.149658, 10.116821, 1.1496582, 10.116821)
+data = SubResource("Resource_rkl05")
+ceiling_height = 5.0
+portal_wall_length = 4.0
+portal_destination_wall_length = -1.0
+
+[node name="Segment4" parent="Sectors/Node2D/Corridor4/FakeHallway" instance=ExtResource("12_yvvru")]
+position = Vector2(0, 60)
+
+[node name="Begin" parent="Sectors/Node2D/Corridor4/FakeHallway/Segment4" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
+position = Vector2(658, -40)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(-54, 10, -54, -6, -50, -6, -50, 10)
+data = SubResource("Resource_8al0g")
+ceiling_height = 5.0
+enable_portal = true
+portal_destination = NodePath("../../Corridor3_FauxArena4/Connector")
+portal_wall = 2
+portal_destination_wall = 3
+portal_wall_length = 16.0
+portal_destination_wall_length = 16.0
+
+[node name="Corridor3_FauxArena4" parent="Sectors/Node2D/Corridor4/FakeHallway" instance=ExtResource("23_l7qbx")]
+position = Vector2(857, -258)
+
+[node name="Connector" parent="Sectors/Node2D/Corridor4/FakeHallway/Corridor3_FauxArena4" instance=ExtResource("2_eukjm")]
+position = Vector2(168.85034, -40.11682)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(1.1496582, -5.8831787, 5.149658, -5.8831787, 5.149658, 10.116821, 1.1496582, 10.116821)
+data = SubResource("Resource_rkl05")
+ceiling_height = 5.0
+portal_wall_length = 4.0
+portal_destination_wall_length = -1.0
+
+[node name="Segment6" parent="Sectors/Node2D/Corridor4/FakeHallway" instance=ExtResource("12_yvvru")]
+position = Vector2(0, 120)
+
+[node name="Begin" parent="Sectors/Node2D/Corridor4/FakeHallway/Segment6" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
+position = Vector2(658, -40)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(-54, 10, -54, -6, -50, -6, -50, 10)
+data = SubResource("Resource_8al0g")
+ceiling_height = 5.0
+enable_portal = true
+portal_destination = NodePath("../../Corridor3_FauxArena5/Connector")
+portal_wall = 2
+portal_destination_wall = 3
+portal_wall_length = 16.0
+portal_destination_wall_length = 16.0
+
+[node name="Corridor3_FauxArena5" parent="Sectors/Node2D/Corridor4/FakeHallway" instance=ExtResource("23_l7qbx")]
+position = Vector2(857, -100)
+
+[node name="Connector" parent="Sectors/Node2D/Corridor4/FakeHallway/Corridor3_FauxArena5" instance=ExtResource("2_eukjm")]
+position = Vector2(168.85034, -40.11682)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(1.1496582, -5.8831787, 5.149658, -5.8831787, 5.149658, 10.116821, 1.1496582, 10.116821)
+data = SubResource("Resource_rkl05")
+ceiling_height = 5.0
+portal_wall_length = 4.0
+portal_destination_wall_length = -1.0
+
+[node name="Segment7" parent="Sectors/Node2D/Corridor4/FakeHallway" instance=ExtResource("12_yvvru")]
+position = Vector2(0, 180)
+
+[node name="Begin" parent="Sectors/Node2D/Corridor4/FakeHallway/Segment7" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
+position = Vector2(658, -40)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(-54, 10, -54, -6, -50, -6, -50, 10)
+data = SubResource("Resource_8al0g")
+ceiling_height = 5.0
+enable_portal = true
+portal_destination = NodePath("../../Corridor3_FauxArena6/Connector")
+portal_wall = 2
+portal_destination_wall = 3
+portal_wall_length = 16.0
+portal_destination_wall_length = 16.0
+
+[node name="Corridor3_FauxArena6" parent="Sectors/Node2D/Corridor4/FakeHallway" instance=ExtResource("23_l7qbx")]
+position = Vector2(1031, -80)
+
+[node name="Connector" parent="Sectors/Node2D/Corridor4/FakeHallway/Corridor3_FauxArena6" instance=ExtResource("2_eukjm")]
+position = Vector2(168.85034, -40.11682)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(1.1496582, -5.8831787, 5.149658, -5.8831787, 5.149658, 10.116821, 1.1496582, 10.116821)
+data = SubResource("Resource_rkl05")
+ceiling_height = 5.0
+portal_wall_length = 4.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-3926" parent="Sectors/Node2D/Corridor4" instance=ExtResource("2_eukjm")]
+position = Vector2(535.20325, -222.30923)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(-0.20324707, -3.6907654, 9.796753, -3.6907654, 9.796753, 12.309235, -0.20324707, 12.309235)
+data = SubResource("Resource_cx621")
+ceiling_height = 5.0
+portal_wall_length = 10.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-3926a" type="Polygon2D" parent="Sectors/Node2D/Corridor4" instance=ExtResource("2_eukjm")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(535.20325, -222.30923)
+polygon = PackedVector2Array(-46.203247, 12.309235, -46.203247, -3.6907654, -0.20324707, -3.6907654, -0.20324707, 12.309235)
+script = ExtResource("24_s7cq3")
+data = SubResource("Resource_aq578")
+ceiling_height = 5.0
+sector_material = ExtResource("3_krcvx")
+portal_wall_length = 16.0
+portal_destination_wall_length = -1.0
 
 [node name="TriangulatedMultisector-6302" parent="." instance=ExtResource("6_eukjm")]
 visible = false
@@ -2164,7 +2375,7 @@ intensity = 2.57
 curve = SubResource("Curve_qxoy5")
 
 [node name="PlayerPosition" parent="." instance=ExtResource("7_ufqas")]
-position = Vector2(456, -80)
+position = Vector2(336, -35.999992)
 rotation = -4.7506037
 
 [node name="PickUps" type="Node2D" parent="."]
@@ -2373,3 +2584,12 @@ script = ExtResource("13_et0pd")
 target = NodePath("../../../../../Activators/Arena1_Finished")
 player_sensitive = false
 enemy_sensitive = true
+
+[node name="FakeCorridor" type="Node2D" parent="Enemies"]
+
+[node name="Cultist" parent="Enemies/FakeCorridor" instance=ExtResource("25_i76wg")]
+position = Vector2(574.00006, -218.00002)
+rotation = -1.5878946
+
+[editable path="Sectors/Node2D/Corridor4/FakeHallway/Segment5"]
+[editable path="Sectors/Node2D/Corridor4/FakeHallway/Segment7"]

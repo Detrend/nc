@@ -56,9 +56,12 @@ func get_undo_redo_raw()->UndoRedo:
 ## Nodes in the [Level] can await this signal to perform an action with at the end of a frame update, after everyone's inputs etc. had been processed
 signal every_frame_signal()
 
+func is_root()->bool:
+	return get_tree().edited_scene_root == self
 
 func _process(_delta: float) -> void:
 	if ! Engine.is_editor_hint(): return
+	if ! is_root(): return
 	_handle_selections()
 	_handle_input()
 	_handle_new_sector_creation()
@@ -78,6 +81,7 @@ func _ready() -> void:
 	if ! Engine.is_editor_hint(): 
 		export_level() # If we are in the game, perform a level export instead of operating normally
 		return
+	if ! is_root(): return
 	config.on_cosmetics_changed.connect(_update_sector_visuals)
 	await self.every_frame_signal # wait 2 frames for UndoRedo to become available (without this things can cryptically break)
 	await self.every_frame_signal
@@ -86,12 +90,14 @@ func _ready() -> void:
 		unre.version_changed.connect(_update_sector_visuals, )
 		
 func _exit_tree() -> void:
+	if ! is_root(): return
 	config.on_cosmetics_changed.disconnect(_update_sector_visuals)
 	var unre := get_undo_redo_raw()
 	if unre and unre.version_changed.is_connected(_update_sector_visuals):
 		unre.version_changed.disconnect(_update_sector_visuals)
 
 func _update_sector_visuals()->void:
+	if ! is_root(): return
 	for s in get_editable_polygons():
 		if s.is_editable: s._update_visuals()
 

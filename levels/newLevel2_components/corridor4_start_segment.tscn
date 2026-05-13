@@ -1,0 +1,48 @@
+[gd_scene load_steps=8 format=3 uid="uid://boc0o07telgjh"]
+
+[ext_resource type="PackedScene" uid="uid://cmy30fxadpjn2" path="res://prefabs/TriangulatedMultisector.tscn" id="1_oeugk"]
+[ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_oi7uh"]
+[ext_resource type="Resource" uid="uid://b0ot7qa5l7k8d" path="res://materials/default_texture.tres" id="2_oi7uh"]
+[ext_resource type="Script" uid="uid://cft80p5qydrwt" path="res://scripts/sector/SectorProperties.gd" id="3_jvngj"]
+[ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="4_5ci7w"]
+
+[sub_resource type="Resource" id="Resource_rkl05"]
+script = ExtResource("3_jvngj")
+ceiling_height = 5.0
+material = ExtResource("2_oi7uh")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_cx621"]
+script = ExtResource("3_jvngj")
+ceiling_height = 5.0
+material = ExtResource("2_oi7uh")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[node name="Corridor4_StartSegment" type="Node2D"]
+script = ExtResource("1_oi7uh")
+
+[node name="TriangulatedMultisector-554" parent="." instance=ExtResource("1_oeugk")]
+position = Vector2(596.0747, -39.070976)
+polygon = PackedVector2Array(-14.074707, -6.9290237, 7.925293, -6.9290237, 7.925293, 9.070976, -14.074707, 9.070976, -22.074707, 19.070976, -24.074707, 27.070976, -46.074707, 27.070976, -44.074707, 19.070976, -38.074707, 7.0709763, -33.074707, 3.0709763, -32.074707, 1.0709763, -33.074707, -0.92902374, -38.074707, -4.9290237, -44.074707, -16.929024, -46.074707, -24.929024, -24.074707, -24.929024, -22.074707, -16.929024)
+data = SubResource("Resource_rkl05")
+
+[node name="_0" parent="." instance=ExtResource("4_5ci7w")]
+z_index = -10
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(549, -68, 571, -68, 572, -64, 550, -64)
+data = SubResource("Resource_cx621")
+ceiling_height = 5.0
+portal_wall_length = 22.0
+portal_destination_wall_length = -1.0
+
+[node name="_1" parent="." node_paths=PackedStringArray("portal_destination") instance=ExtResource("4_5ci7w")]
+z_index = -10
+position = Vector2(0, 56)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(550, -68, 572, -68, 571, -64, 549, -64)
+data = SubResource("Resource_cx621")
+ceiling_height = 5.0
+portal_destination = NodePath("../_0")
+portal_wall = 2
+portal_wall_length = 22.0
+portal_destination_wall_length = 22.0
