@@ -648,24 +648,7 @@ void Player::do_attack()
   {
     vec3 ahead_dir = dir * 0.3f;
     vec3 from_pos  = this->get_position() + UP_DIR * PLAYER_EYE_HEIGHT;
-
-    // Raycast ahead of us
-    PhysLevel::Portals portals_traversed;
-    CollisionHit hit = world.ray_cast_3d
-    (
-      from_pos,
-      from_pos + ahead_dir,
-      PhysLevel::COLLIDE_NONE,
-      &portals_traversed
-    );
-
-    vec3 from = from_pos + ahead_dir * (hit ? hit.coeff : 1.0f);
-    if (portals_traversed.size())
-    {
-      mat4 transform = world.calc_portal_projection(portals_traversed);
-      from = (transform * vec4{from, 1.0f}).xyz();
-      dir  = (transform * vec4{dir,  0.0f}).xyz();
-    }
+    vec3 from = GameHelpers::get().calc_shoot_from_pos(from_pos, ahead_dir, dir);
 
     for (s32 idx = 0; idx < WEAPON_STATS[weapon].projectile_cnt; ++idx)
     {

@@ -36,6 +36,15 @@ public:
   // Returns the pointer to the player
   Player* get_player();
 
+  // Calculates the position from which the projectile should be fired and
+  // potentially overwrites the input arguments.
+  // In most cases does nothing.
+  // In case there is a wall in the way makes sure that the projectile will not
+  // spawn behind the wall, but in front of it.
+  // In case there is a non-euclidean portal in the way makes sure that the
+  // projectile spawns behind it and will face a correct direction.
+  vec3 calc_shoot_from_pos(vec3 eye_pos, vec3 ahead_dir, vec3& shoot_dir);
+
   // Helper for creating projectiles
   Projectile* spawn_projectile
   (
