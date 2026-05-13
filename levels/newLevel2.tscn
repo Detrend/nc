@@ -1,4 +1,4 @@
-[gd_scene load_steps=115 format=3 uid="uid://qa2w68k6j6h2"]
+[gd_scene load_steps=120 format=3 uid="uid://qa2w68k6j6h2"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_1o0vd"]
 [ext_resource type="Script" uid="uid://b8tkglirbwf1e" path="res://scripts/reactivity/ActivatorPool.gd" id="2_b0a4w"]
@@ -21,6 +21,7 @@
 [ext_resource type="PackedScene" uid="uid://dgu644cct1eeb" path="res://prefabs/Entities/Possessed.tscn" id="17_3611k"]
 [ext_resource type="PackedScene" uid="uid://b8tr8d62bd5s2" path="res://prefabs/PickUps/HpBig.tscn" id="18_b0a4w"]
 [ext_resource type="PackedScene" uid="uid://1dbhovgj17my" path="res://prefabs/PickUps/Shotgun.tscn" id="19_et0pd"]
+[ext_resource type="PackedScene" uid="uid://cm0wgegxiipjw" path="res://prefabs/PickUps/HpSmall.tscn" id="20_yvvru"]
 
 [sub_resource type="Resource" id="Resource_koi1o"]
 script = ExtResource("4_coai7")
@@ -346,6 +347,34 @@ ceiling_height = 30.0
 material = ExtResource("3_krcvx")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
+[sub_resource type="Resource" id="Resource_ol8bk"]
+script = ExtResource("4_coai7")
+floor_height = 0.5
+ceiling_height = 30.0
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_7r7db"]
+script = ExtResource("4_coai7")
+floor_height = -0.2
+ceiling_height = 30.0
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_iet2w"]
+script = ExtResource("4_coai7")
+floor_height = 0.3
+ceiling_height = 30.0
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_uq585"]
+script = ExtResource("4_coai7")
+floor_height = 0.3
+ceiling_height = 30.0
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
 [sub_resource type="Resource" id="Resource_be6ki"]
 script = ExtResource("4_coai7")
 floor_height = -10.0
@@ -377,34 +406,6 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 script = ExtResource("4_coai7")
 floor_height = 20.01
 ceiling_height = 22.5
-material = ExtResource("3_krcvx")
-metadata/_custom_type_script = "uid://cft80p5qydrwt"
-
-[sub_resource type="Resource" id="Resource_ol8bk"]
-script = ExtResource("4_coai7")
-floor_height = 0.5
-ceiling_height = 30.0
-material = ExtResource("3_krcvx")
-metadata/_custom_type_script = "uid://cft80p5qydrwt"
-
-[sub_resource type="Resource" id="Resource_7r7db"]
-script = ExtResource("4_coai7")
-floor_height = -0.2
-ceiling_height = 30.0
-material = ExtResource("3_krcvx")
-metadata/_custom_type_script = "uid://cft80p5qydrwt"
-
-[sub_resource type="Resource" id="Resource_iet2w"]
-script = ExtResource("4_coai7")
-floor_height = 0.3
-ceiling_height = 30.0
-material = ExtResource("3_krcvx")
-metadata/_custom_type_script = "uid://cft80p5qydrwt"
-
-[sub_resource type="Resource" id="Resource_uq585"]
-script = ExtResource("4_coai7")
-floor_height = 0.3
-ceiling_height = 30.0
 material = ExtResource("3_krcvx")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
@@ -558,13 +559,6 @@ ceiling_height = -5.0
 material = ExtResource("3_krcvx")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
-[sub_resource type="Resource" id="Resource_8al0g"]
-script = ExtResource("4_coai7")
-floor_height = -9.4
-ceiling_height = -5.0
-material = ExtResource("3_krcvx")
-metadata/_custom_type_script = "uid://cft80p5qydrwt"
-
 [sub_resource type="Resource" id="Resource_80v7h"]
 script = ExtResource("4_coai7")
 floor_height = -10.5
@@ -590,6 +584,41 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 script = ExtResource("4_coai7")
 floor_height = -10.0
 ceiling_height = -8.0
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_ep6v3"]
+script = ExtResource("4_coai7")
+floor_height = -9.85
+ceiling_height = -9.849
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_32df3"]
+script = ExtResource("4_coai7")
+floor_height = -9.85
+ceiling_height = -6.5
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_scl0x"]
+script = ExtResource("4_coai7")
+floor_height = -9.85
+ceiling_height = -6.5
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_jcd71"]
+script = ExtResource("4_coai7")
+floor_height = -9.85
+ceiling_height = -6.5
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_1bxne"]
+script = ExtResource("4_coai7")
+floor_height = -9.85
+ceiling_height = -6.5
 material = ExtResource("3_krcvx")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
@@ -654,7 +683,7 @@ threshold = 2
 
 [node name="Arena1_Finished" type="Node" parent="Activators"]
 script = ExtResource("3_et0pd")
-threshold = 5
+threshold = 6
 
 [node name="Sectors" type="Node2D" parent="."]
 
@@ -1245,9 +1274,83 @@ portal_destination_wall_length = -1.0
 
 [node name="Arena1_MainMultisector" parent="Sectors/Node2D/Node2D" instance=ExtResource("6_eukjm")]
 position = Vector2(319.00507, -83.85193)
-polygon = PackedVector2Array(12.994934, -60.14807, 9.994934, -14.148071, 10.994934, -4.1480713, 10.994934, 11.851929, 9.994934, 20.851929, 6.994934, 25.851929, -12.005066, 54.85193, -25.005066, 75.85193, -96.005066, 67.85193, -93.005066, 56.85193, -86.005066, 34.85193, -81.698105, 23.49545, -66.005066, -30.148071, -62.005066, -43.14807, -59.005066, -52.14807)
+polygon = PackedVector2Array(12.994934, -60.14807, 12.994934, -53.14807, 12.994934, -42.14807, 11.994934, -33.14807, 10.994934, -22.148071, 9.994934, -14.148071, 10.994934, -4.1480713, 10.994934, 11.851929, 9.994934, 20.851929, 6.994934, 25.851929, 4.994934, 28.851929, -0.005065918, 36.85193, -3.005066, 40.85193, -9.005066, 49.85193, -12.005066, 54.85193, -25.005066, 75.85193, -96.005066, 67.85193, -93.005066, 56.85193, -86.005066, 34.85193, -81.698105, 23.49545, -66.005066, -30.148071, -62.005066, -43.14807, -59.005066, -52.14807)
 merge_holes = true
 data = SubResource("Resource_452dm")
+
+[node name="Parkour" type="Node2D" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector"]
+
+[node name="Sector-962" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Parkour" instance=ExtResource("2_eukjm")]
+position = Vector2(-23.005066, 3.8519287)
+color = Color(0.93689734, 0.8732977, 0.89814126, 1)
+texture_scale = Vector2(20, 20)
+polygon = PackedVector2Array(-4, 4, 20, -2, 22, 4, -2, 10)
+data = SubResource("Resource_ol8bk")
+floor_height = 0.5
+ceiling_height = 30.0
+portal_wall_length = 24.738634
+portal_destination_wall_length = -1.0
+
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Parkour/Sector-962" node_paths=PackedStringArray("source")]
+script = ExtResource("13_py677")
+source = NodePath("../../../../../../../Activators/Arena1_Trap")
+floor_mode = 1
+floor_height = -9.0
+ceiling_height = 30.0
+
+[node name="Sector-8485" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Parkour" instance=ExtResource("2_eukjm")]
+position = Vector2(-39.005066, -9.148071)
+color = Color(1, 1, 1, 1)
+texture_scale = Vector2(20, 20)
+polygon = PackedVector2Array(-6, -3, 11, 6, 10, 10, -8, 1)
+data = SubResource("Resource_7r7db")
+floor_height = -0.2
+ceiling_height = 30.0
+portal_wall_length = 19.235384
+portal_destination_wall_length = -1.0
+
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Parkour/Sector-8485" node_paths=PackedStringArray("source")]
+script = ExtResource("13_py677")
+source = NodePath("../../../../../../../Activators/Arena1_Trap")
+floor_mode = 1
+floor_height = -9.0
+ceiling_height = 30.0
+
+[node name="Sector-3221" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Parkour" instance=ExtResource("2_eukjm")]
+position = Vector2(-63.005066, 4.8519287)
+color = Color(0.96202505, 0.9237511, 0.9387018, 1)
+texture_scale = Vector2(20, 20)
+polygon = PackedVector2Array(-9, 1, 9, -4, 10, 0, -8, 5)
+data = SubResource("Resource_iet2w")
+floor_height = 0.3
+ceiling_height = 30.0
+portal_wall_length = 18.681541
+portal_destination_wall_length = -1.0
+
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Parkour/Sector-3221" node_paths=PackedStringArray("source")]
+script = ExtResource("13_py677")
+source = NodePath("../../../../../../../Activators/Arena1_Trap")
+floor_mode = 1
+floor_height = -8.0
+ceiling_height = 30.0
+
+[node name="Sector-2252" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Parkour" instance=ExtResource("2_eukjm")]
+position = Vector2(-61.005066, 15.851929)
+color = Color(0.96202505, 0.9237511, 0.9387018, 1)
+texture_scale = Vector2(20, 20)
+polygon = PackedVector2Array(0.11071777, -1.0973206, 5.110718, 0.90267944, -7, 21, -11, 19)
+data = SubResource("Resource_uq585")
+floor_height = 0.3
+ceiling_height = 30.0
+portal_wall_length = 5.3851647
+portal_destination_wall_length = -1.0
+
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Parkour/Sector-2252" node_paths=PackedStringArray("source")]
+script = ExtResource("13_py677")
+source = NodePath("../../../../../../../Activators/Arena1_Trap")
+floor_mode = 1
+floor_height = -9.0
+ceiling_height = 30.0
 
 [node name="Sector-8212" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-50.219635, 240.74942)
@@ -1323,78 +1426,6 @@ floor_mode = 2
 floor_height = 22.49
 ceiling_height = 22.5
 
-[node name="Sector-962" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
-position = Vector2(-23.005066, 3.8519287)
-color = Color(0.93689734, 0.8732977, 0.89814126, 1)
-texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(-4, 4, 20, -2, 22, 4, -2, 10)
-data = SubResource("Resource_ol8bk")
-floor_height = 0.5
-ceiling_height = 30.0
-portal_wall_length = 24.738634
-portal_destination_wall_length = -1.0
-
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Sector-962" node_paths=PackedStringArray("source")]
-script = ExtResource("13_py677")
-source = NodePath("../../../../../../Activators/Arena1_Trap")
-floor_mode = 1
-floor_height = -9.0
-ceiling_height = 30.0
-
-[node name="Sector-8485" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
-position = Vector2(-39.005066, -9.148071)
-color = Color(1, 1, 1, 1)
-texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(-6, -3, 11, 6, 10, 10, -8, 1)
-data = SubResource("Resource_7r7db")
-floor_height = -0.2
-ceiling_height = 30.0
-portal_wall_length = 19.235384
-portal_destination_wall_length = -1.0
-
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Sector-8485" node_paths=PackedStringArray("source")]
-script = ExtResource("13_py677")
-source = NodePath("../../../../../../Activators/Arena1_Trap")
-floor_mode = 1
-floor_height = -9.0
-ceiling_height = 30.0
-
-[node name="Sector-3221" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
-position = Vector2(-63.005066, 4.8519287)
-color = Color(0.96202505, 0.9237511, 0.9387018, 1)
-texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(-9, 1, 9, -4, 10, 0, -8, 5)
-data = SubResource("Resource_iet2w")
-floor_height = 0.3
-ceiling_height = 30.0
-portal_wall_length = 18.681541
-portal_destination_wall_length = -1.0
-
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Sector-3221" node_paths=PackedStringArray("source")]
-script = ExtResource("13_py677")
-source = NodePath("../../../../../../Activators/Arena1_Trap")
-floor_mode = 1
-floor_height = -9.0
-ceiling_height = 30.0
-
-[node name="Sector-2252" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
-position = Vector2(-61.005066, 15.851929)
-color = Color(0.96202505, 0.9237511, 0.9387018, 1)
-texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(0.11071777, -1.0973206, 5.110718, 0.90267944, -7, 21, -11, 19)
-data = SubResource("Resource_uq585")
-floor_height = 0.3
-ceiling_height = 30.0
-portal_wall_length = 5.3851647
-portal_destination_wall_length = -1.0
-
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Sector-2252" node_paths=PackedStringArray("source")]
-script = ExtResource("13_py677")
-source = NodePath("../../../../../../Activators/Arena1_Trap")
-floor_mode = 1
-floor_height = -9.0
-ceiling_height = 30.0
-
 [node name="ExitSector" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-96.005066, 43.85193)
 color = Color(1, 1, 1, 1)
@@ -1413,7 +1444,7 @@ stripe_width = 1.0
 [node name="Trigger" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/ExitSector/TrapButton" node_paths=PackedStringArray("target")]
 script = ExtResource("13_et0pd")
 target = NodePath("../../../../../../../Activators/Arena1_Trap")
-increment = 5
+increment = 6
 
 [node name="Lovered" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/ExitSector" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
@@ -1757,22 +1788,11 @@ portal_destination_wall_length = 22.36068
 position = Vector2(-106.005066, 90.85193)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(57, 1, 38, 38, 24.32129, 21.876717, 34.32129, 1.8767166)
+polygon = PackedVector2Array(50, 6, 39, 30, 24.32129, 21.876717, 34.32129, 1.8767166)
 data = SubResource("Resource_a3oky")
 floor_height = -9.4
 ceiling_height = -5.0
-portal_wall_length = 41.59327
-portal_destination_wall_length = -1.0
-
-[node name="Sector-4950f" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
-position = Vector2(-106.005066, 90.85193)
-color = Color(1, 1, 1, 1)
-texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(76, 9, 57, 45, 38, 38, 57, 1)
-data = SubResource("Resource_8al0g")
-floor_height = -9.4
-ceiling_height = -5.0
-portal_wall_length = 40.706264
+portal_wall_length = 26.400757
 portal_destination_wall_length = -1.0
 
 [node name="DoorSector-1947" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
@@ -1837,6 +1857,129 @@ sector_material = ExtResource("3_krcvx")
 enable_portal = true
 portal_wall = 1
 portal_wall_length = 5.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-6883" type="Polygon2D" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(6.5961914, 30.552444)
+polygon = PackedVector2Array(-1.6012573, -1.7005157, -0.6012573, -1.7005157, -5.6012573, 7.2994843, -6.6012573, 6.2994843)
+script = ExtResource("12_py677")
+data = SubResource("Resource_ep6v3")
+floor_height = -9.85
+ceiling_height = -9.849
+sector_material = ExtResource("3_krcvx")
+portal_wall_length = 1.0
+portal_destination_wall_length = -1.0
+
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Sector-6883" node_paths=PackedStringArray("source")]
+script = ExtResource("13_py677")
+source = NodePath("../../../../../../Activators/Arena1_Trap_Part2")
+floor_height = -9.85
+ceiling_mode = 2
+ceiling_height = -7.0
+
+[node name="Sector-6884" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+position = Vector2(1.9949341, 45.85193)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(-5, -5, -4, -4, -10, 5, -11, 4)
+data = SubResource("Resource_ep6v3")
+floor_height = -9.85
+ceiling_height = -9.849
+portal_wall_length = 1.4142135
+portal_destination_wall_length = -1.0
+
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Sector-6884" node_paths=PackedStringArray("source")]
+script = ExtResource("13_py677")
+source = NodePath("../../../../../../Activators/Arena1_Trap_Part2")
+floor_height = -9.85
+ceiling_mode = 2
+ceiling_height = -7.0
+
+[node name="Sector-6885" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+position = Vector2(24.994934, -26.148071)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(-13, -7, -11, -7, -12, 4, -14, 4)
+data = SubResource("Resource_ep6v3")
+floor_height = -9.85
+ceiling_height = -9.849
+portal_wall_length = 2.0
+portal_destination_wall_length = -1.0
+
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Sector-6885" node_paths=PackedStringArray("source")]
+script = ExtResource("13_py677")
+source = NodePath("../../../../../../Activators/Arena1_Trap_Part2")
+floor_height = -9.85
+ceiling_mode = 2
+ceiling_height = -7.0
+
+[node name="Sector-6886" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+position = Vector2(26.994934, -46.14807)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(-14, -7, -12, -7, -12, 4, -14, 4)
+data = SubResource("Resource_ep6v3")
+floor_height = -9.85
+ceiling_height = -9.849
+portal_wall_length = 2.0
+portal_destination_wall_length = -1.0
+
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Sector-6886" node_paths=PackedStringArray("source")]
+script = ExtResource("13_py677")
+source = NodePath("../../../../../../Activators/Arena1_Trap_Part2")
+floor_height = -9.85
+ceiling_mode = 2
+ceiling_height = -7.0
+
+[node name="Sector-6886a" type="Polygon2D" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(26.994934, -46.14807)
+polygon = PackedVector2Array(-4, -8, -4, 5, -12, 4, -12, -7)
+script = ExtResource("12_py677")
+data = SubResource("Resource_32df3")
+floor_height = -9.85
+ceiling_height = -6.5
+sector_material = ExtResource("3_krcvx")
+portal_wall_length = 13.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-6885a" type="Polygon2D" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(24.994934, -26.148071)
+polygon = PackedVector2Array(-3, -7, -4, 5, -12, 4, -11, -7)
+script = ExtResource("12_py677")
+data = SubResource("Resource_scl0x")
+floor_height = -9.85
+ceiling_height = -6.5
+sector_material = ExtResource("3_krcvx")
+portal_wall_length = 12.0415945
+portal_destination_wall_length = -1.0
+
+[node name="Sector-6884a" type="Polygon2D" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(1.9949341, 45.85193)
+polygon = PackedVector2Array(5, 0, -1, 10, -10, 5, -4, -4)
+script = ExtResource("12_py677")
+data = SubResource("Resource_jcd71")
+floor_height = -9.85
+ceiling_height = -6.5
+sector_material = ExtResource("3_krcvx")
+portal_wall_length = 11.661903
+portal_destination_wall_length = -1.0
+
+[node name="Sector-6883a" type="Polygon2D" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(6.5961914, 30.552444)
+polygon = PackedVector2Array(-0.6012573, -1.7005157, 8.398743, 0.29948425, 1.3987427, 11.299484, -5.6012573, 7.2994843)
+script = ExtResource("12_py677")
+data = SubResource("Resource_1bxne")
+floor_height = -9.85
+ceiling_height = -6.5
+sector_material = ExtResource("3_krcvx")
+portal_wall_length = 9.219544
 portal_destination_wall_length = -1.0
 
 [node name="TriangulatedMultisector-6302" parent="." instance=ExtResource("6_eukjm")]
@@ -2063,6 +2206,15 @@ position = Vector2(348, -21)
 [node name="PlasmaAmmo7" parent="PickUps/Arena1_Trap" instance=ExtResource("12_coai7")]
 position = Vector2(460, -23)
 
+[node name="PlasmaAmmo13" parent="PickUps/Arena1_Trap" instance=ExtResource("12_coai7")]
+position = Vector2(387, 16)
+
+[node name="PlasmaAmmo14" parent="PickUps/Arena1_Trap" instance=ExtResource("12_coai7")]
+position = Vector2(380, 30)
+
+[node name="PlasmaAmmo12" parent="PickUps/Arena1_Trap" instance=ExtResource("12_coai7")]
+position = Vector2(456, -49)
+
 [node name="HpBig" parent="PickUps/Arena1_Trap" instance=ExtResource("18_b0a4w")]
 position = Vector2(443, 13)
 
@@ -2071,6 +2223,15 @@ position = Vector2(443, 9)
 
 [node name="HpBig3" parent="PickUps/Arena1_Trap" instance=ExtResource("18_b0a4w")]
 position = Vector2(373, -132)
+
+[node name="HpSmall" parent="PickUps/Arena1_Trap" instance=ExtResource("20_yvvru")]
+position = Vector2(466, -110)
+
+[node name="HpSmall2" parent="PickUps/Arena1_Trap" instance=ExtResource("20_yvvru")]
+position = Vector2(468, -132)
+
+[node name="HpSmall3" parent="PickUps/Arena1_Trap" instance=ExtResource("20_yvvru")]
+position = Vector2(449, -35)
 
 [node name="Secret2_Chapel" type="Node2D" parent="PickUps"]
 
@@ -2094,8 +2255,8 @@ player_sensitive = false
 enemy_sensitive = true
 
 [node name="Possessed2" parent="Enemies/Arena1_Trap/Tier1" instance=ExtResource("17_3611k")]
-position = Vector2(443, -21)
-rotation = 2.0108023
+position = Vector2(442, -18)
+rotation = 2.0267615
 
 [node name="Trigger" type="Node" parent="Enemies/Arena1_Trap/Tier1/Possessed2" node_paths=PackedStringArray("target")]
 script = ExtResource("13_et0pd")
@@ -2122,8 +2283,25 @@ target = NodePath("../../../../../Activators/Arena1_Finished")
 player_sensitive = false
 enemy_sensitive = true
 
+[node name="Possessed8" parent="Enemies/Arena1_Trap/Tier2" instance=ExtResource("17_3611k")]
+position = Vector2(379.00003, 28.000008)
+rotation = 2.0108023
+
+[node name="Trigger" type="Node" parent="Enemies/Arena1_Trap/Tier2/Possessed8" node_paths=PackedStringArray("target")]
+script = ExtResource("13_et0pd")
+target = NodePath("../../../../../Activators/Arena1_Trap")
+increment = -1
+player_sensitive = false
+enemy_sensitive = true
+
+[node name="Trigger2" type="Node" parent="Enemies/Arena1_Trap/Tier2/Possessed8" node_paths=PackedStringArray("target")]
+script = ExtResource("13_et0pd")
+target = NodePath("../../../../../Activators/Arena1_Finished")
+player_sensitive = false
+enemy_sensitive = true
+
 [node name="Possessed5" parent="Enemies/Arena1_Trap/Tier2" instance=ExtResource("17_3611k")]
-position = Vector2(398.00003, 15)
+position = Vector2(448.99997, -35.000015)
 rotation = 2.0108023
 
 [node name="Trigger" type="Node" parent="Enemies/Arena1_Trap/Tier2/Possessed5" node_paths=PackedStringArray("target")]
@@ -2140,7 +2318,7 @@ player_sensitive = false
 enemy_sensitive = true
 
 [node name="Possessed6" parent="Enemies/Arena1_Trap/Tier2" instance=ExtResource("17_3611k")]
-position = Vector2(406.99997, 24.999985)
+position = Vector2(457.00003, -49)
 rotation = 2.0108023
 
 [node name="Trigger" type="Node" parent="Enemies/Arena1_Trap/Tier2/Possessed6" node_paths=PackedStringArray("target")]
@@ -2157,7 +2335,7 @@ player_sensitive = false
 enemy_sensitive = true
 
 [node name="Possessed7" parent="Enemies/Arena1_Trap/Tier2" instance=ExtResource("17_3611k")]
-position = Vector2(391.00003, 38)
+position = Vector2(468.00003, -131)
 rotation = 2.0108023
 
 [node name="Trigger" type="Node" parent="Enemies/Arena1_Trap/Tier2/Possessed7" node_paths=PackedStringArray("target")]
@@ -2174,7 +2352,7 @@ player_sensitive = false
 enemy_sensitive = true
 
 [node name="Possessed4" parent="Enemies/Arena1_Trap/Tier2" instance=ExtResource("17_3611k")]
-position = Vector2(377.00003, 28)
+position = Vector2(467.00003, -111.000015)
 rotation = 2.0108023
 
 [node name="Trigger" type="Node" parent="Enemies/Arena1_Trap/Tier2/Possessed4" node_paths=PackedStringArray("target")]
