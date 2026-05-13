@@ -1,4 +1,4 @@
-[gd_scene load_steps=120 format=3 uid="uid://qa2w68k6j6h2"]
+[gd_scene load_steps=122 format=3 uid="uid://qa2w68k6j6h2"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_1o0vd"]
 [ext_resource type="Script" uid="uid://b8tkglirbwf1e" path="res://scripts/reactivity/ActivatorPool.gd" id="2_b0a4w"]
@@ -15,8 +15,8 @@
 [ext_resource type="Script" uid="uid://d3f0i3y2s53si" path="res://scripts/sector/StairMaker.gd" id="11_et0pd"]
 [ext_resource type="PackedScene" uid="uid://3yx126jx5y0c" path="res://prefabs/PickUps/PlasmaRifle.tscn" id="11_krcvx"]
 [ext_resource type="PackedScene" uid="uid://guolywc6hufx" path="res://prefabs/PickUps/PlasmaAmmo.tscn" id="12_coai7"]
-[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/sector/Sector.gd" id="12_py677"]
 [ext_resource type="Script" uid="uid://crfvtueim4q0s" path="res://scripts/reactivity/Trigger.gd" id="13_et0pd"]
+[ext_resource type="Script" uid="uid://0kbske84jb5g" path="res://scripts/sector/TriangulatedMultisector.gd" id="13_l7qbx"]
 [ext_resource type="Script" uid="uid://d1u512ud4vhrt" path="res://scripts/reactivity/SectorAltConfig.gd" id="13_py677"]
 [ext_resource type="PackedScene" uid="uid://dgu644cct1eeb" path="res://prefabs/Entities/Possessed.tscn" id="17_3611k"]
 [ext_resource type="PackedScene" uid="uid://b8tr8d62bd5s2" path="res://prefabs/PickUps/HpBig.tscn" id="18_b0a4w"]
@@ -622,6 +622,18 @@ ceiling_height = -6.5
 material = ExtResource("3_krcvx")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
+[sub_resource type="Resource" id="Resource_8al0g"]
+script = ExtResource("4_coai7")
+ceiling_height = 5.0
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_rkl05"]
+script = ExtResource("4_coai7")
+ceiling_height = 5.0
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
 [sub_resource type="Resource" id="Resource_coai7"]
 script = ExtResource("4_coai7")
 ceiling_height = 5.0
@@ -699,7 +711,7 @@ portal_destination_wall_length = -1.0
 
 [node name="Node2D" type="Node2D" parent="Sectors"]
 
-[node name="Sector-7207" parent="Sectors/Node2D" instance=ExtResource("2_eukjm")]
+[node name="StartRoom" parent="Sectors/Node2D" instance=ExtResource("2_eukjm")]
 position = Vector2(-120, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -709,9 +721,9 @@ ceiling_height = 6.0
 portal_wall_length = 16.0
 portal_destination_wall_length = -1.0
 
-[node name="Node2D3" type="Node2D" parent="Sectors/Node2D"]
+[node name="Corridor1" type="Node2D" parent="Sectors/Node2D"]
 
-[node name="Sector-7207a" parent="Sectors/Node2D/Node2D3" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207a" parent="Sectors/Node2D/Corridor1" instance=ExtResource("2_eukjm")]
 position = Vector2(-120, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -721,7 +733,7 @@ ceiling_height = 5.0
 portal_wall_length = 22.627417
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207g" parent="Sectors/Node2D/Node2D3" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207g" parent="Sectors/Node2D/Corridor1" instance=ExtResource("2_eukjm")]
 position = Vector2(-120, -76)
 color = Color(0.9873009, 0.9745017, 0.9795014, 1)
 texture_scale = Vector2(20, 20)
@@ -732,7 +744,7 @@ ceiling_height = 4.0
 portal_wall_length = 12.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207h" parent="Sectors/Node2D/Node2D3" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207h" parent="Sectors/Node2D/Corridor1" instance=ExtResource("2_eukjm")]
 position = Vector2(-120, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -742,7 +754,7 @@ ceiling_height = 5.0
 portal_wall_length = 32.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207f" parent="Sectors/Node2D/Node2D3" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207f" parent="Sectors/Node2D/Corridor1" instance=ExtResource("2_eukjm")]
 position = Vector2(-120, -76)
 color = Color(0.9873009, 0.9745017, 0.9795014, 1)
 texture_scale = Vector2(20, 20)
@@ -753,7 +765,7 @@ ceiling_height = 4.0
 portal_wall_length = 12.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207i" parent="Sectors/Node2D/Node2D3" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207i" parent="Sectors/Node2D/Corridor1" instance=ExtResource("2_eukjm")]
 position = Vector2(-120, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -763,7 +775,7 @@ ceiling_height = 5.0
 portal_wall_length = 32.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207e" parent="Sectors/Node2D/Node2D3" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207e" parent="Sectors/Node2D/Corridor1" instance=ExtResource("2_eukjm")]
 position = Vector2(-168, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -773,7 +785,7 @@ ceiling_height = 5.0
 portal_wall_length = 4.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207b" parent="Sectors/Node2D/Node2D3" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207b" parent="Sectors/Node2D/Corridor1" instance=ExtResource("2_eukjm")]
 position = Vector2(-120, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -783,7 +795,7 @@ ceiling_height = 5.0
 portal_wall_length = 22.627417
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207d" parent="Sectors/Node2D/Node2D3" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207d" parent="Sectors/Node2D/Corridor1" instance=ExtResource("2_eukjm")]
 position = Vector2(-120, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -793,7 +805,7 @@ ceiling_height = 5.0
 portal_wall_length = 20.396078
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207c" parent="Sectors/Node2D/Node2D3" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
+[node name="Sector-7207c" parent="Sectors/Node2D/Corridor1" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
 position = Vector2(-120, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -801,12 +813,12 @@ polygon = PackedVector2Array(172, 4, 172, -12, 178, -12, 190, -12, 208, -12, 192
 data = SubResource("Resource_krcvx")
 ceiling_height = 5.0
 enable_portal = true
-portal_destination = NodePath("../../Node2D2/Sector-7207c2")
+portal_destination = NodePath("../../Corridor2/Sector-7207c2")
 portal_destination_wall = 4
 portal_wall_length = 16.0
 portal_destination_wall_length = 16.0
 
-[node name="Sector-7207j" parent="Sectors/Node2D/Node2D3" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207j" parent="Sectors/Node2D/Corridor1" instance=ExtResource("2_eukjm")]
 position = Vector2(-120, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -816,20 +828,20 @@ ceiling_height = 5.0
 portal_wall_length = 12.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207k" parent="Sectors/Node2D/Node2D3" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
+[node name="Sector-7207k" parent="Sectors/Node2D/Corridor1" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
 position = Vector2(-120, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(168, -16, 168, -24, 168, -28, 168, -34, 200, -34, 200, -16, 190, -14.4, 178, -14.4)
 data = SubResource("Resource_278tx")
 ceiling_height = 5.0
-portal_destination = NodePath("../../Node2D2/Sector-7207c2b")
+portal_destination = NodePath("../../Corridor2/Sector-7207c2b")
 portal_wall = 1
 portal_destination_wall = 1
 portal_wall_length = 4.0
 portal_destination_wall_length = 32.0
 
-[node name="Sector-7207l" parent="Sectors/Node2D/Node2D3" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
+[node name="Sector-7207l" parent="Sectors/Node2D/Corridor1" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
 position = Vector2(-196, -76)
 color = Color(0.84985316, 0.6985239, 0.7576367, 1)
 texture_scale = Vector2(20, 20)
@@ -838,12 +850,12 @@ data = SubResource("Resource_7nxdn")
 floor_height = 1.2
 ceiling_height = 3.0
 enable_portal = true
-portal_destination = NodePath("../../Node2D2/Sector-7207c2c")
+portal_destination = NodePath("../../Corridor2/Sector-7207c2c")
 portal_wall = 2
 portal_wall_length = 4.0
 portal_destination_wall_length = 4.0
 
-[node name="Sector-7207m" parent="Sectors/Node2D/Node2D3" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207m" parent="Sectors/Node2D/Corridor1" instance=ExtResource("2_eukjm")]
 position = Vector2(-246, -76)
 color = Color(0.84985316, 0.6985239, 0.7576367, 1)
 texture_scale = Vector2(20, 20)
@@ -854,7 +866,7 @@ ceiling_height = 3.0
 portal_wall_length = 8.0
 portal_destination_wall_length = -1.0
 
-[node name="SECRET" parent="Sectors/Node2D/Node2D3" instance=ExtResource("2_eukjm")]
+[node name="SECRET" parent="Sectors/Node2D/Corridor1" instance=ExtResource("2_eukjm")]
 position = Vector2(-246, -78)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -864,22 +876,22 @@ ceiling_height = 5.0
 portal_wall_length = 24.0
 portal_destination_wall_length = -1.0
 
-[node name="Node2D2" type="Node2D" parent="Sectors/Node2D"]
+[node name="Corridor2" type="Node2D" parent="Sectors/Node2D"]
 position = Vector2(52, 0)
 
-[node name="Sector-7207a2" parent="Sectors/Node2D/Node2D2" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
+[node name="Sector-7207a2" parent="Sectors/Node2D/Corridor2" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
 position = Vector2(-38, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(218, 12, 218, 19, 218, 21, 218, 28, 158, 28, 172, 12)
 data = SubResource("Resource_1o0vd")
 ceiling_height = 5.0
-portal_destination = NodePath("../../Node2D/Sector-7207a3")
+portal_destination = NodePath("../../Corridor3_Arena1/Sector-7207a3")
 portal_destination_wall = 2
 portal_wall_length = 7.0
 portal_destination_wall_length = 8.0
 
-[node name="Sector-7207a2a" parent="Sectors/Node2D/Node2D2" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207a2a" parent="Sectors/Node2D/Corridor2" instance=ExtResource("2_eukjm")]
 position = Vector2(-38, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -889,7 +901,7 @@ ceiling_height = 5.0
 portal_wall_length = 2.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207b2" parent="Sectors/Node2D/Node2D2" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207b2" parent="Sectors/Node2D/Corridor2" instance=ExtResource("2_eukjm")]
 position = Vector2(-38, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -899,7 +911,7 @@ ceiling_height = 5.0
 portal_wall_length = 21.260292
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207b2a" parent="Sectors/Node2D/Node2D2" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207b2a" parent="Sectors/Node2D/Corridor2" instance=ExtResource("2_eukjm")]
 position = Vector2(-38, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -909,7 +921,7 @@ ceiling_height = 5.0
 portal_wall_length = 21.540659
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207c2" parent="Sectors/Node2D/Node2D2" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207c2" parent="Sectors/Node2D/Corridor2" instance=ExtResource("2_eukjm")]
 position = Vector2(-38, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -919,7 +931,7 @@ ceiling_height = 5.0
 portal_wall_length = 21.260292
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207c2a" parent="Sectors/Node2D/Node2D2" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207c2a" parent="Sectors/Node2D/Corridor2" instance=ExtResource("2_eukjm")]
 position = Vector2(-38, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -929,7 +941,7 @@ ceiling_height = 5.0
 portal_wall_length = 12.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207c2b" parent="Sectors/Node2D/Node2D2" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207c2b" parent="Sectors/Node2D/Corridor2" instance=ExtResource("2_eukjm")]
 position = Vector2(-38, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -939,7 +951,7 @@ ceiling_height = 5.0
 portal_wall_length = 18.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207c2c" parent="Sectors/Node2D/Node2D2" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207c2c" parent="Sectors/Node2D/Corridor2" instance=ExtResource("2_eukjm")]
 position = Vector2(-38, -76)
 color = Color(0.84985316, 0.6985239, 0.7576367, 1)
 texture_scale = Vector2(20, 20)
@@ -950,7 +962,7 @@ ceiling_height = 3.0
 portal_wall_length = 4.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-2562" parent="Sectors/Node2D/Node2D2" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
+[node name="Sector-2562" parent="Sectors/Node2D/Corridor2" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
 position = Vector2(215.05594, -57.803467)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -958,18 +970,18 @@ polygon = PackedVector2Array(-11.055939, -6.196533, -4.0559387, -6.196533, -4.05
 data = SubResource("Resource_vy02w")
 ceiling_height = 5.0
 enable_portal = true
-portal_destination = NodePath("../../Node2D/Sector-7207a3")
+portal_destination = NodePath("../../Corridor3_Arena1/Sector-7207a3")
 portal_wall = 1
 portal_destination_wall = 4
 portal_wall_length = 16.0
 portal_destination_wall_length = 16.0
 
-[node name="TriangulatedMultisector-8894" parent="Sectors/Node2D/Node2D2" instance=ExtResource("6_eukjm")]
+[node name="TriangulatedMultisector-8894" parent="Sectors/Node2D/Corridor2" instance=ExtResource("6_eukjm")]
 position = Vector2(188.16792, -73.55259)
 polygon = PackedVector2Array(-16.167923, -40.44741, 2.832077, -48.44741, 21.832077, -40.44741, 15.832077, 9.552589, 15.832077, 16.55259, -8.167923, 16.55259, -8.167923, 9.552589)
 data = SubResource("Resource_cthl7")
 
-[node name="Sector-8555" parent="Sectors/Node2D/Node2D2/TriangulatedMultisector-8894" instance=ExtResource("2_eukjm")]
+[node name="Sector-8555" parent="Sectors/Node2D/Corridor2/TriangulatedMultisector-8894" instance=ExtResource("2_eukjm")]
 position = Vector2(-4.167923, -20.44741)
 color = Color(0.75131977, 0.5006813, 0.5985867, 1)
 texture_scale = Vector2(20, 20)
@@ -980,7 +992,7 @@ ceiling_height = 5.0
 portal_wall_length = 4.2426405
 portal_destination_wall_length = -1.0
 
-[node name="Sector-1332" parent="Sectors/Node2D/Node2D2/TriangulatedMultisector-8894" instance=ExtResource("2_eukjm")]
+[node name="Sector-1332" parent="Sectors/Node2D/Corridor2/TriangulatedMultisector-8894" instance=ExtResource("2_eukjm")]
 position = Vector2(6.832077, -28.44741)
 color = Color(0.6897553, 0.3770675, 0.4992109, 1)
 texture_scale = Vector2(20, 20)
@@ -991,7 +1003,7 @@ ceiling_height = 5.0
 portal_wall_length = 3.6055512
 portal_destination_wall_length = -1.0
 
-[node name="Sector-9869" parent="Sectors/Node2D/Node2D2/TriangulatedMultisector-8894" instance=ExtResource("2_eukjm")]
+[node name="Sector-9869" parent="Sectors/Node2D/Corridor2/TriangulatedMultisector-8894" instance=ExtResource("2_eukjm")]
 position = Vector2(10.558929, -15.664871)
 color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
@@ -1002,7 +1014,7 @@ ceiling_height = 5.0
 portal_wall_length = 2.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-2641" parent="Sectors/Node2D/Node2D2/TriangulatedMultisector-8894" instance=ExtResource("2_eukjm")]
+[node name="Sector-2641" parent="Sectors/Node2D/Corridor2/TriangulatedMultisector-8894" instance=ExtResource("2_eukjm")]
 position = Vector2(-4.167923, -32.44741)
 color = Color(0.66505384, 0.32747006, 0.45933837, 1)
 texture_scale = Vector2(20, 20)
@@ -1013,7 +1025,7 @@ ceiling_height = 5.0
 portal_wall_length = 3.6055512
 portal_destination_wall_length = -1.0
 
-[node name="Sector-5807" parent="Sectors/Node2D/Node2D2/TriangulatedMultisector-8894" instance=ExtResource("2_eukjm")]
+[node name="Sector-5807" parent="Sectors/Node2D/Corridor2/TriangulatedMultisector-8894" instance=ExtResource("2_eukjm")]
 position = Vector2(7.7664948, -41.035736)
 color = Color(0.62786376, 0.25279707, 0.39930713, 1)
 texture_scale = Vector2(20, 20)
@@ -1024,7 +1036,7 @@ ceiling_height = 5.0
 portal_wall_length = 4.1231055
 portal_destination_wall_length = -1.0
 
-[node name="Sector-9104" parent="Sectors/Node2D/Node2D2/TriangulatedMultisector-8894" instance=ExtResource("2_eukjm")]
+[node name="Sector-9104" parent="Sectors/Node2D/Corridor2/TriangulatedMultisector-8894" instance=ExtResource("2_eukjm")]
 position = Vector2(-2.167923, -40.44741)
 color = Color(0, 0, 1, 0.145098)
 polygon = PackedVector2Array(-2, 2, 6, 2, 7, 3, 6, 4, -2, 4, -3, 3)
@@ -1035,7 +1047,7 @@ exclude_from_export = true
 portal_wall_length = 8.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-9104a" parent="Sectors/Node2D/Node2D2/TriangulatedMultisector-8894" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
+[node name="Sector-9104a" parent="Sectors/Node2D/Corridor2/TriangulatedMultisector-8894" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
 position = Vector2(-2.167923, -40.44741)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1044,17 +1056,17 @@ data = SubResource("Resource_i7g4b")
 floor_height = -10.0
 ceiling_height = 5.0
 enable_portal = true
-portal_destination = NodePath("../../../Node2D/Sector-7207a3c")
+portal_destination = NodePath("../../../Corridor3_Arena1/Sector-7207a3c")
 portal_wall = 2
 portal_wall_length = 8.0
 portal_destination_wall_length = 8.0
 
-[node name="TriangulatedMultisector-9001" parent="Sectors/Node2D/Node2D2" instance=ExtResource("6_eukjm")]
+[node name="TriangulatedMultisector-9001" parent="Sectors/Node2D/Corridor2" instance=ExtResource("6_eukjm")]
 position = Vector2(189.9174, -47.354294)
 polygon = PackedVector2Array(-9.917404, -7.645706, 14.082596, -7.645706, 14.082596, -0.6457062, 20.082596, 45.354294, 1.0825958, 63.354294, -16.917404, 45.354294, -9.917404, -0.6457062)
 data = SubResource("Resource_8jj66")
 
-[node name="Sector-2047" parent="Sectors/Node2D/Node2D2/TriangulatedMultisector-9001" instance=ExtResource("2_eukjm")]
+[node name="Sector-2047" parent="Sectors/Node2D/Corridor2/TriangulatedMultisector-9001" instance=ExtResource("2_eukjm")]
 position = Vector2(-4.917404, 21.354294)
 color = Color(0.6897553, 0.3770675, 0.4992109, 1)
 texture_scale = Vector2(20, 20)
@@ -1065,7 +1077,7 @@ ceiling_height = 5.0
 portal_wall_length = 3.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-9318" parent="Sectors/Node2D/Node2D2/TriangulatedMultisector-9001" instance=ExtResource("2_eukjm")]
+[node name="Sector-9318" parent="Sectors/Node2D/Corridor2/TriangulatedMultisector-9001" instance=ExtResource("2_eukjm")]
 position = Vector2(-3.9174042, 37.354294)
 color = Color(0, 0, 1, 0.145098)
 polygon = PackedVector2Array(0, 6, 8, 6, 9, 7, 8, 8, 0, 8, -1, 7)
@@ -1076,7 +1088,7 @@ exclude_from_export = true
 portal_wall_length = 8.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-9318a" parent="Sectors/Node2D/Node2D2/TriangulatedMultisector-9001" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
+[node name="Sector-9318a" parent="Sectors/Node2D/Corridor2/TriangulatedMultisector-9001" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
 position = Vector2(-3.9174042, 37.354294)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1085,12 +1097,12 @@ data = SubResource("Resource_rkoer")
 floor_height = -10.0
 ceiling_height = 5.0
 enable_portal = true
-portal_destination = NodePath("../../../Node2D/Sector-7207a3d")
+portal_destination = NodePath("../../../Corridor3_Arena1/Sector-7207a3d")
 portal_wall = 2
 portal_wall_length = 8.0
 portal_destination_wall_length = 8.0
 
-[node name="Sector-2646" parent="Sectors/Node2D/Node2D2/TriangulatedMultisector-9001" instance=ExtResource("2_eukjm")]
+[node name="Sector-2646" parent="Sectors/Node2D/Corridor2/TriangulatedMultisector-9001" instance=ExtResource("2_eukjm")]
 position = Vector2(8.951569, 37.242737)
 color = Color(0.5904535, 0.1776818, 0.3389203, 1)
 texture_scale = Vector2(20, 20)
@@ -1101,7 +1113,7 @@ ceiling_height = 5.0
 portal_wall_length = 2.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-747" parent="Sectors/Node2D/Node2D2/TriangulatedMultisector-9001" instance=ExtResource("2_eukjm")]
+[node name="Sector-747" parent="Sectors/Node2D/Corridor2/TriangulatedMultisector-9001" instance=ExtResource("2_eukjm")]
 position = Vector2(-10.575516, 30.896439)
 color = Color(0.6154212, 0.22781384, 0.37922257, 1)
 texture_scale = Vector2(20, 20)
@@ -1112,7 +1124,7 @@ ceiling_height = 5.0
 portal_wall_length = 2.236068
 portal_destination_wall_length = -1.0
 
-[node name="Sector-6716" parent="Sectors/Node2D/Node2D2/TriangulatedMultisector-9001" instance=ExtResource("2_eukjm")]
+[node name="Sector-6716" parent="Sectors/Node2D/Corridor2/TriangulatedMultisector-9001" instance=ExtResource("2_eukjm")]
 position = Vector2(4.435913, 28.333511)
 color = Color(0.62786376, 0.25279707, 0.39930713, 1)
 texture_scale = Vector2(20, 20)
@@ -1123,7 +1135,7 @@ ceiling_height = 5.0
 portal_wall_length = 3.6055512
 portal_destination_wall_length = -1.0
 
-[node name="Sector-1787" parent="Sectors/Node2D/Node2D2/TriangulatedMultisector-9001" instance=ExtResource("2_eukjm")]
+[node name="Sector-1787" parent="Sectors/Node2D/Corridor2/TriangulatedMultisector-9001" instance=ExtResource("2_eukjm")]
 position = Vector2(8.082596, 20.354294)
 color = Color(0.66505384, 0.32747006, 0.45933837, 1)
 texture_scale = Vector2(20, 20)
@@ -1134,10 +1146,10 @@ ceiling_height = 5.0
 portal_wall_length = 3.6055512
 portal_destination_wall_length = -1.0
 
-[node name="Node2D" type="Node2D" parent="Sectors/Node2D"]
+[node name="Corridor3_Arena1" type="Node2D" parent="Sectors/Node2D"]
 position = Vector2(130, 0)
 
-[node name="Sector-7207a3" parent="Sectors/Node2D/Node2D" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207a3" parent="Sectors/Node2D/Corridor3_Arena1" instance=ExtResource("2_eukjm")]
 position = Vector2(182, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1147,7 +1159,7 @@ ceiling_height = 5.0
 portal_wall_length = 22.627417
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207a3a" parent="Sectors/Node2D/Node2D" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207a3a" parent="Sectors/Node2D/Corridor3_Arena1" instance=ExtResource("2_eukjm")]
 position = Vector2(182, -76)
 color = Color(0.9873009, 0.9745017, 0.9795014, 1)
 texture_scale = Vector2(20, 20)
@@ -1158,7 +1170,7 @@ ceiling_height = 3.0
 portal_wall_length = 8.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207a3b" parent="Sectors/Node2D/Node2D" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207a3b" parent="Sectors/Node2D/Corridor3_Arena1" instance=ExtResource("2_eukjm")]
 position = Vector2(182, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1168,7 +1180,7 @@ ceiling_height = 25.0
 portal_wall_length = 6.3245554
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207a3d" parent="Sectors/Node2D/Node2D" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207a3d" parent="Sectors/Node2D/Corridor3_Arena1" instance=ExtResource("2_eukjm")]
 position = Vector2(182, -76)
 color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
@@ -1179,7 +1191,7 @@ ceiling_height = 20.0
 portal_wall_length = 8.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207a3c" parent="Sectors/Node2D/Node2D" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207a3c" parent="Sectors/Node2D/Corridor3_Arena1" instance=ExtResource("2_eukjm")]
 position = Vector2(182, -76)
 color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
@@ -1190,7 +1202,7 @@ ceiling_height = 20.0
 portal_wall_length = 8.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207b3" parent="Sectors/Node2D/Node2D" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207b3" parent="Sectors/Node2D/Corridor3_Arena1" instance=ExtResource("2_eukjm")]
 position = Vector2(182, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1200,7 +1212,7 @@ ceiling_height = 5.0
 portal_wall_length = 22.627417
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207b3a" parent="Sectors/Node2D/Node2D" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207b3a" parent="Sectors/Node2D/Corridor3_Arena1" instance=ExtResource("2_eukjm")]
 position = Vector2(182, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1210,25 +1222,25 @@ ceiling_height = 5.0
 portal_wall_length = 21.540659
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207c3" parent="Sectors/Node2D/Node2D" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
+[node name="Sector-7207c3" parent="Sectors/Node2D/Corridor3_Arena1" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
 position = Vector2(182, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(148, 4, 148, -12, 208, -12, 192, 4)
 data = SubResource("Resource_krcvx")
 ceiling_height = 5.0
-portal_destination = NodePath("../../Node2D2/Sector-7207c2")
+portal_destination = NodePath("../../Corridor2/Sector-7207c2")
 portal_destination_wall = 2
 portal_wall_length = 16.0
 portal_destination_wall_length = 12.0
 metadata/_edit_group_ = true
 
-[node name="TriangulatedMultisector-911" parent="Sectors/Node2D/Node2D" instance=ExtResource("6_eukjm")]
+[node name="TriangulatedMultisector-911" parent="Sectors/Node2D/Corridor3_Arena1" instance=ExtResource("6_eukjm")]
 position = Vector2(364.44232, -26.13807)
 polygon = PackedVector2Array(-2.4423218, -5.861931, -2.4423218, -13.861931, -2.4423218, -17.86193, -8.442322, -19.86193, -0.44232178, -19.86193, -0.44232178, -13.861931, -0.44232178, -5.861931, -0.44232178, 6.138069, -2.4423218, 13.138069, -10.442322, 17.13807, -12.442322, 18.13807, -14.442322, 17.13807, -22.442322, 13.138069, -24.442322, 6.138069, -24.442322, -5.861931, -24.442322, -13.861931, -24.442322, -19.86193, -16.442322, -19.86193, -22.442322, -17.86193, -22.442322, -13.861931, -22.442322, -5.861931, -22.442322, 6.138069, -20.442322, 12.138069, -12.442322, 16.13807, -4.442322, 12.138069, -2.4423218, 6.138069)
 data = SubResource("Resource_7wnmm")
 
-[node name="Sector-2315" parent="Sectors/Node2D/Node2D" instance=ExtResource("2_eukjm")]
+[node name="Sector-2315" parent="Sectors/Node2D/Corridor3_Arena1" instance=ExtResource("2_eukjm")]
 position = Vector2(352.3861, -5.241829)
 color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
@@ -1239,7 +1251,7 @@ ceiling_height = 19.0
 portal_wall_length = 2.236068
 portal_destination_wall_length = -1.0
 
-[node name="Sector-2315b" parent="Sectors/Node2D/Node2D" instance=ExtResource("2_eukjm")]
+[node name="Sector-2315b" parent="Sectors/Node2D/Corridor3_Arena1" instance=ExtResource("2_eukjm")]
 position = Vector2(352.3861, -5.241829)
 color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
@@ -1250,7 +1262,7 @@ ceiling_height = 19.0
 portal_wall_length = 6.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-2315c" parent="Sectors/Node2D/Node2D" instance=ExtResource("2_eukjm")]
+[node name="Sector-2315c" parent="Sectors/Node2D/Corridor3_Arena1" instance=ExtResource("2_eukjm")]
 position = Vector2(352.3861, -5.241829)
 color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
@@ -1261,7 +1273,7 @@ ceiling_height = 20.0
 portal_wall_length = 5.0990195
 portal_destination_wall_length = -1.0
 
-[node name="Sector-2315a" parent="Sectors/Node2D/Node2D" instance=ExtResource("2_eukjm")]
+[node name="Sector-2315a" parent="Sectors/Node2D/Corridor3_Arena1" instance=ExtResource("2_eukjm")]
 position = Vector2(352.3861, -5.241829)
 color = Color(0.501961, 0, 0.196078, 1)
 texture_scale = Vector2(20, 20)
@@ -1272,15 +1284,15 @@ ceiling_height = 19.0
 portal_wall_length = 3.0
 portal_destination_wall_length = -1.0
 
-[node name="Arena1_MainMultisector" parent="Sectors/Node2D/Node2D" instance=ExtResource("6_eukjm")]
+[node name="Arena1_MainMultisector" parent="Sectors/Node2D/Corridor3_Arena1" instance=ExtResource("6_eukjm")]
 position = Vector2(319.00507, -83.85193)
 polygon = PackedVector2Array(12.994934, -60.14807, 12.994934, -53.14807, 12.994934, -42.14807, 11.994934, -33.14807, 10.994934, -22.148071, 9.994934, -14.148071, 10.994934, -4.1480713, 10.994934, 11.851929, 9.994934, 20.851929, 6.994934, 25.851929, 4.994934, 28.851929, -0.005065918, 36.85193, -3.005066, 40.85193, -9.005066, 49.85193, -12.005066, 54.85193, -25.005066, 75.85193, -96.005066, 67.85193, -93.005066, 56.85193, -86.005066, 34.85193, -81.698105, 23.49545, -66.005066, -30.148071, -62.005066, -43.14807, -59.005066, -52.14807)
 merge_holes = true
 data = SubResource("Resource_452dm")
 
-[node name="Parkour" type="Node2D" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector"]
+[node name="Parkour" type="Node2D" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector"]
 
-[node name="Sector-962" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Parkour" instance=ExtResource("2_eukjm")]
+[node name="Sector-962" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/Parkour" instance=ExtResource("2_eukjm")]
 position = Vector2(-23.005066, 3.8519287)
 color = Color(0.93689734, 0.8732977, 0.89814126, 1)
 texture_scale = Vector2(20, 20)
@@ -1291,14 +1303,14 @@ ceiling_height = 30.0
 portal_wall_length = 24.738634
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Parkour/Sector-962" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/Parkour/Sector-962" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../../Activators/Arena1_Trap")
 floor_mode = 1
 floor_height = -9.0
 ceiling_height = 30.0
 
-[node name="Sector-8485" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Parkour" instance=ExtResource("2_eukjm")]
+[node name="Sector-8485" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/Parkour" instance=ExtResource("2_eukjm")]
 position = Vector2(-39.005066, -9.148071)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1309,14 +1321,14 @@ ceiling_height = 30.0
 portal_wall_length = 19.235384
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Parkour/Sector-8485" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/Parkour/Sector-8485" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../../Activators/Arena1_Trap")
 floor_mode = 1
 floor_height = -9.0
 ceiling_height = 30.0
 
-[node name="Sector-3221" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Parkour" instance=ExtResource("2_eukjm")]
+[node name="Sector-3221" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/Parkour" instance=ExtResource("2_eukjm")]
 position = Vector2(-63.005066, 4.8519287)
 color = Color(0.96202505, 0.9237511, 0.9387018, 1)
 texture_scale = Vector2(20, 20)
@@ -1327,14 +1339,14 @@ ceiling_height = 30.0
 portal_wall_length = 18.681541
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Parkour/Sector-3221" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/Parkour/Sector-3221" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../../Activators/Arena1_Trap")
 floor_mode = 1
 floor_height = -8.0
 ceiling_height = 30.0
 
-[node name="Sector-2252" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Parkour" instance=ExtResource("2_eukjm")]
+[node name="Sector-2252" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/Parkour" instance=ExtResource("2_eukjm")]
 position = Vector2(-61.005066, 15.851929)
 color = Color(0.96202505, 0.9237511, 0.9387018, 1)
 texture_scale = Vector2(20, 20)
@@ -1345,14 +1357,14 @@ ceiling_height = 30.0
 portal_wall_length = 5.3851647
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Parkour/Sector-2252" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/Parkour/Sector-2252" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../../Activators/Arena1_Trap")
 floor_mode = 1
 floor_height = -9.0
 ceiling_height = 30.0
 
-[node name="Sector-8212" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+[node name="Sector-8212" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-50.219635, 240.74942)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1364,7 +1376,7 @@ enable_portal = true
 portal_wall_length = 71.44928
 portal_destination_wall_length = -1.0
 
-[node name="Sector-5544" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
+[node name="Sector-5544" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
 position = Vector2(-95.7522, -226.84439)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1378,7 +1390,7 @@ portal_destination_wall = 2
 portal_wall_length = 72.443085
 portal_destination_wall_length = 72.443085
 
-[node name="Sector-7207c3a" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+[node name="Sector-7207c3a" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-137.00507, 7.8519287)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1388,45 +1400,37 @@ ceiling_height = 30.0
 portal_wall_length = 9.486833
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7207c3b" type="Polygon2D" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-7207c3b" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
 position = Vector2(-137.00507, 7.8519287)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(150, -20, 150, -15, 148.94147, -13.412201, 148.11375, -21.257492)
-script = ExtResource("12_py677")
 data = SubResource("Resource_dasgw")
 floor_height = 20.0
 ceiling_height = 22.5
-sector_material = ExtResource("3_krcvx")
 enable_portal = true
 portal_destination = NodePath("../Sector-7916a")
 portal_destination_wall = 1
 portal_wall_length = 5.0
 portal_destination_wall_length = 5.0
 
-[node name="Sector-7207c3c" type="Polygon2D" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-7207c3c" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-137.00507, 7.8519287)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(148.94147, -13.412201, 148, -12, 147, -22, 148.11375, -21.257492)
-script = ExtResource("12_py677")
 data = SubResource("Resource_uvxkr")
 floor_height = 20.01
 ceiling_height = 22.5
-sector_material = ExtResource("3_krcvx")
 portal_wall_length = 1.4142135
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Sector-7207c3c" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/Sector-7207c3c" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../Activators/Arena1_Trap")
 floor_mode = 2
 floor_height = 22.49
 ceiling_height = 22.5
 
-[node name="ExitSector" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+[node name="ExitSector" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-96.005066, 43.85193)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1436,17 +1440,17 @@ ceiling_height = 30.0
 portal_wall_length = 4.2426405
 portal_destination_wall_length = -1.0
 
-[node name="TrapButton" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/ExitSector" instance=ExtResource("8_ufqas")]
+[node name="TrapButton" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/ExitSector" instance=ExtResource("8_ufqas")]
 position = Vector2(1, 11.5)
 stripe_floor_offset = 1.0
 stripe_width = 1.0
 
-[node name="Trigger" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/ExitSector/TrapButton" node_paths=PackedStringArray("target")]
+[node name="Trigger" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/ExitSector/TrapButton" node_paths=PackedStringArray("target")]
 script = ExtResource("13_et0pd")
 target = NodePath("../../../../../../../Activators/Arena1_Trap")
 increment = 6
 
-[node name="Lovered" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/ExitSector" node_paths=PackedStringArray("source")]
+[node name="Lovered" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/ExitSector" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../Activators/Arena1_Trap")
 move_speed = 6.0
@@ -1454,7 +1458,7 @@ floor_mode = 2
 floor_height = -9.5
 ceiling_height = 30.0
 
-[node name="StairsUp" type="Node2D" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector"]
+[node name="StairsUp" type="Node2D" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector"]
 script = ExtResource("11_et0pd")
 set_floor = true
 floor_begin = -9.9
@@ -1469,7 +1473,7 @@ floor_increment_alt = 0.82
 ceiling_end_alt = inf
 ceiling_increment_alt = inf
 
-[node name="ExitSectos2" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
+[node name="ExitSectos2" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
 position = Vector2(-96.005066, 43.85193)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(6, 20, 2, 19, 3, 13, 7, 14)
@@ -1479,14 +1483,14 @@ ceiling_height = 30.0
 portal_wall_length = 4.1231055
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp/ExitSectos2" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp/ExitSectos2" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../../Activators/Arena1_Finished")
 floor_mode = 2
 floor_height = -9.1
 ceiling_height = 30.0
 
-[node name="ExitSectos" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
+[node name="ExitSectos" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
 position = Vector2(-96.005066, 43.85193)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(12, 20, 6, 20, 7, 14, 10, 14)
@@ -1496,14 +1500,14 @@ ceiling_height = 30.0
 portal_wall_length = 6.0
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp/ExitSectos" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp/ExitSectos" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../../Activators/Arena1_Finished")
 floor_mode = 2
 floor_height = -8.28
 ceiling_height = 30.0
 
-[node name="ExitSectot2a" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
+[node name="ExitSectot2a" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
 position = Vector2(-96.005066, 43.85193)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(16, 19, 12, 20, 10, 14, 13, 13)
@@ -1513,14 +1517,14 @@ ceiling_height = 30.0
 portal_wall_length = 4.1231055
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp/ExitSectot2a" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp/ExitSectot2a" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../../Activators/Arena1_Finished")
 floor_mode = 2
 floor_height = -7.459999999999999
 ceiling_height = 30.0
 
-[node name="ExitSectot2" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
+[node name="ExitSectot2" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
 position = Vector2(-96.005066, 43.85193)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(21, 16, 16, 19, 13, 13, 15, 12)
@@ -1530,14 +1534,14 @@ ceiling_height = 30.0
 portal_wall_length = 5.8309517
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp/ExitSectot2" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp/ExitSectot2" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../../Activators/Arena1_Finished")
 floor_mode = 2
 floor_height = -6.639999999999999
 ceiling_height = 30.0
 
-[node name="ExitSectot" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
+[node name="ExitSectot" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
 position = Vector2(-96.005066, 43.85193)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(23, 11, 21, 16, 15, 12, 16, 9)
@@ -1547,14 +1551,14 @@ ceiling_height = 30.0
 portal_wall_length = 5.3851647
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp/ExitSectot" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp/ExitSectot" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../../Activators/Arena1_Finished")
 floor_mode = 2
 floor_height = -5.8199999999999985
 ceiling_height = 30.0
 
-[node name="ExitSectoz" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
+[node name="ExitSectoz" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
 position = Vector2(-96.005066, 43.85193)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(24, 7, 23, 11, 16, 9, 16.69653, 5.517356)
@@ -1564,14 +1568,14 @@ ceiling_height = 30.0
 portal_wall_length = 4.1231055
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp/ExitSectoz" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp/ExitSectoz" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../../Activators/Arena1_Finished")
 floor_mode = 2
 floor_height = -4.999999999999998
 ceiling_height = 30.0
 
-[node name="ExitSectoy" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
+[node name="ExitSectoy" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
 position = Vector2(-96.005066, 43.85193)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(25, 2, 24, 7, 16.69653, 5.517356, 18, 2)
@@ -1581,14 +1585,14 @@ ceiling_height = 30.0
 portal_wall_length = 5.0990195
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp/ExitSectoy" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp/ExitSectoy" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../../Activators/Arena1_Finished")
 floor_mode = 2
 floor_height = -4.179999999999998
 ceiling_height = 30.0
 
-[node name="ExitSectou" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
+[node name="ExitSectou" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
 position = Vector2(-96.005066, 43.85193)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(26, -4, 25, 2, 18, 2, 18, -1)
@@ -1598,14 +1602,14 @@ ceiling_height = 30.0
 portal_wall_length = 6.0827627
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp/ExitSectou" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp/ExitSectou" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../../Activators/Arena1_Finished")
 floor_mode = 2
 floor_height = -3.359999999999998
 ceiling_height = 30.0
 
-[node name="ExitSectox" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
+[node name="ExitSectox" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
 position = Vector2(-96.005066, 43.85193)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(22, -8, 26, -4, 18, -1, 17, -3)
@@ -1615,14 +1619,14 @@ ceiling_height = 30.0
 portal_wall_length = 5.656854
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp/ExitSectox" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp/ExitSectox" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../../Activators/Arena1_Finished")
 floor_mode = 2
 floor_height = -2.5399999999999983
 ceiling_height = 30.0
 
-[node name="ExitSectow" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
+[node name="ExitSectow" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
 position = Vector2(-96.005066, 43.85193)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(19, -12, 22, -8, 17, -3, 14, -6)
@@ -1632,14 +1636,14 @@ ceiling_height = 30.0
 portal_wall_length = 5.0
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp/ExitSectow" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp/ExitSectow" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../../Activators/Arena1_Finished")
 floor_mode = 2
 floor_height = -1.7199999999999984
 ceiling_height = 30.0
 
-[node name="ExitSectov" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
+[node name="ExitSectov" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp" instance=ExtResource("2_eukjm")]
 position = Vector2(-96.005066, 43.85193)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(15, -15, 19, -12, 14, -6, 10, -9)
@@ -1649,14 +1653,14 @@ ceiling_height = 30.0
 portal_wall_length = 5.0
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/StairsUp/ExitSectov" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/StairsUp/ExitSectov" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../../Activators/Arena1_Finished")
 floor_mode = 2
 floor_height = -0.8999999999999985
 ceiling_height = 30.0
 
-[node name="Sector-7380a" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+[node name="Sector-7380a" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-96.005066, 43.85193)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1666,13 +1670,13 @@ ceiling_height = 0.01
 portal_wall_length = 16.0
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Sector-7380a" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/Sector-7380a" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../Activators/Arena1_Finished")
 ceiling_mode = 2
 ceiling_height = 4.0
 
-[node name="Sector-7380c" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+[node name="Sector-7380c" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-96.005066, 43.85193)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1682,7 +1686,7 @@ ceiling_height = 5.0
 portal_wall_length = 4.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7380b" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+[node name="Sector-7380b" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-96.005066, 43.85193)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1692,7 +1696,7 @@ ceiling_height = 5.0
 portal_wall_length = 16.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-3079" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+[node name="Sector-3079" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-105.005066, 57.85193)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1703,7 +1707,7 @@ ceiling_height = -8.0
 portal_wall_length = 9.0
 portal_destination_wall_length = -1.0
 
-[node name="DoorSector-4950" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+[node name="DoorSector-4950" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-16.326355, 70.97521)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1714,7 +1718,7 @@ ceiling_height = -9.99
 portal_wall_length = 2.236068
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/DoorSector-4950" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/DoorSector-4950" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../Activators/Arena1_Trap")
 move_speed = 0.25
@@ -1722,7 +1726,7 @@ floor_height = -10.0
 ceiling_mode = 2
 ceiling_height = -6.0
 
-[node name="Sector-4950a" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+[node name="Sector-4950a" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-16.326355, 70.97521)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1733,14 +1737,14 @@ ceiling_height = -5.0
 portal_wall_length = 29.529646
 portal_destination_wall_length = -1.0
 
-[node name="Button" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Sector-4950a" instance=ExtResource("8_ufqas")]
+[node name="Button" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/Sector-4950a" instance=ExtResource("8_ufqas")]
 position = Vector2(1.3212891, 8.876717)
 
-[node name="Trigger" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Sector-4950a/Button" node_paths=PackedStringArray("target")]
+[node name="Trigger" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/Sector-4950a/Button" node_paths=PackedStringArray("target")]
 script = ExtResource("13_et0pd")
 target = NodePath("../../../../../../../Activators/Arena1_Trap_Part2")
 
-[node name="Sector-4950b" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
+[node name="Sector-4950b" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
 position = Vector2(-16.326355, 70.97521)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1752,7 +1756,7 @@ portal_destination = NodePath("../DoorSector-4950c")
 portal_wall_length = 10.770329
 portal_destination_wall_length = 22.36068
 
-[node name="DoorSector-4950c" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+[node name="DoorSector-4950c" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-16.326355, 70.97521)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1763,14 +1767,14 @@ ceiling_height = -9.39
 portal_wall_length = 22.36068
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/DoorSector-4950c" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/DoorSector-4950c" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../Activators/Arena1_Trap_Part2")
 floor_height = -9.4
 ceiling_mode = 2
 ceiling_height = -5.0
 
-[node name="Sector-4950d" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
+[node name="Sector-4950d" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
 position = Vector2(-16.326355, 70.97521)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1784,7 +1788,7 @@ portal_destination_wall = 2
 portal_wall_length = 22.36068
 portal_destination_wall_length = 22.36068
 
-[node name="Sector-4950e" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+[node name="Sector-4950e" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-106.005066, 90.85193)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1795,7 +1799,7 @@ ceiling_height = -5.0
 portal_wall_length = 26.400757
 portal_destination_wall_length = -1.0
 
-[node name="DoorSector-1947" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+[node name="DoorSector-1947" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-70.293884, -38.086365)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1806,14 +1810,14 @@ ceiling_height = -10.49
 portal_wall_length = 2.236068
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/DoorSector-1947" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/DoorSector-1947" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../Activators/Arena1_Trap")
 floor_height = -10.0
 ceiling_mode = 2
 ceiling_height = -8.0
 
-[node name="Sector-1947a" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+[node name="Sector-1947a" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-70.293884, -38.086365)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
@@ -1824,62 +1828,53 @@ ceiling_height = -7.0
 portal_wall_length = 16.763054
 portal_destination_wall_length = -1.0
 
-[node name="Sector-7916" type="Polygon2D" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-7916" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(9.892181, 25.761879)
+color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(0.102752686, -4.9099503, 1.3424873, -4.909952, -0.8972473, 0.09004974, -2.8972473, 0.09004974)
-script = ExtResource("12_py677")
 data = SubResource("Resource_ylqe0")
 floor_height = -9.85
 ceiling_height = -8.0
-sector_material = ExtResource("3_krcvx")
 portal_wall_length = 1.0
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Sector-7916" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/Sector-7916" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../Activators/Arena1_Trap")
 floor_height = -9.85
 ceiling_mode = 2
 ceiling_height = -9.84
 
-[node name="Sector-7916a" type="Polygon2D" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-7916a" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(9.892181, 25.761879)
+color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(1.3424873, -4.909952, 3.1027527, -4.9099503, 3.1027527, 0.09004974, -0.8972473, 0.09004974)
-script = ExtResource("12_py677")
 data = SubResource("Resource_5it8e")
 floor_height = -10.0
 ceiling_height = -8.0
-sector_material = ExtResource("3_krcvx")
 enable_portal = true
 portal_wall = 1
 portal_wall_length = 5.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-6883" type="Polygon2D" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-6883" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(6.5961914, 30.552444)
+color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(-1.6012573, -1.7005157, -0.6012573, -1.7005157, -5.6012573, 7.2994843, -6.6012573, 6.2994843)
-script = ExtResource("12_py677")
 data = SubResource("Resource_ep6v3")
 floor_height = -9.85
 ceiling_height = -9.849
-sector_material = ExtResource("3_krcvx")
 portal_wall_length = 1.0
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Sector-6883" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/Sector-6883" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../Activators/Arena1_Trap_Part2")
 floor_height = -9.85
 ceiling_mode = 2
 ceiling_height = -7.0
 
-[node name="Sector-6884" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+[node name="Sector-6884" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(1.9949341, 45.85193)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(-5, -5, -4, -4, -10, 5, -11, 4)
@@ -1889,14 +1884,14 @@ ceiling_height = -9.849
 portal_wall_length = 1.4142135
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Sector-6884" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/Sector-6884" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../Activators/Arena1_Trap_Part2")
 floor_height = -9.85
 ceiling_mode = 2
 ceiling_height = -7.0
 
-[node name="Sector-6885" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+[node name="Sector-6885" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(24.994934, -26.148071)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(-13, -7, -11, -7, -12, 4, -14, 4)
@@ -1906,14 +1901,14 @@ ceiling_height = -9.849
 portal_wall_length = 2.0
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Sector-6885" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/Sector-6885" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../Activators/Arena1_Trap_Part2")
 floor_height = -9.85
 ceiling_mode = 2
 ceiling_height = -7.0
 
-[node name="Sector-6886" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+[node name="Sector-6886" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(26.994934, -46.14807)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(-14, -7, -12, -7, -12, 4, -14, 4)
@@ -1923,64 +1918,75 @@ ceiling_height = -9.849
 portal_wall_length = 2.0
 portal_destination_wall_length = -1.0
 
-[node name="Configuration" type="Node" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector/Sector-6886" node_paths=PackedStringArray("source")]
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector/Sector-6886" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../Activators/Arena1_Trap_Part2")
 floor_height = -9.85
 ceiling_mode = 2
 ceiling_height = -7.0
 
-[node name="Sector-6886a" type="Polygon2D" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-6886a" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(26.994934, -46.14807)
+color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(-4, -8, -4, 5, -12, 4, -12, -7)
-script = ExtResource("12_py677")
 data = SubResource("Resource_32df3")
 floor_height = -9.85
 ceiling_height = -6.5
-sector_material = ExtResource("3_krcvx")
 portal_wall_length = 13.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-6885a" type="Polygon2D" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-6885a" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(24.994934, -26.148071)
+color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(-3, -7, -4, 5, -12, 4, -11, -7)
-script = ExtResource("12_py677")
 data = SubResource("Resource_scl0x")
 floor_height = -9.85
 ceiling_height = -6.5
-sector_material = ExtResource("3_krcvx")
 portal_wall_length = 12.0415945
 portal_destination_wall_length = -1.0
 
-[node name="Sector-6884a" type="Polygon2D" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-6884a" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(1.9949341, 45.85193)
+color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(5, 0, -1, 10, -10, 5, -4, -4)
-script = ExtResource("12_py677")
 data = SubResource("Resource_jcd71")
 floor_height = -9.85
 ceiling_height = -6.5
-sector_material = ExtResource("3_krcvx")
 portal_wall_length = 11.661903
 portal_destination_wall_length = -1.0
 
-[node name="Sector-6883a" type="Polygon2D" parent="Sectors/Node2D/Node2D/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-6883a" parent="Sectors/Node2D/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(6.5961914, 30.552444)
+color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(-0.6012573, -1.7005157, 8.398743, 0.29948425, 1.3987427, 11.299484, -5.6012573, 7.2994843)
-script = ExtResource("12_py677")
 data = SubResource("Resource_1bxne")
 floor_height = -9.85
 ceiling_height = -6.5
-sector_material = ExtResource("3_krcvx")
 portal_wall_length = 9.219544
 portal_destination_wall_length = -1.0
+
+[node name="Corridor4" type="Node2D" parent="Sectors/Node2D"]
+
+[node name="Begin" parent="Sectors/Node2D/Corridor4" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
+position = Vector2(658, -40)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(-54, 10, -54, -6, -50, -6, -50, 10)
+data = SubResource("Resource_8al0g")
+ceiling_height = 5.0
+enable_portal = true
+portal_destination = NodePath("../../Corridor3_Arena1/Arena1_MainMultisector/Sector-7380b")
+portal_wall = 2
+portal_wall_length = 16.0
+portal_destination_wall_length = 16.0
+
+[node name="TriangulatedMultisector-554" type="Polygon2D" parent="Sectors/Node2D/Corridor4" instance=ExtResource("6_eukjm")]
+z_index = 11
+z_as_relative = false
+position = Vector2(596.0747, -39.070976)
+color = Color(0.243137, 0.254902, 0.623529, 0.454902)
+polygon = PackedVector2Array(-14.074707, -6.9290237, 7.925293, -6.9290237, 7.925293, 9.070976, -14.074707, 9.070976, -20.074707, 17.070976, -22.074707, 23.070976, -38.074707, 23.070976, -36.074707, 17.070976, -32.074707, 7.0709763, -24.074707, 1.0709763, -32.074707, -4.9290237, -36.074707, -14.929024, -38.074707, -20.929024, -22.074707, -20.929024, -20.074707, -14.929024)
+script = ExtResource("13_l7qbx")
+data = SubResource("Resource_rkl05")
 
 [node name="TriangulatedMultisector-6302" parent="." instance=ExtResource("6_eukjm")]
 visible = false
