@@ -131,6 +131,12 @@ Player::Player(vec3 position, vec3 forward)
 }
 
 //==============================================================================
+void Player::post_init()
+{
+  get_engine().get_module<UserInterfaceSystem>().get_ui_screen_effect()->clear_effect();
+}
+
+//==============================================================================
 static PlayerSpecificInputs pressed_inputs(const PlayerSpecificInputs& now, const PlayerSpecificInputs& prev)
 {
   PlayerSpecificInputs output;
