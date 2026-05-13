@@ -55,7 +55,7 @@ constexpr f32 ALERT_SOUND_RANGE     = 45.0f;  // Range used for the alert 3D sou
 constexpr f32 HURT_SOUND_INTERVAL_SECONDS = 0.8f; // Minimal interval between two instances of hurt sound being played by a specific enemy
 
 // MR says: Its better to keep these universal for all enemies in the demo.
-constexpr f32 ENEMY_STEP_HEIGHT = 0.66f;  // Step height, 66cm
+constexpr f32 ENEMY_STEP_HEIGHT = 1.30f;  // Step height, 130cm
 constexpr f32 ENEMY_DROP_HEIGHT = 1.0f;   // How much we are able to drop
 
 // Global only temporaly, this will be set per enemy type.
