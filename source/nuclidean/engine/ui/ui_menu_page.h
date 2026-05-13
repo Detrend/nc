@@ -227,6 +227,7 @@ private:
 
   // draw the number of kills itself
   void draw_kill_count(ShaderProgramHandle digit_material);
+  void draw_secret_count(ShaderProgramHandle digit_material);
 
   //methods for buttons
   void next_level_func();
@@ -235,6 +236,7 @@ private:
 
   // text
   UiButton* kills_text;
+  UiButton* secrets_text;
   UiButton* level_text;
   UiButton* demo_text;
   UiButton* completed_text;

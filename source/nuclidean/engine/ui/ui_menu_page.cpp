@@ -28,6 +28,7 @@ NextLevelPage::NextLevelPage()
   next_level_button = new UiButton("ui_next_level", vec2(0.0f, -0.8f), vec2(0.3f, 0.066f), std::bind(&NextLevelPage::next_level_func, this));
   menu_button = new UiButton("ui_menu", vec2(0.0f, -0.8f), vec2(0.12f, 0.066f), std::bind(&NextLevelPage::menu_func, this));
   kills_text = new UiButton("ui_kills", vec2(-0.3f, 0.3f), vec2(0.30f, 0.066f), std::bind(&NextLevelPage::do_nothing, this));
+  secrets_text = new UiButton("ui_secrets", vec2(-0.3f, 0.1f), vec2(0.30f, 0.066f), std::bind(&NextLevelPage::do_nothing, this));
   level_text = new UiButton("ui_level", vec2(0.0f, 0.8f), vec2(0.15f, 0.066f), std::bind(&NextLevelPage::do_nothing, this));
   demo_text = new UiButton("ui_demo", vec2(0.0f, 0.8f), vec2(0.12f, 0.066f), std::bind(&NextLevelPage::do_nothing, this));
   completed_text = new UiButton("ui_completed", vec2(0.0f, 0.6f), vec2(0.253f, 0.066f), std::bind(&NextLevelPage::do_nothing, this));
@@ -42,6 +43,7 @@ NextLevelPage::~NextLevelPage()
   delete level_text;
   delete completed_text;
   delete menu_button;
+  delete secrets_text;
 }
 
 //=============================================================================================
@@ -97,6 +99,7 @@ void NextLevelPage::draw(ShaderProgramHandle button_material, ShaderProgramHandl
 
   // determines wheter next_level or back_to_menu button should be rendered
   kills_text->draw(button_material);
+  secrets_text->draw(button_material);
   if (get_engine().get_module<GameSystem>().get_level_name() == Levels::LEVEL_3)
   {
     demo_text->draw(button_material);
@@ -150,6 +153,7 @@ void NextLevelPage::draw_stats(ShaderProgramHandle digit_material, GLuint VAO)
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   draw_kill_count(digit_material);
+  draw_secret_count(digit_material);
 
   // unbind
   glDisable(GL_BLEND);
@@ -167,7 +171,7 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
   // renders numbers char by char from right to left
   u32 display_count = enemy_count;
 
-  vec2 position = vec2(0.75f, 0.3f);
+  vec2 position = vec2(0.5f, 0.3f);
   vec2 pos_dif = vec2(-0.06f, 0.0f);
   vec2 scale = vec2(0.0277f, 0.066f);
 
@@ -236,6 +240,115 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
     position += pos_dif;
 
     display_count = kill_count;
+  }
+
+  do //DRAW KILL COUNT
+  {
+    glActiveTexture(GL_TEXTURE0);
+
+    glm::mat4 trans_mat = glm::mat4(1.0f);
+    vec2 translate = position;
+    trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+    trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
+
+    const glm::mat4 final_trans = trans_mat;
+
+    int digit = display_count % 10;
+    digit += 48; // + '0'
+
+    //setting shader uniforms
+    digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+    digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+    digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
+    digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
+    digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
+    digit_material.set_uniform(shaders::ui_text::HOVER, false);
+
+    glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    display_count = display_count / 10;
+    position += pos_dif;
+
+  } while (display_count > 0);
+}
+
+void NextLevelPage::draw_secret_count(ShaderProgramHandle digit_material)
+{
+  // renders numbers char by char from right to left
+  u32 display_count = secret_count;
+
+  vec2 position = vec2(0.5f, 0.1f);
+  vec2 pos_dif = vec2(-0.06f, 0.0f);
+  vec2 scale = vec2(0.0277f, 0.066f);
+
+  const TextureManager& manager = TextureManager::get();
+  const TextureHandle& texture = manager["ui_font"];
+
+  do //DRAW TOTAL ENEMY COUNT
+  {
+    glActiveTexture(GL_TEXTURE0);
+
+    glm::mat4 trans_mat = glm::mat4(1.0f);
+    vec2 translate = position;
+    trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+    trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
+
+    const glm::mat4 final_trans = trans_mat;
+
+    int digit = display_count % 10;
+    digit += 48; // + '0'
+
+    //setting shader
+    digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+    digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+    digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
+    digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
+    digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
+    digit_material.set_uniform(shaders::ui_text::HOVER, false);
+
+    glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    display_count = display_count / 10;
+    position += pos_dif;
+
+  } while (display_count > 0);
+
+  // DRAW SEPERATING '/'
+  {
+    glActiveTexture(GL_TEXTURE0);
+
+    glm::mat4 trans_mat = glm::mat4(1.0f);
+    vec2 translate = position;
+    trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+    trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
+
+    const glm::mat4 final_trans = trans_mat;
+
+    int digit = (int)'/';
+
+    // setting shader uniforms
+    digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
+    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+    digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+    digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
+    digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
+    digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
+    digit_material.set_uniform(shaders::ui_text::HOVER, false);
+
+    glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    display_count = display_count / 10;
+    position += pos_dif;
+
+    display_count = revealed_count;
   }
 
   do //DRAW KILL COUNT
