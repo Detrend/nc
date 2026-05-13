@@ -808,7 +808,13 @@ void Player::handle_floor_damage(f32 delta)
   {
     time -= INTERVAL;
     SectorID sid = get_engine().get_map().get_sector_from_point(this->get_position().xz());
-    nc_assert(get_engine().get_map().is_valid_sector_id(sid));
+    //nc_assert(get_engine().get_map().is_valid_sector_id(sid));
+    // in case of being outside of map for some reason
+    if (!get_engine().get_map().is_valid_sector_id(sid))
+    {
+      nc_warn("Handle floor damage: invalid sector at pos {} : {}", this->get_position().x, this->get_position().z);
+      return;
+    }
 
     const SectorDynData& sdd = get_engine().get_map().sectors_dynamic[sid];
     const SectorData& sd = get_engine().get_map().sectors[sid];
