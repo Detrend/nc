@@ -159,8 +159,8 @@ struct CVars
   NC_REGISTER_CVAR_RANGED(f32, gun_sway_air_time,         0.6f,  0.0f, 3.0f, "");
   NC_REGISTER_CVAR_RANGED(f32, gun_zoom,                  1.2f,  0.5f, 3.0f, "");
 
-  NC_REGISTER_CVAR_RANGED(f32, camera_spring_height,       0.85f, 0.0f, 1.0f, "");
-  NC_REGISTER_CVAR_RANGED(f32, camera_spring_update_speed, 6.0f, 0.1f, 10.0f, "");
+  NC_REGISTER_CVAR_RANGED(f32, camera_spring_height,       0.5f, 0.0f, 1.0f, "");
+  NC_REGISTER_CVAR_RANGED(f32, camera_spring_update_speed, 3.0f, 0.1f, 10.0f, "");
 
   NC_REGISTER_CVAR_RANGED(f32, player_hurt_shake_coeff,  5.0f,  0.0f,  10.0f, "How much does the camera shake when hurt.");
   NC_REGISTER_CVAR_RANGED(f32, player_jump_offset_coeff, 1.0f,  0.0f,  10.0f, "How much does the camera rotate when jumping.");
