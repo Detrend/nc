@@ -501,7 +501,7 @@ static void load_json_map
     if (js_light.contains("light_string"))
     {
       std::string string = js_light["light_string"];
-      light->intensity_string = Token{};
+      light->intensity_string = Token(string);
     }
 
     if (js_light.contains("cycle_length"))
