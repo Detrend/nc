@@ -171,11 +171,11 @@ struct CVars
   NC_REGISTER_CVAR_RANGED(f32, player_recoil_time,   0.25f,  0.0f,  5.0f, "");
   NC_REGISTER_CVAR_RANGED(f32, player_recoil_degree, 4.0f, -45.0f, 45.0f, "");
 
-  NC_REGISTER_CVAR_RANGED(f32, player_jump_force,    6.5f,  0.5f, 10.0f, "How high the player jumps.");
+  NC_REGISTER_CVAR_RANGED(f32, player_jump_force,    10.0f, 0.5f, 10.0f, "How high the player jumps.");
   NC_REGISTER_CVAR_RANGED(f32, player_max_speed,     6.0f,  0.5f, 10.0f, "Maximum speed [m/s]");
   NC_REGISTER_CVAR_RANGED(f32, player_acceleration,  50.0f, 1.0f, 50.0f, "Acceleration [m/s2]");
   NC_REGISTER_CVAR_RANGED(f32, player_deceleration,  15.0f, 1.0f, 50.0f, "Deceleration [m/s2]");
-  NC_REGISTER_CVAR_RANGED(f32, player_gravity,       15.0f, 1.0f, 50.0f, "Gravity [m/s2]");
+  NC_REGISTER_CVAR_RANGED(f32, player_gravity,       30.0f, 1.0f, 50.0f, "Gravity [m/s2]");
   NC_REGISTER_CVAR_RANGED(f32, player_air_acc_coeff, 0.5f,  0.0f, 01.0f, "Acceleration in air compared to ground.");
   NC_REGISTER_CVAR_RANGED(f32, player_air_dec_coeff, 0.5f,  0.0f, 01.0f, "Deceleration in air compared to ground.");
   NC_REGISTER_CVAR_RANGED(s32, player_max_hp,        100,  50, 300,      "Max HP.");
