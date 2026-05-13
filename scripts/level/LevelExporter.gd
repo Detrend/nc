@@ -256,6 +256,7 @@ func create_level_export_data() -> Dictionary:
 	# Fill [member _sectors_map] so that we can safely refer to [Sector]s by their indices throughout rest of the export process
 	for t in range(all_sectors.size()):
 		_sectors_map[all_sectors[t]] = t
+		if _level.config.debug_print_level_ids: print("{0}... {1}".format([t, all_sectors[t].get_full_name()]))
 	
 	# Take note which [Sector]s are a destination of someone else's portal
 	var host_portals : Dictionary[Sector, Array] = {}

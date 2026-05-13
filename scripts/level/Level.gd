@@ -11,7 +11,11 @@ extends Node2D
 
 var config : EditorConfig = load("res://config.tres") as EditorConfig
 ## Edittime option - how to visualize the sectors? (E.g. based on their floor/ceiling height or their texturing material)
-@export var coloring_mode: EditorConfig.SectorColoringMode = EditorConfig.SectorColoringMode.Floor
+@export var coloring_mode: EditorConfig.SectorColoringMode = EditorConfig.SectorColoringMode.Floor:
+	get: return coloring_mode
+	set(val):
+		coloring_mode = val
+		_update_sector_visuals()
 
 ## Default music to play when starting the level
 @export var music : String
