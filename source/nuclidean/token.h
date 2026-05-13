@@ -150,6 +150,13 @@ namespace nc {
     }
 
     constexpr BasicToken(const BasicToken& other) : raw(other.raw) {}
+
+    template<size_t TSize>
+    static consteval BasicToken Const(const char(&literal)[TSize])
+    {
+        return BasicToken(literal);
+    }
+
     constexpr BasicToken& operator=(const BasicToken& other)
     {
       this->raw = other.raw;
