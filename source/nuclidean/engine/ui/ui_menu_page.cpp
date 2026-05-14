@@ -16,6 +16,8 @@
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/graphics_system.h>
 
+#include <engine/sound/sound_resources.h>
+
 #include <fstream>
 #include <format>
 #include <json/json.hpp>
@@ -894,6 +896,7 @@ void OptionsPage::set_sound_less()
 {
   sound_step = max(0, sound_step - 1);
   get_engine().get_module<SoundSystem>().set_sound_volume(sound_step);
+  SoundSystem::get().play_oneshot(Sounds::ui_click, 1.0f, SoundLayers::ui);
 }
 
 //=============================================================================================
@@ -901,6 +904,7 @@ void OptionsPage::set_sound_more()
 {
   sound_step = min(9, sound_step + 1);
   get_engine().get_module<SoundSystem>().set_sound_volume(sound_step);
+  SoundSystem::get().play_oneshot(Sounds::ui_click, 1.0f, SoundLayers::ui);
 }
 
 //=============================================================================================
