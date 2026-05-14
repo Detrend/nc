@@ -471,6 +471,7 @@ static void load_json_map
       js_prop["sprite"],
       load_json_vector<3>(js_prop["direction"]).xzy,
       js_prop["scale"],
+      0.0f,
       static_cast<Appearance::SpriteMode>(js_prop["mode"]),
       static_cast<Appearance::PivotMode>(js_prop["pivot"]),
       static_cast<Appearance::ScalingMode>(js_prop["scaling"]),

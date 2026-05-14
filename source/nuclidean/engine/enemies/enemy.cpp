@@ -30,6 +30,7 @@
 
 #include <map>
 #include <format>
+#include <algorithm> // std::fill
 
 #if NC_DEBUG_DRAW
 #include <engine/graphics/debug/gizmo.h>
@@ -180,6 +181,9 @@ Enemy::Enemy(vec3 position, vec3 looking_dir, EnemyType tpe)
     this->anim_fsm.set_state_length(s, stats.state_sprite_len[s]);
   }
 
+  // Smoothing
+  std::fill(smooth_ys.begin(), smooth_ys.end(), position.y);
+
   u64 attack_frame_idx = stats.state_sprite_cnt[ActorAnimStates::attack];
   f32 attack_state_len = stats.state_sprite_len[ActorAnimStates::attack];
   f32 trigger_time = (stats.attack_frame * attack_state_len) / attack_frame_idx;
@@ -267,6 +271,12 @@ void Enemy::handle_movement(f32 delta)
 
     // The target inverse has to be recomputed as well
     this->on_self_or_target_traversed_nc_portal();
+
+    // The last heights have to be recomputed
+    for (f32& height : smooth_ys)
+    {
+      height += portal_transform[3].y;
+    }
   }
 
   if (anim_fsm.get_state() == ActorAnimStates::walk) {
@@ -285,6 +295,19 @@ void Enemy::handle_appearance(f32 delta)
   using Event   = AnimFSMEvents::evalue;
   using Trigger = ActorFSM::Trigger;
   using State   = ActorFSM::State;
+
+  f32 pos_y = this->get_position().y;
+  this->smooth_ys[this->smooth_y_idx] = pos_y;
+  this->smooth_y_idx = (this->smooth_y_idx + 1) % Y_SMOOTHING_FRAMES;
+
+  f32 avg_y = 0.0f;
+  f32 one_over_n = 1.0f / Y_SMOOTHING_FRAMES;
+  for (u8 i = 0; i < Y_SMOOTHING_FRAMES; ++i)
+  {
+    avg_y += smooth_ys[i] * one_over_n;
+  }
+
+  this->appear.offset = avg_y - pos_y;
 
   bool died = false;
 

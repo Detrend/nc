@@ -338,13 +338,7 @@ void Player::apply_velocity(f32 delta_seconds)
   );
 
   // Spring - makes sure that the camera moves smoothly on the stairs
-
-  // We have to work with prev_pos that is relative to our portal transformation.
-  //f32 prev_pos_rel_y = (portal_transform * vec4{prev_pos, 1.0f}).y;
-  // Same as above but without unnecessary multiplications
-  f32 pos_rel_y = position.y + portal_transform[3].y;
-
-  f32 height_diff = pos_rel_y - position.y;
+  f32 height_diff = portal_transform[3].y;
   for (u8 i = 0; i < CAM_SMOOTHING_FRAMES; ++i)
   {
     this->cam_smoothing.heights[i] += height_diff;

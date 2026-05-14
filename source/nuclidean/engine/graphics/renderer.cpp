@@ -805,7 +805,7 @@ void Renderer::render_entities(const CameraData& camera) const
           m_sector_matrices.push_back(camera.portal_dest_to_src);
 
           render_data.appear    = *appearance;
-          render_data.world_pos = world_pos;
+          render_data.world_pos = world_pos + vec3{0.0f, appearance->offset, 0.0f};
           render_data.sector_id = cast<u32>(entity_sector_id);
           render_data.matrix_id = matrix_id;
           render_data.transforms.push_back(t);
