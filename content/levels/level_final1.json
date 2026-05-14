@@ -1443,9 +1443,9 @@
 			"falloff": 1.0,
 			"intensity": 1.0,
 			"position": [
-				-4.09999990463257,
-				-31.1000003814697,
-				14.15
+				-4.20000028610229,
+				-30.8999996185303,
+				15.9
 			],
 			"radius": 1.0
 		},
@@ -9371,22 +9371,7 @@
 		{
 			"ceiling": 13.0,
 			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "Sectors::Sector-1793v2s",
-			"floor": 10.0,
-			"floor_surface": {
-				"id": "floor1",
+				"id": "stone_wall",
 				"offset": [
 					0.0,
 					0.0
@@ -9395,7 +9380,22 @@
 				"scale": 1.0,
 				"show": true,
 				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
+				"tile_rotations_count": 1
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Sector-1793v2s",
+			"floor": 10.0,
+			"floor_surface": {
+				"id": "stone_wall",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 1
 			},
 			"id": 42,
 			"points": [
@@ -9431,7 +9431,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
+						"id": "CCOMP02",
 						"offset": [
 							0.0,
 							0.0
@@ -9439,7 +9439,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
@@ -9447,7 +9447,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 11.0,
-						"id": "bricks",
+						"id": "stone_wall",
 						"offset": [
 							0.0,
 							0.0
@@ -9463,7 +9463,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
+						"id": "CCOMP02",
 						"offset": [
 							0.0,
 							0.0
@@ -9471,7 +9471,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
