@@ -576,18 +576,18 @@ void Enemy::handle_ai_alert(f32 delta)
         bool found_one         = false;
         bool only_for_shooting = false;
 
-        path_points = lvl.calc_path_relative
-        (
-          this->get_position(),
-          this->follow_target_pos,
-          this->get_radius(),
-          this->get_height(),
+          path_points = lvl.calc_path_relative
+          (
+            this->get_position(),
+            this->follow_target_pos,
+            this->get_radius(),
+            this->get_height(),
           ENEMY_STEP_HEIGHT,
-          ENEMY_DROP_HEIGHT,
-          true,
-          &nc_transform,
-          &found_one
-        );
+            ENEMY_DROP_HEIGHT,
+            true,
+            &nc_transform,
+            &found_one
+          );
 
         if (!found_one && !get_stats().is_melee)
         {
@@ -755,9 +755,15 @@ void Enemy::handle_ai_alert(f32 delta)
   {
     for (u64 i = 0; i < current_path.points.size(); ++i)
     {
-      vec2 p1 = i ? current_path.points[i-1].xz() : position_2d;
-      vec2 p2 = current_path.points[i].xz();
-      Gizmo::create_line_2d("Paths", p1, p2, colors::BLUE);
+      vec3 p1 = i ? current_path.points[i-1] : this->get_position();
+      vec3 p2 = current_path.points[i];
+      Gizmo::create_line_2d("Paths", p1.xz(), p2.xz(), colors::BLUE);
+
+      if (CVars::debug_enemy_paths)
+      {
+        vec3 offset = vec3{0.0f, 0.2f, 0.0f};
+        Gizmo::create_line(0.001f, p1 + offset, p2 + offset, colors::BLUE);
+      }
     }
   }
 #endif
