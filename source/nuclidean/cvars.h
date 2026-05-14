@@ -153,7 +153,7 @@ struct CVars
   NC_REGISTER_CVAR_RANGED(f32, time_speed, 1.0f, 0.0f, 10.0f, "Changes the update speed.");
 
   NC_REGISTER_CVAR_RANGED(f32, gun_sway_amount,           0.05f, 0.0f, 1.0f, "");
-  NC_REGISTER_CVAR_RANGED(f32, gun_sway_speed,            6.5f,  0.0f, 8.0f, "");
+  NC_REGISTER_CVAR_RANGED(f32, gun_sway_speed,            4.5f,  0.0f, 8.0f, "");
   NC_REGISTER_CVAR_RANGED(f32, gun_change_time,           0.4f,  0.0f, 5.0f, "");
   NC_REGISTER_CVAR_RANGED(f32, gun_sway_move_fadein_time, 0.2f,  0.0f, 5.0f, "");
   NC_REGISTER_CVAR_RANGED(f32, gun_sway_air_time,         0.6f,  0.0f, 3.0f, "");
@@ -164,7 +164,7 @@ struct CVars
   NC_REGISTER_CVAR_RANGED(f32, player_hurt_shake_coeff,  5.0f,  0.0f,  10.0f, "How much does the camera shake when hurt.");
   NC_REGISTER_CVAR_RANGED(f32, player_jump_offset_coeff, 1.0f,  0.0f,  10.0f, "How much does the camera rotate when jumping.");
   NC_REGISTER_CVAR_RANGED(f32, player_head_move_y_coeff, 1.0f,  0.0f,  10.0f, "Head up/down bobbing multiplier during walking.");
-  NC_REGISTER_CVAR_RANGED(f32, player_head_bob_y_coeff,  0.03f, 0.0f,  10.0f, "Head up/down bobbing multiplier during walking.");
+  NC_REGISTER_CVAR_RANGED(f32, player_head_bob_y_coeff,  0.125f, 0.0f,  10.0f, "Head up/down bobbing multiplier during walking.");
   NC_REGISTER_CVAR_RANGED(f32, player_head_side_coeff_during_strafe, -0.1f, -10.0f, 10.0f, "Head side rotation multiplier during strafing.");
 
   NC_REGISTER_CVAR_RANGED(f32, player_recoil_time,   0.25f,  0.0f,  5.0f, "");
@@ -172,8 +172,8 @@ struct CVars
 
   NC_REGISTER_CVAR_RANGED(f32, player_jump_force,    10.0f, 0.5f, 10.0f, "How high the player jumps.");
   NC_REGISTER_CVAR_RANGED(f32, player_max_speed,     6.0f,  0.5f, 10.0f, "Maximum speed [m/s]");
-  NC_REGISTER_CVAR_RANGED(f32, player_acceleration,  50.0f, 1.0f, 50.0f, "Acceleration [m/s2]");
-  NC_REGISTER_CVAR_RANGED(f32, player_deceleration,  15.0f, 1.0f, 50.0f, "Deceleration [m/s2]");
+  NC_REGISTER_CVAR_RANGED(f32, player_acceleration,  35.0f, 1.0f, 50.0f, "Acceleration [m/s2]");
+  NC_REGISTER_CVAR_RANGED(f32, player_deceleration,  10.0f, 1.0f, 50.0f, "Deceleration [m/s2]");
   NC_REGISTER_CVAR_RANGED(f32, player_gravity,       30.0f, 1.0f, 50.0f, "Gravity [m/s2]");
   NC_REGISTER_CVAR_RANGED(f32, player_air_acc_coeff, 0.5f,  0.0f, 01.0f, "Acceleration in air compared to ground.");
   NC_REGISTER_CVAR_RANGED(f32, player_air_dec_coeff, 0.5f,  0.0f, 01.0f, "Deceleration in air compared to ground.");

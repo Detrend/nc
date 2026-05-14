@@ -125,7 +125,9 @@ Player::Player(vec3 position, vec3 forward)
 , weapon_fsm(0)
 {
   this->camera.update_transform(position, angle_yaw, angle_pitch, 0.0f, 0.0f);
-  std::fill(cam_smoothing.times.begin(), cam_smoothing.times.end(), 0.0);
+
+  // -10 will make sure that these frames will never be considered for averaging
+  std::fill(cam_smoothing.times.begin(), cam_smoothing.times.end(), -10.0); 
 
   // Has to be called to set-up the FSM
   this->change_weapon(this->get_equipped_weapon());
