@@ -12,7 +12,6 @@
 #include <engine/map/physics.h>
 #include <engine/entity/entity_system.h>
 
-#include<engine/game/game_helpers.h>
 #include <engine/sound/sound_system.h>
 #include <engine/sound/sound_resources.h>
 
@@ -378,6 +377,7 @@ void Enemy::die()
   this->anim_fsm.set_state(ActorAnimStates::dying);
   GameHelpers::get().play_3d_sound(this->get_position(), ENEMY_SOUNDS_BY_TYPE[type].die, SOUND_RANGE, 1.0f);
   get_engine().get_module<GameSystem>().increment_kill_count();
+  set_height(get_height() * 0.25f);
 }
 
 //==============================================================================
