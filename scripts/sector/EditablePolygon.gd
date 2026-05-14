@@ -536,6 +536,20 @@ static func find_nearest_point(v: Vector2, others: Array[SectorPoint], tolerance
 			ret_distance = distance
 	return ret	
 
+## Get index of this [Sector]'s wall, which is the closest to the specified point
+func find_closest_wall_to_point(point: Vector2)->int:
+	var min_distance_sqr := INF
+	var min_idx := -1
+	for i in self.get_walls_count():
+		var wall_begin := self.get_wall_begin(i)
+		var wall_end := self.get_wall_end(i)
+		var closest_point := Geometry2D.get_closest_point_to_segment(point, wall_begin, wall_end)
+		var dist_sqr := closest_point.distance_squared_to(point)
+		if dist_sqr < min_distance_sqr:
+			min_distance_sqr = dist_sqr
+			min_idx = i
+	return min_idx
+
 
 func get_full_name()->String:
 	return NodeUtils.get_full_name(self, "::")# func(n: Node)->bool: return n is Level)

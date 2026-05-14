@@ -27,19 +27,7 @@ func find_sector(parent: EditablePolygon = null)->Sector:
 
 ## Find index of the sector wall to which this object is attached
 func find_wall(parent_sector : Sector)->int:
-	var pos := self.global_position
-	var min_distance_sqr := INF
-	var min_idx := -1
-	for i in parent_sector.get_walls_count():
-		var wall_begin := parent_sector.get_wall_begin(i)
-		var wall_end := parent_sector.get_wall_end(i)
-		var closest_point := Geometry2D.get_closest_point_to_segment(pos, wall_begin, wall_end)
-		var dist_sqr := closest_point.distance_squared_to(pos)
-		if dist_sqr < min_distance_sqr:
-			min_distance_sqr = dist_sqr
-			min_idx = i
-
-	return min_idx
+	return parent_sector.find_closest_wall_to_point(self.global_position)
 
 
 func _get_display_position(parent_sector : Sector, wall_idx : int)->Vector2:
