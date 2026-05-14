@@ -8,6 +8,7 @@
 #include <engine/sound/sound_emitter.h>
 #include <game/projectile.h>
 #include <game/particle.h>
+#include <game/teleport.h>
 
 // Other
 #include <engine/map/map_system.h>
@@ -56,6 +57,12 @@ void Game::update
   entities->for_each<Projectile>([&](Projectile& proj)
   {
     proj.update(dt);
+  });
+
+  // Handle teleports
+  entities->for_each<Teleport>([&](Teleport& teleport)
+  {
+    teleport.update(dt);
   });
 
   // Handle particles

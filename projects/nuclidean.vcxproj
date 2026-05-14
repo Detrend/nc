@@ -111,6 +111,7 @@
     <ClCompile Include="..\source\nuclidean\game\projectile.cpp" />
     <ClCompile Include="..\source\nuclidean\engine\graphics\resources\texture.cpp" />
     <ClCompile Include="..\source\nuclidean\game\projectiles.cpp" />
+    <ClCompile Include="..\source\nuclidean\game\teleport.cpp" />
     <ClCompile Include="..\source\nuclidean\game\weapons.cpp" />
     <ClCompile Include="..\source\nuclidean\logging.cpp" />
     <ClCompile Include="..\source\nuclidean\main.cpp" />
@@ -222,6 +223,7 @@
     <ClInclude Include="..\source\nuclidean\game\particle.h" />
     <ClInclude Include="..\source\nuclidean\game\projectile.h" />
     <ClInclude Include="..\source\nuclidean\game\projectiles.h" />
+    <ClInclude Include="..\source\nuclidean\game\teleport.h" />
     <ClInclude Include="..\source\nuclidean\logging.h" />
     <ClInclude Include="..\source\nuclidean\metaprogramming.h" />
     <ClInclude Include="..\source\nuclidean\profiling.h" />

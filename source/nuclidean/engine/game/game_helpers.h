@@ -60,6 +60,8 @@ public:
     EntityID player, mat4 transform, SectorID sid, WallID wid
   );
 
+  void request_entity_teleport(EntityID entity, vec3 teleport_to);
+
 private:
   Game& m_game;
 };
