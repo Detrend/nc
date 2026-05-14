@@ -89,9 +89,9 @@ extends Node2D
 @export_group("Floor Alt")
 ## If enabled, [member SectorAltConfig.floor_height] of children [Sector]s' [SectorAltConfig] will be managed by this [StairMaker]
 @export_custom(PROPERTY_HINT_GROUP_ENABLE, "") var set_floor_alt : bool = false:
-	get: return set_floor
+	get: return set_floor_alt
 	set(val):
-		set_floor = val
+		set_floor_alt = val
 		_do_apply()
 
 ## Floor height assigned to the first sector alt config
