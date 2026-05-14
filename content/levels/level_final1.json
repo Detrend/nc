@@ -1443,9 +1443,9 @@
 			"falloff": 1.0,
 			"intensity": 1.0,
 			"position": [
-				-3.97500014305115,
-				-29.6000003814697,
-				14.4
+				-4.20000028610229,
+				-30.8999996185303,
+				15.9
 			],
 			"radius": 1.0
 		},
@@ -1475,9 +1475,9 @@
 			"falloff": 1.0,
 			"intensity": 1.0,
 			"position": [
-				-1.20000004768372,
-				-24.8999996185303,
-				14.9
+				1.10000002384186,
+				-25.0,
+				15.9
 			],
 			"radius": 1.0
 		},
@@ -2389,7 +2389,7 @@
 			0.300000011920929
 		],
 		[
-			17.6000003814697,
+			17.5,
 			-0.100000001490116
 		],
 		[
@@ -2401,11 +2401,11 @@
 			0.300000011920929
 		],
 		[
-			17.6000003814697,
+			17.5,
 			-0.600000023841858
 		],
 		[
-			17.6000003814697,
+			17.5,
 			-1.0
 		],
 		[
@@ -2417,7 +2417,7 @@
 			-0.600000023841858
 		],
 		[
-			17.6000003814697,
+			17.5,
 			-1.5
 		],
 		[
@@ -3289,19 +3289,19 @@
 			-25.0
 		],
 		[
-			0.800000011920929,
-			-24.8000011444092
-		],
-		[
-			-0.200000002980232,
-			-24.8000011444092
-		],
-		[
 			-0.400000005960464,
 			-24.8000011444092
 		],
 		[
 			-1.39999997615814,
+			-24.8000011444092
+		],
+		[
+			0.800000011920929,
+			-24.8000011444092
+		],
+		[
+			-0.200000002980232,
 			-24.8000011444092
 		],
 		[
@@ -7824,7 +7824,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -7832,7 +7832,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
@@ -7874,12 +7874,12 @@
 					{
 						"begin_height": 12.5,
 						"end_height": 13.0,
-						"id": "wall3",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
 						],
-						"rotation": 0.0,
+						"rotation": 1.5707963267949,
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 0.0,
@@ -7933,12 +7933,12 @@
 					{
 						"begin_height": 12.5,
 						"end_height": 13.0,
-						"id": "wall3",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
 						],
-						"rotation": 0.0,
+						"rotation": 1.5707963267949,
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 0.0,
@@ -8010,7 +8010,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -8018,7 +8018,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
@@ -8026,12 +8026,12 @@
 					{
 						"begin_height": 12.5,
 						"end_height": 13.0,
-						"id": "wall3",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
 						],
-						"rotation": 0.0,
+						"rotation": 1.5707963267949,
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 0.0,
@@ -8117,22 +8117,22 @@
 		{
 			"ceiling": 12.5,
 			"ceiling_surface": {
-				"id": "floor2",
+				"id": "pipes",
 				"offset": [
 					0.0,
 					0.0
 				],
-				"rotation": 0.0,
+				"rotation": 1.5707963267949,
 				"scale": 1.0,
 				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2p",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "floor1",
+				"id": "stone_wall",
 				"offset": [
 					0.0,
 					0.0
@@ -8141,7 +8141,7 @@
 				"scale": 1.0,
 				"show": true,
 				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
+				"tile_rotations_count": 1
 			},
 			"id": 29,
 			"points": [
@@ -8161,7 +8161,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 12.5,
-						"id": "bricks",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -8169,7 +8169,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				]
@@ -8221,7 +8221,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -8229,7 +8229,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
@@ -8237,12 +8237,12 @@
 					{
 						"begin_height": 12.5,
 						"end_height": 13.0,
-						"id": "wall3",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
 						],
-						"rotation": 0.0,
+						"rotation": 1.5707963267949,
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 0.0,
@@ -8254,12 +8254,12 @@
 					{
 						"begin_height": 12.5,
 						"end_height": 13.0,
-						"id": "wall3",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
 						],
-						"rotation": 0.0,
+						"rotation": 1.5707963267949,
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 0.0,
@@ -8270,7 +8270,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -8278,7 +8278,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
@@ -8303,22 +8303,22 @@
 		{
 			"ceiling": 12.5,
 			"ceiling_surface": {
-				"id": "floor2",
+				"id": "pipes",
 				"offset": [
 					0.0,
 					0.0
 				],
-				"rotation": 0.0,
+				"rotation": 1.5707963267949,
 				"scale": 1.0,
 				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2r",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "floor1",
+				"id": "stone_wall",
 				"offset": [
 					0.0,
 					0.0
@@ -8327,7 +8327,7 @@
 				"scale": 1.0,
 				"show": true,
 				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
+				"tile_rotations_count": 1
 			},
 			"id": 31,
 			"points": [
@@ -8349,7 +8349,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 12.5,
-						"id": "bricks",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -8357,7 +8357,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				]
@@ -8366,7 +8366,7 @@
 		{
 			"ceiling": 12.5,
 			"ceiling_surface": {
-				"id": "floor2",
+				"id": "pipes",
 				"offset": [
 					0.0,
 					0.0
@@ -8374,14 +8374,14 @@
 				"rotation": 0.0,
 				"scale": 1.0,
 				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2l",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "floor1",
+				"id": "stone_wall",
 				"offset": [
 					0.0,
 					0.0
@@ -8390,7 +8390,7 @@
 				"scale": 1.0,
 				"show": true,
 				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
+				"tile_rotations_count": 1
 			},
 			"id": 32,
 			"points": [
@@ -8409,7 +8409,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 12.5,
-						"id": "bricks",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -8417,7 +8417,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
@@ -8473,7 +8473,23 @@
 					{
 						"begin_height": 12.5,
 						"end_height": 13.0,
-						"id": "wall3",
+						"id": "pipes",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 1.5707963267949,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 13.0,
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -8505,7 +8521,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -8513,23 +8529,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 13.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
@@ -8537,12 +8537,12 @@
 					{
 						"begin_height": 12.5,
 						"end_height": 13.0,
-						"id": "wall3",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
 						],
-						"rotation": 0.0,
+						"rotation": 1.5707963267949,
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 0.0,
@@ -8554,12 +8554,12 @@
 					{
 						"begin_height": 12.5,
 						"end_height": 13.0,
-						"id": "wall3",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
 						],
-						"rotation": 0.0,
+						"rotation": 1.5707963267949,
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 0.0,
@@ -8571,7 +8571,7 @@
 		{
 			"ceiling": 12.5,
 			"ceiling_surface": {
-				"id": "floor2",
+				"id": "pipes",
 				"offset": [
 					0.0,
 					0.0
@@ -8579,14 +8579,14 @@
 				"rotation": 0.0,
 				"scale": 1.0,
 				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2n",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "floor1",
+				"id": "stone_wall",
 				"offset": [
 					0.0,
 					0.0
@@ -8595,7 +8595,7 @@
 				"scale": 1.0,
 				"show": true,
 				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
+				"tile_rotations_count": 1
 			},
 			"id": 34,
 			"points": [
@@ -8623,7 +8623,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 12.5,
-						"id": "bricks",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -8631,7 +8631,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
@@ -8782,23 +8782,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 12.5,
-						"end_height": 13.0,
-						"id": "wall3",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -8810,12 +8794,28 @@
 						"tile_rotations_count": 1
 					}
 				],
+				[
+					{
+						"begin_height": 12.5,
+						"end_height": 13.0,
+						"id": "pipes",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 1.5707963267949,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
 				[],
 				[
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -8823,7 +8823,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				]
@@ -8874,7 +8874,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -8882,7 +8882,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
@@ -8891,12 +8891,12 @@
 					{
 						"begin_height": 12.5,
 						"end_height": 13.0,
-						"id": "wall3",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
 						],
-						"rotation": 0.0,
+						"rotation": 1.5707963267949,
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 0.0,
@@ -8952,7 +8952,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -8960,7 +8960,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
@@ -8984,7 +8984,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -8992,7 +8992,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
@@ -9001,12 +9001,12 @@
 					{
 						"begin_height": 12.5,
 						"end_height": 13.0,
-						"id": "wall3",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
 						],
-						"rotation": 0.0,
+						"rotation": 1.5707963267949,
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 0.0,
@@ -9060,7 +9060,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -9068,7 +9068,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
@@ -9077,12 +9077,12 @@
 					{
 						"begin_height": 12.5,
 						"end_height": 13.0,
-						"id": "wall3",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
 						],
-						"rotation": 0.0,
+						"rotation": 1.5707963267949,
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 0.0,
@@ -9138,7 +9138,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -9146,7 +9146,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
@@ -9170,7 +9170,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -9178,7 +9178,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
@@ -9187,12 +9187,12 @@
 					{
 						"begin_height": 12.5,
 						"end_height": 13.0,
-						"id": "wall3",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
 						],
-						"rotation": 0.0,
+						"rotation": 1.5707963267949,
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 0.0,
@@ -9246,7 +9246,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -9254,7 +9254,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
@@ -9263,12 +9263,12 @@
 					{
 						"begin_height": 12.5,
 						"end_height": 13.0,
-						"id": "wall3",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
 						],
-						"rotation": 0.0,
+						"rotation": 1.5707963267949,
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 0.0,
@@ -9371,22 +9371,7 @@
 		{
 			"ceiling": 13.0,
 			"ceiling_surface": {
-				"id": "floor2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 1.0,
-				"show": true,
-				"tile_rotation_increment": 3.14159265358979,
-				"tile_rotations_count": 2
-			},
-			"damage": 0,
-			"debug_name": "Sectors::Sector-1793v2s",
-			"floor": 10.0,
-			"floor_surface": {
-				"id": "floor1",
+				"id": "stone_wall",
 				"offset": [
 					0.0,
 					0.0
@@ -9395,7 +9380,22 @@
 				"scale": 1.0,
 				"show": true,
 				"tile_rotation_increment": 1.5707963267949,
-				"tile_rotations_count": 4
+				"tile_rotations_count": 1
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Sector-1793v2s",
+			"floor": 10.0,
+			"floor_surface": {
+				"id": "stone_wall",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 1.0,
+				"show": true,
+				"tile_rotation_increment": 1.5707963267949,
+				"tile_rotations_count": 1
 			},
 			"id": 42,
 			"points": [
@@ -9415,7 +9415,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -9423,7 +9423,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
@@ -9431,7 +9431,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
+						"id": "CCOMP02",
 						"offset": [
 							0.0,
 							0.0
@@ -9439,7 +9439,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
@@ -9447,7 +9447,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 11.0,
-						"id": "bricks",
+						"id": "stone_wall",
 						"offset": [
 							0.0,
 							0.0
@@ -9463,7 +9463,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
+						"id": "CCOMP02",
 						"offset": [
 							0.0,
 							0.0
@@ -9471,7 +9471,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
@@ -9479,7 +9479,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 13.0,
-						"id": "bricks",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
@@ -9487,7 +9487,7 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
 				],
@@ -9496,12 +9496,12 @@
 					{
 						"begin_height": 12.5,
 						"end_height": 13.0,
-						"id": "wall3",
+						"id": "pipes",
 						"offset": [
 							0.0,
 							0.0
 						],
-						"rotation": 0.0,
+						"rotation": 1.5707963267949,
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 0.0,
@@ -13955,31 +13955,10 @@
 				],
 				[
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 12.0,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
-						"end_height": 13.0,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"end_height": 12.25,
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
 						"offset": [
 							0.0,
 							0.0
@@ -13987,8 +13966,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorStorageSecret",
@@ -14002,7 +13981,7 @@
 						]
 					},
 					{
-						"begin_height": 13.0,
+						"begin_height": 12.25,
 						"end_height": 15.0,
 						"id": "bricks",
 						"offset": [
@@ -14262,31 +14241,10 @@
 			"wall_surfaces": [
 				[
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 13.0,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"end_height": 14.0,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
 						"offset": [
 							0.0,
 							0.0
@@ -14294,8 +14252,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorLiftStorage",
@@ -16106,31 +16064,9 @@
 			"wall_surfaces": [
 				[
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 14.0,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
-						"end_height": 14.5,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"end_height": 14.25,
+						"id": "bricks",
 						"offset": [
 							0.0,
 							0.0
@@ -16139,7 +16075,22 @@
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotations_count": 1
+					},
+					{
+						"begin_height": 14.25,
+						"end_height": 14.5,
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorDoorMainSecurity",
@@ -18636,8 +18587,8 @@
 			"points": [
 				321,
 				322,
-				318,
-				317
+				320,
+				319
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 49,
@@ -18727,8 +18678,8 @@
 			"points": [
 				323,
 				324,
-				320,
-				319
+				318,
+				317
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -18736,31 +18687,10 @@
 			"wall_surfaces": [
 				[
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 14.0,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"end_height": 15.0,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
 						"offset": [
 							0.0,
 							0.0
@@ -18768,8 +18698,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorDoorCircle",
@@ -21558,31 +21488,9 @@
 			"wall_surfaces": [
 				[
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 11.0,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
-						"end_height": 12.0,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"end_height": 11.25,
+						"id": "bricks",
 						"offset": [
 							0.0,
 							0.0
@@ -21591,7 +21499,22 @@
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotations_count": 1
+					},
+					{
+						"begin_height": 11.25,
+						"end_height": 11.75,
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorDoorStorageCheckpoint",
@@ -21603,6 +21526,20 @@
 								"while_alive": false
 							}
 						]
+					},
+					{
+						"begin_height": 11.75,
+						"end_height": 12.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
 					}
 				],
 				[
@@ -26471,31 +26408,9 @@
 			"wall_surfaces": [
 				[
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 11.0,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
-						"end_height": 12.0,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"end_height": 11.25,
+						"id": "bricks",
 						"offset": [
 							0.0,
 							0.0
@@ -26504,7 +26419,22 @@
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotations_count": 1
+					},
+					{
+						"begin_height": 11.25,
+						"end_height": 11.75,
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorDoorOffice2",
@@ -26516,6 +26446,20 @@
 								"while_alive": false
 							}
 						]
+					},
+					{
+						"begin_height": 11.75,
+						"end_height": 12.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
 					}
 				],
 				[
@@ -26595,31 +26539,9 @@
 			"wall_surfaces": [
 				[
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 11.0,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
-						"end_height": 12.0,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"end_height": 11.25,
+						"id": "bricks",
 						"offset": [
 							0.0,
 							0.0
@@ -26628,7 +26550,22 @@
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotations_count": 1
+					},
+					{
+						"begin_height": 11.25,
+						"end_height": 11.75,
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorDoorOffice",
@@ -26640,6 +26577,20 @@
 								"while_alive": false
 							}
 						]
+					},
+					{
+						"begin_height": 11.75,
+						"end_height": 12.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
 					}
 				],
 				[
@@ -27289,31 +27240,9 @@
 			"wall_surfaces": [
 				[
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 11.0,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
-						"end_height": 12.0,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"end_height": 11.25,
+						"id": "bricks",
 						"offset": [
 							0.0,
 							0.0
@@ -27322,7 +27251,22 @@
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotations_count": 1
+					},
+					{
+						"begin_height": 11.25,
+						"end_height": 11.75,
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorDoorToilet",
@@ -27334,6 +27278,20 @@
 								"while_alive": false
 							}
 						]
+					},
+					{
+						"begin_height": 11.75,
+						"end_height": 12.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
 					}
 				],
 				[
@@ -27413,31 +27371,9 @@
 			"wall_surfaces": [
 				[
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 11.0,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
-						"end_height": 12.0,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"end_height": 11.25,
+						"id": "bricks",
 						"offset": [
 							0.0,
 							0.0
@@ -27446,7 +27382,22 @@
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotations_count": 1
+					},
+					{
+						"begin_height": 11.25,
+						"end_height": 11.75,
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorDoorCheckpoint",
@@ -27458,6 +27409,20 @@
 								"while_alive": false
 							}
 						]
+					},
+					{
+						"begin_height": 11.75,
+						"end_height": 12.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
 					}
 				],
 				[
@@ -29187,31 +29152,10 @@
 			"wall_surfaces": [
 				[
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 12.0,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"end_height": 13.0,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
 						"offset": [
 							0.0,
 							0.0
@@ -29219,8 +29163,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorExit",
@@ -29892,31 +29836,9 @@
 			"wall_surfaces": [
 				[
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 11.0,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
-						"end_height": 12.0,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"end_height": 11.25,
+						"id": "bricks",
 						"offset": [
 							0.0,
 							0.0
@@ -29925,7 +29847,22 @@
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotations_count": 1
+					},
+					{
+						"begin_height": 11.25,
+						"end_height": 11.75,
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorDoorToilet",
@@ -29937,6 +29874,20 @@
 								"while_alive": false
 							}
 						]
+					},
+					{
+						"begin_height": 11.75,
+						"end_height": 12.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
 					}
 				],
 				[
@@ -30626,31 +30577,10 @@
 			"wall_surfaces": [
 				[
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 11.0,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"end_height": 11.5,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
 						"offset": [
 							0.0,
 							0.0
@@ -30658,8 +30588,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorDoorMToilet2",
@@ -30750,31 +30680,10 @@
 			"wall_surfaces": [
 				[
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 11.0,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"end_height": 11.5,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
 						"offset": [
 							0.0,
 							0.0
@@ -30782,8 +30691,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorDoorMToilet1",
@@ -32453,31 +32362,10 @@
 			"wall_surfaces": [
 				[
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 11.0,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"end_height": 11.5,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
 						"offset": [
 							0.0,
 							0.0
@@ -32485,8 +32373,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorDoorFToilet",
@@ -32577,31 +32465,10 @@
 			"wall_surfaces": [
 				[
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 11.0,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"end_height": 11.5,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
 						"offset": [
 							0.0,
 							0.0
@@ -32609,8 +32476,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorDoorFToilet",
@@ -32701,31 +32568,10 @@
 			"wall_surfaces": [
 				[
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 11.0,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"end_height": 11.5,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
 						"offset": [
 							0.0,
 							0.0
@@ -32733,8 +32579,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorDoorFToilet",
@@ -36267,31 +36113,10 @@
 						"tile_rotations_count": 1
 					},
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 11.0,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"end_height": 12.0,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
 						"offset": [
 							0.0,
 							0.0
@@ -36299,8 +36124,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorDoorMeeting",
@@ -37691,31 +37516,9 @@
 			"wall_surfaces": [
 				[
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 11.0,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
-						"end_height": 12.0,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"end_height": 11.25,
+						"id": "bricks",
 						"offset": [
 							0.0,
 							0.0
@@ -37724,7 +37527,22 @@
 						"scale": 1.0,
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotations_count": 1
+					},
+					{
+						"begin_height": 11.25,
+						"end_height": 11.75,
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorDoorOffice",
@@ -37736,6 +37554,20 @@
 								"while_alive": false
 							}
 						]
+					},
+					{
+						"begin_height": 11.75,
+						"end_height": 12.0,
+						"id": "bricks",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
 					}
 				],
 				[
@@ -41318,31 +41150,10 @@
 						"tile_rotations_count": 1
 					},
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 14.5,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"end_height": 15.5,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
 						"offset": [
 							0.0,
 							0.0
@@ -41350,8 +41161,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorDoorTeleportArena",
@@ -41990,31 +41801,10 @@
 						"tile_rotations_count": 1
 					},
 					{
-						"absolute_directions": false,
-						"begin_down_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"begin_height": 15.0,
-						"begin_up_direction": [
-							0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"end_down_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							0.0500000007450581
-						],
 						"end_height": 16.0,
-						"end_up_direction": [
-							-0.0199999995529652,
-							0.0500000007450581,
-							-0.0500000007450581
-						],
-						"id": "floor1",
-						"id_triggered": "wall7",
+						"id": "button_tech_off",
+						"id_triggered": "button_tech_on",
 						"offset": [
 							0.0,
 							0.0
@@ -42022,8 +41812,8 @@
 						"rotation": 0.0,
 						"scale": 1.0,
 						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 4,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1,
 						"triggers": [
 							{
 								"activator": "ActivatorFinalArenaExit",
