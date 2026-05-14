@@ -59,7 +59,7 @@ void main()
 
   vec2 uv_pixels = vec2(ivec2((uv_meters + texture_offset) * PIXELS_PER_M));
   uv_pixels   = mod(uv_pixels, texture_data.size);
-  vec2 uv_0_1 = clamp(uv_pixels / texture_data.size, vec2(0.001f), vec2(0.999f));
+  vec2 uv_0_1 = clamp(uv_pixels / texture_data.size, vec2(0.01f), vec2(0.99f));
   if (normal.y > 0.0f) uv_0_1.x = 1.0f - uv_0_1.x; // flip floor x
   uv_0_1.y = 1.0f - uv_0_1.y; // flip, not sure why, but it was in the original code
   vec2 uv = (texture_data.pos + uv_0_1 * texture_data.size) / atlas_size;
