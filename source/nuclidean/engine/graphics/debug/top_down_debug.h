@@ -63,9 +63,14 @@ private:
   bool show_sector_grid_list     = false;
   bool show_sector_ids           = false;
   bool show_entity_ids           = false;
+  bool show_entity_bboxes        = false;
   bool inspect_nucledian_portals = false;
   bool show_path_debug           = false;
   bool do_path_smoothing         = true;
+  f32  path_debug_step_up        = 1.0f;
+  f32  path_debug_step_down      = 1.0f;
+  f32  path_debug_radius         = 0.25f;
+  f32  path_debug_height         = 1.0f;
   vec2 path_debug_start = VEC2_ZERO;
   vec2 path_debug_end   = VEC2_ZERO;
 
