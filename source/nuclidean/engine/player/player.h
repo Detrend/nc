@@ -155,8 +155,14 @@ private:
 
   s32 current_health;
 
-  // Camera spring
-  f32 vertical_camera_offset = 0.0f;
+  // Camera height smoothing
+  static constexpr u32 CAM_SMOOTHING_FRAMES = 80; // Because 400FPS * 0.2 = 80
+  struct
+  {
+    std::array<f32, CAM_SMOOTHING_FRAMES> heights{};
+    std::array<f64, CAM_SMOOTHING_FRAMES> times  {};
+    u8 current_idx = 0;
+  } cam_smoothing;
 
   f32 dead_camera_offset = 0.0f;
 

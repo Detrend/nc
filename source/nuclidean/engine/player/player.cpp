@@ -125,6 +125,7 @@ Player::Player(vec3 position, vec3 forward)
 , weapon_fsm(0)
 {
   this->camera.update_transform(position, angle_yaw, angle_pitch, 0.0f, 0.0f);
+  std::fill(cam_smoothing.times.begin(), cam_smoothing.times.end(), 0.0);
 
   // Has to be called to set-up the FSM
   this->change_weapon(this->get_equipped_weapon());
@@ -310,7 +311,6 @@ void Player::apply_velocity(f32 delta_seconds)
 
   // Store the position here, change it, and then set it again later
   vec3 position = this->get_position();
-  vec3 prev_pos = position;
 
   // MR says: hotfix for the physics bug that caused player to float
   velocity.y = clamp(velocity.y, -30.0f, 30.0f);
@@ -342,18 +342,13 @@ void Player::apply_velocity(f32 delta_seconds)
   // We have to work with prev_pos that is relative to our portal transformation.
   //f32 prev_pos_rel_y = (portal_transform * vec4{prev_pos, 1.0f}).y;
   // Same as above but without unnecessary multiplications
-  f32 prev_pos_rel_y
-    = prev_pos.x * portal_transform[0].y
-    + prev_pos.y * portal_transform[1].y
-    + prev_pos.z * portal_transform[2].y
-    + /*1.0f * */  portal_transform[3].y;
+  f32 pos_rel_y = position.y + portal_transform[3].y;
 
-  f32 height_diff = position.y - prev_pos_rel_y;
-  f32 max_offset  = CVars::camera_spring_height;
-  this->vertical_camera_offset = clamp
-  (
-    this->vertical_camera_offset - height_diff, -max_offset, max_offset
-  );
+  f32 height_diff = pos_rel_y - position.y;
+  for (u8 i = 0; i < CAM_SMOOTHING_FRAMES; ++i)
+  {
+    this->cam_smoothing.heights[i] += height_diff;
+  }
 
   // Set on ground if touching floor
   this->on_ground = !collected_collisions.floors.empty();
@@ -511,6 +506,28 @@ void Player::update_camera(f32 delta)
   this->rotation_offsets.update(delta);
   this->position_offsets.update(delta);
 
+  f64 this_t = GameHelpers::get().get_time_since_start();
+  f32 pos_y  = this->get_position().y;
+  this->cam_smoothing.heights[this->cam_smoothing.current_idx] = pos_y;
+  this->cam_smoothing.times  [this->cam_smoothing.current_idx] = this_t;
+  this->cam_smoothing.current_idx = (this->cam_smoothing.current_idx + 1) % CAM_SMOOTHING_FRAMES;
+
+  f32 avg_height  = 0.0f;
+  f32 num_heights = 0.0f;
+  for (u8 i = 0; i < CAM_SMOOTHING_FRAMES; ++i)
+  {
+    f64 t = this->cam_smoothing.times[i];
+    f32 y = this->cam_smoothing.heights[i];
+    if (abs(t - this_t) <= CVars::camera_smoothing_interval)
+    {
+      num_heights += 1.0f; // maybe do a weighted average?
+      avg_height  += y;
+    }
+  }
+
+  nc_assert(num_heights > 0.0f);
+  f32 offset_from_base = (avg_height / num_heights) - pos_y;
+
   if (!alive)
   {
     dead_camera_offset -= delta * 1.0f;
@@ -520,25 +537,13 @@ void Player::update_camera(f32 delta)
       dead_camera_offset = 0.3f;
     }
 
-    f32 spd = CVars::camera_spring_update_speed;
-    lerp_towards(this->vertical_camera_offset, 0.0f, delta * spd);
-
     camera.update_transform
     (
       this->get_position(), this->angle_yaw, this->angle_pitch, 0.0f,
-      dead_camera_offset + this->vertical_camera_offset
+      dead_camera_offset + offset_from_base
     );
 
     return;
-  }
-
-  // Update the spring
-  f32 spd = CVars::camera_spring_update_speed;
-  lerp_towards(this->vertical_camera_offset, 0.0f, delta * spd);
-
-  if (!on_ground)
-  {
-    vertical_camera_offset = 0.0f;
   }
 
   vec2 sway = this->calc_sway_amount() * this->calc_camera_sway_coeff();
@@ -551,7 +556,7 @@ void Player::update_camera(f32 delta)
   f32  yaw   = this->angle_yaw   + camera_rot_offset.x;
   f32  pitch = this->angle_pitch + camera_rot_offset.y;
   f32  roll  = deg2rad(roll_coeff * CVars::player_head_side_coeff_during_strafe);
-  f32  y_off = PLAYER_EYE_HEIGHT + this->vertical_camera_offset + sway.y * CVars::player_head_bob_y_coeff + camera_y_offset * CVars::player_head_move_y_coeff;
+  f32  y_off = PLAYER_EYE_HEIGHT + offset_from_base + sway.y * CVars::player_head_bob_y_coeff + camera_y_offset * CVars::player_head_move_y_coeff;
 
   camera.update_transform(pos, yaw, pitch, roll, y_off);
 }
@@ -926,8 +931,8 @@ void Player::update
 
   // Has to happen even if dead because it calculates gravity
   this->calculate_gravity_velocity(delta);
-  this->apply_velocity(delta);   
-  this->update_camera(delta); // should be after "apply_velocity"
+  this->apply_velocity(delta);
+  this->update_camera(delta); // Has to be called after "apply_velocity"
 }
 
 //==============================================================================
