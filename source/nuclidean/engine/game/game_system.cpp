@@ -149,10 +149,11 @@ static bool load_json_flag(const nlohmann::json& js, const cstr key)
 //==============================================================================
 static SurfaceData load_json_surface(const nlohmann::json &js) 
 {
-  if (const bool should_show = js["show"]) {
+  if (const bool should_show = js["show"])
+  {
     std::string texture_name = js["id"];
 
-    TextureID tid = TextureManager::get()[texture_name].get_texture_id();
+    TextureID tid     = TextureManager::get()[texture_name].get_texture_id();
     TextureID alt_tid = tid;
 
     if (js.contains("id_triggered"))
@@ -163,16 +164,13 @@ static SurfaceData load_json_surface(const nlohmann::json &js)
 
     return SurfaceData
     {
-      .texture_id_default = tid,
+      .texture_id_default   = tid,
       .texture_id_triggered = alt_tid,
-      .scale = js["scale"],
-      .rotation = js["rotation"],
-      .offset = load_json_vector<2>(js["offset"]),
-      .tile_rotations_count = js["tile_rotations_count"],
-      .tile_rotation_increment = js["tile_rotation_increment"],
-      .should_show = true
+      .offset               = load_json_vector<2>(js["offset"]), // in pixels
+      .should_show          = true,
     };
   }
+
   return SurfaceData
   {
     .should_show = false
