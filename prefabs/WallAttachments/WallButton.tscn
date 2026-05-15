@@ -7,9 +7,9 @@
 [node name="WallButton" type="Node2D"]
 script = ExtResource("1_c5gi2")
 texture = ExtResource("2_c5gi2")
-stripe_floor_offset = 0.5
+stripe_floor_offset = 1.0
 _use_stripe_width = true
-stripe_width = 0.5
+stripe_width = 1.0
 
 [node name="Icon" type="Sprite2D" parent="."]
 z_index = 500
