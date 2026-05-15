@@ -21,7 +21,7 @@ class_name Thing
 ## Unique value assigned at the start of export process. Other objects can refer to this [Thing] by it
 var _export_tag : int = -1
 
-const RAW_DATA_EXPORT_CATEGORY :String = "data"
+const RAW_DATA_EXPORT_CATEGORY :String = "rawdata"
 
 ## @brief Section in the level's JSON file where this Thing will be listed. 
 ## 		Typically should be a unique string for each Thing type.

@@ -1,4 +1,4 @@
-[gd_scene load_steps=216 format=3 uid="uid://qa2w68k6j6h2"]
+[gd_scene load_steps=217 format=3 uid="uid://qa2w68k6j6h2"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_1o0vd"]
 [ext_resource type="Script" uid="uid://b8tkglirbwf1e" path="res://scripts/reactivity/ActivatorPool.gd" id="2_b0a4w"]
@@ -30,6 +30,10 @@
 [ext_resource type="PackedScene" uid="uid://mwrf1vplbdod" path="res://levels/newLevel2_components/faux_arena_1.tscn" id="23_l7qbx"]
 [ext_resource type="PackedScene" uid="uid://hg6kt5ju3l3a" path="res://prefabs/Entities/Cultist.tscn" id="25_i76wg"]
 [ext_resource type="PackedScene" uid="uid://brvpsjb10qgr1" path="res://prefabs/PickUps/ShotgunAmmo.tscn" id="25_oer63"]
+
+[sub_resource type="Curve" id="Curve_52ao7"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.21672359, 0.55838645), 0.0, 0.0, 0, 0, Vector2(0.36689425, 1), 0.0, 0.0, 0, 0, Vector2(0.5682594, 0.20647556), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 5
 
 [sub_resource type="Resource" id="Resource_oenso"]
 script = ExtResource("4_coai7")
@@ -1293,13 +1297,42 @@ script = ExtResource("3_et0pd")
 [node name="Hook" type="Node" parent="Activators/TeleportTest"]
 script = ExtResource("4_7nxdn")
 
+[node name="GunDestination" parent="Activators/TeleportTest/Hook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+position = Vector2(-65, -65)
+target = NodePath("../Shotgun")
+
+[node name="LightDestination" parent="Activators/TeleportTest/Hook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+position = Vector2(-58, -41)
+target = NodePath("../PointLight")
+
 [node name="Destination" parent="Activators/TeleportTest/Hook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-position = Vector2(-62, -60)
+position = Vector2(-54, -54)
 target = NodePath("../Cultist5")
+
+[node name="Destination2" parent="Activators/TeleportTest/Hook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+position = Vector2(-46, -54)
+target = NodePath("../Cultist6")
 
 [node name="Cultist5" parent="Activators/TeleportTest/Hook" instance=ExtResource("25_i76wg")]
 position = Vector2(-122, -53.999985)
 rotation = -1.5878946
+
+[node name="Cultist6" parent="Activators/TeleportTest/Hook" instance=ExtResource("25_i76wg")]
+position = Vector2(-123.00001, -60.000004)
+rotation = -1.5878946
+
+[node name="Shotgun" parent="Activators/TeleportTest/Hook" instance=ExtResource("19_et0pd")]
+position = Vector2(-133, -45)
+
+[node name="PointLight" parent="Activators/TeleportTest/Hook" instance=ExtResource("9_qxoy5")]
+position = Vector2(-134, -58)
+color = Color(1, 0, 0, 1)
+intensity = 2.33
+radius = 4.37
+falloff = 0.74
+should_animate = true
+curve = SubResource("Curve_52ao7")
+cycle_duration_seconds = 3.0
 
 [node name="Arena1_Trap" type="Node" parent="Activators"]
 script = ExtResource("3_et0pd")
@@ -1347,10 +1380,10 @@ script = ExtResource("3_et0pd")
 [node name="EnemyReservoir" parent="Sectors" instance=ExtResource("2_eukjm")]
 position = Vector2(-126, -64)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(-2.3949127, -0.27518463, 10, 0, 10, 16, -2.3949127, 15.724815)
+polygon = PackedVector2Array(-16, -7, 13, -6, 15, 24, -17, 24)
 data = SubResource("Resource_oenso")
 ceiling_height = 6.0
-portal_wall_length = 12.0
+portal_wall_length = 29.017237
 portal_destination_wall_length = -1.0
 
 [node name="Node2D" type="Node2D" parent="Sectors"]
@@ -1359,14 +1392,14 @@ portal_destination_wall_length = -1.0
 position = Vector2(-120, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(112, 12, 112, 28, 112, 60, 48, 60, 47, -4, 47, -7, 48, -20, 112, -20)
+polygon = PackedVector2Array(112, 12, 112, 28, 112, 60, 48, 60, 47, -2, 47, -7, 48, -20, 112, -20)
 data = SubResource("Resource_ctoo8")
 ceiling_height = 6.0
 portal_wall_length = 16.0
 portal_destination_wall_length = -1.0
 
 [node name="Button" parent="Sectors/Node2D/StartRoom" instance=ExtResource("8_ufqas")]
-position = Vector2(47, -5.5)
+position = Vector2(47, -4.5)
 
 [node name="Trigger" type="Node" parent="Sectors/Node2D/StartRoom/Button" node_paths=PackedStringArray("target")]
 script = ExtResource("13_et0pd")
@@ -4030,8 +4063,8 @@ intensity = 2.57
 curve = SubResource("Curve_qxoy5")
 
 [node name="PlayerPosition" parent="." instance=ExtResource("7_ufqas")]
-position = Vector2(-40, -74)
-rotation = -6.311343
+position = Vector2(-47, -91)
+rotation = -5.388471
 
 [node name="PickUps" type="Node2D" parent="."]
 
