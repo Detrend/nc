@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://uu7lnwfy77av"]
+
+[ext_resource type="Script" uid="uid://dl12cf3mb2y28" path="res://scripts/things/rawdata/TeleportDestination.gd" id="1_pts45"]
+[ext_resource type="Texture2D" uid="uid://bpmcq0m0b1qsl" path="res://imgs/cultist_face.png" id="2_pu0rs"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_pts45"]
+blend_mode = 2
+
+[node name="TeleportDestination" type="Node2D"]
+z_index = 999
+script = ExtResource("1_pts45")
+
+[node name="Icon" type="Sprite2D" parent="."]
+self_modulate = Color(0.23420608, 0.4406672, 0.4910037, 1)
+texture_filter = 1
+texture_repeat = 1
+material = SubResource("CanvasItemMaterial_pts45")
+scale = Vector2(0.49445286, 0.49445286)
+texture = ExtResource("2_pu0rs")
