@@ -64,7 +64,7 @@ Pickup::Pickup(vec3 position, PickupType my_type, bool on_floor)
 , snap_to_floor(on_floor)
 {
   cstr texture_name = PICKUP_NAMES[this->type];
-  f32  scaling      = this->is_weapon() ? 45.0f : 30.0f;
+  f32  scaling      = this->is_weapon() ? 45.0f : 22.5f;
 
   appear = Appearance
   {

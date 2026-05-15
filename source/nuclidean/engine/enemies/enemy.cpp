@@ -12,18 +12,16 @@
 #include <engine/map/physics.h>
 #include <engine/entity/entity_system.h>
 
-#include<engine/game/game_helpers.h>
 #include <engine/sound/sound_system.h>
 #include <engine/sound/sound_resources.h>
 
 #include <game/projectiles.h> // ProjectileTypes
 #include <game/projectile.h>
 #include <game/enemies.h>     // ENEMY_STATS
+#include <game/particle.h>    // Particle
 
 #include <math/lingebra.h>
 #include <math/utils.h>
-
-#include <cstdlib> // std::rand
 
 #include <engine/graphics/resources/texture.h>
 
@@ -32,6 +30,7 @@
 
 #include <map>
 #include <format>
+#include <algorithm> // std::fill
 
 #if NC_DEBUG_DRAW
 #include <engine/graphics/debug/gizmo.h>
@@ -46,8 +45,8 @@ constexpr f32 SPOT_DISTANCE         = 1.0f;   // Player will get spotted if clos
 constexpr f32 ENEMY_FOV_DEG         = 100.0f; // Field of view
 constexpr f32 TARGET_STOP_DISTANCE  = 1.0f;   // How far do we keep from the target
 constexpr f32 PATH_POINT_ERASE_DIST = 0.25f;  // Removes the path point if this close
-constexpr f32 ENEMY_GRAVITY         = 6.0f;
-constexpr f32 ENEMY_MELEE_RANGE     = 2.5f;
+constexpr f32 ENEMY_GRAVITY         = 30.0f;
+constexpr f32 ENEMY_MELEE_RANGE     = 1.8f;
 constexpr f32 ENEMY_MELEE_EXPAND    = 0.1f;
 
 constexpr f32 SOUND_RANGE           = 25.0f;  // Default range used for all 3D sounds emitted by an enemy
@@ -56,7 +55,7 @@ constexpr f32 ALERT_SOUND_RANGE     = 45.0f;  // Range used for the alert 3D sou
 constexpr f32 HURT_SOUND_INTERVAL_SECONDS = 0.8f; // Minimal interval between two instances of hurt sound being played by a specific enemy
 
 // MR says: Its better to keep these universal for all enemies in the demo.
-constexpr f32 ENEMY_STEP_HEIGHT = 0.66f;  // Step height, 66cm
+constexpr f32 ENEMY_STEP_HEIGHT = 1.30f;  // Step height, 130cm
 constexpr f32 ENEMY_DROP_HEIGHT = 1.0f;   // How much we are able to drop
 
 // Global only temporaly, this will be set per enemy type.
@@ -172,7 +171,7 @@ Enemy::Enemy(vec3 position, vec3 looking_dir, EnemyType tpe)
   {
     .sprite    = std::format("{}_idle_0", ENEMY_TYPE_NAMES[this->type]),
     .direction = this->get_facing_hor(),
-    .scale     = 40.0f,
+    .scale     = 31.25f,
     .mode      = Appearance::SpriteMode::dir8,
     .pivot     = Appearance::PivotMode::bottom,
   };
@@ -181,6 +180,9 @@ Enemy::Enemy(vec3 position, vec3 looking_dir, EnemyType tpe)
   {
     this->anim_fsm.set_state_length(s, stats.state_sprite_len[s]);
   }
+
+  // Smoothing
+  std::fill(smooth_ys.begin(), smooth_ys.end(), position.y);
 
   u64 attack_frame_idx = stats.state_sprite_cnt[ActorAnimStates::attack];
   f32 attack_state_len = stats.state_sprite_len[ActorAnimStates::attack];
@@ -268,8 +270,13 @@ void Enemy::handle_movement(f32 delta)
     }
 
     // The target inverse has to be recomputed as well
-    current_path.target_transform_inv
-      = portal_transform * current_path.target_transform_inv;
+    this->on_self_or_target_traversed_nc_portal();
+
+    // The last heights have to be recomputed
+    for (f32& height : smooth_ys)
+    {
+      height += portal_transform[3].y;
+    }
   }
 
   if (anim_fsm.get_state() == ActorAnimStates::walk) {
@@ -288,6 +295,19 @@ void Enemy::handle_appearance(f32 delta)
   using Event   = AnimFSMEvents::evalue;
   using Trigger = ActorFSM::Trigger;
   using State   = ActorFSM::State;
+
+  f32 pos_y = this->get_position().y;
+  this->smooth_ys[this->smooth_y_idx] = pos_y;
+  this->smooth_y_idx = (this->smooth_y_idx + 1) % Y_SMOOTHING_FRAMES;
+
+  f32 avg_y = 0.0f;
+  f32 one_over_n = 1.0f / Y_SMOOTHING_FRAMES;
+  for (u8 i = 0; i < Y_SMOOTHING_FRAMES; ++i)
+  {
+    avg_y += smooth_ys[i] * one_over_n;
+  }
+
+  this->appear.offset = avg_y - pos_y;
 
   bool died = false;
 
@@ -380,6 +400,7 @@ void Enemy::die()
   this->anim_fsm.set_state(ActorAnimStates::dying);
   GameHelpers::get().play_3d_sound(this->get_position(), ENEMY_SOUNDS_BY_TYPE[type].die, SOUND_RANGE, 1.0f);
   get_engine().get_module<GameSystem>().increment_kill_count();
+  set_height(get_height() * 0.25f);
 }
 
 //==============================================================================
@@ -555,18 +576,18 @@ void Enemy::handle_ai_alert(f32 delta)
         bool found_one         = false;
         bool only_for_shooting = false;
 
-        path_points = lvl.calc_path_relative
-        (
-          this->get_position(),
-          this->follow_target_pos,
-          this->get_radius(),
-          this->get_height(),
+          path_points = lvl.calc_path_relative
+          (
+            this->get_position(),
+            this->follow_target_pos,
+            this->get_radius(),
+            this->get_height(),
           ENEMY_STEP_HEIGHT,
-          ENEMY_DROP_HEIGHT,
-          true,
-          &nc_transform,
-          &found_one
-        );
+            ENEMY_DROP_HEIGHT,
+            true,
+            &nc_transform,
+            &found_one
+          );
 
         if (!found_one && !get_stats().is_melee)
         {
@@ -734,9 +755,15 @@ void Enemy::handle_ai_alert(f32 delta)
   {
     for (u64 i = 0; i < current_path.points.size(); ++i)
     {
-      vec2 p1 = i ? current_path.points[i-1].xz() : position_2d;
-      vec2 p2 = current_path.points[i].xz();
-      Gizmo::create_line_2d("Paths", p1, p2, colors::BLUE);
+      vec3 p1 = i ? current_path.points[i-1] : this->get_position();
+      vec3 p2 = current_path.points[i];
+      Gizmo::create_line_2d("Paths", p1.xz(), p2.xz(), colors::BLUE);
+
+      if (CVars::debug_enemy_paths)
+      {
+        vec3 offset = vec3{0.0f, 0.2f, 0.0f};
+        Gizmo::create_line(0.001f, p1 + offset, p2 + offset, colors::BLUE);
+      }
     }
   }
 #endif
@@ -856,8 +883,11 @@ void Enemy::on_attack_trigger()
 {
   const EnemyStats& stats = this->get_stats();
 
-  vec3 dir  = this->get_facing();
-  vec3 from = this->get_attack_from_pos() + dir * 0.3f;
+  vec3 dir       = this->get_facing();
+  vec3 ahead_dir = dir * 0.3f;
+  vec3 from_pos  = this->get_attack_from_pos();
+
+  vec3 from = GameHelpers::get().calc_shoot_from_pos(from_pos, ahead_dir, dir);
 
   if (stats.is_melee)
   {
@@ -889,6 +919,15 @@ void Enemy::on_attack_trigger()
       {
         enemy->damage(hit_dmg, this->get_id());
       }
+
+      vec3 hit_pos = from + dir * ENEMY_MELEE_RANGE * hit.coeff;
+
+      // Spawn blood particles
+      GameSystem::get().get_entities().create_entity<Particle>
+      (
+        hit_pos, "blood_splatter2",
+        4, 0.3f, colors::BLACK, 0.0f, 24.0f
+      );
     }
   }
   else
@@ -959,15 +998,28 @@ vec2 Enemy::get_facing_2d() const
 }
 
 //==============================================================================
-void Enemy::on_player_traversed_nc_portal(EntityID /*player*/, mat4 transform)
+void Enemy::on_self_or_target_traversed_nc_portal()
+{
+  if (Entity* target = GameSystem::get().get_entities().get_entity(this->target_id))
+  {
+    PhysLevel lvl = GameSystem::get().get_level();
+    vec3 from = this->get_position();
+    vec3 to   = target->get_position();
+
+    mat4 trans = lvl.calc_relative_transform_from_self_to_target(from, to);
+    current_path.target_transform_inv = inverse(trans);
+  }
+}
+
+//==============================================================================
+void Enemy::on_player_traversed_nc_portal(EntityID player_id, mat4 /*transform*/)
 {
   // Modify the target transform inv
   // This fixes the bug due to which the enemy suddenly turns around if the
   // player traverses portal during his shooting animation
-  if (this->state != EnemyAiState::idle)
+  if (this->state != EnemyAiState::idle && this->target_id == player_id)
   {
-    current_path.target_transform_inv
-      = inverse(transform) * current_path.target_transform_inv;
+    this->on_self_or_target_traversed_nc_portal();
   }
 }
 

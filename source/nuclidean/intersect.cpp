@@ -1152,8 +1152,8 @@ bool ray_exp_wall
     );
 
     f32 max_coeff = 1.0f;
-    f32 min_coeff = - wall_exp / length(ray_dir);
-    //f32 min_coeff = 0;
+    //f32 min_coeff = - wall_exp / length(ray_dir);
+    f32 min_coeff = 0;
     if (ll_coll && (ll_coeff < min_coeff || ll_coeff > max_coeff))
     {
       ll_coll = false;

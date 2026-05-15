@@ -37,6 +37,8 @@ layout(location = 3) uniform vec2 level_atlas_size;
 layout(location = 5) uniform uint sector_id;
 layout(location = 6) uniform uint matrix_id;
 
+#define PIXELS_PER_M 48
+
 layout(std430, binding = 0) buffer texture_buffer {
     TextureData textures[];
 };
@@ -53,29 +55,14 @@ void main()
   vec2 atlas_size = (use_game_atlas ? game_atlas_size : level_atlas_size);
 
   // uv based on world position
-  vec2 uv = abs(normal.y) > 0.99f ? position.xz : vec2(cumulative_wall_len, position.y);
-  // get indices of the tile we are currently draving
-  vec2 rand_seed = vec2(floor(uv.x/texture_scale), floor(uv.y/texture_scale));
-  // run those indices through a hash function
-  float rand_value = floor(rand(rand_seed) * tile_rotations_count);
-  // based on the random value we got, randomize the tile rotation
-  float actual_rotation = texture_rotation + (rand_value * tile_rotation_increment);
-  
-  // floor uv is mirrored
-  if (normal.y > 0.0f) uv.x *= -1.0f;
-  // apply rotation, scale, and offset
-  float c = cos(actual_rotation);
-  float s = sin(actual_rotation);
-  uv = (mat2(c, s, -s, c) * uv) / texture_scale + texture_offset;
-  // tile texture
-  uv = fract(uv);
-  // flip y axis
-  uv.y = 1.0f - uv.y;
-  // Hotfix for weird texture edges when mipmapping enabled..  This will break
-  // with large textures!
-  uv = clamp(uv, vec2(0.01f), vec2(0.99f));
-  // compute atlas uv
-  uv = (uv * texture_data.size + texture_data.pos) / atlas_size;
+  vec2 uv_meters = abs(normal.y) > 0.99f ? position.xz : vec2(cumulative_wall_len, position.y);
+
+  vec2 uv_pixels = vec2(ivec2((uv_meters + texture_offset) * PIXELS_PER_M));
+  uv_pixels   = mod(uv_pixels, texture_data.size);
+  vec2 uv_0_1 = clamp(uv_pixels / texture_data.size, vec2(0.01f), vec2(0.99f));
+  if (normal.y > 0.0f) uv_0_1.x = 1.0f - uv_0_1.x; // flip floor x
+  uv_0_1.y = 1.0f - uv_0_1.y; // flip, not sure why, but it was in the original code
+  vec2 uv = (texture_data.pos + uv_0_1 * texture_data.size) / atlas_size;
 
   vec4 color;
   if (use_game_atlas) {

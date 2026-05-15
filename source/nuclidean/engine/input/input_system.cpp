@@ -6,8 +6,11 @@
 #include <engine/core/engine.h>
 
 #include <imgui/imgui_impl_sdl2.h>
+#include <engine/ui/user_interface_system.h>
 
 #include <SDL2/include/SDL.h>
+
+#include <game/weapons.h>
 
 #include <utility> // std::pair
 
@@ -54,7 +57,6 @@ void handle_player_input(GameInputs& inputs)
   // Look around
   int x, y;
   u32 mouse_code = SDL_GetRelativeMouseState(&x, &y);
-
   f32 sensitivity = get_engine().get_module<InputSystem>().get_sensitivity();
   inputs.player_inputs.analog[Analogues::look_vertical  ] = y * sensitivity;
   inputs.player_inputs.analog[Analogues::look_horizontal] = x * sensitivity;
@@ -117,9 +119,57 @@ void InputSystem::update_window_and_pump_messages()
 
     // consume the message ourselves
     this->handle_app_event(event);
+
+    if (event.type == SDL_MOUSEWHEEL)
+    {
+      handle_mouse_wheel(event);
+    }
   }
 
   handle_player_input(m_current_inputs);
+}
+
+//====================================================================
+void InputSystem::handle_mouse_wheel(SDL_Event& event)
+{
+  if (event.wheel.y > 0)
+  {
+    WeaponType weapon = GameHelpers::get().get_player()->get_equipped_weapon();
+    WeaponType next_weapon = weapon;
+    do
+    {
+      next_weapon = (next_weapon + 1);
+      if (next_weapon >= WeaponTypes::count)
+      {
+        next_weapon = 0;
+      }
+
+      if (GameHelpers::get().get_player()->has_weapon(next_weapon))
+      {
+        m_current_inputs.player_inputs.keys |= 1 << (PlayerKeyInputs::weapon_0 + next_weapon);
+        break;
+      }
+    } while (next_weapon != weapon);
+  }
+  else if (event.wheel.y < 0)
+  {
+    WeaponType weapon = GameHelpers::get().get_player()->get_equipped_weapon();
+    WeaponType next_weapon = weapon;
+    do
+    {
+      next_weapon = (next_weapon - 1);
+      if (next_weapon == INVALID_WEAPON_TYPE)
+      {
+        next_weapon = WeaponTypes::count - 1;
+      }
+
+      if (GameHelpers::get().get_player()->has_weapon(next_weapon))
+      {
+        m_current_inputs.player_inputs.keys |= 1 << (PlayerKeyInputs::weapon_0 + next_weapon);
+        break;
+      }
+    } while (next_weapon != weapon);  
+  }
 }
 
 //==============================================================================
@@ -185,8 +235,9 @@ void InputSystem::lock_player_input(InputLockLayer layer, bool lock)
     return;
   }
 
+  const bool should_lock = get_engine().is_editor_mode() ? UserInterfaceSystem::get().get_menu_manager()->get_is_visible() : lock;
   // Switch
-  SDL_SetRelativeMouseMode(lock ? SDL_FALSE : SDL_TRUE);
+  SDL_SetRelativeMouseMode(should_lock ? SDL_FALSE : SDL_TRUE);
 }
 
 //==============================================================================

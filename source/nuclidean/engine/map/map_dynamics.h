@@ -43,6 +43,7 @@ struct TriggerData
   f32  timeout = 0.0f;
 
   // Can be turned off manually? By leaving (sector) or triggering again (wall)
+  s8   increment            = 1;     // How much should be activator value incremented
   bool can_turn_off     : 1 = false; // Can be turned back off manually
   bool player_sensitive : 1 = true;  // Triggers by player
   bool enemy_sensitive  : 1 = false; // Triggers by enemy
@@ -75,18 +76,37 @@ struct TriggerData
   }
 };
 
+struct ActivatorHookLoadArg {
+
+  ActivatorHookLoadArg(const nlohmann::json* the_hook_data, const std::unordered_map<unsigned, EntityID>* the_tags_to_entities, const std::unordered_map<unsigned, const nlohmann::json*>* the_tags_to_rawdata)
+    : _hook_data(the_hook_data), _tags_to_entities(the_tags_to_entities), _tags_to_rawdata(the_tags_to_rawdata) {}
+
+  const nlohmann::json& data() const { return *_hook_data; }
+  EntityID get_entity(const unsigned tag) const { return (*_tags_to_entities).find(tag)->second; }
+  const nlohmann::json& get_additional_data(const unsigned tag) const { return *(*_tags_to_rawdata).find(tag)->second; }
+
+private:
+  const nlohmann::json *_hook_data;
+  const std::unordered_map<unsigned, EntityID> *_tags_to_entities;
+  const std::unordered_map<unsigned, const nlohmann::json*> *_tags_to_rawdata;
+};
+
+struct ActivatorHookArg {
+  f32 delta;
+  std::vector<EntityID> entities;
+};
 class IActivatorHook
 {
 public:
-  using SerializedData = nlohmann::json;
   
   virtual ~IActivatorHook(){}
 
-  virtual void load(const SerializedData& data) = 0;
-  virtual void on_activated_update([[maybe_unused]]const f32 delta) {}
-  virtual void on_activated_start(){}
-  virtual void on_activated_end(){}
+  virtual void load(const ActivatorHookLoadArg& arg) = 0;
+  virtual void on_activated_update([[maybe_unused]]const ActivatorHookArg & args) {}
+  virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args){}
+  virtual void on_activated_end([[maybe_unused]] const ActivatorHookArg& args){}
 };
+
 
 struct ActivatorData
 {
@@ -117,7 +137,7 @@ struct MapDynamics
 
   void evaluate_activators
   (
-    std::vector<u16>& out_values, f32 update_dt = 0.0f, bool notify = false
+    std::vector<u16>& out_values, f32 update_dt = 0.0f, bool notify = false, std::vector<ActivatorHookArg> *const out_info = nullptr
   );
 
   bool switch_wall_segment_trigger(SectorID sector, WallID wall, u8 segment, bool& turned_on);

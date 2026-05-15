@@ -19,6 +19,8 @@ class UiScreenEffect
     // call when player picks up an item
     void did_pickup();
 
+    void clear_effect();
+
   private:
       
     void init();

@@ -310,6 +310,22 @@
 			"falloff": 1.0,
 			"intensity": 1.0,
 			"position": [
+				0.0,
+				-46.0,
+				10.2
+			],
+			"radius": 10.0
+		},
+		{
+			"color": [
+				1.0,
+				1.0,
+				1.0,
+				1.0
+			],
+			"falloff": 1.0,
+			"intensity": 1.0,
+			"position": [
 				15.0,
 				5.0,
 				12.2
@@ -581,6 +597,22 @@
 		[
 			18.0,
 			-30.3999996185303
+		],
+		[
+			-18.0,
+			-50.0
+		],
+		[
+			18.0,
+			-50.2000007629395
+		],
+		[
+			18.0,
+			-40.6000022888184
+		],
+		[
+			-18.0,
+			-40.6000022888184
 		],
 		[
 			12.0,
@@ -982,7 +1014,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1167,7 +1200,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3674",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3674",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1242,7 +1276,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3673",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3673",
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1287,7 +1322,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672z",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672z",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1362,7 +1398,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672y",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672y",
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1407,7 +1444,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672x",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672x",
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1452,7 +1490,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672w",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672w",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1527,7 +1566,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672w2",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672w2",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1557,8 +1597,8 @@
 				14
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_target": 8,
+			"portal_wall": 0,
 			"wall_surfaces": [
 				[
 					{
@@ -1693,8 +1733,9 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672v",
-			"floor": 11.0,
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672w2a",
+			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
 				"offset": [
@@ -1708,6 +1749,112 @@
 				"tile_rotations_count": 1
 			},
 			"id": 8,
+			"points": [
+				26,
+				27,
+				28,
+				29
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 7,
+			"portal_wall": 0,
+			"wall_surfaces": [
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				]
+			]
+		},
+		{
+			"ceiling": 16.0,
+			"ceiling_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672v",
+			"floor": 11.0,
+			"floor_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"id": 9,
 			"points": [
 				17,
 				22,
@@ -1738,7 +1885,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672t",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672t",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1752,7 +1900,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 9,
+			"id": 10,
 			"points": [
 				21,
 				18,
@@ -1813,7 +1961,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672s",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672s",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1827,7 +1976,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 10,
+			"id": 11,
 			"points": [
 				19,
 				25,
@@ -1888,7 +2037,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672k",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672k",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1902,12 +2052,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 11,
+			"id": 12,
 			"points": [
-				26,
-				27,
-				28,
-				29
+				30,
+				31,
+				32,
+				33
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -1963,226 +2113,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672u",
-			"floor": 10.0,
-			"floor_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"id": 12,
-			"points": [
-				30,
-				31,
-				32,
-				33,
-				34,
-				35,
-				36,
-				37,
-				38,
-				39,
-				40,
-				41,
-				1,
-				0,
-				29,
-				28
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 14.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				]
-			]
-		},
-		{
-			"ceiling": 20.0,
-			"ceiling_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"debug_name": "Sector-3672l",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672u",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2198,10 +2130,226 @@
 			},
 			"id": 13,
 			"points": [
+				34,
+				35,
+				36,
+				37,
+				38,
+				39,
+				40,
+				41,
 				42,
 				43,
 				44,
 				45,
+				1,
+				0,
+				33,
+				32
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 14.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				]
+			]
+		},
+		{
+			"ceiling": 20.0,
+			"ceiling_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672l",
+			"floor": 10.0,
+			"floor_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"id": 14,
+			"points": [
 				46,
 				47,
 				48,
@@ -2214,8 +2362,12 @@
 				55,
 				56,
 				57,
-				27,
-				26
+				58,
+				59,
+				60,
+				61,
+				31,
+				30
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -2420,7 +2572,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672q",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672q",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2434,10 +2587,535 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 14,
+			"id": 15,
 			"points": [
-				58,
+				62,
+				63,
+				57,
+				56
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 12.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 12.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				]
+			]
+		},
+		{
+			"ceiling": 20.0,
+			"ceiling_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672p",
+			"floor": 10.0,
+			"floor_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"id": 16,
+			"points": [
+				64,
+				65,
+				61,
+				60
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 20.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 12.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				]
+			]
+		},
+		{
+			"ceiling": 20.0,
+			"ceiling_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672o",
+			"floor": 10.0,
+			"floor_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"id": 17,
+			"points": [
+				66,
+				67,
 				59,
+				58
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 12.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 12.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				]
+			]
+		},
+		{
+			"ceiling": 20.0,
+			"ceiling_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672r",
+			"floor": 10.0,
+			"floor_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"id": 18,
+			"points": [
+				68,
+				65,
+				64,
+				67,
+				66,
+				63,
+				62,
+				69,
+				70,
+				71,
+				72,
+				73,
+				74,
+				75,
+				76,
+				77
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 20.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 12.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 12.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 12.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 12.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 12.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 12.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 20.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 20.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				]
+			]
+		},
+		{
+			"ceiling": 20.0,
+			"ceiling_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672n",
+			"floor": 12.0,
+			"floor_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"id": 19,
+			"points": [
+				67,
+				64,
+				60,
+				59
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[],
+				[],
+				[]
+			]
+		},
+		{
+			"ceiling": 20.0,
+			"ceiling_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672m",
+			"floor": 12.0,
+			"floor_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"id": 20,
+			"points": [
+				63,
+				66,
+				58,
+				57
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[],
+				[],
+				[]
+			]
+		},
+		{
+			"ceiling": 20.0,
+			"ceiling_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672q2",
+			"floor": 10.0,
+			"floor_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"id": 21,
+			"points": [
+				72,
+				71,
 				53,
 				52
 			],
@@ -2495,7 +3173,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672p",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672o2",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2509,85 +3188,10 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 15,
+			"id": 22,
 			"points": [
-				60,
-				61,
-				57,
-				56
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 20.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 12.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				]
-			]
-		},
-		{
-			"ceiling": 20.0,
-			"ceiling_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"debug_name": "Sector-3672o",
-			"floor": 10.0,
-			"floor_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"id": 16,
-			"points": [
-				62,
-				63,
+				70,
+				69,
 				55,
 				54
 			],
@@ -2645,211 +3249,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672r",
-			"floor": 10.0,
-			"floor_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"id": 17,
-			"points": [
-				64,
-				61,
-				60,
-				63,
-				62,
-				59,
-				58,
-				65,
-				66,
-				67,
-				68,
-				69,
-				70,
-				71,
-				72,
-				73
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 20.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 12.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 12.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 12.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 12.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 12.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 12.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 20.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 20.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				]
-			]
-		},
-		{
-			"ceiling": 20.0,
-			"ceiling_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"debug_name": "Sector-3672n",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672n2",
 			"floor": 12.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2863,10 +3264,10 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 18,
+			"id": 23,
 			"points": [
-				63,
-				60,
+				69,
+				62,
 				56,
 				55
 			],
@@ -2894,7 +3295,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672m",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672m2",
 			"floor": 12.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2908,10 +3310,10 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 19,
+			"id": 24,
 			"points": [
-				59,
-				62,
+				71,
+				70,
 				54,
 				53
 			],
@@ -2939,7 +3341,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672q2",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672q3",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2953,10 +3356,10 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 20,
+			"id": 25,
 			"points": [
-				68,
-				67,
+				76,
+				75,
 				49,
 				48
 			],
@@ -2985,7 +3388,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 12.0,
+						"end_height": 20.0,
 						"id": "wall_2",
 						"offset": [
 							0.0,
@@ -3014,7 +3417,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672o2",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672o3",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3028,10 +3432,10 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 21,
+			"id": 26,
 			"points": [
-				66,
-				65,
+				74,
+				73,
 				51,
 				50
 			],
@@ -3089,7 +3493,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672n2",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672n3",
 			"floor": 12.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3103,10 +3508,10 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 22,
+			"id": 27,
 			"points": [
-				65,
-				58,
+				73,
+				72,
 				52,
 				51
 			],
@@ -3134,293 +3539,9 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672m2",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672m3",
 			"floor": 12.0,
-			"floor_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"id": 23,
-			"points": [
-				67,
-				66,
-				50,
-				49
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 20.0,
-			"ceiling_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"debug_name": "Sector-3672q3",
-			"floor": 10.0,
-			"floor_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"id": 24,
-			"points": [
-				72,
-				71,
-				45,
-				44
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 12.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 20.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				]
-			]
-		},
-		{
-			"ceiling": 20.0,
-			"ceiling_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"debug_name": "Sector-3672o3",
-			"floor": 10.0,
-			"floor_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"id": 25,
-			"points": [
-				70,
-				69,
-				47,
-				46
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 12.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 12.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				]
-			]
-		},
-		{
-			"ceiling": 20.0,
-			"ceiling_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"debug_name": "Sector-3672n3",
-			"floor": 12.0,
-			"floor_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"id": 26,
-			"points": [
-				69,
-				68,
-				48,
-				47
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 20.0,
-			"ceiling_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"debug_name": "Sector-3672m3",
-			"floor": 12.0,
-			"floor_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"id": 27,
-			"points": [
-				71,
-				70,
-				46,
-				45
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[],
-				[],
-				[]
-			]
-		},
-		{
-			"ceiling": 16.0,
-			"ceiling_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"debug_name": "Sector-3672f",
-			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
 				"offset": [
@@ -3435,64 +3556,19 @@
 			},
 			"id": 28,
 			"points": [
-				74,
 				75,
-				34,
-				33
+				74,
+				50,
+				49
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 11.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
 				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				]
+				[],
+				[],
+				[]
 			]
 		},
 		{
@@ -3509,8 +3585,9 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672g",
-			"floor": 11.0,
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672f",
+			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
 				"offset": [
@@ -3525,248 +3602,8 @@
 			},
 			"id": 29,
 			"points": [
-				76,
-				77,
-				75,
-				74
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[
-					{
-						"begin_height": 11.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 11.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				]
-			]
-		},
-		{
-			"ceiling": 16.0,
-			"ceiling_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"debug_name": "Sector-3672e",
-			"floor": 10.0,
-			"floor_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"id": 30,
-			"points": [
 				78,
 				79,
-				36,
-				35
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 11.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				]
-			]
-		},
-		{
-			"ceiling": 16.0,
-			"ceiling_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"debug_name": "Sector-3672h",
-			"floor": 11.0,
-			"floor_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"id": 31,
-			"points": [
-				80,
-				81,
-				79,
-				78
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[
-					{
-						"begin_height": 11.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 11.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				]
-			]
-		},
-		{
-			"ceiling": 16.0,
-			"ceiling_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"debug_name": "Sector-3672b",
-			"floor": 10.0,
-			"floor_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"id": 32,
-			"points": [
-				82,
-				83,
 				38,
 				37
 			],
@@ -3839,7 +3676,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672i",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672g",
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3853,12 +3691,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 33,
+			"id": 30,
 			"points": [
-				84,
-				85,
-				83,
-				82
+				80,
+				81,
+				79,
+				78
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -3914,7 +3752,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672a",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672e",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3928,10 +3767,10 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 34,
+			"id": 31,
 			"points": [
-				86,
-				87,
+				82,
+				83,
 				40,
 				39
 			],
@@ -4004,7 +3843,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672j",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672h",
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -4018,7 +3858,174 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 35,
+			"id": 32,
+			"points": [
+				84,
+				85,
+				83,
+				82
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[
+					{
+						"begin_height": 11.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 11.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				]
+			]
+		},
+		{
+			"ceiling": 16.0,
+			"ceiling_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672b",
+			"floor": 10.0,
+			"floor_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"id": 33,
+			"points": [
+				86,
+				87,
+				42,
+				41
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 11.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				]
+			]
+		},
+		{
+			"ceiling": 16.0,
+			"ceiling_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672i",
+			"floor": 11.0,
+			"floor_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"id": 34,
 			"points": [
 				88,
 				89,
@@ -4079,7 +4086,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672d",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672a",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -4093,12 +4101,12 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 36,
+			"id": 35,
 			"points": [
 				90,
 				91,
-				32,
-				31
+				44,
+				43
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -4169,8 +4177,85 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-3672c",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672j",
 			"floor": 11.0,
+			"floor_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"id": 36,
+			"points": [
+				92,
+				93,
+				91,
+				90
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[
+					{
+						"begin_height": 11.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 11.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				]
+			]
+		},
+		{
+			"ceiling": 16.0,
+			"ceiling_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672d",
+			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
 				"offset": [
@@ -4185,10 +4270,101 @@
 			},
 			"id": 37,
 			"points": [
-				90,
-				92,
-				93,
-				91
+				94,
+				95,
+				36,
+				35
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 11.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				]
+			]
+		},
+		{
+			"ceiling": 16.0,
+			"ceiling_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Sector-3672c",
+			"floor": 11.0,
+			"floor_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"id": 38,
+			"points": [
+				94,
+				96,
+				97,
+				95
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -4244,268 +4420,9 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7791",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7791",
 			"floor": 10.0,
-			"floor_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"id": 38,
-			"points": [
-				94,
-				95,
-				96,
-				89,
-				88,
-				85,
-				84,
-				81,
-				80,
-				77,
-				76,
-				93,
-				92,
-				97
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 11.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 11.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 11.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 11.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 11.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				]
-			]
-		},
-		{
-			"ceiling": 16.0,
-			"ceiling_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"debug_name": "Sector-7791a",
-			"floor": 0.0,
 			"floor_surface": {
 				"id": "wall_2",
 				"offset": [
@@ -4522,32 +4439,27 @@
 			"points": [
 				98,
 				99,
-				95,
-				94
+				100,
+				93,
+				92,
+				89,
+				88,
+				85,
+				84,
+				81,
+				80,
+				97,
+				96,
+				101
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
+				[],
 				[
 					{
-						"begin_height": 0.0,
-						"end_height": 10.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[
-					{
-						"begin_height": 0.0,
+						"begin_height": 10.0,
 						"end_height": 16.0,
 						"id": "wall_2",
 						"offset": [
@@ -4563,8 +4475,8 @@
 				],
 				[
 					{
-						"begin_height": 0.0,
-						"end_height": 10.0,
+						"begin_height": 10.0,
+						"end_height": 16.0,
 						"id": "wall_2",
 						"offset": [
 							0.0,
@@ -4579,7 +4491,167 @@
 				],
 				[
 					{
-						"begin_height": 0.0,
+						"begin_height": 10.0,
+						"end_height": 11.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 11.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 11.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 11.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 11.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 10.0,
 						"end_height": 16.0,
 						"id": "wall_2",
 						"offset": [
@@ -4609,8 +4681,9 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7791b",
-			"floor": 10.0,
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7791a",
+			"floor": 0.0,
 			"floor_surface": {
 				"id": "wall_2",
 				"offset": [
@@ -4625,8 +4698,8 @@
 			},
 			"id": 40,
 			"points": [
-				100,
-				101,
+				102,
+				103,
 				99,
 				98
 			],
@@ -4634,81 +4707,6 @@
 			"portal_target": 65535,
 			"portal_wall": -1,
 			"wall_surfaces": [
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				],
-				[],
-				[
-					{
-						"begin_height": 10.0,
-						"end_height": 16.0,
-						"id": "wall_2",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 2.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
-				]
-			]
-		},
-		{
-			"ceiling": 16.0,
-			"ceiling_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"debug_name": "Sector-7791c",
-			"floor": 0.0,
-			"floor_surface": {
-				"id": "wall_2",
-				"offset": [
-					0.0,
-					0.0
-				],
-				"rotation": 0.0,
-				"scale": 2.0,
-				"show": true,
-				"tile_rotation_increment": 0.0,
-				"tile_rotations_count": 1
-			},
-			"id": 41,
-			"points": [
-				102,
-				103,
-				101,
-				100
-			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
-			"wall_surfaces": [
 				[
 					{
 						"begin_height": 0.0,
@@ -4789,7 +4787,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7791d",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7791b",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -4803,7 +4802,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 42,
+			"id": 41,
 			"points": [
 				104,
 				105,
@@ -4864,7 +4863,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7791e",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7791c",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -4878,7 +4878,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 43,
+			"id": 42,
 			"points": [
 				106,
 				107,
@@ -4969,7 +4969,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7791f",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7791d",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -4983,7 +4984,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 44,
+			"id": 43,
 			"points": [
 				108,
 				109,
@@ -5044,7 +5045,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7791g",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7791e",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5058,7 +5060,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 45,
+			"id": 44,
 			"points": [
 				110,
 				111,
@@ -5149,7 +5151,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7791h",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7791f",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5163,7 +5166,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 46,
+			"id": 45,
 			"points": [
 				112,
 				113,
@@ -5224,7 +5227,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7791i",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7791g",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5238,7 +5242,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 47,
+			"id": 46,
 			"points": [
 				114,
 				115,
@@ -5329,7 +5333,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7791j",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7791h",
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5343,7 +5348,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 48,
+			"id": 47,
 			"points": [
 				116,
 				117,
@@ -5404,7 +5409,8 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7791k",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7791i",
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5418,7 +5424,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"id": 49,
+			"id": 48,
 			"points": [
 				118,
 				119,
@@ -5509,8 +5515,85 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
-			"debug_name": "Sector-7791l",
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7791j",
 			"floor": 10.0,
+			"floor_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"id": 49,
+			"points": [
+				120,
+				121,
+				119,
+				118
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[],
+				[
+					{
+						"begin_height": 10.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				]
+			]
+		},
+		{
+			"ceiling": 16.0,
+			"ceiling_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7791k",
+			"floor": 0.0,
 			"floor_surface": {
 				"id": "wall_2",
 				"offset": [
@@ -5525,10 +5608,116 @@
 			},
 			"id": 50,
 			"points": [
-				120,
+				122,
+				123,
 				121,
-				119,
-				118
+				120
+			],
+			"portal_destination_wall": 0,
+			"portal_target": 65535,
+			"portal_wall": -1,
+			"wall_surfaces": [
+				[
+					{
+						"begin_height": 0.0,
+						"end_height": 10.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 0.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 0.0,
+						"end_height": 10.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				],
+				[
+					{
+						"begin_height": 0.0,
+						"end_height": 16.0,
+						"id": "wall_2",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 2.0,
+						"show": true,
+						"tile_rotation_increment": 0.0,
+						"tile_rotations_count": 1
+					}
+				]
+			]
+		},
+		{
+			"ceiling": 16.0,
+			"ceiling_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"damage": 0,
+			"debug_name": "Sectors::Sector-7791l",
+			"floor": 10.0,
+			"floor_surface": {
+				"id": "wall_2",
+				"offset": [
+					0.0,
+					0.0
+				],
+				"rotation": 0.0,
+				"scale": 2.0,
+				"show": true,
+				"tile_rotation_increment": 0.0,
+				"tile_rotations_count": 1
+			},
+			"id": 51,
+			"points": [
+				124,
+				125,
+				123,
+				122
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,

@@ -22,9 +22,11 @@ ProjectileStats PROJECTILE_STATS[] =
   // Plasma ball
   ProjectileStats
   {
-    .dmg_falloff = 0.05f, .speed = 27.0f, .radius = 0.2f, .damage = 25,
+    .dmg_falloff = 0.05f, .speed = 27.0f, .radius = 0.15f, .damage = 25,
     .bounce_cnt = 3, .sprite = "plasma_ball", .sprite_cnt = 1,
     .light_color = colors::BLUE,
+    .light_cycle_len = 0.2f,
+    .light_string = "akcs",
     .hit_sprite = "plasma_ball_death",
     .hit_sprite_cnt = 6,
     .hit_sprite_len = 0.5f,
@@ -49,6 +51,9 @@ ProjectileStats PROJECTILE_STATS[] =
     .dmg_falloff = 0.05f, .speed = 12.0f, .radius = 0.2f, .damage = 12,
     .sprite = "cultist_projectile", .sprite_cnt = 4, .anim_len = 0.8f,
     .light_color = colors::RED * 0.65f,
+    .light_cycle_len = 0.4f,
+    .light_string = "abcdefgfedcb",
+    .hit_sprite = "plasma_ball_death",
   },
 
   // Possessed fist

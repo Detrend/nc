@@ -63,7 +63,7 @@ void AnimFSM<NS, GOTO, ST, TT>::update(f32 delta, Functor&& func)
       }
     }
 
-    if (delta >= until_state_end)
+    if (next_time >= state_len)
     {
       State curr_state = this->state;
       State next_state = cast<State>(GOTO[curr_state]);
@@ -71,7 +71,7 @@ void AnimFSM<NS, GOTO, ST, TT>::update(f32 delta, Functor&& func)
       // Only subtract the amount until the end of the state
       delta -= until_state_end;
 
-      // Has to be called before the functor as the functor might want to
+      // Has to be set before the functor as the functor might want to
       // change the state.
       this->state = next_state;
 
@@ -83,6 +83,9 @@ void AnimFSM<NS, GOTO, ST, TT>::update(f32 delta, Functor&& func)
       this->time = next_time;
       delta = 0.0f;
     }
+
+    // Sanity check
+    nc_assert(this->time >= 0 && this->time < this->state_lengths[this->state]);
 
     if (this->state_lengths[this->state] == 0.0f)
     {

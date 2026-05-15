@@ -21,15 +21,52 @@ namespace nc
   std::unique_ptr<IActivatorHook> create_hook_by_type(const std::string& hook_type);
 
 
-  class ActivatorHook_LevelTransition : public IActivatorHook {
+  class ActivatorHook_LevelTransition : public IActivatorHook 
+  {
   public:
 
-    virtual void load(const SerializedData& data);
+    virtual void load(const ActivatorHookLoadArg& arg);
 
-    virtual void on_activated_start() override;
+    virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args) override;
 
   private:
     LevelName destination;
+  };
+
+  class ActivatorHook_Jumppad : public IActivatorHook 
+  {
+  public:
+    virtual void load(const ActivatorHookLoadArg& arg);
+
+    virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args) override;
+
+  private:
+    vec3 direction;
+  };
+
+  class ActivatorHook_Secret : public IActivatorHook
+  {
+  public:
+    virtual void load(const ActivatorHookLoadArg& arg);
+
+    virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args) override;
+  private:
+    bool revealed = false;
+  };
+
+
+  class ActivatorHook_Teleport : public IActivatorHook
+  {
+  public:
+    virtual void load(const ActivatorHookLoadArg& arg);
+
+    virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args) override;
+  private:
+    struct TeleportData {
+      EntityID entity;
+      vec3     destination_position;
+    };
+    std::vector<TeleportData> data;
   };
 
 }

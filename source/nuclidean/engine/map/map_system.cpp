@@ -1354,10 +1354,8 @@ static void build_sector_grid_and_bboxes(MapSectors& map)
 
   vec2 size = grid_max - grid_min;
 
-  u64 sector_count = map.sectors.size();
-  f32 height_to_width = size.y / size.x;
-  u64 width_grid_cells = sector_count;
-  u64 height_grid_cells = static_cast<u64>(sector_count * height_to_width);
+  u64 width_grid_cells  = cast<u64>(ceil(size.x / 2.0f)); // ~2m for width and height of a cell
+  u64 height_grid_cells = cast<u64>(ceil(size.y / 2.0f));
 
   map.sector_grid.initialize(width_grid_cells, height_grid_cells, grid_min, grid_max);
 
@@ -1742,6 +1740,7 @@ int build_map
     output_sector.state_ceils [0] = output_sector.state_ceils [1] = 0.0f;
     output_sector.activator = sector.activator;
     output_sector.move_speed = sector.move_speed;
+    output_sector.damage = sector.damage;
 
     if (sector.has_more_states)
     {

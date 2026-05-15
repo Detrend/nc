@@ -139,6 +139,7 @@ struct SectorData
   WallID      first_wall   = INVALID_WALL_ID;      // [0..total_wall_count]
   WallID      last_wall    = INVALID_WALL_ID;      // [first_wall..total_wall_count]
   ActivatorID activator    = INVALID_ACTIVATOR_ID; // Only one activator owns us
+  s32         damage       = 0;
 };
 
 // Sector data that is not static and has to be stored in saves.
@@ -348,6 +349,7 @@ struct SectorBuildData
   SurfaceData                ceil_surface;
   ActivatorID                activator = INVALID_ACTIVATOR_ID;
   f32                        move_speed = 1.0f;
+  s32                        damage = 0;
 };
 
 struct OverlapInfo

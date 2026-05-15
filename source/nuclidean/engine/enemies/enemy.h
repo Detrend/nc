@@ -44,6 +44,8 @@ public:
   void on_player_traversed_nc_portal(EntityID player, mat4 transform);
 
 private:
+  void on_self_or_target_traversed_nc_portal();
+
   void handle_ai(f32 delta);
   void handle_movement(f32 delta);
   void handle_appearance(f32 delta);
@@ -83,6 +85,10 @@ private:
     vec3 target_pt_world_space = VEC3_ZERO;
     mat4 target_transform_inv  = mat4{1.0f};
   };
+
+  static constexpr u8 Y_SMOOTHING_FRAMES = 12;
+  std::array<f32, Y_SMOOTHING_FRAMES> smooth_ys{};
+  u8 smooth_y_idx = 0;
 
   EnemyType    type                  = 0;
   vec3         velocity              = VEC3_ZERO;

@@ -13,6 +13,7 @@
 #include <profiling.h>
 #include <stack_vector.h>
 
+#include <algorithm> // std::sort
 #include <set>
 #include <utility>  // std::pair
 #include <type_traits>
@@ -507,6 +508,8 @@ static bool calc_path_raw
           f32 total_dist   = cur_dist + segment_dist;
           if (max_len <= 0.0f || total_dist <= max_len)
           {
+            f32 floor_y = map.sectors_dynamic[next_sector].floor_height;
+
             // Insert closest point to queue
             visited.insert
             ({
@@ -514,7 +517,7 @@ static bool calc_path_raw
               {
                 cur_id,
                 wall1_idx,
-                vec3(projection.x, 0, projection.y),
+                vec3(projection.x, floor_y, projection.y),
                 cur_dist + segment_dist
               }
             });
@@ -576,6 +579,7 @@ static bool calc_path_raw
   // Reverse the path
   std::reverse(points.begin(), points.end());
   std::reverse(transforms.begin(), transforms.end());
+  std::reverse(nc_portals.begin(), nc_portals.end());
 
   // Last point and no transform
   if (found_path)
@@ -587,33 +591,202 @@ static bool calc_path_raw
 }
 
 //==============================================================================
+static bool intersect_sector_2d
+(
+  [[maybe_unused]] const MapSectors& map,
+  [[maybe_unused]] vec2              from,
+  [[maybe_unused]] vec2              to,
+  [[maybe_unused]] f32               expand,
+  [[maybe_unused]] SectorID          sid,
+  [[maybe_unused]] f32&              out_c,
+  [[maybe_unused]] vec3&             out_n
+)
+{
+  return false;
+}
+
+//==============================================================================
+template<typename TVec>
+static bool intersect_entity_empty
+(
+  [[maybe_unused]] const PhysLevel& level,
+  [[maybe_unused]] TVec             from,
+  [[maybe_unused]] TVec             to,
+  [[maybe_unused]] f32              expand,
+  [[maybe_unused]] const Entity&    entity,
+  [[maybe_unused]] f32&             c_out,
+  [[maybe_unused]] vec3&            n_out
+)
+{
+  return false;
+}
+
+//==============================================================================
+static bool raycast_2d_check_step_height
+(
+  PhysLevel           lvl,
+  vec3                from,
+  vec3                to,
+  f32                 max_step_up,
+  f32                 max_step_down,
+  f32                 agent_height
+)
+{
+  // Collect all hits along the way, sort them by distance and then
+  // check if we can climb up.
+  struct PathEntry
+  {
+    SectorID sector = INVALID_SECTOR_ID;
+    f32      coeff  = 0.0f;
+  };
+
+  StackVector<PathEntry, 12> entries;
+
+  auto walking_wall_intersector = [&]
+  (
+    const MapSectors& map,
+    vec2              ray_from,
+    vec2              ray_to,
+    f32               /*expand*/,
+    WallID            w1id,
+    WallID            w2id,
+    SectorID          sid,
+    f32&              out_c,
+    vec3&             out_n,
+    bool&             nc_hit
+  )
+  {
+    nc_assert(ray_from != ray_to);
+
+    const WallData& w1 = map.walls[w1id];
+    const WallData& w2 = map.walls[w2id];
+
+    vec2 n   = vec2{0};
+    f32  c   = FLT_MAX;
+    bool hit = false;
+
+    hit = collide::ray_wall
+    (
+      ray_from, ray_to, w1.pos, w2.pos, n, c
+    );
+
+    if (!hit)
+    {
+      // Did not hit anything, no need to bother about it
+      return false;
+    }
+
+    PortType portal_type = w1.get_portal_type();
+    if (portal_type != PortalType::classic)
+    {
+      // We hit a wall or nuclidean portal, no need to continue
+      out_n  = VEC3_ZERO;
+      out_c  = 0.0f; // ends the algorithm right away
+      nc_hit = false;
+      return true;
+    }
+
+    // Continue along the path, but store the entry for later
+    entries.push_back(PathEntry
+    {
+      .sector = sid,
+      .coeff  = c,
+    });
+
+    // Continue
+    return false;
+  };
+
+  auto hit_something = phys_helpers::raycast_generic<vec2>
+  (
+    lvl, from.xz(), to.xz(), 0.0f, 0, nullptr, INVALID_WALL_ID,
+    walking_wall_intersector, &intersect_sector_2d, &intersect_entity_empty<vec2>
+  );
+
+  if (hit_something)
+  {
+    // Wall or a nc portal in the way, don't smooth this path
+    return true;
+  }
+
+  // Sort the entries by distance as if we would walk from the start to the end
+  std::sort(entries.begin(), entries.end(), [](const PathEntry& a, const PathEntry& b)
+  {
+    return a.coeff < b.coeff;
+  });
+
+  // And now try walking the stairs
+  f32 height = from.y;
+  for (const PathEntry& entry : entries)
+  {
+    const SectorDynData& sdd = lvl.map.sectors_dynamic[entry.sector];
+    if (sdd.get_sector_height() < agent_height)
+    {
+      // Can't walk through here, the ceiling is too low
+      return true;
+    }
+
+    if (sdd.floor_height - height > max_step_up)
+    {
+      // The step is too tall!
+      return true;
+    }
+
+    if (height - sdd.floor_height > max_step_down)
+    {
+      // Can't walk down this much
+      return true;
+    }
+
+    height = sdd.floor_height;
+  }
+
+  // We succesfully walked the stairs and did not fall down.
+  return false;
+}
+
+//==============================================================================
 template<typename OutPointsVector, typename OutTransformsVector>
 static void smooth_out_path
 (
   const PhysLevel&     lvl,
   OutPointsVector&     points,
-  OutTransformsVector& transforms
+  OutTransformsVector& transforms,
+  f32                  max_step_up,
+  f32                  max_step_down,
+  f32                  agent_height
 )
 {
+
   // Remove points from the end
   for (u64 idx = 1; points.size() > 2 && idx < points.size()-1;)
   {
-    vec2 from = points[idx - 1].xz();
-    vec2 to   = points[idx + 1].xz();
+    vec3 from = points[idx - 1];
+    vec3 to   = points[idx + 1];
 
     bool ok_trans = transforms[idx] == identity<mat4>();
-    PhysLevel::Portals portals;
-    if (!ok_trans || lvl.ray_cast_2d(from, to, 0, &portals))
+    if (!ok_trans)
     {
-      // We hit the wall or traversed a nc-portal, can't remove this point
+      // Nc-portal
       idx += 1;
+      continue;
     }
-    else
+
+    bool obstruction_along_way = raycast_2d_check_step_height
+    (
+      lvl, from, to, max_step_up, max_step_down, agent_height
+    );
+
+    if (obstruction_along_way)
     {
-      // No obstruction in the way! Remove the point
-      points.erase(points.begin()         + idx);
-      transforms.erase(transforms.begin() + idx);
+      // Can't smooth this path, might fall down and kill ourselves
+      idx += 1;
+      continue;
     }
+
+    // No obstruction in the way, can walk through here
+    points.erase(points.begin()         + idx);
+    transforms.erase(transforms.begin() + idx);
   }
 }
 
@@ -772,37 +945,6 @@ static bool intersect_wall_2d
 }
 
 //==============================================================================
-static bool intersect_sector_2d
-(
-  [[maybe_unused]] const MapSectors& map,
-  [[maybe_unused]] vec2              from,
-  [[maybe_unused]] vec2              to,
-  [[maybe_unused]] f32               expand,
-  [[maybe_unused]] SectorID          sid,
-  [[maybe_unused]] f32&              out_c,
-  [[maybe_unused]] vec3&             out_n
-)
-{
-  return false;
-}
-
-//==============================================================================
-template<typename TVec>
-static bool intersect_entity_empty
-(
-  [[maybe_unused]] const PhysLevel& level,
-  [[maybe_unused]] TVec             from,
-  [[maybe_unused]] TVec             to,
-  [[maybe_unused]] f32              expand,
-  [[maybe_unused]] const Entity&    entity,
-  [[maybe_unused]] f32&             c_out,
-  [[maybe_unused]] vec3&            n_out
-)
-{
-  return false;
-}
-
-//==============================================================================
 mat4 PhysLevel::calc_portal_projection(const Portals& portals) const
 {
   mat4 transform = identity<mat4>();
@@ -827,7 +969,9 @@ CollisionHit PhysLevel::circle_cast_2d
   return phys_helpers::raycast_generic<vec2>
   (
     *this, from, to, expand, ent_types, out_portals, INVALID_WALL_ID,
-    &intersect_wall_2d, &intersect_sector_2d, &intersect_entity_empty<vec2>
+    &intersect_wall_2d,
+    &phys_helpers::intersect_sector_2d,
+    &phys_helpers::intersect_entity_empty<vec2>
   );
 }
 
@@ -957,7 +1101,8 @@ static bool intersect_sector_3d_height
   const f32  cy  = sector_dyn.ceil_height  - y_ceil_sub;
   const vec3 dir = to - from;
 
-  const f32 min_c = -(y_floor_add + y_ceil_sub) / length(to - from);
+  //const f32 min_c = -(y_floor_add + y_ceil_sub) / length(to - from);
+  const f32 min_c = 0.0f;
   const f32 max_c = 1.0f;
 
   for (auto[floor_y, normal] : {std::pair{fy, UP_DIR}, std::pair{cy, -UP_DIR}})
@@ -1028,7 +1173,8 @@ const
   return phys_helpers::raycast_generic<vec3>
   (
     *this, ray_start, ray_end, 0.0f, ent_types, out_portals, INVALID_WALL_ID,
-    &intersect_wall_3d, &intersect_sector_3d, &intersect_entity_empty<vec3>
+    &intersect_wall_3d, &intersect_sector_3d,
+    &phys_helpers::intersect_entity_empty<vec3>
   );
 }
 
@@ -1225,7 +1371,8 @@ struct CylCastWallIntersector
     );
 
     // Reset the hit if too far behind us
-    f32 min_coeff = -0.25f * expand / length(ray_to - ray_from);
+    //f32 min_coeff = -0.25f * expand / length(ray_to - ray_from);
+    f32 min_coeff = 0.0f;
     if (hit && out_c_2d < min_coeff)
     {
       hit      = false;
@@ -1690,7 +1837,8 @@ const
       CollisionHit hit = phys_helpers::raycast_generic<vec3>
       (
         *this, position, position, radius, colliders, nullptr, INVALID_WALL_ID,
-        bruh_intersector, bruh_sector_intersector, &intersect_entity_empty<vec3>
+        bruh_intersector, bruh_sector_intersector,
+        &phys_helpers::intersect_entity_empty<vec3>
       );
 
       if (bruh_intersector.penetration_vector_out == VEC3_ZERO)
@@ -1978,7 +2126,10 @@ const
   // Smooth out the path by raycasting if required
   if (do_smoothing)
   {
-    phys_helpers::smooth_out_path(*this, points, transforms);
+    phys_helpers::smooth_out_path
+    (
+      *this, points, transforms, step_up, step_down, height
+    );
   }
 
   std::vector<vec3> final_path;
@@ -1994,6 +2145,10 @@ const
     }
 
     *nc_transform_opt = accumulated_t;
+  }
+  else
+  {
+    final_path.assign(points.begin(), points.end());
   }
 
   return final_path;
@@ -2151,7 +2306,7 @@ const
   nc_assert(points.size() == transforms.size());
 
   // Smooth out the path by raycasting if required
-  phys_helpers::smooth_out_path(*this, points, transforms);
+  phys_helpers::smooth_out_path(*this, points, transforms, 1000.0f, 1000.0f, 0.01f);
 
   vec3 previous_rel   = camera_pos;
   f32  total_distance = 0.0f;
@@ -2299,6 +2454,43 @@ const
       });
     });
   }
+}
+
+//==============================================================================
+mat4 PhysLevel::calc_relative_transform_from_self_to_target
+(
+  vec3 self, vec3 target, f32 max_dist
+)
+const
+{
+  nc_assert(max_dist > 0.0f);
+  mat4 transform = identity<mat4>();
+
+  StackVector<vec3, 20> _;
+  StackVector<mat4, 20> __;
+  Portals               portals;
+
+  bool found = phys_helpers::calc_path_raw
+  (
+    *this,   // lvl
+    self,    // start_pos
+    target,  // end_pos
+    0.01f,   // radius
+    0.01f,   // height
+    1000.0f, // step up
+    1000.0f, // step down
+    _,       // points
+    __,      // transforms
+    portals, // nc_portals
+    max_dist // max_len
+  );
+
+  if (!found)
+  {
+    return identity<mat4>();
+  }
+
+  return calc_portal_projection(portals);
 }
 
 }

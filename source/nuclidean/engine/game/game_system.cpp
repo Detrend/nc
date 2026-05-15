@@ -74,6 +74,7 @@ namespace nc::map_helpers
 static void make_sector_helper(
   f32                                              in_floor_y,
   f32                                              in_ceil_y,
+  s32                                              damage,
   const std::vector<u16>&                          points,
   std::vector<map_building::SectorBuildData>&      out,
   int                                              portal_wall_id    = -1,
@@ -106,6 +107,7 @@ static void make_sector_helper(
     .ceil_y        = { in_ceil_y,  in_ceil_y  },
     .floor_surface = floor_surface,
     .ceil_surface  = ceiling_surface,
+    .damage        = damage
   });
 }
 
@@ -147,10 +149,11 @@ static bool load_json_flag(const nlohmann::json& js, const cstr key)
 //==============================================================================
 static SurfaceData load_json_surface(const nlohmann::json &js) 
 {
-  if (const bool should_show = js["show"]) {
+  if (const bool should_show = js["show"])
+  {
     std::string texture_name = js["id"];
 
-    TextureID tid = TextureManager::get()[texture_name].get_texture_id();
+    TextureID tid     = TextureManager::get()[texture_name].get_texture_id();
     TextureID alt_tid = tid;
 
     if (js.contains("id_triggered"))
@@ -161,16 +164,13 @@ static SurfaceData load_json_surface(const nlohmann::json &js)
 
     return SurfaceData
     {
-      .texture_id_default = tid,
+      .texture_id_default   = tid,
       .texture_id_triggered = alt_tid,
-      .scale = js["scale"],
-      .rotation = js["rotation"],
-      .offset = load_json_vector<2>(js["offset"]),
-      .tile_rotations_count = js["tile_rotations_count"],
-      .tile_rotation_increment = js["tile_rotation_increment"],
-      .should_show = true
+      .offset               = load_json_vector<2>(js["offset"]), // in pixels
+      .should_show          = true,
     };
   }
+
   return SurfaceData
   {
     .should_show = false
@@ -194,6 +194,11 @@ static TriggerData load_json_trigger
   td.player_sensitive = load_json_flag(js, "player_sensitive");
   td.enemy_sensitive  = load_json_flag(js, "enemy_sensitive");
   td.while_alive      = load_json_flag(js, "while_alive");
+
+  if (js.contains("increment"))
+  {
+    td.increment = js["increment"];
+  }
 
   return td;
 }
@@ -287,6 +292,7 @@ static void load_json_map
   using namespace map_building;
 
   get_engine().get_module<GameSystem>().reset_enemy_count();
+  get_engine().get_module<GameSystem>().reset_secret_count();
 
   std::ifstream f(get_full_level_path(level_name));
   nc_assert(f.is_open());
@@ -299,8 +305,16 @@ static void load_json_map
   ActivatorMap   activator_map;
   TriggerTable   trigger_table;
 
+
+  struct DeferredActivatorLoad {
+    const nlohmann::json* js;
+    IActivatorHook* hook;
+  };
+  std::vector<DeferredActivatorLoad> hooks_to_load;
+
   try
   {
+
     for (auto&& js_activator : data["activators"])
     {
       std::string name = js_activator["name"];
@@ -311,8 +325,9 @@ static void load_json_map
       for (const auto& hook_js : js_activator["hooks"]) {
         std::string hook_type = hook_js["type"];
         auto hook = create_hook_by_type(hook_type);
-        hook->load(hook_js);
-        ad.hooks.emplace_back(std::move(hook));
+        //hook->load(hook_js);
+        auto &hook_ptr = ad.hooks.emplace_back(std::move(hook));
+        hooks_to_load.emplace_back(DeferredActivatorLoad{ .js = &hook_js, .hook = hook_ptr.get() });
       }
     }
 
@@ -326,6 +341,13 @@ static void load_json_map
     {
       const f32 floor = js_sector["floor"];
       const f32 ceil = js_sector["ceiling"];
+
+      s32 damage = 0;
+      if (js_sector.contains("damage"))
+      {
+        damage = js_sector["damage"];
+      }
+     
 
       const SectorID portal_sector = js_sector["portal_target"];
       const int portal_wall = js_sector["portal_wall"];
@@ -355,7 +377,7 @@ static void load_json_map
         wrelid += 1;
       }
 
-      make_sector_helper(floor, ceil, point_indices, sectors, portal_wall, portal_destination_wall, portal_sector, floor_surface, ceiling_surface, wall_surfaces);
+      make_sector_helper(floor, ceil, damage ,point_indices, sectors, portal_wall, portal_destination_wall, portal_sector, floor_surface, ceiling_surface, wall_surfaces);
       map_building::SectorBuildData& build_data = sectors.back();
 
       // Multiple states
@@ -400,6 +422,13 @@ static void load_json_map
   // Mapping has to be initialized BEFORE creating any entities!!!
   mapping.on_map_rebuild();
 
+  std::unordered_map<unsigned, EntityID> entity_tag_to_id;
+  const auto register_entity = [&entity_tag_to_id](const Entity* const entity, const nlohmann::json& js) ->void {
+    if (js.contains("tag")) {
+      entity_tag_to_id[js["tag"]] = entity->get_id();
+    }
+  };
+
   for (auto&& js_entity : data["entities"])
   {
     const vec3 position = load_json_position(js_entity);
@@ -409,11 +438,13 @@ static void load_json_map
     {
       auto* player = entities.create_entity<Player>(position, forward);
       player_id = player->get_id();
+      register_entity(player, js_entity);
     }
     else
     {
       const EnemyTypes::evalue entity_type = js_entity["entity_type"];
       Entity* enemy = entities.create_entity<Enemy>(position, forward, entity_type);
+      register_entity(enemy, js_entity);
 
       if (js_entity.contains("triggers"))
       {
@@ -436,6 +467,7 @@ static void load_json_map
     const PickupTypes::evalue pickup_type = static_cast<PickupTypes::evalue>(js_pickup["type"]);
 
     Entity* pickup = entities.create_entity<Pickup>(position, pickup_type);
+    register_entity(pickup, js_pickup);
 
     if (js_pickup.contains("triggers"))
     {
@@ -458,13 +490,15 @@ static void load_json_map
       js_prop["sprite"],
       load_json_vector<3>(js_prop["direction"]).xzy,
       js_prop["scale"],
+      0.0f,
       static_cast<Appearance::SpriteMode>(js_prop["mode"]),
       static_cast<Appearance::PivotMode>(js_prop["pivot"]),
       static_cast<Appearance::ScalingMode>(js_prop["scaling"]),
       static_cast<Appearance::RotationMode>(js_prop["rotation"]),
     };
 
-    entities.create_entity<Prop>(position, radius, height, appearance);
+
+    register_entity(entities.create_entity<Prop>(position, radius, height, appearance), js_prop);
   }
   for (auto&& js_light : data["directional_lights"])
   {
@@ -473,7 +507,7 @@ static void load_json_map
     const vec3 direction = load_json_vector<3>(js_light["direction"]);
     const float intensity = js_light["intensity"];
 
-    entities.create_entity<DirectionalLight>(direction, intensity, color);
+    register_entity(entities.create_entity<DirectionalLight>(direction, intensity, color), js_light);
   }
   for (auto&& js_light : data["point_lights"])
   {
@@ -487,13 +521,30 @@ static void load_json_map
       ? cast<f32>(js_light["falloff"])
       : 1.0f;
 
-    entities.create_entity<PointLight>(position, radius, intensity, falloff, color);
+    PointLight* light = entities.create_entity<PointLight>(position, radius, intensity, falloff, color);
+    register_entity(light, js_light);
+
+    if (js_light.contains("light_string"))
+    {
+      std::string string = js_light["light_string"];
+      light->intensity_string = Token(string);
+    }
+
+    if (js_light.contains("cycle_length"))
+    {
+      light->intensity_cycle_len = js_light["cycle_length"];
+    }
+
+    if (js_light.contains("cycle_offset"))
+    {
+      light->intensity_cycle_offset = js_light["cycle_offset"];
+    }
   }
   for (auto&& js_light : data["ambient_lights"])
   {
     const float intensity = js_light["intensity"];
 
-    entities.create_entity<AmbientLight>(intensity);
+    register_entity(entities.create_entity<AmbientLight>(intensity), js_light);
   }
   for (auto&& js_skybox : data["skyboxes"])
   {
@@ -501,9 +552,19 @@ static void load_json_map
     const float exposure = js_skybox["exposure"];
     const bool use_gamma = js_skybox["use_gamma_correction"];
     const GLuint sky_box_map = TextureManager::get().get_equirectangular_map(texture, ResLifetime::Game);
-    entities.create_entity<SkyBox>(sky_box_map, exposure, use_gamma);
+    register_entity(entities.create_entity<SkyBox>(sky_box_map, exposure, use_gamma), js_skybox);
   }
 
+  std::unordered_map<unsigned, const nlohmann::json*> tag_to_rawdata;
+  for (const auto& js_rawdata : data["rawdata"]) {
+    const unsigned tag = js_rawdata["tag"];
+    tag_to_rawdata[tag] = &js_rawdata;
+  }
+
+  for (const auto& hook_load : hooks_to_load) {
+    ActivatorHookLoadArg arg(hook_load.js, &entity_tag_to_id, &tag_to_rawdata);
+    hook_load.hook->load(arg);
+  }
 
   if (data.contains("music")) {
     SoundSystem::get().play_music(Token(data["music"]));

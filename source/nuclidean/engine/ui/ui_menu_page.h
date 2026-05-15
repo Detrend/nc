@@ -219,6 +219,7 @@ public:
 
   // set values to be rendered
   void set_kill_stats(u32 enemies, u32 kills);
+  void set_secret_stats(u32 secrets, u32 revealed);
 
 private:
   // draw the stats (kills so far)
@@ -226,6 +227,7 @@ private:
 
   // draw the number of kills itself
   void draw_kill_count(ShaderProgramHandle digit_material);
+  void draw_secret_count(ShaderProgramHandle digit_material);
 
   //methods for buttons
   void next_level_func();
@@ -234,6 +236,7 @@ private:
 
   // text
   UiButton* kills_text;
+  UiButton* secrets_text;
   UiButton* level_text;
   UiButton* demo_text;
   UiButton* completed_text;
@@ -244,6 +247,9 @@ private:
 
   u32 enemy_count = 0;
   u32 kill_count = 0;
+
+  u32 secret_count = 0;
+  u32 revealed_count = 0;
 };
 
 }

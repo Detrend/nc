@@ -17,6 +17,7 @@ public:
 
   // determines visibility of menu
   void set_visible(bool visibility);
+  bool get_is_visible() const;
 
   void update();
   void draw();
