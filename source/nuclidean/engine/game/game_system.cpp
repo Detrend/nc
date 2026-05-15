@@ -556,7 +556,7 @@ static void load_json_map
   }
 
   std::unordered_map<unsigned, const nlohmann::json*> tag_to_rawdata;
-  for (const auto& js_rawdata : data["data"]) {
+  for (const auto& js_rawdata : data["rawdata"]) {
     const unsigned tag = js_rawdata["tag"];
     tag_to_rawdata[tag] = &js_rawdata;
   }
