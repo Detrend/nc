@@ -14,3 +14,8 @@ class_name SectorMaterial
 @export var floor : TextureDefinition
 
 @export var ceiling : TextureDefinition
+
+
+
+func _get_custom_preview_texture() -> Texture2D:
+	return preview

@@ -65,3 +65,6 @@ static func _adjust_normals(container : TexturingResult, begin_idx : int, begin_
 		e.begin_down_direction = begin_down_direction * scale
 		e.end_down_direction = end_down_direction * scale
 		if additional: additional.call(e)
+
+func _find_preview_texture()->Texture2D:
+	return texture._find_preview_texture() if texture else null

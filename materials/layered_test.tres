@@ -10,7 +10,6 @@
 [sub_resource type="Resource" id="Resource_ymyod"]
 script = ExtResource("2_ejjwb")
 texture = ExtResource("3_ymyod")
-anchor_point = 1.0
 _arguments_preview = PackedStringArray("total_height", "available_height", "wall_height_min", "wall_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling")
 metadata/_custom_type_script = "uid://b60vys5f055ei"
 

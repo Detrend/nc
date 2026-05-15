@@ -59,3 +59,6 @@ func resolve(out: TexturingResult, begin_height: float, end_height: float, ctx: 
 
 ## Debug name - based on the texture's id 
 func _to_string() -> String: return ("" if should_show else "void-") + "tex(%s)"%id
+
+func _find_preview_texture()->Texture2D:
+	return preview as Texture2D

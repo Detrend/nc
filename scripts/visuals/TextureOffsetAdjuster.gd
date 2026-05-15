@@ -72,3 +72,6 @@ func resolve(out: TexturingResult, begin_height: float, end_height: float, ctx: 
 		entry.offset = offset
 		t += 1
 	
+
+func _get_custom_preview_texture() -> Texture2D:
+	return texture._find_preview_texture() if texture else null
