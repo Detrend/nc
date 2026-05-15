@@ -44,11 +44,9 @@ func resolve(out: TexturingResult, begin_height: float, end_height: float, ctx: 
 	var other_sector :Sector = ctx.export_data.get_other_sector(this_sector)
 	var owner_sector : Sector = ctx.get_rule_owner_sector()
 	
-	var t :int = out.entries.size()
 	texture.resolve(out, begin_height, end_height, ctx)
 	var height_expr := get_height_expression()
-	while t < out.entries.size():
-		var entry := out.entries[t]
+	for entry in out.entries:
 		var offset := entry.offset
 		var stripe_height_min :float= entry.begin_height
 		var stripe_height_max :float= entry.end_height
@@ -70,7 +68,6 @@ func resolve(out: TexturingResult, begin_height: float, end_height: float, ctx: 
 		])
 		offset.y += height_change
 		entry.offset = offset
-		t += 1
 	
 
 func _get_custom_preview_texture() -> Texture2D:

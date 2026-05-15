@@ -3,6 +3,7 @@ class_name WallTextureOverride
 extends WallAttachment
 
 @export var texture : ITextureDefinition
+@export var texturing_offset : Vector2 = Vector2.ZERO
 @export var stripe_floor_offset : float = 0.0
 
 @export_group("Use Offset from ceiling")
@@ -49,6 +50,7 @@ func apply(out: TexturingResult, og_begin_height: float, og_end_height : float, 
 	if additional_processing_per_segment:
 		for ov in override.entries:
 			additional_processing_per_segment.call(ov)
+			ov.offset += texturing_offset
 
 	for e in original_entries:
 		if e.end_height <= begin or end <= e.begin_height:
