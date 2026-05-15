@@ -18,6 +18,10 @@ class_name Thing
 ## Height to offset from the parent [Sector]'s height, in a manner determined by [member placement_mode]
 @export var height_offset : float = 0.1
 
+## Unique value assigned at the start of export process. Other objects can refer to this [Thing] by it
+var _export_tag : int = -1
+
+const RAW_DATA_EXPORT_CATEGORY :String = "data"
 
 ## @brief Section in the level's JSON file where this Thing will be listed. 
 ## 		Typically should be a unique string for each Thing type.
@@ -29,7 +33,7 @@ func get_export_category()->String: return "misc"
 ## @param _s Sector where this thing is placed
 ## @param _output JSON object describing this Thing, append additional properties here
 func custom_export(_s: Sector, _output: Dictionary)->void:
-	pass
+	_output['tag'] = _export_tag
 
 ## @c true IFF this Thing is not nested
 ## Nested [Things] get their position computed based on their parent [Thing]'s position.
@@ -40,3 +44,13 @@ func is_standalone()->bool:
 
 ## Get full name identifying this [Thing] in the level hierarchy
 func get_full_name()->String: return NodeUtils.get_full_name(self)
+
+
+
+static func get_all_standalone_things(root: Node, thing_type : Variant = Thing, ret: Array[Thing] = [])->Array[Thing]:
+	ret = NodeUtils.get_children_by_predicate(root, func(n:Node)->bool: return is_instance_of(n, thing_type) and (n as Node2D).is_visible_in_tree() and (n as Thing).is_standalone(), ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)
+	return ret
+
+static func get_all_things(root: Node, thing_type : Variant = Thing, ret: Array[Thing] = [])->Array[Thing]:
+	ret = NodeUtils.get_children_by_predicate(root, func(n:Node)->bool: return is_instance_of(n, thing_type) and (n as Node2D).is_visible_in_tree(), ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)
+	return ret

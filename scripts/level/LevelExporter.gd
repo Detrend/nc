@@ -75,7 +75,11 @@ func _init_datastructs()->void:
 	all_sectors               = _level.get_sectors(true); # exclude non-export [Sector]s
 	things_awaiting_export    = _level.get_standalone_things()
 
-
+func _assign_export_tags(all_things: Array[Thing])->void:
+	var counter : int = 0
+	for th in all_things:
+		th._export_tag = counter
+		counter += 1
 
 ## Get the index of this point in [member points_export]. Create a new entry for it if there isn't any
 func get_point_idx(vec: Vector2)->int:
@@ -244,6 +248,7 @@ func create_level_export_data() -> Dictionary:
 	Sector.sanity_check_all(_level, all_sectors)
 	level_sanity_checks()
 	
+	self._assign_export_tags(_level.get_all_things())
 	
 	level_export["music"] = _level.music
 	
