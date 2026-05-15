@@ -305,8 +305,16 @@ static void load_json_map
   ActivatorMap   activator_map;
   TriggerTable   trigger_table;
 
+
+  struct DeferredActivatorLoad {
+    const nlohmann::json* js;
+    IActivatorHook* hook;
+  };
+  std::vector<DeferredActivatorLoad> hooks_to_load;
+
   try
   {
+
     for (auto&& js_activator : data["activators"])
     {
       std::string name = js_activator["name"];
@@ -317,8 +325,9 @@ static void load_json_map
       for (const auto& hook_js : js_activator["hooks"]) {
         std::string hook_type = hook_js["type"];
         auto hook = create_hook_by_type(hook_type);
-        hook->load(hook_js);
-        ad.hooks.emplace_back(std::move(hook));
+        //hook->load(hook_js);
+        auto &hook_ptr = ad.hooks.emplace_back(std::move(hook));
+        hooks_to_load.emplace_back(DeferredActivatorLoad{ .js = &hook_js, .hook = hook_ptr.get() });
       }
     }
 
@@ -413,6 +422,13 @@ static void load_json_map
   // Mapping has to be initialized BEFORE creating any entities!!!
   mapping.on_map_rebuild();
 
+  std::unordered_map<unsigned, EntityID> entity_tag_to_id;
+  const auto register_entity = [&entity_tag_to_id](const Entity* const entity, const nlohmann::json& js) ->void {
+    if (js.contains("tag")) {
+      entity_tag_to_id[js["tag"]] = entity->get_id();
+    }
+  };
+
   for (auto&& js_entity : data["entities"])
   {
     const vec3 position = load_json_position(js_entity);
@@ -422,11 +438,13 @@ static void load_json_map
     {
       auto* player = entities.create_entity<Player>(position, forward);
       player_id = player->get_id();
+      register_entity(player, js_entity);
     }
     else
     {
       const EnemyTypes::evalue entity_type = js_entity["entity_type"];
       Entity* enemy = entities.create_entity<Enemy>(position, forward, entity_type);
+      register_entity(enemy, js_entity);
 
       if (js_entity.contains("triggers"))
       {
@@ -449,6 +467,7 @@ static void load_json_map
     const PickupTypes::evalue pickup_type = static_cast<PickupTypes::evalue>(js_pickup["type"]);
 
     Entity* pickup = entities.create_entity<Pickup>(position, pickup_type);
+    register_entity(pickup, js_pickup);
 
     if (js_pickup.contains("triggers"))
     {
@@ -478,7 +497,8 @@ static void load_json_map
       static_cast<Appearance::RotationMode>(js_prop["rotation"]),
     };
 
-    entities.create_entity<Prop>(position, radius, height, appearance);
+
+    register_entity(entities.create_entity<Prop>(position, radius, height, appearance), js_prop);
   }
   for (auto&& js_light : data["directional_lights"])
   {
@@ -487,7 +507,7 @@ static void load_json_map
     const vec3 direction = load_json_vector<3>(js_light["direction"]);
     const float intensity = js_light["intensity"];
 
-    entities.create_entity<DirectionalLight>(direction, intensity, color);
+    register_entity(entities.create_entity<DirectionalLight>(direction, intensity, color), js_light);
   }
   for (auto&& js_light : data["point_lights"])
   {
@@ -502,6 +522,7 @@ static void load_json_map
       : 1.0f;
 
     PointLight* light = entities.create_entity<PointLight>(position, radius, intensity, falloff, color);
+    register_entity(light, js_light);
 
     if (js_light.contains("light_string"))
     {
@@ -523,7 +544,7 @@ static void load_json_map
   {
     const float intensity = js_light["intensity"];
 
-    entities.create_entity<AmbientLight>(intensity);
+    register_entity(entities.create_entity<AmbientLight>(intensity), js_light);
   }
   for (auto&& js_skybox : data["skyboxes"])
   {
@@ -531,9 +552,19 @@ static void load_json_map
     const float exposure = js_skybox["exposure"];
     const bool use_gamma = js_skybox["use_gamma_correction"];
     const GLuint sky_box_map = TextureManager::get().get_equirectangular_map(texture, ResLifetime::Game);
-    entities.create_entity<SkyBox>(sky_box_map, exposure, use_gamma);
+    register_entity(entities.create_entity<SkyBox>(sky_box_map, exposure, use_gamma), js_skybox);
   }
 
+  std::unordered_map<unsigned, const nlohmann::json*> tag_to_rawdata;
+  for (const auto& js_rawdata : data["data"]) {
+    const unsigned tag = js_rawdata["tag"];
+    tag_to_rawdata[tag] = &js_rawdata;
+  }
+
+  for (const auto& hook_load : hooks_to_load) {
+    ActivatorHookLoadArg arg(hook_load.js, &entity_tag_to_id, &tag_to_rawdata);
+    hook_load.hook->load(arg);
+  }
 
   if (data.contains("music")) {
     SoundSystem::get().play_music(Token(data["music"]));

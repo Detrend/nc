@@ -25,7 +25,7 @@ namespace nc
   {
   public:
 
-    virtual void load(const SerializedData& data);
+    virtual void load(const ActivatorHookLoadArg& arg);
 
     virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args) override;
 
@@ -36,7 +36,7 @@ namespace nc
   class ActivatorHook_Jumppad : public IActivatorHook 
   {
   public:
-    virtual void load(const SerializedData& data);
+    virtual void load(const ActivatorHookLoadArg& arg);
 
     virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args) override;
 
@@ -47,10 +47,26 @@ namespace nc
   class ActivatorHook_Secret : public IActivatorHook
   {
   public:
-    virtual void load(const SerializedData& data);
+    virtual void load(const ActivatorHookLoadArg& arg);
 
     virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args) override;
   private:
     bool revealed = false;
   };
+
+
+  class ActivatorHook_Teleport : public IActivatorHook
+  {
+  public:
+    virtual void load(const ActivatorHookLoadArg& arg);
+
+    virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args) override;
+  private:
+    struct TeleportData {
+      EntityID entity;
+      vec3     destination_position;
+    };
+    std::vector<TeleportData> data;
+  };
+
 }
