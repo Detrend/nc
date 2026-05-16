@@ -21,6 +21,7 @@ max_snapping_distance = 0.1
 gridsnap_step = 1.0
 gridsnap_step_inv = 1.0
 dissolve_removes_self = true
+extrude_absolute_override = 4.0
 sanity_check_snapping = false
 portal_entry_color = Color(0, 0.392157, 0, 0.666667)
 portal_exit_color_single = Color(0.670588, 0, 0, 0.815686)

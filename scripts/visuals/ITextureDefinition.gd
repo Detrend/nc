@@ -17,3 +17,9 @@ func append_info(out: Array[Dictionary], begin_height: float, end_height: float,
 ## Generate a protocol describing the application of this texture to the given area.
 func resolve(out: TexturingResult, begin_height: float, end_height : float, ctx : TexturingContext)->void:
 	InterfaceUtils.report_not_implemented_error(resolve)
+
+func _find_preview_texture()->Texture2D:
+	return null
+
+func _get_custom_preview_texture() -> Texture2D:
+	return _find_preview_texture()

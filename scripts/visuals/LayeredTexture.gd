@@ -72,3 +72,13 @@ func gather_tiers()->PackedInt32Array:
 			ret.append(normal_entry.tier)
 	ret.sort()
 	return ret
+
+
+
+func _find_preview_texture()->Texture2D:
+	for layer in layers:
+		var texture_definition := layer.get_texture()
+		if texture_definition:
+			var texture := texture_definition._find_preview_texture()
+			if texture: return texture
+	return null
