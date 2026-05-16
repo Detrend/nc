@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=9 format=3 uid="uid://djk11djeyskmb"]
+
+[ext_resource type="Resource" uid="uid://coohq55u58kbj" path="res://material_textures/stone_wall.tres" id="1_iqjlc"]
+[ext_resource type="Texture2D" uid="uid://cfauooi3dehbp" path="res://imgs/CCOMP02.png" id="2_1gdux"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="3_qpm6r"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="4_o503g"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="5_cewmj"]
+[ext_resource type="Resource" uid="uid://boqlybim1wpbi" path="res://material_textures/CC.tres" id="6_vmr3h"]
+
+[sub_resource type="Resource" id="Resource_csai5"]
+script = ExtResource("4_o503g")
+priority = 2
+texture = ExtResource("1_iqjlc")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[sub_resource type="Resource" id="Resource_a6q66"]
+script = ExtResource("5_cewmj")
+priority = 8
+_placement_type = 5
+texture = ExtResource("6_vmr3h")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[resource]
+script = ExtResource("3_qpm6r")
+preview = ExtResource("2_1gdux")
+preview_scale = 4.0
+wall_default = SubResource("Resource_csai5")
+wall_rules = Array[ExtResource("5_cewmj")]([SubResource("Resource_a6q66")])
+floor = ExtResource("1_iqjlc")
+ceiling = ExtResource("1_iqjlc")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"

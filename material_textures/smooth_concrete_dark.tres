@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://bm1xc0veb4pkp"]
+
+[ext_resource type="Texture2D" uid="uid://7qv7u311omap" path="res://imgs/wall/smooth_concrete_dark.png" id="1_jq4gu"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_id1ev"]
+
+[resource]
+script = ExtResource("2_id1ev")
+preview = ExtResource("1_jq4gu")
+tile_rotation_increment = 0.0
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

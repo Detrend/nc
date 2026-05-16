@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://b4tvf4c36nwrn"]
+
+[ext_resource type="Texture2D" uid="uid://skslxx3uepvb" path="res://imgs/wall/wavy_metal.png" id="1_uwaw0"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_qmkqn"]
+
+[resource]
+script = ExtResource("2_qmkqn")
+preview = ExtResource("1_uwaw0")
+tile_rotation_increment = 0.0
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"
