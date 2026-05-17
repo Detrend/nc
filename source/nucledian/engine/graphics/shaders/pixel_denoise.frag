@@ -10,7 +10,7 @@ flat in ivec2 from_px;
 flat in ivec2 to_px;
 
 #define GRID_N 10
-#define DO_DENOISE 0
+#define DO_DENOISE 1
 
 void main()
 {

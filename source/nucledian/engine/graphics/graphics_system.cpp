@@ -1232,9 +1232,9 @@ void GraphicsSystem::create_sector_meshes()
       break;
 
     if (target_height < target_width)
-      target_height += 512;
+      target_height *= 2;
     else
-      target_width += 512;
+      target_width *= 2;
   }
 
   m_sector_megatexture_info.resize(map.sectors.size());

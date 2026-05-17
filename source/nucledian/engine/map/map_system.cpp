@@ -806,7 +806,7 @@ const
       .megatex = mega_c,
     }
     .push_to(vertices_out);
-    nc_log("{}:[[{}, {}], [{}, {}], [{}, {}]]", sector_id, mega_a.x, mega_a.y, mega_b.x, mega_b.y, mega_c.x, mega_c.y);
+    //nc_log("{}:[[{}, {}], [{}, {}], [{}, {}]]", sector_id, mega_a.x, mega_a.y, mega_b.x, mega_b.y, mega_c.x, mega_c.y);
   };
 
   aabb2 bbox_fc;

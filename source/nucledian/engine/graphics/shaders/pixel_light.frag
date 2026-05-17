@@ -220,7 +220,7 @@ float signed_solid_angle(vec3 p, vec3 a, vec3 b, vec3 c)
 
 void main()
 {
-  vec3 final_color = vec3(ambient_strength) * 0.0f;
+  vec3 final_color = vec3(1.0f) * 0.0f;
   vec3 position = wp + normal * 0.1f;
   vec3 color = vec3(0.0);
 
@@ -255,8 +255,8 @@ void main()
       vec3  offset = vec3(off_x, off_y, off_z);
       accum += shadow_coeff(position, light.stitched_position + offset * shadow_d, sector_id, light);
     }
-    //float shadow_coeff = accum / float(num_samples);
-    float shadow_coeff = 1.0f;
+    float shadow_coeff = accum / float(num_samples);
+    //float shadow_coeff = 1.0f;
 
     float diffuse = max(angle, 0.0f);
 
@@ -320,7 +320,7 @@ else
 */
   out_color = vec4(col_out_debug, 1.0f);
 #else
-  //out_color = vec4(final_color, 1.0f);
-  out_color = vec4(vec3(1.0f), 1.0f);
+  out_color = vec4(final_color, 1.0f);
+  //out_color = vec4(vec3(1.0f), 1.0f);
 #endif
 }

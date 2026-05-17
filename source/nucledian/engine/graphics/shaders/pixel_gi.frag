@@ -1,10 +1,11 @@
 #version 430 core
 
 #define MAX_PARTS 128
-#define NUM_SAMPLES_TOTAL_WHEN_BALANCING 32
+#define NUM_SAMPLES_TOTAL_WHEN_BALANCING 64
 #define DEBUG_DRAW 0
 #define CULL_INVISIBLE_PIXELS 0
-#define INSPECTED_PART 391
+#define INSPECTED_PART 0
+//#define INSPECTED_PART 391
 #define HIGHLIGHT_THOSE_WHO_SAMPLE_FROM_THIS_PART 0
 //#define HIGHLIGHT_THOSE_SAMPLED_FROM_THIS_PART 391
 #define HIGHLIGHT_THOSE_SAMPLED_FROM_THIS_PART 0
@@ -70,6 +71,30 @@ layout(binding = 1) uniform sampler2D game_atlas_sampler;
 layout(binding = 2) uniform sampler2D megatex_mask;
 
 layout(binding = 3, rgba8) uniform image2D megatex_debug;
+
+vec3 uint_to_color(uint x)
+{
+  // PCG-style integer hash
+  x ^= x >> 17;
+  x *= 0xed5ad4bbu;
+  x ^= x >> 11;
+  x *= 0xac4c1b51u;
+  x ^= x >> 15;
+  x *= 0x31848babu;
+  x ^= x >> 14;
+
+  // Generate 3 channels from shuffled bits
+  uint r = x;
+  uint g = x * 1664525u + 1013904223u;
+  uint b = x * 22695477u + 1u;
+
+  // Convert to [0,1]
+  return vec3(
+    float(r & 0x00FFFFFFu),
+    float(g & 0x00FFFFFFu),
+    float(b & 0x00FFFFFFu)
+  ) / float(0x00FFFFFFu);
+}
 
 out vec4 out_color;
 
@@ -299,7 +324,6 @@ void sample_from_part(int sample_idx, uint part_id, out vec3 wp_of_sample, out v
 void main()
 {
   const float one_over_pi = 1.0 / 3.141692;
-  const float max_signed_angle = 3.141592f * 2.0f;
 
   float importance_per_part[MAX_PARTS] = float[MAX_PARTS](0.0f);
 
@@ -445,7 +469,9 @@ void main()
   else
 #endif
   {
-    final_color = (og_color * 1.0f + sum * 0.0) * 1.0f;
+    final_color = (og_color * 0.0f + sum * 10.0) * 1.0f;
   }
+
+  //imageStore(megatex_debug, ivec2(gl_FragCoord.xy), vec4(1.0, 0.0, 0.0, 1.0));
   out_color = vec4(final_color, 1.0f);
 }
