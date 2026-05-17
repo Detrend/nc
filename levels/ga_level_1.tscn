@@ -1,4 +1,4 @@
-[gd_scene load_steps=501 format=3 uid="uid://dsay4j34k3qty"]
+[gd_scene load_steps=499 format=3 uid="uid://dsay4j34k3qty"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_1nrge"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_bdnqo"]
@@ -20,7 +20,6 @@
 [ext_resource type="Script" uid="uid://bbt07sf8vceiw" path="res://scripts/reactivity/Activator.gd" id="9_4g5ls"]
 [ext_resource type="Resource" uid="uid://da1uhdi66xs7w" path="res://material_textures/ga_textures/pipes.tres" id="9_7ue4s"]
 [ext_resource type="PackedScene" uid="uid://cm0wgegxiipjw" path="res://prefabs/PickUps/HpSmall.tscn" id="9_84rap"]
-[ext_resource type="Script" uid="uid://d4dmybuav1ksc" path="res://scripts/visuals/WallTextureOverride.gd" id="10_7ue4s"]
 [ext_resource type="PackedScene" uid="uid://b8tr8d62bd5s2" path="res://prefabs/PickUps/HpBig.tscn" id="10_536nw"]
 [ext_resource type="PackedScene" uid="uid://ctwevapidummr" path="res://prefabs/Lights/PointLight.tscn" id="11_07md0"]
 [ext_resource type="Resource" uid="uid://dmn732i3xl4kk" path="res://material_textures/ga_textures/electrical_box_front.tres" id="11_b1mm8"]
@@ -42,7 +41,6 @@
 [ext_resource type="Resource" uid="uid://cvsj1xrjcngag" path="res://materials/ga_lvl1/broken_room.tres" id="22_c6tgh"]
 [ext_resource type="Resource" uid="uid://c6p7pgvfh3is2" path="res://materials/ga_lvl1/broken_room_rubble.tres" id="23_du6ej"]
 [ext_resource type="Script" uid="uid://b4kfisxjy2hq4" path="res://scripts/reactivity/hooks/SecretHook.gd" id="23_g73go"]
-[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/sector/Sector.gd" id="25_lao15"]
 [ext_resource type="Resource" uid="uid://cm5g45651t52b" path="res://materials/ga_lvl1/window.tres" id="26_0doug"]
 [ext_resource type="Resource" uid="uid://cr5hipkk6gh18" path="res://materials/ga_lvl1/supply_room_3.tres" id="26_xehlr"]
 [ext_resource type="Resource" uid="uid://k08qtijoxejw" path="res://material_textures/ga_textures/metal_panel.tres" id="27_0doug"]
@@ -3165,11 +3163,9 @@ sector_material = ExtResource("7_itcm3")
 portal_wall_length = 20.0
 portal_destination_wall_length = -1.0
 
-[node name="TextureOverride" type="Node2D" parent="Sectors/Sector-1793v2c" instance=ExtResource("7_qm6fi")]
+[node name="TextureOverride" parent="Sectors/Sector-1793v2c" instance=ExtResource("7_qm6fi")]
 position = Vector2(-100, 20)
-script = ExtResource("10_7ue4s")
 texture = ExtResource("12_b1mm8")
-_use_ceiling_offset = true
 
 [node name="Sector-1793v2d" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -50)
@@ -3186,17 +3182,13 @@ portal_destination_wall_length = -1.0
 script = ExtResource("7_4rivd")
 target = NodePath("../../../Activators/ActivatorSecret")
 
-[node name="TextureOverride" type="Node2D" parent="Sectors/Sector-1793v2d" instance=ExtResource("7_qm6fi")]
+[node name="TextureOverride" parent="Sectors/Sector-1793v2d" instance=ExtResource("7_qm6fi")]
 position = Vector2(-136, 30)
-script = ExtResource("10_7ue4s")
 texture = ExtResource("12_b1mm8")
-_use_ceiling_offset = true
 
-[node name="TextureOverride2" type="Node2D" parent="Sectors/Sector-1793v2d" instance=ExtResource("7_qm6fi")]
+[node name="TextureOverride2" parent="Sectors/Sector-1793v2d" instance=ExtResource("7_qm6fi")]
 position = Vector2(-147, 30)
-script = ExtResource("10_7ue4s")
 texture = ExtResource("12_b1mm8")
-_use_ceiling_offset = true
 
 [node name="Sector-1793v2d2" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -50)
@@ -3209,17 +3201,13 @@ sector_material = ExtResource("7_itcm3")
 portal_wall_length = 20.0
 portal_destination_wall_length = -1.0
 
-[node name="TextureOverride" type="Node2D" parent="Sectors/Sector-1793v2d2" instance=ExtResource("7_qm6fi")]
+[node name="TextureOverride" parent="Sectors/Sector-1793v2d2" instance=ExtResource("7_qm6fi")]
 position = Vector2(-110, 30)
-script = ExtResource("10_7ue4s")
 texture = ExtResource("12_b1mm8")
-_use_ceiling_offset = true
 
-[node name="TextureOverride2" type="Node2D" parent="Sectors/Sector-1793v2d2" instance=ExtResource("7_qm6fi")]
+[node name="TextureOverride2" parent="Sectors/Sector-1793v2d2" instance=ExtResource("7_qm6fi")]
 position = Vector2(-126, 30)
-script = ExtResource("10_7ue4s")
 texture = ExtResource("12_b1mm8")
-_use_ceiling_offset = true
 
 [node name="Sector-1793v2a" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -30)
@@ -3243,11 +3231,9 @@ sector_material = ExtResource("12_itcm3")
 portal_wall_length = 50.0
 portal_destination_wall_length = -1.0
 
-[node name="TextureOverride" type="Node2D" parent="Sectors/Sector-1793v2h" instance=ExtResource("7_qm6fi")]
+[node name="TextureOverride" parent="Sectors/Sector-1793v2h" instance=ExtResource("7_qm6fi")]
 position = Vector2(-159, 25)
-script = ExtResource("10_7ue4s")
 texture = ExtResource("12_b1mm8")
-_use_ceiling_offset = true
 
 [node name="Sector-1793v2h2" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(65, -30)
@@ -3260,11 +3246,9 @@ sector_material = ExtResource("12_itcm3")
 portal_wall_length = 16.40122
 portal_destination_wall_length = -1.0
 
-[node name="TextureOverride" type="Node2D" parent="Sectors/Sector-1793v2h2" instance=ExtResource("7_qm6fi")]
+[node name="TextureOverride" parent="Sectors/Sector-1793v2h2" instance=ExtResource("7_qm6fi")]
 position = Vector2(-159, 15)
-script = ExtResource("10_7ue4s")
 texture = ExtResource("12_b1mm8")
-_use_ceiling_offset = true
 
 [node name="Sector-1793v2j" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(65, -30)
@@ -3589,11 +3573,9 @@ sector_material = ExtResource("12_itcm3")
 portal_wall_length = 20.0
 portal_destination_wall_length = -1.0
 
-[node name="TextureOverride" type="Node2D" parent="Sectors/Sector-1793v2i" instance=ExtResource("7_qm6fi")]
+[node name="TextureOverride" parent="Sectors/Sector-1793v2i" instance=ExtResource("7_qm6fi")]
 position = Vector2(-157, 10)
-script = ExtResource("10_7ue4s")
 texture = ExtResource("12_b1mm8")
-_use_ceiling_offset = true
 
 [node name="Sector-1793v2b" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -30)
@@ -3606,28 +3588,22 @@ sector_material = ExtResource("16_toxxf")
 portal_wall_length = 20.0
 portal_destination_wall_length = -1.0
 
-[node name="TextureOverride" type="Node2D" parent="Sectors/Sector-1793v2b" instance=ExtResource("7_qm6fi")]
+[node name="TextureOverride" parent="Sectors/Sector-1793v2b" instance=ExtResource("7_qm6fi")]
 position = Vector2(-154, 30)
-script = ExtResource("10_7ue4s")
 texture = ExtResource("11_b1mm8")
 stripe_floor_offset = 0.5
-_use_ceiling_offset = true
 ceiling_offset = 1.0
 
-[node name="TextureOverride2" type="Node2D" parent="Sectors/Sector-1793v2b" instance=ExtResource("7_qm6fi")]
+[node name="TextureOverride2" parent="Sectors/Sector-1793v2b" instance=ExtResource("7_qm6fi")]
 position = Vector2(-132, 30)
-script = ExtResource("10_7ue4s")
 texture = ExtResource("11_b1mm8")
 stripe_floor_offset = 0.5
-_use_ceiling_offset = true
 ceiling_offset = 1.0
 
-[node name="TextureOverride3" type="Node2D" parent="Sectors/Sector-1793v2b" instance=ExtResource("7_qm6fi")]
+[node name="TextureOverride3" parent="Sectors/Sector-1793v2b" instance=ExtResource("7_qm6fi")]
 position = Vector2(-110, 30)
-script = ExtResource("10_7ue4s")
 texture = ExtResource("11_b1mm8")
 stripe_floor_offset = 0.5
-_use_ceiling_offset = true
 ceiling_offset = 1.0
 
 [node name="Sector-1793v2f" parent="Sectors" instance=ExtResource("2_bdnqo")]
@@ -4002,13 +3978,10 @@ sector_material = ExtResource("20_is3sa")
 portal_wall_length = 10.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-1793x4q" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-1793x4q" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -30)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(40, 155, 50, 155, 40, 169)
-script = ExtResource("25_lao15")
 data = SubResource("Resource_bo2n3")
 floor_height = 10.0
 ceiling_height = 16.0
@@ -4239,13 +4212,10 @@ sector_material = ExtResource("20_dfyjn")
 portal_wall_length = 70.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-1793x8" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-1793x8" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -30)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(-40, 170, -30, 170, -40, 190)
-script = ExtResource("25_lao15")
 data = SubResource("Resource_ei6ao")
 floor_height = 10.0
 ceiling_height = 16.0
@@ -4253,13 +4223,10 @@ sector_material = ExtResource("20_is3sa")
 portal_wall_length = 10.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-1793x7" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-1793x7" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -30)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(120, 170, 120, 180, 120, 200, 120, 210, 110, 210, 110, 170)
-script = ExtResource("25_lao15")
 data = SubResource("Resource_jyvgw")
 floor_height = 10.0
 ceiling_height = 16.0
@@ -5013,17 +4980,13 @@ sector_material = ExtResource("30_obqwd")
 portal_wall_length = 21.0
 portal_destination_wall_length = -1.0
 
-[node name="TextureOverride" type="Node2D" parent="Sectors/Sector-1793x2s" instance=ExtResource("7_qm6fi")]
+[node name="TextureOverride" parent="Sectors/Sector-1793x2s" instance=ExtResource("7_qm6fi")]
 position = Vector2(95, 313)
-script = ExtResource("10_7ue4s")
 texture = ExtResource("31_ys8hm")
-_use_ceiling_offset = true
 
-[node name="TextureOverride2" type="Node2D" parent="Sectors/Sector-1793x2s" instance=ExtResource("7_qm6fi")]
+[node name="TextureOverride2" parent="Sectors/Sector-1793x2s" instance=ExtResource("7_qm6fi")]
 position = Vector2(95, 334)
-script = ExtResource("10_7ue4s")
 texture = ExtResource("31_ys8hm")
-_use_ceiling_offset = true
 
 [node name="Sector-1793x2r" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -30)
@@ -5036,17 +4999,13 @@ sector_material = ExtResource("30_obqwd")
 portal_wall_length = 20.0
 portal_destination_wall_length = -1.0
 
-[node name="TextureOverride" type="Node2D" parent="Sectors/Sector-1793x2r" instance=ExtResource("7_qm6fi")]
+[node name="TextureOverride" parent="Sectors/Sector-1793x2r" instance=ExtResource("7_qm6fi")]
 position = Vector2(95, 277)
-script = ExtResource("10_7ue4s")
 texture = ExtResource("31_ys8hm")
-_use_ceiling_offset = true
 
-[node name="TextureOverride2" type="Node2D" parent="Sectors/Sector-1793x2r" instance=ExtResource("7_qm6fi")]
+[node name="TextureOverride2" parent="Sectors/Sector-1793x2r" instance=ExtResource("7_qm6fi")]
 position = Vector2(95, 297)
-script = ExtResource("10_7ue4s")
 texture = ExtResource("31_ys8hm")
-_use_ceiling_offset = true
 
 [node name="Sector-1793x2o" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -30)
@@ -5207,11 +5166,9 @@ sector_material = ExtResource("20_dfyjn")
 portal_wall_length = 9.0
 portal_destination_wall_length = -1.0
 
-[node name="TextureOverride" type="Node2D" parent="Sectors/Sector-1793x2l" instance=ExtResource("7_qm6fi")]
+[node name="TextureOverride" parent="Sectors/Sector-1793x2l" instance=ExtResource("7_qm6fi")]
 position = Vector2(-31, 230)
-script = ExtResource("10_7ue4s")
 texture = ExtResource("27_0doug")
-_use_ceiling_offset = true
 
 [node name="Sector-1793x2h" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -30)
@@ -5246,13 +5203,10 @@ sector_material = ExtResource("20_dfyjn")
 portal_wall_length = 10.0
 portal_destination_wall_length = -1.0
 
-[node name="Sector-1793x2h2c" type="Polygon2D" parent="Sectors" instance=ExtResource("2_bdnqo")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-1793x2h2c" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -30)
 color = Color(0.501961, 0, 0.196078, 1)
 polygon = PackedVector2Array(120, 242, 120, 247, 120, 250, 110, 250, 120, 240)
-script = ExtResource("25_lao15")
 data = SubResource("Resource_4rho2")
 floor_height = 10.0
 ceiling_height = 16.0
@@ -7691,6 +7645,10 @@ sector_material = ExtResource("38_4rho2")
 portal_wall_length = 10.0
 portal_destination_wall_length = -1.0
 
+[node name="Trigger" type="Node" parent="Sectors/Sector-318" node_paths=PackedStringArray("target")]
+script = ExtResource("7_4rivd")
+target = NodePath("../../../Activators/ActivatorTrap")
+
 [node name="Sector-318e" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(300, 194)
 color = Color(0.501961, 0, 0.196078, 1)
@@ -7702,6 +7660,10 @@ sector_material = ExtResource("38_4rho2")
 portal_wall_length = 20.0
 portal_destination_wall_length = -1.0
 
+[node name="Trigger" type="Node" parent="Sectors/Sector-318e" node_paths=PackedStringArray("target")]
+script = ExtResource("7_4rivd")
+target = NodePath("../../../Activators/ActivatorTrap")
+
 [node name="Sector-318b" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(300, 194)
 color = Color(0.501961, 0, 0.196078, 1)
@@ -7712,6 +7674,10 @@ ceiling_height = 20.0
 sector_material = ExtResource("38_4rho2")
 portal_wall_length = 20.0
 portal_destination_wall_length = -1.0
+
+[node name="Trigger" type="Node" parent="Sectors/Sector-318b" node_paths=PackedStringArray("target")]
+script = ExtResource("7_4rivd")
+target = NodePath("../../../Activators/ActivatorTrap")
 
 [node name="Sector-318c" parent="Sectors" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_bdnqo")]
 position = Vector2(300, 194)
@@ -7727,6 +7693,10 @@ portal_wall = 1
 portal_wall_length = 20.0
 portal_destination_wall_length = 20.0
 
+[node name="Trigger" type="Node" parent="Sectors/Sector-318c" node_paths=PackedStringArray("target")]
+script = ExtResource("7_4rivd")
+target = NodePath("../../../Activators/ActivatorTrap")
+
 [node name="Sector-318a" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(300, 194)
 color = Color(0.501961, 0, 0.196078, 1)
@@ -7737,6 +7707,10 @@ ceiling_height = 15.5
 sector_material = ExtResource("38_4rho2")
 portal_wall_length = 5.0
 portal_destination_wall_length = -1.0
+
+[node name="Trigger" type="Node" parent="Sectors/Sector-318a" node_paths=PackedStringArray("target")]
+script = ExtResource("7_4rivd")
+target = NodePath("../../../Activators/ActivatorTrap")
 
 [node name="Sector-318d" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(300, 194)
@@ -8629,11 +8603,10 @@ curve = SubResource("Curve_0doug")
 placement_mode = 1
 
 [node name="PointLight31" parent="Lights" instance=ExtResource("11_07md0")]
-position = Vector2(330, 192)
-color = Color(0, 1, 0, 1)
-radius = 2.0
+position = Vector2(330, 221)
+color = Color(0, 1, 1, 1)
+radius = 5.0
 curve = SubResource("Curve_ruyqr")
-placement_mode = 1
 
 [node name="PointLight47" parent="Lights" instance=ExtResource("11_07md0")]
 position = Vector2(-172, 37)

@@ -17,7 +17,7 @@ metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 
 [sub_resource type="Resource" id="Resource_a6q66"]
 script = ExtResource("6_k2xvn")
-priority = 3
+priority = 7
 _placement_type = 17
 texture = ExtResource("1_4vsmp")
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
