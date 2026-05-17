@@ -1,11 +1,10 @@
 [gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://s10c180w1eyw"]
 
-[ext_resource type="Texture2D" uid="uid://csfwo5bewc5xd" path="res://imgs/pipes.png" id="1_srnin"]
+[ext_resource type="Texture2D" uid="uid://bkx5xv6cpv5l6" path="res://imgs/wall/pipes_horizontal.png" id="1_ukqjh"]
 [ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_pgx7i"]
 
 [resource]
 script = ExtResource("2_pgx7i")
-preview = ExtResource("1_srnin")
-rotation = 90.0
+preview = ExtResource("1_ukqjh")
 tile_rotation_increment = 0.0
 metadata/_custom_type_script = "uid://chjmx3djsb6cj"

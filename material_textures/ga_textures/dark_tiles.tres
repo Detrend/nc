@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://bvikmmuyoknps"]
+
+[ext_resource type="Texture2D" uid="uid://dn4ksc6o5d0ui" path="res://imgs/wall/dark_tiles.png" id="1_h2chi"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_3542x"]
+
+[resource]
+script = ExtResource("2_3542x")
+preview = ExtResource("1_h2chi")
+tile_rotation_increment = 0.0
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

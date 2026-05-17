@@ -1,12 +1,13 @@
-[gd_resource type="Resource" script_class="SectorMaterial" load_steps=11 format=3 uid="uid://xd05ypsir7im"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=12 format=3 uid="uid://xd05ypsir7im"]
 
-[ext_resource type="Resource" uid="uid://s10c180w1eyw" path="res://material_textures/pipesLR.tres" id="1_4vsmp"]
+[ext_resource type="Resource" uid="uid://s10c180w1eyw" path="res://material_textures/ga_textures/pipesLR.tres" id="1_4vsmp"]
+[ext_resource type="Resource" uid="uid://bvikmmuyoknps" path="res://material_textures/ga_textures/dark_tiles.tres" id="2_dkw2x"]
 [ext_resource type="Resource" uid="uid://coohq55u58kbj" path="res://material_textures/stone_wall.tres" id="2_supd7"]
-[ext_resource type="Texture2D" uid="uid://csfwo5bewc5xd" path="res://imgs/pipes.png" id="3_dkw2x"]
+[ext_resource type="Texture2D" uid="uid://dwra0ljx4aaom" path="res://imgs/wall/pipes_vertical.png" id="3_1pvs4"]
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="4_1pvs4"]
 [ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="5_m7rj1"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="6_k2xvn"]
-[ext_resource type="Resource" uid="uid://da1uhdi66xs7w" path="res://material_textures/pipes.tres" id="7_supd7"]
+[ext_resource type="Resource" uid="uid://da1uhdi66xs7w" path="res://material_textures/ga_textures/pipes.tres" id="7_supd7"]
 
 [sub_resource type="Resource" id="Resource_csai5"]
 script = ExtResource("5_m7rj1")
@@ -18,7 +19,6 @@ metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 script = ExtResource("6_k2xvn")
 priority = 3
 _placement_type = 17
-wall_length_range = Vector2(0, 0.5)
 texture = ExtResource("1_4vsmp")
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
@@ -30,10 +30,10 @@ metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [resource]
 script = ExtResource("4_1pvs4")
-preview = ExtResource("3_dkw2x")
+preview = ExtResource("3_1pvs4")
 preview_scale = 4.0
 wall_default = SubResource("Resource_csai5")
 wall_rules = Array[ExtResource("6_k2xvn")]([SubResource("Resource_a6q66"), SubResource("Resource_dkw2x")])
-floor = ExtResource("2_supd7")
+floor = ExtResource("2_dkw2x")
 ceiling = ExtResource("1_4vsmp")
 metadata/_custom_type_script = "uid://bd7os02w6f4ou"

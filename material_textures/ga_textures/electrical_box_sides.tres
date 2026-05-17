@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://c140gt43l7dji"]
+
+[ext_resource type="Texture2D" uid="uid://d18xm0w4jo8at" path="res://imgs/wall/electrical box_sides.png" id="1_ddkj8"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_jh2ne"]
+
+[resource]
+script = ExtResource("2_jh2ne")
+preview = ExtResource("1_ddkj8")
+tile_rotation_increment = 0.0
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

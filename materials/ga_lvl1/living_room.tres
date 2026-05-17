@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=13 format=3 uid="uid://br7k55k3slnyy"]
+
+[ext_resource type="Resource" uid="uid://drlk42euj10hx" path="res://material_textures/ga_textures/gritty_concrete.tres" id="1_2i3id"]
+[ext_resource type="Texture2D" uid="uid://dqxybmfy83arq" path="res://imgs/wall/gritty_concrete.png" id="2_dudgf"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="3_km2su"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="4_tltcm"]
+[ext_resource type="Resource" uid="uid://coohq55u58kbj" path="res://material_textures/stone_wall.tres" id="5_2ao8a"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="6_vv8iv"]
+[ext_resource type="Resource" uid="uid://be6j0sowxs14l" path="res://material_textures/ga_textures/smooth_concrete_white.tres" id="7_r7sq2"]
+[ext_resource type="Resource" uid="uid://bhevr5t5wgjr2" path="res://material_textures/ga_textures/worn_concrete_white.tres" id="8_2i3id"]
+
+[sub_resource type="Resource" id="Resource_csai5"]
+script = ExtResource("4_tltcm")
+priority = 2
+texture = ExtResource("5_2ao8a")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[sub_resource type="Resource" id="Resource_a6q66"]
+script = ExtResource("6_vv8iv")
+priority = 2
+_placement_type = 5
+texture = ExtResource("8_2i3id")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[sub_resource type="Resource" id="Resource_vmr3h"]
+script = ExtResource("6_vv8iv")
+_placement_type = 9
+texture = ExtResource("7_r7sq2")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[sub_resource type="Resource" id="Resource_ltfd2"]
+script = ExtResource("6_vv8iv")
+_placement_type = 17
+texture = ExtResource("7_r7sq2")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[resource]
+script = ExtResource("3_km2su")
+preview = ExtResource("2_dudgf")
+preview_scale = 4.0
+wall_default = SubResource("Resource_csai5")
+wall_rules = Array[ExtResource("6_vv8iv")]([SubResource("Resource_a6q66"), SubResource("Resource_vmr3h"), SubResource("Resource_ltfd2")])
+floor = ExtResource("1_2i3id")
+ceiling = ExtResource("7_r7sq2")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"

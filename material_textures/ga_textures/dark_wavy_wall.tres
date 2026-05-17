@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://ptuhfdhs88um"]
+
+[ext_resource type="Texture2D" uid="uid://dpe60jfanl8g2" path="res://imgs/wall/dark_wavy_wall.png" id="1_lsc0l"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_a8rqf"]
+
+[resource]
+script = ExtResource("2_a8rqf")
+preview = ExtResource("1_lsc0l")
+tile_rotation_increment = 0.0
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

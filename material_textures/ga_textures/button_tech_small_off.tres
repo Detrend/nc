@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://dpx8g11se1itf"]
+
+[ext_resource type="Texture2D" uid="uid://70prvu4p57nc" path="res://imgs/wall/button_small_off_0.png" id="1_0n42g"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_nwhc6"]
+
+[resource]
+script = ExtResource("2_nwhc6")
+preview = ExtResource("1_0n42g")
+id_triggered = "button_small_on_0"
+tile_rotation_increment = 0.0
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=14 format=3 uid="uid://cqednhk2jc6ho"]
+
+[ext_resource type="Resource" uid="uid://bvikmmuyoknps" path="res://material_textures/ga_textures/dark_tiles.tres" id="1_m3ast"]
+[ext_resource type="Resource" uid="uid://4gkfik83lbfb" path="res://material_textures/ga_textures/ventilation_grid_square.tres" id="2_kfqo2"]
+[ext_resource type="Texture2D" uid="uid://cfauooi3dehbp" path="res://imgs/CCOMP02.png" id="2_whh8u"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="3_kfqo2"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="4_o1ydc"]
+[ext_resource type="Resource" uid="uid://coohq55u58kbj" path="res://material_textures/stone_wall.tres" id="5_4eho1"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="6_vcm5m"]
+[ext_resource type="Resource" uid="uid://ptuhfdhs88um" path="res://material_textures/ga_textures/dark_wavy_wall.tres" id="7_hd2l5"]
+[ext_resource type="Resource" uid="uid://b4tvf4c36nwrn" path="res://material_textures/ga_textures/wavy_metal.tres" id="9_kfqo2"]
+
+[sub_resource type="Resource" id="Resource_csai5"]
+script = ExtResource("4_o1ydc")
+priority = 2
+texture = ExtResource("5_4eho1")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[sub_resource type="Resource" id="Resource_a6q66"]
+script = ExtResource("6_vcm5m")
+priority = 2
+_placement_type = 5
+texture = ExtResource("7_hd2l5")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[sub_resource type="Resource" id="Resource_vmr3h"]
+script = ExtResource("6_vcm5m")
+_placement_type = 9
+texture = ExtResource("9_kfqo2")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[sub_resource type="Resource" id="Resource_ltfd2"]
+script = ExtResource("6_vcm5m")
+_placement_type = 17
+texture = ExtResource("7_hd2l5")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[resource]
+script = ExtResource("3_kfqo2")
+preview = ExtResource("2_whh8u")
+preview_scale = 4.0
+wall_default = SubResource("Resource_csai5")
+wall_rules = Array[ExtResource("6_vcm5m")]([SubResource("Resource_a6q66"), SubResource("Resource_vmr3h"), SubResource("Resource_ltfd2")])
+floor = ExtResource("2_kfqo2")
+ceiling = ExtResource("1_m3ast")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"

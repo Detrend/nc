@@ -1,0 +1,45 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=13 format=3 uid="uid://bqyyokp64eh5p"]
+
+[ext_resource type="Resource" uid="uid://4gkfik83lbfb" path="res://material_textures/ga_textures/ventilation_grid_square.tres" id="2_7drr2"]
+[ext_resource type="Texture2D" uid="uid://cfauooi3dehbp" path="res://imgs/CCOMP02.png" id="3_j0tu1"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="4_yn1la"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="5_lpkfl"]
+[ext_resource type="Resource" uid="uid://coohq55u58kbj" path="res://material_textures/stone_wall.tres" id="6_lkb7t"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="7_tny0d"]
+[ext_resource type="Resource" uid="uid://ptuhfdhs88um" path="res://material_textures/ga_textures/dark_wavy_wall.tres" id="8_bmbud"]
+[ext_resource type="Resource" uid="uid://b4tvf4c36nwrn" path="res://material_textures/ga_textures/wavy_metal.tres" id="9_4o31q"]
+
+[sub_resource type="Resource" id="Resource_csai5"]
+script = ExtResource("5_lpkfl")
+priority = 2
+texture = ExtResource("6_lkb7t")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[sub_resource type="Resource" id="Resource_a6q66"]
+script = ExtResource("7_tny0d")
+priority = 2
+_placement_type = 5
+texture = ExtResource("8_bmbud")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[sub_resource type="Resource" id="Resource_vmr3h"]
+script = ExtResource("7_tny0d")
+_placement_type = 9
+texture = ExtResource("9_4o31q")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[sub_resource type="Resource" id="Resource_ltfd2"]
+script = ExtResource("7_tny0d")
+_placement_type = 17
+texture = ExtResource("8_bmbud")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[resource]
+script = ExtResource("4_yn1la")
+preview = ExtResource("3_j0tu1")
+preview_scale = 4.0
+wall_default = SubResource("Resource_csai5")
+wall_rules = Array[ExtResource("7_tny0d")]([SubResource("Resource_a6q66"), SubResource("Resource_vmr3h"), SubResource("Resource_ltfd2")])
+floor = ExtResource("2_7drr2")
+ceiling = ExtResource("2_7drr2")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"

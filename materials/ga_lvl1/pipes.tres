@@ -1,12 +1,13 @@
-[gd_resource type="Resource" script_class="SectorMaterial" load_steps=11 format=3 uid="uid://dbjs655avimol"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=12 format=3 uid="uid://dbjs655avimol"]
 
-[ext_resource type="Resource" uid="uid://da1uhdi66xs7w" path="res://material_textures/pipes.tres" id="1_7js8j"]
+[ext_resource type="Resource" uid="uid://da1uhdi66xs7w" path="res://material_textures/ga_textures/pipes.tres" id="1_7js8j"]
 [ext_resource type="Resource" uid="uid://coohq55u58kbj" path="res://material_textures/stone_wall.tres" id="1_db7ec"]
+[ext_resource type="Resource" uid="uid://bvikmmuyoknps" path="res://material_textures/ga_textures/dark_tiles.tres" id="2_1sqxa"]
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="3_nrcse"]
 [ext_resource type="Texture2D" uid="uid://csfwo5bewc5xd" path="res://imgs/pipes.png" id="3_wryu5"]
 [ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="4_de3yk"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="5_ol06m"]
-[ext_resource type="Resource" uid="uid://s10c180w1eyw" path="res://material_textures/pipesLR.tres" id="7_wryu5"]
+[ext_resource type="Resource" uid="uid://s10c180w1eyw" path="res://material_textures/ga_textures/pipesLR.tres" id="7_wryu5"]
 
 [sub_resource type="Resource" id="Resource_csai5"]
 script = ExtResource("4_de3yk")
@@ -34,6 +35,6 @@ preview = ExtResource("3_wryu5")
 preview_scale = 4.0
 wall_default = SubResource("Resource_csai5")
 wall_rules = Array[ExtResource("5_ol06m")]([SubResource("Resource_1sqxa"), SubResource("Resource_wryu5")])
-floor = ExtResource("1_db7ec")
+floor = ExtResource("2_1sqxa")
 ceiling = ExtResource("1_7js8j")
 metadata/_custom_type_script = "uid://bd7os02w6f4ou"

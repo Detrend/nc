@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=11 format=3 uid="uid://cvsj1xrjcngag"]
+
+[ext_resource type="Resource" uid="uid://drlk42euj10hx" path="res://material_textures/ga_textures/gritty_concrete.tres" id="2_kbxoh"]
+[ext_resource type="Texture2D" uid="uid://cfauooi3dehbp" path="res://imgs/CCOMP02.png" id="3_q3ugi"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="4_ichnx"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="5_b4aog"]
+[ext_resource type="Resource" uid="uid://coohq55u58kbj" path="res://material_textures/stone_wall.tres" id="6_qy307"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="7_runr0"]
+
+[sub_resource type="Resource" id="Resource_csai5"]
+script = ExtResource("5_b4aog")
+priority = 2
+texture = ExtResource("6_qy307")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[sub_resource type="Resource" id="Resource_a6q66"]
+script = ExtResource("7_runr0")
+priority = 2
+_placement_type = 5
+texture = ExtResource("2_kbxoh")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[sub_resource type="Resource" id="Resource_vmr3h"]
+script = ExtResource("7_runr0")
+priority = 4
+_placement_type = 9
+texture = ExtResource("6_qy307")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[sub_resource type="Resource" id="Resource_ltfd2"]
+script = ExtResource("7_runr0")
+_placement_type = 17
+texture = ExtResource("6_qy307")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[resource]
+script = ExtResource("4_ichnx")
+preview = ExtResource("3_q3ugi")
+preview_scale = 4.0
+wall_default = SubResource("Resource_csai5")
+wall_rules = Array[ExtResource("7_runr0")]([SubResource("Resource_a6q66"), SubResource("Resource_vmr3h"), SubResource("Resource_ltfd2")])
+floor = ExtResource("2_kbxoh")
+ceiling = ExtResource("2_kbxoh")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"
