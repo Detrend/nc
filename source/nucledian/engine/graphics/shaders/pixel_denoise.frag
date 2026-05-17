@@ -104,6 +104,8 @@ void main()
         }
       }
 
+      vec2 sample_pos = 
+
       // Others - everywhere
       for (int p = 0; p < num_good_indices; ++p)
       {
