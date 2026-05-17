@@ -2168,17 +2168,17 @@
 			"color": [
 				0.0,
 				1.0,
-				0.0,
+				1.0,
 				1.0
 			],
 			"falloff": 1.0,
 			"intensity": 1.0,
 			"position": [
 				-53.0,
-				15.3000001907349,
-				15.4
+				12.4000005722046,
+				13.6
 			],
-			"radius": 2.0,
+			"radius": 5.0,
 			"tag": 119
 		},
 		{
@@ -40737,6 +40737,17 @@
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
+			"triggers": [
+				{
+					"activator": "ActivatorTrap",
+					"can_turn_off": false,
+					"enemy_sensitive": false,
+					"increment": 1,
+					"player_sensitive": true,
+					"timeout": 0.0,
+					"while_alive": false
+				}
+			],
 			"wall_surfaces": [
 				[
 					{
@@ -40845,6 +40856,17 @@
 			"portal_destination_wall": 6,
 			"portal_target": 288,
 			"portal_wall": 0,
+			"triggers": [
+				{
+					"activator": "ActivatorTrap",
+					"can_turn_off": false,
+					"enemy_sensitive": false,
+					"increment": 1,
+					"player_sensitive": true,
+					"timeout": 0.0,
+					"while_alive": false
+				}
+			],
 			"wall_surfaces": [
 				[
 					{
@@ -40938,6 +40960,17 @@
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
+			"triggers": [
+				{
+					"activator": "ActivatorTrap",
+					"can_turn_off": false,
+					"enemy_sensitive": false,
+					"increment": 1,
+					"player_sensitive": true,
+					"timeout": 0.0,
+					"while_alive": false
+				}
+			],
 			"wall_surfaces": [
 				[
 					{
@@ -41063,6 +41096,17 @@
 			"portal_destination_wall": 0,
 			"portal_target": 296,
 			"portal_wall": 1,
+			"triggers": [
+				{
+					"activator": "ActivatorTrap",
+					"can_turn_off": false,
+					"enemy_sensitive": false,
+					"increment": 1,
+					"player_sensitive": true,
+					"timeout": 0.0,
+					"while_alive": false
+				}
+			],
 			"wall_surfaces": [
 				[
 					{
@@ -41203,6 +41247,17 @@
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
 			"portal_wall": -1,
+			"triggers": [
+				{
+					"activator": "ActivatorTrap",
+					"can_turn_off": false,
+					"enemy_sensitive": false,
+					"increment": 1,
+					"player_sensitive": true,
+					"timeout": 0.0,
+					"while_alive": false
+				}
+			],
 			"wall_surfaces": [
 				[
 					{
