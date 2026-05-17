@@ -218,6 +218,8 @@ float signed_solid_angle(vec3 p, vec3 a, vec3 b, vec3 c)
 	return 2.0 * atan(numerator, denominator);
 }
 
+#define DO_SHADOWS 1
+
 void main()
 {
   vec3 final_color = vec3(1.0f) * 0.0f;
@@ -242,6 +244,7 @@ void main()
       continue;
 
 
+#if DO_SHADOWS
     const int   num_samples = 4;
     const float shadow_d    = 0.2f;
 
@@ -256,7 +259,9 @@ void main()
       accum += shadow_coeff(position, light.stitched_position + offset * shadow_d, sector_id, light);
     }
     float shadow_coeff = accum / float(num_samples);
-    //float shadow_coeff = 1.0f;
+#else
+    float shadow_coeff = 1.0f;
+#endif
 
     float diffuse = max(angle, 0.0f);
 

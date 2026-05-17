@@ -1,7 +1,7 @@
 #version 430 core
 
 #define MAX_PARTS 128
-#define NUM_SAMPLES_TOTAL_WHEN_BALANCING 64
+#define NUM_SAMPLES_TOTAL_WHEN_BALANCING 12
 #define DEBUG_DRAW 0
 #define CULL_INVISIBLE_PIXELS 0
 #define INSPECTED_PART 0
@@ -469,7 +469,7 @@ void main()
   else
 #endif
   {
-    final_color = (og_color * 0.0f + sum * 10.0) * 1.0f;
+    final_color = (og_color * 1.0f + sum * 1.0) * 1.0f;
   }
 
   //imageStore(megatex_debug, ivec2(gl_FragCoord.xy), vec4(1.0, 0.0, 0.0, 1.0));

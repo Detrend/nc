@@ -130,6 +130,8 @@ namespace nc
       inline constexpr Uniform<4,  vec3> WP01;
       inline constexpr Uniform<5,  vec3> WP11;
       inline constexpr Uniform<7,  vec2> MEGATEX_SIZE;
+      inline constexpr Uniform<8,  u32>  NUM_INDICES;
+      inline constexpr Uniform<9,  u32>  MY_PART_ID;
     }
 
     // Sector rendering.
