@@ -111,7 +111,7 @@ float get_intersection_t(vec2 ray_origin, vec2 ray_direction, vec2 wall_p0, vec2
   float wall_t = cross(diff, ray_direction ) * inv_denominator;
 
   // intersection occurs outside of this wall segment
-  if (wall_t < -0.001f || wall_t > wall_length + 0.001f)
+  if (wall_t < 0.0f || wall_t > wall_length + 0.0f)
     return -1.0f;
 
   return ray_t;
