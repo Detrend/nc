@@ -137,7 +137,7 @@ void main()
   g_stitched_normal.w = 1.0f;
   vec4 megatex_value = texelFetch(megatex_input, ivec2(megatex_uv), 0);
   vec4 debug_value   = texelFetch(megatex_debug, ivec2(megatex_uv), 0);
-  g_albedo = color /** vec4(megatex_value.xyz, 1.0f)*/ + debug_value;
+  g_albedo = color * vec4(megatex_value.xyz, 1.0f) + debug_value;
 
   //g_albedo = vec4(megatex_value.xyz, 1.0f);
   g_sector = sector_id;
