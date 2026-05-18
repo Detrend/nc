@@ -333,4 +333,10 @@ void ShaderProgramHandle::set_uniform(GLint location, f32 value) const
   glUniform1f(location, value);
 }
 
+//==============================================================================
+void ShaderProgramHandle::set_uniform(GLint location, const ivec4& value) const
+{
+  glUniform4i(location, value.x, value.y, value.z, value.w);
+}
+
 }

@@ -87,6 +87,14 @@ public:
 
   std::vector<MegatexPart> megatex_parts;
 
+  struct DebugInfo
+  {
+    u32 debug_megatex_part_id = 0;
+    u32 debug_px_x            = 0;
+    u32 debug_px_y            = 0;
+    u32 unused                = 0;
+  } debug_info;
+
 private:
   void update(f32 delta_seconds);
   void render();

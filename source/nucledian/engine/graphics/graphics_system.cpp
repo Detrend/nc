@@ -50,6 +50,7 @@
 #endif
 
 #include <profiling.h>
+#include <engine/map/physics.h>
 
 #include <array>
 #include <algorithm>
@@ -513,6 +514,71 @@ void GraphicsSystem::render()
 
   RenderGunProperties gun_props;
   grab_render_gun_props(gun_props);
+
+  // Fill out debug
+  if (Camera* cam = Camera::get())
+  {
+    vec3 from = cam->get_position();
+    vec3 dir  = cam->get_forward();
+    f32  len  = 40.0f;
+    vec3 to   = from + dir * len;
+
+    auto lvl = GameSystem::get().get_level();
+
+    static bool CheckLookAt = true;
+    if (ImGui::Begin("Part debug"))
+    {
+      ImGui::Checkbox("Update lookat part", &CheckLookAt);
+      ImGui::Text("Debug part id: [%d]", cast<int>(debug_info.debug_megatex_part_id));
+      ImGui::Text("Debug px:      [%d, %d]", cast<int>(debug_info.debug_px_x), cast<int>(debug_info.debug_px_y));
+    }
+    ImGui::End();
+
+    if (CheckLookAt)
+    {
+      auto hit = lvl.ray_cast_3d(from, to, 0, nullptr);
+      if (hit && hit.is_sector_hit())
+      {
+        MegatexPartId part_id = INVALID_MEGATEX_ID;
+        SectorID      sid     = hit.hit.sector.sector_id;
+        ivec2         px      = ivec2{0};
+        vec3          hit_wp  = from + (to - from) * hit.coeff;
+
+        if (hit.is_wall_hit())
+        {
+          part_id = lvl.map.walls[hit.hit.sector.wall_id].megatex_id;
+
+          const MegatexPart& part = megatex_parts[part_id];
+          vec3  mn = part.wpos_00;
+          vec3  mx = part.wpos_11;
+
+          // (hit_wp - mn) = (mx - mn) * t
+          // t = (ht_wp - mn) / (mx - mn)
+          vec3 ddd   = mx - mn;
+          vec3 rel   = (hit_wp - mn) / ddd;
+          f32  x_rel = (abs(ddd.x) < abs(ddd.z)) ? rel.z : rel.x; // can also be rel.z
+          f32  y_rel = rel.y;
+          px = cast<ivec2>(mix(vec2(part.megatex_coord_1), vec2(part.megatex_coord_2), vec2{x_rel, y_rel}));
+        }
+        else
+        {
+          part_id = hit.is_floor_hit() ? lvl.map.sectors[sid].floor_megatex_id : lvl.map.sectors[sid].ceil_megatex_id;
+
+          const MegatexPart& part = megatex_parts[part_id];
+          vec3  mn = part.wpos_00;
+          vec3  mx = part.wpos_11;
+
+          vec2  scale = (mx.xz - mn.xz);
+          vec2  rel  = (hit_wp.xz - mn.xz) / scale;
+          px = cast<ivec2>(mix(vec2(part.megatex_coord_1), vec2(part.megatex_coord_2), rel));
+        }
+
+        debug_info.debug_megatex_part_id = part_id;
+        debug_info.debug_px_x = px.x;
+        debug_info.debug_px_y = px.y;
+      }
+    }
+  }
 
 #ifdef NC_DEBUG_DRAW
   if (CVars::enable_top_down_debug)

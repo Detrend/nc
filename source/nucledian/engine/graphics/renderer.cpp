@@ -582,6 +582,7 @@ const
 {
   float clear_color[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
+  /*
   glClearTexImage(
     GraphicsSystem::get().megatex_mask_handle,        // texture id
     0,              // mip level
@@ -589,6 +590,7 @@ const
     GL_FLOAT,       // type
     clear_color      // data
   );
+  */
 
   glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -1026,9 +1028,18 @@ const
   glClear(GL_COLOR_BUFFER_BIT);
 
   // Use the GI shader
+  ivec4 dbg_info = ivec4
+  {
+    gfx.debug_info.debug_megatex_part_id,
+    gfx.debug_info.debug_px_x,
+    gfx.debug_info.debug_px_y,
+    gfx.debug_info.unused
+  };
+
   m_pixel_denoise_shader.use();
   m_megatex_ssbo.bind(0);
   m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::MEGATEX_SIZE, megatex_size);
+  m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::DEBUG,        dbg_info);
 
   glBindImageTexture(
     2,              // binding unit
