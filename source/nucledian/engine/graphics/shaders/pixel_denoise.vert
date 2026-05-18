@@ -35,7 +35,8 @@ flat out ivec2 from_px;
 flat out ivec2 to_px;
 out flat uint  num_good_indices;
 out flat uint  good_indices[6];
-out flat ivec4 good_offsets[6];
+out flat vec2  good_offsets[6];
+out flat vec2  good_scales[6];
 
 layout(std430, binding = 0) readonly buffer parts_buffer   { MegatexPart megatex_parts[];   };
 layout(std430, binding = 1) readonly buffer indices_buffer { uint        megatex_indices[]; };
@@ -124,12 +125,27 @@ void main()
       {
         continue;
       }
-      else
-      {
-        continue;
-      }
+
+      vec2 my_from = vec2(my_part.megatex_coord_1);
+      vec2 my_to   = vec2(my_part.megatex_coord_2);
+      vec2 from    = vec2(part.megatex_coord_1);
+      vec2 to      = vec2(part.megatex_coord_2);
+
+      float L_mine  = length(my_part.wpos_10.xz - my_part.wpos_00.xz);
+      float L_other = length(part.wpos_10.xz    - part.wpos_00.xz);
+      float scale_x  = L_mine / L_other * (to.x - from.x) / (my_to.x - my_from.x);
+      float offset_x = a ? (to.x   - my_from.x * scale_x)
+                         : (from.x - my_to.x   * scale_x);
+
+      float scale_y  = (my_part.wpos_01.y - my_part.wpos_00.y) / (my_to.y - my_from.y)
+                     * (to.y - from.y) / (part.wpos_01.y - part.wpos_00.y);
+      float offset_y = from.y + (my_part.wpos_00.y - part.wpos_00.y)
+                     * (to.y - from.y) / (part.wpos_01.y - part.wpos_00.y)
+                     - my_from.y * scale_y;
 
       good_indices[num_good_indices] = index;
+      good_offsets[num_good_indices] = vec2(offset_x, offset_y);
+      good_scales [num_good_indices] = vec2(scale_x,  scale_y);
       num_good_indices += 1;
     }
     else
@@ -148,19 +164,19 @@ void main()
         continue;
       }
 
-      // From me to the part
-      vec2 offset_world_start = part.wpos_00.xz - my_part.wpos_00.xz;
-      vec2 offset_world_end   = part.wpos_11.xz - my_part.wpos_00.xz;
+      vec2 from    = ivec2(part.megatex_coord_1);
+      vec2 to      = ivec2(part.megatex_coord_2);
+      vec2 my_from = ivec2(my_part.megatex_coord_1);
+      vec2 my_to   = ivec2(my_part.megatex_coord_2);
 
-      vec2 size_world   = my_part.wpos_11.xz - my_part.wpos_00.xz;
-      vec2 size_px      = vec2(my_part.megatex_coord_2 - my_part.megatex_coord_1);
-
-      vec2 start_in_px = vec2(my_part.megatex_coord_1) + offset_world_start * (size_px / size_world);
-      vec2 end_in_px   = vec2(my_part.megatex_coord_1) + offset_world_end   * (size_px / size_world);
+      vec2 scale  = (my_part.wpos_11.xz - my_part.wpos_00.xz) / (my_to - my_from)
+                  * (to - from) / (part.wpos_11.xz - part.wpos_00.xz);
+      vec2 offset = from + (my_part.wpos_00.xz - part.wpos_00.xz)
+                  * (to - from) / (part.wpos_11.xz - part.wpos_00.xz) - my_from * scale;
 
       good_indices[num_good_indices] = index;
-      good_offsets[num_good_indices].xy = ivec2(start_in_px);
-      good_offsets[num_good_indices].xy = ivec2(end_in_px);
+      good_offsets[num_good_indices] = offset;
+      good_scales [num_good_indices] = scale;
       num_good_indices += 1;
     }
   }

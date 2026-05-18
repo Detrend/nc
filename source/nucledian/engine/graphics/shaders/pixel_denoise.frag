@@ -25,14 +25,15 @@ layout(location = 7)       uniform vec2      u_megatex_size;
 layout(location = 9)       uniform uint      my_part_id;
 layout(location = 10)      uniform ivec4     u_debug_part_pxx_pxy;
 
-out vec4  out_color;
+out vec4      out_color;
 flat in ivec2 from_px;
 flat in ivec2 to_px;
 
 // Indices we should consider
 in flat uint  num_good_indices;
 in flat uint  good_indices[6];
-in flat ivec4 good_offsets[6];
+in flat vec2  good_offsets[6];
+in flat vec2  good_scales[6];
 
 #define GRID_N        10
 #define DO_DENOISE    1
@@ -98,7 +99,7 @@ void main()
 #endif
 
 #if DO_DENOISE
-  float sigma_s = float(GRID_N);
+  float sigma_s = float(GRID_N-3);
 
   for (int i = my_coord.x - GRID_N; i <= my_coord.x + GRID_N; ++i) // horizontal
   {
@@ -139,16 +140,14 @@ void main()
       {
         MegatexPart part = megatex_parts[good_indices[p]];
 
-        vec2 px_c    = true_coord;
-        vec2 from    = ivec2(part.megatex_coord_1);
-        vec2 to      = ivec2(part.megatex_coord_2);
-        vec2 my_from = ivec2(my_part.megatex_coord_1);
-        vec2 my_to   = ivec2(my_part.megatex_coord_2);
+        vec2 px_c  = true_coord;
+        vec2 from  = ivec2(part.megatex_coord_1);
+        vec2 to    = ivec2(part.megatex_coord_2);
 
-        vec2  our_px_rel  = (px_c - my_from) / (my_to - my_from);
-        vec2  our_wpos    = mix(my_part.wpos_00.xz, my_part.wpos_11.xz, our_px_rel);
-        vec2  other_rel_p = (our_wpos - part.wpos_00.xz) / (part.wpos_11.xz - part.wpos_00.xz);
-        ivec2 other_part_coord_within = ivec2(mix(part.megatex_coord_1, part.megatex_coord_2, other_rel_p));
+        vec2 scale  = good_scales[p];
+        vec2 offset = good_offsets[p];
+
+        ivec2 other_part_coord_within = ivec2(scale * px_c + offset);
 
         if (is_in_interval(other_part_coord_within, ivec2(from), ivec2(to)-ivec2(1)))
         {
