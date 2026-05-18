@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=14 format=3 uid="uid://dr84h2mqcc3qd"]
+
+[ext_resource type="Resource" uid="uid://cku8xgnhd4v6x" path="res://material_textures/rocks.tres" id="1_qdyib"]
+[ext_resource type="Resource" uid="uid://cj77kc2y4wc56" path="res://material_textures/mossy_rocks_2.tres" id="2_1ngpb"]
+[ext_resource type="Texture2D" uid="uid://6gkdvke2lg1n" path="res://imgs/moss.png" id="3_5giea"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="4_qljgd"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="5_831re"]
+[ext_resource type="Resource" uid="uid://coohq55u58kbj" path="res://material_textures/stone_wall.tres" id="6_p7ah0"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="7_womx6"]
+[ext_resource type="Resource" uid="uid://c1ku3etge0pxq" path="res://material_textures/mossy_rocks.tres" id="8_tsfqx"]
+[ext_resource type="Resource" uid="uid://62rh5bt21etu" path="res://material_textures/alien_floor.tres" id="9_y6m5m"]
+
+[sub_resource type="Resource" id="Resource_csai5"]
+script = ExtResource("5_831re")
+priority = 2
+texture = ExtResource("6_p7ah0")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[sub_resource type="Resource" id="Resource_a6q66"]
+script = ExtResource("7_womx6")
+priority = 2
+_placement_type = 5
+texture = ExtResource("9_y6m5m")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[sub_resource type="Resource" id="Resource_vmr3h"]
+script = ExtResource("7_womx6")
+priority = 3
+_placement_type = 9
+texture = ExtResource("9_y6m5m")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[sub_resource type="Resource" id="Resource_ltfd2"]
+script = ExtResource("7_womx6")
+_placement_type = 17
+texture = ExtResource("8_tsfqx")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[resource]
+script = ExtResource("4_qljgd")
+preview = ExtResource("3_5giea")
+preview_scale = 4.0
+wall_default = SubResource("Resource_csai5")
+wall_rules = Array[ExtResource("7_womx6")]([SubResource("Resource_a6q66"), SubResource("Resource_vmr3h"), SubResource("Resource_ltfd2")])
+floor = ExtResource("2_1ngpb")
+ceiling = ExtResource("1_qdyib")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"

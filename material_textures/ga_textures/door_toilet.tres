@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://b7plt12t34bdw"]
+
+[ext_resource type="Texture2D" uid="uid://b0kfcvr2tr28s" path="res://imgs/wall/toilet_door.png" id="1_f1ns3"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_6f5vm"]
+
+[resource]
+script = ExtResource("2_6f5vm")
+preview = ExtResource("1_f1ns3")
+tile_rotation_increment = 0.0
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

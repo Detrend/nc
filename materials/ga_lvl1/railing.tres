@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="SectorMaterial" load_steps=14 format=3 uid="uid://dty14eucw5qk7"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=15 format=3 uid="uid://dty14eucw5qk7"]
 
 [ext_resource type="Resource" uid="uid://bvikmmuyoknps" path="res://material_textures/ga_textures/dark_tiles.tres" id="1_m534r"]
 [ext_resource type="Resource" uid="uid://4gkfik83lbfb" path="res://material_textures/ga_textures/ventilation_grid_square.tres" id="2_6pnw4"]
@@ -8,7 +8,7 @@
 [ext_resource type="Resource" uid="uid://coohq55u58kbj" path="res://material_textures/stone_wall.tres" id="6_65ire"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="7_d5ovm"]
 [ext_resource type="Resource" uid="uid://ptuhfdhs88um" path="res://material_textures/ga_textures/dark_wavy_wall.tres" id="8_6akt1"]
-[ext_resource type="Resource" uid="uid://b4tvf4c36nwrn" path="res://material_textures/ga_textures/wavy_metal.tres" id="9_mywkt"]
+[ext_resource type="Resource" uid="uid://bjgmpxpo6sp8f" path="res://material_textures/ga_textures/railing_long.tres" id="10_6pnw4"]
 
 [sub_resource type="Resource" id="Resource_csai5"]
 script = ExtResource("5_cddei")
@@ -25,8 +25,10 @@ metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [sub_resource type="Resource" id="Resource_vmr3h"]
 script = ExtResource("7_d5ovm")
+priority = 5
 _placement_type = 9
-texture = ExtResource("9_mywkt")
+wall_length_range = Vector2(inf_neg, 10)
+texture = ExtResource("10_6pnw4")
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [sub_resource type="Resource" id="Resource_ltfd2"]
@@ -35,12 +37,20 @@ _placement_type = 17
 texture = ExtResource("8_6akt1")
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
+[sub_resource type="Resource" id="Resource_m534r"]
+script = ExtResource("7_d5ovm")
+priority = 7
+_placement_type = 9
+wall_length_range = Vector2(inf_neg, 12)
+texture = ExtResource("10_6pnw4")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
 [resource]
 script = ExtResource("4_1vrx3")
 preview = ExtResource("3_2m22v")
 preview_scale = 4.0
 wall_default = SubResource("Resource_csai5")
-wall_rules = Array[ExtResource("7_d5ovm")]([SubResource("Resource_a6q66"), SubResource("Resource_vmr3h"), SubResource("Resource_ltfd2")])
+wall_rules = Array[ExtResource("7_d5ovm")]([SubResource("Resource_a6q66"), SubResource("Resource_vmr3h"), SubResource("Resource_ltfd2"), SubResource("Resource_m534r")])
 floor = ExtResource("2_6pnw4")
 ceiling = ExtResource("1_m534r")
 metadata/_custom_type_script = "uid://bd7os02w6f4ou"

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=3 format=3 uid="uid://cudukscsaxeh4"]
+
+[ext_resource type="Texture2D" uid="uid://1lkhlicxy2ta" path="res://imgs/wall/door_big_off.png" id="1_mtab4"]
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="2_3fc8w"]
+
+[resource]
+script = ExtResource("2_3fc8w")
+preview = ExtResource("1_mtab4")
+tile_rotation_increment = 0.0
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

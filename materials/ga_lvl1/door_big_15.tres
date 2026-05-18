@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=13 format=3 uid="uid://d1jn6bee5s6ox"]
+
+[ext_resource type="Resource" uid="uid://c4dcuo7k855hu" path="res://material_textures/ga_textures/door_track_20.tres" id="1_68v7k"]
+[ext_resource type="Resource" uid="uid://dtqtb70jr33n" path="res://material_textures/ga_textures/door_track_15.tres" id="1_a5wh3"]
+[ext_resource type="Texture2D" uid="uid://dpe60jfanl8g2" path="res://imgs/wall/dark_wavy_wall.png" id="2_a5wh3"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="3_jodyq"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="4_gktwe"]
+[ext_resource type="Resource" uid="uid://coohq55u58kbj" path="res://material_textures/stone_wall.tres" id="5_fkn40"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="6_dnd41"]
+[ext_resource type="Resource" uid="uid://htq875n7jyq6" path="res://material_textures/ga_textures/door_big_on.tres" id="7_stup7"]
+
+[sub_resource type="Resource" id="Resource_csai5"]
+script = ExtResource("4_gktwe")
+priority = 2
+texture = ExtResource("5_fkn40")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[sub_resource type="Resource" id="Resource_a6q66"]
+script = ExtResource("6_dnd41")
+priority = 2
+_placement_type = 5
+texture = ExtResource("1_68v7k")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[sub_resource type="Resource" id="Resource_vmr3h"]
+script = ExtResource("6_dnd41")
+_placement_type = 9
+texture = ExtResource("1_68v7k")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[sub_resource type="Resource" id="Resource_ltfd2"]
+script = ExtResource("6_dnd41")
+priority = 100
+_placement_type = 17
+texture = ExtResource("7_stup7")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[resource]
+script = ExtResource("3_jodyq")
+preview = ExtResource("2_a5wh3")
+preview_scale = 4.0
+wall_default = SubResource("Resource_csai5")
+wall_rules = Array[ExtResource("6_dnd41")]([SubResource("Resource_a6q66"), SubResource("Resource_vmr3h"), SubResource("Resource_ltfd2")])
+floor = ExtResource("1_a5wh3")
+ceiling = ExtResource("1_a5wh3")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"
