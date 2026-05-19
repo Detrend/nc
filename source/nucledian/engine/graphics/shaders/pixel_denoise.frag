@@ -45,7 +45,7 @@ in flat vec2 good_scales [6];
 #define DO_PART_DEBUG     0
 #define DO_DRAW_DEBUG     0
 #define BLUR_ACROSS_EDGES 1
-#define TONEMAPPER        0 // 0 = none, 1 = aces, 2 = reinhard, 3 = agx
+#define TONEMAPPER        2 // 0 = none, 1 = aces, 2 = reinhard, 3 = agx
 
 #if (TONEMAPPER == 1)
 #define tonemap aces

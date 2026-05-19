@@ -221,7 +221,7 @@ const
     static int count = 0;
     if (ImGui::Button("Recalculate"))
     {
-      glBindTexture(GL_TEXTURE_2D, GraphicsSystem::get().megatex_handle);
+      glBindTexture(GL_TEXTURE_2D, GraphicsSystem::get().megatex_read_from_handle);
       GLint w = 0, h = 0;
       glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH,  &w);
       glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
@@ -245,15 +245,15 @@ const
       auto& gfx = GraphicsSystem::get();
 
       GLint w = 0, h = 0;
-      glBindTexture(GL_TEXTURE_2D, gfx.megatex_handle);
+      glBindTexture(GL_TEXTURE_2D, gfx.megatex_read_from_handle);
       glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH,  &w);
       glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
 
       glCopyImageSubData(
-        gfx.megatex_handle,       // src texture
+        gfx.megatex_read_from_handle,       // src texture
         GL_TEXTURE_2D, 0,         // src target, mip level
         0, 0, 0,                  // src x, y, z
-        gfx.megatex_input_handle, // dst texture
+        gfx.megatex_write_to_handle, // dst texture
         GL_TEXTURE_2D, 0,         // dst target, mip level
         0, 0, 0,                  // dst x, y, z
         w, h, 1                   // width, height, depth
@@ -264,7 +264,7 @@ const
     {
       const float zeros[4] = {0.0f, 0.0f, 0.0f, 0.0f};
       glClearTexImage(
-        GraphicsSystem::get().megatex_input_handle,
+        GraphicsSystem::get().megatex_write_to_handle,
         0,        // mip level
         GL_RGBA,  // format
         GL_FLOAT, // type
@@ -282,7 +282,7 @@ const
       ? (float)gfx.megatex_width / (float)gfx.megatex_height
       : 1.0f;
     ImVec2 img_size = { avail.x, avail.x / aspect };
-    ImGui::Image((ImTextureID)(intptr_t)gfx.megatex_input_handle, img_size, ImVec2(0,1), ImVec2(1,0));
+    ImGui::Image((ImTextureID)(intptr_t)gfx.megatex_write_to_handle, img_size, ImVec2(0,1), ImVec2(1,0));
   }
   ImGui::End();
 
@@ -640,17 +640,71 @@ void Renderer::do_ligh_culling_pass(const CameraData& camera) const
 }
 
 //==============================================================================
-void get_sectors(std::set<SectorID>& out, const VisibilityTree& tree)
+using PartIDs = std::vector<MegatexPartId>;
+using SectorsAndParts = std::map<SectorID, PartIDs>;
+
+template<typename Vector, typename Element>
+void push_back_unique(Vector& vector, Element element)
 {
-  for (const auto[sid, _] : tree.sectors)
+  if (std::find(vector.begin(), vector.end(), element) == vector.end())
   {
-    out.insert(sid);
+    vector.push_back(element);
+  }
+}
+
+//==============================================================================
+void get_sectors([[maybe_unused]]const Renderer::CameraData& camera, const MapSectors& map, SectorsAndParts& out, const VisibilityTree& tree)
+{
+  for (const auto[sid, frustums] : tree.sectors)
+  {
+    PartIDs& parts = out[sid];
+    map.for_each_wall_of_sector(sid, [&](WallID wid)
+    {
+      WallID wid_next = map_helpers::next_wall(map, sid, wid);
+      vec2   p1 = map.walls[wid].pos;
+      vec2   p2 = map.walls[wid_next].pos;
+      if (map.walls[wid].segment_count == 0)
+      {
+        return;
+      }
+
+      for (u64 i = 0; i < FrustumBuffer::FRUSTUM_SLOT_CNT; ++i)
+      {
+        const Frustum2& f = frustums.frustum_slots[i];
+        if (f == INVALID_FRUSTUM) break;
+        if (f.intersects_segment(p1, p2))
+        {
+          push_back_unique(parts, map.walls[wid].megatex_id);
+        }
+      }
+    });
+
+    // Floor and ceil
+    // TODO: Check if we can see these from the camera POV
+    push_back_unique(parts, map.sectors[sid].floor_megatex_id);
+    push_back_unique(parts, map.sectors[sid].ceil_megatex_id);
   }
 
+  // Recurse
   for (const auto& subtree : tree.children)
   {
-    get_sectors(out, subtree);
+    get_sectors(camera, map, out, subtree);
   }
+}
+
+//==============================================================================
+static color4 color_from_u32(u32 id)
+{
+  u32 x = id;
+  x ^= x >> 16;
+  x *= 0x45d9f3bu;
+  x ^= x >> 16;
+  return color4(
+    ((x >>  0) & 0xFFu) / 255.0f,
+    ((x >>  8) & 0xFFu) / 255.0f,
+    ((x >> 16) & 0xFFu) / 255.0f,
+    1.0f
+  );
 }
 
 //==============================================================================
@@ -666,15 +720,21 @@ const
 
   const float clear_color[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
-  static float query_dist = 15.0f;
+  static float query_dist                     = 15.0f;
+  static bool  refresh_gi_sectors_every_frame = true;
+  static bool  show_debug_for_gi_sectors      = false;
+  static SectorsAndParts gi_visualize_parts;
+
   if (ImGui::Begin("Dbg"))
   {
-    ImGui::SliderFloat("query distance", &query_dist, 1.0f, 20.0f);
+    ImGui::SliderFloat("query distance",            &query_dist, 1.0f, 20.0f);
+    ImGui::Checkbox("Visualize gi parts",           &show_debug_for_gi_sectors);
+    ImGui::Checkbox("Refresh gi parts every frame", &refresh_gi_sectors_every_frame);
   }
   ImGui::End();
 
   glClearTexImage(
-    GraphicsSystem::get().megatex_handle,        // texture id
+    GraphicsSystem::get().megatex_read_from_handle,        // texture id
     0,              // mip level
     GL_RGBA,        // format
     GL_FLOAT,       // type
@@ -682,7 +742,7 @@ const
   );
 
   glClearTexImage(
-    GraphicsSystem::get().megatex_input_handle,  // texture id
+    GraphicsSystem::get().megatex_write_to_handle,  // texture id
     0,              // mip level
     GL_RGBA,        // format
     GL_FLOAT,       // type
@@ -705,8 +765,34 @@ const
     "PixelLightingPass - First wave"
   );
 
-  std::set<SectorID> sectors_to_render;
-  get_sectors(sectors_to_render, tree);
+  SectorsAndParts sectors_to_render;
+  get_sectors(camera, map, sectors_to_render, tree);
+
+  if (refresh_gi_sectors_every_frame)
+  {
+    gi_visualize_parts = sectors_to_render;
+  }
+
+  if (show_debug_for_gi_sectors)
+  {
+    for (const auto&[_, parts] : gi_visualize_parts)
+    {
+      for (MegatexPartId part_id : parts)
+      {
+        if (part_id < gfx.megatex_parts.size())
+        {
+          const MegatexPart& part = gfx.megatex_parts[part_id];
+          const color4 col = color_from_u32(part_id);
+          Gizmo::create_line(0.01f, part.wpos_00, part.wpos_11, col);
+          Gizmo::create_line(0.01f, part.wpos_01, part.wpos_10, col);
+          Gizmo::create_line(0.01f, part.wpos_00, part.wpos_10, col);
+          Gizmo::create_line(0.01f, part.wpos_10, part.wpos_11, col);
+          Gizmo::create_line(0.01f, part.wpos_11, part.wpos_01, col);
+          Gizmo::create_line(0.01f, part.wpos_01, part.wpos_00, col);
+        }
+      }
+    }
+  }
 
   glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_fbo);
   glViewport(0, 0, gfx.megatex_width, gfx.megatex_height);
@@ -737,7 +823,7 @@ const
   glBindVertexArray(screen_quad.get_vao());
 
   // Only floors
-  for (SectorID sid : sectors_to_render)
+  for (const auto&[sid, _] : sectors_to_render)
   {
     MegatexPartId floor_id = map.sectors[sid].floor_megatex_id;
     MegatexPartId ceil_id  = map.sectors[sid].ceil_megatex_id;
@@ -834,9 +920,10 @@ const
   );
 
   // Blit megatex_input_handle -> megatex_handle
-  glCopyImageSubData(
-    gfx.megatex_input_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
-    gfx.megatex_handle,       GL_TEXTURE_2D, 0, 0, 0, 0,
+  glCopyImageSubData
+  (
+    gfx.megatex_write_to_handle,  GL_TEXTURE_2D, 0, 0, 0, 0,
+    gfx.megatex_read_from_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
     static_cast<GLsizei>(gfx.megatex_width),
     static_cast<GLsizei>(gfx.megatex_height),
     1
@@ -866,7 +953,7 @@ const
 
   // Read from megatex_handle, write to megatex_input_handle once again
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, gfx.megatex_handle);
+  glBindTexture(GL_TEXTURE_2D, gfx.megatex_read_from_handle);
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, game_atlas.handle);
   glActiveTexture(GL_TEXTURE2);
@@ -882,7 +969,7 @@ const
     GL_RGBA8        // format
   );
 
-  for (SectorID sid : sectors_to_render)
+  for (const auto&[sid, parts] : sectors_to_render)
   {
     struct MegatexPartAndId
     {
@@ -920,40 +1007,14 @@ const
       m_megatex_indices_ssbo.push_back(map.sectors[sector_id].ceil_megatex_id);
     };
 
-    MegatexPartId part_floor = map.sectors[sid].floor_megatex_id;
-    MegatexPartId part_ceil  = map.sectors[sid].ceil_megatex_id;
-
-    // To the render list
-    // Floor
-    parts_to_render.push_back(MegatexPartAndId
+    for (MegatexPartId id : parts)
     {
-      .part = gfx.megatex_parts[part_floor],
-      .id   = part_floor,
-    });
-
-    // Ceil
-    parts_to_render.push_back(MegatexPartAndId
-    {
-      .part = gfx.megatex_parts[part_ceil],
-      .id   = part_ceil,
-    });
-
-    // Push the walls
-    map.for_each_wall_of_sector(sid, [&](WallID wid)
-    {
-      if (map.walls[wid].segment_count <= 0)
-      {
-        // do not render invisible segments
-        return;
-      }
-
-      MegatexPartId part_wall = map.walls[wid].megatex_id;
       parts_to_render.push_back(MegatexPartAndId
       {
-        .part = gfx.megatex_parts[part_wall],
-        .id   = part_wall,
+        .part = gfx.megatex_parts[id],
+        .id   = id,
       });
-    });
+    }
 
     // Us
     push_sector_to_ssbo(sid);
@@ -1019,8 +1080,8 @@ const
 
   // Blit megatex_input_handle -> megatex_handle
   glCopyImageSubData(
-    gfx.megatex_input_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
-    gfx.megatex_handle,       GL_TEXTURE_2D, 0, 0, 0, 0,
+    gfx.megatex_write_to_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
+    gfx.megatex_read_from_handle,       GL_TEXTURE_2D, 0, 0, 0, 0,
     static_cast<GLsizei>(gfx.megatex_width),
     static_cast<GLsizei>(gfx.megatex_height),
     1
@@ -1060,7 +1121,7 @@ const
 
   // Read from megatex_handle, write to megatex_input_handle once again
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, gfx.megatex_handle);
+  glBindTexture(GL_TEXTURE_2D, gfx.megatex_read_from_handle);
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, gfx.megatex_mask_handle);
 
@@ -1084,7 +1145,7 @@ const
   {
     m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::HORIZONTAL, ivec4{cast<int>(horizontal)});
 
-    for (SectorID sid : sectors_to_render)
+    for (const auto&[sid, parts] : sectors_to_render)
     {
       m_megatex_indices_ssbo.clear();
 
@@ -1100,57 +1161,17 @@ const
 
       m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::NUM_INDICES, m_megatex_indices_ssbo.gpu_size_u32());
 
-      MegatexPartId floor_id = map.sectors[sid].floor_megatex_id;
-      MegatexPartId ceil_id  = map.sectors[sid].ceil_megatex_id;
-
-      const MegatexPart& part_floor = gfx.megatex_parts[floor_id];
-      const MegatexPart& part_ceil  = gfx.megatex_parts[ceil_id];
-
-      // floor
+      for (MegatexPartId part_id : parts)
       {
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::FROM, cast<vec2>(part_floor.megatex_coord_1));
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::TO,   cast<vec2>(part_floor.megatex_coord_2));
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP00, part_floor.wpos_00);
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP10, part_floor.wpos_10);
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP01, part_floor.wpos_01);
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP11, part_floor.wpos_11);
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::MY_PART_ID, floor_id);
+        const MegatexPart& part = gfx.megatex_parts[part_id];
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::FROM,       cast<vec2>(part.megatex_coord_1));
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::TO,         cast<vec2>(part.megatex_coord_2));
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP00,       part.wpos_00);
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP10,       part.wpos_10);
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP01,       part.wpos_01);
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP11,       part.wpos_11);
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::MY_PART_ID, part_id);
         glDrawArrays(GL_TRIANGLES, 0, 6);
-      }
-
-      // ceil
-      {
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::FROM, cast<vec2>(part_ceil.megatex_coord_1));
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::TO,   cast<vec2>(part_ceil.megatex_coord_2));
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP00, part_ceil.wpos_00);
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP10, part_ceil.wpos_10);
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP01, part_ceil.wpos_01);
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP11, part_ceil.wpos_11);
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::MY_PART_ID, ceil_id);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
-      }
-
-      // all walls
-      {
-        map.for_each_wall_of_sector(sid, [&](WallID wid)
-        {
-          if (map.walls[wid].segment_count == 0)
-          {
-            return;
-          }
-
-          MegatexPartId wall_id = map.walls[wid].megatex_id;
-          const auto&   part    = gfx.megatex_parts[wall_id];
-
-          m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::FROM, cast<vec2>(part.megatex_coord_1));
-          m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::TO,   cast<vec2>(part.megatex_coord_2));
-          m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP00, part.wpos_00);
-          m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP10, part.wpos_10);
-          m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP01, part.wpos_01);
-          m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP11, part.wpos_11);
-          m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::MY_PART_ID, wall_id);
-          glDrawArrays(GL_TRIANGLES, 0, 6);
-        });
       }
     }
   };
@@ -1160,8 +1181,8 @@ const
   // blit 
   glCopyImageSubData
   (
-    gfx.megatex_input_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
-    gfx.megatex_handle,       GL_TEXTURE_2D, 0, 0, 0, 0,
+    gfx.megatex_write_to_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
+    gfx.megatex_read_from_handle,       GL_TEXTURE_2D, 0, 0, 0, 0,
     static_cast<GLsizei>(gfx.megatex_width),
     static_cast<GLsizei>(gfx.megatex_height),
     1
@@ -1258,7 +1279,7 @@ void Renderer::render_sectors(const CameraData& camera) const
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, GraphicsSystem::get().megatex_debug_handle);
   glActiveTexture(GL_TEXTURE2);
-  glBindTexture(GL_TEXTURE_2D, GraphicsSystem::get().megatex_input_handle);
+  glBindTexture(GL_TEXTURE_2D, GraphicsSystem::get().megatex_write_to_handle);
 
   glBindImageTexture(
     7,              // binding unit

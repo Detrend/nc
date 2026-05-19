@@ -27,13 +27,13 @@
 				1.0
 			],
 			"falloff": 1.0,
-			"intensity": 5.0,
+			"intensity": 100.0,
 			"position": [
 				1.23000001907349,
 				2.48000001907349,
 				1.0
 			],
-			"radius": 20.0,
+			"radius": 1.0,
 			"tag": 3
 		}
 	],
@@ -73,7 +73,7 @@
 	],
 	"sectors": [
 		{
-			"ceiling": 3.144381,
+			"ceiling": 3.0,
 			"ceiling_surface": {
 				"id": "smooth_concrete_white",
 				"offset": [
@@ -198,7 +198,7 @@
 			]
 		},
 		{
-			"ceiling": 3.144381,
+			"ceiling": 3.0,
 			"ceiling_surface": {
 				"id": "smooth_concrete_white",
 				"offset": [

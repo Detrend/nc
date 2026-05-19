@@ -1496,8 +1496,8 @@ void GraphicsSystem::create_sector_meshes()
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
   // Output
-  glGenTextures(1, &megatex_handle);
-  glBindTexture(GL_TEXTURE_2D, megatex_handle);
+  glGenTextures(1, &megatex_read_from_handle);
+  glBindTexture(GL_TEXTURE_2D, megatex_read_from_handle);
 
   glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA16F, target_width, target_height);
 
@@ -1505,8 +1505,8 @@ void GraphicsSystem::create_sector_meshes()
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
   // Input
-  glGenTextures(1, &megatex_input_handle);
-  glBindTexture(GL_TEXTURE_2D, megatex_input_handle);
+  glGenTextures(1, &megatex_write_to_handle);
+  glBindTexture(GL_TEXTURE_2D, megatex_write_to_handle);
 
   glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA16F, target_width, target_height);
 
@@ -1519,7 +1519,7 @@ void GraphicsSystem::create_sector_meshes()
   // FBO for rendering into megatex_input_handle
   glGenFramebuffers(1, &megatex_fbo);
   glBindFramebuffer(GL_FRAMEBUFFER, megatex_fbo);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, megatex_input_handle, 0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, megatex_write_to_handle, 0);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

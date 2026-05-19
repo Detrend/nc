@@ -28,14 +28,6 @@ struct VisibilityTree;
 struct ModuleEvent;
 struct Portal;
 
-struct CameraData
-{
-	const vec3& position;
-	const mat4& view;
-	const mat4& projection;
-	const VisibilityTree& vis_tree;
-};
-
 struct RenderGunProperties
 {
   vec2        sway   = VEC2_ZERO;
@@ -77,8 +69,8 @@ public:
 
   SDL_Window* get_window();
 
-  GLuint megatex_handle       = 0;
-  GLuint megatex_input_handle = 0;
+  GLuint megatex_read_from_handle       = 0;
+  GLuint megatex_write_to_handle = 0;
   GLuint megatex_mask_handle  = 0;
   GLuint megatex_debug_handle = 0;
   GLuint megatex_fbo          = 0;

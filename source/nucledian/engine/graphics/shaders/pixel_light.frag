@@ -266,7 +266,7 @@ void main()
     float diffuse = max(angle, 0.0f);
 
     float attenuation = 1.0f / distance_squared;
-    float intensity = light.radius;
+    float intensity = light.radius * 1.0f;
     final_color += diffuse * light.color * intensity * attenuation * shadow_coeff;
   }
 
