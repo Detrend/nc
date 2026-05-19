@@ -133,6 +133,7 @@ namespace nc
       inline constexpr Uniform<8,  u32>   NUM_INDICES;
       inline constexpr Uniform<9,  u32>   MY_PART_ID;
       inline constexpr Uniform<10, ivec4> DEBUG;
+      inline constexpr Uniform<11, ivec4> HORIZONTAL;
     }
 
     // Sector rendering.

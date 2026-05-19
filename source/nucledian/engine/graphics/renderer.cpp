@@ -1076,75 +1076,94 @@ const
     m_megatex_indices_ssbo.push_back(map.sectors[sector_id].ceil_megatex_id);
   };
 
-  for (SectorID sid : sectors_to_render)
+  auto do_one_denoise_pass = [&](bool horizontal)
   {
-    m_megatex_indices_ssbo.clear();
+    m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::HORIZONTAL, ivec4{cast<int>(horizontal)});
 
-    push_sector_for_denoise(sid); // push ourselves
-    map.for_each_portal_of_sector(sid, [&](WallID wall_id)
+    for (SectorID sid : sectors_to_render)
     {
-      nc_assert(map.is_valid_sector_id(map.walls[wall_id].portal_sector_id));
-      push_sector_for_denoise(map.walls[wall_id].portal_sector_id);
-    });
+      m_megatex_indices_ssbo.clear();
 
-    m_megatex_indices_ssbo.update_gpu_data();
-    m_megatex_indices_ssbo.bind(1);
-
-    m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::NUM_INDICES, m_megatex_indices_ssbo.gpu_size_u32());
-
-    MegatexPartId floor_id = map.sectors[sid].floor_megatex_id;
-    MegatexPartId ceil_id  = map.sectors[sid].ceil_megatex_id;
-
-    const MegatexPart& part_floor = gfx.megatex_parts[floor_id];
-    const MegatexPart& part_ceil  = gfx.megatex_parts[ceil_id];
-
-    // floor
-    {
-      m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::FROM, cast<vec2>(part_floor.megatex_coord_1));
-      m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::TO,   cast<vec2>(part_floor.megatex_coord_2));
-      m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP00, part_floor.wpos_00);
-      m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP10, part_floor.wpos_10);
-      m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP01, part_floor.wpos_01);
-      m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP11, part_floor.wpos_11);
-      m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::MY_PART_ID, floor_id);
-      glDrawArrays(GL_TRIANGLES, 0, 6);
-    }
-
-    // ceil
-    {
-      m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::FROM, cast<vec2>(part_ceil.megatex_coord_1));
-      m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::TO,   cast<vec2>(part_ceil.megatex_coord_2));
-      m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP00, part_ceil.wpos_00);
-      m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP10, part_ceil.wpos_10);
-      m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP01, part_ceil.wpos_01);
-      m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP11, part_ceil.wpos_11);
-      m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::MY_PART_ID, ceil_id);
-      glDrawArrays(GL_TRIANGLES, 0, 6);
-    }
-
-    // all walls
-    {
-      map.for_each_wall_of_sector(sid, [&](WallID wid)
+      push_sector_for_denoise(sid); // push ourselves
+      map.for_each_portal_of_sector(sid, [&](WallID wall_id)
       {
-        if (map.walls[wid].segment_count == 0)
-        {
-          return;
-        }
-
-        MegatexPartId wall_id = map.walls[wid].megatex_id;
-        const auto&   part    = gfx.megatex_parts[wall_id];
-
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::FROM, cast<vec2>(part.megatex_coord_1));
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::TO,   cast<vec2>(part.megatex_coord_2));
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP00, part.wpos_00);
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP10, part.wpos_10);
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP01, part.wpos_01);
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP11, part.wpos_11);
-        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::MY_PART_ID, wall_id);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        nc_assert(map.is_valid_sector_id(map.walls[wall_id].portal_sector_id));
+        push_sector_for_denoise(map.walls[wall_id].portal_sector_id);
       });
+
+      m_megatex_indices_ssbo.update_gpu_data();
+      m_megatex_indices_ssbo.bind(1);
+
+      m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::NUM_INDICES, m_megatex_indices_ssbo.gpu_size_u32());
+
+      MegatexPartId floor_id = map.sectors[sid].floor_megatex_id;
+      MegatexPartId ceil_id  = map.sectors[sid].ceil_megatex_id;
+
+      const MegatexPart& part_floor = gfx.megatex_parts[floor_id];
+      const MegatexPart& part_ceil  = gfx.megatex_parts[ceil_id];
+
+      // floor
+      {
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::FROM, cast<vec2>(part_floor.megatex_coord_1));
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::TO,   cast<vec2>(part_floor.megatex_coord_2));
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP00, part_floor.wpos_00);
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP10, part_floor.wpos_10);
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP01, part_floor.wpos_01);
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP11, part_floor.wpos_11);
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::MY_PART_ID, floor_id);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+      }
+
+      // ceil
+      {
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::FROM, cast<vec2>(part_ceil.megatex_coord_1));
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::TO,   cast<vec2>(part_ceil.megatex_coord_2));
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP00, part_ceil.wpos_00);
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP10, part_ceil.wpos_10);
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP01, part_ceil.wpos_01);
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP11, part_ceil.wpos_11);
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::MY_PART_ID, ceil_id);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+      }
+
+      // all walls
+      {
+        map.for_each_wall_of_sector(sid, [&](WallID wid)
+        {
+          if (map.walls[wid].segment_count == 0)
+          {
+            return;
+          }
+
+          MegatexPartId wall_id = map.walls[wid].megatex_id;
+          const auto&   part    = gfx.megatex_parts[wall_id];
+
+          m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::FROM, cast<vec2>(part.megatex_coord_1));
+          m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::TO,   cast<vec2>(part.megatex_coord_2));
+          m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP00, part.wpos_00);
+          m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP10, part.wpos_10);
+          m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP01, part.wpos_01);
+          m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP11, part.wpos_11);
+          m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::MY_PART_ID, wall_id);
+          glDrawArrays(GL_TRIANGLES, 0, 6);
+        });
+      }
     }
-  }
+  };
+
+  do_one_denoise_pass(true);  // horizontal
+
+  // blit 
+  glCopyImageSubData
+  (
+    gfx.megatex_input_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
+    gfx.megatex_handle,       GL_TEXTURE_2D, 0, 0, 0, 0,
+    static_cast<GLsizei>(gfx.megatex_width),
+    static_cast<GLsizei>(gfx.megatex_height),
+    1
+  );
+
+  do_one_denoise_pass(false); // vertical + tonemap
 
   glBindVertexArray(0);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);

@@ -5,9 +5,7 @@
 #define DEBUG_DRAW 0
 #define CULL_INVISIBLE_PIXELS 0
 #define INSPECTED_PART 0
-//#define INSPECTED_PART 391
 #define HIGHLIGHT_THOSE_WHO_SAMPLE_FROM_THIS_PART 0
-//#define HIGHLIGHT_THOSE_SAMPLED_FROM_THIS_PART 391
 #define HIGHLIGHT_THOSE_SAMPLED_FROM_THIS_PART 0
 
 // Possible improvements:
@@ -43,6 +41,23 @@ struct MegatexPart
   float texture_offset_y;
 };
 
+struct SectorData
+{
+  float floor_y;
+  float ceil_y;
+  uint  walls_offset;
+  uint  walls_count;
+};
+
+struct WallData
+{
+  vec2 start;
+  vec2 end;
+  uint packed_normal;
+  uint destination;
+  uint portal_matrix_index;
+};
+
 struct TextureData
 {
   vec2  pos;
@@ -62,9 +77,11 @@ layout(location = 8)  uniform uint num_indices;
 layout(location = 9)  uniform uint my_part_id;
 layout(location = 10) uniform vec2 game_atlas_size;
 
-layout(std430, binding = 0) readonly buffer parts_buffer   { MegatexPart megatex_parts[];   };
-layout(std430, binding = 1) readonly buffer indices_buffer { uint        megatex_indices[]; };
-layout(std430, binding = 2) readonly buffer texture_buffer { TextureData textures[];        };
+layout(std430, binding = 0) readonly buffer parts_buffer       { MegatexPart megatex_parts[];   };
+layout(std430, binding = 1) readonly buffer indices_buffer     { uint        megatex_indices[]; };
+layout(std430, binding = 2) readonly buffer texture_buffer     { TextureData textures[];        };
+layout(std430, binding = 3) readonly buffer sector_data_buffer { SectorData sectors[];          };
+layout(std430, binding = 4) readonly buffer wall_data_buffer   { WallData   walls[];            };
 
 layout(binding = 0) uniform sampler2D megatex_input;
 layout(binding = 1) uniform sampler2D game_atlas_sampler;
