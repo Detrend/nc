@@ -34,17 +34,78 @@ layout(location = 5) out uint g_sector;
 layout(binding = 0) uniform sampler2D game_atlas_sampler;
 layout(binding = 1) uniform sampler2D megatex_debug;
 layout(binding = 2) uniform sampler2D megatex_input;
+layout(binding = 3) uniform sampler2D megatex_shadows;
 
-layout(location = 2) uniform vec2 game_atlas_size;
-layout(location = 3) uniform vec2 level_atlas_size;
-layout(location = 5) uniform uint sector_id;
-layout(location = 6) uniform uint matrix_id;
+layout(location = 2) uniform vec2  game_atlas_size;
+layout(location = 3) uniform vec2  level_atlas_size;
+layout(location = 5) uniform uint  sector_id;
+layout(location = 6) uniform uint  matrix_id;
+layout(location = 7) uniform ivec4 u_tonemap;
 
 layout(std430, binding = 0) buffer texture_buffer {
     TextureData textures[];
 };
 
 layout(binding = 7, r8) uniform image2D megatex_mask;
+
+vec3 no_tonemap(vec3 x)
+{
+  return x;
+}
+
+vec3 aces(vec3 x)
+{
+  return clamp((x * (2.51*x + 0.03)) / (x * (2.43*x + 0.59) + 0.14), 0.0, 1.0);
+}
+
+vec3 reinhard(vec3 x)
+{
+  return x / (x + vec3(1.0f));
+}
+
+vec3 agx(vec3 x)
+{
+  // Prevent negative values
+  x = max(x, 0.0);
+
+  // --- Input transform ---
+  // Approximate log2 encoding
+  x = log2(1.0 + x);
+
+  // Normalize expected HDR range
+  // (roughly maps 0..16 stops into 0..1)
+  x /= 10.0;
+
+  // --- Sigmoid contrast curve ---
+  vec3 y = x * x * (3.0 - 2.0 * x);
+
+  // --- Highlight rolloff ---
+  y = y / (1.0 + y);
+
+  // --- Highlight desaturation ---
+  float luma = dot(y, vec3(0.2126, 0.7152, 0.0722));
+
+  // Amount of desaturation increases with brightness
+  float desat = smoothstep(0.4, 1.0, luma);
+
+  y = mix(y, vec3(luma), desat * 0.35);
+
+  // --- Output gamma ---
+  y = pow(y, vec3(1.0 / 2.2));
+
+  return clamp(y, 0.0, 1.0);
+}
+
+vec3 tonemap(vec3 x)
+{
+  switch (u_tonemap.x)
+  {
+    case 1: return reinhard(x);
+    case 2: return aces(x);
+    case 3: return agx(x);
+  }
+  return no_tonemap(x);
+}
 
 // copypasted from: https://stackoverflow.com/questions/12964279/whats-the-origin-of-this-glsl-rand-one-liner
 float rand(vec2 co)
@@ -135,10 +196,15 @@ void main()
   g_stitched_normal.xyz = normalize(stitched_normal);
   // 4-th component of stitched_normal is used to determine if shadows are enabled
   g_stitched_normal.w = 1.0f;
-  vec4 megatex_value = texelFetch(megatex_input, ivec2(megatex_uv), 0);
-  vec4 debug_value   = texelFetch(megatex_debug, ivec2(megatex_uv), 0);
-  g_albedo = color * vec4(megatex_value.xyz, 1.0f) + debug_value;
+  vec4 megatex_value  = texelFetch(megatex_input,   ivec2(megatex_uv), 0);
+  vec4 megatex_shadow = texelFetch(megatex_shadows, ivec2(megatex_uv), 0);
+  vec4 debug_value    = texelFetch(megatex_debug,   ivec2(megatex_uv), 0);
+  vec3 light = megatex_value.xyz + megatex_shadow.xyz;
 
-  //g_albedo = vec4(megatex_value.xyz, 1.0f);
+  // Do the tonemapping here
+  vec3 color_with_light = color.xyz * light;
+  vec3 tonemapped = tonemap(color_with_light);
+
+  g_albedo = vec4(tonemapped, 1.0f) + debug_value;
   g_sector = sector_id;
 }

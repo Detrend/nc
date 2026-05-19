@@ -144,13 +144,14 @@ namespace nc
       inline constexpr const char* VERTEX_FILE   = "engine/graphics/shaders/sector.vert";
       inline constexpr const char* FRAGMENT_FILE = "engine/graphics/shaders/sector.frag";
 
-      inline constexpr Uniform<0, mat4> VIEW;
-      inline constexpr Uniform<1, mat4> PROJECTION;
-      inline constexpr Uniform<2, vec2> GAME_ATLAS_SIZE;
-      inline constexpr Uniform<3, vec2> LEVEL_ATLAS_SIZE;
-      inline constexpr Uniform<4, mat4> PORTAL_DEST_TO_SRC;
-      inline constexpr Uniform<5, u32>  SECTOR_ID;
-      inline constexpr Uniform<6, u32>  MATRIX_ID;
+      inline constexpr Uniform<0, mat4>  VIEW;
+      inline constexpr Uniform<1, mat4>  PROJECTION;
+      inline constexpr Uniform<2, vec2>  GAME_ATLAS_SIZE;
+      inline constexpr Uniform<3, vec2>  LEVEL_ATLAS_SIZE;
+      inline constexpr Uniform<4, mat4>  PORTAL_DEST_TO_SRC;
+      inline constexpr Uniform<5, u32>   SECTOR_ID;
+      inline constexpr Uniform<6, u32>   MATRIX_ID;
+      inline constexpr Uniform<7, ivec4> TONEMAP;
     }
 
     namespace light_culling

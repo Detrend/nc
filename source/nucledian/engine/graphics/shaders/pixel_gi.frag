@@ -641,7 +641,7 @@ void main()
   else
 #endif
   {
-    final_color = (og_color * 1.0f + sum * 1.0) * 1.0f;
+    final_color = (og_color * 0.0f + sum * 1.0) * 1.0f;
   }
 
   out_color = vec4(final_color * color_multiplier, 1.0f);

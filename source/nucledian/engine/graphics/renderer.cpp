@@ -31,6 +31,7 @@
 #include <filesystem>
 #include <unordered_set>
 #include <set>
+#include <memory>
 
 namespace nc
 {
@@ -208,7 +209,7 @@ const
   };
 
   // WIP
-  do_pixel_lighting_pass(camera_data, visibility_tree);
+  const_cast<Renderer*>(this)->do_pixel_lighting_pass(camera_data, visibility_tree);
 
   do_geometry_pass(camera_data, gun_data);
   update_ssbos();
@@ -640,9 +641,6 @@ void Renderer::do_ligh_culling_pass(const CameraData& camera) const
 }
 
 //==============================================================================
-using PartIDs = std::vector<MegatexPartId>;
-using SectorsAndParts = std::map<SectorID, PartIDs>;
-
 template<typename Vector, typename Element>
 void push_back_unique(Vector& vector, Element element)
 {
@@ -699,17 +697,48 @@ static bool is_floor_ceil_visible
 }
 
 //==============================================================================
-void get_sectors
-(
-  const Renderer::CameraData& camera,
-  mat4                        view,
-  mat4                        proj,
-  mat4                        trans,
-  const MapSectors&           map,
-  SectorsAndParts&            out,
-  const VisibilityTree&       tree
-)
+bool Renderer::should_be_rendered_this_frame(MegatexPartId megatex_id) const
 {
+  u64 frame_idx    = GameHelpers::get().get_frame_idx();
+  u32 frame_idx_32 = cast<u32>(frame_idx);
+
+  if (scheduling_method == SchedulingMethod::each_nth)
+  {
+    return ((megatex_id + frame_idx_32) % schedule_each_n_frames) == 0;
+  }
+  else if (scheduling_method == SchedulingMethod::first_n)
+  {
+    // Cull out later
+    return true;
+  }
+
+  return true;
+}
+
+//==============================================================================
+void Renderer::get_sectors_to_render_this_frame
+(
+  const CameraData&     camera,
+  mat4                  view,
+  mat4                  proj,
+  mat4                  trans,
+  SectorsAndParts&      out,
+  const VisibilityTree& tree,
+  u32                   render_each_nth,
+  std::vector<SectorAndPart>* temp_list
+)
+const
+{
+  const MapSectors& map = GameSystem::get().get_map();
+
+  std::vector<SectorAndPart>* list = temp_list;
+  std::unique_ptr<std::vector<SectorAndPart>> unique;
+  if (list == nullptr)
+  {
+    unique = std::make_unique<std::vector<SectorAndPart>>();
+    list   = unique.get();
+  }
+
   if (tree.portal_sector != INVALID_SECTOR_ID)
   {
     mat4 t = map.calc_portal_to_portal_projection(tree.portal_sector, tree.portal_wall);
@@ -727,8 +756,16 @@ void get_sectors
       vec2   p1       = map.walls[wid].pos;
       vec2   p2       = map.walls[wid_next].pos;
 
+      MegatexPartId megatex_id = map.walls[wid].megatex_id;
+      if (!should_be_rendered_this_frame(megatex_id))
+      {
+        // Do not render this frame
+        return;
+      }
+
       if (map.walls[wid].segment_count == 0)
       {
+        // No segments
         return;
       }
 
@@ -743,7 +780,8 @@ void get_sectors
         if (f == INVALID_FRUSTUM) break;
         if (f.intersects_segment(p1, p2))
         {
-          push_back_unique(parts, map.walls[wid].megatex_id);
+          push_back_unique(parts, megatex_id);
+          list->push_back(SectorAndPart{.sector = sid, .part = megatex_id});
         }
       }
     });
@@ -759,21 +797,51 @@ void get_sectors
     vec3 ceil1  = with_y(bbox.min, ceil_y);
     vec3 ceil2  = with_y(bbox.max, ceil_y);
 
-    if (is_floor_ceil_visible(floor1, floor2, t_i, view, proj))
+    MegatexPartId floor_part_id = map.sectors[sid].floor_megatex_id;
+    MegatexPartId ceil_part_id  = map.sectors[sid].ceil_megatex_id;
+
+    if (should_be_rendered_this_frame(floor_part_id))
     {
-      push_back_unique(parts, map.sectors[sid].floor_megatex_id);
+      if (is_floor_ceil_visible(floor1, floor2, t_i, view, proj))
+      {
+        push_back_unique(parts, floor_part_id);
+        list->push_back(SectorAndPart{.sector = sid, .part = floor_part_id});
+      }
     }
 
-    if (is_floor_ceil_visible(ceil1, ceil2, t_i, view, proj))
+    if (should_be_rendered_this_frame(ceil_part_id))
     {
-      push_back_unique(parts, map.sectors[sid].ceil_megatex_id);
+      if (is_floor_ceil_visible(ceil1, ceil2, t_i, view, proj))
+      {
+        push_back_unique(parts, ceil_part_id);
+        list->push_back(SectorAndPart{.sector = sid, .part = ceil_part_id});
+      }
     }
   }
 
   // Recurse
   for (const auto& subtree : tree.children)
   {
-    get_sectors(camera, view, proj, trans, map, out, subtree);
+    get_sectors_to_render_this_frame(camera, view, proj, trans, out, subtree, render_each_nth, list);
+  }
+
+  // Now keep only the best N
+  if (scheduling_method == SchedulingMethod::first_n && temp_list == nullptr)
+  {
+    auto& parts = GraphicsSystem::get().megatex_parts;
+    std::sort(list->begin(), list->end(), [&](const SectorAndPart& a, const SectorAndPart& b)
+    {
+      return parts[a.part].last_frame_rendered < parts[b.part].last_frame_rendered;
+    });
+
+    out.clear();
+    auto& arr = *list;
+
+    for (u64 i = 0; i < min(list->size(), cast<u64>(schedule_best_n)); ++i)
+    {
+      out[arr[i].sector].push_back(arr[i].part);
+      parts[arr[i].part].last_frame_rendered = cast<u32>(GameHelpers::get().get_frame_idx());
+    }
   }
 }
 
@@ -792,55 +860,63 @@ static color4 color_from_u32(u32 id)
   );
 }
 
+enum Tonemappers
+{
+  none = 0,
+  aces,
+  reinhard,
+  agx,
+};
+static int tonemapper = Tonemappers::aces;
+
 //==============================================================================
 void Renderer::do_pixel_lighting_pass
 (
   [[maybe_unused]]const CameraData& camera,
   [[maybe_unused]]const VisibilityTree& tree
 )
-const
 {
   auto& gfx = GraphicsSystem::get();
   const MapSectors& map = GameSystem::get().get_map();
-
-  const float clear_color[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
   static float query_dist                     = 15.0f;
   static bool  refresh_gi_sectors_every_frame = true;
   static bool  show_debug_for_gi_sectors      = false;
   static SectorsAndParts gi_visualize_parts;
 
+  constexpr cstr TONEMAPPER_NAMES[4] = {"none", "aces", "reinhard", "agx"};
+  constexpr cstr CULLING_NAMES[2]    = {"each n-th", "first N"};
+
   if (ImGui::Begin("Dbg"))
   {
     ImGui::SliderFloat("query distance",            &query_dist, 1.0f, 20.0f);
     ImGui::Checkbox("Visualize gi parts",           &show_debug_for_gi_sectors);
     ImGui::Checkbox("Refresh gi parts every frame", &refresh_gi_sectors_every_frame);
+    ImGui::Combo("Tonemapper",     &tonemapper, TONEMAPPER_NAMES, 4);
+    ImGui::Combo("Culling Method", &scheduling_method, CULLING_NAMES, 2);
+    ImGui::SliderInt("Schedule each N frames", &schedule_each_n_frames, 1, 50);
+    ImGui::SliderInt("Schedule best N",        &schedule_best_n,        1, 1024);
   }
   ImGui::End();
 
-  glClearTexImage(
-    GraphicsSystem::get().megatex_read_from_handle,        // texture id
-    0,              // mip level
-    GL_RGBA,        // format
-    GL_FLOAT,       // type
-    clear_color     // data
-  );
+  auto clear_megatex = [&](GLuint handle)
+  {
+    const float clear_color[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
-  glClearTexImage(
-    GraphicsSystem::get().megatex_write_to_handle,  // texture id
-    0,              // mip level
-    GL_RGBA,        // format
-    GL_FLOAT,       // type
-    clear_color     // data
-  );
+    glClearTexImage
+    (
+      handle,     // texture id
+      0,          // mip level
+      GL_RGBA,    // format
+      GL_FLOAT,   // type
+      clear_color // data
+    );
+  };
 
-  glClearTexImage(
-    GraphicsSystem::get().megatex_debug_handle,        // texture id
-    0,              // mip level
-    GL_RGBA,        // format
-    GL_FLOAT,       // type
-    clear_color      // data
-  );
+  clear_megatex(GraphicsSystem::get().megatex_read_from_handle);
+  clear_megatex(GraphicsSystem::get().megatex_write_to_handle);
+  clear_megatex(GraphicsSystem::get().megatex_debug_handle);
+  clear_megatex(GraphicsSystem::get().megatex_shadow_handle);
 
   glPushDebugGroup
   (
@@ -851,7 +927,11 @@ const
   );
 
   SectorsAndParts sectors_to_render;
-  get_sectors(camera, camera.view, m_default_projection, identity<mat4>(), map, sectors_to_render, tree);
+  get_sectors_to_render_this_frame
+  (
+    camera, camera.view, m_default_projection,
+    identity<mat4>(), sectors_to_render, tree, 2
+  );
 
   if (refresh_gi_sectors_every_frame)
   {
@@ -1004,11 +1084,12 @@ const
     "PixelLightingPass - Second wave"
   );
 
-  // Blit megatex_input_handle -> megatex_handle
+  // Store shadow for later
+  // Blit megatex_write_to_handle -> megatex_shadow_handle
   glCopyImageSubData
   (
-    gfx.megatex_write_to_handle,  GL_TEXTURE_2D, 0, 0, 0, 0,
-    gfx.megatex_read_from_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
+    gfx.megatex_write_to_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
+    gfx.megatex_shadow_handle,   GL_TEXTURE_2D, 0, 0, 0, 0,
     static_cast<GLsizei>(gfx.megatex_width),
     static_cast<GLsizei>(gfx.megatex_height),
     1
@@ -1038,7 +1119,7 @@ const
 
   // Read from megatex_handle, write to megatex_input_handle once again
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, gfx.megatex_read_from_handle);
+  glBindTexture(GL_TEXTURE_2D, gfx.megatex_shadow_handle);
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, game_atlas.handle);
   glActiveTexture(GL_TEXTURE2);
@@ -1165,17 +1246,12 @@ const
 
   // Blit megatex_input_handle -> megatex_handle
   glCopyImageSubData(
-    gfx.megatex_write_to_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
-    gfx.megatex_read_from_handle,       GL_TEXTURE_2D, 0, 0, 0, 0,
+    gfx.megatex_write_to_handle,  GL_TEXTURE_2D, 0, 0, 0, 0,
+    gfx.megatex_read_from_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
     static_cast<GLsizei>(gfx.megatex_width),
     static_cast<GLsizei>(gfx.megatex_height),
     1
   );
-
-  // Set the target
-  glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_fbo);
-  glViewport(0, 0, gfx.megatex_width, gfx.megatex_height);
-  glClear(GL_COLOR_BUFFER_BIT);
 
   // Use the GI shader
   ivec4 dbg_info = ivec4
@@ -1261,19 +1337,26 @@ const
     }
   };
 
+  // Store into immediate
+  glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_fbo);
+  glViewport(0, 0, gfx.megatex_width, gfx.megatex_height);
+  glClear(GL_COLOR_BUFFER_BIT);
   do_one_denoise_pass(true);  // horizontal
 
   // blit 
   glCopyImageSubData
   (
-    gfx.megatex_write_to_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
-    gfx.megatex_read_from_handle,       GL_TEXTURE_2D, 0, 0, 0, 0,
+    gfx.megatex_write_to_handle,  GL_TEXTURE_2D, 0, 0, 0, 0,
+    gfx.megatex_read_from_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
     static_cast<GLsizei>(gfx.megatex_width),
     static_cast<GLsizei>(gfx.megatex_height),
     1
   );
 
-  do_one_denoise_pass(false); // vertical + tonemap
+  // Store into temporal (will remain until the next frame)
+  glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_temp_fbo);
+  glViewport(0, 0, gfx.megatex_width, gfx.megatex_height);
+  do_one_denoise_pass(false);
 
   glBindVertexArray(0);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -1364,7 +1447,9 @@ void Renderer::render_sectors(const CameraData& camera) const
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, GraphicsSystem::get().megatex_debug_handle);
   glActiveTexture(GL_TEXTURE2);
-  glBindTexture(GL_TEXTURE_2D, GraphicsSystem::get().megatex_write_to_handle);
+  glBindTexture(GL_TEXTURE_2D, GraphicsSystem::get().megatex_temporal_handle);
+  glActiveTexture(GL_TEXTURE3);
+  glBindTexture(GL_TEXTURE_2D, GraphicsSystem::get().megatex_shadow_handle);
 
   glBindImageTexture(
     7,              // binding unit
@@ -1378,6 +1463,7 @@ void Renderer::render_sectors(const CameraData& camera) const
 
   m_sector_material.use();
   m_sector_material.set_uniform(shaders::sector::VIEW, camera.view);
+  m_sector_material.set_uniform(shaders::sector::TONEMAP, ivec4{tonemapper});
   m_sector_material.set_uniform(shaders::sector::PORTAL_DEST_TO_SRC, camera.portal_dest_to_src);
 
   for (const auto& [sector_id, _] : sectors_to_render)

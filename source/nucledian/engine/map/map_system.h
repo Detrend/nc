@@ -62,7 +62,7 @@ struct MegatexPart
   vec3  normal;
   f32   texture_offset_y = 0.0f;
   u32   sector_id = INVALID_SECTOR_ID;
-  u32   unused_a;
+  u32   last_frame_rendered = 0;
   u32   unused_b;
   u32   unused_c;
 };

@@ -69,13 +69,17 @@ public:
 
   SDL_Window* get_window();
 
-  GLuint megatex_read_from_handle       = 0;
-  GLuint megatex_write_to_handle = 0;
-  GLuint megatex_mask_handle  = 0;
-  GLuint megatex_debug_handle = 0;
-  GLuint megatex_fbo          = 0;
-  u32    megatex_width        = 0;
-  u32    megatex_height       = 0;
+  GLuint megatex_read_from_handle = 0;
+  GLuint megatex_write_to_handle  = 0;
+  GLuint megatex_mask_handle      = 0;
+  GLuint megatex_debug_handle     = 0;
+  GLuint megatex_shadow_handle    = 0;
+  GLuint megatex_temporal_handle  = 0;
+
+  GLuint megatex_fbo      = 0;
+  GLuint megatex_temp_fbo = 0;
+  u32    megatex_width    = 0;
+  u32    megatex_height   = 0;
 
   std::vector<MegatexPart> megatex_parts;
 

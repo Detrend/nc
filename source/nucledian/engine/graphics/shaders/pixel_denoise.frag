@@ -45,17 +45,6 @@ in flat vec2 good_scales [6];
 #define DO_PART_DEBUG     0
 #define DO_DRAW_DEBUG     0
 #define BLUR_ACROSS_EDGES 1
-#define TONEMAPPER        2 // 0 = none, 1 = aces, 2 = reinhard, 3 = agx
-
-#if (TONEMAPPER == 1)
-#define tonemap aces
-#elif (TONEMAPPER == 2)
-#define tonemap reinhard
-#elif (TONEMAPPER == 3)
-#define tonemap agx
-#else
-#define tonemap no_tonemap
-#endif
 
 #if DO_DRAW_DEBUG
 void debug_sample(ivec2 pos, vec4 col)
@@ -68,61 +57,13 @@ void sample_nothing(ivec2 pos, vec4 col) {}
 #define debug_store sample_nothing
 #endif
 
-#define PX_COL vec4(1.0f, 1.0f, 0.0f, 1.0f)
-#define MY_COL vec4(1.0f, 0.0f, 0.0f, 1.0f)
+#define PX_COL           vec4(1.0f, 1.0f, 0.0f, 1.0f)
+#define MY_COL           vec4(1.0f, 0.0f, 0.0f, 1.0f)
 #define SAMPLED_FROM_COL vec4(0.0f, 0.0f, 1.0f, 1.0f)
 
 bool is_in_interval(ivec2 val, ivec2 from, ivec2 to)
 {
   return clamp(val, from, to) == val;
-}
-
-vec3 no_tonemap(vec3 x)
-{
-  return x;
-}
-
-vec3 aces(vec3 x)
-{
-  return clamp((x * (2.51*x + 0.03)) / (x * (2.43*x + 0.59) + 0.14), 0.0, 1.0);
-}
-
-vec3 reinhard(vec3 x)
-{
-  return x / (x + vec3(1.0f));
-}
-
-vec3 agx(vec3 x)
-{
-    // Prevent negative values
-    x = max(x, 0.0);
-
-    // --- Input transform ---
-    // Approximate log2 encoding
-    x = log2(1.0 + x);
-
-    // Normalize expected HDR range
-    // (roughly maps 0..16 stops into 0..1)
-    x /= 10.0;
-
-    // --- Sigmoid contrast curve ---
-    vec3 y = x * x * (3.0 - 2.0 * x);
-
-    // --- Highlight rolloff ---
-    y = y / (1.0 + y);
-
-    // --- Highlight desaturation ---
-    float luma = dot(y, vec3(0.2126, 0.7152, 0.0722));
-
-    // Amount of desaturation increases with brightness
-    float desat = smoothstep(0.4, 1.0, luma);
-
-    y = mix(y, vec3(luma), desat * 0.35);
-
-    // --- Output gamma ---
-    y = pow(y, vec3(1.0 / 2.2));
-
-    return clamp(y, 0.0, 1.0);
 }
 
 void main()
@@ -237,18 +178,8 @@ void main()
 #endif
   }
 
-  vec3 averaged_color = sum / max(num_samples, 0.0001f);
-
-  // Tonemap only for vertical pass
-  if (u_horizontal.x != 0)
-  {
-    out_color = vec4(averaged_color, 1.0f);
-  }
-  else
-  {
-    out_color = vec4(tonemap(averaged_color), 1.0f);
-  }
+  out_color = vec4(sum / max(num_samples, 0.0001f), 1.0f);
 #else
-  out_color = vec4(tonemap(og_color), 1.0f);
+  out_color = vec4(og_color, 1.0f);
 #endif
 }
