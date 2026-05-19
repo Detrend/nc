@@ -653,6 +653,15 @@ void push_back_unique(Vector& vector, Element element)
 }
 
 //==============================================================================
+bool wall_facing_away_from_camera(vec2 camera_pos, vec2 a, vec2 b)
+{
+  vec2 dir  = b - a;
+  vec2 norm = flipped(dir);
+  vec2 to_c = camera_pos - a;
+  return dot(norm, to_c) < 0.0f;
+}
+
+//==============================================================================
 void get_sectors([[maybe_unused]]const Renderer::CameraData& camera, const MapSectors& map, SectorsAndParts& out, const VisibilityTree& tree)
 {
   for (const auto[sid, frustums] : tree.sectors)
@@ -661,9 +670,15 @@ void get_sectors([[maybe_unused]]const Renderer::CameraData& camera, const MapSe
     map.for_each_wall_of_sector(sid, [&](WallID wid)
     {
       WallID wid_next = map_helpers::next_wall(map, sid, wid);
-      vec2   p1 = map.walls[wid].pos;
-      vec2   p2 = map.walls[wid_next].pos;
+      vec2   p1       = map.walls[wid].pos;
+      vec2   p2       = map.walls[wid_next].pos;
+
       if (map.walls[wid].segment_count == 0)
+      {
+        return;
+      }
+
+      if (wall_facing_away_from_camera(camera.position.xz(), p1, p2))
       {
         return;
       }
