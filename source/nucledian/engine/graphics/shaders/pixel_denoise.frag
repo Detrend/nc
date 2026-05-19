@@ -165,7 +165,7 @@ void main()
 #if DO_DENOISE
   float sigma_s = float(GRID_N-3);
 
-  for (int k = -GRID_N; k <= GRID_N; ++k)
+  for (int k = -GRID_N; k <= GRID_N; k += 1)
   {
     ivec2 true_coord = u_horizontal == 1
         ? ivec2(my_coord.x + k, my_coord.y)

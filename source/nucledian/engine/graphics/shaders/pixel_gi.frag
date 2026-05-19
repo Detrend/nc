@@ -1,6 +1,6 @@
 #version 430 core
 
-#define MAX_PARTS 128
+#define MAX_PARTS 27
 #define NUM_SAMPLES_TOTAL_WHEN_BALANCING 12
 #define DEBUG_DRAW 0
 #define CULL_INVISIBLE_PIXELS 0
@@ -477,9 +477,26 @@ void sample_from_part(int sample_idx, uint part_id, out vec3 wp_of_sample, out v
   albedo = fetch_part_surface_texture(part, uv_coords) * occluded;
 }
 
+#define DISCARD_EVERY_SECOND 0
+
 void main()
 {
   const float one_over_pi = 1.0 / 3.141692;
+
+  float color_multiplier = 1.0f;
+
+#if DISCARD_EVERY_SECOND
+  ivec2 px_coord = ivec2(gl_FragCoord.xy);
+  if ((px_coord.x & 1) == (px_coord.y & 1))
+  {
+    // Every second one
+    discard;
+  }
+  else
+  {
+    color_multiplier = 2.0f;
+  }
+#endif
 
   float importance_per_part[MAX_PARTS] = float[MAX_PARTS](0.0f);
 
@@ -501,9 +518,8 @@ void main()
     imageStore(megatex_debug, ivec2(gl_FragCoord.xy), vec4(1.0, 0.0, 0.0, 1.0));
   }
 #endif
-  vec3 mask_value = texture(megatex_mask, gl_FragCoord.xy / u_megatex_size).xyz;
-
 #if CULL_INVISIBLE_PIXELS
+  vec3 mask_value = texture(megatex_mask, gl_FragCoord.xy / u_megatex_size).xyz;
   if (mask_value.r <= 0.0f)
   {
     out_color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -628,5 +644,5 @@ void main()
     final_color = (og_color * 1.0f + sum * 1.0) * 1.0f;
   }
 
-  out_color = vec4(final_color, 1.0f);
+  out_color = vec4(final_color * color_multiplier, 1.0f);
 }

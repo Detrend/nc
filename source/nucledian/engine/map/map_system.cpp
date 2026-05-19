@@ -508,6 +508,12 @@ const
           const bool is_nuclidean = walls[wall1_idx].get_portal_type() == PortalType::non_euclidean;
           nc_assert(next_sector != INVALID_SECTOR_ID);
 
+          if (sectors_dynamic[next_sector].get_sector_height() < 0.01f)
+          {
+            // Lets assume it is closed and do not continue further
+            return;
+          }
+
           const auto p1 = walls[wall1_idx].pos;
           const auto p2 = walls[wall2_idx].pos;
 

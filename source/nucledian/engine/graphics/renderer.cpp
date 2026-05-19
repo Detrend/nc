@@ -662,8 +662,62 @@ bool wall_facing_away_from_camera(vec2 camera_pos, vec2 a, vec2 b)
 }
 
 //==============================================================================
-void get_sectors([[maybe_unused]]const Renderer::CameraData& camera, const MapSectors& map, SectorsAndParts& out, const VisibilityTree& tree)
+static bool is_floor_ceil_visible
+(
+  const vec3& bbox_min,
+  const vec3& bbox_max,
+  const mat4& model,
+  const mat4& view,
+  const mat4& proj
+)
 {
+  const mat4 mvp = proj * view * model;
+  const float y  = bbox_min.y;
+
+  const vec4 corners[4] =
+  {
+    mvp * vec4(bbox_min.x, y, bbox_min.z, 1.0f),
+    mvp * vec4(bbox_max.x, y, bbox_min.z, 1.0f),
+    mvp * vec4(bbox_max.x, y, bbox_max.z, 1.0f),
+    mvp * vec4(bbox_min.x, y, bbox_max.z, 1.0f),
+  };
+
+  auto all_outside = [&](auto test)
+  {
+    for (const auto& c : corners) if (!test(c)) return false;
+    return true;
+  };
+
+  if (all_outside([](const vec4& c){ return c.x < -c.w; })) return false; // left
+  if (all_outside([](const vec4& c){ return c.x >  c.w; })) return false; // right
+  if (all_outside([](const vec4& c){ return c.y < -c.w; })) return false; // bottom
+  if (all_outside([](const vec4& c){ return c.y >  c.w; })) return false; // top
+  if (all_outside([](const vec4& c){ return c.z < -c.w; })) return false; // near
+  if (all_outside([](const vec4& c){ return c.z >  c.w; })) return false; // far
+
+  return true;
+}
+
+//==============================================================================
+void get_sectors
+(
+  const Renderer::CameraData& camera,
+  mat4                        view,
+  mat4                        proj,
+  mat4                        trans,
+  const MapSectors&           map,
+  SectorsAndParts&            out,
+  const VisibilityTree&       tree
+)
+{
+  if (tree.portal_sector != INVALID_SECTOR_ID)
+  {
+    mat4 t = map.calc_portal_to_portal_projection(tree.portal_sector, tree.portal_wall);
+    trans = t * trans;
+  }
+
+  mat4 t_i = inverse(trans);
+
   for (const auto[sid, frustums] : tree.sectors)
   {
     PartIDs& parts = out[sid];
@@ -696,14 +750,30 @@ void get_sectors([[maybe_unused]]const Renderer::CameraData& camera, const MapSe
 
     // Floor and ceil
     // TODO: Check if we can see these from the camera POV
-    push_back_unique(parts, map.sectors[sid].floor_megatex_id);
-    push_back_unique(parts, map.sectors[sid].ceil_megatex_id);
+    f32 floor_y = map.sectors_dynamic[sid].floor_height;
+    f32 ceil_y  = map.sectors_dynamic[sid].ceil_height;
+    aabb3 bbox = map.sector_bboxes[sid];
+
+    vec3 floor1 = with_y(bbox.min, floor_y);
+    vec3 floor2 = with_y(bbox.max, floor_y);
+    vec3 ceil1  = with_y(bbox.min, ceil_y);
+    vec3 ceil2  = with_y(bbox.max, ceil_y);
+
+    if (is_floor_ceil_visible(floor1, floor2, t_i, view, proj))
+    {
+      push_back_unique(parts, map.sectors[sid].floor_megatex_id);
+    }
+
+    if (is_floor_ceil_visible(ceil1, ceil2, t_i, view, proj))
+    {
+      push_back_unique(parts, map.sectors[sid].ceil_megatex_id);
+    }
   }
 
   // Recurse
   for (const auto& subtree : tree.children)
   {
-    get_sectors(camera, map, out, subtree);
+    get_sectors(camera, view, proj, trans, map, out, subtree);
   }
 }
 
@@ -781,7 +851,7 @@ const
   );
 
   SectorsAndParts sectors_to_render;
-  get_sectors(camera, map, sectors_to_render, tree);
+  get_sectors(camera, camera.view, m_default_projection, identity<mat4>(), map, sectors_to_render, tree);
 
   if (refresh_gi_sectors_every_frame)
   {
