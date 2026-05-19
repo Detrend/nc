@@ -26,6 +26,10 @@ struct MegatexPart
   float texture_offset_x;
   vec3  normal;
   float texture_offset_y;
+  uint  sector_id;
+  uint  unused_a;
+  uint  unused_b;
+  uint  unused_c;
 };
 
 layout(std430, binding = 0) readonly buffer parts_buffer   { MegatexPart megatex_parts[];   };

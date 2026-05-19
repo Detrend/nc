@@ -7,6 +7,7 @@
 #define INSPECTED_PART 0
 #define HIGHLIGHT_THOSE_WHO_SAMPLE_FROM_THIS_PART 0
 #define HIGHLIGHT_THOSE_SAMPLED_FROM_THIS_PART 0
+#define DO_VISIBLITY_CHECK 1
 
 // Possible improvements:
 // [x] Debug that shows from where we sample.. Effectively another megatex.
@@ -39,6 +40,10 @@ struct MegatexPart
   float texture_offset_x;
   vec3  normal;
   float texture_offset_y;
+  uint  sector_id;
+  uint  unused_a;
+  uint  unused_b;
+  uint  unused_c;
 };
 
 struct SectorData
@@ -76,18 +81,154 @@ layout(location = 7)  uniform vec2 u_megatex_size;
 layout(location = 8)  uniform uint num_indices;
 layout(location = 9)  uniform uint my_part_id;
 layout(location = 10) uniform vec2 game_atlas_size;
+layout(location = 11) uniform uint num_sectors;
+layout(location = 12) uniform uint num_walls;
 
 layout(std430, binding = 0) readonly buffer parts_buffer       { MegatexPart megatex_parts[];   };
 layout(std430, binding = 1) readonly buffer indices_buffer     { uint        megatex_indices[]; };
 layout(std430, binding = 2) readonly buffer texture_buffer     { TextureData textures[];        };
-layout(std430, binding = 3) readonly buffer sector_data_buffer { SectorData sectors[];          };
-layout(std430, binding = 4) readonly buffer wall_data_buffer   { WallData   walls[];            };
+layout(std430, binding = 3) readonly buffer sector_data_buffer { SectorData  sectors[];          };
+layout(std430, binding = 4) readonly buffer wall_data_buffer   { WallData    walls[];            };
 
 layout(binding = 0) uniform sampler2D megatex_input;
 layout(binding = 1) uniform sampler2D game_atlas_sampler;
 layout(binding = 2) uniform sampler2D megatex_mask;
 
 layout(binding = 3, rgba8) uniform image2D megatex_debug;
+
+float cross2(vec2 a, vec2 b)
+{
+  return a.x * b.y - a.y * b.x;
+}
+
+bool out_of_range_sectors = false;
+bool out_of_range_walls   = false;
+bool invalid_wall_id      = false;
+bool max_hops_reached     = false;
+
+// check intersection between top-down shadow ray and "wall ray"
+// return t which tells at which point intersersection occurs
+// if no intersection, returns -1.0f
+float get_intersection_t(vec2 ray_origin, vec2 ray_direction, vec2 wall_p0, vec2 wall_p1)
+{
+  vec2 wall_origin = wall_p0;
+  float wall_length = distance(wall_p1, wall_p0);
+  vec2 wall_direction = normalize(wall_p1 - wall_p0);
+
+  float denominator = cross2(ray_direction, wall_direction);
+
+  // rays are parallel
+  if (abs(denominator) < 0.001f)
+    return -1.0f;
+
+  vec2 diff = wall_origin - ray_origin;
+  float inv_denominator = 1.0f / denominator;
+
+  float ray_t  = cross2(diff, wall_direction) * inv_denominator;
+  float wall_t = cross2(diff, ray_direction ) * inv_denominator;
+
+  // intersection occurs outside of this wall segment
+  if (wall_t < -0.001f || wall_t > wall_length + 0.001f)
+    return -1.0f;
+
+  return ray_t;
+}
+
+float shadow_coeff(vec3 from_position, vec3 to_position, uint start_sector_id, uint end_sector_id)
+{
+  if (start_sector_id == end_sector_id)
+  {
+    return 1.0f;
+  }
+
+  const uint INVALID_WALL_ID = 65535;
+  const uint MAX_LIGHT_TRAVERSE_SECTORS = 32;
+
+  vec3 ray_origin    = from_position;
+  vec3 ray_direction = normalize(to_position - from_position);
+  
+  uint current_sector_id = start_sector_id;
+  float ray_t = -0.001f;
+
+  for (int hop = 0; hop < MAX_LIGHT_TRAVERSE_SECTORS; ++hop)
+  {
+    SectorData sector = sectors[current_sector_id];
+    uint wall_index = INVALID_WALL_ID;
+
+    if (current_sector_id == end_sector_id)
+    {
+      // check if ray collides with floor or ceiling
+      float ray_hit_y = ray_origin.y + ray_t * ray_direction.y;
+      if (ray_hit_y < sector.floor_y - 0.001f || ray_hit_y > sector.ceil_y + 0.001f)
+      {
+        return 0.0f;
+      }
+
+      return 1.0f;
+    }
+
+    if (current_sector_id >= num_sectors)
+    {
+      out_of_range_sectors = true;
+      return 0.0f;
+    }
+
+    for (uint i = 0; i < sector.walls_count; ++i)
+    {
+      if (sector.walls_offset + i >= num_walls)
+      {
+        out_of_range_walls = true;
+        return 0.0f;
+      }
+      WallData wall = walls[sector.walls_offset + i];
+
+      vec2 wall_normal = unpackSnorm2x16(wall.packed_normal);
+      // wall is facing opposite direction, we can skip it
+      if (dot(wall_normal, ray_direction.xz) > 0.001f)
+        continue;
+
+      float t = get_intersection_t(ray_origin.xz, ray_direction.xz, wall.start, wall.end);
+      if (t > ray_t)
+      {
+        wall_index = i;
+        ray_t = t;
+        break;
+      }
+    }
+
+    if (wall_index == INVALID_WALL_ID)
+    {
+      invalid_wall_id = true;
+      return 0.0f;
+    }
+
+    // check if ray collides with floor or ceiling
+    float ray_hit_y = ray_origin.y + ray_t * ray_direction.y;
+    if (ray_hit_y < sector.floor_y - 0.001f || ray_hit_y > sector.ceil_y + 0.001f)
+    {
+      return 0.0f;
+    }
+   
+    WallData wall = walls[sector.walls_offset + wall_index];
+
+    // wall is a solid wall (not a portal)
+    if (wall.destination == INVALID_WALL_ID)
+    {
+      return 0.0f;
+    }
+
+    current_sector_id = wall.destination;
+
+    /*
+    mat4 portal_matrix = inverse(portal_matricies[wall.portal_matrix_index]);
+    ray_origin = (portal_matrix * vec4(ray_origin, 1.0f)).xyz;
+    ray_direction = normalize(mat3(portal_matrix) * ray_direction);
+    */
+  }
+
+  max_hops_reached = true;
+  return 0.0f;
+}
 
 vec3 uint_to_color(uint x)
 {
@@ -244,24 +385,16 @@ float hash_3d(ivec3 p)
   return float(h) / float(0xffffffffu);
 }
 
-ivec2 noise2(ivec2 p)
-{
-  uint h1 = hash(p);
-  uint h2 = hash(p + ivec2(1, 0));
-
-  return ivec2(max(int(h1), 0), max(int(h2), 0));
-}
-
-float triangleArea(vec3 a, vec3 b, vec3 c)
+float triangle_area(vec3 a, vec3 b, vec3 c)
 {
   return 0.5 * length(cross(b - a, c - a));
 }
 
-float quadArea(vec3 v0, vec3 v1, vec3 v2, vec3 v3)
+float quad_area(vec3 v0, vec3 v1, vec3 v2, vec3 v3)
 {
   // Split quad into two triangles: (v0, v1, v2) and (v0, v2, v3)
-  float area1 = triangleArea(v0, v1, v2);
-  float area2 = triangleArea(v0, v2, v3);
+  float area1 = triangle_area(v0, v1, v2);
+  float area2 = triangle_area(v0, v2, v3);
   return area1 + area2;
 }
 
@@ -302,7 +435,8 @@ vec2 hash_4d_to_2d(ivec4 p)
 void sample_from_part(int sample_idx, uint part_id, out vec3 wp_of_sample, out vec3 albedo, out vec3 smple)
 {
   // Sample random points on the surface of the object
-  MegatexPart part = megatex_parts[part_id];
+  MegatexPart my_part = megatex_parts[my_part_id];
+  MegatexPart part    = megatex_parts[part_id];
   ivec2 frag_idx = ivec2(gl_FragCoord.xy);
 
   // Always positive, good
@@ -328,14 +462,19 @@ void sample_from_part(int sample_idx, uint part_id, out vec3 wp_of_sample, out v
   }
 #endif
 
-  vec3 wp_bottom    = mix(part.wpos_00, part.wpos_10, uv_coords.x);
-  vec3 wp_top       = mix(part.wpos_01, part.wpos_11, uv_coords.x);
+  vec3 wp_bottom = mix(part.wpos_00, part.wpos_10, uv_coords.x);
+  vec3 wp_top    = mix(part.wpos_01, part.wpos_11, uv_coords.x);
 
   // This is the world position of the pixel we are sampling
   wp_of_sample = mix(wp_bottom, wp_top, uv_coords.y);
 
+  float occluded = 1.0f;
+#if DO_VISIBLITY_CHECK
+  occluded = shadow_coeff(wp, wp_of_sample, my_part.sector_id, part.sector_id);
+#endif
+
   // Now calculate the UV of the texture that is on the wall
-  albedo = fetch_part_surface_texture(part, uv_coords);
+  albedo = fetch_part_surface_texture(part, uv_coords) * occluded;
 }
 
 void main()
@@ -418,7 +557,7 @@ void main()
     MegatexPart part = megatex_parts[part_id];
 
     vec3  part_sum  = vec3(0.0f);
-    float part_area = quadArea(part.wpos_00, part.wpos_10, part.wpos_01, part.wpos_11);
+    float part_area = quad_area(part.wpos_00, part.wpos_10, part.wpos_01, part.wpos_11);
 
     float this_part_importance      = importance_per_part[i];
     float importance_coeff          = this_part_importance / importance_sum;
@@ -489,6 +628,5 @@ void main()
     final_color = (og_color * 1.0f + sum * 1.0) * 1.0f;
   }
 
-  //imageStore(megatex_debug, ivec2(gl_FragCoord.xy), vec4(1.0, 0.0, 0.0, 1.0));
   out_color = vec4(final_color, 1.0f);
 }

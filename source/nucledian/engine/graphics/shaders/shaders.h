@@ -115,6 +115,8 @@ namespace nc
       inline constexpr Uniform<8,  u32>  NUM_INDICES;
       inline constexpr Uniform<9,  u32>  MY_PART_ID;
       inline constexpr Uniform<10, vec2> GAME_ATLAS_SIZE;
+      inline constexpr Uniform<11, u32>  NUM_SECTORS;
+      inline constexpr Uniform<12, u32>  NUM_WALLS;
     }
 
     // Pixel GI lighting pass

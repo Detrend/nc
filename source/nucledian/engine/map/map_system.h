@@ -61,6 +61,10 @@ struct MegatexPart
   f32   texture_offset_x = 0.0f;
   vec3  normal;
   f32   texture_offset_y = 0.0f;
+  u32   sector_id = INVALID_SECTOR_ID;
+  u32   unused_a;
+  u32   unused_b;
+  u32   unused_c;
 };
 
 // This data structure lets us check which sectors and their parts are visible

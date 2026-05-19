@@ -14,6 +14,10 @@ struct MegatexPart
   float texture_offset_x;
   vec3  normal;
   float texture_offset_y;
+  uint  sector_id;
+  uint  unused_a;
+  uint  unused_b;
+  uint  unused_c;
 };
 
 layout(std430, binding = 0) readonly buffer parts_buffer   { MegatexPart megatex_parts[];   };
@@ -31,22 +35,24 @@ flat in ivec2 from_px;
 flat in ivec2 to_px;
 
 // Indices we should consider
-in flat uint  num_good_indices;
-in flat uint  good_indices[6];
-in flat vec2  good_offsets[6];
-in flat vec2  good_scales[6];
+in flat uint num_good_indices;
+in flat uint good_indices[6];
+in flat vec2 good_offsets[6];
+in flat vec2 good_scales [6];
 
 #define GRID_N            10
 #define DO_DENOISE        1
 #define DO_PART_DEBUG     0
 #define DO_DRAW_DEBUG     0
 #define BLUR_ACROSS_EDGES 1
-#define TONEMAPPER        1 // 0 = none, 1 = aces, 2 = reinhard
+#define TONEMAPPER        0 // 0 = none, 1 = aces, 2 = reinhard, 3 = agx
 
 #if (TONEMAPPER == 1)
 #define tonemap aces
 #elif (TONEMAPPER == 2)
 #define tonemap reinhard
+#elif (TONEMAPPER == 3)
+#define tonemap agx
 #else
 #define tonemap no_tonemap
 #endif
@@ -84,6 +90,39 @@ vec3 aces(vec3 x)
 vec3 reinhard(vec3 x)
 {
   return x / (x + vec3(1.0f));
+}
+
+vec3 agx(vec3 x)
+{
+    // Prevent negative values
+    x = max(x, 0.0);
+
+    // --- Input transform ---
+    // Approximate log2 encoding
+    x = log2(1.0 + x);
+
+    // Normalize expected HDR range
+    // (roughly maps 0..16 stops into 0..1)
+    x /= 10.0;
+
+    // --- Sigmoid contrast curve ---
+    vec3 y = x * x * (3.0 - 2.0 * x);
+
+    // --- Highlight rolloff ---
+    y = y / (1.0 + y);
+
+    // --- Highlight desaturation ---
+    float luma = dot(y, vec3(0.2126, 0.7152, 0.0722));
+
+    // Amount of desaturation increases with brightness
+    float desat = smoothstep(0.4, 1.0, luma);
+
+    y = mix(y, vec3(luma), desat * 0.35);
+
+    // --- Output gamma ---
+    y = pow(y, vec3(1.0 / 2.2));
+
+    return clamp(y, 0.0, 1.0);
 }
 
 void main()

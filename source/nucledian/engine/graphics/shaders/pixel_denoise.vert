@@ -14,6 +14,10 @@ struct MegatexPart
   float texture_offset_x;
   vec3  normal;
   float texture_offset_y;
+  uint  sector_id;
+  uint  unused_a;
+  uint  unused_b;
+  uint  unused_c;
 };
 
 layout(location = 0) uniform vec2 u_from;

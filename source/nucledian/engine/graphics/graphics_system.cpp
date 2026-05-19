@@ -1319,8 +1319,10 @@ void GraphicsSystem::create_sector_meshes()
 
       MegatexPartId   mpart = cast<MegatexPartId>(megatex_parts.size());
       MegatexPart& ref = megatex_parts.emplace_back();
+
       ref.megatex_coord_1 = cast<ivec2>(from);
       ref.megatex_coord_2 = cast<ivec2>(to);
+      ref.sector_id       = cast<SectorID>(ii);
 
       switch (rect.id)
       {

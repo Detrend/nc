@@ -854,8 +854,12 @@ const
   m_pixel_gi_shader.use();
   m_megatex_ssbo.bind(0);
   m_textures_ssbo.bind(2);
+  m_sectors_ssbo.bind(3); // sectors
+  m_walls_ssbo.bind(4);   // walls
   m_pixel_gi_shader.set_uniform(shaders::pixel_gi::MEGATEX_SIZE,    megatex_size);
   m_pixel_gi_shader.set_uniform(shaders::pixel_gi::GAME_ATLAS_SIZE, game_atlas_size);
+  m_pixel_gi_shader.set_uniform(shaders::pixel_gi::NUM_SECTORS,     m_sectors_ssbo.size_u32());
+  m_pixel_gi_shader.set_uniform(shaders::pixel_gi::NUM_WALLS,       m_walls_ssbo.size_u32());
 
   // Bind dummy VAO
   glBindVertexArray(screen_quad.get_vao());
