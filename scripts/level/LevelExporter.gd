@@ -289,6 +289,8 @@ func create_level_export_data() -> Dictionary:
 		sector_export["floor"] = sector.data.floor_height * _level.export_scale.z
 		sector_export["ceiling"] = sector.data.ceiling_height * _level.export_scale.z
 		sector_export["damage"] = sector.data.damage
+		sector_export["force_walkability"] = sector.data.force_walkability
+		
 		
 		var sector_points : PackedInt32Array = []
 		for coords in sector.get_point_positions():

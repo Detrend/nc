@@ -42,6 +42,7 @@ var _gridsnap_step_inv_impl : float
 @export var sanity_check_convex : bool = true
 @export var sanity_check_portals : bool = true
 @export var sanity_check_portal_length_epsilon : float = 0.005
+@export var sanity_check_duplicit_points : bool = true
 
 @export_group("Portal visuals")
 @export var portal_entry_color : Color = Color.DARK_GREEN

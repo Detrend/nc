@@ -559,6 +559,37 @@ static func get_all_editable(parent: Node, ret : Array[EditablePolygon] = [], fl
 	return ret
 
 
+func _remove_duplicit_points(points: PackedVector2Array)->bool:
+	var did_remove : bool = false
+	var t:int = 1
+	while t < points.size():
+		if points[t] == points[t-1]:
+			print("removing idx: {0} : {1} (same as {2}) - size: {3}".format([t, points[t], points[t-1], points.size()]))
+			points.remove_at(t-1)
+			did_remove = true
+		else: t += 1
+	if points.size() > 1 and points[points.size() - 1] == points[0]:
+		print("removing idx: {0} : {1} (same as {2}) - size: {3}".format([points.size() - 1, points[points.size() - 1], points[0], points.size()]))
+		points.remove_at(points.size() - 1)
+		did_remove = true
+	return did_remove
+
+func _sanity_check_duplicit_points()->void:
+	var points: PackedVector2Array = self.polygon
+	for t in Vector2i(1, points.size()):
+		if points[t] == points[t-1]:
+			ErrorUtils.report_warning("Duplicit point at idx: {0} : {1} (same as {2}) - size: {3} in {4}".format([t, points[t], points[t-1], points.size(), NodeUtils.get_full_name(self)]))
+	if points.size() > 1 and points[points.size() - 1] == points[0]:
+		ErrorUtils.report_warning("Duplicit point at idx: {0} : {1} (same as {2}) - size: {3} in {4}".format([points.size() - 1, points[points.size() - 1], points[0], points.size(), NodeUtils.get_full_name(self)]))
+
+func _ensure_points_clockwise(points: PackedVector2Array)->bool:
+	if Geometry2D.is_polygon_clockwise(points):
+		print("reverting {0}".format([get_full_name()]))
+		points.reverse()
+		return true
+	return false
+
+
 
 @export_tool_button("Apply parent rotation") var apply_rotation_tool_button = func()->void:
 	if get_parent() is Node2D: apply_ancestor_rotation(get_parent())

@@ -68,6 +68,13 @@ func on_descendant_editing_finish(_ancestor: Node, _start_was_called_first: bool
 func _ready() -> void:
 	do_triangulate()
 
+## Cleanup this [Sector]'s points after the user finished editing it.
+func do_postprocess(points: PackedVector2Array)->bool:
+	var did_change :bool = false
+	did_change = did_change or self._remove_duplicit_points (points) ## There might be multiple identical points next to each other in the points array
+	return did_change
+
+
 var _has_triangulation_request: bool = false
 ## Request that triangulation should be performed on the next frame. 
 ## Ensures that multiple triangulation requests sent during a single frame will result in just a single triangulation
