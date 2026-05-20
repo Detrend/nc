@@ -1093,9 +1093,8 @@ void Renderer::do_pixel_lighting_pass
   );
 
   // Set the target
-  glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_write_fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_temp_fbo);
   glViewport(0, 0, gfx.megatex_width, gfx.megatex_height);
-  glClear(GL_COLOR_BUFFER_BIT);
 
   const auto& game_atlas = TextureManager::get().get_atlas(ResLifetime::Game);
   const vec2 game_atlas_size = game_atlas.get_size();
@@ -1241,9 +1240,9 @@ void Renderer::do_pixel_lighting_pass
     "PixelLightingPass - Denoise"
   );
 
-  // Blit megatex_input_handle -> megatex_handle
+  // Blit temporal -> read from handle
   glCopyImageSubData(
-    gfx.megatex_write_to_handle,  GL_TEXTURE_2D, 0, 0, 0, 0,
+    gfx.megatex_temporal_handle,  GL_TEXTURE_2D, 0, 0, 0, 0,
     gfx.megatex_read_from_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
     static_cast<GLsizei>(gfx.megatex_width),
     static_cast<GLsizei>(gfx.megatex_height),
@@ -1276,12 +1275,6 @@ void Renderer::do_pixel_lighting_pass
 
   // Bind dummy VAO
   glBindVertexArray(screen_quad.get_vao());
-
-  // Read from megatex_handle, write to megatex_input_handle once again
-  glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, gfx.megatex_read_from_handle);
-  glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D, gfx.megatex_mask_handle);
 
   auto push_sector_for_denoise = [&](SectorID sector_id)
   {
@@ -1334,26 +1327,40 @@ void Renderer::do_pixel_lighting_pass
     }
   };
 
-  // Store into immediate
-  glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_write_fbo);
-  glViewport(0, 0, gfx.megatex_width, gfx.megatex_height);
-  glClear(GL_COLOR_BUFFER_BIT);
-  do_one_denoise_pass(true);  // horizontal
 
-  // blit 
+  // Writing into temporal, but also read from it!
+  glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_temp_fbo);
+  glViewport(0, 0, gfx.megatex_width, gfx.megatex_height);
+
+  // Blit temportal to read before writing to it!
   glCopyImageSubData
   (
-    gfx.megatex_write_to_handle,  GL_TEXTURE_2D, 0, 0, 0, 0,
+    gfx.megatex_temporal_handle,  GL_TEXTURE_2D, 0, 0, 0, 0,
     gfx.megatex_read_from_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
     static_cast<GLsizei>(gfx.megatex_width),
     static_cast<GLsizei>(gfx.megatex_height),
     1
   );
 
-  // Store into temporal (will remain until the next frame)
-  glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_temp_fbo);
-  glViewport(0, 0, gfx.megatex_width, gfx.megatex_height);
-  do_one_denoise_pass(false);
+  // Read from megatex_handle, write to megatex_input_handle once again
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, gfx.megatex_read_from_handle);
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, gfx.megatex_mask_handle);
+
+  do_one_denoise_pass(true);  // horizontal
+
+  // Blit once again
+  glCopyImageSubData
+  (
+    gfx.megatex_temporal_handle,  GL_TEXTURE_2D, 0, 0, 0, 0,
+    gfx.megatex_read_from_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
+    static_cast<GLsizei>(gfx.megatex_width),
+    static_cast<GLsizei>(gfx.megatex_height),
+    1
+  );
+
+  do_one_denoise_pass(false); // vertical pass
 
   glBindVertexArray(0);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);

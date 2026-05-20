@@ -1508,6 +1508,9 @@ void GraphicsSystem::create_sector_meshes()
   // Temporal
   gen_megatex(megatex_temporal_handle, GL_RGBA16F);
 
+  // Temporal noise
+  gen_megatex(megatex_temporal_noise_handle, GL_RGBA16F);
+
   megatex_width  = target_width;
   megatex_height = target_height;
 
@@ -1527,6 +1530,12 @@ void GraphicsSystem::create_sector_meshes()
   glGenFramebuffers(1, &megatex_shadow_fbo);
   glBindFramebuffer(GL_FRAMEBUFFER, megatex_shadow_fbo);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, megatex_shadow_handle, 0);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  // FBO for storing temporary noise
+  glGenFramebuffers(1, &megatex_noise_fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, megatex_noise_fbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, megatex_temporal_noise_handle, 0);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

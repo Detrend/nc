@@ -75,9 +75,11 @@ public:
   GLuint megatex_debug_handle     = 0;
   GLuint megatex_shadow_handle    = 0;
   GLuint megatex_temporal_handle  = 0;
+  GLuint megatex_temporal_noise_handle = 0;
 
   GLuint megatex_write_fbo  = 0;
   GLuint megatex_temp_fbo   = 0;
+  GLuint megatex_noise_fbo  = 0;
   GLuint megatex_shadow_fbo = 0;
   u32    megatex_width      = 0;
   u32    megatex_height     = 0;
