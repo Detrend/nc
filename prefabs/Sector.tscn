@@ -6,13 +6,7 @@
 
 [sub_resource type="Resource" id="Resource_ctoo8"]
 script = ExtResource("2_8a3ec")
-floor_height = 0.0
-ceiling_height = 1.5
 material = ExtResource("3_ctoo8")
-texturing_offset = Vector2(0, 0)
-texturing_rotation = 0.0
-wall_texturing_offset = Vector2(0, 0)
-wall_texturing_rotation = 0.0
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [node name="Sector" type="Polygon2D"]
@@ -23,11 +17,12 @@ script = ExtResource("1_8a3ec")
 data = SubResource("Resource_ctoo8")
 ceiling_height = 1.5
 sector_material = ExtResource("3_ctoo8")
-show_portal_arrow = true
+portal_destination_wall_length = -1.0
 
 [node name="VisualizerLine" type="Line2D" parent="."]
+points = PackedVector2Array(940, 351)
 closed = true
-width = 1.0
+width = 0.2
 default_color = Color(0, 0, 0, 0.796078)
 joint_mode = 2
 begin_cap_mode = 2

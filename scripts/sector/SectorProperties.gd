@@ -7,6 +7,8 @@ class_name SectorProperties
 ## Default ceiling height of this sector, can be changed during runtime through [SectorAltConfig]
 @export var ceiling_height : float = 1.5
 
+@export var force_walkability : bool = false
+
 @export var damage : int = 0
 ## Material used for texturing this sector
 @export var material: SectorMaterial = load("res://materials/default_texture.tres")

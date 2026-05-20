@@ -50,6 +50,10 @@ extends EditablePolygon
 		exclude_from_export = val
 		_update_visuals()
 
+@export var force_walkability : bool:
+	get: return data.force_walkability
+	set(val):
+		data.force_walkability = val
 
 @export_group("Portal")
 ## Single portal that connects this [Sector] with another arbitrary sector, creating non-euclidean level geometry.
@@ -225,31 +229,6 @@ func _visualize_portals()->void:
 
 
 
-func _remove_duplicit_points(points: PackedVector2Array)->bool:
-	var did_remove : bool = false
-	var previous : PackedVector2Array = []
-	previous.append_array(points)
-	var t:int = 1
-	while t < points.size():
-		if points[t] == points[t-1]:
-			print("removing idx: {0} : {1} (same as {2}) - size: {3}".format([t, points[t], points[t-1], points.size()]))
-			points.remove_at(t-1)
-			did_remove = true
-		else: t += 1
-	if points.size() > 1 and points[points.size() - 1] == points[0]:
-		print("removing idx: {0} : {1} (same as {2}) - size: {3}".format([points.size() - 1, points[points.size() - 1], points[0], points.size()]))
-		points.remove_at(points.size() - 1)
-		did_remove = true
-	return did_remove
-
-func _ensure_points_clockwise(points: PackedVector2Array)->bool:
-	if Geometry2D.is_polygon_clockwise(points):
-		print("reverting {0}".format([get_full_name()]))
-		points.reverse()
-		return true
-	return false
-
-
 
 #region SANITY_CHECKS
 
@@ -308,6 +287,10 @@ static func sanity_check_all(level: Level, all_sectors: Array[Sector])->void:
 				if abs(portal_length_in - portal_length_out) > level.config.sanity_check_portal_length_epsilon:
 					ErrorUtils.report_warning("Portal lengths not matching: {0}[{1}] -> {2}[{3}] ({4} m vs {5} m)"
 						.format([s.get_full_name(), s.portal_wall, s.portal_destination.get_full_name(), s.portal_destination_wall, portal_length_in, portal_length_out]))
+	if level.config.sanity_check_duplicit_points:
+		print("\tCheck - duplicit points...")
+		for s in all_sectors:
+			s._sanity_check_duplicit_points()
 
 ## Check if this [Sector] is convex. Non-convex [Sectors] are invalid and have to be fixed by the user before exporting.
 func is_convex()->bool:
