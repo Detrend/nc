@@ -771,6 +771,7 @@ void GameSystem::frame_start()
         GameHelpers::get().get_player()->give_weapon((WeaponType)i);
       }
     }
+    GameHelpers::get().get_player()->change_weapon(get_engine().get_transition_equiped_weapon());
 
     // Reset it
     scheduled_state.reset();

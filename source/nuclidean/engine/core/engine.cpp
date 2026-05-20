@@ -822,6 +822,7 @@ void Engine::on_level_end()
           m_transition_state.owned_weapons |= weapon_flag((WeaponType)i);
         }
       }
+      m_transition_state.current_weapon = GameHelpers::get().get_player()->get_equipped_weapon();
       
       // Enable level transition UI
       UserInterfaceSystem::get().get_menu_manager()->set_transition_screen(true);

@@ -76,6 +76,7 @@ public:
   int     get_max_health() const;
 
   void    set_health(s32 health);
+  void change_weapon(WeaponType new_weapon);
 
   s32     get_current_weapon_ammo();
   s32     get_ammo(WeaponType weapon)     const;
@@ -134,7 +135,7 @@ private:
   void do_attack();
 
   // swap weapons
-  void change_weapon(WeaponType new_weapon);
+  
 
   void handle_pickup(Pickup& pickup);
 
