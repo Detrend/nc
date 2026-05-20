@@ -17,6 +17,8 @@ enum EntityType{
 	Cultist=0, 
 	## Basic mellee enemy
 	Possessed=1, 
+	
+	Grunt=2,
 	## The player's starting position - there MUST always be exactly one in a level
 	Player=-1
 }

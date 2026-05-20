@@ -27,7 +27,7 @@ metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 script = ExtResource("7_womx6")
 priority = 3
 _placement_type = 9
-texture = ExtResource("9_y6m5m")
+texture = ExtResource("2_1ngpb")
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [sub_resource type="Resource" id="Resource_ltfd2"]
@@ -42,6 +42,6 @@ preview = ExtResource("3_5giea")
 preview_scale = 4.0
 wall_default = SubResource("Resource_csai5")
 wall_rules = Array[ExtResource("7_womx6")]([SubResource("Resource_a6q66"), SubResource("Resource_vmr3h"), SubResource("Resource_ltfd2")])
-floor = ExtResource("2_1ngpb")
+floor = ExtResource("9_y6m5m")
 ceiling = ExtResource("1_qdyib")
 metadata/_custom_type_script = "uid://bd7os02w6f4ou"

@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://dgwhwixwr1rac"]
+
+[ext_resource type="Script" uid="uid://cs4fi7b04r2ix" path="res://scripts/things/Entity.gd" id="1_yfrlx"]
+[ext_resource type="Texture2D" uid="uid://dl37i00imlvdr" path="res://imgs/grunt.png" id="2_yfrlx"]
+
+[node name="Grunt" type="Node2D"]
+z_index = 999
+script = ExtResource("1_yfrlx")
+entity_type = 2
+
+[node name="Icon" type="Sprite2D" parent="."]
+texture_filter = 1
+texture_repeat = 1
+scale = Vector2(0.2428286, 0.2428286)
+texture = ExtResource("2_yfrlx")
