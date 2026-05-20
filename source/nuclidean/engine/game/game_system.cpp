@@ -75,6 +75,7 @@ static void make_sector_helper(
   f32                                              in_floor_y,
   f32                                              in_ceil_y,
   s32                                              damage,
+  bool                                             force_walkable,
   const std::vector<u16>&                          points,
   std::vector<map_building::SectorBuildData>&      out,
   int                                              portal_wall_id    = -1,
@@ -96,7 +97,7 @@ static void make_sector_helper(
       .point_index            = p,
       .nc_portal_point_index  = is_portal ? portal_wall_id_to : INVALID_WALL_REL_ID,
       .nc_portal_sector_index = is_portal ? portal_sector     : INVALID_SECTOR_ID,
-      .surface                = std::move(wall_surfaces[i])
+      .surface                = std::move(wall_surfaces[i]),
     });
   }
 
@@ -107,7 +108,8 @@ static void make_sector_helper(
     .ceil_y        = { in_ceil_y,  in_ceil_y  },
     .floor_surface = floor_surface,
     .ceil_surface  = ceiling_surface,
-    .damage        = damage
+    .damage        = damage,
+    .force_walkable = force_walkable
   });
 }
 
@@ -347,7 +349,11 @@ static void load_json_map
       {
         damage = js_sector["damage"];
       }
-     
+      bool force_walkable = false;
+      if (js_sector.contains("force_walkability"))
+      {
+        force_walkable = js_sector["force_walkability"];
+      }
 
       const SectorID portal_sector = js_sector["portal_target"];
       const int portal_wall = js_sector["portal_wall"];
@@ -377,7 +383,7 @@ static void load_json_map
         wrelid += 1;
       }
 
-      make_sector_helper(floor, ceil, damage ,point_indices, sectors, portal_wall, portal_destination_wall, portal_sector, floor_surface, ceiling_surface, wall_surfaces);
+      make_sector_helper(floor, ceil, damage, force_walkable ,point_indices, sectors, portal_wall, portal_destination_wall, portal_sector, floor_surface, ceiling_surface, wall_surfaces);
       map_building::SectorBuildData& build_data = sectors.back();
 
       // Multiple states

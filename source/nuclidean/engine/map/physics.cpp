@@ -474,11 +474,14 @@ static bool calc_path_raw
       {
         const auto wall2_idx = map_helpers::next_wall(map, cur_id, wall1_idx);
 
-        // const bool is_nuclidean = walls[wall1_idx].get_portal_type() == PortalType::non_euclidean;       
-        auto p1 = map.walls[wall1_idx].pos;
-        auto p2 = map.walls[wall2_idx].pos;
+        // const bool is_nuclidean = walls[wall1_idx].get_portal_type() == PortalType::non_euclidean;      
+        auto &wall1= map.walls[wall1_idx];
+        auto &wall2= map.walls[wall2_idx];
+        auto p1 = wall1.pos;
+        auto p2 = wall2.pos;
         auto p1_to_p2 = p2 - p1;
-        if (length(p1_to_p2) > radius * 2.01f) // side to side clearance
+
+        if (next_sd.force_walkable || wall1.force_walkable || wall2.force_walkable || (wall_length > radius * 2.0f)) // side to side clearance
         {
           vec2 wall_dir;
           wall_dir = normalize_or_zero(p1_to_p2);

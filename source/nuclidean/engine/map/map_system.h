@@ -147,7 +147,7 @@ struct SectorDynData
 {
   f32 floor_height = 0.0f;
   f32 ceil_height  = 0.0f;
-
+  bool force_walkable = false;
   // Calculates the current height of the sector from floor to ceiling.
   // Negative if ceiling is under the floor (which should never happen!)
   f32 get_sector_height() const;
@@ -176,6 +176,7 @@ struct WallData
   PortalRenderID  render_data_index = INVALID_PORTAL_RENDER_ID;
   WallRelID       nc_portal_wall_id = INVALID_WALL_REL_ID;
   u8              segment_count     = 0;
+  bool            force_walkable    = false;
 
   PortType get_portal_type() const;
 
@@ -344,12 +345,13 @@ struct SectorBuildData
   std::vector<WallBuildData> points;
   f32                        floor_y[2]{};
   f32                        ceil_y[2]{};
-  bool                       has_more_states = false;
   SurfaceData                floor_surface;
   SurfaceData                ceil_surface;
   ActivatorID                activator = INVALID_ACTIVATOR_ID;
   f32                        move_speed = 1.0f;
   s32                        damage = 0;
+  bool                       has_more_states : 1 = false;
+  bool                       force_walkable : 1 = false;
 };
 
 struct OverlapInfo
