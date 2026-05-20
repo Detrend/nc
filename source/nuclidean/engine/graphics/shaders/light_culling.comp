@@ -1,5 +1,3 @@
-constexpr const char* COMPUTE_SOURCE = R"(
-
 #version 430 core
 
 #define TILE_SIZE_X 16
@@ -154,5 +152,3 @@ void main()
     }
   }
 }
-
-)";

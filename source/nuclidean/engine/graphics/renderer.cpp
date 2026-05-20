@@ -26,24 +26,94 @@
 #include <engine/appearance.h>
 
 #include <array>
+#include <filesystem>
 #include <unordered_set>
 
 namespace nc
 {
 
-//==============================================================================
-Renderer::Renderer(u32 window_w, u32 window_h)
-: m_solid_material(shaders::solid::VERTEX_SOURCE, shaders::solid::FRAGMENT_SOURCE)
-, m_billboard_material(shaders::billboard::VERTEX_SOURCE, shaders::billboard::FRAGMENT_SOURCE)
-, m_gun_material(shaders::gun::VERTEX_SOURCE, shaders::gun::FRAGMENT_SOURCE)
-, m_light_material(shaders::light::VERTEX_SOURCE, shaders::light::FRAGMENT_SOURCE)
-, m_sector_material(shaders::sector::VERTEX_SOURCE, shaders::sector::FRAGMENT_SOURCE)
-, m_light_culling_shader(shaders::light_culling::COMPUTE_SOURCE)
-, m_sky_box_material(shaders::sky_box::VERTEX_SOURCE, shaders::sky_box::FRAGMENT_SOURCE)
-, m_window_size(window_w, window_h)
+// Returns the <root>/source/nucledian/ prefix used to resolve relative shader paths.
+static const std::string& renderer_shader_root()
 {
-  this->create_g_buffers(window_w, window_h);
-  this->recompute_projection(window_w, window_h, GraphicsSystem::FOV);
+  static const std::string root = []()
+  {
+    // renderer.cpp lives at <root>/source/nucledian/engine/graphics/renderer.cpp
+    // Go up 3 directory components (strip filename + engine/graphics) to reach <root>/source/nucledian/
+    std::string path = __FILE__;
+    std::replace(path.begin(), path.end(), '\\', '/');
+    for (int i = 0; i < 3; ++i)
+    {
+      const auto pos = path.rfind('/');
+      if (pos != std::string::npos)
+        path.resize(pos);
+    }
+    return path + "/";
+  }();
+  return root;
+}
+
+// Returns the newest last_write_time across all source files of an entry.
+static std::filesystem::file_time_type newest_write_time(const std::vector<std::string>& file_paths)
+{
+  auto newest = std::filesystem::file_time_type::min();
+  for (const auto& rel : file_paths)
+  {
+    std::error_code ec;
+    const auto t = std::filesystem::last_write_time(renderer_shader_root() + rel, ec);
+    if (!ec && t > newest)
+      newest = t;
+  }
+  return newest;
+}
+
+//==============================================================================
+void Renderer::register_shader(ShaderProgramHandle& handle,
+                               std::initializer_list<const char*> paths)
+{
+  ShaderEntry entry;
+  entry.handle = &handle;
+  for (const char* p : paths)
+    entry.file_paths.emplace_back(p);
+
+  // Seed the write time so the first hot-reload check does not false-trigger.
+  entry.last_write_time = newest_write_time(entry.file_paths);
+  m_shader_entries.push_back(std::move(entry));
+}
+
+//==============================================================================
+void Renderer::check_shader_hot_reload() const
+{
+  for (auto& entry : m_shader_entries)
+  {
+    const auto newest = newest_write_time(entry.file_paths);
+    if (newest <= entry.last_write_time)
+      continue;
+
+    if (entry.handle->try_reload(entry.file_paths))
+    {
+      entry.last_write_time = newest;
+      nc_log("Shader hot-reloaded: {}", entry.file_paths[0]);
+    }
+    else
+    {
+      nc_crit("Shader hot-reload failed: {}", entry.file_paths[0]);
+    }
+  }
+}
+
+//==============================================================================
+Renderer::Renderer(u32 win_w, u32 win_h)
+: m_solid_material(ShaderProgramHandle::from_files(shaders::solid::VERTEX_FILE, shaders::solid::FRAGMENT_FILE))
+, m_billboard_material(ShaderProgramHandle::from_files(shaders::billboard::VERTEX_FILE, shaders::billboard::FRAGMENT_FILE))
+, m_gun_material(ShaderProgramHandle::from_files(shaders::gun::VERTEX_FILE, shaders::gun::FRAGMENT_FILE))
+, m_light_material(ShaderProgramHandle::from_files(shaders::light::VERTEX_FILE, shaders::light::FRAGMENT_FILE))
+, m_sector_material(ShaderProgramHandle::from_files(shaders::sector::VERTEX_FILE, shaders::sector::FRAGMENT_FILE))
+, m_light_culling_shader(ShaderProgramHandle::from_file(shaders::light_culling::COMPUTE_FILE))
+, m_sky_box_material(ShaderProgramHandle::from_files(shaders::sky_box::VERTEX_FILE, shaders::sky_box::FRAGMENT_FILE))
+, m_window_size(win_w, win_h)
+{
+  this->create_g_buffers(win_w, win_h);
+  this->recompute_projection(win_w, win_h, GraphicsSystem::FOV);
 
   const vec2 game_atlas_size = TextureManager::get().get_atlas(ResLifetime::Game).get_size();
   const vec2 level_atlas_size = TextureManager::get().get_atlas(ResLifetime::Level).get_size();
@@ -66,14 +136,23 @@ Renderer::Renderer(u32 window_w, u32 window_h)
 
   // setup light culling ssbos
   {
-    const size_t num_tiles_x = (window_w + LIGHT_CULLING_TILE_SIZE_X - 1) / LIGHT_CULLING_TILE_SIZE_X;
-    const size_t num_tiles_y = (window_h + LIGHT_CULLING_TILE_SIZE_Y - 1) / LIGHT_CULLING_TILE_SIZE_Y;
+    const size_t num_tiles_x = (win_w + LIGHT_CULLING_TILE_SIZE_X - 1) / LIGHT_CULLING_TILE_SIZE_X;
+    const size_t num_tiles_y = (win_h + LIGHT_CULLING_TILE_SIZE_Y - 1) / LIGHT_CULLING_TILE_SIZE_Y;
     const size_t num_tiles = num_tiles_x * num_tiles_y;
 
     m_light_index_ssbo = SSBOBuffer<u32>(MAX_LIGHTS_PER_TILE * num_tiles);
     m_light_tiles_ssbo = SSBOBuffer<u32>(num_tiles * 2);
     m_light_counter_ssbo = SSBOBuffer<u32>(1);
   }
+
+  // Register all shader programs for hot-reload monitoring.
+  register_shader(m_solid_material,        {shaders::solid::VERTEX_FILE,        shaders::solid::FRAGMENT_FILE});
+  register_shader(m_billboard_material,    {shaders::billboard::VERTEX_FILE,    shaders::billboard::FRAGMENT_FILE});
+  register_shader(m_gun_material,          {shaders::gun::VERTEX_FILE,          shaders::gun::FRAGMENT_FILE});
+  register_shader(m_light_material,        {shaders::light::VERTEX_FILE,        shaders::light::FRAGMENT_FILE});
+  register_shader(m_sector_material,       {shaders::sector::VERTEX_FILE,       shaders::sector::FRAGMENT_FILE});
+  register_shader(m_light_culling_shader,  {shaders::light_culling::COMPUTE_FILE});
+  register_shader(m_sky_box_material,      {shaders::sky_box::VERTEX_FILE,      shaders::sky_box::FRAGMENT_FILE});
 }
 
 //==============================================================================
@@ -105,6 +184,8 @@ void Renderer::render
 )
 const
 {
+  check_shader_hot_reload();
+
   const Camera* camera = Camera::get();
   if (!camera)
     return;
@@ -346,10 +427,14 @@ void Renderer::create_g_buffers(u32 width, u32 height)
   // TODO: merge stitched normals and normals into one g buffer
   m_g_position          = create_g_buffer(GL_RGBA32F    , attachments[0], width, height);
   m_g_stitched_position = create_g_buffer(GL_RGBA32F    , attachments[1], width, height);
-  m_g_normal            = create_g_buffer(GL_RGBA8_SNORM, attachments[2], width, height);
-  m_g_stitched_normal   = create_g_buffer(GL_RGBA8_SNORM, attachments[3], width, height);
-  m_g_albedo            = create_g_buffer(GL_RGBA8      , attachments[4], width, height);
-  m_g_sector            = create_g_buffer(GL_R32UI      , attachments[5], width, height);
+
+  // MR says: Changed these from RGBA8_UNORM to RGBA32F for GA demo because I am storing
+  //          shading position and shading stitched position in them for billboards.
+  m_g_normal          = create_g_buffer(GL_RGBA32F, attachments[2], width, height);
+  m_g_stitched_normal = create_g_buffer(GL_RGBA32F, attachments[3], width, height);
+
+  m_g_albedo = create_g_buffer(GL_RGBA8, attachments[4], width, height);
+  m_g_sector = create_g_buffer(GL_R32UI, attachments[5], width, height);
   glDrawBuffers(cast<GLsizei>(attachments.size()), attachments.data());
 
   // create depth-stencil buffer
@@ -828,7 +913,7 @@ void Renderer::render_entities(const CameraData& camera) const
     const TextureAtlas& atlas = TextureManager::get().get_atlas(cast<ResLifetime>(l));
     glBindTexture(GL_TEXTURE_2D, atlas.handle);
     m_billboard_material.set_uniform(shaders::billboard::ATLAS_SIZE, atlas.get_size());
-    m_billboard_material.set_uniform(shaders::billboard::ENABLE_SHADOWS, false);
+    m_billboard_material.set_uniform(shaders::billboard::ENABLE_SHADOWS, true);
 
     for (const auto& [entity, render_data] : group)
     {

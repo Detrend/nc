@@ -1,4 +1,3 @@
-constexpr const char* VERTEX_SOURCE = R"(
 
 #version 430 core
 
@@ -32,5 +31,3 @@ void main(void) {
 
 }
 
-
-)";

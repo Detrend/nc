@@ -115,6 +115,7 @@ struct EnemyStats
   u32            attack_frame   = 0;
   bool           is_melee : 1   = false;
   f32            infight_chance = 0.0f;
+  f32            step_height    = 1.0f;
 };
 
 extern EnemyStats ENEMY_STATS[];

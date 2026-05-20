@@ -55,7 +55,6 @@ constexpr f32 ALERT_SOUND_RANGE     = 45.0f;  // Range used for the alert 3D sou
 constexpr f32 HURT_SOUND_INTERVAL_SECONDS = 0.8f; // Minimal interval between two instances of hurt sound being played by a specific enemy
 
 // MR says: Its better to keep these universal for all enemies in the demo.
-constexpr f32 ENEMY_STEP_HEIGHT = 1.30f;  // Step height, 130cm
 constexpr f32 ENEMY_DROP_HEIGHT = 1.0f;   // How much we are able to drop
 
 // Global only temporaly, this will be set per enemy type.
@@ -257,7 +256,7 @@ void Enemy::handle_movement(f32 delta)
   world.move_character
   (
     position, this->velocity, portal_transform, delta, this->get_radius(),
-    this->get_height(), ENEMY_STEP_HEIGHT, collide_with, 0
+    this->get_height(), get_stats().step_height, collide_with, 0
   );
 
   this->facing = (portal_transform * vec4{this->facing, 0.0f}).xyz();
@@ -553,7 +552,7 @@ void Enemy::handle_ai_alert(f32 delta)
         this->follow_target_pos,
         this->get_radius(),
         this->get_height(),
-        ENEMY_STEP_HEIGHT,
+        get_stats().step_height,
         ENEMY_DROP_HEIGHT,
         true,
         &ext_transform,
@@ -584,7 +583,7 @@ void Enemy::handle_ai_alert(f32 delta)
             this->follow_target_pos,
             this->get_radius(),
             this->get_height(),
-          ENEMY_STEP_HEIGHT,
+            get_stats().step_height,
             ENEMY_DROP_HEIGHT,
             true,
             &nc_transform,
@@ -624,7 +623,7 @@ void Enemy::handle_ai_alert(f32 delta)
             15.0f,
             this->get_radius(),
             this->get_height(),
-            ENEMY_STEP_HEIGHT,
+            get_stats().step_height,
             ENEMY_DROP_HEIGHT,
             this->rng,
             true,

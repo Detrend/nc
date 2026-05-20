@@ -1,4 +1,3 @@
-constexpr const char* FRAGMENT_SOURCE = R"(
 
 #version 430 core
 
@@ -227,7 +226,8 @@ void main()
   vec4 g_normal_sample = texture(g_normal, uv);
   vec3 normal = g_normal_sample.xyz;
   // 4-th component of normal is used to determine if pixel should is a billboard
-  bool billboard = g_normal_sample.w == 0.0f;
+  bool  billboard   = g_normal_sample.w == 0.0f;
+  float billboard_f = float(billboard);
 
   vec4 g_stitched_normal_sample = texture(g_stitched_normal, uv);
   // zero for billboards
@@ -238,18 +238,14 @@ void main()
   vec3 albedo = texture(g_albedo, uv).rgb;
   uint sector_id = texture(g_sector, uv).x;
 
-#define VOX_CNT 16
-#ifdef DO_LIGHT_VOXELS
-  position = round(position * VOX_CNT) / VOX_CNT;
-  stitched_position = round(stitched_position * VOX_CNT) / VOX_CNT;
-#endif
-
   const int shininess = 128;
 
   vec3 view_direction = normalize(view_position - stitched_position);
   vec3 final_color = ambient_strength * albedo;
 
   // directional lights
+  // Disabled for GA
+  /*
   for (int i = 0; i < num_dir_lights; i++)
   {
     vec3 reflect_direction = reflect(-dir_lights[i].direction, normal);
@@ -261,6 +257,7 @@ void main()
 
     final_color += (diffuse + specular) * dir_lights[i].color * dir_lights[i].intensity;
   }
+  */
 
   // point lights
   uvec2 tile_coords = uvec2(gl_FragCoord.xy) / uvec2(TILE_SIZE_X, TILE_SIZE_Y);
@@ -282,22 +279,27 @@ void main()
 
     float distance = sqrt(distance_squared);
     light_direction /= distance;
-    float angle = dot(stitched_normal, light_direction) + float(billboard);
+    float angle = min(max(dot(stitched_normal, light_direction), 0.0f) + billboard_f, 1.0f); // For billboards this is 1
     if (angle <= 0.0f)
       continue;
 
-    if (do_shadows && enable_shadows && is_in_shadow(position, stitched_position, sector_id, matrix_id, light)) 
+    // For billboards we store shading position in "normal" and shading stitched position in "stitched normal"
+    vec3 shading_position          = mix(position,          normal,          billboard_f); // Storing shading position here for billboards
+    vec3 shading_stitched_position = mix(stitched_position, stitched_normal, billboard_f); // Storing stitched shading position here for billboards
+
+    if (do_shadows && is_in_shadow(shading_position, shading_stitched_position, sector_id, matrix_id, light)) 
     continue;
 
     vec3 diffuse = max(angle, 0.0f) * albedo;
 
     vec3 half_direction = normalize(light_direction + view_direction);
     vec3 specular = specular_strength * pow(max(dot(stitched_normal, half_direction), 0.0f), shininess) * vec3(1.0f);
+    specular = vec3(0.0f);
 
     float attenuation = pow(max(light.radius - distance, 0.0f) / light.radius, light.falloff);
     final_color += (diffuse + specular) * light.color * light.intensity * attenuation;
   }
-  
+
 #ifdef PIXEL_DEBUG
   if (debug_pixel)
     out_color = vec4(1.0, 1.0, 0.0, 1.0);
@@ -315,5 +317,3 @@ void main()
   out_color = vec4(final_color, 1.0f);
 #endif
 }
-
-)";

@@ -1,5 +1,3 @@
-constexpr const char* VERTEX_SOURCE = R"(
-
 #version 430 core
 
 layout(location = 0) in vec2 position;
@@ -17,6 +15,3 @@ void main(void) {
 	gl_Position = transformationMatrix * vec4(position, 0.0, 1.0);
 	uv = (a_uv * texture_size + texture_pos) / atlas_size;
 }
-
-
-)";

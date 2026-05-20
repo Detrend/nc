@@ -1,13 +1,14 @@
-constexpr const char* VERTEX_SOURCE = R"(
 
 #version 430 core
 layout(location = 0) in vec3 a_position;
 layout(location = 1) in vec2 a_uv;
 
-out vec3 position;
-out vec3 stitched_position;
-out vec3 normal;
-out vec2 uv;
+out      vec3 position;
+out      vec3 stitched_position;
+out      vec3 normal;
+out      vec2 uv;
+out flat vec3 stitched_shading_position;
+out flat vec3 shading_position;
 
 layout(location = 0) uniform mat4 transform;
 layout(location = 1) uniform mat4 view;
@@ -23,6 +24,7 @@ void main()
   stitched_position = (transform * vec4(vec3(0.0f), 1.0f)).xyz;
   normal = (transform * vec4(0.0f, 0.0f, 1.0f, 0.0f)).xyz;
   uv = (a_uv * texture_size + texture_pos) / atlas_size;
-}
 
-)";
+  stitched_shading_position = (transform * vec4(vec3(0.0f), 1.0f)).xyz;
+  shading_position          = (transform * vec4(vec3(0.0f), 1.0f)).xyz;
+}

@@ -36,7 +36,8 @@ EnemyStats ENEMY_STATS[] =
       1.6f,
     },
     .attack_frame = 26,
-    .infight_chance = 0.05f // 5%
+    .infight_chance = 0.05f, // 5%
+    .step_height = 0.9f,
   },
 
   // Possessed
@@ -67,9 +68,10 @@ EnemyStats ENEMY_STATS[] =
       2.0f,
       1.6f,
     },
-    .attack_frame = 7,
-    .is_melee = true,
+    .attack_frame   = 7,
+    .is_melee       = true,
     .infight_chance = 0.0f,
+    .step_height    = 1.3f,
   },
 
   // Grunt
@@ -103,6 +105,7 @@ EnemyStats ENEMY_STATS[] =
     .attack_frame = 17,
     .is_melee = false,
     .infight_chance = 0.2f, //20%
+    .step_height    = 0.9f,
   },
 };
 static_assert(ARRAY_LENGTH(ENEMY_STATS) == EnemyTypes::count);
