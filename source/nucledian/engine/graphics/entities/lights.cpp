@@ -65,7 +65,7 @@ PointLight::PointLight
   const color3& color
 )
 :
-  Entity(position, radius),
+  Entity(position, radius * 4.0f),
   color(color),
   radius(radius),
   intensity(intensity),
@@ -95,7 +95,7 @@ PointLightGPU PointLight::get_gpu_data(const vec3& position, const vec3& stitche
 //==============================================================================
 void PointLight::refresh_entity_radius()
 {
-  this->set_radius(radius);
+  this->set_radius(radius * 4.0f);
 }
 
 }

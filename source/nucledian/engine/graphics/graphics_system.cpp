@@ -1475,6 +1475,8 @@ void GraphicsSystem::create_sector_meshes()
     m_sector_meshes.push_back(mesh);
   }
 
+  megatex_parts_last_render_idx.assign(megatex_parts.size(), 0);
+
   m_renderer->update_sector_ssbos();
 
   auto gen_megatex = [&](GLuint& handle, GLenum format)

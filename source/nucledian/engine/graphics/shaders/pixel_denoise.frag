@@ -41,7 +41,7 @@ in flat vec2 good_offsets[6];
 in flat vec2 good_scales [6];
 
 #define GRID_N            10
-#define DO_DENOISE        1
+#define DO_DENOISE        0
 #define DO_PART_DEBUG     0
 #define DO_DRAW_DEBUG     0
 #define BLUR_ACROSS_EDGES 1

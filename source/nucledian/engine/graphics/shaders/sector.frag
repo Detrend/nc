@@ -199,7 +199,7 @@ void main()
   vec4 megatex_value  = texelFetch(megatex_input,   ivec2(megatex_uv), 0);
   vec4 megatex_shadow = texelFetch(megatex_shadows, ivec2(megatex_uv), 0);
   vec4 debug_value    = texelFetch(megatex_debug,   ivec2(megatex_uv), 0);
-  vec3 light = megatex_value.xyz + megatex_shadow.xyz;
+  vec3 light = megatex_value.xyz + megatex_shadow.xyz * 0.0f;
 
   // Do the tonemapping here
   vec3 color_with_light = color.xyz * light;

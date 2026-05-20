@@ -82,6 +82,7 @@ public:
   u32    megatex_height   = 0;
 
   std::vector<MegatexPart> megatex_parts;
+  std::vector<u64>         megatex_parts_last_render_idx;
 
   struct DebugInfo
   {

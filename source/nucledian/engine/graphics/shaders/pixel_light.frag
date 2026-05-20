@@ -245,8 +245,8 @@ void main()
 
 
 #if DO_SHADOWS
-    const int   num_samples = 4;
-    const float shadow_d    = 0.2f;
+    const int   num_samples = 1;
+    const float shadow_d    = 0.0f;
 
     // soft shadows
     float accum = 0.0f;

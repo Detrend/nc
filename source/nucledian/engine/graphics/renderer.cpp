@@ -828,10 +828,12 @@ const
   // Now keep only the best N
   if (scheduling_method == SchedulingMethod::first_n && temp_list == nullptr)
   {
-    auto& parts = GraphicsSystem::get().megatex_parts;
+    //auto& parts     = GraphicsSystem::get().megatex_parts;
+    auto& parts_idx = GraphicsSystem::get().megatex_parts_last_render_idx;
+
     std::sort(list->begin(), list->end(), [&](const SectorAndPart& a, const SectorAndPart& b)
     {
-      return parts[a.part].last_frame_rendered < parts[b.part].last_frame_rendered;
+      return parts_idx[a.part] < parts_idx[b.part];
     });
 
     out.clear();
@@ -840,7 +842,13 @@ const
     for (u64 i = 0; i < min(list->size(), cast<u64>(schedule_best_n)); ++i)
     {
       out[arr[i].sector].push_back(arr[i].part);
-      parts[arr[i].part].last_frame_rendered = cast<u32>(GameHelpers::get().get_frame_idx());
+      parts_idx[arr[i].part] = cast<u32>(GameHelpers::get().get_frame_idx());
+    }
+
+    // And also add all the sectors as well
+    for (const auto&[sector_id, part_id] : *list)
+    {
+      [[maybe_unused]]auto& temp_do_nothing = out[sector_id];
     }
   }
 }
@@ -1461,7 +1469,13 @@ void Renderer::render_sectors(const CameraData& camera) const
     GL_R8           // format
   );
 
+  const vec2 game_atlas_size = TextureManager::get().get_atlas(ResLifetime::Game).get_size();
+  const vec2 level_atlas_size = TextureManager::get().get_atlas(ResLifetime::Level).get_size();
+
   m_sector_material.use();
+  m_sector_material.set_uniform(shaders::sector::PROJECTION, m_default_projection);
+  m_sector_material.set_uniform(shaders::sector::GAME_ATLAS_SIZE, game_atlas_size);
+  m_sector_material.set_uniform(shaders::sector::LEVEL_ATLAS_SIZE, level_atlas_size);
   m_sector_material.set_uniform(shaders::sector::VIEW, camera.view);
   m_sector_material.set_uniform(shaders::sector::TONEMAP, ivec4{tonemapper});
   m_sector_material.set_uniform(shaders::sector::PORTAL_DEST_TO_SRC, camera.portal_dest_to_src);
