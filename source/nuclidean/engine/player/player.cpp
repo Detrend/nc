@@ -203,7 +203,7 @@ void Player::calculate_wish_velocity(PlayerSpecificInputs input, f32 delta_secon
 
   // JUMPING
   bool wants_jump = input.keys & (1 << PlayerKeyInputs::jump);
-  bool can_jump   = this->on_ground;
+  bool can_jump   = this->on_ground && this->velocity.y <= 0.0f;
 
   if (wants_jump && can_jump)
   {
