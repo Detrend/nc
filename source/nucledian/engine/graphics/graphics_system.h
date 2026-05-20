@@ -87,12 +87,33 @@ public:
   std::vector<MegatexPart> megatex_parts;
   std::vector<u64>         megatex_parts_last_render_idx;
 
+  enum DebugIdx : u32
+  {
+    none = 0,
+    visualize_parts_cpu,     // visualize what gets submitted to GPU
+    visualize_parts,         // show parts with checkboard
+    visualize_sampling_px,   // only one pixel
+    visualize_sampling_wall, // whole wall
+    visualize_denoise,       // show denoise
+    count
+  };
+
+  static constexpr cstr DEBUG_NAMES[]
+  {
+    "none",
+    "parts cpu",
+    "parts gpu",
+    "sampling px",
+    "sampling wall",
+    "denoise",
+  };
+
   struct DebugInfo
   {
     u32 debug_megatex_part_id = 0;
     u32 debug_px_x            = 0;
     u32 debug_px_y            = 0;
-    u32 unused                = 0;
+    int debug_idx             = 0;
   } debug_info;
 
 private:

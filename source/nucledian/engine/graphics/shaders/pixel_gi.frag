@@ -9,6 +9,10 @@
 #define HIGHLIGHT_THOSE_SAMPLED_FROM_THIS_PART 0
 #define DO_VISIBLITY_CHECK 1
 
+#define HIGHLIGHT_SAMPLING_PX_MODE   1
+#define HIGHLIGHT_SAMPLING_WALL_MODE 2
+#define VISUALIZE_PARTS_MODE         3
+
 // Possible improvements:
 // [x] Debug that shows from where we sample.. Effectively another megatex.
 // [x] Fix the number of samples we give to the parts.. Some parts receive 0
@@ -77,12 +81,13 @@ in smooth vec3 normal;
 in flat uint num_good_indices;
 in flat uint good_indices[26];
 
-layout(location = 7)  uniform vec2 u_megatex_size;
-layout(location = 8)  uniform uint num_indices;
-layout(location = 9)  uniform uint my_part_id;
-layout(location = 10) uniform vec2 game_atlas_size;
-layout(location = 11) uniform uint num_sectors;
-layout(location = 12) uniform uint num_walls;
+layout(location = 7)  uniform vec2  u_megatex_size;
+layout(location = 8)  uniform uint  num_indices;
+layout(location = 9)  uniform uint  my_part_id;
+layout(location = 10) uniform vec2  game_atlas_size;
+layout(location = 11) uniform uint  num_sectors;
+layout(location = 12) uniform uint  num_walls;
+layout(location = 13) uniform ivec4 dbg_part_pxx_pxy_mode;
 
 layout(std430, binding = 0) readonly buffer parts_buffer       { MegatexPart megatex_parts[];   };
 layout(std430, binding = 1) readonly buffer indices_buffer     { uint        megatex_indices[]; };
@@ -455,12 +460,17 @@ void sample_from_part(int sample_idx, uint part_id, out vec3 wp_of_sample, out v
 
   smple = texelFetch(megatex_input, true_coords, 0).xyz;
 
-#if INSPECTED_PART
-  if (my_part_id == INSPECTED_PART)
+  if (dbg_part_pxx_pxy_mode.w == HIGHLIGHT_SAMPLING_PX_MODE)
   {
-    imageStore(megatex_debug, ivec2(true_coords), vec4(0.0, 0.0, 1.0, 1.0));
+    ivec2 coord = ivec2(gl_FragCoord.xy);
+    int p    = dbg_part_pxx_pxy_mode.x;
+    int px_x = dbg_part_pxx_pxy_mode.y;
+    int px_y = dbg_part_pxx_pxy_mode.z;
+    if (my_part_id == p && coord.x == px_x && coord.y == px_y)
+    {
+      imageStore(megatex_debug, ivec2(true_coords), vec4(0.0, 0.0, 1.0, 1.0));
+    }
   }
-#endif
 
   vec3 wp_bottom = mix(part.wpos_00, part.wpos_10, uv_coords.x);
   vec3 wp_top    = mix(part.wpos_01, part.wpos_11, uv_coords.x);
@@ -477,55 +487,48 @@ void sample_from_part(int sample_idx, uint part_id, out vec3 wp_of_sample, out v
   albedo = fetch_part_surface_texture(part, uv_coords) * occluded;
 }
 
-#define DISCARD_EVERY_SECOND 0
-
 void main()
 {
   const float one_over_pi = 1.0 / 3.141692;
+  ivec2 coords = ivec2(gl_FragCoord.xy);
 
-  float color_multiplier = 1.0f;
+  int dbg_mode = dbg_part_pxx_pxy_mode.w;
+  if (dbg_mode == HIGHLIGHT_SAMPLING_WALL_MODE || dbg_mode == HIGHLIGHT_SAMPLING_PX_MODE)
+  {
+    int part_selected = dbg_part_pxx_pxy_mode.x;
+    if (my_part_id == part_selected)
+    {
+      if ((coords.x & 1) == (coords.y & 1))
+        imageStore(megatex_debug, ivec2(gl_FragCoord.xy), vec4(1.0, 0.0, 0.0, 1.0));
+    }
+  }
+  else if (dbg_mode == VISUALIZE_PARTS_MODE)
+  {
+    // Visualize parts
+    vec3 part_color = uint_to_color(my_part_id);
+    if ((coords.x & 1) == (coords.y & 1))
+    {
+      part_color = vec3(0.0f);
+    }
 
-#if DISCARD_EVERY_SECOND
-  ivec2 px_coord = ivec2(gl_FragCoord.xy);
-  if ((px_coord.x & 1) == (px_coord.y & 1))
-  {
-    // Every second one
-    discard;
-  }
-  else
-  {
-    color_multiplier = 2.0f;
-  }
-#endif
-
-  float importance_per_part[MAX_PARTS] = float[MAX_PARTS](0.0f);
-
-#if HIGHLIGHT_THOSE_SAMPLED_FROM_THIS_PART
-  if (my_part_id == HIGHLIGHT_THOSE_SAMPLED_FROM_THIS_PART)
-  {
-    imageStore(megatex_debug, ivec2(gl_FragCoord.xy), vec4(1.0, 0.0, 0.0, 1.0));
-  }
-#endif
-#if INSPECTED_PART
-  if (my_part_id == INSPECTED_PART)
-  {
-    imageStore(megatex_debug, ivec2(gl_FragCoord.xy), vec4(1.0, 0.0, 0.0, 1.0));
-  }
-#endif
-#if HIGHLIGHT_THOSE_WHO_SAMPLE_FROM_THIS_PART
-  if (my_part_id == HIGHLIGHT_THOSE_WHO_SAMPLE_FROM_THIS_PART)
-  {
-    imageStore(megatex_debug, ivec2(gl_FragCoord.xy), vec4(1.0, 0.0, 0.0, 1.0));
-  }
-#endif
-#if CULL_INVISIBLE_PIXELS
-  vec3 mask_value = texture(megatex_mask, gl_FragCoord.xy / u_megatex_size).xyz;
-  if (mask_value.r <= 0.0f)
-  {
-    out_color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+    imageStore(megatex_debug, coords, vec4(part_color, 1.0));
+    out_color = vec4(1.0f);
     return;
   }
-#endif
+
+  if (dbg_part_pxx_pxy_mode.w == HIGHLIGHT_SAMPLING_PX_MODE)
+  {
+    ivec2 coord = ivec2(gl_FragCoord.xy);
+    int p    = dbg_part_pxx_pxy_mode.x;
+    int px_x = dbg_part_pxx_pxy_mode.y;
+    int px_y = dbg_part_pxx_pxy_mode.z;
+    if (my_part_id == p && coord.x == px_x && coord.y == px_y)
+    {
+      imageStore(megatex_debug, coord, vec4(1.0, 1.0, 0.0, 1.0));
+    }
+  }
+
+  float importance_per_part[MAX_PARTS] = float[MAX_PARTS](0.0f);
 
 #if DEBUG_DRAW
   if (num_indices > MAX_PARTS)
@@ -539,24 +542,19 @@ void main()
   for (int i = 0; i < num_good_indices; ++i)
   {
     float importance = calc_part_importance(good_indices[i]);
-#if HIGHLIGHT_THOSE_WHO_SAMPLE_FROM_THIS_PART
-    if (good_indices[i] == HIGHLIGHT_THOSE_WHO_SAMPLE_FROM_THIS_PART)
-    {
-      imageStore(megatex_debug, ivec2(gl_FragCoord.xy), vec4(1.0, 0.0, 1.0, 0.5));
-    }
-#endif
     importance_per_part[i] = importance;
     importance_sum += importance;
-#if HIGHLIGHT_THOSE_SAMPLED_FROM_THIS_PART
-    if (my_part_id == HIGHLIGHT_THOSE_SAMPLED_FROM_THIS_PART)
+    if (dbg_mode == HIGHLIGHT_SAMPLING_WALL_MODE)
     {
-      MegatexPart part = megatex_parts[good_indices[i]];
-      for (int x = part.megatex_coord_1.x; x < part.megatex_coord_2.x; ++x)
-        for (int y = part.megatex_coord_1.y; y < part.megatex_coord_2.y; ++y)
-          if (mod(x + y, 7) == 0)
-            imageStore(megatex_debug, ivec2(x, y), vec4(0.0, 0.0, 1.0, 0.5));
+      if (my_part_id == dbg_part_pxx_pxy_mode.x)
+      {
+        MegatexPart part = megatex_parts[good_indices[i]];
+        for (int x = part.megatex_coord_1.x; x < part.megatex_coord_2.x; ++x)
+          for (int y = part.megatex_coord_1.y; y < part.megatex_coord_2.y; ++y)
+            if (mod(x + y, 7) == 0)
+              imageStore(megatex_debug, ivec2(x, y), vec4(0.0, 0.0, 1.0, 0.5));
+      }
     }
-#endif
   }
 
   vec3 sum = vec3(0.0);
@@ -647,5 +645,5 @@ void main()
     final_color = (og_color * 0.0f + sum * 1.0) * 1.0f;
   }
 
-  out_color = vec4(final_color * color_multiplier, 1.0f);
+  out_color = vec4(final_color, 1.0f);
 }

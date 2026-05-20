@@ -43,7 +43,7 @@ in flat vec2 good_scales [6];
 #define GRID_N            12
 #define DO_DENOISE        1
 #define DO_PART_DEBUG     0
-#define DO_DRAW_DEBUG     0
+#define DO_DRAW_DEBUG     1
 #define BLUR_ACROSS_EDGES 1
 
 #if DO_DRAW_DEBUG
@@ -58,8 +58,8 @@ void sample_nothing(ivec2 pos, vec4 col) {}
 #endif
 
 #define PX_COL           vec4(1.0f, 1.0f, 0.0f, 1.0f)
-#define MY_COL           vec4(1.0f, 0.0f, 0.0f, 1.0f)
-#define SAMPLED_FROM_COL vec4(0.0f, 0.0f, 1.0f, 1.0f)
+#define MY_COL           vec4(1.0f, 0.0f, 0.0f, 0.25f)
+#define SAMPLED_FROM_COL vec4(0.0f, 0.0f, 1.0f, 0.25f)
 
 bool is_in_interval(ivec2 val, ivec2 from, ivec2 to)
 {
@@ -76,8 +76,7 @@ void main()
   vec3  sum         = vec3(0.0f);
   float num_samples = 0.0f;
 
-#if DO_PART_DEBUG
-  if (my_part_id == u_debug_part_pxx_pxy.x)
+  if (u_debug_part_pxx_pxy.w != 0 && my_part_id == u_debug_part_pxx_pxy.x)
   {
     ivec2 dbg_px = u_debug_part_pxx_pxy.yz;
 
@@ -101,7 +100,6 @@ void main()
     // Aimed at pixel
     debug_store(dbg_px, PX_COL);
   }
-#endif
 
 #if DO_DENOISE
   float sigma_s = float(GRID_N) / 3.0;
@@ -129,7 +127,7 @@ void main()
         sum         += neighbor_color * w;
         num_samples += w;
 
-        if (my_part_id == u_debug_part_pxx_pxy.x)
+        if (u_debug_part_pxx_pxy.w != 0 && my_part_id == u_debug_part_pxx_pxy.x)
         {
           ivec2 dbg_px = u_debug_part_pxx_pxy.yz;
           if (dbg_px == my_coord)
@@ -165,7 +163,7 @@ void main()
           sum         += neighbor_color * w;
           num_samples += w;
 
-          if (my_part_id == u_debug_part_pxx_pxy.x)
+          if (u_debug_part_pxx_pxy.w != 0 && my_part_id == u_debug_part_pxx_pxy.x)
           {
             ivec2 dbg_px = u_debug_part_pxx_pxy.yz;
             if (dbg_px == my_coord)

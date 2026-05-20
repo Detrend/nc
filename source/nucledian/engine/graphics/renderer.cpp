@@ -875,7 +875,9 @@ enum Tonemappers
   reinhard,
   agx,
 };
-static int tonemapper = Tonemappers::aces;
+static int  tonemapper = Tonemappers::aces;
+static bool show_direct   = true;
+static bool show_indirect = true;
 
 //==============================================================================
 void Renderer::do_pixel_lighting_pass
@@ -889,7 +891,6 @@ void Renderer::do_pixel_lighting_pass
 
   static float query_dist                     = 15.0f;
   static bool  refresh_gi_sectors_every_frame = true;
-  static bool  show_debug_for_gi_sectors      = false;
   static SectorsAndParts gi_visualize_parts;
 
   constexpr cstr TONEMAPPER_NAMES[4] = {"none", "aces", "reinhard", "agx"};
@@ -897,15 +898,51 @@ void Renderer::do_pixel_lighting_pass
 
   if (ImGui::Begin("Dbg"))
   {
-    ImGui::SliderFloat("query distance",            &query_dist, 1.0f, 20.0f);
-    ImGui::Checkbox("Visualize gi parts",           &show_debug_for_gi_sectors);
     ImGui::Checkbox("Refresh gi parts every frame", &refresh_gi_sectors_every_frame);
+
+    ImGui::Separator();
+
     ImGui::Combo("Tonemapper",                      &tonemapper, TONEMAPPER_NAMES, 4);
     ImGui::Combo("Culling Method",                  &scheduling_method, CULLING_NAMES, 2);
     ImGui::SliderInt("Schedule each N frames",      &schedule_each_n_frames, 1, 50);
     ImGui::SliderInt("Schedule best N",             &schedule_best_n,        1, 1024);
+
+    ImGui::Separator();
+
+    ImGui::Combo("Debug", &gfx.debug_info.debug_idx, GraphicsSystem::DEBUG_NAMES, GraphicsSystem::count);
+
+    ImGui::Separator();
+
+    ImGui::Checkbox("Show direct",   &show_direct);
+    ImGui::Checkbox("Show indirect", &show_indirect);
   }
   ImGui::End();
+
+  // Use the GI shader
+  ivec4 dbg_info = ivec4
+  {
+    gfx.debug_info.debug_megatex_part_id,
+    gfx.debug_info.debug_px_x,
+    gfx.debug_info.debug_px_y,
+    gfx.debug_info.debug_idx
+  };
+
+  int sampling = 0;
+  if (dbg_info.w == GraphicsSystem::visualize_sampling_px)
+  {
+    sampling = 1;
+  }
+  else if (dbg_info.w == GraphicsSystem::visualize_sampling_wall)
+  {
+    sampling = 2;
+  }
+  else if (dbg_info.w == GraphicsSystem::visualize_parts)
+  {
+    sampling = 3;
+  }
+
+  ivec4 denoise_dbg  = ivec4{dbg_info.xyz, cast<int>(dbg_info.w == GraphicsSystem::visualize_denoise)};
+  ivec4 sampling_dbg = ivec4{dbg_info.xyz, sampling};
 
   auto clear_megatex = [&](GLuint handle)
   {
@@ -945,7 +982,7 @@ void Renderer::do_pixel_lighting_pass
     gi_visualize_parts = sectors_to_render;
   }
 
-  if (show_debug_for_gi_sectors)
+  if (gfx.debug_info.debug_idx == GraphicsSystem::visualize_parts_cpu)
   {
     for (const auto&[_, parts] : gi_visualize_parts)
     {
@@ -1109,6 +1146,7 @@ void Renderer::do_pixel_lighting_pass
   m_pixel_gi_shader.set_uniform(shaders::pixel_gi::GAME_ATLAS_SIZE, game_atlas_size);
   m_pixel_gi_shader.set_uniform(shaders::pixel_gi::NUM_SECTORS,     m_sectors_ssbo.size_u32());
   m_pixel_gi_shader.set_uniform(shaders::pixel_gi::NUM_WALLS,       m_walls_ssbo.size_u32());
+  m_pixel_gi_shader.set_uniform(shaders::pixel_gi::DEBUG,           sampling_dbg);
 
   // Bind dummy VAO
   glBindVertexArray(screen_quad.get_vao());
@@ -1249,19 +1287,10 @@ void Renderer::do_pixel_lighting_pass
     1
   );
 
-  // Use the GI shader
-  ivec4 dbg_info = ivec4
-  {
-    gfx.debug_info.debug_megatex_part_id,
-    gfx.debug_info.debug_px_x,
-    gfx.debug_info.debug_px_y,
-    gfx.debug_info.unused
-  };
-
   m_pixel_denoise_shader.use();
   m_megatex_ssbo.bind(0);
   m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::MEGATEX_SIZE, megatex_size);
-  m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::DEBUG,        dbg_info);
+  m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::DEBUG,        denoise_dbg);
 
   glBindImageTexture(
     2,              // binding unit
@@ -1473,7 +1502,7 @@ void Renderer::render_sectors(const CameraData& camera) const
   m_sector_material.set_uniform(shaders::sector::GAME_ATLAS_SIZE, game_atlas_size);
   m_sector_material.set_uniform(shaders::sector::LEVEL_ATLAS_SIZE, level_atlas_size);
   m_sector_material.set_uniform(shaders::sector::VIEW, camera.view);
-  m_sector_material.set_uniform(shaders::sector::TONEMAP, ivec4{tonemapper});
+  m_sector_material.set_uniform(shaders::sector::TONEMAP, ivec4{tonemapper, show_direct, show_indirect, 0});
   m_sector_material.set_uniform(shaders::sector::PORTAL_DEST_TO_SRC, camera.portal_dest_to_src);
 
   for (const auto& [sector_id, _] : sectors_to_render)

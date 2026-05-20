@@ -40,7 +40,7 @@ layout(location = 2) uniform vec2  game_atlas_size;
 layout(location = 3) uniform vec2  level_atlas_size;
 layout(location = 5) uniform uint  sector_id;
 layout(location = 6) uniform uint  matrix_id;
-layout(location = 7) uniform ivec4 u_tonemap;
+layout(location = 7) uniform ivec4 u_tonemap_direct_indirect;
 
 layout(std430, binding = 0) buffer texture_buffer {
     TextureData textures[];
@@ -98,7 +98,7 @@ vec3 agx(vec3 x)
 
 vec3 tonemap(vec3 x)
 {
-  switch (u_tonemap.x)
+  switch (u_tonemap_direct_indirect.x)
   {
     case 1: return reinhard(x);
     case 2: return aces(x);
@@ -199,12 +199,16 @@ void main()
   vec4 megatex_value  = texelFetch(megatex_input,   ivec2(megatex_uv), 0);
   vec4 megatex_shadow = texelFetch(megatex_shadows, ivec2(megatex_uv), 0);
   vec4 debug_value    = texelFetch(megatex_debug,   ivec2(megatex_uv), 0);
-  vec3 light = megatex_value.xyz * 1.0f + megatex_shadow.xyz * 1.0f;
+
+  float direct_coeff   = u_tonemap_direct_indirect.y == 1 ? 1.0f : 0.0f;
+  float indirect_coeff = u_tonemap_direct_indirect.z == 1 ? 1.0f : 0.0f;
+
+  vec3 light = megatex_value.xyz * indirect_coeff + megatex_shadow.xyz * direct_coeff;
 
   // Do the tonemapping here
   vec3 color_with_light = color.xyz * light;
   vec3 tonemapped = tonemap(color_with_light);
 
-  g_albedo = vec4(tonemapped, 1.0f) + debug_value;
+  g_albedo = vec4(mix(tonemapped, debug_value.xyz, debug_value.w), 1.0f);
   g_sector = sector_id;
 }

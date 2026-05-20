@@ -196,9 +196,9 @@ private:
     each_nth = 0,
     first_n,
   };
-  int scheduling_method = SchedulingMethod::each_nth;
+  int scheduling_method = SchedulingMethod::first_n;
   s32 schedule_each_n_frames = 2;
-  s32 schedule_best_n        = 32;
+  s32 schedule_best_n        = 6;
 
   void destroy_g_buffers();
   void create_g_buffers(u32 w, u32 h);
