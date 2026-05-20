@@ -2,6 +2,8 @@
 extends IActivatorHook
 class_name TeleportHook
 
+@export var is_single_use : bool = true
+
 @warning_ignore("unused_private_class_variable")
 @export_tool_button("Add Destination") var _add_destination_btn = func()->void:
 	NodeUtils.instantiate_child(self, load("res://prefabs/Entities/TeleportDestination.tscn") as PackedScene).name = "Destination"
@@ -16,3 +18,4 @@ func do_export(out: Dictionary)->void:
 	for destination : TeleportDestination in Thing.get_all_things(self, TeleportDestination):
 		destinations.append(destination._export_tag)
 	out['destinations'] = destinations
+	out['is_single_use'] = is_single_use
