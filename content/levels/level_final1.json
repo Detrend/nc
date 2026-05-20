@@ -1578,7 +1578,7 @@
 				43.0,
 				0.1
 			],
-			"radius": 10.0,
+			"radius": 5.0,
 			"tag": 144
 		},
 		{
@@ -1615,7 +1615,7 @@
 				36.7999992370605,
 				0.1
 			],
-			"radius": 10.0,
+			"radius": 5.0,
 			"tag": 149
 		},
 		{
@@ -1635,7 +1635,7 @@
 				36.9000015258789,
 				0.1
 			],
-			"radius": 10.0,
+			"radius": 5.0,
 			"tag": 150
 		},
 		{
@@ -1655,7 +1655,7 @@
 				33.2999992370605,
 				0.1
 			],
-			"radius": 10.0,
+			"radius": 5.0,
 			"tag": 147
 		},
 		{
@@ -1675,7 +1675,7 @@
 				33.2000007629395,
 				0.1
 			],
-			"radius": 10.0,
+			"radius": 5.0,
 			"tag": 148
 		},
 		{
@@ -1914,7 +1914,7 @@
 				28.0,
 				0.1
 			],
-			"radius": 10.0,
+			"radius": 5.0,
 			"tag": 145
 		},
 		{
@@ -2345,7 +2345,7 @@
 				28.0,
 				0.1
 			],
-			"radius": 10.0,
+			"radius": 5.0,
 			"tag": 146
 		},
 		{
@@ -2439,7 +2439,7 @@
 				43.0,
 				0.1
 			],
-			"radius": 10.0,
+			"radius": 5.0,
 			"tag": 143
 		},
 		{
@@ -4875,15 +4875,11 @@
 		],
 		[
 			-59.6000022888184,
-			46.7999992370605
+			46.6000022888184
 		],
 		[
 			-57.4000015258789,
 			46.0
-		],
-		[
-			-57.4000015258789,
-			48.0
 		],
 		[
 			-57.2000007629395,
@@ -4891,7 +4887,7 @@
 		],
 		[
 			-57.2000007629395,
-			48.0
+			48.7999992370605
 		],
 		[
 			-57.0,
@@ -4899,7 +4895,7 @@
 		],
 		[
 			-57.0,
-			48.0
+			48.7999992370605
 		],
 		[
 			-59.7999992370605,
@@ -4907,7 +4903,7 @@
 		],
 		[
 			-59.7999992370605,
-			46.7999992370605
+			46.6000022888184
 		],
 		[
 			-60.0,
@@ -4915,7 +4911,7 @@
 		],
 		[
 			-60.0,
-			46.7999992370605
+			46.6000022888184
 		],
 		[
 			-58.0,
@@ -5066,7 +5062,7 @@
 			44.2000007629395
 		],
 		[
-			-60.0,
+			-60.4000015258789,
 			46.6000022888184
 		],
 		[
@@ -6335,7 +6331,7 @@
 		],
 		[
 			-83.5,
-			61.0
+			61.4000015258789
 		],
 		[
 			-80.3000030517578,
@@ -6399,7 +6395,7 @@
 		],
 		[
 			-83.5,
-			59.0
+			58.6000022888184
 		],
 		[
 			-73.7000045776367,
@@ -6487,11 +6483,11 @@
 		],
 		[
 			-70.4000015258789,
-			58.6000022888184
+			58.7000007629395
 		],
 		[
 			-70.4000015258789,
-			60.6000022888184
+			60.9000015258789
 		],
 		[
 			-73.4000015258789,
@@ -29637,8 +29633,7 @@
 				581,
 				576,
 				575,
-				582,
-				583
+				582
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -29785,22 +29780,6 @@
 						"tile_rotation_increment": 0.0,
 						"tile_rotations_count": 1
 					}
-				],
-				[
-					{
-						"begin_height": 9.5,
-						"end_height": 13.0,
-						"id": "smooth_concrete_dark",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 0.0,
-						"tile_rotations_count": 1
-					}
 				]
 			]
 		},
@@ -29843,9 +29822,9 @@
 			},
 			"id": 246,
 			"points": [
-				584,
-				585,
 				583,
+				584,
+				577,
 				582
 			],
 			"portal_destination_wall": 0,
@@ -29919,10 +29898,10 @@
 			},
 			"id": 247,
 			"points": [
-				586,
-				587,
 				585,
-				584
+				586,
+				584,
+				583
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 395,
@@ -30033,8 +30012,8 @@
 			},
 			"id": 248,
 			"points": [
+				587,
 				588,
-				589,
 				581,
 				580
 			],
@@ -30109,10 +30088,10 @@
 			},
 			"id": 249,
 			"points": [
-				590,
-				591,
 				589,
-				588
+				590,
+				588,
+				587
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 404,
@@ -30215,8 +30194,8 @@
 			},
 			"id": 250,
 			"points": [
+				591,
 				592,
-				593,
 				579,
 				578
 			],
@@ -30314,10 +30293,10 @@
 			},
 			"id": 251,
 			"points": [
-				594,
-				595,
 				593,
-				592
+				594,
+				592,
+				591
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -30390,10 +30369,10 @@
 			},
 			"id": 252,
 			"points": [
-				596,
-				597,
 				595,
-				594
+				596,
+				594,
+				593
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -30481,10 +30460,10 @@
 			},
 			"id": 253,
 			"points": [
-				598,
-				599,
 				597,
-				596
+				598,
+				596,
+				595
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -30494,7 +30473,7 @@
 					{
 						"begin_height": 10.0,
 						"end_height": 10.5,
-						"id": "alien_neco",
+						"id": "mossy_rocks_2",
 						"offset": [
 							0.0,
 							0.0
@@ -30574,7 +30553,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3c2d",
 			"floor": 10.5,
 			"floor_surface": {
-				"id": "mossy_rocks_2",
+				"id": "alien_neco",
 				"offset": [
 					0.0,
 					0.0
@@ -30587,12 +30566,12 @@
 			},
 			"id": 254,
 			"points": [
+				599,
 				600,
 				601,
 				602,
-				603,
-				599,
-				598
+				598,
+				597
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -30602,7 +30581,7 @@
 					{
 						"begin_height": 10.5,
 						"end_height": 12.0,
-						"id": "alien_neco",
+						"id": "mossy_rocks_2",
 						"offset": [
 							0.0,
 							0.0
@@ -30618,7 +30597,7 @@
 					{
 						"begin_height": 10.5,
 						"end_height": 11.0,
-						"id": "alien_neco",
+						"id": "mossy_rocks_2",
 						"offset": [
 							0.0,
 							0.0
@@ -30634,7 +30613,7 @@
 					{
 						"begin_height": 10.5,
 						"end_height": 12.0,
-						"id": "alien_neco",
+						"id": "mossy_rocks_2",
 						"offset": [
 							0.0,
 							0.0
@@ -30699,7 +30678,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3c2g",
 			"floor": 12.0,
 			"floor_surface": {
-				"id": "mossy_rocks_2",
+				"id": "alien_neco",
 				"offset": [
 					0.0,
 					0.0
@@ -30712,11 +30691,11 @@
 			},
 			"id": 255,
 			"points": [
+				603,
 				604,
 				605,
-				606,
-				601,
-				600
+				600,
+				599
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -30792,7 +30771,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3c2e",
 			"floor": 11.0,
 			"floor_surface": {
-				"id": "mossy_rocks_2",
+				"id": "alien_neco",
 				"offset": [
 					0.0,
 					0.0
@@ -30805,12 +30784,12 @@
 			},
 			"id": 256,
 			"points": [
+				605,
 				606,
 				607,
 				608,
-				609,
-				602,
-				601
+				601,
+				600
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -30868,7 +30847,7 @@
 					{
 						"begin_height": 11.0,
 						"end_height": 12.0,
-						"id": "alien_neco",
+						"id": "mossy_rocks_2",
 						"offset": [
 							0.0,
 							0.0
@@ -30885,7 +30864,7 @@
 					{
 						"begin_height": 11.0,
 						"end_height": 12.0,
-						"id": "alien_neco",
+						"id": "mossy_rocks_2",
 						"offset": [
 							0.0,
 							0.0
@@ -30930,10 +30909,10 @@
 			},
 			"id": 257,
 			"points": [
+				609,
 				610,
-				611,
-				608,
-				607
+				607,
+				606
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -31035,10 +31014,10 @@
 			},
 			"id": 258,
 			"points": [
-				612,
-				613,
 				611,
-				610
+				612,
+				610,
+				609
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -31125,7 +31104,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3c2f",
 			"floor": 12.0,
 			"floor_surface": {
-				"id": "mossy_rocks_2",
+				"id": "alien_neco",
 				"offset": [
 					0.0,
 					0.0
@@ -31138,11 +31117,11 @@
 			},
 			"id": 259,
 			"points": [
-				614,
-				603,
+				613,
 				602,
-				609,
-				615
+				601,
+				608,
+				614
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -31231,8 +31210,8 @@
 			},
 			"id": 260,
 			"points": [
+				615,
 				616,
-				617,
 				561,
 				560
 			],
@@ -31330,10 +31309,10 @@
 			},
 			"id": 261,
 			"points": [
-				618,
-				619,
 				617,
-				616
+				618,
+				616,
+				615
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -31406,10 +31385,10 @@
 			},
 			"id": 262,
 			"points": [
-				620,
-				621,
 				619,
-				618
+				620,
+				618,
+				617
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -31497,16 +31476,16 @@
 			},
 			"id": 263,
 			"points": [
+				621,
 				622,
 				623,
 				624,
 				625,
-				626,
-				621,
 				620,
+				619,
+				626,
 				627,
-				628,
-				629
+				628
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -31689,10 +31668,10 @@
 			},
 			"id": 264,
 			"points": [
+				629,
 				630,
-				631,
-				628,
-				627
+				627,
+				626
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -31792,12 +31771,12 @@
 			},
 			"id": 265,
 			"points": [
+				631,
 				632,
 				633,
-				634,
-				623,
 				622,
-				635
+				621,
+				634
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -31902,10 +31881,10 @@
 			},
 			"id": 266,
 			"points": [
+				635,
 				636,
-				637,
-				633,
-				632
+				632,
+				631
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -31978,12 +31957,12 @@
 			},
 			"id": 267,
 			"points": [
+				637,
 				638,
 				639,
 				640,
-				641,
-				637,
-				636
+				636,
+				635
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -32102,6 +32081,7 @@
 			},
 			"id": 268,
 			"points": [
+				641,
 				642,
 				643,
 				644,
@@ -32117,10 +32097,9 @@
 				654,
 				655,
 				656,
-				657,
-				639,
 				638,
-				658
+				637,
+				657
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -32472,10 +32451,10 @@
 			},
 			"id": 269,
 			"points": [
+				658,
 				659,
-				660,
-				643,
-				642
+				642,
+				641
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -32563,10 +32542,10 @@
 			},
 			"id": 270,
 			"points": [
+				660,
 				661,
-				662,
-				647,
-				646
+				646,
+				645
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -32654,10 +32633,10 @@
 			},
 			"id": 271,
 			"points": [
+				662,
 				663,
-				664,
-				645,
-				644
+				644,
+				643
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -32757,10 +32736,10 @@
 			},
 			"id": 272,
 			"points": [
+				664,
 				665,
-				666,
-				658,
-				638
+				657,
+				637
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -32868,10 +32847,10 @@
 			},
 			"id": 273,
 			"points": [
+				666,
 				667,
-				668,
-				662,
-				661
+				661,
+				660
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -32944,12 +32923,12 @@
 			},
 			"id": 274,
 			"points": [
+				668,
 				669,
 				670,
-				671,
-				668,
 				667,
-				672
+				666,
+				671
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -33092,10 +33071,10 @@
 			},
 			"id": 275,
 			"points": [
+				672,
 				673,
-				674,
-				660,
-				659
+				659,
+				658
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -33168,12 +33147,12 @@
 			},
 			"id": 276,
 			"points": [
+				674,
 				675,
 				676,
 				677,
-				678,
-				674,
-				673
+				673,
+				672
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -33308,10 +33287,10 @@
 			},
 			"id": 277,
 			"points": [
-				657,
-				679,
-				640,
-				639
+				656,
+				678,
+				639,
+				638
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -33369,10 +33348,10 @@
 			},
 			"id": 278,
 			"points": [
-				656,
-				680,
+				655,
 				679,
-				657
+				678,
+				656
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -33488,10 +33467,10 @@
 			},
 			"id": 279,
 			"points": [
-				655,
-				681,
+				654,
 				680,
-				656
+				679,
+				655
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -33549,10 +33528,10 @@
 			},
 			"id": 280,
 			"points": [
-				654,
-				682,
+				653,
 				681,
-				655
+				680,
+				654
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -33668,10 +33647,10 @@
 			},
 			"id": 281,
 			"points": [
-				653,
-				683,
+				652,
 				682,
-				654
+				681,
+				653
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -33729,10 +33708,10 @@
 			},
 			"id": 282,
 			"points": [
-				652,
-				684,
+				651,
 				683,
-				653
+				682,
+				652
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -33848,10 +33827,10 @@
 			},
 			"id": 283,
 			"points": [
-				651,
-				685,
+				650,
 				684,
-				652
+				683,
+				651
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -33909,10 +33888,10 @@
 			},
 			"id": 284,
 			"points": [
-				650,
-				686,
+				649,
 				685,
-				651
+				684,
+				650
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -34014,10 +33993,10 @@
 			},
 			"id": 285,
 			"points": [
+				686,
 				687,
-				688,
-				625,
-				624
+				624,
+				623
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -34090,12 +34069,12 @@
 			},
 			"id": 286,
 			"points": [
+				688,
 				689,
 				690,
 				691,
-				692,
-				688,
-				687
+				687,
+				686
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -34200,6 +34179,7 @@
 			},
 			"id": 287,
 			"points": [
+				692,
 				693,
 				694,
 				695,
@@ -34213,9 +34193,8 @@
 				703,
 				704,
 				705,
-				706,
-				691,
-				690
+				690,
+				689
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -34537,10 +34516,10 @@
 			},
 			"id": 288,
 			"points": [
+				706,
 				707,
-				708,
-				704,
-				703
+				703,
+				702
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -34628,10 +34607,10 @@
 			},
 			"id": 289,
 			"points": [
+				708,
 				709,
-				710,
-				700,
-				699
+				699,
+				698
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -34719,10 +34698,10 @@
 			},
 			"id": 290,
 			"points": [
+				710,
 				711,
-				712,
-				696,
-				695
+				695,
+				694
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -34810,10 +34789,10 @@
 			},
 			"id": 291,
 			"points": [
+				712,
 				713,
-				714,
-				698,
-				697
+				697,
+				696
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -34913,10 +34892,10 @@
 			},
 			"id": 292,
 			"points": [
+				714,
 				715,
-				716,
-				702,
-				701
+				701,
+				700
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -35016,10 +34995,10 @@
 			},
 			"id": 293,
 			"points": [
+				716,
 				717,
-				718,
-				706,
-				705
+				705,
+				704
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -35127,10 +35106,10 @@
 			},
 			"id": 294,
 			"points": [
+				718,
 				719,
-				720,
-				712,
-				711
+				711,
+				710
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -35203,12 +35182,12 @@
 			},
 			"id": 295,
 			"points": [
+				720,
 				721,
 				722,
 				723,
-				724,
-				720,
-				719
+				719,
+				718
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -35351,10 +35330,10 @@
 			},
 			"id": 296,
 			"points": [
+				724,
 				725,
-				726,
-				710,
-				709
+				709,
+				708
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -35427,12 +35406,12 @@
 			},
 			"id": 297,
 			"points": [
+				726,
 				727,
 				728,
 				729,
-				730,
-				726,
-				725
+				725,
+				724
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -35575,10 +35554,10 @@
 			},
 			"id": 298,
 			"points": [
+				730,
 				731,
-				732,
-				708,
-				707
+				707,
+				706
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -35651,12 +35630,12 @@
 			},
 			"id": 299,
 			"points": [
+				732,
 				733,
 				734,
 				735,
-				736,
-				732,
-				731
+				731,
+				730
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -35799,10 +35778,10 @@
 			},
 			"id": 300,
 			"points": [
+				736,
 				737,
 				738,
-				739,
-				740
+				739
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -35898,10 +35877,10 @@
 			},
 			"id": 301,
 			"points": [
-				741,
-				742,
 				740,
-				739
+				741,
+				739,
+				738
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -35976,8 +35955,8 @@
 			"points": [
 				534,
 				533,
-				742,
-				741
+				741,
+				740
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -36065,13 +36044,13 @@
 			},
 			"id": 303,
 			"points": [
+				742,
 				743,
 				744,
 				745,
 				746,
-				747,
-				738,
-				737
+				737,
+				736
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -36203,14 +36182,14 @@
 			},
 			"id": 304,
 			"points": [
+				747,
 				748,
 				749,
 				750,
-				751,
-				745,
 				744,
-				752,
-				753
+				743,
+				751,
+				752
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 380,
@@ -36373,11 +36352,11 @@
 			},
 			"id": 305,
 			"points": [
+				753,
 				754,
 				755,
-				756,
-				746,
-				745
+				745,
+				744
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -36462,6 +36441,7 @@
 			},
 			"id": 306,
 			"points": [
+				756,
 				757,
 				758,
 				759,
@@ -36471,9 +36451,8 @@
 				763,
 				764,
 				765,
-				766,
-				756,
-				755
+				755,
+				754
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -36655,10 +36634,10 @@
 			},
 			"id": 307,
 			"points": [
+				766,
 				767,
-				768,
-				763,
-				762
+				762,
+				761
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -36754,10 +36733,10 @@
 			},
 			"id": 308,
 			"points": [
-				769,
-				770,
 				768,
-				767
+				769,
+				767,
+				766
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -36830,10 +36809,10 @@
 			},
 			"id": 309,
 			"points": [
-				771,
-				772,
 				770,
-				769
+				771,
+				769,
+				768
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -36921,10 +36900,10 @@
 			},
 			"id": 310,
 			"points": [
-				773,
-				774,
 				772,
-				771
+				773,
+				771,
+				770
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 238,
@@ -37027,11 +37006,11 @@
 			},
 			"id": 311,
 			"points": [
+				774,
 				775,
 				776,
-				777,
-				766,
-				765
+				765,
+				764
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -37146,10 +37125,10 @@
 			},
 			"id": 312,
 			"points": [
+				777,
 				778,
-				779,
-				760,
-				759
+				759,
+				758
 			],
 			"portal_destination_wall": 1,
 			"portal_target": 382,
@@ -37237,12 +37216,12 @@
 			},
 			"id": 313,
 			"points": [
+				779,
 				780,
 				781,
 				782,
-				783,
-				758,
-				757
+				757,
+				756
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 315,
@@ -37373,14 +37352,14 @@
 			},
 			"id": 314,
 			"points": [
+				783,
 				784,
 				785,
 				786,
+				745,
+				755,
 				787,
-				746,
-				756,
-				788,
-				789
+				788
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -37528,10 +37507,10 @@
 			},
 			"id": 315,
 			"points": [
-				790,
-				791,
 				789,
-				788
+				790,
+				788,
+				787
 			],
 			"portal_destination_wall": 1,
 			"portal_target": 313,
@@ -37619,8 +37598,8 @@
 			},
 			"id": 316,
 			"points": [
+				791,
 				792,
-				793,
 				541,
 				540
 			],
@@ -37718,10 +37697,10 @@
 			},
 			"id": 317,
 			"points": [
-				794,
-				795,
 				793,
-				792
+				794,
+				792,
+				791
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -37796,8 +37775,8 @@
 			"points": [
 				507,
 				506,
-				795,
-				794
+				794,
+				793
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -37885,8 +37864,8 @@
 			},
 			"id": 319,
 			"points": [
+				795,
 				796,
-				797,
 				531,
 				530
 			],
@@ -37984,10 +37963,10 @@
 			},
 			"id": 320,
 			"points": [
-				798,
-				799,
 				797,
-				796
+				798,
+				796,
+				795
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -38060,10 +38039,10 @@
 			},
 			"id": 321,
 			"points": [
-				800,
-				801,
 				799,
-				798
+				800,
+				798,
+				797
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -38151,6 +38130,7 @@
 			},
 			"id": 322,
 			"points": [
+				801,
 				802,
 				803,
 				804,
@@ -38159,11 +38139,10 @@
 				807,
 				808,
 				809,
-				810,
-				801,
 				800,
-				811,
-				812
+				799,
+				810,
+				811
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -38396,8 +38375,8 @@
 			"points": [
 				529,
 				528,
-				812,
-				811
+				811,
+				810
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -38470,10 +38449,10 @@
 			},
 			"id": 324,
 			"points": [
+				812,
 				813,
-				814,
-				809,
-				808
+				808,
+				807
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -38546,10 +38525,10 @@
 			},
 			"id": 325,
 			"points": [
-				815,
-				816,
 				814,
-				813
+				815,
+				813,
+				812
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -38662,10 +38641,10 @@
 			},
 			"id": 326,
 			"points": [
-				817,
-				818,
 				816,
-				815
+				817,
+				815,
+				814
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -38738,10 +38717,10 @@
 			},
 			"id": 327,
 			"points": [
+				818,
 				819,
-				820,
-				807,
-				806
+				806,
+				805
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -38814,10 +38793,10 @@
 			},
 			"id": 328,
 			"points": [
-				821,
-				822,
 				820,
-				819
+				821,
+				819,
+				818
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -38890,10 +38869,10 @@
 			},
 			"id": 329,
 			"points": [
-				823,
-				824,
 				822,
-				821
+				823,
+				821,
+				820
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -38966,15 +38945,15 @@
 			},
 			"id": 330,
 			"points": [
+				824,
 				825,
 				826,
 				827,
-				828,
-				818,
 				817,
-				824,
+				816,
 				823,
-				829
+				822,
+				828
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -39112,10 +39091,10 @@
 			},
 			"id": 331,
 			"points": [
+				829,
 				830,
-				831,
-				827,
-				826
+				826,
+				825
 			],
 			"portal_destination_wall": 3,
 			"portal_target": 230,
@@ -39203,14 +39182,14 @@
 			},
 			"id": 332,
 			"points": [
-				824,
-				817,
-				815,
-				813,
-				808,
+				823,
+				816,
+				814,
+				812,
 				807,
-				820,
-				822
+				806,
+				819,
+				821
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -39257,8 +39236,8 @@
 			},
 			"id": 333,
 			"points": [
+				831,
 				832,
-				833,
 				527,
 				526
 			],
@@ -39356,10 +39335,10 @@
 			},
 			"id": 334,
 			"points": [
-				834,
-				835,
 				833,
-				832
+				834,
+				832,
+				831
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -39432,10 +39411,10 @@
 			},
 			"id": 335,
 			"points": [
-				803,
 				802,
-				835,
-				834
+				801,
+				834,
+				833
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -39523,8 +39502,8 @@
 			},
 			"id": 336,
 			"points": [
+				835,
 				836,
-				837,
 				537,
 				536
 			],
@@ -39622,10 +39601,10 @@
 			},
 			"id": 337,
 			"points": [
-				838,
-				839,
 				837,
-				836
+				838,
+				836,
+				835
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -39698,10 +39677,10 @@
 			},
 			"id": 338,
 			"points": [
-				840,
-				841,
 				839,
-				838
+				840,
+				838,
+				837
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -39789,15 +39768,15 @@
 			},
 			"id": 339,
 			"points": [
+				841,
 				842,
 				843,
 				844,
 				845,
 				846,
 				847,
-				848,
-				841,
-				840
+				840,
+				839
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -39964,10 +39943,10 @@
 			},
 			"id": 340,
 			"points": [
-				849,
-				850,
 				848,
-				847
+				849,
+				847,
+				846
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -40067,10 +40046,10 @@
 			},
 			"id": 341,
 			"points": [
+				850,
 				851,
-				852,
-				844,
-				843
+				843,
+				842
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -40143,10 +40122,10 @@
 			},
 			"id": 342,
 			"points": [
+				852,
 				853,
-				854,
-				844,
-				852
+				843,
+				851
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -40219,8 +40198,8 @@
 			},
 			"id": 343,
 			"points": [
+				854,
 				855,
-				856,
 				496,
 				495
 			],
@@ -40295,11 +40274,11 @@
 			},
 			"id": 344,
 			"points": [
-				855,
 				854,
 				853,
-				857,
-				856
+				852,
+				856,
+				855
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -40373,10 +40352,10 @@
 			},
 			"id": 345,
 			"points": [
-				852,
-				858,
+				851,
 				857,
-				853
+				856,
+				852
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -40434,10 +40413,10 @@
 			},
 			"id": 346,
 			"points": [
-				851,
-				859,
+				850,
 				858,
-				852
+				857,
+				851
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -40510,11 +40489,11 @@
 			},
 			"id": 347,
 			"points": [
+				859,
 				860,
 				861,
-				862,
-				854,
-				855
+				853,
+				854
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -40588,10 +40567,10 @@
 			},
 			"id": 348,
 			"points": [
-				845,
 				844,
-				854,
-				862
+				843,
+				853,
+				861
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -40664,10 +40643,10 @@
 			},
 			"id": 349,
 			"points": [
-				846,
 				845,
-				862,
-				861
+				844,
+				861,
+				860
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -40725,15 +40704,15 @@
 			},
 			"id": 350,
 			"points": [
-				863,
+				862,
 				196,
 				462,
 				189,
 				188,
 				479,
 				478,
-				864,
-				865
+				863,
+				864
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -40915,10 +40894,10 @@
 			},
 			"id": 351,
 			"points": [
-				866,
-				867,
 				865,
-				864
+				866,
+				864,
+				863
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 26,
@@ -41103,7 +41082,7 @@
 			"id": 354,
 			"points": [
 				154,
-				868,
+				867,
 				1,
 				0
 			],
@@ -41181,7 +41160,7 @@
 				173,
 				155,
 				1,
-				868
+				867
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -41225,9 +41204,9 @@
 			"id": 356,
 			"points": [
 				154,
+				868,
 				869,
-				870,
-				868
+				867
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -41286,8 +41265,8 @@
 			"id": 357,
 			"points": [
 				153,
-				871,
-				869,
+				870,
+				868,
 				154
 			],
 			"portal_destination_wall": 0,
@@ -41361,9 +41340,9 @@
 			},
 			"id": 358,
 			"points": [
-				872,
-				873,
 				871,
+				872,
+				870,
 				153
 			],
 			"portal_destination_wall": 0,
@@ -41452,10 +41431,10 @@
 			},
 			"id": 359,
 			"points": [
+				873,
 				874,
-				875,
-				871,
-				873
+				870,
+				872
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -41515,7 +41494,7 @@
 			"points": [
 				143,
 				142,
-				872,
+				871,
 				153
 			],
 			"portal_destination_wall": 0,
@@ -41574,10 +41553,10 @@
 			},
 			"id": 361,
 			"points": [
+				875,
 				876,
-				877,
-				873,
-				872
+				872,
+				871
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -41665,10 +41644,10 @@
 			},
 			"id": 362,
 			"points": [
-				878,
-				879,
 				877,
-				876
+				878,
+				876,
+				875
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -41741,10 +41720,10 @@
 			},
 			"id": 363,
 			"points": [
-				880,
-				881,
 				879,
-				878
+				880,
+				878,
+				877
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -41832,15 +41811,15 @@
 			},
 			"id": 364,
 			"points": [
+				881,
 				882,
 				883,
 				884,
 				885,
 				886,
 				887,
-				888,
-				881,
-				880
+				880,
+				879
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -41978,10 +41957,10 @@
 			},
 			"id": 365,
 			"points": [
+				888,
 				889,
-				890,
-				886,
-				885
+				885,
+				884
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -42069,10 +42048,10 @@
 			},
 			"id": 366,
 			"points": [
-				891,
-				892,
 				890,
-				889
+				891,
+				889,
+				888
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -42160,9 +42139,9 @@
 			},
 			"id": 367,
 			"points": [
-				893,
 				892,
-				891
+				891,
+				890
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -42234,11 +42213,11 @@
 			},
 			"id": 368,
 			"points": [
+				893,
 				894,
 				895,
-				896,
-				888,
-				887
+				887,
+				886
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -42342,12 +42321,12 @@
 			},
 			"id": 369,
 			"points": [
+				896,
 				897,
 				898,
 				899,
-				900,
-				895,
-				894
+				894,
+				893
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -42482,14 +42461,14 @@
 			},
 			"id": 370,
 			"points": [
+				900,
 				901,
 				902,
 				903,
-				904,
 				481,
 				480,
-				875,
-				874
+				874,
+				873
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -42670,10 +42649,10 @@
 			},
 			"id": 371,
 			"points": [
+				904,
 				905,
-				906,
-				903,
-				902
+				902,
+				901
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 25,
@@ -42763,9 +42742,9 @@
 			"points": [
 				474,
 				473,
-				869,
-				871,
-				875,
+				868,
+				870,
+				874,
 				480
 			],
 			"portal_destination_wall": 0,
@@ -42813,8 +42792,8 @@
 			"points": [
 				174,
 				173,
-				868,
-				870
+				867,
+				869
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -42859,8 +42838,8 @@
 			"points": [
 				473,
 				472,
-				870,
-				869
+				869,
+				868
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -42935,7 +42914,7 @@
 			"points": [
 				175,
 				174,
-				870,
+				869,
 				472
 			],
 			"portal_destination_wall": 0,
@@ -43101,13 +43080,13 @@
 			},
 			"id": 378,
 			"points": [
+				906,
 				907,
 				908,
 				909,
 				910,
 				911,
-				912,
-				913
+				912
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 231,
@@ -43258,12 +43237,12 @@
 			},
 			"id": 379,
 			"points": [
+				913,
 				914,
 				915,
 				916,
 				917,
-				918,
-				919
+				918
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -43379,10 +43358,10 @@
 			},
 			"id": 380,
 			"points": [
-				920,
-				921,
 				919,
-				918
+				920,
+				918,
+				917
 			],
 			"portal_destination_wall": 6,
 			"portal_target": 304,
@@ -43481,12 +43460,12 @@
 			},
 			"id": 381,
 			"points": [
+				921,
 				922,
 				923,
 				924,
-				925,
-				916,
-				915
+				915,
+				914
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -43617,12 +43596,12 @@
 			},
 			"id": 382,
 			"points": [
+				925,
 				926,
 				927,
 				928,
-				929,
-				925,
-				924
+				924,
+				923
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 312,
@@ -43768,12 +43747,12 @@
 			},
 			"id": 383,
 			"points": [
+				929,
 				930,
 				931,
 				932,
-				933,
-				923,
-				922
+				922,
+				921
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -43889,10 +43868,10 @@
 			},
 			"id": 384,
 			"points": [
+				933,
 				934,
-				935,
-				932,
-				931
+				931,
+				930
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -44006,12 +43985,12 @@
 			},
 			"id": 385,
 			"points": [
+				935,
 				936,
 				937,
 				938,
 				939,
-				940,
-				941
+				940
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -44101,10 +44080,10 @@
 			},
 			"id": 386,
 			"points": [
+				941,
 				942,
 				943,
-				944,
-				939
+				938
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -44177,10 +44156,10 @@
 			},
 			"id": 387,
 			"points": [
-				945,
-				940,
+				944,
 				939,
-				944
+				938,
+				943
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -44268,11 +44247,11 @@
 			},
 			"id": 388,
 			"points": [
+				945,
 				946,
 				947,
-				948,
-				943,
-				942
+				942,
+				941
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -44346,9 +44325,9 @@
 			},
 			"id": 389,
 			"points": [
-				949,
 				948,
-				947
+				947,
+				946
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -44405,16 +44384,16 @@
 			},
 			"id": 390,
 			"points": [
-				945,
-				948,
+				944,
+				947,
+				949,
 				950,
 				951,
 				952,
 				953,
 				954,
-				955,
-				941,
-				940
+				940,
+				939
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -44523,10 +44502,10 @@
 			},
 			"id": 391,
 			"points": [
+				948,
+				955,
 				949,
-				956,
-				950,
-				948
+				947
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -44599,10 +44578,10 @@
 			},
 			"id": 392,
 			"points": [
+				956,
 				957,
-				958,
-				938,
-				937
+				937,
+				936
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -44716,10 +44695,10 @@
 			},
 			"id": 393,
 			"points": [
-				959,
-				955,
+				958,
 				954,
-				960
+				953,
+				959
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -44762,10 +44741,10 @@
 			},
 			"id": 394,
 			"points": [
-				949,
-				947,
-				961,
-				956
+				948,
+				946,
+				960,
+				955
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -44808,10 +44787,10 @@
 			},
 			"id": 395,
 			"points": [
-				946,
-				962,
+				945,
 				961,
-				947
+				960,
+				946
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 247,
@@ -44899,11 +44878,11 @@
 			},
 			"id": 396,
 			"points": [
+				962,
 				963,
 				964,
 				965,
-				966,
-				967
+				966
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -44947,12 +44926,12 @@
 			},
 			"id": 397,
 			"points": [
+				967,
 				968,
 				969,
 				970,
 				971,
-				972,
-				973
+				972
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -44997,10 +44976,10 @@
 			},
 			"id": 398,
 			"points": [
+				973,
 				974,
-				975,
-				970,
-				969
+				969,
+				968
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -45058,9 +45037,9 @@
 			},
 			"id": 399,
 			"points": [
-				976,
-				972,
-				971
+				975,
+				971,
+				970
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -45132,12 +45111,12 @@
 			},
 			"id": 400,
 			"points": [
-				977,
 				976,
+				975,
+				977,
 				978,
 				979,
-				980,
-				981
+				980
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 410,
@@ -45227,10 +45206,10 @@
 			},
 			"id": 401,
 			"points": [
-				971,
-				982,
-				978,
-				976
+				970,
+				981,
+				977,
+				975
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -45317,10 +45296,10 @@
 			},
 			"id": 402,
 			"points": [
-				970,
-				975,
-				982,
-				971
+				969,
+				974,
+				981,
+				970
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -45393,10 +45372,10 @@
 			},
 			"id": 403,
 			"points": [
-				983,
-				967,
-				977,
-				981
+				982,
+				966,
+				976,
+				980
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -45513,12 +45492,12 @@
 			},
 			"id": 404,
 			"points": [
+				983,
 				984,
 				985,
-				986,
-				963,
-				967,
-				983
+				962,
+				966,
+				982
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 249,
@@ -45608,11 +45587,11 @@
 			},
 			"id": 405,
 			"points": [
-				953,
 				952,
-				964,
+				951,
 				963,
-				986
+				962,
+				985
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -45686,10 +45665,10 @@
 			},
 			"id": 406,
 			"points": [
-				951,
-				965,
+				950,
 				964,
-				952
+				963,
+				951
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -45762,12 +45741,12 @@
 			},
 			"id": 407,
 			"points": [
-				987,
-				960,
-				954,
-				953,
 				986,
-				985
+				959,
+				953,
+				952,
+				985,
+				984
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -45857,10 +45836,10 @@
 			},
 			"id": 408,
 			"points": [
-				988,
+				987,
+				958,
 				959,
-				960,
-				987
+				986
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -45948,11 +45927,11 @@
 			},
 			"id": 409,
 			"points": [
-				936,
-				941,
-				955,
-				959,
-				988
+				935,
+				940,
+				954,
+				958,
+				987
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -46041,10 +46020,10 @@
 			},
 			"id": 410,
 			"points": [
+				988,
 				989,
-				990,
-				936,
-				988
+				935,
+				987
 			],
 			"portal_destination_wall": 3,
 			"portal_target": 400,
@@ -46132,11 +46111,11 @@
 			},
 			"id": 411,
 			"points": [
-				966,
-				991,
+				965,
+				990,
+				975,
 				976,
-				977,
-				967
+				966
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -46224,12 +46203,12 @@
 			},
 			"id": 412,
 			"points": [
-				965,
-				951,
-				968,
-				973,
-				991,
-				966
+				964,
+				950,
+				967,
+				972,
+				990,
+				965
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -46349,11 +46328,11 @@
 			},
 			"id": 413,
 			"points": [
-				950,
-				974,
-				969,
+				949,
+				973,
 				968,
-				951
+				967,
+				950
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -46427,10 +46406,10 @@
 			},
 			"id": 414,
 			"points": [
-				956,
-				975,
+				955,
 				974,
-				950
+				973,
+				949
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -46488,10 +46467,10 @@
 			},
 			"id": 415,
 			"points": [
+				960,
 				961,
-				962,
-				975,
-				956
+				974,
+				955
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -46564,10 +46543,10 @@
 			},
 			"id": 416,
 			"points": [
-				973,
 				972,
-				976,
-				991
+				971,
+				975,
+				990
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -46670,10 +46649,10 @@
 			},
 			"id": 417,
 			"points": [
-				945,
 				944,
 				943,
-				948
+				942,
+				947
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,
@@ -46716,10 +46695,10 @@
 			},
 			"id": 418,
 			"points": [
+				991,
 				992,
 				993,
-				994,
-				995
+				994
 			],
 			"portal_destination_wall": 0,
 			"portal_target": 65535,

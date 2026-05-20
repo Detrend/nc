@@ -471,7 +471,7 @@ static bool calc_path_raw
         auto p1 = map.walls[wall1_idx].pos;
         auto p2 = map.walls[wall2_idx].pos;
         auto p1_to_p2 = p2 - p1;
-        if (length(p1_to_p2) > radius * 2.0f) // side to side clearance
+        if (length(p1_to_p2) > radius * 2.1f) // side to side clearance
         {
           vec2 wall_dir;
           wall_dir = normalize_or_zero(p1_to_p2);
@@ -485,8 +485,8 @@ static bool calc_path_raw
             wall_dir = wall_dir / abs(wall_dir.y);
           }
 
-          p1 += wall_dir * radius;
-          p2 -= wall_dir * radius;
+          p1 += wall_dir * radius * 1.05f;
+          p2 -= wall_dir * radius * 1.05f;
           p1_to_p2 = p2 - p1;
           // Get a previous position, but also with portal transformation
           vec3 prev_post = visited[cur_id].point;

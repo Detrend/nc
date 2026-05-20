@@ -331,7 +331,7 @@ void UiHudDisplay::draw_secret_revealed()
   glm::mat4 trans_mat = glm::mat4(1.0f);
   vec2 translate = vec2(0.0f, -0.5f);
   trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
-  trans_mat = glm::scale(trans_mat, glm::vec3(0.3f, 0.04f, 1));
+  trans_mat = glm::scale(trans_mat, glm::vec3(0.275f, 0.04f, 1));
 
   const glm::mat4 final_trans = trans_mat;
 
