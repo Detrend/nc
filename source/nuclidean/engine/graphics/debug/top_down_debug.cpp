@@ -306,9 +306,9 @@ void TopDownDebugRenderer::draw_sector_grid()
   }
 
   // Number of sectors
-  for (s64 x = beg_off_x; x <= w - end_off_x; ++x)
+  for (s64 x = beg_off_x; x < w - end_off_x; ++x)
   {
-    for (s64 y = beg_off_y; y <= h - end_off_y; ++y)
+    for (s64 y = beg_off_y; y < h - end_off_y; ++y)
     {
       f32 cx  = cast<f32>(x) / w;
       f32 xp  = cx * to.x + (1.0f - cx) * from.x + cell_w * 0.5f;
@@ -408,6 +408,7 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
     ImGui::Checkbox("Show sector frustums", &this->show_sector_frustums);
     ImGui::Checkbox("Show sector IDs",      &this->show_sector_ids);
     ImGui::Checkbox("Show entity IDs",      &this->show_entity_ids);
+    ImGui::Checkbox("Show entity bboxes",   &this->show_entity_bboxes);
     ImGui::Checkbox("Show sector grid",     &this->show_sector_grid);
     if (this->show_sector_grid)
     {
@@ -422,6 +423,10 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
     if (this->show_path_debug)
     {
       ImGui::Checkbox("Path Smoothing", &this->do_path_smoothing);
+      ImGui::SliderFloat("Radius",      &this->path_debug_radius,    0.0f, 2.0f);
+      ImGui::SliderFloat("Height",      &this->path_debug_height,    0.0f, 4.0f);
+      ImGui::SliderFloat("Step down",   &this->path_debug_step_down, 0.0f, 10.0f);
+      ImGui::SliderFloat("Step up",     &this->path_debug_step_up,   0.0f, 10.0f);
 
       if (ImGui::Button("Set Start"))
       {
@@ -624,8 +629,22 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
 
   if (this->show_path_debug)
   {
-    vec3 from = vec3{this->path_debug_start.x, 0.0f, this->path_debug_start.y};
-    vec3 to   = vec3{this->path_debug_end.x,   0.0f, this->path_debug_end.y  };
+    auto height_from_pt = [&](vec2 pt)
+    {
+      SectorID sid = map.get_sector_from_point(pt);
+      if (sid == INVALID_SECTOR_ID)
+      {
+        return 0.0f;
+      }
+
+      return map.sectors_dynamic[sid].floor_height;
+    };
+
+    f32 from_y = height_from_pt(this->path_debug_start);
+    f32 to_y   = height_from_pt(this->path_debug_end);
+
+    vec3 from = vec3{this->path_debug_start.x, from_y, this->path_debug_start.y};
+    vec3 to   = vec3{this->path_debug_end.x,   to_y,   this->path_debug_end.y  };
 
     if (this->path_debug_end == VEC2_ZERO)
     {
@@ -634,7 +653,8 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
 
     std::vector<vec3> path = lvl.calc_path_relative
     (
-      from, to, 0.25f, 1.0f, 0.2f, 2.0f, this->do_path_smoothing
+      from, to, this->path_debug_radius, this->path_debug_height,
+      this->path_debug_step_up, this->path_debug_step_down, this->do_path_smoothing
     );
 
     path.insert(path.begin(), from);
@@ -648,7 +668,10 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
   }
 
   // render entities
-  this->draw_entities();
+  if (this->show_entity_bboxes)
+  {
+    this->draw_entities();
+  }
 
   // render the custom objects
   this->draw_custom_objects();

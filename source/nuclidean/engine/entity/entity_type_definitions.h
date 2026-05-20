@@ -34,6 +34,7 @@ namespace EntityTypes
     sky_box,
     particle,
     sound_emitter,
+    teleport,
     // - //
     count,  // <- total number of entity types
     all = EntityType(-1),
@@ -63,6 +64,7 @@ constexpr cstr ENTITY_TYPE_NAMES[]
   "sky_box",
   "particle",
   "sound_emitter",
+  "teleport",
 };
 static_assert(ARRAY_LENGTH(ENTITY_TYPE_NAMES) == EntityTypes::count);
 
@@ -79,6 +81,7 @@ constexpr vec4 ENTITY_TYPE_COLORS[]
   colors::BLACK,  // sky_box (we don't need to see them)
   colors::BLUE,   // particle
   colors::RED,    // sound emitter
+  colors::PURPLE, // teleport
 };
 static_assert(ARRAY_LENGTH(ENTITY_TYPE_COLORS) == EntityTypes::count);
 
@@ -97,6 +100,7 @@ namespace EntityTypeFlags
     sky_box           = entity_type_to_mask(EntityTypes::sky_box),
     particle          = entity_type_to_mask(EntityTypes::particle),
     sound_emitter     = entity_type_to_mask(EntityTypes::sound_emitter),
+    teleport          = entity_type_to_mask(EntityTypes::teleport),
   };
 }
 static_assert(EntityTypes::count < 64);

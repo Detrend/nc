@@ -46,6 +46,7 @@ struct Appearance
   //       of the camera.
   std::string  sprite;
   vec3         direction    = VEC3_ZERO;
+  f32          offset       = 0.0f;
   f32          scale        = 1.0f;
   SpriteMode   mode     : 1 = SpriteMode::mono;
   PivotMode    pivot    : 1 = PivotMode::centered;

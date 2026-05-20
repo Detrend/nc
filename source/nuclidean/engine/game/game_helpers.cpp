@@ -13,6 +13,7 @@
 
 #include <engine/sound/sound_emitter.h>
 #include <engine/enemies/enemy.h>
+#include <game/teleport.h>
 
 #include <game/projectile.h>
 #include <engine/graphics/entities/lights.h>
@@ -135,6 +136,12 @@ void GameHelpers::play_3d_sound
 )
 {
   m_game.entities->create_entity<SoundEmitter>(pos, sound, distance, volume);
+}
+
+//==============================================================================
+void GameHelpers::request_entity_teleport(EntityID entity, vec3 teleport_to)
+{
+  m_game.entities->create_entity<Teleport>(teleport_to, entity);
 }
 
 //==============================================================================

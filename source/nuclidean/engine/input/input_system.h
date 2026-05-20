@@ -37,6 +37,8 @@ public:
 
   void update_window_and_pump_messages();
 
+  void handle_mouse_wheel(SDL_Event& event);
+
   void handle_app_event(const SDL_Event& event);
   void get_player_inputs();
   GameInputs get_inputs() const;

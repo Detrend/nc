@@ -76,6 +76,21 @@ struct TriggerData
   }
 };
 
+struct ActivatorHookLoadArg {
+
+  ActivatorHookLoadArg(const nlohmann::json* the_hook_data, const std::unordered_map<unsigned, EntityID>* the_tags_to_entities, const std::unordered_map<unsigned, const nlohmann::json*>* the_tags_to_rawdata)
+    : _hook_data(the_hook_data), _tags_to_entities(the_tags_to_entities), _tags_to_rawdata(the_tags_to_rawdata) {}
+
+  const nlohmann::json& data() const { return *_hook_data; }
+  EntityID get_entity(const unsigned tag) const { return (*_tags_to_entities).find(tag)->second; }
+  const nlohmann::json& get_additional_data(const unsigned tag) const { return *(*_tags_to_rawdata).find(tag)->second; }
+
+private:
+  const nlohmann::json *_hook_data;
+  const std::unordered_map<unsigned, EntityID> *_tags_to_entities;
+  const std::unordered_map<unsigned, const nlohmann::json*> *_tags_to_rawdata;
+};
+
 struct ActivatorHookArg {
   f32 delta;
   std::vector<EntityID> entities;
@@ -83,12 +98,10 @@ struct ActivatorHookArg {
 class IActivatorHook
 {
 public:
-
-  using SerializedData = nlohmann::json;
   
   virtual ~IActivatorHook(){}
 
-  virtual void load(const SerializedData& data) = 0;
+  virtual void load(const ActivatorHookLoadArg& arg) = 0;
   virtual void on_activated_update([[maybe_unused]]const ActivatorHookArg & args) {}
   virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args){}
   virtual void on_activated_end([[maybe_unused]] const ActivatorHookArg& args){}
