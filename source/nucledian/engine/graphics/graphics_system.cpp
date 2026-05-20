@@ -1512,8 +1512,8 @@ void GraphicsSystem::create_sector_meshes()
   megatex_height = target_height;
 
   // FBO for rendering into megatex_input_handle
-  glGenFramebuffers(1, &megatex_fbo);
-  glBindFramebuffer(GL_FRAMEBUFFER, megatex_fbo);
+  glGenFramebuffers(1, &megatex_write_fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, megatex_write_fbo);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, megatex_write_to_handle, 0);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -1521,6 +1521,12 @@ void GraphicsSystem::create_sector_meshes()
   glGenFramebuffers(1, &megatex_temp_fbo);
   glBindFramebuffer(GL_FRAMEBUFFER, megatex_temp_fbo);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, megatex_temporal_handle, 0);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  // FBO for storing temporary shadows between frames
+  glGenFramebuffers(1, &megatex_shadow_fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, megatex_shadow_fbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, megatex_shadow_handle, 0);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

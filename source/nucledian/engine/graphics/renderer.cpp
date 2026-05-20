@@ -900,10 +900,10 @@ void Renderer::do_pixel_lighting_pass
     ImGui::SliderFloat("query distance",            &query_dist, 1.0f, 20.0f);
     ImGui::Checkbox("Visualize gi parts",           &show_debug_for_gi_sectors);
     ImGui::Checkbox("Refresh gi parts every frame", &refresh_gi_sectors_every_frame);
-    ImGui::Combo("Tonemapper",     &tonemapper, TONEMAPPER_NAMES, 4);
-    ImGui::Combo("Culling Method", &scheduling_method, CULLING_NAMES, 2);
-    ImGui::SliderInt("Schedule each N frames", &schedule_each_n_frames, 1, 50);
-    ImGui::SliderInt("Schedule best N",        &schedule_best_n,        1, 1024);
+    ImGui::Combo("Tonemapper",                      &tonemapper, TONEMAPPER_NAMES, 4);
+    ImGui::Combo("Culling Method",                  &scheduling_method, CULLING_NAMES, 2);
+    ImGui::SliderInt("Schedule each N frames",      &schedule_each_n_frames, 1, 50);
+    ImGui::SliderInt("Schedule best N",             &schedule_best_n,        1, 1024);
   }
   ImGui::End();
 
@@ -924,7 +924,6 @@ void Renderer::do_pixel_lighting_pass
   clear_megatex(GraphicsSystem::get().megatex_read_from_handle);
   clear_megatex(GraphicsSystem::get().megatex_write_to_handle);
   clear_megatex(GraphicsSystem::get().megatex_debug_handle);
-  clear_megatex(GraphicsSystem::get().megatex_shadow_handle);
 
   glPushDebugGroup
   (
@@ -967,9 +966,10 @@ void Renderer::do_pixel_lighting_pass
     }
   }
 
-  glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_fbo);
+  // Write into shadow.. Keep the old pixels in place, replace those that are
+  // visible by the camera.
+  glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_shadow_fbo);
   glViewport(0, 0, gfx.megatex_width, gfx.megatex_height);
-  glClear(GL_COLOR_BUFFER_BIT);
 
   m_pixel_light_shader.use();
 
@@ -1092,19 +1092,8 @@ void Renderer::do_pixel_lighting_pass
     "PixelLightingPass - Second wave"
   );
 
-  // Store shadow for later
-  // Blit megatex_write_to_handle -> megatex_shadow_handle
-  glCopyImageSubData
-  (
-    gfx.megatex_write_to_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
-    gfx.megatex_shadow_handle,   GL_TEXTURE_2D, 0, 0, 0, 0,
-    static_cast<GLsizei>(gfx.megatex_width),
-    static_cast<GLsizei>(gfx.megatex_height),
-    1
-  );
-
   // Set the target
-  glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_write_fbo);
   glViewport(0, 0, gfx.megatex_width, gfx.megatex_height);
   glClear(GL_COLOR_BUFFER_BIT);
 
@@ -1346,7 +1335,7 @@ void Renderer::do_pixel_lighting_pass
   };
 
   // Store into immediate
-  glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_write_fbo);
   glViewport(0, 0, gfx.megatex_width, gfx.megatex_height);
   glClear(GL_COLOR_BUFFER_BIT);
   do_one_denoise_pass(true);  // horizontal
