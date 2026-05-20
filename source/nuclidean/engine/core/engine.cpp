@@ -808,9 +808,21 @@ void Engine::on_level_end()
       m_game_state = GameState::transition;
 
       // Store the next level (has to happen before calling loop_current_demo)
-      LevelName next_lvl_token = GameSystem::get().get_next_level_name();
+      LevelName next_lvl_token = GameSystem::get().get_next_level_name();  
       m_transition_state.next_level_name = next_lvl_token.to_string();
-
+      
+      // save inventory
+      m_transition_state.owned_weapons = 0;
+      m_transition_state.health = GameHelpers::get().get_player()->get_health();
+      for (u32 i = 0; i < 4; i++)
+      {
+        m_transition_state.ammo[i] = GameHelpers::get().get_player()->get_ammo((WeaponType)i);
+        if (GameHelpers::get().get_player()->has_weapon((WeaponType)i))
+        {
+          m_transition_state.owned_weapons |= weapon_flag((WeaponType)i);
+        }
+      }
+      
       // Enable level transition UI
       UserInterfaceSystem::get().get_menu_manager()->set_transition_screen(true);
 
@@ -911,6 +923,7 @@ void Engine::on_next_level_selected_from_menu()
 
       LevelName lvl = std::string_view{m_transition_state.next_level_name};
       GameSystem::get().request_level_change(lvl);
+
       UserInterfaceSystem::get().get_menu_manager()->set_transition_screen(false);
     }
     break;

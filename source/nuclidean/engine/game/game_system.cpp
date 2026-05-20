@@ -761,6 +761,17 @@ void GameSystem::frame_start()
       journal.reset_and_clear(JournalState::recording);
     }
 
+    //load inventory
+    GameHelpers::get().get_player()->set_health(get_engine().get_transition_health());
+    for (u8 i = 1; i < 4; i++)
+    {
+      GameHelpers::get().get_player()->give_ammo((WeaponType)i, get_engine().get_transition_ammo()[i]);
+      if (get_engine().get_transition_weapons() & weapon_flag((WeaponType)i))
+      {
+        GameHelpers::get().get_player()->give_weapon((WeaponType)i);
+      }
+    }
+
     // Reset it
     scheduled_state.reset();
 

@@ -75,6 +75,8 @@ public:
   int     get_health()     const;
   int     get_max_health() const;
 
+  void    set_health(s32 health);
+
   s32     get_current_weapon_ammo();
   s32     get_ammo(WeaponType weapon)     const;
   s32     get_max_ammo(WeaponType weapon) const;

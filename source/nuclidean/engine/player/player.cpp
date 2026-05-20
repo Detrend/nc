@@ -884,6 +884,11 @@ int Player::get_max_health() const
   return CVars::player_max_hp;
 }
 
+void Player::set_health(s32 health)
+{
+  this->current_health = health;
+}
+
 //==============================================================================
 Camera* Player::get_camera()
 {
