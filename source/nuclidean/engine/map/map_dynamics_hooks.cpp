@@ -7,6 +7,7 @@
 #include <engine/entity/entity_types.h>
 #include <engine/entity/entity_system.h>
 #include <engine/entity/entity_type_definitions.h>
+#include <engine/ui/user_interface_system.h>
 
 #include <engine/game/game_helpers.h>
 
@@ -76,6 +77,7 @@ namespace nc
     {
       revealed = true;
       get_engine().get_module<GameSystem>().increment_revealed_count();
+      get_engine().get_module<UserInterfaceSystem>().get_hud()->show_secret();
     }
   }
 

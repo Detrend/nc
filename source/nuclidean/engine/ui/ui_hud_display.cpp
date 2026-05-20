@@ -13,6 +13,7 @@ UiHudDisplay::UiHudDisplay() :
   text_shader(ShaderProgramHandle::from_files(shaders::ui_button::VERTEX_FILE, shaders::ui_button::FRAGMENT_FILE))
 {
   init();
+  time_since_secret = TIME_TO_SHOW_SECRET + 1.0f;
 }
 
 //=========================================================================================
@@ -54,13 +55,14 @@ void UiHudDisplay::init()
 }
 
 //=========================================================================================
-void UiHudDisplay::update()
+void UiHudDisplay::update(float delta_time)
 {
   // Player might not exist in an empty level in menu
   if (Player* player = GameHelpers::get().get_player())
   {
     display_ammo   = player->get_current_weapon_ammo();
     display_health = player->get_health();
+    time_since_secret += delta_time;
   }
   else
   {
@@ -269,6 +271,8 @@ void UiHudDisplay::draw_texts()
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   }
 
+  draw_secret_revealed();
+
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
 
@@ -313,5 +317,41 @@ void UiHudDisplay::draw_crosshair()
 
   glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}
+
+//===========================================================================================
+void UiHudDisplay::draw_secret_revealed()
+{
+  if (time_since_secret > TIME_TO_SHOW_SECRET)
+  {
+    return;
+  }
+
+  // transformation matrices
+  glm::mat4 trans_mat = glm::mat4(1.0f);
+  vec2 translate = vec2(0.0f, -0.5f);
+  trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
+  trans_mat = glm::scale(trans_mat, glm::vec3(0.275f, 0.04f, 1));
+
+  const glm::mat4 final_trans = trans_mat;
+
+  // texture pickup
+  const TextureManager& manager = TextureManager::get();
+  const TextureHandle& texture = manager["ui_secret_revealed"];
+
+  //set uniforms
+  text_shader.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
+  text_shader.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas().get_size());
+  text_shader.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
+  text_shader.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
+
+  glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}
+
+//===========================================================================================
+void UiHudDisplay::show_secret()
+{
+  time_since_secret = 0.0f;
 }
 }
