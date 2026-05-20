@@ -57,7 +57,7 @@ func get_undo_redo_raw()->UndoRedo:
 signal every_frame_signal()
 
 func is_root()->bool:
-	return get_tree().edited_scene_root == self
+	return get_tree() and (get_tree().edited_scene_root == self)
 
 func _process(_delta: float) -> void:
 	if ! Engine.is_editor_hint(): return
