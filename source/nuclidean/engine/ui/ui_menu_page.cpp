@@ -229,7 +229,7 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
     digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
     digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+    digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size() - vec2(1.0f, 0.0f));
     digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
     digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
     digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
@@ -338,7 +338,7 @@ void NextLevelPage::draw_secret_count(ShaderProgramHandle digit_material)
     digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
     digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
+    digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size() - vec2(1.0f, 0.0f));
     digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
     digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
     digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
