@@ -244,6 +244,8 @@ void main()
   vec3 final_color = ambient_strength * albedo;
 
   // directional lights
+  // Disabled for GA
+  /*
   for (int i = 0; i < num_dir_lights; i++)
   {
     vec3 reflect_direction = reflect(-dir_lights[i].direction, normal);
@@ -255,6 +257,7 @@ void main()
 
     final_color += (diffuse + specular) * dir_lights[i].color * dir_lights[i].intensity;
   }
+  */
 
   // point lights
   uvec2 tile_coords = uvec2(gl_FragCoord.xy) / uvec2(TILE_SIZE_X, TILE_SIZE_Y);
@@ -276,7 +279,7 @@ void main()
 
     float distance = sqrt(distance_squared);
     light_direction /= distance;
-    float angle = min(dot(stitched_normal, light_direction) + billboard_f, 1.0f); // For billboards this is 1
+    float angle = min(max(dot(stitched_normal, light_direction), 0.0f) + billboard_f, 1.0f); // For billboards this is 1
     if (angle <= 0.0f)
       continue;
 
@@ -291,11 +294,12 @@ void main()
 
     vec3 half_direction = normalize(light_direction + view_direction);
     vec3 specular = specular_strength * pow(max(dot(stitched_normal, half_direction), 0.0f), shininess) * vec3(1.0f);
+    specular = vec3(0.0f);
 
     float attenuation = pow(max(light.radius - distance, 0.0f) / light.radius, light.falloff);
     final_color += (diffuse + specular) * light.color * light.intensity * attenuation;
   }
-  
+
 #ifdef PIXEL_DEBUG
   if (debug_pixel)
     out_color = vec4(1.0, 1.0, 0.0, 1.0);

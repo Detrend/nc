@@ -427,10 +427,14 @@ void Renderer::create_g_buffers(u32 width, u32 height)
   // TODO: merge stitched normals and normals into one g buffer
   m_g_position          = create_g_buffer(GL_RGBA32F    , attachments[0], width, height);
   m_g_stitched_position = create_g_buffer(GL_RGBA32F    , attachments[1], width, height);
-  m_g_normal            = create_g_buffer(GL_RGBA8_SNORM, attachments[2], width, height);
-  m_g_stitched_normal   = create_g_buffer(GL_RGBA8_SNORM, attachments[3], width, height);
-  m_g_albedo            = create_g_buffer(GL_RGBA8      , attachments[4], width, height);
-  m_g_sector            = create_g_buffer(GL_R32UI      , attachments[5], width, height);
+
+  // MR says: Changed these from RGBA8_UNORM to RGBA32F for GA demo because I am storing
+  //          shading position and shading stitched position in them for billboards.
+  m_g_normal          = create_g_buffer(GL_RGBA32F, attachments[2], width, height);
+  m_g_stitched_normal = create_g_buffer(GL_RGBA32F, attachments[3], width, height);
+
+  m_g_albedo = create_g_buffer(GL_RGBA8, attachments[4], width, height);
+  m_g_sector = create_g_buffer(GL_R32UI, attachments[5], width, height);
   glDrawBuffers(cast<GLsizei>(attachments.size()), attachments.data());
 
   // create depth-stencil buffer
@@ -909,7 +913,7 @@ void Renderer::render_entities(const CameraData& camera) const
     const TextureAtlas& atlas = TextureManager::get().get_atlas(cast<ResLifetime>(l));
     glBindTexture(GL_TEXTURE_2D, atlas.handle);
     m_billboard_material.set_uniform(shaders::billboard::ATLAS_SIZE, atlas.get_size());
-    m_billboard_material.set_uniform(shaders::billboard::ENABLE_SHADOWS, false);
+    m_billboard_material.set_uniform(shaders::billboard::ENABLE_SHADOWS, true);
 
     for (const auto& [entity, render_data] : group)
     {

@@ -16,7 +16,6 @@ layout(location = 3)  uniform vec2 atlas_size;
 layout(location = 4)  uniform vec2 texture_pos;
 layout(location = 5)  uniform vec2 texture_size;
 layout(location = 7)  uniform mat4 portal_dest_to_src;
-//layout(location = 10) uniform vec3 u_shading_position;
 
 void main()
 {
@@ -27,6 +26,10 @@ void main()
   normal = (transform * vec4(0.0f, 0.0f, -1.0f, 0.0f)).xyz;
   uv = (a_uv * texture_size + texture_pos) / atlas_size;
 
-  stitched_shading_position = (portal_dest_to_src * transform * vec4(vec3(0.0f), 1.0f)).xyz;
-  shading_position          = (transform * vec4(vec3(0.0f), 1.0f)).xyz;
+  // Offset within the billboard from which the shadowing is computed.
+  // Slightly above ground
+  vec3 offset = vec3(0.0f, 0.25f, 0.0f);
+
+  stitched_shading_position = (portal_dest_to_src * transform * vec4(offset, 1.0f)).xyz;
+  shading_position          = (transform * vec4(offset, 1.0f)).xyz;
 }
