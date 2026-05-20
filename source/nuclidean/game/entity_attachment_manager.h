@@ -28,14 +28,6 @@ namespace EntityAttachmentFlags
 class EntityAttachment : public IEntityListener
 {
 public:
-  struct Attachment
-  {
-    EntityID             entity = INVALID_ENTITY_ID;
-    f32                  offset = 0.0f;
-    EntityAttachmentType type   = EntityAttachmentFlags::none;
-  };
-  using AttachmentList = std::vector<Attachment>;
-
   EntityAttachment(EntityRegistry& registry);
 
   // IEntityListener
@@ -62,15 +54,18 @@ public:
 
   EntityID get_entity_parent(EntityID id) const;
 
-  const AttachmentList* get_entity_children(EntityID id) const;
-
 private:
-  using ChildMapping  = std::unordered_map<EntityID, AttachmentList>;
-  using ParentMapping = std::unordered_map<EntityID, EntityID>;
+  struct Attachment
+  {
+    EntityID             parent = INVALID_ENTITY_ID;
+    EntityID             child  = INVALID_ENTITY_ID;
+    f32                  offset = 0.0f;
+    EntityAttachmentType type   = EntityAttachmentFlags::none;
+  };
+  using AttachmentList = std::vector<Attachment>;
 
   EntityRegistry& m_registry;
-  ChildMapping    m_child_mapping;
-  ParentMapping   m_parent_mapping;
+  AttachmentList  m_attachments;
 };
 
 }
