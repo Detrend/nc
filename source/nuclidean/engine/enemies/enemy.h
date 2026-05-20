@@ -43,6 +43,8 @@ public:
 
   void on_player_traversed_nc_portal(EntityID player, mat4 transform);
 
+  bool is_physics_enabled() const;
+
 private:
   void on_self_or_target_traversed_nc_portal();
 

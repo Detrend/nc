@@ -265,6 +265,10 @@ void main()
 
   TileData data = tile_data[tile_index];
 
+  // For billboards we store shading position in "normal" and shading stitched position in "stitched normal"
+  vec3 shading_position          = mix(position,          normal,          billboard_f); // Storing shading position here for billboards
+  vec3 shading_stitched_position = mix(stitched_position, stitched_normal, billboard_f); // Storing stitched shading position here for billboards
+
   for (int i = 0; i < data.count; i++)
   {
     uint light_index = light_indices[data.offset + i];
@@ -282,10 +286,6 @@ void main()
     float angle = min(max(dot(stitched_normal, light_direction), 0.0f) + billboard_f, 1.0f); // For billboards this is 1
     if (angle <= 0.0f)
       continue;
-
-    // For billboards we store shading position in "normal" and shading stitched position in "stitched normal"
-    vec3 shading_position          = mix(position,          normal,          billboard_f); // Storing shading position here for billboards
-    vec3 shading_stitched_position = mix(stitched_position, stitched_normal, billboard_f); // Storing stitched shading position here for billboards
 
     if (do_shadows && is_in_shadow(shading_position, shading_stitched_position, sector_id, matrix_id, light)) 
     continue;

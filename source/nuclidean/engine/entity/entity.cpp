@@ -171,4 +171,14 @@ f32 Entity::get_snap_offset() const
   return 0.0f;
 }
 
+//==============================================================================
+bool Entity::is_physics_enabled() const
+{
+  switch (this->get_type())
+  {
+    case EntityTypes::enemy: return this->as<Enemy>()->is_physics_enabled();
+    default: return true;
+  }
+}
+
 }

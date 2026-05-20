@@ -239,6 +239,13 @@ static CollisionHit raycast_generic
       // Broad phase - check the distance to bbox first
       const Entity* entity = world.entities.get_entity(entity_id);
       nc_assert(entity);
+
+      if (!entity->is_physics_enabled())
+      {
+        // Physics disabled
+        continue;
+      }
+
       f32  r = entity->get_radius();
       f32  h = entity->get_height();
       vec3 p = entity->get_position();
