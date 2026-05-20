@@ -84,6 +84,7 @@ enum evalue : EnemyType
 {
   cultist,
   possessed,
+  grunt,
   // - //
   count
 };
@@ -94,6 +95,7 @@ constexpr cstr ENEMY_TYPE_NAMES[]
 {
   "cultist",
   "possessed",
+  "grunt",
 };
 static_assert(ARRAY_LENGTH(ENEMY_TYPE_NAMES) == EnemyTypes::count);
 

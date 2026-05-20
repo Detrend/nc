@@ -74,10 +74,12 @@ static constexpr struct {
 } ENEMY_SOUNDS_BY_TYPE[] = {
     {.hurt = Sounds::cultist_hurt, .die = Sounds::cultist_die, .attack = Sounds::cultist_attack, .alert = Sounds::cultist_alert, .move = Sounds::cultist_move, .move_interval_seconds =1.3f},
     {.hurt = Sounds::possessed_hurt, .die = Sounds::possessed_die, .attack = Sounds::possessed_attack, .alert = Sounds::possessed_alert, .move = Sounds::possessed_move, .move_interval_seconds =1.1f},
+    {.hurt = Sounds::cultist_hurt, .die = Sounds::cultist_die, .attack = Sounds::cultist_attack, .alert = Sounds::cultist_alert, .move = Sounds::cultist_move, .move_interval_seconds = 1.3f}, // temporary -> need grunt sounds
 };
 
 static_assert(EnemyTypes::cultist == 0);
 static_assert(EnemyTypes::possessed == 1);
+static_assert(EnemyTypes::grunt == 2);
 static_assert(EnemyTypes::count == ARRAY_LENGTH(ENEMY_SOUNDS_BY_TYPE));
 
 

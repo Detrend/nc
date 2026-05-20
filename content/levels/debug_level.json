@@ -54,6 +54,20 @@
 			]
 		},
 		{
+			"entity_type": 2,
+			"forward": [
+				0.0,
+				-1.0,
+				0.0
+			],
+			"is_player": false,
+			"position": [
+				23.0,
+				5.0,
+				12.2
+			]
+		},
+		{
 			"entity_type": 1,
 			"forward": [
 				0.0,
