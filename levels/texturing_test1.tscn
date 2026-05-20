@@ -1,0 +1,81 @@
+[gd_scene load_steps=14 format=3 uid="uid://cu2wceyn6xvsd"]
+
+[ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_468q3"]
+[ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_5o2d8"]
+[ext_resource type="Resource" uid="uid://b0ot7qa5l7k8d" path="res://materials/default_texture.tres" id="3_2gu0o"]
+[ext_resource type="Script" uid="uid://cft80p5qydrwt" path="res://scripts/sector/SectorProperties.gd" id="4_tyshi"]
+[ext_resource type="PackedScene" uid="uid://dbqtclaunulw7" path="res://prefabs/WallAttachments/WallTextureOverride.tscn" id="5_2gu0o"]
+[ext_resource type="Resource" uid="uid://cku8xgnhd4v6x" path="res://material_textures/rocks.tres" id="7_7nx0s"]
+[ext_resource type="PackedScene" uid="uid://2xarq0korji0" path="res://prefabs/Entities/PlayerPosition.tscn" id="7_iy4li"]
+[ext_resource type="PackedScene" uid="uid://bve5ovba1xpi5" path="res://prefabs/Lights/DirectionalLight.tscn" id="8_8qj84"]
+[ext_resource type="PackedScene" uid="uid://ctwevapidummr" path="res://prefabs/Lights/PointLight.tscn" id="9_qigy3"]
+[ext_resource type="PackedScene" uid="uid://2lt4yhe883yf" path="res://prefabs/Lights/AmbientLight.tscn" id="10_pjlqe"]
+
+[sub_resource type="Resource" id="Resource_3gf4c"]
+script = ExtResource("4_tyshi")
+ceiling_height = 6.0
+material = ExtResource("3_2gu0o")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_2gu0o"]
+script = ExtResource("4_tyshi")
+ceiling_height = 4.0
+material = ExtResource("3_2gu0o")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Curve" id="Curve_tyshi"]
+
+[node name="Root" type="Node2D"]
+script = ExtResource("1_468q3")
+export_scale = Vector3(0.1, 0.1, 1)
+export_path = "../nc/content/levels/level_final2.json"
+
+[node name="Sectors" type="Node2D" parent="."]
+
+[node name="Parcour" type="Node2D" parent="Sectors"]
+
+[node name="@Polygon2D@223595" parent="Sectors/Parcour" instance=ExtResource("2_5o2d8")]
+position = Vector2(-389, -71)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(344, 135, 321, 96, 322, 18, 325, -33, 463, -33, 465, 9, 461, 141)
+data = SubResource("Resource_3gf4c")
+ceiling_height = 6.0
+portal_wall_length = 45.276924
+
+[node name="TextureOverride" parent="Sectors/Parcour/@Polygon2D@223595" instance=ExtResource("5_2gu0o")]
+position = Vector2(464, -12)
+texture = ExtResource("7_7nx0s")
+
+[node name="_Polygon2D_223595a" parent="Sectors/Parcour" instance=ExtResource("2_5o2d8")]
+position = Vector2(-389, -71)
+color = Color(1, 1, 1, 1)
+polygon = PackedVector2Array(485, -33, 485, 9, 465, 9, 463, -33)
+data = SubResource("Resource_2gu0o")
+ceiling_height = 4.0
+portal_wall_length = 42.0
+
+[node name="PlayerPosition" parent="." instance=ExtResource("7_iy4li")]
+position = Vector2(48, -74)
+rotation = -1.4394228
+
+[node name="Lights" type="Node2D" parent="."]
+position = Vector2(-62, -80)
+
+[node name="DirectionalLight" parent="Lights" instance=ExtResource("8_8qj84")]
+position = Vector2(20, -16)
+direction = Vector3(1, 0, 0)
+color = Color(0.95, 0.2945, 0.30542484, 1)
+
+[node name="DirectionalLight2" parent="Lights" instance=ExtResource("8_8qj84")]
+position = Vector2(28, -18)
+direction = Vector3(0, 0, 1)
+color = Color(0.20999998, 0.30216676, 1, 1)
+
+[node name="PointLight" parent="Lights" instance=ExtResource("9_qigy3")]
+position = Vector2(30, 122)
+intensity = 2.57
+curve = SubResource("Curve_tyshi")
+
+[node name="AmbientLight" parent="Lights" instance=ExtResource("10_pjlqe")]
+position = Vector2(11, -17)
+intensity = 0.3
