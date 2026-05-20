@@ -54,6 +54,7 @@ layout(std430, binding = 4) readonly buffer sector_matricies_buffer { mat4      
 bool out_of_range_sectors = false;
 bool out_of_range_walls = false;
 bool invalid_wall_id = false;
+bool close_to_wall   = false;
 bool max_hops_reached = false;
 bool debug_pixel = false;
 vec3 col_out_debug = vec3(0.0f);
@@ -89,6 +90,15 @@ float get_intersection_t(vec2 ray_origin, vec2 ray_direction, vec2 wall_p0, vec2
     return -1.0f;
 
   return ray_t;
+}
+
+float wall_dist(vec2 pt, vec2 wall_p0, vec2 wall_p1)
+{
+  vec2 wd = normalize(wall_p1 - wall_p0);
+  pt -= wall_p0;
+  float d = dot(pt, wd);
+  vec2 p = wd * d;
+  return distance(pt, p);
 }
 
 float shadow_coeff(vec3 position, vec3 light_pos_stitched, uint start_sector_id, PointLight light)
@@ -130,6 +140,7 @@ float shadow_coeff(vec3 position, vec3 light_pos_stitched, uint start_sector_id,
       return 0.0f;
     }
 
+    bool found_one = false;
     for (uint i = 0; i < sector.walls_count; ++i)
     {
       if (sector.walls_offset + i >= num_walls)
@@ -144,9 +155,22 @@ float shadow_coeff(vec3 position, vec3 light_pos_stitched, uint start_sector_id,
       if (dot(wall_normal, ray_direction.xz) > 0.001f)
         continue;
 
-      float t = get_intersection_t(ray_origin.xz, ray_direction.xz, wall.start, wall.end);
+      vec2 ray_from = ray_origin.xz;
+
+      // This fix works only in certain situations
+      /*
+      if (wall_dist(ray_from, wall.start, wall.end) < 0.03f)
+      {
+        //close_to_wall = true;
+        //return 0.0f;
+        ray_from += wall_normal * 0.04f;
+      }
+      */
+
+      float t = get_intersection_t(ray_from, ray_direction.xz, wall.start, wall.end);
       if (t > ray_t)
       {
+        found_one = true;
         wall_index = i;
         ray_t = t;
         break;
@@ -156,7 +180,7 @@ float shadow_coeff(vec3 position, vec3 light_pos_stitched, uint start_sector_id,
     if (wall_index == INVALID_WALL_ID)
     {
       invalid_wall_id = true;
-      return 0.0f;
+      return 0.9f; // Arbitrary pick to fit the surroundings
     }
 
     // check if ray collides with floor or ceiling
@@ -192,39 +216,14 @@ float rand(vec2 co)
   return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
-float signed_solid_angle(vec3 p, vec3 a, vec3 b, vec3 c)
-{
-	// Vectors from point to triangle vertices
-	vec3 va = a - p;
-	vec3 vb = b - p;
-	vec3 vc = c - p;
-
-	// Lengths
-	float la = length(va);
-	float lb = length(vb);
-	float lc = length(vc);
-
-	// Triple product (signed volume)
-	float numerator = dot(va, cross(vb, vc));
-
-	// Denominator
-	float denominator =
-		la * lb * lc +
-		dot(va, vb) * lc +
-		dot(vb, vc) * la +
-		dot(vc, va) * lb;
-
-	// atan2 gives correct sign and stability
-	return 2.0 * atan(numerator, denominator);
-}
-
 #define DO_SHADOWS 1
 
 void main()
 {
-  vec3 final_color = vec3(1.0f) * 0.0f;
-  vec3 position = wp + normal * 0.1f;
-  vec3 color = vec3(0.0);
+  const float one_over_pi = 1.0 / 3.141692;
+
+  vec3 final_color = vec3(0.0f);
+  vec3 position    = wp + vec3(0.0f, 0.0f, 0.0f);
 
   vec3 stitched_position = position;
   vec3 stitched_normal   = normal;
@@ -242,7 +241,6 @@ void main()
     float angle = dot(stitched_normal, light_direction);
     if (angle <= 0.0f)
       continue;
-
 
 #if DO_SHADOWS
     const int   num_samples = 1;
@@ -270,50 +268,14 @@ void main()
     final_color += diffuse * light.color * intensity * attenuation * shadow_coeff;
   }
 
-  /*
-  float signed_angle = 0.0f;
-  signed_angle += signed_solid_angle(camera_pos, wp00, wp01, wp10);
-  signed_angle += signed_solid_angle(camera_pos, wp01, wp11, wp10);
-  if (normal.y > 0.5)
-  {
-    // floor
-    signed_angle *= -1.0f;
-  }
-  */
-/*
-  if (u_num_lights == 0)
-  {
-    col_out_debug += vec3(1.0, 0.0, 0.0);
-  }
-  else if (u_num_lights == 1)
-  {
-    col_out_debug += vec3(0.0, 1.0, 0.0);
-  }
-  else if (u_num_lights == 2)
-  {
-    col_out_debug += vec3(0.0, 0.0, 1.0);
-  }
-  else if (u_num_lights == 3)
-  {
-    col_out_debug += vec3(1.0, 1.0, 0.0);
-  }
-  else if (u_num_lights == 4)
-  {
-    col_out_debug += vec3(0.0, 1.0, 1.0);
-  }
-  else
-  {
-    col_out_debug += vec3(1.0, 1.0, 1.0);
-  }
-*/
-
 //#define PIXEL_DEBUG
 #ifdef PIXEL_DEBUG
-/*
 if (debug_pixel)
   out_color = vec4(1.0, 1.0, 0.0, 1.0);
 else if (out_of_range_sectors)
   out_color = vec4(1.0, 0.0, 0.0, 1.0);
+else if (close_to_wall)
+  out_color = vec4(1.0, 1.0, 0.0, 1.0);
 else if (out_of_range_walls)
   out_color = vec4(0.0, 1.0, 0.0, 1.0);
 else if (invalid_wall_id)
@@ -322,10 +284,7 @@ else if (max_hops_reached)
   out_color = vec4(1.0, 0.0, 1.0, 1.0);
 else
   out_color = vec4(final_color, 1.0f);
-*/
-  out_color = vec4(col_out_debug, 1.0f);
 #else
   out_color = vec4(final_color, 1.0f);
-  //out_color = vec4(vec3(1.0f), 1.0f);
 #endif
 }

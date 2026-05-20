@@ -40,8 +40,8 @@ in flat uint good_indices[6];
 in flat vec2 good_offsets[6];
 in flat vec2 good_scales [6];
 
-#define GRID_N            10
-#define DO_DENOISE        0
+#define GRID_N            12
+#define DO_DENOISE        1
 #define DO_PART_DEBUG     0
 #define DO_DRAW_DEBUG     0
 #define BLUR_ACROSS_EDGES 1
@@ -104,13 +104,14 @@ void main()
 #endif
 
 #if DO_DENOISE
-  float sigma_s = float(GRID_N-3);
+  float sigma_s = float(GRID_N) / 3.0;
 
   for (int k = -GRID_N; k <= GRID_N; k += 1)
   {
+    int offset = k;
     ivec2 true_coord = u_horizontal == 1
-        ? ivec2(my_coord.x + k, my_coord.y)
-        : ivec2(my_coord.x,     my_coord.y + k);
+        ? ivec2(my_coord.x + offset, my_coord.y)
+        : ivec2(my_coord.x,     my_coord.y + offset);
     ivec2 coord      = true_coord;
 
     ivec2 to_center     = abs(my_coord - true_coord);

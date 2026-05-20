@@ -1,7 +1,7 @@
 #version 430 core
 
 #define MAX_PARTS 27
-#define NUM_SAMPLES_TOTAL_WHEN_BALANCING 32
+#define NUM_SAMPLES_TOTAL_WHEN_BALANCING 128
 #define DEBUG_DRAW 0
 #define CULL_INVISIBLE_PIXELS 0
 #define INSPECTED_PART 0
@@ -614,7 +614,10 @@ void main()
   }
 #endif
 
-  sum = sum * one_over_pi / max(num_samples_total, 1); // prevent division by 0
+  //sum = sum * one_over_pi / max(num_samples_total, 1); // prevent division by 0
+  // NOTE: Removed division by PI for consistency because we are already not doing it in the
+  //       direct illumination shader.
+  sum = sum / max(num_samples_total, 1); // prevent division by 0
 
   vec3 final_color = vec3(0.0, 0.0, 0.0);
 #if DEBUG_DRAW
