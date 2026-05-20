@@ -66,7 +66,7 @@ void UserInterfaceSystem::on_event(ModuleEvent& event)
     menu->post_init();
     break;
   case ModuleEventType::game_update:
-    hud_display->update();
+    hud_display->update(event.update.dt);
     menu->update();
     screen_effect->update(event.update.dt);
     break;
