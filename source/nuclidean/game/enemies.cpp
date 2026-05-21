@@ -100,7 +100,7 @@ EnemyStats ENEMY_STATS[] =
       1.0f,
       1.5f,
       2.0f,
-      1.6f,
+      2.0f,
     },
     .attack_frame = 17,
     .is_melee = false,
