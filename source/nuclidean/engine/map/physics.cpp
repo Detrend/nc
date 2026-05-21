@@ -509,7 +509,7 @@ static bool calc_path_raw
         auto p2 = wall2.pos;
         auto p1_to_p2 = p2 - p1;
         auto wall_length = length(p1_to_p2);
-        if (next_sd.force_walkable || wall1.force_walkable || wall2.force_walkable || (wall_length > radius * 2.0f)) // side to side clearance
+        if (next_sdd.force_walkable || wall1.force_walkable || wall2.force_walkable || (wall_length > radius * 2.0f)) // side to side clearance
         {
           vec2 wall_dir;
           wall_dir = normalize_or_zero(p1_to_p2);
