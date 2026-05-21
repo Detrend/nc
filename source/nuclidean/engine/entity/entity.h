@@ -69,6 +69,8 @@ public:
   SectorSnapType    get_snap_type()   const;
   f32               get_snap_offset() const;
 
+  bool              is_physics_enabled() const;
+
   // =============================================
   //              Utility
   // =============================================

@@ -8,7 +8,6 @@
 
 #include <stack_vector.h>
 
-#include <algorithm> // std::transform
 #include <iterator>  // std::back_inserter
 
 namespace nc
@@ -24,18 +23,12 @@ EntityAttachment::EntityAttachment(EntityRegistry& reg)
 //==============================================================================
 void EntityAttachment::on_entity_move(EntityID id, vec3 p, f32, f32)
 {
-  auto it = m_child_mapping.find(id);
-  if (it == m_child_mapping.end())
-  {
-    return;
-  }
-
   // Move all children
-  for (const Attachment& attach : it->second)
+  for (const Attachment& attach : m_attachments)
   {
-    if (attach.type & EntityAttachmentFlags::copy_position)
+    if (attach.parent == id && (attach.type & EntityAttachmentFlags::copy_position))
     {
-      Entity* entity = m_registry.get_entity(attach.entity);
+      Entity* entity = m_registry.get_entity(attach.child);
       nc_assert(entity);
 
       entity->set_position(p + UP_DIR * attach.offset);
@@ -48,28 +41,23 @@ void EntityAttachment::on_entity_garbaged(EntityID id)
 {
   this->detach_entity(id);
 
-  auto it = m_child_mapping.find(id);
-  if (it == m_child_mapping.end())
-  {
-    return;
-  }
-
-  const AttachmentList& attach_list = it->second;
   StackVector<EntityID, 16> kill_list;
-  for (const Attachment& attach : attach_list)
+
+  // Remove 
+  std::erase_if(m_attachments, [&](const Attachment& attach)
   {
-    if (attach.type & EntityAttachmentFlags::kill_on_death)
+    if (attach.parent == id)
     {
-      kill_list.push_back(attach.entity);
+      if (attach.type & EntityAttachmentFlags::kill_on_death)
+      {
+        kill_list.push_back(attach.child);
+      }
+
+      return true;
     }
 
-    // This will remove it from the child mapping as well. The child mapping is
-    // destroyed after the last entity is removed from it.
-    this->detach_entity(attach.entity);
-  }
-
-  // Now, the child mapping should be dead
-  nc_assert(!m_child_mapping.contains(id));
+    return false;
+  });
 
   // Then kill all the entities that should die with us
   for (EntityID to_kill : kill_list)
@@ -106,6 +94,15 @@ void EntityAttachment::attach_entity
   nc_assert(m_registry.get_entity(parent_id) != nullptr);
 
 #if NC_ASSERTS
+  static u64 max_attachments_for_warning = 32;
+  if (m_attachments.size() > max_attachments_for_warning)
+  {
+    nc_warn("More than {} entity attachments in parallel! Too many attachments can cause performance issues!", max_attachments_for_warning);
+    max_attachments_for_warning *= 2; // Double so that we do not emit a warning every frame
+  }
+#endif
+
+#if NC_ASSERTS
   // Check if this would not create a cyclic hierarchy
   EntityID parent = this->get_entity_parent(parent_id);
   while (parent != INVALID_ENTITY_ID)
@@ -115,102 +112,46 @@ void EntityAttachment::attach_entity
   }
 #endif
 
-  // Insert into the child list
-  AttachmentList& attachments = m_child_mapping[parent_id];
-  attachments.push_back(Attachment
+  m_attachments.push_back(Attachment
   {
-    .entity = child_id,
-    .offset = 0.0f,
-    .type   = attachment_type
+    .parent = parent_id,
+    .child  = child_id,
+    .type   = attachment_type,
   });
-
-  // Insert into the parent list
-  m_parent_mapping[child_id] = parent_id;
 }
 
 //==============================================================================
 void EntityAttachment::detach_entity(EntityID id)
 {
-  nc_assert(m_registry.get_entity(id) != nullptr, "Entity does not exist.");
-
-  auto it_to_parent_mapping = m_parent_mapping.find(id);
-  if (it_to_parent_mapping == m_parent_mapping.end())
+  std::erase_if(m_attachments, [&](const Attachment& attach)
   {
-    // Not attached
-    return;
-  }
-
-  EntityID parent = it_to_parent_mapping->second;
-  nc_assert(m_child_mapping.contains(parent));
-
-  auto it_to_child_mapping = m_child_mapping.find(parent);
-  AttachmentList& list = it_to_child_mapping->second;
-
-  [[maybe_unused]]u64 erased_cnt = std::erase_if
-  (
-    list,
-    [id](const Attachment& attachment)
-    {
-      return attachment.entity == id;
-    }
-  );
-
-  nc_assert(erased_cnt == 1);
-
-  m_parent_mapping.erase(it_to_parent_mapping);
-
-  if (!list.size())
-  {
-    m_child_mapping.erase(it_to_child_mapping);
-  }
+    return attach.child == id;
+  });
 }
 
 //==============================================================================
 void EntityAttachment::change_attachment(EntityID id, EntityAttachmentType type)
 {
-  auto it = m_parent_mapping.find(id);
-  if (it == m_parent_mapping.end())
+  auto it = std::find_if(m_attachments.begin(), m_attachments.end(), [&](const Attachment& attach)
   {
-    return;
-  }
+    return attach.child == id;
+  });
 
-  AttachmentList& list = m_child_mapping[it->second];
-  for (Attachment& attachment : list)
+  if (it != m_attachments.end())
   {
-    if (attachment.entity == id)
-    {
-      attachment.type = type;
-      return;
-    }
+    it->type = type;
   }
-
-  nc_assert(false);
 }
 
 //==============================================================================
 EntityID EntityAttachment::get_entity_parent(EntityID id) const
 {
-  if (auto it = m_parent_mapping.find(id); it != m_parent_mapping.end())
+  auto it = std::find_if(m_attachments.begin(), m_attachments.end(), [&](const Attachment& attach)
   {
-    return it->second;
-  }
+    return attach.child == id;
+  });
 
-  return INVALID_ENTITY_ID;
-}
-
-//==============================================================================
-const EntityAttachment::AttachmentList* EntityAttachment::get_entity_children
-(
-  EntityID id
-)
-const
-{
-  if (auto it = m_child_mapping.find(id); it != m_child_mapping.end())
-  {
-    return &it->second;
-  }
-
-  return nullptr;
+  return it == m_attachments.end() ? INVALID_ENTITY_ID : it->parent;
 }
 
 }

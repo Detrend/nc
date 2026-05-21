@@ -1734,6 +1734,7 @@ int build_map
     SectorData&    output_sector     = output.sectors.emplace_back();
     SectorDynData& output_sector_dyn = output.sectors_dynamic.emplace_back();
 
+    output_sector_dyn.force_walkable = sector.force_walkable;
     output_sector_dyn.floor_height = sector.floor_y[0];
     output_sector_dyn.ceil_height  = sector.ceil_y [0];
     output_sector.state_floors[0] = output_sector.state_floors[1] = 0.0f;
@@ -1843,6 +1844,7 @@ int build_map
         .portal_sector_id  = portal_with,
         .nc_portal_wall_id = nuclidean_wall_rel_idx,
         .segment_count     = segment_cnt,
+        .force_walkable    = sector.force_walkable
       });
     }
   }

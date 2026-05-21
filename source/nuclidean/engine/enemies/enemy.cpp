@@ -1025,6 +1025,12 @@ void Enemy::on_player_traversed_nc_portal(EntityID player_id, mat4 /*transform*/
 }
 
 //==============================================================================
+bool Enemy::is_physics_enabled() const
+{
+  return this->state != EnemyAiState::dead;
+}
+
+//==============================================================================
 Appearance& Enemy::get_appearance()
 {
   return this->appear;
