@@ -2,9 +2,12 @@
 #include <engine/map/physics.h>
 
 #include <cvars.h>
+#include <engine/core/engine.h>
+#include <engine/game/game_system.h>
 #include <engine/map/map_system.h>
 #include <engine/entity/entity_system.h>
 #include <engine/entity/sector_mapping.h>
+#include <engine/map/map_dynamics.h>
 
 #include <math/lingebra.h>
 
@@ -455,12 +458,37 @@ static bool calc_path_raw
         return;
       }
 
-      const SectorDynData& next_sd = map.sectors_dynamic[next_sector];
-      f32 sector_height = next_sd.ceil_height - next_sd.floor_height;
-      if (sector_height <= height)
+      const SectorDynData& next_sdd = map.sectors_dynamic[next_sector];
+      f32 sector_height = next_sdd.ceil_height - next_sdd.floor_height;
+      if (sector_height <= height) // we check if this sector has an activator and if it can be triggered by enemies
       {
+        const SectorData& next_sd = map.sectors[next_sector];
+        if (next_sd.activator == INVALID_ACTIVATOR_ID)
+        {
+          return;
+        }
+
+        bool found = false;
+        std::vector<TriggerData> trig = get_engine().get_module<GameSystem>().get_map_dynamics().triggers;
+        for (u32 i = 0; i < trig.size(); i++)
+        {
+          if (trig[i].activator != next_sd.activator)
+          {
+            continue;
+          }
+
+          if (trig[i].enemy_sensitive)
+          {
+            found = true;
+            break;
+          }
+        }
+
         // We wouldn't fit into this sector
-        return;
+        if (!found)
+        {
+          return;
+        }
       }
 
       if (!visited.contains(next_sector))
