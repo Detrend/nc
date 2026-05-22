@@ -31,12 +31,12 @@ end_cap_mode = 2
 
 [node name="PortalVisualizerLine" type="Line2D" parent="."]
 z_index = 1
-width = 3.0
+points = PackedVector2Array(2181, 815)
+width = 1.0
 default_color = Color(0, 0.513002, 1.92523e-07, 1)
 
 [node name="PortalDestinationVisualizerLine" type="Line2D" parent="."]
 z_index = 1
-points = PackedVector2Array(3076, 1001)
 width = 1.0
 default_color = Color(0.54214, 0.104039, 0.127324, 1)
 
