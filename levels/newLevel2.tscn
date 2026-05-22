@@ -1,4 +1,4 @@
-[gd_scene load_steps=245 format=3 uid="uid://qa2w68k6j6h2"]
+[gd_scene load_steps=249 format=3 uid="uid://qa2w68k6j6h2"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_1o0vd"]
 [ext_resource type="Script" uid="uid://b8tkglirbwf1e" path="res://scripts/reactivity/ActivatorPool.gd" id="2_b0a4w"]
@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://cn044shocju7e" path="res://prefabs/WallAttachments/WallButton.tscn" id="8_ufqas"]
 [ext_resource type="PackedScene" uid="uid://ctwevapidummr" path="res://prefabs/Lights/PointLight.tscn" id="9_qxoy5"]
 [ext_resource type="PackedScene" uid="uid://2lt4yhe883yf" path="res://prefabs/Lights/AmbientLight.tscn" id="10_b0a4w"]
+[ext_resource type="PackedScene" uid="uid://dgwhwixwr1rac" path="res://prefabs/Entities/Grunt.tscn" id="10_vy02w"]
 [ext_resource type="Script" uid="uid://d3f0i3y2s53si" path="res://scripts/sector/StairMaker.gd" id="11_et0pd"]
 [ext_resource type="PackedScene" uid="uid://3yx126jx5y0c" path="res://prefabs/PickUps/PlasmaRifle.tscn" id="11_krcvx"]
 [ext_resource type="PackedScene" uid="uid://guolywc6hufx" path="res://prefabs/PickUps/PlasmaAmmo.tscn" id="12_coai7"]
@@ -26,6 +27,7 @@
 [ext_resource type="PackedScene" uid="uid://b8tr8d62bd5s2" path="res://prefabs/PickUps/HpBig.tscn" id="18_b0a4w"]
 [ext_resource type="PackedScene" uid="uid://1dbhovgj17my" path="res://prefabs/PickUps/Shotgun.tscn" id="19_et0pd"]
 [ext_resource type="PackedScene" uid="uid://cm0wgegxiipjw" path="res://prefabs/PickUps/HpSmall.tscn" id="20_yvvru"]
+[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/sector/Sector.gd" id="21_22bor"]
 [ext_resource type="PackedScene" uid="uid://c36mdme0482de" path="res://materials/skyboxes/skybox_default.tscn" id="22_ruwff"]
 [ext_resource type="Resource" uid="uid://07tb0h3qhkbs" path="res://materials/ga_lvl2/monument.tres" id="23_jxsxr"]
 [ext_resource type="PackedScene" uid="uid://mwrf1vplbdod" path="res://levels/newLevel2_components/faux_arena_1.tscn" id="23_l7qbx"]
@@ -701,6 +703,18 @@ ceiling_height = 7.0
 material = ExtResource("3_krcvx")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
+[sub_resource type="Resource" id="Resource_yscse"]
+script = ExtResource("4_coai7")
+ceiling_height = 0.01
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_c1y55"]
+script = ExtResource("4_coai7")
+ceiling_height = 5.0
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
 [sub_resource type="Resource" id="Resource_3k2qe"]
 script = ExtResource("4_coai7")
 floor_height = 0.2
@@ -1277,7 +1291,7 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_tqsqc"]
 script = ExtResource("4_coai7")
-ceiling_height = 100.0
+ceiling_height = 6.0
 material = ExtResource("17_7nxdn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
@@ -1477,7 +1491,6 @@ script = ExtResource("3_et0pd")
 
 [node name="Hook" type="Node" parent="Activators/TeleportTest"]
 script = ExtResource("4_7nxdn")
-is_single_use = null
 
 [node name="GunDestination" parent="Activators/TeleportTest/Hook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-65, -65)
@@ -1552,7 +1565,6 @@ script = ExtResource("4_278tx")
 
 [node name="CultistUbications_Door1" type="Node" parent="Activators"]
 script = ExtResource("3_et0pd")
-threshold = 0
 
 [node name="CultistUbication_DoorExit" type="Node" parent="Activators"]
 script = ExtResource("3_et0pd")
@@ -1565,39 +1577,37 @@ script = ExtResource("3_et0pd")
 
 [node name="TeleportHook" type="Node" parent="Activators/CultistUbication_BlashpemyEncounter"]
 script = ExtResource("4_7nxdn")
-is_single_use = null
 
 [node name="Destination" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-position = Vector2(8, -160)
-target = NodePath("../Cultist5")
+position = Vector2(14, -159)
+target = NodePath("../Grunt")
 
 [node name="Destination2" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-position = Vector2(30, -160)
+position = Vector2(33, -156)
 target = NodePath("../Cultist6")
 
 [node name="Destination3" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-position = Vector2(18, -162)
-target = NodePath("../Cultist7")
+position = Vector2(24, -159)
+target = NodePath("../Grunt2")
 
 [node name="Destination4" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-position = Vector2(-2, -152)
+position = Vector2(5, -156)
 target = NodePath("../Cultist8")
 
-[node name="Cultist5" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" instance=ExtResource("25_i76wg")]
-position = Vector2(107.99999, -122)
-rotation = -1.5878946
+[node name="Grunt" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" instance=ExtResource("10_vy02w")]
+position = Vector2(110, -122)
+rotation = 0.038884163
 
 [node name="Cultist6" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" instance=ExtResource("25_i76wg")]
 position = Vector2(120, -122)
-rotation = -1.5878946
+rotation = -0.113182545
 
-[node name="Cultist7" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" instance=ExtResource("25_i76wg")]
-position = Vector2(114.00001, -114.00001)
-rotation = -1.5878946
+[node name="Grunt2" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" instance=ExtResource("10_vy02w")]
+position = Vector2(115, -124)
 
 [node name="Cultist8" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" instance=ExtResource("25_i76wg")]
 position = Vector2(120, -116)
-rotation = -1.5878946
+rotation = -0.020765305
 
 [node name="Sectors" type="Node2D" parent="."]
 
@@ -2993,18 +3003,50 @@ portal_destination_wall_length = 16.0
 [node name="Sector-3926a" parent="Sectors/Node2D/Corridor4" instance=ExtResource("2_eukjm")]
 position = Vector2(-118, -162.30923)
 color = Color(0.99968874, 0.9947698, 0.9970863, 1)
-polygon = PackedVector2Array(-55, 12.309235, -55, -3.6907654, -35, -3.6907654, -33, -0.6907654, -33, 9.309235, -35, 12.309235)
+polygon = PackedVector2Array(-55, 12.309235, -55, 11.309235, -55, -2.6907654, -55, -3.6907654, -35, -3.6907654, -33, -0.6907654, -33, 9.309235, -35, 12.309235)
 data = SubResource("Resource_aq578")
 ceiling_height = 7.0
-portal_wall_length = 16.0
+portal_wall_length = 1.0
 
 [node name="Sector-3926n" parent="Sectors/Node2D/Corridor4" instance=ExtResource("2_eukjm")]
 position = Vector2(-118, -162.30923)
 color = Color(0.99968874, 0.9947698, 0.9970863, 1)
-polygon = PackedVector2Array(-107, 12.309235, -107, -3.6907654, -55, -3.6907654, -55, 12.309235)
+polygon = PackedVector2Array(-107, 12.309235, -107, -3.6907654, -58, -3.6907654, -57, -2.6907654, -57, 11.309235, -58, 12.309235)
 data = SubResource("Resource_0fpoy")
 ceiling_height = 7.0
 portal_wall_length = 16.0
+
+[node name="Sector-3926w" type="Polygon2D" parent="Sectors/Node2D/Corridor4" instance=ExtResource("2_eukjm")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-118, -162.30923)
+color = Color(0.9404919, 9.971403e-07, 0.4429023, 1)
+polygon = PackedVector2Array(-57, -2.6907654, -56, -2.6907654, -56, 11.309235, -57, 11.309235)
+script = ExtResource("21_22bor")
+data = SubResource("Resource_yscse")
+ceiling_height = 0.01
+sector_material = ExtResource("3_krcvx")
+portal_wall_length = 1.0
+portal_destination_wall_length = -1.0
+
+[node name="Configuration" type="Node" parent="Sectors/Node2D/Corridor4/Sector-3926w" node_paths=PackedStringArray("source")]
+script = ExtResource("13_py677")
+source = NodePath("../../../../../Activators/CultistUbication_DoorExit")
+ceiling_mode = 2
+ceiling_height = 4.75
+
+[node name="Sector-3926v" type="Polygon2D" parent="Sectors/Node2D/Corridor4" instance=ExtResource("2_eukjm")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-118, -162.30923)
+color = Color(0.99847525, 0.9743774, 0.9857257, 1)
+polygon = PackedVector2Array(-56, -2.6907654, -55, -2.6907654, -55, 11.309235, -56, 11.309235)
+script = ExtResource("21_22bor")
+data = SubResource("Resource_c1y55")
+ceiling_height = 5.0
+sector_material = ExtResource("3_krcvx")
+portal_wall_length = 1.0
+portal_destination_wall_length = -1.0
 
 [node name="Sector-3926h" parent="Sectors/Node2D/Corridor4" instance=ExtResource("2_eukjm")]
 position = Vector2(-118, -162.30923)
@@ -3892,12 +3934,12 @@ portal_wall_length = 3.1622777
 [node name="Sector-2496a" parent="Sectors/Node2D/Corridor4/HiddenPlace/TriangulatedMultisector-686/TriangulatedMultisector-6952" instance=ExtResource("2_eukjm")]
 position = Vector2(-34.39186, 13.745819)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(0.71403503, 1.9921112, 2.714035, 5.992111, -0.28596497, 4.992111, -1.285965, 1.9921112)
+polygon = PackedVector2Array(0.71403503, 1.9921112, 2.714035, 7.992111, -1.285965, 5.992111, -1.285965, 1.9921112)
 data = SubResource("Resource_hqi57")
 floor_height = 3.0
 ceiling_height = 100.0
 sector_material = ExtResource("23_jxsxr")
-portal_wall_length = 4.472136
+portal_wall_length = 6.3245554
 
 [node name="Sector-779" parent="Sectors/Node2D/Corridor4/HiddenPlace/TriangulatedMultisector-686/TriangulatedMultisector-6952" instance=ExtResource("2_eukjm")]
 position = Vector2(-20.119434, 12.914316)
@@ -3922,12 +3964,12 @@ portal_wall_length = 1.4142135
 [node name="Sector-779a" parent="Sectors/Node2D/Corridor4/HiddenPlace/TriangulatedMultisector-686/TriangulatedMultisector-6952" instance=ExtResource("2_eukjm")]
 position = Vector2(-24.305565, 13.796249)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(-1.372261, 5.941681, 0.62773895, 1.9416809, 2.627739, 1.9416809, 1.627739, 4.941681)
+polygon = PackedVector2Array(-1.372261, 7.941681, 0.62773895, 1.9416809, 2.627739, 1.9416809, 2.627739, 5.941681)
 data = SubResource("Resource_oqhyn")
 floor_height = 3.0
 ceiling_height = 100.0
 sector_material = ExtResource("23_jxsxr")
-portal_wall_length = 4.472136
+portal_wall_length = 6.3245554
 
 [node name="Sector-779b" parent="Sectors/Node2D/Corridor4/HiddenPlace/TriangulatedMultisector-686/TriangulatedMultisector-6952" instance=ExtResource("2_eukjm")]
 position = Vector2(-24.305565, 13.796249)
@@ -3982,11 +4024,11 @@ portal_wall_length = 4.472136
 [node name="Sector-3153" parent="Sectors/Node2D/Corridor4/HiddenPlace/TriangulatedMultisector-686/TriangulatedMultisector-6952" instance=ExtResource("2_eukjm")]
 position = Vector2(-31.347824, 25.954361)
 color = Color(1, 1, 1, 1)
-polygon = PackedVector2Array(2.6699982, -4.2164307, 14.669998, -3.2164307, 16.669998, 2.7835693, -11.330002, 2.7835693, -9.330002, -3.2164307)
+polygon = PackedVector2Array(14.669998, -3.2164307, 16.669998, 2.7835693, -11.330002, 2.7835693, -9.330002, -3.2164307)
 data = SubResource("Resource_gcrnl")
 ceiling_height = 100.0
 sector_material = ExtResource("17_7nxdn")
-portal_wall_length = 12.0415945
+portal_wall_length = 6.3245554
 
 [node name="Trigger" type="Node" parent="Sectors/Node2D/Corridor4/HiddenPlace/TriangulatedMultisector-686/TriangulatedMultisector-6952/Sector-3153" node_paths=PackedStringArray("target")]
 script = ExtResource("13_et0pd")
@@ -4031,10 +4073,10 @@ stripe_width = 1.0
 
 [node name="EnemyReservoir" parent="Sectors/Node2D/Corridor4/HiddenPlace" instance=ExtResource("2_eukjm")]
 position = Vector2(84, -78)
-color = Color(1, 1, 1, 1)
+color = Color(0.99914074, 0.9855601, 0.9919556, 1)
 polygon = PackedVector2Array(-8, 2, 18, 2, 14, 20, -6, 20)
 data = SubResource("Resource_tqsqc")
-ceiling_height = 100.0
+ceiling_height = 6.0
 sector_material = ExtResource("17_7nxdn")
 portal_wall_length = 26.0
 
@@ -4798,6 +4840,35 @@ position = Vector2(1061, -536)
 [node name="HpBig" parent="PickUps/Secret3_FauxArena" instance=ExtResource("18_b0a4w")]
 position = Vector2(1054, -535)
 
+[node name="CultistUbications" type="Node2D" parent="PickUps"]
+
+[node name="PlasmaAmmo15" parent="PickUps/CultistUbications" instance=ExtResource("12_coai7")]
+position = Vector2(62, -165)
+
+[node name="PlasmaAmmo16" parent="PickUps/CultistUbications" instance=ExtResource("12_coai7")]
+position = Vector2(-24, -165)
+
+[node name="PlasmaAmmo18" parent="PickUps/CultistUbications" instance=ExtResource("12_coai7")]
+position = Vector2(-82, -128)
+
+[node name="PlasmaAmmo17" parent="PickUps/CultistUbications" instance=ExtResource("12_coai7")]
+position = Vector2(-24, -160)
+
+[node name="HpBig4" parent="PickUps/CultistUbications" instance=ExtResource("18_b0a4w")]
+position = Vector2(-86, -132)
+
+[node name="HpSmall4" parent="PickUps/CultistUbications" instance=ExtResource("20_yvvru")]
+position = Vector2(106, -167)
+
+[node name="HpSmall6" parent="PickUps/CultistUbications" instance=ExtResource("20_yvvru")]
+position = Vector2(-133, -197)
+
+[node name="HpSmall7" parent="PickUps/CultistUbications" instance=ExtResource("20_yvvru")]
+position = Vector2(-38, -196)
+
+[node name="HpSmall5" parent="PickUps/CultistUbications" instance=ExtResource("20_yvvru")]
+position = Vector2(110, -167)
+
 [node name="Enemies" type="Node2D" parent="."]
 
 [node name="Arena1_Trap" type="Node2D" parent="Enemies"]
@@ -4943,6 +5014,10 @@ enemy_sensitive = true
 [node name="Cultist2" parent="Enemies/FakeCorridor" instance=ExtResource("25_i76wg")]
 position = Vector2(-126.00001, -174)
 rotation = -1.5878946
+
+[node name="Cultist5" parent="Enemies/FakeCorridor" instance=ExtResource("25_i76wg")]
+position = Vector2(19, -176)
+rotation = -3.0880494
 
 [node name="Cultist3" parent="Enemies/FakeCorridor" instance=ExtResource("25_i76wg")]
 position = Vector2(-150, -174)
