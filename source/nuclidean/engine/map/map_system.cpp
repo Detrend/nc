@@ -1583,7 +1583,10 @@ static bool resolve_non_convex_and_clockwise
 
     // 1/4 degree to account for float inaccuracies
     constexpr f32 MAX_DEGREE_DIFF = 0.25f;
-    const auto degree_diff = std::abs(degree_sum - 360.0f);
+    f32 degree_diff = std::abs(degree_sum - 360.0f);
+    while (degree_diff >= 360.0f) {
+      degree_diff -= 360.0f;
+    }
     if (degree_diff > MAX_DEGREE_DIFF)
     {
       // the sector is apparently degenerated
