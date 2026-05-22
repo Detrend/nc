@@ -294,7 +294,7 @@ static func sanity_check_all(level: Level, all_sectors: Array[Sector])->void:
 
 ## Check if this [Sector] is convex. Non-convex [Sectors] are invalid and have to be fixed by the user before exporting.
 func is_convex()->bool:
-	return Geometry2D.decompose_polygon_in_convex(self.polygon).size() == 1
+	return GeometryUtils.is_convex_polygon(self.polygon)
 	
 	# algorithm copypasted from: https://www.geeksforgeeks.org/dsa/check-if-given-polygon-is-a-convex-polygon-or-not/
 	@warning_ignore("unreachable_code")

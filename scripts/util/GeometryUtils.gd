@@ -207,7 +207,64 @@ static func polygon_to_convex_segments(polygon: PackedVector2Array, holes: Array
 	return ret
 
 static func is_convex_polygon(polygon: PackedVector2Array)->bool:
+	return is_convex_polygon_ingame(polygon)
 	return Geometry2D.decompose_polygon_in_convex(polygon).size() <= 1
+
+
+static func is_convex_polygon_ingame(sector: PackedVector2Array)->bool:
+	var degree_sum :float = 0.0
+	
+	# If the shape is convex then it will have only counter-clockwise
+	# angles or only clockwise angles
+	var counter_clockwise_count:int = 0
+	var clockwise_count :int = 0
+
+	# First, check the counter-clockwise ordering.
+	# We want the points to be in counter clockwise order. This can be
+	# determined by examining the sign of 2D cross product of two wall
+	# directions.
+	# The sign of the cross product should be positive or zero for
+	# clockwise rotated walls.
+	for curr_index in sector.size():
+		var next_index := (curr_index + 1) % sector.size();
+		var third_index := (next_index + 1) % sector.size();
+
+		var p1 := sector[curr_index]
+		var p2 := sector[next_index]
+		var p3 := sector[third_index]
+
+		var p1_to_p2 := p2 - p1;    # first wall direction
+		var p2_to_p3 := p3 - p2;    # second 		var 
+		var dot_prod := p1_to_p2.normalized().dot(p2_to_p3.normalized());
+		var degrees := rad_to_deg(acos(dot_prod));
+		
+		degree_sum += degrees;
+
+		# By using the 2D cross product we determine if two walls
+		# are counter clockwise or clockwise
+		var sg := signf(p1_to_p2.cross(p2_to_p3))
+		if (sg < 0.0):
+			#this angle between two walls is
+			clockwise_count += 1;
+		elif (sg > 0.0):
+			counter_clockwise_count += 1;
+
+		if (clockwise_count && counter_clockwise_count):
+			#the shape is non convex, we can stop here..
+			ErrorUtils.report_warning("Counted {0} clockwise VS {1} counterclockwise".format([clockwise_count, counter_clockwise_count]))
+			return false
+		
+		
+	var MAX_DEGREE_DIFF : float = 0.25
+	var degree_diff := absf(degree_sum - 360.0)
+	while degree_diff >= 360.0:
+		degree_diff -= 360.0
+	if (degree_diff > MAX_DEGREE_DIFF):
+		# the sector is apparently degenerated
+		ErrorUtils.report_warning("Degenerated sector - {0} degree diff".format([degree_diff]))
+		return false;
+	return true
+
 
 static func get_orthogonal(v: Vector2)->Vector2:
 	return Vector2(v.y, -v.x)
