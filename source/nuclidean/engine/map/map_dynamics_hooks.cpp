@@ -84,6 +84,10 @@ namespace nc
 
   void ActivatorHook_Teleport::load([[maybe_unused]] const ActivatorHookLoadArg& arg)
   {
+    if (arg.data().contains("is_single_use")) {
+      this->is_single_use = arg.data()["is_single_use"];
+    }
+
     this->data.clear();
 
     for (const auto& destination_tag_js : arg.data()["destinations"]) {
@@ -102,6 +106,10 @@ namespace nc
 
   void ActivatorHook_Teleport::on_activated_start([[maybe_unused]] const ActivatorHookArg& args)
   {
+    if (this->is_single_use && this->did_teleport) {
+      return;
+    }
+    this->did_teleport = true;
     for (const auto& it : this->data) {
       GameHelpers::get().request_entity_teleport(it.entity, it.destination_position);
     }
