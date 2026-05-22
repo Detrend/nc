@@ -31,6 +31,20 @@ extends EditablePolygon
 ## If enabled, do not automatically triangulate this sector on input events
 @export var only_manual_triangulation : bool = false
 
+@export_category("Sector Properties")
+
+@export var floor_height : float:
+	get: return data.floor_height
+	set(val): data.floor_height = val
+
+@export var ceiling_height : float:
+	get: return data.ceiling_height
+	set(val): data.ceiling_height = val
+
+@export var sector_material : SectorMaterial:
+	get: return data.material
+	set(val): data.material = val
+
 ## Sector config to be used for all generated sectors
 @export var data : SectorProperties = SectorProperties.new()
 

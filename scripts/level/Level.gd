@@ -10,6 +10,9 @@ class_name Level
 extends Node2D
 
 var config : EditorConfig = load("res://config.tres") as EditorConfig
+
+@export var is_debug_mode : bool = false
+
 ## Edittime option - how to visualize the sectors? (E.g. based on their floor/ceiling height or their texturing material)
 @export var coloring_mode: EditorConfig.SectorColoringMode = EditorConfig.SectorColoringMode.Floor:
 	get: return coloring_mode
@@ -52,6 +55,11 @@ func get_undo_redo_raw()->UndoRedo:
 	var ret := unre.get_history_undo_redo(unre.get_object_history_id(self))
 	if not ret: print("Level::get_undo_redo_raw()... no unre: {0}".format([unre.get_object_history_id(self)]))
 	return ret
+
+static func get_level(this: Node)->Level:
+		var ret : Level = this.get_tree().edited_scene_root as Level
+		if not ret: ret = NodeUtils.get_ancestor_component_of_type(this, Level) as Level
+		return ret
 
 ## Nodes in the [Level] can await this signal to perform an action with at the end of a frame update, after everyone's inputs etc. had been processed
 signal every_frame_signal()

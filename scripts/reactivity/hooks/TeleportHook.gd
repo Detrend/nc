@@ -15,7 +15,9 @@ func get_type()->String: return "teleport"
 func do_export(out: Dictionary)->void:
 	super.do_export(out)
 	var destinations : PackedInt64Array = []
-	for destination : TeleportDestination in Thing.get_all_things(self, TeleportDestination):
-		destinations.append(destination._export_tag)
+	if not Level.get_level(self).is_debug_mode:
+		for destination : TeleportDestination in Thing.get_all_things(self, TeleportDestination):
+			destinations.append(destination._export_tag)
+	
 	out['destinations'] = destinations
 	out['is_single_use'] = is_single_use

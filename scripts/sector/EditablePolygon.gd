@@ -28,8 +28,7 @@ func set_data(new_data : SectorProperties)-> void:
 ## Root [Level] where this [Sector] resides in
 var _level : Level:
 	get: 
-		if not _level: _level = get_tree().edited_scene_root as Level
-		if not _level: _level = NodeUtils.get_ancestor_component_of_type(self, Level) as Level
+		if not _level: _level = Level.get_level(self)
 		return _level
 	set(val):
 		_level = val
