@@ -28,19 +28,17 @@ namespace nc
 {
 
 //==============================================================================
-Entity::Entity(vec3 position, f32 radius, f32 height)
-: m_position(position)
-, m_radius2d(radius)
-, m_height(height)
+void Entity::init(vec3 position, f32 radius, f32 height)
 {
-
+  m_position = position;
+  m_radius2d = radius;
+  m_height   = height;
 }
 
 //==============================================================================
-Entity::Entity(vec3 position, f32 radius)
-: Entity(position, radius, radius)
+void Entity::init(vec3 position, f32 radius)
 {
-
+  this->init(position, radius, radius);
 }
 
 //==============================================================================

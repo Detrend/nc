@@ -19,7 +19,7 @@ public:
 
   f32 strength;
 
-  AmbientLight(f32 strength);
+  void init(f32 strength);
 };
 
 // GPU data friendly with std430 layout
@@ -41,7 +41,7 @@ public:
   vec3   direction = vec3(0.218f, 0.872f, 0.436f);
   f32    intensity = 1.0f;
 
-  DirectionalLight
+  void init
   (
     const vec3& direction = vec3(0.218f, 0.872f, 0.436f),
     f32 intensity = 1.0f,
@@ -93,7 +93,7 @@ public:
   // be properly tracked in the sector to entity mapping.
   void refresh_entity_radius();
 
-  PointLight
+  void init
   (
     const vec3&   position,   // Position of the light in the world
     f32           radius,     // Radius of the light in meters

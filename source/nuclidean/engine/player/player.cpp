@@ -116,18 +116,19 @@ T ViewBobStack<T, StackSize>::get_sum() const
 }
 
 //==============================================================================
-Player::Player(vec3 position, vec3 forward)
-: Base(position, PLAYER_RADIUS, PLAYER_HEIGHT)
-, angle_yaw(atan2f(forward.z, -forward.x) + HALF_PI) // MR says: no idea if it's ok
-, current_health(CVars::player_max_hp)
-, owned_weapons(DEFAULT_WEAPONS)
-, current_weapon(WeaponTypes::wrench)
-, weapon_fsm(0)
+void Player::init(vec3 position, vec3 in_forward)
 {
+  Entity::init(position, PLAYER_RADIUS, PLAYER_HEIGHT);
+  this->angle_yaw      = atan2f(in_forward.z, -in_forward.x) + HALF_PI; // MR says: no idea if it's ok
+  this->current_health = CVars::player_max_hp;
+  this->owned_weapons  = DEFAULT_WEAPONS;
+  this->current_weapon = WeaponTypes::wrench;
+  this->weapon_fsm     = WeaponAnimFSM(0);
+
   this->camera.update_transform(position, angle_yaw, angle_pitch, 0.0f, 0.0f);
 
   // -10 will make sure that these frames will never be considered for averaging
-  std::fill(cam_smoothing.times.begin(), cam_smoothing.times.end(), -10.0); 
+  std::fill(cam_smoothing.times.begin(), cam_smoothing.times.end(), -10.0);
 
   // Has to be called to set-up the FSM
   this->change_weapon(this->get_equipped_weapon());

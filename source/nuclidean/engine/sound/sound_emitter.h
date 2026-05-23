@@ -17,7 +17,7 @@ class SoundEmitter : public Entity
 public:
   static EntityType get_type_static();
 
-  SoundEmitter
+  void init
   (
     vec3    position,
     SoundID sound,

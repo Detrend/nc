@@ -11,7 +11,7 @@ class Teleport : public Entity
 public:
   static EntityType get_type_static();
 
-  Teleport(vec3 position, EntityID to_teleport);
+  void init(vec3 position, EntityID to_teleport);
 
   void post_init();
   void update(f32 delta);

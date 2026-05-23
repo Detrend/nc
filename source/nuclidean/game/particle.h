@@ -21,7 +21,7 @@ public:
 
   void update(f32 delta);
 
-  Particle
+  void init
   (
     vec3   position,
     cstr   sprite,
@@ -32,7 +32,7 @@ public:
     f32    scale       = 30.0f
   );
 
-  Particle
+  void init
   (
     vec3   position,
     f32    duration,

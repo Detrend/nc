@@ -791,7 +791,7 @@ static f32 calc_light_radius_mod(const PointLight& light)
   f64 time = time_since_start + cast<f64>(light.intensity_cycle_offset);
 
   f32 fraction = cast<f32>(fmod(time, cast<f64>(light.intensity_cycle_len)));
-  u32 string_idx = cast<u32>(len * fraction / cycle_len);
+  u32 string_idx = min(cast<u32>(len * fraction / cycle_len), cast<u32>(len-1));
   nc_assert(string_idx < len);
 
   char character = clamp(string[string_idx], 'a', 'z'); // a = 100% intensity, z = 0% intensity

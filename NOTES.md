@@ -24,22 +24,22 @@ Reworks required if we would like to implement this:
 
 . Entity types - they would all have to be POD and stored in memory consecutively
   . Either make Appearance a POD, or remove it from entities
-    . Making it POD would require creating static string class
+    . [x] Making it POD would require creating static string class
   . ActorFSM has pointers, store only some index
   . Remove pointer to the entity register from entity base
     . We need to get the handle to registry from elsewhere
   . Paths on enemies can't be stored in a vector, but in a static array
 
-. Entity registry
-  . Store entities in memory consecutively
-  . Load them from binary
+. [ ] Entity registry
+  . [x] Store entities in memory consecutively
+  . [ ] Load them from binary
 
 . Entity mapping
   . Rebuild mapping after loading all new entities
 
-. Attachment manager
-  . Store mapping in binary, load on startup
-    . Maybe remake it to be linear in memory so it can be scanned into binary?
+. [ ] Attachment manager
+  . [ ] Store mapping in binary, load on startup
+  . [x] Maybe remake it to be linear in memory so it can be scanned into binary?
 
 . Map system
   . Remember states of the sectors

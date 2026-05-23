@@ -34,17 +34,17 @@ namespace nc
 }
 
 //==============================================================================
-Projectile::Projectile
+void Projectile::init
 (
   vec3 pos, vec3 dir, EntityID author, ProjectileType type
 )
-: Entity    (pos, PROJECTILE_STATS[type].radius, PROJECTILE_STATS[type].radius * 2.0f)
-, m_author  (author)
-, m_velocity(normalize(dir) * PROJECTILE_STATS[type].speed)
-, m_type    (type)
 {
-  using SprMode = Appearance::SpriteMode;
   const ProjectileStats& stats = PROJECTILE_STATS[type];
+
+  Entity::init(pos, stats.radius, stats.radius * 2.0f);
+  this->m_author   = author;
+  this->m_velocity = normalize(dir) * stats.speed;
+  this->m_type     = type;
 
   m_hit_cnt_remaining = stats.bounce_cnt + 1;
 

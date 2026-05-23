@@ -17,7 +17,7 @@ public:
   using Base = Entity;
   static EntityType get_type_static();
 
-  SkyBox(GLuint texture_handle, f32 exposure = 1.0f, bool use_gamma_correction = false);
+  void init(GLuint texture_handle, f32 exposure = 1.0f, bool use_gamma_correction = false);
 
   GLuint get_texture_handle() const;
 

@@ -21,12 +21,11 @@ constexpr f32  TELEPORTATION_DURATION = 1.0f;
 }
 
 //==============================================================================
-Teleport::Teleport(vec3 position, EntityID to_teleport)
-: Entity(position, 0.3f, 2.0f)
-, time_remaining(TELEPORTATION_DURATION)
-, entity(to_teleport)
+void Teleport::init(vec3 position, EntityID to_teleport)
 {
-
+  Entity::init(position, 0.3f, 2.0f);
+  this->time_remaining = TELEPORTATION_DURATION;
+  this->entity         = to_teleport;
 }
 
 //==============================================================================

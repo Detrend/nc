@@ -19,7 +19,7 @@ SectorSnapType Prop::get_snap_type() const
 }
 
 //==============================================================================
-Prop::Prop
+void Prop::init
 (
   vec3              pos,
   f32               rad,
@@ -27,11 +27,10 @@ Prop::Prop
   const Appearance& appear,
   SectorSnapType    snap
 )
-: Entity(pos, rad, height)
-, m_appear(appear)
-, m_snap(snap)
 {
-
+  Entity::init(pos, rad, height);
+  this->m_appear = appear;
+  this->m_snap   = snap;
 }
 
 //==============================================================================

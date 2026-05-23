@@ -24,9 +24,18 @@ void EntityRegistry::for_each(EntityTypeMask types, L lambda)
     if (types & (1_u64 << t))
     {
       // if so then iterate all entities
-      for (auto&[idx, entity_unique] : m_pools[t])
+      IEntityPool* pool = m_pools[t].get();
+      nc_assert(pool);
+
+      u64   cnt    = pool->get_cnt();
+      u64   stride = pool->get_stride();
+      byte* ptr    = recast<byte*>(pool->get_first());
+
+      // iterate all entities within the pool
+      for (u64 i = 0; i < cnt; ++i)
       {
-        lambda(*entity_unique);
+        Entity* entity = recast<Entity*>(&ptr[i * stride]);
+        lambda(*entity);
       }
     }
   }
@@ -44,26 +53,28 @@ void EntityRegistry::for_each(L lambda)
 
 //==============================================================================
 template<typename T, typename...Args>
-T* EntityRegistry::create_entity(Args...args)
+T* EntityRegistry::create_entity(Args&&...args)
 {
   nc_assert(T::get_type_static() < m_pools.size());
 
   EntityID id;
   id.type = T::get_type_static();
-  id.idx  = m_next_id++;
 
-  auto[it, is_ok] = m_pools[T::get_type_static()].insert
-  (
-    { id.idx, std::make_unique<T>(std::forward<Args>(args)...) }
-  );
+  Entity* entity = m_pools[T::get_type_static()]->create(id.idx);
 
-  nc_assert(is_ok);
-  Entity* entity = it->second.get();
+  // Setup ID
+  nc_assert(entity);
   this->setup_entity(*entity, id);
 
   // Notice that we have to call "post_init" on the correct type as it is
   // non-virtual.
   T* entity_typed = static_cast<T*>(entity);
+  entity_typed->init(std::forward<Args>(args)...);
+
+  // Call listeners
+  this->post_init_entity(*entity);
+
+  // And call post init (not sure if needed)
   entity_typed->post_init();
 
   return entity_typed;

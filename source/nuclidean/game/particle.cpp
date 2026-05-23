@@ -20,7 +20,7 @@ namespace nc
 }
 
 //==============================================================================
-Particle::Particle
+void Particle::init
 (
   vec3   position,
   cstr   sprite,
@@ -30,15 +30,16 @@ Particle::Particle
   f32    light_range,
   f32    scale
 )
-: Entity(position, light_range)
-, m_light_color(light)
-, m_img_cnt(sprite ? num_imgs : 0)
-, m_duration(duration)
-, m_lifetime(0.0f)
-, m_initial_range(light_range)
 {
   nc_assert(light_range >= 0.0f);
   nc_assert(duration    >= 0.0f);
+
+  Entity::init(position, light_range);
+  this->m_light_color   = light;
+  this->m_img_cnt       = sprite ? num_imgs : 0;
+  this->m_duration      = duration;
+  this->m_lifetime      = 0.0f;
+  this->m_initial_range = light_range;
 
   if (sprite)
   {
@@ -60,7 +61,7 @@ Particle::Particle
 }
 
 //==============================================================================
-Particle::Particle
+void Particle::init
 (
   vec3   position,
   f32    duration,
@@ -68,9 +69,8 @@ Particle::Particle
   f32    light_range,
   f32    scale
 )
-: Particle(position, nullptr, 0, duration, light, light_range, scale)
 {
-  
+  this->init(position, nullptr, 0, duration, light, light_range, scale);
 }
 
 //==============================================================================

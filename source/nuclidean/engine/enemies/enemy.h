@@ -23,7 +23,7 @@ class Enemy : public Entity
 public:
   static EntityType get_type_static();
 
-  Enemy(vec3 position, vec3 facing, EnemyType type);
+  void init(vec3 position, vec3 facing, EnemyType type);
   void post_init();
 
   void update(f32 delta);
@@ -97,7 +97,7 @@ private:
   vec3         facing                = VEC3_ZERO;
   EnemyAiState state                 = EnemyAiState::idle;
   Appearance   appear;
-  ActorFSM     anim_fsm;
+  ActorFSM     anim_fsm{ActorAnimStates::idle};
   Path         current_path;
   EntityID     target_id             = INVALID_ENTITY_ID;
   vec3         follow_target_pos     = VEC3_ZERO;

@@ -20,6 +20,25 @@ struct IEntityListener;
 namespace nc
 {
 
+// We can get rid of the virtuals if we ever have problem with them and
+// rewrite it with just function pointers... Not worth it now tho.
+struct IEntityPool
+{
+  // Non virtual because called often
+  virtual Entity* get(EntityID id)     = 0;
+  virtual Entity* get_first()          = 0;
+  virtual u64     get_cnt()      const = 0;
+  virtual u64     get_stride()   const = 0;
+  virtual void    destroy(EntityID id) = 0;
+  virtual Entity* create(u32& idx_out) = 0;
+
+  virtual u64  size_required()                   const = 0;
+  virtual bool to_bytes(void* to_memory)         const = 0;
+  virtual bool from_bytes(void* from_memory, u64 size) = 0;
+
+  virtual ~IEntityPool() = default;
+};
+
 class EntityRegistry
 {
 public:
@@ -29,8 +48,8 @@ public:
   EntityRegistry(EntityRegistry&)            = delete;
   EntityRegistry& operator=(EntityRegistry&) = delete;
 
-  template<typename T, typename...CtorArgs>
-  T* create_entity(CtorArgs...args);
+  template<typename T, typename...Args>
+  T* create_entity(Args&&...args);
 
   template<typename T>
   T* get_entity(EntityID id);
@@ -60,24 +79,30 @@ public:
   // Do not call on your own or stuff will break.
   void on_entity_move_internal(EntityID id, vec3 pos, f32 r, f32 h);
 
+  // Returns the size required for serialization to bytes
+  u64  size_required() const;
+
+  // Serializes to bytes
+  void to_bytes(void* to_memory) const;
+
+  // Loads from bytes
+  void from_bytes(void* from, u64 cnt);
+
 private:
   void setup_entity(Entity& entity, EntityID id);
+
+  void post_init_entity(Entity& entity);
 
   void destroy_entity_internal(EntityID id);
 
 private:
-  // Bump this up if the entity count gets larger
-  static constexpr u64 MAX_POOL_CNT = 12;
-
-  using Pool      = std::unordered_map<u32, std::unique_ptr<Entity>>;
-  using Pools     = std::array<Pool, MAX_POOL_CNT>;
+  using Pools     = std::vector<std::unique_ptr<IEntityPool>>;
   using IDList    = std::vector<EntityID>;
   using Listeners = std::vector<IEntityListener*>;
 
-  Listeners      m_listeners;
-  Pools          m_pools;
-  u32            m_next_id = 0; // incremented on each created entity
-  IDList         m_pending_for_destruction;
+  Listeners m_listeners;
+  Pools     m_pools;
+  IDList    m_pending_for_destruction;
 };
 
 }

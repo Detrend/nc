@@ -52,7 +52,7 @@ class Player : public Entity
 public:
   using Base = Entity;
 
-  Player(vec3 position, vec3 forward);
+  void init(vec3 position, vec3 forward);
 
   static EntityType get_type_static();
 
@@ -208,7 +208,7 @@ private:
   };
 
   using WeaponAnimFSM = AnimFSM<WeaponStates::count, WEAPON_TRANSITIONS>;
-  WeaponAnimFSM weapon_fsm;
+  WeaponAnimFSM weapon_fsm{0};
 
   Camera camera;
 

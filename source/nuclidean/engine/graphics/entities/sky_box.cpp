@@ -12,12 +12,13 @@ EntityType SkyBox::get_type_static()
 }
 
 //==============================================================================
-SkyBox::SkyBox(GLuint texture_handle, f32 exposure, bool use_gamma_correction)
-: Entity(VEC3_ZERO, 0.0f, 0.0f)
-, texture_handle(texture_handle)
-, exposure(exposure)
-, use_gamma_correction(use_gamma_correction)
-{}
+void SkyBox::init(GLuint in_texture_handle, f32 in_exposure, bool in_use_gamma_correction)
+{
+  Entity::init(VEC3_ZERO, 0.0f, 0.0f);
+  this->texture_handle       = in_texture_handle;
+  this->exposure             = in_exposure;
+  this->use_gamma_correction = in_use_gamma_correction;
+}
 
 //==============================================================================
 GLuint SkyBox::get_texture_handle() const

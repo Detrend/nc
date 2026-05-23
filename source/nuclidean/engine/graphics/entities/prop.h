@@ -15,7 +15,7 @@ class Prop : public Entity
 public:
   static EntityType get_type_static();
 
-  Prop
+  void init
   (
     vec3              pos,
     f32               rad,

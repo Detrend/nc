@@ -18,9 +18,10 @@ EntityType AmbientLight::get_type_static()
 }
 
 //==============================================================================
-AmbientLight::AmbientLight(f32 strength)
-  : Entity(VEC3_ZERO, 0.0f, 0.0f), strength(strength)
+void AmbientLight::init(f32 in_strength)
 {
+  Entity::init(VEC3_ZERO, 0.0f, 0.0f);
+  this->strength = in_strength;
 }
 
 //==============================================================================
@@ -30,10 +31,13 @@ EntityType DirectionalLight::get_type_static()
 }
 
 //==============================================================================
-DirectionalLight::DirectionalLight(const vec3& direction, f32 intensity, const color3& color)
-  : Entity(VEC3_ZERO, 0.0f, 0.0f), color(color), direction(direction), intensity(clamp(intensity, 0.0f, 1.0f))
+void DirectionalLight::init(const vec3& in_direction, f32 in_intensity, const color3& in_color)
 {
-  if (intensity < 0.0f || intensity > 1.0f)
+  Entity::init(VEC3_ZERO, 0.0f, 0.0f);
+  this->color     = in_color;
+  this->direction = in_direction;
+  this->intensity = clamp(in_intensity, 0.0f, 1.0f);
+  if (in_intensity < 0.0f || in_intensity > 1.0f)
   {
     nc_warn("Light intensity is clamped because it is outside [0, 1] range.");
   }
@@ -57,22 +61,21 @@ EntityType PointLight::get_type_static()
 }
 
 //==============================================================================
-PointLight::PointLight
+void PointLight::init
 (
-  const vec3&   position,
-  f32           radius,
-  f32           intensity,
-  f32           falloff,
-  const color3& color
+  const vec3&   in_position,
+  f32           in_radius,
+  f32           in_intensity,
+  f32           in_falloff,
+  const color3& in_color
 )
-:
-  Entity(position, radius),
-  color(color),
-  radius(radius),
-  intensity(intensity),
-  falloff(falloff)
 {
-  if (radius > 16.0f)
+  Entity::init(in_position, in_radius);
+  this->color     = in_color;
+  this->radius    = in_radius;
+  this->intensity = in_intensity;
+  this->falloff   = in_falloff;
+  if (in_radius > 16.0f)
   {
     nc_warn("Light radius is too large. It could lead to bad performance. Consider tweaking light parameters.");
   }

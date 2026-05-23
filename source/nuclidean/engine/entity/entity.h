@@ -15,6 +15,7 @@ namespace nc
 class  EntityRegistry;
 struct Appearance;
 struct Physics;
+struct IEntityPool;
 
 }
 
@@ -24,8 +25,10 @@ namespace nc
 class Entity
 {
 public:
-  Entity(vec3 position, f32 radius, f32 height);
-  Entity(vec3 position, f32 radius);
+  Entity() = default;
+
+  void init(vec3 position, f32 radius, f32 height);
+  void init(vec3 position, f32 radius);
   ~Entity();
 
   // Called on the type of the entity post ID assignment. Does not need to be
@@ -36,8 +39,10 @@ public:
 
   // Deleted copy assignment and construction to not accidentally
   // copy the entity
+  /*
   Entity(const Entity&)            = delete;
   Entity& operator=(const Entity&) = delete;
+  */
 
   // Each entity type has to contain a public static constexpr
   // member variable containing it's type! Like this:
@@ -96,9 +101,9 @@ public:
 private: friend class EntityRegistry;
   EntityRegistry* m_registry    = nullptr;
   EntityID        m_id_and_type = INVALID_ENTITY_ID;
-  vec3            m_position;
-  f32             m_radius2d;
-  f32             m_height;
+  vec3            m_position    = VEC3_ZERO;
+  f32             m_radius2d    = 0.0f;
+  f32             m_height      = 0.0f;
 };
 
 // A surprise tool that will help us later.

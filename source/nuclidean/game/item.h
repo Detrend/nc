@@ -17,7 +17,7 @@ class Player;
 class Pickup : public Entity
 {
 public:
-  Pickup(vec3 position, PickupType type, bool snap_to_floor = true);
+  void init(vec3 position, PickupType type, bool snap_to_floor = true);
 
   static EntityType get_type_static();
 

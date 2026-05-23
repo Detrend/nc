@@ -16,7 +16,7 @@ class Projectile : public Entity
 public:
   static EntityType get_type_static();
 
-  Projectile(vec3 pos, vec3 dir, EntityID author_id, ProjectileType proj_type);
+  void init(vec3 pos, vec3 dir, EntityID author_id, ProjectileType proj_type);
 
   void update(f32 dt);
 

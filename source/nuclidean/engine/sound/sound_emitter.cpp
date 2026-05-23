@@ -28,18 +28,18 @@ namespace nc
 }
 
 //==============================================================================
-SoundEmitter::SoundEmitter
+void SoundEmitter::init
 (
   vec3    position,
   SoundID sound,
   f32     range,
   f32     volume,
-  bool    loop 
+  bool    loop
 )
-: Entity(position, 0.0f)
-, m_range(range)
-, m_volume(volume)
 {
+  Entity::init(position, 0.0f);
+  this->m_range  = range;
+  this->m_volume = volume;
   // Calculate the portals between us and the player
   vec3 listener_pos = VEC3_ZERO;
   if (!this->get_listener_pos(listener_pos))

@@ -153,20 +153,20 @@ EntityType Enemy::get_type_static()
 }
 
 //==============================================================================
-Enemy::Enemy(vec3 position, vec3 looking_dir, EnemyType tpe)
-: Entity(position, ENEMY_STATS[tpe].radius, ENEMY_STATS[tpe].height)
- , type(tpe)
- , facing(looking_dir)
- , anim_fsm(ActorAnimStates::idle)
+void Enemy::init(vec3 position, vec3 looking_dir, EnemyType tpe)
 {
-  nc_assert(this->type >= EnemyTypes::cultist && this->type < EnemyTypes::count);
+  nc_assert(tpe >= EnemyTypes::cultist && tpe < EnemyTypes::count);
   nc_assert(looking_dir != VEC3_ZERO);
+
+  Entity::init(position, ENEMY_STATS[tpe].radius, ENEMY_STATS[tpe].height);
+  this->type    = tpe;
+  this->facing  = normalize(looking_dir);
+  this->anim_fsm = ActorFSM(ActorAnimStates::idle);
 
   const auto& stats = this->get_stats();
 
-  this->facing    = normalize(this->facing);
-  this->velocity  = VEC3_ZERO;
-  this->health    = stats.max_hp;
+  this->velocity = VEC3_ZERO;
+  this->health   = stats.max_hp;
 
   this->appear = Appearance
   {

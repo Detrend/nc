@@ -58,11 +58,12 @@ static WeaponType weapon_type_from_pickup_type(PickupType type)
 }
 
 //==============================================================================
-Pickup::Pickup(vec3 position, PickupType my_type, bool on_floor)
-: Entity(position, PICKUP_RADIUS, PICKUP_HEIGHT)
-, type(my_type)
-, snap_to_floor(on_floor)
+void Pickup::init(vec3 position, PickupType my_type, bool on_floor)
 {
+  Entity::init(position, PICKUP_RADIUS, PICKUP_HEIGHT);
+  this->type          = my_type;
+  this->snap_to_floor = on_floor;
+
   cstr texture_name = PICKUP_NAMES[this->type];
   f32  scaling      = this->is_weapon() ? 45.0f : 22.5f;
 
