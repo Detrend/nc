@@ -17,6 +17,9 @@
 namespace nc
 {
 
+// Directory for all shaders
+static constexpr cstr SHADER_ROOT = "content/shaders/";
+
 // Light-weight shader handle.
 class ShaderProgramHandle
 {

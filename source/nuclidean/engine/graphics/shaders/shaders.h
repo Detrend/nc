@@ -18,8 +18,8 @@ namespace nc
     // Solid geometry.
     namespace solid
     {
-      inline constexpr const char* VERTEX_FILE   = "engine/graphics/shaders/solid.vert";
-      inline constexpr const char* FRAGMENT_FILE = "engine/graphics/shaders/solid.frag";
+      inline constexpr const char* VERTEX_FILE   = "solid.vert";
+      inline constexpr const char* FRAGMENT_FILE = "solid.frag";
 
       inline constexpr Uniform<0, mat4>   TRANSFORM;
       inline constexpr Uniform<1, mat4>   VIEW;
@@ -30,8 +30,8 @@ namespace nc
 
     namespace billboard
     {
-      inline constexpr const char* VERTEX_FILE   = "engine/graphics/shaders/billboard.vert";
-      inline constexpr const char* FRAGMENT_FILE = "engine/graphics/shaders/billboard.frag";
+      inline constexpr const char* VERTEX_FILE   = "billboard.vert";
+      inline constexpr const char* FRAGMENT_FILE = "billboard.frag";
 
       inline constexpr Uniform<0, mat4> TRANSFORM;
       inline constexpr Uniform<1, mat4> VIEW;
@@ -47,8 +47,8 @@ namespace nc
 
     namespace gun
     {
-      inline constexpr const char* VERTEX_FILE   = "engine/graphics/shaders/gun.vert";
-      inline constexpr const char* FRAGMENT_FILE = "engine/graphics/shaders/billboard.frag";
+      inline constexpr const char* VERTEX_FILE   = "gun.vert";
+      inline constexpr const char* FRAGMENT_FILE = "billboard.frag";
 
       inline constexpr Uniform<0, mat4> TRANSFORM;
       inline constexpr Uniform<1, mat4> VIEW;
@@ -65,8 +65,8 @@ namespace nc
     // Lighting pass.
     namespace light
     {
-      inline constexpr const char* VERTEX_FILE   = "engine/graphics/shaders/light.vert";
-      inline constexpr const char* FRAGMENT_FILE = "engine/graphics/shaders/light.frag";
+      inline constexpr const char* VERTEX_FILE   = "light.vert";
+      inline constexpr const char* FRAGMENT_FILE = "light.frag";
 
       inline constexpr Uniform<0, vec3> VIEW_POSITION;
       inline constexpr Uniform<1, u32>  NUM_DIR_LIGHTS;
@@ -80,8 +80,8 @@ namespace nc
     // Sector rendering.
     namespace sector
     {
-      inline constexpr const char* VERTEX_FILE   = "engine/graphics/shaders/sector.vert";
-      inline constexpr const char* FRAGMENT_FILE = "engine/graphics/shaders/sector.frag";
+      inline constexpr const char* VERTEX_FILE   = "sector.vert";
+      inline constexpr const char* FRAGMENT_FILE = "sector.frag";
 
       inline constexpr Uniform<0, mat4> VIEW;
       inline constexpr Uniform<1, mat4> PROJECTION;
@@ -94,7 +94,7 @@ namespace nc
 
     namespace light_culling
     {
-      inline constexpr const char* COMPUTE_FILE = "engine/graphics/shaders/light_culling.comp";
+      inline constexpr const char* COMPUTE_FILE = "light_culling.comp";
 
       inline constexpr Uniform<0, mat4> VIEW;
       inline constexpr Uniform<1, mat4> INV_PROJECTION;
@@ -105,8 +105,8 @@ namespace nc
 
     namespace ui_button
     {
-      inline constexpr const char* VERTEX_FILE   = "engine/ui/ui_button.vert";
-      inline constexpr const char* FRAGMENT_FILE = "engine/ui/ui_button.frag";
+      inline constexpr const char* VERTEX_FILE   = "ui/ui_button.vert";
+      inline constexpr const char* FRAGMENT_FILE = "ui/ui_button.frag";
 
       inline constexpr Uniform<0, mat4> TRANSFORM;
 
@@ -119,8 +119,8 @@ namespace nc
 
     namespace ui_text
     {
-      inline constexpr const char* VERTEX_FILE   = "engine/ui/ui_text.vert";
-      inline constexpr const char* FRAGMENT_FILE = "engine/ui/ui_text.frag";
+      inline constexpr const char* VERTEX_FILE   = "ui/ui_text.vert";
+      inline constexpr const char* FRAGMENT_FILE = "ui/ui_text.frag";
 
       inline constexpr Uniform<0, mat4> TRANSFORM;
 
@@ -136,8 +136,8 @@ namespace nc
 
     namespace sky_box
     {
-      inline constexpr const char* VERTEX_FILE   = "engine/graphics/shaders/sky_box.vert";
-      inline constexpr const char* FRAGMENT_FILE = "engine/graphics/shaders/sky_box.frag";
+      inline constexpr const char* VERTEX_FILE   = "sky_box.vert";
+      inline constexpr const char* FRAGMENT_FILE = "sky_box.frag";
 
       inline constexpr Uniform<0, mat4> VIEW;
       inline constexpr Uniform<1, mat4> PROJECTION;

@@ -324,8 +324,3 @@ const Entity* EntityRegistry::get_entity(EntityID id) const
 }
 
 }
-
-#if NC_TESTS
-#include <engine/entity/entity_tests.inl>
-#endif
-

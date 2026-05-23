@@ -32,37 +32,19 @@
 namespace nc
 {
 
-// Returns the <root>/source/nucledian/ prefix used to resolve relative shader paths.
-static const std::string& renderer_shader_root()
-{
-  static const std::string root = []()
-  {
-    // renderer.cpp lives at <root>/source/nucledian/engine/graphics/renderer.cpp
-    // Go up 3 directory components (strip filename + engine/graphics) to reach <root>/source/nucledian/
-    std::string path = __FILE__;
-    std::replace(path.begin(), path.end(), '\\', '/');
-    for (int i = 0; i < 3; ++i)
-    {
-      const auto pos = path.rfind('/');
-      if (pos != std::string::npos)
-        path.resize(pos);
-    }
-    return path + "/";
-  }();
-  return root;
-}
-
 // Returns the newest last_write_time across all source files of an entry.
+//==============================================================================
 static std::filesystem::file_time_type newest_write_time(const std::vector<std::string>& file_paths)
 {
   auto newest = std::filesystem::file_time_type::min();
   for (const auto& rel : file_paths)
   {
     std::error_code ec;
-    const auto t = std::filesystem::last_write_time(renderer_shader_root() + rel, ec);
+    const auto t = std::filesystem::last_write_time(SHADER_ROOT + rel, ec);
     if (!ec && t > newest)
       newest = t;
   }
+
   return newest;
 }
 
@@ -91,13 +73,16 @@ void Renderer::check_shader_hot_reload() const
 
     if (entry.handle->try_reload(entry.file_paths))
     {
-      entry.last_write_time = newest;
       nc_log("Shader hot-reloaded: {}", entry.file_paths[0]);
     }
     else
     {
       nc_crit("Shader hot-reload failed: {}", entry.file_paths[0]);
     }
+
+    // Do this even if the hot-reload fails because we don't want to receive error
+    // spam each frame.
+    entry.last_write_time = newest;
   }
 }
 

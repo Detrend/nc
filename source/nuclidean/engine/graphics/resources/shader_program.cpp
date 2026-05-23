@@ -16,48 +16,15 @@
 namespace nc
 {
 
-// ---------------------------------------------------------------------------
-// Shader source root – derived once from __FILE__ so the binary always finds
-// the source tree regardless of the working directory.
-// ---------------------------------------------------------------------------
-static std::string g_shader_root;
-
-static std::string compute_default_shader_root()
-{
-  // __FILE__ is the absolute path to this .cpp file.
-  // It lives at: <root>/source/nucledian/engine/graphics/resources/shader_program.cpp
-  // Going up 4 levels (strip filename + engine/graphics/resources) reaches <root>/source/nucledian/
-  std::string path = __FILE__;
-  std::replace(path.begin(), path.end(), '\\', '/');
-  for (int i = 0; i < 4; ++i)
-  {
-    const auto pos = path.rfind('/');
-    if (pos != std::string::npos)
-      path.resize(pos);
-  }
-  return path + "/";
-}
-
-//==============================================================================
-void ShaderProgramHandle::set_shader_root(std::string root)
-{
-  std::replace(root.begin(), root.end(), '\\', '/');
-  if (!root.empty() && root.back() != '/')
-    root += '/';
-  g_shader_root = std::move(root);
-}
-
 //==============================================================================
 std::optional<std::string> ShaderProgramHandle::read_shader_file(const char* relative_path)
 {
-  if (g_shader_root.empty())
-    g_shader_root = compute_default_shader_root();
-
-  const std::string full_path = g_shader_root + relative_path;
+  const std::string full_path = SHADER_ROOT + std::string{relative_path};
   std::ifstream file(full_path);
   if (!file.is_open())
   {
     nc_crit("ShaderProgramHandle: cannot open shader file '{}'", full_path);
+    nc_assert(false);
     return std::nullopt;
   }
   std::ostringstream ss;

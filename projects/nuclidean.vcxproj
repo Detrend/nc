@@ -279,25 +279,9 @@
     <None Include="..\source\nuclidean\engine\core\engine.inl" />
     <None Include="..\source\nuclidean\engine\graphics\resources\model.inl" />
     <None Include="..\source\nuclidean\engine\graphics\resources\shader_program.inl" />
-    <None Include="..\source\nuclidean\engine\graphics\shaders\billboard.frag" />
-    <None Include="..\source\nuclidean\engine\graphics\shaders\billboard.vert" />
-    <None Include="..\source\nuclidean\engine\graphics\shaders\light.frag" />
-    <None Include="..\source\nuclidean\engine\graphics\shaders\light.vert" />
-    <None Include="..\source\nuclidean\engine\graphics\shaders\sector.frag" />
-    <None Include="..\source\nuclidean\engine\graphics\shaders\sector.vert" />
-    <None Include="..\source\nuclidean\engine\graphics\shaders\sky_box.frag" />
-    <None Include="..\source\nuclidean\engine\graphics\shaders\sky_box.vert" />
-    <None Include="..\source\nuclidean\engine\graphics\shaders\solid.frag" />
-    <None Include="..\source\nuclidean\engine\graphics\shaders\solid.vert" />
-    <None Include="..\source\nuclidean\engine\graphics\shaders\light_culling.comp" />
-    <None Include="..\source\nuclidean\engine\ui\ui_button.frag" />
-    <None Include="..\source\nuclidean\engine\ui\ui_button.vert" />
-    <None Include="..\source\nuclidean\engine\ui\ui_text.frag" />
-    <None Include="..\source\nuclidean\engine\ui\ui_text.vert" />
     <None Include="..\source\nuclidean\math\lingebra.inl" />
     <None Include="..\source\nuclidean\engine\entity\entity_system.inl" />
     <None Include="..\source\nuclidean\stack_allocator.inl" />
-    <None Include="..\source\nuclidean\engine\graphics\shaders\gun.vert" />
     <None Include="..\source\nuclidean\engine\entity\sector_mapping.inl" />
     <None Include="..\source\nuclidean\engine\graphics\ssbo_buffer.inl" />
   </ItemGroup>
