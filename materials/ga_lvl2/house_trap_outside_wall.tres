@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=12 format=3 uid="uid://dl3bgt7r6sqyq"]
+
+[ext_resource type="Resource" uid="uid://c0bfb1i38kqd" path="res://material_textures/_None.tres" id="1_litgm"]
+[ext_resource type="Resource" uid="uid://b62b6owe57oqc" path="res://material_textures/Floor1.tres" id="2_spohi"]
+[ext_resource type="Texture2D" uid="uid://jt3ssm48lqjc" path="res://imgs/floor1.png" id="3_pypk5"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="4_5kqqq"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="5_7hgkg"]
+[ext_resource type="Resource" uid="uid://crtucqy2narq3" path="res://material_textures/Bricks.tres" id="6_5e3ud"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="7_hs73s"]
+[ext_resource type="Resource" uid="uid://og8ff4s6kfso" path="res://material_textures/Wall3.tres" id="8_rv1bb"]
+
+[sub_resource type="Resource" id="Resource_csai5"]
+script = ExtResource("5_7hgkg")
+texture = ExtResource("6_5e3ud")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[sub_resource type="Resource" id="Resource_a6q66"]
+script = ExtResource("7_hs73s")
+_placement_type = 9
+wall_length_range = Vector2(0, 0.5)
+texture = ExtResource("8_rv1bb")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[sub_resource type="Resource" id="Resource_uk745"]
+script = ExtResource("7_hs73s")
+_placement_type = 17
+wall_length_range = Vector2(0, 2.3)
+texture = ExtResource("8_rv1bb")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[resource]
+script = ExtResource("4_5kqqq")
+preview = ExtResource("3_pypk5")
+preview_scale = 4.0
+wall_default = SubResource("Resource_csai5")
+wall_rules = Array[ExtResource("7_hs73s")]([SubResource("Resource_a6q66"), SubResource("Resource_uk745")])
+floor = ExtResource("2_spohi")
+ceiling = ExtResource("1_litgm")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"
