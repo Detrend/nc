@@ -766,17 +766,20 @@ void GameSystem::frame_start()
       // Record frames
       journal.reset_and_clear(JournalState::recording);
 
-      //load inventory
-      GameHelpers::get().get_player()->set_health(get_engine().get_transition_health());
-      for (u8 i = 1; i < 4; i++)
+      //load inventory - beware that player might not exist if this is an empty level
+      if (Player* player = GameHelpers::get().get_player())
       {
-        GameHelpers::get().get_player()->give_ammo((WeaponType)i, get_engine().get_transition_ammo()[i]);
-        if (get_engine().get_transition_weapons() & weapon_flag((WeaponType)i))
+        player->set_health(get_engine().get_transition_health());
+        for (u8 i = 1; i < 4; i++)
         {
-          GameHelpers::get().get_player()->give_weapon((WeaponType)i);
+          player->give_ammo((WeaponType)i, get_engine().get_transition_ammo()[i]);
+          if (get_engine().get_transition_weapons() & weapon_flag((WeaponType)i))
+          {
+            player->give_weapon((WeaponType)i);
+          }
         }
+        player->change_weapon(get_engine().get_transition_equiped_weapon());
       }
-      GameHelpers::get().get_player()->change_weapon(get_engine().get_transition_equiped_weapon());
     }
 
     // Reset it
