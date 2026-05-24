@@ -317,8 +317,8 @@ func create_level_export_data() -> Dictionary:
 		sector_export["portal_destination_wall"] = sector.portal_destination_wall if sector.has_portal() else 0
 		var hosts = host_portals.get(sector) # [Array] or [null]
 		if hosts != null and !(hosts as Array).is_empty():
-			if sector.has_portal(): ErrorUtils.report_error("Sector {0} already has its own portal, but also has host portal from {1}".format([sector, hosts]))
-			elif (hosts as Array).size() > 1: ErrorUtils.report_error("Sector {0} has {1} host portals - currently unsupported!".format([sector, (hosts as Array).size()]))
+			if sector.has_portal(): ErrorUtils.report_error("Sector {0} already has its own portal, but also has host portal from {1}".format([sector.get_full_name(), hosts]))
+			elif (hosts as Array).size() > 1: ErrorUtils.report_error("Sector {0} has {1} host portals - currently unsupported!".format([sector.get_full_name(), (hosts as Array).size()]))
 			var host :Sector = hosts[0]
 			sector_export["portal_target"] = _sectors_map[host]
 			sector_export["portal_wall"] = host.portal_destination_wall
