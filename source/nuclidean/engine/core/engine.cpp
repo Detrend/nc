@@ -454,6 +454,7 @@ bool Engine::init(const CmdArgs& cmd_args)
   if (this->is_editor_mode()) {
     CVars::has_fps_limit = true;
     CVars::fps_limit = 30.0f;
+    CVars::invisibility = true;
   }
 
   // init the modules here..
