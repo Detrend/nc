@@ -46,7 +46,7 @@ static WeaponType weapon_type_from_pickup_type(PickupType type)
     case PickupTypes::nail_gun:     [[fallthrough]];
     case PickupTypes::nail_ammo:
     {
-      return WeaponTypes::nail_gun;
+      return WeaponTypes::rail_gun;
     }
 
     default:

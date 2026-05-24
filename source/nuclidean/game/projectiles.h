@@ -17,6 +17,7 @@ enum evalue : ProjectileType
   wrench,
   plasma_ball,
   shotgun_slug,
+  rail,
 
   // enemy ones
   fire_ball,

@@ -57,12 +57,18 @@ WeaponStats WEAPON_STATS[] =
     .recoil_time_coeff = 0.4f,
   },
 
-  // Nail gun
+  // Rail gun
   WeaponStats
   {
-    .projectile = ProjectileTypes::plasma_ball,
-    .rate_of_fire = 8.0f, .ammo = AmmoTypes::nails,
-    .projectile_cnt = 2, .hold_to_fire = true
+    .projectile = ProjectileTypes::rail,
+    .rate_of_fire = 0.5f, .ammo = AmmoTypes::rails,
+    .projectile_cnt = 1, .hold_to_fire = false,
+    .shoot_snd = Sounds::plasma_rifle,
+    .equip_sound = Sounds::plasma_equip,
+    .loudness_dist = 30.0f,
+    .flash_color   = colors::WHITE,
+    .recoil_coeff  = 1.3f,
+    .recoil_time_coeff = 1.8f,
   },
 };
 
@@ -135,8 +141,24 @@ WeaponAnims WEAPON_ANIMS[] =
     },
   },
 
-  // Nail gun
-  WeaponAnims{},
+  // Rail gun
+  WeaponAnims
+  {
+    .set_name = "railgun",
+    .anims = 
+    {
+      // Idle
+      WeaponAnim
+      {
+        .frames_cnt = 1, .time = 1.0f
+      },
+      // Attack
+      WeaponAnim
+      {
+        .frames_cnt = 69, .action_frame = 12, .time = 3.5f
+      },
+    },
+  },
 };
 
 }
@@ -159,4 +181,4 @@ WeaponAnims WEAPON_ANIMS[] =
 NC_REGISTER_WEAPON_STATS_EXT(wrench)
 NC_REGISTER_WEAPON_STATS_EXT(shotgun)
 NC_REGISTER_WEAPON_STATS_EXT(plasma_rifle)
-NC_REGISTER_WEAPON_STATS_EXT(nail_gun)
+NC_REGISTER_WEAPON_STATS_EXT(rail_gun)

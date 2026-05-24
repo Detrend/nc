@@ -45,6 +45,19 @@ ProjectileStats PROJECTILE_STATS[] =
     .hit_sprite_len = 0.35f,
   },
 
+  // Rail
+  ProjectileStats
+  {
+    .dmg_falloff = 0.05f, .speed = 80.0f, .radius = 0.05f, .damage = 110,
+    .bounce_cnt = 0, .sprite = "grunt_projectile", .sprite_cnt = 1,
+    .light_color = colors::YELLOW,
+    .hit_sprite = "buck",
+    .hit_sprite_cnt = 4,
+    .hit_sprite_len = 0.3f,
+    .hit_sprite_col = colors::YELLOW,
+    .hit_sprite_rad = 2.0f,
+  },
+
   // Fire ball
   ProjectileStats
   {

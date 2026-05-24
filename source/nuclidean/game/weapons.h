@@ -23,7 +23,7 @@ enum evalue : WeaponType
   wrench = 0,
   shotgun,
   plasma_rifle,
-  nail_gun,
+  rail_gun,
   // - //
   count
 };
@@ -38,7 +38,7 @@ enum evalue : AmmoType
   melee = 0,
   slugs,
   plasma,
-  nails,
+  rails,
   // - //
   count
 };
