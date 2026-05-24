@@ -97,6 +97,23 @@ public:
   void hot_reload_get_pos_rot(vec3& pos, f32& yaw, f32& pitch);
 #endif
 
+  enum WeaponStates : u8
+  {
+    idle,
+    attack,
+    // - //
+    count
+  };
+
+  using GotoArray = std::array<WeaponStates, WeaponStates::count>;
+  static constexpr GotoArray WEAPON_TRANSITIONS
+  {
+    WeaponStates::idle, // idle->idle
+    WeaponStates::idle  // fire->idle
+  };
+
+  using WeaponAnimFSM = AnimFSM<WeaponStates::count, WEAPON_TRANSITIONS>;
+
 private:
   // apply wish velocity
   void apply_velocity(f32 delta_seconds);
@@ -134,9 +151,6 @@ private:
   // attack with current weapon 
   void do_attack();
 
-  // swap weapons
-  
-
   void handle_pickup(Pickup& pickup);
 
   // Alerts enemies close to the player
@@ -150,6 +164,9 @@ private:
 
   // Gun/camera sway in x/y directions
   vec2 calc_sway_amount() const;
+
+  WeaponAnimFSM&       get_current_weapon_fsm();
+  const WeaponAnimFSM& get_current_weapon_fsm() const;
 
   vec3 velocity    = VEC3_ZERO; // forward/back - left/right velocity
   vec3 forward     = VEC3_ZERO;
@@ -192,29 +209,14 @@ private:
   bool alive     : 1 = true;
   bool on_ground : 1 = true;
 
-  enum WeaponStates : u8
-  {
-    idle,
-    attack,
-    // - //
-    count
-  };
-
-  using GotoArray = std::array<WeaponStates, WeaponStates::count>;
-  static constexpr GotoArray WEAPON_TRANSITIONS
-  {
-    WeaponStates::idle, // idle->idle
-    WeaponStates::idle  // fire->idle
-  };
-
-  using WeaponAnimFSM = AnimFSM<WeaponStates::count, WEAPON_TRANSITIONS>;
-  WeaponAnimFSM weapon_fsm{0};
+  static constexpr u64 WEAPON_CNT = 4;
+  WeaponAnimFSM weapon_fsms[WEAPON_CNT]{0, 0, 0, 0};
 
   Camera camera;
 
-  static constexpr s32 MAX_AMMO[4] = {-1, 20, 60, 20};
+  static constexpr s32 MAX_AMMO[WEAPON_CNT] = {-1, 20, 60, 20};
 
-  s32 current_ammo[4] = {-1, 0, 0, 40}; // We start with nothing
+  s32 current_ammo[WEAPON_CNT] = {-1, 0, 0, 40}; // We start with nothing
   static_assert(ARRAY_LENGTH(current_ammo) == ARRAY_LENGTH(MAX_AMMO));
 
   WeaponType weapon_buffer = INVALID_WEAPON_TYPE;
