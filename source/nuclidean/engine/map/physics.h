@@ -225,7 +225,6 @@ struct PhysLevel
     f32               neg_height,// -y offset of the cylinder start
     f32               bounce,    // bounce factor, 1 = normal bounce
     EntityTypeMask    colliders, // what entities to collide with
-    u32               hit_cnt  = 1,      // End on the first hit
     CollisionListener listener = nullptr // reaction to collisions
   ) const;
 

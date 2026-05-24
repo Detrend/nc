@@ -23,6 +23,7 @@
 #include <math/lingebra.h>
 
 #include <format>
+#include <algorithm> // std::fill
 
 namespace nc
 {
@@ -40,6 +41,8 @@ void Projectile::init
 )
 {
   const ProjectileStats& stats = PROJECTILE_STATS[type];
+
+  std::fill(std::begin(m_penetrated_entities), std::end(m_penetrated_entities), INVALID_ENTITY_ID);
 
   Entity::init(pos, stats.radius, stats.radius * 2.0f);
   this->m_author   = author;
@@ -81,22 +84,36 @@ void Projectile::update(f32 dt)
     ? (EntityTypeFlags::enemy)
     : (EntityTypeFlags::enemy | EntityTypeFlags::player);
 
-  bool was_entity_hit   = false;
+  bool was_entity_hit = false;
+  bool was_wall_hit   = false;
+
+  u64 max_pen_cnt  = PROJECTILE_STATS[m_type].penetration_cnt;
+  f32 bounce_coeff = PROJECTILE_STATS[m_type].bounce_cnt > 0 ? 1.0f : 0.0f;
 
   lvl.move_particle
   (
     position, m_velocity, transform, dt, r, h, 0.0f,
-    1.0f, COLLIDE_WITH, m_hit_cnt_remaining,
+    bounce_coeff, COLLIDE_WITH,
     [&](const CollisionHit& hit)
     {
       if (hit.type == CollisionHit::entity && this->on_entity_hit(hit))
       {
         was_entity_hit = true;
+
+        // check if penetration is possible
+        for (u64 i = 0; i < min(MAX_PENETRATION_CNT, max_pen_cnt); ++i)
+        {
+          if (m_penetrated_entities[i] == INVALID_ENTITY_ID)
+          {
+            m_penetrated_entities[i] = hit.hit.entity.entity_id;
+            return true; // continue
+          }
+        }
+
         m_hit_cnt_remaining = 0;
-        // TODO: play damage hit?
         return false;
       }
-      else
+      else if (hit.type == CollisionHit::sector)
       {
         m_hit_cnt_remaining = min(m_hit_cnt_remaining - 1, m_hit_cnt_remaining);
         if (m_hit_cnt_remaining)
@@ -111,42 +128,42 @@ void Projectile::update(f32 dt)
         }
         else
         {
-          // TODO: play destroy sound?
+          was_wall_hit = true;
           return false;
         }
       }
+
+      return true;
     }
   );
 
   this->set_position(position);
 
-
-  if (!m_hit_cnt_remaining)
+  if (was_entity_hit)
   {
-    // Spawn blood particle on entity hit
-    if (was_entity_hit)
-    {
-      game.get_entities().create_entity<Particle>
-      (
-        this->get_position(), "blood_splatter1",
-        5, 0.3f, colors::BLACK, 0.0f, 24.0f
-      );
-    }
+    game.get_entities().create_entity<Particle>
+    (
+      this->get_position(), "blood_splatter1",
+      5, 0.3f, colors::BLACK, 0.0f, 24.0f
+    );
+  }
 
+  if (m_hit_cnt_remaining == 0 && was_wall_hit && PROJECTILE_STATS[m_type].hit_sprite)
+  {
     // Spawn destroy particle if necessary
-    if (PROJECTILE_STATS[m_type].hit_sprite)
-    {
-      game.get_entities().create_entity<Particle>
-      (
-        this->get_position(),
-        PROJECTILE_STATS[m_type].hit_sprite,
-        PROJECTILE_STATS[m_type].hit_sprite_cnt,
-        PROJECTILE_STATS[m_type].hit_sprite_len,
-        PROJECTILE_STATS[m_type].hit_sprite_col,
-        PROJECTILE_STATS[m_type].hit_sprite_rad
-      );
-    }
+    game.get_entities().create_entity<Particle>
+    (
+      this->get_position(),
+      PROJECTILE_STATS[m_type].hit_sprite,
+      PROJECTILE_STATS[m_type].hit_sprite_cnt,
+      PROJECTILE_STATS[m_type].hit_sprite_len,
+      PROJECTILE_STATS[m_type].hit_sprite_col,
+      PROJECTILE_STATS[m_type].hit_sprite_rad
+    );
+  }
 
+  if (m_hit_cnt_remaining == 0)
+  {
     // Kill ourselves
     game.get_entities().destroy_entity(this->get_id());
   }
@@ -158,7 +175,11 @@ bool Projectile::on_entity_hit(const CollisionHit& hit)
   auto& game = GameSystem::get();
   nc_assert(hit.type == CollisionHit::entity);
 
-  if (Entity* entity = game.get_entities().get_entity(hit.hit.entity.entity_id))
+  EntityID id = hit.hit.entity.entity_id;
+  for (u64 i = 0; i < MAX_PENETRATION_CNT; ++i)
+    if (m_penetrated_entities[i] == id) return false;
+
+  if (Entity* entity = game.get_entities().get_entity(id))
   {
     s32 dmg = PROJECTILE_STATS[m_type].damage;
 

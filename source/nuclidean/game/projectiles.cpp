@@ -56,6 +56,7 @@ ProjectileStats PROJECTILE_STATS[] =
     .hit_sprite_len = 0.3f,
     .hit_sprite_col = colors::YELLOW,
     .hit_sprite_rad = 2.0f,
+    .penetration_cnt = 4,
   },
 
   // Fire ball

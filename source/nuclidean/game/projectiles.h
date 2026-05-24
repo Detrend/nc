@@ -53,6 +53,7 @@ struct ProjectileStats
   f32  hit_sprite_len = 0.0f;
   vec3 hit_sprite_col = VEC3_ZERO;
   f32  hit_sprite_rad = 0.0f;
+  u8   penetration_cnt = 0;
 };
 
 extern ProjectileStats PROJECTILE_STATS[];

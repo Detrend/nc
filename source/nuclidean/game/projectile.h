@@ -29,10 +29,13 @@ private:
   void update_appearance();
 
 private:
+  static constexpr u64 MAX_PENETRATION_CNT = 5;
+
   EntityID m_author = INVALID_ENTITY_ID;
   vec3     m_velocity;
   u32      m_hit_cnt_remaining;
   f32      m_lifetime = 0.0f;
+  EntityID m_penetrated_entities[MAX_PENETRATION_CNT]{};
 
   Appearance     m_appear;
   ProjectileType m_type;

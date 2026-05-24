@@ -2011,7 +2011,6 @@ void PhysLevel::move_particle
   f32                          neg_height,
   f32                          bounce,
   EntityTypeMask               colliders,
-  u32                          hit_cnt,
   PhysLevel::CollisionListener listener /*= nullptr*/
 )
 const
@@ -2021,7 +2020,6 @@ const
   NC_SCOPE_PROFILER(MoveParticle)
 
   nc_assert(bounce >= 0.0f, "Invalid range.");
-  nc_assert(hit_cnt > 0, "Hit cnt must be 1 or more");
 
   const vec3 h_offset = -UP_DIR * neg_height;
 
@@ -2030,7 +2028,7 @@ const
 
   u32 max_iterations = 12;
 
-  while(remaining_distance > 0.0f && hit_cnt)
+  while(remaining_distance > 0.0f)
   {
     max_iterations -= 1;
 #ifdef NC_VALIDATE
@@ -2104,9 +2102,6 @@ const
 
     // Bounce in the other direction
     velocity_og -= reproject * bounce * 2.0f;
-
-    // Decrease the hit count
-    hit_cnt -= 1;
 
     // Let the listener know that we hit something
     if (listener)
