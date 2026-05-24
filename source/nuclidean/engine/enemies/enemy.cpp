@@ -40,6 +40,67 @@
 namespace nc
 {
 
+//==============================================================================
+void Enemy::PathInline::assign(vec3* first, u64 cnt)
+{
+  num_points = cast<u8>(std::min(cnt, NUM_PTS_INLINE));
+  for (u8 i = 0; i < num_points; ++i)
+    points[i] = first[i];
+}
+
+//==============================================================================
+void Enemy::PathInline::clear()
+{
+  num_points = 0;
+}
+
+//==============================================================================
+bool Enemy::PathInline::empty() const
+{
+  return num_points == 0;
+}
+
+//==============================================================================
+u64 Enemy::PathInline::size() const
+{
+  return num_points;
+}
+
+//==============================================================================
+void Enemy::PathInline::pop_front()
+{
+  assert(num_points > 0);
+  for (u8 i = 0; i < num_points - 1; ++i)
+    points[i] = points[i + 1];
+  --num_points;
+}
+
+//==============================================================================
+vec3& Enemy::PathInline::operator[](u64 idx)
+{
+  assert(idx < num_points);
+  return points[idx];
+}
+
+//==============================================================================
+const vec3& Enemy::PathInline::operator[](u64 idx) const
+{
+  assert(idx < num_points);
+  return points[idx];
+}
+
+//==============================================================================
+vec3* Enemy::PathInline::begin()
+{
+  return points;
+}
+
+//==============================================================================
+vec3* Enemy::PathInline::end()
+{
+  return points + num_points;
+}
+
 // These are the same for all enemies
 constexpr f32 SPOT_DISTANCE         = 1.0f;   // Player will get spotted if closer
 constexpr f32 ENEMY_FOV_DEG         = 100.0f; // Field of view
@@ -195,7 +256,7 @@ void Enemy::init(vec3 position, vec3 looking_dir, EnemyType tpe)
   f32 attack_state_len = stats.state_sprite_len[ActorAnimStates::attack];
   f32 trigger_time = (stats.attack_frame * attack_state_len) / attack_frame_idx;
 
-  this->anim_fsm.add_trigger
+  this->anim_fsm.set_trigger
   (
     ActorAnimStates::attack, trigger_time, TriggerTypes::trigger_fire
   );
@@ -500,7 +561,7 @@ void Enemy::handle_ai_alert(f32 delta)
     this->target_id = INVALID_ENTITY_ID;
     this->can_see_target = false;
     this->time_since_saw_target = 0.0f;
-    this->current_path.points.clear();
+    this->current_path.clear();
     return;
   }
 
@@ -538,7 +599,7 @@ void Enemy::handle_ai_alert(f32 delta)
     case ActorAnimStates::walk:
     {
       // Recompute the path if needed
-      bool no_path  = current_path.points.empty();
+      bool no_path  = current_path.empty();
       vec2 last_pt2 = current_path.target_pt_world_space.xz();
 
       vec3 rel_target_pos_ =
@@ -648,7 +709,7 @@ void Enemy::handle_ai_alert(f32 delta)
           if (!only_for_shooting)
           {
             // It might be only a visibility path for shooting
-            this->current_path.points = std::move(path_points);
+            this->current_path.assign(path_points.data(), path_points.size());
           }
         }
       }
@@ -660,18 +721,16 @@ void Enemy::handle_ai_alert(f32 delta)
       vec2 move_from_target_force = VEC2_ZERO; // Moving from the target if too close
       vec2 move_from_mates_force  = VEC2_ZERO; // Moving away from other enemies if too close
 
-      auto& path = this->current_path.points;
-
       // Erase the first point of the path if we are too close
-      while (path.size() && distance(position_2d, path[0].xz()) < PATH_POINT_ERASE_DIST)
+      while (this->current_path.size() && distance(position_2d, this->current_path[0].xz()) < PATH_POINT_ERASE_DIST)
       {
-        path.erase(path.begin());
+        this->current_path.pop_front();
       }
 
       // Compute force moving as towards the closest point of the path
-      if (path.size())
+      if (this->current_path.size())
       {
-        move_path_force = normalize_or_zero(path[0].xz() - position_2d);
+        move_path_force = normalize_or_zero(this->current_path[0].xz() - position_2d);
       }
 
       // Compute force for moving away from the target (so we do not get
@@ -760,10 +819,10 @@ void Enemy::handle_ai_alert(f32 delta)
   // Debug draw path points
 #if NC_DEBUG_DRAW
   {
-    for (u64 i = 0; i < current_path.points.size(); ++i)
+    for (u64 i = 0; i < current_path.size(); ++i)
     {
-      vec3 p1 = i ? current_path.points[i-1] : this->get_position();
-      vec3 p2 = current_path.points[i];
+      vec3 p1 = i ? current_path[i-1] : this->get_position();
+      vec3 p2 = current_path[i];
       Gizmo::create_line_2d("Paths", p1.xz(), p2.xz(), colors::BLUE);
 
       if (CVars::debug_enemy_paths)

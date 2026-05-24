@@ -17,20 +17,21 @@ template<u64 NS, auto GOTO, typename ST, typename TT>
 AnimFSM<NS, GOTO, ST, TT>::AnimFSM(State start_state)
 : state(start_state)
 {
-  
+  this->clear();
 }
 
 //==============================================================================
 template<u64 NS, auto GOTO, typename ST, typename TT>
-void AnimFSM<NS, GOTO, ST, TT>::add_trigger
+void AnimFSM<NS, GOTO, ST, TT>::set_trigger
 (
   State to_state, f32 on_time, const Trigger& trigger
 )
 {
   nc_assert(to_state < NS);
   nc_assert(this->state_lengths[to_state] >= on_time);
-  this->trigger_times[to_state].push_back(on_time);
-  this->trigger_types[to_state].push_back(trigger);
+  nc_assert(this->trigger_times[to_state] < 0.0f);
+  this->trigger_times[to_state] = on_time;
+  this->trigger_types[to_state] = trigger;
 }
 
 //==============================================================================
@@ -48,19 +49,16 @@ void AnimFSM<NS, GOTO, ST, TT>::update(f32 delta, Functor&& func)
     f32 until_state_end = state_len - curr_time;
 
     // Check all triggers
-    for (u64 i = 0; i < this->trigger_times[this->state].size(); ++i)
+    f32 t = this->trigger_times[this->state];
+    if (curr_time < t && next_time >= t)
     {
-      f32 t = this->trigger_times[this->state][i];
-      if (curr_time < t && next_time >= t)
-      {
-        // Activate the trigger
-        func
-        (
-          AnimFSMEvents::trigger,
-          this->trigger_types[this->state][i],
-          this->state
-        );
-      }
+      // Activate the trigger
+      func
+      (
+        AnimFSMEvents::trigger,
+        this->trigger_types[this->state],
+        this->state
+      );
     }
 
     if (next_time >= state_len)
@@ -161,14 +159,14 @@ void AnimFSM<NS, GOTO, ST, TT>::clear_lengths()
 template<u64 NS, auto GOTO, typename ST, typename TT>
 void AnimFSM<NS, GOTO, ST, TT>::clear_triggers()
 {
-  for (auto& lil_vec : trigger_times)
+  for (f32& t : trigger_times)
   {
-    lil_vec.clear();
+    t = -1.0f;
   }
 
-  for (auto& lil_vec : trigger_types)
+  for (auto& trigger : trigger_types)
   {
-    lil_vec.clear();
+    trigger = 0;
   }
 }
 

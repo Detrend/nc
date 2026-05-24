@@ -144,7 +144,7 @@ void Player::init(vec3 position, vec3 in_forward)
       f32 trigger_t = get_weapon_fire_t(anim_set);
 
       this->weapon_fsms[i].set_state_length(state, anim.time);
-      this->weapon_fsms[i].add_trigger(state, trigger_t, 0);
+      this->weapon_fsms[i].set_trigger(state, trigger_t, 0);
     }
   }
 

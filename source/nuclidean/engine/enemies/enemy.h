@@ -81,9 +81,35 @@ private:
     trigger_die,  // TODO
   };
 
-  struct Path
+  struct PathInline
   {
-    std::vector<vec3> points;
+    static constexpr u64 NUM_PTS_INLINE = 8;
+
+    vec3 points[NUM_PTS_INLINE]{};
+    u8   num_points = 0;
+
+    // Assigns first "NUM_PTS_INLINE"
+    void assign(vec3* first, u64 cnt);
+
+    // Clears the points
+    void clear();
+
+    // Checks if there are any points on the path
+    bool empty() const;
+
+    // Returns number of points
+    u64 size() const;
+
+    // Removes the first point
+    void pop_front();
+
+    // Access to a point
+    vec3&       operator[](u64 idx);
+    const vec3& operator[](u64 idx) const;
+
+    // Iterators
+    vec3* begin();
+    vec3* end();
 
     vec3 target_pt_world_space = VEC3_ZERO;
     mat4 target_transform_inv  = mat4{1.0f};
@@ -99,7 +125,7 @@ private:
   EnemyAiState state                 = EnemyAiState::idle;
   Appearance   appear;
   ActorFSM     anim_fsm{ActorAnimStates::idle};
-  Path         current_path;
+  PathInline   current_path;
   EntityID     target_id             = INVALID_ENTITY_ID;
   vec3         follow_target_pos     = VEC3_ZERO;
   f32          time_since_saw_target = 0.0f;
