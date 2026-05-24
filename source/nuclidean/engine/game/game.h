@@ -16,6 +16,7 @@ struct MapDynamics;
 struct SectorMapping;
 class  EntityRegistry;
 class  EntityAttachment;
+class  Buffer;
 
 struct Game
 {
@@ -28,6 +29,10 @@ struct Game
   );
 
   void on_destroy();
+
+  // Save/load data.
+  // When loading, call this AFTER the map has been build.
+  void serialize(Buffer& buffer);
 
   EntityID                          player_id = INVALID_ENTITY_ID;
   std::unique_ptr<MapSectors>       map;

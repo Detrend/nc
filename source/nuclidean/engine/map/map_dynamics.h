@@ -27,6 +27,7 @@ namespace nc
 struct MapSectors;
 class  EntityRegistry;
 struct SectorMapping;
+class  Buffer;
 
 struct TriggerData
 {
@@ -113,8 +114,6 @@ struct ActivatorData
 
   // How many triggers have to be activated to turn on
   u16                                               threshold = 0; 
-  // If this flag changes, `on_activated_start/end` events will be sent to the registered hooks
-  bool                                              is_active = false;
   // Sectors whose floor/ceiling can dynamically change based on the activator's state
   std::vector<SectorID>                             affected_sectors;
   // Generic behaviors that happen depending on the activator
@@ -146,6 +145,8 @@ struct MapDynamics
 
   void on_sector_moving_changed(SectorID sector, bool started_moving);
 
+  void serialize(Buffer& buffer);
+
   using SectorChangeCallback = std::function<void(SectorID)>;
   using ActivatorList        = std::vector<std::vector<SectorID>>;
   using SegmentRuntimeMap    = std::unordered_map<u32, TriggerID>;
@@ -159,6 +160,7 @@ struct MapDynamics
   // No need to save/load
   std::vector<TriggerData>   triggers;
   std::vector<ActivatorData> activators;
+  std::vector<u8>            activators_dynamic;
   std::vector<EntityID>      sector_sounds; // Active sounds for moving sectors
   std::vector<bool>          moving_sectors;
 

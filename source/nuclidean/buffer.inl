@@ -7,12 +7,24 @@
 namespace nc
 {
 
-inline Buffer::Buffer(void* data, u64 bytes_cnt)
+//==============================================================================
+inline Buffer::Buffer(void* data, u64 bytes_cnt, SerializationType type)
 : head(data)
 , size(bytes_cnt)
+, type(type)
 {
 }
 
+//==============================================================================
+inline Buffer::Buffer()
+: head(nullptr)
+, size(0)
+, type(SerializationType::counting_bytes)
+{
+  
+}
+
+//==============================================================================
 template<typename T>
 void Buffer::store(const T& value)
 {
@@ -23,6 +35,7 @@ void Buffer::store(const T& value)
   nc_assert(size >= 0);
 }
 
+//==============================================================================
 template<typename T>
 T Buffer::load()
 {
@@ -34,6 +47,7 @@ T Buffer::load()
   return value;
 }
 
+//==============================================================================
 template<typename T>
 void Buffer::store_array(const T* first, u64 cnt)
 {
@@ -42,6 +56,7 @@ void Buffer::store_array(const T* first, u64 cnt)
   nc_assert(size >= 0);
 }
 
+//==============================================================================
 template<typename T>
 void Buffer::load_array(T* first, u64 cnt)
 {
@@ -50,29 +65,39 @@ void Buffer::load_array(T* first, u64 cnt)
   nc_assert(size >= 0);
 }
 
+//==============================================================================
 template<typename T>
-void Buffer::serialize(T& inout, bool serialize)
+void Buffer::serialize(T& inout)
 {
-  if (serialize)
+  if (is_serializing())
   {
     store<T>(inout);
   }
-  else
+  else if (is_deserializing())
   {
     inout = load<T>();
   }
+  else if (is_counting())
+  {
+    size += sizeof(T);
+  }
 }
 
+//==============================================================================
 template<typename T>
-void Buffer::serialize_array(T* array, u64 cnt, bool serialize)
+void Buffer::serialize_array(T* array, u64 cnt)
 {
-  if (serialize)
+  if (is_serializing())
   {
     store_array<T>(array, cnt);
   }
-  else
+  else if (is_deserializing())
   {
     load_array<T>(array, cnt);
+  }
+  else if (is_counting())
+  {
+    size += sizeof(T) * cnt;
   }
 }
 

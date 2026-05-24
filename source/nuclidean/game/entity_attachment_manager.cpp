@@ -7,6 +7,7 @@
 #include <engine/entity/entity_system.h>
 
 #include <stack_vector.h>
+#include <buffer.h>
 
 #include <iterator>  // std::back_inserter
 
@@ -152,6 +153,20 @@ EntityID EntityAttachment::get_entity_parent(EntityID id) const
   });
 
   return it == m_attachments.end() ? INVALID_ENTITY_ID : it->parent;
+}
+
+//==============================================================================
+void EntityAttachment::serialize(Buffer& buffer)
+{
+  u64 size = m_attachments.size();
+  buffer.serialize<u64>(size);
+
+  if (buffer.is_deserializing())
+  {
+    m_attachments.resize(size);
+  }
+
+  buffer.serialize_array<Attachment>(m_attachments.data(), size);
 }
 
 }

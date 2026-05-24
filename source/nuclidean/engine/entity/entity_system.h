@@ -33,8 +33,7 @@ struct IEntityPool
   virtual void    destroy(EntityID id) = 0;
   virtual Entity* create(u32& idx_out) = 0;
 
-  virtual u64  size_required() const = 0;
-  virtual void serialize(Buffer& buffer, bool serialize) = 0;
+  virtual void serialize(Buffer& buffer) = 0;
 
   virtual ~IEntityPool() = default;
 };
@@ -79,12 +78,9 @@ public:
   // Do not call on your own or stuff will break.
   void on_entity_move_internal(EntityID id, vec3 pos, f32 r, f32 h);
 
-  // Returns the size required for serialization to bytes
-  u64  size_required() const;
-
   // (De)serialization. Performs serialization if "serialize" is true, otherwise
   // does deserialization.
-  bool serialize(Buffer& buffer, bool serialize);
+  void serialize(Buffer& buffer);
 
 private:
   void setup_entity(Entity& entity, EntityID id);

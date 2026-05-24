@@ -12,6 +12,7 @@
 
 #include <math/lingebra.h>
 #include <math/utils.h>
+#include <buffer.h>
 
 #include <algorithm> // std::count_if
 
@@ -55,6 +56,7 @@ void MapDynamics::on_map_rebuild_and_entities_created()
 
   moving_sectors.resize(map.sectors.size(), false);
   sector_sounds.resize(map.sectors.size(), INVALID_ENTITY_ID);
+  activators_dynamic.resize(activators.size(), 0);
 
   SectorID sector_cnt = cast<SectorID>(map.sectors.size());
   for (SectorID sid = 0; sid < sector_cnt; ++sid)
@@ -340,8 +342,9 @@ void MapDynamics::update(f32 delta)
     }
 
     // Update hooks
-    const bool activeness_did_change = (is_on != activator.is_active);
-    activator.is_active = is_on;
+    u8& is_active = activators_dynamic[activator_id];
+    const bool activeness_did_change = (is_on != !!is_active);
+    is_active = is_on;
     if (is_on || activeness_did_change) {
       for (const std::unique_ptr<IActivatorHook>& hook : activator.hooks) {
         if (activeness_did_change && is_on)
@@ -353,9 +356,15 @@ void MapDynamics::update(f32 delta)
       }
     }
 
-
-
   }
+}
+
+//==============================================================================
+void MapDynamics::serialize(Buffer& buffer)
+{
+  // Sadly, we have to serialize ONLY this one thing, because Jakub built the
+  // design of his activators around this.
+  buffer.serialize_array<u8>(activators_dynamic.data(), activators_dynamic.size());
 }
 
 }

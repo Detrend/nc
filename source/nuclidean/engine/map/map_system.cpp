@@ -7,6 +7,7 @@
 #include <math/utils.h>
 #include <math/vector.h>
 #include <math/lingebra.h>
+#include <buffer.h>
 
 #include <grid.h>
 #include <profiling.h>
@@ -611,6 +612,14 @@ bool MapSectors::is_valid_sector_id(SectorID id) const
 bool MapSectors::is_valid_wall_id(WallID id) const
 {
   return id < this->walls.size();
+}
+
+//==============================================================================
+void MapSectors::serialize(Buffer& buffer)
+{
+  // No need to store sizes as they get initialized by loading the map
+  buffer.serialize_array(this->sectors_dynamic.data(), this->sectors_dynamic.size());
+  buffer.serialize_array(this->wall_segments_dynamic.data(), this->wall_segments_dynamic.size());
 }
 
 //==============================================================================
@@ -1734,11 +1743,11 @@ int build_map
     SectorData&    output_sector     = output.sectors.emplace_back();
     SectorDynData& output_sector_dyn = output.sectors_dynamic.emplace_back();
 
-    output_sector_dyn.force_walkable = sector.force_walkable;
     output_sector_dyn.floor_height = sector.floor_y[0];
     output_sector_dyn.ceil_height  = sector.ceil_y [0];
-    output_sector.state_floors[0] = output_sector.state_floors[1] = 0.0f;
-    output_sector.state_ceils [0] = output_sector.state_ceils [1] = 0.0f;
+    output_sector.force_walkable   = sector.force_walkable;
+    output_sector.state_floors[0]  = output_sector.state_floors[1] = 0.0f;
+    output_sector.state_ceils [0]  = output_sector.state_ceils [1] = 0.0f;
     output_sector.activator = sector.activator;
     output_sector.move_speed = sector.move_speed;
     output_sector.damage = sector.damage;

@@ -42,8 +42,7 @@ struct EntityPool : IEntityPool
   virtual u64     get_cnt()      const override;
   virtual u64     get_stride()   const override;
 
-  virtual u64  size_required()                     const override;
-  virtual void serialize(Buffer& buffer, bool serialize) override;
+  virtual void serialize(Buffer& buffer) override;
 };
 
 //==============================================================================
@@ -121,20 +120,7 @@ Entity* EntityPool<EntityType>::create(u32& idx_out)
 
 //==============================================================================
 template<typename EntityType>
-u64 EntityPool<EntityType>::size_required() const
-{
-  if (EntityType::get_static_flags() & EntityStaticFlags::save_load)
-  {
-    // All entities + next id + count
-    return sizeof(EntityType) * this->entities.size() + sizeof(u32) * 2;
-  }
-
-  return 0;
-}
-
-//==============================================================================
-template<typename EntityType>
-void EntityPool<EntityType>::serialize(Buffer& buffer, bool serialize)
+void EntityPool<EntityType>::serialize(Buffer& buffer)
 {
   if (!(EntityType::get_static_flags() & EntityStaticFlags::save_load))
   {
@@ -142,17 +128,27 @@ void EntityPool<EntityType>::serialize(Buffer& buffer, bool serialize)
     return;
   }
 
-  buffer.serialize<u32>(this->next_id, serialize);
+  buffer.serialize<u32>(this->next_id);
 
   u32 cnt = cast<u32>(this->entities.size());
-  buffer.serialize<u32>(cnt, serialize);
+  buffer.serialize<u32>(cnt);
 
-  if (!serialize)
+  if (buffer.is_deserializing())
   {
     this->entities.resize(cnt);
   }
 
-  buffer.serialize_array<EntityType>(this->entities.data(), cnt, serialize);
+  buffer.serialize_array<EntityType>(this->entities.data(), cnt);
+
+  if (buffer.is_deserializing())
+  {
+    // Fill the hash-table on deserialization
+    this->id_to_idx.reserve(cnt);
+    for (u32 i = 0; i < cast<u32>(this->entities.size()); ++i)
+    {
+      this->id_to_idx[this->entities[i].get_id().idx] = i;
+    }
+  }
 }
 
 //==============================================================================
@@ -249,27 +245,14 @@ void EntityRegistry::on_entity_move_internal(EntityID id, vec3 pos, f32 r, f32 h
 }
 
 //==============================================================================
-u64 EntityRegistry::size_required() const
+void EntityRegistry::serialize(Buffer& buffer)
 {
-  u64 total_size = 0;
+  nc_assert(m_pending_for_destruction.empty());
 
   for (auto& pool : m_pools)
   {
-    total_size += pool->size_required();
+    pool->serialize(buffer);
   }
-
-  return total_size;
-}
-
-//==============================================================================
-bool EntityRegistry::serialize(Buffer& buffer, bool serialize)
-{
-  for (auto& pool : m_pools)
-  {
-    pool->serialize(buffer, serialize);
-  }
-
-  return buffer.get_remaining_buffer_size() == 0;
 }
 
 //==============================================================================

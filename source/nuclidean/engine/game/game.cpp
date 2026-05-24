@@ -15,9 +15,11 @@
 #include <engine/map/map_dynamics.h>
 #include <engine/entity/entity_system.h>
 #include <engine/entity/sector_mapping.h>
+#include <engine/entity/entity_type_definitions.h>
 #include <game/entity_attachment_manager.h>
 
 #include <engine/input/game_input.h>
+#include <buffer.h>
 
 namespace nc
 {
@@ -85,6 +87,38 @@ void Game::update
 
   // And then clean up the dead entities
   entities->cleanup();
+}
+
+//==============================================================================
+void Game::serialize(Buffer& buffer)
+{
+  // Small data first
+  buffer.serialize(this->player_id);
+  buffer.serialize(this->frame_idx);
+  buffer.serialize(this->time_since_start);
+  // No need to serialize "is_level_completed" and "next_level_name"
+
+  // Subsystems second
+  map->serialize(buffer);
+  entities->serialize(buffer);
+  dynamics->serialize(buffer);
+  attachment->serialize(buffer);
+
+  // Rebuild the mapping manually, probably faster than loading it
+  if (buffer.is_deserializing())
+  {
+    mapping->on_map_rebuild();
+    entities->for_each(EntityTypes::all, [&](Entity& entity)
+    {
+      mapping->on_entity_create
+      (
+        entity.get_id(),
+        entity.get_position(),
+        entity.get_radius(),
+        entity.get_height()
+      );
+    });
+  }
 }
 
 }
