@@ -205,14 +205,36 @@ void MapDynamics::evaluate_activators
       case TriggerData::sector:
       {
         SectorID sid = td.sector_type.sector;
-        // Increment the activator for each relevant entity that is inside this sector
-        mapping.for_each_in_sector(sid, [&](EntityID id, mat4)
+        if (! td.can_turn_off) {
+          // If this trigger is not turn-offable, then just check if it was already trigered and increment (always only once) if that's the case
+          SectorDynData &sector_dyn = map.sectors_dynamic[td.sector_type.sector];
+          if (!sector_dyn.is_triggered) 
+          {
+            // Not triggered so far - must check for being triggered
+            mapping.for_each_in_sector(sid, [&](EntityID id, mat4)
+              {
+                const bool player = td.player_sensitive && (id.type == EntityTypes::player);
+                const bool enemy = td.enemy_sensitive && (id.type == EntityTypes::enemy);
+                if (player || enemy)
+                  sector_dyn.is_triggered = true;
+              });
+          }
+          if (sector_dyn.is_triggered) 
+          {
+            activator_value += td.increment;
+          }
+        }
+        else 
         {
-          const bool player = td.player_sensitive && (id.type == EntityTypes::player);
-          const bool enemy  = td.enemy_sensitive && (id.type == EntityTypes::enemy);
-          activator_value += (player || enemy) * td.increment;
-          if (out_info) (*out_info)[td.activator].entities.emplace_back(id);
-        });
+          // Increment the activator for each relevant entity that is inside this sector
+          mapping.for_each_in_sector(sid, [&](EntityID id, mat4)
+            {
+              const bool player = td.player_sensitive && (id.type == EntityTypes::player);
+              const bool enemy = td.enemy_sensitive && (id.type == EntityTypes::enemy);
+              activator_value += (player || enemy) * td.increment;
+              if (out_info) (*out_info)[td.activator].entities.emplace_back(id);
+            });
+        }
       }
       break;
 

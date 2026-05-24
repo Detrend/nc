@@ -148,6 +148,8 @@ struct SectorDynData
 {
   f32 floor_height = 0.0f;
   f32 ceil_height  = 0.0f;
+
+  bool is_triggered : 1 = false;
   // Calculates the current height of the sector from floor to ceiling.
   // Negative if ceiling is under the floor (which should never happen!)
   f32 get_sector_height() const;
