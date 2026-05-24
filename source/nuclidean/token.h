@@ -206,7 +206,16 @@ namespace nc {
       return raw;
     }
 
+    // Name picked for consistency with stdlib
+    constexpr bool empty() const
+    {
+      return raw == 0;
+    }
 
+    constexpr explicit operator bool() const
+    {
+      return !empty();
+    }
 
   private:
     u64 raw;
@@ -236,6 +245,16 @@ namespace nc {
     {
       this->storage = other.storage;
       return *this;
+    }
+
+    constexpr CompositeToken& operator=(std::string_view str)
+    {
+      return *this = CompositeToken{str};
+    }
+
+    constexpr CompositeToken& operator=(cstr str)
+    {
+      return *this = CompositeToken{std::string_view{str}};
     }
 
     constexpr CompositeToken(const Segment& other) : storage{ other } {}
@@ -341,6 +360,23 @@ namespace nc {
       return std::string(to_cstring().data());
     }
 
+    constexpr bool empty() const
+    {
+      for (size_t t = 0; t < TTokenCount; ++t)
+      {
+        if (!storage[t].empty())
+        {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    constexpr explicit operator bool() const
+    {
+      return !empty();
+    }
 
   private:
     std::array<Segment, TTokenCount> storage;

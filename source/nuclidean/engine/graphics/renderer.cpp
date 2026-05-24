@@ -632,7 +632,7 @@ static TextureHandle pick_texture_handle_from_appearance
     // 1 directional sprite
     case Appearance::SpriteMode::mono:
     {
-      return TextureManager::get()[appear.sprite];
+      return TextureManager::get()[appear.sprite.to_string()];
       break;
     }
 
@@ -647,7 +647,7 @@ static TextureHandle pick_texture_handle_from_appearance
       if (dir_2d == VEC2_ZERO) [[unlikely]]
       {
         // Not sure if this can even happen legaly
-        return TextureManager::get()[appear.sprite + "_d"];
+        return TextureManager::get()[appear.sprite.to_string() + "_d"];
       }
 
       // ( 0.0f, -1.0f) ->  0.0f   (looking straight at us)
@@ -683,7 +683,7 @@ static TextureHandle pick_texture_handle_from_appearance
         "_u",  // 5 + 4 = 9
       };
 
-      return TextureManager::get()[appear.sprite + SUFFIX_LUT[idx]];
+      return TextureManager::get()[appear.sprite.to_string() + SUFFIX_LUT[idx]];
       break;
     }
 

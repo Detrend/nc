@@ -209,7 +209,7 @@ const Appearance* Projectile::get_appearance() const
 //==============================================================================
 Appearance* Projectile::get_appearance()
 {
-  return m_appear.sprite.length() ? &m_appear : nullptr;
+  return m_appear.sprite ? &m_appear : nullptr;
 }
 
 //==============================================================================

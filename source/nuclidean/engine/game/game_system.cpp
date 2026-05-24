@@ -493,7 +493,7 @@ static void load_json_map
     const f32 radius = js_prop["radius"];
     const f32 height = js_prop["height"];
     const Appearance appearance {
-      js_prop["sprite"],
+      Token{std::string{js_prop["sprite"]}},
       load_json_vector<3>(js_prop["direction"]).xzy,
       js_prop["scale"],
       0.0f,

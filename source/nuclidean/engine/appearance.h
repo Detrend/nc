@@ -3,7 +3,7 @@
 
 #include <math/vector.h>
 
-#include <string>
+#include <token.h>
 
 namespace nc
 {
@@ -44,7 +44,7 @@ struct Appearance
   // dir8: It is a prefix of the texture onto which a directional suffix is
   //       appended which is calculated from the "direction" field and rotation
   //       of the camera.
-  std::string  sprite;
+  Token        sprite;
   vec3         direction    = VEC3_ZERO;
   f32          offset       = 0.0f;
   f32          scale        = 1.0f;

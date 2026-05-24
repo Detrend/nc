@@ -112,23 +112,25 @@ void Particle::update(f32 delta)
     return;
   }
 
+  std::string as_string = m_appear.sprite.to_string();
+
   // Update the sprite anim
-  if (m_appear.sprite.length() && m_img_cnt > 1)
+  if (as_string.length() && m_img_cnt > 1)
   {
     // Remove everything after the last "_"
-    while (m_appear.sprite.back() != '_')
+    while (as_string.back() != '_')
     {
-      m_appear.sprite.pop_back();
-      nc_assert(m_appear.sprite.length());
+      as_string.pop_back();
+      nc_assert(as_string.length());
     }
 
     // Remove the "_" as well
-    m_appear.sprite.pop_back();
+    as_string.pop_back();
 
     // Calculate the index
     f32 frac = m_lifetime / m_duration;
     u32 idx  = cast<u32>(frac * m_img_cnt);
-    m_appear.sprite = std::format("{}_{}", m_appear.sprite, idx);
+    m_appear.sprite = std::format("{}_{}", as_string, idx);
   }
 
   // Update the light
