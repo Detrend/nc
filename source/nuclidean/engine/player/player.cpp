@@ -961,7 +961,7 @@ void Player::update
     time_since_death += delta;
     if (curr_input.keys & 1 << PlayerKeyInputs::use)
     {
-      get_engine().get_module<GameSystem>().request_level_change(get_engine().get_module<GameSystem>().get_level_name());
+      GameSystem::get().request_level_restart();
     }
   }
 
@@ -988,6 +988,44 @@ vec3 Player::get_eye_pos() const
 WeaponType Player::get_equipped_weapon() const
 {
   return this->current_weapon;
+}
+
+//==============================================================================
+void Player::init_with_level_transition_data(const LevelTransitionData& data_in)
+{
+  this->set_health(data_in.health);
+
+  for (u8 i = 1; i < WEAPON_CNT; i++)
+  {
+    WeaponType weapon = cast<WeaponType>(i);
+
+    this->give_ammo(weapon, data_in.ammo[i]);
+    if (data_in.owned_weapons & weapon_flag(weapon))
+    {
+      this->give_weapon(weapon);
+    }
+  }
+
+  this->change_weapon(data_in.current_weapon);
+}
+
+//==============================================================================
+void Player::store_level_transition_data(LevelTransitionData& data_out) const
+{
+  // save inventory
+  data_out.owned_weapons = 0;
+  data_out.health = GameHelpers::get().get_player()->get_health();
+
+  for (u32 i = 0; i < WEAPON_CNT; i++)
+  {
+    data_out.ammo[i] = GameHelpers::get().get_player()->get_ammo((WeaponType)i);
+    if (GameHelpers::get().get_player()->has_weapon((WeaponType)i))
+    {
+      data_out.owned_weapons |= weapon_flag((WeaponType)i);
+    }
+  }
+
+  data_out.current_weapon = GameHelpers::get().get_player()->get_equipped_weapon();
 }
 
 //==============================================================================

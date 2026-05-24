@@ -23,6 +23,7 @@ namespace nc
 // Forward declare, we do not want to include
 struct PlayerSpecificInputs;
 struct RenderGunProperties;
+struct LevelTransitionData;
 class  Pickup;
 }
 
@@ -77,7 +78,7 @@ public:
   int     get_max_health() const;
 
   void    set_health(s32 health);
-  void change_weapon(WeaponType new_weapon);
+  void    change_weapon(WeaponType new_weapon);
 
   s32     get_current_weapon_ammo();
   s32     get_ammo(WeaponType weapon)     const;
@@ -91,6 +92,8 @@ public:
   void       give_weapon(WeaponType weapon);
   void       give_ammo(WeaponType weapon, u32 amount);
 
+  void init_with_level_transition_data(const LevelTransitionData& data_in);
+  void store_level_transition_data(LevelTransitionData& data_out) const;
   void get_gun_props(RenderGunProperties& props) const;
 
 #if NC_HOT_RELOAD

@@ -41,6 +41,16 @@ void Game::update
   PlayerSpecificInputs prev_input
 )
 {
+  // Init the player with transition data on the first frame. Same code path as
+  // when playing a demo.
+  if (frame_idx == 0 && !transition_data.is_empty())
+  {
+    if (Player* player = entities->get_entity<Player>(player_id))
+    {
+      player->init_with_level_transition_data(transition_data);
+    }
+  }
+
   time_since_start += dt;
 
   // Handle the player first

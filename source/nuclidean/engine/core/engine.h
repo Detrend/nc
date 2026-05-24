@@ -15,6 +15,7 @@
 #include <vector>
 #include <string>
 #include <game/game_types.h>
+#include <engine/player/save_types.h>
 
 union SDL_Event;
 
@@ -76,11 +77,6 @@ public:
 
   bool is_editor_mode() const;
 
-  s32 get_transition_health() { return m_transition_state.health; };
-  s32* get_transition_ammo() { return m_transition_state.ammo; };
-  WeaponFlags get_transition_weapons() { return m_transition_state.owned_weapons; };
-  WeaponType get_transition_equiped_weapon() { return m_transition_state.current_weapon; };
-
 private:
   // Called first before level end if a demo was playing
   // menu:     schedule next demo
@@ -129,11 +125,8 @@ private:
 
   struct TransitionStateData
   {
-    std::string next_level_name;
-    s32 health = 100;
-    WeaponFlags owned_weapons = 0;
-    WeaponType current_weapon = 0;
-    s32 ammo[4] = {-1, 0, 0, 0};    
+    Token               next_level_name;
+    LevelTransitionData transition_data;
   };
 
 private:

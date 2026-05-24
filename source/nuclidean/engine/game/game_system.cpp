@@ -52,6 +52,7 @@
 #include <intersect.h>
 #include <profiling.h>
 #include <stack_vector.h>
+#include <buffer.h>
 
 #include <fstream>
 #include <filesystem>
@@ -645,88 +646,12 @@ bool GameSystem::init()
 //==============================================================================
 void GameSystem::post_init()
 {
-  // Load game saves and populate the database
-  namespace fs = std::filesystem;
-
-  for (const auto& entry : fs::directory_iterator(SAVE_DIR_RELATIVE))
-  {
-    if (!entry.is_regular_file())
-    {
-      // Ignore
-      continue;
-    }
-
-    if (entry.path().extension() != SAVE_FILE_SUFFIX)
-    {
-      // Not a savefile
-      continue;
-    }
-
-    std::ifstream input_file;
-    input_file.open(entry, std::ios::binary | std::ios::ate);
-    if (!input_file.is_open())
-    {
-      // What?
-      nc_warn("Failed to open save game file \"{}\", skipping..", entry.path().string());
-      continue;
-    }
-
-    auto size = input_file.tellg();
-    input_file.seekg(0, std::ios::beg);
-
-    std::vector<byte> data(size, 0);
-    input_file.read(reinterpret_cast<char*>(&data[0]), size);
-
-    SaveGameData save_game;
-    if (!deserialize_save_game_from_bytes(save_game, data))
-    {
-      // Try to deserialize the data
-      nc_warn("Failed to read save game data from file \"{}\"", entry.path().string());
-      continue;
-    }
-
-    // Insert into the database
-    this->get_save_game_db().push_back(SaveDbEntry
-    {
-      .data  = save_game,
-      .dirty = false,
-    });
-
-    this->last_save_id = std::max(this->last_save_id, save_game.id);
-  }
 }
 
 //==============================================================================
 void GameSystem::pre_terminate()
 {
-  // Store the dirty save games
-  for (const auto&[save, dirty] : this->get_save_game_db())
-  {
-    if (!dirty)
-    {
-      continue;
-    }
 
-    std::vector<byte> bytes;
-    serialize_save_game_to_bytes(save, bytes);
-
-    std::string filename = std::format
-    (
-      "{}/save{}{}", SAVE_DIR_RELATIVE, save.id, SAVE_FILE_SUFFIX
-    );
-
-    std::ofstream output;
-    output.open(filename, std::ios::binary | std::ios::trunc);
-    if (!output.is_open())
-    {
-      nc_crit("Could not open savegame file \"{}\" for writing.", filename);
-      continue;
-    }
-
-    output.write(reinterpret_cast<char*>(&bytes[0]), bytes.size());
-    output.flush();
-    output.close();
-  }
 }
 
 //==============================================================================
@@ -737,64 +662,33 @@ void GameSystem::frame_start()
   //          the game there would be no level or entities.
   //          This simplifies the stuff a lot as we do not have
   //          to check everywhere if a level exists or not..
-  if (scheduled_state)
+  if (!scheduled_state)
   {
-    NextRequestedState& scheduled_state_ref = *scheduled_state;
-
-    get_engine().send_event
-    (
-      ModuleEvent{.type = ModuleEventType::before_map_rebuild}
-    );
-
-    // Do the level transition
-    this->cleanup_map();
-
-    // Build the normal map
-    this->build_map(scheduled_state_ref.level);
-
-    this->level_name = scheduled_state_ref.level;
-
-    // Demo
-    if (scheduled_state_ref.demo.size())
-    {
-      // Install frames and play them
-      journal.reset_and_clear(JournalState::playing);
-      journal.frames = std::move(scheduled_state_ref.demo);
-    }
-    else
-    {
-      // Record frames
-      journal.reset_and_clear(JournalState::recording);
-
-      //load inventory - beware that player might not exist if this is an empty level
-      if (Player* player = GameHelpers::get().get_player())
-      {
-        player->set_health(get_engine().get_transition_health());
-        for (u8 i = 1; i < 4; i++)
-        {
-          player->give_ammo((WeaponType)i, get_engine().get_transition_ammo()[i]);
-          if (get_engine().get_transition_weapons() & weapon_flag((WeaponType)i))
-          {
-            player->give_weapon((WeaponType)i);
-          }
-        }
-        player->change_weapon(get_engine().get_transition_equiped_weapon());
-      }
-    }
-
-    // Reset it
-    scheduled_state.reset();
-
-    // Fire an event
-    get_engine().send_event
-    (
-      ModuleEvent{.type = ModuleEventType::after_map_rebuild}
-    );
-
-#if NC_HOT_RELOAD
-    notify_hot_reload_post_map_build();
-#endif
+    return;
   }
+
+  NextRequestedState& scheduled_state_ref = *scheduled_state;
+
+  if (scheduled_state_ref.load_from_file.size())
+  {
+    this->handle_load_game(scheduled_state_ref.load_from_file);
+  }
+  else if (scheduled_state_ref.save_to_file.size())
+  {
+    this->handle_save_game(scheduled_state_ref.save_to_file);
+  }
+  else
+  {
+    this->handle_start_new_level_optionally_with_demo
+    (
+      scheduled_state_ref.level,
+      scheduled_state_ref.transition,
+      scheduled_state_ref.demo
+    );
+  }
+
+  // Reset it
+  scheduled_state.reset();
 }
 
 //==============================================================================
@@ -1078,34 +972,36 @@ const EntityRegistry& GameSystem::get_entities() const
 }
 
 //==============================================================================
-SaveGameData GameSystem::save_game() const
+void GameSystem::save_game() const
 {
-  SaveGameData save;
+  // Generate the filename
+  auto now = floor<std::chrono::seconds>(std::chrono::system_clock::now());
+  auto lvl = level_name.to_string();
 
-  // Level name
-  
-  const LevelName& lvl_name = this->get_level_name();
-  nc_assert(lvl_name.to_cstring().size() <= SaveGameData::LVL_NAME_SIZE);
-  std::memset(save.level_name, 0, sizeof(SaveGameData::level_name));
-  std::memcpy(save.level_name, lvl_name.to_cstring().data(), lvl_name.to_cstring().size() * sizeof(char));
-  
-  // Time and ID
-  save.time = SaveGameData::Clock::now();
-  save.id   = ++last_save_id;
-  /**/
-  return save;
+  std::string save_path = std::format
+  (
+    "{}/{}_{:%H_%M_%S_%d_%m_%Y}{}", SAVE_DIR_RELATIVE, lvl, now, SAVE_FILE_SUFFIX
+  );
+
+  scheduled_state = NextRequestedState
+  {
+    .save_to_file = std::move(save_path),
+  };
 }
 
 //==============================================================================
-void GameSystem::load_game(const SaveGameData& save)
+void GameSystem::load_game(const std::string& path)
 {
-  this->request_level_change(save.level_name);
+  scheduled_state = NextRequestedState
+  {
+    .load_from_file = path,
+  };
 }
 
 //==============================================================================
-GameSystem::SaveDatabase& GameSystem::get_save_game_db()
+LevelTransitionData GameSystem::get_transition_data() const
 {
-  return save_db;
+  return this->game->transition_data;
 }
 
 //==============================================================================
@@ -1142,15 +1038,22 @@ void GameSystem::request_empty_level()
 }
 
 //==============================================================================
+void GameSystem::request_level_restart()
+{
+  this->request_level_change(this->level_name, {}, this->game->transition_data);
+}
+
+//==============================================================================
 void GameSystem::request_level_change
 (
-  const LevelName& new_level, DemoDataFrames&& frames
+  const LevelName& new_level, DemoDataFrames&& frames, LevelTransitionData transition
 )
 {
   this->scheduled_state = NextRequestedState
   {
-    .level = new_level,
-    .demo  = std::move(frames),
+    .level      = new_level,
+    .demo       = std::move(frames),
+    .transition = transition
   };
 }
 
@@ -1214,6 +1117,129 @@ void GameSystem::cleanup_map()
   }
 
   game = std::make_unique<Game>();
+}
+
+//==============================================================================
+void GameSystem::handle_start_new_level_optionally_with_demo
+(
+  LevelName             level,
+  LevelTransitionData   transition_data,
+  const DemoDataFrames& demo_optional
+)
+{
+  this->pre_level_load();
+
+  // Load
+  this->load_level(level, false);
+
+  // Setup transition data
+  this->game->transition_data = transition_data;
+
+  // Demo
+  if (demo_optional.size())
+  {
+    // Install frames and play them
+    journal.reset_and_clear(JournalState::playing);
+    journal.frames = demo_optional;
+  }
+  else
+  {
+    // Record frames
+    journal.reset_and_clear(JournalState::recording);
+  }
+
+  this->post_level_load();
+
+#if NC_HOT_RELOAD
+  notify_hot_reload_post_map_build();
+#endif
+}
+
+//==============================================================================
+void GameSystem::load_level(LevelName level, [[maybe_unused]]bool skip_save_load_entities)
+{
+  // Do the level transition
+  this->cleanup_map();
+
+  // Build the normal map
+  this->build_map(level);
+
+  this->level_name = level;
+}
+
+//==============================================================================
+void GameSystem::handle_load_game(const std::string& savefile)
+{
+  u64 size = 0;
+  void* data = load_bytes_from_file(savefile, size);
+  nc_assert(data);
+
+  SaveGameHeader header;
+  Buffer read_buffer(data, size, SerializationType::deserialize);
+
+  // Fire an event before
+  this->pre_level_load();
+
+  read_buffer.serialize(header);
+  load_level(header.level, true);
+
+  game->serialize(read_buffer);
+  nc_assert(read_buffer.get_remaining_buffer_size() == 0);
+
+  // Fire an event after
+  this->post_level_load();
+
+  // Free the data
+  std::free(data);
+}
+
+//==============================================================================
+void GameSystem::handle_save_game(const std::string& savefile)
+{
+  // Header
+  SaveGameHeader header;
+  std::memcpy(header.signature, SaveGameHeader::SIGNATURE, SaveGameHeader::SIGNATURE_SIZE);
+  header.version = CURRENT_GAME_VERSION;
+  header.time    = SaveGameHeader::Clock::now();
+  header.level   = level_name;
+
+  // Find out how many bytes to allocate
+  Buffer size_counter;
+  size_counter.serialize(header);
+  game->serialize(size_counter);
+
+  u64 size = size_counter.get_counted_size();
+
+  // Allocate it
+  void* data = std::malloc(size);
+  Buffer write_buffer(data, size, SerializationType::serialize);
+
+  write_buffer.serialize(header);
+  game->serialize(write_buffer);
+
+  // Dump it to a file
+  save_bytes_to_file(savefile, data, size);
+
+  // Free the data
+  std::free(data);
+}
+
+//==============================================================================
+void GameSystem::pre_level_load()
+{
+  get_engine().send_event
+  (
+    ModuleEvent{.type = ModuleEventType::before_map_rebuild}
+  );
+}
+
+//==============================================================================
+void GameSystem::post_level_load()
+{
+  get_engine().send_event
+  (
+    ModuleEvent{.type = ModuleEventType::after_map_rebuild}
+  );
 }
 
 //==============================================================================

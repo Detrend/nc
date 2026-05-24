@@ -5,6 +5,7 @@
 #include <common.h>
 #include <engine/player/level_types.h>
 #include <engine/input/game_input.h>
+#include <token.h>
 
 #include <vector>
 #include <chrono>
@@ -16,7 +17,7 @@ namespace nc
 using SaveID = u64;
 
 // For old save compatibility with newer game version
-using GameVersion = u16;
+using GameVersion = u64;
 
 // Do not change order of items in this enum as it would break backwards
 // compatibility.
@@ -49,40 +50,56 @@ struct LevelPersistentData
 };
 NC_POP_PACKED
 
-NC_PUSH_PACKED
-struct SaveGameData
+//NC_PUSH_PACKED
+struct SaveGameHeader
 {
   using Clock    = std::chrono::system_clock;
   using SaveTime = std::chrono::time_point<Clock>;
   static constexpr u64  SIGNATURE_SIZE    = 6;
   static constexpr cstr SIGNATURE         = "ncsave";
-  static constexpr u64  LVL_NAME_SIZE     = 32;
-  static constexpr u64  CHAPTER_NAME_SIZE = 32;
 
-  char                signature[SIGNATURE_SIZE];
-  SaveID              id;
-  SaveTime            time;
-  char                chapter   [LVL_NAME_SIZE];
-  char                level_name[CHAPTER_NAME_SIZE];
-  GameVersion         version;
-  LevelPersistentData data;
+  // These 3 are the only mandatory members of the header. These 2 will ALWAYS
+  // be present no matter the game version.
+  // The remaining members can change between updates.
+  char        signature[SIGNATURE_SIZE];
+  GameVersion version;
+  SaveTime    time;
+
+  // These can change between versions
+  Token chapter;
+  Token level;
 };
-NC_POP_PACKED
+//NC_POP_PACKED
 
-void serialize_save_game_to_bytes(const SaveGameData& data, std::vector<byte>& bytes_out);
-bool deserialize_save_game_from_bytes(SaveGameData& data_out, const std::vector<byte>& bytes);
+struct LevelTransitionData
+{
+  s32 health         = 100;
+  u32 owned_weapons  = 0;
+  u8  current_weapon = 0;
+  s32 ammo[4] = {-1, 0, 0, 0};
+
+  bool is_empty() const
+  {
+    return health >= 0;
+  }
+
+  void set_empty()
+  {
+    health = -67;
+  }
+};
 
 NC_PUSH_PACKED
 struct DemoDataHeader
 {
   static constexpr u64  SIGNATURE_SIZE = 6;
   static constexpr cstr SIGNATURE      = "ncdemo";
-  static constexpr u64  LVL_NAME_SIZE  = 32;
 
-  char        signature[SIGNATURE_SIZE];
-  char        level_name[LVL_NAME_SIZE]; // Name of the level
-  GameVersion version;
-  u64         num_frames = 0;
+  char                signature[SIGNATURE_SIZE];
+  Token               level_name;
+  GameVersion         version;
+  u64                 num_frames = 0;
+  LevelTransitionData transition_data;
 };
 NC_POP_PACKED
 
@@ -99,17 +116,34 @@ using DemoDataFrames = std::vector<DemoDataFrame>;
 // Loads a given demo from a file
 bool load_demo_from_file
 (
-  const std::string& file,
-  std::string&       level_name_out,
-  DemoDataFrames&    frames_out
+  const std::string&   file,
+  LevelName&           level_name_out,
+  LevelTransitionData& transition_out,
+  DemoDataFrames&      frames_out
 );
 
 // Returns a list of available demos
 std::vector<std::string> list_available_demo_files();
 
+// Returns a list of available save files
+std::vector<std::string> list_available_save_files();
+
 u64 calc_size_for_demo_to_bytes
 (
   const DemoDataHeader& header
+);
+
+void save_bytes_to_file
+(
+  const std::string& path,
+  void*              data,
+  u64                size
+);
+
+void* load_bytes_from_file
+(
+  const std::string& path,
+  u64&               size
 );
 
 void save_demo_to_bytes
@@ -130,7 +164,7 @@ bool load_demo_from_bytes
 void save_demo_to_file
 (
   const std::string&   filename, // No path or extension, only filename
-  const std::string&   lvl_name, // Name of the level
+  LevelName            level_name, // Name of the level
   const DemoDataFrame* frames,
   u64                  frames_cnt
 );

@@ -4,6 +4,7 @@
 #include <types.h>
 #include <engine/entity/entity_types.h>
 #include <engine/player/level_types.h>
+#include <engine/player/save_types.h>
 
 #include <memory> // std::unique_ptr
 
@@ -40,6 +41,7 @@ struct Game
   std::unique_ptr<SectorMapping>    mapping;
   std::unique_ptr<MapDynamics>      dynamics;
   std::unique_ptr<EntityAttachment> attachment;
+  LevelTransitionData               transition_data;
   u64                               frame_idx = 0;
   f64                               time_since_start = 0.0;
   bool                              is_level_completed = false;

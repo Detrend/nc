@@ -219,6 +219,8 @@ void EntityRegistry::cleanup()
   {
     this->destroy_entity_internal(to_destroy);
   }
+
+  m_pending_for_destruction.clear();
 }
 
 //==============================================================================

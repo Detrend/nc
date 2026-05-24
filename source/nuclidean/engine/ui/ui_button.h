@@ -5,6 +5,7 @@
 #include <engine/game/game_system.h>
 
 #include <functional>
+#include <string>
 
 //======================================================================================
 
@@ -41,12 +42,12 @@ protected:
 private:
   std::function<void(void)> func;
 };
-//======================================================================================
 
+//======================================================================================
 class UiLoadGameButton : public UiButton
 {
 public:
-  UiLoadGameButton(nc::GameSystem::SaveDbEntry& save_entry, vec2 position, vec2 scale);
+  UiLoadGameButton(const std::string& filename, vec2 position, vec2 scale);
 
   // action to be called when a button is pressed
   void on_click() override;
@@ -57,7 +58,7 @@ public:
   void draw(ShaderProgramHandle digit_material);
 
 private:
-  nc::GameSystem::SaveDbEntry& save;
+  std::string save_path;
 };
 
 }

@@ -53,6 +53,7 @@ void Buffer::store_array(const T* first, u64 cnt)
 {
   std::memcpy(head, first, sizeof(T) * cnt);
   size -= sizeof(T) * cnt;
+  head = recast<T*>(head) + cnt;
   nc_assert(size >= 0);
 }
 
@@ -62,6 +63,7 @@ void Buffer::load_array(T* first, u64 cnt)
 {
   std::memcpy(first, head, sizeof(T) * cnt);
   size -= sizeof(T) * cnt;
+  head = recast<T*>(head) + cnt;
   nc_assert(size >= 0);
 }
 

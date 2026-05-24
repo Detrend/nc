@@ -104,22 +104,22 @@ void UiButton::draw(const ShaderProgramHandle button_material)
 }
 
 //==========================================================================================
-UiLoadGameButton::UiLoadGameButton(nc::GameSystem::SaveDbEntry& save_entry, vec2 position, vec2 scale) :
-  save(save_entry)
+UiLoadGameButton::UiLoadGameButton(const std::string& save, vec2 position, vec2 scale)
+: save_path(save)
 {
   this->position = position;
-  this->scale = scale;
-
+  this->scale    = scale;
 }
 
 //=============================================================================================
 void UiLoadGameButton::on_click()
 {
   get_engine().send_event(ModuleEvent
-    {
-      .type = ModuleEventType::new_game_level_requested,
-    });
-  get_engine().get_module<GameSystem>().load_game(save.data);
+  {
+    .type = ModuleEventType::new_game_level_requested,
+  });
+
+  GameSystem::get().load_game(SAVE_DIR_RELATIVE + ("/" + save_path));
   get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_visible(false);
 
 }
@@ -127,10 +127,7 @@ void UiLoadGameButton::on_click()
 //==============================================================================================
 void UiLoadGameButton::draw(ShaderProgramHandle digit_material)
 {
-  // draw button, the text is save time
-  nc::SaveGameData::SaveTime time = save.data.time;
-
-  std::string text = std::format("{:%Y-%m-%d %H:%M}", time);
+  const std::string& text = save_path; 
 
   vec2 final_pos = position - vec2(0.5f, 0.0f);
   vec2 step = vec2(0.033f, 0.0f);
@@ -144,8 +141,7 @@ void UiLoadGameButton::draw(ShaderProgramHandle digit_material)
 
     glm::mat4 trans_mat = glm::mat4(1.0f);
     vec2 translate = final_pos;
-    trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
-    trans_mat = glm::scale(trans_mat, glm::vec3(0.0165f, 0.033f, 1));
+    trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0)); trans_mat = glm::scale(trans_mat, glm::vec3(0.0165f, 0.033f, 1));
 
     const glm::mat4 final_trans = trans_mat;
 

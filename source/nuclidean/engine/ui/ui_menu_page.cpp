@@ -15,6 +15,7 @@
 #include <engine/core/module_event.h>
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/graphics_system.h>
+#include <engine/player/save_types.h>
 
 #include <engine/sound/sound_resources.h>
 
@@ -396,6 +397,7 @@ void MainMenuPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   new_game_button->set_hover(false);
   options_button->set_hover(false);
   load_button->set_hover(false);
+  save_button->set_hover(false);
   quit_button->set_hover(false);
 
   if (new_game_button->is_point_in_rec(mouse_pos))
@@ -409,6 +411,10 @@ void MainMenuPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   else if (load_button->is_point_in_rec(mouse_pos))
   {
     hover_over_button = load_button;
+  }
+  else if (save_button->is_point_in_rec(mouse_pos))
+  {
+    hover_over_button = save_button;
   }
   else if (quit_button->is_point_in_rec(mouse_pos))
   {
@@ -483,7 +489,7 @@ void MainMenuPage::draw(ShaderProgramHandle button_material, GLuint VAO)
   new_game_button->draw(button_material);
   options_button->draw(button_material);
   load_button->draw(button_material);
-  //save_button->draw(button_material);
+  save_button->draw(button_material);
   quit_button->draw(button_material);
   nuclidean_text->draw(button_material);
 
@@ -537,6 +543,7 @@ void MainMenuPage::load_game_func()
 //==============================================================================================
 void MainMenuPage::save_game_func()
 {
+  GameSystem::get().save_game();
 }
 
 //================================================================================================
@@ -1135,16 +1142,14 @@ void LoadGamePage::update_saves()
   }
   load_game_buttons.clear();
 
-  // get save db
-  nc::GameSystem::SaveDatabase& save_db = get_engine().get_module<GameSystem>().get_save_game_db();
-
   // starting pos for first button and steps for next
-  vec2 pos = vec2(-0.0f, 0.3f);
+  vec2 pos      = vec2(-0.0f, 0.3f);
   vec2 step_pos = vec2(0.0f, -0.1f);
-  vec2 scale = vec2(0.5f, 0.033f);
+  vec2 scale    = vec2(0.5f, 0.033f);
 
   // create buttons
-  for (auto& save : save_db)
+  auto saves = list_available_save_files();
+  for (const std::string& save : saves)
   {
     load_game_buttons.push_back(new UiLoadGameButton(save, pos, scale));
     pos += step_pos;
@@ -1385,12 +1390,14 @@ MainMenuPage::MainMenuPage()
   const char* ng_text = "ui_new_game";
   const char* o_text = "ui_options";
   const char* lg_text = "ui_load_game";
+  const char* sg_text = "ui_save_game";
   const char* q_text = "ui_quit";
 
   new_game_button = new UiButton(ng_text, vec2(0.0f, 0.15f), vec2(0.3f, 0.066f), std::bind(&MainMenuPage::new_game_func, this));
   options_button = new UiButton(o_text, vec2(0.0f, 0.0f), vec2(0.3f, 0.066f), std::bind(&MainMenuPage::options_func, this));
-  load_button = new UiButton(lg_text, vec2(0.0f, -0.15f), vec2(0.3f, 0.066f), std::bind(&MainMenuPage::load_game_func, this));
-  quit_button = new UiButton(q_text, vec2(0.0f, -0.3f), vec2(0.3f, 0.066f), std::bind(&MainMenuPage::quit_func, this));
+  save_button = new UiButton(sg_text, vec2(0.0f, -0.15f), vec2(0.3f, 0.066f), std::bind(&MainMenuPage::save_game_func, this));
+  load_button = new UiButton(lg_text, vec2(0.0f, -0.3f), vec2(0.3f, 0.066f), std::bind(&MainMenuPage::load_game_func, this));
+  quit_button = new UiButton(q_text, vec2(0.0f, -0.45f), vec2(0.3f, 0.066f), std::bind(&MainMenuPage::quit_func, this));
   nuclidean_text = new UiButton("ui_nuclidean", vec2(0.0f, 0.5f), vec2(0.42f, 0.1f), std::bind(&MainMenuPage::quit_func, this));
 }
 
@@ -1400,6 +1407,7 @@ MainMenuPage::~MainMenuPage()
   delete new_game_button;
   delete options_button;
   delete load_button;
+  delete save_button;
   delete quit_button;
   delete nuclidean_text;
 }
