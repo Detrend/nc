@@ -74,7 +74,7 @@ void Entity::set_position(vec3 np)
   if (m_position != np)
   {
     m_position = np;
-    m_registry->on_entity_move_internal(m_id_and_type, m_position, m_radius2d, m_height);
+    GameSystem::get().get_entities().on_entity_move_internal(m_id_and_type, m_position, m_radius2d, m_height);
   }
 }
 
@@ -91,7 +91,7 @@ void Entity::set_radius(f32 r)
   if (m_radius2d != r)
   {
     m_radius2d = r;
-    m_registry->on_entity_move_internal(m_id_and_type, m_position, m_radius2d, m_height);
+    GameSystem::get().get_entities().on_entity_move_internal(m_id_and_type, m_position, m_radius2d, m_height);
   }
 }
 
@@ -108,7 +108,7 @@ void Entity::set_height(f32 nh)
   if (m_height != nh)
   {
     m_height = nh;
-    m_registry->on_entity_move_internal(m_id_and_type, m_position, m_radius2d, m_height);
+    GameSystem::get().get_entities().on_entity_move_internal(m_id_and_type, m_position, m_radius2d, m_height);
   }
 }
 
@@ -120,7 +120,7 @@ void Entity::set_pos_rad_height(vec3 p, f32 r, f32 h)
     m_position = p;
     m_radius2d = r;
     m_height   = h;
-    m_registry->on_entity_move_internal(m_id_and_type, m_position, m_radius2d, m_height);
+    GameSystem::get().get_entities().on_entity_move_internal(m_id_and_type, m_position, m_radius2d, m_height);
   }
 }
 

@@ -276,7 +276,6 @@ bool EntityRegistry::serialize(Buffer& buffer, bool serialize)
 void EntityRegistry::setup_entity(Entity& entity, EntityID id)
 {
   entity.m_id_and_type = id;
-  entity.m_registry    = this;
 }
 
 //==============================================================================
