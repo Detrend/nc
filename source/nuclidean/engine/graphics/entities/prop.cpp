@@ -13,6 +13,12 @@ namespace nc
 }
 
 //==============================================================================
+/*static*/ EntityStatFlags Prop::get_static_flags()
+{
+  return EntityStaticFlags::save_load;
+}
+
+//==============================================================================
 SectorSnapType Prop::get_snap_type() const
 {
   return m_snap;

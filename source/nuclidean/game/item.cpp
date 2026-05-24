@@ -84,6 +84,12 @@ EntityType Pickup::get_type_static()
 }
 
 //==============================================================================
+/*static*/ EntityStatFlags Pickup::get_static_flags()
+{
+  return EntityStaticFlags::save_load;
+}
+
+//==============================================================================
 bool Pickup::pick_up(Player& player)
 {
   bool picked_up = false;

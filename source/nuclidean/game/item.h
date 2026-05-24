@@ -19,7 +19,8 @@ class Pickup : public Entity
 public:
   void init(vec3 position, PickupType type, bool snap_to_floor = true);
 
-  static EntityType get_type_static();
+  static EntityType      get_type_static();
+  static EntityStatFlags get_static_flags();
 
   // Will get called if collides with player.
   // Should return true and apply the specific effect or return false and

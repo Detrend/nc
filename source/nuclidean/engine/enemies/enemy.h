@@ -21,7 +21,8 @@ struct EnemyStats;
 class Enemy : public Entity
 {
 public:
-  static EntityType get_type_static();
+  static EntityType      get_type_static();
+  static EntityStatFlags get_static_flags();
 
   void init(vec3 position, vec3 facing, EnemyType type);
   void post_init();

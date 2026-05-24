@@ -35,6 +35,12 @@ namespace nc
 }
 
 //==============================================================================
+/*static*/ EntityStatFlags Projectile::get_static_flags()
+{
+  return EntityStaticFlags::save_load;
+}
+
+//==============================================================================
 void Projectile::init
 (
   vec3 pos, vec3 dir, EntityID author, ProjectileType type

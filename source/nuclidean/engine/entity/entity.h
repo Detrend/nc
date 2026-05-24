@@ -37,16 +37,12 @@ public:
   // types.
   void post_init() {};
 
-  // Deleted copy assignment and construction to not accidentally
-  // copy the entity
-  /*
-  Entity(const Entity&)            = delete;
-  Entity& operator=(const Entity&) = delete;
-  */
-
   // Each entity type has to contain a public static constexpr
   // member variable containing it's type! Like this:
   // static EntityType get_type_static();
+
+  // Returns the static type flags.
+  static EntityStatFlags get_static_flags();
 
   // =============================================
   // Non virtual interface - same for each entity

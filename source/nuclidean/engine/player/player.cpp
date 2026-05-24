@@ -1082,6 +1082,12 @@ EntityType Player::get_type_static()
 }
 
 //==============================================================================
+/*static*/ EntityStatFlags Player::get_static_flags()
+{
+  return EntityStaticFlags::save_load;
+}
+
+//==============================================================================
 s32 Player::get_current_weapon_ammo()
 {
   return this->get_ammo(this->get_equipped_weapon());

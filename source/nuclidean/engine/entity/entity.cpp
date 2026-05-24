@@ -42,10 +42,13 @@ void Entity::init(vec3 position, f32 radius)
 }
 
 //==============================================================================
-Entity::~Entity()
+/*static*/ EntityStatFlags Entity::get_static_flags()
 {
-
+  return EntityStaticFlags::flags_default;
 }
+
+//==============================================================================
+Entity::~Entity() = default;
 
 //==============================================================================
 EntityID Entity::get_id() const

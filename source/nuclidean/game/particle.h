@@ -15,7 +15,8 @@ namespace nc
 class Particle : public Entity
 {
 public:
-  static EntityType get_type_static();
+  static EntityType      get_type_static();
+  static EntityStatFlags get_static_flags();
 
   void post_init();
 

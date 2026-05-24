@@ -153,6 +153,12 @@ EntityType Enemy::get_type_static()
 }
 
 //==============================================================================
+/*static*/ EntityStatFlags Enemy::get_static_flags()
+{
+  return EntityStaticFlags::save_load;
+}
+
+//==============================================================================
 void Enemy::init(vec3 position, vec3 looking_dir, EnemyType tpe)
 {
   nc_assert(tpe >= EnemyTypes::cultist && tpe < EnemyTypes::count);

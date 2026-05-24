@@ -19,6 +19,8 @@
 #include <game/projectile.h>
 #include <game/teleport.h>
 
+#include <buffer.h>
+
 #include <unordered_map>
 #include <algorithm>     // std::swap
 
@@ -40,9 +42,8 @@ struct EntityPool : IEntityPool
   virtual u64     get_cnt()      const override;
   virtual u64     get_stride()   const override;
 
-  virtual u64  size_required()                   const override;
-  virtual bool to_bytes(void* to_memory)         const override;
-  virtual bool from_bytes(void* from_memory, u64 size) override;
+  virtual u64  size_required()                     const override;
+  virtual void serialize(Buffer& buffer, bool serialize) override;
 };
 
 //==============================================================================
@@ -122,52 +123,36 @@ Entity* EntityPool<EntityType>::create(u32& idx_out)
 template<typename EntityType>
 u64 EntityPool<EntityType>::size_required() const
 {
-  return this->get_cnt() * this->get_stride() + sizeof(this->next_id);
-}
-
-//==============================================================================
-template<typename EntityType>
-bool EntityPool<EntityType>::to_bytes(void* to_memory) const
-{
-  u32* ptr_u32 = cast<u32*>(to_memory);
-
-  // Store the cnt at the start
-  ptr_u32[0] = this->next_id;
-
-  void* rest = &ptr_u32[1];
-
-  // Store the rest
-  std::memcpy(rest, this->entities.data(), sizeof(EntityType) * this->entities.size());
-
-  // All good
-  return true;
-}
-
-//==============================================================================
-template<typename EntityType>
-bool EntityPool<EntityType>::from_bytes(void* from_memory, u64 size)
-{
-  // The count is on the start of the data
-  u64 size_without_prefix = size - sizeof(this->next_id);
-
-  if (size_without_prefix % this->get_stride() != 0)
+  if (EntityType::get_static_flags() & EntityStaticFlags::save_load)
   {
-    nc_assert(false);
-    return false;
+    // All entities + next id + count
+    return sizeof(EntityType) * this->entities.size() + sizeof(u32) * 2;
   }
 
-  u32* ptr_u32 = cast<u32*>(from_memory);
-  this->next_id = ptr_u32[0];
+  return 0;
+}
 
-  void* rest = &ptr_u32[1];
+//==============================================================================
+template<typename EntityType>
+void EntityPool<EntityType>::serialize(Buffer& buffer, bool serialize)
+{
+  if (!(EntityType::get_static_flags() & EntityStaticFlags::save_load))
+  {
+    // No serialization for this type
+    return;
+  }
 
-  // Save some space ahead
-  this->entities.resize(size_without_prefix / this->get_stride());
+  buffer.serialize<u32>(this->next_id, serialize);
 
-  // Copy the rest
-  std::memcpy(entities.data(), rest, size);
+  u32 cnt = cast<u32>(this->entities.size());
+  buffer.serialize<u32>(cnt, serialize);
 
-  return true;
+  if (!serialize)
+  {
+    this->entities.resize(cnt);
+  }
+
+  buffer.serialize_array<EntityType>(this->entities.data(), cnt, serialize);
 }
 
 //==============================================================================
@@ -261,6 +246,30 @@ void EntityRegistry::on_entity_move_internal(EntityID id, vec3 pos, f32 r, f32 h
   {
     listener->on_entity_move(id, pos, r, h);
   }
+}
+
+//==============================================================================
+u64 EntityRegistry::size_required() const
+{
+  u64 total_size = 0;
+
+  for (auto& pool : m_pools)
+  {
+    total_size += pool->size_required();
+  }
+
+  return total_size;
+}
+
+//==============================================================================
+bool EntityRegistry::serialize(Buffer& buffer, bool serialize)
+{
+  for (auto& pool : m_pools)
+  {
+    pool->serialize(buffer, serialize);
+  }
+
+  return buffer.get_remaining_buffer_size() == 0;
 }
 
 //==============================================================================

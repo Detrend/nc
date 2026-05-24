@@ -54,7 +54,8 @@ public:
 
   void init(vec3 position, vec3 forward);
 
-  static EntityType get_type_static();
+  static EntityType      get_type_static();
+  static EntityStatFlags get_static_flags();
 
   // clear ui effects from taking damage
   void post_init();
