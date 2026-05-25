@@ -132,6 +132,11 @@ void InputSystem::update_window_and_pump_messages()
 //====================================================================
 void InputSystem::handle_mouse_wheel(SDL_Event& event)
 {
+  if (GameHelpers::get().get_player() == nullptr)
+  {
+    return;
+  }
+
   if (event.wheel.y > 0)
   {
     WeaponType weapon = GameHelpers::get().get_player()->get_equipped_weapon();
