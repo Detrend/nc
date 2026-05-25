@@ -149,7 +149,7 @@ void InputSystem::handle_mouse_wheel(SDL_Event& event)
         next_weapon = 0;
       }
 
-      if (GameHelpers::get().get_player()->has_weapon(next_weapon))
+      if (GameHelpers::get().get_player()->has_weapon(next_weapon) && GameHelpers::get().get_player()->get_ammo(next_weapon) != 0)
       {
         m_current_inputs.player_inputs.keys |= 1 << (PlayerKeyInputs::weapon_0 + next_weapon);
         break;
@@ -168,7 +168,7 @@ void InputSystem::handle_mouse_wheel(SDL_Event& event)
         next_weapon = WeaponTypes::count - 1;
       }
 
-      if (GameHelpers::get().get_player()->has_weapon(next_weapon))
+      if (GameHelpers::get().get_player()->has_weapon(next_weapon) && GameHelpers::get().get_player()->get_ammo(next_weapon) != 0)
       {
         m_current_inputs.player_inputs.keys |= 1 << (PlayerKeyInputs::weapon_0 + next_weapon);
         break;
