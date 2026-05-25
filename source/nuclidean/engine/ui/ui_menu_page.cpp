@@ -441,7 +441,7 @@ void NewGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   go_back_button->set_hover(false);
   level_1_button->set_hover(false);
   level_2_button->set_hover(false);
-  level_3_button->set_hover(false);
+  //level_3_button->set_hover(false);
 
   if (level_1_button->is_point_in_rec(mouse_pos))
   {
@@ -451,10 +451,10 @@ void NewGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   {
     hover_over_button = level_2_button;
   }
-  else if (level_3_button->is_point_in_rec(mouse_pos))
+  /*else if (level_3_button->is_point_in_rec(mouse_pos))
   {
     hover_over_button = level_3_button;
-  }
+  }*/
   else if (go_back_button->is_point_in_rec(mouse_pos))
   {
     hover_over_button = go_back_button;
@@ -558,7 +558,7 @@ NewGamePage::NewGamePage()
   go_back_button = new UiButton("ui_back", vec2(0.0f, 0.3f), vec2(0.3f, 0.066f), std::bind(&NewGamePage::go_back, this));
   level_1_button = new UiButton("ui_level1", vec2(0.0f, 0.15f), vec2(0.3f, 0.066f), std::bind(&NewGamePage::level_1_func, this));
   level_2_button = new UiButton("ui_level2", vec2(0.0f, 0.0f), vec2(0.3f, 0.066f), std::bind(&NewGamePage::level_2_func, this));
-  level_3_button = new UiButton("ui_level3", vec2(0.0f, -0.15f), vec2(0.3f, 0.066f), std::bind(&NewGamePage::level_3_func, this));
+  //level_3_button = new UiButton("ui_level3", vec2(0.0f, -0.15f), vec2(0.3f, 0.066f), std::bind(&NewGamePage::level_3_func, this));
 }
 
 //==============================================================================================
@@ -566,7 +566,7 @@ NewGamePage::~NewGamePage()
 {
   delete level_1_button;
   delete level_2_button;
-  delete level_3_button;
+  //delete level_3_button;
   delete go_back_button;
 }
 
@@ -587,7 +587,7 @@ void NewGamePage::draw(ShaderProgramHandle button_material, GLuint VAO)
 
   level_1_button->draw(button_material);
   level_2_button->draw(button_material);
-  level_3_button->draw(button_material);
+  //level_3_button->draw(button_material);
   go_back_button->draw(button_material);
 
   //unbind

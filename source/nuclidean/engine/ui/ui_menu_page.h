@@ -65,7 +65,7 @@ private:
   UiButton* go_back_button = nullptr;
   UiButton* level_1_button = nullptr;
   UiButton* level_2_button = nullptr;
-  UiButton* level_3_button = nullptr;
+  //UiButton* level_3_button = nullptr;
 };
 
 //======================================================================================
