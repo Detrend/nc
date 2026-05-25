@@ -1320,6 +1320,24 @@
 		},
 		{
 			"position": [
+				-51.9000015258789,
+				14.6000003814697,
+				13.6
+			],
+			"tag": 168,
+			"type": 5
+		},
+		{
+			"position": [
+				-54.2000007629395,
+				14.6000003814697,
+				13.6
+			],
+			"tag": 167,
+			"type": 6
+		},
+		{
+			"position": [
 				-77.4000015258789,
 				65.4000015258789,
 				14.1
@@ -31726,7 +31744,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3d",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "smooth_concrete_white",
+				"id": "smooth_concrete_white_tiles",
 				"offset": [
 					0.0,
 					0.0
@@ -32023,7 +32041,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3f",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "smooth_concrete_white",
+				"id": "smooth_concrete_white_tiles",
 				"offset": [
 					0.0,
 					0.0
@@ -32134,7 +32152,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3g",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "smooth_concrete_white",
+				"id": "smooth_concrete_white_tiles",
 				"offset": [
 					0.0,
 					0.0
@@ -32211,7 +32229,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3h",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "smooth_concrete_white",
+				"id": "smooth_concrete_white_tiles",
 				"offset": [
 					0.0,
 					0.0
@@ -32336,7 +32354,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3q",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "smooth_concrete_white",
+				"id": "smooth_concrete_white_tiles",
 				"offset": [
 					0.0,
 					0.0
@@ -33184,7 +33202,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3u",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "smooth_concrete_white",
+				"id": "smooth_concrete_white_tiles",
 				"offset": [
 					0.0,
 					0.0
@@ -33410,7 +33428,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3s",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "smooth_concrete_white",
+				"id": "smooth_concrete_white_tiles",
 				"offset": [
 					0.0,
 					0.0
@@ -33613,7 +33631,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3j",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "smooth_concrete_white",
+				"id": "smooth_concrete_white_tiles",
 				"offset": [
 					0.0,
 					0.0
@@ -33795,7 +33813,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3l",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "smooth_concrete_white",
+				"id": "smooth_concrete_white_tiles",
 				"offset": [
 					0.0,
 					0.0
@@ -33977,7 +33995,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3n",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "smooth_concrete_white",
+				"id": "smooth_concrete_white_tiles",
 				"offset": [
 					0.0,
 					0.0
@@ -34159,7 +34177,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3p",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "smooth_concrete_white",
+				"id": "smooth_concrete_white_tiles",
 				"offset": [
 					0.0,
 					0.0
@@ -34265,7 +34283,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3e",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "smooth_concrete_white",
+				"id": "smooth_concrete_white_tiles",
 				"offset": [
 					0.0,
 					0.0
@@ -34342,7 +34360,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3v",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "smooth_concrete_white",
+				"id": "smooth_concrete_white_tiles",
 				"offset": [
 					0.0,
 					0.0
@@ -34453,7 +34471,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3w",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "smooth_concrete_white",
+				"id": "smooth_concrete_white_tiles",
 				"offset": [
 					0.0,
 					0.0
@@ -35464,7 +35482,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3w2a",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "smooth_concrete_white",
+				"id": "smooth_concrete_white_tiles",
 				"offset": [
 					0.0,
 					0.0
@@ -35690,7 +35708,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3za",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "smooth_concrete_white",
+				"id": "smooth_concrete_white_tiles",
 				"offset": [
 					0.0,
 					0.0
@@ -35916,7 +35934,7 @@
 			"debug_name": "Sectors::Sector-1793w2f3y",
 			"floor": 10.0,
 			"floor_surface": {
-				"id": "smooth_concrete_white",
+				"id": "smooth_concrete_white_tiles",
 				"offset": [
 					0.0,
 					0.0
