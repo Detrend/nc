@@ -106,7 +106,7 @@ T ViewBobStack<T, StackSize>::get_sum() const
     }
     else
     {
-      coeff = (bob.time_left - bob.time_in) / (bob.time_max - bob.time_in);
+      coeff = max(0.0f, (bob.time_left - bob.time_in) / (bob.time_max - bob.time_in));
     }
 
     sum += bob.offset * coeff;
