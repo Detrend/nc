@@ -46,6 +46,7 @@
 					"destinations": [
 						158
 					],
+					"is_single_use": true,
 					"type": "teleport"
 				}
 			],
@@ -955,7 +956,7 @@
 				35.0,
 				15.1
 			],
-			"tag": 166,
+			"tag": 185,
 			"type": 4
 		},
 		{
@@ -1063,7 +1064,7 @@
 				4.70000028610229,
 				14.1
 			],
-			"tag": 165,
+			"tag": 171,
 			"type": 6
 		},
 		{
@@ -6543,14 +6544,413 @@
 			"position": [
 				-1.89999854564667,
 				36.4000015258789,
-				11.1
+				11.0
 			],
 			"radius": 1.00000001490116,
 			"rotation": 0,
-			"scale": 22.5,
+			"scale": 10.0,
+			"scaling": 0,
+			"sprite": "cup_1",
+			"tag": 186
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 1.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-35.0,
+				10.9000005722046,
+				14.0
+			],
+			"radius": 0.100000001490116,
+			"rotation": 0,
+			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
 			"tag": 167
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 1.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-34.6000022888184,
+				11.1000003814697,
+				14.0
+			],
+			"radius": 0.100000001490116,
+			"rotation": 0,
+			"scale": 10.0,
+			"scaling": 0,
+			"sprite": "cup_1",
+			"tag": 166
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 1.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-31.3000011444092,
+				11.0,
+				14.0
+			],
+			"radius": 0.100000001490116,
+			"rotation": 0,
+			"scale": 10.0,
+			"scaling": 0,
+			"sprite": "lamp_1",
+			"tag": 165
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 1.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-40.1000022888184,
+				19.8999996185303,
+				11.0
+			],
+			"radius": 0.100000001490116,
+			"rotation": 0,
+			"scale": 10.0,
+			"scaling": 0,
+			"sprite": "cup_1",
+			"tag": 173
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 1.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-42.2000007629395,
+				19.8999996185303,
+				11.0
+			],
+			"radius": 0.100000001490116,
+			"rotation": 0,
+			"scale": 10.0,
+			"scaling": 0,
+			"sprite": "lamp_1",
+			"tag": 172
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 1.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-53.0,
+				40.2000007629395,
+				11.0
+			],
+			"radius": 0.100000001490116,
+			"rotation": 0,
+			"scale": 10.0,
+			"scaling": 0,
+			"sprite": "lamp_1",
+			"tag": 175
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 1.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-50.0,
+				41.0,
+				11.0
+			],
+			"radius": 0.100000001490116,
+			"rotation": 0,
+			"scale": 10.0,
+			"scaling": 0,
+			"sprite": "lamp_1",
+			"tag": 174
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 1.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-64.0,
+				31.6000003814697,
+				11.0
+			],
+			"radius": 0.100000001490116,
+			"rotation": 0,
+			"scale": 10.0,
+			"scaling": 0,
+			"sprite": "cup_2",
+			"tag": 184
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 1.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-62.7000007629395,
+				37.4000015258789,
+				11.0
+			],
+			"radius": 0.100000001490116,
+			"rotation": 0,
+			"scale": 10.0,
+			"scaling": 0,
+			"sprite": "cup_1",
+			"tag": 183
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 1.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-64.5999984741211,
+				36.0,
+				11.0
+			],
+			"radius": 0.100000001490116,
+			"rotation": 0,
+			"scale": 10.0,
+			"scaling": 0,
+			"sprite": "cup_1",
+			"tag": 182
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 1.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-62.6000022888184,
+				33.0,
+				11.0
+			],
+			"radius": 0.100000001490116,
+			"rotation": 0,
+			"scale": 10.0,
+			"scaling": 0,
+			"sprite": "cup_1",
+			"tag": 181
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 1.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-48.6000022888184,
+				32.4000015258789,
+				11.0
+			],
+			"radius": 0.100000001490116,
+			"rotation": 0,
+			"scale": 10.0,
+			"scaling": 0,
+			"sprite": "cup_2",
+			"tag": 177
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 1.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-47.7999992370605,
+				32.2000007629395,
+				11.0
+			],
+			"radius": 0.100000001490116,
+			"rotation": 0,
+			"scale": 10.0,
+			"scaling": 0,
+			"sprite": "cup_1",
+			"tag": 176
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 1.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-54.2000007629395,
+				32.7999992370605,
+				11.0
+			],
+			"radius": 0.100000001490116,
+			"rotation": 0,
+			"scale": 10.0,
+			"scaling": 0,
+			"sprite": "cup_2",
+			"tag": 180
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 1.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-54.6000022888184,
+				32.7000007629395,
+				11.0
+			],
+			"radius": 0.100000001490116,
+			"rotation": 0,
+			"scale": 10.0,
+			"scaling": 0,
+			"sprite": "cup_2",
+			"tag": 179
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 1.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-56.1000022888184,
+				32.4000015258789,
+				11.0
+			],
+			"radius": 0.100000001490116,
+			"rotation": 0,
+			"scale": 10.0,
+			"scaling": 0,
+			"sprite": "cup_1",
+			"tag": 178
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 1.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-32.5,
+				6.59999990463257,
+				14.0
+			],
+			"radius": 0.100000001490116,
+			"rotation": 0,
+			"scale": 10.0,
+			"scaling": 0,
+			"sprite": "cup_2",
+			"tag": 170
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 1.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-32.6000022888184,
+				7.09999990463257,
+				14.0
+			],
+			"radius": 0.100000001490116,
+			"rotation": 0,
+			"scale": 10.0,
+			"scaling": 0,
+			"sprite": "cup_2",
+			"tag": 169
+		},
+		{
+			"direction": [
+				0.0,
+				0.0,
+				0.0
+			],
+			"height": 1.0,
+			"mode": 0,
+			"pivot": 1,
+			"position": [
+				-32.2000007629395,
+				7.59999990463257,
+				14.0
+			],
+			"radius": 0.100000001490116,
+			"rotation": 0,
+			"scale": 10.0,
+			"scaling": 0,
+			"sprite": "cup_1",
+			"tag": 168
 		}
 	],
 	"rawdata": [
