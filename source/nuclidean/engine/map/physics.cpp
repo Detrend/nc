@@ -476,7 +476,7 @@ static bool calc_path_raw
         }
 
         bool found = false;
-        std::vector<TriggerData> trig = get_engine().get_module<GameSystem>().get_map_dynamics().triggers;
+        const std::vector<TriggerData>& trig = get_engine().get_module<GameSystem>().get_map_dynamics().triggers;
         for (u32 i = 0; i < trig.size(); i++)
         {
           if (trig[i].activator != next_sd.activator)
