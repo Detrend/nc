@@ -350,10 +350,17 @@ static void load_json_map
       {
         damage = js_sector["damage"];
       }
+
       bool force_walkable = false;
       if (js_sector.contains("force_walkability"))
       {
         force_walkable = js_sector["force_walkability"];
+      }
+
+      bool door_sfx_override = false;
+      if (js_sector.contains("door_sfx_override"))
+      {
+        door_sfx_override = js_sector["door_sfx_override"];
       }
 
       const SectorID portal_sector = js_sector["portal_target"];
@@ -386,6 +393,7 @@ static void load_json_map
 
       make_sector_helper(floor, ceil, damage, force_walkable ,point_indices, sectors, portal_wall, portal_destination_wall, portal_sector, floor_surface, ceiling_surface, wall_surfaces);
       map_building::SectorBuildData& build_data = sectors.back();
+      build_data.door_sfx_override = door_sfx_override;
 
       // Multiple states
       if (js_sector.contains("alt_states"))

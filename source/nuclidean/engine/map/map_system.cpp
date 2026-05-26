@@ -1749,6 +1749,7 @@ int build_map
     output_sector_dyn.floor_height = sector.floor_y[0];
     output_sector_dyn.ceil_height  = sector.ceil_y [0];
     output_sector.force_walkable   = sector.force_walkable;
+    output_sector.door_sfx_override = sector.door_sfx_override;
     output_sector.state_floors[0]  = output_sector.state_floors[1] = 0.0f;
     output_sector.state_ceils [0]  = output_sector.state_ceils [1] = 0.0f;
     output_sector.activator = sector.activator;

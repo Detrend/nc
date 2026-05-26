@@ -143,7 +143,7 @@ struct MapDynamics
 
   SegmentID segment_id_from_trigger(const TriggerData& td) const;
 
-  void on_sector_moving_changed(SectorID sector, bool started_moving);
+  void on_sector_moving_changed(SectorID sector, bool started_moving, bool moving_up);
 
   void serialize(Buffer& buffer);
 
