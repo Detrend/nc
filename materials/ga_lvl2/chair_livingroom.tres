@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=11 format=3 uid="uid://clhqwlfc4rdne"]
+
+[ext_resource type="Resource" uid="uid://be6j0sowxs14l" path="res://material_textures/ga_textures/smooth_concrete_white.tres" id="1_e0j4g"]
+[ext_resource type="Resource" uid="uid://ch4ti6q2t2t21" path="res://material_textures/Wall_2.tres" id="1_r7usi"]
+[ext_resource type="Texture2D" uid="uid://dqkx5vq4hiaj0" path="res://imgs/doors_middle.png" id="2_x1tfr"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="3_mm332"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="4_7rrlf"]
+[ext_resource type="Resource" uid="uid://dtww6d6bqpx47" path="res://material_textures/doors_middle.tres" id="5_735xk"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="6_q4at6"]
+[ext_resource type="Resource" uid="uid://b62b6owe57oqc" path="res://material_textures/Floor1.tres" id="7_o2a4o"]
+
+[sub_resource type="Resource" id="Resource_csai5"]
+script = ExtResource("4_7rrlf")
+priority = 7
+texture = ExtResource("5_735xk")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[sub_resource type="Resource" id="Resource_a6q66"]
+script = ExtResource("6_q4at6")
+_placement_type = 9
+wall_length_range = Vector2(0, 0.5)
+texture = ExtResource("7_o2a4o")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[resource]
+script = ExtResource("3_mm332")
+preview = ExtResource("2_x1tfr")
+preview_scale = 4.0
+wall_default = SubResource("Resource_csai5")
+wall_rules = Array[ExtResource("6_q4at6")]([SubResource("Resource_a6q66")])
+floor = ExtResource("1_r7usi")
+ceiling = ExtResource("1_e0j4g")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"
