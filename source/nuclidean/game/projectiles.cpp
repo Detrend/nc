@@ -81,7 +81,7 @@ ProjectileStats PROJECTILE_STATS[] =
   // grunt_shot
   ProjectileStats
   {
-    .dmg_falloff = 0.2f, .speed = 35.0f, .radius = 0.02f, .damage = 6,
+    .dmg_falloff = 0.2f, .speed = 50.0f, .radius = 0.02f, .damage = 6,
     .sprite = "grunt_projectile", .sprite_cnt = 1, .anim_len = 1.0f,
     .light_color = colors::ORANGE * 0.35f,
     .light_cycle_len = 0.4f,

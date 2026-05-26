@@ -998,24 +998,52 @@ void Enemy::on_attack_trigger()
   }
   else
   {
-    // Make this more general for all types of enemies..
-    mat4 rot1 = rotate(identity<mat4>(), deg2rad( 3.0f), UP_DIR);
-    mat4 rot2 = rotate(identity<mat4>(), deg2rad(-3.0f), UP_DIR);
+    if (stats.projectile == ProjectileTypes::fire_ball)
+    {
+      // Make this more general for all types of enemies..
+      mat4 rot1 = rotate(identity<mat4>(), deg2rad( 3.0f), UP_DIR);
+      mat4 rot2 = rotate(identity<mat4>(), deg2rad(-3.0f), UP_DIR);
 
-    GameHelpers::get().spawn_projectile
-    (
-      stats.projectile, from, dir, this->get_id()
-    );
+      GameHelpers::get().spawn_projectile
+      (
+        stats.projectile, from, dir, this->get_id()
+      );
 
-    GameHelpers::get().spawn_projectile
-    (
-      stats.projectile, from, rot1 * vec4{dir, 0.0f}, this->get_id()
-    );
+      GameHelpers::get().spawn_projectile
+      (
+        stats.projectile, from, rot1 * vec4{dir, 0.0f}, this->get_id()
+      );
 
-    GameHelpers::get().spawn_projectile
-    (
-      stats.projectile, from, rot2 * vec4{dir, 0.0f}, this->get_id()
-    );
+      GameHelpers::get().spawn_projectile
+      (
+        stats.projectile, from, rot2 * vec4{dir, 0.0f}, this->get_id()
+      );
+    }
+    else
+    {
+      for (size_t i = 0; i < 8; i++)
+      {
+        vec3 front_dir = dir;
+        vec3 side_dir = normalize_or(cross(front_dir, UP_DIR), VEC3_X);
+        vec3 up_dir = -cross(front_dir, side_dir);
+
+        mat3 dir_base = { side_dir, up_dir, front_dir };
+
+        f32 angle = rng.next(0.0f, PI2);
+        f32 amount = rng.next(0.0f, 0.3f);
+        f32 rx = sin(angle) * amount;
+        f32 ry = cos(angle) * amount;
+
+        vec3 spreaded_dir = normalize(vec3{ rx, ry, 1.0f });
+        vec3 adjusted_dir = dir_base * spreaded_dir;
+
+        GameHelpers::get().spawn_projectile
+        (
+          stats.projectile, from, adjusted_dir, this->get_id()
+        );
+      }
+    }
+    
   }
 }
 
