@@ -813,7 +813,7 @@ void Engine::on_level_end()
       }
       else
       {
-        nc_warn("Level transition withou player, no transition data to save..");
+        nc_warn("Level transition without player, no transition data to save..");
       }
       
       // Enable level transition UI

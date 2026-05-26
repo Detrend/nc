@@ -80,7 +80,7 @@ struct LevelTransitionData
 
   bool is_empty() const
   {
-    return health >= 0;
+    return health < 0;
   }
 
   void set_empty()
