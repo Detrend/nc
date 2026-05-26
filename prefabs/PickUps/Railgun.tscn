@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://bjmy41pmbvxwn"]
+
+[ext_resource type="Script" uid="uid://8su8gwb3cmui" path="res://scripts/things/PickUp.gd" id="1_7moqn"]
+[ext_resource type="Texture2D" uid="uid://dg8mj3nucrihg" path="res://imgs/pickups/shotgun.png" id="2_juxy7"]
+
+[node name="Railgun" type="Node2D"]
+z_index = 999
+script = ExtResource("1_7moqn")
+type_id = 4
+
+[node name="Icon" type="Sprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(0.195, 0.195)
+texture = ExtResource("2_juxy7")
+region_enabled = true
+region_rect = Rect2(0, 62.84214, 97, 34.15786)

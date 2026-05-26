@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=12 format=3 uid="uid://d0kigkgdapj82"]
+
+[ext_resource type="Resource" uid="uid://be6j0sowxs14l" path="res://material_textures/ga_textures/smooth_concrete_white.tres" id="1_ugsum"]
+[ext_resource type="Resource" uid="uid://wanlup0x7k56" path="res://material_textures/ga_textures/smooth_concrete_white_tiles.tres" id="2_ak5mu"]
+[ext_resource type="Texture2D" uid="uid://dyfvyqwpmf53x" path="res://imgs/wall/smooth_concrete_white.png" id="2_pflf6"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="3_ak5mu"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="4_7jul3"]
+[ext_resource type="Resource" uid="uid://coohq55u58kbj" path="res://material_textures/stone_wall.tres" id="5_y11jb"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="6_bm5d1"]
+
+[sub_resource type="Resource" id="Resource_csai5"]
+script = ExtResource("4_7jul3")
+priority = 2
+texture = ExtResource("5_y11jb")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[sub_resource type="Resource" id="Resource_a6q66"]
+script = ExtResource("6_bm5d1")
+priority = 2
+_placement_type = 5
+texture = ExtResource("1_ugsum")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[sub_resource type="Resource" id="Resource_vmr3h"]
+script = ExtResource("6_bm5d1")
+_placement_type = 9
+texture = ExtResource("1_ugsum")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[sub_resource type="Resource" id="Resource_ltfd2"]
+script = ExtResource("6_bm5d1")
+_placement_type = 17
+texture = ExtResource("1_ugsum")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[resource]
+script = ExtResource("3_ak5mu")
+preview = ExtResource("2_pflf6")
+preview_scale = 4.0
+wall_default = SubResource("Resource_csai5")
+wall_rules = Array[ExtResource("6_bm5d1")]([SubResource("Resource_a6q66"), SubResource("Resource_vmr3h"), SubResource("Resource_ltfd2")])
+floor = ExtResource("2_ak5mu")
+ceiling = ExtResource("1_ugsum")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"
