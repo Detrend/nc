@@ -201,6 +201,7 @@ class WallExportData:
 		ctx.export_data = self
 		ctx.target_sector = this_sector
 		ctx.subject_type = TexturingContext.TexturingSubjectType.Wall
+		ctx.this_wall_idx = self.get_wall_idx(this_sector)
 
 		var res := TexturingResult.new()
 

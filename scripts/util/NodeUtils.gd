@@ -249,10 +249,11 @@ static func get_full_name(this : Node, separator : String = "::", is_stop: Calla
 	return DatastructUtils.string_concat(ret, separator)
 
 
-static func compute_node_hash01(this: Node)->float:
+static func compute_node_hash01(this: Node, additional_data: String = "")->float:
 	var name := get_full_name(this)
 	if this is Node2D: name += "%s"%(this as Node2D).global_position
 	if this is Node3D: name += "%s"%(this as Node3D).global_position
+	if not additional_data.is_empty(): name += additional_data
 	var hash32 := name.hash()
 	var ret := float(hash32) / ((1<<32) - 1)
 	return ret

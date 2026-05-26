@@ -15,7 +15,7 @@ class_name SectorMaterial
 
 @export var ceiling : TextureDefinition
 
-
+@export var door_sound_override : String
 
 func _get_custom_preview_texture() -> Texture2D:
 	return preview

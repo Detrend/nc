@@ -34,6 +34,7 @@ static var _HEIGHT_EXPRESSION_ARGUMENTS : PackedStringArray = [
 	'owner_sector_ceiling',
 	'other_sector_floor',
 	'other_sector_ceiling',
+	'rand01'
 ]
 
 class Args:
@@ -45,6 +46,7 @@ func get_height(total_height: float, available_height: float, texturing_interval
 	var other_sector :Sector = ctx.export_data.get_other_sector(ctx.target_sector)
 	var owner_sector :Sector = ctx.get_rule_owner_sector()
 	var expr := get_height_expression()
+	var rand01 := NodeUtils.compute_node_hash01(ctx.target_sector, "%d"%ctx.this_wall_idx)
 	var ret :float = expr.execute([
 		total_height,
 		available_height,
@@ -55,7 +57,8 @@ func get_height(total_height: float, available_height: float, texturing_interval
 		owner_sector.floor_height,
 		owner_sector.ceiling_height,
 		other_sector.floor_height   if other_sector else null,
-		other_sector.ceiling_height if other_sector else null
+		other_sector.ceiling_height if other_sector else null,
+		rand01
 	], Args.INSTANCE)
 	#print("getting height... available: {0}, expr: '{1}' -> result: {2}".format([available_height, height_expression, ret]))
 	return ret

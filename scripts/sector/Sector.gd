@@ -75,9 +75,11 @@ extends EditablePolygon
 
 ## Index of this [Sector]'s wall where the portal begins
 @export var portal_wall : int:
-	get: return portal_wall
-	set(value): 
-		portal_wall = value if polygon.size() <= 0 else ((value + polygon.size()) % polygon.size())
+	get: 
+		return portal_wall
+	set(value):
+		var poly := self.polygon
+		portal_wall = value if poly.size() <= 0 else ((value + poly.size()) % poly.size())
 		_update_visuals()
 
 ## Index of the wall in [member portal_destination] where the portal ends
