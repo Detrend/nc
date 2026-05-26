@@ -1,4 +1,4 @@
-[gd_scene load_steps=377 format=3 uid="uid://qa2w68k6j6h2"]
+[gd_scene load_steps=384 format=3 uid="uid://qa2w68k6j6h2"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_1o0vd"]
 [ext_resource type="Script" uid="uid://b8tkglirbwf1e" path="res://scripts/reactivity/ActivatorPool.gd" id="2_b0a4w"]
@@ -32,6 +32,7 @@
 [ext_resource type="Texture2D" uid="uid://cfauooi3dehbp" path="res://imgs/CCOMP02.png" id="17_i7g4b"]
 [ext_resource type="Resource" uid="uid://nh1mhkb8yruk" path="res://materials/ga_lvl1/alien.tres" id="17_lnmqd"]
 [ext_resource type="Resource" uid="uid://bqyyokp64eh5p" path="res://materials/ga_lvl1/tower.tres" id="17_piy0f"]
+[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/sector/Sector.gd" id="17_rkpsj"]
 [ext_resource type="PackedScene" uid="uid://b8tr8d62bd5s2" path="res://prefabs/PickUps/HpBig.tscn" id="18_b0a4w"]
 [ext_resource type="PackedScene" uid="uid://1dbhovgj17my" path="res://prefabs/PickUps/Shotgun.tscn" id="19_et0pd"]
 [ext_resource type="Resource" uid="uid://dsxlik2s3src8" path="res://materials/ga_lvl1/alien_struct.tres" id="19_fbdhl"]
@@ -538,6 +539,48 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 script = ExtResource("4_coai7")
 floor_height = -9.85
 ceiling_height = -6.5
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_3htpp"]
+script = ExtResource("4_coai7")
+floor_height = -9.4
+ceiling_height = -5.0
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_uuq87"]
+script = ExtResource("4_coai7")
+floor_height = -9.4
+ceiling_height = -5.0
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_vsy3a"]
+script = ExtResource("4_coai7")
+floor_height = -9.4
+ceiling_height = -5.0
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_nnbrs"]
+script = ExtResource("4_coai7")
+floor_height = -9.4
+ceiling_height = -5.0
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_1xqjk"]
+script = ExtResource("4_coai7")
+floor_height = -9.4
+ceiling_height = -5.0
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_87d23"]
+script = ExtResource("4_coai7")
+floor_height = -9.4
+ceiling_height = -5.0
 material = ExtResource("3_krcvx")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
@@ -3525,6 +3568,96 @@ data = SubResource("Resource_1bxne")
 floor_height = -9.85
 ceiling_height = -6.5
 portal_wall_length = 9.219544
+
+[node name="Sector-8000" type="Polygon2D" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-151.35165, 143.10161)
+texture = ExtResource("10_krcb3")
+texture_scale = Vector2(20, 20)
+polygon = PackedVector2Array(0, 0, 14.346588, -0.24967957, 15.346588, 25.75032, 0, 10)
+script = ExtResource("17_rkpsj")
+data = SubResource("Resource_3htpp")
+floor_height = -9.4
+ceiling_height = -5.0
+sector_material = ExtResource("3_krcvx")
+portal_wall_length = 14.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-8000a" type="Polygon2D" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-142.00507, 143.10161)
+texture = ExtResource("10_krcb3")
+texture_scale = Vector2(20, 20)
+polygon = PackedVector2Array(35.34659, -6.2496796, 37.34659, 30.75032, 20, 25.75032, 20, -0.24967957)
+script = ExtResource("17_rkpsj")
+data = SubResource("Resource_uuq87")
+floor_height = -9.4
+ceiling_height = -5.0
+sector_material = ExtResource("3_krcvx")
+portal_wall_length = 37.054016
+portal_destination_wall_length = -1.0
+
+[node name="Sector-8000c" type="Polygon2D" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-142.00507, 143.10161)
+texture = ExtResource("10_krcb3")
+texture_scale = Vector2(20, 20)
+polygon = PackedVector2Array(39.340755, -6.4655805, 41.340755, 30.53442, 37.34659, 30.75032, 35.34659, -6.2496796)
+script = ExtResource("17_rkpsj")
+data = SubResource("Resource_vsy3a")
+floor_height = -9.4
+ceiling_height = -5.0
+sector_material = ExtResource("3_krcvx")
+portal_wall_length = 37.054016
+portal_destination_wall_length = -1.0
+
+[node name="Sector-8000d" type="Polygon2D" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-142.00507, 143.10161)
+texture = ExtResource("10_krcb3")
+texture_scale = Vector2(20, 20)
+polygon = PackedVector2Array(43.334923, -6.6814814, 45.334923, 30.31852, 41.340755, 30.53442, 39.340755, -6.4655805)
+script = ExtResource("17_rkpsj")
+data = SubResource("Resource_nnbrs")
+floor_height = -9.4
+ceiling_height = -5.0
+sector_material = ExtResource("3_krcvx")
+portal_wall_length = 37.054016
+portal_destination_wall_length = -1.0
+
+[node name="Sector-8000b" type="Polygon2D" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-151.00507, 143.10161)
+texture = ExtResource("10_krcb3")
+texture_scale = Vector2(20, 20)
+polygon = PackedVector2Array(20, 25.75032, 15, 25.75032, 14.346588, -0.24967957, 20, -0.24967957)
+script = ExtResource("17_rkpsj")
+data = SubResource("Resource_1xqjk")
+floor_height = -9.4
+ceiling_height = -5.0
+sector_material = ExtResource("3_krcvx")
+portal_wall_length = 5.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-8000e" type="Polygon2D" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-151.00507, 143.10161)
+texture = ExtResource("10_krcb3")
+texture_scale = Vector2(20, 20)
+polygon = PackedVector2Array(29, -0.24967957, 29, 25.75032, 20, 25.75032, 20, -0.24967957)
+script = ExtResource("17_rkpsj")
+data = SubResource("Resource_87d23")
+floor_height = -9.4
+ceiling_height = -5.0
+sector_material = ExtResource("3_krcvx")
+portal_wall_length = 26.0
+portal_destination_wall_length = -1.0
 
 [node name="Chapel" type="Node2D" parent="Sectors/Main/Corridor3_Arena1"]
 
