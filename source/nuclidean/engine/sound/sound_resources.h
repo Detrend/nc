@@ -30,6 +30,10 @@
   xx(cultist_die,  0.1f)     \
   xx(cultist_alert,  0.1f)   \
   xx(cultist_move,  0.1f)    \
+  xx(grunt_attack, 0.1f)     \
+  xx(grunt_hurt, 0.1f)       \
+  xx(grunt_die,  0.1f)       \
+  xx(grunt_alert,  0.1f)     \
   xx(death,        0.1f)     \
   xx(melee_hit,    0.1f)     \
   xx(ui_click,     0.1f)     \
