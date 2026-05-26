@@ -111,6 +111,9 @@ private:
 
   void go_to_main_menu();
 
+  enum class GameState : u8;
+  void set_game_state(GameState new_state);
+
 private:
   using ModuleArray  = std::array<std::unique_ptr<IEngineModule>, 8>;
   using ModuleVector = std::vector<IEngineModule*>;
@@ -121,6 +124,7 @@ private:
     game,       // the player is playing
     transition, // during the level transition, demo playing in background
     debug_demo, // running the demo from console, debug
+    none,       // error state, only on the start
   };
 
   struct TransitionStateData
@@ -137,7 +141,7 @@ private:
 
   f32           m_delta_time = 0.0f; // last frame time in seconds
   u64           m_frame_idx = 0;     // index of a frame, currently only for debug
-  GameState     m_game_state = GameState::menu;
+  GameState     m_game_state = GameState::none;
 
   bool          m_should_quit       : 1 = false;
   bool          m_demo_adjust_speed : 1 = true;

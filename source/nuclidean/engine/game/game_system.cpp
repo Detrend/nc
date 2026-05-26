@@ -582,10 +582,10 @@ static void load_json_map
   }
 
   if (data.contains("music")) {
-    SoundSystem::get().play_music(Token(data["music"]));
+    SoundSystem::get().set_music_for_track(MusicTracks::game, Token(data["music"]));
   }
   else {
-    SoundSystem::get().play_music("music_ambient"); // just to not have to reexport all levels, will be later removed
+    SoundSystem::get().set_music_for_track(MusicTracks::game, "music_ambient"); // just to not have to reexport all levels, will be later removed
   }
 
   dynamics.activators = std::move(activator_table);
