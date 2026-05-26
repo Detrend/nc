@@ -11,6 +11,9 @@ var export_data : LevelExporter.WallExportData
 var target_sector : Sector
 var this_wall_rule : IWallRule
 var other_wall_rule : IWallRule
+var chosen_wall_rule : IWallRule
+var chosen_rule_sector : Sector
+
 var export_scale : Vector3:
 	get: return target_sector._level.export_scale
 var level : Level:

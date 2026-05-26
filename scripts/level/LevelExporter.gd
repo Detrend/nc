@@ -112,6 +112,7 @@ static func _get_wall_key(wall_begin: Vector2, wall_end: Vector2)->Vector4:
 class WallExportData:
 	# Number of holes participating in the wall, can be arbitrary number
 	var holes_count : int = 0
+	var holes : Array[Sector] = []
 
 	var sector_a : Sector = null
 	var sector_b : Sector = null
@@ -139,6 +140,8 @@ class WallExportData:
 	func register_sector(s: Sector, wall_idx : int)->void:
 		if s.exclude_from_export:
 			holes_count += 1
+			holes.append(s)
+			#print("Texturing hole: {0}".format([s.get_full_name()]))
 		else:
 			if sectors_count() == 0: 
 				sector_a = s
@@ -163,6 +166,32 @@ class WallExportData:
 
 		return this_sector.data.material.wall_default
 
+	func _choose_top_wall_rule(ctx :TexturingContext, this_sector : Sector, wall_height : float, wall_type : WallRule.PlacementType)->IWallRule:
+		var chosen_rule := _choose_wall_rule(this_sector, wall_height, wall_type)
+		ctx.this_wall_rule = chosen_rule
+		ctx.chosen_rule_sector = this_sector
+		if sectors_count() > 1:
+			var other_sector := get_other_sector(this_sector)
+			var other_rule := _choose_wall_rule(other_sector, wall_height, wall_type)
+			ctx.other_wall_rule = other_rule
+			if other_rule.get_priority() > chosen_rule.get_priority(): 
+				chosen_rule = other_rule
+				ctx.chosen_rule_sector = other_sector
+		else:
+			ctx.other_wall_rule = null
+			
+		for hole in holes:
+			var hole_rule := _choose_wall_rule(hole, wall_height, wall_type)
+			if hole_rule.get_priority() > chosen_rule.get_priority(): 
+				chosen_rule = hole_rule
+				ctx.chosen_rule_sector = hole
+				#print("using hole rule: {0} (hole {1})".format([this_sector.get_full_name(), hole.get_full_name()]))
+			else:
+				pass#print("NOT using hole rule: {0} (hole {1})".format([this_sector.get_full_name(), hole.get_full_name()]))
+					
+		ctx.chosen_wall_rule = chosen_rule
+		return chosen_rule
+
 
 	## Generate a JSON-exportable object describing the wall textures for this wall in respect to specified [Sector]
 	func export_wall_data(this_sector : Sector)->Array[Dictionary]:
@@ -180,10 +209,8 @@ class WallExportData:
 			assert(sectors_count() == 1)
 			assert(this_sector == get_only_sector())
 			var wall_height    :float = this_sector.ceiling_height - this_sector.floor_height
-			var chosen_rule    := _choose_wall_rule(this_sector, wall_height, WallRule.PlacementType.Wall)
+			var chosen_rule    := _choose_top_wall_rule(ctx, this_sector, wall_height, WallRule.PlacementType.Wall)
 			var chosen_texture := chosen_rule.get_texture()
-			ctx.this_wall_rule = chosen_rule
-			ctx.other_wall_rule = null
 			if not chosen_texture:
 				ErrorUtils.report_error("Chosen rule with no texture: '{0}'".format([this_sector.get_full_name()]))
 			else:
@@ -195,12 +222,8 @@ class WallExportData:
 
 			var floor_delta :float = other_sector.floor_height - this_sector.floor_height
 			if floor_delta > 0:
-				var this_floor_rule   := _choose_wall_rule(this_sector, floor_delta, WallRule.PlacementType.Floor)
-				var other_floor_rule  := _choose_wall_rule(other_sector, floor_delta, WallRule.PlacementType.Floor)
-				var chosen_floor_rule := this_floor_rule if (this_floor_rule.get_priority() >= other_floor_rule.get_priority()) else other_floor_rule
+				var chosen_floor_rule   := _choose_top_wall_rule(ctx, this_sector, floor_delta, WallRule.PlacementType.Floor)
 				
-				ctx.this_wall_rule = this_floor_rule
-				ctx.other_wall_rule = other_floor_rule
 				var chosen_texture := chosen_floor_rule.get_texture()
 				if not chosen_texture:
 					ErrorUtils.report_error("Chosen rule with no texture: '{0}'".format([this_sector.get_full_name()]))
@@ -208,12 +231,8 @@ class WallExportData:
 
 			var ceiling_delta :float = this_sector.ceiling_height - other_sector.ceiling_height
 			if ceiling_delta > 0:
-				var this_ceiling_rule   := _choose_wall_rule(this_sector, ceiling_delta, WallRule.PlacementType.Ceiling)
-				var other_ceiling_rule  := _choose_wall_rule(other_sector, ceiling_delta, WallRule.PlacementType.Ceiling)
-				var chosen_ceiling_rule := this_ceiling_rule if (this_ceiling_rule.get_priority() >= other_ceiling_rule.get_priority()) else other_ceiling_rule
+				var chosen_ceiling_rule   := _choose_top_wall_rule(ctx, this_sector, ceiling_delta, WallRule.PlacementType.Ceiling)
 				
-				ctx.this_wall_rule = this_ceiling_rule
-				ctx.other_wall_rule = other_ceiling_rule
 				var chosen_texture := chosen_ceiling_rule.get_texture()
 				if not chosen_texture:
 					ErrorUtils.report_error("Chosen rule with no texture: '{0}'".format([this_sector.get_full_name()]))
