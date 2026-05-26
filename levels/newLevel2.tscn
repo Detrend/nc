@@ -2222,6 +2222,9 @@ script = ExtResource("2_b0a4w")
 [node name="Arena1_Trap" type="Node" parent="Activators"]
 script = ExtResource("3_et0pd")
 
+[node name="Arena1_TrapB" type="Node" parent="Activators"]
+script = ExtResource("3_et0pd")
+
 [node name="Arena1_Trap_Part2" type="Node" parent="Activators"]
 script = ExtResource("3_et0pd")
 threshold = 2
@@ -2916,6 +2919,11 @@ script = ExtResource("13_et0pd")
 target = NodePath("../../../../../../../Activators/Arena1_Trap")
 increment = 6
 
+[node name="Trigger2" type="Node" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector/ExitSector/TrapButton" node_paths=PackedStringArray("target")]
+script = ExtResource("13_et0pd")
+target = NodePath("../../../../../../../Activators/Arena1_TrapB")
+increment = 6
+
 [node name="Lovered" type="Node" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector/ExitSector" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
 source = NodePath("../../../../../../Activators/Arena1_Trap")
@@ -3177,7 +3185,7 @@ portal_wall_length = 2.236068
 
 [node name="Configuration" type="Node" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector/DoorSector-4950" node_paths=PackedStringArray("source")]
 script = ExtResource("13_py677")
-source = NodePath("../../../../../../Activators/Arena1_Trap")
+source = NodePath("../../../../../../Activators/Arena1_TrapB")
 move_speed = 0.25
 floor_height = -10.0
 ceiling_mode = 2
@@ -3193,18 +3201,6 @@ floor_height = -10.0
 ceiling_height = -5.0
 portal_wall_length = 29.529646
 
-[node name="Button" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector/Sector-4950a" instance=ExtResource("8_ufqas")]
-position = Vector2(0.82128906, 11.376717)
-
-[node name="Trigger" type="Node" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector/Sector-4950a/Button" node_paths=PackedStringArray("target")]
-script = ExtResource("13_et0pd")
-target = NodePath("../../../../../../../Activators/Arena1_Trap_Part2")
-
-[node name="Trigger" type="Node" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector/Sector-4950a" node_paths=PackedStringArray("target")]
-script = ExtResource("13_et0pd")
-target = NodePath("../../../../../../Activators/Arena1_Trap")
-increment = 10
-
 [node name="Sector-4950b" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
 position = Vector2(-16.326355, 70.97521)
 color = Color(1, 1, 1, 1)
@@ -3216,11 +3212,6 @@ ceiling_height = -5.0
 portal_destination = NodePath("../DoorSector-4950c")
 portal_wall_length = 10.770329
 portal_destination_wall_length = 22.36068
-
-[node name="Trigger" type="Node" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector/Sector-4950b" node_paths=PackedStringArray("target")]
-script = ExtResource("13_et0pd")
-target = NodePath("../../../../../../Activators/Arena1_Trap")
-increment = 10
 
 [node name="DoorSector-4950c" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-16.326355, 70.97521)
@@ -3239,11 +3230,6 @@ floor_height = -9.4
 ceiling_mode = 2
 ceiling_height = -5.0
 
-[node name="Trigger" type="Node" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector/DoorSector-4950c" node_paths=PackedStringArray("target")]
-script = ExtResource("13_et0pd")
-target = NodePath("../../../../../../Activators/Arena1_Trap")
-increment = 10
-
 [node name="Sector-4950d" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
 position = Vector2(-16.326355, 70.97521)
 color = Color(1, 1, 1, 1)
@@ -3258,11 +3244,6 @@ portal_destination_wall = 2
 portal_wall_length = 22.36068
 portal_destination_wall_length = 22.36068
 
-[node name="Trigger" type="Node" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector/Sector-4950d" node_paths=PackedStringArray("target")]
-script = ExtResource("13_et0pd")
-target = NodePath("../../../../../../Activators/Arena1_Trap")
-increment = 10
-
 [node name="Sector-4950e" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-106.005066, 90.85193)
 color = Color(1, 1, 1, 1)
@@ -3272,11 +3253,6 @@ data = SubResource("Resource_a3oky")
 floor_height = -9.4
 ceiling_height = -5.0
 portal_wall_length = 26.400757
-
-[node name="Trigger" type="Node" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector/Sector-4950e" node_paths=PackedStringArray("target")]
-script = ExtResource("13_et0pd")
-target = NodePath("../../../../../../Activators/Arena1_Trap")
-increment = 10
 
 [node name="DoorSector-1947" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-70.293884, -38.086365)
@@ -3348,11 +3324,6 @@ floor_height = -9.85
 ceiling_mode = 2
 ceiling_height = -7.0
 
-[node name="Trigger" type="Node" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector/Sector-6883" node_paths=PackedStringArray("target")]
-script = ExtResource("13_et0pd")
-target = NodePath("../../../../../../Activators/Arena1_Trap")
-increment = 10
-
 [node name="Sector-6884" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(1.9949341, 45.85193)
 color = Color(1, 1, 1, 1)
@@ -3368,11 +3339,6 @@ source = NodePath("../../../../../../Activators/Arena1_Trap_Part2")
 floor_height = -9.85
 ceiling_mode = 2
 ceiling_height = -7.0
-
-[node name="Trigger" type="Node" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector/Sector-6884" node_paths=PackedStringArray("target")]
-script = ExtResource("13_et0pd")
-target = NodePath("../../../../../../Activators/Arena1_Trap")
-increment = 10
 
 [node name="Sector-6885" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(24.994934, -26.148071)
@@ -3390,11 +3356,6 @@ floor_height = -9.85
 ceiling_mode = 2
 ceiling_height = -7.0
 
-[node name="Trigger" type="Node" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector/Sector-6885" node_paths=PackedStringArray("target")]
-script = ExtResource("13_et0pd")
-target = NodePath("../../../../../../Activators/Arena1_Trap")
-increment = 10
-
 [node name="Sector-6886" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(26.994934, -46.14807)
 color = Color(1, 1, 1, 1)
@@ -3411,11 +3372,6 @@ floor_height = -9.85
 ceiling_mode = 2
 ceiling_height = -7.0
 
-[node name="Trigger" type="Node" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector/Sector-6886" node_paths=PackedStringArray("target")]
-script = ExtResource("13_et0pd")
-target = NodePath("../../../../../../Activators/Arena1_Trap")
-increment = 10
-
 [node name="Sector-6886a" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(26.994934, -46.14807)
 color = Color(1, 1, 1, 1)
@@ -3424,11 +3380,6 @@ data = SubResource("Resource_32df3")
 floor_height = -9.85
 ceiling_height = -6.5
 portal_wall_length = 13.0
-
-[node name="Trigger" type="Node" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector/Sector-6886a" node_paths=PackedStringArray("target")]
-script = ExtResource("13_et0pd")
-target = NodePath("../../../../../../Activators/Arena1_Trap")
-increment = 10
 
 [node name="Sector-6885a" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(24.994934, -26.148071)
@@ -3439,11 +3390,6 @@ floor_height = -9.85
 ceiling_height = -6.5
 portal_wall_length = 12.0415945
 
-[node name="Trigger" type="Node" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector/Sector-6885a" node_paths=PackedStringArray("target")]
-script = ExtResource("13_et0pd")
-target = NodePath("../../../../../../Activators/Arena1_Trap")
-increment = 10
-
 [node name="Sector-6884a" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(1.9949341, 45.85193)
 color = Color(1, 1, 1, 1)
@@ -3453,11 +3399,6 @@ floor_height = -9.85
 ceiling_height = -6.5
 portal_wall_length = 11.661903
 
-[node name="Trigger" type="Node" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector/Sector-6884a" node_paths=PackedStringArray("target")]
-script = ExtResource("13_et0pd")
-target = NodePath("../../../../../../Activators/Arena1_Trap")
-increment = 10
-
 [node name="Sector-6883a" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(6.5961914, 30.552444)
 color = Color(1, 1, 1, 1)
@@ -3466,11 +3407,6 @@ data = SubResource("Resource_1bxne")
 floor_height = -9.85
 ceiling_height = -6.5
 portal_wall_length = 9.219544
-
-[node name="Trigger" type="Node" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector/Sector-6883a" node_paths=PackedStringArray("target")]
-script = ExtResource("13_et0pd")
-target = NodePath("../../../../../../Activators/Arena1_Trap")
-increment = 10
 
 [node name="Chapel" type="Node2D" parent="Sectors/Main/Corridor3_Arena1"]
 
