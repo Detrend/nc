@@ -494,14 +494,14 @@ static void load_json_map
     const f32 radius = js_prop["radius"];
     const f32 height = js_prop["height"];
     const Appearance appearance {
-      Token{std::string{js_prop["sprite"]}},
-      load_json_vector<3>(js_prop["direction"]).xzy,
-      js_prop["scale"],
-      0.0f,
-      static_cast<Appearance::SpriteMode>(js_prop["mode"]),
-      static_cast<Appearance::PivotMode>(js_prop["pivot"]),
-      static_cast<Appearance::ScalingMode>(js_prop["scaling"]),
-      static_cast<Appearance::RotationMode>(js_prop["rotation"]),
+      .sprite = Token{std::string{js_prop["sprite"]}},
+      .direction = load_json_vector<3>(js_prop["direction"]).xzy,
+      .offset = 0.0f,
+      .scale = js_prop["scale"],
+      .mode = static_cast<Appearance::SpriteMode>(js_prop["mode"]),
+      .pivot = static_cast<Appearance::PivotMode>(js_prop["pivot"]),
+      .scaling = static_cast<Appearance::ScalingMode>(js_prop["scaling"]),
+      .rotation = static_cast<Appearance::RotationMode>(js_prop["rotation"]),
     };
 
 
