@@ -14,8 +14,9 @@ func get_activator_name()->StringName: return self.name
 
 ## Export all data of this [Activator] in a JSON-serializable object.
 func do_export(out: Dictionary = {})->Dictionary:
+	var level := Level.get_level(self)
 	out["name"] = get_activator_name()
-	out["threshold"] = threshold
+	out["threshold"] = 0 if level.is_debug_mode else threshold 
 	
 	var hooks : Array[Dictionary] = []
 	for hook : IActivatorHook in NodeUtils.get_children_of_type(self, IActivatorHook):

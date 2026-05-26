@@ -27,6 +27,9 @@ var __use_stripe_width_impl_ : bool = false
 		__use_ceiling_offset_impl_ = ! val
 @export var stripe_width : float = 0.0
 
+func dbg(msg: String)->void:
+	pass
+	#print(msg)
 
 func apply(out: TexturingResult, og_begin_height: float, og_end_height : float, ctx : TexturingContext, additional_processing_per_segment :Callable = Callable())->void:
 	if not texture:
@@ -41,7 +44,7 @@ func apply(out: TexturingResult, og_begin_height: float, og_end_height : float, 
 	if _use_stripe_width: end = clampf(begin + stripe_width, og_begin_height, og_end_height)
 	elif _use_ceiling_offset: end = clampf(og_end_height - ceiling_offset, og_begin_height, og_end_height)
 
-	#print("applying wall override {2}: interval <{0}, {1}> (og: <{3}, {4}>)".format([begin, end, self.name, og_begin_height, og_end_height]))
+	dbg("applying wall override {2}: interval <{0}, {1}> (og: <{3}, {4}>)".format([begin, end, self.name, og_begin_height, og_end_height]))
 
 	var original_entries := out.entries
 	out.entries = []
@@ -53,12 +56,15 @@ func apply(out: TexturingResult, og_begin_height: float, og_end_height : float, 
 			ov.offset += texturing_offset
 
 	for e in original_entries:
+		dbg("entry {0} ~ {1}...".format([e.begin_height, e.end_height]))
 		if e.end_height <= begin or end <= e.begin_height:
+			dbg("This entry (<{0},{1}>) is in its whole before the override range starts - just appending it".format([e.begin_height, e.end_height]))
 			out.entries.append(e)
 			continue
 
 
 		if e.begin_height <= begin and begin <= e.end_height:
+			dbg("This entry (<{0},{1}>) is partially overlapping with the override ".format([e.begin_height, e.end_height]))
 			if e.begin_height < begin:
 				var lower_half := e.clone()
 				lower_half.end_height = begin
@@ -74,14 +80,17 @@ func apply(out: TexturingResult, og_begin_height: float, og_end_height : float, 
 			override = null
 			continue
 		if begin <= e.begin_height and e.end_height <= end:
+			dbg("This entry (<{0},{1}>) is totally inside the override - skipping".format([e.begin_height, e.end_height]))
 			continue
 		if begin <= e.begin_height and e.begin_height < end and end < e.end_height:
+			dbg("C")
 			e.begin_height = end
 			out.entries.append(e)
 			continue
 		ErrorUtils.report_error("This shouldn't happen! - situation coverd by no case in wall override {0}".format([NodeUtils.get_full_name(self)]))
 		
 	if override != null:
+		out.entries.append_array(override.entries)
 		ErrorUtils.report_error("This shouldn't happen! - wall override WASN'T APPLIED on {0}".format([NodeUtils.get_full_name(self)]))
 		
 		

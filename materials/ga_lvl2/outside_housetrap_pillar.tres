@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=10 format=3 uid="uid://ch4yr3u6dvy13"]
+
+[ext_resource type="Resource" uid="uid://c0bfb1i38kqd" path="res://material_textures/_None.tres" id="1_2vtmm"]
+[ext_resource type="Resource" uid="uid://cieo8n2cl30cw" path="res://material_textures/moss.tres" id="2_e7iar"]
+[ext_resource type="Texture2D" uid="uid://6gkdvke2lg1n" path="res://imgs/moss.png" id="3_wb7da"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="4_kceud"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="5_l0n1g"]
+[ext_resource type="Resource" uid="uid://coohq55u58kbj" path="res://material_textures/stone_wall.tres" id="6_2hoft"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="7_a6ws0"]
+
+[sub_resource type="Resource" id="Resource_csai5"]
+script = ExtResource("5_l0n1g")
+priority = 7
+texture = ExtResource("6_2hoft")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[sub_resource type="Resource" id="Resource_2vtmm"]
+script = ExtResource("7_a6ws0")
+_placement_type = 17
+texture = ExtResource("1_2vtmm")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[resource]
+script = ExtResource("4_kceud")
+preview = ExtResource("3_wb7da")
+preview_scale = 4.0
+wall_default = SubResource("Resource_csai5")
+wall_rules = Array[ExtResource("7_a6ws0")]([SubResource("Resource_2vtmm")])
+floor = ExtResource("2_e7iar")
+ceiling = ExtResource("1_2vtmm")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"

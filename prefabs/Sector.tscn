@@ -6,6 +6,7 @@
 
 [sub_resource type="Resource" id="Resource_ctoo8"]
 script = ExtResource("2_8a3ec")
+floor_height = 1.0
 material = ExtResource("3_ctoo8")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
@@ -15,12 +16,12 @@ texture_repeat = 2
 color = Color(0, 0, 0, 1)
 script = ExtResource("1_8a3ec")
 data = SubResource("Resource_ctoo8")
+floor_height = 1.0
 ceiling_height = 1.5
 sector_material = ExtResource("3_ctoo8")
 portal_destination_wall_length = -1.0
 
 [node name="VisualizerLine" type="Line2D" parent="."]
-points = PackedVector2Array(940, 351)
 closed = true
 width = 0.2
 default_color = Color(0, 0, 0, 0.796078)
@@ -30,12 +31,13 @@ end_cap_mode = 2
 
 [node name="PortalVisualizerLine" type="Line2D" parent="."]
 z_index = 1
-width = 3.0
+points = PackedVector2Array(2181, 815)
+width = 1.0
 default_color = Color(0, 0.513002, 1.92523e-07, 1)
 
 [node name="PortalDestinationVisualizerLine" type="Line2D" parent="."]
 z_index = 1
-width = 3.0
+width = 1.0
 default_color = Color(0.54214, 0.104039, 0.127324, 1)
 
 [node name="PortalArrowLine" type="Line2D" parent="."]
