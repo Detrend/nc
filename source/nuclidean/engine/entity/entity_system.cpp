@@ -143,9 +143,11 @@ void EntityPool<EntityType>::serialize(Buffer& buffer)
   if (buffer.is_deserializing())
   {
     // Fill the hash-table on deserialization
-    this->id_to_idx.reserve(cnt);
+    this->id_to_idx.clear();      // First remove the old garbage
+    this->id_to_idx.reserve(cnt); // Then reserve a new space
     for (u32 i = 0; i < cast<u32>(this->entities.size()); ++i)
     {
+      // And the connect them
       this->id_to_idx[this->entities[i].get_id().idx] = i;
     }
   }
