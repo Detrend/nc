@@ -54,7 +54,7 @@ static constexpr cstr WEAPON_STATE_NAMES[] =
 };
 
 //==============================================================================
-constexpr WeaponFlags DEFAULT_WEAPONS = weapon_flag(WeaponTypes::wrench) | weapon_flag(WeaponTypes::rail_gun);;
+constexpr WeaponFlags DEFAULT_WEAPONS = weapon_flag(WeaponTypes::wrench);;
 constexpr f32 PLAYER_HEIGHT      = 1.8f;
 constexpr f32 PLAYER_EYE_HEIGHT  = 1.65f;
 constexpr f32 PLAYER_RADIUS      = 0.25f;
