@@ -9,8 +9,9 @@ script = ExtResource("1_nvcmt")
 radius = 1.0
 height = 1.0
 sprite_name = "lamp_1"
-sprite_scale = 22.5
+sprite_scale = 10.0
 pivot_mode = 1
+scaling_mode = 0
 height_offset = 0.0
 
 [node name="Icon" type="Sprite2D" parent="."]

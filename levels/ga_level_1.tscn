@@ -3881,6 +3881,7 @@ position = Vector2(70, -30)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(48, -100, 48, -50, -10, 8, -60, 8, -46, -64, -44, -74, -40, -80, -20, -86, -10, -89)
 data = SubResource("Resource_3llbs")
+floor_height = 0.0
 ceiling_height = 20.0
 damage = 20
 sector_material = ExtResource("18_ub6p1")
@@ -4036,6 +4037,7 @@ position = Vector2(70, -30)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(33, 10, 50, -7, 57, 10, 50, 17)
 data = SubResource("Resource_70omk")
+floor_height = 0.0
 ceiling_height = 25.0
 damage = 20
 sector_material = ExtResource("18_ub6p1")
@@ -4046,6 +4048,7 @@ position = Vector2(70, -30)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(80, -7, 97, 11, 80, 17, 73, 10)
 data = SubResource("Resource_wftin")
+floor_height = 0.0
 ceiling_height = 25.0
 damage = 20
 sector_material = ExtResource("18_ub6p1")
@@ -4056,6 +4059,7 @@ position = Vector2(70, -30)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(97, 40, 79, 57, 73, 40, 80, 33)
 data = SubResource("Resource_vp5mm")
+floor_height = 0.0
 ceiling_height = 25.0
 damage = 20
 sector_material = ExtResource("18_ub6p1")
@@ -4066,6 +4070,7 @@ position = Vector2(70, -30)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(50, 57, 33, 40, 50, 33, 57, 40)
 data = SubResource("Resource_3njhl")
+floor_height = 0.0
 ceiling_height = 25.0
 damage = 20
 sector_material = ExtResource("18_ub6p1")
@@ -4076,6 +4081,7 @@ position = Vector2(70, -30)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(33, 40, 33, 10, 50, 17, 50, 33)
 data = SubResource("Resource_vlh7t")
+floor_height = 0.0
 ceiling_height = 25.0
 damage = 20
 sector_material = ExtResource("18_ub6p1")
@@ -4086,6 +4092,7 @@ position = Vector2(70, -30)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(79, 57, 50, 57, 57, 40, 73, 40)
 data = SubResource("Resource_ns0jd")
+floor_height = 0.0
 ceiling_height = 25.0
 damage = 20
 sector_material = ExtResource("18_ub6p1")
@@ -4096,6 +4103,7 @@ position = Vector2(70, -30)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(97, 11, 97, 40, 80, 33, 80, 17)
 data = SubResource("Resource_vmxoy")
+floor_height = 0.0
 ceiling_height = 25.0
 damage = 20
 sector_material = ExtResource("18_ub6p1")
@@ -4106,6 +4114,7 @@ position = Vector2(70, -30)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(50, -7, 80, -7, 73, 10, 57, 10)
 data = SubResource("Resource_s6dil")
+floor_height = 0.0
 ceiling_height = 25.0
 damage = 20
 sector_material = ExtResource("18_ub6p1")
@@ -5628,6 +5637,7 @@ position = Vector2(70, -30)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(80, 113, 80, 144, 78, 142, 75, 132, 76, 115)
 data = SubResource("Resource_0uaer")
+floor_height = 0.0
 ceiling_height = 20.0
 damage = 20
 sector_material = ExtResource("21_c6tgh")
@@ -5638,6 +5648,7 @@ position = Vector2(70, -30)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(69, 136, 71, 119, 76, 115, 75, 132)
 data = SubResource("Resource_is3sa")
+floor_height = 0.0
 ceiling_height = 20.0
 damage = 20
 sector_material = ExtResource("21_c6tgh")
@@ -5648,6 +5659,7 @@ position = Vector2(70, -30)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(55, 133, 58, 118, 66, 117, 71, 119, 69, 136)
 data = SubResource("Resource_lao15")
+floor_height = 0.0
 ceiling_height = 20.0
 damage = 20
 sector_material = ExtResource("21_c6tgh")
@@ -5658,6 +5670,7 @@ position = Vector2(70, -30)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(50, 143, 50, 114, 58, 118, 55, 133)
 data = SubResource("Resource_xehlr")
+floor_height = 0.0
 ceiling_height = 20.0
 damage = 20
 sector_material = ExtResource("21_c6tgh")
@@ -5668,6 +5681,7 @@ position = Vector2(70, -30)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(40, 150, -40, 130, -48, 105, -50, 95, -60, 42, -10, 42, 50, 102, 50, 114, 50, 143, 50, 150)
 data = SubResource("Resource_k52hm")
+floor_height = 0.0
 ceiling_height = 20.0
 damage = 20
 sector_material = ExtResource("18_ub6p1")
@@ -7456,6 +7470,7 @@ position = Vector2(70, -30)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(170, 130, 80, 150, 80, 144, 80, 113, 80, 102, 140, 42, 190, 42, 180, 95, 178, 105)
 data = SubResource("Resource_4mn31")
+floor_height = 0.0
 ceiling_height = 20.0
 damage = 20
 sector_material = ExtResource("18_ub6p1")
@@ -7659,6 +7674,7 @@ position = Vector2(110, -70)
 color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(50, -60, 100, -49, 110, -46, 130, -40, 150, 48, 100, 48, 42, -10, 42, -60)
 data = SubResource("Resource_1fu5u")
+floor_height = 0.0
 ceiling_height = 20.0
 damage = 20
 sector_material = ExtResource("18_ub6p1")
@@ -9178,84 +9194,64 @@ position = Vector2(342, 199)
 position = Vector2(319, 199)
 
 [node name="Candle1" parent="." instance=ExtResource("70_h1mph")]
-visible = false
 position = Vector2(113, 235)
 
 [node name="Candle2" parent="." instance=ExtResource("71_70omk")]
-visible = false
 position = Vector2(146, 234)
 
 [node name="Candle3" parent="." instance=ExtResource("71_70omk")]
-visible = false
 position = Vector2(150, 236)
 
 [node name="Candle4" parent="." instance=ExtResource("71_70omk")]
-visible = false
 position = Vector2(122, 269)
 
 [node name="Candle5" parent="." instance=ExtResource("72_wftin")]
-visible = false
 position = Vector2(126, 274)
 
 [node name="Candle6" parent="." instance=ExtResource("72_wftin")]
-visible = false
 position = Vector2(125, 279)
 
 [node name="PlasmaAmmo3" parent="." instance=ExtResource("8_k52hm")]
 position = Vector2(165, 298)
 
 [node name="Candle7" parent="." instance=ExtResource("70_h1mph")]
-visible = false
 position = Vector2(222, 146)
-sprite_scale = 100.0
 
 [node name="Candle8" parent="." instance=ExtResource("72_wftin")]
-visible = false
 position = Vector2(201, 146)
 sprite_name = "cup_1"
 
 [node name="Candle9" parent="." instance=ExtResource("70_h1mph")]
-visible = false
 position = Vector2(300, -65)
 
 [node name="Candle10" parent="." instance=ExtResource("70_h1mph")]
-visible = false
 position = Vector2(330, -57)
 
 [node name="Candle11" parent="." instance=ExtResource("71_70omk")]
-visible = false
 position = Vector2(278, 23)
 
 [node name="Candle12" parent="." instance=ExtResource("72_wftin")]
-visible = false
 position = Vector2(286, 21)
 
 [node name="Candle13" parent="." instance=ExtResource("71_70omk")]
-visible = false
 position = Vector2(361, 21)
 
 [node name="Candle14" parent="." instance=ExtResource("72_wftin")]
-visible = false
 position = Vector2(346, 18)
 
 [node name="Candle15" parent="." instance=ExtResource("72_wftin")]
-visible = false
 position = Vector2(342, 17)
 
 [node name="Candle16" parent="." instance=ExtResource("71_70omk")]
-visible = false
 position = Vector2(426, 15)
 
 [node name="Candle17" parent="." instance=ExtResource("71_70omk")]
-visible = false
 position = Vector2(446, -15)
 
 [node name="Candle18" parent="." instance=ExtResource("71_70omk")]
-visible = false
 position = Vector2(427, -29)
 
 [node name="Candle19" parent="." instance=ExtResource("72_wftin")]
-visible = false
 position = Vector2(440, 29)
 
 [node name="Railgun" parent="." instance=ExtResource("73_vp5mm")]
@@ -9265,5 +9261,3 @@ position = Vector2(134, -5)
 position = Vector2(-181.00002, -19)
 radius = 10.0
 direction = Vector3(1, 0, 0)
-scaling_mode = 0
-height_offset = 0.1

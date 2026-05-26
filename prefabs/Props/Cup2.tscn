@@ -9,8 +9,9 @@ script = ExtResource("1_3ilch")
 radius = 1.0
 height = 1.0
 sprite_name = "cup_2"
-sprite_scale = 22.5
+sprite_scale = 10.0
 pivot_mode = 1
+scaling_mode = 0
 height_offset = 0.0
 
 [node name="Icon" type="Sprite2D" parent="."]
