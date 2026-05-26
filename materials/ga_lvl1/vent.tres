@@ -1,0 +1,44 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=12 format=3 uid="uid://ca66vj58axioh"]
+
+[ext_resource type="Resource" uid="uid://be6j0sowxs14l" path="res://material_textures/ga_textures/smooth_concrete_white.tres" id="1_eljyc"]
+[ext_resource type="Resource" uid="uid://k08qtijoxejw" path="res://material_textures/ga_textures/metal_panel.tres" id="1_ua2gt"]
+[ext_resource type="Texture2D" uid="uid://dqxybmfy83arq" path="res://imgs/wall/gritty_concrete.png" id="3_cs0qj"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="4_0mu3p"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="5_ih7h4"]
+[ext_resource type="Resource" uid="uid://coohq55u58kbj" path="res://material_textures/stone_wall.tres" id="6_3g0y5"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="7_oixrn"]
+
+[sub_resource type="Resource" id="Resource_csai5"]
+script = ExtResource("5_ih7h4")
+priority = 2
+texture = ExtResource("6_3g0y5")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[sub_resource type="Resource" id="Resource_a6q66"]
+script = ExtResource("7_oixrn")
+priority = 2
+_placement_type = 5
+texture = ExtResource("1_ua2gt")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[sub_resource type="Resource" id="Resource_vmr3h"]
+script = ExtResource("7_oixrn")
+_placement_type = 9
+texture = ExtResource("1_eljyc")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[sub_resource type="Resource" id="Resource_ltfd2"]
+script = ExtResource("7_oixrn")
+_placement_type = 17
+texture = ExtResource("1_eljyc")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[resource]
+script = ExtResource("4_0mu3p")
+preview = ExtResource("3_cs0qj")
+preview_scale = 4.0
+wall_default = SubResource("Resource_csai5")
+wall_rules = Array[ExtResource("7_oixrn")]([SubResource("Resource_a6q66"), SubResource("Resource_vmr3h"), SubResource("Resource_ltfd2")])
+floor = ExtResource("1_ua2gt")
+ceiling = ExtResource("1_ua2gt")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"

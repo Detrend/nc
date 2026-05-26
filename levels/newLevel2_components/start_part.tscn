@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3 uid="uid://dwxqs8a41ubg6"]
+[gd_scene load_steps=63 format=3 uid="uid://dwxqs8a41ubg6"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_gdff7"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_3mk7n"]
@@ -11,66 +11,130 @@
 [ext_resource type="Resource" uid="uid://bqyyokp64eh5p" path="res://materials/ga_lvl1/tower.tres" id="6_401d3"]
 [ext_resource type="Script" uid="uid://crfvtueim4q0s" path="res://scripts/reactivity/Trigger.gd" id="7_xtdhi"]
 [ext_resource type="PackedScene" uid="uid://cmy30fxadpjn2" path="res://prefabs/TriangulatedMultisector.tscn" id="8_5ty2a"]
+[ext_resource type="Resource" uid="uid://wdswbwv8745b" path="res://materials/ga_lvl1/door_track_20.tres" id="8_401d3"]
+[ext_resource type="Resource" uid="uid://d3u8ti68yjxth" path="res://materials/ga_lvl1/door_big.tres" id="9_xtdhi"]
+[ext_resource type="Resource" uid="uid://cqednhk2jc6ho" path="res://materials/ga_lvl1/catwalk.tres" id="12_wfw7f"]
+[ext_resource type="Resource" uid="uid://br7k55k3slnyy" path="res://materials/ga_lvl1/living_room.tres" id="14_5ty2a"]
+[ext_resource type="Resource" uid="uid://ca66vj58axioh" path="res://materials/ga_lvl1/vent.tres" id="15_daw7r"]
+[ext_resource type="Resource" uid="uid://bttkk6occduew" path="res://materials/ga_lvl1/electrical_sides.tres" id="16_758pq"]
+[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/sector/Sector.gd" id="17_daw7r"]
+[ext_resource type="Resource" uid="uid://crn2d88cb4o82" path="res://materials/ga_lvl1/living_room_table.tres" id="18_758pq"]
+[ext_resource type="Resource" uid="uid://ggr55sy6mhm6" path="res://materials/ga_lvl1/living_room_tech.tres" id="19_04idn"]
+[ext_resource type="PackedScene" uid="uid://ctwevapidummr" path="res://prefabs/Lights/PointLight.tscn" id="21_daw7r"]
 
 [sub_resource type="Resource" id="Resource_ctoo8"]
 script = ExtResource("4_du6s6")
 ceiling_height = 6.0
-material = ExtResource("3_jkrys")
+material = ExtResource("14_5ty2a")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_wfw7f"]
+script = ExtResource("4_du6s6")
+ceiling_height = 6.0
+material = ExtResource("14_5ty2a")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_daw7r"]
+script = ExtResource("4_du6s6")
+floor_height = 1.0
+ceiling_height = 6.0
+material = ExtResource("18_758pq")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_758pq"]
+script = ExtResource("4_du6s6")
+ceiling_height = 6.0
+material = ExtResource("14_5ty2a")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_04idn"]
+script = ExtResource("4_du6s6")
+ceiling_height = 6.0
+material = ExtResource("14_5ty2a")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_h0sl4"]
+script = ExtResource("4_du6s6")
+floor_height = 1.0
+ceiling_height = 6.0
+material = ExtResource("18_758pq")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_djswh"]
+script = ExtResource("4_du6s6")
+ceiling_height = 6.0
+material = ExtResource("14_5ty2a")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_ktmfi"]
+script = ExtResource("4_du6s6")
+ceiling_height = 6.0
+material = ExtResource("14_5ty2a")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_oumsq"]
+script = ExtResource("4_du6s6")
+floor_height = 1.0
+ceiling_height = 3.0
+material = ExtResource("19_04idn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_l7qbx"]
 script = ExtResource("4_du6s6")
-ceiling_height = 3.0
-material = ExtResource("3_jkrys")
+ceiling_height = 2.0
+material = ExtResource("8_401d3")
+wall_texturing_offset = Vector2(-0.2, 0)
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_3htpp"]
 script = ExtResource("4_du6s6")
 ceiling_height = 0.01
-material = ExtResource("3_jkrys")
+material = ExtResource("9_xtdhi")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_uuq87"]
 script = ExtResource("4_du6s6")
-ceiling_height = 3.0
-material = ExtResource("3_jkrys")
+ceiling_height = 2.0
+material = ExtResource("8_401d3")
+wall_texturing_offset = Vector2(-0.4, 0)
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_i76wg"]
 script = ExtResource("4_du6s6")
-floor_height = 0.1
-ceiling_height = 3.0
-material = ExtResource("3_jkrys")
+ceiling_height = 2.0
+material = ExtResource("8_401d3")
+wall_texturing_offset = Vector2(-0.2, 0)
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_5p3cf"]
 script = ExtResource("4_du6s6")
 ceiling_height = 0.01
-material = ExtResource("3_jkrys")
+material = ExtResource("9_xtdhi")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_lr1go"]
 script = ExtResource("4_du6s6")
-ceiling_height = 3.0
-material = ExtResource("3_jkrys")
+ceiling_height = 1.99
+material = ExtResource("8_401d3")
+wall_texturing_offset = Vector2(-0.4, 0)
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_yvvru"]
 script = ExtResource("4_du6s6")
 ceiling_height = 5.0
-material = ExtResource("3_jkrys")
+material = ExtResource("8_401d3")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_eukjm"]
 script = ExtResource("4_du6s6")
 ceiling_height = 5.0
-material = ExtResource("6_401d3")
+material = ExtResource("12_wfw7f")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_et0pd"]
 script = ExtResource("4_du6s6")
 ceiling_height = 5.0
-material = ExtResource("3_jkrys")
+material = ExtResource("12_wfw7f")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_krcvx"]
@@ -82,75 +146,103 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 [sub_resource type="Resource" id="Resource_oer63"]
 script = ExtResource("4_du6s6")
 ceiling_height = 5.0
-material = ExtResource("3_jkrys")
+material = ExtResource("8_401d3")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_278tx"]
 script = ExtResource("4_du6s6")
 ceiling_height = 5.0
-material = ExtResource("3_jkrys")
+material = ExtResource("14_5ty2a")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_7nxdn"]
 script = ExtResource("4_du6s6")
 floor_height = 1.2
 ceiling_height = 3.0
-material = ExtResource("3_jkrys")
+material = ExtResource("15_daw7r")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_jxsxr"]
 script = ExtResource("4_du6s6")
 floor_height = 1.2
 ceiling_height = 3.0
-material = ExtResource("3_jkrys")
+material = ExtResource("15_daw7r")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_krcb3"]
 script = ExtResource("4_du6s6")
 ceiling_height = 5.0
-material = ExtResource("3_jkrys")
+material = ExtResource("16_758pq")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_xtpsb"]
 script = ExtResource("4_du6s6")
 ceiling_height = 5.0
-material = ExtResource("3_jkrys")
+material = ExtResource("14_5ty2a")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_87d23"]
 script = ExtResource("4_du6s6")
 ceiling_height = 5.0
-material = ExtResource("3_jkrys")
+material = ExtResource("14_5ty2a")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_javwg"]
+script = ExtResource("4_du6s6")
+floor_height = 1.0
+ceiling_height = 5.0
+material = ExtResource("18_758pq")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_uj62f"]
+script = ExtResource("4_du6s6")
+floor_height = 1.0
+ceiling_height = 4.0
+material = ExtResource("19_04idn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_jb6op"]
 script = ExtResource("4_du6s6")
 ceiling_height = 5.0
-material = ExtResource("3_jkrys")
+material = ExtResource("14_5ty2a")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_7vdnc"]
 script = ExtResource("4_du6s6")
 ceiling_height = 5.0
-material = ExtResource("3_jkrys")
+material = ExtResource("14_5ty2a")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_3nlj2"]
+script = ExtResource("4_du6s6")
+floor_height = 1.0
+ceiling_height = 5.0
+material = ExtResource("18_758pq")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_5j3vv"]
+script = ExtResource("4_du6s6")
+floor_height = 1.0
+ceiling_height = 4.0
+material = ExtResource("19_04idn")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_vsy3a"]
 script = ExtResource("4_du6s6")
 ceiling_height = 5.0
-material = ExtResource("3_jkrys")
+material = ExtResource("12_wfw7f")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_nnbrs"]
 script = ExtResource("4_du6s6")
 ceiling_height = 5.0
-material = ExtResource("3_jkrys")
+material = ExtResource("12_wfw7f")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_1xqjk"]
 script = ExtResource("4_du6s6")
 ceiling_height = 5.0
-material = ExtResource("3_jkrys")
+material = ExtResource("12_wfw7f")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_1o0vd"]
@@ -184,6 +276,10 @@ ceiling_height = 3.0
 material = ExtResource("3_jkrys")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
+[sub_resource type="Curve" id="Curve_758pq"]
+_data = [Vector2(0.19026549, 0.97752815), 0.0, 0.0, 0, 0, Vector2(0.21681418, 0.011235952), 0.0, 0.0, 0, 0, Vector2(0.26548672, 0), 0.0, 0.0, 0, 0, Vector2(0.2787611, 0.9887641), 0.0, 0.0, 0, 0, Vector2(0.8761062, 0.97752815), 0.0, 0.0, 0, 0, Vector2(0.8893805, 0.06741583), 0.0, 0.0, 0, 0, Vector2(0.95132744, 0.078651786), 0.0, 0.0, 0, 0, Vector2(0.96460176, 0.97752815), 0.0, 0.0, 0, 0]
+point_count = 8
+
 [node name="StartPart" type="Node2D"]
 script = ExtResource("1_gdff7")
 is_debug_mode = true
@@ -208,11 +304,114 @@ script = ExtResource("4_jkrys")
 position = Vector2(-120, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(112, 12, 112, 28, 112, 60, 48, 60, 48, -20, 112, -20)
+polygon = PackedVector2Array(112, 12, 112, 28, 112, 41, 100, 41, 100, 31, 100, 21, 100, 11, 100, 1, 100, -9, 100, -20, 112, -20)
 data = SubResource("Resource_ctoo8")
 floor_height = 0.0
 ceiling_height = 6.0
+sector_material = ExtResource("14_5ty2a")
 portal_wall_length = 16.0
+
+[node name="StartRoon" type="Polygon2D" parent="." instance=ExtResource("2_3mk7n")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-120, -76)
+polygon = PackedVector2Array(60, -9, 60, -20, 100, -20, 100, -9)
+script = ExtResource("17_daw7r")
+data = SubResource("Resource_wfw7f")
+ceiling_height = 6.0
+sector_material = ExtResource("14_5ty2a")
+portal_wall_length = 11.0
+portal_destination_wall_length = -1.0
+
+[node name="StartRooo" type="Polygon2D" parent="." instance=ExtResource("2_3mk7n")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-120, -76)
+color = Color(0.87460613, 0.74822485, 0.7975924, 1)
+polygon = PackedVector2Array(100, 1, 60, 1, 60, -9, 100, -9)
+script = ExtResource("17_daw7r")
+data = SubResource("Resource_daw7r")
+floor_height = 1.0
+ceiling_height = 6.0
+sector_material = ExtResource("18_758pq")
+portal_wall_length = 40.0
+portal_destination_wall_length = -1.0
+
+[node name="StartRoop" type="Polygon2D" parent="." instance=ExtResource("2_3mk7n")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-120, -76)
+polygon = PackedVector2Array(100, 11, 60, 11, 60, 1, 100, 1)
+script = ExtResource("17_daw7r")
+data = SubResource("Resource_758pq")
+ceiling_height = 6.0
+sector_material = ExtResource("14_5ty2a")
+portal_wall_length = 40.0
+portal_destination_wall_length = -1.0
+
+[node name="StartRooq" type="Polygon2D" parent="." instance=ExtResource("2_3mk7n")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-120, -76)
+polygon = PackedVector2Array(100, 21, 60, 21, 60, 11, 100, 11)
+script = ExtResource("17_daw7r")
+data = SubResource("Resource_04idn")
+ceiling_height = 6.0
+sector_material = ExtResource("14_5ty2a")
+portal_wall_length = 40.0
+portal_destination_wall_length = -1.0
+
+[node name="StartRoor" type="Polygon2D" parent="." instance=ExtResource("2_3mk7n")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-120, -76)
+color = Color(0.87460613, 0.74822485, 0.7975924, 1)
+polygon = PackedVector2Array(100, 31, 60, 31, 60, 21, 100, 21)
+script = ExtResource("17_daw7r")
+data = SubResource("Resource_h0sl4")
+floor_height = 1.0
+ceiling_height = 6.0
+sector_material = ExtResource("18_758pq")
+portal_wall_length = 40.0
+portal_destination_wall_length = -1.0
+
+[node name="StartRoos" type="Polygon2D" parent="." instance=ExtResource("2_3mk7n")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-120, -76)
+polygon = PackedVector2Array(100, 41, 60, 41, 60, 31, 100, 31)
+script = ExtResource("17_daw7r")
+data = SubResource("Resource_djswh")
+ceiling_height = 6.0
+sector_material = ExtResource("14_5ty2a")
+portal_wall_length = 40.0
+portal_destination_wall_length = -1.0
+
+[node name="StartRoot" type="Polygon2D" parent="." instance=ExtResource("2_3mk7n")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-120, -76)
+polygon = PackedVector2Array(47, 41, 47, -20, 60, -20, 60, -9, 60, 1, 60, 11, 60, 21, 60, 31, 60, 41)
+script = ExtResource("17_daw7r")
+data = SubResource("Resource_ktmfi")
+ceiling_height = 6.0
+sector_material = ExtResource("14_5ty2a")
+portal_wall_length = 61.0
+portal_destination_wall_length = -1.0
+
+[node name="StartRoou" type="Polygon2D" parent="." instance=ExtResource("2_3mk7n")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-120, -76)
+color = Color(0.87460613, 0.74822485, 0.7975924, 1)
+polygon = PackedVector2Array(38, 36, 38, -14, 47, -20, 47, 41)
+script = ExtResource("17_daw7r")
+data = SubResource("Resource_oumsq")
+floor_height = 1.0
+ceiling_height = 3.0
+sector_material = ExtResource("19_04idn")
+portal_wall_length = 50.0
+portal_destination_wall_length = -1.0
 
 [node name="Corridor1" type="Node2D" parent="."]
 
@@ -223,8 +422,14 @@ texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(189, 32, 179, 32, 179, 31, 189, 31)
 data = SubResource("Resource_l7qbx")
 floor_height = 0.0
-ceiling_height = 3.0
+ceiling_height = 2.0
+sector_material = ExtResource("8_401d3")
 portal_wall_length = 10.0
+
+[node name="Trigger" type="Node" parent="Corridor1/Sector-7207g" node_paths=PackedStringArray("target")]
+script = ExtResource("7_xtdhi")
+target = NodePath("../../../StartActivators/Start_Door2")
+can_turn_off = true
 
 [node name="Sector-7207p" parent="Corridor1" instance=ExtResource("2_3mk7n")]
 position = Vector2(-120, -76)
@@ -233,6 +438,7 @@ polygon = PackedVector2Array(179, 31, 179, 29, 189, 29, 189, 31)
 data = SubResource("Resource_3htpp")
 floor_height = 0.0
 ceiling_height = 0.01
+sector_material = ExtResource("9_xtdhi")
 portal_wall_length = 2.0
 
 [node name="Configuration" type="Node" parent="Corridor1/Sector-7207p" node_paths=PackedStringArray("source")]
@@ -241,7 +447,7 @@ source = NodePath("../../../StartActivators/Start_Door2")
 move_speed = 5.0
 floor_height = 0.1
 ceiling_mode = 2
-ceiling_height = 3.0
+ceiling_height = 1.99
 
 [node name="Sector-7207o" parent="Corridor1" instance=ExtResource("2_3mk7n")]
 position = Vector2(-120, -76)
@@ -249,8 +455,14 @@ color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(179, 29, 179, 28, 189, 28, 189, 29)
 data = SubResource("Resource_uuq87")
 floor_height = 0.0
-ceiling_height = 3.0
+ceiling_height = 2.0
+sector_material = ExtResource("8_401d3")
 portal_wall_length = 1.0
+
+[node name="Trigger" type="Node" parent="Corridor1/Sector-7207o" node_paths=PackedStringArray("target")]
+script = ExtResource("7_xtdhi")
+target = NodePath("../../../StartActivators/Start_Door2")
+can_turn_off = true
 
 [node name="Sector-7207f" parent="Corridor1" instance=ExtResource("2_3mk7n")]
 position = Vector2(-125, -76)
@@ -258,9 +470,15 @@ color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(149, 32, 139, 32, 139, 31, 149, 31)
 data = SubResource("Resource_i76wg")
-floor_height = 0.1
-ceiling_height = 3.0
+floor_height = 0.0
+ceiling_height = 2.0
+sector_material = ExtResource("8_401d3")
 portal_wall_length = 10.0
+
+[node name="Trigger" type="Node" parent="Corridor1/Sector-7207f" node_paths=PackedStringArray("target")]
+script = ExtResource("7_xtdhi")
+target = NodePath("../../../StartActivators/Start_Door1")
+can_turn_off = true
 
 [node name="Sector-7207n" parent="Corridor1" instance=ExtResource("2_3mk7n")]
 position = Vector2(-125, -76)
@@ -269,6 +487,7 @@ polygon = PackedVector2Array(139, 31, 139, 29, 149, 29, 149, 31)
 data = SubResource("Resource_5p3cf")
 floor_height = 0.0
 ceiling_height = 0.01
+sector_material = ExtResource("9_xtdhi")
 portal_wall_length = 2.0
 
 [node name="Configuration" type="Node" parent="Corridor1/Sector-7207n" node_paths=PackedStringArray("source")]
@@ -276,7 +495,7 @@ script = ExtResource("5_w2e6i")
 source = NodePath("../../../StartActivators/Start_Door1")
 move_speed = 5.0
 ceiling_mode = 2
-ceiling_height = 3.0
+ceiling_height = 2.0
 
 [node name="Sector-7207i" parent="Corridor1" instance=ExtResource("2_3mk7n")]
 position = Vector2(-125, -76)
@@ -284,8 +503,14 @@ color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(139, 29, 139, 28, 149, 28, 149, 29)
 data = SubResource("Resource_lr1go")
 floor_height = 0.0
-ceiling_height = 3.0
+ceiling_height = 1.99
+sector_material = ExtResource("8_401d3")
 portal_wall_length = 1.0
+
+[node name="Trigger" type="Node" parent="Corridor1/Sector-7207i" node_paths=PackedStringArray("target")]
+script = ExtResource("7_xtdhi")
+target = NodePath("../../../StartActivators/Start_Door1")
+can_turn_off = true
 
 [node name="Sector-7207e" parent="Corridor1" instance=ExtResource("2_3mk7n")]
 position = Vector2(-168, -76)
@@ -295,6 +520,7 @@ polygon = PackedVector2Array(164, 28, 160, 28, 160, 12, 164, 12)
 data = SubResource("Resource_yvvru")
 floor_height = 0.0
 ceiling_height = 5.0
+sector_material = ExtResource("8_401d3")
 portal_wall_length = 4.0
 
 [node name="Sector-7207b" parent="Corridor1" instance=ExtResource("2_3mk7n")]
@@ -305,7 +531,7 @@ polygon = PackedVector2Array(192, 4, 208, -12, 212, 8, 194, 8)
 data = SubResource("Resource_eukjm")
 floor_height = 0.0
 ceiling_height = 5.0
-sector_material = ExtResource("6_401d3")
+sector_material = ExtResource("12_wfw7f")
 portal_wall_length = 22.627417
 
 [node name="Sector-7207d" parent="Corridor1" instance=ExtResource("2_3mk7n")]
@@ -316,6 +542,7 @@ polygon = PackedVector2Array(212, 8, 208, 28, 192, 12, 194, 8)
 data = SubResource("Resource_et0pd")
 floor_height = 0.0
 ceiling_height = 5.0
+sector_material = ExtResource("12_wfw7f")
 portal_wall_length = 20.396078
 
 [node name="Sector-7207c" parent="Corridor1" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_3mk7n")]
@@ -341,16 +568,18 @@ polygon = PackedVector2Array(178, -14.4, 190, -14.4, 190, -12, 178, -12)
 data = SubResource("Resource_oer63")
 floor_height = 0.0
 ceiling_height = 5.0
+sector_material = ExtResource("8_401d3")
 portal_wall_length = 12.0
 
 [node name="Sector-7207k" parent="Corridor1" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_3mk7n")]
 position = Vector2(-120, -76)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(168, -16, 168, -24, 168, -28, 168, -34, 200, -34, 200, -16, 190, -14.4, 178, -14.4)
+polygon = PackedVector2Array(168, -16, 168, -24, 168, -28, 168, -34, 195, -34, 200, -29, 200, -16, 190, -14.4, 178, -14.4)
 data = SubResource("Resource_278tx")
 floor_height = 0.0
 ceiling_height = 5.0
+sector_material = ExtResource("14_5ty2a")
 portal_destination = NodePath("../../Corridor2/Sector-7207c2b")
 portal_wall = 1
 portal_destination_wall = 1
@@ -359,12 +588,13 @@ portal_destination_wall_length = 32.0
 
 [node name="Sector-7207l" parent="Corridor1" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_3mk7n")]
 position = Vector2(-196, -76)
-color = Color(1, 1, 1, 1)
+color = Color(0.84985316, 0.6985239, 0.7576367, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(244, -28, 244, -24, 98, -24, 98, -28, 168, -28, 176, -28)
 data = SubResource("Resource_7nxdn")
 floor_height = 1.2
 ceiling_height = 3.0
+sector_material = ExtResource("15_daw7r")
 enable_portal = true
 portal_destination = NodePath("../../Corridor2/Sector-7207c2c")
 portal_wall = 2
@@ -373,12 +603,13 @@ portal_destination_wall_length = 4.0
 
 [node name="Sector-7207m" parent="Corridor1" instance=ExtResource("2_3mk7n")]
 position = Vector2(-246, -76)
-color = Color(1, 1, 1, 1)
+color = Color(0.84985316, 0.6985239, 0.7576367, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(218, -32, 226, -32, 226, -28, 218, -28)
 data = SubResource("Resource_jxsxr")
 floor_height = 1.2
 ceiling_height = 3.0
+sector_material = ExtResource("15_daw7r")
 portal_wall_length = 8.0
 
 [node name="SECRET" parent="Corridor1" instance=ExtResource("2_3mk7n")]
@@ -389,6 +620,7 @@ polygon = PackedVector2Array(210, -46, 234, -46, 234, -30, 226, -30, 218, -30, 2
 data = SubResource("Resource_krcb3")
 floor_height = 0.0
 ceiling_height = 5.0
+sector_material = ExtResource("16_758pq")
 portal_wall_length = 24.0
 
 [node name="SecretTrigger1" type="Node" parent="Corridor1/SECRET" node_paths=PackedStringArray("target")]
@@ -397,9 +629,9 @@ target = NodePath("../../../StartActivators/Secret1")
 
 [node name="TriangulatedMultisector-4348" parent="Corridor1" instance=ExtResource("8_5ty2a")]
 position = Vector2(7, -5.6240387)
-polygon = PackedVector2Array(-7.911705, -38.37596, 7.088295, -38.37596, 17.088295, -38.37596, 33.088295, -38.37596, 33.088295, -6.3759613, -7.911705, -6.3759613)
+polygon = PackedVector2Array(0, -38.37596, 7, -38.37596, 17, -38.37596, 26, -38.37596, 33, -31.375961, 33, -14.375961, 27, -6.3759613, 0, -6.3759613, -8, -14.375961, -7.943756, -29.664642)
 ceiling_height = 5.0
-sector_material = ExtResource("3_jkrys")
+sector_material = ExtResource("14_5ty2a")
 data = SubResource("Resource_xtpsb")
 
 [node name="Sector-4193" parent="Corridor1/TriangulatedMultisector-4348" instance=ExtResource("2_3mk7n")]
@@ -409,6 +641,7 @@ polygon = PackedVector2Array(-1.153718, -1.2219925, 8.846282, -1.2219925, 11.846
 data = SubResource("Resource_87d23")
 floor_height = 0.0
 ceiling_height = 5.0
+sector_material = ExtResource("14_5ty2a")
 portal_wall_length = 10.0
 
 [node name="Trigger" type="Node" parent="Corridor1/TriangulatedMultisector-4348/Sector-4193" node_paths=PackedStringArray("target")]
@@ -416,11 +649,39 @@ script = ExtResource("7_xtdhi")
 target = NodePath("../../../../StartActivators/Start_Door1")
 can_turn_off = true
 
+[node name="Sector-6983" type="Polygon2D" parent="Corridor1/TriangulatedMultisector-4348" instance=ExtResource("2_3mk7n")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(8, -21.375961)
+color = Color(0.87460613, 0.74822485, 0.7975924, 1)
+polygon = PackedVector2Array(-16, 7, 25, 7, 19, 15, -8, 15)
+script = ExtResource("17_daw7r")
+data = SubResource("Resource_javwg")
+floor_height = 1.0
+ceiling_height = 5.0
+sector_material = ExtResource("18_758pq")
+portal_wall_length = 41.0
+portal_destination_wall_length = -1.0
+
+[node name="Sector-2352" type="Polygon2D" parent="Corridor1/TriangulatedMultisector-4348" instance=ExtResource("2_3mk7n")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(24.637287, -29.564186)
+color = Color(0.87460613, 0.74822485, 0.7975924, 1)
+polygon = PackedVector2Array(1.3627129, -8.811775, 8.362713, -1.8117752, 1.3627129, -1.8117752)
+script = ExtResource("17_daw7r")
+data = SubResource("Resource_uj62f")
+floor_height = 1.0
+ceiling_height = 4.0
+sector_material = ExtResource("19_04idn")
+portal_wall_length = 9.899495
+portal_destination_wall_length = -1.0
+
 [node name="TriangulatedMultisector-4349" parent="Corridor1" instance=ExtResource("8_5ty2a")]
 position = Vector2(52, -5.6240387)
-polygon = PackedVector2Array(-7.911705, -38.37596, 7.088295, -38.37596, 17.088295, -38.37596, 33.088295, -38.37596, 33.088295, -6.3759613, -7.911705, -6.3759613)
+polygon = PackedVector2Array(-8, -31.375961, -1, -38.37596, 7.088295, -38.37596, 17.088295, -38.37596, 26, -38.37596, 33, -31.375961, 33, -14.375961, 26, -6.3759613, 0, -6.3759613, -8, -14.375961)
 ceiling_height = 5.0
-sector_material = ExtResource("3_jkrys")
+sector_material = ExtResource("14_5ty2a")
 data = SubResource("Resource_jb6op")
 
 [node name="Sector-4193" parent="Corridor1/TriangulatedMultisector-4349" instance=ExtResource("2_3mk7n")]
@@ -430,6 +691,7 @@ polygon = PackedVector2Array(-1.153718, -1.2219925, 8.846282, -1.2219925, 10.846
 data = SubResource("Resource_7vdnc")
 floor_height = 0.0
 ceiling_height = 5.0
+sector_material = ExtResource("14_5ty2a")
 portal_wall_length = 10.0
 
 [node name="Trigger" type="Node" parent="Corridor1/TriangulatedMultisector-4349/Sector-4193" node_paths=PackedStringArray("target")]
@@ -437,11 +699,39 @@ script = ExtResource("7_xtdhi")
 target = NodePath("../../../../StartActivators/Start_Door2")
 can_turn_off = true
 
+[node name="Sector-4087" type="Polygon2D" parent="Corridor1/TriangulatedMultisector-4349" instance=ExtResource("2_3mk7n")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(26, -24.375961)
+color = Color(0.87460613, 0.74822485, 0.7975924, 1)
+polygon = PackedVector2Array(0, -14, 7, -7, 7, 11, 0, 18)
+script = ExtResource("17_daw7r")
+data = SubResource("Resource_3nlj2")
+floor_height = 1.0
+ceiling_height = 5.0
+sector_material = ExtResource("18_758pq")
+portal_wall_length = 9.899495
+portal_destination_wall_length = -1.0
+
+[node name="Sector-2237" type="Polygon2D" parent="Corridor1/TriangulatedMultisector-4349" instance=ExtResource("2_3mk7n")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-3.1180573, -29.980988)
+color = Color(0.87460613, 0.74822485, 0.7975924, 1)
+polygon = PackedVector2Array(2.1180573, -8.394974, 2.1180573, -1.3949738, -4.8819427, -1.3949738)
+script = ExtResource("17_daw7r")
+data = SubResource("Resource_5j3vv")
+floor_height = 1.0
+ceiling_height = 4.0
+sector_material = ExtResource("19_04idn")
+portal_wall_length = 7.0
+portal_destination_wall_length = -1.0
+
 [node name="TriangulatedMultisector-2718" parent="Corridor1" instance=ExtResource("8_5ty2a")]
 position = Vector2(8.264534, -60.42778)
 polygon = PackedVector2Array(-12.264534, -3.5722198, 63.735466, -3.5722198, 79.735466, 12.42778, 60.735466, 12.42778, 50.735466, 12.42778, 15.735466, 12.42778, 5.735466, 12.42778, -12.264534, 12.42778)
 ceiling_height = 5.0
-sector_material = ExtResource("3_jkrys")
+sector_material = ExtResource("12_wfw7f")
 data = SubResource("Resource_vsy3a")
 
 [node name="Sector-646" parent="Corridor1/TriangulatedMultisector-2718" instance=ExtResource("2_3mk7n")]
@@ -451,6 +741,7 @@ polygon = PackedVector2Array(-6.5496883, -1.9333038, 10.450312, -1.9333038, 6.45
 data = SubResource("Resource_nnbrs")
 floor_height = 0.0
 ceiling_height = 5.0
+sector_material = ExtResource("12_wfw7f")
 portal_wall_length = 17.0
 
 [node name="Trigger" type="Node" parent="Corridor1/TriangulatedMultisector-2718/Sector-646" node_paths=PackedStringArray("target")]
@@ -465,6 +756,7 @@ polygon = PackedVector2Array(-5.800209, -3.857174, 10.199791, -3.857174, 7.19979
 data = SubResource("Resource_1xqjk")
 floor_height = 0.0
 ceiling_height = 5.0
+sector_material = ExtResource("12_wfw7f")
 portal_wall_length = 16.0
 
 [node name="Trigger" type="Node" parent="Corridor1/TriangulatedMultisector-2718/Sector-7297" node_paths=PackedStringArray("target")]
@@ -495,7 +787,7 @@ polygon = PackedVector2Array(172, 12, 158, 28, 150, 8, 170, 8)
 data = SubResource("Resource_eukjm")
 floor_height = 0.0
 ceiling_height = 5.0
-sector_material = ExtResource("6_401d3")
+sector_material = ExtResource("12_wfw7f")
 portal_wall_length = 21.260292
 
 [node name="Sector-7207b2a" parent="Corridor2" instance=ExtResource("2_3mk7n")]
@@ -542,10 +834,127 @@ portal_wall_length = 18.0
 
 [node name="Sector-7207c2c" parent="Corridor2" instance=ExtResource("2_3mk7n")]
 position = Vector2(-38, -76)
-color = Color(1, 1, 1, 1)
+color = Color(0.84985316, 0.6985239, 0.7576367, 1)
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(202, -22, 202, -18, 200, -18, 200, -22)
 data = SubResource("Resource_ruwff")
 floor_height = 1.2
 ceiling_height = 3.0
 portal_wall_length = 4.0
+
+[node name="Lights" type="Node2D" parent="."]
+
+[node name="PointLight" parent="Lights" instance=ExtResource("21_daw7r")]
+position = Vector2(19, -31)
+radius = 5.0
+curve = SubResource("Curve_758pq")
+placement_mode = 1
+
+[node name="PointLight3" parent="Lights" instance=ExtResource("21_daw7r")]
+position = Vector2(-26, -50)
+radius = 6.0
+should_animate = true
+curve = SubResource("Curve_758pq")
+cycle_offset_range = 1.0
+placement_mode = 1
+
+[node name="PointLight4" parent="Lights" instance=ExtResource("21_daw7r")]
+position = Vector2(-56, -50)
+radius = 6.0
+curve = SubResource("Curve_758pq")
+cycle_offset_range = 1.0
+placement_mode = 1
+
+[node name="PointLight5" parent="Lights" instance=ExtResource("21_daw7r")]
+position = Vector2(-57, -80)
+radius = 6.0
+curve = SubResource("Curve_758pq")
+cycle_offset_range = 1.0
+placement_mode = 1
+
+[node name="PointLight13" parent="Lights" instance=ExtResource("21_daw7r")]
+position = Vector2(-76, -80)
+radius = 4.0
+should_animate = true
+curve = SubResource("Curve_758pq")
+cycle_offset_range = 1.0
+placement_mode = 1
+
+[node name="PointLight14" parent="Lights" instance=ExtResource("21_daw7r")]
+position = Vector2(-76, -50)
+radius = 4.0
+curve = SubResource("Curve_758pq")
+cycle_offset_range = 1.0
+placement_mode = 1
+
+[node name="PointLight6" parent="Lights" instance=ExtResource("21_daw7r")]
+position = Vector2(-26, -80)
+radius = 6.0
+curve = SubResource("Curve_758pq")
+cycle_duration_seconds = 2.4
+cycle_offset_range = 1.0
+placement_mode = 1
+
+[node name="PointLight12" parent="Lights" instance=ExtResource("21_daw7r")]
+position = Vector2(-24, -119)
+radius = 5.0
+curve = SubResource("Curve_758pq")
+placement_mode = 1
+
+[node name="PointLight7" parent="Lights" instance=ExtResource("21_daw7r")]
+position = Vector2(15, -48)
+color = Color(0, 1, 0, 1)
+radius = 2.0
+curve = SubResource("Curve_758pq")
+placement_mode = 1
+
+[node name="PointLight8" parent="Lights" instance=ExtResource("21_daw7r")]
+position = Vector2(60, -48)
+color = Color(0, 1, 0, 1)
+radius = 2.0
+curve = SubResource("Curve_758pq")
+placement_mode = 1
+
+[node name="PointLight2" parent="Lights" instance=ExtResource("21_daw7r")]
+position = Vector2(64, -31)
+radius = 5.0
+curve = SubResource("Curve_758pq")
+placement_mode = 1
+
+[node name="PointLight9" parent="Lights" instance=ExtResource("21_daw7r")]
+position = Vector2(76, -106)
+radius = 5.0
+curve = SubResource("Curve_758pq")
+placement_mode = 1
+
+[node name="PointLight10" parent="Lights" instance=ExtResource("21_daw7r")]
+position = Vector2(32, -102)
+intensity = -1.0
+radius = 5.0
+curve = SubResource("Curve_758pq")
+placement_mode = 1
+height_offset = 0.8
+
+[node name="PointLight15" parent="Lights" instance=ExtResource("21_daw7r")]
+position = Vector2(18, -102)
+intensity = -1.0
+radius = 5.0
+curve = SubResource("Curve_758pq")
+placement_mode = 1
+height_offset = 0.8
+
+[node name="PointLight11" parent="Lights" instance=ExtResource("21_daw7r")]
+position = Vector2(-68, -102)
+intensity = -1.0
+radius = 5.0
+curve = SubResource("Curve_758pq")
+placement_mode = 1
+height_offset = 0.8
+
+[node name="PointLight16" parent="Lights" instance=ExtResource("21_daw7r")]
+position = Vector2(-84, -102)
+intensity = -1.0
+radius = 5.0
+curve = SubResource("Curve_758pq")
+placement_mode = 1
+height_offset = 0.8
