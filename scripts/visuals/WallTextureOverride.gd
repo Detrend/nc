@@ -91,6 +91,6 @@ func apply(out: TexturingResult, og_begin_height: float, og_end_height : float, 
 		
 	if override != null:
 		out.entries.append_array(override.entries)
-		ErrorUtils.report_error("This shouldn't happen! - wall override WASN'T APPLIED on {0}".format([NodeUtils.get_full_name(self)]))
+		#ErrorUtils.report_error("This shouldn't happen! - wall override WASN'T APPLIED on {0}".format([NodeUtils.get_full_name(self)]))
 		
 		

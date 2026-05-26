@@ -21,7 +21,7 @@ metadata/_custom_type_script = "uid://ds4udf2uy0wpn"
 script = ExtResource("8_f61n5")
 texture = ExtResource("9_x62b0")
 height_expression = "18"
-_arguments_preview = PackedStringArray("total_height", "available_height", "wall_height_min", "wall_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling")
+_arguments_preview = PackedStringArray("total_height", "available_height", "wall_height_min", "wall_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling", "rand01")
 metadata/_custom_type_script = "uid://b60vys5f055ei"
 
 [sub_resource type="Resource" id="Resource_t7e60"]
