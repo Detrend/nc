@@ -11,12 +11,14 @@
 
 [sub_resource type="Resource" id="Resource_3qb78"]
 script = ExtResource("2_yh3tp")
+priority = 7
 texture = ExtResource("6_qko8f")
 
 [sub_resource type="Resource" id="Resource_1drrx"]
 script = ExtResource("3_thgfl")
+priority = 7
 _placement_type = 31
-wall_length_range = Vector2(0, 6)
+wall_length_range = Vector2(0, 9)
 texture = ExtResource("6_vi1aj")
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 

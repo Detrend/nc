@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=8 format=3 uid="uid://bli75mt3yxjog"]
+
+[ext_resource type="Resource" uid="uid://cku8xgnhd4v6x" path="res://material_textures/rocks.tres" id="1_m2xse"]
+[ext_resource type="Texture2D" uid="uid://b53574ty2qsdj" path="res://imgs/mossy_rocks.png" id="2_m2xse"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="3_ex1xv"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="4_3wosq"]
+[ext_resource type="Resource" uid="uid://c1ku3etge0pxq" path="res://material_textures/mossy_rocks.tres" id="5_0udxn"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="6_ko7mw"]
+
+[sub_resource type="Resource" id="Resource_wg1fd"]
+script = ExtResource("4_3wosq")
+texture = ExtResource("5_0udxn")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[resource]
+script = ExtResource("3_ex1xv")
+preview = ExtResource("2_m2xse")
+preview_scale = 4.0
+wall_default = SubResource("Resource_wg1fd")
+floor = ExtResource("1_m2xse")
+ceiling = ExtResource("1_m2xse")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"
