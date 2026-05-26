@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://cvr37ali82gp6" path="res://imgs/smooth_stem.png" id="3_1drrx"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="3_thgfl"]
 [ext_resource type="Resource" uid="uid://c7jatlcq5i3ma" path="res://material_textures/smooth_stem.tres" id="6_qko8f"]
-[ext_resource type="Resource" uid="uid://cgeakf7jcliau" path="res://material_textures/holes.tres" id="6_vi1aj"]
+[ext_resource type="Resource" uid="uid://by61kg2fkyuhm" path="res://materials/ga_lvl2/textures/chapel_top.tres" id="8_g5ai5"]
 
 [sub_resource type="Resource" id="Resource_3qb78"]
 script = ExtResource("2_yh3tp")
@@ -19,7 +19,7 @@ script = ExtResource("3_thgfl")
 priority = 7
 _placement_type = 31
 wall_length_range = Vector2(0, 9)
-texture = ExtResource("6_vi1aj")
+texture = ExtResource("8_g5ai5")
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [resource]

@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=8 format=3 uid="uid://dlsj6te8lmkks"]
+
+[ext_resource type="Resource" uid="uid://cku8xgnhd4v6x" path="res://material_textures/rocks.tres" id="1_2yo2s"]
+[ext_resource type="Texture2D" uid="uid://6gkdvke2lg1n" path="res://imgs/moss.png" id="2_qdhi1"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="3_74vnc"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="4_vcy8e"]
+[ext_resource type="Resource" uid="uid://c7jatlcq5i3ma" path="res://material_textures/smooth_stem.tres" id="5_2yo2s"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="6_68mri"]
+
+[sub_resource type="Resource" id="Resource_hgpmj"]
+script = ExtResource("4_vcy8e")
+priority = 2
+texture = ExtResource("5_2yo2s")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[resource]
+script = ExtResource("3_74vnc")
+preview = ExtResource("2_qdhi1")
+preview_scale = 4.0
+wall_default = SubResource("Resource_hgpmj")
+floor = ExtResource("1_2yo2s")
+ceiling = ExtResource("1_2yo2s")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"

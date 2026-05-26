@@ -4,12 +4,13 @@
 [ext_resource type="Texture2D" uid="uid://b53574ty2qsdj" path="res://imgs/mossy_rocks.png" id="2_m2xse"]
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="3_ex1xv"]
 [ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="4_3wosq"]
-[ext_resource type="Resource" uid="uid://c1ku3etge0pxq" path="res://material_textures/mossy_rocks.tres" id="5_0udxn"]
+[ext_resource type="Resource" uid="uid://b0ot4uewh5nor" path="res://materials/ga_lvl2/textures/portal_rocks.tres" id="5_m2xse"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="6_ko7mw"]
 
 [sub_resource type="Resource" id="Resource_wg1fd"]
 script = ExtResource("4_3wosq")
-texture = ExtResource("5_0udxn")
+priority = 6
+texture = ExtResource("5_m2xse")
 metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 
 [resource]

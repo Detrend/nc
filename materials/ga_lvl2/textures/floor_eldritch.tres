@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=2 format=3 uid="uid://dibfyqaadoj4k"]
+
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="1_3wd8p"]
+
+[resource]
+script = ExtResource("1_3wd8p")
+_id = "floor_eldritch"
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=2 format=3 uid="uid://c35rmw4kgs4qv"]
+
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="1_jv66i"]
+
+[resource]
+script = ExtResource("1_jv66i")
+_id = "bricks_eldritch"
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

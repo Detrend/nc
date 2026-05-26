@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=2 format=3 uid="uid://b0ot4uewh5nor"]
+
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="1_n8m7h"]
+
+[resource]
+script = ExtResource("1_n8m7h")
+_id = "mossy_rocks_magic"
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

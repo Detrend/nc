@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=8 format=3 uid="uid://crs6l7f53n5xw"]
+
+[ext_resource type="Resource" uid="uid://dibfyqaadoj4k" path="res://materials/ga_lvl2/textures/floor_eldritch.tres" id="1_4mmmf"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="1_6qgh8"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="2_jyn2l"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="3_4mmmf"]
+[ext_resource type="Resource" uid="uid://c35rmw4kgs4qv" path="res://materials/ga_lvl2/textures/bricks_eldritch.tres" id="4_34sg8"]
+
+[sub_resource type="Resource" id="Resource_34sg8"]
+script = ExtResource("2_jyn2l")
+texture = ExtResource("4_34sg8")
+
+[sub_resource type="Resource" id="Resource_p7u58"]
+script = ExtResource("3_4mmmf")
+_placement_type = 11
+wall_length_range = Vector2(0, 0.5)
+texture = ExtResource("1_4mmmf")
+metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
+
+[resource]
+script = ExtResource("1_6qgh8")
+wall_default = SubResource("Resource_34sg8")
+wall_rules = Array[ExtResource("3_4mmmf")]([SubResource("Resource_p7u58")])
+floor = ExtResource("1_4mmmf")
+ceiling = ExtResource("1_4mmmf")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"
