@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="SectorMaterial" load_steps=11 format=3 uid="uid://dhbuvjqakdskb"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=18 format=3 uid="uid://dhbuvjqakdskb"]
 
 [ext_resource type="Resource" uid="uid://lv2l2mulcl3e" path="res://material_textures/Floor2.tres" id="1_y12d0"]
 [ext_resource type="Resource" uid="uid://dyel65pf2hq5a" path="res://material_textures/Wall.tres" id="2_g6dwg"]
@@ -8,17 +8,38 @@
 [ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="5_d3i8c"]
 [ext_resource type="Resource" uid="uid://crtucqy2narq3" path="res://material_textures/Bricks.tres" id="6_jdmpx"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="7_2m5ys"]
+[ext_resource type="Script" uid="uid://csukwu081bfv0" path="res://scripts/visuals/ILayeredTextureEntry.gd" id="8_jdmpx"]
+[ext_resource type="Script" uid="uid://b60vys5f055ei" path="res://scripts/visuals/LT_Entry.gd" id="9_2m5ys"]
+[ext_resource type="Script" uid="uid://ds4udf2uy0wpn" path="res://scripts/visuals/LT_Filler.gd" id="10_en3qn"]
+[ext_resource type="Script" uid="uid://dt7r05hfelhgq" path="res://scripts/visuals/LayeredTexture.gd" id="12_n0017"]
 
 [sub_resource type="Resource" id="Resource_csai5"]
 script = ExtResource("5_d3i8c")
 texture = ExtResource("6_jdmpx")
 metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 
+[sub_resource type="Resource" id="Resource_tl3hx"]
+script = ExtResource("9_2m5ys")
+texture = ExtResource("2_g6dwg")
+height_expression = "0.1"
+_arguments_preview = PackedStringArray("total_height", "available_height", "wall_height_min", "wall_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling", "rand01")
+metadata/_custom_type_script = "uid://b60vys5f055ei"
+
+[sub_resource type="Resource" id="Resource_e8aov"]
+script = ExtResource("10_en3qn")
+texture = ExtResource("2_jlcro")
+metadata/_custom_type_script = "uid://ds4udf2uy0wpn"
+
+[sub_resource type="Resource" id="Resource_o2w15"]
+script = ExtResource("12_n0017")
+layers = Array[ExtResource("8_jdmpx")]([SubResource("Resource_tl3hx"), SubResource("Resource_e8aov")])
+metadata/_custom_type_script = "uid://dt7r05hfelhgq"
+
 [sub_resource type="Resource" id="Resource_g2km6"]
 script = ExtResource("7_2m5ys")
 priority = 10
 _placement_type = 11
-texture = ExtResource("2_jlcro")
+texture = SubResource("Resource_o2w15")
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [resource]

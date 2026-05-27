@@ -55,6 +55,10 @@ extends EditablePolygon
 	set(val):
 		data.force_walkability = val
 
+@export var walkability : SectorProperties.WalkabilityMode:
+	get: return data.walkability
+	set(val): data.walkability = val
+
 @export_group("Portal")
 ## Single portal that connects this [Sector] with another arbitrary sector, creating non-euclidean level geometry.
 ## [br]
