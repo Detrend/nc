@@ -6653,7 +6653,7 @@
 			],
 			"radius": 0.100000001490116,
 			"rotation": 0,
-			"scale": 10.0,
+			"scale": 20.0,
 			"scaling": 0,
 			"sprite": "lamp_1",
 			"tag": 172
@@ -6674,7 +6674,7 @@
 			],
 			"radius": 0.100000001490116,
 			"rotation": 0,
-			"scale": 10.0,
+			"scale": 20.0,
 			"scaling": 0,
 			"sprite": "lamp_1",
 			"tag": 175
@@ -6695,7 +6695,7 @@
 			],
 			"radius": 0.100000001490116,
 			"rotation": 0,
-			"scale": 10.0,
+			"scale": 20.0,
 			"scaling": 0,
 			"sprite": "lamp_1",
 			"tag": 174
