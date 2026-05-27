@@ -129,6 +129,7 @@ Appearance* Entity::get_appearance()
 {
   switch (this->get_type())
   {
+    case EntityTypes::player:     return this->as<Player>()->get_appearance();
     case EntityTypes::enemy:      return &this->as<Enemy>()->get_appearance();
     case EntityTypes::projectile: return this->as<Projectile>()->get_appearance();
     case EntityTypes::pickup:     return &this->as<Pickup>()->get_appearance();

@@ -15,6 +15,8 @@
 #include <math/vector.h>
 
 #include <anim_state_machine.h>
+#include <engine/appearance.h>
+
 #include <array>
 
 
@@ -87,10 +89,15 @@ public:
   vec3    get_look_direction() const;
   vec3    get_eye_pos()        const;
 
+  const Appearance* get_appearance() const;
+  Appearance*       get_appearance();
+
   WeaponType get_equipped_weapon()         const;
   bool       has_weapon(WeaponType weapon) const;
   void       give_weapon(WeaponType weapon);
   void       give_ammo(WeaponType weapon, u32 amount);
+
+  vec3 get_facing_hor() const;
 
   void init_with_level_transition_data(const LevelTransitionData& data_in);
   void store_level_transition_data(LevelTransitionData& data_out) const;
@@ -152,6 +159,8 @@ private:
   // update gun animation state
   void update_gun_anim(f32 delta);
 
+  void update_appearance(f32 delta);
+
   // attack with current weapon 
   void do_attack();
 
@@ -204,6 +213,8 @@ private:
   // Bit flags for the weapons owned
   WeaponFlags owned_weapons  = 0;
   WeaponType  current_weapon = 0;
+
+  Appearance appear;
 
   // time for floor damage calculations
   f32 time = 0.0f;

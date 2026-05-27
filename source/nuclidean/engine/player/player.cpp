@@ -61,6 +61,9 @@ constexpr f32 PLAYER_RADIUS      = 0.25f;
 constexpr f32 MELEE_DAMAGE_RANGE = 2.25f;
 constexpr f32 PLAYER_STEP_HEIGHT = 0.9f; // 90cm
 
+constexpr u64  NUM_ANIM_FRAMES = 16;
+constexpr cstr PLAYER_SPRITE   = "player_walk";
+
 //==============================================================================
 template<typename T, u8 StackSize>
 bool ViewBobStack<T, StackSize>::push_one(T offset, f32 time, f32 time_in)
@@ -147,6 +150,16 @@ void Player::init(vec3 position, vec3 in_forward)
       this->weapon_fsms[i].set_trigger(state, trigger_t, 0);
     }
   }
+
+  this->forward = in_forward;
+  this->appear = Appearance
+  {
+    .sprite    = std::format("{}_{}", PLAYER_SPRITE, 0),
+    .direction = this->get_facing_hor(),
+    .scale     = 28.0f,
+    .mode      = Appearance::SpriteMode::dir8,
+    .pivot     = Appearance::PivotMode::bottom,
+  };
 
   this->camera.update_transform(position, angle_yaw, angle_pitch, 0.0f, 0.0f);
 
@@ -645,6 +658,24 @@ void Player::update_gun_anim(f32 delta)
 }
 
 //==============================================================================
+void Player::update_appearance([[maybe_unused]]f32 delta)
+{
+  bool is_moving = length(this->velocity.xz()) > 0.01f;
+  f64 anim_spd    = CVars::player_walk_anim_spd;
+  f64 since_start = GameHelpers::get().get_time_since_start();
+  f64 since_start_mod = std::fmod(since_start * anim_spd, cast<f64>(NUM_ANIM_FRAMES));
+
+  u64 frame_idx = clamp<u64>(cast<u64>(since_start_mod), 0, NUM_ANIM_FRAMES-1);
+  if (!is_moving)
+  {
+    frame_idx = 0;
+  }
+
+  this->appear.direction = this->get_facing_hor();
+  this->appear.sprite    = std::format("{}_{}", PLAYER_SPRITE, frame_idx);
+}
+
+//==============================================================================
 void Player::do_attack()
 {
   auto& sound_system = SoundSystem::get();
@@ -959,6 +990,7 @@ void Player::update
     this->update_gun_sway(delta);
     this->handle_weapon_change(curr_input, prev_input);
     this->update_gun_anim(delta);
+    this->update_appearance(delta);
     this->handle_attack(curr_input, prev_input, delta);
     this->handle_use(curr_input, prev_input, delta);
     this->calculate_wish_velocity(curr_input, delta);
@@ -996,6 +1028,18 @@ vec3 Player::get_eye_pos() const
 WeaponType Player::get_equipped_weapon() const
 {
   return this->current_weapon;
+}
+
+//==============================================================================
+const Appearance* Player::get_appearance() const
+{
+  return const_cast<Player*>(this)->get_appearance();
+}
+
+//==============================================================================
+Appearance* Player::get_appearance()
+{
+  return &this->appear;
 }
 
 //==============================================================================
@@ -1119,6 +1163,12 @@ void Player::give_ammo(WeaponType weapon, u32 amount)
   nc_assert(weapon >= 0 && weapon < ARRAY_LENGTH(MAX_AMMO));
   u32 max_ammo = MAX_AMMO[weapon];
   this->current_ammo[weapon] = min(this->current_ammo[weapon] + amount, max_ammo);
+}
+
+//==============================================================================
+vec3 Player::get_facing_hor() const
+{
+  return normalize_or_zero(with_y(this->forward, 0.0f));
 }
 
 //==============================================================================
