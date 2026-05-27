@@ -35,6 +35,19 @@ namespace SoundLayers
   };
 };
 
+using MusicTrack = u8;
+namespace MusicTracks
+{
+  // With descending priority
+  enum evalue : MusicTrack
+  {
+    menu = 0,
+    game,
+    // - //
+    count
+  };
+};
+
 // ************************************************************************** //
 //                              SOUND SYSTEM                                  //
 // ************************************************************************** //
@@ -50,8 +63,7 @@ public:
   void        play_oneshot(SoundID sound, f32 volume = 1.0f, SoundLayer layer = SoundLayers::game);
   SoundHandle play(SoundID sound, f32 volume = 1.0f, bool loop = false, SoundLayer layer = SoundLayers::game);
   bool        is_handle_valid(const SoundHandle& handle) const;
-  
-  void        play_music(const Token track_name);
+  void        set_music_for_track(MusicTrack track, Token music);
 
 
   // IEngineModule
@@ -67,6 +79,8 @@ public:
   bool is_layer_enabled(SoundLayer layer) const;
 
 private:
+  void play_music(const Token track_name);
+
   void terminate();
   void update(f32 delta_seconds);
   void on_channel_finished(int channel);
@@ -77,6 +91,7 @@ private:
 private:
   struct Helper;
   static constexpr u64 CHANNEL_COUNT = 64;
+  static constexpr u64 TRACKS_COUNT  = MusicTracks::count;
 
   using ChannelArray = std::array<u8, CHANNEL_COUNT>;
 
@@ -113,6 +128,7 @@ private:
     u16        generation = 0;
   };
   ChannelInfo channels[CHANNEL_COUNT]{};
+  Token       music_tracks[TRACKS_COUNT]{};
 };
 
 }

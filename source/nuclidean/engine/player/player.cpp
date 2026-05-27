@@ -54,7 +54,7 @@ static constexpr cstr WEAPON_STATE_NAMES[] =
 };
 
 //==============================================================================
-constexpr WeaponFlags DEFAULT_WEAPONS = weapon_flag(WeaponTypes::wrench) | weapon_flag(WeaponTypes::rail_gun);;
+constexpr WeaponFlags DEFAULT_WEAPONS = weapon_flag(WeaponTypes::wrench);;
 constexpr f32 PLAYER_HEIGHT      = 1.8f;
 constexpr f32 PLAYER_EYE_HEIGHT  = 1.65f;
 constexpr f32 PLAYER_RADIUS      = 0.25f;
@@ -1014,18 +1014,18 @@ void Player::store_level_transition_data(LevelTransitionData& data_out) const
 {
   // save inventory
   data_out.owned_weapons = 0;
-  data_out.health = GameHelpers::get().get_player()->get_health();
+  data_out.health = this->get_health();
 
   for (u32 i = 0; i < WEAPON_CNT; i++)
   {
-    data_out.ammo[i] = GameHelpers::get().get_player()->get_ammo((WeaponType)i);
-    if (GameHelpers::get().get_player()->has_weapon((WeaponType)i))
+    data_out.ammo[i] = this->get_ammo((WeaponType)i);
+    if (this->has_weapon((WeaponType)i))
     {
       data_out.owned_weapons |= weapon_flag((WeaponType)i);
     }
   }
 
-  data_out.current_weapon = GameHelpers::get().get_player()->get_equipped_weapon();
+  data_out.current_weapon = this->get_equipped_weapon();
 }
 
 //==============================================================================

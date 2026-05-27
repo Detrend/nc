@@ -45,7 +45,9 @@
   xx(mellee_equip, 0.1f)     \
   xx(out_of_ammo, 0.1f)      \
   xx(door,         0.1f)     \
-  xx(button,       0.1f)
+  xx(button,       0.1f)     \
+  xx(door_alt_down, 0.1f)    \
+  xx(door_alt_up,   0.1f)
 
 #define NC_SOUND_DIRECTORY_CSTR "content/sound/"
 #define NC_SOUND_TYPE           ".wav" // all sounds are .wav

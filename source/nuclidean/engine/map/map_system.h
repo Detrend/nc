@@ -140,7 +140,8 @@ struct SectorData
   WallID      last_wall      = INVALID_WALL_ID;      // [first_wall..total_wall_count]
   ActivatorID activator      = INVALID_ACTIVATOR_ID; // Only one activator owns us
   s32         damage         = 0;
-  bool        force_walkable = false;
+  bool        force_walkable    : 1 = false;
+  bool        door_sfx_override : 1 = false; // TODO: Rework after GA demo
 };
 
 // Sector data that is not static and has to be stored in saves.
@@ -356,6 +357,7 @@ struct SectorBuildData
   s32                        damage = 0;
   bool                       has_more_states : 1 = false;
   bool                       force_walkable : 1 = false;
+  bool                       door_sfx_override : 1 = false;
 };
 
 struct OverlapInfo

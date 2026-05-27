@@ -561,7 +561,7 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
       return false;
     }
 
-    m_game_state = GameState::debug_demo;
+    set_game_state(GameState::debug_demo);
 
     game_system.request_level_change(lvl_name, std::move(frames), transition);
   }
@@ -569,14 +569,14 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
   else if (std::string lvl; engine_utils::should_play_level(cmd_args, lvl))
   {
     // Start a level
-    m_game_state = GameState::game;
+    set_game_state(GameState::game);
     game_system.request_play_level(LevelName{std::string_view{lvl}});
   }
 #endif
   else
   {
     // Open up the menu and play demos on the background
-    m_game_state = GameState::menu;
+    set_game_state(GameState::menu);
 
     UserInterfaceSystem& ui_system = get_module<UserInterfaceSystem>();
     ui_system.get_menu_manager()->set_visible(true); // Make the menu visible
@@ -588,16 +588,42 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
 }
 
 //============================================================================
-
 void Engine::go_to_main_menu()
 {
-  m_game_state = GameState::menu;
+  set_game_state(GameState::menu);
 
   UserInterfaceSystem& ui_system = get_module<UserInterfaceSystem>();
   ui_system.get_menu_manager()->set_visible(true); // Make the menu visible
   UserInterfaceSystem::get().get_menu_manager()->set_transition_screen(false);
 
   this->play_random_demo();
+}
+
+//============================================================================
+void Engine::set_game_state(GameState new_state)
+{
+  if (m_game_state == new_state)
+  {
+    return;
+  }
+
+  m_game_state = new_state;
+
+  constexpr Token MUSIC_MENU       = "music_menu";
+  constexpr Token MUSIC_TRANSITION = "music_menu";
+
+  bool is_menu        = m_game_state == GameState::menu;
+  bool is_transition  = m_game_state == GameState::transition;
+
+  if (is_menu | is_transition)
+  {
+    Token music = is_menu ? MUSIC_MENU : MUSIC_TRANSITION;
+    SoundSystem::get().set_music_for_track(MusicTracks::menu, music);
+  }
+  else
+  {
+    SoundSystem::get().set_music_for_track(MusicTracks::menu, Token{});
+  }
 }
 
 //==============================================================================
@@ -801,7 +827,7 @@ void Engine::on_level_end()
     case GameState::game:
     {
       // Change the state
-      m_game_state = GameState::transition;
+      set_game_state(GameState::transition);
 
       // Store the next level (has to happen before calling loop_current_demo)
       LevelName next_lvl_token = GameSystem::get().get_next_level_name();
@@ -813,7 +839,7 @@ void Engine::on_level_end()
       }
       else
       {
-        nc_warn("Level transition withou player, no transition data to save..");
+        nc_warn("Level transition without player, no transition data to save..");
       }
       
       // Enable level transition UI
@@ -892,7 +918,7 @@ void Engine::on_new_game_selected_from_menu(LevelName level)
     case GameState::menu:
     case GameState::game:
     {
-      m_game_state = GameState::game;
+      set_game_state(GameState::game);
       GameSystem::get().request_level_change(level);
       UserInterfaceSystem::get().get_menu_manager()->set_visible(false);
 
@@ -912,7 +938,7 @@ void Engine::on_next_level_selected_from_menu()
   {
     case GameState::transition:
     {
-      m_game_state = GameState::game;
+      set_game_state(GameState::game);
 
       LevelName           lvl        = m_transition_state.next_level_name;
       LevelTransitionData transition = m_transition_state.transition_data;

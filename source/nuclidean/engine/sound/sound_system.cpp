@@ -48,6 +48,12 @@ EngineModuleId SoundSystem::get_module_id()
 }
 
 //==============================================================================
+void SoundSystem::set_music_for_track(MusicTrack track, Token music)
+{
+  music_tracks[track] = music;
+}
+
+//==============================================================================
 bool SoundSystem::is_handle_valid(const SoundHandle& handle) const
 {
   if (handle.channel == SoundHandle::INVALID_CHANNEL)
@@ -148,7 +154,13 @@ void SoundSystem::play_music(const Token track_name)
     return;
   }
 
-  
+  if (track_name == Token{})
+  {
+    // Stop music when receiving empty token
+    Mix_HaltMusic();
+    return;
+  }
+
   if ((track_name == this->current_music_name) && Mix_PlayingMusic()) {
       return;
   }
@@ -257,6 +269,19 @@ void SoundSystem::update([[maybe_unused]] f32 delta_seconds)
   {
     return;
   }
+
+  constexpr Token EMPTY_TOKEN = Token{};
+  Token correct_track = EMPTY_TOKEN;
+  for (MusicTrack i = 0; i < TRACKS_COUNT; ++i)
+  {
+    if (music_tracks[i] != EMPTY_TOKEN)
+    {
+      correct_track = music_tracks[i];
+      break;
+    }
+  }
+
+  this->play_music(correct_track);
 
   bool expected = false;
   while (!some_channel_was_just_stopped.compare_exchange_strong(expected, true))
