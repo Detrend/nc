@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="SectorMaterial" load_steps=9 format=3 uid="uid://ck0oa402xtwg4"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=10 format=3 uid="uid://ck0oa402xtwg4"]
 
 [ext_resource type="Resource" uid="uid://did4uc3y8li64" path="res://material_textures/wood.tres" id="2_eqmwx"]
 [ext_resource type="Texture2D" uid="uid://jt3ssm48lqjc" path="res://imgs/floor1.png" id="3_2qx5x"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="5_p7a54"]
 [ext_resource type="Resource" uid="uid://crtucqy2narq3" path="res://material_textures/Bricks.tres" id="6_wm71e"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="7_4c4fa"]
+[ext_resource type="Resource" uid="uid://cqnerhlhk13f0" path="res://materials/ga_lvl2/textures/wooden_door_2_5m.tres" id="7_gtdpg"]
 
 [sub_resource type="Resource" id="Resource_csai5"]
 script = ExtResource("5_p7a54")
@@ -16,7 +17,7 @@ metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 script = ExtResource("7_4c4fa")
 priority = 10
 _placement_type = 31
-texture = ExtResource("2_eqmwx")
+texture = ExtResource("7_gtdpg")
 metadata/_custom_type_script = "uid://ccx3uqpbyjmyf"
 
 [resource]

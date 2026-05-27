@@ -12,7 +12,7 @@
 [ext_resource type="Script" uid="uid://b60vys5f055ei" path="res://scripts/visuals/LT_Entry.gd" id="9_kt5s6"]
 [ext_resource type="Script" uid="uid://ds4udf2uy0wpn" path="res://scripts/visuals/LT_Filler.gd" id="10_4p6y8"]
 [ext_resource type="Script" uid="uid://dt7r05hfelhgq" path="res://scripts/visuals/LayeredTexture.gd" id="12_ba7yd"]
-[ext_resource type="Resource" uid="uid://did4uc3y8li64" path="res://material_textures/wood.tres" id="12_sqwft"]
+[ext_resource type="Resource" uid="uid://cufvrl1qr5aw5" path="res://material_textures/wood_thin_horizontal.tres" id="12_sqwft"]
 
 [sub_resource type="Resource" id="Resource_csai5"]
 script = ExtResource("5_6dbju")

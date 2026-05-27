@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="TextureDefinition" load_steps=2 format=3 uid="uid://cufvrl1qr5aw5"]
+
+[ext_resource type="Script" uid="uid://chjmx3djsb6cj" path="res://scripts/visuals/TextureDefinition.gd" id="1_2eb23"]
+
+[resource]
+script = ExtResource("1_2eb23")
+_id = "wooden_planks_thin_horiz"
+metadata/_custom_type_script = "uid://chjmx3djsb6cj"

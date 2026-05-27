@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="SectorMaterial" load_steps=18 format=3 uid="uid://dxxswuprjbmr4"]
 
 [ext_resource type="Resource" uid="uid://lv2l2mulcl3e" path="res://material_textures/Floor2.tres" id="1_gb2l8"]
-[ext_resource type="Resource" uid="uid://did4uc3y8li64" path="res://material_textures/wood.tres" id="2_6mh6s"]
 [ext_resource type="Texture2D" uid="uid://3ciabrrgxam8" path="res://imgs/holes.png" id="3_afmkl"]
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="4_7w605"]
 [ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="5_oxb4n"]
@@ -11,6 +10,7 @@
 [ext_resource type="Script" uid="uid://csukwu081bfv0" path="res://scripts/visuals/ILayeredTextureEntry.gd" id="8_afmkl"]
 [ext_resource type="Script" uid="uid://ds4udf2uy0wpn" path="res://scripts/visuals/LT_Filler.gd" id="9_yqmrm"]
 [ext_resource type="Script" uid="uid://b60vys5f055ei" path="res://scripts/visuals/LT_Entry.gd" id="10_neftt"]
+[ext_resource type="Resource" uid="uid://cufvrl1qr5aw5" path="res://material_textures/wood_thin_horizontal.tres" id="11_afmkl"]
 [ext_resource type="Script" uid="uid://dt7r05hfelhgq" path="res://scripts/visuals/LayeredTexture.gd" id="12_d70eq"]
 
 [sub_resource type="Resource" id="Resource_csai5"]
@@ -25,7 +25,7 @@ metadata/_custom_type_script = "uid://ds4udf2uy0wpn"
 
 [sub_resource type="Resource" id="Resource_p08ls"]
 script = ExtResource("10_neftt")
-texture = ExtResource("2_6mh6s")
+texture = ExtResource("11_afmkl")
 height_expression = "0.4"
 _arguments_preview = PackedStringArray("total_height", "available_height", "wall_height_min", "wall_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling", "rand01")
 metadata/_custom_type_script = "uid://b60vys5f055ei"
