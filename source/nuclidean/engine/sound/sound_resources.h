@@ -47,7 +47,8 @@
   xx(door,         0.1f)     \
   xx(button,       0.1f)     \
   xx(door_alt_down, 0.1f)    \
-  xx(door_alt_up,   0.1f)
+  xx(door_alt_up,   0.1f)    \
+  xx(railgun, 0.0f)
 
 #define NC_SOUND_DIRECTORY_CSTR "content/sound/"
 #define NC_SOUND_TYPE           ".wav" // all sounds are .wav
