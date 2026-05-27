@@ -330,6 +330,7 @@ func create_level_export_data() -> Dictionary:
 			var wall_data : WallExportData = get_wall_data(sector.get_wall_begin(wall_idx), sector.get_wall_end(wall_idx))
 			walls_export.append(wall_data.export_wall_data(sector))
 		sector_export["wall_surfaces"] = walls_export
+		sector_export["door_sfx_override"] = (not sector.data.material.door_sound_override.is_empty())
 
 		# Export portal info
 		sector_export["portal_target"] = _sectors_map[sector.portal_destination] if sector.has_portal() else 65535
