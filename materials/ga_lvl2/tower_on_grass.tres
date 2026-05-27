@@ -1,37 +1,16 @@
-[gd_resource type="Resource" script_class="SectorMaterial" load_steps=16 format=3 uid="uid://bl6leucwb0uhk"]
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=8 format=3 uid="uid://bl6leucwb0uhk"]
 
 [ext_resource type="Resource" uid="uid://c0bfb1i38kqd" path="res://material_textures/_None.tres" id="1_gh23k"]
-[ext_resource type="Resource" uid="uid://vtqebik67rhe" path="res://material_textures/Vegetation.tres" id="2_pdooh"]
 [ext_resource type="Texture2D" uid="uid://dsv1fbev6xsvx" path="res://imgs/rocks.png" id="3_mctwm"]
 [ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="4_55mul"]
 [ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="5_kan78"]
-[ext_resource type="Script" uid="uid://csukwu081bfv0" path="res://scripts/visuals/ILayeredTextureEntry.gd" id="6_m6tsv"]
-[ext_resource type="Script" uid="uid://ds4udf2uy0wpn" path="res://scripts/visuals/LT_Filler.gd" id="7_7mubh"]
-[ext_resource type="Script" uid="uid://b60vys5f055ei" path="res://scripts/visuals/LT_Entry.gd" id="8_f61n5"]
 [ext_resource type="Resource" uid="uid://cku8xgnhd4v6x" path="res://material_textures/rocks.tres" id="9_x62b0"]
-[ext_resource type="Script" uid="uid://dt7r05hfelhgq" path="res://scripts/visuals/LayeredTexture.gd" id="10_h8c4k"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="11_v8584"]
-
-[sub_resource type="Resource" id="Resource_f8qgp"]
-script = ExtResource("7_7mubh")
-texture = ExtResource("1_gh23k")
-metadata/_custom_type_script = "uid://ds4udf2uy0wpn"
-
-[sub_resource type="Resource" id="Resource_1h802"]
-script = ExtResource("8_f61n5")
-texture = ExtResource("9_x62b0")
-height_expression = "18"
-_arguments_preview = PackedStringArray("total_height", "available_height", "wall_height_min", "wall_height_max", "this_sector_floor", "this_sector_ceiling", "owner_sector_floor", "owner_sector_ceiling", "other_sector_floor", "other_sector_ceiling", "rand01")
-metadata/_custom_type_script = "uid://b60vys5f055ei"
-
-[sub_resource type="Resource" id="Resource_t7e60"]
-script = ExtResource("10_h8c4k")
-layers = Array[ExtResource("6_m6tsv")]([SubResource("Resource_f8qgp"), SubResource("Resource_1h802")])
-metadata/_custom_type_script = "uid://dt7r05hfelhgq"
 
 [sub_resource type="Resource" id="Resource_0ymxa"]
 script = ExtResource("5_kan78")
-texture = SubResource("Resource_t7e60")
+priority = 4
+texture = ExtResource("9_x62b0")
 metadata/_custom_type_script = "uid://b7mxqhkifbeum"
 
 [resource]
@@ -39,6 +18,6 @@ script = ExtResource("4_55mul")
 preview = ExtResource("3_mctwm")
 preview_scale = 4.0
 wall_default = SubResource("Resource_0ymxa")
-floor = ExtResource("2_pdooh")
+floor = ExtResource("9_x62b0")
 ceiling = ExtResource("1_gh23k")
 metadata/_custom_type_script = "uid://bd7os02w6f4ou"
