@@ -53,7 +53,10 @@ func apply(out: TexturingResult, og_begin_height: float, og_end_height : float, 
 	if additional_processing_per_segment:
 		for ov in override.entries:
 			additional_processing_per_segment.call(ov)
+	if texturing_offset != Vector2.ZERO:
+		for ov in override.entries:
 			ov.offset += texturing_offset
+		
 
 	for e in original_entries:
 		dbg("entry {0} ~ {1}...".format([e.begin_height, e.end_height]))
