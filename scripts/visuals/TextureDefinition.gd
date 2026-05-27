@@ -48,8 +48,8 @@ func resolve(out: TexturingResult, begin_height: float, end_height: float, ctx: 
 		var custom_rotation_deg :float = ctx.target_sector.data.wall_texturing_rotation if ctx.subject_type == TexturingContext.TexturingSubjectType.Wall else ctx.target_sector.data.texturing_rotation
 		info.rotation_deg = base_rotation_deg + custom_rotation_deg
 		var offset := ctx.target_sector.data.wall_texturing_offset if (ctx.subject_type == TexturingContext.TexturingSubjectType.Wall) else ctx.target_sector.data.texturing_offset
-		if ctx.chosen_rule_sector != ctx.target_sector:
-			offset += ctx.chosen_rule_sector.data.wall_texturing_offset if (ctx.subject_type == TexturingContext.TexturingSubjectType.Wall) else ctx.chosen_rule_sector.data.texturing_offset
+		if (ctx.subject_type == TexturingContext.TexturingSubjectType.Wall) and (ctx.chosen_rule_sector != ctx.target_sector):
+			offset += ctx.chosen_rule_sector.data.wall_texturing_offset
 		info.offset = offset
 		info.tile_rotations_count = tile_rotations_count if tile_rotations_count else 0
 		info.tile_rotation_increment_deg = tile_rotation_increment
