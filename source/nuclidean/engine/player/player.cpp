@@ -213,7 +213,7 @@ void Player::calculate_wish_velocity(PlayerSpecificInputs input, f32 delta_secon
   this->angle_yaw   += input.analog[PlayerAnalogInputs::look_horizontal];
 
   this->angle_yaw   = rem_euclid(this->angle_yaw, 2.0f * PI);
-  this->angle_pitch = clamp(this->angle_pitch, -HALF_PI + 0.001f, HALF_PI - 0.001f);
+  this->angle_pitch = clamp(this->angle_pitch, -HALF_PI + 0.06f, HALF_PI - 0.06f);
 
   if (CVars::lock_camera_pitch)
   {

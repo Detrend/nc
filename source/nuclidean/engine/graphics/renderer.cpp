@@ -862,6 +862,14 @@ void Renderer::render_entities(const CameraData& camera) const
           return;
         }
 
+        // Do not render player's sprite from up close because it produces a weird looking
+        // lines when looking up/down.
+        vec3 stich_pos = camera.portal_dest_to_src * t * vec4(world_pos, 1.0f);
+        if (distance(stich_pos.xz(), camera.position.xz()) < 0.05f)
+        {
+          return;
+        }
+
         NC_TODO("Add multiple lifetimes to rendering of entities.");
 
         // NOTE: The entity will be renderer multiple times, but at least it solves the

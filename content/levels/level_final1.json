@@ -7462,7 +7462,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "door_big_on",
 						"offset": [
@@ -7520,7 +7520,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.001,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "door_track_15px",
 				"offset": [
@@ -7565,7 +7565,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							-0.0839999988675117,
@@ -7582,7 +7582,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							-0.0839999988675117,
@@ -7658,7 +7658,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "door_big_on",
 						"offset": [
@@ -7699,7 +7699,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.001,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "door_track_15px",
 				"offset": [
@@ -7744,7 +7744,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							-0.0839999988675117,
@@ -7761,7 +7761,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							-0.0839999988675117,
@@ -7837,7 +7837,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "door_big_on",
 						"offset": [
@@ -7930,7 +7930,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "door_big_on",
 						"offset": [
@@ -8742,7 +8742,7 @@
 				],
 				[
 					{
-						"begin_height": 10.01,
+						"begin_height": 10.0,
 						"end_height": 13.0,
 						"id": "dark_wavy_wall",
 						"offset": [
@@ -8783,7 +8783,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.01,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "dark_tiles",
 				"offset": [
@@ -8828,7 +8828,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.01,
+						"end_height": 10.0,
 						"id": "dark_wavy_wall",
 						"offset": [
 							0.0,
@@ -8845,7 +8845,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.01,
+						"end_height": 10.0,
 						"id": "dark_wavy_wall",
 						"offset": [
 							0.0,
@@ -8932,7 +8932,7 @@
 				],
 				[
 					{
-						"begin_height": 10.01,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "doors_small_on",
 						"offset": [
@@ -8973,7 +8973,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.01,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "door_track_20px",
 				"offset": [
@@ -9018,7 +9018,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.01,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -9035,7 +9035,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.01,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -14906,7 +14906,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 16.0,
 						"id": "smooth_concrete_dark",
 						"offset": [
@@ -15104,7 +15104,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 13.0,
 						"id": "stone_wall",
 						"offset": [
@@ -16211,7 +16211,7 @@
 				],
 				[
 					{
-						"begin_height": 12.001,
+						"begin_height": 12.0,
 						"end_height": 15.0,
 						"id": "metal_panel",
 						"offset": [
@@ -16343,7 +16343,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 12.001,
+			"ceiling": 12.0,
 			"ceiling_surface": {
 				"id": "gritty_concrete",
 				"offset": [
@@ -16388,7 +16388,7 @@
 				[
 					{
 						"begin_height": 12.0,
-						"end_height": 12.001,
+						"end_height": 12.0,
 						"id": "smooth_concrete_dark",
 						"offset": [
 							0.0,
@@ -16405,7 +16405,7 @@
 				[
 					{
 						"begin_height": 12.0,
-						"end_height": 12.001,
+						"end_height": 12.0,
 						"id": "smooth_concrete_dark",
 						"offset": [
 							0.0,
@@ -16507,7 +16507,7 @@
 				],
 				[
 					{
-						"begin_height": 12.001,
+						"begin_height": 12.0,
 						"end_height": 15.0,
 						"id": "metal_panel",
 						"offset": [
@@ -16867,7 +16867,7 @@
 				[],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 16.0,
 						"id": "smooth_concrete_dark",
 						"offset": [
@@ -19616,7 +19616,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 13.001,
+						"begin_height": 13.0,
 						"end_height": 15.0,
 						"id": "doors_small_off",
 						"offset": [
@@ -19674,7 +19674,7 @@
 					"move_speed": 5.0
 				}
 			],
-			"ceiling": 13.001,
+			"ceiling": 13.0,
 			"ceiling_surface": {
 				"id": "door_track_20px",
 				"offset": [
@@ -19719,7 +19719,7 @@
 				[
 					{
 						"begin_height": 13.0,
-						"end_height": 13.001,
+						"end_height": 13.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -19736,7 +19736,7 @@
 				[
 					{
 						"begin_height": 13.0,
-						"end_height": 13.001,
+						"end_height": 13.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -19812,7 +19812,7 @@
 				],
 				[
 					{
-						"begin_height": 13.001,
+						"begin_height": 13.0,
 						"end_height": 15.0,
 						"id": "doors_small_off",
 						"offset": [
@@ -20741,7 +20741,7 @@
 				],
 				[
 					{
-						"begin_height": 13.001,
+						"begin_height": 13.0,
 						"end_height": 16.0,
 						"id": "dark_wavy_wall",
 						"offset": [
@@ -21270,7 +21270,7 @@
 					"move_speed": 3.0
 				}
 			],
-			"ceiling": 13.001,
+			"ceiling": 13.0,
 			"ceiling_surface": {
 				"id": "gritty_concrete",
 				"offset": [
@@ -21315,7 +21315,7 @@
 				[
 					{
 						"begin_height": 13.0,
-						"end_height": 13.001,
+						"end_height": 13.0,
 						"id": "stone_wall",
 						"offset": [
 							0.0,
@@ -21332,7 +21332,7 @@
 				[
 					{
 						"begin_height": 13.0,
-						"end_height": 13.001,
+						"end_height": 13.0,
 						"id": "stone_wall",
 						"offset": [
 							0.0,
@@ -21423,7 +21423,7 @@
 				],
 				[
 					{
-						"begin_height": 13.001,
+						"begin_height": 13.0,
 						"end_height": 15.0,
 						"id": "stone_wall",
 						"offset": [
@@ -21499,7 +21499,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 13.001,
+						"begin_height": 13.0,
 						"end_height": 15.0,
 						"id": "doors_small_on",
 						"offset": [
@@ -21557,7 +21557,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 13.001,
+			"ceiling": 13.0,
 			"ceiling_surface": {
 				"id": "door_track_20px",
 				"offset": [
@@ -21602,7 +21602,7 @@
 				[
 					{
 						"begin_height": 13.0,
-						"end_height": 13.001,
+						"end_height": 13.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -21619,7 +21619,7 @@
 				[
 					{
 						"begin_height": 13.0,
-						"end_height": 13.001,
+						"end_height": 13.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -21695,7 +21695,7 @@
 				],
 				[
 					{
-						"begin_height": 13.001,
+						"begin_height": 13.0,
 						"end_height": 15.0,
 						"id": "doors_small_on",
 						"offset": [
@@ -22521,7 +22521,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 13.001,
+						"begin_height": 13.0,
 						"end_height": 15.0,
 						"id": "doors_small_on",
 						"offset": [
@@ -22579,7 +22579,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 13.001,
+			"ceiling": 13.0,
 			"ceiling_surface": {
 				"id": "door_track_20px",
 				"offset": [
@@ -22624,7 +22624,7 @@
 				[
 					{
 						"begin_height": 13.0,
-						"end_height": 13.001,
+						"end_height": 13.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -22641,7 +22641,7 @@
 				[
 					{
 						"begin_height": 13.0,
-						"end_height": 13.001,
+						"end_height": 13.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -22717,7 +22717,7 @@
 				],
 				[
 					{
-						"begin_height": 13.001,
+						"begin_height": 13.0,
 						"end_height": 15.0,
 						"id": "doors_small_on",
 						"offset": [
@@ -23990,7 +23990,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.001,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "gritty_concrete",
 				"offset": [
@@ -24035,7 +24035,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "stone_wall",
 						"offset": [
 							0.0,
@@ -24052,7 +24052,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "stone_wall",
 						"offset": [
 							0.0,
@@ -24424,7 +24424,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "door_big_off",
 						"offset": [
@@ -24482,7 +24482,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.001,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "door_track_20px",
 				"offset": [
@@ -24527,7 +24527,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -24544,7 +24544,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -24620,7 +24620,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "door_big_off",
 						"offset": [
@@ -25355,7 +25355,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.001,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "gritty_concrete",
 				"offset": [
@@ -25415,7 +25415,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "stone_wall",
 						"offset": [
 							0.0,
@@ -25432,7 +25432,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "stone_wall",
 						"offset": [
 							0.0,
@@ -25540,7 +25540,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 14.0,
 						"id": "stone_wall",
 						"offset": [
@@ -27354,7 +27354,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "door_big_off",
 						"offset": [
@@ -27412,7 +27412,7 @@
 					"move_speed": 1.0
 				}
 			],
-			"ceiling": 10.001,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "door_track_20px",
 				"offset": [
@@ -27457,7 +27457,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -27474,7 +27474,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -27550,7 +27550,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "door_big_off",
 						"offset": [
@@ -29454,7 +29454,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "doors_small_off",
 						"offset": [
@@ -29512,7 +29512,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.001,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "door_track_20px",
 				"offset": [
@@ -29557,7 +29557,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -29574,7 +29574,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -29650,7 +29650,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "doors_small_off",
 						"offset": [
@@ -30618,7 +30618,7 @@
 				],
 				[
 					{
-						"begin_height": 9.501,
+						"begin_height": 9.5,
 						"end_height": 13.0,
 						"id": "smooth_concrete_dark",
 						"offset": [
@@ -30682,7 +30682,7 @@
 				],
 				[
 					{
-						"begin_height": 9.501,
+						"begin_height": 9.5,
 						"end_height": 13.0,
 						"id": "smooth_concrete_dark",
 						"offset": [
@@ -30707,7 +30707,7 @@
 					"move_speed": 5.0
 				}
 			],
-			"ceiling": 9.501,
+			"ceiling": 9.5,
 			"ceiling_surface": {
 				"id": "rocks",
 				"offset": [
@@ -30752,7 +30752,7 @@
 				[
 					{
 						"begin_height": 9.5,
-						"end_height": 9.501,
+						"end_height": 9.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -30769,7 +30769,7 @@
 				[
 					{
 						"begin_height": 9.5,
-						"end_height": 9.501,
+						"end_height": 9.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -30860,7 +30860,7 @@
 				],
 				[
 					{
-						"begin_height": 9.501,
+						"begin_height": 9.5,
 						"end_height": 13.0,
 						"id": "mossy_rocks",
 						"offset": [
@@ -30901,7 +30901,7 @@
 					"move_speed": 5.0
 				}
 			],
-			"ceiling": 9.501,
+			"ceiling": 9.5,
 			"ceiling_surface": {
 				"id": "rocks",
 				"offset": [
@@ -30946,7 +30946,7 @@
 				[
 					{
 						"begin_height": 9.5,
-						"end_height": 9.501,
+						"end_height": 9.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -30963,7 +30963,7 @@
 				[
 					{
 						"begin_height": 9.5,
-						"end_height": 9.501,
+						"end_height": 9.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -31054,7 +31054,7 @@
 				],
 				[
 					{
-						"begin_height": 9.501,
+						"begin_height": 9.5,
 						"end_height": 13.0,
 						"id": "mossy_rocks",
 						"offset": [
@@ -31130,7 +31130,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "doors_small_off",
 						"offset": [
@@ -31188,7 +31188,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.001,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "door_track_20px",
 				"offset": [
@@ -31233,7 +31233,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -31250,7 +31250,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -31326,7 +31326,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "doors_small_off",
 						"offset": [
@@ -32166,7 +32166,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "doors_small_on",
 						"offset": [
@@ -32224,7 +32224,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.001,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "door_track_20px",
 				"offset": [
@@ -32269,7 +32269,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -32286,7 +32286,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -32362,7 +32362,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "doors_small_on",
 						"offset": [
@@ -33425,7 +33425,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "toilet_door",
 						"offset": [
@@ -33518,7 +33518,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "toilet_door",
 						"offset": [
@@ -33786,7 +33786,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.001,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "door_track_20px",
 				"offset": [
@@ -33831,7 +33831,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -33848,7 +33848,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -33957,7 +33957,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.5,
 						"id": "toilet_door",
 						"offset": [
@@ -34014,7 +34014,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.001,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "door_track_20px",
 				"offset": [
@@ -34059,7 +34059,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -34076,7 +34076,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -34201,7 +34201,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.5,
 						"id": "toilet_door",
 						"offset": [
@@ -35528,7 +35528,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "toilet_door",
 						"offset": [
@@ -35621,7 +35621,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "toilet_door",
 						"offset": [
@@ -35714,7 +35714,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "toilet_door",
 						"offset": [
@@ -36087,7 +36087,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.001,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "door_track_20px",
 				"offset": [
@@ -36132,7 +36132,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -36149,7 +36149,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -36274,7 +36274,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.5,
 						"id": "toilet_door",
 						"offset": [
@@ -36315,7 +36315,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.001,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "door_track_20px",
 				"offset": [
@@ -36360,7 +36360,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -36377,7 +36377,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -36502,7 +36502,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.5,
 						"id": "toilet_door",
 						"offset": [
@@ -36543,7 +36543,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.001,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "door_track_20px",
 				"offset": [
@@ -36588,7 +36588,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -36605,7 +36605,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -36730,7 +36730,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.5,
 						"id": "toilet_door",
 						"offset": [
@@ -36767,7 +36767,7 @@
 				{
 					"activator": "ActivatorTrap",
 					"ceiling": 12.0,
-					"floor": 11.99,
+					"floor": 12.0,
 					"move_speed": 1.0
 				}
 			],
@@ -36831,7 +36831,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "doors_small_off",
 						"offset": [
@@ -36872,7 +36872,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.001,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "door_track_20px",
 				"offset": [
@@ -36917,7 +36917,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -36949,7 +36949,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -37025,7 +37025,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "doors_small_off",
 						"offset": [
@@ -38695,7 +38695,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "doors_small_on",
 						"offset": [
@@ -38753,7 +38753,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.001,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "door_track_20px",
 				"offset": [
@@ -38798,7 +38798,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -38815,7 +38815,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -38891,7 +38891,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "doors_small_on",
 						"offset": [
@@ -38967,7 +38967,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "doors_small_off",
 						"offset": [
@@ -39025,7 +39025,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.001,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "door_track_20px",
 				"offset": [
@@ -39070,7 +39070,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -39087,7 +39087,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -39163,7 +39163,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "doors_small_off",
 						"offset": [
@@ -40367,7 +40367,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "doors_small_off",
 						"offset": [
@@ -40425,7 +40425,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.001,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "door_track_20px",
 				"offset": [
@@ -40470,7 +40470,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -40487,7 +40487,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -40563,7 +40563,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "doors_small_off",
 						"offset": [
@@ -40639,7 +40639,7 @@
 			"wall_surfaces": [
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "doors_small_on",
 						"offset": [
@@ -40697,7 +40697,7 @@
 					"move_speed": 10.0
 				}
 			],
-			"ceiling": 10.001,
+			"ceiling": 10.0,
 			"ceiling_surface": {
 				"id": "door_track_20px",
 				"offset": [
@@ -40742,7 +40742,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -40759,7 +40759,7 @@
 				[
 					{
 						"begin_height": 10.0,
-						"end_height": 10.001,
+						"end_height": 10.0,
 						"id": "door_track_20px",
 						"offset": [
 							0.0,
@@ -40835,7 +40835,7 @@
 				],
 				[
 					{
-						"begin_height": 10.001,
+						"begin_height": 10.0,
 						"end_height": 12.0,
 						"id": "doors_small_on",
 						"offset": [
