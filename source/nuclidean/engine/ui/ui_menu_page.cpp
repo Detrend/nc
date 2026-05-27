@@ -196,7 +196,7 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
 
     //setting shader
     digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
     digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
@@ -204,7 +204,7 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
     digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
     digit_material.set_uniform(shaders::ui_text::HOVER, false);
 
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     display_count = display_count / 10;
@@ -227,7 +227,7 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
 
     // setting shader uniforms
     digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size() - vec2(1.0f, 0.0f));
     digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
@@ -235,7 +235,7 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
     digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
     digit_material.set_uniform(shaders::ui_text::HOVER, false);
 
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     display_count = display_count / 10;
@@ -260,7 +260,7 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
 
     //setting shader uniforms
     digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
     digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
@@ -268,7 +268,7 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
     digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
     digit_material.set_uniform(shaders::ui_text::HOVER, false);
 
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     display_count = display_count / 10;
@@ -305,7 +305,7 @@ void NextLevelPage::draw_secret_count(ShaderProgramHandle digit_material)
 
     //setting shader
     digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
     digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
@@ -313,7 +313,7 @@ void NextLevelPage::draw_secret_count(ShaderProgramHandle digit_material)
     digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
     digit_material.set_uniform(shaders::ui_text::HOVER, false);
 
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     display_count = display_count / 10;
@@ -336,7 +336,7 @@ void NextLevelPage::draw_secret_count(ShaderProgramHandle digit_material)
 
     // setting shader uniforms
     digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size() - vec2(1.0f, 0.0f));
     digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
@@ -344,7 +344,7 @@ void NextLevelPage::draw_secret_count(ShaderProgramHandle digit_material)
     digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
     digit_material.set_uniform(shaders::ui_text::HOVER, false);
 
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     display_count = display_count / 10;
@@ -369,7 +369,7 @@ void NextLevelPage::draw_secret_count(ShaderProgramHandle digit_material)
 
     //setting shader uniforms
     digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
     digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
@@ -377,7 +377,7 @@ void NextLevelPage::draw_secret_count(ShaderProgramHandle digit_material)
     digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
     digit_material.set_uniform(shaders::ui_text::HOVER, false);
 
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     display_count = display_count / 10;
@@ -717,7 +717,7 @@ void OptionsPage::draw(ShaderProgramHandle button_material, GLuint VAO)
 
     //set uniforms
     digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-    digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+    digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
     digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
     digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
     digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
@@ -725,7 +725,7 @@ void OptionsPage::draw(ShaderProgramHandle button_material, GLuint VAO)
     digit_shader.set_uniform(shaders::ui_text::WIDTH, 8);
     digit_shader.set_uniform(shaders::ui_text::HOVER, false);
 
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   }
 
@@ -742,7 +742,7 @@ void OptionsPage::draw(ShaderProgramHandle button_material, GLuint VAO)
 
   // set uniforms
   digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-  digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture_c.get_atlas().get_size());
+  digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture_c.get_atlas_bundle().get_size());
   digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture_c.get_pos());
   digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture_c.get_size());
   digit_shader.set_uniform(shaders::ui_text::CHARACTER, crosshair_step + 11);
@@ -750,7 +750,7 @@ void OptionsPage::draw(ShaderProgramHandle button_material, GLuint VAO)
   digit_shader.set_uniform(shaders::ui_text::WIDTH, 11);
   digit_shader.set_uniform(shaders::ui_text::HOVER, false);
 
-  glBindTexture(GL_TEXTURE_2D, texture_c.get_atlas().handle);
+  glBindTexture(GL_TEXTURE_2D, texture_c.get_atlas_bundle().diffuse_handle);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
   // unbind

@@ -2,13 +2,15 @@
 #pragma once
 
 #include <config.h>
-
 #include <types.h>
 #include <math/vector.h>
 
 #include <engine/graphics/gl_types.h>
 #include <engine/graphics/resources/res_lifetime.h>
 #include <engine/graphics/resources/texture_id.h>
+
+#include <filesystem>
+#include <string>
 
 // Ignore unused variable in debug code on clang
 #if NC_COMPILER_CLANG
@@ -30,7 +32,7 @@
 namespace nc
 {
 
-struct TextureAtlas;
+struct TextureAtlasBundle;
 
 struct TextureGPU
 {
@@ -52,7 +54,7 @@ public:
   u32 get_y() const;
   u32 get_width() const;
   u32 get_height() const;
-  const TextureAtlas& get_atlas() const;
+  const TextureAtlasBundle& get_atlas_bundle() const;
   TextureID get_texture_id() const;
 
   vec2 get_pos() const;
@@ -75,9 +77,13 @@ private:
 
 using TextureMap = std::unordered_map<std::string, TextureHandle>;
 
-struct TextureAtlas
+// Bundles texture atlasses which shares UV space.
+struct TextureAtlasBundle
 {
-  GLuint     handle = 0;
+  GLuint     diffuse_handle = 0;
+  GLuint     normal_handle = 0;
+  GLuint     specular_handle = 0;
+  GLuint     emissive_handle = 0;
   u32        width = 0;
   u32        height = 0;
   TextureMap textures;
@@ -96,7 +102,7 @@ public:
   void load_directory(ResLifetime lifetime, const std::string& path);
   void unload(ResLifetime lifetime);
 
-  const TextureAtlas& get_atlas(ResLifetime lifetime) const;
+  const TextureAtlasBundle& get_atlas_bundle(ResLifetime lifetime) const;
   GLuint get_error_texture_handle() const;
   const std::vector<TextureHandle>& get_textures() const;
 
@@ -118,7 +124,7 @@ private:
 
   TextureManager();
 
-  TextureAtlas& get_atlas_mut(ResLifetime lifetime);
+  TextureAtlasBundle& get_atlas_bundle_mut(ResLifetime lifetime);
   EquirectangularMapMap& get_equirectangular_maps(ResLifetime lifetime);
   const EquirectangularMapMap& get_equirectangular_maps(ResLifetime lifetime) const;
   void create_error_texture();
@@ -129,15 +135,13 @@ private:
    * Loads texture from the file. After loading all textures of a specified lifetime, you must call
    * TextureManager::finish_load which will actually load the textures.
    */
-  void load_texture(const std::string& path);
+  void load_texture(const std::filesystem::path& path);
   void load_equirectangular_map(const std::string& path, ResLifetime lifetime);
   // Finishes loading of multiple textures of a specified lifetime. Creates a texture atlas.
   void finish_load(ResLifetime lifetime);
 
-  // EquirectangularMapHandle
-
-  TextureAtlas m_game_atlas;
-  TextureAtlas m_level_atlas;
+  TextureAtlasBundle m_game_atlas_bundle;
+  TextureAtlasBundle m_level_atlas_bundle;
   EquirectangularMapMap m_game_equirectangular_maps;
   EquirectangularMapMap m_level_equirectangular_maps;
   std::vector<TextureHandle> m_textures;
@@ -159,10 +163,18 @@ private:
     int            width  = 0;
     // The height of the image in pixels.
     int            height = 0;
-    // The OpenGL texture format (e.g., GL_RGB, GL_RGBA).
-    GLenum         format = GL_RGB;
-    // A pointer to the pixel data.
-    unsigned char* data   = nullptr;
+    GLenum         diffuse_format  = GL_RGB;
+    GLenum         normal_format   = GL_RGB;
+    GLenum         specular_format = GL_RED;
+    GLenum         emissive_format = GL_RGB;
+    // A pointer to the pixel data of the diffuse texture.
+    unsigned char* diffuse_data = nullptr;
+    // A pointer to the pixel data of the normal texture.
+    unsigned char* normal_data = nullptr;
+    // A pointer to the pixel data of the specular texture.
+    unsigned char* specular_data = nullptr;
+    // A pointer to the pixel data of the emissive texture.
+    unsigned char* emissive_data = nullptr;
     // Name of the texture.
     std::string    name   = "";
   };

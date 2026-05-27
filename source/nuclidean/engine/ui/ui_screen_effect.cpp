@@ -104,7 +104,7 @@ const glm::mat4 final_trans = trans_mat;
 
 //set uniforms
 shader.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
-shader.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas().get_size());
+shader.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
 shader.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
 shader.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
 
@@ -118,7 +118,7 @@ else
   shader.set_uniform(shaders::ui_button::COLOR, vec4(1.0f, 0.0f, 0.0f, (MAX_DMG_FLASH_DURATION - time_since_last_dmg)));
 }
 
-glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
 glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 //unbind

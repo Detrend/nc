@@ -7,8 +7,7 @@
 #include <glad/glad.h>
 #include <stb/stb_image.h>
 
-#include <filesystem>
-#include <string>
+#include <array>
 
 namespace nc
 {
@@ -44,9 +43,9 @@ u32 TextureHandle::get_height() const
 }
 
 //==============================================================================
-const TextureAtlas& TextureHandle::get_atlas() const
+const TextureAtlasBundle& TextureHandle::get_atlas_bundle() const
 {
-  return TextureManager::get().get_atlas(m_lifetime);
+  return TextureManager::get().get_atlas_bundle(m_lifetime);
 }
 
 //==============================================================================
@@ -106,7 +105,7 @@ TextureHandle::TextureHandle
 {}
 
 //==============================================================================
-vec2 TextureAtlas::get_size() const
+vec2 TextureAtlasBundle::get_size() const
 {
   return vec2(width, height);
 }
@@ -127,15 +126,25 @@ void TextureManager::load_directory(ResLifetime lifetime, const std::string& pat
 {
   for (const auto& entry : std::filesystem::recursive_directory_iterator(path))
   {
-    if (!entry.path().has_extension())
+    const std::filesystem::path& entry_path = entry.path();
+
+    if (!entry_path.has_extension())
       continue;
 
-    const std::string extension = entry.path().extension().string();
+    const std::filesystem::path extension = entry_path.extension();
     if (extension == ".png" || extension == ".jpg")
-      load_texture(entry.path().string());
+    {
+      const std::string stem = entry_path.stem().string();
+      if (stem.ends_with("_normal") || stem.ends_with("_specular") || stem.ends_with("_emissive"))
+        continue;
+
+      load_texture(entry_path);
+    }
     // not only cube maps have .hdr extension, but for now we are using HDR textures only for cube maps
     else if (extension == ".hdr")
-      load_equirectangular_map(entry.path().string(), lifetime);
+    {
+      load_equirectangular_map(entry_path.string(), lifetime);
+    }
   }
 
   finish_load(lifetime);
@@ -146,11 +155,14 @@ void TextureManager::unload(ResLifetime lifetime)
 {
   nc_assert(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
 
-  auto& atlas = get_atlas_mut(lifetime);
+  auto& bundle = get_atlas_bundle_mut(lifetime);
 
-  glDeleteTextures(1, &atlas.handle);
-  atlas.handle = 0;
-  atlas.textures.clear();
+  glDeleteTextures(4, &bundle.diffuse_handle);
+  bundle.diffuse_handle = 0;
+  bundle.normal_handle = 0;
+  bundle.specular_handle = 0;
+  bundle.emissive_handle = 0;
+  bundle.textures.clear();
 
   m_generation++;
 
@@ -159,14 +171,14 @@ void TextureManager::unload(ResLifetime lifetime)
 }
 
 //==============================================================================
-const TextureAtlas& TextureManager::get_atlas(ResLifetime lifetime) const
+const TextureAtlasBundle& TextureManager::get_atlas_bundle(ResLifetime lifetime) const
 {
   nc_assert(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
 
   if (lifetime == ResLifetime::Game)
-    return m_game_atlas;
+    return m_game_atlas_bundle;
   else
-    return m_level_atlas;
+    return m_level_atlas_bundle;
 }
 
 //==============================================================================
@@ -184,7 +196,7 @@ const std::vector<TextureHandle>& TextureManager::get_textures() const
 //==============================================================================
 const TextureHandle& TextureManager::operator[](const std::pair<const std::string&, ResLifetime> pair) const
 {
-  return get_atlas(pair.second).textures.at(pair.first);
+  return get_atlas_bundle(pair.second).textures.at(pair.first);
 }
 
 //==============================================================================
@@ -213,14 +225,14 @@ TextureManager::TextureManager()
 }
 
 //==============================================================================
-TextureAtlas& TextureManager::get_atlas_mut(ResLifetime lifetime)
+TextureAtlasBundle& TextureManager::get_atlas_bundle_mut(ResLifetime lifetime)
 {
   nc_assert(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
 
   if (lifetime == ResLifetime::Game)
-    return m_game_atlas;
+    return m_game_atlas_bundle;
   else
-    return m_level_atlas;
+    return m_level_atlas_bundle;
 }
 
 //==============================================================================
@@ -295,28 +307,66 @@ std::string TextureManager::get_name(const std::string& path) const
 }
 
 //==============================================================================
-void TextureManager::load_texture(const std::string& path)
+static GLenum gl_format_from_channels(int channels)
+{
+  switch (channels)
+  {
+    case 1:  return GL_RED;
+    case 2:  return GL_RG;
+    case 3:  return GL_RGB;
+    case 4:  return GL_RGBA;
+    default: return 0;
+  }
+}
+
+//==============================================================================
+void TextureManager::load_texture(const std::filesystem::path& path)
 {
   // TODO: use error texture when loading fails
 
+  const std::string path_string = path.string();
+  const std::string path_stem = path.stem().string();
+  const std::string path_extension = path.extension().string();
+
   int width, height, channels;
-  unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
-  if (data == nullptr)
+  unsigned char* diffuse_data = stbi_load(path_string.c_str(), &width, &height, &channels, 0);
+  if (diffuse_data == nullptr)
   {
-    nc_crit("Cannot load image \"{}\": {}", path, stbi_failure_reason());
-    stbi_image_free(data);
+    nc_crit("Cannot load texture \"{}\": {}", path_string, stbi_failure_reason());
     return;
   }
 
-  GLenum format = 0;
-  if (channels == 3)
-    format = GL_RGB;
-  else if (channels == 4)
-    format = GL_RGBA;
-  else
+  const std::filesystem::path parent = path.parent_path();
+  const std::array<std::string, 3> texture_paths
   {
-    nc_crit("Cannot load image \"{}\": {}", path, "Texture format not supported.");
-    stbi_image_free(data);
+    (parent / (path_stem + "_normal"   + path_extension)).string(),
+    (parent / (path_stem + "_specular" + path_extension)).string(),
+    (parent / (path_stem + "_emissive" + path_extension)).string(),
+  };
+  std::array<unsigned char*, 3> texture_data{};
+  std::array<GLenum, 3> texture_formats{ GL_RGB, GL_RED, GL_RGB };
+  for (size_t i = 0; i < texture_paths.size(); ++i)
+  {
+    if (!std::filesystem::exists(texture_paths[i]))
+      continue;
+
+    int aux_width, aux_height, aux_channels;
+    texture_data[i] = stbi_load(texture_paths[i].c_str(), &aux_width, &aux_height, &aux_channels, 0);
+    if (texture_data[i] == nullptr)
+    {
+      nc_crit("Cannot load texture \"{}\": {}", texture_paths[i], stbi_failure_reason());
+      continue;
+    }
+    texture_formats[i] = gl_format_from_channels(aux_channels);
+  }
+
+  const GLenum diffuse_format = gl_format_from_channels(channels);
+  if (diffuse_format != GL_RGB && diffuse_format != GL_RGBA)
+  {
+    nc_crit("Cannot load image \"{}\": {}", path_string, "Texture format not supported.");
+    stbi_image_free(diffuse_data);
+    for (unsigned char* data : texture_data)
+      stbi_image_free(data);
     return;
   }
 
@@ -333,9 +383,15 @@ void TextureManager::load_texture(const std::string& path)
   {
     .width = width,
     .height = height,
-    .format = format,
-    .data = data,
-    .name = get_name(path),
+    .diffuse_format  = diffuse_format,
+    .normal_format   = texture_formats[0],
+    .specular_format = texture_formats[1],
+    .emissive_format = texture_formats[2],
+    .diffuse_data = diffuse_data,
+    .normal_data = texture_data[0],
+    .specular_data = texture_data[1],
+    .emissive_data = texture_data[2],
+    .name = get_name(path_string),
   });
 }
 
@@ -400,53 +456,167 @@ void TextureManager::finish_load(ResLifetime lifetime)
       target_width <<= 1;
   }
 
-  GLuint gl_handle = 0;
-  glGenTextures(1, &gl_handle);
-  glBindTexture(GL_TEXTURE_2D, gl_handle);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, target_width, target_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  auto& bundle = get_atlas_bundle_mut(lifetime);
+  bundle.width = target_width;
+  bundle.height = target_height;
 
-  auto& atlas = get_atlas_mut(lifetime);
-  atlas.handle = gl_handle;
-  atlas.width = target_width;
-  atlas.height = target_height;
-
-  for (u32 i = 0; i < m_load_rects.size(); ++i)
+  // diffuse texture atlas
   {
-    const auto& rect = m_load_rects[i];
-    const auto& load_data = m_load_data[i];
+    glGenTextures(1, &bundle.diffuse_handle);
+    glBindTexture(GL_TEXTURE_2D, bundle.diffuse_handle);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, target_width, target_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    glTexSubImage2D(
-      GL_TEXTURE_2D,
-      0,
-      rect.x,
-      rect.y,
-      rect.w,
-      rect.h,
-      load_data.format,
-      GL_UNSIGNED_BYTE,
-      load_data.data
-    );
-    stbi_image_free(load_data.data);
+    for (u32 i = 0; i < m_load_rects.size(); ++i)
+    {
+      const auto& rect = m_load_rects[i];
+      const auto& load_data = m_load_data[i];
 
-    const TextureHandle handle(
-      lifetime,
-      rect.x,
-      rect.y,
-      rect.w,
-      rect.h,
-      m_generation,
-      cast<TextureID>(m_textures.size())
-    );
+      glTexSubImage2D(
+        GL_TEXTURE_2D,
+        0,
+        rect.x,
+        rect.y,
+        rect.w,
+        rect.h,
+        load_data.diffuse_format,
+        GL_UNSIGNED_BYTE,
+        load_data.diffuse_data
+      );
+      stbi_image_free(load_data.diffuse_data);
 
-    atlas.textures.emplace(load_data.name, handle);
-    m_textures.push_back(handle);
+      const TextureHandle handle(
+        lifetime,
+        rect.x,
+        rect.y,
+        rect.w,
+        rect.h,
+        m_generation,
+        cast<TextureID>(m_textures.size())
+      );
+
+      bundle.textures.emplace(load_data.name, handle);
+      m_textures.push_back(handle);
+    }
+
+    glGenerateMipmap(GL_TEXTURE_2D);
   }
 
-  glGenerateMipmap(GL_TEXTURE_2D);
+  // normal texture atlas
+  {
+    glGenTextures(1, &bundle.normal_handle);
+    glBindTexture(GL_TEXTURE_2D, bundle.normal_handle);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, target_width, target_height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    std::vector<unsigned char> identity(cast<size_t>(target_width * target_height * 3));
+    for (size_t texel = 0; texel < identity.size(); texel += 3)
+    {
+      identity[texel]     = 128;
+      identity[texel + 1] = 128;
+      identity[texel + 2] = 255;
+    }
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, target_width, target_height, GL_RGB, GL_UNSIGNED_BYTE, identity.data());
+
+    for (u32 i = 0; i < m_load_rects.size(); ++i)
+    {
+      const auto& rect = m_load_rects[i];
+      const auto& load_data = m_load_data[i];
+
+      if (load_data.normal_data == nullptr)
+        continue;
+
+      glTexSubImage2D(
+        GL_TEXTURE_2D,
+        0,
+        rect.x,
+        rect.y,
+        rect.w,
+        rect.h,
+        load_data.normal_format,
+        GL_UNSIGNED_BYTE,
+        load_data.normal_data
+      );
+      stbi_image_free(load_data.normal_data);
+    }
+
+    glGenerateMipmap(GL_TEXTURE_2D);
+  }
+
+  // specular texture atlas
+  {
+    glGenTextures(1, &bundle.specular_handle);
+    glBindTexture(GL_TEXTURE_2D, bundle.specular_handle);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, target_width, target_height, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    const std::vector<unsigned char> zero(cast<size_t>(target_width * target_height), 0);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, target_width, target_height, GL_RED, GL_UNSIGNED_BYTE, zero.data());
+
+    for (u32 i = 0; i < m_load_rects.size(); ++i)
+    {
+      const auto& rect = m_load_rects[i];
+      const auto& load_data = m_load_data[i];
+
+      if (load_data.specular_data == nullptr)
+        continue;
+
+      glTexSubImage2D(
+        GL_TEXTURE_2D,
+        0,
+        rect.x,
+        rect.y,
+        rect.w,
+        rect.h,
+        load_data.specular_format,
+        GL_UNSIGNED_BYTE,
+        load_data.specular_data
+      );
+      stbi_image_free(load_data.specular_data);
+    }
+  }
+
+  // emissive texture atlas
+  {
+    glGenTextures(1, &bundle.emissive_handle);
+    glBindTexture(GL_TEXTURE_2D, bundle.emissive_handle);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, target_width, target_height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    for (u32 i = 0; i < m_load_rects.size(); ++i)
+    {
+      const auto& rect = m_load_rects[i];
+      const auto& load_data = m_load_data[i];
+
+      if (load_data.emissive_data == nullptr)
+        continue;
+
+      glTexSubImage2D(
+        GL_TEXTURE_2D,
+        0,
+        rect.x,
+        rect.y,
+        rect.w,
+        rect.h,
+        load_data.emissive_format,
+        GL_UNSIGNED_BYTE,
+        load_data.emissive_data
+      );
+      stbi_image_free(load_data.emissive_data);
+    }
+  }
 
   m_load_rects.clear();
   m_load_data.clear();

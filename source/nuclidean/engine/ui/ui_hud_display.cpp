@@ -151,7 +151,7 @@ void UiHudDisplay::draw_health()
 
     // set uniforms
     digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-    digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+    digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
     digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
     digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
     digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
@@ -159,7 +159,7 @@ void UiHudDisplay::draw_health()
     digit_shader.set_uniform(shaders::ui_text::WIDTH, 8);
     digit_shader.set_uniform(shaders::ui_text::HOVER, false);
 
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     first = false;
@@ -211,7 +211,7 @@ void UiHudDisplay::draw_ammo()
 
     //set uniforms
     digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-    digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+    digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
     digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
     digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
     digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
@@ -219,7 +219,7 @@ void UiHudDisplay::draw_ammo()
     digit_shader.set_uniform(shaders::ui_text::WIDTH, 8);
     digit_shader.set_uniform(shaders::ui_text::HOVER, false);
 
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     first = false;
@@ -263,11 +263,11 @@ void UiHudDisplay::draw_texts()
 
     //set uniforms
     text_shader.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
-    text_shader.set_uniform(shaders::ui_button::ATLAS_SIZE, texture2.get_atlas().get_size());
+    text_shader.set_uniform(shaders::ui_button::ATLAS_SIZE, texture2.get_atlas_bundle().get_size());
     text_shader.set_uniform(shaders::ui_button::TEXTURE_POS, texture2.get_pos());
     text_shader.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture2.get_size());
 
-    glBindTexture(GL_TEXTURE_2D, texture2.get_atlas().handle);
+    glBindTexture(GL_TEXTURE_2D, texture2.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   }
 
@@ -305,7 +305,7 @@ void UiHudDisplay::draw_crosshair()
 
   // set uniforms
   digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-  digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas().get_size());
+  digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
   digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
   digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
 
@@ -315,7 +315,7 @@ void UiHudDisplay::draw_crosshair()
   digit_shader.set_uniform(shaders::ui_text::WIDTH, 11);
   digit_shader.set_uniform(shaders::ui_text::HOVER, false);
 
-  glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+  glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
@@ -341,11 +341,11 @@ void UiHudDisplay::draw_secret_revealed()
 
   //set uniforms
   text_shader.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
-  text_shader.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas().get_size());
+  text_shader.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
   text_shader.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
   text_shader.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
 
-  glBindTexture(GL_TEXTURE_2D, texture.get_atlas().handle);
+  glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 

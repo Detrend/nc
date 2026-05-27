@@ -293,8 +293,7 @@ void main()
     vec3 diffuse = max(angle, 0.0f) * albedo;
 
     vec3 half_direction = normalize(light_direction + view_direction);
-    vec3 specular = specular_strength * pow(max(dot(stitched_normal, half_direction), 0.0f), shininess) * vec3(1.0f);
-    specular = vec3(0.0f);
+    vec3 specular = specular_strength * pow(clamp(dot(stitched_normal, half_direction), 0.0f, 1.0f), shininess) * vec3(1.0f);
 
     float attenuation = pow(max(light.radius - distance, 0.0f) / light.radius, light.falloff);
     final_color += (diffuse + specular) * light.color * light.intensity * attenuation;
