@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=7 format=3 uid="uid://dvmlystyqox3s"]
+
+[ext_resource type="Resource" uid="uid://did4uc3y8li64" path="res://material_textures/wood.tres" id="2_6f54e"]
+[ext_resource type="Texture2D" uid="uid://jt3ssm48lqjc" path="res://imgs/floor1.png" id="3_wns0j"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="4_v1x0g"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="5_0lhre"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="7_uu54u"]
+
+[sub_resource type="Resource" id="Resource_csai5"]
+script = ExtResource("5_0lhre")
+texture = ExtResource("2_6f54e")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[resource]
+script = ExtResource("4_v1x0g")
+preview = ExtResource("3_wns0j")
+preview_scale = 4.0
+wall_default = SubResource("Resource_csai5")
+floor = ExtResource("2_6f54e")
+ceiling = ExtResource("2_6f54e")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"
