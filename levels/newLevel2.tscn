@@ -1,4 +1,4 @@
-[gd_scene load_steps=471 format=3 uid="uid://qa2w68k6j6h2"]
+[gd_scene load_steps=474 format=3 uid="uid://qa2w68k6j6h2"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_1o0vd"]
 [ext_resource type="Script" uid="uid://b8tkglirbwf1e" path="res://scripts/reactivity/ActivatorPool.gd" id="2_b0a4w"]
@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://2xarq0korji0" path="res://prefabs/Entities/PlayerPosition.tscn" id="7_ufqas"]
 [ext_resource type="PackedScene" uid="uid://bve5ovba1xpi5" path="res://prefabs/Lights/DirectionalLight.tscn" id="8_3611k"]
 [ext_resource type="PackedScene" uid="uid://cn044shocju7e" path="res://prefabs/WallAttachments/WallButton.tscn" id="8_ufqas"]
+[ext_resource type="Script" uid="uid://dl12cf3mb2y28" path="res://scripts/things/rawdata/TeleportDestination.gd" id="9_5it8e"]
 [ext_resource type="PackedScene" uid="uid://ctwevapidummr" path="res://prefabs/Lights/PointLight.tscn" id="9_qxoy5"]
 [ext_resource type="PackedScene" uid="uid://2lt4yhe883yf" path="res://prefabs/Lights/AmbientLight.tscn" id="10_b0a4w"]
 [ext_resource type="Texture2D" uid="uid://jt3ssm48lqjc" path="res://imgs/floor1.png" id="10_krcb3"]
@@ -2172,49 +2173,49 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_dj0rv"]
 script = ExtResource("4_coai7")
-ceiling_height = 4.0
+ceiling_height = 0.001
 material = ExtResource("3_krcvx")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_0abib"]
 script = ExtResource("4_coai7")
-ceiling_height = 4.0
+ceiling_height = 0.001
 material = ExtResource("3_krcvx")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_dexux"]
 script = ExtResource("4_coai7")
-ceiling_height = 4.0
+ceiling_height = 0.001
 material = ExtResource("3_krcvx")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_ie62n"]
 script = ExtResource("4_coai7")
-ceiling_height = 4.0
+ceiling_height = 0.001
 material = ExtResource("3_krcvx")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_c4kc2"]
 script = ExtResource("4_coai7")
-ceiling_height = 4.0
+ceiling_height = 0.001
 material = ExtResource("3_krcvx")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_mk4yw"]
 script = ExtResource("4_coai7")
-ceiling_height = 4.0
+ceiling_height = 0.001
 material = ExtResource("3_krcvx")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_c6qmg"]
 script = ExtResource("4_coai7")
-ceiling_height = 4.0
+ceiling_height = 0.001
 material = ExtResource("3_krcvx")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_a31n5"]
 script = ExtResource("4_coai7")
-ceiling_height = 4.0
+ceiling_height = 0.001
 material = ExtResource("3_krcvx")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
@@ -2447,6 +2448,20 @@ script = ExtResource("4_coai7")
 floor_height = 0.8
 ceiling_height = 3.5
 material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_ks0lm"]
+script = ExtResource("4_coai7")
+floor_height = 3.0
+ceiling_height = 1000.0
+material = ExtResource("32_rkpsj")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_abvc5"]
+script = ExtResource("4_coai7")
+floor_height = 3.0
+ceiling_height = 1000.0
+material = ExtResource("32_rkpsj")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_vaakt"]
@@ -2717,9 +2732,124 @@ rotation = -0.020765305
 [node name="Outsides1House_Trap" type="Node" parent="Activators"]
 script = ExtResource("3_et0pd")
 
+[node name="Outsides1House_TrapFinished_Wave1" type="Node" parent="Activators"]
+script = ExtResource("3_et0pd")
+threshold = 9
+
+[node name="TeleportHook" type="Node" parent="Activators/Outsides1House_TrapFinished_Wave1"]
+script = ExtResource("4_7nxdn")
+
+[node name="D-Cultist6" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+z_index = 999
+position = Vector2(-208, 124)
+script = ExtResource("9_5it8e")
+target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Cultist6")
+
+[node name="D-Cultist7" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+z_index = 999
+position = Vector2(-349, -215)
+script = ExtResource("9_5it8e")
+target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Cultist7")
+
+[node name="D-Cultist8" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+z_index = 999
+position = Vector2(-272, -124)
+script = ExtResource("9_5it8e")
+target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Cultist8")
+
+[node name="D-Cultist9" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+z_index = 999
+position = Vector2(-336, -103)
+script = ExtResource("9_5it8e")
+target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Cultist9")
+
+[node name="D-Cultist10" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+z_index = 999
+position = Vector2(-236, -167)
+script = ExtResource("9_5it8e")
+target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Cultist10")
+
+[node name="D-Grunt" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+z_index = 999
+position = Vector2(-234, 63)
+script = ExtResource("9_5it8e")
+target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Grunt")
+
+[node name="D-Grunt2" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+z_index = 999
+position = Vector2(-223, 84)
+script = ExtResource("9_5it8e")
+target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Grunt2")
+
+[node name="D-Grunt3" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+z_index = 999
+position = Vector2(-261, 10)
+script = ExtResource("9_5it8e")
+target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Grunt3")
+
+[node name="D-Possessed5" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+z_index = 999
+position = Vector2(-109, 7)
+script = ExtResource("9_5it8e")
+target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Possessed5")
+
+[node name="D-Possessed6" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+z_index = 999
+position = Vector2(-81, 35)
+script = ExtResource("9_5it8e")
+target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Possessed6")
+
+[node name="D-Possessed7" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+z_index = 999
+position = Vector2(-292, -143)
+script = ExtResource("9_5it8e")
+target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Possessed7")
+
+[node name="D-ShotgunAmmo" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+z_index = 999
+position = Vector2(-265, 87)
+script = ExtResource("9_5it8e")
+target = NodePath("../../../../PickUps/Outsides/Wave2/ShotgunAmmo")
+
+[node name="D-ShotgunAmmo2" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+z_index = 999
+position = Vector2(-253, 100)
+script = ExtResource("9_5it8e")
+target = NodePath("../../../../PickUps/Outsides/Wave2/ShotgunAmmo2")
+
+[node name="D-PlasmaAmmo" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+z_index = 999
+position = Vector2(-268, 101)
+script = ExtResource("9_5it8e")
+target = NodePath("../../../../PickUps/Outsides/Wave2/PlasmaAmmo")
+
+[node name="D-PlasmaAmmo2" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+z_index = 999
+position = Vector2(-235, 92)
+script = ExtResource("9_5it8e")
+target = NodePath("../../../../PickUps/Outsides/Wave2/PlasmaAmmo2")
+
+[node name="D-PlasmaAmmo3" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+z_index = 999
+position = Vector2(-227, 93)
+script = ExtResource("9_5it8e")
+target = NodePath("../../../../PickUps/Outsides/Wave2/PlasmaAmmo3")
+
+[node name="D-HpBig" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+z_index = 999
+position = Vector2(-227, 76)
+script = ExtResource("9_5it8e")
+target = NodePath("../../../../PickUps/Outsides/Wave2/HpBig")
+
+[node name="D-HpBig2" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+z_index = 999
+position = Vector2(-85, 9)
+script = ExtResource("9_5it8e")
+target = NodePath("../../../../PickUps/Outsides/Wave2/HpBig2")
+
 [node name="Outsides1House_TrapFinished" type="Node" parent="Activators"]
 script = ExtResource("3_et0pd")
-threshold = 7
+threshold = 8
 
 [node name="Sectors" type="Node2D" parent="."]
 
@@ -8366,91 +8496,147 @@ data = SubResource("Resource_erpgr")
 
 [node name="Sector-5342f" parent="Sectors/Main/Outsides1/TowerInsides/Bars" instance=ExtResource("2_eukjm")]
 position = Vector2(-162, 133.42735)
-color = Color(0, 0, 1, 0.145098)
+color = Color(1, 1, 1, 1)
+texture = ExtResource("10_krcb3")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(48, -124.42735, 48, -125.42735, 49, -125.42735, 49, -124.42735)
 data = SubResource("Resource_dj0rv")
 floor_height = 0.0
-ceiling_height = 4.0
-exclude_from_export = true
+ceiling_height = 0.001
 portal_wall_length = 1.0
+
+[node name="Configuration" type="Node" parent="Sectors/Main/Outsides1/TowerInsides/Bars/Sector-5342f" node_paths=PackedStringArray("source")]
+script = ExtResource("13_py677")
+source = NodePath("../../../../../../../Activators/Outsides1House_TrapFinished")
+move_speed = 0.2
+ceiling_mode = 2
+ceiling_height = 3.75
 
 [node name="Sector-5342n" parent="Sectors/Main/Outsides1/TowerInsides/Bars" instance=ExtResource("2_eukjm")]
 position = Vector2(-162, 133.42735)
-color = Color(0, 0, 1, 0.145098)
+color = Color(1, 1, 1, 1)
+texture = ExtResource("10_krcb3")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(48, -128.42735, 48, -129.42735, 49, -129.42735, 49, -128.42735)
 data = SubResource("Resource_0abib")
 floor_height = 0.0
-ceiling_height = 4.0
-exclude_from_export = true
+ceiling_height = 0.001
 portal_wall_length = 1.0
+
+[node name="Configuration" type="Node" parent="Sectors/Main/Outsides1/TowerInsides/Bars/Sector-5342n" node_paths=PackedStringArray("source")]
+script = ExtResource("13_py677")
+source = NodePath("../../../../../../../Activators/Outsides1House_TrapFinished")
+move_speed = 0.2
+ceiling_mode = 2
+ceiling_height = 3.75
 
 [node name="Sector-5342l" parent="Sectors/Main/Outsides1/TowerInsides/Bars" instance=ExtResource("2_eukjm")]
 position = Vector2(-162, 133.42735)
-color = Color(0, 0, 1, 0.145098)
+color = Color(1, 1, 1, 1)
+texture = ExtResource("10_krcb3")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(48, -130.42735, 48, -131.42735, 49, -131.42735, 49, -130.42735)
 data = SubResource("Resource_dexux")
 floor_height = 0.0
-ceiling_height = 4.0
-exclude_from_export = true
+ceiling_height = 0.001
 portal_wall_length = 1.0
+
+[node name="Configuration" type="Node" parent="Sectors/Main/Outsides1/TowerInsides/Bars/Sector-5342l" node_paths=PackedStringArray("source")]
+script = ExtResource("13_py677")
+source = NodePath("../../../../../../../Activators/Outsides1House_TrapFinished")
+move_speed = 0.2
+ceiling_mode = 2
+ceiling_height = 3.75
 
 [node name="Sector-5342n2" parent="Sectors/Main/Outsides1/TowerInsides/Bars" instance=ExtResource("2_eukjm")]
 position = Vector2(-162, 133.42735)
-color = Color(0, 0, 1, 0.145098)
+color = Color(1, 1, 1, 1)
+texture = ExtResource("10_krcb3")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(48, -132.42735, 48, -133.42735, 49, -133.42735, 49, -132.42735)
 data = SubResource("Resource_ie62n")
 floor_height = 0.0
-ceiling_height = 4.0
-exclude_from_export = true
+ceiling_height = 0.001
 portal_wall_length = 1.0
+
+[node name="Configuration" type="Node" parent="Sectors/Main/Outsides1/TowerInsides/Bars/Sector-5342n2" node_paths=PackedStringArray("source")]
+script = ExtResource("13_py677")
+source = NodePath("../../../../../../../Activators/Outsides1House_TrapFinished")
+move_speed = 0.2
+ceiling_mode = 2
+ceiling_height = 3.75
 
 [node name="Sector-5342j" parent="Sectors/Main/Outsides1/TowerInsides/Bars" instance=ExtResource("2_eukjm")]
 position = Vector2(-162, 133.42735)
-color = Color(0, 0, 1, 0.145098)
+color = Color(1, 1, 1, 1)
+texture = ExtResource("10_krcb3")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(48, -134.42735, 48, -135.42735, 49, -135.42735, 49, -134.42735)
 data = SubResource("Resource_c4kc2")
 floor_height = 0.0
-ceiling_height = 4.0
-exclude_from_export = true
+ceiling_height = 0.001
 portal_wall_length = 1.0
+
+[node name="Configuration" type="Node" parent="Sectors/Main/Outsides1/TowerInsides/Bars/Sector-5342j" node_paths=PackedStringArray("source")]
+script = ExtResource("13_py677")
+source = NodePath("../../../../../../../Activators/Outsides1House_TrapFinished")
+move_speed = 0.2
+ceiling_mode = 2
+ceiling_height = 3.75
 
 [node name="Sector-5342q" parent="Sectors/Main/Outsides1/TowerInsides/Bars" instance=ExtResource("2_eukjm")]
 position = Vector2(-162, 133.42735)
-color = Color(0, 0, 1, 0.145098)
+color = Color(1, 1, 1, 1)
+texture = ExtResource("10_krcb3")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(48, -126.42735, 48, -127.42735, 49, -127.42735, 49, -126.42735)
 data = SubResource("Resource_mk4yw")
 floor_height = 0.0
-ceiling_height = 4.0
-exclude_from_export = true
+ceiling_height = 0.001
 portal_wall_length = 1.0
+
+[node name="Configuration" type="Node" parent="Sectors/Main/Outsides1/TowerInsides/Bars/Sector-5342q" node_paths=PackedStringArray("source")]
+script = ExtResource("13_py677")
+source = NodePath("../../../../../../../Activators/Outsides1House_TrapFinished")
+move_speed = 0.2
+ceiling_mode = 2
+ceiling_height = 3.75
 
 [node name="Sector-5342n3" parent="Sectors/Main/Outsides1/TowerInsides/Bars" instance=ExtResource("2_eukjm")]
 position = Vector2(-162, 133.42735)
-color = Color(0, 0, 1, 0.145098)
+color = Color(1, 1, 1, 1)
+texture = ExtResource("10_krcb3")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(48, -136.42735, 48, -137.42735, 49, -137.42735, 49, -136.42735)
 data = SubResource("Resource_c6qmg")
 floor_height = 0.0
-ceiling_height = 4.0
-exclude_from_export = true
+ceiling_height = 0.001
 portal_wall_length = 1.0
+
+[node name="Configuration" type="Node" parent="Sectors/Main/Outsides1/TowerInsides/Bars/Sector-5342n3" node_paths=PackedStringArray("source")]
+script = ExtResource("13_py677")
+source = NodePath("../../../../../../../Activators/Outsides1House_TrapFinished")
+move_speed = 0.2
+ceiling_mode = 2
+ceiling_height = 3.75
 
 [node name="Sector-5342h" parent="Sectors/Main/Outsides1/TowerInsides/Bars" instance=ExtResource("2_eukjm")]
 position = Vector2(-162, 133.42735)
-color = Color(0, 0, 1, 0.145098)
+color = Color(1, 1, 1, 1)
+texture = ExtResource("10_krcb3")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(48, -138.42735, 48, -139.42735, 49, -139.42735, 49, -138.42735)
 data = SubResource("Resource_a31n5")
 floor_height = 0.0
-ceiling_height = 4.0
-exclude_from_export = true
+ceiling_height = 0.001
 portal_wall_length = 1.0
+
+[node name="Configuration" type="Node" parent="Sectors/Main/Outsides1/TowerInsides/Bars/Sector-5342h" node_paths=PackedStringArray("source")]
+script = ExtResource("13_py677")
+source = NodePath("../../../../../../../Activators/Outsides1House_TrapFinished")
+move_speed = 0.2
+ceiling_mode = 2
+ceiling_height = 3.75
 
 [node name="BarOutsides" type="Node2D" parent="Sectors/Main/Outsides1/TowerInsides"]
 
@@ -9074,6 +9260,36 @@ portal_destination_wall_length = -1.0
 
 [node name="HouseInside3" type="Node2D" parent="Sectors/Main/Outsides1"]
 position = Vector2(102, 198)
+
+[node name="EnemyReservoir" type="Polygon2D" parent="Sectors/Main/Outsides1/HouseInside3" instance=ExtResource("2_eukjm")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(3.972412, 154.5631)
+texture = ExtResource("16_oa07f")
+texture_scale = Vector2(20, 20)
+polygon = PackedVector2Array(0.02758789, -23.563095, 39.027588, -13.563095, 35.027588, 34.436905, -18.972412, 30.436905)
+script = ExtResource("41_738hi")
+data = SubResource("Resource_ks0lm")
+floor_height = 3.0
+ceiling_height = 1000.0
+sector_material = ExtResource("32_rkpsj")
+portal_wall_length = 40.261642
+portal_destination_wall_length = -1.0
+
+[node name="AmmoReservoir" type="Polygon2D" parent="Sectors/Main/Outsides1/HouseInside3" instance=ExtResource("2_eukjm")]
+texture_filter = 1
+texture_repeat = 2
+position = Vector2(-44.68567, 143.99739)
+texture = ExtResource("16_oa07f")
+texture_scale = Vector2(20, 20)
+polygon = PackedVector2Array(8.685669, -12.997391, 44.68567, -12.997391, 21.685669, 38.00261, -3.314331, 29.00261)
+script = ExtResource("41_738hi")
+data = SubResource("Resource_abvc5")
+floor_height = 3.0
+ceiling_height = 1000.0
+sector_material = ExtResource("32_rkpsj")
+portal_wall_length = 36.0
+portal_destination_wall_length = -1.0
 
 [node name="HouseInsides2" parent="Sectors/Main/Outsides1/HouseInside3" instance=ExtResource("6_eukjm")]
 position = Vector2(-83, 15.288078)
@@ -10077,8 +10293,34 @@ position = Vector2(60, -145)
 
 [node name="Outsides" type="Node2D" parent="PickUps"]
 
+[node name="Wave2" type="Node2D" parent="PickUps/Outsides"]
+
+[node name="ShotgunAmmo" parent="PickUps/Outsides/Wave2" instance=ExtResource("25_oer63")]
+position = Vector2(-184, 176)
+
+[node name="ShotgunAmmo2" parent="PickUps/Outsides/Wave2" instance=ExtResource("25_oer63")]
+position = Vector2(-171, 179)
+
+[node name="PlasmaAmmo" parent="PickUps/Outsides/Wave2" instance=ExtResource("12_coai7")]
+position = Vector2(-185, 192)
+
+[node name="PlasmaAmmo2" parent="PickUps/Outsides/Wave2" instance=ExtResource("12_coai7")]
+position = Vector2(-173, 190)
+
+[node name="PlasmaAmmo3" parent="PickUps/Outsides/Wave2" instance=ExtResource("12_coai7")]
+position = Vector2(-181, 206)
+
+[node name="HpBig" parent="PickUps/Outsides/Wave2" instance=ExtResource("18_b0a4w")]
+position = Vector2(-190, 202)
+
+[node name="HpBig2" parent="PickUps/Outsides/Wave2" instance=ExtResource("18_b0a4w")]
+position = Vector2(-163, 175)
+
 [node name="PlasmaAmmo" parent="PickUps/Outsides" instance=ExtResource("12_coai7")]
 position = Vector2(-222, 74)
+
+[node name="PlasmaAmmo2" parent="PickUps/Outsides" instance=ExtResource("12_coai7")]
+position = Vector2(-108, -11)
 
 [node name="HpBig" parent="PickUps/Outsides" instance=ExtResource("18_b0a4w")]
 position = Vector2(-222, 77)
@@ -10091,6 +10333,12 @@ position = Vector2(-80, 58)
 
 [node name="Railgun" parent="PickUps/Outsides" instance=ExtResource("88_ylqe0")]
 position = Vector2(-260, 95)
+
+[node name="ShotgunAmmo" parent="PickUps/Outsides" instance=ExtResource("25_oer63")]
+position = Vector2(-199, 16)
+
+[node name="ShotgunAmmo2" parent="PickUps/Outsides" instance=ExtResource("25_oer63")]
+position = Vector2(-76, 2)
 
 [node name="Props" type="Node2D" parent="."]
 
@@ -10414,104 +10662,221 @@ rotation = 1.4159808
 
 [node name="OutsideHouseTrap" type="Node2D" parent="Enemies"]
 
-[node name="Cultist6" parent="Enemies/OutsideHouseTrap" instance=ExtResource("25_i76wg")]
+[node name="Wave1" type="Node2D" parent="Enemies/OutsideHouseTrap"]
+
+[node name="Cultist6" parent="Enemies/OutsideHouseTrap/Wave1" instance=ExtResource("25_i76wg")]
 position = Vector2(-272, 120.000015)
 rotation = -2.331033
 
-[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Cultist6" node_paths=PackedStringArray("target")]
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave1/Cultist6" node_paths=PackedStringArray("target")]
 script = ExtResource("13_et0pd")
-target = NodePath("../../../../Activators/Outsides1House_TrapFinished")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished_Wave1")
 player_sensitive = false
 enemy_sensitive = true
 
-[node name="Cultist8" parent="Enemies/OutsideHouseTrap" instance=ExtResource("25_i76wg")]
+[node name="Cultist8" parent="Enemies/OutsideHouseTrap/Wave1" instance=ExtResource("25_i76wg")]
 position = Vector2(-278, 56.000023)
 rotation = -1.2984104
 
-[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Cultist8" node_paths=PackedStringArray("target")]
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave1/Cultist8" node_paths=PackedStringArray("target")]
 script = ExtResource("13_et0pd")
-target = NodePath("../../../../Activators/Outsides1House_TrapFinished")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished_Wave1")
 player_sensitive = false
 enemy_sensitive = true
 
-[node name="Cultist9" parent="Enemies/OutsideHouseTrap" instance=ExtResource("25_i76wg")]
+[node name="Cultist9" parent="Enemies/OutsideHouseTrap/Wave1" instance=ExtResource("25_i76wg")]
 position = Vector2(-261, 10.000008)
 rotation = -0.71319973
 
-[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Cultist9" node_paths=PackedStringArray("target")]
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave1/Cultist9" node_paths=PackedStringArray("target")]
 script = ExtResource("13_et0pd")
-target = NodePath("../../../../Activators/Outsides1House_TrapFinished")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished_Wave1")
 player_sensitive = false
 enemy_sensitive = true
 
-[node name="Cultist10" parent="Enemies/OutsideHouseTrap" instance=ExtResource("25_i76wg")]
+[node name="Cultist10" parent="Enemies/OutsideHouseTrap/Wave1" instance=ExtResource("25_i76wg")]
 position = Vector2(-198, 15.999992)
 rotation = 0.87623906
 
-[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Cultist10" node_paths=PackedStringArray("target")]
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave1/Cultist10" node_paths=PackedStringArray("target")]
 script = ExtResource("13_et0pd")
-target = NodePath("../../../../Activators/Outsides1House_TrapFinished")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished_Wave1")
 player_sensitive = false
 enemy_sensitive = true
 
-[node name="Cultist7" parent="Enemies/OutsideHouseTrap" instance=ExtResource("25_i76wg")]
+[node name="Cultist7" parent="Enemies/OutsideHouseTrap/Wave1" instance=ExtResource("25_i76wg")]
 position = Vector2(-208.00003, 124.00001)
-rotation = -3.796349
+rotation = 2.4868362
 
-[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Cultist7" node_paths=PackedStringArray("target")]
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave1/Cultist7" node_paths=PackedStringArray("target")]
 script = ExtResource("13_et0pd")
-target = NodePath("../../../../Activators/Outsides1House_TrapFinished")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished_Wave1")
 player_sensitive = false
 enemy_sensitive = true
 
-[node name="Grunt" parent="Enemies/OutsideHouseTrap" instance=ExtResource("10_vy02w")]
+[node name="Grunt" parent="Enemies/OutsideHouseTrap/Wave1" instance=ExtResource("10_vy02w")]
 position = Vector2(-180, 104.99999)
 rotation = 2.1582472
 
-[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Grunt" node_paths=PackedStringArray("target")]
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave1/Grunt" node_paths=PackedStringArray("target")]
 script = ExtResource("13_et0pd")
-target = NodePath("../../../../Activators/Outsides1House_TrapFinished")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished_Wave1")
 player_sensitive = false
 enemy_sensitive = true
 
-[node name="Grunt2" parent="Enemies/OutsideHouseTrap" instance=ExtResource("10_vy02w")]
+[node name="Grunt2" parent="Enemies/OutsideHouseTrap/Wave1" instance=ExtResource("10_vy02w")]
 position = Vector2(-177, 64.00002)
 rotation = 1.450119
 
-[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Grunt2" node_paths=PackedStringArray("target")]
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave1/Grunt2" node_paths=PackedStringArray("target")]
 script = ExtResource("13_et0pd")
-target = NodePath("../../../../Activators/Outsides1House_TrapFinished")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished_Wave1")
 player_sensitive = false
 enemy_sensitive = true
 
-[node name="Possessed5" parent="Enemies/OutsideHouseTrap" instance=ExtResource("17_3611k")]
+[node name="Possessed5" parent="Enemies/OutsideHouseTrap/Wave1" instance=ExtResource("17_3611k")]
 position = Vector2(-176, 41)
 rotation = 1.4159808
-scale = Vector2(0.99999994, 0.99999994)
+scale = Vector2(0.9999999, 0.9999999)
 
-[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Possessed5" node_paths=PackedStringArray("target")]
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave1/Possessed5" node_paths=PackedStringArray("target")]
 script = ExtResource("13_et0pd")
-target = NodePath("../../../../Activators/Outsides1House_TrapFinished")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished_Wave1")
 player_sensitive = false
 enemy_sensitive = true
 
-[node name="Possessed6" parent="Enemies/OutsideHouseTrap" instance=ExtResource("17_3611k")]
+[node name="Possessed6" parent="Enemies/OutsideHouseTrap/Wave1" instance=ExtResource("17_3611k")]
 position = Vector2(-289, 121)
-rotation = 4.4242067
+rotation = -1.8589785
 scale = Vector2(0.99999994, 0.99999994)
 
-[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Possessed6" node_paths=PackedStringArray("target")]
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave1/Possessed6" node_paths=PackedStringArray("target")]
 script = ExtResource("13_et0pd")
-target = NodePath("../../../../Activators/Outsides1House_TrapFinished")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished_Wave1")
+player_sensitive = false
+enemy_sensitive = true
+
+[node name="Wave2" type="Node2D" parent="Enemies/OutsideHouseTrap"]
+position = Vector2(-139, 196)
+
+[node name="Cultist6" parent="Enemies/OutsideHouseTrap/Wave2" instance=ExtResource("25_i76wg")]
+position = Vector2(-4.0000153, 8.000015)
+rotation = -2.331033
+
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave2/Cultist6" node_paths=PackedStringArray("target")]
+script = ExtResource("13_et0pd")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished")
+player_sensitive = false
+enemy_sensitive = true
+
+[node name="Cultist7" parent="Enemies/OutsideHouseTrap/Wave2" instance=ExtResource("25_i76wg")]
+position = Vector2(-18.000015, 14.000015)
+rotation = -2.331033
+
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave2/Cultist7" node_paths=PackedStringArray("target")]
+script = ExtResource("13_et0pd")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished")
+player_sensitive = false
+enemy_sensitive = true
+
+[node name="Cultist8" parent="Enemies/OutsideHouseTrap/Wave2" instance=ExtResource("25_i76wg")]
+position = Vector2(-7.0000153, 20.000015)
+rotation = -2.331033
+
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave2/Cultist8" node_paths=PackedStringArray("target")]
+script = ExtResource("13_et0pd")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished")
+player_sensitive = false
+enemy_sensitive = true
+
+[node name="Cultist9" parent="Enemies/OutsideHouseTrap/Wave2" instance=ExtResource("25_i76wg")]
+position = Vector2(7, 20)
+rotation = -2.331033
+
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave2/Cultist9" node_paths=PackedStringArray("target")]
+script = ExtResource("13_et0pd")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished")
+player_sensitive = false
+enemy_sensitive = true
+
+[node name="Cultist10" parent="Enemies/OutsideHouseTrap/Wave2" instance=ExtResource("25_i76wg")]
+position = Vector2(18, 13.000015)
+rotation = -2.331033
+
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave2/Cultist10" node_paths=PackedStringArray("target")]
+script = ExtResource("13_et0pd")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished")
+player_sensitive = false
+enemy_sensitive = true
+
+[node name="Grunt" parent="Enemies/OutsideHouseTrap/Wave2" instance=ExtResource("10_vy02w")]
+position = Vector2(9, 4)
+rotation = 2.1582472
+
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave2/Grunt" node_paths=PackedStringArray("target")]
+script = ExtResource("13_et0pd")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished")
+player_sensitive = false
+enemy_sensitive = true
+
+[node name="Grunt2" parent="Enemies/OutsideHouseTrap/Wave2" instance=ExtResource("10_vy02w")]
+position = Vector2(20, 0)
+rotation = 2.1582472
+
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave2/Grunt2" node_paths=PackedStringArray("target")]
+script = ExtResource("13_et0pd")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished")
+player_sensitive = false
+enemy_sensitive = true
+
+[node name="Grunt3" parent="Enemies/OutsideHouseTrap/Wave2" instance=ExtResource("10_vy02w")]
+position = Vector2(-4, -3.9999847)
+rotation = 2.1582472
+
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave2/Grunt3" node_paths=PackedStringArray("target")]
+script = ExtResource("13_et0pd")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished")
+player_sensitive = false
+enemy_sensitive = true
+
+[node name="Possessed5" parent="Enemies/OutsideHouseTrap/Wave2" instance=ExtResource("17_3611k")]
+position = Vector2(15.000015, -10.0000305)
+rotation = 1.4159808
+scale = Vector2(0.9999999, 0.9999999)
+
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave2/Possessed5" node_paths=PackedStringArray("target")]
+script = ExtResource("13_et0pd")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished")
+player_sensitive = false
+enemy_sensitive = true
+
+[node name="Possessed6" parent="Enemies/OutsideHouseTrap/Wave2" instance=ExtResource("17_3611k")]
+position = Vector2(-1.9999695, -14.0000305)
+rotation = 1.4159808
+scale = Vector2(0.9999999, 0.9999999)
+
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave2/Possessed6" node_paths=PackedStringArray("target")]
+script = ExtResource("13_et0pd")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished")
+player_sensitive = false
+enemy_sensitive = true
+
+[node name="Possessed7" parent="Enemies/OutsideHouseTrap/Wave2" instance=ExtResource("17_3611k")]
+position = Vector2(-12.999985, 2.9999695)
+rotation = 1.4159808
+scale = Vector2(0.9999999, 0.9999999)
+
+[node name="Trigger" type="Node" parent="Enemies/OutsideHouseTrap/Wave2/Possessed7" node_paths=PackedStringArray("target")]
+script = ExtResource("13_et0pd")
+target = NodePath("../../../../../Activators/Outsides1House_TrapFinished")
 player_sensitive = false
 enemy_sensitive = true
 
 [node name="PlayerPosition" parent="." instance=ExtResource("7_ufqas")]
-position = Vector2(-46, -66)
-rotation = -0.8329847
+position = Vector2(-276, -149)
+rotation = 1.4320121
 
 [node name="DebugWeapons" type="Node2D" parent="PlayerPosition"]
-visible = false
 
 [node name="PlasmaRifle3" parent="PlayerPosition/DebugWeapons" instance=ExtResource("11_krcvx")]
 position = Vector2(3.5915756, 0.31715393)
