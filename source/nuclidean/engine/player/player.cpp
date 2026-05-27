@@ -213,7 +213,7 @@ void Player::calculate_wish_velocity(PlayerSpecificInputs input, f32 delta_secon
   this->angle_yaw   += input.analog[PlayerAnalogInputs::look_horizontal];
 
   this->angle_yaw   = rem_euclid(this->angle_yaw, 2.0f * PI);
-  this->angle_pitch = clamp(this->angle_pitch, -HALF_PI + 0.001f, HALF_PI - 0.001f);
+  this->angle_pitch = clamp(this->angle_pitch, -HALF_PI + 0.06f, HALF_PI - 0.06f);
 
   if (CVars::lock_camera_pitch)
   {
@@ -606,6 +606,7 @@ void Player::update_camera(f32 delta)
   f32  yaw   = this->angle_yaw   + camera_rot_offset.x;
   f32  pitch = this->angle_pitch + camera_rot_offset.y;
   f32  roll  = deg2rad(roll_coeff * CVars::player_head_side_coeff_during_strafe);
+  std::cout << yaw << ":" << pitch << ":" << roll << std::endl;
   f32  y_off = PLAYER_EYE_HEIGHT + offset_from_base + sway.y * CVars::player_head_bob_y_coeff + camera_y_offset * CVars::player_head_move_y_coeff;
 
   camera.update_transform(pos, yaw, pitch, roll, y_off);
