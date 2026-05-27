@@ -42,4 +42,5 @@ wall_default = SubResource("Resource_csai5")
 wall_rules = Array[ExtResource("6_5pgy5")]([SubResource("Resource_a6q66"), SubResource("Resource_vmr3h"), SubResource("Resource_ltfd2")])
 floor = ExtResource("1_e0ocn")
 ceiling = ExtResource("1_e0ocn")
+door_sound_override = "true"
 metadata/_custom_type_script = "uid://bd7os02w6f4ou"
