@@ -8,6 +8,8 @@
 #include <engine/entity/entity_system.h>
 #include <engine/entity/entity_type_definitions.h>
 #include <engine/ui/user_interface_system.h>
+#include <engine/sound/sound_system.h>
+#include <engine/sound/sound_resources.h>
 
 #include <engine/game/game_helpers.h>
 
@@ -78,6 +80,7 @@ namespace nc
       revealed = true;
       get_engine().get_module<GameSystem>().increment_revealed_count();
       get_engine().get_module<UserInterfaceSystem>().get_hud()->show_secret();
+      SoundSystem::get().play_oneshot(Sounds::secret, 1.0f);
     }
   }
 

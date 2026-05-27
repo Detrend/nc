@@ -721,7 +721,7 @@ void Player::do_attack()
   }
   else
   {
-    vec3 ahead_dir = dir * 0.3f;
+    vec3 ahead_dir = dir * 0.20f;
     vec3 from_pos  = this->get_position() + UP_DIR * PLAYER_EYE_HEIGHT;
     vec3 from = GameHelpers::get().calc_shoot_from_pos(from_pos, ahead_dir, dir);
 

@@ -19,10 +19,10 @@ namespace nc
 constexpr f32 PICKUP_RADIUS = 0.8f;
 constexpr f32 PICKUP_HEIGHT = 0.2f;
 
-constexpr u32 PICKUP_AMMO_CNTS[] = {0, 6, 12, 30};
+constexpr u32 PICKUP_AMMO_CNTS[] = {0, 6, 12, 4};
 static_assert(ARRAY_LENGTH(PICKUP_AMMO_CNTS) == WeaponTypes::count);
 
-constexpr u32 PICKUP_WEAPON_AMMO_CNTS[] = {0, 4, 10, 20};
+constexpr u32 PICKUP_WEAPON_AMMO_CNTS[] = {0, 4, 10, 2};
 static_assert(ARRAY_LENGTH(PICKUP_WEAPON_AMMO_CNTS) == WeaponTypes::count);
 
 //==============================================================================

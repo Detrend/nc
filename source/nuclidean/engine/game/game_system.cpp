@@ -988,7 +988,7 @@ void GameSystem::save_game() const
 
   std::string save_path = std::format
   (
-    "{}/{}_{:%H_%M_%S_%d_%m_%Y}{}", SAVE_DIR_RELATIVE, lvl, now, SAVE_FILE_SUFFIX
+    "{}/{}_{:%d_%m_%Y}{}", SAVE_DIR_RELATIVE, lvl, now, SAVE_FILE_SUFFIX
   );
 
   scheduled_state = NextRequestedState
