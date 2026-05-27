@@ -1103,7 +1103,7 @@ const
     my_ceil_y  = transform[3].y + transform[1].y * my_ceil_y;
   }
 
-  nc_assert(my_floor_y < my_ceil_y); // Check if something haven't broken
+  nc_assert(my_floor_y <= my_ceil_y); // Check if something haven't broken
 
   // How much we have to step up
   if (step_opt)
