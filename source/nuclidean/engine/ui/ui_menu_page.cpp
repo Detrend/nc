@@ -55,7 +55,7 @@ void NextLevelPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   // determines wheter next_level or back_to_menu button should be updated
   UiButton* hover_over_button = nullptr;
 
-  if (get_engine().get_module<GameSystem>().get_level_name() != Levels::LEVEL_3)
+  if (get_engine().get_module<GameSystem>().get_level_name() != Levels::LEVEL_2)
   {
     next_level_button->set_hover(false);
 
@@ -103,7 +103,7 @@ void NextLevelPage::draw(ShaderProgramHandle button_material, ShaderProgramHandl
   // determines wheter next_level or back_to_menu button should be rendered
   kills_text->draw(button_material);
   secrets_text->draw(button_material);
-  if (get_engine().get_module<GameSystem>().get_level_name() == Levels::LEVEL_3)
+  if (get_engine().get_module<GameSystem>().get_level_name() == Levels::LEVEL_2)
   {
     demo_text->draw(button_material);
     menu_button->draw(button_material);
