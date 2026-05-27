@@ -241,8 +241,8 @@ static func sanity_check_all(level: Level, all_sectors: Array[Sector])->void:
 		if s.get_points_count() < 3:
 			ErrorUtils.report_error("{0} - only {1} vertices".format([s.get_full_name(), s.get_points_count()]))
 	for s in all_sectors:
-		if s.ceiling_height <= s.floor_height:
-			ErrorUtils.report_error("{0} - ceiling <= floor ({1} <= {2})".format([s.get_full_name(), s.ceiling_height, s.floor_height])) 
+		if s.ceiling_height < s.floor_height:
+			ErrorUtils.report_error("{0} - ceiling <= floor ({1} < {2})".format([s.get_full_name(), s.ceiling_height, s.floor_height])) 
 			
 	if level.config.sanity_check_convex:
 		print("\tCheck - convexity...")
