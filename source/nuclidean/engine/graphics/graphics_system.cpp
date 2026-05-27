@@ -669,75 +669,6 @@ static void draw_level_selection()
 }
 
 //==============================================================================
-static void draw_saves_menu()
-{
-  auto& game  = GameSystem::get();
-  auto& saves = game.get_save_game_db();
-
-  if (ImGui::Button("Save Current Game"))
-  {
-    auto save = game.save_game();
-    saves.push_back(GameSystem::SaveDbEntry
-    {
-      .data  = save,
-      .dirty = true,
-    });
-  }
-
-  ImGui::Separator();
-
-  int to_load = -1;
-  int i = 0;
-  for (const auto&[save, dirty] : saves)
-  {
-    namespace ch = std::chrono;
-
-    ImGui::Text("Save IDX[%d]", i);
-    ImGui::Text("Save ID [%d]", cast<int>(save.id));
-    ImGui::Text("Dirty: %s", dirty ? "T" : "F");
-    //ImGui::Text("Level: %s", save.last_level.to_cstring().data());
-
-#ifdef NC_MSVC // localtime_s is platform specific
-    ch::year_month_day date{ch::floor<ch::days>(save.time)};
-
-    // We use time_t because std::chrono::hh_mm_ss reports this stupid error
-    // "N4950 [time.hms.overview]/2 mandates Duration to be a specialization of chrono::duration."
-    std::tm     local_tm;
-    std::time_t now_c = SaveGameData::Clock::to_time_t(save.time);
-
-    localtime_s(&local_tm, &now_c);
-
-    ImGui::Text
-    (
-      "Date: %u.%u.%d %d:%d",
-      (unsigned)date.day(),
-      (unsigned)date.month(),
-      (int)     date.year(),
-      (int)     local_tm.tm_hour,
-      (int)     local_tm.tm_min
-    );
-#endif
-
-    ImGui::PushID(i);
-    const bool should_load = ImGui::Button("Load");
-    ImGui::PopID();
-
-    if (should_load)
-    {
-      to_load = i;
-    }
-
-    ImGui::Separator();
-    ++i;
-  }
-
-  if (to_load >= 0)
-  {
-    game.load_game(saves[to_load].data);
-  }
-}
-
-//==============================================================================
 static void export_pickups(cstr file_path)
 {
   // open the file
@@ -1011,7 +942,7 @@ void GraphicsSystem::draw_debug_window()
 
       if (ImGui::BeginTabItem("Saves"))
       {
-        draw_saves_menu();
+        //draw_saves_menu();
         ImGui::EndTabItem();
       }
 

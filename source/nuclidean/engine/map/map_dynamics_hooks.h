@@ -67,6 +67,8 @@ namespace nc
       vec3     destination_position;
     };
     std::vector<TeleportData> data;
+    bool is_single_use = false;
+    bool did_teleport = false;
   };
 
 }

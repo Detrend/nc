@@ -41,6 +41,16 @@ namespace EntityTypes
   };
 }
 
+namespace EntityStaticFlags
+{
+  enum evalue : EntityStatFlags
+  {
+    save_load = 1 << 0, // Should be saved/loaded?
+
+    flags_default = 0,
+  };
+}
+
 namespace SectorSnapTypes
 {
   enum evalue : SectorSnapType

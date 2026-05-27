@@ -60,7 +60,7 @@ public:
   f32 get_time_relative() const;
 
   // Adds a new trigger onto the given state in the given time point.
-  void add_trigger(State to_state, f32 on_time, const Trigger& trigger);
+  void set_trigger(State to_state, f32 on_time, const Trigger& trigger);
 
   // Resets the state machine and starts from the given state
   void set_state(State new_state);
@@ -80,11 +80,11 @@ public:
   void clear();
 
 private:
-  f32                  state_lengths[NumStates]{}; // Lengths of states
-  std::vector<f32>     trigger_times[NumStates]{}; // Timings of triggers
-  std::vector<Trigger> trigger_types[NumStates]{}; // Types of triggers
-  State                state;                      // The current state
-  f32                  time = 0.0f;                // Time within the state
+  f32     state_lengths[NumStates]{}; // Lengths of states
+  f32     trigger_times[NumStates]{}; // Timings of triggers
+  Trigger trigger_types[NumStates]{}; // Types of triggers
+  State   state;                      // The current state
+  f32     time = 0.0f;                // Time within the state
 };
 
 }

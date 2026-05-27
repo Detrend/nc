@@ -7,9 +7,11 @@
 #include <math/utils.h>
 #include <math/vector.h>
 #include <math/lingebra.h>
+#include <buffer.h>
 
 #include <grid.h>
 #include <profiling.h>
+#include <cvars.h>
 
 #include <algorithm>
 #include <array>
@@ -146,13 +148,15 @@ void modify_nuclidean_frustum(
   WallID            in_portal,
   SectorID          in_sector)
 {
-const auto transform = map.calc_portal_to_portal_projection(in_sector, in_portal);
-  const auto new_pos = (transform * vec4{ frustum.center.x, 0.0f, frustum.center.y, 1.0f }).xz();
-  const auto new_dir = (transform * vec4{ frustum.direction.x, 0.0f, frustum.direction.y, 0.0f }).xz();
+  auto transform = map.calc_portal_to_portal_projection(in_sector, in_portal);
+  auto new_pos   = (transform * vec4{ frustum.center.x, 0.0f, frustum.center.y, 1.0f }).xz();
+  auto new_dir   = (transform * vec4{ frustum.direction.x, 0.0f, frustum.direction.y, 0.0f }).xz();
+
   nc_assert(is_normal(new_dir));
 
-  frustum.center = new_pos;
+  frustum.center    = new_pos;
   frustum.direction = new_dir;
+  frustum.angle *= CVars::mul_frustum_after_nc_portal;
 }
 
 }
@@ -611,6 +615,14 @@ bool MapSectors::is_valid_sector_id(SectorID id) const
 bool MapSectors::is_valid_wall_id(WallID id) const
 {
   return id < this->walls.size();
+}
+
+//==============================================================================
+void MapSectors::serialize(Buffer& buffer)
+{
+  // No need to store sizes as they get initialized by loading the map
+  buffer.serialize_array(this->sectors_dynamic.data(), this->sectors_dynamic.size());
+  buffer.serialize_array(this->wall_segments_dynamic.data(), this->wall_segments_dynamic.size());
 }
 
 //==============================================================================
@@ -1094,7 +1106,7 @@ const
     my_ceil_y  = transform[3].y + transform[1].y * my_ceil_y;
   }
 
-  nc_assert(my_floor_y < my_ceil_y); // Check if something haven't broken
+  nc_assert(my_floor_y <= my_ceil_y); // Check if something haven't broken
 
   // How much we have to step up
   if (step_opt)
@@ -1574,7 +1586,10 @@ static bool resolve_non_convex_and_clockwise
 
     // 1/4 degree to account for float inaccuracies
     constexpr f32 MAX_DEGREE_DIFF = 0.25f;
-    const auto degree_diff = std::abs(degree_sum - 360.0f);
+    f32 degree_diff = std::abs(degree_sum - 360.0f);
+    while (degree_diff >= 360.0f) {
+      degree_diff -= 360.0f;
+    }
     if (degree_diff > MAX_DEGREE_DIFF)
     {
       // the sector is apparently degenerated
@@ -1734,11 +1749,12 @@ int build_map
     SectorData&    output_sector     = output.sectors.emplace_back();
     SectorDynData& output_sector_dyn = output.sectors_dynamic.emplace_back();
 
-    output_sector_dyn.force_walkable = sector.force_walkable;
     output_sector_dyn.floor_height = sector.floor_y[0];
     output_sector_dyn.ceil_height  = sector.ceil_y [0];
-    output_sector.state_floors[0] = output_sector.state_floors[1] = 0.0f;
-    output_sector.state_ceils [0] = output_sector.state_ceils [1] = 0.0f;
+    output_sector.force_walkable   = sector.force_walkable;
+    output_sector.door_sfx_override = sector.door_sfx_override;
+    output_sector.state_floors[0]  = output_sector.state_floors[1] = 0.0f;
+    output_sector.state_ceils [0]  = output_sector.state_ceils [1] = 0.0f;
     output_sector.activator = sector.activator;
     output_sector.move_speed = sector.move_speed;
     output_sector.damage = sector.damage;

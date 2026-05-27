@@ -357,6 +357,15 @@ void TextureManager::load_texture(const std::filesystem::path& path)
       nc_crit("Cannot load texture \"{}\": {}", texture_paths[i], stbi_failure_reason());
       continue;
     }
+    if (aux_width != width || aux_height != height)
+    {
+      nc_crit(
+        "Auxiliary texture \"{}\" dimensions ({}x{}) do not match base \"{}\" ({}x{}). Skipping.",
+        texture_paths[i], aux_width, aux_height, path_string, width, height);
+      stbi_image_free(texture_data[i]);
+      texture_data[i] = nullptr;
+      continue;
+    }
     texture_formats[i] = gl_format_from_channels(aux_channels);
   }
 

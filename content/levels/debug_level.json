@@ -7,7 +7,8 @@
 				5.0,
 				0.400000005960464,
 				10.2
-			]
+			],
+			"tag": 34
 		}
 	],
 	"entities": [
@@ -23,7 +24,8 @@
 				0.200000002980232,
 				-0.200000002980232,
 				11.0
-			]
+			],
+			"tag": 0
 		},
 		{
 			"entity_type": 1,
@@ -37,7 +39,8 @@
 				15.0,
 				5.0,
 				12.2
-			]
+			],
+			"tag": 36
 		},
 		{
 			"entity_type": 0,
@@ -51,21 +54,8 @@
 				19.0,
 				5.0,
 				12.2
-			]
-		},
-		{
-			"entity_type": 2,
-			"forward": [
-				0.0,
-				-1.0,
-				0.0
 			],
-			"is_player": false,
-			"position": [
-				23.0,
-				5.0,
-				12.2
-			]
+			"tag": 37
 		},
 		{
 			"entity_type": 1,
@@ -79,7 +69,8 @@
 				7.80000019073486,
 				19.0,
 				10.2
-			]
+			],
+			"tag": 35
 		},
 		{
 			"entity_type": 1,
@@ -93,7 +84,8 @@
 				0.0,
 				31.0,
 				10.2
-			]
+			],
+			"tag": 38
 		},
 		{
 			"entity_type": 1,
@@ -107,42 +99,56 @@
 				-7.80000019073486,
 				43.0,
 				10.2
-			]
+			],
+			"tag": 39
 		}
 	],
 	"music": "",
 	"pickups": [
 		{
 			"position": [
-				13.0,
-				-26.3999996185303,
-				11.2
+				14.8000001907349,
+				-16.8000011444092,
+				10.2
 			],
+			"tag": 4,
 			"type": 0
 		},
 		{
 			"position": [
-				13.0,
-				-25.0,
-				11.2
+				12.8000001907349,
+				-15.1999998092651,
+				10.2
 			],
+			"tag": 3,
 			"type": 0
 		},
 		{
 			"position": [
-				13.0,
-				-23.3999996185303,
-				11.2
+				11.0,
+				-13.4000005722046,
+				10.2
 			],
+			"tag": 2,
 			"type": 1
 		},
 		{
 			"position": [
-				13.0,
-				-21.8000011444092,
+				9.40000057220459,
+				-12.0,
+				10.2
+			],
+			"tag": 1,
+			"type": 1
+		},
+		{
+			"position": [
+				12.8000001907349,
+				-21.2000007629395,
 				11.2
 			],
-			"type": 1
+			"tag": 16,
+			"type": 4
 		},
 		{
 			"position": [
@@ -150,6 +156,7 @@
 				-29.2000007629395,
 				11.2
 			],
+			"tag": 10,
 			"type": 6
 		},
 		{
@@ -158,6 +165,7 @@
 				-27.6000003814697,
 				11.2
 			],
+			"tag": 9,
 			"type": 6
 		},
 		{
@@ -166,6 +174,7 @@
 				-26.0,
 				11.2
 			],
+			"tag": 8,
 			"type": 6
 		},
 		{
@@ -174,6 +183,7 @@
 				-24.3999996185303,
 				11.2
 			],
+			"tag": 7,
 			"type": 6
 		},
 		{
@@ -182,6 +192,7 @@
 				-22.8000011444092,
 				11.2
 			],
+			"tag": 6,
 			"type": 6
 		},
 		{
@@ -190,6 +201,7 @@
 				-21.2000007629395,
 				11.2
 			],
+			"tag": 5,
 			"type": 3
 		},
 		{
@@ -198,6 +210,7 @@
 				-29.0,
 				11.2
 			],
+			"tag": 15,
 			"type": 5
 		},
 		{
@@ -206,6 +219,7 @@
 				-27.0,
 				11.2
 			],
+			"tag": 14,
 			"type": 5
 		},
 		{
@@ -214,6 +228,7 @@
 				-25.0,
 				11.2
 			],
+			"tag": 13,
 			"type": 5
 		},
 		{
@@ -222,6 +237,7 @@
 				-23.0,
 				11.2
 			],
+			"tag": 12,
 			"type": 5
 		},
 		{
@@ -230,6 +246,7 @@
 				-21.2000007629395,
 				11.2
 			],
+			"tag": 11,
 			"type": 2
 		}
 	],
@@ -248,7 +265,8 @@
 				-29.0,
 				13.0
 			],
-			"radius": 3.0
+			"radius": 3.0,
+			"tag": 21
 		},
 		{
 			"color": [
@@ -264,7 +282,8 @@
 				-27.0,
 				13.0
 			],
-			"radius": 3.0
+			"radius": 3.0,
+			"tag": 20
 		},
 		{
 			"color": [
@@ -280,7 +299,8 @@
 				-25.0,
 				13.0
 			],
-			"radius": 3.0
+			"radius": 3.0,
+			"tag": 19
 		},
 		{
 			"color": [
@@ -296,7 +316,8 @@
 				-23.0,
 				13.0
 			],
-			"radius": 3.0
+			"radius": 3.0,
+			"tag": 18
 		},
 		{
 			"color": [
@@ -312,7 +333,8 @@
 				-21.0,
 				13.0
 			],
-			"radius": 3.0
+			"radius": 3.0,
+			"tag": 17
 		},
 		{
 			"color": [
@@ -328,7 +350,8 @@
 				-46.0,
 				10.2
 			],
-			"radius": 10.0
+			"radius": 10.0,
+			"tag": 31
 		},
 		{
 			"color": [
@@ -344,7 +367,8 @@
 				5.0,
 				12.2
 			],
-			"radius": 2.0
+			"radius": 2.0,
+			"tag": 23
 		},
 		{
 			"color": [
@@ -360,7 +384,8 @@
 				5.0,
 				12.2
 			],
-			"radius": 2.0
+			"radius": 2.0,
+			"tag": 24
 		},
 		{
 			"color": [
@@ -376,7 +401,8 @@
 				19.0,
 				10.2
 			],
-			"radius": 10.0
+			"radius": 10.0,
+			"tag": 30
 		},
 		{
 			"color": [
@@ -392,7 +418,8 @@
 				19.0,
 				10.2
 			],
-			"radius": 10.0
+			"radius": 10.0,
+			"tag": 27
 		},
 		{
 			"color": [
@@ -408,7 +435,8 @@
 				19.0,
 				10.2
 			],
-			"radius": 10.0
+			"radius": 10.0,
+			"tag": 22
 		},
 		{
 			"color": [
@@ -424,7 +452,8 @@
 				31.0,
 				10.2
 			],
-			"radius": 10.0
+			"radius": 10.0,
+			"tag": 32
 		},
 		{
 			"color": [
@@ -440,7 +469,8 @@
 				31.0,
 				10.2
 			],
-			"radius": 10.0
+			"radius": 10.0,
+			"tag": 28
 		},
 		{
 			"color": [
@@ -456,7 +486,8 @@
 				31.0,
 				10.2
 			],
-			"radius": 10.0
+			"radius": 10.0,
+			"tag": 25
 		},
 		{
 			"color": [
@@ -472,7 +503,8 @@
 				43.0,
 				10.2
 			],
-			"radius": 10.0
+			"radius": 10.0,
+			"tag": 33
 		},
 		{
 			"color": [
@@ -488,7 +520,8 @@
 				43.0,
 				10.2
 			],
-			"radius": 10.0
+			"radius": 10.0,
+			"tag": 29
 		},
 		{
 			"color": [
@@ -504,7 +537,8 @@
 				43.0,
 				10.2
 			],
-			"radius": 10.0
+			"radius": 10.0,
+			"tag": 26
 		}
 	],
 	"points": [
@@ -1030,6 +1064,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1043,6 +1078,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 0,
 			"points": [
 				0,
@@ -1216,6 +1252,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3674",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1229,6 +1266,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 1,
 			"points": [
 				14,
@@ -1292,6 +1330,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3673",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1305,6 +1344,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 2,
 			"points": [
 				15,
@@ -1338,6 +1378,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672z",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1351,6 +1392,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 3,
 			"points": [
 				16,
@@ -1414,6 +1456,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672y",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1427,6 +1470,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 4,
 			"points": [
 				18,
@@ -1460,6 +1504,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672x",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1473,6 +1518,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 5,
 			"points": [
 				20,
@@ -1506,6 +1552,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672w",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1519,6 +1566,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 6,
 			"points": [
 				22,
@@ -1582,6 +1630,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672w2",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1595,6 +1644,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 7,
 			"points": [
 				23,
@@ -1749,6 +1799,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672w2a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1762,6 +1813,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 8,
 			"points": [
 				26,
@@ -1855,6 +1907,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672v",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1868,6 +1921,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 9,
 			"points": [
 				17,
@@ -1901,6 +1955,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672t",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1914,6 +1969,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 10,
 			"points": [
 				21,
@@ -1977,6 +2033,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672s",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -1990,6 +2047,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 11,
 			"points": [
 				19,
@@ -2053,6 +2111,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672k",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2066,6 +2125,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 12,
 			"points": [
 				30,
@@ -2129,6 +2189,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672u",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2142,6 +2203,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 13,
 			"points": [
 				34,
@@ -2349,6 +2411,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672l",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2362,6 +2425,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 14,
 			"points": [
 				46,
@@ -2588,6 +2652,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672q",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2601,6 +2666,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 15,
 			"points": [
 				62,
@@ -2664,6 +2730,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672p",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2677,6 +2744,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 16,
 			"points": [
 				64,
@@ -2740,6 +2808,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672o",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2753,6 +2822,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 17,
 			"points": [
 				66,
@@ -2816,6 +2886,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672r",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -2829,6 +2900,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 18,
 			"points": [
 				68,
@@ -3021,6 +3093,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672n",
+			"door_sfx_override": false,
 			"floor": 12.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3034,6 +3107,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 19,
 			"points": [
 				67,
@@ -3067,6 +3141,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672m",
+			"door_sfx_override": false,
 			"floor": 12.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3080,6 +3155,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 20,
 			"points": [
 				63,
@@ -3113,6 +3189,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672q2",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3126,6 +3203,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 21,
 			"points": [
 				72,
@@ -3189,6 +3267,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672o2",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3202,6 +3281,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 22,
 			"points": [
 				70,
@@ -3265,6 +3345,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672n2",
+			"door_sfx_override": false,
 			"floor": 12.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3278,6 +3359,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 23,
 			"points": [
 				69,
@@ -3311,6 +3393,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672m2",
+			"door_sfx_override": false,
 			"floor": 12.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3324,6 +3407,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 24,
 			"points": [
 				71,
@@ -3357,6 +3441,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672q3",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3370,6 +3455,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 25,
 			"points": [
 				76,
@@ -3433,6 +3519,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672o3",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3446,6 +3533,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 26,
 			"points": [
 				74,
@@ -3509,6 +3597,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672n3",
+			"door_sfx_override": false,
 			"floor": 12.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3522,6 +3611,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 27,
 			"points": [
 				73,
@@ -3555,6 +3645,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672m3",
+			"door_sfx_override": false,
 			"floor": 12.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3568,6 +3659,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 28,
 			"points": [
 				75,
@@ -3601,6 +3693,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672f",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3614,6 +3707,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 29,
 			"points": [
 				78,
@@ -3692,6 +3786,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672g",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3705,6 +3800,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 30,
 			"points": [
 				80,
@@ -3768,6 +3864,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672e",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3781,6 +3878,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 31,
 			"points": [
 				82,
@@ -3859,6 +3957,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672h",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3872,6 +3971,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 32,
 			"points": [
 				84,
@@ -3935,6 +4035,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672b",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -3948,6 +4049,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 33,
 			"points": [
 				86,
@@ -4026,6 +4128,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672i",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -4039,6 +4142,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 34,
 			"points": [
 				88,
@@ -4102,6 +4206,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -4115,6 +4220,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 35,
 			"points": [
 				90,
@@ -4193,6 +4299,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672j",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -4206,6 +4313,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 36,
 			"points": [
 				92,
@@ -4269,6 +4377,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672d",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -4282,6 +4391,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 37,
 			"points": [
 				94,
@@ -4360,6 +4470,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-3672c",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -4373,6 +4484,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 38,
 			"points": [
 				94,
@@ -4436,6 +4548,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7791",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -4449,6 +4562,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 39,
 			"points": [
 				98,
@@ -4697,6 +4811,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7791a",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -4710,6 +4825,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 40,
 			"points": [
 				102,
@@ -4803,6 +4919,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7791b",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -4816,6 +4933,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 41,
 			"points": [
 				104,
@@ -4879,6 +4997,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7791c",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -4892,6 +5011,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 42,
 			"points": [
 				106,
@@ -4985,6 +5105,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7791d",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -4998,6 +5119,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 43,
 			"points": [
 				108,
@@ -5061,6 +5183,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7791e",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5074,6 +5197,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 44,
 			"points": [
 				110,
@@ -5167,6 +5291,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7791f",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5180,6 +5305,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 45,
 			"points": [
 				112,
@@ -5243,6 +5369,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7791g",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5256,6 +5383,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 46,
 			"points": [
 				114,
@@ -5349,6 +5477,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7791h",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5362,6 +5491,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 47,
 			"points": [
 				116,
@@ -5425,6 +5555,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7791i",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5438,6 +5569,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 48,
 			"points": [
 				118,
@@ -5531,6 +5663,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7791j",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5544,6 +5677,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 49,
 			"points": [
 				120,
@@ -5607,6 +5741,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7791k",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5620,6 +5755,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 50,
 			"points": [
 				122,
@@ -5713,6 +5849,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7791l",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "wall_2",
@@ -5726,6 +5863,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 51,
 			"points": [
 				124,

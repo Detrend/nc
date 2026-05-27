@@ -20,6 +20,12 @@ namespace nc
 }
 
 //==============================================================================
+/*static*/ EntityStatFlags Particle::get_static_flags()
+{
+  return EntityStaticFlags::save_load;
+}
+
+//==============================================================================
 void Particle::init
 (
   vec3   position,

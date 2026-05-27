@@ -11,6 +11,7 @@ namespace nc
 {
 
 class EntityRegistry;
+class Buffer;
 
 using EntityAttachmentType = u8;
 namespace EntityAttachmentFlags
@@ -53,6 +54,8 @@ public:
   void detach_entity(EntityID id);
 
   EntityID get_entity_parent(EntityID id) const;
+
+  void serialize(Buffer& buffer);
 
 private:
   struct Attachment

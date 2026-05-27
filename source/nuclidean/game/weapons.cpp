@@ -63,7 +63,7 @@ WeaponStats WEAPON_STATS[] =
     .projectile = ProjectileTypes::rail,
     .rate_of_fire = 0.5f, .ammo = AmmoTypes::rails,
     .projectile_cnt = 1, .hold_to_fire = false,
-    .shoot_snd = Sounds::plasma_rifle,
+    .shoot_snd = Sounds::railgun,
     .equip_sound = Sounds::plasma_equip,
     .loudness_dist = 30.0f,
     .flash_color   = colors::WHITE,

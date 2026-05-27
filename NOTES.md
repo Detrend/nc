@@ -30,7 +30,7 @@ Reworks required if we would like to implement this:
     . We need to get the handle to registry from elsewhere
   . Paths on enemies can't be stored in a vector, but in a static array
 
-. [ ] Entity registry
+. [x] Entity registry
   . [x] Store entities in memory consecutively
   . [ ] Load them from binary
 

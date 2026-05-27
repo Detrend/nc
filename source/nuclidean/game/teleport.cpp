@@ -21,6 +21,12 @@ constexpr f32  TELEPORTATION_DURATION = 1.0f;
 }
 
 //==============================================================================
+/*static*/ EntityStatFlags Teleport::get_static_flags()
+{
+  return EntityStaticFlags::save_load;
+}
+
+//==============================================================================
 void Teleport::init(vec3 position, EntityID to_teleport)
 {
   Entity::init(position, 0.3f, 2.0f);

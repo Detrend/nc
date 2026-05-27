@@ -14,7 +14,6 @@ namespace nc
 
 class  EntityRegistry;
 struct Appearance;
-struct Physics;
 struct IEntityPool;
 
 }
@@ -37,16 +36,12 @@ public:
   // types.
   void post_init() {};
 
-  // Deleted copy assignment and construction to not accidentally
-  // copy the entity
-  /*
-  Entity(const Entity&)            = delete;
-  Entity& operator=(const Entity&) = delete;
-  */
-
   // Each entity type has to contain a public static constexpr
   // member variable containing it's type! Like this:
   // static EntityType get_type_static();
+
+  // Returns the static type flags.
+  static EntityStatFlags get_static_flags();
 
   // =============================================
   // Non virtual interface - same for each entity
@@ -99,11 +94,10 @@ public:
   }
 
 private: friend class EntityRegistry;
-  EntityRegistry* m_registry    = nullptr;
-  EntityID        m_id_and_type = INVALID_ENTITY_ID;
-  vec3            m_position    = VEC3_ZERO;
-  f32             m_radius2d    = 0.0f;
-  f32             m_height      = 0.0f;
+  EntityID m_id_and_type = INVALID_ENTITY_ID;
+  vec3     m_position    = VEC3_ZERO;
+  f32      m_radius2d    = 0.0f;
+  f32      m_height      = 0.0f;
 };
 
 // A surprise tool that will help us later.

@@ -61,6 +61,12 @@ EntityType PointLight::get_type_static()
 }
 
 //==============================================================================
+/*static*/ EntityStatFlags PointLight::get_static_flags()
+{
+  return EntityStaticFlags::save_load;
+}
+
+//==============================================================================
 void PointLight::init
 (
   const vec3&   in_position,

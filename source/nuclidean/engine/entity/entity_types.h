@@ -8,9 +8,10 @@
 namespace nc
 {
 
-using EntityType     = u8;
-using EntityTypeMask = u64;
-using SectorSnapType = u8;
+using EntityType      = u8;
+using EntityTypeMask  = u64;
+using SectorSnapType  = u8;
+using EntityStatFlags = u64;
 
 struct EntityID
 {

@@ -3,6 +3,8 @@
 
 #include <glad/glad.h>
 
+#include <algorithm> // std::min
+
 namespace nc
 {
 
@@ -105,17 +107,21 @@ inline void SSBOBuffer<T>::update_gpu_data(UnaryOp op, bool reset_capacity)
 template<typename T>
 inline void SSBOBuffer<T>::update_gpu_data_with(const std::vector<T>& elements)
 {
+  size_t max_additions = m_capacity - std::min(m_gpu_size, m_capacity);
+  size_t num_additions = std::min(max_additions, elements.size());
+
   glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_handle);
   glBufferSubData
   (
     GL_SHADER_STORAGE_BUFFER,
     m_gpu_size * sizeof(T),
-    elements.size() * sizeof(T),
+    num_additions * sizeof(T),
     elements.data()
   );
 
-  m_size += elements.size();
+  m_size += num_additions;
   m_gpu_size = m_size;
+  nc_assert(m_gpu_size <= m_capacity);
 }
 
 //==============================================================================

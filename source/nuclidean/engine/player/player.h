@@ -15,6 +15,8 @@
 #include <math/vector.h>
 
 #include <anim_state_machine.h>
+#include <engine/appearance.h>
+
 #include <array>
 
 
@@ -23,6 +25,7 @@ namespace nc
 // Forward declare, we do not want to include
 struct PlayerSpecificInputs;
 struct RenderGunProperties;
+struct LevelTransitionData;
 class  Pickup;
 }
 
@@ -54,7 +57,8 @@ public:
 
   void init(vec3 position, vec3 forward);
 
-  static EntityType get_type_static();
+  static EntityType      get_type_static();
+  static EntityStatFlags get_static_flags();
 
   // clear ui effects from taking damage
   void post_init();
@@ -76,7 +80,7 @@ public:
   int     get_max_health() const;
 
   void    set_health(s32 health);
-  void change_weapon(WeaponType new_weapon);
+  void    change_weapon(WeaponType new_weapon);
 
   s32     get_current_weapon_ammo();
   s32     get_ammo(WeaponType weapon)     const;
@@ -85,11 +89,18 @@ public:
   vec3    get_look_direction() const;
   vec3    get_eye_pos()        const;
 
+  const Appearance* get_appearance() const;
+  Appearance*       get_appearance();
+
   WeaponType get_equipped_weapon()         const;
   bool       has_weapon(WeaponType weapon) const;
   void       give_weapon(WeaponType weapon);
   void       give_ammo(WeaponType weapon, u32 amount);
 
+  vec3 get_facing_hor() const;
+
+  void init_with_level_transition_data(const LevelTransitionData& data_in);
+  void store_level_transition_data(LevelTransitionData& data_out) const;
   void get_gun_props(RenderGunProperties& props) const;
 
 #if NC_HOT_RELOAD
@@ -148,6 +159,8 @@ private:
   // update gun animation state
   void update_gun_anim(f32 delta);
 
+  void update_appearance(f32 delta);
+
   // attack with current weapon 
   void do_attack();
 
@@ -201,6 +214,8 @@ private:
   WeaponFlags owned_weapons  = 0;
   WeaponType  current_weapon = 0;
 
+  Appearance appear;
+
   // time for floor damage calculations
   f32 time = 0.0f;
 
@@ -216,7 +231,7 @@ private:
 
   static constexpr s32 MAX_AMMO[WEAPON_CNT] = {-1, 20, 60, 20};
 
-  s32 current_ammo[WEAPON_CNT] = {-1, 0, 0, 40}; // We start with nothing
+  s32 current_ammo[WEAPON_CNT] = {-1, 0, 0, 0}; // We start with nothing
   static_assert(ARRAY_LENGTH(current_ammo) == ARRAY_LENGTH(MAX_AMMO));
 
   WeaponType weapon_buffer = INVALID_WEAPON_TYPE;

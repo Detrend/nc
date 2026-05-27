@@ -68,7 +68,8 @@ class PointLight : public Entity
 {
 public:
   using Base = Entity;
-  static EntityType get_type_static();
+  static EntityType      get_type_static();
+  static EntityStatFlags get_static_flags();
 
   color3 color     = colors::WHITE;
   f32    intensity = 1.0f;

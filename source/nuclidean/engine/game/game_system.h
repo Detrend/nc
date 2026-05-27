@@ -41,14 +41,7 @@ class  Projectile;
 class GameSystem : public IEngineModule
 {
 public:
-  struct SaveDbEntry
-  {
-    SaveGameData data;
-    bool         dirty = false;
-  };
-
-  using GamePtr      = std::unique_ptr<Game>;
-  using SaveDatabase = std::vector<SaveDbEntry>;
+  using GamePtr = std::unique_ptr<Game>;
 
 public:
   static EngineModuleId get_module_id();
@@ -63,14 +56,15 @@ public:
   bool init();
   void on_event(ModuleEvent& event) override;
 
-  // Saving and loading the game.
-  SaveGameData save_game() const;
-  void         load_game(const SaveGameData& save);
+  // Saves the game into a file.
+  void save_game() const;
 
-  SaveDatabase& get_save_game_db();
+  // Loads the game from a file.
+  void load_game(const std::string& path);
 
-  LevelName get_level_name()      const;
-  LevelName get_next_level_name() const;
+  LevelTransitionData get_transition_data() const;
+  LevelName           get_level_name()      const;
+  LevelName           get_next_level_name() const;
 
   const DemoDataFrames& get_demo_frames() const;
 
@@ -92,10 +86,15 @@ public:
   // demo or currently played level.
   void request_play_level(const LevelName& new_level);
 
-  // If there is a demo or not
+  // Restarts the level from the beginning, keeping the transition data from the start
+  void request_level_restart();
+
+  // Plays the level from the start. If demo is non-empty then plays the demo.
   void request_level_change
   (
-    const LevelName& new_level, DemoDataFrames&& frames = {}
+    const LevelName&    new_level,
+    DemoDataFrames&&    frames     = {},
+    LevelTransitionData transition = {}
   );
 
   // Called from the action trigger
@@ -119,6 +118,25 @@ public:
 private:
   // Clean up the current map, entities, mapping etc..
   void cleanup_map();
+
+  // Starts a new game
+  void handle_start_new_level_optionally_with_demo
+  (
+    LevelName             level,
+    LevelTransitionData   transition_data,
+    const DemoDataFrames& demo_optional
+  );
+
+  // Loads the game from this savefile
+  void handle_load_game(const std::string& savefile);
+
+  // Saves the game into this savefile
+  void handle_save_game(const std::string& savefile);
+
+  void pre_level_load();
+  void post_level_load();
+
+  void load_level(LevelName level, bool skip_save_load_entities);
 
   // Loads a new level with the given ID. Requires
   // "cleanup_map" to be called before. Do not call
@@ -168,12 +186,13 @@ private:
 
   struct Journal
   {
-    DemoDataFrames frames;
-    JournalState   state       = DEFAULT_JOURNAL_STATE;
-    u64            rover       = 0;
-    bool           paused      = false;
-    int            skip_to     = -1;
-    f32            extra_delta = 0.0f;
+    LevelTransitionData transition_data;
+    DemoDataFrames      frames;
+    JournalState        state       = DEFAULT_JOURNAL_STATE;
+    u64                 rover       = 0;
+    bool                paused      = false;
+    int                 skip_to     = -1;
+    f32                 extra_delta = 0.0f;
 
     void reset(JournalState to_state);
     void reset_and_clear(JournalState to_state);
@@ -181,24 +200,23 @@ private:
 
   struct NextRequestedState
   {
-    LevelName      level;
-    DemoDataFrames demo;
+    LevelName           level;
+    DemoDataFrames      demo;
+    std::string         load_from_file;
+    std::string         save_to_file;
+    LevelTransitionData transition;
   };
 
-  GamePtr         game;
-  LevelName       level_name         = INVALID_LEVEL_NAME;
-  LevelName       scheduled_level_id = INVALID_LEVEL_NAME;
-  SaveDatabase    save_db;
-  Journal         journal;
-  u64             demo_rng_idx = 0;
-  mutable SaveID  last_save_id = 0;
+  GamePtr   game;
+  LevelName level_name = INVALID_LEVEL_NAME;
+  Journal   journal;
 
-  std::optional<NextRequestedState> scheduled_state;
+  mutable std::optional<NextRequestedState> scheduled_state;
 
   u32 enemy_count = 0;
-  u32 kill_count = 0;
+  u32 kill_count  = 0;
 
-  u32 secret_count = 0;
+  u32 secret_count   = 0;
   u32 revealed_count = 0;
 };
 

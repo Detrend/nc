@@ -14,7 +14,8 @@ namespace nc
 class Projectile : public Entity
 {
 public:
-  static EntityType get_type_static();
+  static EntityType      get_type_static();
+  static EntityStatFlags get_static_flags();
 
   void init(vec3 pos, vec3 dir, EntityID author_id, ProjectileType proj_type);
 

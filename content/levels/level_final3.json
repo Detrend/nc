@@ -58,7 +58,8 @@
 				6.70000028610229,
 				3.70000004768372,
 				10.6
-			]
+			],
+			"tag": 18
 		}
 	],
 	"entities": [
@@ -74,7 +75,8 @@
 				-3.0,
 				4.0,
 				7.85
-			]
+			],
+			"tag": 0
 		},
 		{
 			"entity_type": 0,
@@ -88,7 +90,8 @@
 				-7.0,
 				15.1000003814697,
 				10.6
-			]
+			],
+			"tag": 61
 		},
 		{
 			"entity_type": 0,
@@ -102,7 +105,8 @@
 				-7.09999990463257,
 				12.1000003814697,
 				10.6
-			]
+			],
+			"tag": 60
 		},
 		{
 			"entity_type": 0,
@@ -116,7 +120,8 @@
 				0.900000035762787,
 				15.0,
 				10.6
-			]
+			],
+			"tag": 59
 		},
 		{
 			"entity_type": 0,
@@ -130,7 +135,8 @@
 				1.0,
 				11.9000005722046,
 				10.6
-			]
+			],
+			"tag": 58
 		},
 		{
 			"entity_type": 1,
@@ -144,7 +150,8 @@
 				-3.10000014305115,
 				18.8000011444092,
 				7.6
-			]
+			],
+			"tag": 62
 		},
 		{
 			"entity_type": 0,
@@ -158,7 +165,8 @@
 				-8.10000038146973,
 				2.79999995231628,
 				7.85
-			]
+			],
+			"tag": 53
 		},
 		{
 			"entity_type": 1,
@@ -172,7 +180,8 @@
 				-1.60000002384186,
 				-4.5,
 				0.1
-			]
+			],
+			"tag": 52
 		},
 		{
 			"entity_type": 1,
@@ -186,7 +195,8 @@
 				1.0,
 				-4.70000028610229,
 				0.1
-			]
+			],
+			"tag": 51
 		},
 		{
 			"entity_type": 0,
@@ -201,11 +211,13 @@
 				15.8000001907349,
 				5.1
 			],
+			"tag": 46,
 			"triggers": [
 				{
 					"activator": "CrissCrossLift2",
 					"can_turn_off": false,
 					"enemy_sensitive": false,
+					"increment": 1,
 					"player_sensitive": true,
 					"timeout": 0.0,
 					"while_alive": false
@@ -225,11 +237,13 @@
 				15.8000001907349,
 				5.1
 			],
+			"tag": 45,
 			"triggers": [
 				{
 					"activator": "CrissCrossLift2",
 					"can_turn_off": false,
 					"enemy_sensitive": false,
+					"increment": 1,
 					"player_sensitive": true,
 					"timeout": 0.0,
 					"while_alive": false
@@ -249,11 +263,13 @@
 				15.8000001907349,
 				5.1
 			],
+			"tag": 44,
 			"triggers": [
 				{
 					"activator": "CrissCrossLift2",
 					"can_turn_off": false,
 					"enemy_sensitive": false,
+					"increment": 1,
 					"player_sensitive": true,
 					"timeout": 0.0,
 					"while_alive": false
@@ -273,11 +289,13 @@
 				12.0,
 				5.1
 			],
+			"tag": 48,
 			"triggers": [
 				{
 					"activator": "CrissCrossLift3",
 					"can_turn_off": false,
 					"enemy_sensitive": false,
+					"increment": 1,
 					"player_sensitive": true,
 					"timeout": 0.0,
 					"while_alive": false
@@ -297,11 +315,13 @@
 				14.1999998092651,
 				5.1
 			],
+			"tag": 47,
 			"triggers": [
 				{
 					"activator": "CrissCrossLift3",
 					"can_turn_off": false,
 					"enemy_sensitive": false,
+					"increment": 1,
 					"player_sensitive": true,
 					"timeout": 0.0,
 					"while_alive": false
@@ -321,11 +341,13 @@
 				11.8000001907349,
 				5.1
 			],
+			"tag": 50,
 			"triggers": [
 				{
 					"activator": "CrissCrossLift3",
 					"can_turn_off": false,
 					"enemy_sensitive": false,
+					"increment": 1,
 					"player_sensitive": true,
 					"timeout": 0.0,
 					"while_alive": false
@@ -345,11 +367,13 @@
 				14.1999998092651,
 				5.1
 			],
+			"tag": 49,
 			"triggers": [
 				{
 					"activator": "CrissCrossLift3",
 					"can_turn_off": false,
 					"enemy_sensitive": false,
+					"increment": 1,
 					"player_sensitive": true,
 					"timeout": 0.0,
 					"while_alive": false
@@ -368,7 +392,8 @@
 				-29.0,
 				-2.29999995231628,
 				2.1
-			]
+			],
+			"tag": 55
 		},
 		{
 			"entity_type": 0,
@@ -382,7 +407,8 @@
 				-31.5,
 				0.300000011920929,
 				2.1
-			]
+			],
+			"tag": 56
 		},
 		{
 			"entity_type": 1,
@@ -396,7 +422,8 @@
 				-34.0,
 				-2.40000009536743,
 				2.1
-			]
+			],
+			"tag": 54
 		},
 		{
 			"entity_type": 0,
@@ -410,7 +437,8 @@
 				-31.3999996185303,
 				-4.70000028610229,
 				2.1
-			]
+			],
+			"tag": 57
 		}
 	],
 	"music": "music_ambient",
@@ -421,6 +449,7 @@
 				16.1000003814697,
 				10.6
 			],
+			"tag": 42,
 			"type": 6
 		},
 		{
@@ -429,6 +458,7 @@
 				10.9000005722046,
 				10.6
 			],
+			"tag": 40,
 			"type": 1
 		},
 		{
@@ -437,6 +467,7 @@
 				16.1000003814697,
 				10.6
 			],
+			"tag": 43,
 			"type": 5
 		},
 		{
@@ -445,6 +476,7 @@
 				10.6999998092651,
 				10.6
 			],
+			"tag": 41,
 			"type": 1
 		},
 		{
@@ -453,6 +485,7 @@
 				-5.40000009536743,
 				5.1
 			],
+			"tag": 25,
 			"type": 6
 		},
 		{
@@ -461,6 +494,7 @@
 				-5.30000019073486,
 				5.1
 			],
+			"tag": 24,
 			"type": 6
 		},
 		{
@@ -469,6 +503,7 @@
 				-4.70000028610229,
 				5.1
 			],
+			"tag": 23,
 			"type": 3
 		},
 		{
@@ -477,6 +512,7 @@
 				3.5,
 				10.6
 			],
+			"tag": 22,
 			"type": 5
 		},
 		{
@@ -485,6 +521,7 @@
 				4.59999990463257,
 				10.6
 			],
+			"tag": 21,
 			"type": 5
 		},
 		{
@@ -493,6 +530,7 @@
 				4.0,
 				10.6
 			],
+			"tag": 20,
 			"type": 2
 		},
 		{
@@ -501,6 +539,7 @@
 				-11.9000005722046,
 				5.1
 			],
+			"tag": 33,
 			"type": 5
 		},
 		{
@@ -509,6 +548,7 @@
 				-12.9000005722046,
 				5.1
 			],
+			"tag": 34,
 			"type": 1
 		},
 		{
@@ -517,6 +557,7 @@
 				-12.1999998092651,
 				5.1
 			],
+			"tag": 35,
 			"type": 1
 		},
 		{
@@ -525,6 +566,7 @@
 				7.90000009536743,
 				0.1
 			],
+			"tag": 30,
 			"type": 5
 		},
 		{
@@ -533,6 +575,7 @@
 				8.0,
 				0.1
 			],
+			"tag": 28,
 			"type": 1
 		},
 		{
@@ -541,6 +584,7 @@
 				17.8999996185303,
 				0.1
 			],
+			"tag": 31,
 			"type": 5
 		},
 		{
@@ -549,6 +593,7 @@
 				18.0,
 				0.1
 			],
+			"tag": 29,
 			"type": 1
 		},
 		{
@@ -557,6 +602,7 @@
 				20.5,
 				0.1
 			],
+			"tag": 32,
 			"type": 1
 		},
 		{
@@ -565,6 +611,7 @@
 				-0.200000002980232,
 				2.1
 			],
+			"tag": 27,
 			"type": 1
 		},
 		{
@@ -573,6 +620,7 @@
 				-0.800000011920929,
 				2.1
 			],
+			"tag": 26,
 			"type": 1
 		},
 		{
@@ -581,6 +629,7 @@
 				-1.60000002384186,
 				2.1
 			],
+			"tag": 38,
 			"type": 6
 		},
 		{
@@ -589,6 +638,7 @@
 				-2.5,
 				2.1
 			],
+			"tag": 36,
 			"type": 1
 		},
 		{
@@ -597,6 +647,7 @@
 				-3.29999995231628,
 				2.1
 			],
+			"tag": 37,
 			"type": 6
 		},
 		{
@@ -605,6 +656,7 @@
 				-2.10000014305115,
 				2.1
 			],
+			"tag": 39,
 			"type": 2
 		}
 	],
@@ -623,7 +675,8 @@
 				-1.89999997615814,
 				7.5
 			],
-			"radius": 5.0
+			"radius": 5.0,
+			"tag": 8
 		},
 		{
 			"color": [
@@ -639,7 +692,8 @@
 				4.0,
 				10.25
 			],
-			"radius": 5.0
+			"radius": 5.0,
+			"tag": 4
 		},
 		{
 			"color": [
@@ -655,7 +709,8 @@
 				6.20000028610229,
 				10.0
 			],
-			"radius": 5.0
+			"radius": 5.0,
+			"tag": 13
 		},
 		{
 			"color": [
@@ -671,7 +726,8 @@
 				10.3000001907349,
 				13.0
 			],
-			"radius": 10.0
+			"radius": 10.0,
+			"tag": 9
 		},
 		{
 			"color": [
@@ -687,7 +743,8 @@
 				10.1999998092651,
 				13.0
 			],
-			"radius": 10.0
+			"radius": 10.0,
+			"tag": 11
 		},
 		{
 			"color": [
@@ -703,7 +760,8 @@
 				19.1000003814697,
 				9.5
 			],
-			"radius": 5.0
+			"radius": 5.0,
+			"tag": 16
 		},
 		{
 			"color": [
@@ -719,7 +777,8 @@
 				3.0,
 				10.0
 			],
-			"radius": 5.0
+			"radius": 5.0,
+			"tag": 14
 		},
 		{
 			"color": [
@@ -735,7 +794,8 @@
 				-8.0,
 				0.1
 			],
-			"radius": 5.0
+			"radius": 5.0,
+			"tag": 2
 		},
 		{
 			"color": [
@@ -751,7 +811,8 @@
 				-6.20000028610229,
 				0.1
 			],
-			"radius": 5.0
+			"radius": 5.0,
+			"tag": 17
 		},
 		{
 			"color": [
@@ -767,7 +828,8 @@
 				-13.1999998092651,
 				9.9
 			],
-			"radius": 10.0
+			"radius": 10.0,
+			"tag": 3
 		},
 		{
 			"color": [
@@ -783,7 +845,8 @@
 				-9.10000038146973,
 				0.1
 			],
-			"radius": 5.0
+			"radius": 5.0,
+			"tag": 1
 		},
 		{
 			"color": [
@@ -799,7 +862,8 @@
 				4.0,
 				13.0
 			],
-			"radius": 5.0
+			"radius": 5.0,
+			"tag": 7
 		},
 		{
 			"color": [
@@ -815,7 +879,8 @@
 				12.1000003814697,
 				4.5
 			],
-			"radius": 10.0
+			"radius": 10.0,
+			"tag": 15
 		},
 		{
 			"color": [
@@ -831,7 +896,8 @@
 				20.3999996185303,
 				2.5
 			],
-			"radius": 5.0
+			"radius": 5.0,
+			"tag": 12
 		},
 		{
 			"color": [
@@ -847,7 +913,8 @@
 				-2.40000009536743,
 				2.1
 			],
-			"radius": 5.0
+			"radius": 5.0,
+			"tag": 5
 		},
 		{
 			"color": [
@@ -863,7 +930,8 @@
 				-5.80000019073486,
 				5.5
 			],
-			"radius": 10.0
+			"radius": 10.0,
+			"tag": 10
 		},
 		{
 			"color": [
@@ -879,7 +947,8 @@
 				-2.10000014305115,
 				2.1
 			],
-			"radius": 5.0
+			"radius": 5.0,
+			"tag": 6
 		}
 	],
 	"points": [
@@ -2138,15 +2207,16 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 0,
 			"points": [
 				0,
 				1,
 				2
 			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_destination_wall": 2,
+			"portal_target": 94,
+			"portal_wall": 2,
 			"wall_surfaces": [
 				[
 					{
@@ -2235,6 +2305,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 1,
 			"points": [
 				3,
@@ -2311,6 +2382,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 2,
 			"points": [
 				5,
@@ -2318,9 +2390,9 @@
 				4,
 				3
 			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_destination_wall": 3,
+			"portal_target": 138,
+			"portal_wall": 0,
 			"wall_surfaces": [
 				[
 					{
@@ -2417,6 +2489,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 3,
 			"points": [
 				7,
@@ -2523,6 +2596,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 4,
 			"points": [
 				9,
@@ -2629,6 +2703,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 5,
 			"points": [
 				11,
@@ -2735,6 +2810,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 6,
 			"points": [
 				13,
@@ -2841,6 +2917,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 7,
 			"points": [
 				15,
@@ -2947,6 +3024,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 8,
 			"points": [
 				17,
@@ -3053,6 +3131,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 9,
 			"points": [
 				19,
@@ -3159,6 +3238,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 10,
 			"points": [
 				21,
@@ -3265,6 +3345,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 11,
 			"points": [
 				23,
@@ -3371,6 +3452,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 12,
 			"points": [
 				25,
@@ -3477,6 +3559,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 13,
 			"points": [
 				27,
@@ -3591,6 +3674,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 14,
 			"points": [
 				29,
@@ -3667,6 +3751,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 15,
 			"points": [
 				31,
@@ -3772,6 +3857,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 16,
 			"points": [
 				33,
@@ -3877,6 +3963,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 17,
 			"points": [
 				35,
@@ -4133,6 +4220,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 18,
 			"points": [
 				45,
@@ -4142,8 +4230,8 @@
 				42
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_target": 20,
+			"portal_wall": 4,
 			"wall_surfaces": [
 				[
 					{
@@ -4164,7 +4252,7 @@
 				[
 					{
 						"begin_height": 10.5,
-						"end_height": 11.0,
+						"end_height": 11.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -4183,7 +4271,7 @@
 							0.0,
 							0.0
 						],
-						"begin_height": 11.0,
+						"begin_height": 11.5,
 						"begin_up_direction": [
 							0.0,
 							0.0,
@@ -4194,7 +4282,7 @@
 							0.0,
 							0.0
 						],
-						"end_height": 12.0,
+						"end_height": 12.5,
 						"end_up_direction": [
 							0.0,
 							0.0,
@@ -4203,8 +4291,8 @@
 						"id": "button_off_wall_2",
 						"id_triggered": "button_on_wall_2",
 						"offset": [
-							0.0,
-							-11.0
+							-0.150000005960464,
+							-11.5
 						],
 						"rotation": 0.0,
 						"scale": 1.0,
@@ -4216,6 +4304,7 @@
 								"activator": "DoorToExit",
 								"can_turn_off": false,
 								"enemy_sensitive": false,
+								"increment": 1,
 								"player_sensitive": true,
 								"timeout": 0.0,
 								"while_alive": false
@@ -4223,7 +4312,7 @@
 						]
 					},
 					{
-						"begin_height": 12.0,
+						"begin_height": 12.5,
 						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
@@ -4301,6 +4390,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 19,
 			"points": [
 				48,
@@ -4310,8 +4400,8 @@
 				50
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_target": 21,
+			"portal_wall": 1,
 			"wall_surfaces": [
 				[
 					{
@@ -4365,7 +4455,7 @@
 				[
 					{
 						"begin_height": 10.5,
-						"end_height": 11.0,
+						"end_height": 11.5,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -4384,7 +4474,7 @@
 							0.0,
 							0.0
 						],
-						"begin_height": 11.0,
+						"begin_height": 11.5,
 						"begin_up_direction": [
 							0.0,
 							0.0,
@@ -4395,7 +4485,7 @@
 							0.0,
 							0.0
 						],
-						"end_height": 12.0,
+						"end_height": 12.5,
 						"end_up_direction": [
 							0.0,
 							0.0,
@@ -4404,8 +4494,8 @@
 						"id": "button_off_wall_2",
 						"id_triggered": "button_on_wall_2",
 						"offset": [
-							0.0,
-							-11.0
+							0.150000005960464,
+							-11.5
 						],
 						"rotation": 0.0,
 						"scale": 1.0,
@@ -4417,6 +4507,7 @@
 								"activator": "DoorToExit",
 								"can_turn_off": false,
 								"enemy_sensitive": false,
+								"increment": 1,
 								"player_sensitive": true,
 								"timeout": 0.0,
 								"while_alive": false
@@ -4424,7 +4515,7 @@
 						]
 					},
 					{
-						"begin_height": 12.0,
+						"begin_height": 12.5,
 						"end_height": 13.5,
 						"id": "mossy_rocks",
 						"offset": [
@@ -4469,6 +4560,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 20,
 			"points": [
 				51,
@@ -4476,9 +4568,9 @@
 				41,
 				40
 			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_destination_wall": 4,
+			"portal_target": 18,
+			"portal_wall": 0,
 			"wall_surfaces": [
 				[
 					{
@@ -4560,6 +4652,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 21,
 			"points": [
 				53,
@@ -4567,9 +4660,9 @@
 				37,
 				36
 			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_destination_wall": 1,
+			"portal_target": 19,
+			"portal_wall": 0,
 			"wall_surfaces": [
 				[
 					{
@@ -4651,6 +4744,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 22,
 			"points": [
 				55,
@@ -4750,6 +4844,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 23,
 			"points": [
 				57,
@@ -4826,6 +4921,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 24,
 			"points": [
 				59,
@@ -4876,7 +4972,7 @@
 				[
 					{
 						"begin_height": 7.5,
-						"end_height": 8.0,
+						"end_height": 8.5,
 						"id": "wall_2",
 						"offset": [
 							0.0,
@@ -4895,7 +4991,7 @@
 							0.0,
 							0.0
 						],
-						"begin_height": 8.0,
+						"begin_height": 8.5,
 						"begin_up_direction": [
 							0.0,
 							0.0,
@@ -4906,7 +5002,7 @@
 							0.0,
 							0.0
 						],
-						"end_height": 9.0,
+						"end_height": 9.5,
 						"end_up_direction": [
 							0.0,
 							0.0,
@@ -4915,8 +5011,8 @@
 						"id": "button_off_wall_2",
 						"id_triggered": "button_on_wall_2",
 						"offset": [
-							0.0,
-							-8.0
+							0.75,
+							-8.5
 						],
 						"rotation": 0.0,
 						"scale": 1.0,
@@ -4928,6 +5024,7 @@
 								"activator": "Exit",
 								"can_turn_off": false,
 								"enemy_sensitive": false,
+								"increment": 1,
 								"player_sensitive": true,
 								"timeout": 0.0,
 								"while_alive": false
@@ -4935,7 +5032,7 @@
 						]
 					},
 					{
-						"begin_height": 9.0,
+						"begin_height": 9.5,
 						"end_height": 10.0,
 						"id": "wall_2",
 						"offset": [
@@ -5068,6 +5165,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 25,
 			"points": [
 				65,
@@ -5144,6 +5242,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 26,
 			"points": [
 				67,
@@ -5209,7 +5308,7 @@
 				[
 					{
 						"begin_height": 7.75,
-						"end_height": 8.25,
+						"end_height": 8.75,
 						"id": "wall_2",
 						"offset": [
 							-0.185000002384186,
@@ -5228,7 +5327,7 @@
 							0.0,
 							0.0
 						],
-						"begin_height": 8.25,
+						"begin_height": 8.75,
 						"begin_up_direction": [
 							0.0,
 							0.0,
@@ -5239,7 +5338,7 @@
 							0.0,
 							0.0
 						],
-						"end_height": 9.25,
+						"end_height": 9.75,
 						"end_up_direction": [
 							0.0,
 							0.0,
@@ -5249,7 +5348,7 @@
 						"id_triggered": "button_on_wall_2",
 						"offset": [
 							-0.185000002384186,
-							-8.25
+							-8.75
 						],
 						"rotation": 0.0,
 						"scale": 1.0,
@@ -5261,6 +5360,7 @@
 								"activator": "DoorBackTOStaircase",
 								"can_turn_off": false,
 								"enemy_sensitive": false,
+								"increment": 1,
 								"player_sensitive": true,
 								"timeout": 0.0,
 								"while_alive": false
@@ -5268,7 +5368,7 @@
 						]
 					},
 					{
-						"begin_height": 9.25,
+						"begin_height": 9.75,
 						"end_height": 10.5,
 						"id": "wall_2",
 						"offset": [
@@ -5329,6 +5429,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 27,
 			"points": [
 				71,
@@ -5420,6 +5521,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 28,
 			"points": [
 				73,
@@ -5428,8 +5530,8 @@
 				71
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_target": 70,
+			"portal_wall": 0,
 			"wall_surfaces": [
 				[
 					{
@@ -5511,6 +5613,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 29,
 			"points": [
 				75,
@@ -5617,6 +5720,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 30,
 			"points": [
 				77,
@@ -5723,6 +5827,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 31,
 			"points": [
 				79,
@@ -5829,6 +5934,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 32,
 			"points": [
 				81,
@@ -5949,6 +6055,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 33,
 			"points": [
 				83,
@@ -6069,6 +6176,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 34,
 			"points": [
 				85,
@@ -6079,9 +6187,9 @@
 				81,
 				79
 			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_destination_wall": 2,
+			"portal_target": 35,
+			"portal_wall": 0,
 			"wall_surfaces": [
 				[
 					{
@@ -6166,6 +6274,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 35,
 			"points": [
 				89,
@@ -6174,8 +6283,8 @@
 				92
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_target": 34,
+			"portal_wall": 2,
 			"wall_surfaces": [
 				[],
 				[
@@ -6248,6 +6357,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 36,
 			"points": [
 				93,
@@ -6416,6 +6526,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 37,
 			"points": [
 				97,
@@ -6424,9 +6535,9 @@
 				95,
 				94
 			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_destination_wall": 1,
+			"portal_target": 133,
+			"portal_wall": 0,
 			"wall_surfaces": [
 				[
 					{
@@ -6515,6 +6626,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 38,
 			"points": [
 				100,
@@ -6586,6 +6698,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 39,
 			"points": [
 				104,
@@ -6655,6 +6768,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 40,
 			"points": [
 				101,
@@ -6722,6 +6836,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 41,
 			"points": [
 				93,
@@ -6804,6 +6919,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 42,
 			"points": [
 				110,
@@ -6843,6 +6959,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 43,
 			"points": [
 				113,
@@ -6880,6 +6997,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 44,
 			"points": [
 				110,
@@ -6951,6 +7069,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 45,
 			"points": [
 				118,
@@ -7018,6 +7137,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 46,
 			"points": [
 				120,
@@ -7085,6 +7205,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 47,
 			"points": [
 				122,
@@ -7152,6 +7273,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 48,
 			"points": [
 				124,
@@ -7219,6 +7341,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 49,
 			"points": [
 				126,
@@ -7322,6 +7445,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 50,
 			"points": [
 				117,
@@ -7404,6 +7528,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 51,
 			"points": [
 				131,
@@ -7486,6 +7611,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 52,
 			"points": [
 				133,
@@ -7553,6 +7679,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 53,
 			"points": [
 				135,
@@ -7622,6 +7749,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 54,
 			"points": [
 				138,
@@ -7689,6 +7817,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 55,
 			"points": [
 				140,
@@ -7756,6 +7885,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 56,
 			"points": [
 				127,
@@ -7823,6 +7953,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 57,
 			"points": [
 				142,
@@ -7875,6 +8006,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 58,
 			"points": [
 				144,
@@ -7942,6 +8074,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 59,
 			"points": [
 				146,
@@ -8002,6 +8135,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 60,
 			"points": [
 				140,
@@ -8060,6 +8194,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 61,
 			"points": [
 				138,
@@ -8133,6 +8268,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 62,
 			"points": [
 				135,
@@ -8201,6 +8337,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 63,
 			"points": [
 				126,
@@ -8261,6 +8398,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 64,
 			"points": [
 				124,
@@ -8312,6 +8450,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 65,
 			"points": [
 				122,
@@ -8370,6 +8509,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 66,
 			"points": [
 				120,
@@ -8443,6 +8583,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 67,
 			"points": [
 				118,
@@ -8486,6 +8627,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 68,
 			"points": [
 				102,
@@ -8527,6 +8669,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 69,
 			"points": [
 				141,
@@ -8609,6 +8752,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 70,
 			"points": [
 				159,
@@ -8619,8 +8763,8 @@
 				104
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_target": 28,
+			"portal_wall": 0,
 			"wall_surfaces": [
 				[
 					{
@@ -8710,6 +8854,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 71,
 			"points": [
 				112,
@@ -8792,6 +8937,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 72,
 			"points": [
 				107,
@@ -8857,6 +9003,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 73,
 			"points": [
 				102,
@@ -8939,6 +9086,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 74,
 			"points": [
 				159,
@@ -9030,6 +9178,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 75,
 			"points": [
 				88,
@@ -9150,6 +9299,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 76,
 			"points": [
 				87,
@@ -9256,6 +9406,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 77,
 			"points": [
 				162,
@@ -9362,6 +9513,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 78,
 			"points": [
 				164,
@@ -9468,6 +9620,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 79,
 			"points": [
 				166,
@@ -9574,6 +9727,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 80,
 			"points": [
 				168,
@@ -9699,6 +9853,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 81,
 			"points": [
 				172,
@@ -9713,7 +9868,7 @@
 				[
 					{
 						"begin_height": 10.5,
-						"end_height": 11.0,
+						"end_height": 11.5,
 						"id": "bricks_2",
 						"offset": [
 							0.0,
@@ -9732,7 +9887,7 @@
 							0.0,
 							0.0
 						],
-						"begin_height": 11.0,
+						"begin_height": 11.5,
 						"begin_up_direction": [
 							0.0,
 							0.0,
@@ -9743,7 +9898,7 @@
 							0.0,
 							0.0
 						],
-						"end_height": 12.0,
+						"end_height": 12.5,
 						"end_up_direction": [
 							0.0,
 							0.0,
@@ -9752,8 +9907,8 @@
 						"id": "button_off_wall_2",
 						"id_triggered": "button_on_wall_2",
 						"offset": [
-							0.0,
-							-11.0
+							0.150000005960464,
+							-11.5
 						],
 						"rotation": 0.0,
 						"scale": 1.0,
@@ -9765,6 +9920,7 @@
 								"activator": "DoorCrissCrossArena",
 								"can_turn_off": false,
 								"enemy_sensitive": false,
+								"increment": 1,
 								"player_sensitive": true,
 								"timeout": 5.0,
 								"while_alive": false
@@ -9772,7 +9928,7 @@
 						]
 					},
 					{
-						"begin_height": 12.0,
+						"begin_height": 12.5,
 						"end_height": 13.5,
 						"id": "bricks_2",
 						"offset": [
@@ -9858,6 +10014,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 82,
 			"points": [
 				174,
@@ -9934,6 +10091,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 83,
 			"points": [
 				176,
@@ -9941,9 +10099,9 @@
 				175,
 				174
 			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_destination_wall": 2,
+			"portal_target": 113,
+			"portal_wall": 0,
 			"wall_surfaces": [
 				[
 					{
@@ -10040,6 +10198,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 84,
 			"points": [
 				178,
@@ -10146,6 +10305,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 85,
 			"points": [
 				180,
@@ -10252,6 +10412,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 86,
 			"points": [
 				182,
@@ -10358,6 +10519,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 87,
 			"points": [
 				184,
@@ -10464,6 +10626,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 88,
 			"points": [
 				186,
@@ -10570,6 +10733,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 89,
 			"points": [
 				188,
@@ -10676,6 +10840,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 90,
 			"points": [
 				190,
@@ -10782,6 +10947,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 91,
 			"points": [
 				192,
@@ -10888,6 +11054,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 92,
 			"points": [
 				194,
@@ -10994,6 +11161,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 93,
 			"points": [
 				196,
@@ -11100,15 +11268,16 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 94,
 			"points": [
 				198,
 				197,
 				196
 			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_destination_wall": 2,
+			"portal_target": 0,
+			"portal_wall": 2,
 			"wall_surfaces": [
 				[
 					{
@@ -11180,6 +11349,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 95,
 			"points": [
 				199,
@@ -11217,6 +11387,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 96,
 			"points": [
 				141,
@@ -11269,6 +11440,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 97,
 			"points": [
 				201,
@@ -11351,6 +11523,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 98,
 			"points": [
 				132,
@@ -11403,6 +11576,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 99,
 			"points": [
 				200,
@@ -11455,6 +11629,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 100,
 			"points": [
 				199,
@@ -11539,6 +11714,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 101,
 			"points": [
 				203,
@@ -11576,6 +11752,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 102,
 			"points": [
 				131,
@@ -11628,6 +11805,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 103,
 			"points": [
 				205,
@@ -11710,6 +11888,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 104,
 			"points": [
 				127,
@@ -11762,6 +11941,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 105,
 			"points": [
 				204,
@@ -11814,6 +11994,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 106,
 			"points": [
 				203,
@@ -11898,6 +12079,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 107,
 			"points": [
 				207,
@@ -11935,6 +12117,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 108,
 			"points": [
 				116,
@@ -11987,6 +12170,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 109,
 			"points": [
 				209,
@@ -12069,6 +12253,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 110,
 			"points": [
 				123,
@@ -12121,6 +12306,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 111,
 			"points": [
 				208,
@@ -12173,6 +12359,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 112,
 			"points": [
 				207,
@@ -12266,6 +12453,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 113,
 			"points": [
 				211,
@@ -12274,8 +12462,8 @@
 				214
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_target": 83,
+			"portal_wall": 2,
 			"wall_surfaces": [
 				[],
 				[
@@ -12342,6 +12530,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 114,
 			"points": [
 				215,
@@ -12433,6 +12622,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 115,
 			"points": [
 				217,
@@ -12479,6 +12669,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 116,
 			"points": [
 				219,
@@ -12538,6 +12729,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 117,
 			"points": [
 				220,
@@ -12552,7 +12744,7 @@
 				[
 					{
 						"begin_height": 0.0,
-						"end_height": 0.5,
+						"end_height": 1.0,
 						"id": "mossy_rocks",
 						"offset": [
 							0.0,
@@ -12571,7 +12763,7 @@
 							0.0,
 							0.0
 						],
-						"begin_height": 0.5,
+						"begin_height": 1.0,
 						"begin_up_direction": [
 							0.0,
 							0.0,
@@ -12582,7 +12774,7 @@
 							0.0,
 							0.0
 						],
-						"end_height": 1.5,
+						"end_height": 2.0,
 						"end_up_direction": [
 							0.0,
 							0.0,
@@ -12591,8 +12783,8 @@
 						"id": "button_off_wall_2",
 						"id_triggered": "button_on_wall_2",
 						"offset": [
-							0.0,
-							-0.5
+							0.150000005960464,
+							-1.0
 						],
 						"rotation": 0.0,
 						"scale": 1.0,
@@ -12604,6 +12796,7 @@
 								"activator": "CrissCrossLift1",
 								"can_turn_off": false,
 								"enemy_sensitive": false,
+								"increment": 1,
 								"player_sensitive": true,
 								"timeout": 0.0,
 								"while_alive": false
@@ -12611,7 +12804,7 @@
 						]
 					},
 					{
-						"begin_height": 1.5,
+						"begin_height": 2.0,
 						"end_height": 5.0,
 						"id": "mossy_rocks",
 						"offset": [
@@ -12659,6 +12852,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 118,
 			"points": [
 				222,
@@ -12735,6 +12929,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 119,
 			"points": [
 				224,
@@ -12811,6 +13006,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 120,
 			"points": [
 				223,
@@ -12887,6 +13083,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 121,
 			"points": [
 				226,
@@ -12963,6 +13160,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 122,
 			"points": [
 				228,
@@ -12973,9 +13171,9 @@
 				231,
 				232
 			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_destination_wall": 1,
+			"portal_target": 125,
+			"portal_wall": 5,
 			"wall_surfaces": [
 				[
 					{
@@ -13090,6 +13288,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 123,
 			"points": [
 				233,
@@ -13151,6 +13350,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 124,
 			"points": [
 				217,
@@ -13210,6 +13410,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 125,
 			"points": [
 				235,
@@ -13220,9 +13421,9 @@
 				238,
 				239
 			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_destination_wall": 5,
+			"portal_target": 122,
+			"portal_wall": 1,
 			"wall_surfaces": [
 				[
 					{
@@ -13337,6 +13538,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 126,
 			"points": [
 				219,
@@ -13398,6 +13600,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 127,
 			"points": [
 				225,
@@ -13474,6 +13677,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 128,
 			"points": [
 				242,
@@ -13569,6 +13773,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 129,
 			"points": [
 				241,
@@ -13630,6 +13835,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 130,
 			"points": [
 				222,
@@ -13714,6 +13920,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 131,
 			"points": [
 				228,
@@ -13790,6 +13997,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 132,
 			"points": [
 				246,
@@ -13881,6 +14089,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 133,
 			"points": [
 				248,
@@ -13890,8 +14099,8 @@
 				246
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_target": 37,
+			"portal_wall": 1,
 			"wall_surfaces": [
 				[
 					{
@@ -13989,6 +14198,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 134,
 			"points": [
 				251,
@@ -14073,6 +14283,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 135,
 			"points": [
 				244,
@@ -14187,6 +14398,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 136,
 			"points": [
 				233,
@@ -14301,6 +14513,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 137,
 			"points": [
 				225,
@@ -14407,6 +14620,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 138,
 			"points": [
 				252,
@@ -14415,8 +14629,8 @@
 				255
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_target": 2,
+			"portal_wall": 3,
 			"wall_surfaces": [
 				[
 					{
@@ -14498,6 +14712,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 139,
 			"points": [
 				256,
@@ -14574,6 +14789,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 140,
 			"points": [
 				258,
@@ -14650,6 +14866,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 141,
 			"points": [
 				260,
@@ -14726,6 +14943,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 142,
 			"points": [
 				262,
@@ -14802,6 +15020,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 143,
 			"points": [
 				264,
@@ -14878,6 +15097,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 144,
 			"points": [
 				266,
@@ -14886,8 +15106,8 @@
 				269
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_target": 153,
+			"portal_wall": 3,
 			"wall_surfaces": [
 				[
 					{
@@ -14969,6 +15189,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 145,
 			"points": [
 				270,
@@ -14983,7 +15204,7 @@
 				[
 					{
 						"begin_height": 2.0,
-						"end_height": 2.5,
+						"end_height": 3.0,
 						"id": "bricks_2",
 						"offset": [
 							0.0,
@@ -15002,7 +15223,7 @@
 							0.0,
 							0.0
 						],
-						"begin_height": 2.5,
+						"begin_height": 3.0,
 						"begin_up_direction": [
 							0.0,
 							0.0,
@@ -15013,7 +15234,7 @@
 							0.0,
 							0.0
 						],
-						"end_height": 3.5,
+						"end_height": 4.0,
 						"end_up_direction": [
 							0.0,
 							0.0,
@@ -15022,8 +15243,8 @@
 						"id": "button_off_bricks_2",
 						"id_triggered": "button_on_bricks_2",
 						"offset": [
-							0.0,
-							-2.5
+							0.150000005960464,
+							-3.0
 						],
 						"rotation": 0.0,
 						"scale": 1.0,
@@ -15035,6 +15256,7 @@
 								"activator": "DoorToFinale",
 								"can_turn_off": false,
 								"enemy_sensitive": false,
+								"increment": 1,
 								"player_sensitive": true,
 								"timeout": 0.0,
 								"while_alive": false
@@ -15042,7 +15264,7 @@
 						]
 					},
 					{
-						"begin_height": 3.5,
+						"begin_height": 4.0,
 						"end_height": 5.5,
 						"id": "bricks_2",
 						"offset": [
@@ -15090,6 +15312,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 146,
 			"points": [
 				272,
@@ -15098,8 +15321,8 @@
 				267
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_target": 163,
+			"portal_wall": 0,
 			"wall_surfaces": [
 				[
 					{
@@ -15181,6 +15404,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 147,
 			"points": [
 				275,
@@ -15242,6 +15466,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 148,
 			"points": [
 				276,
@@ -15250,8 +15475,8 @@
 				274
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_target": 159,
+			"portal_wall": 0,
 			"wall_surfaces": [
 				[
 					{
@@ -15333,6 +15558,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 149,
 			"points": [
 				279,
@@ -15394,6 +15620,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 150,
 			"points": [
 				280,
@@ -15402,8 +15629,8 @@
 				278
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_target": 155,
+			"portal_wall": 0,
 			"wall_surfaces": [
 				[
 					{
@@ -15485,6 +15712,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 151,
 			"points": [
 				271,
@@ -15554,6 +15782,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 152,
 			"points": [
 				257,
@@ -15630,6 +15859,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 153,
 			"points": [
 				284,
@@ -15637,9 +15867,9 @@
 				283,
 				282
 			],
-			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_destination_wall": 3,
+			"portal_target": 144,
+			"portal_wall": 0,
 			"wall_surfaces": [
 				[
 					{
@@ -15744,6 +15974,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 154,
 			"points": [
 				286,
@@ -15820,6 +16051,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 155,
 			"points": [
 				289,
@@ -15828,8 +16060,8 @@
 				287
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_target": 150,
+			"portal_wall": 0,
 			"wall_surfaces": [
 				[
 					{
@@ -15926,6 +16158,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 156,
 			"points": [
 				291,
@@ -16002,6 +16235,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 157,
 			"points": [
 				292,
@@ -16086,6 +16320,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 158,
 			"points": [
 				265,
@@ -16162,6 +16397,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 159,
 			"points": [
 				296,
@@ -16170,8 +16406,8 @@
 				294
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_target": 148,
+			"portal_wall": 0,
 			"wall_surfaces": [
 				[
 					{
@@ -16268,6 +16504,7 @@
 				"tile_rotation_increment": 1.5707963267949,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 160,
 			"points": [
 				264,
@@ -16378,6 +16615,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 161,
 			"points": [
 				300,
@@ -16392,7 +16630,7 @@
 				[
 					{
 						"begin_height": 2.0,
-						"end_height": 2.5,
+						"end_height": 3.0,
 						"id": "wall_2",
 						"offset": [
 							0.0,
@@ -16411,7 +16649,7 @@
 							0.0,
 							0.0
 						],
-						"begin_height": 2.5,
+						"begin_height": 3.0,
 						"begin_up_direction": [
 							0.0,
 							0.0,
@@ -16422,7 +16660,7 @@
 							0.0,
 							0.0
 						],
-						"end_height": 3.5,
+						"end_height": 4.0,
 						"end_up_direction": [
 							0.0,
 							0.0,
@@ -16431,8 +16669,8 @@
 						"id": "button_off_wall_2",
 						"id_triggered": "button_on_wall_2",
 						"offset": [
-							0.0,
-							-2.5
+							0.150000005960464,
+							-3.0
 						],
 						"rotation": 0.0,
 						"scale": 1.0,
@@ -16444,6 +16682,7 @@
 								"activator": "DoorsInCave",
 								"can_turn_off": false,
 								"enemy_sensitive": false,
+								"increment": 1,
 								"player_sensitive": true,
 								"timeout": 0.0,
 								"while_alive": false
@@ -16451,7 +16690,7 @@
 						]
 					},
 					{
-						"begin_height": 3.5,
+						"begin_height": 4.0,
 						"end_height": 4.5,
 						"id": "wall_2",
 						"offset": [
@@ -16537,6 +16776,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 162,
 			"points": [
 				261,
@@ -16613,6 +16853,7 @@
 				"tile_rotation_increment": 0.0,
 				"tile_rotations_count": 1
 			},
+			"force_walkability": false,
 			"id": 163,
 			"points": [
 				304,
@@ -16621,8 +16862,8 @@
 				302
 			],
 			"portal_destination_wall": 0,
-			"portal_target": 65535,
-			"portal_wall": -1,
+			"portal_target": 146,
+			"portal_wall": 0,
 			"wall_surfaces": [
 				[
 					{
@@ -16699,6 +16940,7 @@
 				-7.70000028610229,
 				2.1
 			],
+			"tag": 19,
 			"texture": "qwantani_night_puresky_1k",
 			"use_gamma_correction": false
 		}

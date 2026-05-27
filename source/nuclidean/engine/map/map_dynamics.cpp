@@ -12,6 +12,7 @@
 
 #include <math/lingebra.h>
 #include <math/utils.h>
+#include <buffer.h>
 
 #include <algorithm> // std::count_if
 
@@ -40,7 +41,7 @@ void MapDynamics::on_destroy()
   // Kill all sounds
   for (SectorID sid = 0; sid < cast<SectorID>(sector_sounds.size()); ++sid)
   {
-    this->on_sector_moving_changed(sid, false);
+    this->on_sector_moving_changed(sid, false, false);
   }
 }
 
@@ -55,6 +56,7 @@ void MapDynamics::on_map_rebuild_and_entities_created()
 
   moving_sectors.resize(map.sectors.size(), false);
   sector_sounds.resize(map.sectors.size(), INVALID_ENTITY_ID);
+  activators_dynamic.resize(activators.size(), 0);
 
   SectorID sector_cnt = cast<SectorID>(map.sectors.size());
   for (SectorID sid = 0; sid < sector_cnt; ++sid)
@@ -81,8 +83,11 @@ SegmentID MapDynamics::segment_id_from_trigger(const TriggerData& td) const
 }
 
 //==============================================================================
-void MapDynamics::on_sector_moving_changed(SectorID sid, bool started_moving)
+void MapDynamics::on_sector_moving_changed(SectorID sid, bool started_moving, bool moving_up)
 {
+  nc_assert(map.is_valid_sector_id(sid));
+  bool has_sfx_override = map.sectors[sid].door_sfx_override;
+
   if (started_moving)
   {
     nc_assert(sector_sounds[sid] == INVALID_ENTITY_ID);
@@ -100,14 +105,32 @@ void MapDynamics::on_sector_moving_changed(SectorID sid, bool started_moving)
 
     vec3 sound_pos = vec3{avg_pos_2d.x, avg_h, avg_pos_2d.y};
 
+    // =====================================
+    // TODO: Rework after GA demo!
+    SoundID sound = Sounds::door;
+    bool loop_sound = true;
+    f32  volume = 0.2f;
+    if (has_sfx_override)
+    {
+      sound = moving_up ? Sounds::door_alt_up : Sounds::door_alt_down;
+      loop_sound = false;
+      volume = 1.3f;
+    }
+    // =====================================
+
     SoundEmitter* emitter = registry.create_entity<SoundEmitter>
     (
-      sound_pos, Sounds::door, 20.0f, 0.2f, true
+      sound_pos, sound, 20.0f, volume, loop_sound
     );
 
     nc_assert(emitter);
 
-    sector_sounds[sid] = emitter->get_id();
+    // TODO: Rework after GA demo!
+    if (!has_sfx_override)
+    {
+      // Do not store the override SFX, we don't want to stop it if the door stops moving
+      sector_sounds[sid] = emitter->get_id();
+    }
   }
   else
   {
@@ -203,14 +226,36 @@ void MapDynamics::evaluate_activators
       case TriggerData::sector:
       {
         SectorID sid = td.sector_type.sector;
-        // Increment the activator for each relevant entity that is inside this sector
-        mapping.for_each_in_sector(sid, [&](EntityID id, mat4)
+        if (! td.can_turn_off) {
+          // If this trigger is not turn-offable, then just check if it was already trigered and increment (always only once) if that's the case
+          SectorDynData &sector_dyn = map.sectors_dynamic[td.sector_type.sector];
+          if (!sector_dyn.is_triggered) 
+          {
+            // Not triggered so far - must check for being triggered
+            mapping.for_each_in_sector(sid, [&](EntityID id, mat4)
+              {
+                const bool player = td.player_sensitive && (id.type == EntityTypes::player);
+                const bool enemy = td.enemy_sensitive && (id.type == EntityTypes::enemy);
+                if (player || enemy)
+                  sector_dyn.is_triggered = true;
+              });
+          }
+          if (sector_dyn.is_triggered) 
+          {
+            activator_value += td.increment;
+          }
+        }
+        else 
         {
-          const bool player = td.player_sensitive && (id.type == EntityTypes::player);
-          const bool enemy  = td.enemy_sensitive && (id.type == EntityTypes::enemy);
-          activator_value += (player || enemy) * td.increment;
-          if (out_info) (*out_info)[td.activator].entities.emplace_back(id);
-        });
+          // Increment the activator for each relevant entity that is inside this sector
+          mapping.for_each_in_sector(sid, [&](EntityID id, mat4)
+            {
+              const bool player = td.player_sensitive && (id.type == EntityTypes::player);
+              const bool enemy = td.enemy_sensitive && (id.type == EntityTypes::enemy);
+              activator_value += (player || enemy) * td.increment;
+              if (out_info) (*out_info)[td.activator].entities.emplace_back(id);
+            });
+        }
       }
       break;
 
@@ -312,15 +357,18 @@ void MapDynamics::update(f32 delta)
       const f32 change_per_frame = delta * sector.move_speed;
 
       bool moved = false;
+      bool moving_up = false;
 
       if (sector_dyn.floor_height != desired_floor && change_per_frame != 0)
       {
+        moving_up = desired_floor > sector_dyn.floor_height;
         lerp_towards(sector_dyn.floor_height, desired_floor, change_per_frame);
         moved = true;
       }
 
       if (sector_dyn.ceil_height != desired_ceil && change_per_frame != 0)
       {
+        moving_up = desired_ceil > sector_dyn.ceil_height;
         lerp_towards(sector_dyn.ceil_height, desired_ceil, change_per_frame);
         moved = true;
       }
@@ -334,14 +382,15 @@ void MapDynamics::update(f32 delta)
       if (moving_sectors[sid] != moved)
       {
         // Notify that it started/stopped moving
-        on_sector_moving_changed(sid, moved);
+        on_sector_moving_changed(sid, moved, moving_up);
         moving_sectors[sid] = moved;
       }
     }
 
     // Update hooks
-    const bool activeness_did_change = (is_on != activator.is_active);
-    activator.is_active = is_on;
+    u8& is_active = activators_dynamic[activator_id];
+    const bool activeness_did_change = (is_on != !!is_active);
+    is_active = is_on;
     if (is_on || activeness_did_change) {
       for (const std::unique_ptr<IActivatorHook>& hook : activator.hooks) {
         if (activeness_did_change && is_on)
@@ -353,9 +402,15 @@ void MapDynamics::update(f32 delta)
       }
     }
 
-
-
   }
+}
+
+//==============================================================================
+void MapDynamics::serialize(Buffer& buffer)
+{
+  // Sadly, we have to serialize ONLY this one thing, because Jakub built the
+  // design of his activators around this.
+  buffer.serialize_array<u8>(activators_dynamic.data(), activators_dynamic.size());
 }
 
 }

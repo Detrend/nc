@@ -30,6 +30,10 @@
   xx(cultist_die,  0.1f)     \
   xx(cultist_alert,  0.1f)   \
   xx(cultist_move,  0.1f)    \
+  xx(grunt_attack, 0.1f)     \
+  xx(grunt_hurt, 0.1f)       \
+  xx(grunt_die,  0.1f)       \
+  xx(grunt_alert,  0.1f)     \
   xx(death,        0.1f)     \
   xx(melee_hit,    0.1f)     \
   xx(ui_click,     0.1f)     \
@@ -41,7 +45,11 @@
   xx(mellee_equip, 0.1f)     \
   xx(out_of_ammo, 0.1f)      \
   xx(door,         0.1f)     \
-  xx(button,       0.1f)
+  xx(button,       0.1f)     \
+  xx(door_alt_down, 0.1f)    \
+  xx(door_alt_up,   0.1f)    \
+  xx(railgun, 0.0f)          \
+  xx(secret, 0.2f)
 
 #define NC_SOUND_DIRECTORY_CSTR "content/sound/"
 #define NC_SOUND_TYPE           ".wav" // all sounds are .wav

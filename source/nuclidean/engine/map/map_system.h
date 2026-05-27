@@ -135,11 +135,13 @@ struct SectorData
   SurfaceData ceil_surface;
   f32         state_floors[NUM_SECTOR_STATES]{};   // Heights for both OFF and ON states
   f32         state_ceils [NUM_SECTOR_STATES]{};
-  f32         move_speed = 1.0f;                   // Speed of change betwen states, m/s
-  WallID      first_wall   = INVALID_WALL_ID;      // [0..total_wall_count]
-  WallID      last_wall    = INVALID_WALL_ID;      // [first_wall..total_wall_count]
-  ActivatorID activator    = INVALID_ACTIVATOR_ID; // Only one activator owns us
-  s32         damage       = 0;
+  f32         move_speed     = 1.0f;                 // Speed of change betwen states, m/s
+  WallID      first_wall     = INVALID_WALL_ID;      // [0..total_wall_count]
+  WallID      last_wall      = INVALID_WALL_ID;      // [first_wall..total_wall_count]
+  ActivatorID activator      = INVALID_ACTIVATOR_ID; // Only one activator owns us
+  s32         damage         = 0;
+  bool        force_walkable    : 1 = false;
+  bool        door_sfx_override : 1 = false; // TODO: Rework after GA demo
 };
 
 // Sector data that is not static and has to be stored in saves.
@@ -147,7 +149,8 @@ struct SectorDynData
 {
   f32 floor_height = 0.0f;
   f32 ceil_height  = 0.0f;
-  bool force_walkable = false;
+
+  bool is_triggered : 1 = false;
   // Calculates the current height of the sector from floor to ceiling.
   // Negative if ceiling is under the floor (which should never happen!)
   f32 get_sector_height() const;
@@ -320,6 +323,8 @@ struct MapSectors
   bool is_valid_sector_id(SectorID id) const;
   bool is_valid_wall_id(WallID id)     const;
 
+  void serialize(class Buffer& buffer);
+
 private:
   void query_visible_sectors_impl(
     const SectorID*      start_sectors,
@@ -352,6 +357,7 @@ struct SectorBuildData
   s32                        damage = 0;
   bool                       has_more_states : 1 = false;
   bool                       force_walkable : 1 = false;
+  bool                       door_sfx_override : 1 = false;
 };
 
 struct OverlapInfo

@@ -182,6 +182,9 @@ struct CVars
 
   NC_REGISTER_CVAR_RANGED(s32, medkit_small_hp, 10, 1, 100, "Small medkit HP.");
   NC_REGISTER_CVAR_RANGED(s32, medkit_large_hp, 40, 1, 100, "Large medkit HP.");
+  NC_REGISTER_CVAR_RANGED(f32, player_walk_anim_spd, 34.0f, 1.0f, 100.0f, "Speed of player walking animation.");
+
+  NC_REGISTER_CVAR_RANGED(f32, mul_frustum_after_nc_portal, 0.95f, 0.0f, 1.0f, "DON'T TOUCH THIS");
 };
 
 }

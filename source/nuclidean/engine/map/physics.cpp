@@ -466,17 +466,17 @@ static bool calc_path_raw
       }
 
       const SectorDynData& next_sdd = map.sectors_dynamic[next_sector];
+      const SectorData&    next_sd  = map.sectors[next_sector];
       f32 sector_height = next_sdd.ceil_height - next_sdd.floor_height;
       if (sector_height <= height) // we check if this sector has an activator and if it can be triggered by enemies
       {
-        const SectorData& next_sd = map.sectors[next_sector];
         if (next_sd.activator == INVALID_ACTIVATOR_ID)
         {
           return;
         }
 
         bool found = false;
-        std::vector<TriggerData> trig = get_engine().get_module<GameSystem>().get_map_dynamics().triggers;
+        const std::vector<TriggerData>& trig = get_engine().get_module<GameSystem>().get_map_dynamics().triggers;
         for (u32 i = 0; i < trig.size(); i++)
         {
           if (trig[i].activator != next_sd.activator)
@@ -509,7 +509,7 @@ static bool calc_path_raw
         auto p2 = wall2.pos;
         auto p1_to_p2 = p2 - p1;
         auto wall_length = length(p1_to_p2);
-        if (next_sdd.force_walkable || wall1.force_walkable || wall2.force_walkable || (wall_length > radius * 2.0f)) // side to side clearance
+        if (next_sd.force_walkable || wall1.force_walkable || wall2.force_walkable || (wall_length > radius * 2.0f)) // side to side clearance
         {
           vec2 wall_dir;
           wall_dir = normalize_or_zero(p1_to_p2);
@@ -1845,7 +1845,7 @@ const
 
   bool did_something = handle_portal_traversal_between_positions
   (
-    *this, position, position + velocity, transform_out, colls_opt
+    *this, position - velocity * 0.1f , position + velocity, transform_out, colls_opt
   );
 
   if (did_something)
@@ -1855,8 +1855,14 @@ const
     velocity    = (transform_out * vec4{velocity,    0.0f}).xyz();
   }
 
+  vec3 last_player_pos = position;
   // Add the position first time
   position += velocity;
+
+  if (map.get_sector_from_point(position.xz) == INVALID_SECTOR_ID)
+  {
+    position = last_player_pos;
+  }
 
   if (CVars::character_physics_stabilize)
   {
@@ -1873,7 +1879,7 @@ const
       };
 
       CollisionHit hit = phys_helpers::raycast_generic<vec3>
-      (
+        (
         *this, position, position, radius, colliders, nullptr, INVALID_WALL_ID,
         bruh_intersector, bruh_sector_intersector,
         &phys_helpers::intersect_entity_empty<vec3>

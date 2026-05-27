@@ -37,8 +37,10 @@ inline void assert_fail_impl(const char* const expression_str, const logging::Lo
   logging::log_message_impl(logging::LoggingSeverity::error, actual_message, logging_ctx);
 #if NC_COMPILER_MSVC
   __debugbreak();
-#endif
+  return;
+#else
   abort();
+#endif
 }
 
 //==============================================================================

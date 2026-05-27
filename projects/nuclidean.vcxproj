@@ -272,10 +272,12 @@
     <ClInclude Include="..\source\nuclidean\engine\sound\sound_emitter.h" />
     <ClInclude Include="..\source\nuclidean\engine\sound\sound_handle.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="..\source\nuclidean\buffer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\settings.cfg" />
     <None Include="..\source\nuclidean\anim_state_machine.inl" />
+    <None Include="..\source\nuclidean\buffer.inl" />
     <None Include="..\source\nuclidean\engine\core\engine.inl" />
     <None Include="..\source\nuclidean\engine\graphics\resources\model.inl" />
     <None Include="..\source\nuclidean\engine\graphics\resources\shader_program.inl" />

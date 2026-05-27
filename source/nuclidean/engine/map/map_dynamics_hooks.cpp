@@ -8,6 +8,8 @@
 #include <engine/entity/entity_system.h>
 #include <engine/entity/entity_type_definitions.h>
 #include <engine/ui/user_interface_system.h>
+#include <engine/sound/sound_system.h>
+#include <engine/sound/sound_resources.h>
 
 #include <engine/game/game_helpers.h>
 
@@ -78,12 +80,17 @@ namespace nc
       revealed = true;
       get_engine().get_module<GameSystem>().increment_revealed_count();
       get_engine().get_module<UserInterfaceSystem>().get_hud()->show_secret();
+      SoundSystem::get().play_oneshot(Sounds::secret, 1.0f);
     }
   }
 
 
   void ActivatorHook_Teleport::load([[maybe_unused]] const ActivatorHookLoadArg& arg)
   {
+    if (arg.data().contains("is_single_use")) {
+      this->is_single_use = arg.data()["is_single_use"];
+    }
+
     this->data.clear();
 
     for (const auto& destination_tag_js : arg.data()["destinations"]) {
@@ -102,6 +109,10 @@ namespace nc
 
   void ActivatorHook_Teleport::on_activated_start([[maybe_unused]] const ActivatorHookArg& args)
   {
+    if (this->is_single_use && this->did_teleport) {
+      return;
+    }
+    this->did_teleport = true;
     for (const auto& it : this->data) {
       GameHelpers::get().request_entity_teleport(it.entity, it.destination_position);
     }
