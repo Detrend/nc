@@ -439,6 +439,11 @@ void Player::handle_attack(PlayerSpecificInputs curr_input, PlayerSpecificInputs
     }
 
     this->get_current_weapon_fsm().set_state(WeaponStates::attack);
+    if (current_weapon == WeaponTypes::rail_gun)
+    {
+      auto& sound_system = SoundSystem::get();
+      sound_system.play_oneshot(WEAPON_STATS[current_weapon].shoot_snd, 0.5f);
+    }
   }
 }
 
@@ -733,7 +738,10 @@ void Player::do_attack()
     this->alert_nearby_enemies(WEAPON_STATS[weapon].loudness_dist);
   }
 
-  sound_system.play_oneshot(WEAPON_STATS[weapon].shoot_snd, 0.5f);
+  if (WEAPON_STATS[weapon].shoot_snd != Sounds::railgun)
+  {
+    sound_system.play_oneshot(WEAPON_STATS[weapon].shoot_snd, 0.5f);
+  }
   time_since_shoot = 0.0f;
 }
 
