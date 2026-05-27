@@ -1845,7 +1845,7 @@ const
 
   bool did_something = handle_portal_traversal_between_positions
   (
-    *this, position, position + velocity, transform_out, colls_opt
+    *this, position - velocity * 0.1f , position + velocity, transform_out, colls_opt
   );
 
   if (did_something)
@@ -1855,8 +1855,14 @@ const
     velocity    = (transform_out * vec4{velocity,    0.0f}).xyz();
   }
 
+  vec3 last_player_pos = position;
   // Add the position first time
   position += velocity;
+
+  if (map.get_sector_from_point(position.xz) == INVALID_SECTOR_ID)
+  {
+    position = last_player_pos;
+  }
 
   if (CVars::character_physics_stabilize)
   {
@@ -1873,7 +1879,7 @@ const
       };
 
       CollisionHit hit = phys_helpers::raycast_generic<vec3>
-      (
+        (
         *this, position, position, radius, colliders, nullptr, INVALID_WALL_ID,
         bruh_intersector, bruh_sector_intersector,
         &phys_helpers::intersect_entity_empty<vec3>
