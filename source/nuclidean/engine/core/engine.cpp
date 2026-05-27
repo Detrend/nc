@@ -451,11 +451,13 @@ void Engine::send_event(ModuleEvent&& event)
 bool Engine::init(const CmdArgs& cmd_args)
 {
   this->m_editor_mode = engine_utils::contains_arg(cmd_args, engine_utils::EDITOR_MODE_ARG);
+#if !NC_IS_DEPLOY
   if (this->is_editor_mode()) {
     CVars::has_fps_limit = true;
     CVars::fps_limit = 30.0f;
     CVars::invisibility = true;
   }
+#endif
 
   // init the modules here..
   #define INIT_MODULE(_module_class, ...)                     \
