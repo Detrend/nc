@@ -14,7 +14,6 @@ namespace nc
 
 class  EntityRegistry;
 struct Appearance;
-struct Physics;
 struct IEntityPool;
 
 }
