@@ -11,6 +11,7 @@
 
 #include <grid.h>
 #include <profiling.h>
+#include <cvars.h>
 
 #include <algorithm>
 #include <array>
@@ -147,13 +148,15 @@ void modify_nuclidean_frustum(
   WallID            in_portal,
   SectorID          in_sector)
 {
-const auto transform = map.calc_portal_to_portal_projection(in_sector, in_portal);
-  const auto new_pos = (transform * vec4{ frustum.center.x, 0.0f, frustum.center.y, 1.0f }).xz();
-  const auto new_dir = (transform * vec4{ frustum.direction.x, 0.0f, frustum.direction.y, 0.0f }).xz();
+  auto transform = map.calc_portal_to_portal_projection(in_sector, in_portal);
+  auto new_pos   = (transform * vec4{ frustum.center.x, 0.0f, frustum.center.y, 1.0f }).xz();
+  auto new_dir   = (transform * vec4{ frustum.direction.x, 0.0f, frustum.direction.y, 0.0f }).xz();
+
   nc_assert(is_normal(new_dir));
 
-  frustum.center = new_pos;
+  frustum.center    = new_pos;
   frustum.direction = new_dir;
+  frustum.angle *= CVars::mul_frustum_after_nc_portal;
 }
 
 }
