@@ -13,10 +13,10 @@
 [ext_resource type="PackedScene" uid="uid://2xarq0korji0" path="res://prefabs/Entities/PlayerPosition.tscn" id="7_ufqas"]
 [ext_resource type="PackedScene" uid="uid://bve5ovba1xpi5" path="res://prefabs/Lights/DirectionalLight.tscn" id="8_3611k"]
 [ext_resource type="PackedScene" uid="uid://cn044shocju7e" path="res://prefabs/WallAttachments/WallButton.tscn" id="8_ufqas"]
-[ext_resource type="Script" uid="uid://dl12cf3mb2y28" path="res://scripts/things/rawdata/TeleportDestination.gd" id="9_5it8e"]
 [ext_resource type="PackedScene" uid="uid://ctwevapidummr" path="res://prefabs/Lights/PointLight.tscn" id="9_qxoy5"]
 [ext_resource type="PackedScene" uid="uid://2lt4yhe883yf" path="res://prefabs/Lights/AmbientLight.tscn" id="10_b0a4w"]
 [ext_resource type="Texture2D" uid="uid://jt3ssm48lqjc" path="res://imgs/floor1.png" id="10_krcb3"]
+[ext_resource type="Script" uid="uid://cw0a2syvnfeio" path="res://scripts/reactivity/hooks/LevelTransition.gd" id="10_uvxkr"]
 [ext_resource type="PackedScene" uid="uid://dgwhwixwr1rac" path="res://prefabs/Entities/Grunt.tscn" id="10_vy02w"]
 [ext_resource type="Script" uid="uid://d3f0i3y2s53si" path="res://scripts/sector/StairMaker.gd" id="11_et0pd"]
 [ext_resource type="PackedScene" uid="uid://3yx126jx5y0c" path="res://prefabs/PickUps/PlasmaRifle.tscn" id="11_krcvx"]
@@ -64,7 +64,6 @@
 [ext_resource type="Resource" uid="uid://by61kg2fkyuhm" path="res://materials/ga_lvl2/textures/chapel_top.tres" id="32_7wnmm"]
 [ext_resource type="Resource" uid="uid://dl3bgt7r6sqyq" path="res://materials/ga_lvl2/house_trap_outside_wall.tres" id="32_few44"]
 [ext_resource type="Resource" uid="uid://ch4yr3u6dvy13" path="res://materials/ga_lvl2/outside_housetrap_pillar.tres" id="32_rkpsj"]
-[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/sector/Sector.gd" id="41_738hi"]
 [ext_resource type="Texture2D" uid="uid://3ciabrrgxam8" path="res://imgs/holes.png" id="41_x0wix"]
 [ext_resource type="Resource" uid="uid://ck0oa402xtwg4" path="res://materials/ga_lvl2/cultist_wood_door.tres" id="42_25eiq"]
 [ext_resource type="Resource" uid="uid://dhbuvjqakdskb" path="res://materials/ga_lvl2/cultist_table.tres" id="43_738hi"]
@@ -78,11 +77,10 @@
 [ext_resource type="Resource" uid="uid://y56sy5hfx6n7" path="res://materials/ga_lvl2/alien_portal_short.tres" id="56_atpps"]
 [ext_resource type="PackedScene" uid="uid://boeburcj5vvkc" path="res://prefabs/Props/CandleCluster4.tscn" id="57_6mjsd"]
 [ext_resource type="PackedScene" uid="uid://bts3bshxihgtd" path="res://prefabs/Props/CandleCluster2.tscn" id="58_6mjsd"]
-[ext_resource type="Script" uid="uid://0kbske84jb5g" path="res://scripts/sector/TriangulatedMultisector.gd" id="58_xb5nr"]
-[ext_resource type="Script" uid="uid://d4dmybuav1ksc" path="res://scripts/visuals/WallTextureOverride.gd" id="59_c7hrj"]
 [ext_resource type="Resource" uid="uid://crtucqy2narq3" path="res://material_textures/Bricks.tres" id="60_xj83m"]
 [ext_resource type="Resource" uid="uid://dvmlystyqox3s" path="res://materials/ga_lvl2/cultist_wood_window.tres" id="61_dasgw"]
 [ext_resource type="PackedScene" uid="uid://btmw5evvahvyn" path="res://prefabs/Props/CandleCluster5.tscn" id="65_g5c78"]
+[ext_resource type="Resource" uid="uid://b4n4vwcj0lhl0" path="res://material_textures/ga_textures/exit.tres" id="66_jcd71"]
 [ext_resource type="PackedScene" uid="uid://sxwn2wmj6jav" path="res://prefabs/Props/Candle5.tscn" id="67_ol8bk"]
 [ext_resource type="PackedScene" uid="uid://do3g17io5lr1x" path="res://prefabs/Props/HangingLantern1.tscn" id="70_6vrtt"]
 [ext_resource type="PackedScene" uid="uid://mfwv4ydkyyvs" path="res://prefabs/Props/StandingTorch1.tscn" id="70_a3oky"]
@@ -2161,8 +2159,22 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_kj6bh"]
 script = ExtResource("4_coai7")
-ceiling_height = 30.0
+ceiling_height = 60.0
 material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_xdsfc"]
+script = ExtResource("4_coai7")
+ceiling_height = 60.0
+material = ExtResource("3_krcvx")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_ofjtp"]
+script = ExtResource("4_coai7")
+floor_height = 3.0
+ceiling_height = 4.0
+material = ExtResource("3_krcvx")
+texturing_offset = Vector2(0.33, 0)
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_erpgr"]
@@ -2174,49 +2186,49 @@ metadata/_custom_type_script = "uid://cft80p5qydrwt"
 [sub_resource type="Resource" id="Resource_dj0rv"]
 script = ExtResource("4_coai7")
 ceiling_height = 0.001
-material = ExtResource("3_krcvx")
+material = ExtResource("17_hxkhf")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_0abib"]
 script = ExtResource("4_coai7")
 ceiling_height = 0.001
-material = ExtResource("3_krcvx")
+material = ExtResource("17_hxkhf")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_dexux"]
 script = ExtResource("4_coai7")
 ceiling_height = 0.001
-material = ExtResource("3_krcvx")
+material = ExtResource("17_hxkhf")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_ie62n"]
 script = ExtResource("4_coai7")
 ceiling_height = 0.001
-material = ExtResource("3_krcvx")
+material = ExtResource("17_hxkhf")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_c4kc2"]
 script = ExtResource("4_coai7")
 ceiling_height = 0.001
-material = ExtResource("3_krcvx")
+material = ExtResource("17_hxkhf")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_mk4yw"]
 script = ExtResource("4_coai7")
 ceiling_height = 0.001
-material = ExtResource("3_krcvx")
+material = ExtResource("17_hxkhf")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_c6qmg"]
 script = ExtResource("4_coai7")
 ceiling_height = 0.001
-material = ExtResource("3_krcvx")
+material = ExtResource("17_hxkhf")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_a31n5"]
 script = ExtResource("4_coai7")
 ceiling_height = 0.001
-material = ExtResource("3_krcvx")
+material = ExtResource("17_hxkhf")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
 [sub_resource type="Resource" id="Resource_3yuco"]
@@ -2661,15 +2673,15 @@ script = ExtResource("3_et0pd")
 [node name="TeleportHook" type="Node" parent="Activators/CultistUbication_PossessedCage1"]
 script = ExtResource("4_7nxdn")
 
-[node name="Destination" parent="Activators/CultistUbication_PossessedCage1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+[node name="D-Cultist6" parent="Activators/CultistUbication_PossessedCage1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-1, -141)
 target = NodePath("../Cultist6")
 
-[node name="Destination2" parent="Activators/CultistUbication_PossessedCage1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+[node name="D-Cultist8" parent="Activators/CultistUbication_PossessedCage1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(40, -142)
 target = NodePath("../Cultist8")
 
-[node name="Destination3" parent="Activators/CultistUbication_PossessedCage1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+[node name="D-Cultist7" parent="Activators/CultistUbication_PossessedCage1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(19, -180)
 target = NodePath("../Cultist7")
 
@@ -2691,23 +2703,23 @@ script = ExtResource("3_et0pd")
 [node name="TeleportHook" type="Node" parent="Activators/CultistUbication_BlashpemyEncounter"]
 script = ExtResource("4_7nxdn")
 
-[node name="Destination" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+[node name="D-Grunt" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(14, -159)
 target = NodePath("../Grunt")
 
-[node name="Destination2" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+[node name="D-Cultist6" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(33, -156)
 target = NodePath("../Cultist6")
 
-[node name="Destination3" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+[node name="D-Grunt2" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(24, -159)
 target = NodePath("../Grunt2")
 
-[node name="Destination5" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+[node name="D-Grunt3" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(19, -164)
 target = NodePath("../Grunt3")
 
-[node name="Destination4" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+[node name="D-Cultist8" parent="Activators/CultistUbication_BlashpemyEncounter/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(5, -156)
 target = NodePath("../Cultist8")
 
@@ -2739,117 +2751,88 @@ threshold = 9
 [node name="TeleportHook" type="Node" parent="Activators/Outsides1House_TrapFinished_Wave1"]
 script = ExtResource("4_7nxdn")
 
-[node name="D-Cultist6" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-z_index = 999
+[node name="D-Cultist6" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-208, 124)
-script = ExtResource("9_5it8e")
 target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Cultist6")
 
-[node name="D-Cultist7" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-z_index = 999
+[node name="D-Cultist7" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-349, -215)
-script = ExtResource("9_5it8e")
 target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Cultist7")
 
-[node name="D-Cultist8" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-z_index = 999
+[node name="D-Cultist8" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-272, -124)
-script = ExtResource("9_5it8e")
 target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Cultist8")
 
-[node name="D-Cultist9" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-z_index = 999
+[node name="D-Cultist9" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-336, -103)
-script = ExtResource("9_5it8e")
 target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Cultist9")
 
-[node name="D-Cultist10" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-z_index = 999
+[node name="D-Cultist10" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-236, -167)
-script = ExtResource("9_5it8e")
 target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Cultist10")
 
-[node name="D-Grunt" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-z_index = 999
+[node name="D-Grunt" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-234, 63)
-script = ExtResource("9_5it8e")
 target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Grunt")
 
-[node name="D-Grunt2" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-z_index = 999
+[node name="D-Grunt2" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-223, 84)
-script = ExtResource("9_5it8e")
 target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Grunt2")
 
-[node name="D-Grunt3" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-z_index = 999
+[node name="D-Grunt3" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-261, 10)
-script = ExtResource("9_5it8e")
 target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Grunt3")
 
-[node name="D-Possessed5" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-z_index = 999
+[node name="D-Possessed5" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-109, 7)
-script = ExtResource("9_5it8e")
 target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Possessed5")
 
-[node name="D-Possessed6" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-z_index = 999
+[node name="D-Possessed6" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-81, 35)
-script = ExtResource("9_5it8e")
 target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Possessed6")
 
-[node name="D-Possessed7" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-z_index = 999
+[node name="D-Possessed7" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-292, -143)
-script = ExtResource("9_5it8e")
 target = NodePath("../../../../Enemies/OutsideHouseTrap/Wave2/Possessed7")
 
-[node name="D-ShotgunAmmo" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-z_index = 999
+[node name="D-ShotgunAmmo" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-265, 87)
-script = ExtResource("9_5it8e")
 target = NodePath("../../../../PickUps/Outsides/Wave2/ShotgunAmmo")
 
-[node name="D-ShotgunAmmo2" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-z_index = 999
+[node name="D-ShotgunAmmo2" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-253, 100)
-script = ExtResource("9_5it8e")
 target = NodePath("../../../../PickUps/Outsides/Wave2/ShotgunAmmo2")
 
-[node name="D-PlasmaAmmo" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-z_index = 999
+[node name="D-PlasmaAmmo" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-268, 101)
-script = ExtResource("9_5it8e")
 target = NodePath("../../../../PickUps/Outsides/Wave2/PlasmaAmmo")
 
-[node name="D-PlasmaAmmo2" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-z_index = 999
+[node name="D-PlasmaAmmo2" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-235, 92)
-script = ExtResource("9_5it8e")
 target = NodePath("../../../../PickUps/Outsides/Wave2/PlasmaAmmo2")
 
-[node name="D-PlasmaAmmo3" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-z_index = 999
+[node name="D-PlasmaAmmo3" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-227, 93)
-script = ExtResource("9_5it8e")
 target = NodePath("../../../../PickUps/Outsides/Wave2/PlasmaAmmo3")
 
-[node name="D-HpBig" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-z_index = 999
+[node name="D-HpBig" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-227, 76)
-script = ExtResource("9_5it8e")
 target = NodePath("../../../../PickUps/Outsides/Wave2/HpBig")
 
-[node name="D-HpBig2" type="Node2D" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
-z_index = 999
+[node name="D-HpBig2" parent="Activators/Outsides1House_TrapFinished_Wave1/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
 position = Vector2(-85, 9)
-script = ExtResource("9_5it8e")
 target = NodePath("../../../../PickUps/Outsides/Wave2/HpBig2")
 
 [node name="Outsides1House_TrapFinished" type="Node" parent="Activators"]
 script = ExtResource("3_et0pd")
 threshold = 8
+
+[node name="TheEnd" type="Node" parent="Activators"]
+script = ExtResource("3_et0pd")
+
+[node name="Hook" type="Node" parent="Activators/TheEnd"]
+script = ExtResource("10_uvxkr")
+destination = "level_final3"
 
 [node name="Sectors" type="Node2D" parent="."]
 
@@ -8299,33 +8282,29 @@ portal_wall = 2
 portal_wall_length = 10.0
 portal_destination_wall_length = 10.0
 
-[node name="Sector-2014" type="Polygon2D" parent="Sectors/Main/Outsides1/Main2/House2" instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-2014" parent="Sectors/Main/Outsides1/Main2/House2" instance=ExtResource("2_eukjm")]
 position = Vector2(69.24036, -58.895035)
+color = Color(1, 1, 1, 1)
 texture = ExtResource("28_rkoer")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-3.2403564, -2.1049652, 0.75964355, -3.1049652, 0.75964355, 1.8950348, -3.2403564, 1.8950348)
-script = ExtResource("41_738hi")
 data = SubResource("Resource_yyj5q")
+floor_height = 0.0
 ceiling_height = 1000.0
 sector_material = ExtResource("27_8jj66")
 portal_wall_length = 4.1231055
-portal_destination_wall_length = -1.0
 
-[node name="Sector-4133" type="Polygon2D" parent="Sectors/Main/Outsides1/Main2/House2" instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-4133" parent="Sectors/Main/Outsides1/Main2/House2" instance=ExtResource("2_eukjm")]
 position = Vector2(73.395874, -47.724457)
+color = Color(1, 1, 1, 1)
 texture = ExtResource("28_rkoer")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-1.395874, -1.2755432, 3.604126, -1.2755432, 3.604126, 2.7244568, -1.395874, 2.7244568)
-script = ExtResource("41_738hi")
 data = SubResource("Resource_gy3qr")
+floor_height = 0.0
 ceiling_height = 1000.0
 sector_material = ExtResource("27_8jj66")
 portal_wall_length = 5.0
-portal_destination_wall_length = -1.0
 
 [node name="TriangulatedMultisector-1357" parent="Sectors/Main/Outsides1/Main2/House2" instance=ExtResource("6_eukjm")]
 position = Vector2(49.158813, 74.54184)
@@ -8334,52 +8313,38 @@ ceiling_height = 1000.0
 sector_material = ExtResource("27_8jj66")
 data = SubResource("Resource_sd08i")
 
-[node name="TriangulatedMultisector-1357c" type="Polygon2D" parent="Sectors/Main/Outsides1/Main2/House2" instance=ExtResource("6_eukjm")]
-z_index = 11
-z_as_relative = false
+[node name="TriangulatedMultisector-1357c" parent="Sectors/Main/Outsides1/Main2/House2" instance=ExtResource("6_eukjm")]
 position = Vector2(49.158813, 74.54184)
-color = Color(0.243137, 0.254902, 0.623529, 0.454902)
 polygon = PackedVector2Array(27.841187, -123.54184, 34.841187, -123.54184, 34.841187, -119.54184, 27.543795, -119.54184)
-script = ExtResource("58_xb5nr")
 ceiling_height = 1000.0
 sector_material = ExtResource("27_8jj66")
 data = SubResource("Resource_mvjsh")
 
-[node name="TriangulatedMultisector-1357b" type="Polygon2D" parent="Sectors/Main/Outsides1/Main2/House2" instance=ExtResource("6_eukjm")]
-z_index = 11
-z_as_relative = false
+[node name="TriangulatedMultisector-1357b" parent="Sectors/Main/Outsides1/Main2/House2" instance=ExtResource("6_eukjm")]
 position = Vector2(49.158813, 74.54184)
-color = Color(0.243137, 0.254902, 0.623529, 0.454902)
 polygon = PackedVector2Array(16.841187, -135.9376, 16.841187, -154.54184, 63.841187, -154.54184, 63.841187, -138.54184, 58.841187, -137.54184, 58.841187, -149.54184, 20.841187, -149.54184, 20.841187, -136.47943)
-script = ExtResource("58_xb5nr")
 ceiling_height = 1000.0
 sector_material = ExtResource("27_8jj66")
 data = SubResource("Resource_alecq")
 
-[node name="TriangulatedMultisector-1357a" type="Polygon2D" parent="Sectors/Main/Outsides1/Main2/House2" instance=ExtResource("6_eukjm")]
-z_index = 11
-z_as_relative = false
+[node name="TriangulatedMultisector-1357a" parent="Sectors/Main/Outsides1/Main2/House2" instance=ExtResource("6_eukjm")]
 position = Vector2(49.158813, 74.54184)
-color = Color(0.243137, 0.254902, 0.623529, 0.454902)
 polygon = PackedVector2Array(63.841187, -132.54184, 62.841187, -118.54184, 44.841187, -119.54184, 44.841187, -123.54184, 58.841187, -123.54184, 58.841187, -132.54184)
-script = ExtResource("58_xb5nr")
 ceiling_height = 1000.0
 sector_material = ExtResource("27_8jj66")
 data = SubResource("Resource_yi3f3")
 
-[node name="Sector-8039" type="Polygon2D" parent="Sectors/Main/Outsides1/Main2/House2" instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-8039" parent="Sectors/Main/Outsides1/Main2/House2" instance=ExtResource("2_eukjm")]
 position = Vector2(109.591095, -61.17328)
+color = Color(1, 1, 1, 1)
 texture = ExtResource("28_rkoer")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-1.591095, -1.8267212, 3.408905, -2.8267212, 3.408905, 3.1732788, -1.591095, 3.1732788)
-script = ExtResource("41_738hi")
 data = SubResource("Resource_h3wpv")
+floor_height = 0.0
 ceiling_height = 1000.0
 sector_material = ExtResource("27_8jj66")
 portal_wall_length = 5.0990195
-portal_destination_wall_length = -1.0
 
 [node name="Tower" type="Node2D" parent="Sectors/Main/Outsides1/Main2"]
 position = Vector2(-32, 19.917328)
@@ -8480,10 +8445,51 @@ portal_wall_length = 16.0
 
 [node name="TriangulatedMultisector-5240" parent="Sectors/Main/Outsides1/TowerInsides" instance=ExtResource("6_eukjm")]
 position = Vector2(-133, 1)
-polygon = PackedVector2Array(-22, -20, 3, -18, 17, -8, 17, 8, 5, 20, -22, 23)
-ceiling_height = 30.0
+polygon = PackedVector2Array(-8, -15, 3, -18, 17, -8, 17, 8, 5, 20, -8, 15, -15, 5, -9, 3, -9, -3, -15, -6)
+ceiling_height = 60.0
 sector_material = ExtResource("3_krcvx")
 data = SubResource("Resource_kj6bh")
+
+[node name="Sector-2990" parent="Sectors/Main/Outsides1/TowerInsides/TriangulatedMultisector-5240" instance=ExtResource("2_eukjm")]
+position = Vector2(-14.926636, -0.34580994)
+color = Color(1, 1, 1, 1)
+texture = ExtResource("10_krcb3")
+texture_scale = Vector2(20, 20)
+polygon = PackedVector2Array(5.9266357, -2.65419, 8.926636, 0.34580994, 5.9266357, 3.34581)
+data = SubResource("Resource_xdsfc")
+floor_height = 0.0
+ceiling_height = 60.0
+portal_wall_length = 4.2426405
+
+[node name="Button" parent="Sectors/Main/Outsides1/TowerInsides/TriangulatedMultisector-5240/Sector-2990" instance=ExtResource("8_ufqas")]
+position = Vector2(5.9266357, 0.34580994)
+scale = Vector2(0.4281507, 0.4281507)
+texturing_offset = Vector2(0.1, 0.3)
+stripe_width = 1.38
+
+[node name="Trigger" type="Node" parent="Sectors/Main/Outsides1/TowerInsides/TriangulatedMultisector-5240/Sector-2990/Button" node_paths=PackedStringArray("target")]
+script = ExtResource("13_et0pd")
+target = NodePath("../../../../../../../../Activators/TheEnd")
+
+[node name="Sector-2990a" parent="Sectors/Main/Outsides1/TowerInsides/TriangulatedMultisector-5240" instance=ExtResource("2_eukjm")]
+position = Vector2(-14.926636, -0.34580994)
+color = Color(1, 1, 1, 1)
+texture = ExtResource("10_krcb3")
+texture_offset = Vector2(-0.33, 0)
+texture_scale = Vector2(20, 20)
+polygon = PackedVector2Array(4.9266357, 2.34581, 4.9266357, -2.65419, 5.9266357, -2.65419, 5.9266357, 3.34581)
+data = SubResource("Resource_ofjtp")
+floor_height = 3.0
+ceiling_height = 4.0
+portal_wall_length = 5.0
+
+[node name="TextureOverride" parent="Sectors/Main/Outsides1/TowerInsides/TriangulatedMultisector-5240/Sector-2990a" instance=ExtResource("23_vy02w")]
+position = Vector2(4.9266357, -0.15419006)
+scale = Vector2(0.32333878, 0.32333878)
+texture = ExtResource("66_jcd71")
+_use_ceiling_offset = false
+_use_stripe_width = true
+stripe_width = 1.0
 
 [node name="TriangulatedMultisector-5240a" parent="Sectors/Main/Outsides1/TowerInsides" instance=ExtResource("6_eukjm")]
 position = Vector2(-133, 1)
@@ -8497,12 +8503,13 @@ data = SubResource("Resource_erpgr")
 [node name="Sector-5342f" parent="Sectors/Main/Outsides1/TowerInsides/Bars" instance=ExtResource("2_eukjm")]
 position = Vector2(-162, 133.42735)
 color = Color(1, 1, 1, 1)
-texture = ExtResource("10_krcb3")
+texture = ExtResource("16_777gt")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(48, -124.42735, 48, -125.42735, 49, -125.42735, 49, -124.42735)
 data = SubResource("Resource_dj0rv")
 floor_height = 0.0
 ceiling_height = 0.001
+sector_material = ExtResource("17_hxkhf")
 portal_wall_length = 1.0
 
 [node name="Configuration" type="Node" parent="Sectors/Main/Outsides1/TowerInsides/Bars/Sector-5342f" node_paths=PackedStringArray("source")]
@@ -8515,12 +8522,13 @@ ceiling_height = 3.75
 [node name="Sector-5342n" parent="Sectors/Main/Outsides1/TowerInsides/Bars" instance=ExtResource("2_eukjm")]
 position = Vector2(-162, 133.42735)
 color = Color(1, 1, 1, 1)
-texture = ExtResource("10_krcb3")
+texture = ExtResource("16_777gt")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(48, -128.42735, 48, -129.42735, 49, -129.42735, 49, -128.42735)
 data = SubResource("Resource_0abib")
 floor_height = 0.0
 ceiling_height = 0.001
+sector_material = ExtResource("17_hxkhf")
 portal_wall_length = 1.0
 
 [node name="Configuration" type="Node" parent="Sectors/Main/Outsides1/TowerInsides/Bars/Sector-5342n" node_paths=PackedStringArray("source")]
@@ -8533,12 +8541,13 @@ ceiling_height = 3.75
 [node name="Sector-5342l" parent="Sectors/Main/Outsides1/TowerInsides/Bars" instance=ExtResource("2_eukjm")]
 position = Vector2(-162, 133.42735)
 color = Color(1, 1, 1, 1)
-texture = ExtResource("10_krcb3")
+texture = ExtResource("16_777gt")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(48, -130.42735, 48, -131.42735, 49, -131.42735, 49, -130.42735)
 data = SubResource("Resource_dexux")
 floor_height = 0.0
 ceiling_height = 0.001
+sector_material = ExtResource("17_hxkhf")
 portal_wall_length = 1.0
 
 [node name="Configuration" type="Node" parent="Sectors/Main/Outsides1/TowerInsides/Bars/Sector-5342l" node_paths=PackedStringArray("source")]
@@ -8551,12 +8560,13 @@ ceiling_height = 3.75
 [node name="Sector-5342n2" parent="Sectors/Main/Outsides1/TowerInsides/Bars" instance=ExtResource("2_eukjm")]
 position = Vector2(-162, 133.42735)
 color = Color(1, 1, 1, 1)
-texture = ExtResource("10_krcb3")
+texture = ExtResource("16_777gt")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(48, -132.42735, 48, -133.42735, 49, -133.42735, 49, -132.42735)
 data = SubResource("Resource_ie62n")
 floor_height = 0.0
 ceiling_height = 0.001
+sector_material = ExtResource("17_hxkhf")
 portal_wall_length = 1.0
 
 [node name="Configuration" type="Node" parent="Sectors/Main/Outsides1/TowerInsides/Bars/Sector-5342n2" node_paths=PackedStringArray("source")]
@@ -8569,12 +8579,13 @@ ceiling_height = 3.75
 [node name="Sector-5342j" parent="Sectors/Main/Outsides1/TowerInsides/Bars" instance=ExtResource("2_eukjm")]
 position = Vector2(-162, 133.42735)
 color = Color(1, 1, 1, 1)
-texture = ExtResource("10_krcb3")
+texture = ExtResource("16_777gt")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(48, -134.42735, 48, -135.42735, 49, -135.42735, 49, -134.42735)
 data = SubResource("Resource_c4kc2")
 floor_height = 0.0
 ceiling_height = 0.001
+sector_material = ExtResource("17_hxkhf")
 portal_wall_length = 1.0
 
 [node name="Configuration" type="Node" parent="Sectors/Main/Outsides1/TowerInsides/Bars/Sector-5342j" node_paths=PackedStringArray("source")]
@@ -8587,12 +8598,13 @@ ceiling_height = 3.75
 [node name="Sector-5342q" parent="Sectors/Main/Outsides1/TowerInsides/Bars" instance=ExtResource("2_eukjm")]
 position = Vector2(-162, 133.42735)
 color = Color(1, 1, 1, 1)
-texture = ExtResource("10_krcb3")
+texture = ExtResource("16_777gt")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(48, -126.42735, 48, -127.42735, 49, -127.42735, 49, -126.42735)
 data = SubResource("Resource_mk4yw")
 floor_height = 0.0
 ceiling_height = 0.001
+sector_material = ExtResource("17_hxkhf")
 portal_wall_length = 1.0
 
 [node name="Configuration" type="Node" parent="Sectors/Main/Outsides1/TowerInsides/Bars/Sector-5342q" node_paths=PackedStringArray("source")]
@@ -8605,12 +8617,13 @@ ceiling_height = 3.75
 [node name="Sector-5342n3" parent="Sectors/Main/Outsides1/TowerInsides/Bars" instance=ExtResource("2_eukjm")]
 position = Vector2(-162, 133.42735)
 color = Color(1, 1, 1, 1)
-texture = ExtResource("10_krcb3")
+texture = ExtResource("16_777gt")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(48, -136.42735, 48, -137.42735, 49, -137.42735, 49, -136.42735)
 data = SubResource("Resource_c6qmg")
 floor_height = 0.0
 ceiling_height = 0.001
+sector_material = ExtResource("17_hxkhf")
 portal_wall_length = 1.0
 
 [node name="Configuration" type="Node" parent="Sectors/Main/Outsides1/TowerInsides/Bars/Sector-5342n3" node_paths=PackedStringArray("source")]
@@ -8623,12 +8636,13 @@ ceiling_height = 3.75
 [node name="Sector-5342h" parent="Sectors/Main/Outsides1/TowerInsides/Bars" instance=ExtResource("2_eukjm")]
 position = Vector2(-162, 133.42735)
 color = Color(1, 1, 1, 1)
-texture = ExtResource("10_krcb3")
+texture = ExtResource("16_777gt")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(48, -138.42735, 48, -139.42735, 49, -139.42735, 49, -138.42735)
 data = SubResource("Resource_a31n5")
 floor_height = 0.0
 ceiling_height = 0.001
+sector_material = ExtResource("17_hxkhf")
 portal_wall_length = 1.0
 
 [node name="Configuration" type="Node" parent="Sectors/Main/Outsides1/TowerInsides/Bars/Sector-5342h" node_paths=PackedStringArray("source")]
@@ -8742,14 +8756,12 @@ floor_height = 0.0
 ceiling_height = 3.0
 portal_wall_length = 4.0
 
-[node name="Window" type="Polygon2D" parent="Sectors/Main/Outsides1/HouseInside1" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Window" parent="Sectors/Main/Outsides1/HouseInside1" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
 position = Vector2(-115.625755, 22.387955)
+color = Color(1, 1, 1, 1)
 texture = ExtResource("10_krcb3")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(7.6257553, 9.612045, 1.6257553, 9.612045, 1.6257553, 7.6120453, 5.6257553, 7.6120453, 7.6257553, 7.6120453)
-script = ExtResource("41_738hi")
 data = SubResource("Resource_aqjxs")
 floor_height = 2.5
 ceiling_height = 3.5
@@ -8759,16 +8771,13 @@ portal_destination = NodePath("../../WindowDestination/Sector-6779a3")
 portal_wall_length = 6.0
 portal_destination_wall_length = 6.0
 
-[node name="Window2" type="Polygon2D" parent="Sectors/Main/Outsides1/HouseInside1" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Window2" parent="Sectors/Main/Outsides1/HouseInside1" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
 position = Vector2(-94, 9)
+color = Color(1, 1, 1, 1)
 texture = ExtResource("10_krcb3")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-2, -4, 0, -4, 0, 2, -2, 2)
-script = ExtResource("41_738hi")
 data = SubResource("Resource_px2o4")
-floor_height = 1.0
 ceiling_height = 2.0
 sector_material = ExtResource("61_dasgw")
 enable_portal = true
@@ -8950,13 +8959,11 @@ ceiling_height = 4.0
 sector_material = ExtResource("43_kmijg")
 portal_wall_length = 10.0
 
-[node name="TextureOverride" type="Node2D" parent="Sectors/Main/Outsides1/HouseInside1/HouseInsides1/Bed/Sector-6590" instance=ExtResource("23_vy02w")]
+[node name="TextureOverride" parent="Sectors/Main/Outsides1/HouseInside1/HouseInsides1/Bed/Sector-6590" instance=ExtResource("23_vy02w")]
 position = Vector2(7.198601, -10.518394)
 rotation = 0.35317522
 scale = Vector2(0.33060324, 0.33060324)
-script = ExtResource("59_c7hrj")
 texture = ExtResource("60_xj83m")
-_use_ceiling_offset = true
 
 [node name="Sector-6590a" parent="Sectors/Main/Outsides1/HouseInside1/HouseInsides1/Bed" instance=ExtResource("2_eukjm")]
 position = Vector2(-1.084816, -13.769684)
@@ -8982,52 +8989,41 @@ ceiling_height = 4.0
 sector_material = ExtResource("43_nda1l")
 portal_wall_length = 4.0
 
-[node name="Sector-8775" type="Polygon2D" parent="Sectors/Main/Outsides1/HouseInside1/HouseInsides1" instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-8775" parent="Sectors/Main/Outsides1/HouseInside1/HouseInsides1" instance=ExtResource("2_eukjm")]
 position = Vector2(1.0117493, -27.847565)
+color = Color(1, 1, 1, 1)
 texture = ExtResource("10_krcb3")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(0.10203552, -1.4405136, 7.1020355, -1.4405136, 10.1020355, 3.5594864, 0.10203552, 3.5594864, -2.8979645, 3.5594864)
-script = ExtResource("41_738hi")
 data = SubResource("Resource_q3gkn")
-floor_height = 1.0
 ceiling_height = 3.5
-sector_material = ExtResource("3_krcvx")
 portal_wall_length = 7.0
-portal_destination_wall_length = -1.0
 
 [node name="WindowDestination" type="Node2D" parent="Sectors/Main/Outsides1"]
 position = Vector2(336, 1420)
 
-[node name="Sector-6779" type="Polygon2D" parent="Sectors/Main/Outsides1/WindowDestination" instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-6779" parent="Sectors/Main/Outsides1/WindowDestination" instance=ExtResource("2_eukjm")]
 position = Vector2(-42.17737, 75.36928)
+color = Color(1, 1, 1, 1)
 texture = ExtResource("30_hxkhf")
 texture_scale = Vector2(0.5, 0.5)
 polygon = PackedVector2Array(2.1773682, -83.36928, 25.177368, -348.36926, 464.17737, -210.36926, 482.17737, 371.63074, 23.177368, 463.63074, 2.1773682, 148.63072, 2.1773682, 66.63072, 2.1773682, 60.630722, 2.1773682, 59.630722, 2.1773682, 53.630722, 2.1773682, 52.630722, 2.1773682, 46.630722, 2.1773682, 45.630722, 2.1773682, 39.630722, 2.1773682, 31.630722, 2.1773682, 25.630722, 2.1773682, 21.630722, 2.1773682, 15.630722)
-script = ExtResource("41_738hi")
 data = SubResource("Resource_b4xax")
+floor_height = 0.0
 ceiling_height = 1000.0
 sector_material = ExtResource("17_7nxdn")
 portal_wall_length = 265.99625
-portal_destination_wall_length = -1.0
 
-[node name="Sector-6779a" type="Polygon2D" parent="Sectors/Main/Outsides1/WindowDestination" instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-6779a" parent="Sectors/Main/Outsides1/WindowDestination" instance=ExtResource("2_eukjm")]
 position = Vector2(-42.17737, 74)
+color = Color(1, 1, 1, 1)
 texture = ExtResource("10_krcb3")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(1.1773682, 47, 1.1773682, 41, 2.1773682, 41, 2.1773682, 47)
-script = ExtResource("41_738hi")
 data = SubResource("Resource_u02ot")
-floor_height = 1.0
 ceiling_height = 2.0
 sector_material = ExtResource("61_dasgw")
 portal_wall_length = 6.0
-portal_destination_wall_length = -1.0
 
 [node name="Sector-6779a4" parent="Sectors/Main/Outsides1/WindowDestination" instance=ExtResource("2_eukjm")]
 position = Vector2(-42.17737, 81)
@@ -9228,68 +9224,54 @@ ceiling_height = 4.0
 sector_material = ExtResource("43_nda1l")
 portal_wall_length = 1.0
 
-[node name="Sector-4052" type="Polygon2D" parent="Sectors/Main/Outsides1/HouseInside2/HouseInsides2" instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-4052" parent="Sectors/Main/Outsides1/HouseInside2/HouseInsides2" instance=ExtResource("2_eukjm")]
 position = Vector2(2.1836243, 39.343307)
+color = Color(1, 1, 1, 1)
 texture = ExtResource("10_krcb3")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-5.1836243, -0.6313858, 10.816376, -0.6313858, 7.8163757, 5.368614, -2.1836243, 5.368614)
-script = ExtResource("41_738hi")
 data = SubResource("Resource_3c2ox")
 floor_height = 0.8
 ceiling_height = 3.5
-sector_material = ExtResource("3_krcvx")
 portal_wall_length = 16.0
-portal_destination_wall_length = -1.0
 
-[node name="Sector-3105" type="Polygon2D" parent="Sectors/Main/Outsides1/HouseInside2/HouseInsides2" instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-3105" parent="Sectors/Main/Outsides1/HouseInside2/HouseInsides2" instance=ExtResource("2_eukjm")]
 position = Vector2(0, -21.288078)
+color = Color(1, 1, 1, 1)
 texture = ExtResource("10_krcb3")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(0, 6, 10, 6, 13, 11, 3, 11, -3, 11)
-script = ExtResource("41_738hi")
 data = SubResource("Resource_fe2x0")
 floor_height = 0.8
 ceiling_height = 3.5
-sector_material = ExtResource("3_krcvx")
 portal_wall_length = 10.0
-portal_destination_wall_length = -1.0
 
 [node name="HouseInside3" type="Node2D" parent="Sectors/Main/Outsides1"]
 position = Vector2(102, 198)
 
-[node name="EnemyReservoir" type="Polygon2D" parent="Sectors/Main/Outsides1/HouseInside3" instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="EnemyReservoir" parent="Sectors/Main/Outsides1/HouseInside3" instance=ExtResource("2_eukjm")]
 position = Vector2(3.972412, 154.5631)
+color = Color(1, 1, 1, 1)
 texture = ExtResource("16_oa07f")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(0.02758789, -23.563095, 39.027588, -13.563095, 35.027588, 34.436905, -18.972412, 30.436905)
-script = ExtResource("41_738hi")
 data = SubResource("Resource_ks0lm")
 floor_height = 3.0
 ceiling_height = 1000.0
 sector_material = ExtResource("32_rkpsj")
 portal_wall_length = 40.261642
-portal_destination_wall_length = -1.0
 
-[node name="AmmoReservoir" type="Polygon2D" parent="Sectors/Main/Outsides1/HouseInside3" instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="AmmoReservoir" parent="Sectors/Main/Outsides1/HouseInside3" instance=ExtResource("2_eukjm")]
 position = Vector2(-44.68567, 143.99739)
+color = Color(1, 1, 1, 1)
 texture = ExtResource("16_oa07f")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(8.685669, -12.997391, 44.68567, -12.997391, 21.685669, 38.00261, -3.314331, 29.00261)
-script = ExtResource("41_738hi")
 data = SubResource("Resource_abvc5")
 floor_height = 3.0
 ceiling_height = 1000.0
 sector_material = ExtResource("32_rkpsj")
 portal_wall_length = 36.0
-portal_destination_wall_length = -1.0
 
 [node name="HouseInsides2" parent="Sectors/Main/Outsides1/HouseInside3" instance=ExtResource("6_eukjm")]
 position = Vector2(-83, 15.288078)
@@ -9379,6 +9361,10 @@ floor_height = 1.5
 ceiling_height = 6.545454545454545
 portal_wall_length = 8.0
 
+[node name="Trigger" type="Node" parent="Sectors/Main/Outsides1/HouseInside3/HouseInsides2/Stairs2/Sector-5045c" node_paths=PackedStringArray("target")]
+script = ExtResource("13_et0pd")
+target = NodePath("../../../../../../../../Activators/Outsides1House_Trap")
+
 [node name="Sector-5045d" parent="Sectors/Main/Outsides1/HouseInside3/HouseInsides2/Stairs2" instance=ExtResource("2_eukjm")]
 position = Vector2(-1.5119705, 7.0998764)
 color = Color(1, 1, 1, 1)
@@ -9464,11 +9450,11 @@ position = Vector2(-7.1255035, -8.49057)
 color = Color(1, 1, 1, 1)
 texture = ExtResource("10_krcb3")
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(1.1255035, 36.20249, 10.125504, 36.20249, 7.1255035, 43.20249, 3.1255035, 43.20249, -0.87449646, 43.20249)
+polygon = PackedVector2Array(1.1255035, 36.20249, 9.125504, 36.20249, 7.1255035, 43.20249, 3.1255035, 43.20249, -0.87449646, 43.20249)
 data = SubResource("Resource_weve2")
 floor_height = 0.0
 ceiling_height = 4.0
-portal_wall_length = 9.0
+portal_wall_length = 8.0
 
 [node name="Trigger" type="Node" parent="Sectors/Main/Outsides1/HouseInside3/HouseInsides2/Trap" node_paths=PackedStringArray("target")]
 script = ExtResource("13_et0pd")
@@ -10115,6 +10101,18 @@ position = Vector2(-45, 69)
 [node name="StandingTorch" parent="Lights/Outsides" instance=ExtResource("73_8al0g")]
 position = Vector2(-43, 100)
 
+[node name="StandingTorch2" parent="Lights/Outsides" instance=ExtResource("73_8al0g")]
+position = Vector2(-293, -55)
+
+[node name="StandingTorch3" parent="Lights/Outsides" instance=ExtResource("73_8al0g")]
+position = Vector2(-293, -75)
+
+[node name="StandingTorch4" parent="Lights/Outsides" instance=ExtResource("73_8al0g")]
+position = Vector2(-450.00006, -69)
+
+[node name="StandingTorch5" parent="Lights/Outsides" instance=ExtResource("73_8al0g")]
+position = Vector2(-450.00006, -59)
+
 [node name="HangingLantern1" parent="Lights/Outsides" instance=ExtResource("70_6vrtt")]
 position = Vector2(-35, 100)
 
@@ -10320,7 +10318,7 @@ position = Vector2(-163, 175)
 position = Vector2(-222, 74)
 
 [node name="PlasmaAmmo2" parent="PickUps/Outsides" instance=ExtResource("12_coai7")]
-position = Vector2(-108, -11)
+position = Vector2(-109, -10)
 
 [node name="HpBig" parent="PickUps/Outsides" instance=ExtResource("18_b0a4w")]
 position = Vector2(-222, 77)
@@ -10873,10 +10871,11 @@ player_sensitive = false
 enemy_sensitive = true
 
 [node name="PlayerPosition" parent="." instance=ExtResource("7_ufqas")]
-position = Vector2(-276, -149)
-rotation = 1.4320121
+position = Vector2(-64, -64)
+rotation = 5.337088
 
 [node name="DebugWeapons" type="Node2D" parent="PlayerPosition"]
+visible = false
 
 [node name="PlasmaRifle3" parent="PlayerPosition/DebugWeapons" instance=ExtResource("11_krcvx")]
 position = Vector2(3.5915756, 0.31715393)
