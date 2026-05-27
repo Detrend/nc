@@ -6,7 +6,7 @@
 [ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="4_kk0f5"]
 [ext_resource type="Resource" uid="uid://coohq55u58kbj" path="res://material_textures/stone_wall.tres" id="5_2rubc"]
 [ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="6_5ipds"]
-[ext_resource type="Resource" uid="uid://htq875n7jyq6" path="res://material_textures/ga_textures/door_big_on.tres" id="7_j4gbm"]
+[ext_resource type="Resource" uid="uid://cxmtw4ka1mer5" path="res://material_textures/ga_textures/door_big_tall_on.tres" id="7_j4gbm"]
 
 [sub_resource type="Resource" id="Resource_csai5"]
 script = ExtResource("4_kk0f5")

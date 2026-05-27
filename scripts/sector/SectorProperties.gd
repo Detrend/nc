@@ -2,12 +2,26 @@
 extends Resource
 class_name SectorProperties
 
+enum WalkabilityMode{
+	Default = 0, Walkable = 1, Unwalkable = 2
+}
+
 ## Default floor height of this sector, can be changed during runtime through [SectorAltConfig]
 @export var floor_height : float = 0.0
 ## Default ceiling height of this sector, can be changed during runtime through [SectorAltConfig]
 @export var ceiling_height : float = 1.5
 
 @export var force_walkability : bool = false
+@export var walkability : WalkabilityMode = WalkabilityMode.Default :
+	get:
+		if force_walkability:
+			walkability = WalkabilityMode.Walkable
+		return walkability
+	set(val):
+		if force_walkability:
+			walkability = WalkabilityMode.Walkable
+		else:
+			walkability = val
 
 @export var damage : int = 0
 ## Material used for texturing this sector
