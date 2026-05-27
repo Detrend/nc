@@ -69,7 +69,7 @@ namespace nc
       inline constexpr const char* FRAGMENT_FILE = "light.frag";
 
       inline constexpr Uniform<0, vec3> VIEW_POSITION;
-      inline constexpr Uniform<1, u32>  NUM_DIR_LIGHTS;
+      // inline constexpr Uniform<1, u32>  NUM_DIR_LIGHTS; // Not using anymore
       inline constexpr Uniform<2, u32>  NUM_TILES_X;
       inline constexpr Uniform<3, f32>  AMBIENT_STRENGTH;
       inline constexpr Uniform<4, u32>  NUM_SECTORS;

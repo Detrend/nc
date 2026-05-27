@@ -61,7 +61,7 @@ layout(binding = 4) uniform sampler2D  g_albedo;
 layout(binding = 5) uniform usampler2D g_sector;
 
 layout(location = 0) uniform vec3  view_position;
-layout(location = 1) uniform uint  num_dir_lights;
+//layout(location = 1) uniform uint  num_dir_lights; // Not using this anymore
 layout(location = 2) uniform uint  num_tiles_x;
 layout(location = 3) uniform float ambient_strength;
 layout(location = 4) uniform uint  num_sectors;

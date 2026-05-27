@@ -546,7 +546,7 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   // prepare shader
   m_light_material.use();
   m_light_material.set_uniform(shaders::light::VIEW_POSITION, view_position);
-  m_light_material.set_uniform(shaders::light::NUM_DIR_LIGHTS, m_dir_light_ssbo.gpu_size_u32());
+  // m_light_material.set_uniform(shaders::light::NUM_DIR_LIGHTS, m_dir_light_ssbo.gpu_size_u32()); // Disabled for now
   m_light_material.set_uniform(shaders::light::NUM_TILES_X, cast<u32>(num_tiles_x));
   m_light_material.set_uniform(shaders::light::NUM_SECTORS, m_sectors_ssbo.gpu_size_u32());
   m_light_material.set_uniform(shaders::light::NUM_WALLS, m_walls_ssbo.gpu_size_u32());
