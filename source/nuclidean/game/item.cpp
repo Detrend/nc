@@ -22,7 +22,7 @@ constexpr f32 PICKUP_HEIGHT = 0.2f;
 constexpr u32 PICKUP_AMMO_CNTS[] = {0, 6, 12, 4};
 static_assert(ARRAY_LENGTH(PICKUP_AMMO_CNTS) == WeaponTypes::count);
 
-constexpr u32 PICKUP_WEAPON_AMMO_CNTS[] = {0, 4, 10, 2};
+constexpr u32 PICKUP_WEAPON_AMMO_CNTS[] = {0, 4, 10, 6};
 static_assert(ARRAY_LENGTH(PICKUP_WEAPON_AMMO_CNTS) == WeaponTypes::count);
 
 //==============================================================================
