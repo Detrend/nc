@@ -14,7 +14,7 @@ script = ExtResource("1_fm8vh")
 radius = 1.0
 height = 1.0
 sprite_name = "candle_6"
-sprite_scale = 22.5
+sprite_scale = 45.0
 pivot_mode = 1
 height_offset = 0.0
 

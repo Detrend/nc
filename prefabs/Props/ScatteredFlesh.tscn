@@ -9,7 +9,7 @@ script = ExtResource("1_m3u0d")
 radius = 0.25
 height = 2.0
 sprite_name = "possessed_dying_23"
-sprite_scale = 22.5
+sprite_scale = 45.0
 pivot_mode = 1
 height_offset = 0.0
 
