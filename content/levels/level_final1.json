@@ -6981,6 +6981,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -7043,6 +7044,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793m",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -7120,6 +7122,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793p",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -7197,6 +7200,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793p4",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -7300,6 +7304,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793p3",
+			"door_sfx_override": false,
 			"floor": 11.25,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -7364,6 +7369,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793p2",
+			"door_sfx_override": false,
 			"floor": 11.25,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -7428,6 +7434,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v5",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -7528,6 +7535,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v6",
+			"door_sfx_override": true,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_15px",
@@ -7605,6 +7613,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v6a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -7705,6 +7714,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v3",
+			"door_sfx_override": true,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_15px",
@@ -7782,6 +7792,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v3b",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -7874,6 +7885,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v3a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -7966,6 +7978,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -8045,6 +8058,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v7",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -8118,6 +8132,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v7a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -8167,6 +8182,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v7b",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -8246,6 +8262,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2c",
+			"door_sfx_override": false,
 			"floor": 9.5,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -8357,6 +8374,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2d",
+			"door_sfx_override": false,
 			"floor": 9.5,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -8479,6 +8497,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2d2",
+			"door_sfx_override": false,
 			"floor": 9.5,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -8575,6 +8594,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -8637,6 +8657,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2h",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -8777,6 +8798,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2h3",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -8854,6 +8876,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2h3a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -8965,6 +8988,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2h3g",
+			"door_sfx_override": true,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -9042,6 +9066,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2h3b",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -9225,6 +9250,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2h3f",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -9317,6 +9343,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2h3e",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -9409,6 +9436,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2h3d",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -9501,6 +9529,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2h3c",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -9593,6 +9622,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2h2",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -9657,6 +9687,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2j",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -9730,6 +9761,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2j2",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -9807,6 +9839,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2k",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -9918,6 +9951,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2k3",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -9980,6 +10014,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2k3a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -10074,6 +10109,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2k2",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -10147,6 +10183,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2p",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -10209,6 +10246,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2q",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -10335,6 +10373,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2r",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -10399,6 +10438,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2l",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -10463,6 +10503,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2m",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -10606,6 +10647,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2n",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -10678,6 +10720,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2o",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -10869,6 +10912,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2v",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -10946,6 +10990,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2w",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -11057,6 +11102,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2x",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -11134,6 +11180,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2y",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -11245,6 +11292,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2z",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -11322,6 +11370,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2u",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -11414,6 +11463,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2s",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -11557,6 +11607,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2t",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -11649,6 +11700,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2i",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -11741,6 +11793,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2b",
+			"door_sfx_override": false,
 			"floor": 9.5,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -11972,6 +12025,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2f",
+			"door_sfx_override": false,
 			"floor": 9.5,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -12049,6 +12103,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v2e",
+			"door_sfx_override": false,
 			"floor": 9.5,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -12126,6 +12181,7 @@
 			},
 			"damage": 20,
 			"debug_name": "Sectors::Sector-1793u",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "red_wall",
@@ -12346,6 +12402,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793v",
+			"door_sfx_override": false,
 			"floor": 0.5,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -12438,6 +12495,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793u3",
+			"door_sfx_override": false,
 			"floor": 17.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -12530,6 +12588,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793u2",
+			"door_sfx_override": false,
 			"floor": 11.25,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -12581,6 +12640,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793k",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -12628,6 +12688,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793l",
+			"door_sfx_override": false,
 			"floor": 15.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -12694,6 +12755,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793l17",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -12756,6 +12818,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793l16",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -12818,6 +12881,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793l15",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -12880,6 +12944,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793l14",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -12950,6 +13015,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793l13",
+			"door_sfx_override": false,
 			"floor": 13.99,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -13042,6 +13108,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793l12",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -13104,6 +13171,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793l11",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -13166,6 +13234,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793l10",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -13228,6 +13297,7 @@
 			},
 			"damage": 20,
 			"debug_name": "Sectors::Sector-1793l9",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "red_wall",
@@ -13333,6 +13403,7 @@
 			},
 			"damage": 20,
 			"debug_name": "Sectors::Sector-1793l8",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "red_wall",
@@ -13438,6 +13509,7 @@
 			},
 			"damage": 20,
 			"debug_name": "Sectors::Sector-1793l7",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "red_wall",
@@ -13543,6 +13615,7 @@
 			},
 			"damage": 20,
 			"debug_name": "Sectors::Sector-1793l6",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "red_wall",
@@ -13648,6 +13721,7 @@
 			},
 			"damage": 20,
 			"debug_name": "Sectors::Sector-1793l5",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "red_wall",
@@ -13753,6 +13827,7 @@
 			},
 			"damage": 20,
 			"debug_name": "Sectors::Sector-1793l4",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "red_wall",
@@ -13858,6 +13933,7 @@
 			},
 			"damage": 20,
 			"debug_name": "Sectors::Sector-1793l3",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "red_wall",
@@ -13963,6 +14039,7 @@
 			},
 			"damage": 20,
 			"debug_name": "Sectors::Sector-1793l2",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "red_wall",
@@ -14068,6 +14145,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793b",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -14145,6 +14223,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793j",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -14192,6 +14271,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793c",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -14254,6 +14334,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793o",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -14331,6 +14412,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793r",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -14418,6 +14500,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793y",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -14463,6 +14546,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -14555,6 +14639,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x6",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_15px",
@@ -14632,6 +14717,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x6a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -14724,6 +14810,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x4",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -14851,6 +14938,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x4q",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -14940,6 +15028,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x4m",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -15047,6 +15136,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x4n",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -15139,6 +15229,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x4o",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -15216,6 +15307,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x4p",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -15342,6 +15434,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x4a",
+			"door_sfx_override": false,
 			"floor": 10.25,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -15434,6 +15527,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x4b",
+			"door_sfx_override": false,
 			"floor": 10.5,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -15526,6 +15620,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x4c",
+			"door_sfx_override": false,
 			"floor": 10.75,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -15618,6 +15713,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x4d",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -15710,6 +15806,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x4e",
+			"door_sfx_override": false,
 			"floor": 11.25,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -15802,6 +15899,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x4f",
+			"door_sfx_override": false,
 			"floor": 11.5,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -15894,6 +15992,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x4g",
+			"door_sfx_override": false,
 			"floor": 11.75,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -15986,6 +16085,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x4h",
+			"door_sfx_override": false,
 			"floor": 12.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -16063,6 +16163,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x4i",
+			"door_sfx_override": false,
 			"floor": 12.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -16257,6 +16358,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x4k",
+			"door_sfx_override": false,
 			"floor": 12.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -16334,6 +16436,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x4l",
+			"door_sfx_override": false,
 			"floor": 12.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -16452,6 +16555,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x4j",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -16587,6 +16691,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -16718,6 +16823,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x8",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -16793,6 +16899,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x7",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -16903,6 +17010,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x5",
+			"door_sfx_override": false,
 			"floor": 12.5,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -16981,6 +17089,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x3",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -17066,6 +17175,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2j",
+			"door_sfx_override": false,
 			"floor": 10.17,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -17151,6 +17261,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2j2",
+			"door_sfx_override": false,
 			"floor": 10.16,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -17236,6 +17347,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2j2a",
+			"door_sfx_override": false,
 			"floor": 10.15,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -17336,6 +17448,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2j2b",
+			"door_sfx_override": false,
 			"floor": 10.14,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -17436,6 +17549,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2j2c",
+			"door_sfx_override": false,
 			"floor": 10.13,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -17536,6 +17650,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2j2d",
+			"door_sfx_override": false,
 			"floor": 10.12,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -17636,6 +17751,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2j2e",
+			"door_sfx_override": false,
 			"floor": 10.11,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -17721,6 +17837,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2j2f",
+			"door_sfx_override": false,
 			"floor": 10.1,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -17798,6 +17915,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2m",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -17875,6 +17993,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2n",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -17954,6 +18073,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2n4",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -18027,6 +18147,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2n3",
+			"door_sfx_override": false,
 			"floor": 13.5,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -18104,6 +18225,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2n3a",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -18180,6 +18302,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2n2",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -18384,6 +18507,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2n2l",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -18488,6 +18612,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2n2i",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -18533,6 +18658,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2n2f",
+			"door_sfx_override": false,
 			"floor": 13.5,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -18610,6 +18736,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2n2e",
+			"door_sfx_override": false,
 			"floor": 13.5,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -18687,6 +18814,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2n2a",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -18778,6 +18906,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2n2j",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -18851,6 +18980,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2n2h",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -19008,6 +19138,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2n2g",
+			"door_sfx_override": false,
 			"floor": 13.5,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -19085,6 +19216,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2n2d",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -19162,6 +19294,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2n2c",
+			"door_sfx_override": false,
 			"floor": 13.75,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -19268,6 +19401,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2n2b",
+			"door_sfx_override": false,
 			"floor": 13.5,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -19362,6 +19496,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2n2k",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -19453,6 +19588,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2x",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -19553,6 +19689,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2x3",
+			"door_sfx_override": true,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -19630,6 +19767,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2x3a",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -19722,6 +19860,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2x2",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -19866,6 +20005,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2x2i",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -19943,6 +20083,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2x2a",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -20034,6 +20175,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2x2c",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -20081,6 +20223,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2x2d",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -20176,6 +20319,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2x2h",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -20238,6 +20382,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2x2g",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -20345,6 +20490,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2x2f",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -20452,6 +20598,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2x2b",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -20512,6 +20659,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2x2e",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -20641,6 +20789,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2x2k",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -20718,6 +20867,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2x2l",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "dark_tiles",
@@ -20929,6 +21079,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2x2o",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -21021,6 +21172,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2x2m",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -21133,6 +21285,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2x2j",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -21210,6 +21363,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2x2n",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -21317,6 +21471,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2p",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -21417,6 +21572,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2p2",
+			"door_sfx_override": true,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -21494,6 +21650,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2p2a",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -21586,6 +21743,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2q",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -21745,6 +21903,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2q3",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -21823,6 +21982,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2q2",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -21896,6 +22056,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2z",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "technical_tile_2",
@@ -21988,6 +22149,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2v",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -22067,6 +22229,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2w",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -22144,6 +22307,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2s",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "technical_tile_2",
@@ -22236,6 +22400,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2r",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "technical_tile_2",
@@ -22328,6 +22493,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2o",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -22428,6 +22594,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2o2",
+			"door_sfx_override": true,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -22505,6 +22672,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2o2a",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -22597,6 +22765,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2t",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -22675,6 +22844,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2t3",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -22752,6 +22922,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2t2",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -22840,6 +23011,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2y",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white",
@@ -22934,6 +23106,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2u",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -23011,6 +23184,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2k",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -23122,6 +23296,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2k2",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -23199,6 +23374,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2k2a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -23302,6 +23478,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2i",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -23413,6 +23590,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2l",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -23490,6 +23668,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2h",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -23564,6 +23743,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2h3",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -23613,6 +23793,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2h2",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -23692,6 +23873,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2h2c",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -23823,6 +24005,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2h2b",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -23900,6 +24083,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2h2a",
+			"door_sfx_override": false,
 			"floor": 11.25,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -24004,6 +24188,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2g",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -24085,6 +24270,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2g3",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -24147,6 +24333,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2g3a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -24209,6 +24396,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2g2",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -24309,6 +24497,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2g2g",
+			"door_sfx_override": true,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -24386,6 +24575,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2g2h",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -24478,6 +24668,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2g2b",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -24587,6 +24778,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2g2a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -24809,6 +25001,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2g2f",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -24901,6 +25094,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2g2e",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -24993,6 +25187,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2g2d",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -25087,6 +25282,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2g2c",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -25174,6 +25370,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -25266,6 +25463,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2b",
+			"door_sfx_override": false,
 			"floor": 10.5,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -25390,6 +25588,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2c",
+			"door_sfx_override": false,
 			"floor": 11.5,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -25482,6 +25681,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2d",
+			"door_sfx_override": false,
 			"floor": 11.5,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -25574,6 +25774,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2e",
+			"door_sfx_override": false,
 			"floor": 12.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -25666,6 +25867,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793x2f",
+			"door_sfx_override": false,
 			"floor": 12.5,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -25775,6 +25977,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793z",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -25843,6 +26046,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793za",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -25888,6 +26092,7 @@
 			},
 			"damage": 20,
 			"debug_name": "Sectors::Sector-1793zb",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "red_wall",
@@ -25982,6 +26187,7 @@
 			},
 			"damage": 20,
 			"debug_name": "Sectors::Sector-1793zc",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "red_wall",
@@ -26059,6 +26265,7 @@
 			},
 			"damage": 20,
 			"debug_name": "Sectors::Sector-1793zd",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "red_wall",
@@ -26153,6 +26360,7 @@
 			},
 			"damage": 20,
 			"debug_name": "Sectors::Sector-1793ze",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "red_wall",
@@ -26230,6 +26438,7 @@
 			},
 			"damage": 20,
 			"debug_name": "Sectors::Sector-1793t",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "red_wall",
@@ -26438,6 +26647,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793t3",
+			"door_sfx_override": false,
 			"floor": 0.5,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -26530,6 +26740,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793t2",
+			"door_sfx_override": false,
 			"floor": 11.25,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -26581,6 +26792,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793i",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -26628,6 +26840,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793d",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -26705,6 +26918,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793h",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -26752,6 +26966,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793e",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -26814,6 +27029,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793n",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -26891,6 +27107,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793q",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -26983,6 +27200,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793q3",
+			"door_sfx_override": false,
 			"floor": 11.25,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -27045,6 +27263,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793q2",
+			"door_sfx_override": false,
 			"floor": 11.25,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -27107,6 +27326,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -27207,6 +27427,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w3",
+			"door_sfx_override": true,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -27284,6 +27505,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w3a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "red_carpet",
@@ -27376,6 +27598,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "red_carpet",
@@ -27617,6 +27840,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2y",
+			"door_sfx_override": false,
 			"floor": 10.5,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -27694,6 +27918,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2y2",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "red_carpet",
@@ -27921,6 +28146,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2y2d",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "red_carpet",
@@ -28013,6 +28239,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2y2c",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white",
@@ -28075,6 +28302,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2y2e",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white",
@@ -28169,6 +28397,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2y2b",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white",
@@ -28231,6 +28460,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2y2f",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white",
@@ -28325,6 +28555,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2y2a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "red_carpet",
@@ -28417,6 +28648,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2x",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -28509,6 +28741,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "red_carpet",
@@ -28983,6 +29216,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f6",
+			"door_sfx_override": false,
 			"floor": 11.5,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -29087,6 +29321,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f5",
+			"door_sfx_override": false,
 			"floor": 11.5,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -29191,6 +29426,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -29291,6 +29527,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f4",
+			"door_sfx_override": true,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -29368,6 +29605,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f4a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -29460,6 +29698,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -29748,6 +29987,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3a3",
+			"door_sfx_override": false,
 			"floor": 11.5,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -29852,6 +30092,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3a2",
+			"door_sfx_override": false,
 			"floor": 11.5,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -29956,6 +30197,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3c",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -30033,6 +30275,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3c3",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -30110,6 +30353,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3c3a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -30187,6 +30431,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3c2",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -30279,6 +30524,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3c2a",
+			"door_sfx_override": false,
 			"floor": 9.5,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -30476,6 +30722,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3c2k",
+			"door_sfx_override": false,
 			"floor": 9.5,
 			"floor_surface": {
 				"id": "moss",
@@ -30553,6 +30800,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3c2m",
+			"door_sfx_override": false,
 			"floor": 9.5,
 			"floor_surface": {
 				"id": "moss",
@@ -30668,6 +30916,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3c2j",
+			"door_sfx_override": false,
 			"floor": 9.5,
 			"floor_surface": {
 				"id": "moss",
@@ -30745,6 +30994,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3c2n",
+			"door_sfx_override": false,
 			"floor": 9.5,
 			"floor_surface": {
 				"id": "moss",
@@ -30852,6 +31102,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3c2b",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -30952,6 +31203,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3c2h",
+			"door_sfx_override": true,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -31029,6 +31281,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3c2i",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -31121,6 +31374,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3c2c",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -31228,6 +31482,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3c2d",
+			"door_sfx_override": false,
 			"floor": 10.5,
 			"floor_surface": {
 				"id": "alien_neco",
@@ -31354,6 +31609,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3c2g",
+			"door_sfx_override": false,
 			"floor": 12.0,
 			"floor_surface": {
 				"id": "alien_neco",
@@ -31448,6 +31704,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3c2e",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "alien_neco",
@@ -31574,6 +31831,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3c2o",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "mossy_rocks_2",
@@ -31680,6 +31938,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3c2l",
+			"door_sfx_override": false,
 			"floor": 12.0,
 			"floor_surface": {
 				"id": "alien_neco",
@@ -31784,6 +32043,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3c2f",
+			"door_sfx_override": false,
 			"floor": 12.0,
 			"floor_surface": {
 				"id": "alien_neco",
@@ -31878,6 +32138,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3b",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -31978,6 +32239,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3b2",
+			"door_sfx_override": true,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -32055,6 +32317,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3b2a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -32147,6 +32410,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3d",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white_tiles",
@@ -32340,6 +32604,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3d2",
+			"door_sfx_override": false,
 			"floor": 11.5,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -32444,6 +32709,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3f",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white_tiles",
@@ -32555,6 +32821,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3g",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white_tiles",
@@ -32632,6 +32899,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3h",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white_tiles",
@@ -32757,6 +33025,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3q",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white_tiles",
@@ -33128,6 +33397,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3q5",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white",
@@ -33220,6 +33490,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3q4",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white",
@@ -33312,6 +33583,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3q3",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -33416,6 +33688,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3q2",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -33528,6 +33801,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3t",
+			"door_sfx_override": true,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -33605,6 +33879,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3u",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white_tiles",
@@ -33754,6 +34029,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3r",
+			"door_sfx_override": true,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -33831,6 +34107,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3s",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white_tiles",
@@ -33972,6 +34249,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3i",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "smooth_concrete_dark",
@@ -34034,6 +34312,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3j",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white_tiles",
@@ -34154,6 +34433,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3k",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "smooth_concrete_dark",
@@ -34216,6 +34496,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3l",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white_tiles",
@@ -34336,6 +34617,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3m",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "smooth_concrete_dark",
@@ -34398,6 +34680,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3n",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white_tiles",
@@ -34518,6 +34801,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3o",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "smooth_concrete_dark",
@@ -34580,6 +34864,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3p",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white_tiles",
@@ -34686,6 +34971,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3e",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white_tiles",
@@ -34763,6 +35049,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3v",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white_tiles",
@@ -34874,6 +35161,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3w",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white_tiles",
@@ -35212,6 +35500,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3w8",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white",
@@ -35304,6 +35593,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3w7",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white",
@@ -35396,6 +35686,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3w6",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white",
@@ -35488,6 +35779,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3w5",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -35592,6 +35884,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3w4",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -35696,6 +35989,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3w3",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -35808,6 +36102,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3w2",
+			"door_sfx_override": true,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -35885,6 +36180,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3w2a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white_tiles",
@@ -36034,6 +36330,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3z",
+			"door_sfx_override": true,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -36111,6 +36408,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3za",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white_tiles",
@@ -36260,6 +36558,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3x",
+			"door_sfx_override": true,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -36337,6 +36636,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f3y",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white_tiles",
@@ -36486,6 +36786,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f2",
+			"door_sfx_override": false,
 			"floor": 10.01,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -36586,6 +36887,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f2k",
+			"door_sfx_override": true,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -36678,6 +36980,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f2l",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -36770,6 +37073,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f2a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -36923,6 +37227,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f2e",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -37094,6 +37399,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f2b",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -37184,6 +37490,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f2d",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -37378,6 +37685,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f2i",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -37478,6 +37786,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f2m",
+			"door_sfx_override": true,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -37555,6 +37864,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f2n",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -37647,6 +37957,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f2j",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -37754,6 +38065,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f2h",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -37874,6 +38186,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f2g",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -37966,6 +38279,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f2f",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -38103,6 +38417,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f2c",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -38259,6 +38574,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2f2o",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -38351,6 +38667,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2z",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -38451,6 +38768,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2za",
+			"door_sfx_override": true,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -38528,6 +38846,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2zb",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -38620,6 +38939,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2n",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -38720,6 +39040,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2n2",
+			"door_sfx_override": true,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -38797,6 +39118,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2n2a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -38889,6 +39211,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2o",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "red_carpet",
@@ -39133,6 +39456,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2o2",
+			"door_sfx_override": false,
 			"floor": 10.5,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -39210,6 +39534,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2u",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "red_carpet",
@@ -39287,6 +39612,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2v",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "red_carpet",
@@ -39404,6 +39730,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2w",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "red_carpet",
@@ -39481,6 +39808,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2q",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "red_carpet",
@@ -39558,6 +39886,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2r",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "red_carpet",
@@ -39635,6 +39964,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2s",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "red_carpet",
@@ -39712,6 +40042,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2t",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "red_carpet",
@@ -39859,6 +40190,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2t2",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "red_carpet",
@@ -39951,6 +40283,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2p",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white",
@@ -40006,6 +40339,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2m",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -40106,6 +40440,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2m2",
+			"door_sfx_override": true,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -40183,6 +40518,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2m2a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -40275,6 +40611,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2g",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -40375,6 +40712,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2g2",
+			"door_sfx_override": true,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -40452,6 +40790,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2g2a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_20px",
@@ -40544,6 +40883,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2h",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "red_carpet",
@@ -40720,6 +41060,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2h2",
+			"door_sfx_override": false,
 			"floor": 11.5,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -40824,6 +41165,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2k",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "red_carpet",
@@ -40901,6 +41243,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2l",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "red_carpet",
@@ -40978,6 +41321,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2a",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "dark_wavy_wall",
@@ -41055,6 +41399,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2b",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white",
@@ -41134,6 +41479,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2i",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white",
@@ -41196,6 +41542,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2j",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white",
@@ -41273,6 +41620,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2c",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white",
@@ -41352,6 +41700,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2e",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "red_carpet",
@@ -41429,6 +41778,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793w2d",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white",
@@ -41491,6 +41841,7 @@
 			},
 			"damage": 20,
 			"debug_name": "Sectors::Sector-1793s",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "red_wall",
@@ -41682,6 +42033,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793s3",
+			"door_sfx_override": false,
 			"floor": 0.5,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -41774,6 +42126,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793s2",
+			"door_sfx_override": false,
 			"floor": 11.25,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -41825,6 +42178,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793g",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -41872,6 +42226,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -41949,6 +42304,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1793f",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -41996,6 +42352,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7496",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -42058,6 +42415,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7496d",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -42135,6 +42493,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7496e",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -42227,6 +42586,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7496i",
+			"door_sfx_override": false,
 			"floor": 11.25,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -42289,6 +42649,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7496h",
+			"door_sfx_override": false,
 			"floor": 11.25,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -42351,6 +42712,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7496g",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -42443,6 +42805,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7496q",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "door_track_15px",
@@ -42520,6 +42883,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7496r",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -42612,6 +42976,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7496k",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -42759,6 +43124,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7496n",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -42851,6 +43217,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7496o",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -42943,6 +43310,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7496p",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -43018,6 +43386,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7496l",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -43127,6 +43496,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7496m",
+			"door_sfx_override": false,
 			"floor": 9.5,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -43268,6 +43638,7 @@
 			},
 			"damage": 20,
 			"debug_name": "Sectors::Sector-7496f",
+			"door_sfx_override": false,
 			"floor": 0.0,
 			"floor_surface": {
 				"id": "red_wall",
@@ -43457,6 +43828,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7496s",
+			"door_sfx_override": false,
 			"floor": 0.5,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -43549,6 +43921,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7496j",
+			"door_sfx_override": false,
 			"floor": 11.25,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -43600,6 +43973,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7496b",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -43647,6 +44021,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7496a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -43724,6 +44099,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7496c",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "ventilation_grid_square",
@@ -43771,6 +44147,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-6013",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "smooth_concrete_white",
@@ -43818,6 +44195,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-6013a",
+			"door_sfx_override": false,
 			"floor": 13.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -43895,6 +44273,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7459",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "gritty_concrete",
@@ -44053,6 +44432,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-318",
+			"door_sfx_override": false,
 			"floor": 17.0,
 			"floor_surface": {
 				"id": "moss",
@@ -44175,6 +44555,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-318e",
+			"door_sfx_override": false,
 			"floor": 17.0,
 			"floor_surface": {
 				"id": "moss",
@@ -44278,6 +44659,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-318b",
+			"door_sfx_override": false,
 			"floor": 13.5,
 			"floor_surface": {
 				"id": "moss",
@@ -44415,6 +44797,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-318c",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -44567,6 +44950,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-318a",
+			"door_sfx_override": false,
 			"floor": 13.5,
 			"floor_surface": {
 				"id": "moss",
@@ -44689,6 +45073,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-318d",
+			"door_sfx_override": false,
 			"floor": 13.5,
 			"floor_surface": {
 				"id": "moss",
@@ -44807,6 +45192,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7481",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "alien_neco",
@@ -44903,6 +45289,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7481d",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -44980,6 +45367,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7481g",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -45072,6 +45460,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7481e",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -45151,6 +45540,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7481f",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -45211,6 +45601,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7481b",
+			"door_sfx_override": false,
 			"floor": 10.1,
 			"floor_surface": {
 				"id": "moss",
@@ -45330,6 +45721,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7481c",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -45407,6 +45799,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7481a",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "moss",
@@ -45525,6 +45918,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1601",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "alien_neco",
@@ -45572,6 +45966,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7942",
+			"door_sfx_override": false,
 			"floor": 13.5,
 			"floor_surface": {
 				"id": "alien_neco",
@@ -45619,6 +46014,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-7942a",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -45711,6 +46107,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-9177",
+			"door_sfx_override": false,
 			"floor": 13.5,
 			"floor_surface": {
 				"id": "alien_neco",
@@ -45760,6 +46157,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1228",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "alien_neco",
@@ -45811,6 +46209,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1228b",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -45873,6 +46272,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-1228a",
+			"door_sfx_override": false,
 			"floor": 9.8,
 			"floor_surface": {
 				"id": "moss",
@@ -45948,6 +46348,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-5698",
+			"door_sfx_override": false,
 			"floor": 14.0,
 			"floor_surface": {
 				"id": "alien_neco",
@@ -46044,6 +46445,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-5698g",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -46135,6 +46537,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-5698h",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -46212,6 +46615,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-5698a",
+			"door_sfx_override": false,
 			"floor": 9.7,
 			"floor_surface": {
 				"id": "moss",
@@ -46333,6 +46737,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-5698c",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -46429,6 +46834,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-5698j",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -46508,6 +46914,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-5698k",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -46585,6 +46992,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-5698i",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -46681,6 +47089,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-5698d",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -46773,6 +47182,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-5698e",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "moss",
@@ -46867,6 +47277,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-5698p",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "moss",
@@ -46959,6 +47370,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-5698b",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -47052,6 +47464,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-5698l",
+			"door_sfx_override": false,
 			"floor": 9.9,
 			"floor_surface": {
 				"id": "moss",
@@ -47178,6 +47591,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-5698m",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -47257,6 +47671,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-5698n",
+			"door_sfx_override": false,
 			"floor": 10.0,
 			"floor_surface": {
 				"id": "moss",
@@ -47319,6 +47734,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-5698o",
+			"door_sfx_override": false,
 			"floor": 10.2,
 			"floor_surface": {
 				"id": "moss",
@@ -47396,6 +47812,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-5698f",
+			"door_sfx_override": false,
 			"floor": 9.5,
 			"floor_surface": {
 				"id": "moss",
@@ -47503,6 +47920,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-2762",
+			"door_sfx_override": false,
 			"floor": 13.5,
 			"floor_surface": {
 				"id": "moss",
@@ -47550,6 +47968,7 @@
 			},
 			"damage": 0,
 			"debug_name": "Sectors::Sector-4211",
+			"door_sfx_override": false,
 			"floor": 11.0,
 			"floor_surface": {
 				"id": "dark_tiles",
