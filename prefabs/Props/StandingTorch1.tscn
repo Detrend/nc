@@ -1,0 +1,41 @@
+[gd_scene load_steps=5 format=3 uid="uid://mfwv4ydkyyvs"]
+
+[ext_resource type="Script" uid="uid://bvy2sc6knx1r2" path="res://scripts/things/Prop.gd" id="1_ndble"]
+[ext_resource type="Texture2D" uid="uid://btin7xhrxqhbs" path="res://imgs/props/standing_torch_1.png" id="2_ndble"]
+[ext_resource type="PackedScene" uid="uid://ctwevapidummr" path="res://prefabs/Lights/PointLight.tscn" id="3_w5h4h"]
+
+[sub_resource type="Curve" id="Curve_ik1j0"]
+_data = [Vector2(0, 0.91391766), 0.0, 0.0, 0, 0, Vector2(0.07861636, 0.50566834), 0.0, 0.0, 0, 0, Vector2(0.16981134, 0.5793575), 0.0, 0.0, 0, 0, Vector2(0.19496855, 0.77618587), 0.0, 0.0, 0, 0, Vector2(0.29454926, 0.6290633), 0.0, 0.0, 0, 0, Vector2(0.35744232, 0.8497472), 0.0, 0.0, 0, 0, Vector2(0.44954953, 0.4683832), 0.0, 0.0, 0, 0, Vector2(0.55225223, 0.6816862), 0.0, 0.0, 0, 0, Vector2(0.6132075, 0.8935709), 0.0, 0.0, 0, 0, Vector2(0.8585585, 0.54714125), 0.0, 0.0, 0, 0, Vector2(1, 0.9217433), 0.0, 0.0, 0, 0]
+point_count = 11
+
+[node name="StandingTorch" type="Node2D"]
+scale = Vector2(2.1301146, 2.1301146)
+script = ExtResource("1_ndble")
+radius = 1.0
+height = 1.0
+sprite_name = "standing_torch_1"
+sprite_scale = 45.0
+pivot_mode = 1
+height_offset = 0.0
+
+[node name="Icon" type="Sprite2D" parent="."]
+z_index = 999
+texture_filter = 1
+scale = Vector2(0.04088975, 0.04088975)
+texture = ExtResource("2_ndble")
+
+[node name="PointLight" parent="." instance=ExtResource("3_w5h4h")]
+scale = Vector2(0.10605363, 0.10605363)
+color = Color(0.83612, 0.6396753, 0.34024593, 1)
+radius = 3.5
+should_animate = true
+curve = SubResource("Curve_ik1j0")
+cycle_duration_seconds = 3.5
+cycle_offset_range = 1.0
+placement_mode = 3
+height_offset = 1.5
+
+[node name="Icon" parent="PointLight" index="0"]
+visible = false
+
+[editable path="PointLight"]
