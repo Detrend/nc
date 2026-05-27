@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="SectorMaterial" load_steps=9 format=3 uid="uid://cgwcmup8tlf55"]
+
+[ext_resource type="Resource" uid="uid://bvikmmuyoknps" path="res://material_textures/ga_textures/dark_tiles.tres" id="1_bg11l"]
+[ext_resource type="Resource" uid="uid://cku8xgnhd4v6x" path="res://material_textures/rocks.tres" id="2_avcpv"]
+[ext_resource type="Texture2D" uid="uid://3ciabrrgxam8" path="res://imgs/holes.png" id="3_4h7ff"]
+[ext_resource type="Script" uid="uid://bd7os02w6f4ou" path="res://scripts/visuals/SectorMaterial.gd" id="4_og3yh"]
+[ext_resource type="Script" uid="uid://b7mxqhkifbeum" path="res://scripts/visuals/DefaultWallRule.gd" id="5_6puta"]
+[ext_resource type="Resource" uid="uid://by61kg2fkyuhm" path="res://materials/ga_lvl2/textures/chapel_top.tres" id="6_22grs"]
+[ext_resource type="Script" uid="uid://ccx3uqpbyjmyf" path="res://scripts/visuals/WallRule.gd" id="7_1cqgq"]
+
+[sub_resource type="Resource" id="Resource_csai5"]
+script = ExtResource("5_6puta")
+priority = 2
+texture = ExtResource("6_22grs")
+metadata/_custom_type_script = "uid://b7mxqhkifbeum"
+
+[resource]
+script = ExtResource("4_og3yh")
+preview = ExtResource("3_4h7ff")
+preview_scale = 4.0
+wall_default = SubResource("Resource_csai5")
+floor = ExtResource("2_avcpv")
+ceiling = ExtResource("1_bg11l")
+metadata/_custom_type_script = "uid://bd7os02w6f4ou"
