@@ -7,7 +7,9 @@
 #include <glad/glad.h>
 #include <stb/stb_image.h>
 
+#include <algorithm>
 #include <array>
+#include <vector>
 
 namespace nc
 {
@@ -320,6 +322,34 @@ static GLenum gl_format_from_channels(int channels)
 }
 
 //==============================================================================
+static constexpr u32 ATLAS_GUTTER = 4;
+static constexpr u32 ATLAS_MAX_MIP_LEVEL = 3;
+
+//==============================================================================
+static std::vector<unsigned char> pad_with_edge_extend(
+  const unsigned char* source, int width, int height, u32 channels, u32 gutter)
+{
+  const u32 padded_width  = cast<u32>(width)  + gutter * 2;
+  const u32 padded_height = cast<u32>(height) + gutter * 2;
+  std::vector<unsigned char> padded(cast<size_t>(padded_width) * padded_height * channels);
+
+  for (u32 y = 0; y < padded_height; ++y)
+  {
+    const int source_y = std::clamp(cast<int>(y) - cast<int>(gutter), 0, height - 1);
+    for (u32 x = 0; x < padded_width; ++x)
+    {
+      const int source_x = std::clamp(cast<int>(x) - cast<int>(gutter), 0, width - 1);
+      const unsigned char* src = source + (cast<size_t>(source_y) * width + source_x) * channels;
+      unsigned char* dst = padded.data() + (cast<size_t>(y) * padded_width + x) * channels;
+      for (u32 c = 0; c < channels; ++c)
+        dst[c] = src[c];
+    }
+  }
+
+  return padded;
+}
+
+//==============================================================================
 void TextureManager::load_texture(const std::filesystem::path& path)
 {
   // TODO: use error texture when loading fails
@@ -344,7 +374,7 @@ void TextureManager::load_texture(const std::filesystem::path& path)
     (parent / (path_stem + "_emissive" + path_extension)).string(),
   };
   std::array<unsigned char*, 3> texture_data{};
-  std::array<GLenum, 3> texture_formats{ GL_RGB, GL_RED, GL_RGB };
+  std::array<int, 3> texture_channels{};
   for (size_t i = 0; i < texture_paths.size(); ++i)
   {
     if (!std::filesystem::exists(texture_paths[i]))
@@ -366,7 +396,7 @@ void TextureManager::load_texture(const std::filesystem::path& path)
       texture_data[i] = nullptr;
       continue;
     }
-    texture_formats[i] = gl_format_from_channels(aux_channels);
+    texture_channels[i] = aux_channels;
   }
 
   const GLenum diffuse_format = gl_format_from_channels(channels);
@@ -382,8 +412,8 @@ void TextureManager::load_texture(const std::filesystem::path& path)
   m_load_rects.push_back(stbrp_rect
   {
     .id = cast<int>(m_load_rects.size()),
-    .w = width,
-    .h = height,
+    .w = width  + cast<int>(ATLAS_GUTTER) * 2,
+    .h = height + cast<int>(ATLAS_GUTTER) * 2,
     .x = 0,
     .y = 0,
     .was_packed = 0,
@@ -392,10 +422,10 @@ void TextureManager::load_texture(const std::filesystem::path& path)
   {
     .width = width,
     .height = height,
-    .diffuse_format  = diffuse_format,
-    .normal_format   = texture_formats[0],
-    .specular_format = texture_formats[1],
-    .emissive_format = texture_formats[2],
+    .diffuse_channels  = channels,
+    .normal_channels   = texture_channels[0],
+    .specular_channels = texture_channels[1],
+    .emissive_channels = texture_channels[2],
     .diffuse_data = diffuse_data,
     .normal_data = texture_data[0],
     .specular_data = texture_data[1],
@@ -476,6 +506,7 @@ void TextureManager::finish_load(ResLifetime lifetime)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, target_width, target_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, ATLAS_MAX_MIP_LEVEL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
@@ -484,6 +515,10 @@ void TextureManager::finish_load(ResLifetime lifetime)
       const auto& rect = m_load_rects[i];
       const auto& load_data = m_load_data[i];
 
+      const std::vector<unsigned char> padded = pad_with_edge_extend(
+        load_data.diffuse_data, load_data.width, load_data.height,
+        cast<u32>(load_data.diffuse_channels), ATLAS_GUTTER);
+
       glTexSubImage2D(
         GL_TEXTURE_2D,
         0,
@@ -491,18 +526,18 @@ void TextureManager::finish_load(ResLifetime lifetime)
         rect.y,
         rect.w,
         rect.h,
-        load_data.diffuse_format,
+        gl_format_from_channels(load_data.diffuse_channels),
         GL_UNSIGNED_BYTE,
-        load_data.diffuse_data
+        padded.data()
       );
       stbi_image_free(load_data.diffuse_data);
 
       const TextureHandle handle(
         lifetime,
-        rect.x,
-        rect.y,
-        rect.w,
-        rect.h,
+        rect.x + ATLAS_GUTTER,
+        rect.y + ATLAS_GUTTER,
+        load_data.width,
+        load_data.height,
         m_generation,
         cast<TextureID>(m_textures.size())
       );
@@ -519,8 +554,9 @@ void TextureManager::finish_load(ResLifetime lifetime)
     glGenTextures(1, &bundle.normal_handle);
     glBindTexture(GL_TEXTURE_2D, bundle.normal_handle);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, target_width, target_height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, ATLAS_MAX_MIP_LEVEL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
@@ -541,6 +577,10 @@ void TextureManager::finish_load(ResLifetime lifetime)
       if (load_data.normal_data == nullptr)
         continue;
 
+      const std::vector<unsigned char> padded = pad_with_edge_extend(
+        load_data.normal_data, load_data.width, load_data.height,
+        cast<u32>(load_data.normal_channels), ATLAS_GUTTER);
+
       glTexSubImage2D(
         GL_TEXTURE_2D,
         0,
@@ -548,12 +588,14 @@ void TextureManager::finish_load(ResLifetime lifetime)
         rect.y,
         rect.w,
         rect.h,
-        load_data.normal_format,
+        gl_format_from_channels(load_data.normal_channels),
         GL_UNSIGNED_BYTE,
-        load_data.normal_data
+        padded.data()
       );
       stbi_image_free(load_data.normal_data);
     }
+
+    glGenerateMipmap(GL_TEXTURE_2D);
   }
 
   // specular texture atlas
@@ -561,8 +603,9 @@ void TextureManager::finish_load(ResLifetime lifetime)
     glGenTextures(1, &bundle.specular_handle);
     glBindTexture(GL_TEXTURE_2D, bundle.specular_handle);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, target_width, target_height, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, ATLAS_MAX_MIP_LEVEL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
@@ -577,6 +620,10 @@ void TextureManager::finish_load(ResLifetime lifetime)
       if (load_data.specular_data == nullptr)
         continue;
 
+      const std::vector<unsigned char> padded = pad_with_edge_extend(
+        load_data.specular_data, load_data.width, load_data.height,
+        cast<u32>(load_data.specular_channels), ATLAS_GUTTER);
+
       glTexSubImage2D(
         GL_TEXTURE_2D,
         0,
@@ -584,12 +631,14 @@ void TextureManager::finish_load(ResLifetime lifetime)
         rect.y,
         rect.w,
         rect.h,
-        load_data.specular_format,
+        gl_format_from_channels(load_data.specular_channels),
         GL_UNSIGNED_BYTE,
-        load_data.specular_data
+        padded.data()
       );
       stbi_image_free(load_data.specular_data);
     }
+
+    glGenerateMipmap(GL_TEXTURE_2D);
   }
 
   // emissive texture atlas
@@ -610,6 +659,10 @@ void TextureManager::finish_load(ResLifetime lifetime)
       if (load_data.emissive_data == nullptr)
         continue;
 
+      const std::vector<unsigned char> padded = pad_with_edge_extend(
+        load_data.emissive_data, load_data.width, load_data.height,
+        cast<u32>(load_data.emissive_channels), ATLAS_GUTTER);
+
       glTexSubImage2D(
         GL_TEXTURE_2D,
         0,
@@ -617,9 +670,9 @@ void TextureManager::finish_load(ResLifetime lifetime)
         rect.y,
         rect.w,
         rect.h,
-        load_data.emissive_format,
+        gl_format_from_channels(load_data.emissive_channels),
         GL_UNSIGNED_BYTE,
-        load_data.emissive_data
+        padded.data()
       );
       stbi_image_free(load_data.emissive_data);
     }

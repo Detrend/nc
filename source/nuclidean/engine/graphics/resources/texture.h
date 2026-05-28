@@ -163,10 +163,10 @@ private:
     int            width  = 0;
     // The height of the image in pixels.
     int            height = 0;
-    GLenum         diffuse_format  = GL_RGB;
-    GLenum         normal_format   = GL_RGB;
-    GLenum         specular_format = GL_RED;
-    GLenum         emissive_format = GL_RGB;
+    int            diffuse_channels  = 0;
+    int            normal_channels   = 0;
+    int            specular_channels = 0;
+    int            emissive_channels = 0;
     // A pointer to the pixel data of the diffuse texture.
     unsigned char* diffuse_data = nullptr;
     // A pointer to the pixel data of the normal texture.
