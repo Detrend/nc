@@ -322,8 +322,8 @@ static GLenum gl_format_from_channels(int channels)
 }
 
 //==============================================================================
-static constexpr u32 ATLAS_GUTTER = 4;
-static constexpr u32 ATLAS_MAX_MIP_LEVEL = 3;
+static constexpr u32 ATLAS_MAX_MIP_LEVEL = 4;
+static constexpr u32 ATLAS_GUTTER = 1u << ATLAS_MAX_MIP_LEVEL;
 
 //==============================================================================
 static std::vector<unsigned char> pad_with_edge_extend(
