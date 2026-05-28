@@ -4,6 +4,9 @@
 #include <engine/entity/entity_type_definitions.h>
 #include <engine/entity/entity_system.h>
 
+#include <engine/game/game_helpers.h>
+#include <engine/sound/sound_resources.h>
+
 #include <engine/game/game_system.h>
 
 #include <game/particle.h>
@@ -54,9 +57,15 @@ void Teleport::post_init()
 //==============================================================================
 void Teleport::update(f32 delta)
 {
+  if (time_remaining == TELEPORTATION_DURATION)
+  {
+    GameHelpers::get().play_3d_sound(this->get_position(), Sounds::teleport, 25.0f, 1.0f);
+  }
+
   time_remaining -= delta;
   if (time_remaining <= 0.0f)
   {
+    
     // Kill ourselves, but before that spawn a flash of light
     EntityRegistry& ecs = GameSystem::get().get_entities();
 
