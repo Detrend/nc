@@ -95,8 +95,8 @@ void main()
     normal_rgb = texture(level_normal_sampler, uv).xyz;
     specular_strength = texture(level_specular_sampler, uv).r;
   }
-  if (color.a < 0.95f)
-    discard;
+  //if (color.a < 0.95f)
+  //  discard;
 
   vec3 normal_ts = normal_rgb * 2.0f - 1.0f;
   vec3 world_normal          = perturb_normal(normal, normal_ts);
