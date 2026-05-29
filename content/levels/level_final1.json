@@ -232,7 +232,7 @@
 				13.2000017166138,
 				0.1
 			],
-			"tag": 448
+			"tag": 451
 		},
 		{
 			"entity_type": 1,
@@ -247,7 +247,7 @@
 				3.60000014305115,
 				-9.9
 			],
-			"tag": 413,
+			"tag": 416,
 			"triggers": [
 				{
 					"activator": "Arena1_Trap_Part2",
@@ -273,7 +273,7 @@
 				2.0,
 				-9.9
 			],
-			"tag": 412,
+			"tag": 415,
 			"triggers": [
 				{
 					"activator": "Arena1_Trap_Part2",
@@ -299,7 +299,7 @@
 				-5.6000018119812,
 				-9.3
 			],
-			"tag": 415,
+			"tag": 418,
 			"triggers": [
 				{
 					"activator": "Arena1_Trap",
@@ -334,7 +334,7 @@
 				-3.19999694824219,
 				-9.3
 			],
-			"tag": 414,
+			"tag": 417,
 			"triggers": [
 				{
 					"activator": "Arena1_Trap",
@@ -369,7 +369,7 @@
 				26.2000007629395,
 				-9.75
 			],
-			"tag": 418,
+			"tag": 421,
 			"triggers": [
 				{
 					"activator": "Arena1_Trap",
@@ -404,7 +404,7 @@
 				22.2000026702881,
 				-9.75
 			],
-			"tag": 419,
+			"tag": 422,
 			"triggers": [
 				{
 					"activator": "Arena1_Trap",
@@ -439,7 +439,7 @@
 				7.00000333786011,
 				-9.75
 			],
-			"tag": 416,
+			"tag": 419,
 			"triggers": [
 				{
 					"activator": "Arena1_Trap",
@@ -474,7 +474,7 @@
 				9.80000019073486,
 				-9.75
 			],
-			"tag": 417,
+			"tag": 420,
 			"triggers": [
 				{
 					"activator": "Arena1_Trap",
@@ -509,7 +509,7 @@
 				31.600004196167,
 				0.1
 			],
-			"tag": 420,
+			"tag": 423,
 			"triggers": [
 				{
 					"activator": "KillFirstCultist",
@@ -535,7 +535,7 @@
 				28.1999969482422,
 				0.7
 			],
-			"tag": 424
+			"tag": 427
 		},
 		{
 			"entity_type": 0,
@@ -550,7 +550,7 @@
 				34.7999992370605,
 				0.7
 			],
-			"tag": 423
+			"tag": 426
 		},
 		{
 			"entity_type": 0,
@@ -565,7 +565,7 @@
 				34.7999992370605,
 				0.7
 			],
-			"tag": 421
+			"tag": 424
 		},
 		{
 			"entity_type": 0,
@@ -580,7 +580,7 @@
 				35.2000007629395,
 				-5.1
 			],
-			"tag": 422
+			"tag": 425
 		},
 		{
 			"entity_type": 0,
@@ -715,7 +715,7 @@
 				31.2000007629395,
 				-5.0
 			],
-			"tag": 425
+			"tag": 428
 		},
 		{
 			"entity_type": 1,
@@ -730,7 +730,7 @@
 				30.0,
 				-5.1
 			],
-			"tag": 427
+			"tag": 430
 		},
 		{
 			"entity_type": 1,
@@ -745,7 +745,7 @@
 				32.4000015258789,
 				-5.1
 			],
-			"tag": 426
+			"tag": 429
 		},
 		{
 			"entity_type": 1,
@@ -760,7 +760,7 @@
 				-39.7999954223633,
 				3.1
 			],
-			"tag": 447,
+			"tag": 450,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -786,7 +786,7 @@
 				-36.3999938964844,
 				3.1
 			],
-			"tag": 446,
+			"tag": 449,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -812,7 +812,7 @@
 				-37.1999931335449,
 				3.1
 			],
-			"tag": 445,
+			"tag": 448,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -838,7 +838,7 @@
 				-38.4000053405762,
 				3.1
 			],
-			"tag": 444,
+			"tag": 447,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -864,7 +864,7 @@
 				-39.2000007629395,
 				3.1
 			],
-			"tag": 443,
+			"tag": 446,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -890,7 +890,7 @@
 				-40.0,
 				3.1
 			],
-			"tag": 442,
+			"tag": 445,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -916,7 +916,7 @@
 				-41.8000030517578,
 				3.1
 			],
-			"tag": 441,
+			"tag": 444,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -942,7 +942,7 @@
 				-43.2000007629395,
 				3.1
 			],
-			"tag": 440,
+			"tag": 443,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -968,7 +968,7 @@
 				-43.2000045776367,
 				3.1
 			],
-			"tag": 439,
+			"tag": 442,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -994,7 +994,7 @@
 				-42.0000038146973,
 				3.1
 			],
-			"tag": 438,
+			"tag": 441,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -1020,7 +1020,7 @@
 				-40.8000030517578,
 				3.1
 			],
-			"tag": 437,
+			"tag": 440,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -1046,7 +1046,7 @@
 				-24.2000007629395,
 				0.0
 			],
-			"tag": 436,
+			"tag": 439,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished_Wave1",
@@ -1072,7 +1072,7 @@
 				-8.19999980926514,
 				0.0
 			],
-			"tag": 435,
+			"tag": 438,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished_Wave1",
@@ -1098,7 +1098,7 @@
 				-12.8000049591064,
 				0.0
 			],
-			"tag": 434,
+			"tag": 437,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished_Wave1",
@@ -1124,7 +1124,7 @@
 				-20.9999980926514,
 				0.0
 			],
-			"tag": 433,
+			"tag": 436,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished_Wave1",
@@ -1150,7 +1150,7 @@
 				-24.8000011444092,
 				3.1
 			],
-			"tag": 432,
+			"tag": 435,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished_Wave1",
@@ -1176,7 +1176,7 @@
 				-24.0000038146973,
 				4.1
 			],
-			"tag": 428,
+			"tag": 431,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished_Wave1",
@@ -1202,7 +1202,7 @@
 				-11.2000045776367,
 				5.1
 			],
-			"tag": 429,
+			"tag": 432,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished_Wave1",
@@ -1228,7 +1228,7 @@
 				-2.00000166893005,
 				2.6
 			],
-			"tag": 430,
+			"tag": 433,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished_Wave1",
@@ -1254,7 +1254,7 @@
 				-3.19999861717224,
 				2.1
 			],
-			"tag": 431,
+			"tag": 434,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished_Wave1",
@@ -1501,7 +1501,7 @@
 				39.4000015258789,
 				1.5
 			],
-			"tag": 342,
+			"tag": 343,
 			"type": 0
 		},
 		{
@@ -1546,7 +1546,7 @@
 				43.0,
 				-2.3
 			],
-			"tag": 343,
+			"tag": 346,
 			"type": 0
 		},
 		{
@@ -1564,7 +1564,7 @@
 				36.7999992370605,
 				0.1
 			],
-			"tag": 345,
+			"tag": 348,
 			"type": 2
 		},
 		{
@@ -1573,7 +1573,7 @@
 				33.7999992370605,
 				0.1
 			],
-			"tag": 347,
+			"tag": 350,
 			"type": 5
 		},
 		{
@@ -1582,7 +1582,7 @@
 				33.4000015258789,
 				0.1
 			],
-			"tag": 346,
+			"tag": 349,
 			"type": 5
 		},
 		{
@@ -1591,7 +1591,7 @@
 				33.4000015258789,
 				0.1
 			],
-			"tag": 344,
+			"tag": 347,
 			"type": 0
 		},
 		{
@@ -1600,8 +1600,17 @@
 				33.4000015258789,
 				0.1
 			],
-			"tag": 341,
+			"tag": 342,
 			"type": 0
+		},
+		{
+			"position": [
+				4.40000009536743,
+				29.2000007629395,
+				-5.0
+			],
+			"tag": 341,
+			"type": 1
 		},
 		{
 			"position": [
@@ -1627,8 +1636,26 @@
 				29.0,
 				-5.1
 			],
-			"tag": 348,
+			"tag": 351,
 			"type": 5
+		},
+		{
+			"position": [
+				-12.1999998092651,
+				30.3999996185303,
+				-5.1
+			],
+			"tag": 345,
+			"type": 0
+		},
+		{
+			"position": [
+				-12.0,
+				31.3999996185303,
+				-5.1
+			],
+			"tag": 344,
+			"type": 0
 		},
 		{
 			"position": [
@@ -1645,7 +1672,7 @@
 				2.0,
 				1.1
 			],
-			"tag": 357,
+			"tag": 360,
 			"type": 6
 		},
 		{
@@ -1654,7 +1681,7 @@
 				-11.6000003814697,
 				0.9
 			],
-			"tag": 362,
+			"tag": 365,
 			"type": 0
 		},
 		{
@@ -1663,7 +1690,7 @@
 				-11.6000003814697,
 				0.9
 			],
-			"tag": 361,
+			"tag": 364,
 			"type": 0
 		},
 		{
@@ -1672,7 +1699,7 @@
 				-0.400000005960464,
 				0.9
 			],
-			"tag": 365,
+			"tag": 368,
 			"type": 5
 		},
 		{
@@ -1681,7 +1708,7 @@
 				-35.0,
 				3.1
 			],
-			"tag": 355,
+			"tag": 358,
 			"type": 1
 		},
 		{
@@ -1690,7 +1717,7 @@
 				-40.4000015258789,
 				3.1
 			],
-			"tag": 354,
+			"tag": 357,
 			"type": 1
 		},
 		{
@@ -1699,7 +1726,7 @@
 				-41.2000007629395,
 				3.1
 			],
-			"tag": 353,
+			"tag": 356,
 			"type": 6
 		},
 		{
@@ -1708,7 +1735,7 @@
 				-38.0,
 				3.1
 			],
-			"tag": 352,
+			"tag": 355,
 			"type": 6
 		},
 		{
@@ -1717,7 +1744,7 @@
 				-38.4000015258789,
 				3.1
 			],
-			"tag": 351,
+			"tag": 354,
 			"type": 6
 		},
 		{
@@ -1726,7 +1753,7 @@
 				-35.7999992370605,
 				3.1
 			],
-			"tag": 350,
+			"tag": 353,
 			"type": 5
 		},
 		{
@@ -1735,7 +1762,7 @@
 				-35.2000007629395,
 				3.1
 			],
-			"tag": 349,
+			"tag": 352,
 			"type": 5
 		},
 		{
@@ -1744,7 +1771,7 @@
 				-15.4000005722046,
 				0.1
 			],
-			"tag": 358,
+			"tag": 361,
 			"type": 1
 		},
 		{
@@ -1753,7 +1780,7 @@
 				-14.8000001907349,
 				0.1
 			],
-			"tag": 356,
+			"tag": 359,
 			"type": 6
 		},
 		{
@@ -1762,7 +1789,7 @@
 				-17.0,
 				3.6
 			],
-			"tag": 359,
+			"tag": 362,
 			"type": 1
 		},
 		{
@@ -1771,7 +1798,7 @@
 				-19.6000003814697,
 				0.0
 			],
-			"tag": 360,
+			"tag": 363,
 			"type": 1
 		},
 		{
@@ -1780,7 +1807,7 @@
 				-3.20000004768372,
 				2.1
 			],
-			"tag": 364,
+			"tag": 367,
 			"type": 5
 		},
 		{
@@ -1789,7 +1816,7 @@
 				-19.0,
 				0.4
 			],
-			"tag": 363,
+			"tag": 366,
 			"type": 4
 		}
 	],
@@ -11737,7 +11764,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 390
+			"tag": 393
 		},
 		{
 			"direction": [
@@ -11758,7 +11785,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 389
+			"tag": 392
 		},
 		{
 			"direction": [
@@ -11779,7 +11806,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 372
+			"tag": 375
 		},
 		{
 			"direction": [
@@ -11800,7 +11827,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 371
+			"tag": 374
 		},
 		{
 			"direction": [
@@ -11821,7 +11848,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 388
+			"tag": 391
 		},
 		{
 			"direction": [
@@ -11842,7 +11869,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 385
+			"tag": 388
 		},
 		{
 			"direction": [
@@ -11863,7 +11890,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 374
+			"tag": 377
 		},
 		{
 			"direction": [
@@ -11884,7 +11911,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 373
+			"tag": 376
 		},
 		{
 			"direction": [
@@ -11905,7 +11932,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 384
+			"tag": 387
 		},
 		{
 			"direction": [
@@ -11926,7 +11953,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 383
+			"tag": 386
 		},
 		{
 			"direction": [
@@ -11947,7 +11974,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 382
+			"tag": 385
 		},
 		{
 			"direction": [
@@ -11968,7 +11995,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 381
+			"tag": 384
 		},
 		{
 			"direction": [
@@ -11989,7 +12016,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 380
+			"tag": 383
 		},
 		{
 			"direction": [
@@ -12010,7 +12037,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 379
+			"tag": 382
 		},
 		{
 			"direction": [
@@ -12031,7 +12058,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 370
+			"tag": 373
 		},
 		{
 			"direction": [
@@ -12052,7 +12079,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 369
+			"tag": 372
 		},
 		{
 			"direction": [
@@ -12073,7 +12100,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 368
+			"tag": 371
 		},
 		{
 			"direction": [
@@ -12094,7 +12121,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 367
+			"tag": 370
 		},
 		{
 			"direction": [
@@ -12115,7 +12142,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 366
+			"tag": 369
 		},
 		{
 			"direction": [
@@ -12136,7 +12163,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 376
+			"tag": 379
 		},
 		{
 			"direction": [
@@ -12157,7 +12184,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 375
+			"tag": 378
 		},
 		{
 			"direction": [
@@ -12178,7 +12205,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 386
+			"tag": 389
 		},
 		{
 			"direction": [
@@ -12199,7 +12226,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 387
+			"tag": 390
 		},
 		{
 			"direction": [
@@ -12220,7 +12247,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 377
+			"tag": 380
 		},
 		{
 			"direction": [
@@ -12241,7 +12268,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 378
+			"tag": 381
 		},
 		{
 			"direction": [
@@ -13774,7 +13801,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_1",
-			"tag": 395
+			"tag": 398
 		},
 		{
 			"direction": [
@@ -13795,7 +13822,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_2",
-			"tag": 391
+			"tag": 394
 		},
 		{
 			"direction": [
@@ -13858,7 +13885,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 398
+			"tag": 401
 		},
 		{
 			"direction": [
@@ -13942,7 +13969,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_1",
-			"tag": 397
+			"tag": 400
 		},
 		{
 			"direction": [
@@ -13984,7 +14011,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_2",
-			"tag": 394
+			"tag": 397
 		},
 		{
 			"direction": [
@@ -14089,7 +14116,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "vines_3",
-			"tag": 402
+			"tag": 405
 		},
 		{
 			"direction": [
@@ -14110,7 +14137,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "vines_2",
-			"tag": 400
+			"tag": 403
 		},
 		{
 			"direction": [
@@ -14131,7 +14158,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "vines_4",
-			"tag": 399
+			"tag": 402
 		},
 		{
 			"direction": [
@@ -14152,7 +14179,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "vines_3",
-			"tag": 403
+			"tag": 406
 		},
 		{
 			"direction": [
@@ -14236,7 +14263,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "vines_2",
-			"tag": 401
+			"tag": 404
 		},
 		{
 			"direction": [
@@ -14257,7 +14284,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "vines_3",
-			"tag": 404
+			"tag": 407
 		},
 		{
 			"direction": [
@@ -14362,7 +14389,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_1",
-			"tag": 396
+			"tag": 399
 		},
 		{
 			"direction": [
@@ -14383,7 +14410,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_2",
-			"tag": 392
+			"tag": 395
 		},
 		{
 			"direction": [
@@ -14404,7 +14431,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_2",
-			"tag": 393
+			"tag": 396
 		},
 		{
 			"direction": [
@@ -14593,7 +14620,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 409
+			"tag": 412
 		},
 		{
 			"direction": [
@@ -14635,7 +14662,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_2",
-			"tag": 405
+			"tag": 408
 		},
 		{
 			"direction": [
@@ -14698,7 +14725,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 411
+			"tag": 414
 		},
 		{
 			"direction": [
@@ -14719,7 +14746,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 410
+			"tag": 413
 		},
 		{
 			"direction": [
@@ -14761,7 +14788,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_2",
-			"tag": 406
+			"tag": 409
 		},
 		{
 			"direction": [
@@ -14824,7 +14851,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_2",
-			"tag": 408
+			"tag": 411
 		},
 		{
 			"direction": [
@@ -14845,7 +14872,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_2",
-			"tag": 407
+			"tag": 410
 		},
 		{
 			"direction": [
@@ -15054,7 +15081,7 @@
 				0.1
 			],
 			"tag": 20,
-			"target": 441
+			"target": 444
 		},
 		{
 			"position": [
@@ -15063,7 +15090,7 @@
 				0.1
 			],
 			"tag": 19,
-			"target": 440
+			"target": 443
 		},
 		{
 			"position": [
@@ -15072,7 +15099,7 @@
 				0.1
 			],
 			"tag": 17,
-			"target": 438
+			"target": 441
 		},
 		{
 			"position": [
@@ -15081,7 +15108,7 @@
 				0.1
 			],
 			"tag": 26,
-			"target": 447
+			"target": 450
 		},
 		{
 			"position": [
@@ -15090,7 +15117,7 @@
 				0.1
 			],
 			"tag": 18,
-			"target": 439
+			"target": 442
 		},
 		{
 			"position": [
@@ -15099,7 +15126,7 @@
 				0.1
 			],
 			"tag": 24,
-			"target": 445
+			"target": 448
 		},
 		{
 			"position": [
@@ -15108,7 +15135,7 @@
 				0.1
 			],
 			"tag": 25,
-			"target": 446
+			"target": 449
 		},
 		{
 			"position": [
@@ -15117,7 +15144,7 @@
 				1.1
 			],
 			"tag": 33,
-			"target": 355
+			"target": 358
 		},
 		{
 			"position": [
@@ -15126,7 +15153,7 @@
 				0.1
 			],
 			"tag": 21,
-			"target": 442
+			"target": 445
 		},
 		{
 			"position": [
@@ -15135,7 +15162,7 @@
 				0.1
 			],
 			"tag": 32,
-			"target": 354
+			"target": 357
 		},
 		{
 			"position": [
@@ -15144,7 +15171,7 @@
 				1.1
 			],
 			"tag": 30,
-			"target": 352
+			"target": 355
 		},
 		{
 			"position": [
@@ -15153,7 +15180,7 @@
 				2.1
 			],
 			"tag": 31,
-			"target": 353
+			"target": 356
 		},
 		{
 			"position": [
@@ -15162,7 +15189,7 @@
 				4.1
 			],
 			"tag": 22,
-			"target": 443
+			"target": 446
 		},
 		{
 			"position": [
@@ -15171,7 +15198,7 @@
 				0.0
 			],
 			"tag": 29,
-			"target": 351
+			"target": 354
 		},
 		{
 			"position": [
@@ -15180,7 +15207,7 @@
 				0.0
 			],
 			"tag": 27,
-			"target": 349
+			"target": 352
 		},
 		{
 			"position": [
@@ -15189,7 +15216,7 @@
 				0.0
 			],
 			"tag": 28,
-			"target": 350
+			"target": 353
 		},
 		{
 			"position": [
@@ -15198,7 +15225,7 @@
 				3.1
 			],
 			"tag": 16,
-			"target": 437
+			"target": 440
 		},
 		{
 			"position": [
@@ -15207,7 +15234,7 @@
 				2.6
 			],
 			"tag": 23,
-			"target": 444
+			"target": 447
 		}
 	],
 	"sectors": [
@@ -66700,20 +66727,6 @@
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
 						"tile_rotations_count": 1
-					},
-					{
-						"begin_height": 4.0,
-						"end_height": 4.5,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
 					}
 				]
 			]
@@ -66792,20 +66805,6 @@
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
 						"tile_rotations_count": 1
-					},
-					{
-						"begin_height": 4.0,
-						"end_height": 4.5,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
 					}
 				]
 			]
@@ -66856,20 +66855,6 @@
 						"begin_height": 0.6,
 						"end_height": 2.0,
 						"id": "wooden_planks_thick",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					},
-					{
-						"begin_height": 4.0,
-						"end_height": 4.5,
-						"id": "bricks",
 						"offset": [
 							0.0,
 							0.0
@@ -66959,20 +66944,6 @@
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
 						"tile_rotations_count": 1
-					},
-					{
-						"begin_height": 4.0,
-						"end_height": 4.5,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
 					}
 				]
 			]
@@ -67041,20 +67012,6 @@
 						"begin_height": 0.6,
 						"end_height": 2.0,
 						"id": "wooden_planks_thick",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					},
-					{
-						"begin_height": 4.0,
-						"end_height": 4.5,
-						"id": "bricks",
 						"offset": [
 							0.0,
 							0.0
@@ -67143,20 +67100,6 @@
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
 						"tile_rotations_count": 1
-					},
-					{
-						"begin_height": 4.0,
-						"end_height": 4.5,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
 					}
 				]
 			]
@@ -67207,20 +67150,6 @@
 						"begin_height": 0.6,
 						"end_height": 1.2,
 						"id": "wooden_planks_thick",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					},
-					{
-						"begin_height": 4.0,
-						"end_height": 4.5,
-						"id": "bricks",
 						"offset": [
 							0.0,
 							0.0
@@ -67324,20 +67253,6 @@
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
 						"tile_rotations_count": 1
-					},
-					{
-						"begin_height": 4.0,
-						"end_height": 4.5,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
 					}
 				]
 			]
@@ -67416,20 +67331,6 @@
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
 						"tile_rotations_count": 1
-					},
-					{
-						"begin_height": 4.0,
-						"end_height": 4.5,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
 					}
 				]
 			]
@@ -67481,20 +67382,6 @@
 						"begin_height": 0.6,
 						"end_height": 1.2,
 						"id": "wooden_planks_thick",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					},
-					{
-						"begin_height": 4.0,
-						"end_height": 4.5,
-						"id": "bricks",
 						"offset": [
 							0.0,
 							0.0
@@ -67559,20 +67446,6 @@
 						"begin_height": 0.6,
 						"end_height": 1.2,
 						"id": "wooden_planks_thick",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					},
-					{
-						"begin_height": 4.0,
-						"end_height": 4.5,
-						"id": "bricks",
 						"offset": [
 							0.0,
 							0.0
@@ -67676,20 +67549,6 @@
 						"show": true,
 						"tile_rotation_increment": 1.5707963267949,
 						"tile_rotations_count": 1
-					},
-					{
-						"begin_height": 4.0,
-						"end_height": 4.5,
-						"id": "bricks",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
 					}
 				]
 			]
@@ -67773,7 +67632,7 @@
 			]
 		},
 		{
-			"ceiling": 4.0,
+			"ceiling": 4.5,
 			"ceiling_surface": {
 				"id": "floor2",
 				"offset": [
@@ -67836,7 +67695,7 @@
 			]
 		},
 		{
-			"ceiling": 4.0,
+			"ceiling": 4.5,
 			"ceiling_surface": {
 				"id": "floor2",
 				"offset": [
@@ -67884,7 +67743,7 @@
 			]
 		},
 		{
-			"ceiling": 4.0,
+			"ceiling": 4.5,
 			"ceiling_surface": {
 				"id": "floor2",
 				"offset": [
@@ -67947,7 +67806,7 @@
 			]
 		},
 		{
-			"ceiling": 4.0,
+			"ceiling": 4.5,
 			"ceiling_surface": {
 				"id": "floor2",
 				"offset": [
