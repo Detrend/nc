@@ -13,6 +13,8 @@
 
 #include <engine/game/game_helpers.h>
 
+#include <engine/game/game_system.h>
+
 #include <math/lingebra.h>
 #include <math/utils.h>
 
@@ -37,6 +39,10 @@ namespace nc
 
     if (hook_type == "teleport") {
       return std::make_unique<ActivatorHook_Teleport>();
+    }
+
+    if (hook_type == "autosave") {
+      return std::make_unique<ActivatorHook_Autosave>();
     }
 
     return nullptr;
@@ -117,5 +123,18 @@ namespace nc
       GameHelpers::get().request_entity_teleport(it.entity, it.destination_position);
     }
   }
+
+
+  void ActivatorHook_Autosave::load([[maybe_unused]] const ActivatorHookLoadArg& arg)
+  {
+    this->name = Token(arg.data()["name"]);
+  }
+
+  void ActivatorHook_Autosave::on_activated_start([[maybe_unused]] const ActivatorHookArg& args)
+  {
+    auto save_name = this->name.to_cstring_enclosed("-autosave-", "-");
+    GameSystem::get().save_game(save_name.data());
+  }
+
 
 }

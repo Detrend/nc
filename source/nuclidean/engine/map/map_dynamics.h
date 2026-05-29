@@ -136,7 +136,7 @@ struct MapDynamics
 
   void evaluate_activators
   (
-    std::vector<u16>& out_values, f32 update_dt = 0.0f, bool notify = false, std::vector<ActivatorHookArg> *const out_info = nullptr
+    std::vector<s16>& out_values, f32 update_dt = 0.0f, bool notify = false, std::vector<ActivatorHookArg> *const out_info = nullptr
   );
 
   bool switch_wall_segment_trigger(SectorID sector, WallID wall, u8 segment, bool& turned_on);

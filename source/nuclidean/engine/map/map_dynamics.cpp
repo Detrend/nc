@@ -205,7 +205,7 @@ bool MapDynamics::switch_wall_segment_trigger
 //==============================================================================
 void MapDynamics::evaluate_activators
 (
-  std::vector<u16>& activator_values, f32 delta, bool notify, std::vector<ActivatorHookArg>* const out_info /* = nullptr*/
+  std::vector<s16>& activator_values, f32 delta, bool notify, std::vector<ActivatorHookArg>* const out_info /* = nullptr*/
 )
 {
   nc_assert(triggers.size() <= MAX_TRIGGERS);
@@ -217,7 +217,7 @@ void MapDynamics::evaluate_activators
   // Now iterate all triggers
   for (TriggerID trigger_id = 0; trigger_id < trigger_cnt; ++trigger_id)
   {
-    s32 activator_value = 0;
+    s16 activator_value = 0;
     const TriggerData& td = triggers[trigger_id];
 
     switch (td.type)
@@ -319,8 +319,8 @@ void MapDynamics::evaluate_activators
       break;
     }
 
-    u16& value = activator_values[td.activator];
-    value = cast<u16>(clamp(cast<s32>(value) + activator_value, 0, (1 << 16) - 1));
+    s16& value = activator_values[td.activator];
+    value = value + activator_value;
   }
 }
 
@@ -330,7 +330,7 @@ void MapDynamics::update(f32 delta)
   // Now iterate all sectors that can be activated and move them correctly
   nc_assert(activators.size() <= MAX_ACTIVATORS);
   ActivatorID activator_cnt = cast<ActivatorID>(activators.size());
-  std::vector<u16> activator_values(activator_cnt, 0);
+  std::vector<s16> activator_values(activator_cnt, 0);
   std::vector<ActivatorHookArg> activator_hook_args(activator_cnt, ActivatorHookArg{.delta = delta});
 
   // Iterate triggers
@@ -340,8 +340,8 @@ void MapDynamics::update(f32 delta)
   for (ActivatorID activator_id = 0; activator_id < activator_cnt; ++activator_id)
   {
     ActivatorData& activator = activators[activator_id];
-    u16 threshold = activator.threshold;
-    u16 value     = activator_values[activator_id];
+    s32 threshold = activator.threshold;
+    s16 value     = activator_values[activator_id];
     ActivatorHookArg& arg = activator_hook_args[activator_id];
 
     bool is_on = value >= threshold;

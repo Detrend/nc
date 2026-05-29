@@ -893,7 +893,7 @@ void GraphicsSystem::handle_sector_height_debug()
     ImGui::End();
 
     MapDynamics& dynamics = GameSystem::get().get_map_dynamics();
-    std::vector<u16> activator_values(dynamics.activators.size());
+    std::vector<s16> activator_values(dynamics.activators.size());
     dynamics.evaluate_activators(activator_values);
 
     for (u64 idx = 0; idx < activator_values.size(); ++idx)
