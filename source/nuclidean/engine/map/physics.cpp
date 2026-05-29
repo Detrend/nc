@@ -1845,7 +1845,7 @@ const
 
   bool did_something = handle_portal_traversal_between_positions
   (
-    *this, position - velocity * 0.1f , position + velocity, transform_out, colls_opt
+    *this, position, position + velocity, transform_out, colls_opt
   );
 
   if (did_something)
