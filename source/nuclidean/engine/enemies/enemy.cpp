@@ -1021,7 +1021,7 @@ void Enemy::on_attack_trigger()
     }
     else
     {
-      for (size_t i = 0; i < 8; i++)
+      for (size_t i = 0; i < 3; i++)
       {
         vec3 front_dir = dir;
         vec3 side_dir = normalize_or(cross(front_dir, UP_DIR), VEC3_X);

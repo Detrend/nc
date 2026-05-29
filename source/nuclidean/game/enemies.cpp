@@ -79,7 +79,7 @@ EnemyStats ENEMY_STATS[] =
   {
     .move_speed = 2.0f,
     .projectile = ProjectileTypes::grunt_shot,
-    .max_hp = 100,
+    .max_hp = 75,
     .height = 1.5f,
     .eye_height = 1.4f,
     .atk_height = 0.8f,

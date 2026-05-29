@@ -73,7 +73,7 @@ ProjectileStats PROJECTILE_STATS[] =
   // Possessed fist
   ProjectileStats
   {
-    .damage = 30,
+    .damage = 15,
     .sprite = "cultist_projectile",
   },
 
