@@ -58,7 +58,7 @@ EnemyStats ENEMY_STATS[] =
       16, // walk
       23, // attack
       1,  // dead
-      24, // dying
+      27, // dying
     },
     .state_sprite_len
     {
