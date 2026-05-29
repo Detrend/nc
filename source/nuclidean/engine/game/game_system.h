@@ -58,6 +58,7 @@ public:
 
   // Saves the game into a file.
   void save_game() const;
+  void quick_save() const;
 
   // Loads the game from a file.
   void load_game(const std::string& path);

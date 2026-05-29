@@ -13,6 +13,7 @@ public:
   void update(float delta_time);
 
   void show_secret();
+  void show_saved();
 
   void draw();
     
@@ -27,12 +28,14 @@ private:
   void draw_texts();
   void draw_crosshair();
   void draw_secret_revealed();
+  void draw_saved();
 
   int display_ammo = 0;
   int display_health = 0;
   int crosshair = 1;
 
-  float time_since_secret = TIME_TO_SHOW_SECRET;
+  float time_since_secret = TIME_TO_SHOW_SECRET + 1.0f;
+  float time_since_saved = TIME_TO_SHOW_SECRET + 1.0f;
 
   const float TIME_TO_SHOW_SECRET = 3.0f;
 

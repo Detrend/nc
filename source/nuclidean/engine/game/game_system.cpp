@@ -44,6 +44,7 @@
 #include <engine/map/map_dynamics_hooks.h>
 
 #include <math/lingebra.h>
+#include <SDL2/include/SDL.h>
 
 #if NC_IMGUI
 #include <imgui/imgui.h> // for hot reload
@@ -989,6 +990,24 @@ void GameSystem::save_game() const
   std::string save_path = std::format
   (
     "{}/{}_{:%d_%m_%Y}{}", SAVE_DIR_RELATIVE, lvl, now, SAVE_FILE_SUFFIX
+  );
+
+  scheduled_state = NextRequestedState
+  {
+    .save_to_file = std::move(save_path),
+  };
+}
+
+//==============================================================================
+void GameSystem::quick_save() const
+{
+  // Generate the filename
+  auto now = floor<std::chrono::seconds>(std::chrono::system_clock::now());
+  auto lvl = level_name.to_string();
+
+  std::string save_path = std::format
+  (
+    "{}/{}{}", SAVE_DIR_RELATIVE, "quicksave", SAVE_FILE_SUFFIX
   );
 
   scheduled_state = NextRequestedState

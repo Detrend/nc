@@ -124,6 +124,22 @@ void InputSystem::update_window_and_pump_messages()
     {
       handle_mouse_wheel(event);
     }
+
+    if (event.type == SDL_KEYDOWN)
+    {
+      if (event.key.keysym.scancode == SDL_SCANCODE_F6)
+      {
+        GameSystem::get().quick_save();
+        get_engine().get_module<UserInterfaceSystem>().get_hud()->show_saved();
+      }
+      else if (event.key.keysym.scancode == SDL_SCANCODE_F9)
+      {
+        GameSystem::get().load_game(std::format
+        (
+          "{}/{}{}", SAVE_DIR_RELATIVE, "quicksave", SAVE_FILE_SUFFIX
+        ));
+      }
+    }
   }
 
   handle_player_input(m_current_inputs);
