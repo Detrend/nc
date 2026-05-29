@@ -106,6 +106,7 @@ void Game::serialize(Buffer& buffer)
   buffer.serialize(this->player_id);
   buffer.serialize(this->frame_idx);
   buffer.serialize(this->time_since_start);
+  buffer.serialize(this->difficulty);
   // No need to serialize "is_level_completed" and "next_level_name"
 
   // Subsystems second

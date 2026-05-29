@@ -3,6 +3,7 @@
 
 #include <types.h>
 #include <game/game_types.h>
+#include <engine/game/game.h>
 #include <engine/entity/entity_types.h>
 #include <engine/sound/sound_types.h>
 #include <engine/map/map_types.h>
@@ -61,6 +62,8 @@ public:
   );
 
   void request_entity_teleport(EntityID entity, vec3 teleport_to);
+
+  DifficultySettings get_difficulty_settings() const;
 
 private:
   Game& m_game;

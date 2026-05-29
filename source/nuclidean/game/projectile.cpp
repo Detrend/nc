@@ -193,7 +193,10 @@ bool Projectile::on_entity_hit(const CollisionHit& hit)
     {
       case EntityTypes::player:
       {
-        entity->as<Player>()->damage(dmg);
+        s32 final_dmg = dmg;
+        if (m_author.type != EntityTypes::player)
+          final_dmg = static_cast<s32>(dmg * GameHelpers::get().get_difficulty_settings().enemy_damage);
+        entity->as<Player>()->damage(final_dmg);
         return true;
       }
 

@@ -11,6 +11,7 @@
 #include <engine/player/save_types.h>
 
 #include <engine/input/game_input.h>
+#include <engine/game/game.h>
 #include <game/game_types.h>
 #include <math/vector.h>
 #include <math/matrix.h>
@@ -99,6 +100,8 @@ public:
 
   // Called from the action trigger
   void end_level_and_go_to_another_one_from_gamemode(const LevelName& new_level);
+
+  void set_pending_difficulty(Difficulty d) { pending_difficulty = d; }
 
   // map stats, use in level transition
   void increment_enemy_count() { enemy_count++; }
@@ -207,8 +210,9 @@ private:
     LevelTransitionData transition;
   };
 
-  GamePtr   game;
-  LevelName level_name = INVALID_LEVEL_NAME;
+  GamePtr    game;
+  LevelName  level_name         = INVALID_LEVEL_NAME;
+  Difficulty pending_difficulty = Difficulty::medium;
   Journal   journal;
 
   mutable std::optional<NextRequestedState> scheduled_state;

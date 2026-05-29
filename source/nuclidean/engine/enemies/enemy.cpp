@@ -233,7 +233,7 @@ void Enemy::init(vec3 position, vec3 looking_dir, EnemyType tpe)
   const auto& stats = this->get_stats();
 
   this->velocity = VEC3_ZERO;
-  this->health   = stats.max_hp;
+  this->health   = static_cast<int>(stats.max_hp * GameHelpers::get().get_difficulty_settings().enemy_health);
 
   this->appear = Appearance
   {
@@ -778,7 +778,7 @@ void Enemy::handle_ai_alert(f32 delta)
         time_until_attack = rng.next
         (
           stats.atk_delay_min, stats.atk_delay_max
-        );
+        ) * GameHelpers::get().get_difficulty_settings().enemy_reload_speed;
         GameHelpers::get().play_3d_sound(this->get_position(), ENEMY_SOUNDS_BY_TYPE[type].attack, SOUND_RANGE, 1.0f);
         //SoundSystem::get().play_oneshot(ENEMY_SOUNDS_BY_TYPE[type].attack);
       }

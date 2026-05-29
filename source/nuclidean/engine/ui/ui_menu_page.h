@@ -8,11 +8,36 @@ namespace nc
 enum class MenuPage
 {
   main_page,
+  difficulty,
   new_game,
   options,
   load,
   save,
   quit
+};
+
+//======================================================================================
+class DifficultyPage
+{
+public:
+  DifficultyPage();
+  ~DifficultyPage();
+
+  void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
+  void draw(ShaderProgramHandle button_material, GLuint VAO);
+
+private:
+  void go_back();
+  void select_ign();
+  void select_medium();
+  void select_hard();
+  void select_ultra();
+
+  UiButton* go_back_button  = nullptr;
+  UiButton* ign_button      = nullptr;
+  UiButton* medium_button   = nullptr;
+  UiButton* hard_button     = nullptr;
+  UiButton* ultra_button    = nullptr;
 };
 
 //======================================================================================

@@ -42,12 +42,13 @@ private:
   const ShaderProgramHandle digit_material;
 
   // pages
-  MainMenuPage* main_menu_page = nullptr;
-  OptionsPage* options_page = nullptr;
-  LoadGamePage* load_game_page = nullptr;
-  NewGamePage* new_game_page = nullptr;
-  QuitGamePage* quit_game_page = nullptr;
-  NextLevelPage* next_level_page = nullptr;
+  MainMenuPage*    main_menu_page  = nullptr;
+  DifficultyPage*  difficulty_page = nullptr;
+  OptionsPage*     options_page    = nullptr;
+  LoadGamePage*    load_game_page  = nullptr;
+  NewGamePage*     new_game_page   = nullptr;
+  QuitGamePage*    quit_game_page  = nullptr;
+  NextLevelPage*   next_level_page = nullptr;
 
   MenuPage current_page = MenuPage::main_page;
 

@@ -524,7 +524,7 @@ void NextLevelPage::menu_func()
 //==============================================================================================
 void MainMenuPage::new_game_func()
 {
-  get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MenuPage::new_game);
+  get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MenuPage::difficulty);
 }
 
 //==============================================================================================
@@ -550,6 +550,118 @@ void MainMenuPage::save_game_func()
 void MainMenuPage::quit_func()
 {
   get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MenuPage::quit);
+}
+
+//============================================================================================
+DifficultyPage::DifficultyPage()
+{
+  go_back_button = new UiButton("ui_back",   vec2(0.0f,  0.45f), vec2(0.3f, 0.066f), std::bind(&DifficultyPage::go_back,       this));
+  ign_button     = new UiButton("ui_level1", vec2(0.0f,  0.3f),  vec2(0.3f, 0.066f), std::bind(&DifficultyPage::select_ign,    this));
+  medium_button  = new UiButton("ui_level1", vec2(0.0f,  0.15f), vec2(0.3f, 0.066f), std::bind(&DifficultyPage::select_medium, this));
+  hard_button    = new UiButton("ui_level1", vec2(0.0f,  0.0f),  vec2(0.3f, 0.066f), std::bind(&DifficultyPage::select_hard,   this));
+  ultra_button   = new UiButton("ui_level1", vec2(0.0f, -0.15f), vec2(0.3f, 0.066f), std::bind(&DifficultyPage::select_ultra,  this));
+}
+
+//============================================================================================
+DifficultyPage::~DifficultyPage()
+{
+  delete go_back_button;
+  delete ign_button;
+  delete medium_button;
+  delete hard_button;
+  delete ultra_button;
+}
+
+//============================================================================================
+void DifficultyPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
+{
+  UiButton* hover_over_button = nullptr;
+
+  go_back_button->set_hover(false);
+  ign_button->set_hover(false);
+  medium_button->set_hover(false);
+  hard_button->set_hover(false);
+  ultra_button->set_hover(false);
+
+  if (ign_button->is_point_in_rec(mouse_pos))
+    hover_over_button = ign_button;
+  else if (medium_button->is_point_in_rec(mouse_pos))
+    hover_over_button = medium_button;
+  else if (hard_button->is_point_in_rec(mouse_pos))
+    hover_over_button = hard_button;
+  else if (ultra_button->is_point_in_rec(mouse_pos))
+    hover_over_button = ultra_button;
+  else if (go_back_button->is_point_in_rec(mouse_pos))
+    hover_over_button = go_back_button;
+
+  if (hover_over_button != nullptr)
+  {
+    hover_over_button->set_hover(true);
+    if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+      hover_over_button->on_click();
+  }
+}
+
+//============================================================================================
+void DifficultyPage::draw(ShaderProgramHandle button_material, GLuint VAO)
+{
+  button_material.use();
+
+  glBindVertexArray(VAO);
+  glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
+
+  glDisable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  ign_button->draw(button_material);
+  medium_button->draw(button_material);
+  hard_button->draw(button_material);
+  ultra_button->draw(button_material);
+  go_back_button->draw(button_material);
+
+  glDisable(GL_BLEND);
+  glEnable(GL_DEPTH_TEST);
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+  glDisableVertexAttribArray(0);
+  glDisableVertexAttribArray(1);
+  glBindVertexArray(0);
+}
+
+//============================================================================================
+void DifficultyPage::go_back()
+{
+  get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MenuPage::main_page);
+}
+
+//============================================================================================
+void DifficultyPage::select_ign()
+{
+  GameSystem::get().set_pending_difficulty(Difficulty::IGN);
+  get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MenuPage::new_game);
+}
+
+//============================================================================================
+void DifficultyPage::select_medium()
+{
+  GameSystem::get().set_pending_difficulty(Difficulty::medium);
+  get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MenuPage::new_game);
+}
+
+//============================================================================================
+void DifficultyPage::select_hard()
+{
+  GameSystem::get().set_pending_difficulty(Difficulty::hard);
+  get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MenuPage::new_game);
+}
+
+//============================================================================================
+void DifficultyPage::select_ultra()
+{
+  GameSystem::get().set_pending_difficulty(Difficulty::ultra_violence);
+  get_engine().get_module<UserInterfaceSystem>().get_menu_manager()->set_page(MenuPage::new_game);
 }
 
 //============================================================================================

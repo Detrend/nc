@@ -145,6 +145,23 @@ void GameHelpers::request_entity_teleport(EntityID entity, vec3 teleport_to)
 }
 
 //==============================================================================
+DifficultySettings GameHelpers::get_difficulty_settings() const
+{
+  static constexpr DifficultySettings SETTINGS[] =
+  {
+    // IGN
+    { .pickup_ammo = 2.0f, .pickup_health = 2.0f, .enemy_health = 0.5f, .enemy_damage = 0.5f, .enemy_reload_speed = 2.0f },
+    // medium
+    { .pickup_ammo = 1.0f, .pickup_health = 1.0f, .enemy_health = 1.0f, .enemy_damage = 1.0f, .enemy_reload_speed = 1.0f },
+    // hard
+    { .pickup_ammo = 0.75f, .pickup_health = 0.75f, .enemy_health = 1.5f, .enemy_damage = 1.5f, .enemy_reload_speed = 0.75f },
+    // ultra_violence
+    { .pickup_ammo = 0.5f, .pickup_health = 0.5f, .enemy_health = 2.0f, .enemy_damage = 2.0f, .enemy_reload_speed = 0.5f },
+  };
+  return SETTINGS[static_cast<u8>(m_game.difficulty)];
+}
+
+//==============================================================================
 void GameHelpers::on_player_traversed_nc_portal
 (
   EntityID player, mat4 transform, SectorID sid, WallID wid

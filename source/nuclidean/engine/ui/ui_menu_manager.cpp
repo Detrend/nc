@@ -20,11 +20,12 @@ MenuManager::MenuManager() :
   digit_material(ShaderProgramHandle::from_files(shaders::ui_text::VERTEX_FILE, shaders::ui_text::FRAGMENT_FILE))
 {
 
-  main_menu_page = new MainMenuPage();
-  options_page = new OptionsPage();
-  load_game_page = new LoadGamePage();
-  new_game_page = new NewGamePage();
-  quit_game_page = new QuitGamePage();
+  main_menu_page  = new MainMenuPage();
+  difficulty_page = new DifficultyPage();
+  options_page    = new OptionsPage();
+  load_game_page  = new LoadGamePage();
+  new_game_page   = new NewGamePage();
+  quit_game_page  = new QuitGamePage();
   next_level_page = new NextLevelPage();
 
   // Create VAO and VBO
@@ -65,6 +66,7 @@ void MenuManager::post_init()
 MenuManager::~MenuManager()
 {
   delete main_menu_page;
+  delete difficulty_page;
   delete options_page;
   delete load_game_page;
   delete new_game_page;
@@ -203,6 +205,9 @@ void MenuManager::update()
   case MenuPage::main_page:
     main_menu_page->update(mouse_pos, prev_mousestate, cur_mousestate);
     break;
+  case MenuPage::difficulty:
+    difficulty_page->update(mouse_pos, prev_mousestate, cur_mousestate);
+    break;
   case MenuPage::new_game:
     new_game_page->update(mouse_pos, prev_mousestate, cur_mousestate);
     break;
@@ -242,6 +247,9 @@ void MenuManager::draw()
   {
   case MenuPage::main_page:
     main_menu_page->draw(button_material, VAO);
+    break;
+  case MenuPage::difficulty:
+    difficulty_page->draw(button_material, VAO);
     break;
   case MenuPage::new_game:
     new_game_page->draw(button_material, VAO);

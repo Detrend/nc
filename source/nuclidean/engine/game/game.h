@@ -19,6 +19,23 @@ class  EntityRegistry;
 class  EntityAttachment;
 class  Buffer;
 
+enum class Difficulty : u8
+{
+  IGN            = 0,
+  medium         = 1,
+  hard           = 2,
+  ultra_violence = 3,
+};
+
+struct DifficultySettings
+{
+  f32 pickup_ammo;
+  f32 pickup_health;
+  f32 enemy_health;
+  f32 enemy_damage;
+  f32 enemy_reload_speed;
+};
+
 struct Game
 {
   // Simulates one frame of the game
@@ -42,6 +59,7 @@ struct Game
   std::unique_ptr<MapDynamics>      dynamics;
   std::unique_ptr<EntityAttachment> attachment;
   LevelTransitionData               transition_data;
+  Difficulty                        difficulty = Difficulty::medium;
   u64                               frame_idx = 0;
   f64                               time_since_start = 0.0;
   bool                              is_level_completed = false;

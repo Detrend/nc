@@ -1137,6 +1137,8 @@ void GameSystem::handle_start_new_level_optionally_with_demo
 {
   this->pre_level_load();
 
+  game->difficulty = pending_difficulty;
+
   // Load
   this->load_level(level, false);
 

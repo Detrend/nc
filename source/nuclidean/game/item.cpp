@@ -2,6 +2,7 @@
 #include <game/item.h>
 #include <cvars.h>
 
+#include <engine/game/game_helpers.h>
 #include <engine/player/player.h> // for checking if should be picked up
 
 #include <engine/graphics/resources/texture.h> // graphics
@@ -94,12 +95,15 @@ bool Pickup::pick_up(Player& player)
 {
   bool picked_up = false;
 
+  const DifficultySettings diff = GameHelpers::get().get_difficulty_settings();
+
   if (this->is_heal())
   {
     if (player.get_health() != player.get_max_health())
     {
       bool is_small = this->type == PickupTypes::hp_small;
-      player.heal(is_small ? CVars::medkit_small_hp : CVars::medkit_large_hp);
+      s32  base_hp  = is_small ? CVars::medkit_small_hp : CVars::medkit_large_hp;
+      player.heal(static_cast<u32>(base_hp * diff.pickup_health));
       picked_up = true;
     }
   }
@@ -117,11 +121,11 @@ bool Pickup::pick_up(Player& player)
     // Give him the ammo if not full
     if (player.get_ammo(weapon) != player.get_max_ammo(weapon))
     {
-      u32 ammo_cnt = is_ammo()
+      u32 base_ammo = is_ammo()
         ? PICKUP_AMMO_CNTS[weapon]
         : PICKUP_WEAPON_AMMO_CNTS[weapon];
 
-      player.give_ammo(weapon, ammo_cnt);
+      player.give_ammo(weapon, static_cast<u32>(base_ammo * diff.pickup_ammo));
       picked_up = true;
     }
   }
