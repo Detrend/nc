@@ -48,6 +48,10 @@
 					],
 					"is_single_use": true,
 					"type": "teleport"
+				},
+				{
+					"name": "",
+					"type": "autosave"
 				}
 			],
 			"name": "ActivatorDoorCircle",
@@ -74,7 +78,12 @@
 			"threshold": 1
 		},
 		{
-			"hooks": [],
+			"hooks": [
+				{
+					"name": "",
+					"type": "autosave"
+				}
+			],
 			"name": "ActivatorDoorTeleportArena",
 			"threshold": 1
 		},
@@ -45416,7 +45425,7 @@
 					{
 						"begin_height": 14.5,
 						"end_height": 15.5,
-						"id": "button_on_0",
+						"id": "button_off_0",
 						"id_triggered": "button_off_0",
 						"offset": [
 							0.0,
