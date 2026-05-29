@@ -136,7 +136,7 @@ struct CVars
   NC_REGISTER_CVAR(bool, debug_demo_recording,  false, "Debug that enables replaying a demo.");
   NC_REGISTER_CVAR(bool, debug_enemy_paths,     false, "Displays enemy paths.");
   NC_REGISTER_CVAR(bool, lock_camera_pitch,     false, "Restricts camera from looking up/down.");
-  NC_REGISTER_CVAR(bool, has_fps_limit,         false, "Is the FPS limited?");
+  NC_REGISTER_CVAR(bool, has_fps_limit,         true, "Is the FPS limited?");
   NC_REGISTER_CVAR(bool, has_min_fps,           false, "Min FPS");
   NC_REGISTER_CVAR(bool, light_debug,           false, "Light debugging.");
   NC_REGISTER_CVAR(bool, sector_height_debug,   false, "Sector movement debug.");
@@ -145,7 +145,7 @@ struct CVars
 
   NC_REGISTER_CVAR(bool, character_physics_stabilize, true, "Extra stabilization iterations for character physics.");
 
-  NC_REGISTER_CVAR_RANGED(f32, fps_limit, 60.0f, 1.0f, 512.0f,
+  NC_REGISTER_CVAR_RANGED(f32, fps_limit, 120.0f, 1.0f, 512.0f,
     "FPS limit if the \"has_fps_limit\" is turned on");
   NC_REGISTER_CVAR_RANGED(f32, fps_min, 30.0f, 1.0f, 2048.0f,
     "FPS limit if the \"has_fps_limit\" is turned on");
