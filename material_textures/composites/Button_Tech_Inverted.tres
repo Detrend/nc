@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dpohkvy6wk8m2" path="res://scripts/visuals/ExtrudedTexture.gd" id="1_stjey"]
 [ext_resource type="Script" uid="uid://b7mxery2plfee" path="res://scripts/visuals/TextureOffsetAdjuster.gd" id="2_nhvl1"]
-[ext_resource type="Resource" uid="uid://bvei4os4m0b0m" path="res://material_textures/ga_textures/button_tech_on.tres" id="3_stjey"]
+[ext_resource type="Resource" uid="uid://di0yhrdfnundc" path="res://material_textures/ga_textures/button_tech_off.tres" id="3_stjey"]
 
 [sub_resource type="Resource" id="Resource_ushbu"]
 script = ExtResource("2_nhvl1")

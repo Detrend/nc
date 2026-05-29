@@ -1,4 +1,4 @@
-[gd_scene load_steps=538 format=3 uid="uid://dsay4j34k3qty"]
+[gd_scene load_steps=539 format=3 uid="uid://dsay4j34k3qty"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_1nrge"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_bdnqo"]
@@ -45,6 +45,7 @@
 [ext_resource type="Resource" uid="uid://cm5g45651t52b" path="res://materials/ga_lvl1/window.tres" id="26_0doug"]
 [ext_resource type="Resource" uid="uid://cr5hipkk6gh18" path="res://materials/ga_lvl1/supply_room_3.tres" id="26_xehlr"]
 [ext_resource type="Resource" uid="uid://k08qtijoxejw" path="res://material_textures/ga_textures/metal_panel.tres" id="27_0doug"]
+[ext_resource type="Resource" uid="uid://cnc5hudjpb3x" path="res://material_textures/composites/Button_Tech.tres" id="27_vp5mm"]
 [ext_resource type="Resource" uid="uid://c7k703jblora0" path="res://materials/ga_lvl1/broken_room_supplies.tres" id="28_6kpey"]
 [ext_resource type="Resource" uid="uid://br7k55k3slnyy" path="res://materials/ga_lvl1/living_room.tres" id="29_ruyqr"]
 [ext_resource type="Resource" uid="uid://crn2d88cb4o82" path="res://materials/ga_lvl1/living_room_table.tres" id="30_a6do4"]
@@ -3137,7 +3138,7 @@ position = Vector2(200, -345)
 script = ExtResource("1_1nrge")
 music = "music_ambient"
 export_scale = Vector3(0.1, 0.1, 1)
-export_path = "../../nc/content/levels/level_final1.json"
+export_path = "../nc/content/levels/level_final2.json"
 
 [node name="Sectors" type="Node2D" parent="."]
 
@@ -4422,7 +4423,7 @@ portal_wall_length = 10.0
 
 [node name="Button" parent="Sectors/Sector-1793x4j" instance=ExtResource("8_rfdhl")]
 position = Vector2(-35, 164)
-texture = ExtResource("8_g73go")
+texture = ExtResource("27_vp5mm")
 stripe_floor_offset = 0.0
 
 [node name="Trigger" type="Node" parent="Sectors/Sector-1793x4j/Button" node_paths=PackedStringArray("target")]
@@ -5004,7 +5005,7 @@ portal_wall_length = 10.0
 
 [node name="Button" parent="Sectors/Sector-1793x2x2m" instance=ExtResource("8_rfdhl")]
 position = Vector2(-60, 278)
-texture = ExtResource("8_g73go")
+texture = ExtResource("27_vp5mm")
 stripe_floor_offset = 0.0
 
 [node name="Trigger" type="Node" parent="Sectors/Sector-1793x2x2m/Button" node_paths=PackedStringArray("target")]
@@ -5853,7 +5854,7 @@ portal_wall_length = 50.0
 [node name="Sector-1793w2y2" parent="Sectors" instance=ExtResource("2_bdnqo")]
 position = Vector2(70, -30)
 color = Color(0.501961, 0, 0.196078, 1)
-polygon = PackedVector2Array(200, 0, 200, -15, 246, -16, 254, -16, 256, -16, 263, -16, 297, -15, 297, -5, 297, 0, 290, 5, 260, 5, 210, 5)
+polygon = PackedVector2Array(200, 0, 200, -15, 246, -16, 254, -16, 256, -16, 263, -16, 297, -15, 297, -5, 297, -1, 271, 5, 260, 5, 210, 5)
 data = SubResource("Resource_j2t6o")
 floor_height = 10.0
 ceiling_height = 13.0
@@ -6307,7 +6308,7 @@ portal_wall_length = 10.0
 
 [node name="Button" parent="Sectors/Sector-1793w2f3c2l" instance=ExtResource("8_rfdhl")]
 position = Vector2(315, -192)
-texture = ExtResource("8_g73go")
+texture = ExtResource("27_vp5mm")
 stripe_floor_offset = 0.0
 
 [node name="Trigger" type="Node" parent="Sectors/Sector-1793w2f3c2l/Button" node_paths=PackedStringArray("target")]
@@ -7192,7 +7193,7 @@ portal_wall_length = 20.0
 
 [node name="Button" parent="Sectors/Sector-1793w2v" instance=ExtResource("8_rfdhl")]
 position = Vector2(365, 90)
-texture = ExtResource("8_g73go")
+texture = ExtResource("27_vp5mm")
 
 [node name="Trigger" type="Node" parent="Sectors/Sector-1793w2v/Button" node_paths=PackedStringArray("target")]
 script = ExtResource("7_4rivd")
@@ -7940,7 +7941,7 @@ portal_wall_length = 10.0
 
 [node name="Button" parent="Sectors/Sector-7481a" instance=ExtResource("8_rfdhl")]
 position = Vector2(13, -8)
-texture = ExtResource("8_g73go")
+texture = ExtResource("27_vp5mm")
 
 [node name="Trigger" type="Node" parent="Sectors/Sector-7481a/Button" node_paths=PackedStringArray("target")]
 script = ExtResource("7_4rivd")
@@ -8361,6 +8362,12 @@ rotation = -1.1847197
 [node name="HpBig4" parent="Entities" instance=ExtResource("10_536nw")]
 position = Vector2(131, 323)
 
+[node name="HpBig11" parent="Entities" instance=ExtResource("10_536nw")]
+position = Vector2(-66, -25)
+
+[node name="HpBig12" parent="Entities" instance=ExtResource("10_536nw")]
+position = Vector2(-65, -36)
+
 [node name="PlasmaRifle2" parent="Entities" instance=ExtResource("11_g73go")]
 position = Vector2(14, 285)
 
@@ -8401,6 +8408,7 @@ position = Vector2(362, 25)
 position = Vector2(356, 17)
 
 [node name="Cultist10" parent="Entities" instance=ExtResource("13_upg8e")]
+visible = false
 position = Vector2(301, 32)
 rotation = 3.07308
 
@@ -8409,6 +8417,7 @@ position = Vector2(331, 31)
 rotation = 2.7117012
 
 [node name="Cultist12" parent="Entities" instance=ExtResource("13_upg8e")]
+visible = false
 position = Vector2(290, -53)
 
 [node name="Cultist13" parent="Entities" instance=ExtResource("13_upg8e")]
@@ -8484,6 +8493,7 @@ position = Vector2(542, -245)
 rotation = 1.8108501
 
 [node name="Cultist22" parent="Entities" instance=ExtResource("13_upg8e")]
+visible = false
 position = Vector2(545, -291)
 rotation = 0.99546444
 
@@ -8492,6 +8502,7 @@ position = Vector2(598, -255)
 rotation = -1.3080426
 
 [node name="Cultist24" parent="Entities" instance=ExtResource("13_upg8e")]
+visible = false
 position = Vector2(580, -207)
 rotation = -0.79632264
 
@@ -8524,6 +8535,7 @@ position = Vector2(555, -308)
 position = Vector2(264, -113)
 
 [node name="Possessed22" parent="Entities" instance=ExtResource("11_yf5a1")]
+visible = false
 position = Vector2(285, -120)
 
 [node name="Possessed23" parent="Entities" instance=ExtResource("11_yf5a1")]
@@ -8540,6 +8552,7 @@ position = Vector2(439, -27)
 rotation = 1.5786164
 
 [node name="Grunt4" parent="Entities" instance=ExtResource("61_acq4m")]
+visible = false
 position = Vector2(438, 6)
 rotation = 1.5786164
 
@@ -9062,7 +9075,7 @@ placement_mode = 1
 
 [node name="AmbientLight" parent="Lights" instance=ExtResource("7_bdnqo")]
 position = Vector2(55, -76)
-intensity = 0.15
+intensity = 0.35
 
 [node name="Activators" type="Node" parent="."]
 script = ExtResource("3_pghxd")
@@ -9098,7 +9111,7 @@ script = ExtResource("9_4g5ls")
 script = ExtResource("66_vsyfr")
 metadata/_custom_type_script = "uid://clc81aelnhtob"
 
-[node name="TeleportDestination" parent="Activators/ActivatorDoorCircle/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("68_grj2i")]
+[node name="D-Grunt3" parent="Activators/ActivatorDoorCircle/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("68_grj2i")]
 position = Vector2(334, -349)
 target = NodePath("../../../../Entities/Grunt3")
 
