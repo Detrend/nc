@@ -71,4 +71,15 @@ namespace nc
     bool did_teleport = false;
   };
 
+  class ActivatorHook_Autosave : public IActivatorHook
+  {
+  public:
+    virtual void load(const ActivatorHookLoadArg& arg);
+
+    virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args) override;
+
+  private:
+    Token name;
+  };
+
 }

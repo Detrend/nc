@@ -57,7 +57,7 @@ public:
   void on_event(ModuleEvent& event) override;
 
   // Saves the game into a file.
-  void save_game() const;
+  void save_game(const char* const save_name="") const;
   void quick_save() const;
 
   // Loads the game from a file.

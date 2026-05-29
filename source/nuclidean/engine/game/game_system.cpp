@@ -981,7 +981,7 @@ const EntityRegistry& GameSystem::get_entities() const
 }
 
 //==============================================================================
-void GameSystem::save_game() const
+void GameSystem::save_game(const char*const save_name) const
 {
   // Generate the filename
   auto now = floor<std::chrono::seconds>(std::chrono::system_clock::now());
@@ -989,7 +989,7 @@ void GameSystem::save_game() const
 
   std::string save_path = std::format
   (
-    "{}/{}_{:%d_%m_%Y}{}", SAVE_DIR_RELATIVE, lvl, now, SAVE_FILE_SUFFIX
+    "{}/{}{}_{:%d_%m_%Y}{}", SAVE_DIR_RELATIVE, lvl, save_name, now, SAVE_FILE_SUFFIX
   );
 
   scheduled_state = NextRequestedState
