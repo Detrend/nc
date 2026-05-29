@@ -228,11 +228,11 @@
 			],
 			"is_player": true,
 			"position": [
-				12.8000001907349,
-				12.8000001907349,
+				13.399998664856,
+				13.2000017166138,
 				0.1
 			],
-			"tag": 444
+			"tag": 446
 		},
 		{
 			"entity_type": 1,
@@ -247,7 +247,7 @@
 				3.60000014305115,
 				-9.9
 			],
-			"tag": 409,
+			"tag": 411,
 			"triggers": [
 				{
 					"activator": "Arena1_Trap_Part2",
@@ -273,7 +273,7 @@
 				2.0,
 				-9.9
 			],
-			"tag": 408,
+			"tag": 410,
 			"triggers": [
 				{
 					"activator": "Arena1_Trap_Part2",
@@ -299,7 +299,7 @@
 				-5.6000018119812,
 				-9.3
 			],
-			"tag": 411,
+			"tag": 413,
 			"triggers": [
 				{
 					"activator": "Arena1_Trap",
@@ -334,7 +334,7 @@
 				-3.19999694824219,
 				-9.3
 			],
-			"tag": 410,
+			"tag": 412,
 			"triggers": [
 				{
 					"activator": "Arena1_Trap",
@@ -369,7 +369,7 @@
 				26.2000007629395,
 				-9.75
 			],
-			"tag": 414,
+			"tag": 416,
 			"triggers": [
 				{
 					"activator": "Arena1_Trap",
@@ -404,7 +404,7 @@
 				22.2000026702881,
 				-9.75
 			],
-			"tag": 415,
+			"tag": 417,
 			"triggers": [
 				{
 					"activator": "Arena1_Trap",
@@ -439,7 +439,7 @@
 				7.00000333786011,
 				-9.75
 			],
-			"tag": 412,
+			"tag": 414,
 			"triggers": [
 				{
 					"activator": "Arena1_Trap",
@@ -474,7 +474,7 @@
 				9.80000019073486,
 				-9.75
 			],
-			"tag": 413,
+			"tag": 415,
 			"triggers": [
 				{
 					"activator": "Arena1_Trap",
@@ -509,7 +509,7 @@
 				31.600004196167,
 				0.1
 			],
-			"tag": 416,
+			"tag": 418,
 			"triggers": [
 				{
 					"activator": "KillFirstCultist",
@@ -535,7 +535,7 @@
 				28.1999969482422,
 				0.7
 			],
-			"tag": 420
+			"tag": 422
 		},
 		{
 			"entity_type": 0,
@@ -550,7 +550,7 @@
 				34.7999992370605,
 				0.7
 			],
-			"tag": 419
+			"tag": 421
 		},
 		{
 			"entity_type": 0,
@@ -565,7 +565,7 @@
 				34.7999992370605,
 				0.7
 			],
-			"tag": 417
+			"tag": 419
 		},
 		{
 			"entity_type": 0,
@@ -580,7 +580,7 @@
 				35.2000007629395,
 				-5.1
 			],
-			"tag": 418
+			"tag": 420
 		},
 		{
 			"entity_type": 0,
@@ -715,7 +715,7 @@
 				31.2000007629395,
 				-5.0
 			],
-			"tag": 421
+			"tag": 423
 		},
 		{
 			"entity_type": 1,
@@ -730,7 +730,7 @@
 				30.0,
 				-5.1
 			],
-			"tag": 423
+			"tag": 425
 		},
 		{
 			"entity_type": 1,
@@ -745,7 +745,7 @@
 				32.4000015258789,
 				-5.1
 			],
-			"tag": 422
+			"tag": 424
 		},
 		{
 			"entity_type": 1,
@@ -760,7 +760,7 @@
 				-39.7999954223633,
 				3.1
 			],
-			"tag": 443,
+			"tag": 445,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -786,7 +786,7 @@
 				-36.3999938964844,
 				3.1
 			],
-			"tag": 442,
+			"tag": 444,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -812,7 +812,7 @@
 				-37.1999931335449,
 				3.1
 			],
-			"tag": 441,
+			"tag": 443,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -838,7 +838,7 @@
 				-38.4000053405762,
 				3.1
 			],
-			"tag": 440,
+			"tag": 442,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -864,7 +864,7 @@
 				-39.2000007629395,
 				3.1
 			],
-			"tag": 439,
+			"tag": 441,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -890,7 +890,7 @@
 				-40.0,
 				3.1
 			],
-			"tag": 438,
+			"tag": 440,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -916,7 +916,7 @@
 				-41.8000030517578,
 				3.1
 			],
-			"tag": 437,
+			"tag": 439,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -942,7 +942,7 @@
 				-43.2000007629395,
 				3.1
 			],
-			"tag": 436,
+			"tag": 438,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -968,7 +968,7 @@
 				-43.2000045776367,
 				3.1
 			],
-			"tag": 435,
+			"tag": 437,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -994,7 +994,7 @@
 				-42.0000038146973,
 				3.1
 			],
-			"tag": 434,
+			"tag": 436,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -1020,7 +1020,7 @@
 				-40.8000030517578,
 				3.1
 			],
-			"tag": 433,
+			"tag": 435,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished",
@@ -1046,7 +1046,7 @@
 				-24.2000007629395,
 				0.0
 			],
-			"tag": 432,
+			"tag": 434,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished_Wave1",
@@ -1072,7 +1072,7 @@
 				-8.19999980926514,
 				0.0
 			],
-			"tag": 431,
+			"tag": 433,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished_Wave1",
@@ -1098,7 +1098,7 @@
 				-12.8000049591064,
 				0.0
 			],
-			"tag": 430,
+			"tag": 432,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished_Wave1",
@@ -1124,7 +1124,7 @@
 				-20.9999980926514,
 				0.0
 			],
-			"tag": 429,
+			"tag": 431,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished_Wave1",
@@ -1150,7 +1150,7 @@
 				-24.8000011444092,
 				3.1
 			],
-			"tag": 428,
+			"tag": 430,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished_Wave1",
@@ -1176,7 +1176,7 @@
 				-24.0000038146973,
 				4.1
 			],
-			"tag": 424,
+			"tag": 426,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished_Wave1",
@@ -1202,7 +1202,7 @@
 				-11.2000045776367,
 				5.1
 			],
-			"tag": 425,
+			"tag": 427,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished_Wave1",
@@ -1228,7 +1228,7 @@
 				-2.00000166893005,
 				2.6
 			],
-			"tag": 426,
+			"tag": 428,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished_Wave1",
@@ -1254,7 +1254,7 @@
 				-3.19999861717224,
 				2.1
 			],
-			"tag": 427,
+			"tag": 429,
 			"triggers": [
 				{
 					"activator": "Outsides1House_TrapFinished_Wave1",
@@ -1268,7 +1268,7 @@
 			]
 		}
 	],
-	"music": "",
+	"music": "music_ambient",
 	"pickups": [
 		{
 			"position": [
@@ -1636,7 +1636,7 @@
 				-11.6000003814697,
 				0.9
 			],
-			"tag": 358,
+			"tag": 360,
 			"type": 0
 		},
 		{
@@ -1645,7 +1645,7 @@
 				-11.6000003814697,
 				0.9
 			],
-			"tag": 357,
+			"tag": 359,
 			"type": 0
 		},
 		{
@@ -1654,7 +1654,7 @@
 				-0.400000005960464,
 				0.9
 			],
-			"tag": 361,
+			"tag": 363,
 			"type": 5
 		},
 		{
@@ -1740,11 +1740,29 @@
 		},
 		{
 			"position": [
+				44.6000022888184,
+				-17.0,
+				3.6
+			],
+			"tag": 357,
+			"type": 1
+		},
+		{
+			"position": [
+				54.0,
+				-19.6000003814697,
+				0.0
+			],
+			"tag": 358,
+			"type": 1
+		},
+		{
+			"position": [
 				39.7999992370605,
 				-3.20000004768372,
 				2.1
 			],
-			"tag": 360,
+			"tag": 362,
 			"type": 5
 		},
 		{
@@ -1753,7 +1771,7 @@
 				-19.0,
 				0.4
 			],
-			"tag": 359,
+			"tag": 361,
 			"type": 4
 		}
 	],
@@ -11701,7 +11719,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 386
+			"tag": 388
 		},
 		{
 			"direction": [
@@ -11722,7 +11740,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 385
+			"tag": 387
 		},
 		{
 			"direction": [
@@ -11743,7 +11761,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 368
+			"tag": 370
 		},
 		{
 			"direction": [
@@ -11764,7 +11782,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 367
+			"tag": 369
 		},
 		{
 			"direction": [
@@ -11785,7 +11803,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 384
+			"tag": 386
 		},
 		{
 			"direction": [
@@ -11806,7 +11824,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 381
+			"tag": 383
 		},
 		{
 			"direction": [
@@ -11827,7 +11845,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 370
+			"tag": 372
 		},
 		{
 			"direction": [
@@ -11848,7 +11866,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 369
+			"tag": 371
 		},
 		{
 			"direction": [
@@ -11869,7 +11887,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 380
+			"tag": 382
 		},
 		{
 			"direction": [
@@ -11890,7 +11908,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 379
+			"tag": 381
 		},
 		{
 			"direction": [
@@ -11911,7 +11929,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 378
+			"tag": 380
 		},
 		{
 			"direction": [
@@ -11932,7 +11950,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 377
+			"tag": 379
 		},
 		{
 			"direction": [
@@ -11953,7 +11971,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 376
+			"tag": 378
 		},
 		{
 			"direction": [
@@ -11974,7 +11992,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 375
+			"tag": 377
 		},
 		{
 			"direction": [
@@ -11995,7 +12013,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 366
+			"tag": 368
 		},
 		{
 			"direction": [
@@ -12016,7 +12034,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 365
+			"tag": 367
 		},
 		{
 			"direction": [
@@ -12037,7 +12055,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 364
+			"tag": 366
 		},
 		{
 			"direction": [
@@ -12058,7 +12076,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 363
+			"tag": 365
 		},
 		{
 			"direction": [
@@ -12079,7 +12097,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 362
+			"tag": 364
 		},
 		{
 			"direction": [
@@ -12100,7 +12118,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 372
+			"tag": 374
 		},
 		{
 			"direction": [
@@ -12121,7 +12139,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 371
+			"tag": 373
 		},
 		{
 			"direction": [
@@ -12142,7 +12160,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 382
+			"tag": 384
 		},
 		{
 			"direction": [
@@ -12163,7 +12181,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 383
+			"tag": 385
 		},
 		{
 			"direction": [
@@ -12184,7 +12202,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 373
+			"tag": 375
 		},
 		{
 			"direction": [
@@ -12205,7 +12223,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 374
+			"tag": 376
 		},
 		{
 			"direction": [
@@ -13738,7 +13756,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_1",
-			"tag": 391
+			"tag": 393
 		},
 		{
 			"direction": [
@@ -13759,7 +13777,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_2",
-			"tag": 387
+			"tag": 389
 		},
 		{
 			"direction": [
@@ -13822,7 +13840,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 394
+			"tag": 396
 		},
 		{
 			"direction": [
@@ -13906,7 +13924,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_1",
-			"tag": 393
+			"tag": 395
 		},
 		{
 			"direction": [
@@ -13948,7 +13966,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_2",
-			"tag": 390
+			"tag": 392
 		},
 		{
 			"direction": [
@@ -14053,7 +14071,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "vines_3",
-			"tag": 398
+			"tag": 400
 		},
 		{
 			"direction": [
@@ -14074,7 +14092,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "vines_2",
-			"tag": 396
+			"tag": 398
 		},
 		{
 			"direction": [
@@ -14095,7 +14113,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "vines_4",
-			"tag": 395
+			"tag": 397
 		},
 		{
 			"direction": [
@@ -14116,7 +14134,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "vines_3",
-			"tag": 399
+			"tag": 401
 		},
 		{
 			"direction": [
@@ -14200,7 +14218,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "vines_2",
-			"tag": 397
+			"tag": 399
 		},
 		{
 			"direction": [
@@ -14221,7 +14239,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "vines_3",
-			"tag": 400
+			"tag": 402
 		},
 		{
 			"direction": [
@@ -14326,7 +14344,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_1",
-			"tag": 392
+			"tag": 394
 		},
 		{
 			"direction": [
@@ -14347,7 +14365,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_2",
-			"tag": 388
+			"tag": 390
 		},
 		{
 			"direction": [
@@ -14368,7 +14386,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_2",
-			"tag": 389
+			"tag": 391
 		},
 		{
 			"direction": [
@@ -14557,7 +14575,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_1",
-			"tag": 405
+			"tag": 407
 		},
 		{
 			"direction": [
@@ -14599,7 +14617,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_2",
-			"tag": 401
+			"tag": 403
 		},
 		{
 			"direction": [
@@ -14662,7 +14680,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 407
+			"tag": 409
 		},
 		{
 			"direction": [
@@ -14683,7 +14701,7 @@
 			"scale": 10.0,
 			"scaling": 0,
 			"sprite": "cup_2",
-			"tag": 406
+			"tag": 408
 		},
 		{
 			"direction": [
@@ -14725,7 +14743,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_2",
-			"tag": 402
+			"tag": 404
 		},
 		{
 			"direction": [
@@ -14788,7 +14806,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_2",
-			"tag": 404
+			"tag": 406
 		},
 		{
 			"direction": [
@@ -14809,7 +14827,7 @@
 			"scale": 45.0,
 			"scaling": 1,
 			"sprite": "hanging_body_2",
-			"tag": 403
+			"tag": 405
 		},
 		{
 			"direction": [
@@ -15018,7 +15036,7 @@
 				0.1
 			],
 			"tag": 20,
-			"target": 437
+			"target": 439
 		},
 		{
 			"position": [
@@ -15027,7 +15045,7 @@
 				0.1
 			],
 			"tag": 19,
-			"target": 436
+			"target": 438
 		},
 		{
 			"position": [
@@ -15036,7 +15054,7 @@
 				0.1
 			],
 			"tag": 17,
-			"target": 434
+			"target": 436
 		},
 		{
 			"position": [
@@ -15045,7 +15063,7 @@
 				0.1
 			],
 			"tag": 26,
-			"target": 443
+			"target": 445
 		},
 		{
 			"position": [
@@ -15054,7 +15072,7 @@
 				0.1
 			],
 			"tag": 18,
-			"target": 435
+			"target": 437
 		},
 		{
 			"position": [
@@ -15063,7 +15081,7 @@
 				0.1
 			],
 			"tag": 24,
-			"target": 441
+			"target": 443
 		},
 		{
 			"position": [
@@ -15072,7 +15090,7 @@
 				0.1
 			],
 			"tag": 25,
-			"target": 442
+			"target": 444
 		},
 		{
 			"position": [
@@ -15090,7 +15108,7 @@
 				0.1
 			],
 			"tag": 21,
-			"target": 438
+			"target": 440
 		},
 		{
 			"position": [
@@ -15126,7 +15144,7 @@
 				4.1
 			],
 			"tag": 22,
-			"target": 439
+			"target": 441
 		},
 		{
 			"position": [
@@ -15162,7 +15180,7 @@
 				3.1
 			],
 			"tag": 16,
-			"target": 433
+			"target": 435
 		},
 		{
 			"position": [
@@ -15171,7 +15189,7 @@
 				2.6
 			],
 			"tag": 23,
-			"target": 440
+			"target": 442
 		}
 	],
 	"sectors": [
@@ -66652,6 +66670,20 @@
 				[],
 				[
 					{
+						"begin_height": 0.6,
+						"end_height": 2.0,
+						"id": "wooden_planks_thick",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					},
+					{
 						"begin_height": 4.0,
 						"end_height": 4.5,
 						"id": "bricks",
@@ -66730,6 +66762,20 @@
 				[],
 				[
 					{
+						"begin_height": 0.6,
+						"end_height": 2.0,
+						"id": "wooden_planks_thick",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					},
+					{
 						"begin_height": 4.0,
 						"end_height": 4.5,
 						"id": "bricks",
@@ -66790,7 +66836,7 @@
 				[
 					{
 						"begin_height": 0.6,
-						"end_height": 1.4,
+						"end_height": 2.0,
 						"id": "wooden_planks_thick",
 						"offset": [
 							0.0,
@@ -66884,7 +66930,7 @@
 				[
 					{
 						"begin_height": 0.6,
-						"end_height": 1.4,
+						"end_height": 2.0,
 						"id": "wooden_planks_thick",
 						"offset": [
 							0.0,
@@ -66975,7 +67021,7 @@
 				[
 					{
 						"begin_height": 0.6,
-						"end_height": 1.4,
+						"end_height": 2.0,
 						"id": "wooden_planks_thick",
 						"offset": [
 							0.0,
@@ -67068,7 +67114,7 @@
 				[
 					{
 						"begin_height": 0.6,
-						"end_height": 1.4,
+						"end_height": 2.0,
 						"id": "wooden_planks_thick",
 						"offset": [
 							0.0,
@@ -67139,6 +67185,20 @@
 			"portal_wall": -1,
 			"wall_surfaces": [
 				[
+					{
+						"begin_height": 0.6,
+						"end_height": 2.0,
+						"id": "wooden_planks_thick",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					},
 					{
 						"begin_height": 4.0,
 						"end_height": 4.5,
@@ -67234,6 +67294,20 @@
 				[],
 				[
 					{
+						"begin_height": 0.6,
+						"end_height": 2.0,
+						"id": "wooden_planks_thick",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					},
+					{
 						"begin_height": 4.0,
 						"end_height": 4.5,
 						"id": "bricks",
@@ -67313,7 +67387,7 @@
 				[
 					{
 						"begin_height": 0.6,
-						"end_height": 1.4,
+						"end_height": 2.0,
 						"id": "wooden_planks_thick",
 						"offset": [
 							0.0,
@@ -67386,6 +67460,20 @@
 			"wall_surfaces": [
 				[
 					{
+						"begin_height": 0.6,
+						"end_height": 2.0,
+						"id": "wooden_planks_thick",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					},
+					{
 						"begin_height": 4.0,
 						"end_height": 4.5,
 						"id": "bricks",
@@ -67449,6 +67537,20 @@
 			"portal_wall": -1,
 			"wall_surfaces": [
 				[
+					{
+						"begin_height": 0.6,
+						"end_height": 2.0,
+						"id": "wooden_planks_thick",
+						"offset": [
+							0.0,
+							0.0
+						],
+						"rotation": 0.0,
+						"scale": 1.0,
+						"show": true,
+						"tile_rotation_increment": 1.5707963267949,
+						"tile_rotations_count": 1
+					},
 					{
 						"begin_height": 4.0,
 						"end_height": 4.5,
@@ -67545,7 +67647,7 @@
 				[
 					{
 						"begin_height": 0.6,
-						"end_height": 1.4,
+						"end_height": 2.0,
 						"id": "wooden_planks_thick",
 						"offset": [
 							0.0,
@@ -67669,7 +67771,7 @@
 			"damage": 0,
 			"debug_name": "Sectors::Main::Corridor4::Room3::Chair::Sector-4453",
 			"door_sfx_override": false,
-			"floor": 0.6,
+			"floor": 2.0,
 			"floor_surface": {
 				"id": "wooden_planks_thick",
 				"offset": [
@@ -67695,22 +67797,7 @@
 			"portal_wall": -1,
 			"wall_surfaces": [
 				[],
-				[
-					{
-						"begin_height": 0.6,
-						"end_height": 1.4,
-						"id": "wooden_planks_thick",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
+				[],
 				[],
 				[]
 			]
@@ -67732,7 +67819,7 @@
 			"damage": 0,
 			"debug_name": "Sectors::Main::Corridor4::Room3::Chair::Sector-4453a",
 			"door_sfx_override": false,
-			"floor": 1.4,
+			"floor": 2.0,
 			"floor_surface": {
 				"id": "wooden_planks_thick",
 				"offset": [
@@ -67780,7 +67867,7 @@
 			"damage": 0,
 			"debug_name": "Sectors::Main::Corridor4::Room3::Chair2::Sector-4453",
 			"door_sfx_override": false,
-			"floor": 0.6,
+			"floor": 2.0,
 			"floor_surface": {
 				"id": "wooden_planks_thick",
 				"offset": [
@@ -67806,22 +67893,7 @@
 			"portal_wall": -1,
 			"wall_surfaces": [
 				[],
-				[
-					{
-						"begin_height": 0.6,
-						"end_height": 1.4,
-						"id": "wooden_planks_thick",
-						"offset": [
-							0.0,
-							0.0
-						],
-						"rotation": 0.0,
-						"scale": 1.0,
-						"show": true,
-						"tile_rotation_increment": 1.5707963267949,
-						"tile_rotations_count": 1
-					}
-				],
+				[],
 				[],
 				[]
 			]
@@ -67843,7 +67915,7 @@
 			"damage": 0,
 			"debug_name": "Sectors::Main::Corridor4::Room3::Chair2::Sector-4453a",
 			"door_sfx_override": false,
-			"floor": 1.4,
+			"floor": 2.0,
 			"floor_surface": {
 				"id": "wooden_planks_thick",
 				"offset": [
