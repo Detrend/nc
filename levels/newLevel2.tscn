@@ -1,4 +1,4 @@
-[gd_scene load_steps=474 format=3 uid="uid://qa2w68k6j6h2"]
+[gd_scene load_steps=479 format=3 uid="uid://qa2w68k6j6h2"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_1o0vd"]
 [ext_resource type="Script" uid="uid://b8tkglirbwf1e" path="res://scripts/reactivity/ActivatorPool.gd" id="2_b0a4w"]
@@ -96,6 +96,10 @@
 [ext_resource type="PackedScene" uid="uid://bh1r63nf0cmsu" path="res://prefabs/Props/Vines4.tscn" id="86_ydyyl"]
 [ext_resource type="PackedScene" uid="uid://bjmy41pmbvxwn" path="res://prefabs/PickUps/Railgun.tscn" id="88_ylqe0"]
 [ext_resource type="PackedScene" uid="uid://baxg2nfenfeby" path="res://prefabs/Props/Cup1.tscn" id="90_ye8aj"]
+[ext_resource type="PackedScene" uid="uid://c3gl2xtkcfe3f" path="res://prefabs/Props/Bush1.tscn" id="95_ep6v3"]
+[ext_resource type="PackedScene" uid="uid://dfen5ojms1xh" path="res://prefabs/Props/Bush2.tscn" id="96_1bxne"]
+[ext_resource type="PackedScene" uid="uid://75c6ft47ph3" path="res://prefabs/Props/Bush3.tscn" id="97_jcd71"]
+[ext_resource type="PackedScene" uid="uid://deia7l8swr6i1" path="res://prefabs/Props/Bush4.tscn" id="98_scl0x"]
 
 [sub_resource type="Resource" id="Resource_oenso"]
 script = ExtResource("4_coai7")
@@ -979,16 +983,9 @@ ceiling_height = 4.5
 material = ExtResource("43_738hi")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
-[sub_resource type="Resource" id="Resource_4p2vn"]
+[sub_resource type="Resource" id="Resource_kmflq"]
 script = ExtResource("4_coai7")
-floor_height = 0.6
-ceiling_height = 4.0
-material = ExtResource("43_nda1l")
-metadata/_custom_type_script = "uid://cft80p5qydrwt"
-
-[sub_resource type="Resource" id="Resource_fvsxm"]
-script = ExtResource("4_coai7")
-floor_height = 1.4
+floor_height = 2.0
 ceiling_height = 4.0
 material = ExtResource("43_nda1l")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
@@ -2448,6 +2445,20 @@ ceiling_height = 4.0
 material = ExtResource("43_738hi")
 metadata/_custom_type_script = "uid://cft80p5qydrwt"
 
+[sub_resource type="Resource" id="Resource_4p2vn"]
+script = ExtResource("4_coai7")
+floor_height = 0.6
+ceiling_height = 4.0
+material = ExtResource("43_nda1l")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
+[sub_resource type="Resource" id="Resource_fvsxm"]
+script = ExtResource("4_coai7")
+floor_height = 1.4
+ceiling_height = 4.0
+material = ExtResource("43_nda1l")
+metadata/_custom_type_script = "uid://cft80p5qydrwt"
+
 [sub_resource type="Resource" id="Resource_3c2ox"]
 script = ExtResource("4_coai7")
 floor_height = 0.8
@@ -2622,6 +2633,7 @@ point_count = 3
 [node name="Root" type="Node2D"]
 script = ExtResource("1_1o0vd")
 coloring_mode = 2
+music = "music_ambient"
 export_scale = Vector3(0.2, 0.2, 1)
 export_path = "../nc/content/levels/level_final2.json"
 
@@ -4944,8 +4956,8 @@ color = Color(1, 1, 1, 1)
 texture = ExtResource("10_krcb3")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(-1.4042053, -0.41603088, 1.5957947, -0.41603088, 1.5957947, 3.583969, -1.4042053, 3.583969)
-data = SubResource("Resource_4p2vn")
-floor_height = 0.6
+data = SubResource("Resource_kmflq")
+floor_height = 2.0
 ceiling_height = 4.0
 sector_material = ExtResource("43_nda1l")
 portal_wall_length = 3.0
@@ -4956,8 +4968,8 @@ color = Color(1, 1, 1, 1)
 texture = ExtResource("10_krcb3")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(1.5957947, -0.41603088, 2.5957947, -0.41603088, 2.5957947, 3.583969, 1.5957947, 3.583969)
-data = SubResource("Resource_fvsxm")
-floor_height = 1.4
+data = SubResource("Resource_kmflq")
+floor_height = 2.0
 ceiling_height = 4.0
 sector_material = ExtResource("43_nda1l")
 portal_wall_length = 1.0
@@ -4971,8 +4983,8 @@ color = Color(1, 1, 1, 1)
 texture = ExtResource("10_krcb3")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(4.5957947, 17.206772, 4.5957947, 20.206772, 0.5957947, 20.206772, 0.5957947, 17.206772)
-data = SubResource("Resource_4p2vn")
-floor_height = 0.6
+data = SubResource("Resource_kmflq")
+floor_height = 2.0
 ceiling_height = 4.0
 sector_material = ExtResource("43_nda1l")
 portal_wall_length = 3.0
@@ -4983,8 +4995,8 @@ color = Color(1, 1, 1, 1)
 texture = ExtResource("10_krcb3")
 texture_scale = Vector2(20, 20)
 polygon = PackedVector2Array(4.5957947, 20.206772, 4.5957947, 21.206772, 0.5957947, 21.206772, 0.5957947, 20.206772)
-data = SubResource("Resource_fvsxm")
-floor_height = 1.4
+data = SubResource("Resource_kmflq")
+floor_height = 2.0
 ceiling_height = 4.0
 sector_material = ExtResource("43_nda1l")
 portal_wall_length = 1.0
@@ -10323,6 +10335,12 @@ position = Vector2(-109, -10)
 [node name="HpBig" parent="PickUps/Outsides" instance=ExtResource("18_b0a4w")]
 position = Vector2(-222, 77)
 
+[node name="HpBig2" parent="PickUps/Outsides" instance=ExtResource("18_b0a4w")]
+position = Vector2(-223, 85)
+
+[node name="HpBig3" parent="PickUps/Outsides" instance=ExtResource("18_b0a4w")]
+position = Vector2(-270, 98)
+
 [node name="HpSmall" parent="PickUps/Outsides" instance=ExtResource("20_yvvru")]
 position = Vector2(-76, 58)
 
@@ -10483,6 +10501,192 @@ position = Vector2(-82, 9)
 
 [node name="Cup3" parent="Props/Outsides" instance=ExtResource("74_80v7h")]
 position = Vector2(-88, 12)
+
+[node name="Vegetation" type="Node2D" parent="Props/Outsides"]
+visible = false
+
+[node name="Bush1" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-305, -155)
+
+[node name="Bush11" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-300.00003, -137.00002)
+
+[node name="Bush12" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-314.00003, -123.000015)
+
+[node name="Bush13" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-318, -175)
+
+[node name="Bush2" parent="Props/Outsides/Vegetation" instance=ExtResource("96_1bxne")]
+position = Vector2(-264, -166.00002)
+
+[node name="Bush9" parent="Props/Outsides/Vegetation" instance=ExtResource("96_1bxne")]
+position = Vector2(-250.00003, -175.00002)
+
+[node name="Bush10" parent="Props/Outsides/Vegetation" instance=ExtResource("96_1bxne")]
+position = Vector2(-297, -179.00002)
+
+[node name="Bush3" parent="Props/Outsides/Vegetation" instance=ExtResource("97_jcd71")]
+position = Vector2(-271, -131)
+
+[node name="Bush14" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-383, -229.99998)
+
+[node name="Bush15" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-378.00003, -212)
+
+[node name="Bush16" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-392.00003, -198)
+
+[node name="Bush17" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-396, -249.99998)
+
+[node name="Bush18" parent="Props/Outsides/Vegetation" instance=ExtResource("96_1bxne")]
+position = Vector2(-342, -241)
+
+[node name="Bush19" parent="Props/Outsides/Vegetation" instance=ExtResource("96_1bxne")]
+position = Vector2(-328.00003, -250)
+
+[node name="Bush20" parent="Props/Outsides/Vegetation" instance=ExtResource("96_1bxne")]
+position = Vector2(-375, -254)
+
+[node name="Bush21" parent="Props/Outsides/Vegetation" instance=ExtResource("97_jcd71")]
+position = Vector2(-349, -205.99998)
+
+[node name="Bush22" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-378, -74.999985)
+
+[node name="Bush23" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-373.00003, -57)
+
+[node name="Bush24" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-387.00003, -43)
+
+[node name="Bush25" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-391, -94.999985)
+
+[node name="Bush26" parent="Props/Outsides/Vegetation" instance=ExtResource("96_1bxne")]
+position = Vector2(-337, -86)
+
+[node name="Bush27" parent="Props/Outsides/Vegetation" instance=ExtResource("96_1bxne")]
+position = Vector2(-323.00003, -95)
+
+[node name="Bush28" parent="Props/Outsides/Vegetation" instance=ExtResource("96_1bxne")]
+position = Vector2(-370, -99)
+
+[node name="Bush29" parent="Props/Outsides/Vegetation" instance=ExtResource("97_jcd71")]
+position = Vector2(-344, -50.999985)
+
+[node name="Bush30" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-241, -227.99998)
+
+[node name="Bush31" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-236.00003, -210)
+
+[node name="Bush32" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-250.00003, -196)
+
+[node name="Bush33" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-254, -247.99998)
+
+[node name="Bush37" parent="Props/Outsides/Vegetation" instance=ExtResource("97_jcd71")]
+position = Vector2(-207, -203.99998)
+
+[node name="Bush38" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-349, -196.99998)
+
+[node name="Bush39" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-344.00003, -179)
+
+[node name="Bush40" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-358.00003, -165)
+
+[node name="Bush41" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-362, -216.99998)
+
+[node name="Bush42" parent="Props/Outsides/Vegetation" instance=ExtResource("96_1bxne")]
+position = Vector2(-308, -208)
+
+[node name="Bush43" parent="Props/Outsides/Vegetation" instance=ExtResource("96_1bxne")]
+position = Vector2(-294.00003, -217)
+
+[node name="Bush44" parent="Props/Outsides/Vegetation" instance=ExtResource("96_1bxne")]
+position = Vector2(-341, -221)
+
+[node name="Bush45" parent="Props/Outsides/Vegetation" instance=ExtResource("97_jcd71")]
+position = Vector2(-315, -172.99998)
+
+[node name="Bush46" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-438, -171.99998)
+
+[node name="Bush47" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-433.00003, -154)
+
+[node name="Bush48" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-447.00003, -140)
+
+[node name="Bush49" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-451, -191.99998)
+
+[node name="Bush50" parent="Props/Outsides/Vegetation" instance=ExtResource("96_1bxne")]
+position = Vector2(-397, -183)
+
+[node name="Bush51" parent="Props/Outsides/Vegetation" instance=ExtResource("96_1bxne")]
+position = Vector2(-383.00003, -192)
+
+[node name="Bush52" parent="Props/Outsides/Vegetation" instance=ExtResource("96_1bxne")]
+position = Vector2(-430, -196)
+
+[node name="Bush54" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-429, -95.999985)
+
+[node name="Bush55" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-424.00003, -78)
+
+[node name="Bush57" parent="Props/Outsides/Vegetation" instance=ExtResource("95_ep6v3")]
+position = Vector2(-442, -115.999985)
+
+[node name="Bush60" parent="Props/Outsides/Vegetation" instance=ExtResource("96_1bxne")]
+position = Vector2(-421, -120)
+
+[node name="Bush61" parent="Props/Outsides/Vegetation" instance=ExtResource("97_jcd71")]
+position = Vector2(-395, -71.999985)
+
+[node name="Bush6" parent="Props/Outsides/Vegetation" instance=ExtResource("97_jcd71")]
+position = Vector2(-284.00003, -140)
+
+[node name="Bush7" parent="Props/Outsides/Vegetation" instance=ExtResource("97_jcd71")]
+position = Vector2(-282.00003, -161)
+
+[node name="Bush8" parent="Props/Outsides/Vegetation" instance=ExtResource("97_jcd71")]
+position = Vector2(-274.00003, -183.00002)
+
+[node name="Bush4" parent="Props/Outsides/Vegetation" instance=ExtResource("98_scl0x")]
+position = Vector2(-217, -196.00002)
+
+[node name="Bush34" parent="Props/Outsides/Vegetation" instance=ExtResource("98_scl0x")]
+position = Vector2(-212.00002, -163)
+
+[node name="Bush35" parent="Props/Outsides/Vegetation" instance=ExtResource("98_scl0x")]
+position = Vector2(-331, -210.00002)
+
+[node name="Bush36" parent="Props/Outsides/Vegetation" instance=ExtResource("98_scl0x")]
+position = Vector2(-425.00003, -225.00002)
+
+[node name="Bush53" parent="Props/Outsides/Vegetation" instance=ExtResource("98_scl0x")]
+position = Vector2(-352, -265)
+
+[node name="Bush56" parent="Props/Outsides/Vegetation" instance=ExtResource("98_scl0x")]
+position = Vector2(-275, -258.00003)
+
+[node name="Bush58" parent="Props/Outsides/Vegetation" instance=ExtResource("98_scl0x")]
+position = Vector2(-307, -45.00003)
+
+[node name="Bush59" parent="Props/Outsides/Vegetation" instance=ExtResource("98_scl0x")]
+position = Vector2(-412.00003, -59)
+
+[node name="Bush5" parent="Props/Outsides/Vegetation" instance=ExtResource("98_scl0x")]
+position = Vector2(-226.00002, -101)
 
 [node name="Enemies" type="Node2D" parent="."]
 
@@ -10871,7 +11075,7 @@ player_sensitive = false
 enemy_sensitive = true
 
 [node name="PlayerPosition" parent="." instance=ExtResource("7_ufqas")]
-position = Vector2(-64, -64)
+position = Vector2(-66.99999, -66.00001)
 rotation = 5.337088
 
 [node name="DebugWeapons" type="Node2D" parent="PlayerPosition"]

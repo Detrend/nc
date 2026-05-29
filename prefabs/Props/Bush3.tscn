@@ -16,5 +16,5 @@ height_offset = 0.0
 [node name="Icon" type="Sprite2D" parent="."]
 z_index = 999
 texture_filter = 1
-scale = Vector2(0.04088975, 0.04088975)
+scale = Vector2(0.111, 0.111)
 texture = ExtResource("2_wa3wg")
