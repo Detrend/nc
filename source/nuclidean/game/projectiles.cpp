@@ -37,7 +37,7 @@ ProjectileStats PROJECTILE_STATS[] =
   // Shotgun slug
   ProjectileStats
   {
-    .dmg_falloff = 0.05f, .speed = 100.0f, .radius = 0.01f, .damage = 15,
+    .dmg_falloff = 0.05f, .speed = 100.0f, .radius = 0.01f, .damage = 20,
     .bounce_cnt = 0, .sprite = nullptr, .sprite_cnt = 1,
     .light_color = VEC3_ZERO,
     .hit_sprite = "buck",
