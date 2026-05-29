@@ -1,4 +1,4 @@
-[gd_scene load_steps=539 format=3 uid="uid://dsay4j34k3qty"]
+[gd_scene load_steps=540 format=3 uid="uid://dsay4j34k3qty"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_1nrge"]
 [ext_resource type="PackedScene" uid="uid://byfpnxkb3xc6c" path="res://prefabs/Sector.tscn" id="2_bdnqo"]
@@ -70,6 +70,7 @@
 [ext_resource type="PackedScene" uid="uid://dgwhwixwr1rac" path="res://prefabs/Entities/Grunt.tscn" id="61_acq4m"]
 [ext_resource type="Script" uid="uid://clc81aelnhtob" path="res://scripts/reactivity/hooks/TeleportHook.gd" id="66_vsyfr"]
 [ext_resource type="PackedScene" uid="uid://uu7lnwfy77av" path="res://prefabs/Entities/TeleportDestination.tscn" id="68_grj2i"]
+[ext_resource type="Script" uid="uid://f6c5d4jgyb33" path="res://scripts/reactivity/hooks/GenericActivatorHook.gd" id="69_3njhl"]
 [ext_resource type="PackedScene" uid="uid://c3kjwctw4d8w8" path="res://prefabs/Props/lamp.tscn" id="70_h1mph"]
 [ext_resource type="PackedScene" uid="uid://baxg2nfenfeby" path="res://prefabs/Props/Cup1.tscn" id="71_70omk"]
 [ext_resource type="PackedScene" uid="uid://c3jattvt67o1g" path="res://prefabs/Props/Cup2.tscn" id="72_wftin"]
@@ -9115,6 +9116,13 @@ metadata/_custom_type_script = "uid://clc81aelnhtob"
 position = Vector2(334, -349)
 target = NodePath("../../../../Entities/Grunt3")
 
+[node name="Autosave" type="Node" parent="Activators/ActivatorDoorCircle"]
+script = ExtResource("69_3njhl")
+type = "autosave"
+data = Dictionary[String, Variant]({
+"name": ""
+})
+
 [node name="ActivatorDoorOffice" type="Node" parent="Activators"]
 script = ExtResource("9_4g5ls")
 
@@ -9129,6 +9137,13 @@ script = ExtResource("9_4g5ls")
 
 [node name="ActivatorDoorTeleportArena" type="Node" parent="Activators"]
 script = ExtResource("9_4g5ls")
+
+[node name="Autosave" type="Node" parent="Activators/ActivatorDoorTeleportArena"]
+script = ExtResource("69_3njhl")
+type = "autosave"
+data = Dictionary[String, Variant]({
+"name": ""
+})
 
 [node name="ActivatorDoorMToilet1" type="Node" parent="Activators"]
 script = ExtResource("9_4g5ls")
