@@ -45426,7 +45426,7 @@
 						"begin_height": 14.5,
 						"end_height": 15.5,
 						"id": "button_off_0",
-						"id_triggered": "button_off_0",
+						"id_triggered": "button_on_0",
 						"offset": [
 							0.0,
 							0.5
