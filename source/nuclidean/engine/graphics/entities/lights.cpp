@@ -78,7 +78,7 @@ void PointLight::init
 {
   Entity::init(in_position, in_radius);
   this->color     = in_color;
-  this->radius    = in_radius;
+  this->radius    = in_radius * 4.0f;
   this->intensity = in_intensity;
   this->falloff   = in_falloff;
   if (in_radius > 16.0f)
@@ -105,7 +105,7 @@ PointLightGPU PointLight::get_gpu_data(const vec3& position, const vec3& stitche
 //==============================================================================
 void PointLight::refresh_entity_radius()
 {
-  this->set_radius(radius);
+  this->set_radius(radius * 4.0f);
 }
 
 }

@@ -32,6 +32,27 @@
 namespace nc
 {
 
+// layout430 compatible
+struct MegatexPart
+{
+  ivec2 megatex_coord_1;
+  ivec2 megatex_coord_2;
+  vec3  wpos_00; // world pos at local(0,0)
+  f32   texture_id = -1.0f;
+  vec3  wpos_10; // world pos at local(1,0)
+  f32   texture_scale = 1.0f;
+  vec3  wpos_01; // world pos at local(0,1)
+  f32   cumulative_wall_len_start = 0.0f;
+  vec3  wpos_11; // world pos at local(1,1)
+  f32   texture_offset_x = 0.0f;
+  vec3  normal;
+  f32   texture_offset_y = 0.0f;
+  u32   sector_id = INVALID_SECTOR_ID;
+  u32   last_frame_rendered = 0;
+  u32   unused_b;
+  u32   unused_c;
+};
+
 // This data structure lets us check which sectors and their parts are visible
 // and which are not.
 // Can be used for occlusion culling or detecting visible regions by AI
@@ -59,7 +80,13 @@ struct VisibilityTree
   bool is_visible(SectorID id, u64& depth) const;
 
   // Same as above but without outputting the depth
-  bool is_visible(SectorID id) const;
+  bool is_visible(SectorID id) const; };
+
+struct SectorMegatexData
+{
+  aabb2              floor  {};
+  aabb2              ceiling{};
+  std::vector<aabb2> walls;
 };
 
 struct SectorSet
@@ -139,6 +166,8 @@ struct SectorData
   WallID      first_wall     = INVALID_WALL_ID;      // [0..total_wall_count]
   WallID      last_wall      = INVALID_WALL_ID;      // [first_wall..total_wall_count]
   ActivatorID activator      = INVALID_ACTIVATOR_ID; // Only one activator owns us
+  MegatexPartId floor_megatex_id = INVALID_MEGATEX_ID;
+  MegatexPartId ceil_megatex_id  = INVALID_MEGATEX_ID;
   s32         damage         = 0;
   bool        force_walkable    : 1 = false;
   bool        door_sfx_override : 1 = false; // TODO: Rework after GA demo
@@ -180,6 +209,7 @@ struct WallData
   WallRelID       nc_portal_wall_id = INVALID_WALL_REL_ID;
   u8              segment_count     = 0;
   bool            force_walkable    = false;
+  MegatexPartId   megatex_id        = INVALID_MEGATEX_ID;
 
   PortType get_portal_type() const;
 
@@ -294,7 +324,8 @@ struct MapSectors
   void sector_to_vertices
   (
     SectorID           sector_id,
-    std::vector<f32>&  vertices_out
+    std::vector<f32>&  vertices_out,
+    const SectorMegatexData& megatex
   ) const;
 
   // Calculates the height of the step between two sectors.

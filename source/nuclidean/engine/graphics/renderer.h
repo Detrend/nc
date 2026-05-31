@@ -9,6 +9,7 @@
 #include <engine/graphics/resources/texture.h>
 #include <engine/graphics/resources/shader_program.h>
 #include <engine/map/map_types.h>
+#include <engine/map/map_system.h>
 
 #include <math/vector.h>
 #include <math/matrix.h>
@@ -18,6 +19,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <map>
 
 namespace nc
 {
@@ -41,6 +43,7 @@ public:
   static constexpr size_t MAX_SECTORS = 4096;
   static constexpr size_t MAX_WALLS = MAX_SECTORS * 8;
   static constexpr size_t MAX_PORTALS = MAX_SECTORS * 4;
+  static constexpr size_t MAX_MEGATEX_PARTS = 1024 * 8;
 
   struct CameraData
   {
@@ -128,6 +131,9 @@ private:
   mutable ShaderProgramHandle m_sector_material;
   mutable ShaderProgramHandle m_light_culling_shader;
   mutable ShaderProgramHandle m_sky_box_material;
+  mutable ShaderProgramHandle m_pixel_light_shader;
+  mutable ShaderProgramHandle m_pixel_gi_shader;
+  mutable ShaderProgramHandle m_pixel_denoise_shader;
 
   // Registry used by the hot-reload loop.
   mutable std::vector<ShaderEntry> m_shader_entries;
@@ -139,13 +145,16 @@ private:
   mutable SSBOBuffer<u32>        m_light_index_ssbo;
   mutable SSBOBuffer<u32>        m_light_tiles_ssbo;
   mutable SSBOBuffer<u32>        m_light_counter_ssbo;
+  mutable SSBOBuffer<u32>        m_megatex_indices_ssbo { 1024 };
 
-  mutable SSBOBuffer<DirLightGPU>   m_dir_light_ssbo       { MAX_DIR_LIGHTS           };
-  mutable SSBOBuffer<PointLightGPU> m_point_light_ssbo     { MAX_VISIBLE_POINT_LIGHTS };
-  mutable SSBOBuffer<SectorGPU>     m_sectors_ssbo         { MAX_SECTORS              };
-  mutable SSBOBuffer<WallGPU>       m_walls_ssbo           { MAX_WALLS                };
-  mutable SSBOBuffer<mat4>          m_portal_matrices_ssbo { MAX_PORTALS              };
-  mutable SSBOBuffer<mat4>          m_sector_matrices_ssbo { MAX_SECTORS              };
+  mutable SSBOBuffer<DirLightGPU>   m_dir_light_ssbo         { MAX_DIR_LIGHTS           };
+  mutable SSBOBuffer<PointLightGPU> m_point_light_ssbo       { MAX_VISIBLE_POINT_LIGHTS };
+  mutable SSBOBuffer<PointLightGPU> m_point_light_pixel_ssbo { MAX_VISIBLE_POINT_LIGHTS };
+  mutable SSBOBuffer<SectorGPU>     m_sectors_ssbo           { MAX_SECTORS              };
+  mutable SSBOBuffer<MegatexPart>   m_megatex_ssbo           { MAX_MEGATEX_PARTS        };
+  mutable SSBOBuffer<WallGPU>       m_walls_ssbo             { MAX_WALLS                };
+  mutable SSBOBuffer<mat4>          m_portal_matrices_ssbo   { MAX_PORTALS              };
+  mutable SSBOBuffer<mat4>          m_sector_matrices_ssbo   { MAX_SECTORS              };
 
   mutable std::vector<mat4> m_sector_matrices;
   mutable std::unordered_map<u64, size_t> m_light_gpu_data_indices;
@@ -157,6 +166,39 @@ private:
   GLuint m_g_stitched_normal   = 0;
   GLuint m_g_albedo            = 0;
   GLuint m_g_sector            = 0;
+  GLuint m_megatex_handle      = 0;
+
+  using PartIDs = std::vector<MegatexPartId>;
+  using SectorsAndParts = std::map<SectorID, PartIDs>;
+
+  struct SectorAndPart
+  {
+    SectorID      sector;
+    MegatexPartId part;
+  };
+
+  void get_sectors_to_render_this_frame
+  (
+    const CameraData&     camera,
+    mat4                  view,
+    mat4                  proj,
+    mat4                  trans,
+    SectorsAndParts&      out,
+    const VisibilityTree& tree,
+    u32                   render_each_nth,
+    std::vector<SectorAndPart>* temp_list = nullptr
+  ) const;
+
+  bool should_be_rendered_this_frame(MegatexPartId megatex_id) const;
+
+  enum SchedulingMethod
+  {
+    each_nth = 0,
+    first_n,
+  };
+  int scheduling_method = SchedulingMethod::first_n;
+  s32 schedule_each_n_frames = 2;
+  s32 schedule_best_n        = 6;
 
   bool m_shadows = true;
 
@@ -175,6 +217,8 @@ private:
   void do_geometry_pass(const CameraData& camera, const RenderGunProperties& gun) const;
   void do_light_culling_pass(const CameraData& camera) const;
   void do_lighting_pass(const vec3& view_position) const;
+
+  void do_pixel_lighting_pass(const CameraData& camera, const VisibilityTree& tree);
 
   void update_ssbos() const;
 

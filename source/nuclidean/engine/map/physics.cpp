@@ -168,13 +168,16 @@ static CollisionHit raycast_generic
 
     if (sector_hit)
     {
+      f32 hit_y = ray_from.y + (ray_to.y - ray_from.y) * c;
+      bool is_floor = abs(hit_y - world.map.sectors_dynamic[sector_id].floor_height) < 0.01f;
+
       // Floor/ceiling can't be a nuclidean portal
       add_possible_hit(CollisionHit::build(c, n, CollisionHit::SectorHit
       {
         .sector_id       = sector_id,
         .wall_id         = INVALID_WALL_ID,
         .wall_segment_id = 0,
-        .type            = SectorHitType::floor, // TODO: add option for ceiling
+        .type            = is_floor ? SectorHitType::floor : SectorHitType::ceil, // TODO: add option for ceiling
       }));
     }
 

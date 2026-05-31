@@ -39,6 +39,7 @@ inline constexpr LevelName LEVEL_2("level_final2");
 inline constexpr LevelName LEVEL_3("level_final3");
 inline constexpr LevelName DEBUG_LEVEL("debug_level");
 inline constexpr LevelName MATUS_DEBUG("matus_debug");
+inline constexpr LevelName CORNELL("cornell_box");
 }
 
 static auto LevelsDB = std::to_array
@@ -49,6 +50,7 @@ static auto LevelsDB = std::to_array
   Levels::LEVEL_3,
   Levels::DEBUG_LEVEL,
   Levels::MATUS_DEBUG,
+  Levels::CORNELL,
 });
 
 

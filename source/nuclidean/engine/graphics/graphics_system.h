@@ -10,8 +10,11 @@
 #include <engine/core/engine_module_id.h>
 #include <engine/graphics/resources/model.h>
 #include <engine/map/map_types.h>            // SectorID
+#include <engine/map/map_system.h>            // SectorID
 
 #include <game/game_types.h>
+
+#include <stb/stb_rect_pack.h>
 
 #include <vector>
 #include <string>
@@ -47,6 +50,8 @@ public:
   // TODO: MacSectors::query_visible don't work correctly with other aspect ratios
   static constexpr f32 ASPECT_RATIO  = 800.0f / 600.0f;
   static constexpr f32 FOV = 70.0f * (1.0f / 180.0f) * PI; // 70 degrees
+  static constexpr f32 PX_PER_M  = 16;
+  static constexpr f32 PX_PER_M2 = PX_PER_M * PX_PER_M;
 
   static EngineModuleId  get_module_id();
   static GraphicsSystem& get();
@@ -73,6 +78,53 @@ public:
   SDL_Window* get_window();
   void set_shadows(bool shadows);
 
+  GLuint megatex_read_from_handle = 0;
+  GLuint megatex_write_to_handle  = 0;
+  GLuint megatex_mask_handle      = 0;
+  GLuint megatex_debug_handle     = 0;
+  GLuint megatex_shadow_handle    = 0;
+  GLuint megatex_temporal_handle  = 0;
+  GLuint megatex_temporal_noise_handle = 0;
+
+  GLuint megatex_write_fbo  = 0;
+  GLuint megatex_temp_fbo   = 0;
+  GLuint megatex_noise_fbo  = 0;
+  GLuint megatex_shadow_fbo = 0;
+  u32    megatex_width      = 0;
+  u32    megatex_height     = 0;
+
+  std::vector<MegatexPart> megatex_parts;
+  std::vector<u64>         megatex_parts_last_render_idx;
+
+  enum DebugIdx : u32
+  {
+    none = 0,
+    visualize_parts_cpu,     // visualize what gets submitted to GPU
+    visualize_parts,         // show parts with checkboard
+    visualize_sampling_px,   // only one pixel
+    visualize_sampling_wall, // whole wall
+    visualize_denoise,       // show denoise
+    count
+  };
+
+  static constexpr cstr DEBUG_NAMES[]
+  {
+    "none",
+    "parts cpu",
+    "parts gpu",
+    "sampling px",
+    "sampling wall",
+    "denoise",
+  };
+
+  struct DebugInfo
+  {
+    u32 debug_megatex_part_id = 0;
+    u32 debug_px_x            = 0;
+    u32 debug_px_y            = 0;
+    int debug_idx             = 0;
+  } debug_info;
+
 private:
   void update(f32 delta_seconds);
   void render();
@@ -98,6 +150,8 @@ private:
   RendererPtr             m_renderer = nullptr;
   std::vector<MeshHandle> m_sector_meshes;
   std::vector<bool>       m_dirty_sectors;
+
+  std::vector<SectorMegatexData> m_sector_megatexture_info;
 
 #if NC_DEBUG_DRAW
   using DebugRendererPtr = std::unique_ptr<class TopDownDebugRenderer>;

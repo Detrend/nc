@@ -25,14 +25,17 @@
 #include <engine/game/game_helpers.h>
 #include <engine/appearance.h>
 
+#include <imgui/imgui.h>
+
 #include <array>
 #include <filesystem>
 #include <unordered_set>
+#include <set>
+#include <memory>
 
 namespace nc
 {
 
-// Returns the newest last_write_time across all source files of an entry.
 //==============================================================================
 static std::filesystem::file_time_type newest_write_time(const std::vector<std::string>& file_paths)
 {
@@ -95,6 +98,9 @@ Renderer::Renderer(u32 win_w, u32 win_h)
 , m_sector_material(ShaderProgramHandle::from_files(shaders::sector::VERTEX_FILE, shaders::sector::FRAGMENT_FILE))
 , m_light_culling_shader(ShaderProgramHandle::from_file(shaders::light_culling::COMPUTE_FILE))
 , m_sky_box_material(ShaderProgramHandle::from_files(shaders::sky_box::VERTEX_FILE, shaders::sky_box::FRAGMENT_FILE))
+, m_pixel_light_shader(ShaderProgramHandle::from_files(shaders::pixel_light::VERTEX_FILE, shaders::pixel_light::FRAGMENT_FILE))
+, m_pixel_gi_shader(ShaderProgramHandle::from_files(shaders::pixel_gi::VERTEX_FILE, shaders::pixel_gi::FRAGMENT_FILE))
+, m_pixel_denoise_shader(ShaderProgramHandle::from_files(shaders::pixel_denoise::VERTEX_FILE, shaders::pixel_denoise::FRAGMENT_FILE))
 , m_window_size(win_w, win_h)
 {
   this->create_g_buffers(win_w, win_h);
@@ -138,6 +144,9 @@ Renderer::Renderer(u32 win_w, u32 win_h)
   register_shader(m_sector_material,       {shaders::sector::VERTEX_FILE,       shaders::sector::FRAGMENT_FILE});
   register_shader(m_light_culling_shader,  {shaders::light_culling::COMPUTE_FILE});
   register_shader(m_sky_box_material,      {shaders::sky_box::VERTEX_FILE,      shaders::sky_box::FRAGMENT_FILE});
+  register_shader(m_pixel_light_shader,    {shaders::pixel_light::VERTEX_FILE,  shaders::pixel_light::FRAGMENT_FILE});
+  register_shader(m_pixel_gi_shader,       {shaders::pixel_gi::VERTEX_FILE,  shaders::pixel_gi::FRAGMENT_FILE});
+  register_shader(m_pixel_denoise_shader,  {shaders::pixel_denoise::VERTEX_FILE,  shaders::pixel_denoise::FRAGMENT_FILE});
 }
 
 //==============================================================================
@@ -186,10 +195,97 @@ const
     .portal_dest_to_src = mat4(1.0f),
   };
 
+  // WIP
+  const_cast<Renderer*>(this)->do_pixel_lighting_pass(camera_data, visibility_tree);
+
   do_geometry_pass(camera_data, gun_data);
   update_ssbos();
   do_light_culling_pass(camera_data);
   do_lighting_pass(camera_data.position);
+
+  // DEBUG: count white pixels in megatex
+  if (ImGui::Begin("Num visible pixels"))
+  {
+    static int count = 0;
+    if (ImGui::Button("Recalculate"))
+    {
+      glBindTexture(GL_TEXTURE_2D, GraphicsSystem::get().megatex_read_from_handle);
+      GLint w = 0, h = 0;
+      glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH,  &w);
+      glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
+
+      std::vector<float> px(w * h * 4);
+      glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, px.data());
+
+      count = 0;
+      for (int i = 0; i < w * h; ++i)
+        if (px[i*4] >= 1.f && px[i*4+1] >= 1.f && px[i*4+2] >= 1.f)
+          ++count;
+    }
+
+    ImGui::Text("Number of visible pixels: %d",  count);
+    ImGui::Text("Number of visible pixels: %dK", (int)ceil(count / 1000.0f));
+
+    ImGui::Separator();
+
+    if (ImGui::Button("Blit"))
+    {
+      auto& gfx = GraphicsSystem::get();
+
+      GLint w = 0, h = 0;
+      glBindTexture(GL_TEXTURE_2D, gfx.megatex_read_from_handle);
+      glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH,  &w);
+      glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &h);
+
+      glCopyImageSubData(
+        gfx.megatex_read_from_handle,       // src texture
+        GL_TEXTURE_2D, 0,         // src target, mip level
+        0, 0, 0,                  // src x, y, z
+        gfx.megatex_write_to_handle, // dst texture
+        GL_TEXTURE_2D, 0,         // dst target, mip level
+        0, 0, 0,                  // dst x, y, z
+        w, h, 1                   // width, height, depth
+      );
+    }
+
+    if (ImGui::Button("Clear"))
+    {
+      const float zeros[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+      glClearTexImage(
+        GraphicsSystem::get().megatex_write_to_handle,
+        0,        // mip level
+        GL_RGBA,  // format
+        GL_FLOAT, // type
+        zeros
+      );
+    }
+  }
+  ImGui::End();
+
+  if (ImGui::Begin("Pixel Light Megatex"))
+  {
+    auto& gfx = GraphicsSystem::get();
+    ImVec2 avail = ImGui::GetContentRegionAvail();
+    float aspect = (gfx.megatex_height > 0)
+      ? (float)gfx.megatex_width / (float)gfx.megatex_height
+      : 1.0f;
+    ImVec2 img_size = { avail.x, avail.x / aspect };
+    ImGui::Image((ImTextureID)(intptr_t)gfx.megatex_write_to_handle, img_size, ImVec2(0,1), ImVec2(1,0));
+  }
+  ImGui::End();
+
+  if (ImGui::Begin("Megatex Mask"))
+  {
+    auto& gfx = GraphicsSystem::get();
+    ImVec2 avail = ImGui::GetContentRegionAvail();
+    float aspect = (gfx.megatex_height > 0)
+      ? (float)gfx.megatex_width / (float)gfx.megatex_height
+      : 1.0f;
+    ImVec2 img_size = { avail.x, avail.x / aspect };
+    ImGui::Image((ImTextureID)(intptr_t)gfx.megatex_mask_handle, img_size, ImVec2(0,1), ImVec2(1,0));
+  }
+  ImGui::End();
+
 
   m_dir_light_ssbo.clear();
   m_point_light_ssbo.clear();
@@ -215,6 +311,7 @@ void Renderer::update_sector_ssbos() const
 
   m_sectors_ssbo.clear();
   m_walls_ssbo.clear();
+  m_megatex_ssbo.clear();
   m_portal_matrices_ssbo.clear();
 
   m_portal_matrices_ssbo.push_back(mat4(1.0f));
@@ -270,9 +367,15 @@ void Renderer::update_sector_ssbos() const
     );
   }
 
+  for (const MegatexPart& part : GraphicsSystem::get().megatex_parts)
+  {
+    m_megatex_ssbo.push_back(part);
+  }
+
   m_sectors_ssbo.update_gpu_data();
   m_walls_ssbo.update_gpu_data();
   m_portal_matrices_ssbo.update_gpu_data();
+  m_megatex_ssbo.update_gpu_data();
 }
 
 //==============================================================================
@@ -467,6 +570,18 @@ void Renderer::do_geometry_pass
 )
 const
 {
+  float clear_color[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+
+  /*
+  glClearTexImage(
+    GraphicsSystem::get().megatex_mask_handle,        // texture id
+    0,              // mip level
+    GL_RGBA,        // format
+    GL_FLOAT,       // type
+    clear_color      // data
+  );
+  */
+
   glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   
@@ -515,6 +630,764 @@ void Renderer::do_light_culling_pass(const CameraData& camera) const
 }
 
 //==============================================================================
+template<typename Vector, typename Element>
+void push_back_unique(Vector& vector, Element element)
+{
+  if (std::find(vector.begin(), vector.end(), element) == vector.end())
+  {
+    vector.push_back(element);
+  }
+}
+
+//==============================================================================
+bool wall_facing_away_from_camera(vec2 camera_pos, vec2 a, vec2 b)
+{
+  vec2 dir  = b - a;
+  vec2 norm = flipped(dir);
+  vec2 to_c = camera_pos - a;
+  return dot(norm, to_c) < 0.0f;
+}
+
+//==============================================================================
+static bool is_floor_ceil_visible
+(
+  const vec3& bbox_min,
+  const vec3& bbox_max,
+  const mat4& model,
+  const mat4& view,
+  const mat4& proj
+)
+{
+  const mat4 mvp = proj * view * model;
+  const float y  = bbox_min.y;
+
+  const vec4 corners[4] =
+  {
+    mvp * vec4(bbox_min.x, y, bbox_min.z, 1.0f),
+    mvp * vec4(bbox_max.x, y, bbox_min.z, 1.0f),
+    mvp * vec4(bbox_max.x, y, bbox_max.z, 1.0f),
+    mvp * vec4(bbox_min.x, y, bbox_max.z, 1.0f),
+  };
+
+  auto all_outside = [&](auto test)
+  {
+    for (const auto& c : corners) if (!test(c)) return false;
+    return true;
+  };
+
+  if (all_outside([](const vec4& c){ return c.x < -c.w; })) return false; // left
+  if (all_outside([](const vec4& c){ return c.x >  c.w; })) return false; // right
+  if (all_outside([](const vec4& c){ return c.y < -c.w; })) return false; // bottom
+  if (all_outside([](const vec4& c){ return c.y >  c.w; })) return false; // top
+  if (all_outside([](const vec4& c){ return c.z < -c.w; })) return false; // near
+  if (all_outside([](const vec4& c){ return c.z >  c.w; })) return false; // far
+
+  return true;
+}
+
+//==============================================================================
+bool Renderer::should_be_rendered_this_frame(MegatexPartId megatex_id) const
+{
+  u64 frame_idx    = GameHelpers::get().get_frame_idx();
+  u32 frame_idx_32 = cast<u32>(frame_idx);
+
+  if (scheduling_method == SchedulingMethod::each_nth)
+  {
+    return ((megatex_id + frame_idx_32) % schedule_each_n_frames) == 0;
+  }
+  else if (scheduling_method == SchedulingMethod::first_n)
+  {
+    // Cull out later
+    return true;
+  }
+
+  return true;
+}
+
+//==============================================================================
+void Renderer::get_sectors_to_render_this_frame
+(
+  const CameraData&     camera,
+  mat4                  view,
+  mat4                  proj,
+  mat4                  trans,
+  SectorsAndParts&      out,
+  const VisibilityTree& tree,
+  u32                   render_each_nth,
+  std::vector<SectorAndPart>* temp_list
+)
+const
+{
+  const MapSectors& map = GameSystem::get().get_map();
+
+  std::vector<SectorAndPart>* list = temp_list;
+  std::unique_ptr<std::vector<SectorAndPart>> unique;
+  if (list == nullptr)
+  {
+    unique = std::make_unique<std::vector<SectorAndPart>>();
+    list   = unique.get();
+  }
+
+  if (tree.portal_sector != INVALID_SECTOR_ID)
+  {
+    mat4 t = map.calc_portal_to_portal_projection(tree.portal_sector, tree.portal_wall);
+    trans = t * trans;
+  }
+
+  mat4 t_i = inverse(trans);
+
+  for (const auto[sid, frustums] : tree.sectors)
+  {
+    PartIDs& parts = out[sid];
+    map.for_each_wall_of_sector(sid, [&](WallID wid)
+    {
+      WallID wid_next = map_helpers::next_wall(map, sid, wid);
+      vec2   p1       = map.walls[wid].pos;
+      vec2   p2       = map.walls[wid_next].pos;
+
+      MegatexPartId megatex_id = map.walls[wid].megatex_id;
+      if (!should_be_rendered_this_frame(megatex_id))
+      {
+        // Do not render this frame
+        return;
+      }
+
+      if (map.walls[wid].segment_count == 0)
+      {
+        // No segments
+        return;
+      }
+
+      if (wall_facing_away_from_camera(camera.position.xz(), p1, p2))
+      {
+        return;
+      }
+
+      for (u64 i = 0; i < FrustumBuffer::FRUSTUM_SLOT_CNT; ++i)
+      {
+        const Frustum2& f = frustums.frustum_slots[i];
+        if (f == INVALID_FRUSTUM) break;
+        if (f.intersects_segment(p1, p2))
+        {
+          push_back_unique(parts, megatex_id);
+          list->push_back(SectorAndPart{.sector = sid, .part = megatex_id});
+        }
+      }
+    });
+
+    // Floor and ceil
+    // TODO: Check if we can see these from the camera POV
+    f32 floor_y = map.sectors_dynamic[sid].floor_height;
+    f32 ceil_y  = map.sectors_dynamic[sid].ceil_height;
+    aabb3 bbox = map.sector_bboxes[sid];
+
+    vec3 floor1 = with_y(bbox.min, floor_y);
+    vec3 floor2 = with_y(bbox.max, floor_y);
+    vec3 ceil1  = with_y(bbox.min, ceil_y);
+    vec3 ceil2  = with_y(bbox.max, ceil_y);
+
+    MegatexPartId floor_part_id = map.sectors[sid].floor_megatex_id;
+    MegatexPartId ceil_part_id  = map.sectors[sid].ceil_megatex_id;
+
+    if (should_be_rendered_this_frame(floor_part_id))
+    {
+      if (is_floor_ceil_visible(floor1, floor2, t_i, view, proj))
+      {
+        push_back_unique(parts, floor_part_id);
+        list->push_back(SectorAndPart{.sector = sid, .part = floor_part_id});
+      }
+    }
+
+    if (should_be_rendered_this_frame(ceil_part_id))
+    {
+      if (is_floor_ceil_visible(ceil1, ceil2, t_i, view, proj))
+      {
+        push_back_unique(parts, ceil_part_id);
+        list->push_back(SectorAndPart{.sector = sid, .part = ceil_part_id});
+      }
+    }
+  }
+
+  // Recurse
+  for (const auto& subtree : tree.children)
+  {
+    get_sectors_to_render_this_frame(camera, view, proj, trans, out, subtree, render_each_nth, list);
+  }
+
+  // Now keep only the best N
+  if (scheduling_method == SchedulingMethod::first_n && temp_list == nullptr)
+  {
+    //auto& parts     = GraphicsSystem::get().megatex_parts;
+    auto& parts_idx = GraphicsSystem::get().megatex_parts_last_render_idx;
+
+    std::sort(list->begin(), list->end(), [&](const SectorAndPart& a, const SectorAndPart& b)
+    {
+      return parts_idx[a.part] < parts_idx[b.part];
+    });
+
+    out.clear();
+    auto& arr = *list;
+
+    for (u64 i = 0; i < min(list->size(), cast<u64>(schedule_best_n)); ++i)
+    {
+      out[arr[i].sector].push_back(arr[i].part);
+      parts_idx[arr[i].part] = cast<u32>(GameHelpers::get().get_frame_idx());
+    }
+
+    // And also add all the sectors as well
+    for (const auto&[sector_id, part_id] : *list)
+    {
+      [[maybe_unused]]auto& temp_do_nothing = out[sector_id];
+    }
+  }
+}
+
+//==============================================================================
+static color4 color_from_u32(u32 id)
+{
+  u32 x = id;
+  x ^= x >> 16;
+  x *= 0x45d9f3bu;
+  x ^= x >> 16;
+  return color4(
+    ((x >>  0) & 0xFFu) / 255.0f,
+    ((x >>  8) & 0xFFu) / 255.0f,
+    ((x >> 16) & 0xFFu) / 255.0f,
+    1.0f
+  );
+}
+
+enum Tonemappers
+{
+  none = 0,
+  aces,
+  reinhard,
+  agx,
+};
+static int  tonemapper = Tonemappers::aces;
+static bool show_direct   = true;
+static bool show_indirect = true;
+
+//==============================================================================
+void Renderer::do_pixel_lighting_pass
+(
+  [[maybe_unused]]const CameraData& camera,
+  [[maybe_unused]]const VisibilityTree& tree
+)
+{
+  auto& gfx = GraphicsSystem::get();
+  const MapSectors& map = GameSystem::get().get_map();
+
+  static float query_dist                     = 15.0f;
+  static bool  refresh_gi_sectors_every_frame = true;
+  static SectorsAndParts gi_visualize_parts;
+
+  constexpr cstr TONEMAPPER_NAMES[4] = {"none", "aces", "reinhard", "agx"};
+  constexpr cstr CULLING_NAMES[2]    = {"each n-th", "first N"};
+
+  if (ImGui::Begin("Dbg"))
+  {
+    ImGui::Checkbox("Refresh gi parts every frame", &refresh_gi_sectors_every_frame);
+
+    ImGui::Separator();
+
+    ImGui::Combo("Tonemapper",                      &tonemapper, TONEMAPPER_NAMES, 4);
+    ImGui::Combo("Culling Method",                  &scheduling_method, CULLING_NAMES, 2);
+    ImGui::SliderInt("Schedule each N frames",      &schedule_each_n_frames, 1, 50);
+    ImGui::SliderInt("Schedule best N",             &schedule_best_n,        1, 1024);
+
+    ImGui::Separator();
+
+    ImGui::Combo("Debug", &gfx.debug_info.debug_idx, GraphicsSystem::DEBUG_NAMES, GraphicsSystem::count);
+
+    ImGui::Separator();
+
+    ImGui::Checkbox("Show direct",   &show_direct);
+    ImGui::Checkbox("Show indirect", &show_indirect);
+  }
+  ImGui::End();
+
+  // Use the GI shader
+  ivec4 dbg_info = ivec4
+  {
+    gfx.debug_info.debug_megatex_part_id,
+    gfx.debug_info.debug_px_x,
+    gfx.debug_info.debug_px_y,
+    gfx.debug_info.debug_idx
+  };
+
+  int sampling = 0;
+  if (dbg_info.w == GraphicsSystem::visualize_sampling_px)
+  {
+    sampling = 1;
+  }
+  else if (dbg_info.w == GraphicsSystem::visualize_sampling_wall)
+  {
+    sampling = 2;
+  }
+  else if (dbg_info.w == GraphicsSystem::visualize_parts)
+  {
+    sampling = 3;
+  }
+
+  ivec4 denoise_dbg  = ivec4{dbg_info.xyz, cast<int>(dbg_info.w == GraphicsSystem::visualize_denoise)};
+  ivec4 sampling_dbg = ivec4{dbg_info.xyz, sampling};
+
+  auto clear_megatex = [&](GLuint handle)
+  {
+    const float clear_color[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+
+    glClearTexImage
+    (
+      handle,     // texture id
+      0,          // mip level
+      GL_RGBA,    // format
+      GL_FLOAT,   // type
+      clear_color // data
+    );
+  };
+
+  clear_megatex(GraphicsSystem::get().megatex_read_from_handle);
+  clear_megatex(GraphicsSystem::get().megatex_write_to_handle);
+  clear_megatex(GraphicsSystem::get().megatex_debug_handle);
+
+  glPushDebugGroup
+  (
+    GL_DEBUG_SOURCE_APPLICATION,
+    0,
+    -1,
+    "PixelLightingPass - First wave"
+  );
+
+  SectorsAndParts sectors_to_render;
+  get_sectors_to_render_this_frame
+  (
+    camera, camera.view, m_default_projection,
+    identity<mat4>(), sectors_to_render, tree, 2
+  );
+
+  if (refresh_gi_sectors_every_frame)
+  {
+    gi_visualize_parts = sectors_to_render;
+  }
+
+  if (gfx.debug_info.debug_idx == GraphicsSystem::visualize_parts_cpu)
+  {
+    for (const auto&[_, parts] : gi_visualize_parts)
+    {
+      for (MegatexPartId part_id : parts)
+      {
+        if (part_id < gfx.megatex_parts.size())
+        {
+          const MegatexPart& part = gfx.megatex_parts[part_id];
+          const color4 col = color_from_u32(part_id);
+          Gizmo::create_line(0.01f, part.wpos_00, part.wpos_11, col);
+          Gizmo::create_line(0.01f, part.wpos_01, part.wpos_10, col);
+          Gizmo::create_line(0.01f, part.wpos_00, part.wpos_10, col);
+          Gizmo::create_line(0.01f, part.wpos_10, part.wpos_11, col);
+          Gizmo::create_line(0.01f, part.wpos_11, part.wpos_01, col);
+          Gizmo::create_line(0.01f, part.wpos_01, part.wpos_00, col);
+        }
+      }
+    }
+  }
+
+  // Write into shadow.. Keep the old pixels in place, replace those that are
+  // visible by the camera.
+  glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_shadow_fbo);
+  glViewport(0, 0, gfx.megatex_width, gfx.megatex_height);
+
+  m_pixel_light_shader.use();
+
+  const vec2 megatex_size = vec2(gfx.megatex_width, gfx.megatex_height);
+  m_pixel_light_shader.set_uniform(shaders::pixel_light::MEGATEX_SIZE, megatex_size);
+  m_pixel_light_shader.set_uniform(shaders::pixel_light::NUM_SECTORS,  m_sectors_ssbo.gpu_size_u32());
+  m_pixel_light_shader.set_uniform(shaders::pixel_light::NUM_WALLS,    m_walls_ssbo.gpu_size_u32());
+  m_pixel_light_shader.set_uniform(shaders::pixel_light::CAMERA_POS,   camera.position);
+
+  EntityRegistry& registry = GameSystem::get().get_entities();
+  registry.for_each<AmbientLight>([this](AmbientLight& ambient)
+  {
+    m_pixel_light_shader.set_uniform(shaders::pixel_light::AMBIENT_STRENGTH, ambient.strength);
+  });
+
+  m_sectors_ssbo.bind(1);
+  m_walls_ssbo.bind(2);
+  m_portal_matrices_ssbo.bind(3);
+  m_sector_matrices_ssbo.bind(4);
+
+  // Bind a dummy VAO — core profile requires one even when vertex data
+  // comes entirely from gl_VertexID.
+  const MeshHandle screen_quad = MeshManager::get().get_screen_quad();
+  glBindVertexArray(screen_quad.get_vao());
+
+  // Only floors
+  for (const auto&[sid, _] : sectors_to_render)
+  {
+    MegatexPartId floor_id = map.sectors[sid].floor_megatex_id;
+    MegatexPartId ceil_id  = map.sectors[sid].ceil_megatex_id;
+
+    const MegatexPart& part_floor = gfx.megatex_parts[floor_id];
+    const auto& part_ceil = gfx.megatex_parts[ceil_id];
+
+    m_pixel_light_shader.set_uniform(shaders::pixel_light::SECTOR_ID, cast<u32>(sid));
+
+    // gather light info
+    m_point_light_pixel_ssbo.clear();
+
+    // Push back all lights
+    const auto& mapping = GameSystem::get().get_sector_mapping();
+    mapping.for_each_in_sector<PointLight>(sid, [&](EntityID id, mat4 t)
+    {
+      PointLight* light = GameSystem::get().get_entities().get_entity<PointLight>(id);
+      nc_assert(light);
+
+      vec3 pos = (t * vec4(light->get_position(), 1.0f)).xyz();
+      SectorID light_sid = map.get_sector_from_point(light->get_position().xz());
+      m_point_light_pixel_ssbo.push_back(light->get_gpu_data(pos, pos, light_sid));
+    });
+
+    // gpu data there
+    m_point_light_pixel_ssbo.update_gpu_data();
+    m_point_light_pixel_ssbo.bind(0);
+
+    // set num lights
+    m_pixel_light_shader.set_uniform(shaders::pixel_light::NUM_LIGHTS, m_point_light_pixel_ssbo.gpu_size_u32());
+
+    // floor
+    {
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::FROM,   cast<vec2>(part_floor.megatex_coord_1));
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::TO,     cast<vec2>(part_floor.megatex_coord_2));
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::COLOR,  vec3{1.0f, 0.0f, 0.0f});
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP00,   part_floor.wpos_00);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP10,   part_floor.wpos_10);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP01,   part_floor.wpos_01);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP11,   part_floor.wpos_11);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::NORMAL, part_floor.normal);
+      glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
+    // ceil
+    {
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::FROM,   cast<vec2>(part_ceil.megatex_coord_1));
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::TO,     cast<vec2>(part_ceil.megatex_coord_2));
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::COLOR,  vec3{0.0f, 0.0f, 1.0f});
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP00,   part_ceil.wpos_00);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP10,   part_ceil.wpos_10);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP01,   part_ceil.wpos_01);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::WP11,   part_ceil.wpos_11);
+      m_pixel_light_shader.set_uniform(shaders::pixel_light::NORMAL, part_ceil.normal);
+      glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
+    // all walls
+    {
+      map.for_each_wall_of_sector(sid, [&](WallID wid)
+      {
+        MegatexPartId wall_id = map.walls[wid].megatex_id;
+        const auto&   part    = gfx.megatex_parts[wall_id];
+
+        if (map.walls[wid].segment_count == 0)
+        {
+          return;
+        }
+
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::FROM,   cast<vec2>(part.megatex_coord_1));
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::TO,     cast<vec2>(part.megatex_coord_2));
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::COLOR,  vec3{0.0f, 1.0f, 0.0f});
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::WP00,   part.wpos_00);
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::WP10,   part.wpos_10);
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::WP01,   part.wpos_01);
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::WP11,   part.wpos_11);
+        m_pixel_light_shader.set_uniform(shaders::pixel_light::NORMAL, part.normal);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+      });
+    }
+  }
+
+  glBindVertexArray(0);
+
+  glPopDebugGroup();
+
+  // PART 2
+  glPushDebugGroup
+  (
+    GL_DEBUG_SOURCE_APPLICATION,
+    0,
+    -1,
+    "PixelLightingPass - Second wave"
+  );
+
+  // Set the target
+  glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_temp_fbo);
+  glViewport(0, 0, gfx.megatex_width, gfx.megatex_height);
+
+  const auto& game_atlas = TextureManager::get().get_atlas_bundle(ResLifetime::Game);
+  const vec2 game_atlas_size = game_atlas.get_size();
+
+  // Use the GI shader
+  m_pixel_gi_shader.use();
+  m_megatex_ssbo.bind(0);
+  m_textures_ssbo.bind(2);
+  m_sectors_ssbo.bind(3); // sectors
+  m_walls_ssbo.bind(4);   // walls
+  m_pixel_gi_shader.set_uniform(shaders::pixel_gi::MEGATEX_SIZE,    megatex_size);
+  m_pixel_gi_shader.set_uniform(shaders::pixel_gi::GAME_ATLAS_SIZE, game_atlas_size);
+  m_pixel_gi_shader.set_uniform(shaders::pixel_gi::NUM_SECTORS,     m_sectors_ssbo.size_u32());
+  m_pixel_gi_shader.set_uniform(shaders::pixel_gi::NUM_WALLS,       m_walls_ssbo.size_u32());
+  m_pixel_gi_shader.set_uniform(shaders::pixel_gi::DEBUG,           sampling_dbg);
+
+  // Bind dummy VAO
+  glBindVertexArray(screen_quad.get_vao());
+
+  // Read from megatex_handle, write to megatex_input_handle once again
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, gfx.megatex_shadow_handle);
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, game_atlas.diffuse_handle);
+  glActiveTexture(GL_TEXTURE2);
+  glBindTexture(GL_TEXTURE_2D, gfx.megatex_mask_handle);
+
+  glBindImageTexture(
+    3,              // binding unit
+    GraphicsSystem::get().megatex_debug_handle, // texture id
+    0,              // mip level
+    GL_FALSE,       // layered
+    0,              // layer
+    GL_WRITE_ONLY,  // access
+    GL_RGBA8        // format
+  );
+
+  for (const auto&[sid, parts] : sectors_to_render)
+  {
+    struct MegatexPartAndId
+    {
+      MegatexPart   part;
+      MegatexPartId id;
+    };
+
+    std::unordered_set<SectorID>  pushed_already;
+    std::vector<MegatexPartAndId> parts_to_render;
+
+    // Update the inner SSBO
+    m_megatex_indices_ssbo.clear();
+
+    // This can be optimized to not include walls that we can't see
+    auto push_sector_to_ssbo = [&](SectorID sector_id)
+    {
+      if (pushed_already.contains(sector_id))
+      {
+        return;
+      }
+
+      pushed_already.insert(sector_id);
+
+      map.for_each_wall_of_sector(sector_id, [&](WallID wid)
+      {
+        if (map.walls[wid].segment_count <= 0)
+        {
+          return;
+        }
+
+        m_megatex_indices_ssbo.push_back(map.walls[wid].megatex_id);
+      });
+
+      m_megatex_indices_ssbo.push_back(map.sectors[sector_id].floor_megatex_id);
+      m_megatex_indices_ssbo.push_back(map.sectors[sector_id].ceil_megatex_id);
+    };
+
+    for (MegatexPartId id : parts)
+    {
+      parts_to_render.push_back(MegatexPartAndId
+      {
+        .part = gfx.megatex_parts[id],
+        .id   = id,
+      });
+    }
+
+    // Us
+    push_sector_to_ssbo(sid);
+
+    // Other sectors around
+    vec2 center = VEC2_ZERO;
+    int  num    = 0;
+    map.for_each_portal_of_sector(sid, [&](WallID wid)
+    {
+      center += map.walls[wid].pos;
+      num    += 1;
+    });
+    center /= num;
+
+    SectorSet query_sectors;
+    map.query_nearby_sectors_short_distance(center, query_dist, query_sectors);
+
+    for (u64 i = 0; i < query_sectors.sectors.size(); ++i)
+    {
+      if (query_sectors.transforms[i] == identity<mat4>())
+      {
+        push_sector_to_ssbo(query_sectors.sectors[i]);
+      }
+    }
+
+    m_megatex_indices_ssbo.update_gpu_data();
+    m_megatex_indices_ssbo.bind(1);
+    m_pixel_gi_shader.set_uniform(shaders::pixel_gi::NUM_INDICES, m_megatex_indices_ssbo.gpu_size_u32());
+
+    // Now we can render
+    for (const MegatexPartAndId& pair : parts_to_render)
+    {
+      m_pixel_gi_shader.set_uniform(shaders::pixel_gi::MY_PART_ID, pair.id);
+
+      m_pixel_gi_shader.set_uniform(shaders::pixel_gi::FROM, cast<vec2>(pair.part.megatex_coord_1));
+      m_pixel_gi_shader.set_uniform(shaders::pixel_gi::TO,   cast<vec2>(pair.part.megatex_coord_2));
+
+      m_pixel_gi_shader.set_uniform(shaders::pixel_gi::WP00, pair.part.wpos_00);
+      m_pixel_gi_shader.set_uniform(shaders::pixel_gi::WP10, pair.part.wpos_10);
+      m_pixel_gi_shader.set_uniform(shaders::pixel_gi::WP01, pair.part.wpos_01);
+      m_pixel_gi_shader.set_uniform(shaders::pixel_gi::WP11, pair.part.wpos_11);
+
+      m_pixel_gi_shader.set_uniform(shaders::pixel_gi::NORMAL, pair.part.normal);
+
+      glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+  }
+
+  glBindVertexArray(0);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glViewport(0, 0, m_window_size.x, m_window_size.y);
+
+  glPopDebugGroup();
+
+  // PART 3 - Denoise
+  glPushDebugGroup
+  (
+    GL_DEBUG_SOURCE_APPLICATION,
+    0,
+    -1,
+    "PixelLightingPass - Denoise"
+  );
+
+  // Blit temporal -> read from handle
+  glCopyImageSubData(
+    gfx.megatex_temporal_handle,  GL_TEXTURE_2D, 0, 0, 0, 0,
+    gfx.megatex_read_from_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
+    static_cast<GLsizei>(gfx.megatex_width),
+    static_cast<GLsizei>(gfx.megatex_height),
+    1
+  );
+
+  m_pixel_denoise_shader.use();
+  m_megatex_ssbo.bind(0);
+  m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::MEGATEX_SIZE, megatex_size);
+  m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::DEBUG,        denoise_dbg);
+
+  glBindImageTexture(
+    2,              // binding unit
+    GraphicsSystem::get().megatex_debug_handle, // texture id
+    0,              // mip level
+    GL_FALSE,       // layered
+    0,              // layer
+    GL_WRITE_ONLY,  // access
+    GL_RGBA8        // format
+  );
+
+  // Bind dummy VAO
+  glBindVertexArray(screen_quad.get_vao());
+
+  auto push_sector_for_denoise = [&](SectorID sector_id)
+  {
+    map.for_each_wall_of_sector(sector_id, [&](WallID wid)
+    {
+      if (map.walls[wid].segment_count <= 0)
+      {
+        return;
+      }
+
+      m_megatex_indices_ssbo.push_back(map.walls[wid].megatex_id);
+    });
+
+    m_megatex_indices_ssbo.push_back(map.sectors[sector_id].floor_megatex_id);
+    m_megatex_indices_ssbo.push_back(map.sectors[sector_id].ceil_megatex_id);
+  };
+
+  auto do_one_denoise_pass = [&](bool horizontal)
+  {
+    m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::HORIZONTAL, ivec4{cast<int>(horizontal)});
+
+    for (const auto&[sid, parts] : sectors_to_render)
+    {
+      m_megatex_indices_ssbo.clear();
+
+      push_sector_for_denoise(sid); // push ourselves
+      map.for_each_portal_of_sector(sid, [&](WallID wall_id)
+      {
+        nc_assert(map.is_valid_sector_id(map.walls[wall_id].portal_sector_id));
+        push_sector_for_denoise(map.walls[wall_id].portal_sector_id);
+      });
+
+      m_megatex_indices_ssbo.update_gpu_data();
+      m_megatex_indices_ssbo.bind(1);
+
+      m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::NUM_INDICES, m_megatex_indices_ssbo.gpu_size_u32());
+
+      for (MegatexPartId part_id : parts)
+      {
+        const MegatexPart& part = gfx.megatex_parts[part_id];
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::FROM,       cast<vec2>(part.megatex_coord_1));
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::TO,         cast<vec2>(part.megatex_coord_2));
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP00,       part.wpos_00);
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP10,       part.wpos_10);
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP01,       part.wpos_01);
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::WP11,       part.wpos_11);
+        m_pixel_denoise_shader.set_uniform(shaders::pixel_denoise::MY_PART_ID, part_id);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+      }
+    }
+  };
+
+
+  // Writing into temporal, but also read from it!
+  glBindFramebuffer(GL_FRAMEBUFFER, gfx.megatex_temp_fbo);
+  glViewport(0, 0, gfx.megatex_width, gfx.megatex_height);
+
+  // Blit temportal to read before writing to it!
+  glCopyImageSubData
+  (
+    gfx.megatex_temporal_handle,  GL_TEXTURE_2D, 0, 0, 0, 0,
+    gfx.megatex_read_from_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
+    static_cast<GLsizei>(gfx.megatex_width),
+    static_cast<GLsizei>(gfx.megatex_height),
+    1
+  );
+
+  // Read from megatex_handle, write to megatex_input_handle once again
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, gfx.megatex_read_from_handle);
+  glActiveTexture(GL_TEXTURE1);
+  glBindTexture(GL_TEXTURE_2D, gfx.megatex_mask_handle);
+
+  do_one_denoise_pass(true);  // horizontal
+
+  // Blit once again
+  glCopyImageSubData
+  (
+    gfx.megatex_temporal_handle,  GL_TEXTURE_2D, 0, 0, 0, 0,
+    gfx.megatex_read_from_handle, GL_TEXTURE_2D, 0, 0, 0, 0,
+    static_cast<GLsizei>(gfx.megatex_width),
+    static_cast<GLsizei>(gfx.megatex_height),
+    1
+  );
+
+  do_one_denoise_pass(false); // vertical pass
+
+  glBindVertexArray(0);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glViewport(0, 0, m_window_size.x, m_window_size.y);
+
+  glPopDebugGroup();
+}
+
+//==============================================================================
 void Renderer::do_lighting_pass(const vec3& view_position) const
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -525,8 +1398,7 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   glActiveTexture(GL_TEXTURE1);
   glBindTexture(GL_TEXTURE_2D, m_g_stitched_position);
   glActiveTexture(GL_TEXTURE2);
-  glBindTexture(GL_TEXTURE_2D, m_g_normal);
-  glActiveTexture(GL_TEXTURE3);
+  glBindTexture(GL_TEXTURE_2D, m_g_normal); glActiveTexture(GL_TEXTURE3);
   glBindTexture(GL_TEXTURE_2D, m_g_stitched_normal);
   glActiveTexture(GL_TEXTURE4);
   glBindTexture(GL_TEXTURE_2D, m_g_albedo);
@@ -591,24 +1463,47 @@ void Renderer::render_sectors(const CameraData& camera) const
   const auto& sectors_to_render = camera.vis_tree.sectors;
 
   const auto& game_atlas = TextureManager::get().get_atlas_bundle(ResLifetime::Game);
-  const auto& level_atlas = TextureManager::get().get_atlas_bundle(ResLifetime::Level);
+  //const auto& level_atlas = TextureManager::get().get_atlas_bundle(ResLifetime::Level);
 
   m_textures_ssbo.bind(0);
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, game_atlas.diffuse_handle);
-  glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D, level_atlas.diffuse_handle);
-  glActiveTexture(GL_TEXTURE2);
+  //glActiveTexture(GL_TEXTURE0);
+  //glBindTexture(GL_TEXTURE_2D, level_atlas.diffuse_handle);
+  glActiveTexture(GL_TEXTURE0+1);
   glBindTexture(GL_TEXTURE_2D, game_atlas.normal_handle);
-  glActiveTexture(GL_TEXTURE3);
-  glBindTexture(GL_TEXTURE_2D, level_atlas.normal_handle);
-  glActiveTexture(GL_TEXTURE4);
+  //glActiveTexture(GL_TEXTURE0);
+  //glBindTexture(GL_TEXTURE_2D, level_atlas.normal_handle);
+  glActiveTexture(GL_TEXTURE0+2);
   glBindTexture(GL_TEXTURE_2D, game_atlas.specular_handle);
-  glActiveTexture(GL_TEXTURE5);
-  glBindTexture(GL_TEXTURE_2D, level_atlas.specular_handle);
+  //glActiveTexture(GL_TEXTURE0);
+  //glBindTexture(GL_TEXTURE_2D, level_atlas.specular_handle);
+  glActiveTexture(GL_TEXTURE0+3);
+  glBindTexture(GL_TEXTURE_2D, GraphicsSystem::get().megatex_debug_handle);
+  glActiveTexture(GL_TEXTURE0+4);
+  glBindTexture(GL_TEXTURE_2D, GraphicsSystem::get().megatex_temporal_handle);
+  glActiveTexture(GL_TEXTURE0+5);
+  glBindTexture(GL_TEXTURE_2D, GraphicsSystem::get().megatex_shadow_handle);
+
+  glBindImageTexture(
+    6,              // binding unit
+    GraphicsSystem::get().megatex_mask_handle, // texture id
+    0,              // mip level
+    GL_FALSE,       // layered
+    0,              // layer
+    GL_WRITE_ONLY,  // access
+    GL_R8           // format
+  );
+
+  const vec2 game_atlas_size = TextureManager::get().get_atlas_bundle(ResLifetime::Game).get_size();
+  const vec2 level_atlas_size = TextureManager::get().get_atlas_bundle(ResLifetime::Level).get_size();
 
   m_sector_material.use();
+  m_sector_material.set_uniform(shaders::sector::PROJECTION, m_default_projection);
+  m_sector_material.set_uniform(shaders::sector::GAME_ATLAS_SIZE, game_atlas_size);
+  m_sector_material.set_uniform(shaders::sector::LEVEL_ATLAS_SIZE, level_atlas_size);
   m_sector_material.set_uniform(shaders::sector::VIEW, camera.view);
+  m_sector_material.set_uniform(shaders::sector::TONEMAP, ivec4{tonemapper, show_direct, show_indirect, 0});
   m_sector_material.set_uniform(shaders::sector::PORTAL_DEST_TO_SRC, camera.portal_dest_to_src);
 
   for (const auto& [sector_id, _] : sectors_to_render)
@@ -627,6 +1522,7 @@ void Renderer::render_sectors(const CameraData& camera) const
   }
 
   glBindVertexArray(0);
+  glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 }
 
 //==============================================================================

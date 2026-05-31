@@ -17,13 +17,13 @@ struct DirLight
 
 struct PointLight
 {
-    vec3  position;
-    float intensity;
-    vec3  stitched_position;
-    float radius;
-    vec3  color;
-    float falloff;
-    uint  sector_id;
+  vec3  position;
+  float intensity;
+  vec3  stitched_position;
+  float radius;
+  vec3  color;
+  float falloff;
+  uint  sector_id;
 };
 
 struct TileData
@@ -110,6 +110,7 @@ float get_intersection_t(vec2 ray_origin, vec2 ray_direction, vec2 wall_p0, vec2
   float wall_t = cross(diff, ray_direction ) * inv_denominator;
 
   // intersection occurs outside of this wall segment
+  // if (wall_t < -0.001f || wall_t > wall_length + 0.001f)
   if (wall_t < 0.0f || wall_t > wall_length + 0.0f)
     return -1.0f;
 
@@ -313,6 +314,7 @@ void main()
   else
     out_color = vec4(final_color, 1.0f);
 #else
-  out_color = vec4(final_color, 1.0f);
+  //out_color = vec4(final_color, 1.0f);
+  out_color = vec4(albedo, 1.0f);
 #endif
 }

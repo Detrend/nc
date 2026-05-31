@@ -77,19 +77,84 @@ namespace nc
       inline constexpr Uniform<6, bool> DO_SHADOWS;
     }
 
+    // Pixel lighting pass.
+    namespace pixel_light
+    {
+      inline constexpr const char* VERTEX_FILE   = "pixel_light.vert";
+      inline constexpr const char* FRAGMENT_FILE = "pixel_light.frag";
+
+      inline constexpr Uniform<0,  vec2> FROM;
+      inline constexpr Uniform<1,  vec2> TO;
+      inline constexpr Uniform<2,  vec2> MEGATEX_SIZE;
+      inline constexpr Uniform<3,  vec3> COLOR;
+      inline constexpr Uniform<4,  vec3> WP00;
+      inline constexpr Uniform<5,  vec3> WP10;
+      inline constexpr Uniform<6,  vec3> WP01;
+      inline constexpr Uniform<7,  vec3> WP11;
+      inline constexpr Uniform<8,  u32>  NUM_LIGHTS;
+      inline constexpr Uniform<9,  vec3> NORMAL;
+      inline constexpr Uniform<10, u32>  NUM_SECTORS;
+      inline constexpr Uniform<11, u32>  NUM_WALLS;
+      inline constexpr Uniform<12, u32>  SECTOR_ID;
+      inline constexpr Uniform<13, f32>  AMBIENT_STRENGTH;
+      inline constexpr Uniform<14, vec3> CAMERA_POS;
+    }
+
+    // Pixel GI lighting pass
+    namespace pixel_gi
+    {
+      inline constexpr const char* VERTEX_FILE   = "pixel_gi.vert";
+      inline constexpr const char* FRAGMENT_FILE = "pixel_gi.frag";
+
+      inline constexpr Uniform<0,  vec2>  FROM;
+      inline constexpr Uniform<1,  vec2>  TO;
+      inline constexpr Uniform<2,  vec3>  WP00;
+      inline constexpr Uniform<3,  vec3>  WP10;
+      inline constexpr Uniform<4,  vec3>  WP01;
+      inline constexpr Uniform<5,  vec3>  WP11;
+      inline constexpr Uniform<6,  vec3>  NORMAL;
+      inline constexpr Uniform<7,  vec2>  MEGATEX_SIZE;
+      inline constexpr Uniform<8,  u32>   NUM_INDICES;
+      inline constexpr Uniform<9,  u32>   MY_PART_ID;
+      inline constexpr Uniform<10, vec2>  GAME_ATLAS_SIZE;
+      inline constexpr Uniform<11, u32>   NUM_SECTORS;
+      inline constexpr Uniform<12, u32>   NUM_WALLS;
+      inline constexpr Uniform<13, ivec4> DEBUG;
+    }
+
+    // Pixel GI lighting pass
+    namespace pixel_denoise
+    {
+      inline constexpr const char* VERTEX_FILE   = "pixel_denoise.vert";
+      inline constexpr const char* FRAGMENT_FILE = "pixel_denoise.frag";
+
+      inline constexpr Uniform<0,  vec2>  FROM;
+      inline constexpr Uniform<1,  vec2>  TO;
+      inline constexpr Uniform<2,  vec3>  WP00;
+      inline constexpr Uniform<3,  vec3>  WP10;
+      inline constexpr Uniform<4,  vec3>  WP01;
+      inline constexpr Uniform<5,  vec3>  WP11;
+      inline constexpr Uniform<7,  vec2>  MEGATEX_SIZE;
+      inline constexpr Uniform<8,  u32>   NUM_INDICES;
+      inline constexpr Uniform<9,  u32>   MY_PART_ID;
+      inline constexpr Uniform<10, ivec4> DEBUG;
+      inline constexpr Uniform<11, ivec4> HORIZONTAL;
+    }
+
     // Sector rendering.
     namespace sector
     {
       inline constexpr const char* VERTEX_FILE   = "sector.vert";
       inline constexpr const char* FRAGMENT_FILE = "sector.frag";
 
-      inline constexpr Uniform<0, mat4> VIEW;
-      inline constexpr Uniform<1, mat4> PROJECTION;
-      inline constexpr Uniform<2, vec2> GAME_ATLAS_SIZE;
-      inline constexpr Uniform<3, vec2> LEVEL_ATLAS_SIZE;
-      inline constexpr Uniform<4, mat4> PORTAL_DEST_TO_SRC;
-      inline constexpr Uniform<5, u32>  SECTOR_ID;
-      inline constexpr Uniform<6, u32>  MATRIX_ID;
+      inline constexpr Uniform<0, mat4>  VIEW;
+      inline constexpr Uniform<1, mat4>  PROJECTION;
+      inline constexpr Uniform<2, vec2>  GAME_ATLAS_SIZE;
+      inline constexpr Uniform<3, vec2>  LEVEL_ATLAS_SIZE;
+      inline constexpr Uniform<4, mat4>  PORTAL_DEST_TO_SRC;
+      inline constexpr Uniform<5, u32>   SECTOR_ID;
+      inline constexpr Uniform<6, u32>   MATRIX_ID;
+      inline constexpr Uniform<7, ivec4> TONEMAP;
     }
 
     namespace light_culling

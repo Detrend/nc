@@ -337,7 +337,12 @@ static void load_json_map
 
     for (auto&& js_point : data["points"])
     {
-      points.emplace_back(load_json_vector<2>(js_point));
+      vec2 pt = load_json_vector<2>(js_point);
+      // lock onto the grid
+      //pt *= GraphicsSystem::PX_PER_M;
+      //pt = round(pt);
+      //pt /= GraphicsSystem::PX_PER_M;
+      points.emplace_back(pt);
     }
 
     SectorID sid = 0;

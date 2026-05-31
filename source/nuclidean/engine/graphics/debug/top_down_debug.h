@@ -57,11 +57,11 @@ private:
   inline static std::map<std::string, std::vector<Line>> g_lines_to_draw;
   inline static std::map<std::string, bool> g_enabled_categories;
 
-  bool show_sector_frustums      = true;
+  bool show_sector_frustums      = false;
   bool show_visible_sectors      = false;
   bool show_sector_grid          = false;
   bool show_sector_grid_list     = false;
-  bool show_sector_ids           = false;
+  bool show_sector_ids           = true;
   bool show_entity_ids           = false;
   bool show_entity_bboxes        = false;
   bool inspect_nucledian_portals = false;

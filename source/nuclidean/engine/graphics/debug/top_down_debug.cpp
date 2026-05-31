@@ -406,6 +406,7 @@ void TopDownDebugRenderer::render(const VisibilityTree& visible_sectors)
     ImGui::Separator();
     ImGui::Checkbox("Show visible sectors", &this->show_visible_sectors);
     ImGui::Checkbox("Show sector frustums", &this->show_sector_frustums);
+    ImGui::Checkbox("Show sector entity radius", &this->show_entity_bboxes);
     ImGui::Checkbox("Show sector IDs",      &this->show_sector_ids);
     ImGui::Checkbox("Show entity IDs",      &this->show_entity_ids);
     ImGui::Checkbox("Show entity bboxes",   &this->show_entity_bboxes);

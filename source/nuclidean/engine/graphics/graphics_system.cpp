@@ -50,6 +50,7 @@
 #endif
 
 #include <profiling.h>
+#include <engine/map/physics.h>
 
 #include <array>
 #include <algorithm>
@@ -60,6 +61,7 @@
 #include <utility>
 #include <format>
 #include <numeric> // std::iota
+#include <set>
 
 #if NC_DEBUG_DRAW
 #include <chrono>
@@ -170,7 +172,7 @@ bool GraphicsSystem::init()
   }
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
@@ -193,7 +195,7 @@ bool GraphicsSystem::init()
     return false;
   }
 
-  SDL_SetWindowResizable(m_window, get_engine().is_editor_mode() ? SDL_TRUE : SDL_FALSE);
+  //SDL_SetWindowResizable(m_window, SDL_FALSE);
 
   // create opengl context
   m_gl_context = SDL_GL_CreateContext(m_window);
@@ -335,7 +337,7 @@ const MeshHandle& GraphicsSystem::get_and_update_sector_mesh(SectorID sid)
   if (m_dirty_sectors[sid])
   {
     std::vector<f32> vertices;
-    GameSystem::get().get_map().sector_to_vertices(sid, vertices);
+    GameSystem::get().get_map().sector_to_vertices(sid, vertices, m_sector_megatexture_info[sid]);
 
     MeshManager::get().recreate_sector
     (
@@ -388,6 +390,72 @@ static void grab_render_gun_props(RenderGunProperties& props)
   {
     props.sprite = "";
     props.sway   = VEC2_ZERO;
+  }
+}
+
+//==============================================================================
+struct WallDataTemp
+{
+  SectorID  sid;
+  WallRelID wrelid;
+
+  u32 as_u32() const
+  {
+    return cast<u32>(sid) << 8 | cast<u32>(wrelid);
+  }
+
+  bool operator<(const WallDataTemp& other) const
+  {
+    return this->as_u32() < other.as_u32();
+  }
+};
+static void get_visible_walls
+(
+  const MapSectors& map, std::set<WallDataTemp>& out, const VisibilityTree& tree
+)
+{
+  for (const auto&[sid, frustums] : tree.sectors)
+  {
+    WallID first_wall = map.sectors[sid].first_wall;
+    WallID last_wall  = map.sectors[sid].last_wall;
+
+    for (WallID wid = first_wall; wid < last_wall; ++wid)
+    {
+      WallID wnext = map_helpers::next_wall(map, sid, wid);
+      vec2 p1 = map.walls[wid].pos;
+      vec2 p2 = map.walls[wnext].pos;
+      for (const Frustum2& f : frustums.frustum_slots)
+      {
+        if (f != INVALID_FRUSTUM)
+        {
+          if (f.intersects_segment(p1, p2))
+          {
+            WallRelID wrelid = cast<WallRelID>(wid - first_wall);
+            out.insert(WallDataTemp{sid, wrelid});
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  for (const VisibilityTree& child : tree.children)
+  {
+    get_visible_walls(map, out, child);
+  }
+}
+
+//==============================================================================
+static void get_unique_sectors(std::set<SectorID>& out, const VisibilityTree& tree)
+{
+  for (const auto&[sid, _] : tree.sectors)
+  {
+    out.insert(sid);
+  }
+
+  for (const auto& child : tree.children)
+  {
+    get_unique_sectors(out, child);
   }
 }
 
@@ -445,7 +513,72 @@ void GraphicsSystem::render()
   RenderGunProperties gun_props;
   grab_render_gun_props(gun_props);
 
-#if NC_DEBUG_DRAW
+  // Fill out debug
+  if (Camera* cam = Camera::get())
+  {
+    vec3 from = cam->get_position();
+    vec3 dir  = cam->get_forward();
+    f32  len  = 40.0f;
+    vec3 to   = from + dir * len;
+
+    auto lvl = GameSystem::get().get_level();
+
+    static bool CheckLookAt = true;
+    if (ImGui::Begin("Part debug"))
+    {
+      ImGui::Checkbox("Update lookat part", &CheckLookAt);
+      ImGui::Text("Debug part id: [%d]", cast<int>(debug_info.debug_megatex_part_id));
+      ImGui::Text("Debug px:      [%d, %d]", cast<int>(debug_info.debug_px_x), cast<int>(debug_info.debug_px_y));
+    }
+    ImGui::End();
+
+    if (CheckLookAt)
+    {
+      auto hit = lvl.ray_cast_3d(from, to, 0, nullptr);
+      if (hit && hit.is_sector_hit())
+      {
+        MegatexPartId part_id = INVALID_MEGATEX_ID;
+        SectorID      sid     = hit.hit.sector.sector_id;
+        ivec2         px      = ivec2{0};
+        vec3          hit_wp  = from + (to - from) * hit.coeff;
+
+        if (hit.is_wall_hit())
+        {
+          part_id = lvl.map.walls[hit.hit.sector.wall_id].megatex_id;
+
+          const MegatexPart& part = megatex_parts[part_id];
+          vec3  mn = part.wpos_00;
+          vec3  mx = part.wpos_11;
+
+          // (hit_wp - mn) = (mx - mn) * t
+          // t = (ht_wp - mn) / (mx - mn)
+          vec3 ddd   = mx - mn;
+          vec3 rel   = (hit_wp - mn) / ddd;
+          f32  x_rel = (abs(ddd.x) < abs(ddd.z)) ? rel.z : rel.x; // can also be rel.z
+          f32  y_rel = rel.y;
+          px = cast<ivec2>(mix(vec2(part.megatex_coord_1), vec2(part.megatex_coord_2), vec2{x_rel, y_rel}));
+        }
+        else
+        {
+          part_id = hit.is_floor_hit() ? lvl.map.sectors[sid].floor_megatex_id : lvl.map.sectors[sid].ceil_megatex_id;
+
+          const MegatexPart& part = megatex_parts[part_id];
+          vec3  mn = part.wpos_00;
+          vec3  mx = part.wpos_11;
+
+          vec2  scale = (mx.xz - mn.xz);
+          vec2  rel  = (hit_wp.xz - mn.xz) / scale;
+          px = cast<ivec2>(mix(vec2(part.megatex_coord_1), vec2(part.megatex_coord_2), rel));
+        }
+
+        debug_info.debug_megatex_part_id = part_id;
+        debug_info.debug_px_x = px.x;
+        debug_info.debug_px_y = px.y;
+      }
+    }
+  }
+
+#ifdef NC_DEBUG_DRAW
   if (CVars::enable_top_down_debug)
   {
     // Top down rendering for easier debugging
@@ -459,7 +592,29 @@ void GraphicsSystem::render()
     get_engine().get_module<UserInterfaceSystem>().draw();
   }
 
-#if NC_IMGUI
+  // Debug num pixels visible
+  {
+    if (ImGui::Begin("Megatexture debug"))
+    {
+      std::set<SectorID> unique_sectors;
+      get_unique_sectors(unique_sectors, visible_sectors);
+
+      std::set<WallDataTemp> visible_walls;
+      get_visible_walls(GameSystem::get().get_map(), visible_walls, visible_sectors);
+
+      int visible_pixels = 0;
+
+      ImGui::Text("Num unique sectors visible: %d", cast<int>(unique_sectors.size()));
+      ImGui::Text("Num walls visible:          %d", cast<int>(visible_walls.size()));
+      ImGui::Separator();
+      ImGui::Text("Num naive pixels visible:   %d",  visible_pixels);
+      ImGui::Text("Num naive pixels visible:   %dK", (int)ceil(visible_pixels / 1000.0f));
+      ImGui::Text("Num naive pixels visible:   %dM", (int)ceil(visible_pixels / 1'000'000.0f));
+    }
+    ImGui::End();
+  }
+
+#ifdef NC_IMGUI
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
   imgui_start_frame(); // start a new frame just after rendering the old one
@@ -970,19 +1125,280 @@ void GraphicsSystem::draw_debug_window()
 //==============================================================================
 void GraphicsSystem::create_sector_meshes()
 {
-  const MapSectors& map          = GameSystem::get().get_map();
+  MapSectors& map = const_cast<MapSectors&>(GameSystem::get().get_map());
   MeshManager&      mesh_manager = MeshManager::get();
   std::vector<f32>  vertices;
 
   m_sector_meshes.clear();
   m_dirty_sectors.clear();
+  m_sector_megatexture_info.clear();
+  megatex_parts.clear();
+
   m_sector_meshes.reserve(map.sectors.size());
   m_dirty_sectors.resize(map.sectors.size(), false);
+  m_sector_megatexture_info.resize(map.sectors.size());
+
+  f32 total_surface = 0.0f;
+  constexpr int MIN_S = 1;
+  constexpr int MAX_S = 256;
+
+  std::vector<stbrp_rect>          rects;
+  std::vector<std::pair<u64, u64>> cnts;
+
+  for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)
+  {
+    f32 floor_min = map.sectors[sector_id].state_floors[0];
+    f32 ceil_max  = map.sectors[sector_id].state_ceils[0];
+    f32 height    = ceil_max - floor_min;
+
+    //nc_assert(height > 0.0f);
+
+    u64 cnt = 0;
+    u64 idx = rects.size();
+
+    WallRelID wrelid = 0;
+    map.for_each_wall_of_sector(sector_id, [&](WallID wid)
+    {
+      WallID wid_next = map_helpers::next_wall(map, sector_id, wid);
+
+      vec2 pt1 = map.walls[wid].pos;
+      vec2 pt2 = map.walls[wid_next].pos;
+
+      f32 len = distance(pt1, pt2);
+
+      rects.push_back(stbrp_rect
+      {
+        .id = cast<int>(wrelid),
+        .w  = clamp(cast<int>(ceil(len    * PX_PER_M)), MIN_S, MAX_S),
+        .h  = clamp(cast<int>(ceil(height * PX_PER_M)), MIN_S, MAX_S),
+      });
+
+      total_surface += ceil(len) * ceil(height);
+      cnt += 1;
+
+      wrelid += 1;
+    });
+
+    aabb3 bbox      = map.sector_bboxes[sector_id];
+    vec2  bbox_size = (bbox.max - bbox.min).xz();
+
+    total_surface += bbox_size.x * bbox_size.y * 2.0f;
+
+    // Floor
+    rects.push_back(stbrp_rect
+    {
+      .id = -1,
+      .w  = clamp(cast<int>(ceil(bbox_size.x * PX_PER_M)), MIN_S, MAX_S),
+      .h  = clamp(cast<int>(ceil(bbox_size.y * PX_PER_M)), MIN_S, MAX_S),
+    });
+    cnt += 1;
+
+    // Ceiling
+    rects.push_back(stbrp_rect
+    {
+      .id = -2,
+      .w  = clamp(cast<int>(ceil(bbox_size.x * PX_PER_M)), MIN_S, MAX_S),
+      .h  = clamp(cast<int>(ceil(bbox_size.y * PX_PER_M)), MIN_S, MAX_S),
+    });
+    cnt += 1;
+
+    cnts.push_back({idx, cnt});
+  }
+
+  f32 total_px = total_surface * PX_PER_M2;
+  f32 total_mb = ((total_px * 4.0f) / 1024.0f) / 1024.0f;
+
+  int target_width  = 1024;
+  int target_height = 1024;
+
+  while (true)
+  {
+    stbrp_context context;
+    std::vector<stbrp_node> nodes(target_width);
+
+    stbrp_init_target(&context, target_width, target_height, nodes.data(), static_cast<int>(nodes.size()));
+    stbrp_pack_rects(&context, rects.data(), static_cast<int>(rects.size()));
+
+    bool all_packed = true;
+    for (const auto& rect : rects)
+    {
+      if (rect.was_packed == 0)
+      {
+        all_packed = false;
+        break;
+      }
+    }
+    if (all_packed)
+      break;
+
+    if (target_height < target_width)
+      target_height *= 2;
+    else
+      target_width *= 2;
+  }
+
+  m_sector_megatexture_info.resize(map.sectors.size());
+  for (u64 ii = 0; ii < cnts.size(); ++ii)
+  {
+    auto[idx, cnt] = cnts[ii];
+
+    for (u64 i = 0; i < cnt; ++i)
+    {
+      stbrp_rect& rect = rects[idx+i];
+      vec2 from = vec2{rect.x, rect.y};
+      vec2 to   = from + vec2{rect.w, rect.h};
+      nc_assert(rect.w > 0 && rect.h > 0);
+
+      m_sector_megatexture_info[ii].walls.resize(map.sectors[ii].last_wall - map.sectors[ii].first_wall);
+
+      MegatexPartId   mpart = cast<MegatexPartId>(megatex_parts.size());
+      MegatexPart& ref = megatex_parts.emplace_back();
+
+      ref.megatex_coord_1 = cast<ivec2>(from);
+      ref.megatex_coord_2 = cast<ivec2>(to);
+      ref.sector_id       = cast<SectorID>(ii);
+
+      switch (rect.id)
+      {
+        // Floor
+        case -1:
+        {
+          m_sector_megatexture_info[ii].floor = aabb2{from, to};
+          f32 height = map.sectors[ii].state_floors[0];
+          const vec3& bmin = map.sector_bboxes[ii].min;
+          const vec3& bmax = map.sector_bboxes[ii].max;
+          ref.wpos_00 = vec3{bmin.x, height, bmin.z};
+          ref.wpos_10 = vec3{bmax.x, height, bmin.z};
+          ref.wpos_01 = vec3{bmin.x, height, bmax.z};
+          ref.wpos_11 = vec3{bmax.x, height, bmax.z};
+          ref.normal  = UP_DIR;
+          ref.texture_id = map.sectors[ii].floor_surface.texture_id_default;
+          ref.texture_scale = map.sectors[ii].floor_surface.scale;
+          ref.cumulative_wall_len_start = 0.0f;
+          ref.texture_offset_x = map.sectors[ii].floor_surface.offset.x;
+          ref.texture_offset_y = map.sectors[ii].floor_surface.offset.y;
+          map.sectors[ii].floor_megatex_id = mpart;
+        }
+        break;
+
+        // Ceil
+        case -2:
+        {
+          m_sector_megatexture_info[ii].ceiling = aabb2{from, to};
+          f32 height = map.sectors[ii].state_ceils[0];
+          const vec3& bmin = map.sector_bboxes[ii].min;
+          const vec3& bmax = map.sector_bboxes[ii].max;
+          ref.wpos_00 = vec3{bmin.x, height, bmin.z};
+          ref.wpos_10 = vec3{bmax.x, height, bmin.z};
+          ref.wpos_01 = vec3{bmin.x, height, bmax.z};
+          ref.wpos_11 = vec3{bmax.x, height, bmax.z};
+          ref.normal  = -UP_DIR;
+          ref.texture_id = map.sectors[ii].ceil_surface.texture_id_default;
+          ref.texture_scale = map.sectors[ii].ceil_surface.scale;
+          ref.cumulative_wall_len_start = 0.0f;
+          ref.texture_offset_x = map.sectors[ii].ceil_surface.offset.x;
+          ref.texture_offset_y = map.sectors[ii].ceil_surface.offset.y;
+          map.sectors[ii].ceil_megatex_id = mpart;
+        }
+        break;
+
+        default:
+        {
+          m_sector_megatexture_info[ii].walls[rect.id] = aabb2{from, to};
+          f32 height1 = map.sectors_dynamic[ii].floor_height;
+          f32 height2 = map.sectors_dynamic[ii].ceil_height;
+
+          WallID wid = cast<WallID>(map.sectors[ii].first_wall + rect.id);
+          WallID next_wid = map_helpers::next_wall(map, cast<SectorID>(ii), wid);
+
+          vec2 coord1 = map.walls[wid].pos;
+          vec2 coord2 = map.walls[next_wid].pos;
+          vec2 norm   = normalize(flipped(coord2 - coord1));
+
+          ref.wpos_00 = vec3{coord1.x, height1, coord1.y};
+          ref.wpos_10 = vec3{coord2.x, height1, coord2.y};
+          ref.wpos_01 = vec3{coord1.x, height2, coord1.y};
+          ref.wpos_11 = vec3{coord2.x, height2, coord2.y};
+          ref.normal  = vec3{norm.x, 0.0f, norm.y};
+
+          // inefective af
+          f32 cum_len = 0.0f; // funny variable name
+          vec2 prev_pos = map.walls[map.sectors[ii].first_wall].pos;
+          for (int iidx = 0; iidx <= rect.id; ++iidx)
+          {
+            WallID wdd = cast<WallID>(map.sectors[ii].first_wall + iidx);
+            vec2 p = map.walls[wdd].pos;
+            cum_len += distance(prev_pos, p);
+            prev_pos = p;
+          }
+
+          // just copy it from the first segment..
+          SegmentID seg_id = map.walls[wid].first_segment;
+          if (map.walls[wid].segment_count > 0)
+          {
+            ref.texture_id    = map.wall_segments[seg_id].surface.texture_id_default;
+            ref.texture_scale = map.wall_segments[seg_id].surface.scale;
+            ref.cumulative_wall_len_start = cum_len;
+            ref.texture_offset_x = map.wall_segments[seg_id].surface.offset.x;
+            ref.texture_offset_y = map.wall_segments[seg_id].surface.offset.y;
+          }
+          else
+          {
+            [[maybe_unused]]int a = 17;
+          }
+
+          map.walls[wid].megatex_id = mpart;
+        }
+        break;
+      }
+
+      //nc_log("{}:[{}, {}, {}, {}]", ii, rect.x, rect.y, rect.w, rect.h);
+    }
+  }
+
+
+  /*
+  nc_log("RECTS_BEGIN");
+  for (u64 i = 0; i < m_sector_megatexture_info.size(); ++i)
+  {
+    const SectorMegatexData& mega = m_sector_megatexture_info[i];
+    auto print_one = [&](aabb2 bbox)
+    {
+      vec2 from = bbox.min;
+      vec2 size = bbox.max - bbox.min;
+      nc_log("{}:[{}, {}, {}, {}]", i, from.x, from.y, size.x, size.y);
+    };
+
+    print_one(mega.floor);
+    print_one(mega.ceiling);
+    for (const auto& wall : mega.walls)
+    {
+      print_one(wall);
+    }
+  }
+  nc_log("RECTS_END");
+  */
+
+  int final_size = target_width * target_height;
+
+  nc_log("===========================================================");
+  nc_log("              Megatexture log");
+  nc_log("Total surface area of all sectors:   {:.2f}m2", total_surface);
+  nc_log("Optimisic num pixels in all sectors: {:.2f}",   total_px);
+  nc_log("Optimisic size of megatexture:       {:.2f}MB", total_mb);
+  nc_log("");
+  nc_log("Megatexture size is:   {}x{}", target_width, target_height);
+  nc_log("Megatexture memory is: {:.2f}MB", ((final_size * 4) / 1024.0f) / 1024.0f);
+  nc_log("===========================================================");
+
+	nc_log("============================================");
+	nc_log("Starting sector to vertices.");
+	nc_log("============================================");
 
   for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)
   {
     vertices.clear();
-    map.sector_to_vertices(sector_id, vertices);
+    map.sector_to_vertices(sector_id, vertices, m_sector_megatexture_info[sector_id]);
 
     const auto mesh = mesh_manager.create_sector
     (
@@ -993,7 +1409,68 @@ void GraphicsSystem::create_sector_meshes()
     m_sector_meshes.push_back(mesh);
   }
 
+  megatex_parts_last_render_idx.assign(megatex_parts.size(), 0);
+
   m_renderer->update_sector_ssbos();
+
+  auto gen_megatex = [&](GLuint& handle, GLenum format)
+  {
+    glGenTextures(1, &handle);
+    glBindTexture(GL_TEXTURE_2D, handle);
+
+    glTexStorage2D(GL_TEXTURE_2D, 1, format, target_width, target_height);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  };
+
+  // Mask
+  gen_megatex(megatex_mask_handle, GL_R8);
+
+  // Debug
+  gen_megatex(megatex_debug_handle, GL_RGBA8);
+
+  // Output
+  gen_megatex(megatex_read_from_handle, GL_RGBA16F);
+
+  // Input
+  gen_megatex(megatex_write_to_handle, GL_RGBA16F);
+
+  // Shadows
+  gen_megatex(megatex_shadow_handle, GL_RGBA16F);
+
+  // Temporal
+  gen_megatex(megatex_temporal_handle, GL_RGBA16F);
+
+  // Temporal noise
+  gen_megatex(megatex_temporal_noise_handle, GL_RGBA16F);
+
+  megatex_width  = target_width;
+  megatex_height = target_height;
+
+  // FBO for rendering into megatex_input_handle
+  glGenFramebuffers(1, &megatex_write_fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, megatex_write_fbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, megatex_write_to_handle, 0);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  // FBO for rendering into megatex_input_handle
+  glGenFramebuffers(1, &megatex_temp_fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, megatex_temp_fbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, megatex_temporal_handle, 0);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  // FBO for storing temporary shadows between frames
+  glGenFramebuffers(1, &megatex_shadow_fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, megatex_shadow_fbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, megatex_shadow_handle, 0);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+  // FBO for storing temporary noise
+  glGenFramebuffers(1, &megatex_noise_fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, megatex_noise_fbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, megatex_temporal_noise_handle, 0);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 //==============================================================================
