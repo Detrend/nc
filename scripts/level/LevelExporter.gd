@@ -261,13 +261,18 @@ class WallExportData:
 
 ## Generate a JSON-exportable object describing the whole level
 func create_level_export_data() -> Dictionary:	
+	var total_timestamp := _start_timestamp()
 
 	_init_datastructs() # Fill [member all_sectors] and [member all_things], init everything else to empty
+	_report_timestamp("datastruct init", total_timestamp)
 
+	var sanity_checks_timestamp := _start_timestamp()
 	# run all sanity checks
 	Sector.sanity_check_all(_level, all_sectors)
 	level_sanity_checks()
+	_report_timestamp("sanity checks", sanity_checks_timestamp)
 	
+	var export_preparations_timestamp := _start_timestamp()
 	self._assign_export_tags(_level.get_all_things())
 	
 	level_export["music"] = _level.music
@@ -298,6 +303,9 @@ func create_level_export_data() -> Dictionary:
 			wall_data.register_sector(s, i)
 			i += 1
 	
+	_report_timestamp("export preparations", export_preparations_timestamp)
+	
+	var sector_export_timestamp := _start_timestamp()
 	# Now go through all [Sector]s and export them one by one. 
 	# Also export all [Thing]s that are contained in some [Sector] into their respective sections. [Thing]s that are outside any [Sector] will get skipped.
 	var sectors_export : Array[Dictionary] # Fill this with all sector descriptors
@@ -367,6 +375,9 @@ func create_level_export_data() -> Dictionary:
 		
 	level_export["points"] = points_export
 	level_export["sectors"] = sectors_export
+
+	_report_timestamp("sectors export", sector_export_timestamp)
+	_report_timestamp("total time", total_timestamp)
 
 	return level_export
 
@@ -440,3 +451,12 @@ func _get_export_coords(p : Vector2)-> Vector2:
 func level_sanity_checks()->void:
 	var all_players := _level.get_entities(PlayerPosition)
 	if all_players.size() != 1: ErrorUtils.report_error("Invalid number of Player Positions: {0}".format([all_players.size()]))
+
+
+func _start_timestamp()->int:
+	return Time.get_ticks_usec()
+
+func _report_timestamp(name: String, start_timestamp: int)->void:
+	var duration := _start_timestamp() - start_timestamp
+	var duration_sec : float = duration * 0.000001
+	print("\t - {0}: {1} s".format([name, duration_sec]))
