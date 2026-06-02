@@ -1,4 +1,4 @@
-[gd_scene load_steps=473 format=3 uid="uid://qa2w68k6j6h2"]
+[gd_scene load_steps=472 format=3 uid="uid://qa2w68k6j6h2"]
 
 [ext_resource type="Script" uid="uid://be00i81icyu5g" path="res://scripts/level/Level.gd" id="1_1o0vd"]
 [ext_resource type="Script" uid="uid://b8tkglirbwf1e" path="res://scripts/reactivity/ActivatorPool.gd" id="2_b0a4w"]
@@ -50,7 +50,6 @@
 [ext_resource type="Resource" uid="uid://lor4rc5ka172" path="res://materials/ga_lvl2/portal_on_grass.tres" id="27_8jj66"]
 [ext_resource type="Resource" uid="uid://d03dlff8qifyt" path="res://materials/ga_lvl2/alien_secret.tres" id="27_777gt"]
 [ext_resource type="Resource" uid="uid://b4cgh8bkqkn60" path="res://materials/ga_lvl2/mountains_on_grass.tres" id="28_8r82h"]
-[ext_resource type="Script" uid="uid://3av8aia3g1rm" path="res://scripts/sector/Sector.gd" id="29_c7hrj"]
 [ext_resource type="Resource" uid="uid://yc8n2wq2ecc8" path="res://materials/ga_lvl2/crops.tres" id="29_nqhxv"]
 [ext_resource type="Resource" uid="uid://ce5o5p44crqly" path="res://material_textures/composites/Button_Tech_Inverted.tres" id="31_ep6v3"]
 [ext_resource type="Resource" uid="uid://dveryoeo505ml" path="res://materials/lvl1/red_caves.tres" id="31_wv1f3"]
@@ -4049,18 +4048,15 @@ ceiling_height = -6.5
 sector_material = ExtResource("31_wv1f3")
 portal_wall_length = 9.219544
 
-[node name="Sector-2759" type="Polygon2D" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
-texture_filter = 1
-texture_repeat = 2
+[node name="Sector-2759" parent="Sectors/Main/Corridor3_Arena1/Arena1_MainMultisector" instance=ExtResource("2_eukjm")]
 position = Vector2(-67.05292, 62.997643)
+color = Color(1, 1, 1, 1)
 polygon = PackedVector2Array(0.047851563, -1.1457138, 11.047852, -2.1457138, 12.047852, 6.854286, 0.047851563, 7.854286)
-script = ExtResource("29_c7hrj")
 data = SubResource("Resource_xsoye")
 floor_height = -9.2
 ceiling_height = 30.0
 sector_material = ExtResource("17_hxkhf")
 portal_wall_length = 11.045361
-portal_destination_wall_length = -1.0
 
 [node name="Chapel" type="Node2D" parent="Sectors/Main/Corridor3_Arena1"]
 position = Vector2(0, 2)
@@ -5635,12 +5631,10 @@ stripe_width = 1.38
 [node name="Trigger" type="Node" parent="Sectors/Main/Corridor4/HiddenPlace/TriangulatedMultisector-686/Sector-782d/Button" node_paths=PackedStringArray("target")]
 script = ExtResource("13_et0pd")
 target = NodePath("../../../../../../../../Activators/CultistUbication_DoorExit")
-can_turn_off = true
 
 [node name="Trigger2" type="Node" parent="Sectors/Main/Corridor4/HiddenPlace/TriangulatedMultisector-686/Sector-782d/Button" node_paths=PackedStringArray("target")]
 script = ExtResource("13_et0pd")
 target = NodePath("../../../../../../../../Activators/CultistUbication_PossessedCage1")
-can_turn_off = true
 
 [node name="Sector-782e" parent="Sectors/Main/Corridor4/HiddenPlace/TriangulatedMultisector-686" node_paths=PackedStringArray("portal_destination") instance=ExtResource("2_eukjm")]
 position = Vector2(-4.502205, 19)
@@ -9118,11 +9112,11 @@ portal_wall_length = 8.0
 position = Vector2(-7.1255035, -8.49057)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(1.1255035, 36.20249, 9.125504, 36.20249, 7.1255035, 43.20249, 3.1255035, 43.20249, -0.87449646, 43.20249)
+polygon = PackedVector2Array(-0.87449646, 24.202492, 10.125504, 25.202492, 12.125504, 35.20249, 11.125504, 43.20249, 7.1255035, 43.20249, 3.1255035, 43.20249, -0.87449646, 43.20249)
 data = SubResource("Resource_weve2")
 floor_height = 0.0
 ceiling_height = 4.0
-portal_wall_length = 8.0
+portal_wall_length = 11.045361
 
 [node name="Trigger" type="Node" parent="Sectors/Main/Outsides1/HouseInside3/HouseInsides2/Trap" node_paths=PackedStringArray("target")]
 script = ExtResource("13_et0pd")
@@ -9209,7 +9203,7 @@ portal_wall_length = 9.0
 position = Vector2(-94.46326, 35.672844)
 color = Color(1, 1, 1, 1)
 texture_scale = Vector2(20, 20)
-polygon = PackedVector2Array(1.4632568, -32.672844, 3.4632568, -30.672844, 3.4632568, 14.327156, 3.4632568, 22.327156, 1.4632568, 24.327156)
+polygon = PackedVector2Array(1.4632568, -32.672844, 3.4632568, -30.672844, 3.4632568, -4.672844, 3.4632568, 14.327156, 3.4632568, 22.327156, 1.4632568, 24.327156)
 data = SubResource("Resource_bk5e1")
 floor_height = 0.0
 ceiling_height = 0.01
