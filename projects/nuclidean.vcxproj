@@ -188,6 +188,7 @@
     <ClInclude Include="..\source\nuclidean\common.h" />
     <ClInclude Include="..\source\nuclidean\config.h" />
     <ClInclude Include="..\source\nuclidean\cvars.h" />
+    <ClInclude Include="..\source\nuclidean\database.h" />
     <ClInclude Include="..\source\nuclidean\engine\appearance.h" />
     <ClInclude Include="..\source\nuclidean\engine\entity\entity_system_listener.h" />
     <ClInclude Include="..\source\nuclidean\engine\entity\entity_types.h" />
@@ -278,6 +279,7 @@
     <None Include="..\settings.cfg" />
     <None Include="..\source\nuclidean\anim_state_machine.inl" />
     <None Include="..\source\nuclidean\buffer.inl" />
+    <None Include="..\source\nuclidean\database.inl" />
     <None Include="..\source\nuclidean\engine\core\engine.inl" />
     <None Include="..\source\nuclidean\engine\graphics\resources\model.inl" />
     <None Include="..\source\nuclidean\engine\graphics\resources\shader_program.inl" />

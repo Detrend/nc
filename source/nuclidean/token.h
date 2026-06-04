@@ -217,6 +217,19 @@ namespace nc {
       return !empty();
     }
 
+    constexpr static bool can_be_tokenized(std::string_view view)
+    {
+      for (char c : view)
+      {
+        if (!CHAR_TO_CODE[c])
+        {
+          return false;
+        }
+      }
+
+      return true;
+    }
+
   private:
     u64 raw;
 
@@ -234,7 +247,6 @@ namespace nc {
   template<size_t TTokenCount, typename TPermittedChars=token_policies::Chars_Default>
   struct CompositeToken 
   {
-
     using Segment = BasicToken<TPermittedChars>;
 
     static constexpr size_t MAX_LENGTH = TTokenCount * Segment::MAX_LENGTH;
@@ -376,6 +388,11 @@ namespace nc {
     constexpr explicit operator bool() const
     {
       return !empty();
+    }
+
+    constexpr static bool can_be_tokenized(std::string_view view)
+    {
+      return Segment::can_be_tokenized(view);
     }
 
   private:
