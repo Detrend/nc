@@ -188,7 +188,6 @@
     <ClInclude Include="..\source\nuclidean\common.h" />
     <ClInclude Include="..\source\nuclidean\config.h" />
     <ClInclude Include="..\source\nuclidean\cvars.h" />
-    <ClInclude Include="..\source\nuclidean\database.h" />
     <ClInclude Include="..\source\nuclidean\engine\appearance.h" />
     <ClInclude Include="..\source\nuclidean\engine\entity\entity_system_listener.h" />
     <ClInclude Include="..\source\nuclidean\engine\entity\entity_types.h" />
@@ -261,6 +260,7 @@
     <ClInclude Include="..\source\nuclidean\token.h" />
     <ClInclude Include="..\source\nuclidean\types.h" />
     <ClInclude Include="..\source\nuclidean\unit_test.h" />
+    <ClInclude Include="..\source\nuclidean\util\database.h" />
     <ClInclude Include="logging.h" />
     <ClInclude Include="..\source\nuclidean\engine\entity\entity_system.h" />
     <ClInclude Include="..\source\nuclidean\engine\entity\entity.h" />
@@ -279,7 +279,6 @@
     <None Include="..\settings.cfg" />
     <None Include="..\source\nuclidean\anim_state_machine.inl" />
     <None Include="..\source\nuclidean\buffer.inl" />
-    <None Include="..\source\nuclidean\database.inl" />
     <None Include="..\source\nuclidean\engine\core\engine.inl" />
     <None Include="..\source\nuclidean\engine\graphics\resources\model.inl" />
     <None Include="..\source\nuclidean\engine\graphics\resources\shader_program.inl" />
@@ -288,6 +287,7 @@
     <None Include="..\source\nuclidean\stack_allocator.inl" />
     <None Include="..\source\nuclidean\engine\entity\sector_mapping.inl" />
     <None Include="..\source\nuclidean\engine\graphics\ssbo_buffer.inl" />
+    <ClCompile Include="..\source\nuclidean\util\database.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\source\libs\glm\CMakeLists.txt" />

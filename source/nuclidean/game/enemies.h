@@ -7,6 +7,7 @@
 
 #include <metaprogramming.h> // ARRAY_LENGTH
 #include <anim_state_machine.h>
+#include <util/database.h>
 
 #include <array>
 
@@ -117,6 +118,25 @@ struct EnemyStats
   f32            infight_chance = 0.0f;
   f32            step_height    = 1.0f;
 };
+
+struct EnemyStatsSmall
+{
+  DbCol<f32,   "move speed">       move_speed     = 5.0f;
+  DbCol<Token, "projectile">       projectile     = "test";
+  DbCol<s32,   "max hp">           max_hp         = 100;
+  DbCol<f32,   "height">           height         = 2.0f;
+  DbCol<f32,   "eye height">       eye_height     = 1.8f;
+  DbCol<f32,   "attack height">    atk_height     = 1.5f;
+  DbCol<f32,   "radius">           radius         = 0.25f;
+  DbCol<f32,   "attack delay min"> atk_delay_min  = 3.0f;
+  DbCol<f32,   "attack delay max"> atk_delay_max  = 8.0f;
+  DbCol<u32,   "attack frame">     attack_frame   = 0;
+  DbCol<bool,  "is melee">         is_melee       = false;
+  DbCol<f32,   "infight chance">   infight_chance = 0.0f;
+  DbCol<f32,   "step height">      step_height    = 1.0f;
+};
+
+inline EntityDatabase<EnemyStatsSmall> EnemyDb("enemy");
 
 extern EnemyStats ENEMY_STATS[];
 
