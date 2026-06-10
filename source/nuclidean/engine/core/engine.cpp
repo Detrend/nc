@@ -20,8 +20,7 @@
 #include <engine/game/game_system.h>
 #include <engine/sound/sound_system.h>
 #include <engine/ui/user_interface_system.h>
-
-#include <util/database.h>
+#include <engine/database/database_system.h>
 
 #if NC_BENCHMARK
 #include <benchmark/benchmark.h>
@@ -335,13 +334,6 @@ int init_engine_and_run_game(const CmdArgs& args)
   // game directly from the "bin/[cfg]" directory.
   engine_utils::change_current_directory_if_necessary();
 
-  const auto& dbs = IDatabase::get_db_list();
-  for (auto& db : dbs)
-  {
-    std::string err;
-    const_cast<IDatabase*>(db)->add_or_patch_row_from_file("content/bruh.enemy.json", err);
-  }
-
   [[maybe_unused]] bool exit_after_benchmarks_and_tests = false;
 
 #if NC_BENCHMARK
@@ -485,6 +477,7 @@ bool Engine::init(const CmdArgs& cmd_args)
   INIT_MODULE(GameSystem);
   INIT_MODULE(SoundSystem);
   INIT_MODULE(UserInterfaceSystem);
+  INIT_MODULE(DatabaseSystem);
 
   #undef INIT_MODULE
 
