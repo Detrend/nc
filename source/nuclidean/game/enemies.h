@@ -7,7 +7,7 @@
 
 #include <metaprogramming.h> // ARRAY_LENGTH
 #include <anim_state_machine.h>
-#include <util/database.h>
+#include <engine/database/database.h>
 
 #include <array>
 
@@ -119,6 +119,11 @@ struct EnemyStats
   f32            step_height    = 1.0f;
 };
 
+struct EnemyStatsAgain
+{
+  DbCol<s32, "health amount"> health_amount = 12;
+};
+
 struct EnemyStatsSmall
 {
   DbCol<f32,   "move speed">       move_speed     = 5.0f;
@@ -134,9 +139,11 @@ struct EnemyStatsSmall
   DbCol<bool,  "is melee">         is_melee       = false;
   DbCol<f32,   "infight chance">   infight_chance = 0.0f;
   DbCol<f32,   "step height">      step_height    = 1.0f;
+  DbCol<EnemyStatsAgain*, "ptr">   reference      = nullptr;
 };
 
-inline EntityDatabase<EnemyStatsSmall> EnemyDb("enemy");
+inline Database<EnemyStatsSmall> EnemyDb("enemy");
+inline Database<EnemyStatsAgain> EnemyDb2("enemy_big");
 
 extern EnemyStats ENEMY_STATS[];
 

@@ -1,0 +1,7 @@
+{
+  "move speed": 3.0,
+  "projectile": "fireball",
+  "max hp": 10,
+  "eye height": 30.0,
+  "is melee": true
+}

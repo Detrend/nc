@@ -1,6 +1,8 @@
 // Project Nuclidean Source File
 #pragma once
 
+#include <tuple>
+
 namespace nc
 {
 
@@ -92,7 +94,9 @@ auto struct_to_tie(Type& value)
     auto&[a] = value; return std::tie(a);
   }
   else
+  {
     return ErrorType{};
+  }
 }
 
 }
