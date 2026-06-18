@@ -1,8 +1,10 @@
 // Project Nuclidean Source File
 
+#include <engine/entity/entity_types.h>
 #include <engine/game/game.h>
 
 // Entity types
+#include <engine/network/constants.h>
 #include <engine/player/player.h>
 #include <engine/enemies/enemy.h>
 #include <engine/sound/sound_emitter.h>
@@ -38,9 +40,9 @@ void Game::on_destroy()
 //==============================================================================
 void Game::update
 (
-  f32                  dt,
-  PlayerSpecificInputs curr_input,
-  PlayerSpecificInputs prev_input
+  f32                     dt,
+  const PlayerInputArray& curr_inputs,
+  const PlayerInputArray& prev_inputs
 )
 {
   NC_SCOPE_COUNTER(game_update);
@@ -49,7 +51,7 @@ void Game::update
   // when playing a demo.
   if (frame_idx == 0 && !transition_data.is_empty())
   {
-    if (Player* player = entities->get_entity<Player>(player_id))
+    if (Player* player = entities->get_entity<Player>(get_local_player_id()))
     {
       player->init_with_level_transition_data(transition_data);
     }
@@ -60,10 +62,14 @@ void Game::update
   // Handle the player first
   {
     NC_SCOPE_COUNTER(player_update)
-    entities->for_each<Player>([&](Player& player)
+    for (u8 slot = 0; slot < g_max_player_count; ++slot)
     {
-      player.update(curr_input, prev_input, dt);
-    });
+      if (player_ids[slot] == INVALID_ENTITY_ID)
+        continue;
+
+      Player* const player = entities->get_entity<Player>(player_ids[slot]);
+      player->update(curr_inputs[slot], prev_inputs[slot], dt);
+    }
   }
 
   // Handle enemies
@@ -119,7 +125,8 @@ void Game::update
 void Game::serialize(Buffer& buffer)
 {
   // Small data first
-  buffer.serialize(this->player_id);
+  buffer.serialize_array(this->player_ids.data(), this->player_ids.size());
+  buffer.serialize(this->local_player_slot);
   buffer.serialize(this->frame_idx);
   buffer.serialize(this->time_since_start);
   // No need to serialize "is_level_completed" and "next_level_name"
@@ -145,6 +152,12 @@ void Game::serialize(Buffer& buffer)
       );
     });
   }
+}
+
+//==============================================================================
+EntityID Game::get_local_player_id() const
+{
+  return player_ids[local_player_slot];
 }
 
 }
