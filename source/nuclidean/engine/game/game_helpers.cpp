@@ -51,7 +51,7 @@ f64 GameHelpers::get_time_since_start() const
 //==============================================================================
 Player* GameHelpers::get_player()
 {
-  return m_game.entities->get_entity<Player>(m_game.player_id);
+  return m_game.entities->get_entity<Player>(m_game.get_local_player_id());
 }
 
 //==============================================================================

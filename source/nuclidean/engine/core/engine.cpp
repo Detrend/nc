@@ -20,6 +20,7 @@
 #include <engine/game/game_system.h>
 #include <engine/sound/sound_system.h>
 #include <engine/ui/user_interface_system.h>
+#include <engine/network/network_system.h>
 
 #if NC_BENCHMARK
 #include <benchmark/benchmark.h>
@@ -473,6 +474,7 @@ bool Engine::init(const CmdArgs& cmd_args)
 
   INIT_MODULE(GraphicsSystem);
   INIT_MODULE(InputSystem);
+  INIT_MODULE(NetworkSystem, cmd_args);
   INIT_MODULE(GameSystem);
   INIT_MODULE(SoundSystem);
   INIT_MODULE(UserInterfaceSystem);
@@ -550,7 +552,12 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
     cmd_args, engine_utils::FAST_DEMO_ARG
   );
 
-  if (std::string demo; engine_utils::should_play_demo(cmd_args, demo))
+  if (get_module<NetworkSystem>().is_multiplayer())
+  {
+    set_game_state(GameState::game);
+    game_system.request_level_change(Levels::LEVEL_1);
+  }
+  else if (std::string demo; engine_utils::should_play_demo(cmd_args, demo))
   {
     // Play one demo and then exit
     LevelName           lvl_name;
