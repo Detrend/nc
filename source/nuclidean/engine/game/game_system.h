@@ -11,14 +11,13 @@
 #include <engine/player/save_types.h>
 
 #include <engine/input/game_input.h>
+#include <engine/network/constants.h>
 #include <game/game_types.h>
 #include <math/vector.h>
 #include <math/matrix.h>
 
 #include <memory> // std::unique_ptr
-#include <unordered_set>
 #include <string>
-#include <vector>
 #include <optional>
 
 namespace nc
@@ -212,6 +211,8 @@ private:
   LevelName level_name = INVALID_LEVEL_NAME;
   Journal   journal;
 
+  PlayerInputArray m_previous_tick_inputs{};
+
   mutable std::optional<NextRequestedState> scheduled_state;
 
   u32 enemy_count = 0;
@@ -219,6 +220,7 @@ private:
 
   u32 secret_count   = 0;
   u32 revealed_count = 0;
+  
 };
 
 }

@@ -2,8 +2,10 @@
 #include <common.h>
 #include <cvars.h>
 
+#include <engine/entity/entity_types.h>
 #include <engine/game/game_system.h>
 #include <engine/game/game_helpers.h>
+#include <engine/input/game_input.h>
 #include <engine/player/player.h>
 
 #include <engine/core/engine.h>
@@ -19,6 +21,9 @@
 #include <engine/map/physics.h>
 #include <engine/map/map_system.h>
 #include <engine/map/map_dynamics.h>
+
+#include <engine/network/constants.h>
+#include <engine/network/network_system.h>
 
 #include <engine/graphics/entities/lights.h>
 #include <engine/graphics/entities/sky_box.h>
@@ -55,6 +60,7 @@
 #include <stack_vector.h>
 #include <buffer.h>
 
+#include <array>
 #include <fstream>
 #include <filesystem>
 #include <string>
@@ -274,10 +280,11 @@ static void load_empty_map
   SectorMapping&  mapping,
   EntityRegistry& /*entities*/,
   MapDynamics&    dynamics,
-  EntityID&       player_id
+  PlayerArray&    player_ids
 )
 {
-  player_id = INVALID_ENTITY_ID;
+  player_ids[0] = INVALID_ENTITY_ID;
+  player_ids[1] = INVALID_ENTITY_ID;
   mapping.on_map_rebuild();
   dynamics.on_map_rebuild_and_entities_created();
 }
@@ -290,7 +297,7 @@ static void load_json_map
   SectorMapping&   mapping,
   EntityRegistry&  entities,
   MapDynamics&     dynamics,
-  EntityID&        player_id
+  PlayerArray&     player_ids
 )
 {
   using namespace map_building;
@@ -452,9 +459,16 @@ static void load_json_map
 
     if (js_entity["is_player"] == true)
     {
-      auto* player = entities.create_entity<Player>(position, forward);
-      player_id = player->get_id();
-      register_entity(player, js_entity);
+      auto* player0 = entities.create_entity<Player>(position, forward);
+      player_ids[0] = player0->get_id();
+      register_entity(player0, js_entity);
+
+      if (get_engine().get_module<NetworkSystem>().is_multiplayer())
+      {
+        auto* player1 = entities.create_entity<Player>(position + forward, forward);
+        player_ids[1] = player1->get_id();
+        register_entity(player1, js_entity);
+      }
     }
     else
     {
@@ -795,35 +809,51 @@ void GameSystem::game_update(f32 delta)
       const DemoDataFrame&  frame = frames[journal.rover];
 
       bool first_frame = !journal.rover;
-      prev_inputs = first_frame ? empty_inputs : frames[journal.rover-1].inputs;
-      curr_inputs = frame.inputs;
       delta_time  = frame.delta;
+
+      PlayerInputArray curr{};
+      PlayerInputArray prev{};
+      curr[0] = frame.inputs;
+      prev[0] = first_frame ? PlayerSpecificInputs{} : frames[journal.rover - 1].inputs;
 
       journal.rover += 1;
 
-      return std::make_tuple(delta_time, curr_inputs, prev_inputs);
+      return std::make_tuple(delta_time, curr, prev);
     };
 
     auto game_inputs = [this, delta]()
     {
-      GameInputs curr_input = InputSystem::get().get_inputs();
-      GameInputs prev_input = InputSystem::get().get_prev_inputs();
+      NetworkSystem& network = NetworkSystem::get();
 
-      PlayerSpecificInputs curr_inputs = curr_input.player_inputs;
-      PlayerSpecificInputs prev_inputs = prev_input.player_inputs;
-      f32                  delta_time  = delta;
+      const PlayerSpecificInputs local = InputSystem::get().get_inputs().player_inputs;
 
-      if (journal.state == JournalState::recording)
+      PlayerInputArray curr{};
+      if (network.is_multiplayer())
+      {
+        // blocks until input arrives from peer
+        curr = network.exchange(local);
+      }
+      else
+      {
+        curr[game->local_player_slot] = local;
+      }
+
+      const PlayerInputArray prev = m_previous_tick_inputs;
+      m_previous_tick_inputs = curr;
+
+      const f32 delta_time = network.is_multiplayer() ? g_mp_fixed_delta_time : delta;
+
+      if (!network.is_multiplayer() && journal.state == JournalState::recording)
       {
         // Record the inputs as well
         journal.frames.push_back(DemoDataFrame
         {
-          .inputs = curr_inputs,
+          .inputs = local,
           .delta  = delta_time,
         });
       }
 
-      return std::make_tuple(delta_time, curr_inputs, prev_inputs);
+      return std::make_tuple(delta_time, curr, prev);
     };
 
     if (journal.state == JournalState::playing)
@@ -1218,6 +1248,8 @@ void GameSystem::handle_load_game(const std::string& savefile)
 
   // Free the data
   std::free(data);
+
+  m_previous_tick_inputs = PlayerInputArray{};
 }
 
 //==============================================================================
@@ -1405,7 +1437,7 @@ void GameSystem::build_map(LevelName level)
       *game->mapping,
       *game->entities,
       *game->dynamics,
-      game->player_id
+      game->player_ids
     );
   }
   else
@@ -1417,9 +1449,11 @@ void GameSystem::build_map(LevelName level)
       *game->mapping,
       *game->entities,
       *game->dynamics,
-      game->player_id
+      game->player_ids
     );
   }
+
+  game->local_player_slot = get_engine().get_module<NetworkSystem>().get_player_index();
 
   // Now snap all required entities to the floor
   game->entities->for_each(EntityTypes::all, [&](Entity& entity)
