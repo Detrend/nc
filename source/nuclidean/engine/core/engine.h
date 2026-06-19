@@ -120,11 +120,12 @@ private:
 
   enum class GameState : u8
   {
-    menu,       // in menu, the demo is playing in the background
-    game,       // the player is playing
-    transition, // during the level transition, demo playing in background
-    debug_demo, // running the demo from console, debug
-    none,       // error state, only on the start
+    menu,         // in menu, the demo is playing in the background
+    presentation, // like menu, but shows prepared slides instead of menu UI
+    game,         // the player is playing
+    transition,   // during the level transition, demo playing in background
+    debug_demo,   // running the demo from console, debug
+    none,         // error state, only on the start
   };
 
   struct TransitionStateData

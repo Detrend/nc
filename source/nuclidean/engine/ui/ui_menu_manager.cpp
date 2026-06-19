@@ -9,6 +9,9 @@
 #include <engine/core/module_event.h>
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/graphics_system.h>
+#include <engine/graphics/resources/texture.h>
+
+#include <logging.h>
 
 
 namespace nc
@@ -151,9 +154,74 @@ bool MenuManager::get_is_visible() const
   return is_visible;
 }
 
+//=============================================================================
+bool MenuManager::set_presentation_slides
+(
+  const std::vector<std::string>& slide_texture_names
+)
+{
+  presentation_slides.clear();
+  presentation_index = 0;
+
+  const TextureMap& textures =
+    TextureManager::get().get_atlas_bundle(ResLifetime::Game).textures;
+
+  for (const std::string& name : slide_texture_names)
+  {
+    if (textures.contains(name))
+    {
+      presentation_slides.push_back(name);
+    }
+    else
+    {
+      nc_warn("Presentation slide texture \"{}\" not found, skipping.", name);
+    }
+  }
+
+  is_presentation = !presentation_slides.empty();
+  return is_presentation;
+}
+
+//=============================================================================
+void MenuManager::update_presentation()
+{
+  if (presentation_slides.empty())
+  {
+    return;
+  }
+
+  int          num_keys = 0;
+  const Uint8* keyboard = SDL_GetKeyboardState(&num_keys);
+
+  const bool left  = keyboard[SDL_SCANCODE_LEFT];
+  const bool right = keyboard[SDL_SCANCODE_RIGHT];
+
+  const size_t count = presentation_slides.size();
+
+  // Edge-triggered: one slide change per key press.
+  if (left && !prev_left_pressed)
+  {
+    presentation_index = (presentation_index + count - 1) % count;
+  }
+  else if (right && !prev_right_pressed)
+  {
+    presentation_index = (presentation_index + 1) % count;
+  }
+
+  prev_left_pressed  = left;
+  prev_right_pressed = right;
+}
+
 //===============================================================================================
 void MenuManager::update()
 {
+  // presentation mode?
+  if (is_presentation)
+  {
+    update_presentation();
+    return;
+  }
+
   // transition screen?
   if (is_transition)
   {
@@ -225,6 +293,13 @@ void MenuManager::update()
 //============================================================================================
 void MenuManager::draw()
 {
+  // presentation mode?
+  if (is_presentation)
+  {
+    draw_presentation();
+    return;
+  }
+
   // transition?
   if (is_transition)
   {
@@ -310,6 +385,59 @@ void MenuManager::draw_cursor()
 
   // shader unbinding
 
+  glDisable(GL_BLEND);
+  glEnable(GL_DEPTH_TEST);
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+  glDisableVertexAttribArray(0);
+  glDisableVertexAttribArray(1);
+  glBindVertexArray(0);
+}
+
+//=============================================================================================
+void MenuManager::draw_presentation()
+{
+  if (presentation_slides.empty())
+  {
+    return;
+  }
+
+  // shader init
+  button_material.use();
+
+  glBindVertexArray(VAO);
+  glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
+
+  glDisable(GL_DEPTH_TEST);
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  // Slide names are validated in set_presentation_slides, so this lookup is safe
+  const TextureManager& manager = TextureManager::get();
+  const TextureHandle& texture = manager[presentation_slides[presentation_index]];
+
+  glActiveTexture(GL_TEXTURE0);
+
+  // full-screen quad
+  glm::mat4 trans_mat = glm::mat4(1.0f);
+  trans_mat = glm::translate(trans_mat, glm::vec3(0.0f, 0.0f, 0.0f));
+  trans_mat = glm::scale(trans_mat, glm::vec3(1.0f, 1.0f, 1.0f));
+
+  const glm::mat4 final_trans = trans_mat;
+
+  // set shader uniforms
+  button_material.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
+  button_material.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
+  button_material.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
+  button_material.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
+  button_material.set_uniform(shaders::ui_button::HOVER, false);
+
+  glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+  // shader unbinding
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
 

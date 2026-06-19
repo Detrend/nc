@@ -60,6 +60,7 @@ namespace engine_utils
 [[maybe_unused]] constexpr cstr START_DEMO_ARG     = "-start_demo";
 [[maybe_unused]] constexpr cstr FAST_DEMO_ARG      = "-fast_demo";
 [[maybe_unused]] constexpr cstr EDITOR_MODE_ARG    = "-editor_mode"; // sets up bunch of minor stuff to make it more pleasant to use the game for preview when editing a level
+[[maybe_unused]] constexpr cstr PRESENTATION_ARG   = "-presentation"; // shows prepared slides while demos play in the background; followed by slide texture names
 
 //==============================================================================
 static f32 duration_to_seconds(auto t1, auto t2)
@@ -118,6 +119,30 @@ static bool contains_pair_of_args
 
   out = *std::next(it);
   return true;
+}
+
+//==============================================================================
+// Collects all values following an argument up until the next "-" flag.
+// e.g. for "-presentation slide_a slide_b -other" returns {slide_a, slide_b}.
+static std::vector<std::string> collect_values_after_arg
+(
+  const CmdArgs& cmd_args, cstr flag
+)
+{
+  std::vector<std::string> out;
+
+  auto it = std::find(cmd_args.begin(), cmd_args.end(), flag);
+  if (it == cmd_args.end())
+  {
+    return out;
+  }
+
+  for (++it; it != cmd_args.end() && !it->starts_with('-'); ++it)
+  {
+    out.push_back(*it);
+  }
+
+  return out;
 }
 
 //==============================================================================
@@ -550,6 +575,34 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
     cmd_args, engine_utils::FAST_DEMO_ARG
   );
 
+  // Presentation mode: show prepared slides while demos play in the background.
+  // Slide texture names follow the "-presentation" argument.
+  if (engine_utils::contains_arg(cmd_args, engine_utils::PRESENTATION_ARG))
+  {
+    const std::vector<std::string> slides = engine_utils::collect_values_after_arg
+    (
+      cmd_args, engine_utils::PRESENTATION_ARG
+    );
+
+    MenuManager* menu = get_module<UserInterfaceSystem>().get_menu_manager();
+
+    // Validates slides, logs and skips missing ones. Only enter presentation
+    // mode if at least one slide is valid, otherwise fall back to the menu.
+    if (menu->set_presentation_slides(slides))
+    {
+      set_game_state(GameState::presentation);
+      SDL_ShowCursor(SDL_DISABLE); // No mouse cursor over the slides
+      this->play_random_demo();
+      return true;
+    }
+
+    nc_warn
+    (
+      "Presentation mode requested but no valid slides found, "
+      "falling back to the main menu."
+    );
+  }
+
   if (std::string demo; engine_utils::should_play_demo(cmd_args, demo))
   {
     // Play one demo and then exit
@@ -614,12 +667,13 @@ void Engine::set_game_state(GameState new_state)
   constexpr Token MUSIC_MENU       = "music_menu";
   constexpr Token MUSIC_TRANSITION = "music_menu";
 
-  bool is_menu        = m_game_state == GameState::menu;
-  bool is_transition  = m_game_state == GameState::transition;
+  bool is_menu         = m_game_state == GameState::menu;
+  bool is_transition   = m_game_state == GameState::transition;
+  bool is_presentation = m_game_state == GameState::presentation;
 
-  if (is_menu | is_transition)
+  if (is_menu | is_transition | is_presentation)
   {
-    Token music = is_menu ? MUSIC_MENU : MUSIC_TRANSITION;
+    Token music = is_transition ? MUSIC_TRANSITION : MUSIC_MENU;
     SoundSystem::get().set_music_for_track(MusicTracks::menu, music);
   }
   else
@@ -797,7 +851,8 @@ void Engine::on_demo_end()
 {
   switch (m_game_state)
   {
-    case GameState::menu:
+    case GameState::menu:        [[fallthrough]];
+    case GameState::presentation:
     {
       // Schedule a next demo. This overwrites the requests of other systems
       this->play_random_demo();
@@ -865,8 +920,9 @@ bool Engine::should_ammo_hp_hud_be_visible() const
 {
   const auto UI_INVISIBLE_STATES =
   {
-    GameState::menu,       // In menu, we do not want to see the HUD
-    GameState::transition, // Nor in level transition screen
+    GameState::menu,         // In menu, we do not want to see the HUD
+    GameState::transition,   // Nor in level transition screen
+    GameState::presentation, // Nor over the presentation slides
   };
 
   auto it = std::find
@@ -955,7 +1011,8 @@ void Engine::on_next_level_selected_from_menu()
 //==============================================================================
 bool Engine::is_menu_locked_visible() const
 {
-  return m_game_state == GameState::menu;
+  return m_game_state == GameState::menu
+      || m_game_state == GameState::presentation;
 }
 
 //==============================================================================
@@ -963,8 +1020,9 @@ bool Engine::is_level_sound_enabled() const
 {
   switch (m_game_state)
   {
-    case GameState::menu:       [[fallthrough]];
-    case GameState::transition:
+    case GameState::menu:         [[fallthrough]];
+    case GameState::transition:   [[fallthrough]];
+    case GameState::presentation:
     {
       return false;
     }
