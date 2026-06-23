@@ -21,6 +21,8 @@
 #include <vector>
 #include <optional>
 
+#include <json/json_fwd.hpp>
+
 namespace nc
 {
 
@@ -37,6 +39,23 @@ class  EntityRegistry;
 class  Player;
 class  EntityAttachment;
 class  Projectile;
+
+namespace map_helpers
+{
+
+void load_and_parse_map_json(LevelName level, nlohmann::json& json_out);
+
+void load_json_map_partial
+(
+  const LevelName& level_name,
+  MapSectors&      map,
+  SectorMapping&   mapping,
+  EntityRegistry&  entities,
+  MapDynamics&     dynamics,
+  EntityID&        player_id
+);
+
+}
 
 class GameSystem : public IEngineModule
 {

@@ -76,7 +76,7 @@ namespace nc
 
   void ActivatorHook_Secret::load([[maybe_unused]] const ActivatorHookLoadArg& arg)
   {
-    get_engine().get_module<GameSystem>().increment_secret_count();
+    //get_engine().get_module<GameSystem>().increment_secret_count();
   }
 
   void ActivatorHook_Secret::on_activated_start([[maybe_unused]] const ActivatorHookArg& args)

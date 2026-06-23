@@ -173,7 +173,7 @@ void Player::init(vec3 position, vec3 in_forward)
 //==============================================================================
 void Player::post_init()
 {
-  get_engine().get_module<UserInterfaceSystem>().get_ui_screen_effect()->clear_effect();
+  //get_engine().get_module<UserInterfaceSystem>().get_ui_screen_effect()->clear_effect();
 }
 
 //==============================================================================
@@ -782,7 +782,7 @@ void Player::change_weapon(WeaponType new_weapon)
   this->current_weapon        = new_weapon;
   this->time_since_gun_change = 0.0f;
 
-  SoundSystem::get().play_oneshot(WEAPON_STATS[new_weapon].equip_sound);
+  //SoundSystem::get().play_oneshot(WEAPON_STATS[new_weapon].equip_sound);
 }
 
 //==============================================================================

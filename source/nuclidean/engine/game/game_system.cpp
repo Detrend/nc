@@ -157,13 +157,15 @@ static SurfaceData load_json_surface(const nlohmann::json &js)
   {
     std::string texture_name = js["id"];
 
-    TextureID tid     = TextureManager::get()[texture_name].get_texture_id();
+    //TextureID tid     = TextureManager::get()[texture_name].get_texture_id();
+    TextureID tid     = 0;
     TextureID alt_tid = tid;
 
     if (js.contains("id_triggered"))
     {
       std::string alt_texture_name = js["id_triggered"];
-      alt_tid = TextureManager::get()[alt_texture_name].get_texture_id();
+      //alt_tid = TextureManager::get()[alt_texture_name].get_texture_id();
+      alt_tid = tid;
     }
 
     return SurfaceData
@@ -283,7 +285,15 @@ static void load_empty_map
 }
 
 //==============================================================================
-static void load_json_map
+void load_and_parse_map_json(LevelName level_name, nlohmann::json& data)
+{
+  std::ifstream f(get_full_level_path(level_name));
+  nc_assert(f.is_open());
+  data = nlohmann::json::parse(f);
+}
+
+//==============================================================================
+void load_json_map_partial
 (
   const LevelName& level_name,
   MapSectors&      map,
@@ -295,12 +305,8 @@ static void load_json_map
 {
   using namespace map_building;
 
-  get_engine().get_module<GameSystem>().reset_enemy_count();
-  get_engine().get_module<GameSystem>().reset_secret_count();
-
-  std::ifstream f(get_full_level_path(level_name));
-  nc_assert(f.is_open());
-  auto data = nlohmann::json::parse(f);
+  nlohmann::json data;
+  load_and_parse_map_json(level_name, data);
 
   std::vector<vec2> points;
   std::vector<map_building::SectorBuildData> sectors;
@@ -308,7 +314,6 @@ static void load_json_map
   ActivatorTable activator_table;
   ActivatorMap   activator_map;
   TriggerTable   trigger_table;
-
 
   struct DeferredActivatorLoad {
     const nlohmann::json* js;
@@ -318,7 +323,6 @@ static void load_json_map
 
   try
   {
-
     for (auto&& js_activator : data["activators"])
     {
       std::string name = js_activator["name"];
@@ -473,7 +477,7 @@ static void load_json_map
         }
       }
 
-      get_engine().get_module<GameSystem>().increment_enemy_count();
+      //get_engine().get_module<GameSystem>().increment_enemy_count();
     }
   }
 
@@ -567,7 +571,8 @@ static void load_json_map
     const std::string texture = js_skybox["texture"];
     const float exposure = js_skybox["exposure"];
     const bool use_gamma = js_skybox["use_gamma_correction"];
-    const GLuint sky_box_map = TextureManager::get().get_equirectangular_map(texture, ResLifetime::Game);
+    //const GLuint sky_box_map = TextureManager::get().get_equirectangular_map(texture, ResLifetime::Game);
+    const GLuint sky_box_map = 11;
     register_entity(entities.create_entity<SkyBox>(sky_box_map, exposure, use_gamma), js_skybox);
   }
 
@@ -582,17 +587,36 @@ static void load_json_map
     hook_load.hook->load(arg);
   }
 
+  dynamics.activators = std::move(activator_table);
+  dynamics.triggers   = std::move(trigger_table);
+
+  dynamics.on_map_rebuild_and_entities_created();
+}
+
+//==============================================================================
+static void load_json_map
+(
+  const LevelName& level_name,
+  MapSectors&      map,
+  SectorMapping&   mapping,
+  EntityRegistry&  entities,
+  MapDynamics&     dynamics,
+  EntityID&        player_id
+)
+{
+  get_engine().get_module<GameSystem>().reset_enemy_count();
+  get_engine().get_module<GameSystem>().reset_secret_count();
+
+  load_json_map_partial(level_name, map, mapping, entities, dynamics, player_id);
+
+  /*
   if (data.contains("music")) {
     SoundSystem::get().set_music_for_track(MusicTracks::game, Token(data["music"]));
   }
   else {
     SoundSystem::get().set_music_for_track(MusicTracks::game, "music_ambient"); // just to not have to reexport all levels, will be later removed
   }
-
-  dynamics.activators = std::move(activator_table);
-  dynamics.triggers   = std::move(trigger_table);
-
-  dynamics.on_map_rebuild_and_entities_created();
+  */
 }
 
 }
