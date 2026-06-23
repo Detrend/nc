@@ -37,12 +37,19 @@
 
 #include <SDL.h>   // SDL_Event
 
-#include <ranges>     // std::views::reverse
-#include <chrono>     // std::chrono::high_resolution_clock
-#include <cstdlib>    // std::rand
-#include <iterator>   // std::next
-#include <filesystem> // std::current_path
-#include <cctype>     // std::tolower
+#include <ranges>      // std::views::reverse
+#include <chrono>      // std::chrono::high_resolution_clock
+#include <cstdlib>     // std::rand
+#include <iterator>    // std::next
+#include <filesystem>  // std::current_path
+#include <cctype>      // std::tolower
+#include <algorithm>   // std::sort, std::max, std::find
+#include <string>      // std::string
+#include <string_view> // std::string_view
+#include <format>      // std::format
+#include <utility>     // std::move
+#include <map>         // std::map
+#include <vector>      // std::vector
 
 namespace nc
 {
@@ -61,6 +68,7 @@ namespace engine_utils
 [[maybe_unused]] constexpr cstr FAST_DEMO_ARG      = "-fast_demo";
 [[maybe_unused]] constexpr cstr EDITOR_MODE_ARG    = "-editor_mode"; // sets up bunch of minor stuff to make it more pleasant to use the game for preview when editing a level
 [[maybe_unused]] constexpr cstr PRESENTATION_ARG   = "-presentation"; // shows prepared slides while demos play in the background; followed by slide texture names
+[[maybe_unused]] constexpr cstr PRINT_COUNTERS_ARG = "-print_counters"; // prints the performance counters [into a file] 
 
 //==============================================================================
 static f32 duration_to_seconds(auto t1, auto t2)
@@ -603,6 +611,17 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
     );
   }
 
+  // Counter printing
+  if (engine_utils::contains_pair_of_args(cmd_args, engine_utils::PRINT_COUNTERS_ARG, m_counters_output_path))
+  {
+    if (m_counters_output_path == "stdout")
+    {
+      m_counters_output_path.clear();
+    }
+
+    m_print_counters = true;
+  }
+
   if (std::string demo; engine_utils::should_play_demo(cmd_args, demo))
   {
     // Play one demo and then exit
@@ -690,66 +709,77 @@ void Engine::run()
 
   InputSystem& input_system = this->get_module<InputSystem>();
 
-  while (!this->should_quit())
   {
-    auto current_time = std::chrono::high_resolution_clock::now();
-    f32 frame_time = eu::duration_to_seconds(previous_time, current_time);
+    NC_SCOPE_COUNTER(total_runtime)
+
+    while (!this->should_quit())
+    {
+      auto current_time = std::chrono::high_resolution_clock::now();
+      f32 frame_time = eu::duration_to_seconds(previous_time, current_time);
 #if NC_PROFILING
-    Profiler::get().new_frame(m_frame_idx, frame_time);
-    NC_SCOPE_PROFILER(FullFrame)
+      Profiler::get().new_frame(m_frame_idx, frame_time);
+      NC_SCOPE_PROFILER(FullFrame)
 #endif
-    eu::limit_min_frametime(frame_time);
+      eu::limit_min_frametime(frame_time);
 
-    // Limit the FPS if desired
-    const f32 min_frame_time = CVars::has_fps_limit ? 1.0f / CVars::fps_limit : 0.0f;
-    while (frame_time < min_frame_time)
-    {
-      // Spin until the time runs out
-      current_time = std::chrono::high_resolution_clock::now();
-      frame_time   = eu::duration_to_seconds(previous_time, current_time);
+      // Limit the FPS if desired
+      const f32 min_frame_time = CVars::has_fps_limit ? 1.0f / CVars::fps_limit : 0.0f;
+      while (frame_time < min_frame_time)
+      {
+        // Spin until the time runs out
+        current_time = std::chrono::high_resolution_clock::now();
+        frame_time   = eu::duration_to_seconds(previous_time, current_time);
+      }
+
+      previous_time = current_time;
+      m_delta_time  = frame_time;
+
+      // notify frame start
+      this->send_event(ModuleEvent
+      {
+        .type = ModuleEventType::frame_start,
+      });
+
+      // pump messages
+      input_system.update_window_and_pump_messages();
+
+      const f32 game_logic_update_time = frame_time * CVars::time_speed;
+
+      // frame start
+      this->send_event(ModuleEvent
+      {
+        .type = ModuleEventType::frame_start,
+      });
+
+      // update
+      this->send_event(ModuleEvent
+      {
+        .type = ModuleEventType::game_update,
+        .update = {.dt = game_logic_update_time},
+      });
+
+      // render
+      this->send_event(ModuleEvent
+      {
+        .type = ModuleEventType::render,
+      });
+
+      // cleanup
+      this->send_event(ModuleEvent
+      {
+        .type = ModuleEventType::cleanup,
+      });
+
+      m_frame_idx += 1;
     }
-
-    previous_time = current_time;
-    m_delta_time  = frame_time;
-
-    // notify frame start
-    this->send_event(ModuleEvent
-    {
-      .type = ModuleEventType::frame_start,
-    });
-
-    // pump messages
-    input_system.update_window_and_pump_messages();
-
-    const f32 game_logic_update_time = frame_time * CVars::time_speed;
-
-    // frame start
-    this->send_event(ModuleEvent
-    {
-      .type = ModuleEventType::frame_start,
-    });
-
-    // update
-    this->send_event(ModuleEvent
-    {
-      .type = ModuleEventType::game_update,
-      .update = {.dt = game_logic_update_time},
-    });
-
-    // render
-    this->send_event(ModuleEvent
-    {
-      .type = ModuleEventType::render,
-    });
-
-    // cleanup
-    this->send_event(ModuleEvent
-    {
-      .type = ModuleEventType::cleanup,
-    });
-
-    m_frame_idx += 1;
   }
+
+#if NC_PROFILING
+  if (m_print_counters)
+  {
+    print_runtime_counters(m_counters_output_path.empty() ? nullptr : m_counters_output_path.c_str());
+  }
+#endif
 }
 
 //==============================================================================

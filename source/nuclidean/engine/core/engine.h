@@ -25,11 +25,9 @@ namespace nc
 struct ModuleEvent;
 class  IEngineModule;
 struct MapSectors;
+using  LevelName = Token;
+using  CmdArgs   = std::vector<std::string>;
 
-
-using LevelName = Token;
-
-using CmdArgs = std::vector<std::string>;
 class Engine
 {
 public:
@@ -148,6 +146,8 @@ private:
   bool          m_demo_adjust_speed : 1 = true;
   bool          m_paused            : 1 = false;
   bool          m_editor_mode       : 1 = false;
+  bool          m_print_counters    : 1 = false;
+  std::string   m_counters_output_path;
 };
 
 Engine& get_engine();

@@ -395,6 +395,7 @@ static void grab_render_gun_props(RenderGunProperties& props)
 void GraphicsSystem::render()
 {
   NC_SCOPE_PROFILER(Render)
+  NC_SCOPE_COUNTER(render)
 
   int width = 0, height = 0;
   SDL_GetWindowSize(m_window, &width, &height);

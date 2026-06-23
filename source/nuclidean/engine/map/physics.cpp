@@ -97,6 +97,7 @@ static CollisionHit raycast_generic
 )
 {
   NC_SCOPE_PROFILER(Raycast)
+  NC_SCOPE_COUNTER(raycast_generic)
 
   using SectorHitType = CollisionHit::SectorHitType;
   using HitType       = CollisionHit::HitType;
@@ -106,24 +107,27 @@ static CollisionHit raycast_generic
 
   std::set<SectorID> overlap_sectors;
 
-  if (vector_to_2d(ray_from) == vector_to_2d(ray_to))
   {
-    // stationary
-    aabb2 bbox = calc_stationary_bbox(ray_from, expand);
-    world.map.sector_grid.query_aabb(bbox, [&](aabb2, SectorID sid)
+    NC_SCOPE_COUNTER(query_sectors)
+    if (vector_to_2d(ray_from) == vector_to_2d(ray_to))
     {
-      overlap_sectors.insert(sid);
-      return false; // continue iteration
-    });
-  }
-  else
-  {
-    // moving
-    world.map.sector_grid.query_ray(ray_from, ray_to, expand, [&](aabb2, SectorID sid)
+      // stationary
+      aabb2 bbox = calc_stationary_bbox(ray_from, expand);
+      world.map.sector_grid.query_aabb(bbox, [&](aabb2, SectorID sid)
+      {
+        overlap_sectors.insert(sid);
+        return false; // continue iteration
+      });
+    }
+    else
     {
-      overlap_sectors.insert(sid);
-      return false; // continue iteration
-    });
+      // moving
+      world.map.sector_grid.query_ray(ray_from, ray_to, expand, [&](aabb2, SectorID sid)
+      {
+        overlap_sectors.insert(sid);
+        return false; // continue iteration
+      });
+    }
   }
 
   CollisionHit best_hit = CollisionHit::no_hit();
@@ -138,146 +142,149 @@ static CollisionHit raycast_generic
   };
 
   // Iterate all sectors that the ray might possibly intersect
-  for (const SectorID sector_id : overlap_sectors)
+  NC_SCOPE_COUNTER(iterate_sectors)
   {
-    nc_assert(world.map.is_valid_sector_id(sector_id));
-    const SectorData& sector     = world.map.sectors[sector_id];
-    const auto        begin_wall = sector.first_wall;
-    const auto        end_wall   = sector.last_wall;
-    const auto&       bbox3      = world.map.sector_bboxes[sector_id];
-
-    // Calculate approximate distance to the sector. If the closest
-    // point of the sector bbox is further than the closest raycasted
-    // point so far then we can skip this sector.
-    const f32 distance_to_closest_pt  = calc_dist_to_bbox(ray_from, bbox3);
-    const f32 closest_hit_dist_so_far = length(ray_to - ray_from) * best_hit.coeff;
-    if (best_hit && distance_to_closest_pt > closest_hit_dist_so_far)
+    for (const SectorID sector_id : overlap_sectors)
     {
-      // We can safely ignore this sector as it is too far away
-      continue;
-    }
+      nc_assert(world.map.is_valid_sector_id(sector_id));
+      const SectorData& sector     = world.map.sectors[sector_id];
+      const auto        begin_wall = sector.first_wall;
+      const auto        end_wall   = sector.last_wall;
+      const auto&       bbox3      = world.map.sector_bboxes[sector_id];
 
-    f32  c = FLT_MAX;
-    vec3 n = vec3{0};
-
-    // Check floor and ceiling intersections
-    const bool sector_hit = sector_intersect
-    (
-      world.map, ray_from, ray_to, expand, sector_id, c, n
-    );
-
-    if (sector_hit)
-    {
-      // Floor/ceiling can't be a nuclidean portal
-      add_possible_hit(CollisionHit::build(c, n, CollisionHit::SectorHit
+      // Calculate approximate distance to the sector. If the closest
+      // point of the sector bbox is further than the closest raycasted
+      // point so far then we can skip this sector.
+      const f32 distance_to_closest_pt  = calc_dist_to_bbox(ray_from, bbox3);
+      const f32 closest_hit_dist_so_far = length(ray_to - ray_from) * best_hit.coeff;
+      if (best_hit && distance_to_closest_pt > closest_hit_dist_so_far)
       {
-        .sector_id       = sector_id,
-        .wall_id         = INVALID_WALL_ID,
-        .wall_segment_id = 0,
-        .type            = SectorHitType::floor, // TODO: add option for ceiling
-      }));
-    }
-
-    // Check wall intersections
-    // TODO[perf]: In theory, we do not need to check all the walls.
-    // Once we hit one all other walls further away can be ignored.
-    for (WallID wall_id = begin_wall; wall_id < end_wall; ++wall_id)
-    {
-      const WallID    next_wall_id = map_helpers::next_wall(world.map, sector_id, wall_id);
-      const WallData& wall_data    = world.map.walls[wall_id];
-
-      const auto portal_type  = wall_data.get_portal_type();
-      const bool is_nc_portal = portal_type == PortalType::non_euclidean;
-
-      if (wall_id == ignore_portal)
-      {
-        // ignore this portal, because we got here either from a previous
-        // iteration or this is a normal portal.
-        nc_assert(is_nc_portal);
+        // We can safely ignore this sector as it is too far away
         continue;
       }
 
-      bool is_nc_hit = false;
-      c = FLT_MAX;
-      n = vec3{0};
+      f32  c = FLT_MAX;
+      vec3 n = vec3{0};
 
-      const bool does_intersect = wall_intersect
+      // Check floor and ceiling intersections
+      const bool sector_hit = sector_intersect
       (
-        world.map, ray_from, ray_to, expand, wall_id,
-        next_wall_id, sector_id, c, n, is_nc_hit
+        world.map, ray_from, ray_to, expand, sector_id, c, n
       );
 
-      if (does_intersect)
+      if (sector_hit)
       {
-        u8 segment_id = 0;
-
-        // TODO: No need to do it here. This can be actually computed from the
-        // CollisionHit data AFTER the raycast function returns
-        if constexpr (std::is_same_v<TVec, vec3>)
-        {
-          f32 hit_y = ray_from.y + (ray_to.y - ray_from.y) * c;
-          segment_id = world.map.get_segment_idx_from_height(wall_id, hit_y);
-        }
-
-        SectorHitType hit_type = is_nc_hit ? SectorHitType::nuclidean_wall : SectorHitType::wall;
+        // Floor/ceiling can't be a nuclidean portal
         add_possible_hit(CollisionHit::build(c, n, CollisionHit::SectorHit
         {
           .sector_id       = sector_id,
-          .wall_id         = wall_id,
-          .wall_segment_id = segment_id,
-          .type            = hit_type,
+          .wall_id         = INVALID_WALL_ID,
+          .wall_segment_id = 0,
+          .type            = SectorHitType::floor, // TODO: add option for ceiling
         }));
       }
-    }
 
-    // Check entity intersections
-    for (auto entity_id : world.mapping.sectors_to_entities.entities[sector_id])
-    {
-      if (!(entity_type_to_mask(entity_id.type) & ent_types))
+      // Check wall intersections
+      // TODO[perf]: In theory, we do not need to check all the walls.
+      // Once we hit one all other walls further away can be ignored.
+      for (WallID wall_id = begin_wall; wall_id < end_wall; ++wall_id)
       {
-        // skip this entity, we do not check it
-        continue;
-      }
+        const WallID    next_wall_id = map_helpers::next_wall(world.map, sector_id, wall_id);
+        const WallData& wall_data    = world.map.walls[wall_id];
 
-      // Broad phase - check the distance to bbox first
-      const Entity* entity = world.entities.get_entity(entity_id);
-      nc_assert(entity);
+        const auto portal_type  = wall_data.get_portal_type();
+        const bool is_nc_portal = portal_type == PortalType::non_euclidean;
 
-      if (!entity->is_physics_enabled())
-      {
-        // Physics disabled
-        continue;
-      }
-
-      f32  r = entity->get_radius();
-      f32  h = entity->get_height();
-      vec3 p = entity->get_position();
-      aabb3 bbox
-      {
-        p - vec3{r, 0, r} - vec3{expand},
-        p + vec3{r, h, r} + vec3{expand}
-      };
-
-      f32 closest_pt_on_bbox = calc_dist_to_bbox(ray_from, bbox);
-      f32 closest_pt_so_far  = length(ray_from - ray_to) * best_hit.coeff;
-      if (best_hit && closest_pt_so_far < closest_pt_on_bbox)
-      {
-        // The point we hit is already closer, no need to check the entity
-        continue;
-      }
-
-      const bool does_intersect = entity_intersect
-      (
-        world, ray_from, ray_to, expand, *entity, c, n
-      );
-
-      if (does_intersect)
-      {
-        // TODO
-        add_possible_hit(CollisionHit::build(c, n, CollisionHit::EntityHit
+        if (wall_id == ignore_portal)
         {
-          .entity_id = entity_id
-        }));
+          // ignore this portal, because we got here either from a previous
+          // iteration or this is a normal portal.
+          nc_assert(is_nc_portal);
+          continue;
+        }
+
+        bool is_nc_hit = false;
+        c = FLT_MAX;
+        n = vec3{0};
+
+        const bool does_intersect = wall_intersect
+        (
+          world.map, ray_from, ray_to, expand, wall_id,
+          next_wall_id, sector_id, c, n, is_nc_hit
+        );
+
+        if (does_intersect)
+        {
+          u8 segment_id = 0;
+
+          // TODO: No need to do it here. This can be actually computed from the
+          // CollisionHit data AFTER the raycast function returns
+          if constexpr (std::is_same_v<TVec, vec3>)
+          {
+            f32 hit_y = ray_from.y + (ray_to.y - ray_from.y) * c;
+            segment_id = world.map.get_segment_idx_from_height(wall_id, hit_y);
+          }
+
+          SectorHitType hit_type = is_nc_hit ? SectorHitType::nuclidean_wall : SectorHitType::wall;
+          add_possible_hit(CollisionHit::build(c, n, CollisionHit::SectorHit
+          {
+            .sector_id       = sector_id,
+            .wall_id         = wall_id,
+            .wall_segment_id = segment_id,
+            .type            = hit_type,
+          }));
+        }
+      }
+
+      // Check entity intersections
+      for (auto entity_id : world.mapping.sectors_to_entities.entities[sector_id])
+      {
+        if (!(entity_type_to_mask(entity_id.type) & ent_types))
+        {
+          // skip this entity, we do not check it
+          continue;
+        }
+
+        // Broad phase - check the distance to bbox first
+        const Entity* entity = world.entities.get_entity(entity_id);
+        nc_assert(entity);
+
+        if (!entity->is_physics_enabled())
+        {
+          // Physics disabled
+          continue;
+        }
+
+        f32  r = entity->get_radius();
+        f32  h = entity->get_height();
+        vec3 p = entity->get_position();
+        aabb3 bbox
+        {
+          p - vec3{r, 0, r} - vec3{expand},
+          p + vec3{r, h, r} + vec3{expand}
+        };
+
+        f32 closest_pt_on_bbox = calc_dist_to_bbox(ray_from, bbox);
+        f32 closest_pt_so_far  = length(ray_from - ray_to) * best_hit.coeff;
+        if (best_hit && closest_pt_so_far < closest_pt_on_bbox)
+        {
+          // The point we hit is already closer, no need to check the entity
+          continue;
+        }
+
+        const bool does_intersect = entity_intersect
+        (
+          world, ray_from, ray_to, expand, *entity, c, n
+        );
+
+        if (does_intersect)
+        {
+          // TODO
+          add_possible_hit(CollisionHit::build(c, n, CollisionHit::EntityHit
+          {
+            .entity_id = entity_id
+          }));
+        }
       }
     }
   }
@@ -386,6 +393,8 @@ static bool calc_path_raw
 )
 {
   NC_SCOPE_PROFILER(PhysicsCalcPathRaw);
+  NC_SCOPE_COUNTER(pathfind)
+
   const MapSectors& map = lvl.map;
 
   nc_assert(step_up   >= 0.0f);
@@ -1706,6 +1715,7 @@ const
   // #define NC_PHYS_DBG
 
   NC_SCOPE_PROFILER(MoveCharacter)
+  NC_SCOPE_COUNTER(move_character)
 
   auto sector_intersector = [height, max_step_height]
   (
@@ -1759,152 +1769,166 @@ const
     return false;
   };
 
+
   // We limit the amount of iterations.
   // Note to self:
   // I thing that this might cause problems around smooth corners, but
   // it is questionable if such a case can happen in the game.
   constexpr u32 MAX_ITERATIONS = 12;
 
-  // Note: we currently do not modify the velocity and that is not good.
-  vec3 velocity = velocity_og * delta_time;
-
-  CylCastWallIntersector<StairWalkSettings::Enabled> wall_intersector
-  (
-    height, max_step_height
-  );
-
-  // First check collisions and adjust the velocity
-  u32 iterations_left = MAX_ITERATIONS; 
-  while(iterations_left-->0)
   {
-    const vec3 ray_from = position;
-    const vec3 ray_to   = position + velocity;
+    NC_SCOPE_COUNTER(move_character_main_loop)
 
-    StackVector<EntityIdAndCoeff, 8> report_only;
-    CylCastEntityIntersector<CollectReportOnly::Yes> entity_intersector
+    // Note: we currently do not modify the velocity and that is not good.
+    vec3 velocity = velocity_og * delta_time;
+
+    CylCastWallIntersector<StairWalkSettings::Enabled> wall_intersector
     (
-      report_types,
-      &report_only
+      height, max_step_height
     );
 
-    // Then move
-    CollisionHit hit = phys_helpers::raycast_generic<vec3>
-    (
-      *this, ray_from, ray_to, radius, colliders, nullptr,
-      INVALID_WALL_ID, wall_intersector, sector_intersector, entity_intersector
-    );
-
-    // Filter out the report only hits
-    if (colls_opt)
+    // First check collisions and adjust the velocity
+    u32 iterations_left = MAX_ITERATIONS; 
+    while(iterations_left-->0)
     {
-      for (auto[id, coeff] : report_only)
-      {
-        auto beg = colls_opt->report_entities.begin();
-        auto end = colls_opt->report_entities.end();
+      NC_SCOPE_COUNTER(move_character_main_loop_iteration)
 
-        // We only report the entities closer to us than the first collide object
-        f32 before_coeff = hit ? hit.coeff : 1.0f;
+      const vec3 ray_from = position;
+      const vec3 ray_to   = position + velocity;
 
-        // Push it only if not present already
-        if (coeff <= before_coeff && std::find(beg, end, id) == end)
-        {
-          colls_opt->report_entities.push_back(id);
-        }
-      }
-    }
-
-    if (!hit)
-    {
-      break;
-    }
-
-    // TODO: REMOVE THIS LATER!!! Assert prevention for Vojta demo
-    if (!is_normal(hit.normal))
-    {
-      break;
-    }
-
-    //This is a nasty hack to disallow us from going through walls
-    //works at 100FPS
-    if (iterations_left < 1 && length(velocity.xz()) < 1.0f * delta_time)
-    {
-      velocity = vec3(0, velocity.y, 0);
-      break;
-    }
-
-    nc_assert(is_normal(hit.normal), "Bad things can happen");
-    const auto remaining = velocity * (1.0f - hit.coeff);
-    const auto projected = hit.normal * dot(remaining, hit.normal);
-
-    velocity -= projected;
-  }
-
-  // Then handle nuclidean portal transitions - check which portals
-  // we have traversed through and store them.
-  transform_out = identity<mat4>();
-
-  bool did_something = handle_portal_traversal_between_positions
-  (
-    *this, position, position + velocity, transform_out, colls_opt
-  );
-
-  if (did_something)
-  {
-    velocity_og = (transform_out * vec4{velocity_og, 0.0f}).xyz();
-    position    = (transform_out * vec4{position,    1.0f}).xyz();
-    velocity    = (transform_out * vec4{velocity,    0.0f}).xyz();
-  }
-
-  vec3 last_player_pos = position;
-  // Add the position first time
-  position += velocity;
-
-  if (map.get_sector_from_point(position.xz) == INVALID_SECTOR_ID)
-  {
-    position = last_player_pos;
-  }
-
-  if (CVars::character_physics_stabilize)
-  {
-    // Stabilize after positioning..
-    vec3 original_pos = position;
-    u32  stabilize_iterations_left = MAX_ITERATIONS;
-
-    while(stabilize_iterations_left-->0)
-    {
-      StabilizeWallIntersector bruh_intersector
-      {
-        .player_height = height,
-        .step_height   = max_step_height,
-      };
-
-      CollisionHit hit = phys_helpers::raycast_generic<vec3>
-        (
-        *this, position, position, radius, colliders, nullptr, INVALID_WALL_ID,
-        bruh_intersector, bruh_sector_intersector,
-        &phys_helpers::intersect_entity_empty<vec3>
+      StackVector<EntityIdAndCoeff, 8> report_only;
+      CylCastEntityIntersector<CollectReportOnly::Yes> entity_intersector
+      (
+        report_types,
+        &report_only
       );
 
-      if (bruh_intersector.penetration_vector_out == VEC3_ZERO)
+      // Then move
+      CollisionHit hit;
+
+      {
+        NC_SCOPE_COUNTER(move_character_main_loop_raycast)
+        hit = phys_helpers::raycast_generic<vec3>
+        (
+          *this, ray_from, ray_to, radius, colliders, nullptr,
+          INVALID_WALL_ID, wall_intersector, sector_intersector, entity_intersector
+        );
+      }
+
+      // Filter out the report only hits
+      if (colls_opt)
+      {
+        for (auto[id, coeff] : report_only)
+        {
+          auto beg = colls_opt->report_entities.begin();
+          auto end = colls_opt->report_entities.end();
+
+          // We only report the entities closer to us than the first collide object
+          f32 before_coeff = hit ? hit.coeff : 1.0f;
+
+          // Push it only if not present already
+          if (coeff <= before_coeff && std::find(beg, end, id) == end)
+          {
+            colls_opt->report_entities.push_back(id);
+          }
+        }
+      }
+
+      if (!hit)
       {
         break;
       }
 
-      position += bruh_intersector.penetration_vector_out;
+      // TODO: REMOVE THIS LATER!!! Assert prevention for Vojta demo
+      if (!is_normal(hit.normal))
+      {
+        break;
+      }
+
+      //This is a nasty hack to disallow us from going through walls
+      //works at 100FPS
+      if (iterations_left < 1 && length(velocity.xz()) < 1.0f * delta_time)
+      {
+        velocity = vec3(0, velocity.y, 0);
+        break;
+      }
+
+      nc_assert(is_normal(hit.normal), "Bad things can happen");
+      const auto remaining = velocity * (1.0f - hit.coeff);
+      const auto projected = hit.normal * dot(remaining, hit.normal);
+
+      velocity -= projected;
     }
 
-    mat4 another_transform = identity<mat4>();
-    did_something = handle_portal_traversal_between_positions
+    // Then handle nuclidean portal transitions - check which portals
+    // we have traversed through and store them.
+    transform_out = identity<mat4>();
+
+    bool did_something = handle_portal_traversal_between_positions
     (
-      *this, original_pos, position, another_transform, colls_opt
+      *this, position, position + velocity, transform_out, colls_opt
     );
 
     if (did_something)
     {
-      velocity_og = (another_transform * vec4{velocity_og, 0.0f}).xyz();
-      position    = (another_transform * vec4{position,    1.0f}).xyz();
-      velocity    = (another_transform * vec4{velocity,    0.0f}).xyz();
-      transform_out = another_transform * transform_out;
+      velocity_og = (transform_out * vec4{velocity_og, 0.0f}).xyz();
+      position    = (transform_out * vec4{position,    1.0f}).xyz();
+      velocity    = (transform_out * vec4{velocity,    0.0f}).xyz();
+    }
+
+    vec3 last_player_pos = position;
+    // Add the position first time
+    position += velocity;
+
+    if (map.get_sector_from_point(position.xz) == INVALID_SECTOR_ID)
+    {
+      position = last_player_pos;
+    }
+
+    if (CVars::character_physics_stabilize)
+    {
+      NC_SCOPE_COUNTER(move_character_stabilize)
+
+      // Stabilize after positioning..
+      vec3 original_pos = position;
+      u32  stabilize_iterations_left = MAX_ITERATIONS;
+
+      while(stabilize_iterations_left-->0)
+      {
+        StabilizeWallIntersector bruh_intersector
+        {
+          .player_height = height,
+          .step_height   = max_step_height,
+        };
+
+        CollisionHit hit = phys_helpers::raycast_generic<vec3>
+          (
+          *this, position, position, radius, colliders, nullptr, INVALID_WALL_ID,
+          bruh_intersector, bruh_sector_intersector,
+          &phys_helpers::intersect_entity_empty<vec3>
+        );
+
+        if (bruh_intersector.penetration_vector_out == VEC3_ZERO)
+        {
+          break;
+        }
+
+        position += bruh_intersector.penetration_vector_out;
+      }
+
+      mat4 another_transform = identity<mat4>();
+      did_something = handle_portal_traversal_between_positions
+      (
+        *this, original_pos, position, another_transform, colls_opt
+      );
+
+      if (did_something)
+      {
+        velocity_og = (another_transform * vec4{velocity_og, 0.0f}).xyz();
+        position    = (another_transform * vec4{position,    1.0f}).xyz();
+        velocity    = (another_transform * vec4{velocity,    0.0f}).xyz();
+        transform_out = another_transform * transform_out;
+      }
     }
   }
 
@@ -1920,90 +1944,95 @@ const
   */
 
   // Iterate the sectors and check if we touch them
-  SectorSet nearby_sectors;
-  map.query_nearby_sectors_short_distance
-  (
-    position.xz(), radius * DIST_COEFF, nearby_sectors
-  );
-
-  // highest floor relative to our y (how much y we need to add)
-  f32 highest_floor = -FLT_MAX;
-
-  // lowest ceiling relative to our y (how much y we need to subtract)
-  f32 lowest_ceil = FLT_MAX;
-
-  // store the ceils, floors here
-  StackVector<SectorID, 8> touching_floors;
-  StackVector<SectorID, 8> touching_ceils;
-
-  nc_assert(nearby_sectors.sectors.size() == nearby_sectors.transforms.size());
-  for (u64 i = 0; i < nearby_sectors.sectors.size(); ++i)
   {
-    const SectorID sid   = nearby_sectors.sectors[i];
-    const mat4     trans = nearby_sectors.transforms[i];
+    NC_SCOPE_COUNTER(move_character_ground_align)
 
-    nc_assert(map.is_valid_sector_id(sid));
-    const SectorDynData& sdd = map.sectors_dynamic[sid];
+    SectorSet nearby_sectors;
+    map.query_nearby_sectors_short_distance
+    (
+      position.xz(), radius * DIST_COEFF, nearby_sectors
+    );
 
-    vec3 pos_rel = (trans * vec4{position, 1.0f}).xyz();
+    // highest floor relative to our y (how much y we need to add)
+    f32 highest_floor = -FLT_MAX;
 
-    // Process floors
-    f32 step_up = sdd.floor_height - pos_rel.y;
-    if (step_up <= max_step_height && step_up >= highest_floor)
+    // lowest ceiling relative to our y (how much y we need to subtract)
+    f32 lowest_ceil = FLT_MAX;
+
+    // store the ceils, floors here
+    StackVector<SectorID, 8> touching_floors;
+    StackVector<SectorID, 8> touching_ceils;
+
+    nc_assert(nearby_sectors.sectors.size() == nearby_sectors.transforms.size());
+    for (u64 i = 0; i < nearby_sectors.sectors.size(); ++i)
     {
-      if (step_up > highest_floor)
+      const SectorID sid   = nearby_sectors.sectors[i];
+      const mat4     trans = nearby_sectors.transforms[i];
+
+      nc_assert(map.is_valid_sector_id(sid));
+      const SectorDynData& sdd = map.sectors_dynamic[sid];
+
+      vec3 pos_rel = (trans * vec4{position, 1.0f}).xyz();
+
+      // Process floors
+      f32 step_up = sdd.floor_height - pos_rel.y;
+      if (step_up <= max_step_height && step_up >= highest_floor)
       {
-        touching_floors.clear();
-        highest_floor = step_up;
+        if (step_up > highest_floor)
+        {
+          touching_floors.clear();
+          highest_floor = step_up;
+        }
+
+        touching_floors.push_back(sid);
       }
 
-      touching_floors.push_back(sid);
-    }
-
-    // Process ceils
-    f32 from_ceil = (sdd.ceil_height - height) - pos_rel.y;
-    if (from_ceil <= lowest_ceil)
-    {
-      if (from_ceil < lowest_ceil)
+      // Process ceils
+      f32 from_ceil = (sdd.ceil_height - height) - pos_rel.y;
+      if (from_ceil <= lowest_ceil)
       {
-        touching_ceils.clear();
-        lowest_ceil = from_ceil;
+        if (from_ceil < lowest_ceil)
+        {
+          touching_ceils.clear();
+          lowest_ceil = from_ceil;
+        }
+
+        touching_ceils.push_back(sid);
       }
-
-      touching_ceils.push_back(sid);
     }
-  }
 
-  // Now adjust the height
-  if (highest_floor >= 0.0f)
-  {
-    // Hit floor
-    position.y   += highest_floor;
-    velocity_og.y = std::max(0.0f, velocity_og.y);
-
-    if (colls_opt)
+    // Now adjust the height
+    if (highest_floor >= 0.0f)
     {
-      colls_opt->floors.assign(touching_floors.begin(), touching_floors.end());
-    }
-  }
-  else if (lowest_ceil <= 0.0f)
-  {
-    // Hit ceil
-    position.y   += lowest_ceil;
-    velocity_og.y = std::min(0.0f, velocity_og.y);
+      // Hit floor
+      position.y   += highest_floor;
+      velocity_og.y = std::max(0.0f, velocity_og.y);
 
-    if (colls_opt)
+      if (colls_opt)
+      {
+        colls_opt->floors.assign(touching_floors.begin(), touching_floors.end());
+      }
+    }
+    else if (lowest_ceil <= 0.0f)
     {
-      colls_opt->ceilings.assign(touching_ceils.begin(), touching_ceils.end());
-    }
-  }
+      // Hit ceil
+      position.y   += lowest_ceil;
+      velocity_og.y = std::min(0.0f, velocity_og.y);
 
-  // Not sure what to do if we hit both..
-  if (lowest_ceil < 0.0f && highest_floor > 0.0f)
-  {
-    nc_warn("We are stuck between floor and ceil. This is not ok");
+      if (colls_opt)
+      {
+        colls_opt->ceilings.assign(touching_ceils.begin(), touching_ceils.end());
+      }
+    }
+
+    // Not sure what to do if we hit both..
+    if (lowest_ceil < 0.0f && highest_floor > 0.0f)
+    {
+      nc_warn("We are stuck between floor and ceil. This is not ok");
+    }
   }
 }
+
 
 //==============================================================================
 void PhysLevel::move_particle
@@ -2024,6 +2053,7 @@ const
 //#define NC_VALIDATE
 
   NC_SCOPE_PROFILER(MoveParticle)
+  //NC_SCOPE_COUNTER(move_particle)
 
   nc_assert(bounce >= 0.0f, "Invalid range.");
 
