@@ -139,6 +139,8 @@
     <ClCompile Include="..\source\nuclidean\engine\game\game_helpers.cpp" />
     <ClCompile Include="..\source\nuclidean\engine\sound\sound_emitter.cpp" />
     <ClCompile Include="..\source\nuclidean\engine\sound\sound_handle.cpp" />
+    <ClCompile Include="..\source\nuclidean\engine\editor\editor_system.cpp" />
+    <ClCompile Include="..\source\nuclidean\engine\editor\editor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -273,6 +275,8 @@
     <ClInclude Include="..\source\nuclidean\engine\sound\sound_handle.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="..\source\nuclidean\buffer.h" />
+    <ClInclude Include="..\source\nuclidean\engine\editor\editor_system.h" />
+    <ClInclude Include="..\source\nuclidean\engine\editor\editor.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\settings.cfg" />

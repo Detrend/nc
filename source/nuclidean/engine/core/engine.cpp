@@ -69,6 +69,7 @@ namespace engine_utils
 [[maybe_unused]] constexpr cstr EDITOR_MODE_ARG    = "-editor_mode"; // sets up bunch of minor stuff to make it more pleasant to use the game for preview when editing a level
 [[maybe_unused]] constexpr cstr PRESENTATION_ARG   = "-presentation"; // shows prepared slides while demos play in the background; followed by slide texture names
 [[maybe_unused]] constexpr cstr PRINT_COUNTERS_ARG = "-print_counters"; // prints the performance counters [into a file] 
+[[maybe_unused]] constexpr cstr EDITOR_ARG         = "-editor";         // starts editor
 
 //==============================================================================
 static f32 duration_to_seconds(auto t1, auto t2)
@@ -611,6 +612,13 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
     );
   }
 
+  // Startup editor
+  if (engine_utils::contains_arg(cmd_args, engine_utils::EDITOR_ARG))
+  {
+    set_game_state(GameState::editor);
+    return true;
+  }
+
   // Counter printing
   if (engine_utils::contains_pair_of_args(cmd_args, engine_utils::PRINT_COUNTERS_ARG, m_counters_output_path))
   {
@@ -681,6 +689,7 @@ void Engine::set_game_state(GameState new_state)
     return;
   }
 
+  GameState prev_state = m_game_state;
   m_game_state = new_state;
 
   constexpr Token MUSIC_MENU       = "music_menu";
@@ -698,6 +707,16 @@ void Engine::set_game_state(GameState new_state)
   else
   {
     SoundSystem::get().set_music_for_track(MusicTracks::menu, Token{});
+  }
+
+  if (m_game_state == GameState::editor)
+  {
+    this->send_event(ModuleEvent{.type = ModuleEventType::editor_start_request});
+  }
+
+  if (prev_state == GameState::editor)
+  {
+    this->send_event(ModuleEvent{.type = ModuleEventType::editor_end_request});
   }
 }
 
@@ -743,19 +762,17 @@ void Engine::run()
       // pump messages
       input_system.update_window_and_pump_messages();
 
-      const f32 game_logic_update_time = frame_time * CVars::time_speed;
+      ModuleEventId update_event_type = m_game_state == GameState::editor
+        ? ModuleEventType::editor_update
+        : ModuleEventType::game_update;
 
-      // frame start
-      this->send_event(ModuleEvent
-      {
-        .type = ModuleEventType::frame_start,
-      });
+      f32 logic_update_time = frame_time * CVars::time_speed;
 
       // update
       this->send_event(ModuleEvent
       {
-        .type = ModuleEventType::game_update,
-        .update = {.dt = game_logic_update_time},
+        .type = update_event_type,
+        .update = {.dt = logic_update_time},
       });
 
       // render

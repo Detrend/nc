@@ -19,12 +19,16 @@ namespace ModuleEventType
 
     frame_start,         // a new frame has just started - before everything else
     game_update,         // during gameplay
+    editor_update,       // during editing
     render,
 
     before_map_rebuild,  // send before the map rebuild starts
     after_map_rebuild,   // sent after the map is rebuilt
 
     cleanup,             // at the end of a frame
+
+    editor_start_request,
+    editor_end_request,
 
     menu_opened,         // the menu was opened
     menu_closed,         // the menu was closed

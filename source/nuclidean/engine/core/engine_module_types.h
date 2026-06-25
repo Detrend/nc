@@ -15,6 +15,7 @@ namespace EngineModule
     game_system,
     sound_system,
     user_interface_system,
+    editor_system,
     // -- //
     count
   };

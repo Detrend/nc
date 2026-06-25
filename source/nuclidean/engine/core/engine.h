@@ -123,6 +123,7 @@ private:
     game,         // the player is playing
     transition,   // during the level transition, demo playing in background
     debug_demo,   // running the demo from console, debug
+    editor,       // running the editor
     none,         // error state, only on the start
   };
 
