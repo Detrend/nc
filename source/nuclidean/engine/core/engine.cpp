@@ -19,6 +19,7 @@
 #include <engine/input/input_system.h>
 #include <engine/game/game_system.h>
 #include <engine/sound/sound_system.h>
+#include <engine/editor/editor_system.h>
 #include <engine/ui/user_interface_system.h>
 
 #if NC_BENCHMARK
@@ -510,6 +511,7 @@ bool Engine::init(const CmdArgs& cmd_args)
   INIT_MODULE(GameSystem);
   INIT_MODULE(SoundSystem);
   INIT_MODULE(UserInterfaceSystem);
+  INIT_MODULE(EditorSystem);
 
   #undef INIT_MODULE
 
@@ -552,12 +554,19 @@ void Engine::play_random_demo()
     nc_warn(
       "Failed to play a random demo from a file \"{}\", starting empty level.",
       demo);
-    game_system.request_empty_level();
+    this->play_empty_level();
     return;
   }
 
   // Demo loaded, play it
   game_system.request_level_change(lvl_name, std::move(frames), transition);
+}
+
+//==============================================================================
+void Engine::play_empty_level()
+{
+  GameSystem& game_system = GameSystem::get();
+  game_system.request_empty_level();
 }
 
 //==============================================================================
@@ -615,7 +624,8 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
   // Startup editor
   if (engine_utils::contains_arg(cmd_args, engine_utils::EDITOR_ARG))
   {
-    set_game_state(GameState::editor);
+    this->play_empty_level();
+    this->set_game_state(GameState::editor);
     return true;
   }
 

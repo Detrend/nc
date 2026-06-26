@@ -31,6 +31,8 @@
 #include <engine/player/level_types.h>
 #include <engine/player/player.h>
 
+#include <engine/editor/editor.h>
+
 #include <engine/ui/user_interface_system.h>
 
 #if NC_DEBUG_DRAW
@@ -456,6 +458,11 @@ void GraphicsSystem::render()
 #endif
   {
     m_renderer->render(visible_sectors, gun_props);
+
+    if (Editor* editor = Editor::get())
+    {
+      editor->render();
+    }
 
     get_engine().get_module<UserInterfaceSystem>().draw();
   }

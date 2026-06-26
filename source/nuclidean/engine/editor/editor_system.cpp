@@ -25,6 +25,10 @@ namespace nc
 }
 
 //==================================================================================================
+EditorSystem::EditorSystem()  = default;
+EditorSystem::~EditorSystem() = default;
+
+//==================================================================================================
 bool EditorSystem::init()
 {
   return true;
@@ -58,6 +62,12 @@ void EditorSystem::on_event(ModuleEvent& event)
     }
     break;
   }
+}
+
+//==================================================================================================
+Editor* EditorSystem::get_editor()
+{
+  return m_editor.get();
 }
 
 }

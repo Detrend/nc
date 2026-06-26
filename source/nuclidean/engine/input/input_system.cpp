@@ -250,15 +250,14 @@ void InputSystem::lock_player_input(InputLockLayer layer, bool lock)
 
   bool disabled_now = !!m_locked_inputs;
 
-  if (disabled_previously != disabled_now)
+  if (disabled_previously == disabled_now)
   {
     // Do nothing
     return;
   }
 
-  const bool should_lock = get_engine().is_editor_mode() ? UserInterfaceSystem::get().get_menu_manager()->get_is_visible() : lock;
   // Switch
-  SDL_SetRelativeMouseMode(should_lock ? SDL_FALSE : SDL_TRUE);
+  SDL_SetRelativeMouseMode(lock ? SDL_FALSE : SDL_TRUE);
 }
 
 //==============================================================================

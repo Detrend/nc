@@ -22,8 +22,9 @@ namespace InputLockLayers
 {
 enum evalue : InputLockLayer
 {
-  menu  = 1 << 0, // Locked by the menu
-  cvars = 1 << 1, // Locked by the cvars
+  menu   = 1 << 0, // Locked by the menu
+  cvars  = 1 << 1, // Locked by the cvars
+  editor = 1 << 2, // Locked by the editor
 };
 };
 

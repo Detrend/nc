@@ -100,6 +100,8 @@ private:
 
   void play_random_demo();
 
+  void play_empty_level();
+
   void loop_current_demo();
 
   void on_event(const ModuleEvent& event);

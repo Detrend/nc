@@ -17,6 +17,11 @@ public:
   static EngineModuleId get_module_id();
   static EditorSystem&  get();
 
+  EditorSystem();
+  ~EditorSystem();
+  EditorSystem(const EditorSystem&)            = delete;
+  EditorSystem& operator=(const EditorSystem&) = delete;
+
   bool init();
   void on_event(ModuleEvent& event) override;
 
