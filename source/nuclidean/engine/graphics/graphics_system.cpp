@@ -415,6 +415,12 @@ void GraphicsSystem::render()
 #if NC_DEBUG_DRAW
     m_debug_renderer->on_window_resized(m_window_width, m_window_height);
 #endif
+#if NC_EDITOR
+    if (Editor* editor = Editor::get())
+    {
+      editor->on_window_resized(m_window_width, m_window_height);
+    }
+#endif
   }
 
 #if NC_DEBUG_DRAW
@@ -459,10 +465,12 @@ void GraphicsSystem::render()
   {
     m_renderer->render(visible_sectors, gun_props);
 
+#if NC_EDITOR
     if (Editor* editor = Editor::get())
     {
       editor->render();
     }
+#endif
 
     get_engine().get_module<UserInterfaceSystem>().draw();
   }

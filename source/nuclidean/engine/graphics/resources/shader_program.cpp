@@ -266,6 +266,12 @@ void ShaderProgramHandle::set_uniform(GLint location, const mat4& value) const
 }
 
 //==============================================================================
+void ShaderProgramHandle::set_uniform(GLint location, const mat3& value) const
+{
+  glUniformMatrix3fv(location, 1, GL_FALSE, value_ptr(value));
+}
+
+//==============================================================================
 void ShaderProgramHandle::set_uniform(GLint location, const vec2& value) const
 {
   glUniform2f(location, value.x, value.y);

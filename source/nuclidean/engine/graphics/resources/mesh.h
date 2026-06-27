@@ -1,12 +1,16 @@
 // Project Nuclidean Source File
 #pragma once
 
+#include <config.h>
+
 #include <engine/graphics/resources/res_lifetime.h>
 #include <engine/graphics/gl_types.h>
 #include <types.h>
+#include <math/vector.h>
 
 #include <vector>
 #include <memory>
+#include <span>   // std::span
 
 namespace nc
 {
@@ -70,6 +74,19 @@ public:
    * Creates mesh, for a sector, from vertex data and stores it in GPU memory.
    */
   MeshHandle create_sector(ResLifetime lifetime, const f32* data, u32 count, GLenum draw_mode = GL_TRIANGLES);
+#if NC_EDITOR
+  /**
+  * Creates a mesh for an editor. Can be used with GL_LINES, GL_TRIANGLES, GL_LINE_STRIP or GL_LINE_LOOP.
+  * The mesh does not get registered into the list of resources and therefore has to be deallocated by
+  * the author himself after it is no longer needed.
+  */
+  MeshHandle create_editor_primitive(std::span<vec2> data, GLenum draw_mode = GL_LINES);
+  /**
+  * Deallocates previously created editor mesh, freeing the resources. Has to be called before termination
+  * of graphics system and OpenGL.
+  */
+  void destroy_editor_primitive(MeshHandle& handle);
+#endif
   /*
   * Unloads the old mesh and recreates it once again.
   */

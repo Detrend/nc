@@ -2,6 +2,8 @@
 #include <common.h>
 #include <config.h>
 
+#if NC_EDITOR
+
 #include <engine/editor/editor_system.h>
 #include <engine/core/engine_module_types.h>
 #include <engine/core/engine.h>
@@ -71,3 +73,5 @@ Editor* EditorSystem::get_editor()
 }
 
 }
+
+#endif // #if NC_EDITOR

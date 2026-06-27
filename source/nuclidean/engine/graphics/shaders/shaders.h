@@ -2,6 +2,7 @@
 #pragma once
 
 #include <types.h>
+#include <config.h>
 #include <math/vector.h>
 #include <math/matrix.h>
 
@@ -144,6 +145,16 @@ namespace nc
       inline constexpr Uniform<2, f32>  EXPOSURE;
       inline constexpr Uniform<3, bool> USE_GAMMA_CORRECTION;
     }
-  }
 
+#if NC_EDITOR
+    namespace editor::lines
+    {
+      constexpr const char* VERTEX_FILE   = "editor_lines.vert";
+      constexpr const char* FRAGMENT_FILE = "editor_lines.frag";
+
+      constexpr Uniform<0, mat3> TRANSFORM;
+      constexpr Uniform<1, vec4> COLOR;
+    }
+#endif
+  }
 }

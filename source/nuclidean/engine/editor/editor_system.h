@@ -1,6 +1,10 @@
 // Project Nuclidean Source File
 #pragma once
 
+#include <config.h>
+
+#if NC_EDITOR
+
 #include <engine/core/engine_module.h>
 #include <engine/core/engine_module_id.h>
 
@@ -33,3 +37,5 @@ private:
 };
 
 }
+
+#endif // #if NC_EDITOR

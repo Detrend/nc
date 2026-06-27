@@ -334,6 +334,58 @@ MeshHandle MeshManager::create_sector(ResLifetime lifetime, const f32* data, u32
   return mesh;
 }
 
+#if NC_EDITOR
+
+//==============================================================================
+MeshHandle MeshManager::create_editor_primitive(std::span<vec2> vertices, GLenum draw_mode)
+{
+  MeshHandle mesh;
+  mesh.m_lifetime     = ResLifetime::None;
+  mesh.m_generation   = 0;
+  mesh.m_draw_mode    = draw_mode;
+  mesh.m_vertex_count = cast<u32>(vertices.size());
+
+  // generate buffers
+  glGenVertexArrays(1, &mesh.m_vao);
+  glGenBuffers(1, &mesh.m_vbo);
+
+  // setup vao
+  glBindVertexArray(mesh.m_vao);
+
+  u64  count = vertices.size();
+  f32* data  = &vertices[0].x;
+
+  // vertex buffer
+  glBindBuffer(GL_ARRAY_BUFFER, mesh.m_vbo);
+  glBufferData(GL_ARRAY_BUFFER, count * sizeof(vec2), data, GL_STATIC_DRAW);
+
+  // position attribute
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+  glEnableVertexAttribArray(0);
+
+  glBindVertexArray(0);
+
+  return mesh;
+}
+
+//==============================================================================
+void MeshManager::destroy_editor_primitive(MeshHandle& mesh)
+{
+  if (mesh.m_vbo)
+  {
+    glDeleteBuffers(1, &mesh.m_vbo);
+    mesh.m_vbo = 0;
+  }
+
+  if (mesh.m_vao)
+  {
+    glDeleteVertexArrays(1, &mesh.m_vao);
+    mesh.m_vao = 0;
+  }
+}
+
+#endif
+
 //==============================================================================
 void MeshManager::recreate_sector(MeshHandle& mesh, const f32* data, u32 count)
 {

@@ -12,8 +12,12 @@ using GLboolean = unsigned char;
 inline constexpr GLboolean GL_TRUE = 1;
 inline constexpr GLboolean GL_FALSE = 0;
 
-inline constexpr GLenum GL_TRIANGLES = 0x0004;
-inline constexpr GLenum GL_RED       = 0x1903;
-inline constexpr GLenum GL_RG        = 0x8227;
-inline constexpr GLenum GL_RGB       = 0x1907;
-inline constexpr GLenum GL_RGBA      = 0x1908;
+inline constexpr GLenum GL_POINTS     = 0x0000;
+inline constexpr GLenum GL_LINES      = 0x0001;
+inline constexpr GLenum GL_LINES_LOOP = 0x0002;
+inline constexpr GLenum GL_LINE_STRIP = 0x0003;
+inline constexpr GLenum GL_TRIANGLES  = 0x0004;
+inline constexpr GLenum GL_RED        = 0x1903;
+inline constexpr GLenum GL_RG         = 0x8227;
+inline constexpr GLenum GL_RGB        = 0x1907;
+inline constexpr GLenum GL_RGBA       = 0x1908;
