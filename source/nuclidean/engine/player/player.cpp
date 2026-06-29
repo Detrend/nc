@@ -174,6 +174,7 @@ void Player::init(vec3 position, vec3 in_forward)
 void Player::post_init()
 {
   get_engine().get_module<UserInterfaceSystem>().get_ui_screen_effect()->clear_effect();
+  rng.seed(cast<u8>(this->get_id().idx));
 }
 
 //==============================================================================
