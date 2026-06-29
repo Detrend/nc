@@ -169,7 +169,10 @@ void Renderer::render
 )
 const
 {
+  // NOTE: This can consume up to 250 microseconds..
+#if !NC_IS_DEPLOY
   check_shader_hot_reload();
+#endif
 
   const Camera* camera = Camera::get();
   if (!camera)

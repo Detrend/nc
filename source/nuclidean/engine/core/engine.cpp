@@ -37,12 +37,19 @@
 
 #include <SDL.h>   // SDL_Event
 
-#include <ranges>     // std::views::reverse
-#include <chrono>     // std::chrono::high_resolution_clock
-#include <cstdlib>    // std::rand
-#include <iterator>   // std::next
-#include <filesystem> // std::current_path
-#include <cctype>     // std::tolower
+#include <ranges>      // std::views::reverse
+#include <chrono>      // std::chrono::high_resolution_clock
+#include <cstdlib>     // std::rand
+#include <iterator>    // std::next
+#include <filesystem>  // std::current_path
+#include <cctype>      // std::tolower
+#include <algorithm>   // std::sort, std::max, std::find
+#include <string>      // std::string
+#include <string_view> // std::string_view
+#include <format>      // std::format
+#include <utility>     // std::move
+#include <map>         // std::map
+#include <vector>      // std::vector
 
 namespace nc
 {
@@ -60,6 +67,8 @@ namespace engine_utils
 [[maybe_unused]] constexpr cstr START_DEMO_ARG     = "-start_demo";
 [[maybe_unused]] constexpr cstr FAST_DEMO_ARG      = "-fast_demo";
 [[maybe_unused]] constexpr cstr EDITOR_MODE_ARG    = "-editor_mode"; // sets up bunch of minor stuff to make it more pleasant to use the game for preview when editing a level
+[[maybe_unused]] constexpr cstr PRESENTATION_ARG   = "-presentation"; // shows prepared slides while demos play in the background; followed by slide texture names
+[[maybe_unused]] constexpr cstr PRINT_COUNTERS_ARG = "-print_counters"; // prints the performance counters [into a file] 
 
 //==============================================================================
 static f32 duration_to_seconds(auto t1, auto t2)
@@ -118,6 +127,30 @@ static bool contains_pair_of_args
 
   out = *std::next(it);
   return true;
+}
+
+//==============================================================================
+// Collects all values following an argument up until the next "-" flag.
+// e.g. for "-presentation slide_a slide_b -other" returns {slide_a, slide_b}.
+static std::vector<std::string> collect_values_after_arg
+(
+  const CmdArgs& cmd_args, cstr flag
+)
+{
+  std::vector<std::string> out;
+
+  auto it = std::find(cmd_args.begin(), cmd_args.end(), flag);
+  if (it == cmd_args.end())
+  {
+    return out;
+  }
+
+  for (++it; it != cmd_args.end() && !it->starts_with('-'); ++it)
+  {
+    out.push_back(*it);
+  }
+
+  return out;
 }
 
 //==============================================================================
@@ -550,6 +583,45 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
     cmd_args, engine_utils::FAST_DEMO_ARG
   );
 
+  // Presentation mode: show prepared slides while demos play in the background.
+  // Slide texture names follow the "-presentation" argument.
+  if (engine_utils::contains_arg(cmd_args, engine_utils::PRESENTATION_ARG))
+  {
+    const std::vector<std::string> slides = engine_utils::collect_values_after_arg
+    (
+      cmd_args, engine_utils::PRESENTATION_ARG
+    );
+
+    MenuManager* menu = get_module<UserInterfaceSystem>().get_menu_manager();
+
+    // Validates slides, logs and skips missing ones. Only enter presentation
+    // mode if at least one slide is valid, otherwise fall back to the menu.
+    if (menu->set_presentation_slides(slides))
+    {
+      set_game_state(GameState::presentation);
+      SDL_ShowCursor(SDL_DISABLE); // No mouse cursor over the slides
+      this->play_random_demo();
+      return true;
+    }
+
+    nc_warn
+    (
+      "Presentation mode requested but no valid slides found, "
+      "falling back to the main menu."
+    );
+  }
+
+  // Counter printing
+  if (engine_utils::contains_pair_of_args(cmd_args, engine_utils::PRINT_COUNTERS_ARG, m_counters_output_path))
+  {
+    if (m_counters_output_path == "stdout")
+    {
+      m_counters_output_path.clear();
+    }
+
+    m_print_counters = true;
+  }
+
   if (std::string demo; engine_utils::should_play_demo(cmd_args, demo))
   {
     // Play one demo and then exit
@@ -614,12 +686,13 @@ void Engine::set_game_state(GameState new_state)
   constexpr Token MUSIC_MENU       = "music_menu";
   constexpr Token MUSIC_TRANSITION = "music_menu";
 
-  bool is_menu        = m_game_state == GameState::menu;
-  bool is_transition  = m_game_state == GameState::transition;
+  bool is_menu         = m_game_state == GameState::menu;
+  bool is_transition   = m_game_state == GameState::transition;
+  bool is_presentation = m_game_state == GameState::presentation;
 
-  if (is_menu | is_transition)
+  if (is_menu | is_transition | is_presentation)
   {
-    Token music = is_menu ? MUSIC_MENU : MUSIC_TRANSITION;
+    Token music = is_transition ? MUSIC_TRANSITION : MUSIC_MENU;
     SoundSystem::get().set_music_for_track(MusicTracks::menu, music);
   }
   else
@@ -636,66 +709,77 @@ void Engine::run()
 
   InputSystem& input_system = this->get_module<InputSystem>();
 
-  while (!this->should_quit())
   {
-    auto current_time = std::chrono::high_resolution_clock::now();
-    f32 frame_time = eu::duration_to_seconds(previous_time, current_time);
+    NC_SCOPE_COUNTER(total_runtime)
+
+    while (!this->should_quit())
+    {
+      auto current_time = std::chrono::high_resolution_clock::now();
+      f32 frame_time = eu::duration_to_seconds(previous_time, current_time);
 #if NC_PROFILING
-    Profiler::get().new_frame(m_frame_idx, frame_time);
-    NC_SCOPE_PROFILER(FullFrame)
+      Profiler::get().new_frame(m_frame_idx, frame_time);
+      NC_SCOPE_PROFILER(FullFrame)
 #endif
-    eu::limit_min_frametime(frame_time);
+      eu::limit_min_frametime(frame_time);
 
-    // Limit the FPS if desired
-    const f32 min_frame_time = CVars::has_fps_limit ? 1.0f / CVars::fps_limit : 0.0f;
-    while (frame_time < min_frame_time)
-    {
-      // Spin until the time runs out
-      current_time = std::chrono::high_resolution_clock::now();
-      frame_time   = eu::duration_to_seconds(previous_time, current_time);
+      // Limit the FPS if desired
+      const f32 min_frame_time = CVars::has_fps_limit ? 1.0f / CVars::fps_limit : 0.0f;
+      while (frame_time < min_frame_time)
+      {
+        // Spin until the time runs out
+        current_time = std::chrono::high_resolution_clock::now();
+        frame_time   = eu::duration_to_seconds(previous_time, current_time);
+      }
+
+      previous_time = current_time;
+      m_delta_time  = frame_time;
+
+      // notify frame start
+      this->send_event(ModuleEvent
+      {
+        .type = ModuleEventType::frame_start,
+      });
+
+      // pump messages
+      input_system.update_window_and_pump_messages();
+
+      const f32 game_logic_update_time = frame_time * CVars::time_speed;
+
+      // frame start
+      this->send_event(ModuleEvent
+      {
+        .type = ModuleEventType::frame_start,
+      });
+
+      // update
+      this->send_event(ModuleEvent
+      {
+        .type = ModuleEventType::game_update,
+        .update = {.dt = game_logic_update_time},
+      });
+
+      // render
+      this->send_event(ModuleEvent
+      {
+        .type = ModuleEventType::render,
+      });
+
+      // cleanup
+      this->send_event(ModuleEvent
+      {
+        .type = ModuleEventType::cleanup,
+      });
+
+      m_frame_idx += 1;
     }
-
-    previous_time = current_time;
-    m_delta_time  = frame_time;
-
-    // notify frame start
-    this->send_event(ModuleEvent
-    {
-      .type = ModuleEventType::frame_start,
-    });
-
-    // pump messages
-    input_system.update_window_and_pump_messages();
-
-    const f32 game_logic_update_time = frame_time * CVars::time_speed;
-
-    // frame start
-    this->send_event(ModuleEvent
-    {
-      .type = ModuleEventType::frame_start,
-    });
-
-    // update
-    this->send_event(ModuleEvent
-    {
-      .type = ModuleEventType::game_update,
-      .update = {.dt = game_logic_update_time},
-    });
-
-    // render
-    this->send_event(ModuleEvent
-    {
-      .type = ModuleEventType::render,
-    });
-
-    // cleanup
-    this->send_event(ModuleEvent
-    {
-      .type = ModuleEventType::cleanup,
-    });
-
-    m_frame_idx += 1;
   }
+
+#if NC_PROFILING
+  if (m_print_counters)
+  {
+    print_runtime_counters(m_counters_output_path.empty() ? nullptr : m_counters_output_path.c_str());
+  }
+#endif
 }
 
 //==============================================================================
@@ -797,7 +881,8 @@ void Engine::on_demo_end()
 {
   switch (m_game_state)
   {
-    case GameState::menu:
+    case GameState::menu:        [[fallthrough]];
+    case GameState::presentation:
     {
       // Schedule a next demo. This overwrites the requests of other systems
       this->play_random_demo();
@@ -865,8 +950,9 @@ bool Engine::should_ammo_hp_hud_be_visible() const
 {
   const auto UI_INVISIBLE_STATES =
   {
-    GameState::menu,       // In menu, we do not want to see the HUD
-    GameState::transition, // Nor in level transition screen
+    GameState::menu,         // In menu, we do not want to see the HUD
+    GameState::transition,   // Nor in level transition screen
+    GameState::presentation, // Nor over the presentation slides
   };
 
   auto it = std::find
@@ -955,7 +1041,8 @@ void Engine::on_next_level_selected_from_menu()
 //==============================================================================
 bool Engine::is_menu_locked_visible() const
 {
-  return m_game_state == GameState::menu;
+  return m_game_state == GameState::menu
+      || m_game_state == GameState::presentation;
 }
 
 //==============================================================================
@@ -963,8 +1050,9 @@ bool Engine::is_level_sound_enabled() const
 {
   switch (m_game_state)
   {
-    case GameState::menu:       [[fallthrough]];
-    case GameState::transition:
+    case GameState::menu:         [[fallthrough]];
+    case GameState::transition:   [[fallthrough]];
+    case GameState::presentation:
     {
       return false;
     }

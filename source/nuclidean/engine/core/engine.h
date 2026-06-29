@@ -25,11 +25,9 @@ namespace nc
 struct ModuleEvent;
 class  IEngineModule;
 struct MapSectors;
+using  LevelName = Token;
+using  CmdArgs   = std::vector<std::string>;
 
-
-using LevelName = Token;
-
-using CmdArgs = std::vector<std::string>;
 class Engine
 {
 public:
@@ -120,11 +118,12 @@ private:
 
   enum class GameState : u8
   {
-    menu,       // in menu, the demo is playing in the background
-    game,       // the player is playing
-    transition, // during the level transition, demo playing in background
-    debug_demo, // running the demo from console, debug
-    none,       // error state, only on the start
+    menu,         // in menu, the demo is playing in the background
+    presentation, // like menu, but shows prepared slides instead of menu UI
+    game,         // the player is playing
+    transition,   // during the level transition, demo playing in background
+    debug_demo,   // running the demo from console, debug
+    none,         // error state, only on the start
   };
 
   struct TransitionStateData
@@ -147,6 +146,8 @@ private:
   bool          m_demo_adjust_speed : 1 = true;
   bool          m_paused            : 1 = false;
   bool          m_editor_mode       : 1 = false;
+  bool          m_print_counters    : 1 = false;
+  std::string   m_counters_output_path;
 };
 
 Engine& get_engine();

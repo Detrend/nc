@@ -18,6 +18,8 @@
 #include <engine/entity/entity_type_definitions.h>
 #include <game/entity_attachment_manager.h>
 
+#include <profiling.h>
+
 #include <engine/input/game_input.h>
 #include <buffer.h>
 
@@ -41,6 +43,8 @@ void Game::update
   PlayerSpecificInputs prev_input
 )
 {
+  NC_SCOPE_COUNTER(game_update);
+
   // Init the player with transition data on the first frame. Same code path as
   // when playing a demo.
   if (frame_idx == 0 && !transition_data.is_empty())
@@ -54,22 +58,31 @@ void Game::update
   time_since_start += dt;
 
   // Handle the player first
-  entities->for_each<Player>([&](Player& player)
   {
-    player.update(curr_input, prev_input, dt);
-  });
+    NC_SCOPE_COUNTER(player_update)
+    entities->for_each<Player>([&](Player& player)
+    {
+      player.update(curr_input, prev_input, dt);
+    });
+  }
 
   // Handle enemies
-  entities->for_each<Enemy>([&](Enemy& enemy)
   {
-    enemy.update(dt);
-  });
+    NC_SCOPE_COUNTER(enemy_update)
+    entities->for_each<Enemy>([&](Enemy& enemy)
+    {
+      enemy.update(dt);
+    });
+  }
 
   // Handle projectiles
-  entities->for_each<Projectile>([&](Projectile& proj)
   {
-    proj.update(dt);
-  });
+    NC_SCOPE_COUNTER(projectile_update)
+    entities->for_each<Projectile>([&](Projectile& proj)
+    {
+      proj.update(dt);
+    });
+  }
 
   // Handle teleports
   entities->for_each<Teleport>([&](Teleport& teleport)
@@ -90,7 +103,10 @@ void Game::update
   });
 
   // And update the map
-  dynamics->update(dt);
+  {
+    NC_SCOPE_COUNTER(dynamics_update)
+    dynamics->update(dt);
+  }
 
   // Push the frame index
   frame_idx += 1;

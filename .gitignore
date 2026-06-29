@@ -16,7 +16,6 @@ imgui.ini
 /source/nucledian/engine/player/player.cpp.orig
 /.godot
 /dumps
-/demo
 *.mscz~
 imgui.ini
 /settings.cfg
