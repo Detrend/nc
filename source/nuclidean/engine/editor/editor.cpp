@@ -147,7 +147,7 @@ struct Editor::EditorImpl
   f32                       zoom   = 1.0f;
 
   bool is_dragging                     = false;
-  vec2 dragging_start_cursor_world_pos = VEC2_ZERO;
+  vec2 dragging_start_cursor_screen_pos = VEC2_ZERO;
   vec2 dragging_start_center_world_pos = VEC2_ZERO;
 
   void init()
@@ -164,6 +164,12 @@ struct Editor::EditorImpl
   {
     mat3 screen_to_world = calc_view_matrix(this->center, this->zoom, this->aspect);
     return (screen_to_world * vec3{screen_pos, 1.0f}).xy;
+  }
+
+  vec2 wpos_to_screen(vec2 wpos)
+  {
+    mat3 world_to_screen = inverse(calc_view_matrix(this->center, this->zoom, this->aspect));
+    return (world_to_screen * vec3{wpos, 1.0f}).xy;
   }
 
   vec2 get_mouse_normalized()
@@ -184,11 +190,10 @@ struct Editor::EditorImpl
 
   vec2 get_mouse_wpos()
   {
-    vec2 mpos = this->get_mouse_screen_pos();
-    return screen_to_wpos(mpos);
+    return this->screen_to_wpos(this->get_mouse_screen_pos());
   }
 
-  void handle_dragging()
+  bool handle_dragging()
   {
     bool middle_mouse = ImGui::IsMouseDown(ImGuiMouseButton_Middle);
 
@@ -198,21 +203,37 @@ struct Editor::EditorImpl
       if (is_dragging)
       {
         // Started dragging
-        dragging_start_center_world_pos = this->center;
-        dragging_start_cursor_world_pos = this->get_mouse_wpos();
-      }
-      else
-      {
-        // Ended..
+        dragging_start_center_world_pos  = this->center;
+        dragging_start_cursor_screen_pos = this->get_mouse_screen_pos();
       }
     }
 
     if (is_dragging)
     {
-      vec2 current_mouse_wpos    = this->get_mouse_wpos();
-      vec2 difference_from_start = this->dragging_start_cursor_world_pos - current_mouse_wpos;
-      this->center = this->dragging_start_center_world_pos + difference_from_start;
+      vec2 screen_difference_from_start = this->get_mouse_screen_pos() - this->dragging_start_cursor_screen_pos;
+      mat3 screen_to_world = calc_view_matrix(this->center, this->zoom, 1.0f);
+      vec2 wspace_difference_from_start = (screen_to_world * vec3{screen_difference_from_start, 0.0f}).xy;
+      this->center = this->dragging_start_center_world_pos - wspace_difference_from_start;
     }
+
+    ImGui::SetMouseCursor(is_dragging ? ImGuiMouseCursor_ResizeAll : ImGuiMouseCursor_Arrow);
+
+    return is_dragging;
+  }
+
+  bool handle_zoom_in_out()
+  {
+    f32 wheel = ImGui::GetIO().MouseWheel;
+    wheel = floor(wheel * 10.0f) * 0.1f;
+
+    if (!wheel)
+    {
+      return false;
+    }
+
+    this->zoom += wheel;
+
+    return true;
   }
 };
 
@@ -265,7 +286,7 @@ void Editor::update(f32 /*delta*/)
     ImGui::EndMainMenuBar();
   }
 
-  m_impl->handle_dragging();
+  m_impl->handle_dragging() || m_impl->handle_zoom_in_out();
 }
 
 //==================================================================================================
