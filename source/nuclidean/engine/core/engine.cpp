@@ -57,6 +57,10 @@ namespace nc
 
 static Engine* g_engine = nullptr;
 
+u64 g_perform_test_raycasts       = 10'000'000;
+u64 g_perform_test_sector_queries = 0;
+u64 g_perform_test_vis_queries    = 0;
+
 //==============================================================================
 namespace engine_utils
 {

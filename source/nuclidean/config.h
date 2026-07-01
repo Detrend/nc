@@ -9,14 +9,20 @@
 #define NC_EDITOR     NC_CONFIG_ON
 #define NC_DEBUG_DRAW NC_CONFIG_ON
 #define NC_IMGUI      NC_CONFIG_ON
-#define NC_ASSERTS    NC_CONFIG_ON
-#define NC_PROFILING  NC_CONFIG_ON
 #define NC_HOT_RELOAD NC_CONFIG_ON
+#define NC_PROFILING  NC_CONFIG_ON
+
+#if defined(NC_Debug) || defined(NC_Release)
+  #define NC_ASSERTS    NC_CONFIG_ON
+#else
+  #define NC_ASSERTS    NC_CONFIG_OFF
+#endif
+
 #else
 #define NC_TESTS      NC_CONFIG_OFF
-#define NC_EDITOR     NC_CONFIG_OFF
+#define NC_EDITOR     NC_CONFIG_ON
 #define NC_DEBUG_DRAW NC_CONFIG_OFF
-#define NC_IMGUI      NC_CONFIG_OFF
+#define NC_IMGUI      NC_CONFIG_ON
 #define NC_ASSERTS    NC_CONFIG_OFF
 #define NC_PROFILING  NC_CONFIG_OFF
 #define NC_HOT_RELOAD NC_CONFIG_OFF

@@ -62,6 +62,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <cstdlib> // std::rand
 
 #include <json/json.hpp>
 
@@ -1260,13 +1261,183 @@ void GameSystem::pre_level_load()
   );
 }
 
+//==================================================================================================
+void string_to_file(const std::string& filename, const std::string& content)
+{
+  std::ofstream file(filename);
+  nc_assert(file.is_open());
+  file << content;
+  file.flush();
+  file.close();
+}
+
+
+//==================================================================================================
+void sectors_to_file(const std::string& filename, const MapSectors& map)
+{
+  std::string output;
+
+  for (SectorID sid = 0; sid < cast<SectorID>(map.sectors.size()); ++sid)
+  {
+    output += std::format("{}", sid);
+    map.for_each_wall_of_sector(sid, [&](WallID wid)
+    {
+      vec2 pt = map.walls[wid].pos;
+      PortType type = map.walls[wid].get_portal_type();
+      cstr type_str = type == PortalType::none ? "none" : (type == PortalType::classic ? "wall" : "portal");
+      output += std::format(" [{},{},{}]", pt.x, pt.y, type_str);
+    });
+    output += "\n";
+  }
+
+  string_to_file(filename, output);
+}
+
 //==============================================================================
+extern u64 g_perform_test_raycasts      ;
+extern u64 g_perform_test_sector_queries;
+extern u64 g_perform_test_vis_queries   ;
+
 void GameSystem::post_level_load()
 {
   get_engine().send_event
   (
     ModuleEvent{.type = ModuleEventType::after_map_rebuild}
   );
+
+  bool at_least_one = g_perform_test_raycasts || g_perform_test_vis_queries || g_perform_test_sector_queries;
+  if (!at_least_one)
+  {
+    return;
+  }
+
+  auto generate_random_points_in_sectors = [&](u64 point_count, unsigned seed, f32 max_dir_len, std::vector<vec3>& source, std::vector<vec3>& directions)
+  {
+    std::srand(seed);
+
+    auto random_f32 = [](f32 mn, f32 mx)
+    {
+      int value = std::rand();
+      f64 interval = cast<f64>(mx - mn);
+      f32 bounded  = cast<f32>(cast<f64>(value * interval) / (RAND_MAX-1) + cast<f64>(mn));
+      return clamp(bounded, mn, mx);
+    };
+
+    f64 total_area = 0.0;
+    const MapSectors& map = *game->map;
+
+    // First calculate the sum area
+    for (SectorID sid = 0; sid < cast<SectorID>(map.sectors.size()); ++sid)
+    {
+      aabb3 bbox = map.sector_bboxes[sid];
+      vec3  size = bbox.max - bbox.min;
+      f32   area = size.x * size.z;
+      total_area += area;
+    }
+
+    // Then for each sector calculate it's budget
+    for (SectorID sid = 0; sid < cast<SectorID>(map.sectors.size()); ++sid)
+    {
+      aabb3 bbox = map.sector_bboxes[sid];
+      vec3  size = bbox.max - bbox.min;
+      f32   area = size.x * size.z;
+      u64   num_pts = cast<u64>((area / total_area) * point_count);
+
+      std::vector<vec3> pts;
+      std::vector<vec3> dirs;
+
+      u64 reject_cnt = 0;
+
+      while (pts.size() < num_pts && reject_cnt < 128)
+      {
+        vec3 p =
+        {
+          random_f32(bbox.min.x, bbox.max.x),
+          random_f32(map.sectors_dynamic[sid].floor_height, map.sectors_dynamic[sid].ceil_height),
+          random_f32(bbox.min.z, bbox.max.z)
+        };
+
+        if (!map.is_point_in_sector(p.xz, sid))
+        {
+          reject_cnt += 1;
+          continue;
+        }
+
+        // biased but we don't care
+        vec3 d = {random_f32(-1.0f, 1.0f), random_f32(-1.0f, 1.0f), random_f32(-1.0f, 1.0f)};
+        if (is_zero(d, 0.001f))
+        {
+          reject_cnt += 1;
+          continue;
+        }
+
+        f32  l = random_f32(0.0f, max_dir_len);
+        d = normalize(d) * l;
+
+        pts.push_back(p);
+        dirs.push_back(d);
+        reject_cnt = 0;
+      }
+
+      source.insert(source.end(),         pts.begin(),  pts.end());
+      directions.insert(directions.end(), dirs.begin(), dirs.end());
+    }
+  };
+
+  if (g_perform_test_raycasts)
+  {
+    // Sample random points around the map and shoot rays from them
+    std::vector<vec3> source_points;
+    std::vector<vec3> target_dirs;
+
+    generate_random_points_in_sectors(g_perform_test_raycasts, 0, 64.0f, source_points, target_dirs);
+
+    std::vector<f64>  measured_time_ms;
+    std::vector<f32>  results;
+    measured_time_ms.resize(source_points.size(), 0.0f);
+    results.resize(source_points.size(), 0.0f);
+
+    PhysLevel physics = this->get_level();
+
+    for (u64 i = 0; i < source_points.size(); ++i)
+    {
+      vec3 p = source_points[i];
+      vec3 d = target_dirs[i];
+
+      vec3 from = p;
+      vec3 to   = from + d;
+      EntityTypeMask mask = EntityTypeFlags::player | EntityTypeFlags::enemy | EntityTypeFlags::pickup;
+
+      namespace sch = std::chrono;
+
+      auto start = sch::high_resolution_clock::now();
+      CollisionHit result = physics.ray_cast_3d(from, to, mask);
+      auto end = sch::high_resolution_clock::now();
+      f64 ms = sch::duration_cast<sch::nanoseconds>(end - start).count() * 0.000'001;
+
+      measured_time_ms[i] = ms;
+      results[i] = result ? result.coeff : 1.0f;
+    }
+
+    std::string csv_contents;
+    csv_contents += "time,coeff,from,to\n";
+    for (u64 i = 0; i < measured_time_ms.size(); ++i)
+    {
+      f64  time   = measured_time_ms[i];
+      f32  result = results[i];
+      vec3 from   = source_points[i];
+      vec3 to     = source_points[i] + target_dirs[i];
+      csv_contents += std::format("{},{},[{}:{}:{}],[{}:{}:{}]\n", time, result, from.x, from.y, from.z, to.x, to.y, to.z);
+    }
+
+    string_to_file("raycast_profiling.csv", csv_contents);
+    sectors_to_file("sectors.txt", *game->map);
+    volatile bool maybe_true = true;
+    if (maybe_true)
+    {
+      std::exit(67);
+    }
+  }
 }
 
 //==============================================================================
