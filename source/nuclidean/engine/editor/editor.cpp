@@ -21,6 +21,18 @@
 #include <vector>
 #include <span>
 
+//==================================================================================================
+namespace nc::editor
+{
+
+// Default alpha of the grid.
+constexpr f32 GRID_ALPHA = 0.3f;
+
+// Width/height of one grid cell has to occupy at least this amount of screen in order to be visible
+constexpr f32 GRID_SCREEN_PERCENTAGE_FOR_VISIBILITY = 0.01f;
+
+}
+
 namespace nc
 {
 
@@ -159,12 +171,12 @@ struct EditorSector
 struct Editor::EditorImpl
 {
   static constexpr u64 PX_PER_M  = 48;
-  static constexpr u64 NUM_GRIDS = 6;
+  static constexpr u64 NUM_GRIDS = 5;
 
-  static constexpr u64    GRID_SIZES[]  = {1, 24, PX_PER_M, PX_PER_M * 8, PX_PER_M * 64, PX_PER_M * 512};
+  static constexpr u64    GRID_SIZES[]  = {1, PX_PER_M, PX_PER_M * 8, PX_PER_M * 64, PX_PER_M * 512};
   static constexpr color4 GRID_COLORS[] =
   {
-    colors::GRAY, colors::YELLOW, colors::WHITE, colors::RED, colors::BLUE, colors::MAGENTA
+    colors::GRAY, colors::WHITE, colors::RED, colors::BLUE, colors::MAGENTA
   };
 
   static_assert(ARRAY_LENGTH(GRID_SIZES)  == NUM_GRIDS);
@@ -234,8 +246,13 @@ struct Editor::EditorImpl
 
     std::vector<vec2> points;
 
-    if (percentage_of_screen > 0.01f)
+    f32 alpha_coeff = 1.0f;
+    f32 thresh = editor::GRID_SCREEN_PERCENTAGE_FOR_VISIBILITY;
+
+    if (percentage_of_screen > thresh)
     {
+      alpha_coeff = clamp((percentage_of_screen - thresh) / thresh, 0.0f, 1.0f);
+
       s64 x_start = cast<s64>(ceil(bottom_left.x) / step_size) * step_size;
       s64 x_end   = cast<s64>(top_right.x         / step_size) * step_size;
       s64 y_start = cast<s64>(ceil(bottom_left.y) / step_size) * step_size;
@@ -258,7 +275,7 @@ struct Editor::EditorImpl
 
     primitive.refresh_gpu_data(points);
     primitive.line_width = 1.0f;
-    primitive.color      = color4{color.xyz, 0.3f};
+    primitive.color      = color4{color.xyz, 0.3f * alpha_coeff};
   }
 
   void recompute_grids()
