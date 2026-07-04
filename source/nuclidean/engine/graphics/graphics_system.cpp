@@ -399,6 +399,7 @@ void GraphicsSystem::render()
   NC_SCOPE_PROFILER(Render)
   NC_SCOPE_COUNTER(render)
 
+  // TODO: This returns window size, not client area size. Might be a problem?
   int width = 0, height = 0;
   SDL_GetWindowSize(m_window, &width, &height);
 

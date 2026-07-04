@@ -13,6 +13,9 @@
 #include <engine/graphics/resources/shader_program.h>
 #include <engine/graphics/resources/mesh.h>
 
+#include <math/lingebra.h>   // compMax
+#include <metaprogramming.h> // ARRAY_LENGTH
+
 #include <imgui/imgui.h>
 
 #include <vector>
@@ -42,16 +45,21 @@ struct EditorPrimitive
 
   void refresh_gpu_data(std::span<vec2> points)
   {
-    // Refresh the bbox
-    bbox = aabb2{};
-    for (vec2 p : points)
-    {
-      bbox.insert_point(p);
-    }
-
-    // Upload the data
+    // Get rid of the old data
     MeshManager::get().destroy_editor_primitive(handle);
-    handle = MeshManager::get().create_editor_primitive(points, GL_LINES);
+
+    // Refresh the bbox if any vertices
+    if (points.size())
+    {
+      bbox = aabb2{};
+      for (vec2 p : points)
+      {
+        bbox.insert_point(p);
+      }
+
+      // Upload the data
+      handle = MeshManager::get().create_editor_primitive(points, GL_LINES);
+    }
   }
 
   ~EditorPrimitive()
@@ -68,23 +76,30 @@ class OpenGlStateScope
 public:
   OpenGlStateScope()
   {
-    m_depth_test = glIsEnabled(GL_DEPTH_TEST);
+    m_depth_test  = glIsEnabled(GL_DEPTH_TEST);
+    m_alpha_blend = glIsEnabled(GL_BLEND);
     glGetFloatv(GL_LINE_WIDTH, &m_line_width);
   }
 
   ~OpenGlStateScope()
   {
-    if (m_depth_test)
-      glEnable(GL_DEPTH_TEST);
-    else
-      glDisable(GL_DEPTH_TEST);
+    auto reset_state = [](auto flag, bool state)
+    {
+      if (state)
+        glEnable(flag);
+      else
+        glDisable(flag);
+    };
 
+    reset_state(GL_DEPTH_TEST, m_depth_test);
+    reset_state(GL_BLEND,      m_alpha_blend);
     glLineWidth(m_line_width);
   }
 
 private:
-  bool m_depth_test = false;
-  f32  m_line_width = 0.0f;
+  bool m_depth_test  = false;
+  bool m_alpha_blend = false;
+  f32  m_line_width  = 0.0f;
 };
 
 //==================================================================================================
@@ -102,11 +117,15 @@ public:
     glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "Editor pass");
     OpenGlStateScope state_restore;
 
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+
     grid_rendering.use();
     grid_rendering.set_uniform(shaders::editor::lines::TRANSFORM, projection);
 
     for (const EditorPrimitive* primitive : primitives)
     {
+      nc_assert(primitive->handle.is_valid());
       grid_rendering.set_uniform(shaders::editor::lines::COLOR, primitive->color);
       glLineWidth(primitive->line_width);
       glBindVertexArray(primitive->handle.get_vao());
@@ -139,34 +158,127 @@ struct EditorSector
 //==================================================================================================
 struct Editor::EditorImpl
 {
-  f32                       aspect = 1.0f;
-  EditorPrimitive           grid;
-  std::vector<EditorSector> sectors;
-  EditorRenderer            renderer;
-  vec2                      center = VEC2_ZERO;
-  f32                       zoom   = 0.0f;
+  static constexpr u64 PX_PER_M  = 48;
+  static constexpr u64 NUM_GRIDS = 6;
 
-  bool is_dragging                     = false;
+  static constexpr u64    GRID_SIZES[]  = {1, 24, PX_PER_M, PX_PER_M * 8, PX_PER_M * 64, PX_PER_M * 512};
+  static constexpr color4 GRID_COLORS[] =
+  {
+    colors::GRAY, colors::YELLOW, colors::WHITE, colors::RED, colors::BLUE, colors::MAGENTA
+  };
+
+  static_assert(ARRAY_LENGTH(GRID_SIZES)  == NUM_GRIDS);
+  static_assert(ARRAY_LENGTH(GRID_COLORS) == NUM_GRIDS);
+
+  f32                          aspect = 1.0f;
+  ivec2                        screen_size = ivec2{1920, 1080};
+  std::vector<EditorPrimitive> grids;
+  std::vector<EditorSector>    sectors;
+  EditorRenderer               renderer;
+  vec2                         center = VEC2_ZERO;
+  f32                          zoom   = 0.0f;
+
+  bool is_dragging                      = false;
   vec2 dragging_start_cursor_screen_pos = VEC2_ZERO;
-  vec2 dragging_start_center_world_pos = VEC2_ZERO;
+  vec2 dragging_start_center_world_pos  = VEC2_ZERO;
+
+  vec2 get_offset() const
+  {
+    return this->center;
+  }
+
+  void set_offset(vec2 new_offset)
+  {
+    if (vec2 prev = this->center; prev != new_offset)
+    {
+      this->center = new_offset;
+      this->on_offset_changed(prev, this->center);
+    }
+  }
+
+  void on_offset_changed(vec2 /*prev*/, vec2 /*curr*/)
+  {
+    this->recompute_grids();
+  }
+
+  f32 get_zoom() const
+  {
+    return this->zoom;
+  }
+
+  void set_zoom(f32 new_zoom)
+  {
+    if (f32 prev = this->zoom; prev != new_zoom)
+    {
+      this->zoom = new_zoom;
+      this->on_zoom_changed(prev, this->zoom);
+    }
+  }
+
+  void on_zoom_changed(f32 /*previous_zoom*/, f32 /*new_zoom*/)
+  {
+    this->recompute_grids();
+  }
+
+  void recompute_exact_grid(EditorPrimitive& primitive, u64 step_size, color4 color)
+  {
+    nc_assert(step_size > 0);
+
+    // compute left/right/up/down world positions
+    vec2 bottom_left = this->screen_to_wpos(vec2{-1.0f, -1.0f});
+    vec2 top_right   = this->screen_to_wpos(vec2{ 1.0f,  1.0f});
+
+    f32  world_size   = cast<f32>(step_size);
+    vec2 screen_scale = (this->calc_view_matrix() * vec3{world_size, world_size, 0.0f}).xy;
+    f32  percentage_of_screen = compMax(screen_scale) * 0.5f;
+
+    std::vector<vec2> points;
+
+    if (percentage_of_screen > 0.01f)
+    {
+      s64 x_start = cast<s64>(ceil(bottom_left.x) / step_size) * step_size;
+      s64 x_end   = cast<s64>(top_right.x         / step_size) * step_size;
+      s64 y_start = cast<s64>(ceil(bottom_left.y) / step_size) * step_size;
+      s64 y_end   = cast<s64>(top_right.y         / step_size) * step_size;
+
+      for (s64 x = x_start; x <= x_end; x += step_size)
+      {
+        vec2 from = vec2{cast<f32>(x), top_right.y};
+        vec2 to   = vec2{cast<f32>(x), bottom_left.y};
+        points.insert(points.end(), {from, to});
+      }
+
+      for (s64 y = y_start; y <= y_end; y += step_size)
+      {
+        vec2 from = vec2{bottom_left.x, cast<f32>(y)};
+        vec2 to   = vec2{top_right.x,   cast<f32>(y)};
+        points.insert(points.end(), {from, to});
+      }
+    }
+
+    primitive.refresh_gpu_data(points);
+    primitive.line_width = 1.0f;
+    primitive.color      = color4{color.xyz, 0.3f};
+  }
+
+  void recompute_grids()
+  {
+    // grid sizes with different colors?
+    grids.resize(NUM_GRIDS);
+    for (u64 i = 0; i < NUM_GRIDS; ++i)
+    {
+      this->recompute_exact_grid(this->grids[i], GRID_SIZES[i], GRID_COLORS[i]);
+    }
+  }
 
   void init()
   {
-    std::vector<vec2> points;
-    points.insert(points.end(), {vec2{-1.0f,  0.0f}, vec2{1.0f, 0.0f}});
-    points.insert(points.end(), {vec2{ 0.0f, -1.0f}, vec2{0.0f, 1.0f}});
-
-    points.insert(points.end(), {vec2{-0.25f, -0.25f}, vec2{0.25f, -0.25f}});
-    points.insert(points.end(), {vec2{-0.25f,  0.25f}, vec2{0.25f,  0.25f}});
-
-    grid.refresh_gpu_data(points);
-    grid.color = colors::GRAY;
-    grid.line_width = 1.0f;
+    this->recompute_grids();
   }
 
   mat3 calc_view_matrix()
   {
-    return calc_view_matrix_impl(this->center, std::exp(this->zoom * 0.1f), this->aspect);
+    return calc_view_matrix_impl(this->get_offset(), std::exp(this->get_zoom() * 0.1f), this->aspect);
   }
 
   vec2 screen_to_wpos(vec2 screen_pos)
@@ -213,7 +325,7 @@ struct Editor::EditorImpl
       if (is_dragging)
       {
         // Started dragging
-        this->dragging_start_center_world_pos  = this->center;
+        this->dragging_start_center_world_pos  = this->get_offset();
         this->dragging_start_cursor_screen_pos = this->get_mouse_screen_pos();
       }
     }
@@ -224,7 +336,7 @@ struct Editor::EditorImpl
       vec2 screen_diff_from_start = this->get_mouse_screen_pos() - this->dragging_start_cursor_screen_pos;
       mat3 screen_to_world = inverse(this->calc_view_matrix());
       vec2 wspace_diff_from_start = (screen_to_world * vec3{screen_diff_from_start, 0.0f}).xy;
-      this->center = this->dragging_start_center_world_pos - wspace_diff_from_start;
+      this->set_offset(this->dragging_start_center_world_pos - wspace_diff_from_start);
     }
 
     ImGui::SetMouseCursor(is_dragging ? ImGuiMouseCursor_ResizeAll : ImGuiMouseCursor_Arrow);
@@ -243,10 +355,11 @@ struct Editor::EditorImpl
     }
 
     vec2 world_pos_under_cursor_before_zoom = this->get_mouse_wpos();
-    this->zoom = clamp(this->zoom + wheel, -100.0f, 100.0f);
+    f32 new_zoom = clamp(this->get_zoom() + wheel, -100.0f, 100.0f);
+    this->set_zoom(new_zoom);
     vec2 world_pos_under_cursor_after_zoom = this->get_mouse_wpos();
     vec2 difference = world_pos_under_cursor_after_zoom - world_pos_under_cursor_before_zoom;
-    this->center -= difference;
+    this->set_offset(this->get_offset() - difference);
 
     return true;
   }
@@ -309,7 +422,13 @@ void Editor::render()
 {
   std::vector<EditorPrimitive*> primitives;
 
-  primitives.push_back(&m_impl->grid);
+  for (u64 i = 0; i < EditorImpl::NUM_GRIDS; ++i)
+  {
+    if (m_impl->grids[i].handle.is_valid())
+    {
+      primitives.push_back(&m_impl->grids[i]);
+    }
+  }
 
   for (EditorSector& sector : m_impl->sectors)
   {
@@ -326,7 +445,8 @@ void Editor::render()
 //==================================================================================================
 void Editor::on_window_resized(u32 width, u32 height)
 {
-  m_impl->aspect = cast<f32>(width) / height;
+  m_impl->aspect      = cast<f32>(width) / height;
+  m_impl->screen_size = ivec2{width, height};
 }
 
 }

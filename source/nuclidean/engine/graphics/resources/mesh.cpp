@@ -138,7 +138,9 @@ bool MeshHandle::is_valid() const
     return false;
   }
 
-  return m_vao != 0 && m_vbo != 0 && m_vertex_count != 0 && m_lifetime != ResLifetime::None;
+  // NOTE: Not checking for a "none" lifetime because it is used for meshes which manage their
+  // lifetime on their own (for example editor primitives).
+  return m_vao != 0 && m_vbo != 0 && m_vertex_count != 0;
 }
 
 //==============================================================================
