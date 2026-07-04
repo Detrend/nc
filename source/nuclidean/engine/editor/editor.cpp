@@ -20,6 +20,8 @@
 
 #include <vector>
 #include <span>
+#include <optional>
+#include <variant>
 
 //==================================================================================================
 namespace nc::editor
@@ -80,6 +82,8 @@ struct EditorPrimitive
     MeshManager::get().destroy_editor_primitive(handle);
   }
 };
+
+using RenderList = std::vector<EditorPrimitive*>;
 
 //==================================================================================================
 // Restores the GL state when exiting the scope.
@@ -189,10 +193,87 @@ struct Editor::EditorImpl
   EditorRenderer               renderer;
   vec2                         center = VEC2_ZERO;
   f32                          zoom   = 0.0f;
+  u64                          current_snap = 1;
+
+  struct EmptyTool
+  {
+    void get_render_data(RenderList&) {}
+    void update(EditorImpl&, f32)     {}
+  };
+
+  struct BrushTool
+  {
+    EditorPrimitive         render_data;
+    std::vector<EditorWall> painted_walls_stack;
+
+    void update(EditorImpl& editor, f32 /*delta*/)
+    {
+      bool left_click  = ImGui::IsMouseReleased(ImGuiMouseButton_Left);
+      bool right_click = ImGui::IsMouseReleased(ImGuiMouseButton_Right);
+
+      vec2 mouse_world_pos = editor.get_mouse_wpos();
+      editor.snap_to_grid(mouse_world_pos);
+
+      std::vector<vec2> pts;
+      auto& walls = this->painted_walls_stack;
+
+      if (left_click)
+      {
+        walls.push_back(EditorWall{.pt = mouse_world_pos});
+      }
+      else if (right_click)
+      {
+        if (walls.size())
+        {
+          walls.pop_back();
+        }
+      }
+
+      for (u64 i = 1; i < walls.size(); ++i)
+      {
+        pts.insert(pts.end(), {walls[i-1].pt, walls[i].pt});
+      }
+
+      if (walls.size())
+      {
+        pts.insert(pts.end(), {walls.back().pt, mouse_world_pos});
+      }
+
+      this->render_data.refresh_gpu_data(pts);
+      this->render_data.color = colors::GREEN;
+    }
+
+    void get_render_data(RenderList& list)
+    {
+      if (render_data.handle.is_valid())
+      {
+        list.push_back(&render_data);
+      }
+    }
+  };
+
+  std::variant<EmptyTool, BrushTool> tool;
 
   bool is_dragging                      = false;
   vec2 dragging_start_cursor_screen_pos = VEC2_ZERO;
   vec2 dragging_start_center_world_pos  = VEC2_ZERO;
+
+  template<typename NewToolType>
+  void change_tool()
+  {
+    if (std::holds_alternative<NewToolType>(tool))
+    {
+      return;
+    }
+
+    // Create the data
+    tool = NewToolType{};
+  }
+
+  void snap_to_grid(vec2& coords)
+  {
+    coords = round(coords);
+  }
 
   vec2 get_offset() const
   {
@@ -291,6 +372,7 @@ struct Editor::EditorImpl
   void init()
   {
     this->recompute_grids();
+    this->change_tool<BrushTool>();
   }
 
   mat3 calc_view_matrix()
@@ -360,7 +442,6 @@ struct Editor::EditorImpl
     return is_dragging;
   }
 
-//==================================================================================================
   bool handle_zoom_in_out()
   {
     f32 wheel = ImGui::GetIO().MouseWheel;
@@ -379,6 +460,10 @@ struct Editor::EditorImpl
     this->set_offset(this->get_offset() - difference);
 
     return true;
+  }
+
+  bool handle_brush_tool()
+  {
   }
 };
 
@@ -410,7 +495,7 @@ void Editor::terminate()
 }
 
 //==================================================================================================
-void Editor::update(f32 /*delta*/)
+void Editor::update(f32 delta)
 {
   if (ImGui::BeginMainMenuBar())
   {
@@ -432,12 +517,17 @@ void Editor::update(f32 /*delta*/)
   }
 
   m_impl->handle_dragging() || m_impl->handle_zoom_in_out();
+
+  std::visit([&](auto& tool)
+  {
+    tool.update(*m_impl, delta);
+  }, m_impl->tool);
 }
 
 //==================================================================================================
 void Editor::render()
 {
-  std::vector<EditorPrimitive*> primitives;
+  RenderList primitives;
 
   for (u64 i = 0; i < EditorImpl::NUM_GRIDS; ++i)
   {
@@ -446,6 +536,12 @@ void Editor::render()
       primitives.push_back(&m_impl->grids[i]);
     }
   }
+
+  std::visit([&](auto& data_type)
+  {
+    data_type.get_render_data(primitives);
+  },
+  m_impl->tool);
 
   for (EditorSector& sector : m_impl->sectors)
   {
