@@ -23,13 +23,13 @@ namespace nc
 
 //==================================================================================================
 // World coords to screen coords.
-[[maybe_unused]] static mat3 calc_view_matrix(vec2 offset, f32 zoom, f32 aspect)
+static mat3 calc_view_matrix_impl(vec2 offset, f32 zoom, f32 aspect)
 {
-  vec3 c0  = vec3{1.0f, 0.0f, 0.0f} * zoom;
-  vec3 c1  = vec3{0.0f, 1.0f, 0.0f} * zoom * aspect;
-  vec3 c2  = vec3{-offset, 1.0f};
-  mat3 mat = {c0, c1, c2};
-  return mat;
+  vec3 zooming = vec3{zoom, zoom * aspect, 1.0f};
+  vec3 c0 = vec3{1.0f, 0.0f, 0.0f} * zooming;
+  vec3 c1 = vec3{0.0f, 1.0f, 0.0f} * zooming;
+  vec3 c2 = vec3{-offset,    1.0f} * zooming;
+  return mat3{c0, c1, c2};
 }
 
 //==================================================================================================
@@ -144,7 +144,7 @@ struct Editor::EditorImpl
   std::vector<EditorSector> sectors;
   EditorRenderer            renderer;
   vec2                      center = VEC2_ZERO;
-  f32                       zoom   = 1.0f;
+  f32                       zoom   = 0.0f;
 
   bool is_dragging                     = false;
   vec2 dragging_start_cursor_screen_pos = VEC2_ZERO;
@@ -153,22 +153,31 @@ struct Editor::EditorImpl
   void init()
   {
     std::vector<vec2> points;
-    points.insert(points.begin(), {vec2{-1.0f,  0.0f}, vec2{1.0f, 0.0f}});
-    points.insert(points.begin(), {vec2{ 0.0f, -1.0f}, vec2{0.0f, 1.0f}});
+    points.insert(points.end(), {vec2{-1.0f,  0.0f}, vec2{1.0f, 0.0f}});
+    points.insert(points.end(), {vec2{ 0.0f, -1.0f}, vec2{0.0f, 1.0f}});
+
+    points.insert(points.end(), {vec2{-0.25f, -0.25f}, vec2{0.25f, -0.25f}});
+    points.insert(points.end(), {vec2{-0.25f,  0.25f}, vec2{0.25f,  0.25f}});
+
     grid.refresh_gpu_data(points);
     grid.color = colors::GRAY;
     grid.line_width = 1.0f;
   }
 
+  mat3 calc_view_matrix()
+  {
+    return calc_view_matrix_impl(this->center, std::exp(this->zoom * 0.1f), this->aspect);
+  }
+
   vec2 screen_to_wpos(vec2 screen_pos)
   {
-    mat3 screen_to_world = calc_view_matrix(this->center, this->zoom, this->aspect);
+    mat3 screen_to_world = inverse(this->calc_view_matrix());
     return (screen_to_world * vec3{screen_pos, 1.0f}).xy;
   }
 
   vec2 wpos_to_screen(vec2 wpos)
   {
-    mat3 world_to_screen = inverse(calc_view_matrix(this->center, this->zoom, this->aspect));
+    mat3 world_to_screen = this->calc_view_matrix();
     return (world_to_screen * vec3{wpos, 1.0f}).xy;
   }
 
@@ -195,32 +204,34 @@ struct Editor::EditorImpl
 
   bool handle_dragging()
   {
-    bool middle_mouse = ImGui::IsMouseDown(ImGuiMouseButton_Middle);
+    bool middle_mouse_held = ImGui::IsMouseDown(ImGuiMouseButton_Middle);
 
-    if (middle_mouse != is_dragging)
+    if (middle_mouse_held != is_dragging)
     {
-      is_dragging = middle_mouse;
+      // Dragging state changed
+      is_dragging = middle_mouse_held;
       if (is_dragging)
       {
         // Started dragging
-        dragging_start_center_world_pos  = this->center;
-        dragging_start_cursor_screen_pos = this->get_mouse_screen_pos();
+        this->dragging_start_center_world_pos  = this->center;
+        this->dragging_start_cursor_screen_pos = this->get_mouse_screen_pos();
       }
     }
 
+    // During the dragging
     if (is_dragging)
     {
-      vec2 screen_difference_from_start = this->get_mouse_screen_pos() - this->dragging_start_cursor_screen_pos;
-      mat3 screen_to_world = calc_view_matrix(this->center, this->zoom, 1.0f);
-      vec2 wspace_difference_from_start = (screen_to_world * vec3{screen_difference_from_start, 0.0f}).xy;
-      this->center = this->dragging_start_center_world_pos - wspace_difference_from_start;
+      vec2 screen_diff_from_start = this->get_mouse_screen_pos() - this->dragging_start_cursor_screen_pos;
+      mat3 screen_to_world = inverse(this->calc_view_matrix());
+      vec2 wspace_diff_from_start = (screen_to_world * vec3{screen_diff_from_start, 0.0f}).xy;
+      this->center = this->dragging_start_center_world_pos - wspace_diff_from_start;
     }
 
     ImGui::SetMouseCursor(is_dragging ? ImGuiMouseCursor_ResizeAll : ImGuiMouseCursor_Arrow);
-
     return is_dragging;
   }
 
+//==================================================================================================
   bool handle_zoom_in_out()
   {
     f32 wheel = ImGui::GetIO().MouseWheel;
@@ -231,7 +242,11 @@ struct Editor::EditorImpl
       return false;
     }
 
-    this->zoom += wheel;
+    vec2 world_pos_under_cursor_before_zoom = this->get_mouse_wpos();
+    this->zoom = clamp(this->zoom + wheel, -100.0f, 100.0f);
+    vec2 world_pos_under_cursor_after_zoom = this->get_mouse_wpos();
+    vec2 difference = world_pos_under_cursor_after_zoom - world_pos_under_cursor_before_zoom;
+    this->center -= difference;
 
     return true;
   }
@@ -304,7 +319,7 @@ void Editor::render()
     }
   }
 
-  mat3 projection = calc_view_matrix(m_impl->center, m_impl->zoom, m_impl->aspect);
+  mat3 projection = m_impl->calc_view_matrix();
   m_impl->renderer.render(projection, primitives);
 }
 
