@@ -13,6 +13,8 @@
 #include <engine/graphics/resources/shader_program.h>
 #include <engine/graphics/resources/mesh.h>
 
+#include <engine/graphics/resources/texture.h>
+
 #include <math/lingebra.h>   // compMax
 #include <metaprogramming.h> // ARRAY_LENGTH
 
@@ -217,6 +219,36 @@ struct EditorSector
 };
 
 //==================================================================================================
+namespace ImGuiNc
+{
+
+bool ImageButton(cstr texture, ImVec2 size, bool selected)
+{
+  auto& texture_man = TextureManager::get();
+
+  const auto& texture_handle   = texture_man[texture];
+  const auto& texture_bundle   = texture_man.get_atlas_bundle(texture_handle.get_lifetime());
+  ImTextureID bundle_im_handle = recast<ImTextureID>(cast<u64>(texture_bundle.diffuse_handle));
+
+  vec2 bundle_size = texture_bundle.get_size();
+  vec2 uv0 =  texture_handle.get_pos()                              / bundle_size;
+  vec2 uv1 = (texture_handle.get_pos() + texture_handle.get_size()) / bundle_size;
+
+  constexpr ImVec4 back_col     = ImVec4{0.0f, 0.0f, 0.0f, 0.0f};
+  constexpr ImVec4 selected_col = ImVec4{1.0f, 1.0f, 1.0f, 1.0f};
+  constexpr ImVec4 default_col  = ImVec4{0.3f, 0.3f, 0.3f, 1.0f};
+
+  ImVec4 tint_col = selected ? selected_col : default_col;
+
+  return ImGui::ImageButton
+  (
+    texture, bundle_im_handle, size, ImVec2{uv0.x, uv0.y}, ImVec2{uv1.x, uv1.y}, back_col, tint_col
+  );
+}
+
+}
+
+//==================================================================================================
 struct Editor::EditorImpl
 {
   static constexpr u64 PX_PER_M  = 48;
@@ -245,6 +277,8 @@ struct Editor::EditorImpl
   {
     this->time_since_start += cast<f64>(dt);
 
+    constexpr ImVec2 TOOL_SIZE = ImVec2{16, 16};
+
     if (ImGui::BeginMainMenuBar())
     {
       if (ImGui::BeginMenu("File"))
@@ -259,6 +293,24 @@ struct Editor::EditorImpl
       if (ImGui::BeginMenu("Edit"))
       {
         ImGui::EndMenu();
+      }
+
+      bool has_select_tool = this->has_tool_selected<EmptyTool>();
+      if (ImGuiNc::ImageButton("editor_select_tool", TOOL_SIZE, has_select_tool))
+      {
+        //this->change_tool<>
+      }
+
+      bool has_brush_tool = this->has_tool_selected<BrushTool>();
+      if (ImGuiNc::ImageButton("editor_brush_tool", TOOL_SIZE, has_brush_tool))
+      {
+        this->change_tool<BrushTool>();
+      }
+
+      bool has_entity_tool = this->has_tool_selected<EmptyTool>();
+      if (ImGuiNc::ImageButton("editor_entity_tool", TOOL_SIZE, has_entity_tool))
+      {
+        
       }
 
       ImGui::EndMainMenuBar();
@@ -311,8 +363,9 @@ struct Editor::EditorImpl
 
     void update(EditorImpl& editor, f32 /*delta*/)
     {
-      bool left_click  = ImGui::IsMouseReleased(ImGuiMouseButton_Left);
-      bool right_click = ImGui::IsMouseReleased(ImGuiMouseButton_Right);
+      bool input_allowed = !ImGui::GetIO().WantCaptureMouse;
+      bool left_click    = input_allowed && ImGui::IsMouseReleased(ImGuiMouseButton_Left);
+      bool right_click   = input_allowed && ImGui::IsMouseReleased(ImGuiMouseButton_Right);
 
       vec2 mouse_world_pos = editor.get_mouse_wpos();
       editor.snap_to_grid(mouse_world_pos);
@@ -408,16 +461,22 @@ struct Editor::EditorImpl
   vec2 dragging_start_cursor_screen_pos = VEC2_ZERO;
   vec2 dragging_start_center_world_pos  = VEC2_ZERO;
 
+  template<typename ToolType>
+  bool has_tool_selected()
+  {
+    return std::holds_alternative<ToolType>(this->tool);
+  }
+
   template<typename NewToolType>
   void change_tool()
   {
-    if (std::holds_alternative<NewToolType>(tool))
+    if (this->has_tool_selected<NewToolType>())
     {
       return;
     }
 
     // Create the data
-    tool = NewToolType{};
+    this->tool = NewToolType{};
   }
 
   void snap_to_grid(vec2& coords)
