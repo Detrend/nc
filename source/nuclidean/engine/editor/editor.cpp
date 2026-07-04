@@ -18,10 +18,12 @@
 
 #include <imgui/imgui.h>
 
+#include <algorithm> // std::transform
 #include <vector>
 #include <span>
 #include <optional>
 #include <variant>
+#include <memory>
 
 //==================================================================================================
 namespace nc::editor
@@ -32,6 +34,16 @@ constexpr f32 GRID_ALPHA = 0.3f;
 
 // Width/height of one grid cell has to occupy at least this amount of screen in order to be visible
 constexpr f32 GRID_SCREEN_PERCENTAGE_FOR_VISIBILITY = 0.01f;
+
+// The amount of screen space the brush cursor occupies.
+constexpr f32 BRUSH_CURSOR_SCREEN_PERCENTAGE = 0.005f;
+
+// The amount of screen space the normals of the wall occupy.
+constexpr f32 WALL_NORMAL_SCREEN_PERCENTAGE = 0.01f;
+
+constexpr color4 BRUSH_WALL_COL1           = colors::WHITE;
+constexpr color4 BRUSH_WALL_COL2           = colors::WHITE;
+constexpr f32    BRUSH_WALL_FLASH_INTERVAL = 0.5f;
 
 }
 
@@ -50,12 +62,20 @@ static mat3 calc_view_matrix_impl(vec2 offset, f32 zoom, f32 aspect)
 }
 
 //==================================================================================================
-struct EditorPrimitive
+struct EditorPrimitive : public std::enable_shared_from_this<EditorPrimitive>
 {
   MeshHandle handle     = MeshHandle::invalid();
   aabb2      bbox       = aabb2{};
   f32        line_width = 1.0f;
   color4     color      = colors::WHITE;
+
+  EditorPrimitive() = default;
+
+  // Disable any moving or construction whatsoever
+  EditorPrimitive(const EditorPrimitive&)            = delete;
+  EditorPrimitive& operator=(const EditorPrimitive&) = delete;
+  EditorPrimitive(EditorPrimitive&&)                 = delete;
+  EditorPrimitive& operator=(EditorPrimitive&&)      = delete;
 
   void refresh_gpu_data(std::span<vec2> points)
   {
@@ -83,7 +103,8 @@ struct EditorPrimitive
   }
 };
 
-using RenderList = std::vector<EditorPrimitive*>;
+using EditorPrimitivePtr = std::shared_ptr<EditorPrimitive>;
+using RenderList         = std::vector<EditorPrimitivePtr>;
 
 //==================================================================================================
 // Restores the GL state when exiting the scope.
@@ -128,7 +149,7 @@ public:
     nc_assert(grid_rendering.is_valid());
   }
 
-  void render(mat3 projection, const std::span<EditorPrimitive*> primitives)
+  void render(mat3 projection, const std::span<EditorPrimitivePtr> primitives)
   {
     glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "Editor pass");
     OpenGlStateScope state_restore;
@@ -139,7 +160,7 @@ public:
     grid_rendering.use();
     grid_rendering.set_uniform(shaders::editor::lines::TRANSFORM, projection);
 
-    for (const EditorPrimitive* primitive : primitives)
+    for (const EditorPrimitivePtr primitive : primitives)
     {
       nc_assert(primitive->handle.is_valid());
       grid_rendering.set_uniform(shaders::editor::lines::COLOR, primitive->color);
@@ -159,16 +180,40 @@ private:
 //==================================================================================================
 struct EditorWall
 {
-  vec2 pt;
+  ivec2 pt;
 };
 
 //==================================================================================================
 struct EditorSector
 {
-  EditorPrimitive         render_data;
+  EditorPrimitivePtr      render_data;
   std::vector<EditorWall> walls;
   f32                     floor_height = 0.0f;
   f32                     ceil_height  = 0.0f;
+
+  void get_render_data(RenderList& list)
+  {
+    if (render_data && render_data->handle.is_valid())
+    {
+      list.push_back(render_data->shared_from_this());
+    }
+  }
+
+  void recompute_render_data()
+  {
+    if (!render_data)
+    {
+      render_data = std::make_shared<EditorPrimitive>();
+    }
+
+    std::vector<vec2> points;
+    for (u64 i = 1; i < walls.size(); ++i)
+    {
+      points.insert(points.end(), {cast<vec2>(walls[i-1].pt), cast<vec2>(walls[i].pt)});
+    }
+
+    render_data->refresh_gpu_data(points);
+  }
 };
 
 //==================================================================================================
@@ -186,14 +231,71 @@ struct Editor::EditorImpl
   static_assert(ARRAY_LENGTH(GRID_SIZES)  == NUM_GRIDS);
   static_assert(ARRAY_LENGTH(GRID_COLORS) == NUM_GRIDS);
 
-  f32                          aspect = 1.0f;
-  ivec2                        screen_size = ivec2{1920, 1080};
-  std::vector<EditorPrimitive> grids;
-  std::vector<EditorSector>    sectors;
-  EditorRenderer               renderer;
-  vec2                         center = VEC2_ZERO;
-  f32                          zoom   = 0.0f;
-  u64                          current_snap = 1;
+  f32                             aspect = 1.0f;
+  ivec2                           screen_size = ivec2{1920, 1080};
+  std::vector<EditorPrimitivePtr> grids;
+  std::vector<EditorSector>       sectors;
+  EditorRenderer                  renderer;
+  vec2                            center = VEC2_ZERO;
+  f32                             zoom   = 0.0f;
+  u64                             current_snap = 1;
+  f64                             time_since_start = 0.0f;
+
+  void update(f32 dt)
+  {
+    this->time_since_start += cast<f64>(dt);
+
+    if (ImGui::BeginMainMenuBar())
+    {
+      if (ImGui::BeginMenu("File"))
+      {
+        ImGui::MenuItem("Save Map",    "Ctrl+S");
+        ImGui::MenuItem("Save Map As", "Ctrl+Shift+S");
+        ImGui::MenuItem("Open Map",    "Ctrl+O");
+
+        ImGui::EndMenu();
+      }
+
+      if (ImGui::BeginMenu("Edit"))
+      {
+        ImGui::EndMenu();
+      }
+
+      ImGui::EndMainMenuBar();
+    }
+
+    this->handle_dragging() || this->handle_zoom_in_out();
+
+    std::visit([&](auto& tool)
+    {
+      tool.update(*this, dt);
+    }, this->tool);
+  }
+
+  bool try_insert_sector_walls_into_map(const std::vector<ivec2>& pts)
+  {
+    // First, check if the first point matched with the last one
+    if (pts.size() < 3)
+    {
+      return false;
+    }
+
+    // Full loop
+    if (pts.front() == pts.back())
+    {
+      EditorSector& new_sector = sectors.emplace_back();
+      std::transform(pts.begin(), pts.end(), std::back_inserter(new_sector.walls), [&](ivec2 point)
+      {
+        return EditorWall{.pt = point};
+      });
+
+      new_sector.recompute_render_data();
+
+      return true;
+    }
+
+    return false;
+  }
 
   struct EmptyTool
   {
@@ -203,8 +305,9 @@ struct Editor::EditorImpl
 
   struct BrushTool
   {
-    EditorPrimitive         render_data;
-    std::vector<EditorWall> painted_walls_stack;
+    EditorPrimitivePtr cursor      = std::make_shared<EditorPrimitive>();
+    EditorPrimitivePtr render_data = std::make_shared<EditorPrimitive>();
+    std::vector<ivec2> painted_walls_stack;
 
     void update(EditorImpl& editor, f32 /*delta*/)
     {
@@ -214,40 +317,87 @@ struct Editor::EditorImpl
       vec2 mouse_world_pos = editor.get_mouse_wpos();
       editor.snap_to_grid(mouse_world_pos);
 
-      std::vector<vec2> pts;
-      auto& walls = this->painted_walls_stack;
+      mat3 screen_to_world = inverse(editor.calc_view_matrix());
+      f32  normal_len      = screen_to_world[0].x * editor::WALL_NORMAL_SCREEN_PERCENTAGE;
+      f32  cursor_len      = screen_to_world[0].x * editor::BRUSH_CURSOR_SCREEN_PERCENTAGE;
+
+      // Cursor
+      vec2 cursor_dirs[4] = {VEC2_X, VEC2_Y, -VEC2_X, -VEC2_Y};
+      std::vector<vec2> cursor_pts;
+      for (u64 i = 0; i < 4; ++i)
+      {
+        vec2 a = mouse_world_pos + cursor_len * cursor_dirs[i];
+        vec2 b = mouse_world_pos + cursor_len * cursor_dirs[(i+1) % 4];
+        cursor_pts.insert(cursor_pts.end(), {a, b});
+      }
+      cursor->refresh_gpu_data(cursor_pts);
+
+      // Wall pts
+      std::vector<vec2> pts_to_render;
+      auto& wall_pts = this->painted_walls_stack;
 
       if (left_click)
       {
-        walls.push_back(EditorWall{.pt = mouse_world_pos});
+        ivec2 coords = ivec2{mouse_world_pos};
+        if (wall_pts.empty() || wall_pts.back() != coords)
+        {
+          // Check if this will produce some sector
+          // First, check our points
+          wall_pts.push_back(coords);
+          if (editor.try_insert_sector_walls_into_map(wall_pts))
+          {
+            // Sector created
+            wall_pts.clear();
+          }
+        }
       }
       else if (right_click)
       {
-        if (walls.size())
+        if (wall_pts.size())
         {
-          walls.pop_back();
+          wall_pts.pop_back();
         }
       }
 
-      for (u64 i = 1; i < walls.size(); ++i)
+      for (u64 i = 1; i < wall_pts.size(); ++i)
       {
-        pts.insert(pts.end(), {walls[i-1].pt, walls[i].pt});
+        pts_to_render.insert(pts_to_render.end(), {vec2{wall_pts[i-1]}, vec2{wall_pts[i]}});
       }
 
-      if (walls.size())
+      if (wall_pts.size())
       {
-        pts.insert(pts.end(), {walls.back().pt, mouse_world_pos});
+        pts_to_render.insert(pts_to_render.end(), {vec2{wall_pts.back()}, mouse_world_pos});
       }
 
-      this->render_data.refresh_gpu_data(pts);
-      this->render_data.color = colors::GREEN;
+      u64 pts_size = pts_to_render.size();
+      nc_assert(pts_size % 2 == 0);
+
+      for (u64 i = 0; i < pts_size; i += 2)
+      {
+        vec2 a = vec2{pts_to_render[i  ]};
+        vec2 b = vec2{pts_to_render[i+1]};
+        vec2 mid  = (a + b) * 0.5f;
+        vec2 dir  = normalize_or_zero(b - a);
+        vec2 norm = flipped(dir) * normal_len;
+        pts_to_render.insert(pts_to_render.end(), {mid, mid + norm});
+      }
+
+      f32 color_mix = cast<f32>(abs(sin(editor.time_since_start / editor::BRUSH_WALL_FLASH_INTERVAL)));
+
+      this->render_data->refresh_gpu_data(pts_to_render);
+      this->render_data->color = mix(editor::BRUSH_WALL_COL1, editor::BRUSH_WALL_COL2, color_mix);
     }
 
     void get_render_data(RenderList& list)
     {
-      if (render_data.handle.is_valid())
+      if (render_data->handle.is_valid())
       {
-        list.push_back(&render_data);
+        list.push_back(render_data->shared_from_this());
+      }
+
+      if (cursor->handle.is_valid())
+      {
+        list.push_back(cursor->shared_from_this());
       }
     }
   };
@@ -356,7 +506,7 @@ struct Editor::EditorImpl
 
     primitive.refresh_gpu_data(points);
     primitive.line_width = 1.0f;
-    primitive.color      = color4{color.xyz, 0.3f * alpha_coeff};
+    primitive.color      = color4{color.xyz, editor::GRID_ALPHA * alpha_coeff};
   }
 
   void recompute_grids()
@@ -365,7 +515,8 @@ struct Editor::EditorImpl
     grids.resize(NUM_GRIDS);
     for (u64 i = 0; i < NUM_GRIDS; ++i)
     {
-      this->recompute_exact_grid(this->grids[i], GRID_SIZES[i], GRID_COLORS[i]);
+      grids[i] = std::make_shared<EditorPrimitive>();
+      this->recompute_exact_grid(*this->grids[i], GRID_SIZES[i], GRID_COLORS[i]);
     }
   }
 
@@ -461,10 +612,6 @@ struct Editor::EditorImpl
 
     return true;
   }
-
-  bool handle_brush_tool()
-  {
-  }
 };
 
 //==================================================================================================
@@ -497,31 +644,7 @@ void Editor::terminate()
 //==================================================================================================
 void Editor::update(f32 delta)
 {
-  if (ImGui::BeginMainMenuBar())
-  {
-    if (ImGui::BeginMenu("File"))
-    {
-      ImGui::MenuItem("Save Map",    "Ctrl+S");
-      ImGui::MenuItem("Save Map As", "Ctrl+Shift+S");
-      ImGui::MenuItem("Open Map",    "Ctrl+O");
-
-      ImGui::EndMenu();
-    }
-
-    if (ImGui::BeginMenu("Edit"))
-    {
-      ImGui::EndMenu();
-    }
-
-    ImGui::EndMainMenuBar();
-  }
-
-  m_impl->handle_dragging() || m_impl->handle_zoom_in_out();
-
-  std::visit([&](auto& tool)
-  {
-    tool.update(*m_impl, delta);
-  }, m_impl->tool);
+  m_impl->update(delta);
 }
 
 //==================================================================================================
@@ -531,9 +654,9 @@ void Editor::render()
 
   for (u64 i = 0; i < EditorImpl::NUM_GRIDS; ++i)
   {
-    if (m_impl->grids[i].handle.is_valid())
+    if (m_impl->grids[i]->handle.is_valid())
     {
-      primitives.push_back(&m_impl->grids[i]);
+      primitives.push_back(m_impl->grids[i]->shared_from_this());
     }
   }
 
@@ -545,10 +668,7 @@ void Editor::render()
 
   for (EditorSector& sector : m_impl->sectors)
   {
-    if (sector.render_data.handle.is_valid())
-    {
-      primitives.push_back(&sector.render_data);
-    }
+    sector.get_render_data(primitives);
   }
 
   mat3 projection = m_impl->calc_view_matrix();
