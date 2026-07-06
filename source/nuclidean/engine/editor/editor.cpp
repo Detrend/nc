@@ -48,6 +48,10 @@ constexpr color4 BRUSH_WALL_COL1           = colors::WHITE;
 constexpr color4 BRUSH_WALL_COL2           = colors::WHITE;
 constexpr f32    BRUSH_WALL_FLASH_INTERVAL = 0.5f;
 
+constexpr color4 SECTOR_WALL_COL    = colors::WHITE;
+constexpr color4 SECTOR_SPLITS_COL  = colors::GRAY;
+constexpr color4 SECTOR_SURFACE_COL = colors::NAVY;
+
 // Maximum distance from center in all 4 directions.
 constexpr s64 LEVEL_AREA_LIMIT = 512 * 48;
 constexpr f32 ZOOM_LIMIT_MIN   = -100.0f;
@@ -86,7 +90,7 @@ struct EditorPrimitive : public std::enable_shared_from_this<EditorPrimitive>
   EditorPrimitive(EditorPrimitive&&)                 = delete;
   EditorPrimitive& operator=(EditorPrimitive&&)      = delete;
 
-  void refresh_gpu_data(std::span<vec2> points)
+  void refresh_gpu_data(std::span<vec2> points, GLenum primitive_type = GL_LINES)
   {
     // Get rid of the old data
     MeshManager::get().destroy_editor_primitive(handle);
@@ -101,7 +105,7 @@ struct EditorPrimitive : public std::enable_shared_from_this<EditorPrimitive>
       }
 
       // Upload the data
-      handle = MeshManager::get().create_editor_primitive(points, GL_LINES);
+      handle = MeshManager::get().create_editor_primitive(points, primitive_type);
     }
   }
 
@@ -169,7 +173,7 @@ public:
     grid_rendering.use();
     grid_rendering.set_uniform(shaders::editor::lines::TRANSFORM, projection);
 
-    for (const EditorPrimitivePtr primitive : primitives)
+    for (const EditorPrimitivePtr& primitive : primitives)
     {
       nc_assert(primitive->handle.is_valid());
       grid_rendering.set_uniform(shaders::editor::lines::COLOR, primitive->color);
@@ -201,23 +205,23 @@ struct EditorSector
     u16 to   = 0;
   };
 
-  EditorPrimitivePtr      render_data_lines;
-  EditorPrimitivePtr      render_data_surface;
+  EditorPrimitivePtr      render_data_lines   = std::make_shared<EditorPrimitive>();
+  EditorPrimitivePtr      render_data_surface = std::make_shared<EditorPrimitive>();
+  EditorPrimitivePtr      render_data_splits  = std::make_shared<EditorPrimitive>();
   std::vector<EditorWall> walls;
   f32                     floor_height = 0.0f;
   f32                     ceil_height  = 0.0f;
 
   void get_render_data(RenderList& list)
   {
-    if (render_data_lines && render_data_lines->handle.is_valid())
-    {
+    if (render_data_lines->handle.is_valid())
       list.push_back(render_data_lines->shared_from_this());
-    }
 
-    if (render_data_surface && render_data_surface->handle.is_valid())
-    {
+    if (render_data_surface->handle.is_valid())
       list.push_back(render_data_surface->shared_from_this());
-    }
+
+    if (render_data_splits->handle.is_valid())
+      list.push_back(render_data_splits->shared_from_this());
   }
 
   void recompute_lines()
@@ -231,6 +235,7 @@ struct EditorSector
     }
 
     render_data_lines->refresh_gpu_data(points);
+    render_data_lines->color = editor::SECTOR_WALL_COL;
   }
 
   // This is O(n^3) but fuck it we ball
@@ -238,7 +243,8 @@ struct EditorSector
   (
     const std::vector<ivec2>&       pts,
     const std::vector<u16>&         indices,
-    std::vector<ConvexifyPair>& pairs_out
+    std::vector<ConvexifyPair>&     pairs_out,
+    std::vector<std::vector<u16>>&  convex_out
   )
   {
     auto get_idx_pt = [&](s64 idx)
@@ -430,10 +436,15 @@ struct EditorSector
       }
 
       // And run on each group recursively
-      convexify_sector(pts, indices_a, pairs_out);
-      convexify_sector(pts, indices_b, pairs_out);
+      convexify_sector(pts, indices_a, pairs_out, convex_out);
+      convexify_sector(pts, indices_b, pairs_out, convex_out);
       return;
     }
+
+    // If we got here then everything is convex.. Copy the indices to "convex_out" and
+    // exit.
+    std::vector<u16>& convex_list_out = convex_out.emplace_back();
+    convex_list_out.assign(indices.begin(), indices.end());
   }
 
   static bool is_sector_inward(const std::vector<ivec2>& pts)
@@ -479,9 +490,10 @@ struct EditorSector
     std::vector<u16> indices(pts.size());
     std::iota(indices.begin(), indices.end(), 0_u16);
 
-    std::vector<ConvexifyPair> splits;
+    std::vector<ConvexifyPair>    splits;
+    std::vector<std::vector<u16>> convex_parts;
 
-    convexify_sector(pts, indices, splits);
+    convexify_sector(pts, indices, splits, convex_parts);
 
     std::vector<vec2> split_line_pts;
     for (const auto&[idx1, idx2] : splits)
@@ -490,22 +502,31 @@ struct EditorSector
       split_line_pts.push_back(cast<vec2>(pts[idx2]));
     }
 
-    render_data_surface->refresh_gpu_data(split_line_pts);
-    render_data_surface->color = colors::GRAY;
+    std::vector<vec2> surface_triangle_pts;
+    for (const std::vector<u16>& part : convex_parts)
+    {
+      if (part.empty())
+        return;
+
+      vec2 a = cast<vec2>(pts[part[0]]);
+      for (u64 i = 1; i < part.size(); ++i)
+      {
+        u64  prev = i - 1;
+        vec2 b = cast<vec2>(pts[part[prev]]);
+        vec2 c = cast<vec2>(pts[part[i   ]]);
+        surface_triangle_pts.insert(surface_triangle_pts.end(), {a, b, c});
+      }
+    }
+
+    render_data_splits->refresh_gpu_data(split_line_pts);
+    render_data_splits->color = editor::SECTOR_SPLITS_COL;
+
+    render_data_surface->refresh_gpu_data(surface_triangle_pts, GL_TRIANGLES);
+    render_data_surface->color = editor::SECTOR_SURFACE_COL;
   }
 
   void recompute_render_data()
   {
-    if (!render_data_lines)
-    {
-      render_data_lines = std::make_shared<EditorPrimitive>();
-    }
-
-    if (!render_data_surface)
-    {
-      render_data_surface = std::make_shared<EditorPrimitive>();
-    }
-
     this->recompute_lines();
     this->convexify_surface();
   }
