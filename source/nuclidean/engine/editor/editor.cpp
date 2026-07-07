@@ -8,12 +8,9 @@
 #include <engine/input/input_system.h>
 #include <engine/editor/editor_system.h>
 
-#include <engine/graphics/shaders/uniform.h>
-#include <engine/graphics/shaders/shaders.h>
-#include <engine/graphics/resources/shader_program.h>
-#include <engine/graphics/resources/mesh.h>
-
-#include <engine/graphics/resources/texture.h>
+#include <engine/editor/editor_primitive.h>
+#include <engine/editor/editor_renderer.h>
+#include <engine/editor/rendering_modifier.h>
 
 #include <math/lingebra.h>   // compMax
 #include <metaprogramming.h> // ARRAY_LENGTH
@@ -27,6 +24,8 @@
 #include <variant>
 #include <memory>
 #include <numeric>   // std::iota
+#include <map>
+
 
 //==================================================================================================
 namespace nc::editor
@@ -64,6 +63,12 @@ namespace nc
 {
 
 //==================================================================================================
+static u64 random_id()
+{
+  return cast<u64>(__rdtsc());
+}
+
+//==================================================================================================
 // World coords to screen coords.
 static mat3 calc_view_matrix_impl(vec2 offset, f32 zoom, f32 aspect)
 {
@@ -73,122 +78,6 @@ static mat3 calc_view_matrix_impl(vec2 offset, f32 zoom, f32 aspect)
   vec3 c2 = vec3{-offset,    1.0f} * zooming;
   return mat3{c0, c1, c2};
 }
-
-//==================================================================================================
-struct EditorPrimitive : public std::enable_shared_from_this<EditorPrimitive>
-{
-  MeshHandle handle     = MeshHandle::invalid();
-  aabb2      bbox       = aabb2{};
-  f32        line_width = 1.0f;
-  color4     color      = colors::WHITE;
-
-  EditorPrimitive() = default;
-
-  // Disable any moving or construction whatsoever
-  EditorPrimitive(const EditorPrimitive&)            = delete;
-  EditorPrimitive& operator=(const EditorPrimitive&) = delete;
-  EditorPrimitive(EditorPrimitive&&)                 = delete;
-  EditorPrimitive& operator=(EditorPrimitive&&)      = delete;
-
-  void refresh_gpu_data(std::span<vec2> points, GLenum primitive_type = GL_LINES)
-  {
-    // Get rid of the old data
-    MeshManager::get().destroy_editor_primitive(handle);
-
-    // Refresh the bbox if any vertices
-    if (points.size())
-    {
-      bbox = aabb2{};
-      for (vec2 p : points)
-      {
-        bbox.insert_point(p);
-      }
-
-      // Upload the data
-      handle = MeshManager::get().create_editor_primitive(points, primitive_type);
-    }
-  }
-
-  ~EditorPrimitive()
-  {
-    // It should be ok to call this even if the handle is null
-    MeshManager::get().destroy_editor_primitive(handle);
-  }
-};
-
-using EditorPrimitivePtr = std::shared_ptr<EditorPrimitive>;
-using RenderList         = std::vector<EditorPrimitivePtr>;
-
-//==================================================================================================
-// Restores the GL state when exiting the scope.
-class OpenGlStateScope
-{
-public:
-  OpenGlStateScope()
-  {
-    m_depth_test  = glIsEnabled(GL_DEPTH_TEST);
-    m_alpha_blend = glIsEnabled(GL_BLEND);
-    glGetFloatv(GL_LINE_WIDTH, &m_line_width);
-  }
-
-  ~OpenGlStateScope()
-  {
-    auto reset_state = [](auto flag, bool state)
-    {
-      if (state)
-        glEnable(flag);
-      else
-        glDisable(flag);
-    };
-
-    reset_state(GL_DEPTH_TEST, m_depth_test);
-    reset_state(GL_BLEND,      m_alpha_blend);
-    glLineWidth(m_line_width);
-  }
-
-private:
-  bool m_depth_test  = false;
-  bool m_alpha_blend = false;
-  f32  m_line_width  = 0.0f;
-};
-
-//==================================================================================================
-class EditorRenderer
-{
-public:
-  EditorRenderer()
-  : grid_rendering(ShaderProgramHandle::from_files(shaders::editor::lines::VERTEX_FILE, shaders::editor::lines::FRAGMENT_FILE))
-  {
-    nc_assert(grid_rendering.is_valid());
-  }
-
-  void render(mat3 projection, const std::span<EditorPrimitivePtr> primitives)
-  {
-    glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "Editor pass");
-    OpenGlStateScope state_restore;
-
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_BLEND);
-
-    grid_rendering.use();
-    grid_rendering.set_uniform(shaders::editor::lines::TRANSFORM, projection);
-
-    for (const EditorPrimitivePtr& primitive : primitives)
-    {
-      nc_assert(primitive->handle.is_valid());
-      grid_rendering.set_uniform(shaders::editor::lines::COLOR, primitive->color);
-      glLineWidth(primitive->line_width);
-      glBindVertexArray(primitive->handle.get_vao());
-      glDrawArrays(primitive->handle.get_draw_mode(), 0, primitive->handle.get_vertex_count());
-    }
-
-    glBindVertexArray(0);
-    glPopDebugGroup();
-  }
-
-private:
-  ShaderProgramHandle grid_rendering;
-};
 
 //==================================================================================================
 struct EditorWall
@@ -211,16 +100,17 @@ struct EditorSector
   std::vector<EditorWall> walls;
   f32                     floor_height = 0.0f;
   f32                     ceil_height  = 0.0f;
+  u64                     id;
 
   void get_render_data(RenderList& list)
   {
-    if (render_data_lines->handle.is_valid())
+    if (render_data_lines->is_valid())
       list.push_back(render_data_lines->shared_from_this());
 
-    if (render_data_surface->handle.is_valid())
+    if (render_data_surface->is_valid())
       list.push_back(render_data_surface->shared_from_this());
 
-    if (render_data_splits->handle.is_valid())
+    if (render_data_splits->is_valid())
       list.push_back(render_data_splits->shared_from_this());
   }
 
@@ -235,16 +125,19 @@ struct EditorSector
     }
 
     render_data_lines->refresh_gpu_data(points);
-    render_data_lines->color = editor::SECTOR_WALL_COL;
+    render_data_lines->properties.color = editor::SECTOR_WALL_COL;
+    render_data_lines->type = EditorPrimitiveType::sector;
+    render_data_lines->sector.type = 0;;
+
   }
 
   // This is O(n^3) but fuck it we ball
   static void convexify_sector
   (
-    const std::vector<ivec2>&       pts,
-    const std::vector<u16>&         indices,
-    std::vector<ConvexifyPair>&     pairs_out,
-    std::vector<std::vector<u16>>&  convex_out
+    const std::vector<ivec2>&      pts,
+    const std::vector<u16>&        indices,
+    std::vector<ConvexifyPair>&    pairs_out,
+    std::vector<std::vector<u16>>& convex_out
   )
   {
     auto get_idx_pt = [&](s64 idx)
@@ -519,10 +412,14 @@ struct EditorSector
     }
 
     render_data_splits->refresh_gpu_data(split_line_pts);
-    render_data_splits->color = editor::SECTOR_SPLITS_COL;
+    render_data_splits->properties.color = editor::SECTOR_SPLITS_COL;
+    render_data_splits->type = EditorPrimitiveType::sector;
+    render_data_splits->sector.type = 1;
 
     render_data_surface->refresh_gpu_data(surface_triangle_pts, GL_TRIANGLES);
-    render_data_surface->color = editor::SECTOR_SURFACE_COL;
+    render_data_surface->properties.color = editor::SECTOR_SURFACE_COL;
+    render_data_surface->type = EditorPrimitiveType::sector;
+    render_data_surface->sector.type = 2;
   }
 
   void recompute_render_data()
@@ -580,7 +477,7 @@ struct Editor::EditorImpl
   f32                             aspect = 1.0f;
   ivec2                           screen_size = ivec2{1920, 1080};
   std::vector<EditorPrimitivePtr> grids;
-  std::vector<EditorSector>       sectors;
+  std::map<u64, EditorSector>     sectors;
   EditorRenderer                  renderer;
   vec2                            center = VEC2_ZERO;
   f32                             zoom   = editor::ZOOM_DEFAULT;
@@ -621,14 +518,6 @@ struct Editor::EditorImpl
         this->change_tool<BrushTool>();
       }
 
-      /*
-      bool has_entity_tool = this->has_tool_selected<EmptyTool>();
-      if (ImGuiNc::ImageButton("editor_entity_tool", TOOL_SIZE, has_entity_tool))
-      {
-        
-      }
-      */
-
       ImGui::EndMainMenuBar();
     }
 
@@ -651,14 +540,17 @@ struct Editor::EditorImpl
     // Full loop
     if (pts.front() == pts.back())
     {
-      EditorSector& new_sector = sectors.emplace_back();
+      u64 id = random_id();
+      nc_assert(!sectors.contains(id));
+
+      EditorSector& new_sector = sectors[id];
+      new_sector.id = id;
       std::transform(pts.begin(), pts.end()-1, std::back_inserter(new_sector.walls), [&](ivec2 point)
       {
         return EditorWall{.pt = point};
       });
 
       new_sector.recompute_render_data();
-
       return true;
     }
 
@@ -672,8 +564,24 @@ struct Editor::EditorImpl
   };
 
   // Enables selection and movement of walls, sectors and entities.
-  struct SelectTool
+  struct SelectTool : public IEditorPrimitiveRenderingModifier
   {
+    void modify_rendering_properties
+    (
+      EditorPrimitiveRenderingProperties& properties,
+      const EditorPrimitive&        primitive
+    )
+    override
+    {
+      if (primitive.type == EditorPrimitiveType::sector)
+      {
+        if (primitive.sector.id == pointed_at_sector)
+        {
+          properties.color *= 2.0f;
+        }
+      }
+    }
+
     void get_render_data(RenderList& /*list*/)
     {
       
@@ -683,6 +591,13 @@ struct Editor::EditorImpl
     {
       
     }
+
+    void get_modifiers(RenderModifierList& list)
+    {
+      list.push_back(this);
+    }
+
+    u64 pointed_at_sector = 0;
   };
 
   struct BrushTool
@@ -768,7 +683,7 @@ struct Editor::EditorImpl
       f32 color_mix = cast<f32>(abs(sin(editor.time_since_start / editor::BRUSH_WALL_FLASH_INTERVAL)));
 
       this->render_data->refresh_gpu_data(pts_to_render);
-      this->render_data->color = mix(editor::BRUSH_WALL_COL1, editor::BRUSH_WALL_COL2, color_mix);
+      this->render_data->properties.color = mix(editor::BRUSH_WALL_COL1, editor::BRUSH_WALL_COL2, color_mix);
     }
 
     void get_render_data(RenderList& list)
@@ -782,6 +697,11 @@ struct Editor::EditorImpl
       {
         list.push_back(cursor->shared_from_this());
       }
+    }
+
+    void get_modifiers(RenderModifierList& /*list*/)
+    {
+      
     }
   };
 
@@ -910,8 +830,8 @@ struct Editor::EditorImpl
     }
 
     primitive.refresh_gpu_data(points);
-    primitive.line_width = 1.0f;
-    primitive.color      = color4{color.xyz, editor::GRID_ALPHA * alpha_coeff};
+    primitive.properties.line_width = 1.0f;
+    primitive.properties.color      = color4{color.xyz, editor::GRID_ALPHA * alpha_coeff};
   }
 
   void recompute_grids()
@@ -1055,7 +975,8 @@ void Editor::update(f32 delta)
 //==================================================================================================
 void Editor::render()
 {
-  RenderList primitives;
+  RenderList         primitives;
+  RenderModifierList modifiers;
 
   for (u64 i = 0; i < EditorImpl::NUM_GRIDS; ++i)
   {
@@ -1065,19 +986,32 @@ void Editor::render()
     }
   }
 
-  std::visit([&](auto& data_type)
+  std::visit([&](auto& tool_type)
   {
-    data_type.get_render_data(primitives);
+    tool_type.get_render_data(primitives);
+    tool_type.get_modifiers(modifiers);
   },
   m_impl->tool);
 
-  for (EditorSector& sector : m_impl->sectors)
+  for (auto&[id, sector] : m_impl->sectors)
   {
     sector.get_render_data(primitives);
   }
 
+  // Sort the primitives by their order
+  std::sort(primitives.begin(), primitives.end(), [](const auto& a, const auto& b)
+  {
+    return a->order < b->order;
+  });
+
+  // Sort the modifiers by their order
+  std::sort(modifiers.begin(), modifiers.end(), [](const auto* a, const auto* b)
+  {
+    return a->order < b->order;
+  });
+
   mat3 projection = m_impl->calc_view_matrix();
-  m_impl->renderer.render(projection, primitives);
+  m_impl->renderer.render(projection, primitives, modifiers);
 }
 
 //==================================================================================================
