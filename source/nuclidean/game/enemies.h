@@ -124,6 +124,13 @@ struct EnemyStatsAgain
   DbCol<s32, "health amount"> health_amount = 12;
 };
 
+enum class TestEnemyEnum : u8
+{
+  item1,
+  item2,
+  item3,
+};
+
 struct EnemyStatsSmall
 {
   DbCol<f32,   "move speed">       move_speed     = 5.0f;
@@ -140,6 +147,7 @@ struct EnemyStatsSmall
   DbCol<f32,   "infight chance">   infight_chance = 0.0f;
   DbCol<f32,   "step height">      step_height    = 1.0f;
   DbCol<EnemyStatsAgain*, "ptr">   reference      = nullptr;
+  DbCol<TestEnemyEnum, "enum">     enum_member    = TestEnemyEnum::item1;
 };
 
 inline Database<EnemyStatsSmall> EnemyDb ("enemy");

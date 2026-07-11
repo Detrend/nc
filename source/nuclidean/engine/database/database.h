@@ -101,6 +101,12 @@ template<typename T>
   requires PropertyTypeSupported<T>::value
 struct PropertyTypeSupported<std::vector<T>> : std::true_type {};
 
+// Enums, but only the ones with underlying type of u8
+template<typename EnumType>
+  requires std::is_enum_v<EnumType>
+    && std::is_same_v<std::underlying_type_t<EnumType>, u8> 
+struct PropertyTypeSupported<EnumType> : std::true_type {};
+
 template<u64 Len>
 struct CompileTimeString
 {

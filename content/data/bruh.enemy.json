@@ -3,5 +3,6 @@
   "projectile": "fireball",
   "max hp": 10,
   "eye height": 30.0,
-  "is melee": true
+  "is melee": true,
+  "enum": "item3"
 }

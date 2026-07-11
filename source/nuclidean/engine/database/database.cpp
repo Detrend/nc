@@ -21,6 +21,9 @@
 #include <array>
 #include <fstream>
 
+// Remove
+// #include <iostream>
+
 namespace nc
 {
 
@@ -88,7 +91,7 @@ auto type_check_string = [](const auto& json_it) { return json_it->is_string(); 
 
 //==================================================================================================
 template<typename TypeCheck>
-static bool possible_quick_exit(cstr name, const auto& json, DbSerializationCtx& ctx, TypeCheck&& check)
+static bool check_existance_and_type(cstr name, const auto& json, DbSerializationCtx& ctx, TypeCheck&& check)
 {
   auto it = json.find(name);
   if (it == json.end())
@@ -117,7 +120,7 @@ void deserialize(Type& /*t*/, cstr /*name*/, const auto& /*json*/, DbSerializati
 template<std::integral Type>
 void deserialize(Type& t, cstr name, const auto& json, DbSerializationCtx& ctx)
 {
-  if (possible_quick_exit(name, json, ctx, type_check_int))
+  if (check_existance_and_type(name, json, ctx, type_check_int))
   {
     t = json[name];
   }
@@ -153,7 +156,7 @@ void deserialize(Type& t, cstr name, const auto& json, DbSerializationCtx& ctx)
 template<std::floating_point Type>
 void deserialize(Type& t, cstr name, const auto& json, DbSerializationCtx& ctx)
 {
-  if (possible_quick_exit(name, json, ctx, type_check_float))
+  if (check_existance_and_type(name, json, ctx, type_check_float))
   {
     t = json[name];
   }
@@ -162,7 +165,7 @@ void deserialize(Type& t, cstr name, const auto& json, DbSerializationCtx& ctx)
 //==================================================================================================
 void deserialize(Token& t, cstr name, const auto& json, DbSerializationCtx& ctx)
 {
-  if (possible_quick_exit(name, json, ctx, type_check_string))
+  if (check_existance_and_type(name, json, ctx, type_check_string))
   {
     auto it = json.find(name);
     const std::string& ref = it->get_ref<const std::string&>();
@@ -175,6 +178,27 @@ void deserialize(Token& t, cstr name, const auto& json, DbSerializationCtx& ctx)
     }
 
     t = Token{ref};
+  }
+}
+
+//==================================================================================================
+template<typename EnumType>
+  requires std::is_enum_v<EnumType> && std::is_same_v<std::underlying_type_t<EnumType>, u8>
+void deserialize(EnumType& enum_value, cstr name, const auto& json, DbSerializationCtx& ctx)
+{
+  if (check_existance_and_type(name, json, ctx, type_check_string))
+  {
+    auto it = json.find(name);
+    const std::string& ref = it->get_ref<const std::string&>();
+
+    if (!EnumNameTable<EnumType>::name_exists(ref))
+    {
+      ctx.warn("Can't deserialize enum property \"{}\" because the value \"{}\" is not a known "
+               "enum item.", name, ref);
+      return;
+    }
+
+    enum_value = EnumNameTable<EnumType>::get_value_for_name(ref);
   }
 }
 
@@ -344,79 +368,6 @@ Token Database<RowType>::get_type() const
 }
 
 //==================================================================================================
-template<typename EnumType, u64 Idx>
-constexpr void fill_elements_from_this_to_zero(std::array<std::string_view, 256>& output)
-{
-  output[Idx] = evil::get_enum_item_name<cast<EnumType>(Idx)>();
-
-  if constexpr (Idx != 0)
-  {
-    fill_elements_from_this_to_zero<Idx-1>(output);
-  }
-}
-
-//==================================================================================================
-template<typename EnumType>
-constexpr std::array<std::string_view, 256> build_string_table()
-{
-  std::array<std::string_view, 256> table;
-  fill_elements_from_this_to_zero<EnumType, 255>(table);
-  return table;
-}
-
-//==================================================================================================
-template<typename EnumType>
-struct EnumNameTable
-{
-  using BoolList = std::array<bool, 256>;
-  using NameList = std::array<std::string_view, 256>;
-  using NameMap  = std::map<std::string_view, EnumType>;
-
-  static NameMap build_name_map()
-  {
-    const auto& names = get_names(); 
-    NameMap map;
-
-    for (u64 i = 0; i < 256; ++i)
-    {
-      if (EnumType eval = cast<EnumType>(i); item_exists(eval))
-      {
-        map[names[i]] = eval;
-      }
-    }
-
-    return map;
-  }
-
-  static const NameMap& get_name_map()
-  {
-    static NameMap map = build_name_map();
-    return map;
-  }
-
-  static const NameList& get_names()
-  {
-    static NameList names = build_string_table<EnumType>();
-    return names;
-  }
-
-  static std::string_view get_name_for_value(EnumType value)
-  {
-    return get_names()[cast<u8>(value)];
-  }
-
-  static bool item_exists(EnumType value)
-  {
-    return get_name_for_value(value)[0] != '0';
-  }
-
-  static bool name_exists(std::string_view name)
-  {
-    return get_name_map().contains(name);
-  }
-};
-
-//==================================================================================================
 template<typename RowType>
   requires IsDbRow<RowType>
 bool Database<RowType>::add_or_patch_row_from_file(const std::string& file_path, std::string& error)
@@ -466,23 +417,41 @@ bool Database<RowType>::add_or_patch_row_from_file(const std::string& file_path,
 
   DbSerializationCtx ctx(*this);
 
+  bool retval = false;
   if (is_json)
   {
-    return detail::deserialize_row_from_json(path, *ptr, ctx);
+    retval = detail::deserialize_row_from_json(path, *ptr, ctx);
   }
   else
   {
-    return detail::deserialize_row_from_binary(path, *ptr);
+    retval = detail::deserialize_row_from_binary(path, *ptr);
   }
 
-  // DEBUG
-  /*
   const auto& tie = struct_to_tie(*ptr);
-  detail::tuple_for_each(tie, [&]<typename T>(const T&)
+
+  /*
+  std::cout << file_path << std::endl;
+  detail::tuple_for_each(tie, [&]<typename T, auto Str>(const DbCol<T, Str>& column)
   {
-    
+    std::cout << Str.str << " : ";
+    if constexpr (std::is_same_v<Token, T>)
+    {
+      std::cout << column.value.to_string();
+    }
+    else if constexpr (std::is_enum_v<T>)
+    {
+      std::cout << EnumNameTable<T>::get_name_for_value(column.value);
+    }
+    else
+    {
+      std::cout << column.value;
+    }
+
+    std::cout << std::endl;
   });
-    */
+  */
+
+  return retval;
 }
 
 //==================================================================================================
