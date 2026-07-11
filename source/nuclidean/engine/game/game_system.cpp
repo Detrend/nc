@@ -316,6 +316,19 @@ static void load_json_map
   };
   std::vector<DeferredActivatorLoad> hooks_to_load;
 
+  const auto load_entity_triggers = [&trigger_table, &activator_map](const nlohmann::json &js_entity, const Entity *const entity) {
+    if (js_entity.contains("triggers"))
+    {
+      for (auto&& js_trigger : js_entity["triggers"])
+      {
+        TriggerData td = load_json_trigger(js_trigger, activator_map);
+        td.type = TriggerData::entity;
+        td.entity_type.entity = entity->get_id();
+        trigger_table.push_back(td);
+      }
+    }
+    };
+
   try
   {
 
@@ -461,17 +474,7 @@ static void load_json_map
       const EnemyTypes::evalue entity_type = js_entity["entity_type"];
       Entity* enemy = entities.create_entity<Enemy>(position, forward, entity_type);
       register_entity(enemy, js_entity);
-
-      if (js_entity.contains("triggers"))
-      {
-        for (auto&& js_trigger : js_entity["triggers"])
-        {
-          TriggerData td = load_json_trigger(js_trigger, activator_map);
-          td.type = TriggerData::entity;
-          td.entity_type.entity = enemy->get_id();
-          trigger_table.push_back(td);
-        }
-      }
+      load_entity_triggers(js_entity, enemy);
 
       get_engine().get_module<GameSystem>().increment_enemy_count();
     }
@@ -485,16 +488,7 @@ static void load_json_map
     Entity* pickup = entities.create_entity<Pickup>(position, pickup_type);
     register_entity(pickup, js_pickup);
 
-    if (js_pickup.contains("triggers"))
-    {
-      for (auto&& js_trigger : js_pickup["triggers"])
-      {
-        TriggerData td = load_json_trigger(js_trigger, activator_map);
-        td.type = TriggerData::entity;
-        td.entity_type.entity = pickup->get_id();
-        trigger_table.push_back(td);
-      }
-    }
+    load_entity_triggers(js_pickup, pickup);
   }
 
   for (auto&& js_prop : data["props"])
@@ -513,8 +507,9 @@ static void load_json_map
       .rotation = static_cast<Appearance::RotationMode>(js_prop["rotation"]),
     };
 
-
-    register_entity(entities.create_entity<Prop>(position, radius, height, appearance), js_prop);
+    Entity* const prop = entities.create_entity<Prop>(position, radius, height, appearance);
+    register_entity(prop, js_prop);
+    load_entity_triggers(js_prop, prop);
   }
   for (auto&& js_light : data["directional_lights"])
   {
@@ -523,7 +518,9 @@ static void load_json_map
     const vec3 direction = load_json_vector<3>(js_light["direction"]);
     const float intensity = js_light["intensity"];
 
-    register_entity(entities.create_entity<DirectionalLight>(direction, intensity, color), js_light);
+    Entity* const light = entities.create_entity<DirectionalLight>(direction, intensity, color);
+    register_entity(light, js_light);
+    load_entity_triggers(js_light, light);
   }
   for (auto&& js_light : data["point_lights"])
   {
@@ -539,6 +536,7 @@ static void load_json_map
 
     PointLight* light = entities.create_entity<PointLight>(position, radius, intensity, falloff, color);
     register_entity(light, js_light);
+    load_entity_triggers(js_light, light);
 
     if (js_light.contains("light_string"))
     {
@@ -560,7 +558,9 @@ static void load_json_map
   {
     const float intensity = js_light["intensity"];
 
-    register_entity(entities.create_entity<AmbientLight>(intensity), js_light);
+    Entity* const light = entities.create_entity<AmbientLight>(intensity);
+    register_entity(light, js_light);
+    load_entity_triggers(js_light, light);
   }
   for (auto&& js_skybox : data["skyboxes"])
   {
@@ -568,7 +568,9 @@ static void load_json_map
     const float exposure = js_skybox["exposure"];
     const bool use_gamma = js_skybox["use_gamma_correction"];
     const GLuint sky_box_map = TextureManager::get().get_equirectangular_map(texture, ResLifetime::Game);
-    register_entity(entities.create_entity<SkyBox>(sky_box_map, exposure, use_gamma), js_skybox);
+    Entity* const skybox = entities.create_entity<SkyBox>(sky_box_map, exposure, use_gamma);
+    register_entity(skybox, js_skybox);
+    load_entity_triggers(js_skybox, skybox);
   }
 
   std::unordered_map<unsigned, const nlohmann::json*> tag_to_rawdata;
