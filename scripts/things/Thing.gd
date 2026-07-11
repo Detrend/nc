@@ -32,8 +32,17 @@ func get_export_category()->String: return "misc"
 ##
 ## @param _s Sector where this thing is placed
 ## @param _output JSON object describing this Thing, append additional properties here
-func custom_export(_s: Sector, _output: Dictionary)->void:
-	_output['tag'] = _export_tag
+func custom_export(_s: Sector, output: Dictionary)->void:
+	output['tag'] = _export_tag
+	_do_export_triggers(output, get_triggers())
+
+static func _do_export_triggers(output : Dictionary, triggers : Array[Trigger])->void:
+	if not triggers.is_empty():
+		var triggers_export : Array[Dictionary] = []
+		for trigger in triggers:
+			triggers_export.append(trigger.do_export())
+		output["triggers"] = triggers_export
+
 
 ## @c true IFF this Thing is not nested
 ## Nested [Things] get their position computed based on their parent [Thing]'s position.
@@ -54,3 +63,10 @@ static func get_all_standalone_things(root: Node, thing_type : Variant = Thing, 
 static func get_all_things(root: Node, thing_type : Variant = Thing, ret: Array[Thing] = [])->Array[Thing]:
 	ret = NodeUtils.get_children_by_predicate(root, func(n:Node)->bool: return is_instance_of(n, thing_type) and (n as Node2D).is_visible_in_tree(), ret, NodeUtils.LOOKUP_FLAGS.RECURSIVE)
 	return ret
+
+## Create a new [Trigger] attached to this [Entity]
+@export_tool_button("Add Trigger") var _add_trigger_tool_button = func()->void: NodeUtils.instantiate_child_by_type_and_select(self, Trigger, "Trigger")
+
+## Get all [Trigger]s attached to this [Entity] (activated by it being alive/dead)
+func get_triggers(ret : Array[Trigger] = [])->Array[Trigger]:
+	return Trigger.get_triggers_for_node(self, ret) 
