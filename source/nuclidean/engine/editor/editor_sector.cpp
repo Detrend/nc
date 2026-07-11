@@ -293,62 +293,70 @@ void EditorSector::recompute_lines()
 }
 
 //==================================================================================================
-
-//==================================================================================================
 void EditorSector::convexify_surface()
 {
-  std::vector<ivec2> pts;
-  std::transform(walls.begin(), walls.end(), std::back_inserter(pts), [](const EditorWall& wall)
+  // First allocate it into a point list
+  std::vector<ivec2> points;
+  std::transform(this->walls.begin(), this->walls.end(), std::back_inserter(points), [](auto&& wall)
   {
     return wall.pt;
   });
 
   // No need to triangulate inward sectors..
-  if (!is_sector_inward(pts))
+  if (!is_sector_inward(points))
   {
     return;
   }
 
-  std::vector<u16> indices(pts.size());
+  // Generate indices
+  std::vector<u16> indices(points.size());
   std::iota(indices.begin(), indices.end(), 0_u16);
 
-  std::vector<ConvexifyPair>    splits;
-  std::vector<std::vector<u16>> convex_parts;
+  // Convexify now
+  this->convex_parts.clear();
+  std::vector<ConvexifyPair> splits;
+  convexify_sector(points, indices, splits, convex_parts);
 
-  convexify_sector(pts, indices, splits, convex_parts);
-
+  // Build lines for the convex splits (might be empty if the sector is already convex)
   std::vector<vec2> split_line_pts;
-  for (const auto&[idx1, idx2] : splits)
+  for (auto&&[idx1, idx2] : splits)
   {
-    split_line_pts.push_back(cast<vec2>(pts[idx1]));
-    split_line_pts.push_back(cast<vec2>(pts[idx2]));
+    split_line_pts.push_back(cast<vec2>(points[idx1]));
+    split_line_pts.push_back(cast<vec2>(points[idx2]));
   }
 
+  // Build triangles for the surface
   std::vector<vec2> surface_triangle_pts;
-  for (const std::vector<u16>& part : convex_parts)
+  for (const IndexList& index_list : this->convex_parts)
   {
-    if (part.empty())
+    if (index_list.empty())
+    {
       return;
+    }
 
-    vec2 a = cast<vec2>(pts[part[0]]);
-    for (u64 i = 1; i < part.size(); ++i)
+    vec2 pt1 = cast<vec2>(points[index_list[0]]);
+    for (u64 i = 1; i < index_list.size(); ++i)
     {
       u64  prev = i - 1;
-      vec2 b = cast<vec2>(pts[part[prev]]);
-      vec2 c = cast<vec2>(pts[part[i   ]]);
-      surface_triangle_pts.insert(surface_triangle_pts.end(), {a, b, c});
+      vec2 pt2  = cast<vec2>(points[index_list[prev]]);
+      vec2 pt3  = cast<vec2>(points[index_list[i   ]]);
+      surface_triangle_pts.insert(surface_triangle_pts.end(), {pt1, pt2, pt3});
     }
   }
 
+  // And refresh lines
   render_data_splits->refresh_gpu_data(split_line_pts);
   render_data_splits->properties.color = editor::SECTOR_SPLITS_COL;
   render_data_splits->type = EditorPrimitiveType::sector;
   render_data_splits->sector.type = 1;
+  render_data_splits->sector.id   = this->id;
 
+  // And surface area
   render_data_surface->refresh_gpu_data(surface_triangle_pts, GL_TRIANGLES);
   render_data_surface->properties.color = editor::SECTOR_SURFACE_COL;
   render_data_surface->type = EditorPrimitiveType::sector;
   render_data_surface->sector.type = 2;
+  render_data_surface->sector.id   = this->id;
 }
 
 //==================================================================================================

@@ -15,6 +15,7 @@
 
 #include <math/lingebra.h>   // compMax
 #include <metaprogramming.h> // ARRAY_LENGTH
+#include <intersect.h>
 
 #include <imgui/imgui.h>
 
@@ -189,6 +190,7 @@ struct Editor::EditorImpl
 
       EditorSector& new_sector = sectors[id];
       new_sector.id = id;
+
       std::transform(pts.begin(), pts.end()-1, std::back_inserter(new_sector.walls), [&](ivec2 point)
       {
         return EditorWall{.pt = point};
@@ -210,16 +212,18 @@ struct Editor::EditorImpl
   // Enables selection and movement of walls, sectors and entities.
   struct SelectTool : public IEditorPrimitiveRenderingModifier
   {
+    bool is_dragging = false;
+
     void modify_rendering_properties
     (
       EditorPrimitiveRenderingProperties& properties,
-      const EditorPrimitive&        primitive
+      const EditorPrimitive&              primitive
     )
     override
     {
-      if (primitive.type == EditorPrimitiveType::sector)
+      if (primitive.type == EditorPrimitiveType::sector && this->current_selection == SelectionType::sector)
       {
-        if (primitive.sector.id == pointed_at_sector)
+        if (primitive.sector.id == this->selection.sector.sector_id)
         {
           properties.color *= 2.0f;
         }
@@ -231,9 +235,120 @@ struct Editor::EditorImpl
       
     }
 
-    void update(EditorImpl& /*editor*/, f32 /*dt*/)
+    bool handle_dragging(EditorImpl& /*editor*/)
     {
-      
+      if (this->current_selection == SelectionType::none)
+      {
+        return false;
+      }
+
+      bool input_allowed = !ImGui::GetIO().WantCaptureMouse;
+      bool holding_right = input_allowed && ImGui::IsMouseReleased(ImGuiMouseButton_Right);
+
+      if (holding_right != this->is_dragging)
+      {
+        this->is_dragging = holding_right;
+
+        if (this->is_dragging)
+        {
+          // Started dragging.. Decide what do we actually want to drag
+        }
+        else
+        {
+          // Ended dragging
+        }
+      }
+
+      return false;
+    }
+
+    bool handle_selection(EditorImpl& editor)
+    {
+      u64 sector_directly_selected = 0;
+      ivec2 closest_wall_a, closest_wall_b, closest_point;
+
+      f32 distance_to_closest_point = FLT_MAX;
+      f32 distance_to_closest_wall  = FLT_MAX;
+
+      vec2 cursor_in_world = editor.get_mouse_wpos();
+
+      // Update the pointed at sector..
+      for (const auto&[id, sector] : editor.sectors)
+      {
+        // Handle the direct point-at sector - iterate all convex parts
+        for (const EditorSector::IndexList& convex_part_indices : sector.convex_parts)
+        {
+          u16 idx0 = convex_part_indices[0];
+
+          for (u64 i = 0; i < convex_part_indices.size(); ++i)
+          {
+            u16 idx1 = convex_part_indices[ i                                  ];
+            u16 idx2 = convex_part_indices[(i + 1) % convex_part_indices.size()];
+
+            vec2 pt0 = cast<vec2>(sector.walls[idx0].pt);
+            vec2 pt1 = cast<vec2>(sector.walls[idx1].pt);
+            vec2 pt2 = cast<vec2>(sector.walls[idx2].pt);
+
+            if (intersect::point_triangle(cursor_in_world, pt0, pt1, pt2))
+            {
+              sector_directly_selected = id;
+              break;
+            }
+          }
+        }
+
+        // Iterate all walls and points of the sector and check their distance
+        for (u64 i = 0; i < sector.walls.size(); ++i)
+        {
+          u64 i_next = (i + 1) % sector.walls.size();
+
+          ivec2 pt_a = sector.walls[i     ].pt;
+          ivec2 pt_b = sector.walls[i_next].pt;
+
+          // Check point distance
+          f32 pt_dist = distance(cast<vec2>(pt_a), cursor_in_world);
+          if (pt_dist < distance_to_closest_point)
+          {
+            distance_to_closest_point = pt_dist;
+            closest_point             = pt_a;
+          }
+
+          // Check wall distance
+          f32 wall_dist = dist::point_line_2d(cursor_in_world, cast<vec2>(pt_a), cast<vec2>(pt_b));
+          if (wall_dist < distance_to_closest_wall)
+          {
+            distance_to_closest_wall = wall_dist;
+            closest_wall_a           = pt_a;
+            closest_wall_b           = pt_b;
+          }
+        }
+      }
+
+      // Now evaluate what should actually be selected
+      if (sector_directly_selected != 0)
+      {
+        this->current_selection = SelectionType::sector;
+        //this->selection.sector  = sector_directly_selected;
+      }
+      else if (distance_to_closest_point < 10.0f)
+      {
+        // Handle closest point
+      }
+      else if (distance_to_closest_wall < 10.0f)
+      {
+        // Handle closest wall
+      }
+      else
+      {
+        this->current_selection = SelectionType::none;
+      }
+
+      return true;
+    }
+
+    void update(EditorImpl& editor, f32 /*dt*/)
+    {
+      handle_dragging(editor) || handle_selection(editor);
     }
 
     void get_modifiers(RenderModifierList& list)
@@ -241,7 +356,34 @@ struct Editor::EditorImpl
       list.push_back(this);
     }
 
-    u64 pointed_at_sector = 0;
+    enum class SelectionType
+    {
+      none,
+      sector,
+      wall,
+      point,
+    };
+
+    SelectionType current_selection = SelectionType::none;
+    union
+    {
+      struct
+      {
+        u64 sector_id;
+      } sector;
+
+      struct
+      {
+        u64 sector_id;
+        u64 wall_idx;
+      } wall;
+
+      struct
+      {
+        u64 sector_id;
+        u64 point_idx;
+      } point;
+    } selection;
   };
 
   struct BrushTool
@@ -450,13 +592,6 @@ struct Editor::EditorImpl
       s64 x_end   = cast<s64>(top_right.x         / step_size) * step_size;
       s64 y_start = cast<s64>(ceil(bottom_left.y) / step_size) * step_size;
       s64 y_end   = cast<s64>(top_right.y         / step_size) * step_size;
-
-      /*
-      x_start = clamp(x_start, -editor::LEVEL_AREA_LIMIT, editor::LEVEL_AREA_LIMIT);
-      x_end   = clamp(x_end,   -editor::LEVEL_AREA_LIMIT, editor::LEVEL_AREA_LIMIT);
-      y_start = clamp(y_start, -editor::LEVEL_AREA_LIMIT, editor::LEVEL_AREA_LIMIT);
-      y_end   = clamp(y_end,   -editor::LEVEL_AREA_LIMIT, editor::LEVEL_AREA_LIMIT);
-      */
 
       for (s64 x = x_start; x <= x_end; x += step_size)
       {

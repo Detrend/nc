@@ -18,6 +18,8 @@ struct EditorWall
 
 struct EditorSector
 {
+  using IndexList = std::vector<u16>;
+
   EditorPrimitivePtr      render_data_lines   = std::make_shared<EditorPrimitive>();
   EditorPrimitivePtr      render_data_surface = std::make_shared<EditorPrimitive>();
   EditorPrimitivePtr      render_data_splits  = std::make_shared<EditorPrimitive>();
@@ -25,6 +27,7 @@ struct EditorSector
   f32                     floor_height = 0.0f;
   f32                     ceil_height  = 0.0f;
   u64                     id;
+  std::vector<IndexList>  convex_parts; // Used for selection
 
   void get_render_data(RenderList& list);
   void recompute_lines();
