@@ -119,7 +119,7 @@ private:
   std::array<f32, Y_SMOOTHING_FRAMES> smooth_ys{};
   u8 smooth_y_idx = 0;
 
-  EnemyType    type                  = 0;
+  EnemyType    type                  = INVALID_ENEMY_TYPE;
   vec3         velocity              = VEC3_ZERO;
   vec3         facing                = VEC3_ZERO;
   EnemyAiState state                 = EnemyAiState::idle;

@@ -124,25 +124,6 @@ constexpr ActorAnimStateFlag ENEMY_DIR8_STATES
   & ~(ActorAnimStatesFlags::dying | ActorAnimStatesFlags::dead);
 
 
-static constexpr struct {
-    SoundID hurt;
-    SoundID die;
-    SoundID attack;
-    SoundID alert;
-    SoundID move;
-    f32     move_interval_seconds;
-} ENEMY_SOUNDS_BY_TYPE[] = {
-    {.hurt = Sounds::cultist_hurt, .die = Sounds::cultist_die, .attack = Sounds::cultist_attack, .alert = Sounds::cultist_alert, .move = Sounds::cultist_move, .move_interval_seconds =1.3f},
-    {.hurt = Sounds::possessed_hurt, .die = Sounds::possessed_die, .attack = Sounds::possessed_attack, .alert = Sounds::possessed_alert, .move = Sounds::possessed_move, .move_interval_seconds =1.1f},
-    {.hurt = Sounds::grunt_hurt, .die = Sounds::grunt_die, .attack = Sounds::grunt_attack, .alert = Sounds::grunt_alert, .move = Sounds::cultist_move, .move_interval_seconds = 1.3f}, // temporary -> need grunt sounds
-};
-
-static_assert(EnemyTypes::cultist == 0);
-static_assert(EnemyTypes::possessed == 1);
-static_assert(EnemyTypes::grunt == 2);
-static_assert(EnemyTypes::count == ARRAY_LENGTH(ENEMY_SOUNDS_BY_TYPE));
-
-
 namespace sprites
 {
 
@@ -150,13 +131,13 @@ namespace sprites
 static std::string choose_sprite(const ActorFSM& fsm, EnemyType type)
 {
   u8   anim_state       = fsm.get_state();
-  u64  state_sprite_cnt = ENEMY_STATS[type].state_sprite_cnt[anim_state];
+  u64  state_sprite_cnt = db::enemies.get(type).state_sprite_cnt.value[anim_state];
   f32  rel_time         = fsm.get_time_relative();
   u64  sprite_idx       = cast<u64>(rel_time * state_sprite_cnt);
   cstr sprite_sheet     = ACTOR_ANIM_STATES_NAMES[anim_state];
-  cstr type_name        = ENEMY_TYPE_NAMES[type];
+  auto type_name        = type.to_cstring();
 
-  return std::format("{}_{}_{}", type_name, sprite_sheet, sprite_idx);
+  return std::format("{}_{}_{}", &type_name[0], sprite_sheet, sprite_idx);
 }
 
 //==============================================================================
@@ -222,22 +203,23 @@ EntityType Enemy::get_type_static()
 //==============================================================================
 void Enemy::init(vec3 position, vec3 looking_dir, EnemyType tpe)
 {
-  nc_assert(tpe >= EnemyTypes::cultist && tpe < EnemyTypes::count);
   nc_assert(looking_dir != VEC3_ZERO);
+  nc_assert(db::enemies.contains(tpe));
 
-  Entity::init(position, ENEMY_STATS[tpe].radius, ENEMY_STATS[tpe].height);
-  this->type    = tpe;
-  this->facing  = normalize(looking_dir);
+  this->type     = tpe;
+  this->facing   = normalize(looking_dir);
   this->anim_fsm = ActorFSM(ActorAnimStates::idle);
 
   const auto& stats = this->get_stats();
+
+  Entity::init(position, stats.radius, stats.height);
 
   this->velocity = VEC3_ZERO;
   this->health   = stats.max_hp;
 
   this->appear = Appearance
   {
-    .sprite    = std::format("{}_idle_0", ENEMY_TYPE_NAMES[this->type]),
+    .sprite    = std::format("{}_idle_0", this->type.to_cstring()[0]),
     .direction = this->get_facing_hor(),
     .scale     = 31.25f,
     .mode      = Appearance::SpriteMode::dir8,
@@ -246,14 +228,14 @@ void Enemy::init(vec3 position, vec3 looking_dir, EnemyType tpe)
 
   for (ActorAnimState s = 0; s < ActorAnimStates::count; ++s)
   {
-    this->anim_fsm.set_state_length(s, stats.state_sprite_len[s]);
+    this->anim_fsm.set_state_length(s, stats.state_sprite_len.value[s]);
   }
 
   // Smoothing
   std::fill(smooth_ys.begin(), smooth_ys.end(), position.y);
 
-  u64 attack_frame_idx = stats.state_sprite_cnt[ActorAnimStates::attack];
-  f32 attack_state_len = stats.state_sprite_len[ActorAnimStates::attack];
+  u64 attack_frame_idx = stats.state_sprite_cnt.value[ActorAnimStates::attack];
+  f32 attack_state_len = stats.state_sprite_len.value[ActorAnimStates::attack];
   f32 trigger_time = (stats.attack_frame * attack_state_len) / attack_frame_idx;
 
   this->anim_fsm.set_trigger
@@ -347,12 +329,14 @@ void Enemy::handle_movement(f32 delta)
     }
   }
 
+  /*
   if (anim_fsm.get_state() == ActorAnimStates::walk) {
       const auto& sound = ENEMY_SOUNDS_BY_TYPE[type];
       if (move_sound_timestamp.try_consume(sound.move_interval_seconds)) {
           GameHelpers::get().play_3d_sound(this->get_position(), sound.move, SOUND_RANGE, 1.0f);
       }
   }
+  */
 }
 
 //==============================================================================
@@ -439,7 +423,7 @@ void Enemy::damage(int damage, EntityID from_who)
 
   if (attacker && retreat_chance >= rng.next(0.0f, 1.0f))
   {
-    if (this->state != EnemyAiState::alert) GameHelpers::get().play_3d_sound(this->get_position(), ENEMY_SOUNDS_BY_TYPE[type].alert, ALERT_SOUND_RANGE, 1.0f);
+    //if (this->state != EnemyAiState::alert) GameHelpers::get().play_3d_sound(this->get_position(), ENEMY_SOUNDS_BY_TYPE[type].alert, ALERT_SOUND_RANGE, 1.0f);
     this->state = EnemyAiState::alert;
     this->target_id = from_who;
     this->can_see_target = false;
@@ -455,9 +439,11 @@ void Enemy::damage(int damage, EntityID from_who)
     this->die();
   }
   else if(damage > 0) {
+    /*
     if(hurt_sound_timestamp.try_consume(HURT_SOUND_INTERVAL_SECONDS)){
       GameHelpers::get().play_3d_sound(this->get_position(), ENEMY_SOUNDS_BY_TYPE[type].hurt, SOUND_RANGE, 1.0f);
     }
+    */
   }
 }
 
@@ -466,7 +452,7 @@ void Enemy::die()
 {
   this->state = EnemyAiState::dead;
   this->anim_fsm.set_state(ActorAnimStates::dying);
-  GameHelpers::get().play_3d_sound(this->get_position(), ENEMY_SOUNDS_BY_TYPE[type].die, SOUND_RANGE, 1.0f);
+  //GameHelpers::get().play_3d_sound(this->get_position(), ENEMY_SOUNDS_BY_TYPE[type].die, SOUND_RANGE, 1.0f);
   get_engine().get_module<GameSystem>().increment_kill_count();
   set_height(get_height() * 0.25f);
 }
@@ -537,7 +523,7 @@ void Enemy::handle_ai_idle(f32 /*delta*/)
 
   if (transition_to_alert)
   {
-    if(this->state != EnemyAiState::alert) GameHelpers::get().play_3d_sound(this->get_position(), ENEMY_SOUNDS_BY_TYPE[type].alert, ALERT_SOUND_RANGE, 1.0f);
+    //if(this->state != EnemyAiState::alert) GameHelpers::get().play_3d_sound(this->get_position(), ENEMY_SOUNDS_BY_TYPE[type].alert, ALERT_SOUND_RANGE, 1.0f);
     this->state          = EnemyAiState::alert;
     this->target_id      = player->get_id();
     this->can_see_target = true;
@@ -747,7 +733,7 @@ void Enemy::handle_ai_alert(f32 delta)
       final_force += move_path_force;
       final_force += move_from_target_force;
       final_force += move_from_mates_force;
-      final_force = clamp_length(final_force, 0.0f, 1.0f) * stats.move_speed;
+      final_force = clamp_length(final_force, 0.0f, 1.0f) * stats.move_speed.value;
 
       this->velocity.x = final_force.x;
       this->velocity.z = final_force.y;
@@ -779,7 +765,7 @@ void Enemy::handle_ai_alert(f32 delta)
         (
           stats.atk_delay_min, stats.atk_delay_max
         );
-        GameHelpers::get().play_3d_sound(this->get_position(), ENEMY_SOUNDS_BY_TYPE[type].attack, SOUND_RANGE, 1.0f);
+        //GameHelpers::get().play_3d_sound(this->get_position(), ENEMY_SOUNDS_BY_TYPE[type].attack, SOUND_RANGE, 1.0f);
         //SoundSystem::get().play_oneshot(ENEMY_SOUNDS_BY_TYPE[type].attack);
       }
 
@@ -1056,7 +1042,7 @@ const Appearance& Enemy::get_appearance() const
 //==============================================================================
 const EnemyStats& Enemy::get_stats() const
 {
-  return ENEMY_STATS[this->type];
+  return db::enemies.get(this->type);
 }
 
 //==============================================================================

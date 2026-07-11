@@ -5,6 +5,8 @@
 namespace nc
 {
 
+/*
+
 EnemyStats ENEMY_STATS[] =
 {
   // Cultist
@@ -109,5 +111,7 @@ EnemyStats ENEMY_STATS[] =
   },
 };
 static_assert(ARRAY_LENGTH(ENEMY_STATS) == EnemyTypes::count);
+
+*/
 
 }

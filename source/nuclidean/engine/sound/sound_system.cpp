@@ -270,7 +270,6 @@ void SoundSystem::update([[maybe_unused]] f32 delta_seconds)
     return;
   }
 
-  constexpr Token EMPTY_TOKEN = Token{};
   Token correct_track = EMPTY_TOKEN;
   for (MusicTrack i = 0; i < TRACKS_COUNT; ++i)
   {

@@ -111,7 +111,7 @@ static bool check_existance_and_type(cstr name, const auto& json, DbSerializatio
 
 //==================================================================================================
 template<typename Type>
-void deserialize(Type& /*t*/, cstr /*name*/, const auto& /*json*/, DbSerializationCtx& ctx)
+void deserialize(Type& /*t*/, cstr /*name*/, const auto& /*json*/, DbSerializationCtx& /*ctx*/)
 {
   // Non implemented
 }
@@ -427,9 +427,9 @@ bool Database<RowType>::add_or_patch_row_from_file(const std::string& file_path,
     retval = detail::deserialize_row_from_binary(path, *ptr);
   }
 
-  const auto& tie = struct_to_tie(*ptr);
-
   /*
+
+  const auto& tie = struct_to_tie(*ptr);
   std::cout << file_path << std::endl;
   detail::tuple_for_each(tie, [&]<typename T, auto Str>(const DbCol<T, Str>& column)
   {
@@ -457,6 +457,14 @@ bool Database<RowType>::add_or_patch_row_from_file(const std::string& file_path,
 //==================================================================================================
 template<typename RowType>
   requires IsDbRow<RowType>
+bool Database<RowType>::contains(const KeyType& id) const
+{
+  return this->try_get(id) != nullptr;
+}
+
+//==================================================================================================
+template<typename RowType>
+  requires IsDbRow<RowType>
 const RowType* Database<RowType>::try_get(const KeyType& id) const
 {
   if (auto it = m_data.find(id); it != m_data.end())
@@ -479,6 +487,6 @@ const RowType& Database<RowType>::get(const KeyType& id) const
 
 //==================================================================================================
 // Explicit instantiations
-template class Database<EnemyStatsSmall>;
+template class Database<EnemyStats>;
 
 }

@@ -430,4 +430,5 @@ namespace nc {
 namespace nc {
   // Declare our standard token to carry up to 24 chars
   using Token = CompositeToken<2>;
+  constexpr Token EMPTY_TOKEN = Token{};
 }

@@ -39,6 +39,9 @@ public:
   // Initializes the database. Does not load any data yet.
   Database(Token name) : m_db_name(name) {}
 
+  // Returns true if the given key is in the database.
+  bool contains(const KeyType& key) const;
+
   // Returns pointer to the entry if it exists.
   const RowType* try_get(const KeyType& key) const;
 
@@ -127,7 +130,7 @@ struct DbCol
   Type value;
 
   // Const reference that can be passed to a function without doing a copy
-  operator const Type&()
+  operator const Type&() const
   {
     return value;
   }

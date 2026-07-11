@@ -4,6 +4,7 @@
 #include <types.h>
 #include <common.h>
 #include <game/game_types.h>
+#include <game/projectiles.h>
 
 #include <metaprogramming.h> // ARRAY_LENGTH
 #include <anim_state_machine.h>
@@ -78,81 +79,31 @@ static constexpr GotoArray ACTOR_ANIM_TRANSITIONS
 };
 using ActorFSM = AnimFSM<ActorAnimStates::count, ACTOR_ANIM_TRANSITIONS>;
 
-namespace EnemyTypes
+struct EnemyStats
 {
-
-enum evalue : EnemyType
-{
-  cultist,
-  possessed,
-  grunt,
-  // - //
-  count
+  DbCol<f32              , "move speed"         > move_speed     = 5.0f;
+  DbCol<s32              , "max hp"             > max_hp         = 100;
+  DbCol<f32              , "height"             > height         = 2.0f;
+  DbCol<f32              , "eye height"         > eye_height     = 1.8f;
+  DbCol<f32              , "attack radius"      > atk_height     = 1.5f;
+  DbCol<f32              , "radius"             > radius         = 0.25f;
+  DbCol<f32              , "min attack delay"   > atk_delay_min  = 3.0f;
+  DbCol<f32              , "max attack delay"   > atk_delay_max  = 8.0f;
+  DbCol<u32              , "attack frame"       > attack_frame   = 0;
+  DbCol<bool             , "is melee"           > is_melee       = false;
+  DbCol<f32              , "infight chance"     > infight_chance = 0.0f;
+  DbCol<f32              , "step height"        > step_height    = 1.0f;
+  DbCol<std::vector<u32> , "state sprite count" > state_sprite_cnt;
+  DbCol<std::vector<f32> , "state sprite length"> state_sprite_len;
+  DbCol<ProjectileTypes::evalue, "projectile"   > projectile     = ProjectileTypes::wrench;
 };
 
 }
 
-constexpr cstr ENEMY_TYPE_NAMES[]
+
+namespace nc::db
 {
-  "cultist",
-  "possessed",
-  "grunt",
-};
-static_assert(ARRAY_LENGTH(ENEMY_TYPE_NAMES) == EnemyTypes::count);
 
-struct EnemyStats
-{
-  f32            move_speed     = 5.0f;
-  ProjectileType projectile     = 0;
-  s32            max_hp         = 100;
-  f32            height         = 2.0f;
-  f32            eye_height     = 1.8f;
-  f32            atk_height     = 1.5f;
-  f32            radius         = 0.25f;
-  f32            atk_delay_min  = 3.0f;
-  f32            atk_delay_max  = 8.0f;
-  u32            state_sprite_cnt[ActorAnimStates::count]{};
-  f32            state_sprite_len[ActorAnimStates::count]{};
-  u32            attack_frame   = 0;
-  bool           is_melee : 1   = false;
-  f32            infight_chance = 0.0f;
-  f32            step_height    = 1.0f;
-};
-
-struct EnemyStatsAgain
-{
-  DbCol<s32, "health amount"> health_amount = 12;
-};
-
-enum class TestEnemyEnum : u8
-{
-  item1,
-  item2,
-  item3,
-};
-
-struct EnemyStatsSmall
-{
-  DbCol<f32,   "move speed">       move_speed     = 5.0f;
-  DbCol<Token, "projectile">       projectile     = "test";
-  DbCol<s32,   "max hp">           max_hp         = 100;
-  DbCol<f32,   "height">           height         = 2.0f;
-  DbCol<f32,   "eye height">       eye_height     = 1.8f;
-  DbCol<f32,   "attack height">    atk_height     = 1.5f;
-  DbCol<f32,   "radius">           radius         = 0.25f;
-  DbCol<f32,   "attack delay min"> atk_delay_min  = 3.0f;
-  DbCol<f32,   "attack delay max"> atk_delay_max  = 8.0f;
-  DbCol<u32,   "attack frame">     attack_frame   = 0;
-  DbCol<bool,  "is melee">         is_melee       = false;
-  DbCol<f32,   "infight chance">   infight_chance = 0.0f;
-  DbCol<f32,   "step height">      step_height    = 1.0f;
-  DbCol<EnemyStatsAgain*, "ptr">   reference      = nullptr;
-  DbCol<TestEnemyEnum, "enum">     enum_member    = TestEnemyEnum::item1;
-};
-
-inline Database<EnemyStatsSmall> EnemyDb ("enemy");
-inline Database<EnemyStatsAgain> EnemyDb2("enemy_big");
-
-extern EnemyStats ENEMY_STATS[];
+inline Database<EnemyStats> enemies("enemy");
 
 }
