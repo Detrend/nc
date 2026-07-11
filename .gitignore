@@ -19,3 +19,5 @@ imgui.ini
 *.mscz~
 imgui.ini
 /settings.cfg
+demo
+save
