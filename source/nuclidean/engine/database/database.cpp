@@ -10,6 +10,7 @@
 
 // JSON
 #include <json/json.hpp>
+#include <util/evil_enum.h>
 
 #include <utility>
 #include <type_traits>
@@ -343,6 +344,79 @@ Token Database<RowType>::get_type() const
 }
 
 //==================================================================================================
+template<typename EnumType, u64 Idx>
+constexpr void fill_elements_from_this_to_zero(std::array<std::string_view, 256>& output)
+{
+  output[Idx] = evil::get_enum_item_name<cast<EnumType>(Idx)>();
+
+  if constexpr (Idx != 0)
+  {
+    fill_elements_from_this_to_zero<Idx-1>(output);
+  }
+}
+
+//==================================================================================================
+template<typename EnumType>
+constexpr std::array<std::string_view, 256> build_string_table()
+{
+  std::array<std::string_view, 256> table;
+  fill_elements_from_this_to_zero<EnumType, 255>(table);
+  return table;
+}
+
+//==================================================================================================
+template<typename EnumType>
+struct EnumNameTable
+{
+  using BoolList = std::array<bool, 256>;
+  using NameList = std::array<std::string_view, 256>;
+  using NameMap  = std::map<std::string_view, EnumType>;
+
+  static NameMap build_name_map()
+  {
+    const auto& names = get_names(); 
+    NameMap map;
+
+    for (u64 i = 0; i < 256; ++i)
+    {
+      if (EnumType eval = cast<EnumType>(i); item_exists(eval))
+      {
+        map[names[i]] = eval;
+      }
+    }
+
+    return map;
+  }
+
+  static const NameMap& get_name_map()
+  {
+    static NameMap map = build_name_map();
+    return map;
+  }
+
+  static const NameList& get_names()
+  {
+    static NameList names = build_string_table<EnumType>();
+    return names;
+  }
+
+  static std::string_view get_name_for_value(EnumType value)
+  {
+    return get_names()[cast<u8>(value)];
+  }
+
+  static bool item_exists(EnumType value)
+  {
+    return get_name_for_value(value)[0] != '0';
+  }
+
+  static bool name_exists(std::string_view name)
+  {
+    return get_name_map().contains(name);
+  }
+};
+
+//==================================================================================================
 template<typename RowType>
   requires IsDbRow<RowType>
 bool Database<RowType>::add_or_patch_row_from_file(const std::string& file_path, std::string& error)
@@ -400,6 +474,15 @@ bool Database<RowType>::add_or_patch_row_from_file(const std::string& file_path,
   {
     return detail::deserialize_row_from_binary(path, *ptr);
   }
+
+  // DEBUG
+  /*
+  const auto& tie = struct_to_tie(*ptr);
+  detail::tuple_for_each(tie, [&]<typename T>(const T&)
+  {
+    
+  });
+    */
 }
 
 //==================================================================================================
