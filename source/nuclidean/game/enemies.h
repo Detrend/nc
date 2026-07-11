@@ -142,7 +142,7 @@ struct EnemyStatsSmall
   DbCol<EnemyStatsAgain*, "ptr">   reference      = nullptr;
 };
 
-inline Database<EnemyStatsSmall> EnemyDb("enemy");
+inline Database<EnemyStatsSmall> EnemyDb ("enemy");
 inline Database<EnemyStatsAgain> EnemyDb2("enemy_big");
 
 extern EnemyStats ENEMY_STATS[];

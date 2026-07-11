@@ -5,6 +5,8 @@
 #include <game/game_types.h>
 #include <math/vector.h>
 
+#include <engine/database/database.h>
+
 namespace nc
 {
 
@@ -54,6 +56,30 @@ struct ProjectileStats
   vec3 hit_sprite_col = VEC3_ZERO;
   f32  hit_sprite_rad = 0.0f;
   u8   penetration_cnt = 0;
+};
+
+struct ProjectileStatsDb
+{
+  DbCol<f32  , "dmg falloff"      > dmg_falloff     = 0;
+  DbCol<f32  , "speed"            > speed           = 0;
+  DbCol<f32  , "radius"           > radius          = 0;
+  DbCol<f32  , "gravity"          > gravity         = 0;
+  DbCol<f32  , "friction"         > friction        = 1;
+  DbCol<f32  , "lifetime"         > lifetime        = 0;
+  DbCol<s32  , "damage"           > damage          = 0;
+  DbCol<s32  , "bounce count"     > bounce_cnt      = 0;
+  DbCol<Token, "sprite"           > sprite          = nullptr;
+  DbCol<u8   , "sprite count"     > sprite_cnt      = 0;
+  DbCol<f32  , "anim length"      > anim_len        = 0.0f;
+  DbCol<vec3 , "light color"      > light_color     = VEC3_ZERO;
+  DbCol<f32  , "light len cycle"  > light_cycle_len = 0.0f;
+  DbCol<Token, "light string"     > light_string    = nullptr;
+  DbCol<Token, "hit sprite"       > hit_sprite      = nullptr;
+  DbCol<u8   , "hit sprite count" > hit_sprite_cnt  = 0;
+  DbCol<f32  , "hit sprite length"> hit_sprite_len  = 0.0f;
+  DbCol<vec3 , "hit sprite color" > hit_sprite_col  = VEC3_ZERO;
+  DbCol<f32  , "hit sprite radius"> hit_sprite_rad  = 0.0f;
+  DbCol<u8   , "penetration count"> penetration_cnt = 0;
 };
 
 extern ProjectileStats PROJECTILE_STATS[];

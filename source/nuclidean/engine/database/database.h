@@ -7,6 +7,7 @@
 #include <util/struct_to_tie.h>
 
 #include <engine/database/database_base.h>
+#include <math/vector.h>
 
 #include <map>
 #include <unordered_map>
@@ -83,6 +84,10 @@ struct PropertyTypeSupported<f32> : std::true_type {};
 // Support for tokens
 template<>
 struct PropertyTypeSupported<Token> : std::true_type {};
+
+// Support for vectors
+template<u64 N>
+struct PropertyTypeSupported<vec<f32, N>> : std::true_type {};
 
 // Support for having another row as a property.
 template<typename T>
