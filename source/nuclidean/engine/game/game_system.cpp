@@ -753,6 +753,106 @@ void simulate_one_frame(Game& game, InputGetter inputs)
 }
 
 //==============================================================================
+static nlohmann::json build_sim_state_json(Game& game)
+{
+  constexpr EntityTypeMask sim_mask =
+      EntityTypeFlags::player
+    | EntityTypeFlags::enemy
+    | EntityTypeFlags::pickup
+    | EntityTypeFlags::projectile
+    | EntityTypeFlags::prop
+    | EntityTypeFlags::teleport;
+
+  nlohmann::json state;
+  state["frame_idx"]        = game.frame_idx;
+  state["time_since_start"] = game.time_since_start;
+
+  game.entities->for_each(sim_mask, [&](Entity& entity)
+  {
+    const EntityID id  = entity.get_id();
+    const vec3     pos = entity.get_position();
+
+    nlohmann::json entry;
+    entry["pos"] = { pos.x, pos.y, pos.z };
+    entry["r"]   = entity.get_radius();
+    entry["h"]   = entity.get_height();
+
+    if (const Player* player = entity.as<Player>())
+    {
+      const vec3 look = player->get_look_direction();
+      entry["hp"]     = player->get_health();
+      entry["look"]   = { look.x, look.y, look.z };
+      entry["weapon"] = cast<u32>(player->get_equipped_weapon());
+    }
+
+    const std::string key = std::format("e_{:02}_{:08}", cast<u32>(id.type), id.idx);
+    state[key] = std::move(entry);
+  });
+
+  return state;
+}
+
+//==============================================================================
+static u64 fnv1a_64(const std::string& data)
+{
+  u64 hash = 14695981039346656037_u64;
+  for (const unsigned char c : data)
+  {
+    hash ^= cast<u64>(c);
+    hash *= 1099511628211_u64;
+  }
+  return hash;
+}
+
+//==============================================================================
+static void write_desync_diff
+(
+  u8                 player_index,
+  u64                frame_index,
+  const std::string& local_json,
+  const std::string& peer_json
+)
+{
+  const nlohmann::json local = nlohmann::json::parse(local_json, nullptr, false);
+  const nlohmann::json peer  = nlohmann::json::parse(peer_json,  nullptr, false);
+
+  if (local.is_discarded() || peer.is_discarded())
+  {
+    nc_crit("[net] desync diff: could not parse state json from one of the peers.");
+    return;
+  }
+
+  const nlohmann::json patch = nlohmann::json::diff(local, peer);
+
+  const std::string path = std::format("desync_diff_p{}_frame{}.txt", player_index, frame_index);
+  std::ofstream out(path, std::ios::trunc);
+
+  nc_crit("[net] DESYNC DIFF at frame {}: {} differing field(s). Full report in '{}'.", frame_index, patch.size(), path);
+  out << std::format("desync at frame {} ({} differing fields)\n", frame_index, patch.size());
+
+  u64 logged = 0;
+  for (const nlohmann::json& op : patch)
+  {
+    const std::string pointer = op.value("path", std::string{});
+
+    std::string local_value = "<absent>";
+    if (const auto ptr = nlohmann::json::json_pointer(pointer); local.contains(ptr))
+    {
+      local_value = local.at(ptr).dump();
+    }
+    const std::string peer_value = op.contains("value") ? op["value"].dump() : "<absent>";
+
+    const std::string line = std::format("  {} : local={} peer={}", pointer, local_value, peer_value);
+    out << line << "\n";
+
+    if (logged++ < 30)
+    {
+      nc_crit("[net]{}", line);
+    }
+  }
+}
+
+//==============================================================================
 void GameSystem::game_update(f32 delta)
 {
   NC_SCOPE_PROFILER(GameSystemUpdate)
@@ -830,8 +930,23 @@ void GameSystem::game_update(f32 delta)
       PlayerInputArray curr{};
       if (network.is_multiplayer())
       {
-        // blocks until input arrives from peer
-        curr = network.exchange(local);
+        u64         local_checksum = 0;
+        std::string local_state_json;
+        if (CVars::net_desync_check)
+        {
+          local_state_json = build_sim_state_json(*game).dump();
+          local_checksum   = fnv1a_64(local_state_json);
+        }
+
+        const InputExchangeResult result = network.exchange(local, game->frame_idx, local_checksum);
+        curr = result.inputs;
+
+        if (result.state_mismatch && !m_desync_dumped)
+        {
+          m_desync_dumped = true;
+          const std::string peer_state_json = network.exchange_blob(local_state_json);
+          write_desync_diff(network.get_player_index(), game->frame_idx, local_state_json, peer_state_json);
+        }
       }
       else
       {
@@ -1250,6 +1365,7 @@ void GameSystem::handle_load_game(const std::string& savefile)
   std::free(data);
 
   m_previous_tick_inputs = PlayerInputArray{};
+  m_desync_dumped        = false;
 }
 
 //==============================================================================
