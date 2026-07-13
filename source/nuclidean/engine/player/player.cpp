@@ -17,6 +17,7 @@
 #include <engine/game/game_helpers.h>
 #include <engine/entity/entity_system.h>
 #include <engine/enemies/enemy.h>
+#include <engine/network/network_system.h>
 
 #include <engine/graphics/graphics_system.h> // RenderGunProperties
 
@@ -136,6 +137,15 @@ void Player::init(vec3 position, vec3 in_forward)
   this->current_health = CVars::player_max_hp;
   this->owned_weapons  = DEFAULT_WEAPONS;
   this->current_weapon = WeaponTypes::wrench;
+
+  if (NetworkSystem::get().is_multiplayer())
+  {
+    for (WeaponType i = 0; i < WeaponTypes::count; ++i)
+    {
+      this->owned_weapons |= weapon_flag(i);
+      this->give_ammo(i, 20);
+    }
+  }
 
   for (u64 i = 0; i < WEAPON_CNT; ++i)
   {
