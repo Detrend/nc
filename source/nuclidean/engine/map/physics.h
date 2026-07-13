@@ -158,6 +158,14 @@ struct PhysLevel
     Portals*       out_portals = nullptr      // list of portals the ray went through
   ) const;
 
+  CollisionHit ray_cast_3d_fast
+  (
+    vec3           ray_start,                 // point to cast from
+    vec3           ray_end,                   // cast to
+    EntityTypeMask ent_types   = COLLIDE_ALL, // which entities should be hit and which ignored
+    Portals*       out_portals = nullptr      // list of portals the ray went through
+  ) const;
+
   // Casts a cylinder shape between two points and checks if it intersects something
   // in the world.
   CollisionHit cylinder_cast_3d

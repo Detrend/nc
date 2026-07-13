@@ -1226,6 +1226,185 @@ const
 }
 
 //==============================================================================
+CollisionHit PhysLevel::ray_cast_3d_fast
+(
+  vec3           ray_start,
+  vec3           ray_end,
+  EntityTypeMask /*ent_types*/,
+  Portals*       /*out_portals*/
+)
+const
+{
+  vec3 direction  = ray_end - ray_start;
+  vec2 direction2 = direction.xz; // TODO: Handle null vector
+
+  SectorID sector        = map.get_sector_from_point(ray_start.xz);
+  SectorID target_sector = map.get_sector_from_point(ray_end.xz);
+
+  if (sector == INVALID_SECTOR_ID)
+  {
+    nc_assert(false);
+    return CollisionHit::no_hit();
+  }
+
+  CollisionHit best_hit = CollisionHit{};
+
+  while (true)
+  {
+    // Check intersection with each wall
+    WallID first_wall = map.sectors[sector].first_wall;
+    WallID last_wall  = map.sectors[sector].last_wall;
+
+    for (WallID this_wid = first_wall; this_wid < last_wall; ++this_wid)
+    {
+      WallID next_wid = map_helpers::next_wall(map, sector, this_wid);
+      vec2   this_pt  = map.walls[this_wid].pos;
+      vec2   next_pt  = map.walls[next_wid].pos;
+      vec2   normal   = flipped(next_pt - this_pt);
+
+      f32 dot_product = normal.x * direction2.x + normal.y * direction2.y;
+      if (dot_product >= 0.0f)
+      {
+        // Away from us or in the same direction
+        continue;
+      }
+
+      // We have ray start RS and ray dir RD
+      // The segment has points A and B, D = A->B
+      // We want to find t and s such
+      // RS + RD * t = A + D * s
+      // RD * t = (A-RS) + D * s
+      // We multiply with the cross product from the right
+      // 0                          = (A-RS) x RD + s * (D x RD)
+      // - ((A-RS) x RD)            = s * (D x RD)
+      // - ((A-RS) x RD) / (D x RD) = s
+      // s = - ((A-RS) x RD) / (D x RD)
+
+      // Then, we check if s >= 0 && s <= 1
+      // If so then we have to compute t
+
+      // RD * t = (A-RS) + D * s
+      // t * (RD x D) = (A-RS) x D
+      // t = ((A-RS) x D) / (RD x D)
+
+      // We actually don't have to compute D x RD and RD x D separately, we can calculate one from
+      // another by flipping a sign bit.
+
+      // We never have to check if RD x D == 0 because above we already checked the dot product of
+      // the normal and therefore cross product is always non-zero.
+
+      // So the final formula is:
+      // bot = D.x * RD.y - D.y * RD.x
+      // top = (A-RS).x * RD.y - (A-RS).y * RD.x
+      // s   = - top / bot
+      // No need to check if bot is non-zero, we verified above with dot product of a normal.
+      // The above computation is 4 muls and 4 adds (2 for cross prod, 2 for A-RS)
+
+      // Then we check if the s is in the [0, 1] interval. This produces a branch
+      // If so, then we continue and calculate the t.
+      // bot = -bot                             // reuse the result from before
+      // top = (A-RS).x * D.y - (A-RS).y * D.x  // A-RS already computed above
+      // t   = top / bot
+      // Once again, no need to verify if bot is non-zero
+      // This time, we have to do only 2 muls and one add.
+      // At total, we did 6 muls and 5 adds and 2 divs (can be reduced to 1 or 0)
+      // Now, we have to check if t is in the [0, 1] interval once again. If so, then hit.
+    }
+
+    // If we intersected a wall then we should check the height of the intersection.. If it is under
+    // the floor or above the ceiling then we also have to check for intersection with either floor
+    // or ceil.
+
+    // If ray hit point is under floor/above ceil then check floor/ceiling intersection.
+    // The ray has as starting point RS and direction RD
+    // The floor/ceiling has a height H
+    // We want to compute the formula:
+    // RS + RD * t = H
+    // RS.y + RD.y * t = H
+    // t = (H - RS.y) / RD.y
+    // We have to be careful about RD.y, which might be 0
+    // We also have to check if we are not under the floor or above the ceiling
+
+    // Now, we have to check for the collisions with entities.
+    // Each entity has an radius and height.
+    // First, we calculate if we are not inside of the entity and react to that.
+    // If not, then we calculate intersection of ray and circle.
+    // PE = position of entity
+    // R  = radius of entity
+    // It is evaluated by the following equation:
+    // | RD * t - (PE-RS) |           = R
+    // | RD * t - (PE-RS) | - R       = 0
+    // (RD * t - (PE-RS)) ^ 2 - R ^ 2 = 0
+    // t^2 * RD.x^2 * 
+
+    // If this is the last sector then no need to continue..
+    // Just return the result we got so far..
+    if (sector == target_sector)
+    {
+      // TODO: This can return a hit to a portal part of the wall. Have to handle that
+      return best_hit;
+    }
+
+    // Check if we hit something..
+    if (!best_hit)
+    {
+      // This can't fuckin happen
+      nc_assert(false);
+      break;
+    }
+
+    // If it is a wall then we should check whether it is a portal or not.
+    // If it is a non-euclidean portal than we have to transform.
+    if (best_hit.is_wall_hit())
+    {
+      nc_assert(best_hit.hit.sector.sector_id == sector); // This has to hold
+      const WallData& wd = map.walls[best_hit.hit.sector.wall_id];
+
+      if (wd.is_portal()) [[unlikely]] // Statistically, this will (probably) hold
+      {
+        // This is the sector behind the portal. We need it to find out how much has the floor/ceil
+        // moved.
+        SectorID          next_sector      = wd.portal_sector_id;
+        const SectorData& next_sector_data = map.sectors[next_sector];
+
+        // We have to compute the exact segment id, which might be a problem if the wall moves
+        f32 ypos = best_hit.coeff * direction.y + ray_start.y;
+
+        // This is the default height
+        f32 default_ceil_height = next_sector_data.state_ceils[0];
+
+        // And this is an offset relative to the default height
+        f32 floor_shift, ceil_shift;
+        map.get_sector_shift_amount(next_sector, &floor_shift, &ceil_shift);
+
+        // Now iterate all segments and for each one decide if it is by default under or above
+        // the default level. From that, we can derive if it should be moved down or up. And then
+        // we compare the ypos with the new, modified position
+        // One entry starts where the previous one ends..
+        for (u8 segment_idx = 0; segment_idx < wd.segment_count; ++segment_idx)
+        {
+          const WallSegmentData& entry = map.wall_segments[wd.first_segment + segment_idx];
+          bool is_bottom = entry.end_height < default_ceil_height;
+          f32  shift     = is_bottom ? floor_shift : ceil_shift;
+
+          if (entry.end_height + shift > ypos)
+          {
+            break;
+          }
+        }
+      }
+      else
+      {
+        // It is 100% a hit, no need to calculate anything..
+      }
+    }
+  }
+
+  // We got to the target
+  return CollisionHit::no_hit();
+}
+
+//==============================================================================
 // Checks only the surrounding walls and calculates the penetration vector
 // with each one. The largest penetration is then returned.
 struct StabilizeWallIntersector
