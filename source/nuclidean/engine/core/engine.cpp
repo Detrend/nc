@@ -654,7 +654,9 @@ void Engine::run()
     eu::limit_min_frametime(frame_time);
 
     // Limit the FPS if desired
-    const f32 min_frame_time = CVars::has_fps_limit ? 1.0f / CVars::fps_limit : 0.0f;
+    const f32 min_frame_time = NetworkSystem::get().is_multiplayer()
+      ? g_mp_fixed_delta_time
+      : (CVars::has_fps_limit ? 1.0f / CVars::fps_limit : 0.0f);
     while (frame_time < min_frame_time)
     {
       // Spin until the time runs out
