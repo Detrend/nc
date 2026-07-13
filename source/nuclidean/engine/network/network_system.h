@@ -16,6 +16,13 @@ namespace nc
 
 using CmdArgs = std::vector<std::string>;
 
+struct InputExchangeResult
+{
+  PlayerInputArray inputs;
+  bool             desynced       = false;
+  bool             state_mismatch = false;
+};
+
 class NetworkSystem : public IEngineModule
 {
 public:
@@ -30,7 +37,9 @@ public:
   bool is_host() const;
   bool is_client() const;
 
-  PlayerInputArray exchange(const PlayerSpecificInputs& local_inputs);
+  InputExchangeResult exchange(const PlayerSpecificInputs& local_inputs, u64 frame_index, u64 state_checksum);
+
+  std::string exchange_blob(const std::string& local_blob);
 
 private:
   bool        m_is_multiplayer = false;
@@ -39,6 +48,7 @@ private:
   u16         m_port           = 18082;
   uintptr_t   m_peer_socket    = 0;
   bool        m_wsa_started    = false;
+  bool        m_desync_reported = false;
 
   bool establish_connection();
   bool connect_as_host();
