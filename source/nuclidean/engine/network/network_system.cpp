@@ -156,30 +156,116 @@ bool receive_data(SOCKET peer_socket, char* buffer, int length)
 }
 
 //==============================================================================
-PlayerInputArray NetworkSystem::exchange(const PlayerSpecificInputs& local_inputs)
+struct NetFramePacket
+{
+  PlayerSpecificInputs inputs;
+  u64                  frame_index;
+  u64                  state_checksum;
+};
+
+//==============================================================================
+InputExchangeResult NetworkSystem::exchange
+(
+  const PlayerSpecificInputs& local_inputs,
+  u64                         frame_index,
+  u64                         state_checksum
+)
 {
   const SOCKET peer_socket = (SOCKET)m_peer_socket;
 
-  PlayerSpecificInputs peer_inputs;
+  const NetFramePacket local_packet
+  {
+    .inputs         = local_inputs,
+    .frame_index    = frame_index,
+    .state_checksum = state_checksum,
+  };
+  NetFramePacket peer_packet{};
 
-  const bool result = send_data(peer_socket, (const char *)&local_inputs, sizeof(local_inputs))
-    && receive_data(peer_socket, (char*)&peer_inputs, sizeof(peer_inputs));
+  const bool result = send_data(peer_socket, (const char*)&local_packet, sizeof(local_packet))
+    && receive_data(peer_socket, (char*)&peer_packet, sizeof(peer_packet));
 
   if (!result)
   {
     nc_crit("[net] peer disconnected, quitting.");
     get_engine().request_quit();
-    return PlayerInputArray();
+    return InputExchangeResult{};
   }
 
   const u8 local_index = get_player_index();
   const u8 peer_index  = local_index ^ 1;
 
-  PlayerInputArray inputs;
-  inputs[local_index] = local_inputs;
-  inputs[peer_index]  = peer_inputs;
+  InputExchangeResult out;
+  out.inputs[local_index] = local_inputs;
+  out.inputs[peer_index]  = peer_packet.inputs;
 
-  return inputs;
+  if (peer_packet.frame_index != frame_index)
+  {
+    if (!m_desync_reported)
+    {
+      m_desync_reported = true;
+      nc_crit
+      (
+        "[net] LOCKSTEP BREAK: local at frame {} but peer at frame {}. Simulations no longer aligned.",
+        frame_index, peer_packet.frame_index
+      );
+    }
+    out.desynced = true;
+  }
+  else if (peer_packet.state_checksum != state_checksum)
+  {
+    if (!m_desync_reported)
+    {
+      m_desync_reported = true;
+      nc_crit
+      (
+        "[net] STATE DESYNC at frame {}: local checksum {:#018x} != peer checksum {:#018x}. "
+        "The sim state going into this frame already differs, so an earlier frame's update diverged.",
+        frame_index, state_checksum, peer_packet.state_checksum
+      );
+    }
+    out.desynced       = true;
+    out.state_mismatch = true;
+  }
+
+  return out;
+}
+
+//==============================================================================
+std::string NetworkSystem::exchange_blob(const std::string& local_blob)
+{
+  const SOCKET peer_socket = (SOCKET)m_peer_socket;
+
+  auto send_blob = [&](const std::string& blob) -> bool
+  {
+    const u32 length = cast<u32>(blob.size());
+    return send_data(peer_socket, (const char*)&length, sizeof(length))
+        && send_data(peer_socket, blob.data(), cast<int>(length));
+  };
+
+  auto receive_blob = [&](std::string& out_blob) -> bool
+  {
+    u32 length = 0;
+    if (!receive_data(peer_socket, (char*)&length, sizeof(length)))
+      return false;
+
+    out_blob.resize(length);
+    return receive_data(peer_socket, out_blob.data(), cast<int>(length));
+  };
+
+  std::string peer_blob;
+
+  const bool result = is_host()
+    ? (send_blob(local_blob) && receive_blob(peer_blob))
+    : (receive_blob(peer_blob) && send_blob(local_blob));
+
+  if (!result)
+  {
+    nc_crit("[net] blob exchange failed, peer likely disconnected.");
+    get_engine().request_quit();
+    return {};
+  }
+
+  return peer_blob;
 }
 
 //==============================================================================

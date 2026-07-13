@@ -213,6 +213,8 @@ private:
 
   PlayerInputArray m_previous_tick_inputs{};
 
+  bool m_desync_dumped = false;
+
   mutable std::optional<NextRequestedState> scheduled_state;
 
   u32 enemy_count = 0;
