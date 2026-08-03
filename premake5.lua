@@ -80,6 +80,7 @@ project "Nuclidean"
     includedirs "source/nuclidean"
     uses { "glad", "glm", "stb", "SDL2", "SDL_mixer" }
     defines { "_CONSOLE", "SDL_MAIN_HANDLED" }
+    links "Ws2_32"
 
     warnings "Extra"
     fatalwarnings "All"

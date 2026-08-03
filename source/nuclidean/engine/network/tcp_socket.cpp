@@ -7,13 +7,9 @@
 #include <logging.h>
 #include <types.h>
 
-#include <array>
 #include <bit>
 #include <cstring>
 #include <format>
-#include <optional>
-#include <string>
-#include <string_view>
 #include <system_error>
 
 #include <ws2tcpip.h>
@@ -31,6 +27,8 @@ static bool g_wsa_started = false;
 // Disables Nagle's algorithm on the TCP socket handle.
 // When Nagle is on, TCP waits ~40ms after each write to buffer more data.
 static bool set_no_delay(SOCKET handle);
+// Set socket to no blocking mode.
+static bool set_blocking_mode(SOCKET handle, bool should_block);
 // Get error message based on system category error code.
 static std::string get_error_message(int error_code);
 // Get last WSA error message.
@@ -39,6 +37,12 @@ static std::string get_last_wsa_error();
 static TransferResult get_transfer_result(int error_code);
 
 static_assert(TCPSocket::invalid_handle == INVALID_SOCKET);
+
+//==============================================================================
+std::string IPv4Address::to_string() const
+{
+  return std::format("{}.{}.{}.{}", octets[0], octets[1], octets[2], octets[3]);
+}
 
 //==============================================================================
 std::optional<IPv4Address> IPv4Address::parse(std::string_view view)
@@ -100,7 +104,7 @@ bool shutdown()
 }
 
 //==============================================================================
-std::optional<TCPSocket> create_socket(IPv4Address server_address, u16 server_port)
+std::optional<TCPSocket> create_socket(IPv4Address address, u16 port)
 {
   const SOCKET handle = socket(AF_INET, SOCK_STREAM, 0);
   if (handle == INVALID_SOCKET)
@@ -109,16 +113,18 @@ std::optional<TCPSocket> create_socket(IPv4Address server_address, u16 server_po
     return std::nullopt;
   }
 
+  if (!set_no_delay(handle)) return std::nullopt;
+
   return TCPSocket
   {
     .handle = cast<u64>(handle),
-    .address = server_address,
-    .port = server_port,
+    .address = address,
+    .port = port,
   };
 }
 
 //==============================================================================
-bool close_socket(TCPSocket socket)
+bool close_socket(TCPSocket& socket)
 {
   if (!socket.is_valid())
   {
@@ -127,15 +133,18 @@ bool close_socket(TCPSocket socket)
 
   if (closesocket(cast<SOCKET>(socket.handle)) == SOCKET_ERROR)
   {
-    nc_crit("[net] closesocket() failed: \"{}\"", get_last_wsa_error());
+    socket.handle = TCPSocket::invalid_handle;
+    nc_warn("[net] closesocket() failed: \"{}\"", get_last_wsa_error());
     return false;
   }
+
+  socket.handle = TCPSocket::invalid_handle;
 
   return true;
 }
 
 //==============================================================================
-bool start_listening(TCPSocket server_socket)
+bool start_listening(TCPSocket server_socket, bool blocking)
 {
   const SOCKET server_handle = cast<SOCKET>(server_socket.handle);
 
@@ -143,7 +152,7 @@ bool start_listening(TCPSocket server_socket)
   const int setsockopt_result = setsockopt(
     server_handle,
     SOL_SOCKET, 
-    SO_REUSEADDR, 
+    SO_EXCLUSIVEADDRUSE, 
     recast<const char*>(&enabled), 
     sizeof(enabled)
   );
@@ -170,11 +179,26 @@ bool start_listening(TCPSocket server_socket)
     return false;
   }
 
+  if (!set_blocking_mode(server_handle, blocking))
+    nc_warn("[net] failed to set blocking mode");
+
   return true;
 }
 
 //==============================================================================
-std::optional<TCPSocket> accept_client(TCPSocket server_socket)
+bool is_accept_pending(TCPSocket server_socket)
+{
+  WSAPOLLFD poll{};
+  poll.fd = cast<SOCKET>(server_socket.handle);
+  poll.events = POLLRDNORM;
+
+  const int n = WSAPoll(&poll, 1, 0);
+  
+  return n > 0 && (poll.revents & POLLRDNORM);
+}
+
+//==============================================================================
+std::optional<TCPSocket> accept_client(TCPSocket server_socket, bool blocking)
 {
   const SOCKET server_handle = cast<SOCKET>(server_socket.handle);
 
@@ -184,15 +208,19 @@ std::optional<TCPSocket> accept_client(TCPSocket server_socket)
   const SOCKET client_handle = accept(server_handle, recast<sockaddr*>(&client_address), &client_address_length);
   if (client_handle == INVALID_SOCKET)
   {
-    nc_crit("[net] accept() failed: \"{}\"", get_last_wsa_error());
+    nc_warn("[net] accept() failed: \"{}\"", get_last_wsa_error());
     return std::nullopt;
   }
 
   if (!set_no_delay(client_handle))
   {
-    close_socket(TCPSocket{.handle = cast<u64>(client_handle)});
+    TCPSocket client_socket = TCPSocket{.handle = cast<u64>(client_handle)};
+    close_socket(client_socket);
     return std::nullopt;
   }
+
+  if (!set_blocking_mode(client_handle, blocking))
+    nc_warn("[net] failed to set blocking mode");
 
   return TCPSocket
   {
@@ -203,7 +231,7 @@ std::optional<TCPSocket> accept_client(TCPSocket server_socket)
 }
 
 //==============================================================================
-bool connect(TCPSocket client_socket)
+bool connect(TCPSocket client_socket, bool blocking)
 {
   const SOCKET client_handle = cast<SOCKET>(client_socket.handle);
 
@@ -223,20 +251,25 @@ bool connect(TCPSocket client_socket)
     return false;
   }
 
+  if (!set_blocking_mode(client_handle, blocking))
+    nc_warn("[net] failed to set blocking mode");
+
   return true;
 }
 
 //==============================================================================
-TransferResult send_data(TCPSocket socket, std::span<const std::byte> data_to_send)
+TransferResult send_raw_data(TCPSocket socket, std::span<const std::byte> data_to_send)
 {
+  const SOCKET handle = cast<SOCKET>(socket.handle);
+
   u64 sent = 0;
   while (sent < data_to_send.size())
   {
-    // send is allowed to accept fewer bytes than asked
+    // send is allowed to send fewer bytes than asked
     const int result = send(
-      cast<SOCKET>(socket.handle), 
+      handle, 
       recast<const char*>(data_to_send.data() + sent), 
-      data_to_send.size() - sent, 
+      cast<int>(data_to_send.size() - sent), 
       0
     );
 
@@ -254,34 +287,38 @@ TransferResult send_data(TCPSocket socket, std::span<const std::byte> data_to_se
 }
 
 //==============================================================================
-TransferResult receive_data(TCPSocket socket, std::span<std::byte> data_to_receive)
+std::pair<TransferResult, size_t> receive_raw_data(TCPSocket socket, std::span<std::byte> data_to_receive)
 {
-  u64 received = 0;
+  const SOCKET handle = cast<SOCKET>(socket.handle);
+
+  u32 received = 0;
   while (received < data_to_receive.size())
   {
+    // recv is allowed to receive fewer bytes than asked
     const int result = recv(
-      cast<SOCKET>(socket.handle),
+      handle,
       recast<char*>(data_to_receive.data() + received),
-      data_to_receive.size() - received,
+      cast<int>(data_to_receive.size() - received),
       0
     );
 
+    if (result == 0)
+      return {TransferResult::disconnected, received};
     if (result == SOCKET_ERROR)
     {
       const int error = WSAGetLastError();
+
+      if (error == WSAEWOULDBLOCK)
+        return {TransferResult::success, received};
+
       nc_crit("[net] recv() failed: \"{}\"", get_error_message(error));
-      return get_transfer_result(error);
-    }
-    if (result == 0)
-    {
-      // proper disconnect
-      return TransferResult::disconnected;
+      return {get_transfer_result(error), received};
     }
 
-    received += cast<u64>(result);
+    received += result;
   }
 
-  return TransferResult::success;
+  return {TransferResult::success, received};
 }
 
 //==============================================================================
@@ -291,6 +328,19 @@ static bool set_no_delay(SOCKET handle)
   if (setsockopt(handle, IPPROTO_TCP, TCP_NODELAY, recast<const char*>(&enabled), sizeof(enabled)) == SOCKET_ERROR)
   {
     nc_crit("[net] setsockopt() failed \"{}\"", get_last_wsa_error());
+    return false;
+  }
+
+  return true;
+}
+
+//==============================================================================
+static bool set_blocking_mode(SOCKET handle, bool should_block)
+{
+  u_long mode = should_block ? 0 : 1;
+  if (ioctlsocket(handle, FIONBIO, &mode) == SOCKET_ERROR)
+  {
+    nc_crit("[net] ioctlsocket() failed: \"{}\"", get_last_wsa_error());
     return false;
   }
 
@@ -320,12 +370,16 @@ static TransferResult get_transfer_result(int error_code)
     case WSAENETRESET:
     case WSAETIMEDOUT:
     case WSAESHUTDOWN:
+    case WSAEINTR:
+    case WSAENOTSOCK:
       return TransferResult::disconnected;
 
     default:
       return TransferResult::error;
   }
 }
+
+
 
 }
 
@@ -457,25 +511,27 @@ NC_UNIT_TEST(ipv4_address_parse_unterminated_view_test)->name("Net IPv4Address P
 //==============================================================================
 bool tcp_socket_create_and_close_test(unit_test::TestCtx& /*ctx*/)
 {
-  NC_TEST_ASSERT(!TCPSocket{}.is_valid());
-  NC_TEST_ASSERT(close_socket(TCPSocket{}));
+  TCPSocket empty_socket{};
+  NC_TEST_ASSERT(!empty_socket.is_valid());
+  NC_TEST_ASSERT(close_socket(empty_socket));
 
   NC_TEST_ASSERT(init());
 
   static constexpr u16 TEST_PORT = 27015;
 
-  const std::optional<TCPSocket> socket = create_socket(IPv4Address::loopback(), TEST_PORT);
-  if (!socket.has_value())
+  const std::optional<TCPSocket> maybe_socket = create_socket(IPv4Address::loopback(), TEST_PORT);
+  if (!maybe_socket.has_value())
   {
     nc_warn("[net] create_socket() returned nullopt.");
     shutdown();
     NC_TEST_FAIL;
   }
 
-  const bool handle_is_valid   = socket->is_valid();
-  const bool address_preserved = socket->address == IPv4Address::loopback();
-  const bool port_preserved    = socket->port == TEST_PORT;
-  const bool close_succeeded   = close_socket(*socket);
+  const bool handle_is_valid   = maybe_socket->is_valid();
+  const bool address_preserved = maybe_socket->address == IPv4Address::loopback();
+  const bool port_preserved    = maybe_socket->port == TEST_PORT;
+  TCPSocket socket = *maybe_socket;
+  const bool close_succeeded   = close_socket(socket);
 
   NC_TEST_ASSERT(shutdown());
 
@@ -489,45 +545,172 @@ bool tcp_socket_create_and_close_test(unit_test::TestCtx& /*ctx*/)
 NC_UNIT_TEST(tcp_socket_create_and_close_test)->name("Net TCPSocket Create And Close");
 
 //==============================================================================
-bool transfer_result_from_error_code_test(unit_test::TestCtx& /*ctx*/)
+bool ipv4_address_to_string_test(unit_test::TestCtx& /*ctx*/)
 {
   struct TestCase
   {
-    int            error_code;
-    TransferResult expected;
+    IPv4Address      input;
+    std::string_view expected;
   };
 
   const TestCase TEST_CASES[]
   {
-    {WSAECONNRESET,   TransferResult::disconnected},
-    {WSAECONNABORTED, TransferResult::disconnected},
-    {WSAENETRESET,    TransferResult::disconnected},
-    {WSAETIMEDOUT,    TransferResult::disconnected},
-    {WSAESHUTDOWN,    TransferResult::disconnected},
-    {WSAENOTSOCK,     TransferResult::error       },
-    {WSAEINVAL,       TransferResult::error       },
-    {WSAEFAULT,       TransferResult::error       },
-    {0,               TransferResult::error       },
+    {IPv4Address::any(),                "0.0.0.0"        },
+    {IPv4Address::loopback(),           "127.0.0.1"      },
+    {IPv4Address{{1, 2, 3, 4}},         "1.2.3.4"        },
+    {IPv4Address{{192, 168, 0, 255}},   "192.168.0.255"  },
+    {IPv4Address{{255, 255, 255, 255}}, "255.255.255.255"},
   };
 
   for (const TestCase& test_case : TEST_CASES)
   {
-    const TransferResult result = get_transfer_result(test_case.error_code);
+    const std::string result = test_case.input.to_string();
     if (result != test_case.expected)
     {
-      nc_warn(
-        "[net] get_transfer_result({}) returned {}, expected {}.",
-        test_case.error_code,
-        cast<u32>(result),
-        cast<u32>(test_case.expected)
-      );
+      nc_warn("[net] to_string() returned \"{}\", expected \"{}\".", result, test_case.expected);
+      NC_TEST_FAIL;
+    }
+
+    const std::optional<IPv4Address> reparsed = IPv4Address::parse(result);
+    if (!reparsed.has_value() || *reparsed != test_case.input)
+    {
+      nc_warn("[net] parse(to_string()) did not round trip for \"{}\".", result);
       NC_TEST_FAIL;
     }
   }
 
   NC_TEST_SUCCESS;
 }
-NC_UNIT_TEST(transfer_result_from_error_code_test)->name("Net TransferResult From Error Code");
+NC_UNIT_TEST(ipv4_address_to_string_test)->name("Net IPv4Address To String");
+
+//==============================================================================
+static_assert(to_bytes(u8{0x01}, u8{0x02}).size() == 2);
+static_assert(to_bytes(u8{0x01}, u8{0x02})[0] == std::byte{0x01});
+static_assert(to_bytes(u8{0x01}, u8{0x02})[1] == std::byte{0x02});
+
+//==============================================================================
+bool to_bytes_size_and_order_test(unit_test::TestCtx& /*ctx*/)
+{
+  const auto single = to_bytes(u32{0});
+  NC_TEST_ASSERT(single.size() == sizeof(u32));
+
+  const auto mixed = to_bytes(u8{0}, u16{0}, u32{0}, u64{0});
+  NC_TEST_ASSERT(mixed.size() == sizeof(u8) + sizeof(u16) + sizeof(u32) + sizeof(u64));
+
+  const auto ordered = to_bytes(u8{0xAA}, u8{0xBB}, u8{0xCC});
+  NC_TEST_ASSERT(ordered.size() == 3);
+  NC_TEST_ASSERT(ordered[0] == std::byte{0xAA});
+  NC_TEST_ASSERT(ordered[1] == std::byte{0xBB});
+  NC_TEST_ASSERT(ordered[2] == std::byte{0xCC});
+
+  NC_TEST_SUCCESS;
+}
+NC_UNIT_TEST(to_bytes_size_and_order_test)->name("Net To Bytes Size And Order");
+
+//==============================================================================
+bool byte_conversion_round_trip_test(unit_test::TestCtx& /*ctx*/)
+{
+  {
+    const auto bytes = to_bytes(u8{0}, u16{0}, u32{0}, u64{0});
+    const auto [a, b, c, d] = from_bytes<u8, u16, u32, u64>(bytes);
+    NC_TEST_ASSERT(a == 0);
+    NC_TEST_ASSERT(b == 0);
+    NC_TEST_ASSERT(c == 0);
+    NC_TEST_ASSERT(d == 0);
+  }
+
+  {
+    const auto bytes = to_bytes(u8{0xFF}, u16{0xFFFF}, u32{0xFFFFFFFFu}, u64{~0ull});
+    const auto [a, b, c, d] = from_bytes<u8, u16, u32, u64>(bytes);
+    NC_TEST_ASSERT(a == 0xFF);
+    NC_TEST_ASSERT(b == 0xFFFF);
+    NC_TEST_ASSERT(c == 0xFFFFFFFFu);
+    NC_TEST_ASSERT(d == ~0ull);
+  }
+
+  {
+    const auto bytes = to_bytes(s8{-1}, s16{-32768}, s32{-2147483647 - 1}, s64{-1});
+    const auto [a, b, c, d] = from_bytes<s8, s16, s32, s64>(bytes);
+    NC_TEST_ASSERT(a == -1);
+    NC_TEST_ASSERT(b == -32768);
+    NC_TEST_ASSERT(c == -2147483647 - 1);
+    NC_TEST_ASSERT(d == -1);
+  }
+
+  {
+    const auto bytes = to_bytes(f32{-0.5f}, f64{0.0}, f32{3.4028235e38f});
+    const auto [a, b, c] = from_bytes<f32, f64, f32>(bytes);
+    NC_TEST_ASSERT(a == -0.5f);
+    NC_TEST_ASSERT(b == 0.0);
+    NC_TEST_ASSERT(c == 3.4028235e38f);
+  }
+
+  {
+    const auto bytes = to_bytes(u8{0x11});
+    const auto [only] = from_bytes<u8>(bytes);
+    NC_TEST_ASSERT(only == 0x11);
+  }
+
+  NC_TEST_SUCCESS;
+}
+NC_UNIT_TEST(byte_conversion_round_trip_test)->name("Net Byte Conversion Round Trip");
+
+//==============================================================================
+bool byte_conversion_wire_types_round_trip_test(unit_test::TestCtx& /*ctx*/)
+{
+  enum class TestMessageType : u8
+  {
+    first = 0,
+    last  = 255,
+  };
+
+  {
+    const auto bytes = to_bytes(TestMessageType::last, u8{7});
+    const auto [type, player_id] = from_bytes<TestMessageType, u8>(bytes);
+    NC_TEST_ASSERT(bytes.size() == sizeof(u8) + sizeof(u8));
+    NC_TEST_ASSERT(type == TestMessageType::last);
+    NC_TEST_ASSERT(player_id == 7);
+  }
+
+  struct PaddedPayload
+  {
+    u16 keys;
+    f32 analog[2];
+  };
+  static_assert(sizeof(PaddedPayload) > sizeof(u16) + sizeof(f32) * 2);
+
+  {
+    const PaddedPayload sent{.keys = 0xBEEF, .analog = {-1.25f, 8.5f}};
+    const auto bytes = to_bytes(sent);
+    const auto [got] = from_bytes<PaddedPayload>(bytes);
+    NC_TEST_ASSERT(bytes.size() == sizeof(PaddedPayload));
+    NC_TEST_ASSERT(got.keys == sent.keys);
+    NC_TEST_ASSERT(got.analog[0] == sent.analog[0]);
+    NC_TEST_ASSERT(got.analog[1] == sent.analog[1]);
+  }
+
+  NC_TEST_SUCCESS;
+}
+NC_UNIT_TEST(byte_conversion_wire_types_round_trip_test)->name("Net Byte Conversion Wire Types Round Trip");
+
+//==============================================================================
+bool from_bytes_reads_from_span_start_test(unit_test::TestCtx& /*ctx*/)
+{
+  const auto bytes = to_bytes(u16{0xBEEF}, u32{0xDEADBEEFu}, u8{0x42});
+  const std::span<const std::byte> whole{bytes};
+
+  const auto [leading] = from_bytes<u16>(whole);
+  NC_TEST_ASSERT(leading == 0xBEEF);
+
+  const auto [middle] = from_bytes<u32>(whole.subspan(sizeof(u16)));
+  NC_TEST_ASSERT(middle == 0xDEADBEEFu);
+
+  const auto [trailing] = from_bytes<u8>(whole.subspan(sizeof(u16) + sizeof(u32)));
+  NC_TEST_ASSERT(trailing == 0x42);
+
+  NC_TEST_SUCCESS;
+}
+NC_UNIT_TEST(from_bytes_reads_from_span_start_test)->name("Net From Bytes Reads From Span Start");
 
 }
 

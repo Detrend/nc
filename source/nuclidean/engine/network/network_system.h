@@ -4,24 +4,25 @@
 #include <types.h>
 #include <engine/core/engine_module_id.h>
 #include <engine/core/engine_module.h>
-#include <engine/input/game_input.h> 
 #include <engine/network/constants.h>
 
-#include <cstdint>
-#include <string>
+#include <array>
+#include <memory>
 #include <vector>
+#include <string>
 
 namespace nc
 {
 
 using CmdArgs = std::vector<std::string>;
 
-struct InputExchangeResult
+namespace net
 {
-  PlayerInputArray inputs;
-  bool             desynced       = false;
-  bool             state_mismatch = false;
-};
+  class Server;
+  class Client;
+}
+
+// TODO: integration tests
 
 class NetworkSystem : public IEngineModule
 {
@@ -29,32 +30,35 @@ public:
   static EngineModuleId get_module_id();
   static NetworkSystem& get();
 
+  NetworkSystem();
+  ~NetworkSystem() override;
+
   bool init(const CmdArgs& args);
   void on_event(ModuleEvent& event) override;
 
-  bool is_multiplayer() const;
-  u8   get_player_index() const;
-  bool is_host() const;
-  bool is_client() const;
+  // Return true if game is running in multiplayer; false if game is running in singleplayer.
+  bool is_multiplayer() const { return m_is_multiplayer; }
+  PlayerID get_local_player_id() const { return m_local_player_id; }
+  // Determine if a player occupies the given slot. Slots are filled by the server on connect.
+  bool is_player_connected(PlayerID player_id) const;
+  // Determine if this frame's input was received.
+  bool are_inputs_received() const { return m_input_received; }
 
-  InputExchangeResult exchange(const PlayerSpecificInputs& local_inputs, u64 frame_index, u64 state_checksum);
-
-  std::string exchange_blob(const std::string& local_blob);
+  // Poll available network events. This is non-blocking call.
+  void poll_network();
 
 private:
-  bool        m_is_multiplayer = false;
-  u8          m_player_index   = 0;
-  std::string m_peer_ip;
-  u16         m_port           = 18082;
-  uintptr_t   m_peer_socket    = 0;
-  bool        m_wsa_started    = false;
-  bool        m_desync_reported = false;
+  // true if game is running in multiplayer; false if game is running in singleplayer.
+  bool m_is_multiplayer = false;
+  PlayerID m_local_player_id = 0;
+  // Slot occupancy of all players in the session, including the local one.
+  std::array<bool, MAX_PLAYER_COUNT> m_connected_players{};
+  // Determine if this frame's input was received.
+  bool m_input_received = false;
 
-  bool establish_connection();
-  bool connect_as_host();
-  bool connect_as_client();
-
-  void close_connection();
+  std::unique_ptr<net::Server> m_server = nullptr;
+  std::unique_ptr<net::Client> m_client = nullptr;
+  
 };
 
 }

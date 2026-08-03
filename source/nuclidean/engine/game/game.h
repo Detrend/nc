@@ -2,6 +2,7 @@
 #pragma once
 
 #include <types.h>
+#include <math/vector.h>
 #include <engine/entity/entity_types.h>
 #include <engine/input/game_input.h>
 #include <engine/network/constants.h>
@@ -26,9 +27,9 @@ struct Game
   // Simulates one frame of the game
   void update
   (
-    f32                     delta_time,
-    const PlayerInputArray& current_inputs,
-    const PlayerInputArray& previous_inputs
+    f32               delta_time,
+    const InputArray& current_inputs,
+    const InputArray& previous_inputs
   );
 
   void on_destroy();
@@ -39,8 +40,9 @@ struct Game
 
   EntityID get_local_player_id() const;
 
-  PlayerArray player_ids        = { INVALID_ENTITY_ID, INVALID_ENTITY_ID };
-  u8          local_player_slot = 0;
+  PlayerArray player_ids        = []() constexpr { PlayerArray array{}; array.fill(INVALID_ENTITY_ID); return array; }();
+  vec3        spawn_point       = VEC3_ZERO;
+  vec3        spawn_direction   = VEC3_X;
 
   std::unique_ptr<MapSectors>       map;
   std::unique_ptr<EntityRegistry>   entities;
