@@ -225,7 +225,19 @@
     <ClCompile Include="..\source\nuclidean\engine\map\physics.cpp">
       <Filter>source\nuclidean\engine\map</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\nuclidean\engine\network\client.cpp">
+      <Filter>source\nuclidean\engine\network</Filter>
+    </ClCompile>
     <ClCompile Include="..\source\nuclidean\engine\network\network_system.cpp">
+      <Filter>source\nuclidean\engine\network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\nuclidean\engine\network\protocol.cpp">
+      <Filter>source\nuclidean\engine\network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\nuclidean\engine\network\server.cpp">
+      <Filter>source\nuclidean\engine\network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\nuclidean\engine\network\tcp_socket.cpp">
       <Filter>source\nuclidean\engine\network</Filter>
     </ClCompile>
     <ClCompile Include="..\source\nuclidean\engine\player\player.cpp">
@@ -1388,10 +1400,22 @@
     <ClInclude Include="..\source\nuclidean\engine\map\physics.h">
       <Filter>source\nuclidean\engine\map</Filter>
     </ClInclude>
+    <ClInclude Include="..\source\nuclidean\engine\network\client.h">
+      <Filter>source\nuclidean\engine\network</Filter>
+    </ClInclude>
     <ClInclude Include="..\source\nuclidean\engine\network\constants.h">
       <Filter>source\nuclidean\engine\network</Filter>
     </ClInclude>
     <ClInclude Include="..\source\nuclidean\engine\network\network_system.h">
+      <Filter>source\nuclidean\engine\network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\nuclidean\engine\network\protocol.h">
+      <Filter>source\nuclidean\engine\network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\nuclidean\engine\network\server.h">
+      <Filter>source\nuclidean\engine\network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\nuclidean\engine\network\tcp_socket.h">
       <Filter>source\nuclidean\engine\network</Filter>
     </ClInclude>
     <ClInclude Include="..\source\nuclidean\engine\player\level_types.h">
@@ -1949,6 +1973,9 @@
     </None>
     <None Include="..\source\nuclidean\engine\graphics\ssbo_buffer.inl">
       <Filter>source\nuclidean\engine\graphics</Filter>
+    </None>
+    <None Include="..\source\nuclidean\engine\network\tcp_socket.inl">
+      <Filter>source\nuclidean\engine\network</Filter>
     </None>
     <None Include="..\source\nuclidean\math\lingebra.inl">
       <Filter>source\nuclidean\math</Filter>

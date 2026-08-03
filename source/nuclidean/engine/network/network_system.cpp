@@ -1,23 +1,16 @@
 // Project Nuclidean Source File
-// winsock2 must be included before anything else includes windows.h
-#include <engine/input/game_input.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
-
 #include <engine/network/network_system.h>
 
-#include <common.h>
 #include <logging.h>
 
 #include <engine/core/engine_module_types.h>
 #include <engine/core/module_event.h>
 #include <engine/core/engine.h>
-
-#include <algorithm>
-#include <iterator>
-
-// TODO: this is only supported by MSVC, for other compiler support this would need to be properly linked
-#pragma comment(lib, "ws2_32.lib")
+#include <engine/input/input_system.h>
+#include <engine/network/protocol.h>
+#include <engine/network/server.h>
+#include <engine/network/client.h>
+#include <engine/network/tcp_socket.h>
 
 namespace nc
 {
@@ -35,354 +28,138 @@ NetworkSystem& NetworkSystem::get()
 }
 
 //==============================================================================
+NetworkSystem::NetworkSystem() = default;
+
+//==============================================================================
+NetworkSystem::~NetworkSystem() = default;
+
+//==============================================================================
 bool NetworkSystem::init(const CmdArgs& args)
 {
   const auto host_it = std::find(args.begin(), args.end(), "-mp_host");
   const auto client_it = std::find(args.begin(), args.end(), "-mp_client");
 
+  // return if not multiplayer
+  if (!((host_it != args.end()) || (client_it != args.end())))
+    return true;
+
+  if (!net::init())
+  {
+    nc_crit("[net][network system] failed to init");
+    return false;
+  }
+
+  // is server?
   if (host_it != args.end())
   {
-    m_is_multiplayer = true;
-    m_player_index   = 0;
+    m_server = std::make_unique<net::Server>(net::IPv4Address::any(), net::protocol::PORT);
+    m_client = std::make_unique<net::Client>(net::IPv4Address::loopback(), net::protocol::PORT);
   }
-  else if (client_it != args.end() && std::next(client_it) != args.end())
+  // is client?
+  else
   {
-    m_is_multiplayer = true;
-    m_player_index   = 1;
-    m_peer_ip        = *std::next(client_it);
-  }
-
-  if (m_is_multiplayer)
-  {
-    WSADATA wsa{};
-    const int result = WSAStartup(MAKEWORD(2, 2), &wsa);
-    if (result != 0)
+    if (std::next(client_it) == args.end())
     {
-      nc_crit("[net] WSAStartup failed: {}", result);
+      nc_crit("[net][network system] missing server IP after \"-mp_client\"");
       return false;
     }
-    m_wsa_started = true;
+
+    auto maybe_address = net::IPv4Address::parse(*std::next(client_it));
+    if (!maybe_address)
+    {
+      nc_crit("[net][network system] failed to parse server IP");
+      return false;
+    }
+
+    m_client = std::make_unique<net::Client>(*maybe_address, net::protocol::PORT);
   }
 
+  if (!m_client->is_connected())
+  {
+    nc_crit("[net][network system] client is not connected to the server");
+    return false;
+  }
+
+  m_is_multiplayer = true;
   return true;
 }
 
 //==============================================================================
 void NetworkSystem::on_event(ModuleEvent& event)
 {
+  if (!m_is_multiplayer) return;
+
   switch (event.type)
   {
-    case ModuleEventType::post_init:
-    {
-      if (m_is_multiplayer && !establish_connection())
-      {
-        nc_crit("[net] failed to establish connection, quitting.");
-        get_engine().request_quit();
-      }
-    }
+  case ModuleEventType::frame_start:
+    m_input_received = false;
+    m_client->send_inputs(InputSystem::get().get_inputs().player_inputs);
     break;
+  case ModuleEventType::terminate:
+    m_client = nullptr;
+    m_server = nullptr;
 
-    case ModuleEventType::terminate:
-    {
-      close_connection();
-      if (m_wsa_started)
-      {
-        WSACleanup();
-        m_wsa_started = false;
-      }
-    }
+    if (!net::shutdown())
+      nc_crit("[net][network system] failed to shutdown");
+
     break;
-  } 
-}
-
-//==============================================================================
-bool NetworkSystem::is_multiplayer() const
-{
-  return m_is_multiplayer;
-}
-
-//==============================================================================
-u8 NetworkSystem::get_player_index() const
-{
-  return m_player_index;
-}
-
-//==============================================================================
-bool NetworkSystem::is_host() const
-{
-  return m_player_index == 0; 
-}
-
-//==============================================================================
-bool NetworkSystem::is_client() const
-{
-  return !is_host(); 
-}
-
-//==============================================================================
-bool send_data(SOCKET peer_socket, const char* buffer, int length)
-{
-  int sent = 0;
-  while (sent < length)
-  {
-    // send is allowed to accept fewer bytes than asked
-    const int n = send(peer_socket, buffer + sent, length - sent, 0);
-
-    if (n <= 0)
-      return false;
-
-    sent += n;
   }
-
-  return true;
 }
 
 //==============================================================================
-bool receive_data(SOCKET peer_socket, char* buffer, int length)
+bool NetworkSystem::is_player_connected(PlayerID player_id) const
 {
-  int received = 0;
-  while (received < length)
-  {
-    // recv is allowed to accept fewer bytes than asked
-    const int n = recv(peer_socket, buffer + received, length - received, 0);
-
-    if (n <= 0)
-      return false;
-
-    received += n;
-  }
-
-  return true;
+  nc_assert(player_id < MAX_PLAYER_COUNT, "invalid player id - \"{}\"", player_id);
+  return m_connected_players[player_id];
 }
 
 //==============================================================================
-struct NetFramePacket
+void NetworkSystem::poll_network()
 {
-  PlayerSpecificInputs inputs;
-  u64                  frame_index;
-  u64                  state_checksum;
-};
+  if (!m_is_multiplayer) return;
 
-//==============================================================================
-InputExchangeResult NetworkSystem::exchange
-(
-  const PlayerSpecificInputs& local_inputs,
-  u64                         frame_index,
-  u64                         state_checksum
-)
-{
-  const SOCKET peer_socket = (SOCKET)m_peer_socket;
-
-  const NetFramePacket local_packet
+  while (const std::optional<net::protocol::Message> message = m_client->pop_message())
   {
-    .inputs         = local_inputs,
-    .frame_index    = frame_index,
-    .state_checksum = state_checksum,
-  };
-  NetFramePacket peer_packet{};
+    using namespace net::protocol::messages;
 
-  const bool result = send_data(peer_socket, (const char*)&local_packet, sizeof(local_packet))
-    && receive_data(peer_socket, (char*)&peer_packet, sizeof(peer_packet));
+    message->process(
+      [this](const NewPlayerData& message)
+      {
+        m_local_player_id = message.player_id;
+      },
+      [this](const PlayerConnected& message)
+      {
+        nc_assert(message.player_id < MAX_PLAYER_COUNT, "invalid player id - \"{}\"", message.player_id);
+        m_connected_players[message.player_id] = true;
 
-  if (!result)
-  {
-    nc_crit("[net] peer disconnected, quitting.");
-    get_engine().request_quit();
-    return InputExchangeResult{};
-  }
+        get_engine().send_event(
+        {
+          .type = ModuleEventType::net_player_spawned,
+          .net_player = { .player_id = message.player_id },
+        });
+      },
+      [this](const PlayerDisconnected& message)
+      {
+        nc_assert(message.player_id < MAX_PLAYER_COUNT, "invalid player id - \"{}\"", message.player_id);
+        m_connected_players[message.player_id] = false;
 
-  const u8 local_index = get_player_index();
-  const u8 peer_index  = local_index ^ 1;
-
-  InputExchangeResult out;
-  out.inputs[local_index] = local_inputs;
-  out.inputs[peer_index]  = peer_packet.inputs;
-
-  if (peer_packet.frame_index != frame_index)
-  {
-    if (!m_desync_reported)
-    {
-      m_desync_reported = true;
-      nc_crit
-      (
-        "[net] LOCKSTEP BREAK: local at frame {} but peer at frame {}. Simulations no longer aligned.",
-        frame_index, peer_packet.frame_index
-      );
-    }
-    out.desynced = true;
-  }
-  else if (peer_packet.state_checksum != state_checksum)
-  {
-    if (!m_desync_reported)
-    {
-      m_desync_reported = true;
-      nc_crit
-      (
-        "[net] STATE DESYNC at frame {}: local checksum {:#018x} != peer checksum {:#018x}. "
-        "The sim state going into this frame already differs, so an earlier frame's update diverged.",
-        frame_index, state_checksum, peer_packet.state_checksum
-      );
-    }
-    out.desynced       = true;
-    out.state_mismatch = true;
-  }
-
-  return out;
-}
-
-//==============================================================================
-std::string NetworkSystem::exchange_blob(const std::string& local_blob)
-{
-  const SOCKET peer_socket = (SOCKET)m_peer_socket;
-
-  auto send_blob = [&](const std::string& blob) -> bool
-  {
-    const u32 length = cast<u32>(blob.size());
-    return send_data(peer_socket, (const char*)&length, sizeof(length))
-        && send_data(peer_socket, blob.data(), cast<int>(length));
-  };
-
-  auto receive_blob = [&](std::string& out_blob) -> bool
-  {
-    u32 length = 0;
-    if (!receive_data(peer_socket, (char*)&length, sizeof(length)))
-      return false;
-
-    out_blob.resize(length);
-    return receive_data(peer_socket, out_blob.data(), cast<int>(length));
-  };
-
-  std::string peer_blob;
-
-  const bool result = is_host()
-    ? (send_blob(local_blob) && receive_blob(peer_blob))
-    : (receive_blob(peer_blob) && send_blob(local_blob));
-
-  if (!result)
-  {
-    nc_crit("[net] blob exchange failed, peer likely disconnected.");
-    get_engine().request_quit();
-    return {};
-  }
-
-  return peer_blob;
-}
-
-//==============================================================================
-bool NetworkSystem::establish_connection()
-{
-  return is_host() ? connect_as_host() : connect_as_client();
-}
-
-//==============================================================================
-static void set_no_delay(SOCKET socket)
-{
-  /*
-   * Disables Nagle's algorithm on the TCP socket.
-   * When Nagle is on TCP buffers writes by waiting ~40ms after each write.
-   */
-
-  BOOL enabled = TRUE;
-  setsockopt(socket, IPPROTO_TCP, TCP_NODELAY, (const char*)&enabled, sizeof(enabled));
-}
-
-//==============================================================================
-bool NetworkSystem::connect_as_host()
-{
-  const SOCKET listen_socket = socket(AF_INET, SOCK_STREAM, 0);
-  if (listen_socket == INVALID_SOCKET)
-  {
-    nc_crit("[net] host socket() failed: {}", WSAGetLastError());
-    return false;
-  }
-
-  sockaddr_in address{};
-  address.sin_family      = AF_INET;
-  address.sin_addr.s_addr = INADDR_ANY;
-  address.sin_port        = htons(m_port);
-
-  if (bind(listen_socket, (const sockaddr*)&address, sizeof(address)) == SOCKET_ERROR)
-  {
-    nc_crit("[net] bind() failed: {}", WSAGetLastError());
-    closesocket(listen_socket);
-    return false;
-  }
-
-  if (listen(listen_socket, 1) == SOCKET_ERROR)
-  {
-    nc_crit("[net] listen() failed: {}", WSAGetLastError());
-    closesocket(listen_socket);
-    return false;
-  }
-
-  nc_log("[net] host listening on port {}, waiting for peer...", m_port);
-
-  sockaddr_in peer_address{};
-  int         peer_address_length = sizeof(peer_address);
-
-  const SOCKET peer_socket = accept(listen_socket, (sockaddr*)&peer_address, &peer_address_length);
-  closesocket(listen_socket);
-
-  if (peer_socket == INVALID_SOCKET)
-  {
-    nc_crit("[net] accept() failed: {}", WSAGetLastError());
-    return false;
-  }
-
-  set_no_delay(peer_socket);
-  m_peer_socket = (uintptr_t)peer_socket;
-
-  char client_ip[INET_ADDRSTRLEN]{};
-  inet_ntop(AF_INET, &peer_address.sin_addr, client_ip, sizeof(client_ip));
-  nc_log("[net] peer connected from {}:{}.", client_ip, ntohs(peer_address.sin_port));
-
-  return true;
-}
-
-//==============================================================================
-bool NetworkSystem::connect_as_client()
-{
-  sockaddr_in server_address{};
-  server_address.sin_family = AF_INET;
-  server_address.sin_port   = htons(m_port);
-  if (inet_pton(AF_INET, m_peer_ip.c_str(), &server_address.sin_addr) != 1)
-  {
-    nc_crit("[net] invalid peer ip '{}'.", m_peer_ip);
-    return false;
-  }
-
-  while (true)
-  {
-    const SOCKET host_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if (host_socket == INVALID_SOCKET)
-    {
-      nc_crit("[net] client socket() failed: {}", WSAGetLastError());
-      return false;
-    }
-
-    if (connect(host_socket, (const sockaddr*)&server_address, sizeof(server_address)) == 0)
-    {
-      m_peer_socket = (uintptr_t)host_socket;
-      set_no_delay(m_peer_socket);
-      nc_log("[net] connected to host {}:{}.", m_peer_ip, m_port);
-      return true;
-    }
-
-    closesocket(host_socket);
-    nc_warn("[net] connect attempt to {} failed, retrying...", m_peer_ip);
-    Sleep(500);
-  }
-
-  return false;
-}
-
-//==============================================================================
-void NetworkSystem::close_connection()
-{
-  if ((SOCKET)m_peer_socket != INVALID_SOCKET)
-  {
-    closesocket((SOCKET)m_peer_socket);
-    m_peer_socket = (uintptr_t)INVALID_SOCKET;
+        get_engine().send_event(
+        {
+          .type = ModuleEventType::net_player_despawned,
+          .net_player = { .player_id = message.player_id },
+        });
+      },
+      [this](const AllPlayersInputs& message)
+      {
+        get_engine().send_event(ModuleEvent
+        {
+          .type = ModuleEventType::net_input_arrived,
+          .net_inputs = { .inputs = &message.inputs_array },
+        });
+        m_input_received = true;
+      },
+      [](const auto&){ nc_warn("[net][network system] client received invalid message"); }
+    );
   }
 }
 

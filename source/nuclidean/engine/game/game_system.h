@@ -211,9 +211,8 @@ private:
   LevelName level_name = INVALID_LEVEL_NAME;
   Journal   journal;
 
-  PlayerInputArray m_previous_tick_inputs{};
-
-  bool m_desync_dumped = false;
+  InputArray m_next_tick_inputs{};
+  InputArray m_previous_tick_inputs{};
 
   mutable std::optional<NextRequestedState> scheduled_state;
 
@@ -222,7 +221,6 @@ private:
 
   u32 secret_count   = 0;
   u32 revealed_count = 0;
-  
 };
 
 }

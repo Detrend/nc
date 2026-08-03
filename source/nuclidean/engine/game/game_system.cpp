@@ -280,11 +280,14 @@ static void load_empty_map
   SectorMapping&  mapping,
   EntityRegistry& /*entities*/,
   MapDynamics&    dynamics,
-  PlayerArray&    player_ids
+  PlayerArray&    player_ids,
+  vec3&           spawn_point,
+  vec3&           spawn_direction
 )
 {
-  player_ids[0] = INVALID_ENTITY_ID;
-  player_ids[1] = INVALID_ENTITY_ID;
+  player_ids.fill(INVALID_ENTITY_ID);
+  spawn_point     = VEC3_ZERO;
+  spawn_direction = VEC3_X;
   mapping.on_map_rebuild();
   dynamics.on_map_rebuild_and_entities_created();
 }
@@ -297,7 +300,9 @@ static void load_json_map
   SectorMapping&   mapping,
   EntityRegistry&  entities,
   MapDynamics&     dynamics,
-  PlayerArray&     player_ids
+  PlayerArray&     player_ids,
+  vec3&            spawn_point,
+  vec3&            spawn_direction
 )
 {
   using namespace map_building;
@@ -459,15 +464,26 @@ static void load_json_map
 
     if (js_entity["is_player"] == true)
     {
-      auto* player0 = entities.create_entity<Player>(position, forward);
-      player_ids[0] = player0->get_id();
-      register_entity(player0, js_entity);
+      spawn_point     = position;
+      spawn_direction = forward;
 
-      if (get_engine().get_module<NetworkSystem>().is_multiplayer())
+      if (NetworkSystem::get().is_multiplayer())
       {
-        auto* player1 = entities.create_entity<Player>(position + forward, forward);
-        player_ids[1] = player1->get_id();
-        register_entity(player1, js_entity);
+        for (PlayerID player_id = 0; player_id < MAX_PLAYER_COUNT; ++player_id)
+        {
+          if (!NetworkSystem::get().is_player_connected(player_id))
+            continue;
+
+          const Player* player = entities.create_entity<Player>(position, forward);
+          player_ids[player_id] = player->get_id();
+          register_entity(player, js_entity);
+        }
+      }
+      else
+      {
+        auto* player = entities.create_entity<Player>(position, forward);
+        player_ids[0] = player->get_id();
+        register_entity(player, js_entity);
       }
     }
     else
@@ -753,106 +769,6 @@ void simulate_one_frame(Game& game, InputGetter inputs)
 }
 
 //==============================================================================
-static nlohmann::json build_sim_state_json(Game& game)
-{
-  constexpr EntityTypeMask sim_mask =
-      EntityTypeFlags::player
-    | EntityTypeFlags::enemy
-    | EntityTypeFlags::pickup
-    | EntityTypeFlags::projectile
-    | EntityTypeFlags::prop
-    | EntityTypeFlags::teleport;
-
-  nlohmann::json state;
-  state["frame_idx"]        = game.frame_idx;
-  state["time_since_start"] = game.time_since_start;
-
-  game.entities->for_each(sim_mask, [&](Entity& entity)
-  {
-    const EntityID id  = entity.get_id();
-    const vec3     pos = entity.get_position();
-
-    nlohmann::json entry;
-    entry["pos"] = { pos.x, pos.y, pos.z };
-    entry["r"]   = entity.get_radius();
-    entry["h"]   = entity.get_height();
-
-    if (const Player* player = entity.as<Player>())
-    {
-      const vec3 look = player->get_look_direction();
-      entry["hp"]     = player->get_health();
-      entry["look"]   = { look.x, look.y, look.z };
-      entry["weapon"] = cast<u32>(player->get_equipped_weapon());
-    }
-
-    const std::string key = std::format("e_{:02}_{:08}", cast<u32>(id.type), id.idx);
-    state[key] = std::move(entry);
-  });
-
-  return state;
-}
-
-//==============================================================================
-static u64 fnv1a_64(const std::string& data)
-{
-  u64 hash = 14695981039346656037_u64;
-  for (const unsigned char c : data)
-  {
-    hash ^= cast<u64>(c);
-    hash *= 1099511628211_u64;
-  }
-  return hash;
-}
-
-//==============================================================================
-static void write_desync_diff
-(
-  u8                 player_index,
-  u64                frame_index,
-  const std::string& local_json,
-  const std::string& peer_json
-)
-{
-  const nlohmann::json local = nlohmann::json::parse(local_json, nullptr, false);
-  const nlohmann::json peer  = nlohmann::json::parse(peer_json,  nullptr, false);
-
-  if (local.is_discarded() || peer.is_discarded())
-  {
-    nc_crit("[net] desync diff: could not parse state json from one of the peers.");
-    return;
-  }
-
-  const nlohmann::json patch = nlohmann::json::diff(local, peer);
-
-  const std::string path = std::format("desync_diff_p{}_frame{}.txt", player_index, frame_index);
-  std::ofstream out(path, std::ios::trunc);
-
-  nc_crit("[net] DESYNC DIFF at frame {}: {} differing field(s). Full report in '{}'.", frame_index, patch.size(), path);
-  out << std::format("desync at frame {} ({} differing fields)\n", frame_index, patch.size());
-
-  u64 logged = 0;
-  for (const nlohmann::json& op : patch)
-  {
-    const std::string pointer = op.value("path", std::string{});
-
-    std::string local_value = "<absent>";
-    if (const auto ptr = nlohmann::json::json_pointer(pointer); local.contains(ptr))
-    {
-      local_value = local.at(ptr).dump();
-    }
-    const std::string peer_value = op.contains("value") ? op["value"].dump() : "<absent>";
-
-    const std::string line = std::format("  {} : local={} peer={}", pointer, local_value, peer_value);
-    out << line << "\n";
-
-    if (logged++ < 30)
-    {
-      nc_crit("[net]{}", line);
-    }
-  }
-}
-
-//==============================================================================
 void GameSystem::game_update(f32 delta)
 {
   NC_SCOPE_PROFILER(GameSystemUpdate)
@@ -911,8 +827,8 @@ void GameSystem::game_update(f32 delta)
       bool first_frame = !journal.rover;
       delta_time  = frame.delta;
 
-      PlayerInputArray curr{};
-      PlayerInputArray prev{};
+      InputArray curr{};
+      InputArray prev{};
       curr[0] = frame.inputs;
       prev[0] = first_frame ? PlayerSpecificInputs{} : frames[journal.rover - 1].inputs;
 
@@ -927,36 +843,20 @@ void GameSystem::game_update(f32 delta)
 
       const PlayerSpecificInputs local = InputSystem::get().get_inputs().player_inputs;
 
-      PlayerInputArray curr{};
+      InputArray curr{};
       if (network.is_multiplayer())
       {
-        u64         local_checksum = 0;
-        std::string local_state_json;
-        if (CVars::net_desync_check)
-        {
-          local_state_json = build_sim_state_json(*game).dump();
-          local_checksum   = fnv1a_64(local_state_json);
-        }
-
-        const InputExchangeResult result = network.exchange(local, game->frame_idx, local_checksum);
-        curr = result.inputs;
-
-        if (result.state_mismatch && !m_desync_dumped)
-        {
-          m_desync_dumped = true;
-          const std::string peer_state_json = network.exchange_blob(local_state_json);
-          write_desync_diff(network.get_player_index(), game->frame_idx, local_state_json, peer_state_json);
-        }
+        curr = m_next_tick_inputs;
       }
       else
       {
-        curr[game->local_player_slot] = local;
+        curr[network.get_local_player_id()] = local;
       }
 
-      const PlayerInputArray prev = m_previous_tick_inputs;
+      const InputArray prev = m_previous_tick_inputs;
       m_previous_tick_inputs = curr;
 
-      const f32 delta_time = network.is_multiplayer() ? g_mp_fixed_delta_time : delta;
+      const f32 delta_time = network.is_multiplayer() ? MULTIPLAYER_FIXED_DELTA_TIME : delta;
 
       if (!network.is_multiplayer() && journal.state == JournalState::recording)
       {
@@ -1100,6 +1000,43 @@ void GameSystem::on_event(ModuleEvent& event)
     case ModuleEventType::game_update:
     {
       this->game_update(event.update.dt);
+    }
+    break;
+
+    case ModuleEventType::net_input_arrived:
+    {
+      nc_assert(event.net_inputs.inputs != nullptr);
+      m_next_tick_inputs = *event.net_inputs.inputs;
+    }
+    break;
+
+    case ModuleEventType::net_player_spawned:
+    {
+      const PlayerID player_id = event.net_player.player_id;
+      nc_assert(player_id < MAX_PLAYER_COUNT, "invalid net player id - \"{}\"", player_id);
+      nc_assert
+      (
+        game->player_ids[player_id] == INVALID_ENTITY_ID,
+        "net player {} spawned into an occupied slot", player_id
+      );
+
+      const Player* player = game->entities->create_entity<Player>(game->spawn_point, game->spawn_direction);
+      game->player_ids[player_id] = player->get_id();
+    }
+    break;
+
+    case ModuleEventType::net_player_despawned:
+    {
+      const PlayerID player_id = event.net_player.player_id;
+      nc_assert(player_id < MAX_PLAYER_COUNT, "invalid net player id - \"{}\"", player_id);
+      nc_assert
+      (
+        game->player_ids[player_id] != INVALID_ENTITY_ID,
+        "net player {} despawned from an empty slot", player_id
+      );
+
+      game->entities->destroy_entity(game->player_ids[player_id]);
+      game->player_ids[player_id] = INVALID_ENTITY_ID;
     }
     break;
   }
@@ -1364,8 +1301,8 @@ void GameSystem::handle_load_game(const std::string& savefile)
   // Free the data
   std::free(data);
 
-  m_previous_tick_inputs = PlayerInputArray{};
-  m_desync_dumped        = false;
+  m_next_tick_inputs = InputArray{};
+  m_previous_tick_inputs = InputArray{};
 }
 
 //==============================================================================
@@ -1553,7 +1490,9 @@ void GameSystem::build_map(LevelName level)
       *game->mapping,
       *game->entities,
       *game->dynamics,
-      game->player_ids
+      game->player_ids,
+      game->spawn_point,
+      game->spawn_direction
     );
   }
   else
@@ -1565,11 +1504,11 @@ void GameSystem::build_map(LevelName level)
       *game->mapping,
       *game->entities,
       *game->dynamics,
-      game->player_ids
+      game->player_ids,
+      game->spawn_point,
+      game->spawn_direction
     );
   }
-
-  game->local_player_slot = get_engine().get_module<NetworkSystem>().get_player_index();
 
   // Now snap all required entities to the floor
   game->entities->for_each(EntityTypes::all, [&](Entity& entity)

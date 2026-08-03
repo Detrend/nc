@@ -1,6 +1,8 @@
 // Project Nuclidean Source File
 #pragma once
 
+#include <types.h>
+
 namespace nc
 {
 

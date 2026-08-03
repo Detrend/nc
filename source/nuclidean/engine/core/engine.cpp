@@ -642,6 +642,7 @@ void Engine::run()
   auto previous_time = std::chrono::high_resolution_clock::now();
 
   InputSystem& input_system = this->get_module<InputSystem>();
+  NetworkSystem& network_system = this->get_module<NetworkSystem>();
 
   while (!this->should_quit())
   {
@@ -654,8 +655,8 @@ void Engine::run()
     eu::limit_min_frametime(frame_time);
 
     // Limit the FPS if desired
-    const f32 min_frame_time = NetworkSystem::get().is_multiplayer()
-      ? g_mp_fixed_delta_time
+    const f32 min_frame_time = network_system.is_multiplayer()
+      ? MULTIPLAYER_FIXED_DELTA_TIME
       : (CVars::has_fps_limit ? 1.0f / CVars::fps_limit : 0.0f);
     while (frame_time < min_frame_time)
     {
@@ -667,22 +668,16 @@ void Engine::run()
     previous_time = current_time;
     m_delta_time  = frame_time;
 
+    // pump messages
+    input_system.update_window_and_pump_messages();
+
     // notify frame start
     this->send_event(ModuleEvent
     {
       .type = ModuleEventType::frame_start,
     });
 
-    // pump messages
-    input_system.update_window_and_pump_messages();
-
     const f32 game_logic_update_time = frame_time * CVars::time_speed;
-
-    // frame start
-    this->send_event(ModuleEvent
-    {
-      .type = ModuleEventType::frame_start,
-    });
 
     // update
     this->send_event(ModuleEvent
@@ -696,6 +691,12 @@ void Engine::run()
     {
       .type = ModuleEventType::render,
     });
+
+    // TODO: freeze on server death
+    while (network_system.is_multiplayer() && !network_system.are_inputs_received())
+    {
+      network_system.poll_network();
+    }
 
     // cleanup
     this->send_event(ModuleEvent

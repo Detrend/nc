@@ -1,10 +1,12 @@
 // Project Nuclidean Source File
+#include <common.h>
 
 #include <engine/entity/entity_types.h>
 #include <engine/game/game.h>
 
 // Entity types
 #include <engine/network/constants.h>
+#include <engine/network/network_system.h>
 #include <engine/player/player.h>
 #include <engine/enemies/enemy.h>
 #include <engine/sound/sound_emitter.h>
@@ -38,9 +40,9 @@ void Game::on_destroy()
 //==============================================================================
 void Game::update
 (
-  f32                     dt,
-  const PlayerInputArray& curr_inputs,
-  const PlayerInputArray& prev_inputs
+  f32               dt,
+  const InputArray& curr_inputs,
+  const InputArray& prev_inputs
 )
 {
   // Init the player with transition data on the first frame. Same code path as
@@ -55,14 +57,15 @@ void Game::update
 
   time_since_start += dt;
 
-  // Handle the player first
-  for (u8 slot = 0; slot < g_max_player_count; ++slot)
+  // Handle the players first
+  for (PlayerID player_id = 0; player_id < MAX_PLAYER_COUNT; ++player_id)
   {
-    if (player_ids[slot] == INVALID_ENTITY_ID)
+    if (player_ids[player_id] == INVALID_ENTITY_ID)
       continue;
 
-    Player* const player = entities->get_entity<Player>(player_ids[slot]);
-    player->update(curr_inputs[slot], prev_inputs[slot], dt);
+    Player* const player = entities->get_entity<Player>(player_ids[player_id]);
+    nc_assert(player, "player slot {} holds a destroyed entity", player_id);
+    player->update(curr_inputs[player_id], prev_inputs[player_id], dt);
   }
 
   // Handle enemies
@@ -110,7 +113,6 @@ void Game::serialize(Buffer& buffer)
 {
   // Small data first
   buffer.serialize_array(this->player_ids.data(), this->player_ids.size());
-  buffer.serialize(this->local_player_slot);
   buffer.serialize(this->frame_idx);
   buffer.serialize(this->time_since_start);
   // No need to serialize "is_level_completed" and "next_level_name"
@@ -141,7 +143,7 @@ void Game::serialize(Buffer& buffer)
 //==============================================================================
 EntityID Game::get_local_player_id() const
 {
-  return player_ids[local_player_slot];
+  return player_ids[NetworkSystem::get().get_local_player_id()];
 }
 
 }
