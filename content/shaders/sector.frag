@@ -1,5 +1,4 @@
 #version 430 core
-#extension GL_NV_gpu_shader5 : enable
 
 struct TextureData {
   vec2 pos;

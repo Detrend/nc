@@ -1,6 +1,5 @@
 
 #version 430 core
-#extension GL_NV_gpu_shader5 : enable
 
 in      vec3 position;
 in      vec3 stitched_position;
