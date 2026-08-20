@@ -219,8 +219,6 @@ bool GraphicsSystem::init()
   // disable vsync and unlock fps
   SDL_GL_SetSwapInterval(0);
 
-  glLineWidth(5.0f);
-
   MeshManager::get().init();
   TextureManager::get().load_directory(ResLifetime::Game, "content/textures");
 
