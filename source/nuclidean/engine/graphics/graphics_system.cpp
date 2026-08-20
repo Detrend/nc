@@ -78,13 +78,13 @@ namespace nc::debug_helpers
 
 //==============================================================================
 #if NC_DEBUG_DRAW
-static void display_fps_as_title(SDL_Window* window)
+static void display_fps_as_title(SDL_Window* window, const ivec2 render_res)
 {
   const auto delta_time = get_engine().get_delta_time();
   const auto fps_number = 1.0f / delta_time;
   const auto title_str  = std::format
   (
-    "Nuclidean Game. FPS: {:.2f}, Dt: {:.2f}ms", fps_number, delta_time * 1000.0f
+    "Nuclidean Game. ({}x{}) FPS: {:.2f}, Dt: {:.2f}ms", render_res.x, render_res.y, fps_number, delta_time * 1000.0f
   );
 
   SDL_SetWindowTitle(window, title_str.c_str());
@@ -402,10 +402,11 @@ void GraphicsSystem::render()
   u32 u_width  = cast<u32>(width);
   u32 u_height = cast<u32>(height);
 
-  if (u_width != m_window_width || u_height != m_window_height)
+  if (u_width != m_window_width || u_height != m_window_height || m_last_resolution_scale != CVars::resolution_scale)
   {
     m_window_width  = u_width;
     m_window_height = u_height;
+    m_last_resolution_scale = CVars::resolution_scale;
     m_renderer->on_window_resized(m_window_width, m_window_height);
 #if NC_DEBUG_DRAW
     m_debug_renderer->on_window_resized(m_window_width, m_window_height);
@@ -414,7 +415,7 @@ void GraphicsSystem::render()
 
 #if NC_DEBUG_DRAW
   // Note that this call can take up to 200 microseconds
-  debug_helpers::display_fps_as_title(m_window);
+  debug_helpers::display_fps_as_title(m_window, m_renderer->get_render_size());
 #endif
 
   glViewport(0, 0, width, height);

@@ -12,6 +12,7 @@
 
 #include <math/vector.h>
 #include <math/matrix.h>
+#include <cvars.h>
 
 #include <filesystem>
 #include <memory>
@@ -118,6 +119,10 @@ private:
 
   mat4  m_default_projection;
   ivec2 m_window_size;
+public:
+  // Resolution in which the game will be rendered, is affected by `CVars::resolution_scale`
+  ivec2 get_render_size() const { return ivec2{ m_window_size.x * CVars::resolution_scale, m_window_size.y * CVars::resolution_scale }; }
+private:
 
   // Shader members are mutable so the hot-reload helper (called from the
   // const render() method) can swap their underlying OpenGL handles.
@@ -158,10 +163,14 @@ private:
   GLuint m_g_albedo            = 0;
   GLuint m_g_sector            = 0;
 
+  GLuint m_lowres_framebuff    = 0;
+  GLuint m_lowres_color        = 0;
+  GLuint m_lowres_z_stencil    = 0;
+
   bool m_shadows = true;
 
-  void destroy_g_buffers();
-  void create_g_buffers(u32 w, u32 h);
+  void destroy_renderbuffers(); // Destroys g-buffers and lowres renderbuffer
+  void create_renderbuffers(ivec2 dims); // Creates g-buffers (always) and lowres renderbuffer (if resolution_scale != 1.0f)
   void recompute_projection(u32 width, u32 height, f32 fov);
 
   // Register a shader for hot-reload monitoring.

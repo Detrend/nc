@@ -185,6 +185,9 @@ struct CVars
   NC_REGISTER_CVAR_RANGED(f32, player_walk_anim_spd, 34.0f, 1.0f, 100.0f, "Speed of player walking animation.");
 
   NC_REGISTER_CVAR_RANGED(f32, mul_frustum_after_nc_portal, 0.95f, 0.0f, 1.0f, "DON'T TOUCH THIS");
+
+  NC_REGISTER_CVAR_RANGED(f32, resolution_scale, 1.0f, 0.02f, 2.0f, "Render the game in other than native resolution");
+  NC_REGISTER_CVAR       (bool, use_nearest_for_resolution_scale, true, "Use nearest neighbor for resolution scale, otherwise linear");
 };
 
 }

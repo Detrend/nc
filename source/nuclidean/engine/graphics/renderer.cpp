@@ -97,7 +97,7 @@ Renderer::Renderer(u32 win_w, u32 win_h)
 , m_sky_box_material(ShaderProgramHandle::from_files(shaders::sky_box::VERTEX_FILE, shaders::sky_box::FRAGMENT_FILE))
 , m_window_size(win_w, win_h)
 {
-  this->create_g_buffers(win_w, win_h);
+  this->create_renderbuffers(get_render_size());
   this->recompute_projection(win_w, win_h, GraphicsSystem::FOV);
 
   const vec2 game_atlas_size = TextureManager::get().get_atlas_bundle(ResLifetime::Game).get_size();
@@ -146,8 +146,8 @@ void Renderer::on_window_resized(u32 width, u32 height)
   m_window_size = ivec2{width, height};
 
   // resize g buffers
-  this->destroy_g_buffers();
-  this->create_g_buffers(width, height);
+  this->destroy_renderbuffers();
+  this->create_renderbuffers(get_render_size());
   this->recompute_projection(width, height, GraphicsSystem::FOV);
 
   // resize ssbo buffers
@@ -174,6 +174,7 @@ const
   check_shader_hot_reload();
 #endif
 
+  ivec2 render_size = get_render_size();
   const Camera* camera = Camera::get();
   if (!camera)
     return;
@@ -191,6 +192,20 @@ const
   do_light_culling_pass(camera_data);
   do_lighting_pass(camera_data.position);
 
+  if (m_lowres_framebuff != 0) {
+    // If we were rendering into the lowres framebuffer, we need to blit its contents to the screen
+    nc_assert(CVars::resolution_scale != 1.0f);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, m_lowres_framebuff);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+    glBlitFramebuffer(
+      0, 0, render_size.x, render_size.y,
+      0, 0, m_window_size.x, m_window_size.y,
+      GL_COLOR_BUFFER_BIT, (CVars::use_nearest_for_resolution_scale ? GL_NEAREST : GL_LINEAR)
+    );
+  }
+
+  glViewport(0, 0, m_window_size.x, m_window_size.y);
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
   m_dir_light_ssbo.clear();
   m_point_light_ssbo.clear();
   m_sector_matrices_ssbo.clear();
@@ -360,7 +375,7 @@ static GLuint create_g_buffer(GLint internal_format, GLenum attachment, u32 w, u
 }
 
 //==============================================================================
-void Renderer::destroy_g_buffers()
+void Renderer::destroy_renderbuffers()
 {
   if (m_g_buffer)
   {
@@ -392,12 +407,26 @@ void Renderer::destroy_g_buffers()
     m_g_stitched_normal   = 0;
     m_g_albedo            = 0;
     m_g_sector            = 0;
+
+
+    if (m_lowres_framebuff != 0) {
+      nc_assert(glIsFramebuffer(m_lowres_framebuff));
+      glDeleteFramebuffers(1, &m_lowres_framebuff);
+      m_lowres_framebuff  = 0;
+
+      nc_assert(m_lowres_color);
+      nc_assert(m_lowres_z_stencil);
+      glDeleteRenderbuffers(2, std::array<GLuint, 2>{m_lowres_color, m_lowres_z_stencil}.data());
+      m_lowres_color      = 0;
+      m_lowres_z_stencil  = 0;
+    }
   }
 }
 
 //==============================================================================
-void Renderer::create_g_buffers(u32 width, u32 height)
+void Renderer::create_renderbuffers(ivec2 dims)
 {
+  const u32 width = dims.x, height = dims.y;
   glGenFramebuffers(1, &m_g_buffer);
   glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
 
@@ -440,6 +469,29 @@ void Renderer::create_g_buffers(u32 width, u32 height)
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     nc_warn("G-buffer not complete.");
 
+  if (CVars::resolution_scale != 1.0f) {
+    glGenFramebuffers(1, &m_lowres_framebuff);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_lowres_framebuff);
+
+    glGenRenderbuffers(1, &m_lowres_color);
+    glBindRenderbuffer(GL_RENDERBUFFER, m_lowres_color);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, cast<GLsizei>(width), cast<GLsizei>(height));
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, m_lowres_color);
+
+    glGenRenderbuffers(1, &m_lowres_z_stencil);
+    glBindRenderbuffer(GL_RENDERBUFFER, m_lowres_z_stencil);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, cast<GLsizei>(width), cast<GLsizei>(height));
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_lowres_z_stencil);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+      nc_warn("Loweres-buffer not complete.");
+  }
+  else {
+    nc_assert(m_lowres_framebuff  == 0);
+    nc_assert(m_lowres_color      == 0);
+    nc_assert(m_lowres_z_stencil  == 0);
+  }
+
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -467,6 +519,8 @@ void Renderer::do_geometry_pass
 )
 const
 {
+  const ivec2 render_size = get_render_size();
+  glViewport(0, 0, render_size.x, render_size.y);
   glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   
@@ -483,12 +537,14 @@ const
   render_gun(camera, gun);
   render_sky_box(camera);
 
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  glBindFramebuffer(GL_FRAMEBUFFER, m_lowres_framebuff);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 //==============================================================================
 void Renderer::do_light_culling_pass(const CameraData& camera) const
 {
+  ivec2 render_size = get_render_size();
   m_light_culling_shader.use();
 
   m_point_light_ssbo.bind(0);
@@ -502,13 +558,13 @@ void Renderer::do_light_culling_pass(const CameraData& camera) const
 
   m_light_culling_shader.set_uniform(shaders::light_culling::VIEW, camera.view);
   m_light_culling_shader.set_uniform(shaders::light_culling::INV_PROJECTION, inverse(m_default_projection));
-  m_light_culling_shader.set_uniform(shaders::light_culling::WINDOW_SIZE, cast<vec2>(m_window_size));
+  m_light_culling_shader.set_uniform(shaders::light_culling::WINDOW_SIZE, cast<vec2>(render_size));
   m_light_culling_shader.set_uniform(shaders::light_culling::FAR_PLANE, FAR);
   m_light_culling_shader.set_uniform(shaders::light_culling::NUM_LIGHTS, m_point_light_ssbo.gpu_size_u32());
 
-  const size_t num_tiles_x = (cast<size_t>(m_window_size.x) + LIGHT_CULLING_TILE_SIZE_X - 1)
+  const size_t num_tiles_x = (cast<size_t>(render_size.x) + LIGHT_CULLING_TILE_SIZE_X - 1)
     / LIGHT_CULLING_TILE_SIZE_X;
-  const size_t num_tiles_y = (cast<size_t>(m_window_size.y) + LIGHT_CULLING_TILE_SIZE_Y - 1) 
+  const size_t num_tiles_y = (cast<size_t>(render_size.y) + LIGHT_CULLING_TILE_SIZE_Y - 1)
     / LIGHT_CULLING_TILE_SIZE_Y;
 
   m_light_culling_shader.dispatch(num_tiles_x, num_tiles_y, 1, true);
@@ -543,7 +599,7 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   m_portal_matrices_ssbo.bind(6);
   m_sector_matrices_ssbo.bind(7);
 
-  const size_t num_tiles_x = (cast<size_t>(m_window_size.x) + LIGHT_CULLING_TILE_SIZE_X - 1) 
+  const size_t num_tiles_x = (cast<size_t>(get_render_size().x) + LIGHT_CULLING_TILE_SIZE_X - 1)
     / LIGHT_CULLING_TILE_SIZE_X;
 
   // prepare shader
@@ -1031,7 +1087,7 @@ const
   const MeshHandle&    texturable_quad = MeshManager::get().get_texturable_quad();
 
   f32  gun_zoom = CVars::gun_zoom;
-  vec2 win_size = cast<vec2>(m_window_size);
+  vec2 win_size = cast<vec2>(get_render_size());
   vec3 scale    = -vec3{win_size.x * gun_zoom, win_size.y * gun_zoom, 1.0f};
   f32  trans_x  = 0.5f + gun.sway.x * 0.5f;
   f32  trans_y  = 0.5f + gun.sway.y * 0.5f;

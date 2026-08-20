@@ -12,6 +12,7 @@
 #include <engine/map/map_types.h>            // SectorID
 
 #include <game/game_types.h>
+#include <cvars.h>
 
 #include <vector>
 #include <string>
@@ -106,6 +107,7 @@ private:
 
   u32 m_window_width  = cast<u32>(WINDOW_WIDTH);
   u32 m_window_height = cast<u32>(WINDOW_HEIGHT);
+  f32 m_last_resolution_scale = CVars::resolution_scale; // Resolution scale used on last frame, stored just so we can detect the cvar's change
 };
 
 }
