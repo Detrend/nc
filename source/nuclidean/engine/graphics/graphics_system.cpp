@@ -817,6 +817,16 @@ void GraphicsSystem::handle_light_debug()
   {
     if (ImGui::Begin("Light Debug", &CVars::light_debug))
     {
+      if (!light_test)
+      {
+        // light_test is never assigned anywhere in the codebase today --
+        // guard against the null dereference instead of crashing as soon
+        // as this debug window is opened.
+        ImGui::Text("No light selected for debugging.");
+        ImGui::End();
+        return;
+      }
+
       vec3 pos = light_test->get_position();
       if (ImGui::DragFloat3("Position", &pos.x, 0.1f))
       {
