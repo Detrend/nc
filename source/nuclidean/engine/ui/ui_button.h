@@ -17,6 +17,13 @@ public:
   UiButton();
   UiButton(const char* texture_name, vec2 position, vec2 scale, std::function<void(void)> func);
 
+  // UiLoadGameButton (and anything else deriving from UiButton) owns a
+  // std::string and is currently only ever deleted through its exact
+  // derived type (std::vector<UiLoadGameButton*>) -- but without a
+  // virtual destructor here, the first place that deletes a derived
+  // button through a UiButton* gets UB and a leaked std::string.
+  virtual ~UiButton() = default;
+
   //checks overlap of point and button
   bool is_point_in_rec(vec2 point);
 
@@ -34,7 +41,12 @@ public:
   virtual void draw(ShaderProgramHandle button_material);
 
 protected:
-  const char* texture_name;
+  // Default-constructed via UiButton() (an empty-body ctor with no member
+  // init list) whenever a button is default-constructed before being
+  // properly set up -- must not be left uninitialized, or a
+  // default-constructed button that gets drawn passes garbage to
+  // TextureManager::operator[].
+  const char* texture_name = nullptr;
   vec2 position;
   vec2 scale;
   bool isHover = false;

@@ -8,7 +8,8 @@ class UiScreenEffect
 {
   public:
     UiScreenEffect();
-      
+    ~UiScreenEffect();
+
     void update(float delta);
 
     void draw();

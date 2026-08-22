@@ -20,7 +20,11 @@ UiHudDisplay::UiHudDisplay() :
 //=========================================================================================
 UiHudDisplay::~UiHudDisplay()
 {
-  glDeleteBuffers(1, &VAO);
+  // A VAO must be deleted with glDeleteVertexArrays, not glDeleteBuffers --
+  // VAO and buffer names live in separate namespaces, so calling
+  // glDeleteBuffers on a VAO name leaks the VAO and (worse) deletes
+  // whatever unrelated buffer object happens to share that numeric name.
+  glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
 }
 
@@ -34,8 +38,6 @@ void UiHudDisplay::init()
     vec2(1.0f, -1.0f), vec2(1.0f, 1.0f - 0.015f) };
 
   glGenBuffers(1, &VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 4, &vertices, GL_STATIC_DRAW);
 
   glGenVertexArrays(1, &VAO);
 

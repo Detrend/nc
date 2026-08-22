@@ -32,6 +32,7 @@ UserInterfaceSystem::~UserInterfaceSystem()
 {
   delete hud_display;
   delete menu;
+  delete screen_effect;
 }
 //===========================================================================================
 MenuManager* UserInterfaceSystem::get_menu_manager()

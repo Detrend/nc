@@ -17,6 +17,15 @@ init();
 }
 
 //===========================================================================================
+UiScreenEffect::~UiScreenEffect()
+{
+  // A VAO must be deleted with glDeleteVertexArrays, not glDeleteBuffers --
+  // VAO and buffer names live in separate namespaces.
+  glDeleteVertexArrays(1, &VAO);
+  glDeleteBuffers(1, &VBO);
+}
+
+//===========================================================================================
 void UiScreenEffect::did_damage(int damage)
 {
 // final color is determined by how big the damage is
@@ -48,8 +57,6 @@ vec2 vertices[] = { vec2(-1, 1), vec2(0, 0),
   vec2(1, -1), vec2(1, 1) };
 
 glGenBuffers(1, &VBO);
-glBindBuffer(GL_ARRAY_BUFFER, VBO);
-glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 4, &vertices, GL_STATIC_DRAW);
 
 glGenVertexArrays(1, &VAO);
 

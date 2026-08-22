@@ -1003,6 +1003,10 @@ OptionsPage::~OptionsPage()
   delete crosshair_less;
   delete crosshair_more;
   delete go_back_button;
+  delete crosshair_text;
+  delete shadow_text;
+  delete shadow_on_button;
+  delete shadow_off_button;
 }
 
 //==============================================================================================
