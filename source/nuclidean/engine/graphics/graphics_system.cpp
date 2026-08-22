@@ -393,7 +393,11 @@ void GraphicsSystem::render()
   NC_SCOPE_COUNTER(render)
 
   int width = 0, height = 0;
-  SDL_GetWindowSize(m_window, &width, &height);
+  // SDL_GetWindowSize returns the size in screen coordinates ("points"),
+  // which differs from the actual framebuffer size in pixels on high-DPI
+  // displays -- SDL_GL_GetDrawableSize is the one that matches what the GL
+  // context actually renders into.
+  SDL_GL_GetDrawableSize(m_window, &width, &height);
 
   nc_assert(width >= 0 && height >= 0, "WTF?");
 
