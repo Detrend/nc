@@ -121,8 +121,9 @@ Renderer::Renderer(u32 win_w, u32 win_h)
 
   // setup light culling ssbos
   {
-    const size_t num_tiles_x = (win_w + LIGHT_CULLING_TILE_SIZE_X - 1) / LIGHT_CULLING_TILE_SIZE_X;
-    const size_t num_tiles_y = (win_h + LIGHT_CULLING_TILE_SIZE_Y - 1) / LIGHT_CULLING_TILE_SIZE_Y;
+    const ivec2 render_size = get_render_size();
+    const size_t num_tiles_x = (render_size.x + LIGHT_CULLING_TILE_SIZE_X - 1) / LIGHT_CULLING_TILE_SIZE_X;
+    const size_t num_tiles_y = (render_size.y + LIGHT_CULLING_TILE_SIZE_Y - 1) / LIGHT_CULLING_TILE_SIZE_Y;
     const size_t num_tiles = num_tiles_x * num_tiles_y;
 
     m_light_index_ssbo = SSBOBuffer<u32>(MAX_LIGHTS_PER_TILE * num_tiles);
@@ -152,8 +153,9 @@ void Renderer::on_window_resized(u32 width, u32 height)
 
   // resize ssbo buffers
   {
-    const size_t num_tiles_x = (width + LIGHT_CULLING_TILE_SIZE_X - 1) / LIGHT_CULLING_TILE_SIZE_X;
-    const size_t num_tiles_y = (height + LIGHT_CULLING_TILE_SIZE_Y - 1) / LIGHT_CULLING_TILE_SIZE_Y;
+    const ivec2 render_size = get_render_size();
+    const size_t num_tiles_x = (render_size.x + LIGHT_CULLING_TILE_SIZE_X - 1) / LIGHT_CULLING_TILE_SIZE_X;
+    const size_t num_tiles_y = (render_size.y + LIGHT_CULLING_TILE_SIZE_Y - 1) / LIGHT_CULLING_TILE_SIZE_Y;
     const size_t num_tiles = num_tiles_x * num_tiles_y;
 
     m_light_index_ssbo.resize(MAX_LIGHTS_PER_TILE * num_tiles);
