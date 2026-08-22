@@ -23,6 +23,7 @@
 #include <engine/map/map_system.h>
 #include <engine/game/game_system.h>
 #include <engine/game/game_helpers.h>
+#include <engine/player/player.h>
 #include <engine/appearance.h>
 
 #include <array>
@@ -244,7 +245,7 @@ void Renderer::update_sector_ssbos() const
       const WallData& wall = map.walls[wall_id];
 
       size_t matrix_index;
-      if (wall.render_data_index == INVALID_SECTOR_ID)
+      if (wall.render_data_index == INVALID_PORTAL_RENDER_ID)
       {
         // index of unit matrix
         matrix_index = 0;
@@ -1099,7 +1100,16 @@ const
   mat4 view       = translation(trans) * scaling(scale);
   mat4 projection = ortho(0.0f, win_size.x, win_size.y, 0.0f, -1.0f, 1.0f);
 
-  const vec2 player_position = ((Entity*)GameHelpers::get().get_player())->get_position().xz;
+  Player* player = GameHelpers::get().get_player();
+  if (!player)
+  {
+    // gun.sprite should be empty whenever there is no player
+    // (grab_render_gun_props clears it), but do not rely on an invariant
+    // maintained in a different file for avoiding a null deref here.
+    return;
+  }
+
+  const vec2 player_position = player->get_position().xz;
   const SectorID sector_id = GameSystem::get().get_map().get_sector_from_point(player_position);
 
   const u32 matrix_id = cast<u32>(m_sector_matrices.size());
