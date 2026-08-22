@@ -37,8 +37,6 @@ MenuManager::MenuManager() :
     vec2(1.0f, -1.0f), vec2(1.0f, 1.0f - 0.015f) };
 
   glGenBuffers(1, &VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 4, &vertices, GL_STATIC_DRAW);
 
   glGenVertexArrays(1, &VAO);
 
@@ -72,8 +70,13 @@ MenuManager::~MenuManager()
   delete load_game_page;
   delete new_game_page;
   delete next_level_page;
+  delete quit_game_page;
 
-  glDeleteBuffers(1, &VAO);
+  // A VAO must be deleted with glDeleteVertexArrays, not glDeleteBuffers --
+  // VAO and buffer names live in separate namespaces, so calling
+  // glDeleteBuffers on a VAO name leaks the VAO and (worse) deletes
+  // whatever unrelated buffer object happens to share that numeric name.
+  glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
 }
 
