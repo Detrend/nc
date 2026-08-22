@@ -45,10 +45,23 @@ public:
 
   struct CameraData
   {
-    const vec3& position;
-    const mat4& view;
+    // position/view/portal_dest_to_src are stored BY VALUE (they are small
+    // -- vec3/mat4) rather than by reference: several call sites bind
+    // these to temporaries (e.g. `.portal_dest_to_src = camera.pds *
+    // portal.d2s`), which is only safe via aggregate reference
+    // lifetime-extension -- a guarantee that breaks the moment a
+    // CameraData is copied or returned from a function instead of
+    // being a freshly aggregate-initialized named local.
+    vec3 position;
+    mat4 view;
+    // vis_tree stays a reference on purpose: it is a real tree of
+    // std::vectors, referenced (never copied) all the way down through
+    // portal recursion; storing it by value would deep-copy the whole
+    // subtree at every portal hit every frame. Its lifetime already
+    // outlives any single render() call (owned by the caller), so this one
+    // is not the same danger as the two above.
     const VisibilityTree& vis_tree;
-    const mat4& portal_dest_to_src;
+    mat4 portal_dest_to_src;
     WallID portal_id = INVALID_WALL_ID;
   };
 
