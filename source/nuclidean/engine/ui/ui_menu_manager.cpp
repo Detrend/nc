@@ -90,14 +90,28 @@ void MenuManager::on_exit()
 }
 
 //=============================================================================================
-vec2 MenuManager::get_normalized_mouse_pos()
+// Advances the click edge-detection state (prev <- cur <- fresh SDL read).
+// Must be called EXACTLY ONCE per frame -- get_normalized_mouse_pos() used
+// to do this itself as a side effect, and since it was called once from
+// update() (correct) and again from draw_cursor() during rendering, a
+// button press landing between update and draw got copied into
+// prev_mousestate before the next update() ever saw it as "new", silently
+// swallowing the click.
+void MenuManager::advance_mouse_state()
 {
   int mouse_x, mouse_y;
-
   uint32 state = SDL_GetMouseState(&mouse_x, &mouse_y);
 
   prev_mousestate = cur_mousestate;
-  cur_mousestate = state;
+  cur_mousestate  = state;
+}
+
+//=============================================================================================
+// Pure position query -- does NOT advance click edge-detection state.
+vec2 MenuManager::get_normalized_mouse_pos()
+{
+  int mouse_x, mouse_y;
+  SDL_GetMouseState(&mouse_x, &mouse_y);
 
   vec2 dimensions = get_engine().get_module<GraphicsSystem>().get_window_size();
 
@@ -225,6 +239,7 @@ void MenuManager::update()
   // transition screen?
   if (is_transition)
   {
+    advance_mouse_state();
     vec2 mouse_pos = get_normalized_mouse_pos();
     next_level_page->update(mouse_pos, prev_mousestate, cur_mousestate);
     return;
@@ -263,6 +278,7 @@ void MenuManager::update()
     return;
   }
 
+  advance_mouse_state();
   vec2 mouse_pos = get_normalized_mouse_pos();
 
   // call to render current page itself

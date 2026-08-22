@@ -48,7 +48,12 @@ private:
   void update_presentation();
   void draw_presentation();
 
-  // return position of mouse in (-1, 1) coordinates
+  // Advances click edge-detection state (prev <- cur <- fresh SDL read).
+  // Must be called exactly once per frame.
+  void advance_mouse_state();
+
+  // return position of mouse in (-1, 1) coordinates. Pure query, does not
+  // advance click edge-detection state -- see advance_mouse_state().
   vec2 get_normalized_mouse_pos();
 
   //shaders
