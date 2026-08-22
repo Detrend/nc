@@ -410,6 +410,11 @@ void Renderer::destroy_renderbuffers()
     m_g_albedo            = 0;
     m_g_sector            = 0;
 
+    nc_assert(m_g_depth_stencil);
+    nc_assert(glIsRenderbuffer(m_g_depth_stencil));
+    glDeleteRenderbuffers(1, &m_g_depth_stencil);
+    m_g_depth_stencil = 0;
+
 
     if (m_lowres_framebuff != 0) {
       nc_assert(glIsFramebuffer(m_lowres_framebuff));
@@ -457,16 +462,15 @@ void Renderer::create_renderbuffers(ivec2 dims)
   glDrawBuffers(cast<GLsizei>(attachments.size()), attachments.data());
 
   // create depth-stencil buffer
-  GLuint depth_stencil_buffer;
-  glGenRenderbuffers(1, &depth_stencil_buffer);
-  glBindRenderbuffer(GL_RENDERBUFFER, depth_stencil_buffer);
+  glGenRenderbuffers(1, &m_g_depth_stencil);
+  glBindRenderbuffer(GL_RENDERBUFFER, m_g_depth_stencil);
   glRenderbufferStorage(
     GL_RENDERBUFFER,
     GL_DEPTH24_STENCIL8,
     cast<GLsizei>(width),
     cast<GLsizei>(height)
   );
-  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depth_stencil_buffer);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_g_depth_stencil);
 
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     nc_warn("G-buffer not complete.");

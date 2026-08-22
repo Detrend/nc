@@ -162,6 +162,7 @@ private:
   GLuint m_g_stitched_normal   = 0;
   GLuint m_g_albedo            = 0;
   GLuint m_g_sector            = 0;
+  GLuint m_g_depth_stencil     = 0;
 
   GLuint m_lowres_framebuff    = 0;
   GLuint m_lowres_color        = 0;
