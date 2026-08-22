@@ -158,7 +158,7 @@ bool GraphicsSystem::init()
 
   // init SDL
   constexpr auto SDL_INIT_FLAGS = SDL_INIT_VIDEO | SDL_INIT_EVENTS;
-  constexpr u32  SDL_WIN_FLAGS = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED;
+  constexpr u32  SDL_WIN_FLAGS = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_ALLOW_HIGHDPI;
   constexpr cstr WINDOW_NAME = "N U C L I D E A N";
   constexpr auto WIN_POS = SDL_WINDOWPOS_UNDEFINED;
 
@@ -393,7 +393,7 @@ void GraphicsSystem::render()
   NC_SCOPE_COUNTER(render)
 
   int width = 0, height = 0;
-  SDL_GetWindowSize(m_window, &width, &height);
+  SDL_GL_GetDrawableSize(m_window, &width, &height);
 
   nc_assert(width >= 0 && height >= 0, "WTF?");
 
