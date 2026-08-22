@@ -159,7 +159,18 @@ void TextureManager::unload(ResLifetime lifetime)
 
   auto& bundle = get_atlas_bundle_mut(lifetime);
 
-  glDeleteTextures(4, &bundle.diffuse_handle);
+  // Delete via an explicit local array instead of
+  // glDeleteTextures(4, &bundle.diffuse_handle) -- the old call relied on
+  // diffuse/normal/specular/emissive_handle being four adjacent members in
+  // exactly that order, with no compiler diagnostic if that ever changed.
+  GLuint handles[4] =
+  {
+    bundle.diffuse_handle,
+    bundle.normal_handle,
+    bundle.specular_handle,
+    bundle.emissive_handle,
+  };
+  glDeleteTextures(4, handles);
   bundle.diffuse_handle = 0;
   bundle.normal_handle = 0;
   bundle.specular_handle = 0;
