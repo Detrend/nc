@@ -198,7 +198,29 @@ const std::vector<TextureHandle>& TextureManager::get_textures() const
 //==============================================================================
 const TextureHandle& TextureManager::operator[](const std::pair<const std::string&, ResLifetime> pair) const
 {
-  return get_atlas_bundle(pair.second).textures.at(pair.first);
+  const TextureAtlasBundle& bundle = get_atlas_bundle(pair.second);
+
+  auto it = bundle.textures.find(pair.first);
+  if (it == bundle.textures.end())
+  {
+    // Sprite names are built dynamically all over the code (animation
+    // frame suffixes, dir8 suffixes, ...), so a typo in a level file, a
+    // missing frame on disk, or an animation-frame-index bug elsewhere can
+    // all reach this with an unknown name. This used to be `.at()`, which
+    // throws std::out_of_range with nothing up the stack to catch it --
+    // one bad name terminated the whole game. Log loudly and fall back to
+    // an existing texture in the same atlas instead of crashing.
+    nc_crit
+    (
+      "Texture \"{}\" not found in the {} atlas -- using a placeholder "
+      "instead of crashing.",
+      pair.first, pair.second == ResLifetime::Game ? "Game" : "Level"
+    );
+    nc_assert(!bundle.textures.empty(), "No textures loaded to fall back to.");
+    return bundle.textures.begin()->second;
+  }
+
+  return it->second;
 }
 
 //==============================================================================
