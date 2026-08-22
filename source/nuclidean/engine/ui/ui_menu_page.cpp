@@ -1,5 +1,4 @@
 // Project Nuclidean Source File
-#pragma once
 
 #include <engine/ui/ui_menu_page.h>
 #include <engine/ui/user_interface_system.h>

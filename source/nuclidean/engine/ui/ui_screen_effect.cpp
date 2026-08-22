@@ -79,6 +79,17 @@ time_since_last_pickup = min(time_since_last_pickup + delta, MAX_PICKUP_FLASH_DU
 //===========================================================================================
 void UiScreenEffect::draw()
 {
+// Skip the full-screen flash quad entirely once both effects are fully
+// faded (alpha 0) -- previously this was drawn (with alpha 0, so
+// invisible) every single frame regardless, at the cost of a full-screen
+// blended draw.
+bool dmg_faded    = (MAX_DMG_FLASH_DURATION - time_since_last_dmg) == 0;
+bool pickup_faded = (MAX_PICKUP_FLASH_DURATION - time_since_last_pickup) == 0;
+if (dmg_faded && pickup_faded)
+{
+  return;
+}
+
 //init shader
 shader.use();
 
