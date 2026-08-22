@@ -1140,16 +1140,24 @@ void Renderer::render_sky_box(const CameraData& camera) const
   m_sky_box_material.set_uniform(shaders::sky_box::PROJECTION, m_default_projection);
 
   glActiveTexture(GL_TEXTURE0);
-  registry.for_each<SkyBox>([this](const SkyBox& sky_box)
+  bool has_sky_box = false;
+  registry.for_each<SkyBox>([this, &has_sky_box](const SkyBox& sky_box)
   {
+    // NOTE: with multiple skyboxes only the last one iterated survives,
+    // silently -- unchanged pre-existing behavior, not part of this fix.
+    has_sky_box = true;
+
     glBindTexture(GL_TEXTURE_2D, sky_box.get_texture_handle());
 
     m_sky_box_material.set_uniform(shaders::sky_box::EXPOSURE, sky_box.exposure);
     m_sky_box_material.set_uniform(shaders::sky_box::USE_GAMMA_CORRECTION, sky_box.use_gamma_correction);
   });
 
-  glBindVertexArray(cube.get_vao());
-  glDrawArrays(cube.get_draw_mode(), 0, cube.get_vertex_count());
+  if (has_sky_box)
+  {
+    glBindVertexArray(cube.get_vao());
+    glDrawArrays(cube.get_draw_mode(), 0, cube.get_vertex_count());
+  }
 
   glDepthMask(GL_TRUE);
   glDepthFunc(GL_LESS);
