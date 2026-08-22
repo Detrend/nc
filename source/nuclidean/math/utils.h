@@ -3,6 +3,7 @@
 
 #include <types.h>
 #include <numbers>
+#include <type_traits>
 
 namespace nc
 {
@@ -23,6 +24,13 @@ f32 rem_euclid(f32 value, f32 range);
 // Returns -1.0f if the value is smaller than zero.
 // Returns 0.0f if the value is equal to zero.
 f32 sgn(f32 value);
+
+template<typename T>
+  requires std::is_signed_v<T> && std::is_integral_v<T>
+T sgn(T value)
+{
+  return cast<T>(value > 0) - cast<T>(value < 0);
+}
 
 // Returns true if abs(num) < tolerance
 bool is_zero(f32 num, f32 tolerance);

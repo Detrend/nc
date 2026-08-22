@@ -144,6 +144,7 @@
     <ClCompile Include="..\source\nuclidean\engine\editor\editor_renderer.cpp" />
     <ClCompile Include="..\source\nuclidean\engine\editor\editor_primitive.cpp" />
     <ClCompile Include="..\source\nuclidean\engine\editor\editor_sector.cpp" />
+    <ClCompile Include="..\source\nuclidean\engine\editor\editor_objects.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -284,6 +285,7 @@
     <ClInclude Include="..\source\nuclidean\engine\editor\editor_primitive.h" />
     <ClInclude Include="..\source\nuclidean\engine\editor\rendering_modifier.h" />
     <ClInclude Include="..\source\nuclidean\engine\editor\editor_sector.h" />
+    <ClInclude Include="..\source\nuclidean\engine\editor\editor_objects.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\settings.cfg" />
