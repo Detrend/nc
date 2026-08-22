@@ -780,10 +780,10 @@ void OptionsPage::load_settings()
     nc_warn("Failed to load settings");
     return;
   }
-  auto data = nlohmann::json::parse(f);
-
   try
   {
+    auto data = nlohmann::json::parse(f);
+
     for (s32 sound_setting : data["sound"])
     {
       if (sound_setting < 0)
@@ -844,7 +844,15 @@ void OptionsPage::load_settings()
       }
     }
   }
-  catch (int) {}
+  catch (const nlohmann::json::exception& e)
+  {
+    // nlohmann::json throws json::exception (parse_error, type_error, ...)
+    // for malformed/hand-edited settings.cfg -- `catch(int)` here never
+    // actually caught anything (same dead pattern as load_json_map), so a
+    // corrupt settings file used to abort the game at boot with no
+    // message, since load_settings runs at post_init.
+    nc_warn("Failed to parse settings.cfg: {}", e.what());
+  }
 }
 
 //=============================================================================================
@@ -854,6 +862,7 @@ void OptionsPage::save_settings()
   if (!f.is_open())
   {
     nc_warn("Failed to write settings");
+    return;
   }
   nlohmann::json data;
 
