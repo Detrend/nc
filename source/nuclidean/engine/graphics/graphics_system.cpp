@@ -257,6 +257,16 @@ void GraphicsSystem::on_event(ModuleEvent& event)
     }
     break;
 
+    case ModuleEventType::before_map_rebuild:
+    {
+      // create_sector_meshes() (below, on after_map_rebuild) always
+      // creates fresh ResLifetime::Level meshes -- without this, every
+      // level change (including the level restart triggered by dying)
+      // leaked the previous level's sector meshes.
+      MeshManager::get().unload(ResLifetime::Level);
+    }
+    break;
+
     case ModuleEventType::after_map_rebuild:
     {
       create_sector_meshes();
