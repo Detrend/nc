@@ -1280,7 +1280,13 @@ void LoadGamePage::go_back()
 //=============================================================================================
 void LoadGamePage::page_up()
 {
-  page = min(page + 1, (s32)load_game_buttons.size() / PAGE_SIZE);
+  // A save count that is an exact multiple of PAGE_SIZE (e.g. 8 saves,
+  // PAGE_SIZE 8) made size/PAGE_SIZE == 1 allow page 1, which displayed
+  // entries [8, 16) -- an empty page. (size - 1) / PAGE_SIZE is the
+  // correct last page index; for an empty list this is (0 - 1) / PAGE_SIZE
+  // == -1 / PAGE_SIZE == 0 (integer division truncates toward zero), so
+  // no separate size == 0 guard is needed.
+  page = min(page + 1, ((s32)load_game_buttons.size() - 1) / PAGE_SIZE);
 }
 
 //=============================================================================================
