@@ -78,7 +78,7 @@ void NextLevelPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   {
     hover_over_button->set_hover(true);
 
-    if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    if (!(prev_mouse & SDL_BUTTON(1)) && (cur_mouse & SDL_BUTTON(1)))
     {
       hover_over_button->on_click();
     }
@@ -425,7 +425,7 @@ void MainMenuPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   {
     hover_over_button->set_hover(true);
 
-    if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    if (!(prev_mouse & SDL_BUTTON(1)) && (cur_mouse & SDL_BUTTON(1)))
     {
       hover_over_button->on_click();
     }
@@ -464,7 +464,7 @@ void NewGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   {
     hover_over_button->set_hover(true);
 
-    if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    if (!(prev_mouse & SDL_BUTTON(1)) && (cur_mouse & SDL_BUTTON(1)))
     {
       hover_over_button->on_click();
     }
@@ -1103,7 +1103,7 @@ void OptionsPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   {
     hover_over_button->set_hover(true);
 
-    if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    if (!(prev_mouse & SDL_BUTTON(1)) && (cur_mouse & SDL_BUTTON(1)))
     {
       hover_over_button->on_click();
     }
@@ -1204,7 +1204,7 @@ void LoadGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   {
     hover_over_button->set_hover(true);
 
-    if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    if (!(prev_mouse & SDL_BUTTON(1)) && (cur_mouse & SDL_BUTTON(1)))
     {
       hover_over_button->on_click();
     }
@@ -1337,7 +1337,7 @@ void QuitGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   {
     hover_over_button->set_hover(true);
 
-    if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    if (!(prev_mouse & SDL_BUTTON(1)) && (cur_mouse & SDL_BUTTON(1)))
     {
       hover_over_button->on_click();
     }
