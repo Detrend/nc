@@ -67,6 +67,7 @@ namespace engine_utils
 [[maybe_unused]] constexpr cstr START_DEMO_ARG     = "-start_demo";
 [[maybe_unused]] constexpr cstr FAST_DEMO_ARG      = "-fast_demo";
 [[maybe_unused]] constexpr cstr EDITOR_MODE_ARG    = "-editor_mode"; // sets up bunch of minor stuff to make it more pleasant to use the game for preview when editing a level
+[[maybe_unused]] constexpr cstr RES_SCALE_ARG      = "-res_scale"; // Sets up the resolution_scale cvar (quick hack, should be removed once we have on Options entry for it)
 [[maybe_unused]] constexpr cstr PRESENTATION_ARG   = "-presentation"; // shows prepared slides while demos play in the background; followed by slide texture names
 [[maybe_unused]] constexpr cstr PRINT_COUNTERS_ARG = "-print_counters"; // prints the performance counters [into a file] 
 
@@ -489,6 +490,10 @@ bool Engine::init(const CmdArgs& cmd_args)
     CVars::has_fps_limit = true;
     CVars::fps_limit = 30.0f;
     CVars::invisibility = true;
+  }
+  std::string res_scale_value;
+  if (engine_utils::contains_pair_of_args(cmd_args, engine_utils::RES_SCALE_ARG, res_scale_value)) {
+    CVars::resolution_scale = static_cast<f32>(std::atof(res_scale_value.c_str()));
   }
 #endif
 
