@@ -105,7 +105,7 @@ void main()
   g_position.xyz = position;
   // 4-th component of position is used for specular strength
   g_position.w = specular_strength;
-  g_stitched_position = vec4(stitched_position, uintBitsToFloat(matrix_id));
+  g_stitched_position = vec4(stitched_position, float(matrix_id));
   g_normal.xyz = world_normal;
   // 4-th component of normal is used to determine if pixel should be lit
   g_normal.w = 1.0f;

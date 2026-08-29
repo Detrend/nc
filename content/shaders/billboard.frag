@@ -30,7 +30,7 @@ void main()
   g_position.xyz = position;
   // 4-th component of position is used for specular strength
   g_position.w = 0.0f;
-  g_stitched_position = vec4(stitched_position, uintBitsToFloat(matrix_id));
+  g_stitched_position = vec4(stitched_position, float(matrix_id));
   // 4-th component of normal is used to determine if pixel is a billboard
   // First 3 components are used as shading pos
   g_normal = vec4(shading_position, 0.0f);

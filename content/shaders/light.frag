@@ -221,7 +221,7 @@ void main()
 
   vec4 g_stitched_position_sample = texture(g_stitched_position, uv);
   vec3 stitched_position = g_stitched_position_sample.xyz;
-  uint matrix_id = floatBitsToUint(g_stitched_position_sample.w);
+  uint matrix_id = uint(g_stitched_position_sample.w);
 
   vec4 g_normal_sample = texture(g_normal, uv);
   vec3 normal = g_normal_sample.xyz;
