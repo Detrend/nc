@@ -61,6 +61,27 @@ void Client::send_inputs(const PlayerSpecificInputs& inputs)
 }
 
 //==============================================================================
+void Client::send_positions(const PositionArray& positions)
+{
+  const TransferResult result = protocol::send(
+    m_connection,
+    protocol::messages::PositionSync{.position_array = positions}
+  );
+
+  switch (result)
+  {
+  case TransferResult::success:
+    break;
+  case TransferResult::error:
+    nc_warn("[net][client] protocol send message error");
+    break;
+  case TransferResult::disconnected:
+    nc_warn("[net][client] server disconnected");
+    break;
+  }
+}
+
+//==============================================================================
 std::optional<protocol::Message> Client::pop_message()
 {
   auto [result, maybe_message] = protocol::pop_message(m_connection);

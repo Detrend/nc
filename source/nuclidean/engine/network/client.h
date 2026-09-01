@@ -2,6 +2,7 @@
 #pragma once
 
 #include <engine/input/game_input.h>
+#include <engine/network/constants.h>
 #include <engine/network/protocol.h>
 #include <engine/network/tcp_socket.h>
 
@@ -21,6 +22,10 @@ public:
 
   // Send player inputs over the network.
   void send_inputs(const PlayerSpecificInputs& inputs);
+  // Send position of every player.
+  // WARNING: This should be called only from hosting client.
+  // WARNING: Used as temporary workaround to solve desync issues.
+  void send_positions(const PositionArray& positions);
   // Pop next received message. If no messages are pending return `std::nullopt`.
   std::optional<protocol::Message> pop_message();
 

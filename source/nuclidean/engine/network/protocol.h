@@ -3,6 +3,8 @@
 
 #include <common.h>
 #include <types.h>
+#include <math/vector.h>
+
 #include <engine/input/game_input.h>
 #include <engine/network/constants.h>
 #include <engine/network/tcp_socket.h>
@@ -66,6 +68,13 @@ namespace messages
     // Input from all players.
     InputArray inputs_array;
   };
+
+  // Broadcast from server to all clients. Contains position of each client.
+  // WARNING: This is used only as temporary workaround to desync issues.
+  struct PositionSync
+  {
+    PositionArray position_array;
+  };
 }
 
 using MessageBase = std::variant
@@ -74,7 +83,8 @@ using MessageBase = std::variant
   messages::PlayerConnected,
   messages::PlayerDisconnected,
   messages::PlayerInputs,
-  messages::AllPlayersInputs
+  messages::AllPlayersInputs,
+  messages::PositionSync
 >;
 
 // Represent message which can be send/received over the network.

@@ -48,6 +48,9 @@ public:
   void poll_network();
 
 private:
+  //  Blocking wait until the expected number of players joins the session.
+  void wait_for_players(u32 expected_player_count);
+
   // true if game is running in multiplayer; false if game is running in singleplayer.
   bool m_is_multiplayer = false;
   PlayerID m_local_player_id = 0;
@@ -55,6 +58,7 @@ private:
   std::array<bool, MAX_PLAYER_COUNT> m_connected_players{};
   // Determine if this frame's input was received.
   bool m_input_received = false;
+  u64 m_frame_counter = 0;
 
   std::unique_ptr<net::Server> m_server = nullptr;
   std::unique_ptr<net::Client> m_client = nullptr;
