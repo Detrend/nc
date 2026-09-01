@@ -85,7 +85,6 @@ private:
 #if NC_DEBUG_DRAW
   void render_map_top_down(const VisibilityTree& visible);
   void draw_debug_window();
-  void handle_light_debug();
   void handle_sector_height_debug();
 #endif
 

@@ -432,7 +432,6 @@ void GraphicsSystem::render()
     draw_debug_window();
   }
 
-  handle_light_debug();
   handle_sector_height_debug();
 #endif
 
@@ -807,47 +806,6 @@ void draw_profiling()
   }
 }
 #endif
-
-//==============================================================================
-PointLight* light_test;
-
-void GraphicsSystem::handle_light_debug()
-{
-  if (CVars::light_debug)
-  {
-    if (ImGui::Begin("Light Debug", &CVars::light_debug))
-    {
-      vec3 pos = light_test->get_position();
-      if (ImGui::DragFloat3("Position", &pos.x, 0.1f))
-      {
-        light_test->set_position(pos);
-      }
-
-      bool changed = false;
-
-      changed |= ImGui::ColorEdit3("Color",    &light_test->color.x);
-      changed |= ImGui::DragFloat("Intensity", &light_test->intensity, 0.001f, 0.0f, 10.0f);
-      changed |= ImGui::DragFloat("Radius",    &light_test->radius, 0.001f, 0.0f, 32.0f);
-      changed |= ImGui::DragFloat("Falloff",   &light_test->falloff, 0.001f, 0.01f, 10.0f);
-
-      if (changed)
-      {
-        light_test->refresh_entity_radius();
-      }
-
-      ImGui::Separator();
-      Player* p = GameHelpers::get().get_player();
-      if (p)
-      {
-        f32 dist = length(p->get_position() - light_test->get_position());
-        ImGui::Text("Distance to player is: %.2f", dist);
-      }
-      ImGui::Text("Light radius is: %.2f", light_test->get_radius());
-    }
-
-    ImGui::End();
-  }
-}
 
 //==============================================================================
 void GraphicsSystem::handle_sector_height_debug()

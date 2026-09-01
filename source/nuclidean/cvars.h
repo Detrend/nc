@@ -138,7 +138,6 @@ struct CVars
   NC_REGISTER_CVAR(bool, lock_camera_pitch,     false, "Restricts camera from looking up/down.");
   NC_REGISTER_CVAR(bool, has_fps_limit,         true, "Is the FPS limited?");
   NC_REGISTER_CVAR(bool, has_min_fps,           false, "Min FPS");
-  NC_REGISTER_CVAR(bool, light_debug,           false, "Light debugging.");
   NC_REGISTER_CVAR(bool, sector_height_debug,   false, "Sector movement debug.");
   NC_REGISTER_CVAR(bool, invisibility,          false, "Makes the player invisible to enemies.");
   NC_REGISTER_CVAR(bool, billboard_cam_rot,     true,  "True = rotate billboards with camera, False = rotate to the camera");
