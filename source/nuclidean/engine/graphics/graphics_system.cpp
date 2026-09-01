@@ -289,6 +289,11 @@ void GraphicsSystem::terminate()
 
   MeshManager::get().unload(ResLifetime::Game);
 
+  m_renderer.reset();
+#if NC_DEBUG_DRAW
+  m_debug_renderer.reset();
+#endif
+
   SDL_GL_DeleteContext(m_gl_context);
   m_gl_context = nullptr;
 

@@ -16,6 +16,12 @@ class SSBOBuffer
 public:
   SSBOBuffer() {}
   explicit SSBOBuffer(size_t capacity);
+  ~SSBOBuffer();
+
+  SSBOBuffer(const SSBOBuffer&)            = delete;
+  SSBOBuffer& operator=(const SSBOBuffer&) = delete;
+  SSBOBuffer(SSBOBuffer&& other) noexcept;
+  SSBOBuffer& operator=(SSBOBuffer&& other) noexcept;
 
   void resize(size_t new_capacity);
   void clear();

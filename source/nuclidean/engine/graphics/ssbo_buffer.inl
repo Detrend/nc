@@ -22,6 +22,51 @@ inline SSBOBuffer<T>::SSBOBuffer(size_t capacity)
 
 //==============================================================================
 template<typename T>
+inline SSBOBuffer<T>::~SSBOBuffer()
+{
+  glDeleteBuffers(1, &m_handle);
+}
+
+//==============================================================================
+template<typename T>
+inline SSBOBuffer<T>::SSBOBuffer(SSBOBuffer&& other) noexcept
+  : m_capacity(other.m_capacity),
+    m_gpu_size(other.m_gpu_size),
+    m_size(other.m_size),
+    m_handle(other.m_handle),
+    m_buffer(std::move(other.m_buffer))
+{
+  other.m_handle   = 0;
+  other.m_capacity = 0;
+  other.m_gpu_size = 0;
+  other.m_size     = 0;
+}
+
+//==============================================================================
+template<typename T>
+inline SSBOBuffer<T>& SSBOBuffer<T>::operator=(SSBOBuffer&& other) noexcept
+{
+  if (this == &other)
+    return *this;
+
+  glDeleteBuffers(1, &m_handle);
+
+  m_capacity = other.m_capacity;
+  m_gpu_size = other.m_gpu_size;
+  m_size     = other.m_size;
+  m_handle   = other.m_handle;
+  m_buffer   = std::move(other.m_buffer);
+
+  other.m_handle   = 0;
+  other.m_capacity = 0;
+  other.m_gpu_size = 0;
+  other.m_size     = 0;
+
+  return *this;
+}
+
+//==============================================================================
+template<typename T>
 inline void SSBOBuffer<T>::resize(size_t new_capacity)
 {
   m_capacity = new_capacity;
