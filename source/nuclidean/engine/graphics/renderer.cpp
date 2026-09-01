@@ -1133,6 +1133,22 @@ const
 void Renderer::render_sky_box(const CameraData& camera) const
 {
   EntityRegistry& registry = GameSystem::get().get_entities();
+
+  const SkyBox* sky_box = nullptr;
+  u32 sky_box_count = 0;
+  registry.for_each<SkyBox>([&](const SkyBox& candidate)
+  {
+    if (sky_box == nullptr)
+      sky_box = &candidate;
+    ++sky_box_count;
+  });
+
+  if (sky_box_count > 1)
+    nc_warn("Level defines {} skyboxes; only the first is rendered.", sky_box_count);
+
+  if (sky_box == nullptr)
+    return;
+
   const MeshHandle& cube = MeshManager::get().get_cube();
 
   glDepthMask(GL_FALSE);
@@ -1144,17 +1160,14 @@ void Renderer::render_sky_box(const CameraData& camera) const
   m_sky_box_material.set_uniform(shaders::sky_box::PROJECTION, m_default_projection);
 
   glActiveTexture(GL_TEXTURE0);
-  registry.for_each<SkyBox>([this](const SkyBox& sky_box)
-  {
-    glBindTexture(GL_TEXTURE_2D, sky_box.get_texture_handle());
-
-    m_sky_box_material.set_uniform(shaders::sky_box::EXPOSURE, sky_box.exposure);
-    m_sky_box_material.set_uniform(shaders::sky_box::USE_GAMMA_CORRECTION, sky_box.use_gamma_correction);
-  });
+  glBindTexture(GL_TEXTURE_2D, sky_box->get_texture_handle());
+  m_sky_box_material.set_uniform(shaders::sky_box::EXPOSURE, sky_box->exposure);
+  m_sky_box_material.set_uniform(shaders::sky_box::USE_GAMMA_CORRECTION, sky_box->use_gamma_correction);
 
   glBindVertexArray(cube.get_vao());
   glDrawArrays(cube.get_draw_mode(), 0, cube.get_vertex_count());
 
+  glBindVertexArray(0);
   glDepthMask(GL_TRUE);
   glDepthFunc(GL_LESS);
   glCullFace(GL_BACK);
