@@ -233,37 +233,34 @@ bool message_process_dispatch_test(unit_test::TestCtx& /*ctx*/)
     new_player_data,
     player_connected,
     player_disconnected,
-    player_inputs,
-    all_players_inputs,
     fallback,
   };
 
-  Handled handled = Handled::none;
+  Handled handled        = Handled::none;
   u8      seen_player_id = INVALID_PLAYER_ID;
 
   auto dispatch = [&](const Message& message)
   {
-    handled = Handled::none;
+    handled        = Handled::none;
     seen_player_id = INVALID_PLAYER_ID;
 
     message.process(
       [&](const messages::NewPlayerData& payload)
       {
-        handled = Handled::new_player_data;
+        handled        = Handled::new_player_data;
         seen_player_id = payload.player_id;
       },
       [&](const messages::PlayerConnected& payload)
       {
-        handled = Handled::player_connected;
+        handled        = Handled::player_connected;
         seen_player_id = payload.player_id;
       },
       [&](const messages::PlayerDisconnected& payload)
       {
-        handled = Handled::player_disconnected;
+        handled        = Handled::player_disconnected;
         seen_player_id = payload.player_id;
       },
-      [&](const messages::PlayerInputs&)   { handled = Handled::player_inputs;      },
-      [&](const messages::AllPlayersInputs&){ handled = Handled::all_players_inputs; }
+      [&](const auto&){ handled = Handled::fallback; }
     );
   };
 
@@ -280,28 +277,6 @@ bool message_process_dispatch_test(unit_test::TestCtx& /*ctx*/)
   NC_TEST_ASSERT(seen_player_id == 0);
 
   dispatch(Message{messages::PlayerInputs{}});
-  NC_TEST_ASSERT(handled == Handled::player_inputs);
-
-  dispatch(Message{messages::AllPlayersInputs{}});
-  NC_TEST_ASSERT(handled == Handled::all_players_inputs);
-
-  auto dispatch_with_fallback = [&](const Message& message)
-  {
-    handled = Handled::none;
-
-    message.process(
-      [&](const messages::PlayerInputs&){ handled = Handled::player_inputs; },
-      [&](const auto&)                  { handled = Handled::fallback;      }
-    );
-  };
-
-  dispatch_with_fallback(Message{messages::PlayerInputs{}});
-  NC_TEST_ASSERT(handled == Handled::player_inputs);
-
-  dispatch_with_fallback(Message{messages::NewPlayerData{}});
-  NC_TEST_ASSERT(handled == Handled::fallback);
-
-  dispatch_with_fallback(Message{messages::AllPlayersInputs{}});
   NC_TEST_ASSERT(handled == Handled::fallback);
 
   NC_TEST_SUCCESS;

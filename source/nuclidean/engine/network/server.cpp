@@ -80,6 +80,10 @@ void Server::process_messages(PlayerID player_id)
           m_inputs[player_id] = message.inputs;
           client.input_received = true;
         },
+        [this](const protocol::messages::PositionSync& message)
+        {
+          broadcast(message);
+        },
         [](const auto&){ nc_warn("[net][server] received invalid message"); }
       );
       break;

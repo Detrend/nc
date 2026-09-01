@@ -1065,6 +1065,12 @@ const EntityRegistry& GameSystem::get_entities() const
 }
 
 //==============================================================================
+const PlayerArray& GameSystem::get_player_ids() const
+{
+  return game->player_ids;
+}
+
+//==============================================================================
 void GameSystem::save_game(const char*const save_name) const
 {
   // Generate the filename

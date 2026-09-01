@@ -71,6 +71,7 @@ public:
   EntityRegistry&         get_entities();
   MapDynamics&            get_map_dynamics();
   const EntityRegistry&   get_entities()       const;
+  const PlayerArray&      get_player_ids()     const;
   const MapSectors&       get_map()            const;
   const SectorMapping&    get_sector_mapping() const;
   PhysLevel               get_level()          const;
