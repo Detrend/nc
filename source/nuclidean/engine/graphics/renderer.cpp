@@ -244,7 +244,7 @@ void Renderer::update_sector_ssbos() const
       const WallData& wall = map.walls[wall_id];
 
       size_t matrix_index;
-      if (wall.render_data_index == INVALID_SECTOR_ID)
+      if (wall.render_data_index == INVALID_PORTAL_RENDER_ID)
       {
         // index of unit matrix
         matrix_index = 0;
