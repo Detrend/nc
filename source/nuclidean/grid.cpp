@@ -189,8 +189,16 @@ static bool check_line_in_bbox_and_clip_it(vec2& from, vec2& to, aabb2 bbox)
     return false;
   }
 
-  f32 mni = max(min(cfs[0], cfs[1]), 0.0f);
-  f32 mxi = min(max(cfs[0], cfs[1]), 1.0f);
+  f32 t_min = cfs[0];
+  f32 t_max = cfs[0];
+  for (u8 i = 1; i < cnt; ++i)
+  {
+    t_min = min(t_min, cfs[i]);
+    t_max = max(t_max, cfs[i]);
+  }
+
+  f32 mni = max(t_min, 0.0f);
+  f32 mxi = min(t_max, 1.0f);
 
   to   = from + dir * mxi;
   from = from + dir * mni;
