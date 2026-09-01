@@ -1,9 +1,11 @@
 #include <engine/graphics/ssbo_buffer.h>
 #include <common.h>
+#include <logging.h>
 
 #include <glad/glad.h>
 
 #include <algorithm> // std::min
+#include <utility>
 
 namespace nc
 {
@@ -40,7 +42,7 @@ inline void SSBOBuffer<T>::clear()
 template<typename T>
 inline size_t SSBOBuffer<T>::push_back(T&& value)
 {
-  m_buffer.push_back(value);
+  m_buffer.push_back(std::move(value));
   m_size++;
 
   return m_size - 1;
@@ -73,16 +75,29 @@ inline void SSBOBuffer<T>::extend(std::vector<T>&& elements)
 template<typename T>
 inline void SSBOBuffer<T>::update_gpu_data(bool reset_capacity)
 {
+  size_t max_additions = m_capacity - std::min(m_gpu_size, m_capacity);
+  size_t num_additions = std::min(max_additions, m_buffer.size());
+
+  if (num_additions < m_buffer.size())
+  {
+    nc_warn
+    (
+      "SSBOBuffer::update_gpu_data: dropping {} of {} pending item(s), capacity ({}) exceeded.",
+      m_buffer.size() - num_additions, m_buffer.size(), m_capacity
+    );
+  }
+
   glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_handle);
   glBufferSubData
   (
     GL_SHADER_STORAGE_BUFFER,
     m_gpu_size * sizeof(T),
-    m_buffer.size() * sizeof(T),
+    num_additions * sizeof(T),
     m_buffer.data()
   );
 
-  m_gpu_size = m_size;
+  m_gpu_size += num_additions;
+  m_size = m_gpu_size;
   m_buffer.clear();
   if (reset_capacity)
   {
