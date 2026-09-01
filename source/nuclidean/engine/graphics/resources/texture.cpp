@@ -9,10 +9,19 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdlib>
 #include <vector>
 
 namespace nc
 {
+
+//==============================================================================
+namespace
+{
+constexpr cstr ERROR_TEXTURE_NAME       = "__nc_error_texture__";
+constexpr u32  ERROR_TEXTURE_ATLAS_SIZE = 64;
+constexpr u32  ERROR_TEXTURE_CELL_SIZE  = 16;
+}
 
 //==============================================================================
 ResLifetime TextureHandle::get_lifetime() const
@@ -184,12 +193,6 @@ const TextureAtlasBundle& TextureManager::get_atlas_bundle(ResLifetime lifetime)
 }
 
 //==============================================================================
-GLuint TextureManager::get_error_texture_handle() const
-{
-  return m_error_texture;
-}
-
-//==============================================================================
 const std::vector<TextureHandle>& TextureManager::get_textures() const
 {
   return m_textures;
@@ -198,7 +201,17 @@ const std::vector<TextureHandle>& TextureManager::get_textures() const
 //==============================================================================
 const TextureHandle& TextureManager::operator[](const std::pair<const std::string&, ResLifetime> pair) const
 {
-  return get_atlas_bundle(pair.second).textures.at(pair.first);
+  const TextureMap& textures = get_atlas_bundle(pair.second).textures;
+
+  if (const auto it = textures.find(pair.first); it != textures.end())
+    return it->second;
+
+  nc_warn
+  (
+    "Texture \"{}\" not found in {} atlas. Using error texture.",
+    pair.first, pair.second == ResLifetime::Game ? "game" : "level"
+  );
+  return m_error_texture_handle;
 }
 
 //==============================================================================
@@ -223,7 +236,6 @@ GLuint TextureManager::get_equirectangular_map(const std::string& name, ResLifet
 //==============================================================================
 TextureManager::TextureManager()
 {
-  create_error_texture();
 }
 
 //==============================================================================
@@ -257,44 +269,6 @@ const TextureManager::EquirectangularMapMap& TextureManager::get_equirectangular
     return m_game_equirectangular_maps;
   else
     return m_level_equirectangular_maps;
-}
-
-//==============================================================================
-void TextureManager::create_error_texture()
-{
-  constexpr u32 channels = 3;
-
-  std::vector<unsigned char> data(ERROR_TEXTURE_SIZE * ERROR_TEXTURE_SIZE * channels);
-  // black-magenta checkerboard pattern
-  for (u32 y = 0; y < ERROR_TEXTURE_SIZE; ++y)
-  {
-    for (u32 x = 0; x < ERROR_TEXTURE_SIZE; ++x)
-    {
-      u32 index = (y * ERROR_TEXTURE_SIZE + x) * channels;
-      if ((y / 64 + x / 64) % 2 == 0)
-      {
-        // black
-        data[index]     = 0; // R
-        data[index + 1] = 0; // G
-        data[index + 2] = 0; // B
-      }
-      else
-      {
-        // magenta
-        data[index]     = 255; // R
-        data[index + 1] = 0;   // G
-        data[index + 2] = 255; // B
-      }
-    }
-  }
-
-  glGenTextures(1, &m_error_texture);
-  glBindTexture(GL_TEXTURE_2D, m_error_texture);
-
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ERROR_TEXTURE_SIZE, ERROR_TEXTURE_SIZE, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data());
-  glGenerateMipmap(GL_TEXTURE_2D);
-
-  glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 //==============================================================================
@@ -460,11 +434,59 @@ void TextureManager::load_equirectangular_map(const std::string& path, ResLifeti
 }
 
 //==============================================================================
+void TextureManager::push_error_texture_load()
+{
+  constexpr u32 channels = 3;
+  constexpr u32 size     = ERROR_TEXTURE_ATLAS_SIZE;
+
+  auto* data = cast<unsigned char*>(std::malloc(cast<size_t>(size) * size * channels));
+
+  for (u32 y = 0; y < size; ++y)
+  {
+    for (u32 x = 0; x < size; ++x)
+    {
+      const u32  index   = (y * size + x) * channels;
+      const bool magenta = ((y / ERROR_TEXTURE_CELL_SIZE) + (x / ERROR_TEXTURE_CELL_SIZE)) % 2 != 0;
+      data[index]     = magenta ? 255 : 0;
+      data[index + 1] = 0;
+      data[index + 2] = magenta ? 255 : 0;
+    }
+  }
+
+  m_load_rects.push_back(stbrp_rect
+  {
+    .id = cast<int>(m_load_rects.size()),
+    .w  = cast<int>(size) + cast<int>(ATLAS_GUTTER) * 2,
+    .h  = cast<int>(size) + cast<int>(ATLAS_GUTTER) * 2,
+    .x  = 0,
+    .y  = 0,
+    .was_packed = 0,
+  });
+  m_load_data.push_back(LoadData
+  {
+    .width             = cast<int>(size),
+    .height            = cast<int>(size),
+    .diffuse_channels  = cast<int>(channels),
+    .normal_channels   = 0,
+    .specular_channels = 0,
+    .emissive_channels = 0,
+    .diffuse_data      = data,
+    .normal_data       = nullptr,
+    .specular_data     = nullptr,
+    .emissive_data     = nullptr,
+    .name              = ERROR_TEXTURE_NAME,
+  });
+}
+
+//==============================================================================
 void TextureManager::finish_load(ResLifetime lifetime)
 {
   static constexpr u16 DEFAULT_LOAD_TARGET_SIZE = 256;
 
   nc_assert(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
+
+  if (lifetime == ResLifetime::Game)
+    push_error_texture_load();
 
   int target_width = DEFAULT_LOAD_TARGET_SIZE;
   int target_height = DEFAULT_LOAD_TARGET_SIZE;
@@ -544,6 +566,9 @@ void TextureManager::finish_load(ResLifetime lifetime)
 
       bundle.textures.emplace(load_data.name, handle);
       m_textures.push_back(handle);
+
+      if (load_data.name == ERROR_TEXTURE_NAME)
+        m_error_texture_handle = handle;
     }
 
     glGenerateMipmap(GL_TEXTURE_2D);

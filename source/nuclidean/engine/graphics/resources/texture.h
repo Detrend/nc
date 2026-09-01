@@ -103,7 +103,6 @@ public:
   void unload(ResLifetime lifetime);
 
   const TextureAtlasBundle& get_atlas_bundle(ResLifetime lifetime) const;
-  GLuint get_error_texture_handle() const;
   const std::vector<TextureHandle>& get_textures() const;
 
   const TextureHandle& operator[](const std::pair<const std::string&, ResLifetime> pair) const;
@@ -111,8 +110,6 @@ public:
   const TextureHandle& operator[](u16 texture_id) const;
 
   GLuint get_equirectangular_map(const std::string& name, ResLifetime lifetime) const;
-
-  constexpr static u32 ERROR_TEXTURE_SIZE = 1024;
 
 private:
   struct LoadData;
@@ -127,7 +124,7 @@ private:
   TextureAtlasBundle& get_atlas_bundle_mut(ResLifetime lifetime);
   EquirectangularMapMap& get_equirectangular_maps(ResLifetime lifetime);
   const EquirectangularMapMap& get_equirectangular_maps(ResLifetime lifetime) const;
-  void create_error_texture();
+  void push_error_texture_load();
 
   // Get asset name based on it's path.
   std::string get_name(const std::string& path) const;
@@ -146,7 +143,7 @@ private:
   EquirectangularMapMap m_level_equirectangular_maps;
   std::vector<TextureHandle> m_textures;
 
-  GLuint m_error_texture = 0;
+  TextureHandle m_error_texture_handle;
 
   /**
    * During a load operation, each loaded texture's width and height are added here to be processed by stb_rect_pack
