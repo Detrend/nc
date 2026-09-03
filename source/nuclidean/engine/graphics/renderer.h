@@ -149,10 +149,10 @@ private:
   mutable SSBOBuffer<PointLightGPU> m_point_light_ssbo     { MAX_VISIBLE_POINT_LIGHTS };
   mutable SSBOBuffer<SectorGPU>     m_sectors_ssbo         { MAX_SECTORS              };
   mutable SSBOBuffer<WallGPU>       m_walls_ssbo           { MAX_WALLS                };
-  mutable SSBOBuffer<mat4>          m_portal_matrices_ssbo { MAX_PORTALS              };
-  mutable SSBOBuffer<mat4>          m_sector_matrices_ssbo { MAX_SECTORS              };
+  mutable SSBOBuffer<mat4>          m_portal_matrices_inv_ssbo { MAX_PORTALS              };
+  mutable SSBOBuffer<mat4>          m_sector_matrices_inv_ssbo { MAX_SECTORS              };
 
-  mutable std::vector<mat4> m_sector_matrices;
+  mutable std::vector<mat4> m_sector_matrices_inv;
   mutable std::unordered_map<u64, size_t> m_light_gpu_data_indices;
 
   GLuint m_g_buffer            = 0;

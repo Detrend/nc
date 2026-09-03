@@ -210,10 +210,10 @@ const
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   m_dir_light_ssbo.clear();
   m_point_light_ssbo.clear();
-  m_sector_matrices_ssbo.clear();
+  m_sector_matrices_inv_ssbo.clear();
 
   m_light_gpu_data_indices.clear();
-  m_sector_matrices.clear();
+  m_sector_matrices_inv.clear();
 
   m_light_checker.registry.clear();
   m_entity_checker.registry.clear();
@@ -232,9 +232,9 @@ void Renderer::update_sector_ssbos() const
 
   m_sectors_ssbo.clear();
   m_walls_ssbo.clear();
-  m_portal_matrices_ssbo.clear();
+  m_portal_matrices_inv_ssbo.clear();
 
-  m_portal_matrices_ssbo.push_back(mat4(1.0f));
+  m_portal_matrices_inv_ssbo.push_back(mat4(1.0f));
 
   for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)
   {
@@ -252,7 +252,7 @@ void Renderer::update_sector_ssbos() const
       else
       {
         const mat4& portal_matrix = map.portals_render_data[wall.render_data_index].dest_to_src;
-        matrix_index = m_portal_matrices_ssbo.push_back(portal_matrix);
+        matrix_index = m_portal_matrices_inv_ssbo.push_back(inverse(portal_matrix));
       }
 
       if (walls_data.size() > 0)
@@ -289,7 +289,7 @@ void Renderer::update_sector_ssbos() const
 
   m_sectors_ssbo.update_gpu_data();
   m_walls_ssbo.update_gpu_data();
-  m_portal_matrices_ssbo.update_gpu_data();
+  m_portal_matrices_inv_ssbo.update_gpu_data();
 }
 
 //==============================================================================
@@ -602,8 +602,8 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   m_light_tiles_ssbo.bind(3);
   m_sectors_ssbo.bind(4);
   m_walls_ssbo.bind(5);
-  m_portal_matrices_ssbo.bind(6);
-  m_sector_matrices_ssbo.bind(7);
+  m_portal_matrices_inv_ssbo.bind(6);
+  m_sector_matrices_inv_ssbo.bind(7);
 
   const size_t num_tiles_x = (cast<size_t>(get_render_size().x) + LIGHT_CULLING_TILE_SIZE_X - 1)
     / LIGHT_CULLING_TILE_SIZE_X;
@@ -643,7 +643,7 @@ void Renderer::update_ssbos() const
   
   m_dir_light_ssbo.update_gpu_data();
   m_point_light_ssbo.update_gpu_data();
-  m_sector_matrices_ssbo.update_gpu_data_with(m_sector_matrices);
+  m_sector_matrices_inv_ssbo.update_gpu_data_with(m_sector_matrices_inv);
 }
 
 //==============================================================================
@@ -675,8 +675,8 @@ void Renderer::render_sectors(const CameraData& camera) const
 
   for (const auto& [sector_id, _] : sectors_to_render)
   {
-    const u32 matrix_id = cast<u32>(m_sector_matrices.size());
-    m_sector_matrices.push_back(camera.portal_dest_to_src);
+    const u32 matrix_id = cast<u32>(m_sector_matrices_inv.size());
+    m_sector_matrices_inv.push_back(inverse(camera.portal_dest_to_src));
 
     m_sector_material.set_uniform(shaders::sector::SECTOR_ID, cast<u32>(sector_id));
     m_sector_material.set_uniform(shaders::sector::MATRIX_ID, matrix_id);
@@ -952,8 +952,8 @@ void Renderer::render_entities(const CameraData& camera) const
         {
           auto& group = groups[cast<u64>(ResLifetime::Game)];
           EntityRenderData& render_data = group[id.as_u32()];
-          const u32 matrix_id = cast<u32>(m_sector_matrices.size());
-          m_sector_matrices.push_back(camera.portal_dest_to_src);
+          const u32 matrix_id = cast<u32>(m_sector_matrices_inv.size());
+          m_sector_matrices_inv.push_back(inverse(camera.portal_dest_to_src));
 
           render_data.appear    = *appearance;
           render_data.world_pos = world_pos + vec3{0.0f, appearance->offset, 0.0f};
@@ -1106,8 +1106,8 @@ const
   const vec2 player_position = ((Entity*)GameHelpers::get().get_player())->get_position().xz;
   const SectorID sector_id = GameSystem::get().get_map().get_sector_from_point(player_position);
 
-  const u32 matrix_id = cast<u32>(m_sector_matrices.size());
-  m_sector_matrices.push_back(camera.portal_dest_to_src);
+  const u32 matrix_id = cast<u32>(m_sector_matrices_inv.size());
+  m_sector_matrices_inv.push_back(inverse(camera.portal_dest_to_src));
 
   glBindVertexArray(texturable_quad.get_vao());
 
