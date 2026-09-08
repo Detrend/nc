@@ -172,7 +172,7 @@ void Renderer::render
 const
 {
   // NOTE: This can consume up to 250 microseconds..
-#if !NC_IS_DEPLOY
+#if !NC_IS_SHIP
   check_shader_hot_reload();
 #endif
 

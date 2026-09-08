@@ -4,7 +4,7 @@
 #define NC_CONFIG_ON  1
 #define NC_CONFIG_OFF 0
 
-#if defined(NC_Debug) || defined(NC_Release) || defined(NC_Profiling)
+#if defined(NC_Debug) || defined(NC_Test) || defined(NC_Profiling)
 #define NC_TESTS      NC_CONFIG_ON
 #define NC_EDITOR     NC_CONFIG_ON
 #define NC_DEBUG_DRAW NC_CONFIG_ON
@@ -23,20 +23,18 @@
 #endif
 
 #if defined(NC_Profiling)
-#define NC_BENCHMARK NC_CONFIG_ON // benchmarks should be compiled
-// Google benchmark library requires this in order to link.
-#pragma comment (lib, "Shlwapi.lib")
+#define NC_BENCHMARK NC_CONFIG_ON
 #define BENCHMARK_STATIC_DEFINE
 #else
 #define NC_BENCHMARK NC_CONFIG_OFF
 #endif
 
-#if defined(NC_Deploy)
+#if defined(NC_Ship)
 #define NC_BAKED_CVARS NC_CONFIG_ON
-#define NC_IS_DEPLOY   NC_CONFIG_ON
+#define NC_IS_SHIP     NC_CONFIG_ON
 #else
 #define NC_BAKED_CVARS NC_CONFIG_OFF
-#define NC_IS_DEPLOY   NC_CONFIG_OFF
+#define NC_IS_SHIP     NC_CONFIG_OFF
 #endif
 
 #if defined(__clang__)

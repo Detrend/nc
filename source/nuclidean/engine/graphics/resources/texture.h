@@ -12,17 +12,7 @@
 #include <filesystem>
 #include <string>
 
-// Ignore unused variable in debug code on clang
-#if NC_COMPILER_CLANG
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-but-set-variable"
-#endif
-
 #include <stb/stb_rect_pack.h>
-
-#if NC_COMPILER_CLANG
-#pragma clang diagnostic pop
-#endif
 
 #include <memory>
 #include <string>

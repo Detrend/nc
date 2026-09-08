@@ -2,6 +2,7 @@
 /bin
 /asm
 /bin_temp
+/build*
 **/x64
 *.vcxproj.user
 

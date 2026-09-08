@@ -161,7 +161,7 @@ static bool should_play_demo(const CmdArgs& cmd_args, std::string& out_demo)
 }
 
 //==============================================================================
-#if !NC_IS_DEPLOY
+#if !NC_IS_SHIP
 static bool should_play_level(const CmdArgs& cmd_args, std::string& out_lvl)
 {
   return contains_pair_of_args(cmd_args, engine_utils::START_LEVEL_ARG, out_lvl);
@@ -485,7 +485,7 @@ void Engine::send_event(ModuleEvent&& event)
 bool Engine::init(const CmdArgs& cmd_args)
 {
   this->m_editor_mode = engine_utils::contains_arg(cmd_args, engine_utils::EDITOR_MODE_ARG);
-#if !NC_IS_DEPLOY
+#if !NC_IS_SHIP
   if (this->is_editor_mode()) {
     CVars::has_fps_limit = true;
     CVars::fps_limit = 30.0f;
@@ -644,7 +644,7 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
 
     game_system.request_level_change(lvl_name, std::move(frames), transition);
   }
-#if !NC_IS_DEPLOY
+#if !NC_IS_SHIP
   else if (std::string lvl; engine_utils::should_play_level(cmd_args, lvl))
   {
     // Start a level
