@@ -14,9 +14,7 @@ workspace "Nuclidean"
     }
 
     language "C++"
-    -- C++23 introduces constexpr destructor for std::unique_ptr thus changing
-    -- the standart requires some changes to the code
-    cppdialect "C++20"
+    cppdialect "C++23"
     warnings "Off"
     conformancemode "On"
     intrinsics "On"
