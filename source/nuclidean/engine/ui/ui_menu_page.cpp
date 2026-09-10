@@ -1,6 +1,4 @@
 // Project Nuclidean Source File
-#pragma once
-
 #include <engine/ui/ui_menu_page.h>
 #include <engine/ui/user_interface_system.h>
 
@@ -78,7 +76,7 @@ void NextLevelPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   {
     hover_over_button->set_hover(true);
 
-    if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    if (!(prev_mouse & SDL_BUTTON(1)) && (cur_mouse & SDL_BUTTON(1)))
     {
       hover_over_button->on_click();
     }
@@ -425,7 +423,7 @@ void MainMenuPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   {
     hover_over_button->set_hover(true);
 
-    if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    if (!(prev_mouse & SDL_BUTTON(1)) && (cur_mouse & SDL_BUTTON(1)))
     {
       hover_over_button->on_click();
     }
@@ -464,7 +462,7 @@ void NewGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   {
     hover_over_button->set_hover(true);
 
-    if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    if (!(prev_mouse & SDL_BUTTON(1)) && (cur_mouse & SDL_BUTTON(1)))
     {
       hover_over_button->on_click();
     }
@@ -1103,7 +1101,7 @@ void OptionsPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   {
     hover_over_button->set_hover(true);
 
-    if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    if (!(prev_mouse & SDL_BUTTON(1)) && (cur_mouse & SDL_BUTTON(1)))
     {
       hover_over_button->on_click();
     }
@@ -1190,7 +1188,7 @@ void LoadGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   }
 
   for (size_t i = 0 + page * PAGE_SIZE;
-    i < load_game_buttons.size() && i < (page + 1) * PAGE_SIZE;
+    i < load_game_buttons.size() && i < cast<size_t>((page + 1) * PAGE_SIZE);
     i++)
   {
     if (load_game_buttons[i]->is_point_in_rec(mouse_pos))
@@ -1204,7 +1202,7 @@ void LoadGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   {
     hover_over_button->set_hover(true);
 
-    if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    if (!(prev_mouse & SDL_BUTTON(1)) && (cur_mouse & SDL_BUTTON(1)))
     {
       hover_over_button->on_click();
     }
@@ -1255,7 +1253,7 @@ void LoadGamePage::draw(ShaderProgramHandle button_material, ShaderProgramHandle
 
   //render load game buttons
   for (size_t i = 0 + page * PAGE_SIZE;
-    i < load_game_buttons.size() && i < (page + 1) * PAGE_SIZE;
+    i < load_game_buttons.size() && i < cast<size_t>((page + 1) * PAGE_SIZE);
     i++)
   {
     load_game_buttons[i]->draw(digit_material);
@@ -1337,7 +1335,7 @@ void QuitGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   {
     hover_over_button->set_hover(true);
 
-    if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    if (!(prev_mouse & SDL_BUTTON(1)) && (cur_mouse & SDL_BUTTON(1)))
     {
       hover_over_button->on_click();
     }

@@ -41,8 +41,8 @@ static u64               counter_stack_it = 0;
 
 //==============================================================================
 ScopeProfilingCounter::ScopeProfilingCounter(ProfilingCounter& ref)
-: counter(&ref)
-, start(ClockType::now())
+: start(ClockType::now())
+, counter(&ref)
 {
   // The enclosing scope is the parent; the outermost scope is its own parent.
   ProfilingCounter* the_parent = counter_stack_it ? counter_stack[counter_stack_it - 1] : &ref;

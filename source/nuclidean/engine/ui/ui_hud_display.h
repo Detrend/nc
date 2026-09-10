@@ -34,10 +34,10 @@ private:
   int display_health = 0;
   int crosshair = 1;
 
+  const float TIME_TO_SHOW_SECRET = 3.0f;
+
   float time_since_secret = TIME_TO_SHOW_SECRET + 1.0f;
   float time_since_saved = TIME_TO_SHOW_SECRET + 1.0f;
-
-  const float TIME_TO_SHOW_SECRET = 3.0f;
 
   GLuint VAO;
   GLuint VBO;

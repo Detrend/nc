@@ -25,7 +25,7 @@ namespace nc
   {
   public:
 
-    virtual void load(const ActivatorHookLoadArg& arg);
+    virtual void load(const ActivatorHookLoadArg& arg) override;
 
     virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args) override;
 
@@ -36,7 +36,7 @@ namespace nc
   class ActivatorHook_Jumppad : public IActivatorHook 
   {
   public:
-    virtual void load(const ActivatorHookLoadArg& arg);
+    virtual void load(const ActivatorHookLoadArg& arg) override;
 
     virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args) override;
 
@@ -47,7 +47,7 @@ namespace nc
   class ActivatorHook_Secret : public IActivatorHook
   {
   public:
-    virtual void load(const ActivatorHookLoadArg& arg);
+    virtual void load(const ActivatorHookLoadArg& arg) override;
 
     virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args) override;
   private:
@@ -58,7 +58,7 @@ namespace nc
   class ActivatorHook_Teleport : public IActivatorHook
   {
   public:
-    virtual void load(const ActivatorHookLoadArg& arg);
+    virtual void load(const ActivatorHookLoadArg& arg) override;
 
     virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args) override;
   private:
@@ -74,7 +74,7 @@ namespace nc
   class ActivatorHook_Autosave : public IActivatorHook
   {
   public:
-    virtual void load(const ActivatorHookLoadArg& arg);
+    virtual void load(const ActivatorHookLoadArg& arg) override;
 
     virtual void on_activated_start([[maybe_unused]] const ActivatorHookArg& args) override;
 

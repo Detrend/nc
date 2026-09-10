@@ -1,6 +1,4 @@
 // Project Nuclidean Source File
-#pragma once
-
 #include <engine/sound/sound_system.h>
 #include <engine/sound/sound_emitter.h>
 #include <engine/player/player.h>

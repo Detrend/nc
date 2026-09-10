@@ -102,7 +102,7 @@ TextureHandle::TextureHandle
   u32 y, 
   u32 width, 
   u32 height, 
-  u16 generation, 
+  u16 generation,
   TextureID texture_id
 )
 :
@@ -116,6 +116,23 @@ TextureHandle::TextureHandle
 {}
 
 //==============================================================================
+bool TextureHandle::is_valid() const
+{
+  if (m_lifetime == ResLifetime::Game && m_generation != TextureManager::m_generation)
+  {
+    return false;
+  }
+
+  return m_lifetime != ResLifetime::None && m_texture_id != INVALID_TEXTURE_ID;
+}
+
+//==============================================================================
+TextureHandle::operator bool() const
+{
+  return is_valid();
+}
+
+//==============================================================================
 vec2 TextureAtlasBundle::get_size() const
 {
   return vec2(width, height);
@@ -124,12 +141,8 @@ vec2 TextureAtlasBundle::get_size() const
 //==============================================================================
 TextureManager& TextureManager::get()
 {
-  if (m_instance == nullptr)
-  {
-    m_instance = std::unique_ptr<TextureManager>(new TextureManager());
-  }
-
-  return *m_instance;
+  static TextureManager instance;
+  return instance;
 }
 
 //==============================================================================

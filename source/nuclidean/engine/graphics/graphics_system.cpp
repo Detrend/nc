@@ -526,8 +526,8 @@ static void draw_cvar_type_and_input(bool* bl, const CVarRange&)
 static void draw_cvar_row(const std::string& name, const CVar& cvar)
 {
   ImGui::TableNextColumn();
-  ImGui::Text(name.c_str());
-  ImGui::SetItemTooltip(cvar.desc);
+  ImGui::Text("%s", name.c_str());
+  ImGui::SetItemTooltip("%s", cvar.desc);
 
   auto& range_list = CVars::get_cvar_ranges();
   auto  it = range_list.find(CVarName(name));

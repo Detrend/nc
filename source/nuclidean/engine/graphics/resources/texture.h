@@ -52,6 +52,9 @@ public:
 
   TextureGPU get_gpu_data() const;
 
+  bool is_valid() const;
+  operator bool() const;
+
 private:
   TextureHandle() {}
   TextureHandle(ResLifetime lifetime, u32 x, u32 y, u32 width, u32 height, u16 generation, TextureID texture_id);
@@ -106,7 +109,6 @@ private:
 
   using EquirectangularMapMap = std::unordered_map<std::string, GLuint>;
 
-  inline static std::unique_ptr<TextureManager> m_instance = nullptr;
   inline static u16 m_generation = 0;
 
   TextureManager();

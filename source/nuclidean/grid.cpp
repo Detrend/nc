@@ -451,7 +451,7 @@ const
     // Faster implementation for raycasts (expansion size == 0.0f)
     grid_helper::query_ray_helper(*this, from, to, [&](ivec2 coord)
     {
-      if (coord.x >= this->m_cells.size() || coord.y >= this->m_cells[0].size())
+      if (cast<size_t>(coord.x) >= this->m_cells.size() || cast<size_t>(coord.y) >= this->m_cells[0].size())
       {
         nc_warn(
           "Out of bounds grid indexing! Grid size: [{}, {}], idx: [{}, {}]",

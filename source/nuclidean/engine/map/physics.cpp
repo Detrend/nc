@@ -1901,7 +1901,7 @@ const
           .step_height   = max_step_height,
         };
 
-        CollisionHit hit = phys_helpers::raycast_generic<vec3>
+        phys_helpers::raycast_generic<vec3>
           (
           *this, position, position, radius, colliders, nullptr, INVALID_WALL_ID,
           bruh_intersector, bruh_sector_intersector,
@@ -2533,7 +2533,6 @@ mat4 PhysLevel::calc_relative_transform_from_self_to_target
 const
 {
   nc_assert(max_dist > 0.0f);
-  mat4 transform = identity<mat4>();
 
   StackVector<vec3, 20> _;
   StackVector<mat4, 20> __;

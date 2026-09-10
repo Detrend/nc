@@ -48,9 +48,6 @@ void Entity::init(vec3 position, f32 radius)
 }
 
 //==============================================================================
-Entity::~Entity() = default;
-
-//==============================================================================
 EntityID Entity::get_id() const
 {
   return m_id_and_type;

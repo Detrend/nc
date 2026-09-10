@@ -156,12 +156,8 @@ MeshHandle MeshHandle::invalid()
 //==============================================================================
 MeshManager& MeshManager::get()
 {
-  if (m_instance == nullptr)
-  {
-    m_instance = std::unique_ptr<MeshManager>(new MeshManager());
-  }
-
-  return *m_instance;
+  static MeshManager instance;
+  return instance;
 }
 
 //==============================================================================

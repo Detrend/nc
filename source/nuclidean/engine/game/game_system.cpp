@@ -153,7 +153,7 @@ static bool load_json_flag(const nlohmann::json& js, const cstr key)
 //==============================================================================
 static SurfaceData load_json_surface(const nlohmann::json &js) 
 {
-  if (const bool should_show = js["show"])
+  if (js["show"].get<bool>())
   {
     std::string texture_name = js["id"];
 
@@ -922,7 +922,7 @@ void GameSystem::handle_hot_reload()
   }
   else if (ImGui::IsKeyReleased(ImGuiKey_F7))
   {
-    if (Player* player = GameHelpers::get().get_player())
+    if (GameHelpers::get().get_player())
     {
       HotReloadData::has_data = false;
       this->request_level_change(this->get_level_name());
@@ -1004,7 +1004,6 @@ void GameSystem::save_game(const char*const save_name) const
 void GameSystem::quick_save() const
 {
   // Generate the filename
-  auto now = floor<std::chrono::seconds>(std::chrono::system_clock::now());
   auto lvl = level_name.to_string();
 
   std::string save_path = std::format

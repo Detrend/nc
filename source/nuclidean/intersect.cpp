@@ -1373,13 +1373,6 @@ bool test_frustum_from_point_and_portal(unit_test::TestCtx& /*ctx*/)
     Frustum2{vec2{0, 1}, vec2{1, 0}, Frustum2::ALMOST_FULL_ANGLE},
   };
 
-  auto cmp = [](const Frustum2& a, const Frustum2& b)
-  {
-    return a.center == b.center
-      && is_zero(a.direction - b.direction, 0.001f)
-      && is_zero(a.angle     - b.angle,     0.001f);
-  };
-
   static_assert(ARRAY_LENGTH(INPUTS) == ARRAY_LENGTH(OUTPUTS));
   constexpr u64 cnt = ARRAY_LENGTH(INPUTS);
 

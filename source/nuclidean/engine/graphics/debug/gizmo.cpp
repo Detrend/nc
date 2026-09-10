@@ -126,12 +126,8 @@ std::pair<vec3, f32> Gizmo::compute_rotation_angle_axis(const vec3& direction)
 //==============================================================================
 GizmoManager& GizmoManager::get()
 {
-  if (m_instance == nullptr)
-  {
-    m_instance = std::unique_ptr<GizmoManager>(new GizmoManager());
-  }
-
-  return *m_instance;
+  static GizmoManager instance;
+  return instance;
 }
 
 //==============================================================================

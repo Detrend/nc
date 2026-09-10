@@ -1,6 +1,4 @@
 // Project Nuclidean Source File
-#pragma once
-
 #include <engine/ui/ui_button.h>
 
 #include <engine/sound/sound_system.h>

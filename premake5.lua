@@ -1,13 +1,14 @@
 workspace "Nuclidean"
     architecture "x86_64"
     configurations { "Debug", "Test", "Profiling", "Ship" }
+    toolset "clang"
 
     location "build"
     targetdir "bin/%{prj.name}_%{cfg.buildcfg}"
     objdir "bin_temp/%{prj.name}_%{cfg.buildcfg}"
     startproject "Nuclidean"
 
-    includedirs {
+    externalincludedirs {
         "source/libs",
         "source/libs/SDL2/include",
         "source/libs/SDL_mixer/include"
@@ -64,10 +65,12 @@ project "Nuclidean"
     }
     includedirs "source/nuclidean"
     uses { "glad", "glm", "stb", "SDL2", "SDL_mixer" }
-    defines { "_CONSOLE" }
+    defines { "_CONSOLE", "SDL_MAIN_HANDLED" }
+    linkoptions { "-fuse-ld=lld" }
 
     warnings "High"
     fatalwarnings "All"
+    disablewarnings { "switch", "#pragma-messages", "missing-field-initializers", "missing-designated-field-initializers" }
 
     characterset "Unicode"
     clr "Off"
@@ -203,6 +206,7 @@ project "SDL2"
         "source/libs/SDL2/src/events/imKStoUCS.c",
         "source/libs/SDL2/src/events/SDL_keysym_to_scancode.c",
         "source/libs/SDL2/src/events/SDL_scancode_tables.c",
+        "source/libs/SDL2/src/main/windows/SDL_windows_main.c",
     }
     includedirs {
         "source/libs/SDL2/include",
@@ -211,7 +215,20 @@ project "SDL2"
     defines "_WINDOWS"
 
     usage "INTERFACE"
-        links { "SDL2", "setupapi", "winmm", "imm32", "version" }
+        links {
+            "SDL2", 
+            "user32", 
+            "gdi32", 
+            "winmm", 
+            "imm32", 
+            "ole32", 
+            "oleaut32", 
+            "version", 
+            "uuid", 
+            "advapi32", 
+            "setupapi", 
+            "shell32" 
+        }
 
     filter "configurations:Debug"
         defines "_DEBUG"

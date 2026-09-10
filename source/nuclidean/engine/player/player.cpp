@@ -154,7 +154,7 @@ void Player::init(vec3 position, vec3 in_forward)
   this->forward = in_forward;
   this->appear = Appearance
   {
-    .sprite    = std::format("{}_{}", PLAYER_SPRITE, 0),
+    .sprite    = std::format("{}_{}", PLAYER_SPRITE, 0).c_str(),
     .direction = this->get_facing_hor(),
     .scale     = 28.0f,
     .mode      = Appearance::SpriteMode::dir8,
@@ -416,7 +416,6 @@ void Player::apply_velocity(f32 delta_seconds)
   {
     WallID   wid   = portal.wall_id;
     SectorID sid   = portal.sector_id;
-    mat4     trans = lvl.map.calc_portal_to_portal_projection(sid, wid);
 
     GameHelpers::get().on_player_traversed_nc_portal
     (
