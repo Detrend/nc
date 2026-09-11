@@ -66,7 +66,6 @@ project "Nuclidean"
     includedirs "source/nuclidean"
     uses { "glad", "glm", "stb", "SDL2", "SDL_mixer" }
     defines { "_CONSOLE", "SDL_MAIN_HANDLED" }
-    linkoptions { "-fuse-ld=lld" }
 
     warnings "High"
     fatalwarnings "All"
@@ -90,7 +89,15 @@ project "Nuclidean"
         uses { "imgui", "benchmark" }
     filter "configurations:Ship"
         kind "WindowedApp"
+        entrypoint "mainCRTStartup"
         defines { "NC_Ship", "NDEBUG" }
+
+    filter "action:ninja"
+        linkoptions { "-fuse-ld=lld" }
+
+    filter { "configurations:Ship", "action:ninja" }
+        -- workaround for ninja ignoring `kind "WindowedApp"`
+        linkoptions { "-Xlinker /SUBSYSTEM:WINDOWS", "-Xlinker /ENTRY:mainCRTStartup" }
 
 -- ############################ 3rd party libraries ############################
 
