@@ -84,7 +84,7 @@ jobs:
       - name: Build Ship
         run: msbuild build\Nuclidean.slnx -p:Configuration=Ship -p:Platform=x64 -m
 
-  checks:
+  check-assets:
     runs-on: ubuntu-latest
 
     steps:
