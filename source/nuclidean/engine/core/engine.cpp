@@ -291,7 +291,11 @@ static std::string find_text_filter_regex(const std::vector<std::string>& args)
 }
 
 //==============================================================================
-static bool execute_unit_tests_if_required(const std::vector<std::string>& args)
+static bool execute_unit_tests_if_required
+(
+  const std::vector<std::string>& args,
+  bool&                           out_success
+)
 {
   auto test_arg_it = std::find(args.begin(), args.end(), UNIT_TEST_ARG);
   if (test_arg_it == args.end())
@@ -345,6 +349,8 @@ static bool execute_unit_tests_if_required(const std::vector<std::string>& args)
     ok_test_cnt, total_test_cnt, ok_perc
   );
 
+  out_success = ok_test_cnt == total_test_cnt;
+
   return true;
 }
 #endif
@@ -368,6 +374,7 @@ int init_engine_and_run_game(const CmdArgs& args)
   engine_utils::change_current_directory_if_necessary();
 
   [[maybe_unused]] bool exit_after_benchmarks_and_tests = false;
+  bool                  unit_tests_succeeded            = true;
 
 #if NC_BENCHMARK
   if (engine_utils::execute_benchmarks_if_required(args))
@@ -378,7 +385,7 @@ int init_engine_and_run_game(const CmdArgs& args)
 #endif
 
 #if NC_TESTS
-  if (engine_utils::execute_unit_tests_if_required(args))
+  if (engine_utils::execute_unit_tests_if_required(args, unit_tests_succeeded))
   {
     // running only tests, exit
     exit_after_benchmarks_and_tests = true;
@@ -388,7 +395,7 @@ int init_engine_and_run_game(const CmdArgs& args)
   if (exit_after_benchmarks_and_tests)
   {
     // exit if we want to run only tests or benchmarks
-    return 0;
+    return unit_tests_succeeded ? 0 : 1;
   }
 
   // create instance of the engine

@@ -1,64 +1,188 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-name: Build
+name: CI
 
 on:
-  workflow_dispatch:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches-ignore: [editor-main]
+  workflow_dispatch:
 
-env:
-  # Path to the solution file relative to the root of the project.
-  SOLUTION_FILE_PATH: .
-
-  # Configuration type to build.
-  # You can convert this to a build matrix if you need coverage of multiple configuration types.
-  # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-  BUILD_CONFIGURATION: Release
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: windows-latest
 
+    defaults:
+      run:
+        shell: pwsh
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [Ship, Test]
+
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-    - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
+      - name: Install Ninja
+        run: choco install ninja -y --no-progress
 
-    - name: Restore NuGet packages
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: nuget restore ${{env.SOLUTION_FILE_PATH}}
+      - name: Use the standalone LLVM toolchain
+        run: Add-Content -Path $env:GITHUB_PATH -Value 'C:\Program Files\LLVM\bin' -Encoding utf8
 
-    - name: Build
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      # Add additional options to the MSBuild command line here (like platform or verbosity level).
-      # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
-      run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
-    - name: Debug
-      run: tree
-    - name: Put stuff together
-      run: mkdir res ; mv content res/content ; mv save res/save ; cp bin/Release/*.exe res ; cp bin/Release/*.dll res
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: Build-Win64
-        path: ./res
-    - name: Create release zip
-      run: Compress-Archive -Path res/* -DestinationPath nc_build-win64.zip
-    - name: Create Release
-      uses: "marvinpinto/action-automatic-releases@latest"
-      with:
-        repo_token:  "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "autobuild"
-        title: "Automated Build"
-        prerelease: false
-        files: |
-          ./nc_build-win64.zip
+      - name: Report toolchain versions
+        run: |
+          clang --version
+          ninja --version
+          tools\premake5.exe --version
 
-    
+      - name: Generate build files
+        run: tools\premake5.exe ninja
+
+      - name: Build ${{ matrix.config }}
+        run: ninja -C build ${{ matrix.config }}
+
+      - name: Stage package
+        run: |
+          New-Item -ItemType Directory -Path staging | Out-Null
+          Copy-Item -Path bin\Nuclidean_${{ matrix.config }}\Nuclidean.exe -Destination staging\
+          Copy-Item -Path content -Destination staging\content -Recurse
+
+      - name: Create archive
+        run: Compress-Archive -Path staging\* -DestinationPath nuclidean-${{ matrix.config }}-win64.zip
+
+      - name: Upload archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuclidean-${{ matrix.config }}-win64
+          path: nuclidean-${{ matrix.config }}-win64.zip
+          if-no-files-found: error
+
+  build-vs:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Generate build files
+        run: tools\premake5.exe vs2026
+
+      - name: Build Ship
+        run: msbuild build\Nuclidean.slnx -p:Configuration=Ship -p:Platform=x64 -m
+
+  checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install glslang
+        run: sudo apt-get update && sudo apt-get install -y glslang-tools
+
+      - name: Compile shaders
+        run: |
+          status=0
+          while IFS= read -r shader; do
+            output=$(glslangValidator "$shader" 2>&1) || status=1
+            case $output in *WARNING:*) status=1 ;; esac
+            echo "$output"
+          done < <(find content/shaders -type f \( -name '*.vert' -o -name '*.frag' -o -name '*.comp' \) | sort)
+          exit $status
+
+      - name: Check shaders referenced from the source exist
+        run: |
+          missing=$(grep -oP '_FILE\s*=\s*"\K[^"]+' source/nuclidean/engine/graphics/shaders/shaders.h \
+            | sort -u | while read -r path; do [ -f "content/shaders/$path" ] || echo "$path"; done)
+          if [ -n "$missing" ]; then
+            echo "shaders.h references files that do not exist in content/shaders:"
+            echo "$missing"
+            exit 1
+          fi
+
+      - name: Check declared sounds exist
+        run: |
+          missing=$(comm -23 \
+            <(grep -oP '^\s*xx\(\K[a-z_0-9]+' source/nuclidean/engine/sound/sound_resources.h | sort) \
+            <(find content/sound -name '*.wav' -exec basename {} .wav \; | sort))
+          if [ -n "$missing" ]; then
+            echo "NC_SOUNDS declares sounds with no matching .wav in content/sound:"
+            echo "$missing"
+            exit 1
+          fi
+
+      - name: Check levels parse
+        run: |
+          for level in content/levels/*.json; do
+            python3 -c 'import json, sys; json.load(open(sys.argv[1]))' "$level" \
+              || { echo "invalid JSON: $level"; exit 1; }
+          done
+
+  unit-tests:
+    needs: build
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Download the Test archive
+        uses: actions/download-artifact@v4
+        with:
+          name: nuclidean-Test-win64
+
+      - name: Unpack
+        run: Expand-Archive -Path nuclidean-Test-win64.zip -DestinationPath test_build
+
+      - name: Run unit tests
+        working-directory: test_build
+        run: .\Nuclidean.exe -unit_test
+
+  push-artifacts:
+    needs: [build, unit-tests]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    concurrency:
+      group: push-artifacts
+      cancel-in-progress: false
+
+    steps:
+      - name: Download archives
+        uses: actions/download-artifact@v4
+        with:
+          pattern: nuclidean-*-win64
+          merge-multiple: true
+          path: artifacts
+
+      - name: Replace the autobuild release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release delete autobuild --yes --cleanup-tag || true
+          gh release create autobuild artifacts/*.zip \
+            --target "$GITHUB_SHA" \
+            --title "Automated build" \
+            --notes "Built from ${GITHUB_SHA} on $(date -u '+%Y-%m-%d %H:%M UTC')." \
+            --prerelease
