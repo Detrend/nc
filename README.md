@@ -60,12 +60,12 @@ This project uses premake. Using pinned version from `tools/premake5` is recomme
 
 ```bash
 # Generate project files using Ninja generator.
-.\tools\premake.exe ninja
+.\tools\premake5.exe ninja
 # Build the project using ninja
 ninja -C build Ship
 
 # Generate project files using Visual Studio generator.
-.\tools\premake.exe vs2026
+.\tools\premake5.exe vs2026
 # Build the project using msbuild
 # (Note that you probably need to be in VS dev shell).
 msbuild build\Nuclidean.slnx -p:Configuration=Ship
