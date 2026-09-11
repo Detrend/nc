@@ -1,24 +1,26 @@
-.vs
-/bin
+# Build artifacts
 /asm
+/bin
 /bin_temp
 /build*
+
+# Visual Studio
 **/x64
 *.vcxproj.user
-
-# ignore visual studio aps resource files: https://learn.microsoft.com/en-us/cpp/windows/resource-files-visual-studio?view=msvc-170
+.vs
 *.aps
 
-# ignore imgui configuration
+# ImGui
 imgui.ini
-/projects/nucledian.vcxproj.filters.orig
-/source/nucledian/engine/entity/entity.h.orig
-/source/nucledian/engine/entity/entity.cpp.orig
-/source/nucledian/engine/player/player.cpp.orig
+settings.cfg
+
+# Saves & Demos
+demo
+save
+
+# Others
+*.orig
+*.tmp
 /.godot
 /dumps
 *.mscz~
-imgui.ini
-/settings.cfg
-demo
-save
