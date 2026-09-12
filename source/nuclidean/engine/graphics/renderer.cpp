@@ -208,7 +208,6 @@ const
 
   glViewport(0, 0, m_window_size.x, m_window_size.y);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  m_dir_light_ssbo.clear();
   m_point_light_ssbo.clear();
   m_sector_matrices_inv_ssbo.clear();
 
@@ -596,14 +595,13 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   glBindTexture(GL_TEXTURE_2D, m_g_sector);
 
   // bind light ssbos
-  m_dir_light_ssbo.bind(0);
-  m_point_light_ssbo.bind(1);
-  m_light_index_ssbo.bind(2);
-  m_light_tiles_ssbo.bind(3);
-  m_sectors_ssbo.bind(4);
-  m_walls_ssbo.bind(5);
-  m_portal_matrices_inv_ssbo.bind(6);
-  m_sector_matrices_inv_ssbo.bind(7);
+  m_point_light_ssbo.bind(0);
+  m_light_index_ssbo.bind(1);
+  m_light_tiles_ssbo.bind(2);
+  m_sectors_ssbo.bind(3);
+  m_walls_ssbo.bind(4);
+  m_portal_matrices_inv_ssbo.bind(5);
+  m_sector_matrices_inv_ssbo.bind(6);
 
   const size_t num_tiles_x = (cast<size_t>(get_render_size().x) + LIGHT_CULLING_TILE_SIZE_X - 1)
     / LIGHT_CULLING_TILE_SIZE_X;
@@ -611,7 +609,6 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   // prepare shader
   m_light_material.use();
   m_light_material.set_uniform(shaders::light::VIEW_POSITION, view_position);
-  // m_light_material.set_uniform(shaders::light::NUM_DIR_LIGHTS, m_dir_light_ssbo.gpu_size_u32()); // Disabled for now
   m_light_material.set_uniform(shaders::light::NUM_TILES_X, cast<u32>(num_tiles_x));
   m_light_material.set_uniform(shaders::light::NUM_SECTORS, m_sectors_ssbo.gpu_size_u32());
   m_light_material.set_uniform(shaders::light::NUM_WALLS, m_walls_ssbo.gpu_size_u32());
@@ -635,13 +632,6 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
 //==============================================================================
 void Renderer::update_ssbos() const
 {
-  EntityRegistry& registry = GameSystem::get().get_entities();
-  registry.for_each<DirectionalLight>([this](DirectionalLight& light)
-  {
-    m_dir_light_ssbo.push_back(light.get_gpu_data());
-  });
-  
-  m_dir_light_ssbo.update_gpu_data();
   m_point_light_ssbo.update_gpu_data();
   m_sector_matrices_inv_ssbo.update_gpu_data_with(m_sector_matrices_inv);
 }
