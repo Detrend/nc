@@ -39,7 +39,6 @@ static GLuint         g_default_vao       = 0;
 
 //==============================================================================
 constexpr cstr TOP_DOWN_FRAGMENT_SOURCE = R"ABC(
-#version 430 core
 out vec4 FragColor;
 
 layout(location = 0) uniform vec3 u_color;
@@ -52,7 +51,6 @@ void main()
 
 //==============================================================================
 constexpr cstr TOP_DOWN_VERTEX_SOURCE = R"ABC(
-#version 430 core
 layout (location = 0) in vec3 aPos;
 
 void main()

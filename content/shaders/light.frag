@@ -1,6 +1,4 @@
 
-#version 430 core
-
 #define TILE_SIZE_X 16
 #define TILE_SIZE_Y 16
 

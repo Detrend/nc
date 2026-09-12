@@ -1,4 +1,3 @@
-#version 430 core
 
 struct TextureData {
   vec2 pos;

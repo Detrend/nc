@@ -1,7 +1,6 @@
 
 // note: this shader is obsolete and may not work properly
 
-#version 430 core
 in vec3 normal;
 in vec3 position;
 

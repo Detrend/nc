@@ -193,7 +193,12 @@ ShaderProgramHandle::ShaderProgramHandle(std::initializer_list<std::pair<const c
 std::optional<GLuint> ShaderProgramHandle::compile_shader(const char* source, GLenum type, bool log_only) const
 {
   const GLuint shader = glCreateShader(type);
-  glShaderSource(shader, 1, &source, nullptr);
+  const char*const source_segments[] = {
+    "#version 430 core\n",
+    "#line 1\n",
+    source
+  };
+  glShaderSource(shader, ARRAY_LENGTH(source_segments), source_segments, nullptr);
   glCompileShader(shader);
 
   GLint success = 0;
