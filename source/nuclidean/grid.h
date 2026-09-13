@@ -25,11 +25,11 @@ public:
 
   // Visitor returns true it it does not require more iterations
   using Visitor = std::function<bool(aabb2, const T&)>;
-  void query_point(vec2 point, Visitor func) const;
-  void query_aabb(aabb2 bbox,  Visitor func) const;
+  void query_point(vec2 point, const Visitor& func) const;
+  void query_aabb(aabb2 bbox,  const Visitor& func) const;
 
-  void query_ray(vec2 from, vec2 to, f32 expand, Visitor func) const;
-  void query_ray(vec3 from, vec3 to, f32 expand, Visitor func) const;
+  void query_ray(vec2 from, vec2 to, f32 expand, const Visitor& func) const;
+  void query_ray(vec3 from, vec3 to, f32 expand, const Visitor& func) const;
 
   // Resets the grid into non initialized state and frees all resources
   void reset();

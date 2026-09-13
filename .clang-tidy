@@ -1,0 +1,30 @@
+---
+Checks:
+  - -*
+  - bugprone-*
+  - performance-*
+  - clang-analyzer-*
+  - -bugprone-easily-swappable-parameters
+  - -bugprone-narrowing-conversions
+  - -bugprone-throwing-static-initialization
+  - -bugprone-exception-escape
+  - -bugprone-derived-method-shadowing-base-method
+  - -bugprone-macro-parentheses
+  - -bugprone-switch-missing-default-case
+  - -bugprone-std-namespace-modification
+  - -bugprone-random-generator-seed
+  - -bugprone-empty-catch
+  - -bugprone-branch-clone
+  - -bugprone-too-small-loop-variable
+  - -bugprone-signed-char-misuse
+  - -bugprone-unchecked-string-to-number-conversion
+  - -performance-enum-size
+  - -performance-no-int-to-ptr
+  - -performance-avoid-endl
+  - -performance-faster-string-find
+  - -clang-analyzer-optin.*
+
+CheckOptions:
+  bugprone-reserved-identifier.AllowedIdentifiers: '^__$'
+
+HeaderFilterRegex: '.*source.nuclidean.*'

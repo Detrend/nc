@@ -627,14 +627,14 @@ void MapSectors::serialize(Buffer& buffer)
 
 //==============================================================================
 bool MapSectors::for_each_portal_of_sector(
-  SectorID      sector,
-  WallVisitor visitor) const
+  SectorID           sector,
+  const WallVisitor& visitor) const
 {
   return map_helpers::for_each_portal(*this, sector, visitor);
 }
 
 //==============================================================================
-void MapSectors::for_each_wall_of_sector(SectorID sector, WallVisitor visitor) const
+void MapSectors::for_each_wall_of_sector(SectorID sector, const WallVisitor& visitor) const
 {
     map_helpers::for_each_wall(*this, sector, [&visitor](WallID current, WallID) { visitor(current); });
 }

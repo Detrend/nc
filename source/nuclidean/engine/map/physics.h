@@ -216,16 +216,16 @@ struct PhysLevel
   // All objects have a cylinder-like collider with radius and a height
   void move_particle
   (
-    vec3&             position,  // starting position, changed by the function
-    vec3&             velocity,  // starting velocity, changed by the function
-    mat4&             transform, // transform, changes after passing through portals
-    f32&              delta_time,// frametime in seconds
-    f32               radius,    // radius of the cylinder
-    f32               height,    // height of the cylinder
-    f32               neg_height,// -y offset of the cylinder start
-    f32               bounce,    // bounce factor, 1 = normal bounce
-    EntityTypeMask    colliders, // what entities to collide with
-    CollisionListener listener = nullptr // reaction to collisions
+    vec3&                    position,  // starting position, changed by the function
+    vec3&                    velocity,  // starting velocity, changed by the function
+    mat4&                    transform, // transform, changes after passing through portals
+    f32&                     delta_time,// frametime in seconds
+    f32                      radius,    // radius of the cylinder
+    f32                      height,    // height of the cylinder
+    f32                      neg_height,// -y offset of the cylinder start
+    f32                      bounce,    // bounce factor, 1 = normal bounce
+    EntityTypeMask           colliders, // what entities to collide with
+    const CollisionListener& listener = nullptr // reaction to collisions
   ) const;
 
   // Computes a path. Points which were reached through non-euclidean portals

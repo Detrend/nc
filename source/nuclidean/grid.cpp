@@ -384,14 +384,14 @@ void StatGridAABB2<T>::initialize(u64 width, u64 height, vec2 min, vec2 max)
 
 //==============================================================================
 template<typename T>
-void StatGridAABB2<T>::query_point(vec2 point, Visitor func) const
+void StatGridAABB2<T>::query_point(vec2 point, const Visitor& func) const
 {
   this->query_aabb(aabb2{point}, func);
 }
 
 //==============================================================================
 template<typename T>
-void StatGridAABB2<T>::query_aabb(aabb2 bbox, Visitor func) const
+void StatGridAABB2<T>::query_aabb(aabb2 bbox, const Visitor& func) const
 {
   NC_SCOPE_PROFILER(QueryAABB)
   nc_assert(m_initialized);
@@ -415,7 +415,7 @@ void StatGridAABB2<T>::query_aabb(aabb2 bbox, Visitor func) const
 template<typename T>
 void StatGridAABB2<T>::query_ray
 (
-  vec3 from, vec3 to, f32 expand, Visitor func
+  vec3 from, vec3 to, f32 expand, const Visitor& func
 )
 const
 {
@@ -427,7 +427,7 @@ const
 template<typename T>
 void StatGridAABB2<T>::query_ray
 (
-  vec2 from, vec2 to, f32 expand, Visitor func
+  vec2 from, vec2 to, f32 expand, const Visitor& func
 )
 const
 {

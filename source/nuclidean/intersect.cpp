@@ -1075,7 +1075,7 @@ void FrustumBuffer::insert_frustum(Frustum2 new_frustum)
     // not overlapping, but might be quite close
     if (angle_diff < closest_dst)
     {
-      angle_diff = closest_dst;
+      closest_dst = angle_diff;
       closest_idx = i;
     }
   }

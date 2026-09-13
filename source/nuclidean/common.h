@@ -16,11 +16,7 @@ namespace nc
 // disable warnings for when if-condition evaluates to constant
 #pragma warning(disable:4127)
 
-inline void do_nothing([[maybe_unused]]auto&& something)
-{
-  // Left to be optimized away
-}
-
+__attribute__((analyzer_noreturn))
 inline void assert_fail_impl(const char* const expression_str, const logging::LoggingContext &logging_ctx, const std::string& message)
 {
   std::string actual_message;
@@ -45,7 +41,7 @@ inline void assert_fail_impl(const char* const expression_str, const logging::Lo
 #if NC_ASSERTS
 #   define nc_assert(expr, ...) nc_expect(expr, __VA_ARGS__)
 #else
-#   define nc_assert(expr, ...) ::nc::do_nothing(expr); // So we do not receive warnings for unused variables on builds where assert does nothing.
+#   define nc_assert(expr, ...) do { if (false) { (void)(expr); } } while(false)
 #endif
 
 

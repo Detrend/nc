@@ -84,6 +84,33 @@ jobs:
       - name: Build Ship
         run: msbuild build\Nuclidean.slnx -p:Configuration=Ship -p:Platform=x64 -m
 
+  clang-tidy:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Use the standalone LLVM toolchain
+        run: Add-Content -Path $env:GITHUB_PATH -Value 'C:\Program Files\LLVM\bin' -Encoding utf8
+
+      - name: Report toolchain versions
+        run: |
+          clang-tidy --version
+          python --version
+
+      - name: Generate compile database
+        run: tools\premake5.exe compilecommands --cc-config=Debug --cc-output=build/compile_commands.json
+
+      - name: Run clang-tidy
+        run: python 'C:\Program Files\LLVM\bin\run-clang-tidy' -p build -quiet -warnings-as-errors=* source.nuclidean
+
   check-assets:
     runs-on: ubuntu-latest
 

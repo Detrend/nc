@@ -181,7 +181,6 @@ void Player::post_init()
 static PlayerSpecificInputs pressed_inputs(const PlayerSpecificInputs& now, const PlayerSpecificInputs& prev)
 {
   PlayerSpecificInputs output;
-  std::memset(&output, 0, sizeof(output));
   output.keys = now.keys & ~prev.keys;
   return output;
 }

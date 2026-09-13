@@ -2037,16 +2037,16 @@ const
 //==============================================================================
 void PhysLevel::move_particle
 (
-  vec3&                        position,
-  vec3&                        velocity_og,
-  mat4&                        transform,
-  f32&                         delta_time,
-  f32                          radius,
-  f32                          height,
-  f32                          neg_height,
-  f32                          bounce,
-  EntityTypeMask               colliders,
-  PhysLevel::CollisionListener listener /*= nullptr*/
+  vec3&                               position,
+  vec3&                               velocity_og,
+  mat4&                               transform,
+  f32&                                delta_time,
+  f32                                 radius,
+  f32                                 height,
+  f32                                 neg_height,
+  f32                                 bounce,
+  EntityTypeMask                      colliders,
+  const PhysLevel::CollisionListener& listener /*= nullptr*/
 )
 const
 {
@@ -2294,11 +2294,6 @@ const
     {
       // Success, return the path
       return points;
-    }
-    else
-    {
-      // Increment for the next iteration
-      random_number += 1;
     }
   }
 

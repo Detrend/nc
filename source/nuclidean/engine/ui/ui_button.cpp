@@ -22,7 +22,7 @@ UiButton::UiButton(const char* texture_name, vec2 position, vec2 scale, std::fun
 
   this->position = position;
   this->scale = scale;
-  this->func = func;
+  this->func = std::move(func);
 
 }
 

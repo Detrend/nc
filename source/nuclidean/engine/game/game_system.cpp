@@ -99,7 +99,7 @@ static void make_sector_helper(
       .point_index            = p,
       .nc_portal_point_index  = is_portal ? portal_wall_id_to : INVALID_WALL_REL_ID,
       .nc_portal_sector_index = is_portal ? portal_sector     : INVALID_SECTOR_ID,
-      .surface                = std::move(wall_surfaces[i]),
+      .surface                = wall_surfaces[i],
     });
   }
 
@@ -1004,7 +1004,7 @@ void GameSystem::save_game(const char*const save_name) const
 void GameSystem::quick_save() const
 {
   // Generate the filename
-  auto lvl = level_name.to_string();
+  [[maybe_unused]] auto lvl = level_name.to_string();
 
   std::string save_path = std::format
   (

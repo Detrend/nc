@@ -237,7 +237,6 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
     glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    display_count = display_count / 10;
     position += pos_dif;
 
     display_count = kill_count;
@@ -346,7 +345,6 @@ void NextLevelPage::draw_secret_count(ShaderProgramHandle digit_material)
     glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    display_count = display_count / 10;
     position += pos_dif;
 
     display_count = revealed_count;

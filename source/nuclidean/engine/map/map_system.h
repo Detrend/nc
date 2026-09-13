@@ -275,9 +275,9 @@ struct MapSectors
   ) const;
 
   // Iterates all portals of this sector
-  bool for_each_portal_of_sector(SectorID sector, WallVisitor visitor) const;
+  bool for_each_portal_of_sector(SectorID sector, const WallVisitor& visitor) const;
   // Iterates all walls of this sector, including portal ones.
-  void for_each_wall_of_sector(SectorID sector, WallVisitor visitor) const;
+  void for_each_wall_of_sector(SectorID sector, const WallVisitor& visitor) const;
 
   // Returns an id of a sector that lies on this position. If there is
   // no such sector then returns INVALID_SECTOR_ID. If there are multiple

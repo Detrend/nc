@@ -74,10 +74,10 @@ namespace nc {
       }
 
       std::array<u8, 256> ret = {};
-      for (char t = 0; t < chars_list.size(); ++t) {
-        ret[chars_list[t]] = t + 1;
+      for (u32 t = 0; t < chars_list.size(); ++t) {
+        ret[chars_list[t]] = static_cast<u8>(t + 1);
         if (t < alt_chars_list.size()) {
-          ret[alt_chars_list[t]] = t + 1;
+          ret[alt_chars_list[t]] = static_cast<u8>(t + 1);
         }
       }
       return ret;
