@@ -28,7 +28,6 @@ public:
 
   void init(vec3 position, f32 radius, f32 height);
   void init(vec3 position, f32 radius);
-  ~Entity() = default;
 
   // Called on the type of the entity post ID assignment. Does not need to be
   // virtual as the caller has the information about the type.

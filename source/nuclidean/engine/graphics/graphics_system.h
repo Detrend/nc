@@ -53,7 +53,7 @@ public:
   static GraphicsSystem& get();
 
   GraphicsSystem();
-  ~GraphicsSystem();
+  ~GraphicsSystem() override;
 
   GraphicsSystem(const GraphicsSystem&)            = delete;
   GraphicsSystem& operator=(const GraphicsSystem&) = delete;

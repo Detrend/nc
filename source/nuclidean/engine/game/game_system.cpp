@@ -384,7 +384,7 @@ static void load_json_map
       std::vector<u16> point_indices;
       for (auto&& js_point : js_sector["points"])
       {
-        point_indices.emplace_back((u16)(int)js_point);
+        point_indices.emplace_back(cast<u16>(cast<int>(js_point)));
       }
 
       auto floor_surface   = load_json_surface(js_sector["floor_surface"]);

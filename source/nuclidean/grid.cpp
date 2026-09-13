@@ -346,7 +346,7 @@ static void query_aabb_helper(const StatGridAABB2<T>& self, aabb2 bbox, F func)
 }
 
 //==============================================================================
-u64 ray_count_cells(const StatGridAABB2<u64>& grid, vec2 from, vec2 to)
+[[maybe_unused]] static u64 ray_count_cells(const StatGridAABB2<u64>& grid, vec2 from, vec2 to)
 {
   u64 cnt = 0;
   query_ray_helper(grid, from, to, [&cnt](ivec2 /*coord*/)
@@ -579,7 +579,7 @@ namespace nc
 using ResSet = std::set<ivec2, decltype(cmp_ivec2)>;
 
 //==============================================================================
-bool grid_test_basic(unit_test::TestCtx& /*ctx*/)
+static bool grid_test_basic(unit_test::TestCtx& /*ctx*/)
 {
   struct TestCase
   {
@@ -632,7 +632,7 @@ bool grid_test_basic(unit_test::TestCtx& /*ctx*/)
 NC_UNIT_TEST(grid_test_basic)->name("Grid Test Basic");
 
 //==============================================================================
-bool grid_test_compare(unit_test::TestCtx& /*ctx*/)
+static bool grid_test_compare(unit_test::TestCtx& /*ctx*/)
 {
   StatGridAABB2<u64> grid;
   grid.initialize(32, 29, vec2{1.25f, -0.89f}, vec2{32.3f, 30.0f});
@@ -725,7 +725,7 @@ NC_UNIT_TEST(grid_test_compare)->name("Grid Test Compare");
 
 //==============================================================================
 // -unit_test -test_filter=Clip.*
-bool clip_bbox_test(unit_test::TestCtx& /*ctx*/)
+static bool clip_bbox_test(unit_test::TestCtx& /*ctx*/)
 {
   struct TestCase
   {

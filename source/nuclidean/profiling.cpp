@@ -16,7 +16,7 @@ namespace nc
 {
 
 //==============================================================================
-std::vector<ProfilingCounter*>& get_all_profiling_counters()
+static std::vector<ProfilingCounter*>& get_all_profiling_counters()
 {
   static std::vector<ProfilingCounter*> counters;
   return counters;

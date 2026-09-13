@@ -222,7 +222,7 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
 
     const glm::mat4 final_trans = trans_mat;
 
-    int digit = (int)'/';
+    int digit = cast<int>('/');
 
     // setting shader uniforms
     digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
@@ -331,7 +331,7 @@ void NextLevelPage::draw_secret_count(ShaderProgramHandle digit_material)
 
     const glm::mat4 final_trans = trans_mat;
 
-    int digit = (int)'/';
+    int digit = cast<int>('/');
 
     // setting shader uniforms
     digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
@@ -1278,7 +1278,7 @@ void LoadGamePage::go_back()
 //=============================================================================================
 void LoadGamePage::page_up()
 {
-  page = min(page + 1, (s32)load_game_buttons.size() / PAGE_SIZE);
+  page = min(page + 1, cast<s32>(load_game_buttons.size()) / PAGE_SIZE);
 }
 
 //=============================================================================================

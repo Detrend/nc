@@ -866,7 +866,7 @@ void Player::handle_floor_damage(f32 delta)
     const SectorData& sd = get_engine().get_map().sectors[sid];
     if (sd.damage > 0 && this->get_position().y < sdd.floor_height + 0.1f)
     {
-      this->damage((s32)(sd.damage * INTERVAL));
+      this->damage(cast<s32>(sd.damage * INTERVAL));
     }
   }
 }
@@ -1070,10 +1070,10 @@ void Player::store_level_transition_data(LevelTransitionData& data_out) const
 
   for (u32 i = 0; i < WEAPON_CNT; i++)
   {
-    data_out.ammo[i] = this->get_ammo((WeaponType)i);
-    if (this->has_weapon((WeaponType)i))
+    data_out.ammo[i] = this->get_ammo(cast<WeaponType>(i));
+    if (this->has_weapon(cast<WeaponType>(i)))
     {
-      data_out.owned_weapons |= weapon_flag((WeaponType)i);
+      data_out.owned_weapons |= weapon_flag(cast<WeaponType>(i));
     }
   }
 

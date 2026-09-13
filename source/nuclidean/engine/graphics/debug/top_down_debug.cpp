@@ -86,7 +86,7 @@ void TopDownDebugRenderer::draw_line(vec2 from, vec2 to, vec3 color)
   vec3 data[2] = { vec3(from, -0.5f), vec3(to, -0.5f) };
   glBufferData(GL_ARRAY_BUFFER, sizeof(vec3) * 2, data, GL_DYNAMIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), recast<void*>(0));
   glEnableVertexAttribArray(0);
 
   glUniform3f(0, color.x, color.y, color.z);
@@ -141,7 +141,7 @@ void TopDownDebugRenderer::draw_triangle(vec2 a, vec2 b, vec2 c, vec3 color)
   };
   glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_DYNAMIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), recast<void*>(0));
   glEnableVertexAttribArray(0);
 
   glUniform3f(0, color.x, color.y, color.z);

@@ -12,7 +12,7 @@
 namespace nc {
 
   template<typename TToken>
-  static void test_basic(const std::string& str) {
+  [[maybe_unused]] static void test_basic(const std::string& str) {
     TToken tok(str);
     nc_assert(str == tok.to_string());
   }

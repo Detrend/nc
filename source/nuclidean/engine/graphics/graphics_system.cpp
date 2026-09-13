@@ -779,7 +779,7 @@ static void draw_main_plot()
 }
 
 //==============================================================================
-void draw_profiling()
+static void draw_profiling()
 {
   NC_SCOPE_PROFILER(DrawProfiler)
 

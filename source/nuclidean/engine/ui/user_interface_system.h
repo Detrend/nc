@@ -20,7 +20,7 @@ public:
   static UserInterfaceSystem& get();
   void on_event(ModuleEvent& event) override;
   bool init();
-  ~UserInterfaceSystem();
+  ~UserInterfaceSystem() override;
 
   void draw();
 

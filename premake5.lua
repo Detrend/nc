@@ -67,9 +67,43 @@ project "Nuclidean"
     uses { "glad", "glm", "stb", "SDL2", "SDL_mixer" }
     defines { "_CONSOLE", "SDL_MAIN_HANDLED" }
 
-    warnings "High"
+    warnings "Extra"
     fatalwarnings "All"
-    disablewarnings { "switch", "#pragma-messages", "missing-field-initializers", "missing-designated-field-initializers" }
+    enablewarnings {
+        -- Control flow
+        "comma", "conditional-uninitialized", "implicit-fallthrough",
+        "missing-noreturn", "unreachable-code-aggressive",
+
+        -- Conversions
+        "anon-enum-enum-conversion", "bitfield-enum-conversion",
+        "enum-conversion", "float-overflow-conversion",
+        "implicit-int-conversion-on-negation", "shorten-64-to-32", "string-conversion",
+
+        -- Casts and comparisons
+        "cast-qual", "old-style-cast", "shift-sign-overflow",
+        "tautological-constant-in-range-compare", "undefined-reinterpret-cast",
+
+        -- Memory layout
+        "array-bounds-pointer-arithmetic", "class-varargs", "over-aligned", "unaligned-access",
+
+        -- Classes
+        "deprecated-copy-with-dtor", "duplicate-enum", "non-virtual-dtor",
+        "range-loop-bind-reference", "shadow-field-in-constructor-modified",
+        "suggest-destructor-override", "suggest-override",
+
+        -- Declarations and unused code
+        "missing-prototypes", "missing-variable-declarations",
+        "unused-macros", "unused-member-function", "unused-template",
+
+        -- Source hygiene
+        "header-hygiene", "invalid-utf8", "newline-eof", "undef"
+    }
+    disablewarnings { 
+        "switch",
+        "#pragma-messages",
+        "missing-field-initializers",
+        "missing-designated-field-initializers"
+    }
 
     characterset "Unicode"
     clr "Off"
@@ -79,6 +113,14 @@ project "Nuclidean"
         kind "ConsoleApp"
         defines "NC_Debug"
         uses "imgui"
+        buildoptions {
+            "-Wno-error=unused",
+            "-Wno-error=unused-parameter",
+            "-Wno-error=unused-macros",
+            "-Wno-error=unused-member-function",
+            "-Wno-error=unused-template",
+            "-Wno-error=unreachable-code-aggressive"
+        }
     filter "configurations:Test"
         kind "ConsoleApp"
         defines { "NC_Test", "NDEBUG" }

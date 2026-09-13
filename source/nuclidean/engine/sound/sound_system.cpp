@@ -119,7 +119,7 @@ void SoundSystem::set_sound_volume(int step)
   {
     if (! channels[i].is_free)
     {
-      Mix_Volume(i, (int)(128.0f * global_music_volume));
+      Mix_Volume(i, cast<int>(128.0f * global_music_volume));
     }
   }
 }
@@ -136,7 +136,7 @@ void SoundSystem::set_music_volume(int step)
   global_music_volume = (1.0f / 9.0f * step) * (1.0f / 9.0f * step);
   if (!terminated)
   {
-    Mix_VolumeMusic((int)(128.0f * global_music_volume));
+    Mix_VolumeMusic(cast<int>(128.0f * global_music_volume));
   }
 }
 

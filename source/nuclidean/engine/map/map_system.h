@@ -203,17 +203,17 @@ struct Portal
   const mat4 transform   = mat4(1.0f);
   /*
   * Compute the view matrix for the virtual camera looking through the destination portal.
-  * The camera’s relative offset to the source portal is preserved when projecting through.
+  * The camera's relative offset to the source portal is preserved when projecting through.
   *
-  * First, build the virtual camera’s world transform by:
+  * First, build the virtual camera's world transform by:
   *   1. Transforming the camera from local to world space.
-  *   2. Converting from world space into the source portal’s local space.
-  *   3. Rotating 180° around the up (Y) axis.
-  *   4. Transforming into the destination portal’s world space.
+  *   2. Converting from world space into the source portal's local space.
+  *   3. Rotating 180 degrees around the up (Y) axis.
+  *   4. Transforming into the destination portal's world space.
   *
   * To get the view matrix (i.e., the inverse world-to-local transform), apply the inverse sequence:
   *   1. Destination portal: world-to-local.
-  *   2. Rotate 180° around the up (Y) axis (inverse of 180° is 180°).
+  *   2. Rotate 180 degrees around the up (Y) axis (inverse of 180 degrees is 180 degrees).
   *   3. Source portal: local-to-world.
   *   4. Camera: world-to-local.
   *

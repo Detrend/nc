@@ -813,7 +813,7 @@ static bool interval_intersection
 }
 
 //==============================================================================
-f32 to_0_pi(f32 in)
+static f32 to_0_pi(f32 in)
 {
   if (in < 0.0f)
   {
@@ -1335,7 +1335,7 @@ f32 segment_segment_2d
 namespace nc
 {
 
-bool test_segment(unit_test::TestCtx& /*ctx*/)
+static bool test_segment(unit_test::TestCtx& /*ctx*/)
 {
   f32 t, u;
   intersect::segment_segment(vec2{-1, 0}, vec2{1, 0}, vec2{0, -1}, vec2{0, 1}, t, u);
@@ -1350,7 +1350,7 @@ bool test_segment(unit_test::TestCtx& /*ctx*/)
 }
 NC_UNIT_TEST(test_segment)->name("Segment segment intersection");
 
-bool test_frustum_from_point_and_portal(unit_test::TestCtx& /*ctx*/)
+static bool test_frustum_from_point_and_portal(unit_test::TestCtx& /*ctx*/)
 {
   struct Input
   {

@@ -118,7 +118,7 @@ void for_each_wall(const MapSectors& map, SectorID sector_id, F&& lambda)
 }
 
 //==============================================================================
-u32 get_sectors_from_point(const MapSectors& map, vec2 point, SectorID* sectors_out, u32 max_sectors_out)
+static u32 get_sectors_from_point(const MapSectors& map, vec2 point, SectorID* sectors_out, u32 max_sectors_out)
 {
   nc_assert(sectors_out && max_sectors_out);
   u32 counter = 0;
@@ -142,7 +142,7 @@ u32 get_sectors_from_point(const MapSectors& map, vec2 point, SectorID* sectors_
 }
 
 //==============================================================================
-void modify_nuclidean_frustum(
+static void modify_nuclidean_frustum(
   const MapSectors& map,
   Frustum2& frustum,
   WallID            in_portal,
