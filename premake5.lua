@@ -76,8 +76,8 @@ project "Nuclidean"
 
         -- Conversions
         "anon-enum-enum-conversion", "bitfield-enum-conversion",
-        "enum-conversion", "float-overflow-conversion",
-        "implicit-int-conversion-on-negation", "shorten-64-to-32", "string-conversion",
+        "enum-conversion", "float-overflow-conversion", "shorten-64-to-32",
+        "string-conversion",
 
         -- Casts and comparisons
         "cast-qual", "old-style-cast", "shift-sign-overflow",
