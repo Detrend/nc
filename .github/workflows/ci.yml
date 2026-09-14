@@ -136,9 +136,11 @@ jobs:
         run: |
           status=0
           while IFS= read -r shader; do
-            output=$(glslangValidator "$shader" 2>&1) || status=1
+            echo "$shader"
+            output=$({ printf '#version 430 core\n#line 1\n'; cat "$shader"; } \
+              | glslangValidator --stdin -S "${shader##*.}" 2>&1) || status=1
             case $output in *WARNING:*) status=1 ;; esac
-            echo "$output"
+            if [ -n "$output" ]; then echo "$output"; fi
           done < <(find content/shaders -type f \( -name '*.vert' -o -name '*.frag' -o -name '*.comp' \) | sort)
           exit $status
 
