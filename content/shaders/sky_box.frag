@@ -1,4 +1,4 @@
-#version 430 core
+
 in vec3 world_position;
 
 layout(location = 0) out vec4 g_position;

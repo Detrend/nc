@@ -1,6 +1,4 @@
-
-#version 430 core
-      
+    
 in vec2 uv;
       
 layout(location = 7) uniform bool hover = false;

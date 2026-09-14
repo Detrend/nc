@@ -1,6 +1,4 @@
 
-#version 430 core
-
 #define TILE_SIZE_X 16
 #define TILE_SIZE_Y 16
 
@@ -61,21 +59,19 @@ layout(binding = 4) uniform sampler2D  g_albedo;
 layout(binding = 5) uniform usampler2D g_sector;
 
 layout(location = 0) uniform vec3  view_position;
-//layout(location = 1) uniform uint  num_dir_lights; // Not using this anymore
-layout(location = 2) uniform uint  num_tiles_x;
-layout(location = 3) uniform float ambient_strength;
-layout(location = 4) uniform uint  num_sectors;
-layout(location = 5) uniform uint  num_walls;
-layout(location = 6) uniform bool  do_shadows = true;
+layout(location = 1) uniform uint  num_tiles_x;
+layout(location = 2) uniform float ambient_strength;
+layout(location = 3) uniform uint  num_sectors;
+layout(location = 4) uniform uint  num_walls;
+layout(location = 5) uniform bool  do_shadows = true;
 
-layout(std430, binding = 0) readonly buffer dir_lights_buffer      { DirLight   dir_lights[];       };
-layout(std430, binding = 1) readonly buffer point_light_buffer     { PointLight point_lights[];     };
-layout(std430, binding = 2) readonly buffer light_index_buffer     { uint       light_indices[];    };
-layout(std430, binding = 3) readonly buffer tile_data_buffer       { TileData   tile_data[];        };
-layout(std430, binding = 4) readonly buffer sector_data_buffer     { SectorData sectors[];          };
-layout(std430, binding = 5) readonly buffer wall_data_buffer       { WallData   walls[];            };
-layout(std430, binding = 6) readonly buffer portal_matrices_buffer { mat4       portal_matrices_inv[]; };
-layout(std430, binding = 7) readonly buffer sector_matrices_buffer { mat4       sector_matrices_inv[]; };
+layout(std430, binding = 0) readonly buffer point_light_buffer     { PointLight point_lights[];     };
+layout(std430, binding = 1) readonly buffer light_index_buffer     { uint       light_indices[];    };
+layout(std430, binding = 2) readonly buffer tile_data_buffer       { TileData   tile_data[];        };
+layout(std430, binding = 3) readonly buffer sector_data_buffer     { SectorData sectors[];          };
+layout(std430, binding = 4) readonly buffer wall_data_buffer       { WallData   walls[];            };
+layout(std430, binding = 5) readonly buffer portal_matrices_buffer { mat4       portal_matrices_inv[]; };
+layout(std430, binding = 6) readonly buffer sector_matrices_buffer { mat4       sector_matrices_inv[]; };
 
 bool out_of_range_sectors = false;
 bool out_of_range_walls = false;
@@ -242,22 +238,6 @@ void main()
 
   vec3 view_direction = normalize(view_position - stitched_position);
   vec3 final_color = ambient_strength * albedo;
-
-  // directional lights
-  // Disabled for GA
-  /*
-  for (int i = 0; i < num_dir_lights; i++)
-  {
-    vec3 reflect_direction = reflect(-dir_lights[i].direction, normal);
-
-    // this is 0 for billboards
-    float angle = dot(normal, dir_lights[i].direction);
-    vec3 diffuse = max(angle, 0.0f) * albedo;
-    vec3 specular = specular_strength * pow(max(dot(view_direction, reflect_direction), 0.0f), shininess) * vec3(1.0f);
-
-    final_color += (diffuse + specular) * dir_lights[i].color * dir_lights[i].intensity;
-  }
-  */
 
   // point lights
   uvec2 tile_coords = uvec2(gl_FragCoord.xy) / uvec2(TILE_SIZE_X, TILE_SIZE_Y);
