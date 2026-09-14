@@ -129,7 +129,6 @@ private:
   EntityID     target_id             = INVALID_ENTITY_ID;
   vec3         follow_target_pos     = VEC3_ZERO;
   f32          time_since_saw_target = 0.0f;
-  f32          time_since_idle       = 0.0f;
   Rng          rng;
   float        time_until_attack     = 3.0f;
   int          health                = 0;

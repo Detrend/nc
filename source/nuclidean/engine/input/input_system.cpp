@@ -18,7 +18,7 @@ namespace nc
 {
 
 //==============================================================================
-void handle_player_input(GameInputs& inputs)
+static void handle_player_input(GameInputs& inputs)
 {
   namespace Keys      = PlayerKeyInputs;
   namespace Analogues = PlayerAnalogInputs;

@@ -237,7 +237,7 @@ void Enemy::init(vec3 position, vec3 looking_dir, EnemyType tpe)
 
   this->appear = Appearance
   {
-    .sprite    = std::format("{}_idle_0", ENEMY_TYPE_NAMES[this->type]),
+    .sprite    = std::format("{}_idle_0", ENEMY_TYPE_NAMES[this->type]).c_str(),
     .direction = this->get_facing_hor(),
     .scale     = 31.25f,
     .mode      = Appearance::SpriteMode::dir8,
@@ -512,7 +512,6 @@ void Enemy::handle_ai_idle(f32 /*delta*/)
   }
 
   vec3 player_pos = player->get_position();
-  vec3 player_dir = normalize_or_zero(player_pos - this->get_position());
 
   bool transition_to_alert = false;
 

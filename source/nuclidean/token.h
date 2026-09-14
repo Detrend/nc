@@ -74,10 +74,10 @@ namespace nc {
       }
 
       std::array<u8, 256> ret = {};
-      for (char t = 0; t < chars_list.size(); ++t) {
-        ret[chars_list[t]] = t + 1;
+      for (u32 t = 0; t < chars_list.size(); ++t) {
+        ret[chars_list[t]] = static_cast<u8>(t + 1);
         if (t < alt_chars_list.size()) {
-          ret[alt_chars_list[t]] = t + 1;
+          ret[alt_chars_list[t]] = static_cast<u8>(t + 1);
         }
       }
       return ret;
@@ -149,18 +149,10 @@ namespace nc {
       }
     }
 
-    constexpr BasicToken(const BasicToken& other) : raw(other.raw) {}
-
     template<size_t TSize>
     static consteval BasicToken Const(const char(&literal)[TSize])
     {
         return BasicToken(literal);
-    }
-
-    constexpr BasicToken& operator=(const BasicToken& other)
-    {
-      this->raw = other.raw;
-      return *this;
     }
 
     constexpr bool operator==(const BasicToken other) const
@@ -240,12 +232,6 @@ namespace nc {
     static constexpr size_t MAX_LENGTH = TTokenCount * Segment::MAX_LENGTH;
 
     constexpr CompositeToken() : storage{} {}
-    constexpr CompositeToken(const CompositeToken& other) : storage(other.storage) {}
-    constexpr CompositeToken& operator=(const CompositeToken& other)
-    {
-      this->storage = other.storage;
-      return *this;
-    }
 
     constexpr CompositeToken& operator=(std::string_view str)
     {
@@ -265,7 +251,7 @@ namespace nc {
       return CompositeToken(literal);
     }
 
-    template<typename size_t TOtherTokenCount, typename _sfinae_guard = std::enable_if<(TOtherTokenCount < TTokenCount), char>::type>
+    template<size_t TOtherTokenCount, typename _sfinae_guard = typename std::enable_if<(TOtherTokenCount < TTokenCount), char>::type>
     constexpr CompositeToken(const CompositeToken<TOtherTokenCount>& other) : storage {}
     {
       storage = other.get_storage();
@@ -398,7 +384,7 @@ namespace nc {
   {
     std::size_t operator()(const nc::CompositeToken<TTokenCount, TPermittedChars>& token) const noexcept
     {
-      using hasher = std::hash<nc::CompositeToken<TTokenCount, TPermittedChars>::Segment>;
+      using hasher = std::hash<typename nc::CompositeToken<TTokenCount, TPermittedChars>::Segment>;
       const auto& segments(token.get_storage());
       size_t ret = hasher{}(segments[0]);
       for (size_t t = 1; t < TTokenCount; ++t) 

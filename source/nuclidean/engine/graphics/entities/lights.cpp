@@ -9,8 +9,6 @@
 namespace nc
 {
 
-constexpr f32 RADIUS_COEFF = 0.23f;
-
 //==============================================================================
 EntityType AmbientLight::get_type_static()
 {

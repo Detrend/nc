@@ -16,6 +16,7 @@ class UiButton
 public:
   UiButton();
   UiButton(const char* texture_name, vec2 position, vec2 scale, std::function<void(void)> func);
+  virtual ~UiButton() = default;
 
   //checks overlap of point and button
   bool is_point_in_rec(vec2 point);
@@ -55,7 +56,7 @@ public:
   // render the button
   // draw takes the shader to modify its uniforms
   // VAO must be bound before this is called
-  void draw(ShaderProgramHandle digit_material);
+  void draw(ShaderProgramHandle digit_material) override;
 
 private:
   std::string save_path;

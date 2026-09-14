@@ -48,7 +48,7 @@ public:
   static GameSystem&    get();
 
   GameSystem();
-  ~GameSystem();
+  ~GameSystem() override;
 
   GameSystem(const GameSystem&)            = delete;
   GameSystem& operator=(const GameSystem&) = delete;

@@ -12,17 +12,7 @@
 #include <filesystem>
 #include <string>
 
-// Ignore unused variable in debug code on clang
-#if NC_COMPILER_CLANG
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-but-set-variable"
-#endif
-
 #include <stb/stb_rect_pack.h>
-
-#if NC_COMPILER_CLANG
-#pragma clang diagnostic pop
-#endif
 
 #include <memory>
 #include <string>
@@ -61,6 +51,9 @@ public:
   vec2 get_size() const;
 
   TextureGPU get_gpu_data() const;
+
+  bool is_valid() const;
+  operator bool() const;
 
 private:
   TextureHandle() {}
@@ -116,7 +109,6 @@ private:
 
   using EquirectangularMapMap = std::unordered_map<std::string, GLuint>;
 
-  inline static std::unique_ptr<TextureManager> m_instance = nullptr;
   inline static u16 m_generation = 0;
 
   TextureManager();

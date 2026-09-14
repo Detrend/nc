@@ -56,8 +56,20 @@ At the moment, the NUCLIDEAN can be played and built only on Windows. Linux supp
 
 ## Building
 
-We hate C++ build systems just as the next guy and to avoid unnecessary complications we are building using Visual Studio only.
-Transitioning to Premake/CMake is planned in the near future.
+This project uses premake. Using pinned version from `tools/premake5` is recommended. Note that using `ninja` as a generator is recommended.
+
+```bash
+# Generate project files using Ninja generator.
+.\tools\premake5.exe ninja
+# Build the project using ninja
+ninja -C build Ship
+
+# Generate project files using Visual Studio generator.
+.\tools\premake5.exe vs2026
+# Build the project using msbuild
+# (Note that you probably need to be in VS dev shell).
+msbuild build\Nuclidean.slnx -p:Configuration=Ship
+```
 
 ---
 

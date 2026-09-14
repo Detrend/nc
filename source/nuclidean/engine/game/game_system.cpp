@@ -99,7 +99,7 @@ static void make_sector_helper(
       .point_index            = p,
       .nc_portal_point_index  = is_portal ? portal_wall_id_to : INVALID_WALL_REL_ID,
       .nc_portal_sector_index = is_portal ? portal_sector     : INVALID_SECTOR_ID,
-      .surface                = std::move(wall_surfaces[i]),
+      .surface                = wall_surfaces[i],
     });
   }
 
@@ -153,7 +153,7 @@ static bool load_json_flag(const nlohmann::json& js, const cstr key)
 //==============================================================================
 static SurfaceData load_json_surface(const nlohmann::json &js) 
 {
-  if (const bool should_show = js["show"])
+  if (js["show"].get<bool>())
   {
     std::string texture_name = js["id"];
 
@@ -384,7 +384,7 @@ static void load_json_map
       std::vector<u16> point_indices;
       for (auto&& js_point : js_sector["points"])
       {
-        point_indices.emplace_back((u16)(int)js_point);
+        point_indices.emplace_back(cast<u16>(cast<int>(js_point)));
       }
 
       auto floor_surface   = load_json_surface(js_sector["floor_surface"]);
@@ -922,7 +922,7 @@ void GameSystem::handle_hot_reload()
   }
   else if (ImGui::IsKeyReleased(ImGuiKey_F7))
   {
-    if (Player* player = GameHelpers::get().get_player())
+    if (GameHelpers::get().get_player())
     {
       HotReloadData::has_data = false;
       this->request_level_change(this->get_level_name());
@@ -1004,8 +1004,7 @@ void GameSystem::save_game(const char*const save_name) const
 void GameSystem::quick_save() const
 {
   // Generate the filename
-  auto now = floor<std::chrono::seconds>(std::chrono::system_clock::now());
-  auto lvl = level_name.to_string();
+  [[maybe_unused]] auto lvl = level_name.to_string();
 
   std::string save_path = std::format
   (

@@ -1901,7 +1901,7 @@ const
           .step_height   = max_step_height,
         };
 
-        CollisionHit hit = phys_helpers::raycast_generic<vec3>
+        phys_helpers::raycast_generic<vec3>
           (
           *this, position, position, radius, colliders, nullptr, INVALID_WALL_ID,
           bruh_intersector, bruh_sector_intersector,
@@ -2037,16 +2037,16 @@ const
 //==============================================================================
 void PhysLevel::move_particle
 (
-  vec3&                        position,
-  vec3&                        velocity_og,
-  mat4&                        transform,
-  f32&                         delta_time,
-  f32                          radius,
-  f32                          height,
-  f32                          neg_height,
-  f32                          bounce,
-  EntityTypeMask               colliders,
-  PhysLevel::CollisionListener listener /*= nullptr*/
+  vec3&                               position,
+  vec3&                               velocity_og,
+  mat4&                               transform,
+  f32&                                delta_time,
+  f32                                 radius,
+  f32                                 height,
+  f32                                 neg_height,
+  f32                                 bounce,
+  EntityTypeMask                      colliders,
+  const PhysLevel::CollisionListener& listener /*= nullptr*/
 )
 const
 {
@@ -2295,11 +2295,6 @@ const
       // Success, return the path
       return points;
     }
-    else
-    {
-      // Increment for the next iteration
-      random_number += 1;
-    }
   }
 
   nc_warn(
@@ -2533,7 +2528,6 @@ mat4 PhysLevel::calc_relative_transform_from_self_to_target
 const
 {
   nc_assert(max_dist > 0.0f);
-  mat4 transform = identity<mat4>();
 
   StackVector<vec3, 20> _;
   StackVector<mat4, 20> __;

@@ -1,0 +1,224 @@
+name: CI
+
+on:
+  push:
+    branches-ignore: [editor-main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  LLVM_VERSION: 20.1.8
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: pwsh
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [Ship, Test]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install Ninja
+        run: choco install ninja -y --no-progress
+
+      - name: Install LLVM ${{ env.LLVM_VERSION }}
+        run: choco upgrade llvm --version=${{ env.LLVM_VERSION }} --allow-downgrade -y --no-progress
+
+      - name: Use the standalone LLVM toolchain
+        run: Add-Content -Path $env:GITHUB_PATH -Value 'C:\Program Files\LLVM\bin' -Encoding utf8
+
+      - name: Report toolchain versions
+        run: |
+          clang --version
+          ninja --version
+          tools\premake5.exe --version
+
+      - name: Generate build files
+        run: tools\premake5.exe ninja
+
+      - name: Build ${{ matrix.config }}
+        run: ninja -C build ${{ matrix.config }}
+
+      - name: Stage package
+        run: |
+          New-Item -ItemType Directory -Path staging | Out-Null
+          Copy-Item -Path bin\Nuclidean_${{ matrix.config }}\Nuclidean.exe -Destination staging\
+          Copy-Item -Path content -Destination staging\content -Recurse
+
+      - name: Create archive
+        run: Compress-Archive -Path staging\* -DestinationPath nuclidean-${{ matrix.config }}-win64.zip
+
+      - name: Upload archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuclidean-${{ matrix.config }}-win64
+          path: nuclidean-${{ matrix.config }}-win64.zip
+          if-no-files-found: error
+
+  build-vs:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Generate build files
+        run: tools\premake5.exe vs2026
+
+      - name: Build Ship
+        run: msbuild build\Nuclidean.slnx -p:Configuration=Ship -p:Platform=x64 -m
+
+  clang-tidy:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install LLVM ${{ env.LLVM_VERSION }}
+        run: choco upgrade llvm --version=${{ env.LLVM_VERSION }} --allow-downgrade -y --no-progress
+
+      - name: Use the standalone LLVM toolchain
+        run: Add-Content -Path $env:GITHUB_PATH -Value 'C:\Program Files\LLVM\bin' -Encoding utf8
+
+      - name: Report toolchain versions
+        run: |
+          clang-tidy --version
+          python --version
+
+      - name: Generate compile database
+        run: tools\premake5.exe compilecommands --cc-config=Debug --cc-output=build/compile_commands.json
+
+      - name: Run clang-tidy
+        run: python 'C:\Program Files\LLVM\bin\run-clang-tidy' -p build -quiet -warnings-as-errors=* source.nuclidean
+
+  check-assets:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install glslang
+        run: sudo apt-get update && sudo apt-get install -y glslang-tools
+
+      - name: Compile shaders
+        run: |
+          status=0
+          while IFS= read -r shader; do
+            output=$(glslangValidator "$shader" 2>&1) || status=1
+            case $output in *WARNING:*) status=1 ;; esac
+            echo "$output"
+          done < <(find content/shaders -type f \( -name '*.vert' -o -name '*.frag' -o -name '*.comp' \) | sort)
+          exit $status
+
+      - name: Check shaders referenced from the source exist
+        run: |
+          missing=$(grep -oP '_FILE\s*=\s*"\K[^"]+' source/nuclidean/engine/graphics/shaders/shaders.h \
+            | sort -u | while read -r path; do [ -f "content/shaders/$path" ] || echo "$path"; done)
+          if [ -n "$missing" ]; then
+            echo "shaders.h references files that do not exist in content/shaders:"
+            echo "$missing"
+            exit 1
+          fi
+
+      - name: Check declared sounds exist
+        run: |
+          missing=$(comm -23 \
+            <(grep -oP '^\s*xx\(\K[a-z_0-9]+' source/nuclidean/engine/sound/sound_resources.h | sort) \
+            <(find content/sound -name '*.wav' -exec basename {} .wav \; | sort))
+          if [ -n "$missing" ]; then
+            echo "NC_SOUNDS declares sounds with no matching .wav in content/sound:"
+            echo "$missing"
+            exit 1
+          fi
+
+      - name: Check levels parse
+        run: |
+          for level in content/levels/*.json; do
+            python3 -c 'import json, sys; json.load(open(sys.argv[1]))' "$level" \
+              || { echo "invalid JSON: $level"; exit 1; }
+          done
+
+  unit-tests:
+    needs: build
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Download the Test archive
+        uses: actions/download-artifact@v4
+        with:
+          name: nuclidean-Test-win64
+
+      - name: Unpack
+        run: Expand-Archive -Path nuclidean-Test-win64.zip -DestinationPath test_build
+
+      - name: Run unit tests
+        working-directory: test_build
+        run: .\Nuclidean.exe -unit_test
+
+  push-artifacts:
+    needs: [build, unit-tests]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    concurrency:
+      group: push-artifacts
+      cancel-in-progress: false
+
+    steps:
+      - name: Download archives
+        uses: actions/download-artifact@v4
+        with:
+          pattern: nuclidean-*-win64
+          merge-multiple: true
+          path: artifacts
+
+      - name: Replace the autobuild release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release delete autobuild --yes --cleanup-tag || true
+          gh release create autobuild artifacts/*.zip \
+            --target "$GITHUB_SHA" \
+            --title "Automated build" \
+            --notes "Built from ${GITHUB_SHA} on $(date -u '+%Y-%m-%d %H:%M UTC')." \
+            --prerelease

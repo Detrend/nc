@@ -233,7 +233,7 @@ std::vector<std::string> list_available_save_files()
   {
     if (entry.is_regular_file())
     {
-      auto path = entry.path();
+      const auto& path = entry.path();
       if (path.extension() == SAVE_FILE_SUFFIX)
       {
         result.push_back(path.filename().string());
@@ -261,7 +261,7 @@ std::vector<std::string> list_available_demo_files()
   {
     if (entry.is_regular_file())
     {
-      auto path = entry.path();
+      const auto& path = entry.path();
       if (path.extension() == DEMO_FILE_SUFFIX)
       {
         result.push_back(path.filename().string());

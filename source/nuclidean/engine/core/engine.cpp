@@ -161,7 +161,7 @@ static bool should_play_demo(const CmdArgs& cmd_args, std::string& out_demo)
 }
 
 //==============================================================================
-#if !NC_IS_DEPLOY
+#if !NC_IS_SHIP
 static bool should_play_level(const CmdArgs& cmd_args, std::string& out_lvl)
 {
   return contains_pair_of_args(cmd_args, engine_utils::START_LEVEL_ARG, out_lvl);
@@ -291,7 +291,11 @@ static std::string find_text_filter_regex(const std::vector<std::string>& args)
 }
 
 //==============================================================================
-static bool execute_unit_tests_if_required(const std::vector<std::string>& args)
+static bool execute_unit_tests_if_required
+(
+  const std::vector<std::string>& args,
+  bool&                           out_success
+)
 {
   auto test_arg_it = std::find(args.begin(), args.end(), UNIT_TEST_ARG);
   if (test_arg_it == args.end())
@@ -345,6 +349,8 @@ static bool execute_unit_tests_if_required(const std::vector<std::string>& args)
     ok_test_cnt, total_test_cnt, ok_perc
   );
 
+  out_success = ok_test_cnt == total_test_cnt;
+
   return true;
 }
 #endif
@@ -368,6 +374,7 @@ int init_engine_and_run_game(const CmdArgs& args)
   engine_utils::change_current_directory_if_necessary();
 
   [[maybe_unused]] bool exit_after_benchmarks_and_tests = false;
+  bool                  unit_tests_succeeded            = true;
 
 #if NC_BENCHMARK
   if (engine_utils::execute_benchmarks_if_required(args))
@@ -378,7 +385,7 @@ int init_engine_and_run_game(const CmdArgs& args)
 #endif
 
 #if NC_TESTS
-  if (engine_utils::execute_unit_tests_if_required(args))
+  if (engine_utils::execute_unit_tests_if_required(args, unit_tests_succeeded))
   {
     // running only tests, exit
     exit_after_benchmarks_and_tests = true;
@@ -388,7 +395,7 @@ int init_engine_and_run_game(const CmdArgs& args)
   if (exit_after_benchmarks_and_tests)
   {
     // exit if we want to run only tests or benchmarks
-    return 0;
+    return unit_tests_succeeded ? 0 : 1;
   }
 
   // create instance of the engine
@@ -485,7 +492,7 @@ void Engine::send_event(ModuleEvent&& event)
 bool Engine::init(const CmdArgs& cmd_args)
 {
   this->m_editor_mode = engine_utils::contains_arg(cmd_args, engine_utils::EDITOR_MODE_ARG);
-#if !NC_IS_DEPLOY
+#if !NC_IS_SHIP
   if (this->is_editor_mode()) {
     CVars::has_fps_limit = true;
     CVars::fps_limit = 30.0f;
@@ -644,7 +651,7 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
 
     game_system.request_level_change(lvl_name, std::move(frames), transition);
   }
-#if !NC_IS_DEPLOY
+#if !NC_IS_SHIP
   else if (std::string lvl; engine_utils::should_play_level(cmd_args, lvl))
   {
     // Start a level

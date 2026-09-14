@@ -23,6 +23,7 @@
 #include <engine/map/map_system.h>
 #include <engine/game/game_system.h>
 #include <engine/game/game_helpers.h>
+#include <engine/player/player.h>
 #include <engine/appearance.h>
 
 #include <array>
@@ -88,14 +89,14 @@ void Renderer::check_shader_hot_reload() const
 
 //==============================================================================
 Renderer::Renderer(u32 win_w, u32 win_h)
-: m_solid_material(ShaderProgramHandle::from_files(shaders::solid::VERTEX_FILE, shaders::solid::FRAGMENT_FILE))
+: m_window_size(win_w, win_h)
+, m_solid_material(ShaderProgramHandle::from_files(shaders::solid::VERTEX_FILE, shaders::solid::FRAGMENT_FILE))
 , m_billboard_material(ShaderProgramHandle::from_files(shaders::billboard::VERTEX_FILE, shaders::billboard::FRAGMENT_FILE))
 , m_gun_material(ShaderProgramHandle::from_files(shaders::gun::VERTEX_FILE, shaders::gun::FRAGMENT_FILE))
 , m_light_material(ShaderProgramHandle::from_files(shaders::light::VERTEX_FILE, shaders::light::FRAGMENT_FILE))
 , m_sector_material(ShaderProgramHandle::from_files(shaders::sector::VERTEX_FILE, shaders::sector::FRAGMENT_FILE))
 , m_light_culling_shader(ShaderProgramHandle::from_file(shaders::light_culling::COMPUTE_FILE))
 , m_sky_box_material(ShaderProgramHandle::from_files(shaders::sky_box::VERTEX_FILE, shaders::sky_box::FRAGMENT_FILE))
-, m_window_size(win_w, win_h)
 {
   this->create_renderbuffers(get_render_size());
   this->recompute_projection(win_w, win_h, GraphicsSystem::FOV);
@@ -172,7 +173,7 @@ void Renderer::render
 const
 {
   // NOTE: This can consume up to 250 microseconds..
-#if !NC_IS_DEPLOY
+#if !NC_IS_SHIP
   check_shader_hot_reload();
 #endif
 
@@ -706,7 +707,6 @@ static TextureHandle pick_texture_handle_from_appearance
     case Appearance::SpriteMode::mono:
     {
       return TextureManager::get()[appear.sprite.to_string()];
-      break;
     }
 
     // 8 directional sprite
@@ -757,7 +757,6 @@ static TextureHandle pick_texture_handle_from_appearance
       };
 
       return TextureManager::get()[appear.sprite.to_string() + SUFFIX_LUT[idx]];
-      break;
     }
 
     default:
@@ -1103,7 +1102,7 @@ const
   mat4 view       = translation(trans) * scaling(scale);
   mat4 projection = ortho(0.0f, win_size.x, win_size.y, 0.0f, -1.0f, 1.0f);
 
-  const vec2 player_position = ((Entity*)GameHelpers::get().get_player())->get_position().xz;
+  const vec2 player_position = GameHelpers::get().get_player()->get_position().xz;
   const SectorID sector_id = GameSystem::get().get_map().get_sector_from_point(player_position);
 
   const u32 matrix_id = cast<u32>(m_sector_matrices_inv.size());

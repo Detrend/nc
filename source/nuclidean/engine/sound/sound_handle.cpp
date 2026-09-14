@@ -1,6 +1,4 @@
 // Project Nuclidean Source File
-#pragma once
-
 #include <types.h>
 #include <common.h>
 #include <math/lingebra.h>

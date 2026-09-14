@@ -813,7 +813,7 @@ static bool interval_intersection
 }
 
 //==============================================================================
-f32 to_0_pi(f32 in)
+static f32 to_0_pi(f32 in)
 {
   if (in < 0.0f)
   {
@@ -1075,7 +1075,7 @@ void FrustumBuffer::insert_frustum(Frustum2 new_frustum)
     // not overlapping, but might be quite close
     if (angle_diff < closest_dst)
     {
-      angle_diff = closest_dst;
+      closest_dst = angle_diff;
       closest_idx = i;
     }
   }
@@ -1335,7 +1335,7 @@ f32 segment_segment_2d
 namespace nc
 {
 
-bool test_segment(unit_test::TestCtx& /*ctx*/)
+static bool test_segment(unit_test::TestCtx& /*ctx*/)
 {
   f32 t, u;
   intersect::segment_segment(vec2{-1, 0}, vec2{1, 0}, vec2{0, -1}, vec2{0, 1}, t, u);
@@ -1350,7 +1350,7 @@ bool test_segment(unit_test::TestCtx& /*ctx*/)
 }
 NC_UNIT_TEST(test_segment)->name("Segment segment intersection");
 
-bool test_frustum_from_point_and_portal(unit_test::TestCtx& /*ctx*/)
+static bool test_frustum_from_point_and_portal(unit_test::TestCtx& /*ctx*/)
 {
   struct Input
   {
@@ -1371,13 +1371,6 @@ bool test_frustum_from_point_and_portal(unit_test::TestCtx& /*ctx*/)
     Frustum2{vec2{0},    vec2{0, 1}, Frustum2::ALMOST_FULL_ANGLE},
     Frustum2{vec2{0},    vec2{1, 0}, Frustum2::ALMOST_FULL_ANGLE},
     Frustum2{vec2{0, 1}, vec2{1, 0}, Frustum2::ALMOST_FULL_ANGLE},
-  };
-
-  auto cmp = [](const Frustum2& a, const Frustum2& b)
-  {
-    return a.center == b.center
-      && is_zero(a.direction - b.direction, 0.001f)
-      && is_zero(a.angle     - b.angle,     0.001f);
   };
 
   static_assert(ARRAY_LENGTH(INPUTS) == ARRAY_LENGTH(OUTPUTS));

@@ -86,7 +86,6 @@ public:
   MeshHandle get_screen_quad() const;
 
 private:
-  inline static std::unique_ptr<MeshManager> m_instance = nullptr;
   MeshManager() {}
 
   void populate_sector_mesh(MeshHandle& mesh, const f32* data, u32 count);

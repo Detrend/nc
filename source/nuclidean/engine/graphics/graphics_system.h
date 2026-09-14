@@ -53,7 +53,7 @@ public:
   static GraphicsSystem& get();
 
   GraphicsSystem();
-  ~GraphicsSystem();
+  ~GraphicsSystem() override;
 
   GraphicsSystem(const GraphicsSystem&)            = delete;
   GraphicsSystem& operator=(const GraphicsSystem&) = delete;
@@ -95,13 +95,13 @@ private:
   SDL_Window* m_window     = nullptr;
   void*       m_gl_context = nullptr;
 
-  RendererPtr             m_renderer = nullptr;
+  RendererPtr             m_renderer;
   std::vector<MeshHandle> m_sector_meshes;
   std::vector<bool>       m_dirty_sectors;
 
 #if NC_DEBUG_DRAW
   using DebugRendererPtr = std::unique_ptr<class TopDownDebugRenderer>;
-  DebugRendererPtr m_debug_renderer = nullptr;
+  DebugRendererPtr m_debug_renderer;
 #endif
 
   u32 m_window_width  = cast<u32>(WINDOW_WIDTH);

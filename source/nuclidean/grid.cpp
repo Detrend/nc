@@ -346,7 +346,7 @@ static void query_aabb_helper(const StatGridAABB2<T>& self, aabb2 bbox, F func)
 }
 
 //==============================================================================
-u64 ray_count_cells(const StatGridAABB2<u64>& grid, vec2 from, vec2 to)
+[[maybe_unused]] static u64 ray_count_cells(const StatGridAABB2<u64>& grid, vec2 from, vec2 to)
 {
   u64 cnt = 0;
   query_ray_helper(grid, from, to, [&cnt](ivec2 /*coord*/)
@@ -384,14 +384,14 @@ void StatGridAABB2<T>::initialize(u64 width, u64 height, vec2 min, vec2 max)
 
 //==============================================================================
 template<typename T>
-void StatGridAABB2<T>::query_point(vec2 point, Visitor func) const
+void StatGridAABB2<T>::query_point(vec2 point, const Visitor& func) const
 {
   this->query_aabb(aabb2{point}, func);
 }
 
 //==============================================================================
 template<typename T>
-void StatGridAABB2<T>::query_aabb(aabb2 bbox, Visitor func) const
+void StatGridAABB2<T>::query_aabb(aabb2 bbox, const Visitor& func) const
 {
   NC_SCOPE_PROFILER(QueryAABB)
   nc_assert(m_initialized);
@@ -415,7 +415,7 @@ void StatGridAABB2<T>::query_aabb(aabb2 bbox, Visitor func) const
 template<typename T>
 void StatGridAABB2<T>::query_ray
 (
-  vec3 from, vec3 to, f32 expand, Visitor func
+  vec3 from, vec3 to, f32 expand, const Visitor& func
 )
 const
 {
@@ -427,7 +427,7 @@ const
 template<typename T>
 void StatGridAABB2<T>::query_ray
 (
-  vec2 from, vec2 to, f32 expand, Visitor func
+  vec2 from, vec2 to, f32 expand, const Visitor& func
 )
 const
 {
@@ -451,7 +451,7 @@ const
     // Faster implementation for raycasts (expansion size == 0.0f)
     grid_helper::query_ray_helper(*this, from, to, [&](ivec2 coord)
     {
-      if (coord.x >= this->m_cells.size() || coord.y >= this->m_cells[0].size())
+      if (cast<size_t>(coord.x) >= this->m_cells.size() || cast<size_t>(coord.y) >= this->m_cells[0].size())
       {
         nc_warn(
           "Out of bounds grid indexing! Grid size: [{}, {}], idx: [{}, {}]",
@@ -579,7 +579,7 @@ namespace nc
 using ResSet = std::set<ivec2, decltype(cmp_ivec2)>;
 
 //==============================================================================
-bool grid_test_basic(unit_test::TestCtx& /*ctx*/)
+static bool grid_test_basic(unit_test::TestCtx& /*ctx*/)
 {
   struct TestCase
   {
@@ -632,7 +632,7 @@ bool grid_test_basic(unit_test::TestCtx& /*ctx*/)
 NC_UNIT_TEST(grid_test_basic)->name("Grid Test Basic");
 
 //==============================================================================
-bool grid_test_compare(unit_test::TestCtx& /*ctx*/)
+static bool grid_test_compare(unit_test::TestCtx& /*ctx*/)
 {
   StatGridAABB2<u64> grid;
   grid.initialize(32, 29, vec2{1.25f, -0.89f}, vec2{32.3f, 30.0f});
@@ -725,7 +725,7 @@ NC_UNIT_TEST(grid_test_compare)->name("Grid Test Compare");
 
 //==============================================================================
 // -unit_test -test_filter=Clip.*
-bool clip_bbox_test(unit_test::TestCtx& /*ctx*/)
+static bool clip_bbox_test(unit_test::TestCtx& /*ctx*/)
 {
   struct TestCase
   {

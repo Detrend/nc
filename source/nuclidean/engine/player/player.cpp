@@ -154,7 +154,7 @@ void Player::init(vec3 position, vec3 in_forward)
   this->forward = in_forward;
   this->appear = Appearance
   {
-    .sprite    = std::format("{}_{}", PLAYER_SPRITE, 0),
+    .sprite    = std::format("{}_{}", PLAYER_SPRITE, 0).c_str(),
     .direction = this->get_facing_hor(),
     .scale     = 28.0f,
     .mode      = Appearance::SpriteMode::dir8,
@@ -181,7 +181,6 @@ void Player::post_init()
 static PlayerSpecificInputs pressed_inputs(const PlayerSpecificInputs& now, const PlayerSpecificInputs& prev)
 {
   PlayerSpecificInputs output;
-  std::memset(&output, 0, sizeof(output));
   output.keys = now.keys & ~prev.keys;
   return output;
 }
@@ -416,7 +415,6 @@ void Player::apply_velocity(f32 delta_seconds)
   {
     WallID   wid   = portal.wall_id;
     SectorID sid   = portal.sector_id;
-    mat4     trans = lvl.map.calc_portal_to_portal_projection(sid, wid);
 
     GameHelpers::get().on_player_traversed_nc_portal
     (
@@ -867,7 +865,7 @@ void Player::handle_floor_damage(f32 delta)
     const SectorData& sd = get_engine().get_map().sectors[sid];
     if (sd.damage > 0 && this->get_position().y < sdd.floor_height + 0.1f)
     {
-      this->damage((s32)(sd.damage * INTERVAL));
+      this->damage(cast<s32>(sd.damage * INTERVAL));
     }
   }
 }
@@ -1071,10 +1069,10 @@ void Player::store_level_transition_data(LevelTransitionData& data_out) const
 
   for (u32 i = 0; i < WEAPON_CNT; i++)
   {
-    data_out.ammo[i] = this->get_ammo((WeaponType)i);
-    if (this->has_weapon((WeaponType)i))
+    data_out.ammo[i] = this->get_ammo(cast<WeaponType>(i));
+    if (this->has_weapon(cast<WeaponType>(i)))
     {
-      data_out.owned_weapons |= weapon_flag((WeaponType)i);
+      data_out.owned_weapons |= weapon_flag(cast<WeaponType>(i));
     }
   }
 

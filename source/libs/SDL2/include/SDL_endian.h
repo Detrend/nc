@@ -34,7 +34,7 @@
 /* As of Clang 11, '_m_prefetchw' is conflicting with the winnt.h's version,
    so we define the needed '_m_prefetch' here as a pseudo-header, until the issue is fixed. */
 #ifdef __clang__
-#ifndef __PRFCHWINTRIN_H
+#if !defined(__PRFCHWINTRIN_H) && !__has_builtin(_m_prefetch)
 #define __PRFCHWINTRIN_H
 static __inline__ void __attribute__((__always_inline__, __nodebug__))
 _m_prefetch(void *__P)

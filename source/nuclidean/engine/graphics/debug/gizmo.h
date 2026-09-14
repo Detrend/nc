@@ -105,7 +105,6 @@ private:
 
   using GizmoMap = std::unordered_map<u32, Gizmo>;
 
-  inline static std::unique_ptr<GizmoManager> m_instance = nullptr;
   inline static u32 m_next_gizmo_id = 0;
 
   // Contain all active gizmos with GizmoPtr lifetime management.

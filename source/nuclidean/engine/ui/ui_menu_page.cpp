@@ -1,6 +1,4 @@
 // Project Nuclidean Source File
-#pragma once
-
 #include <engine/ui/ui_menu_page.h>
 #include <engine/ui/user_interface_system.h>
 
@@ -78,7 +76,7 @@ void NextLevelPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   {
     hover_over_button->set_hover(true);
 
-    if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    if (!(prev_mouse & SDL_BUTTON(1)) && (cur_mouse & SDL_BUTTON(1)))
     {
       hover_over_button->on_click();
     }
@@ -224,7 +222,7 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
 
     const glm::mat4 final_trans = trans_mat;
 
-    int digit = (int)'/';
+    int digit = cast<int>('/');
 
     // setting shader uniforms
     digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
@@ -239,7 +237,6 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
     glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    display_count = display_count / 10;
     position += pos_dif;
 
     display_count = kill_count;
@@ -333,7 +330,7 @@ void NextLevelPage::draw_secret_count(ShaderProgramHandle digit_material)
 
     const glm::mat4 final_trans = trans_mat;
 
-    int digit = (int)'/';
+    int digit = cast<int>('/');
 
     // setting shader uniforms
     digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
@@ -348,7 +345,6 @@ void NextLevelPage::draw_secret_count(ShaderProgramHandle digit_material)
     glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    display_count = display_count / 10;
     position += pos_dif;
 
     display_count = revealed_count;
@@ -425,7 +421,7 @@ void MainMenuPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   {
     hover_over_button->set_hover(true);
 
-    if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    if (!(prev_mouse & SDL_BUTTON(1)) && (cur_mouse & SDL_BUTTON(1)))
     {
       hover_over_button->on_click();
     }
@@ -464,7 +460,7 @@ void NewGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   {
     hover_over_button->set_hover(true);
 
-    if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    if (!(prev_mouse & SDL_BUTTON(1)) && (cur_mouse & SDL_BUTTON(1)))
     {
       hover_over_button->on_click();
     }
@@ -1103,7 +1099,7 @@ void OptionsPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   {
     hover_over_button->set_hover(true);
 
-    if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    if (!(prev_mouse & SDL_BUTTON(1)) && (cur_mouse & SDL_BUTTON(1)))
     {
       hover_over_button->on_click();
     }
@@ -1190,7 +1186,7 @@ void LoadGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   }
 
   for (size_t i = 0 + page * PAGE_SIZE;
-    i < load_game_buttons.size() && i < (page + 1) * PAGE_SIZE;
+    i < load_game_buttons.size() && i < cast<size_t>((page + 1) * PAGE_SIZE);
     i++)
   {
     if (load_game_buttons[i]->is_point_in_rec(mouse_pos))
@@ -1204,7 +1200,7 @@ void LoadGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   {
     hover_over_button->set_hover(true);
 
-    if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    if (!(prev_mouse & SDL_BUTTON(1)) && (cur_mouse & SDL_BUTTON(1)))
     {
       hover_over_button->on_click();
     }
@@ -1255,7 +1251,7 @@ void LoadGamePage::draw(ShaderProgramHandle button_material, ShaderProgramHandle
 
   //render load game buttons
   for (size_t i = 0 + page * PAGE_SIZE;
-    i < load_game_buttons.size() && i < (page + 1) * PAGE_SIZE;
+    i < load_game_buttons.size() && i < cast<size_t>((page + 1) * PAGE_SIZE);
     i++)
   {
     load_game_buttons[i]->draw(digit_material);
@@ -1280,7 +1276,7 @@ void LoadGamePage::go_back()
 //=============================================================================================
 void LoadGamePage::page_up()
 {
-  page = min(page + 1, (s32)load_game_buttons.size() / PAGE_SIZE);
+  page = min(page + 1, cast<s32>(load_game_buttons.size()) / PAGE_SIZE);
 }
 
 //=============================================================================================
@@ -1337,7 +1333,7 @@ void QuitGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
   {
     hover_over_button->set_hover(true);
 
-    if (!prev_mouse & SDL_BUTTON(1) && cur_mouse & SDL_BUTTON(1))
+    if (!(prev_mouse & SDL_BUTTON(1)) && (cur_mouse & SDL_BUTTON(1)))
     {
       hover_over_button->on_click();
     }
