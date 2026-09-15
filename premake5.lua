@@ -185,6 +185,7 @@ project "glm"
         "source/libs/glm/**.inl",
         "source/libs/glm/**.cpp",
     }
+    removefiles "source/libs/glm/**.cppm"
     includedirs "source/libs/glm"
     usage "INTERFACE"
         links "glm"
