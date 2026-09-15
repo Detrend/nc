@@ -61,6 +61,7 @@ This project uses premake. Using pinned version from `tools/premake5` is recomme
 ```bash
 # Generate project files using Ninja generator.
 .\tools\premake5.exe ninja
+# To build successfuly, first make sure you have Clang in PATH
 # Build the project using ninja
 ninja -C build Ship
 
