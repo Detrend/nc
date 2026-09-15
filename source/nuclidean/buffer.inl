@@ -1,6 +1,7 @@
 // Project Nuclidean Source File
 #pragma once
 
+#include <cstring>
 #include <buffer.h>
 #include <common.h>
 

@@ -44,6 +44,7 @@
 #include <filesystem>  // std::current_path
 #include <cctype>      // std::tolower
 #include <algorithm>   // std::sort, std::max, std::find
+#include <cstring>     // std::strlen
 #include <string>      // std::string
 #include <string_view> // std::string_view
 #include <format>      // std::format

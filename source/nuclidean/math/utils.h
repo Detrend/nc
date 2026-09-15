@@ -3,6 +3,7 @@
 
 #include <types.h>
 #include <numbers>
+#include <stddef.h>
 
 namespace nc
 {
