@@ -1,0 +1,17 @@
+{
+  "move speed": 2.0,
+  "projectile": "grunt_shot",
+  "max hp": 75,
+  "height": 1.5,
+  "eye height": 1.4,
+  "attack radius": 0.8,
+  "radius": 0.4,
+  "min attack delay": 0.2,
+  "max attack delay": 0.4,
+  "state sprite count": [1, 16, 30, 1, 28],
+  "state sprite length": [1.0, 1.0, 1.5, 2.0, 2.0],
+  "attack frame": 17,
+  "is melee": false,
+  "infight chance": 0.2,
+  "step height": 0.9
+}

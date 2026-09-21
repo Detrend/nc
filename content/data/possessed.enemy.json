@@ -1,0 +1,17 @@
+{
+  "move speed": 4.0,
+  "projectile": "possessed_fist",
+  "max hp": 200,
+  "height": 1.9,
+  "eye height": 1.75,
+  "attack radius": 1.5,
+  "radius": 0.4,
+  "min attack delay": 0.2,
+  "max attack delay": 0.4,
+  "state sprite count": [1, 16, 23, 1, 27],
+  "state sprite length": [1.0, 1.0, 1.5, 2.0, 1.6],
+  "attack frame": 7,
+  "is melee": true,
+  "infight chance": 0.0,
+  "step height": 1.3
+}

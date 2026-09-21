@@ -84,25 +84,19 @@ namespace nc::json_parsers
 {
 
 //==================================================================================================
-auto type_check_int    = [](const auto& json_it) { return json_it->is_number_integer(); };
-auto type_check_float  = [](const auto& json_it) { return json_it->is_number_float();   };
-auto type_check_bool   = [](const auto& json_it) { return json_it->is_boolean();        };
-auto type_check_string = [](const auto& json_it) { return json_it->is_string();         };
+auto type_check_int    = [](const auto& json_it) { return json_it.is_number_integer(); };
+auto type_check_float  = [](const auto& json_it) { return json_it.is_number_float();   };
+auto type_check_bool   = [](const auto& json_it) { return json_it.is_boolean();        };
+auto type_check_string = [](const auto& json_it) { return json_it.is_string();         };
+auto type_check_array  = [](const auto& json_it) { return json_it.is_array();          };
 
 //==================================================================================================
 template<typename TypeCheck>
-static bool check_existance_and_type(cstr name, const auto& json, DbSerializationCtx& ctx, TypeCheck&& check)
+static bool check_type(const nlohmann::json& json, DbSerializationCtx& ctx, TypeCheck&& check)
 {
-  auto it = json.find(name);
-  if (it == json.end())
+  if (!check(json))
   {
-    ctx.log("Value for property \"{}\" missing in JSON, using default value.", name);
-    return false;
-  }
-
-  if (!check(it))
-  {
-    ctx.warn("Value for property \"{}\" has incorrect type. Expected: {}, got: {}", name);
+    ctx.warn("Value for property has incorrect type.");
     return false;
   }
 
@@ -111,69 +105,72 @@ static bool check_existance_and_type(cstr name, const auto& json, DbSerializatio
 
 //==================================================================================================
 template<typename Type>
-void deserialize(Type& /*t*/, cstr /*name*/, const auto& /*json*/, DbSerializationCtx& /*ctx*/)
+  requires (!std::integral<Type>
+    && !std::floating_point<Type>
+    && !std::is_pointer_v<Type>
+    && !(std::is_enum_v<Type> && std::is_same_v<std::underlying_type_t<Type>, u8>))
+void deserialize(Type& /*t*/, const nlohmann::json& /*json*/, DbSerializationCtx& /*ctx*/)
 {
   // Non implemented
+  nc_assert(false);
 }
 
 //==================================================================================================
 template<std::integral Type>
-void deserialize(Type& t, cstr name, const auto& json, DbSerializationCtx& ctx)
+void deserialize(Type& t, const nlohmann::json& json, DbSerializationCtx& ctx)
 {
-  if (check_existance_and_type(name, json, ctx, type_check_int))
+  if (check_type(json, ctx, type_check_int))
   {
-    t = json[name];
+    t = json;
   }
 }
 
 //==================================================================================================
 template<typename Type>
   requires std::is_pointer_v<Type>
-void deserialize(Type& t, cstr name, const auto& json, DbSerializationCtx& ctx)
+void deserialize(Type& t, const nlohmann::json& json, DbSerializationCtx& ctx)
 {
-  auto it = json.find(name);
-  if (it == json.end())
+  if (!json.is_string())
   {
-    ctx.warn("Foreign property \"{}\" not found in the JSON, "
-             "can't link it to foreign table.", name);
+    ctx.error("Foreign property has to be a string that indexes into other table.");
     t = nullptr;
     return;
   }
 
-  if (!it->is_string())
-  {
-    ctx.error("Foreign property \"{}\" has to be a string that indexes "
-              "into other table.", name);
-    t = nullptr;
-    return;
-  }
-
-  Token key = Token{it->get_ref<const std::string&>()};
+  Token key = Token{json.get_ref<const std::string&>()};
   ctx.push_unresolved<Type>(key, t);
 }
 
 //==================================================================================================
 template<std::floating_point Type>
-void deserialize(Type& t, cstr name, const auto& json, DbSerializationCtx& ctx)
+void deserialize(Type& t, const nlohmann::json& json, DbSerializationCtx& ctx)
 {
-  if (check_existance_and_type(name, json, ctx, type_check_float))
+  if (check_type(json, ctx, type_check_float))
   {
-    t = json[name];
+    t = json;
   }
 }
 
 //==================================================================================================
-void deserialize(Token& t, cstr name, const auto& json, DbSerializationCtx& ctx)
+void deserialize(bool& value, const nlohmann::json& json, DbSerializationCtx& ctx)
 {
-  if (check_existance_and_type(name, json, ctx, type_check_string))
+  if (check_type(json, ctx, type_check_bool))
   {
-    auto it = json.find(name);
-    const std::string& ref = it->get_ref<const std::string&>();
+    value = bool{json};
+  }
+}
+
+//==================================================================================================
+void deserialize(Token& t, const nlohmann::json& json, DbSerializationCtx& ctx)
+{
+  if (check_type(json, ctx, type_check_string))
+  {
+    const std::string& ref = json.get_ref<const std::string&>();
 
     if (ref.length() > Token::MAX_LENGTH || !Token::can_be_tokenized(ref))
     {
-      ctx.warn("Token property \"{}\" cannot be deserialized as the value is "
-               "either too long or contains unsupported characters.", name);
+      ctx.warn("Token property cannot be deserialized as the value is "
+               "either too long or contains unsupported characters.");
       return;
     }
 
@@ -184,21 +181,37 @@ void deserialize(Token& t, cstr name, const auto& json, DbSerializationCtx& ctx)
 //==================================================================================================
 template<typename EnumType>
   requires std::is_enum_v<EnumType> && std::is_same_v<std::underlying_type_t<EnumType>, u8>
-void deserialize(EnumType& enum_value, cstr name, const auto& json, DbSerializationCtx& ctx)
+void deserialize(EnumType& enum_value, const nlohmann::json& json, DbSerializationCtx& ctx)
 {
-  if (check_existance_and_type(name, json, ctx, type_check_string))
+  if (check_type(json, ctx, type_check_string))
   {
-    auto it = json.find(name);
-    const std::string& ref = it->get_ref<const std::string&>();
+    const std::string& ref = json.get_ref<const std::string&>();
 
     if (!EnumNameTable<EnumType>::name_exists(ref))
     {
-      ctx.warn("Can't deserialize enum property \"{}\" because the value \"{}\" is not a known "
-               "enum item.", name, ref);
+      ctx.warn("Can't deserialize enum property because the value \"{}\" is not a known "
+               "enum item.", ref);
       return;
     }
 
     enum_value = EnumNameTable<EnumType>::get_value_for_name(ref);
+  }
+}
+
+//==================================================================================================
+template<typename InnerType>
+void deserialize
+(
+  std::vector<InnerType>& container, const nlohmann::json& json, DbSerializationCtx& ctx
+)
+{
+  if (check_type(json, ctx, type_check_array))
+  {
+    for (auto it : json)
+    {
+      InnerType& ref = container.emplace_back();
+      deserialize(ref, it, ctx);
+    }
   }
 }
 
@@ -256,7 +269,7 @@ struct IsDbCol<DbCol<T, Name>> : std::true_type
 
 //==================================================================================================
 template<typename T>
-static void load_row_from_json(T& row, const auto& json, DbSerializationCtx& ctx)
+static void load_row_from_json(T& row, const nlohmann::json& json, DbSerializationCtx& ctx)
 {
   // We get the list of properties here
   auto tie = struct_to_tie(row);
@@ -266,8 +279,14 @@ static void load_row_from_json(T& row, const auto& json, DbSerializationCtx& ctx
   {
     if constexpr (IsDbCol<T>::value)
     {
-      constexpr cstr name = IsDbCol<T>::name;
-      json_parsers::deserialize(col.value, name, json, ctx);
+      if (auto it = json.find(IsDbCol<T>::name); it != json.end())
+      {
+        json_parsers::deserialize(col.value, *it, ctx);
+      }
+      else
+      {
+        // Keep the default value if not present..
+      }
     }
   });
 }

@@ -1,0 +1,16 @@
+{
+  "move speed": 2.5,
+  "projectile": "fire_ball",
+  "max hp": 80,
+  "height": 1.9,
+  "eye height": 1.75,
+  "attack radius": 1.5,
+  "radius": 0.35,
+  "min attack delay": 0.5,
+  "max attack delay": 2.5,
+  "state sprite count": [1, 16, 45, 1, 20],
+  "state sprite length": [1.0, 1.25, 1.5, 2.0, 1.6],
+  "attack frame": 26,
+  "infight chance": 0.05,
+  "step height": 0.9
+}

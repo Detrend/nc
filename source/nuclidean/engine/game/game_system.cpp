@@ -458,7 +458,22 @@ static void load_json_map
     }
     else
     {
-      const EnemyTypes::evalue entity_type = js_entity["entity_type"];
+      // MR says: This is a workaround for backwards compatibility with old level formats that stored
+      // the type of the enemy as integer.
+      constexpr EnemyType ENEMY_TYPE_LUT_WORKAROUND[]
+      {
+        EnemyType{"cultist"},
+        EnemyType{"possessed"},
+        EnemyType{"grunt"},
+      };
+
+      u32 idx = js_entity["entity_type"];
+      if (idx > ARRAY_LENGTH(ENEMY_TYPE_LUT_WORKAROUND))
+      {
+        continue;
+      }
+
+      EnemyType entity_type = ENEMY_TYPE_LUT_WORKAROUND[idx];
       Entity* enemy = entities.create_entity<Enemy>(position, forward, entity_type);
       register_entity(enemy, js_entity);
 

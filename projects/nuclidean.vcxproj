@@ -104,7 +104,6 @@
     <ClCompile Include="..\source\nuclidean\engine\ui\ui_hud_display.cpp" />
     <ClCompile Include="..\source\nuclidean\engine\ui\ui_menu_page.cpp" />
     <ClCompile Include="..\source\nuclidean\engine\ui\ui_screen_effect.cpp" />
-    <ClCompile Include="..\source\nuclidean\game\enemies.cpp" />
     <ClCompile Include="..\source\nuclidean\game\entity_attachment_manager.cpp" />
     <ClCompile Include="..\source\nuclidean\engine\ui\ui_menu_manager.cpp" />
     <ClCompile Include="..\source\nuclidean\game\item.cpp" />

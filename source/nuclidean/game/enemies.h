@@ -85,7 +85,7 @@ struct EnemyStats
   DbCol<s32              , "max hp"             > max_hp         = 100;
   DbCol<f32              , "height"             > height         = 2.0f;
   DbCol<f32              , "eye height"         > eye_height     = 1.8f;
-  DbCol<f32              , "attack radius"      > atk_height     = 1.5f;
+  DbCol<f32              , "attack height"      > atk_height     = 1.5f;
   DbCol<f32              , "radius"             > radius         = 0.25f;
   DbCol<f32              , "min attack delay"   > atk_delay_min  = 3.0f;
   DbCol<f32              , "max attack delay"   > atk_delay_max  = 8.0f;

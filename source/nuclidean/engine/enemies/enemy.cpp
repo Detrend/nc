@@ -1048,13 +1048,13 @@ const EnemyStats& Enemy::get_stats() const
 //==============================================================================
 vec3 Enemy::get_attack_from_pos() const
 {
-  return this->get_position() + UP_DIR * this->get_stats().atk_height;
+  return this->get_position() + UP_DIR * this->get_stats().atk_height.value;
 }
 
 //==============================================================================
 vec3 Enemy::get_eye_pos() const
 {
-  return this->get_position() + UP_DIR * this->get_stats().eye_height;
+  return this->get_position() + UP_DIR * this->get_stats().eye_height.value;
 }
 
 //==============================================================================
