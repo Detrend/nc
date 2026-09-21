@@ -300,7 +300,7 @@ namespace nc {
     }
 
     constexpr CompositeToken(cstr c_string)
-     : CompositeToken(std::string_view{c_string})
+     : CompositeToken(c_string ? std::string_view{c_string} : std::string_view{})
     {}
 
     constexpr bool operator==(const CompositeToken& other) const

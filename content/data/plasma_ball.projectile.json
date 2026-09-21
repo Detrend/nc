@@ -1,0 +1,17 @@
+{
+  "dmg falloff": 0.05,
+  "speed": 27.0,
+  "radius": 0.15,
+  "damage": 25,
+  "bounce count": 3,
+  "sprite": "plasma_ball",
+  "sprite count": 1,
+  "light color": [0.0, 0.0, 1.0],
+  "light len cycle": 0.2,
+  "light string": "akcs",
+  "hit sprite": "plasma_ball_death",
+  "hit sprite count": 6,
+  "hit sprite length": 0.5,
+  "hit sprite color": [0.0, 0.0, 1.0],
+  "hit sprite radius": 2.0
+}

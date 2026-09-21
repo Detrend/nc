@@ -85,3 +85,8 @@ struct ProjectileStatsDb
 extern ProjectileStats PROJECTILE_STATS[];
 
 }
+
+namespace nc::db
+{
+inline Database<ProjectileStatsDb> projectiles{"projectile"};
+}

@@ -1,0 +1,13 @@
+{
+  "dmg falloff": 0.05,
+  "speed": 12.0,
+  "radius": 0.2,
+  "damage": 12,
+  "sprite": "cultist_projectile",
+  "sprite count": 4,
+  "anim length": 0.8,
+  "light color": [0.65, 0.0, 0.0],
+  "light len cycle": 0.4,
+  "light string": "abcdefgfedcb",
+  "hit sprite": "plasma_ball_death"
+}

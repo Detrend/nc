@@ -1,0 +1,13 @@
+{
+  "dmg falloff": 0.2,
+  "speed": 50.0,
+  "radius": 0.02,
+  "damage": 6,
+  "sprite": "grunt_projectile",
+  "sprite count": 1,
+  "anim length": 1.0,
+  "light color": [0.35, 0.175, 0.0],
+  "light len cycle": 0.4,
+  "light string": "abcdefgfedcb",
+  "hit sprite": "plasma_ball_death"
+}

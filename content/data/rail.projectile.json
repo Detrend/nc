@@ -1,0 +1,15 @@
+{
+  "dmg falloff": 0.05,
+  "speed": 80.0,
+  "radius": 0.05,
+  "damage": 110,
+  "sprite": "grunt_projectile",
+  "sprite count": 1,
+  "light color": [1.0, 1.0, 0.0],
+  "hit sprite": "buck",
+  "hit sprite count": 4,
+  "hit sprite length": 0.3,
+  "hit sprite color": [1.0, 1.0, 0.0],
+  "hit sprite radius": 2.0,
+  "penetration count": 4
+}

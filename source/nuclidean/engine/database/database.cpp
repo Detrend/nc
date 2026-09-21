@@ -7,10 +7,13 @@
 
 // Database types
 #include <game/enemies.h>
+#include <game/projectiles.h>
 
 // JSON
 #include <json/json.hpp>
 #include <util/evil_enum.h>
+
+#include <math/vector.h>
 
 #include <utility>
 #include <type_traits>
@@ -20,9 +23,6 @@
 #include <tuple>
 #include <array>
 #include <fstream>
-
-// Remove
-// #include <iostream>
 
 namespace nc
 {
@@ -104,116 +104,181 @@ static bool check_type(const nlohmann::json& json, DbSerializationCtx& ctx, Type
 }
 
 //==================================================================================================
+// Primary template - unsupported types.
 template<typename Type>
-  requires (!std::integral<Type>
-    && !std::floating_point<Type>
-    && !std::is_pointer_v<Type>
-    && !(std::is_enum_v<Type> && std::is_same_v<std::underlying_type_t<Type>, u8>))
-void deserialize(Type& /*t*/, const nlohmann::json& /*json*/, DbSerializationCtx& /*ctx*/)
+struct Deserializer
 {
-  // Non implemented
-  nc_assert(false);
-}
+  static bool run(Type& /*t*/, const nlohmann::json& /*json*/, DbSerializationCtx& /*ctx*/)
+  {
+    // Non implemented
+    nc_assert(false);
+    return false;
+  }
+};
 
 //==================================================================================================
 template<std::integral Type>
-void deserialize(Type& t, const nlohmann::json& json, DbSerializationCtx& ctx)
+struct Deserializer<Type>
 {
-  if (check_type(json, ctx, type_check_int))
+  static bool run(Type& t, const nlohmann::json& json, DbSerializationCtx& ctx)
   {
+    if (!check_type(json, ctx, type_check_int))
+    {
+      return false;
+    }
+
     t = json;
+    return true;
   }
-}
+};
 
 //==================================================================================================
 template<typename Type>
   requires std::is_pointer_v<Type>
-void deserialize(Type& t, const nlohmann::json& json, DbSerializationCtx& ctx)
+struct Deserializer<Type>
 {
-  if (!json.is_string())
+  static bool run(Type& t, const nlohmann::json& json, DbSerializationCtx& ctx)
   {
-    ctx.error("Foreign property has to be a string that indexes into other table.");
-    t = nullptr;
-    return;
-  }
+    if (!json.is_string())
+    {
+      ctx.error("Foreign property has to be a string that indexes into other table.");
+      t = nullptr;
+      return false;
+    }
 
-  Token key = Token{json.get_ref<const std::string&>()};
-  ctx.push_unresolved<Type>(key, t);
-}
+    Token key = Token{json.get_ref<const std::string&>()};
+    ctx.push_unresolved<Type>(key, t);
+    return true;
+  }
+};
 
 //==================================================================================================
 template<std::floating_point Type>
-void deserialize(Type& t, const nlohmann::json& json, DbSerializationCtx& ctx)
+struct Deserializer<Type>
 {
-  if (check_type(json, ctx, type_check_float))
+  static bool run(Type& t, const nlohmann::json& json, DbSerializationCtx& ctx)
   {
+    if (!check_type(json, ctx, type_check_float))
+    {
+      return false;
+    }
+
     t = json;
+    return true;
   }
-}
+};
 
 //==================================================================================================
-void deserialize(bool& value, const nlohmann::json& json, DbSerializationCtx& ctx)
+template<>
+struct Deserializer<bool>
 {
-  if (check_type(json, ctx, type_check_bool))
+  static bool run(bool& value, const nlohmann::json& json, DbSerializationCtx& ctx)
   {
+    if (!check_type(json, ctx, type_check_bool))
+    {
+      return false;
+    }
+
     value = bool{json};
+    return true;
   }
-}
+};
 
 //==================================================================================================
-void deserialize(Token& t, const nlohmann::json& json, DbSerializationCtx& ctx)
+template<u64 NUM_COMPONENTS, typename ComponentType>
+struct Deserializer<glm::vec<NUM_COMPONENTS, ComponentType>>
 {
-  if (check_type(json, ctx, type_check_string))
+  using VecType = glm::vec<NUM_COMPONENTS, ComponentType>;
+
+  static bool run(VecType& value, const nlohmann::json& json, DbSerializationCtx& ctx)
   {
+    if (!check_type(json, ctx, type_check_array) || json.size() != NUM_COMPONENTS)
+    {
+      return false;
+    }
+
+    bool ok = true;
+    for (typename VecType::length_type i = 0; i < NUM_COMPONENTS; ++i)
+    {
+      ok &= Deserializer<ComponentType>::run(value[i], json[i], ctx);
+    }
+
+    return ok;
+  }
+};
+
+//==================================================================================================
+template<>
+struct Deserializer<Token>
+{
+  static bool run(Token& t, const nlohmann::json& json, DbSerializationCtx& ctx)
+  {
+    if (!check_type(json, ctx, type_check_string))
+    {
+      return false;
+    }
+
     const std::string& ref = json.get_ref<const std::string&>();
 
     if (ref.length() > Token::MAX_LENGTH || !Token::can_be_tokenized(ref))
     {
       ctx.warn("Token property cannot be deserialized as the value is "
                "either too long or contains unsupported characters.");
-      return;
+      return false;
     }
 
     t = Token{ref};
+    return true;
   }
-}
+};
 
 //==================================================================================================
 template<typename EnumType>
   requires std::is_enum_v<EnumType> && std::is_same_v<std::underlying_type_t<EnumType>, u8>
-void deserialize(EnumType& enum_value, const nlohmann::json& json, DbSerializationCtx& ctx)
+struct Deserializer<EnumType>
 {
-  if (check_type(json, ctx, type_check_string))
+  static bool run(EnumType& enum_value, const nlohmann::json& json, DbSerializationCtx& ctx)
   {
+    if (!check_type(json, ctx, type_check_string))
+    {
+      return false;
+    }
+
     const std::string& ref = json.get_ref<const std::string&>();
 
     if (!EnumNameTable<EnumType>::name_exists(ref))
     {
       ctx.warn("Can't deserialize enum property because the value \"{}\" is not a known "
                "enum item.", ref);
-      return;
+      return false;
     }
 
     enum_value = EnumNameTable<EnumType>::get_value_for_name(ref);
+    return true;
   }
-}
+};
 
 //==================================================================================================
 template<typename InnerType>
-void deserialize
-(
-  std::vector<InnerType>& container, const nlohmann::json& json, DbSerializationCtx& ctx
-)
+struct Deserializer<std::vector<InnerType>>
 {
-  if (check_type(json, ctx, type_check_array))
+  static bool run(std::vector<InnerType>& container, const nlohmann::json& json, DbSerializationCtx& ctx)
   {
+    if (!check_type(json, ctx, type_check_array))
+    {
+      return false;
+    }
+
+    bool ok = true;
     for (auto it : json)
     {
       InnerType& ref = container.emplace_back();
-      deserialize(ref, it, ctx);
+      ok &= Deserializer<InnerType>::run(ref, it, ctx);
     }
+
+    return ok;
   }
-}
+};
 
 }
 
@@ -269,19 +334,21 @@ struct IsDbCol<DbCol<T, Name>> : std::true_type
 
 //==================================================================================================
 template<typename T>
-static void load_row_from_json(T& row, const nlohmann::json& json, DbSerializationCtx& ctx)
+static bool load_row_from_json(T& row, const nlohmann::json& json, DbSerializationCtx& ctx)
 {
   // We get the list of properties here
   auto tie = struct_to_tie(row);
 
   // Now iterate all properties and isolate them from JSON
+  bool ok = true;
   tuple_for_each(tie, [&]<typename T>(T& col)
   {
     if constexpr (IsDbCol<T>::value)
     {
       if (auto it = json.find(IsDbCol<T>::name); it != json.end())
       {
-        json_parsers::deserialize(col.value, *it, ctx);
+        using ColType = typename IsDbCol<T>::Type;
+        ok &= json_parsers::Deserializer<ColType>::run(col.value, *it, ctx);
       }
       else
       {
@@ -289,6 +356,8 @@ static void load_row_from_json(T& row, const nlohmann::json& json, DbSerializati
       }
     }
   });
+
+  return ok;
 }
 
 //==================================================================================================
@@ -305,10 +374,7 @@ bool deserialize_row_from_json
   }
 
   auto json_data = nlohmann::json::parse(file);
-
-  load_row_from_json(row_out, json_data, ctx);
-
-  return true;
+  return load_row_from_json(row_out, json_data, ctx);
 }
 
 //==================================================================================================
@@ -446,30 +512,6 @@ bool Database<RowType>::add_or_patch_row_from_file(const std::string& file_path,
     retval = detail::deserialize_row_from_binary(path, *ptr);
   }
 
-  /*
-
-  const auto& tie = struct_to_tie(*ptr);
-  std::cout << file_path << std::endl;
-  detail::tuple_for_each(tie, [&]<typename T, auto Str>(const DbCol<T, Str>& column)
-  {
-    std::cout << Str.str << " : ";
-    if constexpr (std::is_same_v<Token, T>)
-    {
-      std::cout << column.value.to_string();
-    }
-    else if constexpr (std::is_enum_v<T>)
-    {
-      std::cout << EnumNameTable<T>::get_name_for_value(column.value);
-    }
-    else
-    {
-      std::cout << column.value;
-    }
-
-    std::cout << std::endl;
-  });
-  */
-
   return retval;
 }
 
@@ -507,5 +549,6 @@ const RowType& Database<RowType>::get(const KeyType& id) const
 //==================================================================================================
 // Explicit instantiations
 template class Database<EnemyStats>;
+template class Database<ProjectileStatsDb>;
 
 }

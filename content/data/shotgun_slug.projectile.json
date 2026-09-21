@@ -1,0 +1,10 @@
+{
+  "dmg falloff": 0.05,
+  "speed": 100.0,
+  "radius": 0.01,
+  "damage": 20,
+  "sprite count": 1,
+  "hit sprite": "buck",
+  "hit sprite count": 4,
+  "hit sprite length": 0.35
+}
