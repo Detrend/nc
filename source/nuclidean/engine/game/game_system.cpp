@@ -587,7 +587,7 @@ static void load_json_map
   }
 
   if (data.contains("music")) {
-    SoundSystem::get().set_music_for_track(MusicTracks::game, Token(data["music"]));
+    SoundSystem::get().set_music_for_track(MusicTracks::game, Token(std::string(data["music"])));
   }
   else {
     SoundSystem::get().set_music_for_track(MusicTracks::game, "music_ambient"); // just to not have to reexport all levels, will be later removed
