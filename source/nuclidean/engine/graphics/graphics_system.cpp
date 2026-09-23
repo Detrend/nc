@@ -771,7 +771,8 @@ static void draw_main_plot()
     }
     else
     {
-      ImPlot::PlotInfLines("##InfLine", &idx, 1);
+      ImU64 plot_idx = static_cast<ImU64>(idx);
+      ImPlot::PlotInfLines("##InfLine", &plot_idx, 1);
     }
 
     ImPlot::EndPlot();
