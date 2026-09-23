@@ -133,11 +133,12 @@ static vec<float, TSize> load_json_vector(const nlohmann::json& js)
 
 //==============================================================================
 template<typename T, typename TSupplier>
-static void load_json_optional(T& out, const nlohmann::json& js, const cstr key, const TSupplier& supplier) 
+static T load_json_optional(const T& default_val, const nlohmann::json& js, const cstr key, const TSupplier& supplier) 
 {
   if (js.contains(key)) {
-    out = supplier(js[key]);
+    return supplier(js[key]);
   }
+  return default_val;
 }
 
 
@@ -226,10 +227,10 @@ static std::vector<WallSegmentData> load_json_wall_surface
     WallSegmentData& entry = ret.emplace_back();
     entry.surface = load_json_surface(js_entry);
     entry.end_height = js_entry["end_height"];
-    load_json_optional(entry.begin_up_tesselation.xzy, js_entry, "begin_up_direction", load_json_vector<3>);
-    load_json_optional(entry.end_up_tesselation.xzy, js_entry, "end_up_direction", load_json_vector<3>);
-    load_json_optional(entry.begin_down_tesselation.xzy, js_entry, "begin_down_direction", load_json_vector<3>);
-    load_json_optional(entry.end_down_tesselation.xzy, js_entry, "end_down_direction", load_json_vector<3>);
+    entry.begin_up_tesselation   = load_json_optional(VEC3_ZERO, js_entry, "begin_up_direction", load_json_vector<3>).xzy();
+    entry.end_up_tesselation     = load_json_optional(VEC3_ZERO, js_entry, "end_up_direction", load_json_vector<3>).xzy();
+    entry.begin_down_tesselation = load_json_optional(VEC3_ZERO, js_entry, "begin_down_direction", load_json_vector<3>).xzy();
+    entry.end_down_tesselation   = load_json_optional(VEC3_ZERO, js_entry, "end_down_direction", load_json_vector<3>).xzy();
 
     if (load_json_flag(js_entry, "absolute_directions"))
     {
@@ -261,10 +262,11 @@ static std::vector<WallSegmentData> load_json_wall_surface
   return ret;
 }
 
+
 //==============================================================================
 static vec3 load_json_position(const nlohmann::json& js, const cstr &field_name = "position") 
 {
-  return load_json_vector<3>(js[field_name]).xzy;
+  return load_json_vector<3>(js[field_name]).xzy();
 }
 
 //==============================================================================
@@ -461,7 +463,7 @@ static void load_json_map
   for (auto&& js_entity : data["entities"])
   {
     const vec3 position = load_json_position(js_entity);
-    const vec3 forward = load_json_vector<3>(js_entity["forward"]).xzy;
+    const vec3 forward = load_json_vector<3>(js_entity["forward"]).xzy();
 
     if (js_entity["is_player"] == true)
     {
@@ -498,7 +500,7 @@ static void load_json_map
     const f32 height = js_prop["height"];
     const Appearance appearance {
       .sprite = Token{std::string{js_prop["sprite"]}},
-      .direction = load_json_vector<3>(js_prop["direction"]).xzy,
+      .direction = load_json_vector<3>(js_prop["direction"]).xzy(),
       .offset = 0.0f,
       .scale = js_prop["scale"],
       .mode = static_cast<Appearance::SpriteMode>(js_prop["mode"]),

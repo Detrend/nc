@@ -419,8 +419,8 @@ static bool calc_path_raw
     }
   };
 
-  SectorID start_id = map.get_sector_from_point(start_pos.xz);
-  SectorID end_id   = map.get_sector_from_point(end_pos.xz);
+  SectorID start_id = map.get_sector_from_point(start_pos.xz());
+  SectorID end_id   = map.get_sector_from_point(end_pos.xz());
   if (start_id == INVALID_SECTOR_ID || end_id == INVALID_SECTOR_ID)
   {
     // MR says: Hotfix for the case when the enemy or player are outside of the
@@ -548,7 +548,7 @@ static bool calc_path_raw
           // Calculate closest point on p1_to_p2 line
           f32 l2 = length(p1_to_p2);
           l2 *= l2;
-          const float t = max(0.0f, min(1.0f, dot(prev_post.xz - p1, p1_to_p2) / l2));
+          const float t = max(0.0f, min(1.0f, dot(prev_post.xz() - p1, p1_to_p2) / l2));
           const vec2 projection = p1 + t * (p1_to_p2);
 
           f32 segment_dist = distance(prev_post.xz(), projection);
@@ -1880,7 +1880,7 @@ const
     // Add the position first time
     position += velocity;
 
-    if (map.get_sector_from_point(position.xz) == INVALID_SECTOR_ID)
+    if (map.get_sector_from_point(position.xz()) == INVALID_SECTOR_ID)
     {
       position = last_player_pos;
     }

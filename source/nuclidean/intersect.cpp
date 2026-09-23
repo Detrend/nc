@@ -384,8 +384,8 @@ bool ray_wall_3d
 
   out_coeff = FLT_MAX;
 
-  const vec2 start2d = ray_start.xz;
-  const vec2 end2d   = ray_end.xz;
+  const vec2 start2d = ray_start.xz();
+  const vec2 end2d   = ray_end.xz();
   const vec3 ray_dir = ray_end - ray_start;
 
   if (f32 _; !segment_segment(start2d, end2d, wall_a, wall_b, out_coeff, _))

@@ -1092,7 +1092,7 @@ const
   mat4 view       = translation(trans) * scaling(scale);
   mat4 projection = ortho(0.0f, win_size.x, win_size.y, 0.0f, -1.0f, 1.0f);
 
-  const vec2 player_position = GameHelpers::get().get_player()->get_position().xz;
+  const vec2 player_position = GameHelpers::get().get_player()->get_position().xz();
   const SectorID sector_id = GameSystem::get().get_map().get_sector_from_point(player_position);
 
   const u32 matrix_id = cast<u32>(m_sector_matrices_inv.size());
