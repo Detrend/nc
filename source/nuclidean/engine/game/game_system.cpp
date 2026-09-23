@@ -816,10 +816,7 @@ void GameSystem::game_update(f32 delta)
   {
     auto demo_inputs = [this]()
     {
-      PlayerSpecificInputs empty_inputs;
-      PlayerSpecificInputs prev_inputs;
-      PlayerSpecificInputs curr_inputs;
-      f32                  delta_time = 0.0f;
+      f32 delta_time = 0.0f;
 
       nc_assert(journal.rover < journal.frames.size());
 

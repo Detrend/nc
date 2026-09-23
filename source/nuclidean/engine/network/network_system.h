@@ -60,8 +60,8 @@ private:
   bool m_input_received = false;
   u64 m_frame_counter = 0;
 
-  std::unique_ptr<net::Server> m_server = nullptr;
-  std::unique_ptr<net::Client> m_client = nullptr;
+  std::unique_ptr<net::Server> m_server;
+  std::unique_ptr<net::Client> m_client;
   
 };
 

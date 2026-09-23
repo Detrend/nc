@@ -498,7 +498,6 @@ bool Enemy::is_my_turn_for_visibility_query() const
 //==============================================================================
 void Enemy::handle_ai_idle(f32 /*delta*/)
 {
-  auto  game     = GameHelpers::get();
   auto& entities = GameSystem::get().get_entities();
 
   this->velocity = VEC3_ZERO;

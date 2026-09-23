@@ -28,7 +28,7 @@ Server::Server(IPv4Address address, u16 port)
     return;
   }
 
-  m_server_thread = std::jthread([this](std::stop_token token){ run_server_thread(token); });
+  m_server_thread = std::jthread([this](const std::stop_token& token){ run_server_thread(token); });
 }
 
 //==============================================================================
@@ -244,7 +244,7 @@ void Server::broadcast_all_player_inputs()
 }
 
 //==============================================================================
-void Server::run_server_thread(std::stop_token token)
+void Server::run_server_thread(const std::stop_token& token)
 {
   while (!token.stop_requested())
   {

@@ -211,7 +211,7 @@ void NetworkSystem::poll_network()
         });
         m_input_received = true;
       },
-      [this](const PositionSync& message)
+      [](const PositionSync& message)
       {
         EntityRegistry&    entities   = GameSystem::get().get_entities();
         const PlayerArray& player_ids = GameSystem::get().get_player_ids();

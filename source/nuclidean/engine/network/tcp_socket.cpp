@@ -393,7 +393,7 @@ namespace nc::net
 {
 
 //==============================================================================
-bool ipv4_address_parse_valid_test(unit_test::TestCtx& /*ctx*/)
+static bool ipv4_address_parse_valid_test(unit_test::TestCtx& /*ctx*/)
 {
   struct TestCase
   {
@@ -437,7 +437,7 @@ bool ipv4_address_parse_valid_test(unit_test::TestCtx& /*ctx*/)
 NC_UNIT_TEST(ipv4_address_parse_valid_test)->name("Net IPv4Address Parse Valid");
 
 //==============================================================================
-bool ipv4_address_parse_invalid_test(unit_test::TestCtx& /*ctx*/)
+static bool ipv4_address_parse_invalid_test(unit_test::TestCtx& /*ctx*/)
 {
   const std::string_view TEST_CASES[]
   {
@@ -482,7 +482,7 @@ bool ipv4_address_parse_invalid_test(unit_test::TestCtx& /*ctx*/)
 NC_UNIT_TEST(ipv4_address_parse_invalid_test)->name("Net IPv4Address Parse Invalid");
 
 //==============================================================================
-bool ipv4_address_parse_unterminated_view_test(unit_test::TestCtx& /*ctx*/)
+static bool ipv4_address_parse_unterminated_view_test(unit_test::TestCtx& /*ctx*/)
 {
   const std::string      loopback_buffer = "127.0.0.1255.255.255.255";
   const std::string_view loopback_view{loopback_buffer.data(), 9};
@@ -509,7 +509,7 @@ bool ipv4_address_parse_unterminated_view_test(unit_test::TestCtx& /*ctx*/)
 NC_UNIT_TEST(ipv4_address_parse_unterminated_view_test)->name("Net IPv4Address Parse Unterminated View");
 
 //==============================================================================
-bool tcp_socket_create_and_close_test(unit_test::TestCtx& /*ctx*/)
+static bool tcp_socket_create_and_close_test(unit_test::TestCtx& /*ctx*/)
 {
   TCPSocket empty_socket{};
   NC_TEST_ASSERT(!empty_socket.is_valid());
@@ -545,7 +545,7 @@ bool tcp_socket_create_and_close_test(unit_test::TestCtx& /*ctx*/)
 NC_UNIT_TEST(tcp_socket_create_and_close_test)->name("Net TCPSocket Create And Close");
 
 //==============================================================================
-bool ipv4_address_to_string_test(unit_test::TestCtx& /*ctx*/)
+static bool ipv4_address_to_string_test(unit_test::TestCtx& /*ctx*/)
 {
   struct TestCase
   {
@@ -589,7 +589,7 @@ static_assert(to_bytes(u8{0x01}, u8{0x02})[0] == std::byte{0x01});
 static_assert(to_bytes(u8{0x01}, u8{0x02})[1] == std::byte{0x02});
 
 //==============================================================================
-bool to_bytes_size_and_order_test(unit_test::TestCtx& /*ctx*/)
+static bool to_bytes_size_and_order_test(unit_test::TestCtx& /*ctx*/)
 {
   const auto single = to_bytes(u32{0});
   NC_TEST_ASSERT(single.size() == sizeof(u32));
@@ -608,7 +608,7 @@ bool to_bytes_size_and_order_test(unit_test::TestCtx& /*ctx*/)
 NC_UNIT_TEST(to_bytes_size_and_order_test)->name("Net To Bytes Size And Order");
 
 //==============================================================================
-bool byte_conversion_round_trip_test(unit_test::TestCtx& /*ctx*/)
+static bool byte_conversion_round_trip_test(unit_test::TestCtx& /*ctx*/)
 {
   {
     const auto bytes = to_bytes(u8{0}, u16{0}, u32{0}, u64{0});
@@ -656,7 +656,7 @@ bool byte_conversion_round_trip_test(unit_test::TestCtx& /*ctx*/)
 NC_UNIT_TEST(byte_conversion_round_trip_test)->name("Net Byte Conversion Round Trip");
 
 //==============================================================================
-bool byte_conversion_wire_types_round_trip_test(unit_test::TestCtx& /*ctx*/)
+static bool byte_conversion_wire_types_round_trip_test(unit_test::TestCtx& /*ctx*/)
 {
   enum class TestMessageType : u8
   {
@@ -694,7 +694,7 @@ bool byte_conversion_wire_types_round_trip_test(unit_test::TestCtx& /*ctx*/)
 NC_UNIT_TEST(byte_conversion_wire_types_round_trip_test)->name("Net Byte Conversion Wire Types Round Trip");
 
 //==============================================================================
-bool from_bytes_reads_from_span_start_test(unit_test::TestCtx& /*ctx*/)
+static bool from_bytes_reads_from_span_start_test(unit_test::TestCtx& /*ctx*/)
 {
   const auto bytes = to_bytes(u16{0xBEEF}, u32{0xDEADBEEFu}, u8{0x42});
   const std::span<const std::byte> whole{bytes};

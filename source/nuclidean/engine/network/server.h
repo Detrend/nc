@@ -58,7 +58,7 @@ private:
   // Broadcast all player inputs.
   void broadcast_all_player_inputs();
 
-  void run_server_thread(std::stop_token token);
+  void run_server_thread(const std::stop_token& token);
 };
 
 }

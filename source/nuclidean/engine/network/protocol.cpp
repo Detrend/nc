@@ -124,7 +124,7 @@ namespace nc::net::protocol
 {
 
 //==============================================================================
-bool message_index_matches_tables_test(unit_test::TestCtx& /*ctx*/)
+static bool message_index_matches_tables_test(unit_test::TestCtx& /*ctx*/)
 {
   NC_TEST_ASSERT(MESSAGE_SIZES.size() == std::variant_size_v<MessageBase>);
   NC_TEST_ASSERT(MESSAGE_FACTORIES.size() == std::variant_size_v<MessageBase>);
@@ -155,7 +155,7 @@ bool message_index_matches_tables_test(unit_test::TestCtx& /*ctx*/)
 NC_UNIT_TEST(message_index_matches_tables_test)->name("Net Protocol Message Index Matches Tables");
 
 //==============================================================================
-bool message_factory_round_trip_test(unit_test::TestCtx& /*ctx*/)
+static bool message_factory_round_trip_test(unit_test::TestCtx& /*ctx*/)
 {
   {
     const messages::NewPlayerData sent{.player_id = cast<u8>(MAX_PLAYER_COUNT - 1)};
@@ -212,7 +212,7 @@ bool message_factory_round_trip_test(unit_test::TestCtx& /*ctx*/)
 NC_UNIT_TEST(message_factory_round_trip_test)->name("Net Protocol Message Factory Round Trip");
 
 //==============================================================================
-bool connection_buffer_fits_largest_message_test(unit_test::TestCtx& /*ctx*/)
+static bool connection_buffer_fits_largest_message_test(unit_test::TestCtx& /*ctx*/)
 {
   const u64 largest_message = *std::max_element(MESSAGE_SIZES.begin(), MESSAGE_SIZES.end());
 
@@ -225,7 +225,7 @@ bool connection_buffer_fits_largest_message_test(unit_test::TestCtx& /*ctx*/)
 NC_UNIT_TEST(connection_buffer_fits_largest_message_test)->name("Net Protocol Connection Buffer Fits Largest Message");
 
 //==============================================================================
-bool message_process_dispatch_test(unit_test::TestCtx& /*ctx*/)
+static bool message_process_dispatch_test(unit_test::TestCtx& /*ctx*/)
 {
   enum class Handled : u8
   {
@@ -299,7 +299,7 @@ static auto make_wire_bytes(const T& payload)
 }
 
 //==============================================================================
-bool pop_buffered_message_empty_buffer_test(unit_test::TestCtx& /*ctx*/)
+static bool pop_buffered_message_empty_buffer_test(unit_test::TestCtx& /*ctx*/)
 {
   Connection connection{};
 
@@ -311,7 +311,7 @@ bool pop_buffered_message_empty_buffer_test(unit_test::TestCtx& /*ctx*/)
 NC_UNIT_TEST(pop_buffered_message_empty_buffer_test)->name("Net Protocol Pop Buffered Message Empty Buffer");
 
 //==============================================================================
-bool pop_buffered_message_partial_message_test(unit_test::TestCtx& /*ctx*/)
+static bool pop_buffered_message_partial_message_test(unit_test::TestCtx& /*ctx*/)
 {
   const messages::PlayerInputs sent
   {
@@ -345,7 +345,7 @@ bool pop_buffered_message_partial_message_test(unit_test::TestCtx& /*ctx*/)
 NC_UNIT_TEST(pop_buffered_message_partial_message_test)->name("Net Protocol Pop Buffered Message Partial Message");
 
 //==============================================================================
-bool pop_buffered_message_two_messages_test(unit_test::TestCtx& /*ctx*/)
+static bool pop_buffered_message_two_messages_test(unit_test::TestCtx& /*ctx*/)
 {
   const auto first  = make_wire_bytes(messages::PlayerConnected{.player_id = 2});
   const auto second = make_wire_bytes(messages::PlayerDisconnected{.player_id = 5});
@@ -375,7 +375,7 @@ bool pop_buffered_message_two_messages_test(unit_test::TestCtx& /*ctx*/)
 NC_UNIT_TEST(pop_buffered_message_two_messages_test)->name("Net Protocol Pop Buffered Message Two Messages");
 
 //==============================================================================
-bool pop_buffered_message_unknown_type_resync_test(unit_test::TestCtx& /*ctx*/)
+static bool pop_buffered_message_unknown_type_resync_test(unit_test::TestCtx& /*ctx*/)
 {
   const std::byte garbage[]{std::byte{cast<u8>(std::variant_size_v<MessageBase>)}};
   const auto      valid = make_wire_bytes(messages::PlayerConnected{.player_id = 7});
@@ -399,7 +399,7 @@ bool pop_buffered_message_unknown_type_resync_test(unit_test::TestCtx& /*ctx*/)
 NC_UNIT_TEST(pop_buffered_message_unknown_type_resync_test)->name("Net Protocol Pop Buffered Message Unknown Type Resync");
 
 //==============================================================================
-bool pop_buffered_message_largest_message_test(unit_test::TestCtx& /*ctx*/)
+static bool pop_buffered_message_largest_message_test(unit_test::TestCtx& /*ctx*/)
 {
   messages::AllPlayersInputs sent{};
   for (u64 slot = 0; slot < MAX_PLAYER_COUNT; ++slot)
