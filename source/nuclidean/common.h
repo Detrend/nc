@@ -13,11 +13,35 @@
 namespace nc
 {
 
+#if defined(_MSC_VER) && !defined(__clang__)
+#   define NC_MSVC
+#elif defined(_MSC_VER)
+#   define NC_CLANG
+#endif
+
+#define NC_TODO(_msg) __pragma(message ("TODO: " _msg))
+
+#ifdef NC_CLANG
+#   define NC_FORCE_INLINE __attribute__((always_inline))
+#   define NC_NEVER_INLINE __attribute__((noinline))
+#   define NC_ANALYZER_NORETURN __attribute__((analyzer_noreturn))
+#   define NC_PUSH_PACKED _Pragma("pack(push, 1)")
+#   define NC_POP_PACKED  _Pragma("pack(pop)")
+#elif defined(NC_MSVC)
+#   define NC_FORCE_INLINE __forceinline
+#   define NC_NEVER_INLINE __declspec(noinline)
+#   define NC_ANALYZER_NORETURN
+#   define NC_PUSH_PACKED __pragma(pack(push)); __pragma(pack(1));
+#   define NC_POP_PACKED  __pragma(pack(pop));
+#endif
+
+
+
 // disable warnings for when if-condition evaluates to constant
 #pragma warning(disable:4127)
 
-__attribute__((analyzer_noreturn))
-inline void assert_fail_impl(const char* const expression_str, const logging::LoggingContext &logging_ctx, const std::string& message)
+
+NC_ANALYZER_NORETURN inline void assert_fail_impl(const char* const expression_str, const logging::LoggingContext &logging_ctx, const std::string& message)
 {
   std::string actual_message;
   if (expression_str)
@@ -47,24 +71,6 @@ inline void assert_fail_impl(const char* const expression_str, const logging::Lo
 
 }
 
-#if defined(_MSC_VER) && !defined(__clang__)
-#define NC_MSVC
-#elif defined(_MSC_VER)
-#define NC_CLANG
-#endif
-
-#define NC_TODO(_msg) __pragma(message ("TODO: " _msg))
-
-#ifdef NC_CLANG
-#define NC_FORCE_INLINE __attribute__((always_inline))
-#define NC_NEVER_INLINE __attribute__((noinline))
-#elif defined(NC_MSVC)
-#define NC_FORCE_INLINE __forceinline
-#define NC_NEVER_INLINE __declspec(noinline)
-#endif
-
-#define NC_PUSH_PACKED __pragma(pack(push)); __pragma(pack(1));
-#define NC_POP_PACKED  __pragma(pack(pop));
 
 //==============================================================================
 // Casting macros

@@ -1,7 +1,21 @@
 workspace "Nuclidean"
     architecture "x86_64"
     configurations { "Debug", "Test", "Profiling", "Ship" }
-    toolset "clang"
+    newoption {
+        trigger = "cppdialect",
+        value = "DIALECT",
+        description = "C++ language standard",
+        allowed = {
+            { "C++20", "C++20" },
+            { "C++23", "C++23" }
+        },
+        default = "C++20"
+    }
+
+    -- Use either of these at generation time:
+    --   .\tools\premake5.exe --cc=clang ninja
+    --   .\tools\premake5.exe --cc=msc vs2026
+
 
     location "build"
     targetdir "bin/%{prj.name}_%{cfg.buildcfg}"
@@ -15,7 +29,7 @@ workspace "Nuclidean"
     }
 
     language "C++"
-    cppdialect "C++23"
+    cppdialect (_OPTIONS.cppdialect or "C++20")
     warnings "Off"
     conformancemode "On"
     intrinsics "On"
@@ -69,41 +83,42 @@ project "Nuclidean"
 
     warnings "Extra"
     fatalwarnings "All"
-    enablewarnings {
-        -- Control flow
-        "comma", "conditional-uninitialized", "implicit-fallthrough",
-        "missing-noreturn", "unreachable-code-aggressive",
+    filter "toolset:clang"
+        enablewarnings {
+            -- Control flow
+            "comma", "conditional-uninitialized", "implicit-fallthrough",
+            "missing-noreturn", "unreachable-code-aggressive",
 
-        -- Conversions
-        "anon-enum-enum-conversion", "bitfield-enum-conversion",
-        "enum-conversion", "float-overflow-conversion", "shorten-64-to-32",
-        "string-conversion",
+            -- Conversions
+            "anon-enum-enum-conversion", "bitfield-enum-conversion",
+            "enum-conversion", "float-overflow-conversion", "shorten-64-to-32",
+            "string-conversion",
 
-        -- Casts and comparisons
-        "cast-qual", "old-style-cast", "shift-sign-overflow",
-        "tautological-constant-in-range-compare", "undefined-reinterpret-cast",
+            -- Casts and comparisons
+            "cast-qual", "old-style-cast", "shift-sign-overflow",
+            "tautological-constant-in-range-compare", "undefined-reinterpret-cast",
 
-        -- Memory layout
-        "array-bounds-pointer-arithmetic", "class-varargs", "over-aligned", "unaligned-access",
+            -- Memory layout
+            "array-bounds-pointer-arithmetic", "class-varargs", "over-aligned", "unaligned-access",
 
-        -- Classes
-        "deprecated-copy-with-dtor", "duplicate-enum", "non-virtual-dtor",
-        "range-loop-bind-reference", "shadow-field-in-constructor-modified",
-        "suggest-destructor-override", "suggest-override",
+            -- Classes
+            "deprecated-copy-with-dtor", "duplicate-enum", "non-virtual-dtor",
+            "range-loop-bind-reference", "shadow-field-in-constructor-modified",
+            "suggest-destructor-override", "suggest-override",
 
-        -- Declarations and unused code
-        "missing-prototypes", "missing-variable-declarations",
-        "unused-macros", "unused-member-function", "unused-template",
+            -- Declarations and unused code
+            "missing-prototypes", "missing-variable-declarations",
+            "unused-macros", "unused-member-function", "unused-template",
 
-        -- Source hygiene
-        "header-hygiene", "invalid-utf8", "newline-eof", "undef"
-    }
-    disablewarnings { 
-        "switch",
-        "#pragma-messages",
-        "missing-field-initializers",
-        "missing-designated-field-initializers"
-    }
+            -- Source hygiene
+            "header-hygiene", "invalid-utf8", "newline-eof", "undef"
+        }
+        disablewarnings { 
+            "switch",
+            "#pragma-messages",
+            "missing-field-initializers",
+            "missing-designated-field-initializers"
+        }
 
     characterset "Unicode"
     clr "Off"
@@ -113,14 +128,15 @@ project "Nuclidean"
         kind "ConsoleApp"
         defines "NC_Debug"
         uses "imgui"
-        buildoptions {
-            "-Wno-error=unused",
-            "-Wno-error=unused-parameter",
-            "-Wno-error=unused-macros",
-            "-Wno-error=unused-member-function",
-            "-Wno-error=unused-template",
-            "-Wno-error=unreachable-code-aggressive"
-        }
+        filter "toolset:clang"
+            buildoptions {
+                "-Wno-error=unused",
+                "-Wno-error=unused-parameter",
+                "-Wno-error=unused-macros",
+                "-Wno-error=unused-member-function",
+                "-Wno-error=unused-template",
+                "-Wno-error=unreachable-code-aggressive"
+            }
     filter "configurations:Test"
         kind "ConsoleApp"
         defines { "NC_Test", "NDEBUG" }

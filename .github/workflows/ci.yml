@@ -47,7 +47,7 @@ jobs:
           tools\premake5.exe --version
 
       - name: Generate build files
-        run: tools\premake5.exe ninja
+        run: tools\premake5.exe --cc=clang --cppdialect=C++23 ninja
 
       - name: Build ${{ matrix.config }}
         run: ninja -C build ${{ matrix.config }}
@@ -85,7 +85,7 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: Generate build files
-        run: tools\premake5.exe vs2026
+        run: tools\premake5.exe --cc=clang --cppdialect=C++23 vs2026
 
       - name: Build Ship
         run: msbuild build\Nuclidean.slnx -p:Configuration=Ship -p:Platform=x64 -m
@@ -115,7 +115,7 @@ jobs:
           python --version
 
       - name: Generate compile database
-        run: tools\premake5.exe compilecommands --cc-config=Debug --cc-output=build/compile_commands.json
+        run: tools\premake5.exe compilecommands --cc=clang --cppdialect=C++23 --cc-config=Debug --cc-output=build/compile_commands.json
 
       - name: Run clang-tidy
         run: python 'C:\Program Files\LLVM\bin\run-clang-tidy' -p build -quiet -warnings-as-errors=* source.nuclidean
