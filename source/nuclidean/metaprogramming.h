@@ -6,6 +6,7 @@
 
 #define NC_INTERNAL_TOKENPASTE2(_a, _b) _a##_b
 #define NC_TOKENJOIN(_a, _b) NC_INTERNAL_TOKENPASTE2(_a, _b)
+#define NC_TOKENJOIN3(_a, _b, _c) NC_TOKENJOIN(_a, NC_TOKENJOIN(_b, _c))
 #define NC_TOKENPASTE(_a) _a
 
 
