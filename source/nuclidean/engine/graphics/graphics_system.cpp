@@ -166,6 +166,7 @@ bool GraphicsSystem::init()
   {
     // failed to init SDL, see what's the issue
     [[maybe_unused]] cstr error = SDL_GetError();
+    nc_crit("Error when initializing SDL: {}", error);
     return false;
   }
 
@@ -188,6 +189,7 @@ bool GraphicsSystem::init()
   if (!m_window)
   {
     [[maybe_unused]] cstr error = SDL_GetError();
+    nc_crit("Error when creating window: {}", error);
     return false;
   }
 
@@ -198,12 +200,14 @@ bool GraphicsSystem::init()
   if (!m_gl_context)
   {
     [[maybe_unused]] cstr error = SDL_GetError();
+    nc_crit("Error when creating GL_Context: {}", error);
     return false;
   }
 
   // init opengl bindings
   if (!gladLoadGLLoader(SDL_GL_GetProcAddress))
   {
+    nc_crit("GL loader failed!");
     return false;
   }
 

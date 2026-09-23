@@ -511,6 +511,7 @@ bool Engine::init(const CmdArgs& cmd_args)
     auto m = std::make_unique<_module_class>();               \
     if (!m || !m->init(__VA_ARGS__))                          \
     {                                                         \
+      nc_crit("Failed to {} module " #_module_class, m?"init":"create"); \
       return false;                                           \
     }                                                         \
     m_module_init_order.push_back(m.get());                   \
