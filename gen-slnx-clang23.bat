@@ -1,0 +1,1 @@
+.\\tools\\premake5.exe --cc=clang --cppdialect=C++23 vs2026

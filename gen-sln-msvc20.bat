@@ -1,0 +1,1 @@
+.\\tools\\premake5.exe --cc=msc --cppdialect=C++20 vs2022
