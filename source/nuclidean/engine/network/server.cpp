@@ -12,7 +12,8 @@ namespace nc::net
 {
 
 //==============================================================================
-Server::Server(IPv4Address address, u16 port)
+Server::Server(IPv4Address address, u16 port, u32 expected_player_count)
+  : m_expected_player_count(expected_player_count)
 {
   const auto maybe_socket = create_socket(address, port);
   if (!maybe_socket)
@@ -103,6 +104,19 @@ std::optional<PlayerID> Server::get_free_id() const
   }
 
   return std::nullopt;
+}
+
+//==============================================================================
+u32 Server::get_connected_count() const
+{
+  u32 count = 0;
+  for (const ClientData& client : m_clients)
+  {
+    if (client.status == Status::connected)
+      count += 1;
+  }
+
+  return count;
 }
 
 //==============================================================================
@@ -246,10 +260,22 @@ void Server::broadcast_all_player_inputs()
 //==============================================================================
 void Server::run_server_thread(const std::stop_token& token)
 {
+  // TODO: detect disconnects while waiting for players
+  while (get_connected_count() < m_expected_player_count)
+  {
+    if (token.stop_requested())
+      return;
+
+    drain_accepts();
+    handle_connection_events();
+  }
+
+  close_socket(m_listen_socket);
+  broadcast(protocol::messages::GameStart{});
+
   while (!token.stop_requested())
   {
     loop_until_inputs_received();
-    drain_accepts();
     handle_connection_events();
     broadcast_all_player_inputs();
   }

@@ -82,7 +82,7 @@ bool NetworkSystem::init(const CmdArgs& args)
       return false;
     }
 
-    m_server = std::make_unique<net::Server>(net::IPv4Address::any(), net::protocol::PORT);
+    m_server = std::make_unique<net::Server>(net::IPv4Address::any(), net::protocol::PORT, expected_player_count);
     m_client = std::make_unique<net::Client>(net::IPv4Address::loopback(), net::protocol::PORT);
   }
   // is client?
@@ -110,8 +110,7 @@ bool NetworkSystem::init(const CmdArgs& args)
     return false;
   }
 
-  if (m_server)
-    wait_for_players(expected_player_count);
+  wait_for_game_start();
 
   m_is_multiplayer = true;
   return true;
@@ -129,24 +128,24 @@ void NetworkSystem::on_event(ModuleEvent& event)
     m_client->send_inputs(InputSystem::get().get_inputs().player_inputs);
 
     // WARNING: Used as temporary workaround to solve desync issues.
-    {
-      m_frame_counter += 1;
-      if (m_server && m_frame_counter % 30 == 0)
-      {
-        PositionArray positions{};
-
-        EntityRegistry&    entities   = GameSystem::get().get_entities();
-        const PlayerArray& player_ids = GameSystem::get().get_player_ids();
-
-        for (PlayerID player_id = 0; player_id < MAX_PLAYER_COUNT; ++player_id)
-        {
-          if (const Player* player = entities.get_entity<Player>(player_ids[player_id]))
-            positions[player_id] = player->get_position();
-        }
-
-        m_client->send_positions(positions);
-      }
-    }
+    // {
+    //   m_frame_counter += 1;
+    //   if (m_server && m_frame_counter % 30 == 0)
+    //   {
+    //     PositionArray positions{};
+    //
+    //     EntityRegistry&    entities   = GameSystem::get().get_entities();
+    //     const PlayerArray& player_ids = GameSystem::get().get_player_ids();
+    //
+    //     for (PlayerID player_id = 0; player_id < MAX_PLAYER_COUNT; ++player_id)
+    //     {
+    //       if (const Player* player = entities.get_entity<Player>(player_ids[player_id]))
+    //         positions[player_id] = player->get_position();
+    //     }
+    //
+    //     m_client->send_positions(positions);
+    //   }
+    // }
     break;
   case ModuleEventType::terminate:
     m_client = nullptr;
@@ -228,17 +227,15 @@ void NetworkSystem::poll_network()
 }
 
 //==============================================================================
-void NetworkSystem::wait_for_players(u32 expected_player_count)
+void NetworkSystem::wait_for_game_start()
 {
   using namespace net::protocol::messages;
 
-  nc_log("[net][network system] waiting for {} players", expected_player_count);
+  nc_log("[net][network system] waiting for players");
 
-  u32 connected_count = 0;
-  while (connected_count < expected_player_count)
+  bool game_started = false;
+  while (!game_started)
   {
-    m_client->send_inputs(PlayerSpecificInputs{});
-
     while (const std::optional<net::protocol::Message> message = m_client->pop_message())
     {
       message->process(
@@ -246,17 +243,14 @@ void NetworkSystem::wait_for_players(u32 expected_player_count)
         {
           m_local_player_id = message.player_id;
         },
-        [this, &connected_count, expected_player_count](const PlayerConnected& message)
+        [this](const PlayerConnected& message)
         {
           nc_assert(message.player_id < MAX_PLAYER_COUNT, "invalid player id - \"{}\"", message.player_id);
-          if (!m_connected_players[message.player_id])
-          {
-            m_connected_players[message.player_id] = true;
-            connected_count += 1;
-            nc_log("[net][network system] player {} joined ({}/{})", message.player_id, connected_count, expected_player_count);
-          }
+          m_connected_players[message.player_id] = true;
+          nc_log("[net][network system] player {} joined", message.player_id);
         },
-        [](const AllPlayersInputs&){ /* Inputs are ignored while waiting for players. */ },
+        // TODO: handle PlayerDisconnected
+        [&game_started](const GameStart&){ game_started = true; },
         [](const auto&){ nc_warn("[net][network system] unexpected message while waiting for players"); }
       );
     }

@@ -16,7 +16,7 @@ namespace nc::net
 class Server
 {
 public:
-  Server(IPv4Address address, u16 port);
+  Server(IPv4Address address, u16 port, u32 expected_player_count);
   ~Server();
 
 private:
@@ -35,6 +35,7 @@ private:
     bool input_received = false;
   };
 
+  u32 m_expected_player_count = 0;
   TCPSocket m_listen_socket;
   std::jthread m_server_thread;
   std::array<ClientData, MAX_PLAYER_COUNT> m_clients;
@@ -44,6 +45,7 @@ private:
   void process_messages(PlayerID player_id);
   // Get unused player id.
   std::optional<PlayerID> get_free_id() const;
+  u32 get_connected_count() const;
   // Send message to specified client.
   void send(ClientData& client, const protocol::Message& message);
   // Broadcast message to all clients.

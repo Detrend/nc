@@ -75,6 +75,9 @@ namespace messages
   {
     PositionArray position_array;
   };
+
+  // Broadcast from server to all clients once the expected number of players is connected.
+  struct GameStart {};
 }
 
 using MessageBase = std::variant
@@ -84,7 +87,8 @@ using MessageBase = std::variant
   messages::PlayerDisconnected,
   messages::PlayerInputs,
   messages::AllPlayersInputs,
-  messages::PositionSync
+  messages::PositionSync,
+  messages::GameStart
 >;
 
 // Represent message which can be send/received over the network.
