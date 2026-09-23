@@ -385,7 +385,7 @@ void Player::apply_velocity(f32 delta_seconds)
   const auto forward2 = normalize(with_y(forward, 0.0f));
   this->angle_yaw = rem_euclid
   (
-    std::atan2f(forward2.z, -forward2.x) + HALF_PI, PI * 2
+    std::atan2(forward2.z, -forward2.x) + HALF_PI, PI * 2
   );
 
   // Spring - makes sure that the camera moves smoothly on the stairs
@@ -539,7 +539,7 @@ void Player::update_gun_sway(f32 delta)
   f32 velocity_amount  = velocity2_len / max_velocity_len;
 
   time_since_shoot      += delta;
-  time_since_start      += std::sqrtf(velocity_amount) * delta;
+  time_since_start      += std::sqrt(velocity_amount) * delta;
   time_since_gun_change += delta;
 
   const bool is_moving = length(this->velocity.xz()) > 0.01f;
