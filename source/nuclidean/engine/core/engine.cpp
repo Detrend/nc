@@ -1011,7 +1011,10 @@ void Engine::on_menu_state_changed(bool opened)
     case GameState::game:
     {
       // Pause the game
-      this->pause(opened);
+      if (!this->get_module<NetworkSystem>().is_multiplayer())
+      {
+        this->pause(opened);
+      }
 
       // Do not forward mouse movement and keypresses to the player
       InputSystem::get().lock_player_input(InputLockLayers::menu, opened);
