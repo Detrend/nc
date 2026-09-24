@@ -9,6 +9,7 @@
 #include <array>
 #include <format>
 #include <string>
+#include <filesystem>
 
 #include<token.h>
 
@@ -23,11 +24,11 @@ using LevelName = Token;
 
 inline const LevelName   INVALID_LEVEL_NAME    {"_no_lvl"};
 inline const ChapterID   INVALID_CHAPTER_ID    {"_no_chapter"};
-inline const std::string LEVELS_DIRECTORY_PATH {".\\content\\levels"};
+inline const std::filesystem::path LEVELS_DIRECTORY_PATH = std::filesystem::path {"."} / "content" / "levels" ;
 
-inline std::string get_full_level_path(const LevelName& level_name)
+inline std::filesystem::path get_full_level_path(const LevelName& level_name)
 {
-  return std::format("{0}\\{1}.json", LEVELS_DIRECTORY_PATH, level_name.to_cstring().data());
+  return LEVELS_DIRECTORY_PATH / level_name.to_cstring_enclosed("", ".json").data();
 }
 
 namespace Levels

@@ -300,8 +300,9 @@ static void load_json_map
   get_engine().get_module<GameSystem>().reset_enemy_count();
   get_engine().get_module<GameSystem>().reset_secret_count();
 
-  std::ifstream f(get_full_level_path(level_name));
-  nc_assert(f.is_open());
+  std::filesystem::path  full_level_path(get_full_level_path(level_name));
+  std::ifstream f(full_level_path);
+  nc_assert(f.is_open(), "No level at path '{0}'!", std::filesystem::absolute(full_level_path).string());
   auto data = nlohmann::json::parse(f);
 
   std::vector<vec2> points;
