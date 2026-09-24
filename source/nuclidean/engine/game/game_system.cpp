@@ -1312,6 +1312,11 @@ void GameSystem::handle_load_game(const std::string& savefile)
 //==============================================================================
 void GameSystem::handle_save_game(const std::string& savefile)
 {
+  if (NetworkSystem::get().is_multiplayer())
+  {
+    return;
+  }
+
   // Header
   SaveGameHeader header;
   std::memcpy(header.signature, SaveGameHeader::SIGNATURE, SaveGameHeader::SIGNATURE_SIZE);
