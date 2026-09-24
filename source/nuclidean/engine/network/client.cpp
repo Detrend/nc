@@ -42,31 +42,25 @@ bool Client::is_connected() const
 //==============================================================================
 void Client::send_inputs(const PlayerSpecificInputs& inputs)
 {
-  const TransferResult result = protocol::send(
-    m_connection,
-    protocol::messages::PlayerInputs{.inputs = inputs}
-  );
-
-  switch (result)
-  {
-  case TransferResult::success:
-    break;
-  case TransferResult::error:
-    nc_warn("[net][client] protocol send message error");
-    break;
-  case TransferResult::disconnected:
-    nc_warn("[net][client] server disconnected");
-    break;
-  }
+  send(protocol::messages::PlayerInputs{.inputs = inputs});
 }
 
 //==============================================================================
 void Client::send_positions(const PositionArray& positions)
 {
-  const TransferResult result = protocol::send(
-    m_connection,
-    protocol::messages::PositionSync{.position_array = positions}
-  );
+  send(protocol::messages::PositionSync{.position_array = positions});
+}
+
+//==============================================================================
+void Client::send_state_hash(u64 hash)
+{
+  send(protocol::messages::HashSync{.hash = hash});
+}
+
+//==============================================================================
+void Client::send(const protocol::Message& message)
+{
+  const TransferResult result = protocol::send(m_connection, message);
 
   switch (result)
   {

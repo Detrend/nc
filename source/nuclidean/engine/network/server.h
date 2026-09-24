@@ -33,6 +33,9 @@ private:
     Status status = Status::none;
     protocol::Connection connection{};
     bool input_received = false;
+    // Game state hash received from the client for the desync check.
+    u64  state_hash = 0;
+    bool hash_received = false;
   };
 
   u32 m_expected_player_count = 0;
@@ -53,6 +56,8 @@ private:
 
   // Loops until all inputs are received.
   void loop_until_inputs_received();
+  // Once all clients sent their state hash, compare them and tell clients the result.
+  void check_state_hashes();
   // Drain all accepts on listen socket.
   void drain_accepts();
   // Handle connects/disconnects.

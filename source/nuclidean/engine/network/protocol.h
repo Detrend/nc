@@ -78,6 +78,19 @@ namespace messages
 
   // Broadcast from server to all clients once the expected number of players is connected.
   struct GameStart {};
+
+  // Send from client to server before `PlayerInputs` when the desync check is enabled.
+  struct HashSync
+  {
+    // Hash of the game state (frame number and position of all entities).
+    u64 hash;
+  };
+
+  // Broadcast from server to all clients when hashes of all clients match.
+  struct NoDesync {};
+
+  // Broadcast from server to all clients when hashes of clients differ.
+  struct DesyncDetected {};
 }
 
 using MessageBase = std::variant
@@ -88,7 +101,10 @@ using MessageBase = std::variant
   messages::PlayerInputs,
   messages::AllPlayersInputs,
   messages::PositionSync,
-  messages::GameStart
+  messages::GameStart,
+  messages::HashSync,
+  messages::NoDesync,
+  messages::DesyncDetected
 >;
 
 // Represent message which can be send/received over the network.

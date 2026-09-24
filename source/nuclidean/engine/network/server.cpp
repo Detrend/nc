@@ -85,6 +85,11 @@ void Server::process_messages(PlayerID player_id)
         {
           broadcast(message);
         },
+        [&client](const protocol::messages::HashSync& message)
+        {
+          client.state_hash = message.hash;
+          client.hash_received = true;
+        },
         [](const auto&){ nc_warn("[net][server] received invalid message"); }
       );
       break;
@@ -169,7 +174,70 @@ void Server::loop_until_inputs_received()
       if (!client.input_received)
         all_inputs_received = false;
     }
+
+    check_state_hashes();
   }
+}
+
+//==============================================================================
+void Server::check_state_hashes()
+{
+  std::optional<PlayerID> reference_id;
+  for (PlayerID player_id = 0; player_id < m_clients.size(); ++player_id)
+  {
+    const ClientData& client = m_clients[player_id];
+    if (client.status != Status::connected)
+      continue;
+
+    // Wait until all clients sent their hash.
+    if (!client.hash_received)
+      return;
+
+    if (!reference_id)
+      reference_id = player_id;
+  }
+
+  if (!reference_id)
+    return;
+
+  const u64 reference_hash = m_clients[*reference_id].state_hash;
+
+  bool desync = false;
+  for (const ClientData& client : m_clients)
+  {
+    if (client.status == Status::connected && client.state_hash != reference_hash)
+      desync = true;
+  }
+
+  if (desync)
+  {
+    nc_warn("[net][server] desync detected");
+
+    for (PlayerID player_id = 0; player_id < m_clients.size(); ++player_id)
+    {
+      const ClientData& client = m_clients[player_id];
+      if (client.status != Status::connected)
+        continue;
+
+      nc_warn(
+        "[net][server]   player {} ({}:{}) hash {:016x}{}",
+        player_id,
+        client.connection.socket.address.to_string(),
+        client.connection.socket.port,
+        client.state_hash,
+        client.state_hash == reference_hash ? "" : " <- differs"
+      );
+    }
+
+    broadcast(protocol::messages::DesyncDetected{});
+  }
+  else
+  {
+    broadcast(protocol::messages::NoDesync{});
+  }
+
+  for (ClientData& client : m_clients)
+    client.hash_received = false;
 }
 
 //==============================================================================
@@ -198,6 +266,7 @@ void Server::drain_accepts()
     client.status = Status::connecting;
     client.connection = protocol::Connection{.socket = client_socket};
     client.input_received = false;
+    client.hash_received = false;
   }
 }
 
@@ -243,6 +312,7 @@ void Server::handle_connection_events()
     close_socket(client.connection.socket);
     client.status = Status::none;
     client.input_received = false;
+    client.hash_received = false;
 
     broadcast(protocol::messages::PlayerDisconnected{.player_id = player_id});
   }

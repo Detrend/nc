@@ -1,12 +1,15 @@
 // Project Nuclidean Source File
 #include <engine/network/network_system.h>
 
+#include <cvars.h>
 #include <logging.h>
 
 #include <engine/core/engine_module_types.h>
 #include <engine/core/module_event.h>
 #include <engine/core/engine.h>
 #include <engine/entity/entity_system.h>
+#include <engine/entity/entity_type_definitions.h>
+#include <engine/game/game_helpers.h>
 #include <engine/game/game_system.h>
 #include <engine/input/input_system.h>
 #include <engine/network/protocol.h>
@@ -15,12 +18,52 @@
 #include <engine/network/tcp_socket.h>
 #include <engine/player/player.h>
 
+#include <json/json.hpp>
+#include <SDL2/include/SDL.h>
+
 #include <charconv>
 #include <chrono>
+#include <filesystem>
+#include <format>
+#include <fstream>
+#include <functional>
+#include <string>
 #include <thread>
 
 namespace nc
 {
+
+//==============================================================================
+// Game state which must be the same on all clients.
+static nlohmann::json serialize_game_state()
+{
+  nlohmann::json entities = nlohmann::json::array();
+
+  GameSystem::get().get_entities().for_each(EntityTypes::all, [&entities](Entity& entity)
+  {
+    const EntityID id       = entity.get_id();
+    const vec3     position = entity.get_position();
+
+    entities.push_back(nlohmann::json
+    {
+      {"type",     ENTITY_TYPE_NAMES[id.type]},
+      {"idx",      id.idx},
+      {"position", {position.x, position.y, position.z}},
+    });
+  });
+
+  return nlohmann::json
+  {
+    {"frame",    GameHelpers::get().get_frame_idx()},
+    {"entities", std::move(entities)},
+  };
+}
+
+//==============================================================================
+static u64 hash_game_state(const nlohmann::json& state)
+{
+  return std::hash<std::string>{}(state.dump());
+}
 
 //==============================================================================
 EngineModuleId NetworkSystem::get_module_id()
@@ -124,6 +167,9 @@ void NetworkSystem::on_event(ModuleEvent& event)
   switch (event.type)
   {
   case ModuleEventType::frame_start:
+    if (CVars::net_desync_check && !m_desync_detected)
+      sync_state_hash();
+
     m_input_received = false;
     m_client->send_inputs(InputSystem::get().get_inputs().player_inputs);
 
@@ -221,6 +267,16 @@ void NetworkSystem::poll_network()
             player->set_position(message.position_array[player_id]);
         }
       },
+      [this](const NoDesync&)
+      {
+        m_hash_result_received = true;
+      },
+      [this](const DesyncDetected&)
+      {
+        write_desync_log();
+        m_desync_detected = true;
+        m_hash_result_received = true;
+      },
       [](const auto&){ nc_warn("[net][network system] client received invalid message"); }
     );
   }
@@ -257,6 +313,53 @@ void NetworkSystem::wait_for_game_start()
 
     std::this_thread::sleep_for(std::chrono::milliseconds(16));
   }
+}
+
+//==============================================================================
+void NetworkSystem::sync_state_hash()
+{
+  m_client->send_state_hash(hash_game_state(serialize_game_state()));
+
+  m_hash_result_received = false;
+  while (!m_hash_result_received)
+  {
+    poll_network();
+  }
+}
+
+//==============================================================================
+void NetworkSystem::write_desync_log() const
+{
+  namespace fs = std::filesystem;
+
+  const u64            frame = GameHelpers::get().get_frame_idx();
+  const nlohmann::json state = serialize_game_state();
+  const nlohmann::json log
+  {
+    {"player_id", m_local_player_id},
+    {"hash",      std::format("{:016x}", hash_game_state(state))},
+    {"state",     state},
+  };
+
+  char* const base_path = SDL_GetBasePath();
+  const fs::path directory = fs::path{recast<const char8_t*>(base_path)} / "desync_logs";
+  SDL_free(base_path);
+
+  const auto     now  = std::chrono::floor<std::chrono::seconds>(std::chrono::system_clock::now());
+  const fs::path file = directory / std::format("{:%Y-%m-%d_%H-%M-%S}_p{}.log", now, m_local_player_id);
+
+  std::error_code error;
+  fs::create_directories(directory, error);
+
+  std::ofstream stream{file};
+  if (error || !stream)
+  {
+    nc_crit("[net][network system] desync at frame {} - failed to write \"{}\"", frame, file.string());
+    return;
+  }
+
+  stream << log.dump(2);
+  nc_warn("[net][network system] desync at frame {} - game state written to \"{}\"", frame, file.string());
 }
 
 }

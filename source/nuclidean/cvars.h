@@ -141,6 +141,8 @@ struct CVars
   NC_REGISTER_CVAR(bool, sector_height_debug,   false, "Sector movement debug.");
   NC_REGISTER_CVAR(bool, invisibility,          false, "Makes the player invisible to enemies.");
   NC_REGISTER_CVAR(bool, billboard_cam_rot,     true,  "True = rotate billboards with camera, False = rotate to the camera");
+  // Treated as immutable.
+  NC_REGISTER_CVAR(bool, net_desync_check,      true,"Multiplayer - hash game state every frame and compare it across clients.");
 
   NC_REGISTER_CVAR(bool, character_physics_stabilize, true, "Extra stabilization iterations for character physics.");
 

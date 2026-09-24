@@ -50,6 +50,10 @@ public:
 private:
   // Blocking wait until the server starts the game.
   void wait_for_game_start();
+  // Send game state hash to the server and block until the server compares it with other clients.
+  void sync_state_hash();
+  // Log local game state.
+  void write_desync_log() const;
 
   // true if game is running in multiplayer; false if game is running in singleplayer.
   bool m_is_multiplayer = false;
@@ -58,6 +62,10 @@ private:
   std::array<bool, MAX_PLAYER_COUNT> m_connected_players{};
   // Determine if this frame's input was received.
   bool m_input_received = false;
+  // Determine if the server answered this frame's state hash.
+  bool m_hash_result_received = false;
+  // Set on the first desync, the desync check then stays off for the rest of the session.
+  bool m_desync_detected = false;
   // u64 m_frame_counter = 0;
 
   std::unique_ptr<net::Server> m_server;

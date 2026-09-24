@@ -149,6 +149,11 @@ static bool message_index_matches_tables_test(unit_test::TestCtx& /*ctx*/)
   NC_TEST_ASSERT(check.template operator()<messages::PlayerDisconnected>(2));
   NC_TEST_ASSERT(check.template operator()<messages::PlayerInputs>      (3));
   NC_TEST_ASSERT(check.template operator()<messages::AllPlayersInputs>  (4));
+  NC_TEST_ASSERT(check.template operator()<messages::PositionSync>      (5));
+  NC_TEST_ASSERT(check.template operator()<messages::GameStart>         (6));
+  NC_TEST_ASSERT(check.template operator()<messages::HashSync>          (7));
+  NC_TEST_ASSERT(check.template operator()<messages::NoDesync>          (8));
+  NC_TEST_ASSERT(check.template operator()<messages::DesyncDetected>    (9));
 
   NC_TEST_SUCCESS;
 }
