@@ -946,13 +946,21 @@ void Player::heal(u32 how_much)
 //==============================================================================
 void Player::die()
 {
-  if (alive)
+  if (!alive)
   {
-    this->velocity.x = this->velocity.z = 0.0f; // Stop on the place
-    dead_camera_offset = PLAYER_EYE_HEIGHT;
-    SoundSystem::get().play_oneshot(Sounds::death);
+    return;
   }
+
+  this->velocity.x = this->velocity.z = 0.0f; // Stop on the place
+  dead_camera_offset = PLAYER_EYE_HEIGHT;
+  SoundSystem::get().play_oneshot(Sounds::death);
   alive = false;
+
+  // When one player dies, all players die.
+  GameSystem::get().get_entities().for_each<Player>([](Player& player)
+  {
+    player.die();
+  });
 }
 
 //==============================================================================
