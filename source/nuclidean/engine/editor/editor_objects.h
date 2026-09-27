@@ -4,6 +4,7 @@
 #include <types.h>
 #include <common.h>
 #include <math/vector.h>
+//#include 
 
 #include <variant>
 #include <optional>
@@ -43,6 +44,7 @@ template<typename T>
 using EID = EditorID;
 
 constexpr EditorID INVALID_EDITOR_ID = 0;
+constexpr EditorID VOID_SECTOR_ID    = 1;
 
 struct EditorLevel;
 
@@ -86,6 +88,15 @@ struct EditorSector2
   EditorID parent     = INVALID_EDITOR_ID;
   EditorID first_hole = INVALID_EDITOR_ID;
   EditorID next_hole  = INVALID_EDITOR_ID;
+
+  // void sector is a virtual non-existing sector that acts as a top-most parent of all other
+  // sectors. It is tracked as a real sector to elliminate several edge-cases in the code even
+  // though it does not have any edges.
+  // Each top-most sector is tracked as a hole of the void sector.
+  bool is_void() const
+  {
+    return parent == INVALID_EDITOR_ID; // Void is the only one that can have an invalid parent
+  }
 };
 
 struct EditorEntity
@@ -108,7 +119,7 @@ struct ActionCreateOrDeleteLine
   EditorCoord to;
 
   bool do_create(EditorLevel& level);
-  void do_destroy(EditorLevel& level);
+  bool do_destroy(EditorLevel& level);
   void action_do(EditorLevel& level);
   void action_undo(EditorLevel& level);
 };
@@ -124,40 +135,19 @@ struct EditorLevel
   PointToHalfEdgesMap point_to_half_edges;
   CoordToPointMap     coord_to_point;
 
-  EditorSector2 void_sector
-  {
-    .first_hole = INVALID_EDITOR_ID,
-  };
+  // Creates an empty level, which contains only the void sector
+  EditorLevel();
 
   // Returns pointer to the object with the given ID. Nullptr if the object does not exist.
   // Asserts if the object exists and is of a different type.
   template<typename T>
-  T* try_get_object(EditorID id)
-  {
-    auto it = objects.find(id);
-    if (it == objects.end())
-    {
-      return nullptr;
-    }
-
-    T* typed = std::get_if<T>(&it->second);
-    nc_assert(typed != nullptr);
-    return typed;
-  }
+  T* try_get_object(EditorID id);
 
   template<typename T>
-  T& get_object(EditorID id)
-  {
-    T* object = this->try_get_object<T>(id);
-    nc_assert(object);
-    return *object;
-  }
+  T& get_object(EditorID id);
 
   template<typename T>
-  const T& get_object(EditorID id) const
-  {
-    return const_cast<EditorLevel*>(this)->get_object<T>(id);
-  }
+  const T& get_object(EditorID id) const;
 
   EditorObject* get_any_object(EditorID id);
 
@@ -166,59 +156,10 @@ struct EditorLevel
   EditorID new_id() const;
 
   template<typename T, typename F>
-  void for_each_object_of_type(F&& lambda)
-  {
-    for (auto&[id, obj] : objects)
-    {
-      if (T* typed = std::get_if<T>(&obj))
-      {
-        if constexpr (requires (bool cont){cont = lambda(id, *typed);})
-        {
-          if (!lambda(id, *typed))
-          {
-            return;
-          }
-        }
-        else if constexpr (requires {lambda(id, *typed);})
-        {
-          lambda(id, *typed);
-        }
-        else if constexpr (requires (bool cont){cont = lambda(*typed);})
-        {
-          if (!lambda(*typed))
-          {
-            return;
-          }
-        }
-        else
-        {
-          lambda(*typed);
-        }
-      }
-    }
-  }
+  void for_each_object_of_type(F&& lambda);
 
   template<typename T, typename...Args>
-  T& create_object(EditorID id, Args&&...arguments)
-  {
-    nc_assert(!objects.contains(id));
-
-    auto[it, ok] = objects.emplace
-    (
-      std::piecewise_construct, std::forward_as_tuple(id),
-      std::forward_as_tuple(std::in_place_type<T>, std::forward<Args>(arguments)...)
-    );
-
-    nc_assert(ok);
-    T& ref = std::get<T>(it->second);
-
-    if constexpr (requires {this->on_object_created(id, ref);})
-    {
-      this->on_object_created(id, ref);
-    }
-
-    return ref;
-  }
+  T& create_object(EditorID id, Args&&...arguments);
 
   void destroy_object(EditorID id);
 
@@ -226,13 +167,15 @@ struct EditorLevel
 
   bool create_line(EditorID line_id, EditorCoord start, EditorCoord end);
 
-  void destroy_line(EditorID edge_id);
+  bool destroy_line(EditorID line_id);
 
   // Callback helpers
   void on_object_created(EditorID   id, const EditorPoint&    point    );
   void on_object_destroyed(EditorID id, const EditorPoint&    point    );
   void on_object_created(EditorID   id, const EditorHalfEdge& half_edge);
+  void on_object_destroyed(EditorID id, const EditorHalfEdge& half_edge);
 
+  // Debug function for printing the current status of the level into a text.
   void dump_to_text();
 };
 
@@ -249,3 +192,5 @@ void undo_action(EditorLevel& level, ActionType& action)
 }
 
 }
+
+#include <engine/editor/editor_objects.inl>

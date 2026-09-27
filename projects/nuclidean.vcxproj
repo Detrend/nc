@@ -299,6 +299,7 @@
     <None Include="..\source\nuclidean\stack_allocator.inl" />
     <None Include="..\source\nuclidean\engine\entity\sector_mapping.inl" />
     <None Include="..\source\nuclidean\engine\graphics\ssbo_buffer.inl" />
+    <None Include="..\source\nuclidean\engine\editor\editor_objects.inl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\source\libs\glm\CMakeLists.txt" />
