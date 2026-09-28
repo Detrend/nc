@@ -581,11 +581,7 @@ static void move_holes(EditorLevel& level, EID<EditorSector> from_id, EID<Editor
 //==================================================================================================
 bool EditorLevel::create_line(EditorID line_id, EditorCoord start, EditorCoord end)
 {
-  if (!this->can_create_line(start, end))
-  {
-    return false;
-  }
-
+  nc_assert(this->can_create_line(start, end));
   nc_assert(this->get_any_object(line_id) == nullptr);
 
   /*[[indeterminate]]*/
@@ -630,7 +626,7 @@ bool EditorLevel::create_line(EditorID line_id, EditorCoord start, EditorCoord e
     // This means that we haven't created any new sector or split another sector into 2..
     // Bail out.
     // The line was however created succesfully, so return success.
-    return true;
+    return false;
   }
 
   // If the sum is ~360 degrees then the area forms a cycle! This means that we either created a

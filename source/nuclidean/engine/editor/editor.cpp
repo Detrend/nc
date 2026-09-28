@@ -169,6 +169,33 @@ struct Editor::EditorImpl
     objects_render.insert({object_id, std::move(new_sector)});
   }
 
+  void on_object_created(EditorID object_id, const EditorLine& line)
+  {
+    const EditorHalfEdge& h1 = level.get_object<EditorHalfEdge>(line.half_edge_a);
+    const EditorHalfEdge& h2 = level.get_object<EditorHalfEdge>(line.half_edge_b);
+    const EditorPoint&    p1 = level.get_object<EditorPoint>(h1.from);
+    const EditorPoint&    p2 = level.get_object<EditorPoint>(h2.from);
+
+    EditorLineRenderData render_data {.id = object_id};
+    render_data.recreate_render_data(p1.coords, p2.coords);
+    objects_render.insert({object_id, std::move(render_data)});
+  }
+
+  void on_object_destroyed(EditorID object_id, const EditorLine&)
+  {
+    objects_render.erase(object_id);
+  }
+
+  void on_object_modified(EditorID object_id, const EditorLine&, const EditorLine& line)
+  {
+    const EditorHalfEdge& h1 = level.get_object<EditorHalfEdge>(line.half_edge_a);
+    const EditorHalfEdge& h2 = level.get_object<EditorHalfEdge>(line.half_edge_b);
+    const EditorPoint&    p1 = level.get_object<EditorPoint>(h1.from);
+    const EditorPoint&    p2 = level.get_object<EditorPoint>(h2.from);
+
+    std::get<EditorLineRenderData>(objects_render[object_id]).recreate_render_data(p1.coords, p2.coords);
+  }
+
   void on_object_destroyed(EditorID object_id, const EditorSector&)
   {
     if (object_id == VOID_SECTOR_ID)
@@ -300,11 +327,13 @@ struct Editor::EditorImpl
     }, this->tool);
   }
 
-  bool try_insert_line_into_map(EditorCoord start, EditorCoord end)
+  bool try_insert_line_into_map(EditorCoord start, EditorCoord end, bool& sector_created)
   {
+    sector_created = false;
+
     if (level.can_create_line(start, end))
     {
-      level.create_line(level.new_id(), start, end);
+      sector_created = level.create_line(level.new_id(), start, end);
       return true;
     }
 
@@ -527,15 +556,23 @@ struct Editor::EditorImpl
       }
       cursor->refresh_gpu_data(cursor_pts);
 
-      EditorCoord pointing_at  = EditorCoord{mouse_world_pos};
-      bool        should_reset = false;
-      bool        should_start = false;
+      EditorCoord pointing_at    = EditorCoord{mouse_world_pos};
+      bool        should_reset   = false;
+      bool        should_start   = false;
+      bool        sector_created = false;
 
       // Check what to do
-      if (left_click && is_painting && editor.try_insert_line_into_map(painting_start, pointing_at))
+      if (left_click && is_painting && editor.try_insert_line_into_map(painting_start, pointing_at, sector_created))
       {
         // We inserted a line into the map, reset!
-        should_reset = true;
+        if (sector_created)
+        {
+          should_reset = true;
+        }
+        else
+        {
+          should_start = true;
+        }
       }
       else if (left_click && !is_painting)
       {

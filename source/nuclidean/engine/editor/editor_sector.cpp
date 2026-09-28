@@ -346,6 +346,7 @@ void EditorSectorRenderData::convexify_surface()
   render_data_splits->type = EditorPrimitiveType::sector;
   render_data_splits->sector.type = 1;
   render_data_splits->sector.id   = this->id;
+  render_data_splits->order       = 10;
 
   // And surface area
   render_data_surface->refresh_gpu_data(surface_triangle_pts, GL_TRIANGLES);
@@ -358,7 +359,7 @@ void EditorSectorRenderData::convexify_surface()
 //==================================================================================================
 void EditorSectorRenderData::recompute_render_data()
 {
-  this->recompute_lines();
+  //this->recompute_lines();
   this->convexify_surface();
 }
 
