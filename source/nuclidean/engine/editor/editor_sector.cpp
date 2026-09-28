@@ -263,7 +263,7 @@ static void convexify_sector
 }
 
 //==================================================================================================
-void EditorSector::get_render_data(RenderList& list)
+void EditorSectorRenderData::get_render_data(RenderList& list)
 {
   if (render_data_lines->is_valid())
     list.push_back(render_data_lines->shared_from_this());
@@ -276,7 +276,7 @@ void EditorSector::get_render_data(RenderList& list)
 }
 
 //==================================================================================================
-void EditorSector::recompute_lines()
+void EditorSectorRenderData::recompute_lines()
 {
   std::vector<vec2> points;
   for (u64 i = 0; i < walls.size(); ++i)
@@ -293,7 +293,7 @@ void EditorSector::recompute_lines()
 }
 
 //==================================================================================================
-void EditorSector::convexify_surface()
+void EditorSectorRenderData::convexify_surface()
 {
   // First allocate it into a point list
   std::vector<ivec2> points;
@@ -302,11 +302,7 @@ void EditorSector::convexify_surface()
     return wall.pt;
   });
 
-  // No need to triangulate inward sectors..
-  if (!is_sector_inward(points))
-  {
-    return;
-  }
+  nc_assert(is_sector_inward(points));
 
   // Generate indices
   std::vector<u16> indices(points.size());
@@ -360,7 +356,7 @@ void EditorSector::convexify_surface()
 }
 
 //==================================================================================================
-void EditorSector::recompute_render_data()
+void EditorSectorRenderData::recompute_render_data()
 {
   this->recompute_lines();
   this->convexify_surface();

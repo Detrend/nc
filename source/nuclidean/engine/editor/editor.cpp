@@ -12,6 +12,7 @@
 #include <engine/editor/editor_renderer.h>
 #include <engine/editor/rendering_modifier.h>
 #include <engine/editor/editor_sector.h>
+#include <engine/editor/editor_objects.h>
 
 #include <math/lingebra.h>   // compMax
 #include <metaprogramming.h> // ARRAY_LENGTH
@@ -58,12 +59,6 @@ namespace nc
 {
 
 //==================================================================================================
-static u64 random_id()
-{
-  return cast<u64>(__rdtsc());
-}
-
-//==================================================================================================
 // World coords to screen coords.
 static mat3 calc_view_matrix_impl(vec2 offset, f32 zoom, f32 aspect)
 {
@@ -104,6 +99,8 @@ bool ImageButton(cstr texture, ImVec2 size, bool selected)
 
 }
 
+using EditorObjectRenderData = std::variant<EditorGenericRenderData, EditorSectorRenderData, EditorLineRenderData>;
+
 //==================================================================================================
 struct Editor::EditorImpl
 {
@@ -119,19 +116,148 @@ struct Editor::EditorImpl
   static_assert(ARRAY_LENGTH(GRID_SIZES)  == NUM_GRIDS);
   static_assert(ARRAY_LENGTH(GRID_COLORS) == NUM_GRIDS);
 
-  f32                             aspect = 1.0f;
-  ivec2                           screen_size = ivec2{1920, 1080};
-  std::vector<EditorPrimitivePtr> grids;
-  std::map<u64, EditorSector>     sectors;
-  EditorRenderer                  renderer;
-  vec2                            center = VEC2_ZERO;
-  f32                             zoom   = editor::ZOOM_DEFAULT;
-  u64                             current_snap = 1;
-  f64                             time_since_start = 0.0f;
+  f32                              aspect = 1.0f;
+  ivec2                            screen_size = ivec2{1920, 1080};
+  std::vector<EditorPrimitivePtr>  grids;
+  EditorRenderer                   renderer;
+  vec2                             center = VEC2_ZERO;
+  f32                              zoom   = editor::ZOOM_DEFAULT;
+  u64                              current_snap = 1;
+  f64                              time_since_start = 0.0f;
+  EditorLevel                      level;
+
+  // The object state
+  std::map<EditorID, EditorObject>           objects_mirror;
+  std::map<EditorID, EditorObjectRenderData> objects_render;
+
+  void recompute_sector_render_data(const EditorSector& sector, EditorSectorRenderData& render_data)
+  {
+    // Iterate all edges of the sector and push into the points list..
+    render_data.walls.clear();
+
+    EditorID first_edge = sector.edge;
+    EditorID edge       = first_edge;
+
+    do
+    {
+      const EditorHalfEdge& edge_ref = level.get_object<EditorHalfEdge>(edge);
+      const EditorPoint&    pt_ref   = level.get_object<EditorPoint>(edge_ref.from);
+      render_data.walls.push_back(EditorWall{.pt = pt_ref.coords});
+      edge = edge_ref.next;
+    }
+    while (edge != first_edge);
+
+    // Then recompute the render data
+    render_data.recompute_render_data();
+  }
+
+  void on_object_created(EditorID object_id, const EditorSector& sector)
+  {
+    if (object_id == VOID_SECTOR_ID)
+    {
+      // Void sector ignored
+      return;
+    }
+
+    // Create a new sector and set its ID
+    EditorSectorRenderData new_sector {.id = object_id};
+
+    // Recompute the render data
+    this->recompute_sector_render_data(sector, new_sector);
+
+    // And move the sector into the list
+    objects_render.insert({object_id, std::move(new_sector)});
+  }
+
+  void on_object_destroyed(EditorID object_id, const EditorSector&)
+  {
+    if (object_id == VOID_SECTOR_ID)
+    {
+      return;
+    }
+
+    // Destroy the sector..
+    nc_assert(objects_render.contains(object_id));
+    objects_render.erase(object_id);
+  }
+
+  void on_object_modified(EditorID object_id, const EditorSector&, const EditorSector& new_state)
+  {
+    if (object_id == VOID_SECTOR_ID)
+    {
+      return;
+    }
+
+    nc_assert(objects_render.contains(object_id));
+    EditorSectorRenderData& render_data = std::get<EditorSectorRenderData>(objects_render[object_id]);
+    this->recompute_sector_render_data(new_state, render_data);
+  }
+
+  void check_level_state_update()
+  {
+    // React to object changes during the last frame..
+    // First, check for the new and modified objects
+    for (const auto&[object_id, object] : level.objects)
+    {
+      if (objects_mirror.contains(object_id))
+      {
+        // Check if it got modified..
+        std::visit([&]<typename T>(const T& new_object_state)
+        {
+          EditorObject& second_variant = objects_mirror[object_id];
+          T& old_object_state = std::get<T>(second_variant);
+          if (new_object_state != old_object_state)
+          {
+            // Notify the change if we are interested to hear it
+            if constexpr (requires {this->on_object_modified(object_id, old_object_state, new_object_state); })
+            {
+              this->on_object_modified(object_id, old_object_state, new_object_state);
+            }
+
+            old_object_state = new_object_state; // copy the state
+          }
+        }, object);
+      }
+      else
+      {
+        // The object got created!
+        std::visit([&](auto& object_typed)
+        {
+          if constexpr (requires { this->on_object_created(object_id, object_typed); })
+          {
+            this->on_object_created(object_id, object_typed);
+          }
+        }, object);
+
+        // Insert if not present previously
+        objects_mirror.insert({object_id, object});
+      }
+    }
+
+    // Then check for the deleted objects..
+    for (const auto&[object_id, object] : objects_mirror)
+    {
+      if (!level.objects.contains(object_id))
+      {
+        // The object got deleted! Propagate the information
+        std::visit([&](auto& object_typed)
+        {
+          if constexpr (requires { this->on_object_destroyed(object_id, object_typed); })
+          {
+            this->on_object_destroyed(object_id, object_typed);
+          }
+        }, object);
+
+        // And erase it from the mirror
+        objects_mirror.erase(object_id);
+      }
+    }
+  }
 
   void update(f32 dt)
   {
     this->time_since_start += cast<f64>(dt);
+    this->check_level_state_update();
 
     constexpr ImVec2 TOOL_SIZE = ImVec2{16, 16};
 
@@ -174,29 +300,11 @@ struct Editor::EditorImpl
     }, this->tool);
   }
 
-  bool try_insert_sector_walls_into_map(const std::vector<ivec2>& pts)
+  bool try_insert_line_into_map(EditorCoord start, EditorCoord end)
   {
-    // First, check if the first point matched with the last one
-    if (pts.size() < 3)
+    if (level.can_create_line(start, end))
     {
-      return false;
-    }
-
-    // Full loop
-    if (pts.front() == pts.back())
-    {
-      u64 id = random_id();
-      nc_assert(!sectors.contains(id));
-
-      EditorSector& new_sector = sectors[id];
-      new_sector.id = id;
-
-      std::transform(pts.begin(), pts.end()-1, std::back_inserter(new_sector.walls), [&](ivec2 point)
-      {
-        return EditorWall{.pt = point};
-      });
-
-      new_sector.recompute_render_data();
+      level.create_line(level.new_id(), start, end);
       return true;
     }
 
@@ -262,8 +370,10 @@ struct Editor::EditorImpl
       return false;
     }
 
-    bool handle_selection(EditorImpl& editor)
+    bool handle_selection(EditorImpl& /*editor*/)
     {
+      return false;
+      /*
       u64 sector_directly_selected = 0;
       ivec2 closest_wall_a, closest_wall_b, closest_point;
 
@@ -273,10 +383,10 @@ struct Editor::EditorImpl
       vec2 cursor_in_world = editor.get_mouse_wpos();
 
       // Update the pointed at sector..
-      for (const auto&[id, sector] : editor.sectors)
+      for (const auto&[id, sector] : editor.objects_mirror)
       {
         // Handle the direct point-at sector - iterate all convex parts
-        for (const EditorSector::IndexList& convex_part_indices : sector.convex_parts)
+        for (const EditorSectorRenderData::IndexList& convex_part_indices : sector.convex_parts)
         {
           u16 idx0 = convex_part_indices[0];
 
@@ -344,6 +454,7 @@ struct Editor::EditorImpl
       }
 
       return true;
+      */
     }
 
     void update(EditorImpl& editor, f32 /*dt*/)
@@ -388,9 +499,10 @@ struct Editor::EditorImpl
 
   struct BrushTool
   {
-    EditorPrimitivePtr cursor      = std::make_shared<EditorPrimitive>();
-    EditorPrimitivePtr render_data = std::make_shared<EditorPrimitive>();
-    std::vector<ivec2> painted_walls_stack;
+    EditorPrimitivePtr cursor         = std::make_shared<EditorPrimitive>();
+    EditorPrimitivePtr render_data    = std::make_shared<EditorPrimitive>();
+    bool               is_painting    = false;
+    EditorCoord        painting_start = EditorCoord{0};
 
     void update(EditorImpl& editor, f32 /*delta*/)
     {
@@ -402,7 +514,6 @@ struct Editor::EditorImpl
       editor.snap_to_grid(mouse_world_pos);
 
       mat3 screen_to_world = inverse(editor.calc_view_matrix());
-      f32  normal_len      = screen_to_world[0].x * editor::WALL_NORMAL_SCREEN_PERCENTAGE;
       f32  cursor_len      = screen_to_world[0].x * editor::BRUSH_CURSOR_SCREEN_PERCENTAGE;
 
       // Cursor
@@ -416,60 +527,60 @@ struct Editor::EditorImpl
       }
       cursor->refresh_gpu_data(cursor_pts);
 
+      EditorCoord pointing_at  = EditorCoord{mouse_world_pos};
+      bool        should_reset = false;
+      bool        should_start = false;
+
+      // Check what to do
+      if (left_click && is_painting && editor.try_insert_line_into_map(painting_start, pointing_at))
+      {
+        // We inserted a line into the map, reset!
+        should_reset = true;
+      }
+      else if (left_click && !is_painting)
+      {
+        // We started painting
+        should_start = true;
+      }
+      else if (right_click && is_painting)
+      {
+        // We canceled the first point, reset
+        should_reset = true;
+      }
+
+      // And then do it
+      if (should_reset)
+      {
+        is_painting    = false;
+        painting_start = EditorCoord{0};
+      }
+      else if (should_start)
+      {
+        is_painting    = true;
+        painting_start = pointing_at;
+      }
+
       // Wall pts
-      std::vector<vec2> pts_to_render;
-      auto& wall_pts = this->painted_walls_stack;
-
-      if (left_click)
+      std::vector<vec2> points;
+      color4 line_color = colors::WHITE;
+      if (is_painting)
       {
-        ivec2 coords = ivec2{mouse_world_pos};
-        if (wall_pts.empty() || wall_pts.back() != coords)
+        f32 color_mix = cast<f32>(abs(sin(editor.time_since_start / editor::BRUSH_WALL_FLASH_INTERVAL)));
+        line_color = mix(editor::BRUSH_WALL_COL1, editor::BRUSH_WALL_COL2, color_mix);
+
+        // Set a red color if we can't put a line here!
+        if (!editor.level.can_create_line(painting_start, pointing_at))
         {
-          // Check if this will produce some sector
-          // First, check our points
-          wall_pts.push_back(coords);
-          if (editor.try_insert_sector_walls_into_map(wall_pts))
-          {
-            // Sector created
-            wall_pts.clear();
-          }
+          line_color = colors::RED;
         }
-      }
-      else if (right_click)
-      {
-        if (wall_pts.size())
-        {
-          wall_pts.pop_back();
-        }
+
+        // Create the line from the 2 points
+        points.insert(points.end(), {cast<vec2>(painting_start), cast<vec2>(pointing_at)});
       }
 
-      for (u64 i = 1; i < wall_pts.size(); ++i)
-      {
-        pts_to_render.insert(pts_to_render.end(), {vec2{wall_pts[i-1]}, vec2{wall_pts[i]}});
-      }
-
-      if (wall_pts.size())
-      {
-        pts_to_render.insert(pts_to_render.end(), {vec2{wall_pts.back()}, mouse_world_pos});
-      }
-
-      u64 pts_size = pts_to_render.size();
-      nc_assert(pts_size % 2 == 0);
-
-      for (u64 i = 0; i < pts_size; i += 2)
-      {
-        vec2 a = vec2{pts_to_render[i  ]};
-        vec2 b = vec2{pts_to_render[i+1]};
-        vec2 mid  = (a + b) * 0.5f;
-        vec2 dir  = normalize_or_zero(b - a);
-        vec2 norm = flipped(dir) * normal_len;
-        pts_to_render.insert(pts_to_render.end(), {mid, mid + norm});
-      }
-
-      f32 color_mix = cast<f32>(abs(sin(editor.time_since_start / editor::BRUSH_WALL_FLASH_INTERVAL)));
-
-      this->render_data->refresh_gpu_data(pts_to_render);
-      this->render_data->properties.color = mix(editor::BRUSH_WALL_COL1, editor::BRUSH_WALL_COL2, color_mix);
+      // And then refresh the GPU data!
+      this->render_data->refresh_gpu_data(points);
+      this->render_data->properties.color = line_color;
     }
 
     void get_render_data(RenderList& list)
@@ -772,9 +883,12 @@ void Editor::render()
   },
   m_impl->tool);
 
-  for (auto&[id, sector] : m_impl->sectors)
+  for (auto&[id, object] : m_impl->objects_render)
   {
-    sector.get_render_data(primitives);
+    std::visit([&](auto& casted_type)
+    {
+      casted_type.get_render_data(primitives);
+    }, object);
   }
 
   // Sort the primitives by their order

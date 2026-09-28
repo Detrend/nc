@@ -4,7 +4,6 @@
 #include <types.h>
 #include <common.h>
 #include <math/vector.h>
-//#include 
 
 #include <variant>
 #include <optional>
@@ -48,12 +47,10 @@ constexpr EditorID VOID_SECTOR_ID    = 1;
 
 struct EditorLevel;
 
-template<typename T>
-using Opt = std::optional<T>;
-
 struct EditorPoint
 {
   EditorCoord coords;
+  bool operator==(const EditorPoint&) const = default;
 };
 
 struct EditorHalfEdge
@@ -62,11 +59,13 @@ struct EditorHalfEdge
   EditorID twin   = INVALID_EDITOR_ID;
   EditorID next   = INVALID_EDITOR_ID;
   EditorID sector = INVALID_EDITOR_ID;
+  bool operator==(const EditorHalfEdge&) const = default;
 };
 
 struct EditorLineData
 {
   u16 something;
+  bool operator==(const EditorLineData&) const = default;
 };
 
 struct EditorLine
@@ -74,15 +73,15 @@ struct EditorLine
   EditorID       half_edge_a = INVALID_EDITOR_ID;
   EditorID       half_edge_b = INVALID_EDITOR_ID;
   EditorLineData data;
+  bool operator==(const EditorLine&) const = default;
 };
 
 struct EditorSectorData
 {
-
+  bool operator==(const EditorSectorData&) const = default;
 };
 
-// TODO: Rename later
-struct EditorSector2
+struct EditorSector
 {
   EditorID edge       = INVALID_EDITOR_ID;
   EditorID parent     = INVALID_EDITOR_ID;
@@ -97,15 +96,16 @@ struct EditorSector2
   {
     return parent == INVALID_EDITOR_ID; // Void is the only one that can have an invalid parent
   }
+
+  bool operator==(const EditorSector&) const = default;
 };
 
 struct EditorEntity
 {
-
+  bool operator==(const EditorEntity&) const = default;
 };
 
-using EditorObject = std::variant<EditorPoint, EditorLine, EditorHalfEdge, EditorSector2, EditorEntity>;
-
+using EditorObject = std::variant<EditorPoint, EditorLine, EditorHalfEdge, EditorSector, EditorEntity>;
 
 struct ActionCreateOrDeleteLine;
 using EditorAction = std::variant<ActionCreateOrDeleteLine>;

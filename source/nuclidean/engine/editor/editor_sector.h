@@ -11,12 +11,21 @@
 namespace nc
 {
 
+struct EditorGenericRenderData
+{
+  // Empty by purpose
+  void get_render_data(RenderList& /*list*/)
+  {
+
+  }
+};
+
 struct EditorWall
 {
   ivec2 pt;
 };
 
-struct EditorSector
+struct EditorSectorRenderData
 {
   using IndexList = std::vector<u16>;
 
@@ -24,8 +33,6 @@ struct EditorSector
   EditorPrimitivePtr      render_data_surface = std::make_shared<EditorPrimitive>();
   EditorPrimitivePtr      render_data_splits  = std::make_shared<EditorPrimitive>();
   std::vector<EditorWall> walls;
-  f32                     floor_height = 0.0f;
-  f32                     ceil_height  = 0.0f;
   u64                     id;
   std::vector<IndexList>  convex_parts; // Used for selection
 
@@ -33,6 +40,17 @@ struct EditorSector
   void recompute_lines();
   void convexify_surface();
   void recompute_render_data();
+};
+
+struct EditorLineRenderData
+{
+  EditorPrimitivePtr render_data_line = std::make_shared<EditorPrimitive>();
+  u64                id = 0;
+
+  void get_render_data(RenderList& /*list*/)
+  {
+
+  }
 };
 
 }

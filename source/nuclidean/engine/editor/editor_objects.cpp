@@ -19,7 +19,7 @@ namespace nc
 EditorLevel::EditorLevel()
 {
   // The void sector has to be manually created on the start..
-  this->create_object<EditorSector2>(VOID_SECTOR_ID);
+  this->create_object<EditorSector>(VOID_SECTOR_ID);
 }
 
 //==================================================================================================
@@ -203,11 +203,11 @@ bool EditorLevel::can_create_line(EditorCoord start, EditorCoord end)
 // of the test and unlike the winding one it needs no floating point math at all.
 bool is_sector_within_sector
 (
-  const EditorLevel& level, EID<EditorSector2> sector1_id, EID<EditorSector2> sector2_id
+  const EditorLevel& level, EID<EditorSector> sector1_id, EID<EditorSector> sector2_id
 )
 {
-  const EditorSector2& sector1 = level.get_object<EditorSector2>(sector1_id);
-  const EditorSector2& sector2 = level.get_object<EditorSector2>(sector2_id);
+  const EditorSector& sector1 = level.get_object<EditorSector>(sector1_id);
+  const EditorSector& sector2 = level.get_object<EditorSector>(sector2_id);
 
   EditorID half_edge_id = sector1.edge;
   do
@@ -291,7 +291,7 @@ bool is_sector_within_sector
 // The parent itself is returned if none of its holes contains the sector.
 static EditorID find_parent_sector(const EditorLevel& level, EditorID parent_id, EditorID sector_id)
 {
-  const EditorSector2& top = level.get_object<EditorSector2>(parent_id);
+  const EditorSector& top = level.get_object<EditorSector>(parent_id);
 
   // Search through all sub-sectors
   EditorID hole_id = top.first_hole;
@@ -307,7 +307,7 @@ static EditorID find_parent_sector(const EditorLevel& level, EditorID parent_id,
       }
 
       // Not inside? Then try another sector..
-      const auto& hole_sector = level.get_object<EditorSector2>(hole_id);
+      const auto& hole_sector = level.get_object<EditorSector>(hole_id);
       hole_id = hole_sector.next_hole;
     } while (hole_id != top.first_hole);
   }
@@ -439,7 +439,7 @@ static s64 bbox_area_of_loop
 // means the sector ends up identical no matter which edge the walk happened to start from.
 static void assign_loop_to_sector
 (
-  EditorLevel& level, const StackVector<EID<EditorHalfEdge>, 32>& edges, EID<EditorSector2> sector_id
+  EditorLevel& level, const StackVector<EID<EditorHalfEdge>, 32>& edges, EID<EditorSector> sector_id
 )
 {
   EID<EditorHalfEdge> lowest_edge_id = edges.front();
@@ -456,19 +456,19 @@ static void assign_loop_to_sector
     lowest_edge_id = std::min(lowest_edge_id, edge_id);
   }
 
-  level.get_object<EditorSector2>(sector_id).edge = lowest_edge_id;
+  level.get_object<EditorSector>(sector_id).edge = lowest_edge_id;
 }
 
 //==================================================================================================
 // Inserts a hole into the sector's hole list. The list is kept sorted by the ID in an ascending
 // order with the first hole always being the lowest ID one. That way the same set of holes always
 // produces the same list, no matter in which order they were inserted.
-static void insert_hole(EditorLevel& level, EditorSector2& sector, EID<EditorSector2> hole_id)
+static void insert_hole(EditorLevel& level, EditorSector& sector, EID<EditorSector> hole_id)
 {
   if (sector.first_hole == INVALID_EDITOR_ID)
   {
     sector.first_hole = hole_id;
-    level.get_object<EditorSector2>(hole_id).next_hole = hole_id;
+    level.get_object<EditorSector>(hole_id).next_hole = hole_id;
     return;
   }
 
@@ -476,23 +476,23 @@ static void insert_hole(EditorLevel& level, EditorSector2& sector, EID<EditorSec
   {
     // We are the new lowest ID, so we belong right before the current first hole, which means right
     // after the last one.
-    EID<EditorSector2> last_id = sector.first_hole;
-    while (level.get_object<EditorSector2>(last_id).next_hole != sector.first_hole)
+    EID<EditorSector> last_id = sector.first_hole;
+    while (level.get_object<EditorSector>(last_id).next_hole != sector.first_hole)
     {
-      last_id = level.get_object<EditorSector2>(last_id).next_hole;
+      last_id = level.get_object<EditorSector>(last_id).next_hole;
     }
 
-    level.get_object<EditorSector2>(last_id).next_hole = hole_id;
-    level.get_object<EditorSector2>(hole_id).next_hole = sector.first_hole;
+    level.get_object<EditorSector>(last_id).next_hole = hole_id;
+    level.get_object<EditorSector>(hole_id).next_hole = sector.first_hole;
     sector.first_hole = hole_id;
     return;
   }
 
   // Find the last hole with a lower ID than ours and squeeze ourselves right after it
-  EID<EditorSector2> prev_id = sector.first_hole;
+  EID<EditorSector> prev_id = sector.first_hole;
   while (true)
   {
-    EID<EditorSector2> next_id = level.get_object<EditorSector2>(prev_id).next_hole;
+    EID<EditorSector> next_id = level.get_object<EditorSector>(prev_id).next_hole;
     if (next_id == sector.first_hole || next_id > hole_id)
     {
       break;
@@ -501,13 +501,13 @@ static void insert_hole(EditorLevel& level, EditorSector2& sector, EID<EditorSec
     prev_id = next_id;
   }
 
-  level.get_object<EditorSector2>(hole_id).next_hole = level.get_object<EditorSector2>(prev_id).next_hole;
-  level.get_object<EditorSector2>(prev_id).next_hole = hole_id;
+  level.get_object<EditorSector>(hole_id).next_hole = level.get_object<EditorSector>(prev_id).next_hole;
+  level.get_object<EditorSector>(prev_id).next_hole = hole_id;
 }
 
 //==================================================================================================
 // Unlinks a hole from the sector's hole list. Does nothing if it is not in there at all.
-static void remove_hole(EditorLevel& level, EditorSector2& sector, EID<EditorSector2> hole_id)
+static void remove_hole(EditorLevel& level, EditorSector& sector, EID<EditorSector> hole_id)
 {
   if (sector.first_hole == INVALID_EDITOR_ID)
   {
@@ -516,10 +516,10 @@ static void remove_hole(EditorLevel& level, EditorSector2& sector, EID<EditorSec
 
   // Find the hole that points to the one we are removing. For a list with a single hole in it this
   // ends up being the hole itself, because it points back to itself.
-  EID<EditorSector2> prev_id = sector.first_hole;
-  while (level.get_object<EditorSector2>(prev_id).next_hole != hole_id)
+  EID<EditorSector> prev_id = sector.first_hole;
+  while (level.get_object<EditorSector>(prev_id).next_hole != hole_id)
   {
-    prev_id = level.get_object<EditorSector2>(prev_id).next_hole;
+    prev_id = level.get_object<EditorSector>(prev_id).next_hole;
     if (prev_id == sector.first_hole)
     {
       // We went all the way around without finding it
@@ -527,7 +527,7 @@ static void remove_hole(EditorLevel& level, EditorSector2& sector, EID<EditorSec
     }
   }
 
-  EditorSector2& hole = level.get_object<EditorSector2>(hole_id);
+  EditorSector& hole = level.get_object<EditorSector>(hole_id);
 
   if (hole.next_hole == hole_id)
   {
@@ -536,7 +536,7 @@ static void remove_hole(EditorLevel& level, EditorSector2& sector, EID<EditorSec
   }
   else
   {
-    level.get_object<EditorSector2>(prev_id).next_hole = hole.next_hole;
+    level.get_object<EditorSector>(prev_id).next_hole = hole.next_hole;
 
     if (sector.first_hole == hole_id)
     {
@@ -550,30 +550,30 @@ static void remove_hole(EditorLevel& level, EditorSector2& sector, EID<EditorSec
 //==================================================================================================
 // Moves every hole of one sector into another one, leaving the source with no holes at all. Used
 // when a sector stops existing and everything that was inside of it has to go somewhere else.
-static void move_holes(EditorLevel& level, EID<EditorSector2> from_id, EID<EditorSector2> to_id)
+static void move_holes(EditorLevel& level, EID<EditorSector> from_id, EID<EditorSector> to_id)
 {
-  EditorSector2& from = level.get_object<EditorSector2>(from_id);
+  EditorSector& from = level.get_object<EditorSector>(from_id);
   if (from.first_hole == INVALID_EDITOR_ID)
   {
     return;
   }
 
   // Collect them first, we can not walk the list while we are relinking it
-  StackVector<EID<EditorSector2>, 16> holes;
-  EID<EditorSector2> hole_rover = from.first_hole;
+  StackVector<EID<EditorSector>, 16> holes;
+  EID<EditorSector> hole_rover = from.first_hole;
   do
   {
     holes.push_back(hole_rover);
-    hole_rover = level.get_object<EditorSector2>(hole_rover).next_hole;
+    hole_rover = level.get_object<EditorSector>(hole_rover).next_hole;
   } while (hole_rover != from.first_hole);
 
   from.first_hole = INVALID_EDITOR_ID;
 
   // And now insert them one by one so that the target list stays sorted
-  EditorSector2& to = level.get_object<EditorSector2>(to_id);
-  for (EID<EditorSector2> hole_id : holes)
+  EditorSector& to = level.get_object<EditorSector>(to_id);
+  for (EID<EditorSector> hole_id : holes)
   {
-    level.get_object<EditorSector2>(hole_id).parent = to_id;
+    level.get_object<EditorSector>(hole_id).parent = to_id;
     insert_hole(level, to, hole_id);
   }
 }
@@ -615,6 +615,14 @@ bool EditorLevel::create_line(EditorID line_id, EditorCoord start, EditorCoord e
   StackVector<EID<EditorHalfEdge>, 32> left_enclosed_edges, right_enclosed_edges;
   iterate_left_most_half_edges(*this, h1_id, left_signed_angle, left_enclosed_edges);
 
+  // Negative sign, reverse..
+  if (is_zero(left_signed_angle + PI2, 0.1f))
+  {
+    left_enclosed_edges.clear();
+    iterate_left_most_half_edges(*this, h2_id, left_signed_angle, left_enclosed_edges);
+    std::swap(h1_id, h2_id); // Swap them
+  }
+
   // Now that we returned back we should have a list of points through which we travelled
   // Check if the area is enclosed by examining the total signed angle
   if (!is_zero(left_signed_angle - PI2, 0.1f))
@@ -634,7 +642,7 @@ bool EditorLevel::create_line(EditorID line_id, EditorCoord start, EditorCoord e
     for (u64 i_curr = 0; i_curr < holes.size(); ++i_curr)
     {
       u64 i_next = (i_curr+1) % holes.size();
-      this->get_object<EditorSector2>(holes[i_curr]).next_hole = holes[i_next];
+      this->get_object<EditorSector>(holes[i_curr]).next_hole = holes[i_next];
     }
   };
 
@@ -642,10 +650,10 @@ bool EditorLevel::create_line(EditorID line_id, EditorCoord start, EditorCoord e
   // already belongs somewhere answers that. We can not just look at the first one, because the two
   // edges we have created belong nowhere yet and neither do the rims of the holes we might have
   // just bridged into, so the loop can easily start with a couple of those.
-  EID<EditorSector2> previous_sector_id = INVALID_EDITOR_ID;
+  EID<EditorSector> previous_sector_id = INVALID_EDITOR_ID;
   for (EID<EditorHalfEdge> edge_id : left_enclosed_edges)
   {
-    EID<EditorSector2> edge_sector_id = this->get_object<EditorHalfEdge>(edge_id).sector;
+    EID<EditorSector> edge_sector_id = this->get_object<EditorHalfEdge>(edge_id).sector;
     if (edge_sector_id != INVALID_EDITOR_ID)
     {
       previous_sector_id = edge_sector_id;
@@ -685,8 +693,8 @@ bool EditorLevel::create_line(EditorID line_id, EditorCoord start, EditorCoord e
   bool created_new_sector = !connected_parent_to_hole;
   if (created_new_sector)
   {
-    EID<EditorSector2> new_sector_id = this->new_id();
-    EditorSector2&     new_sector    = this->create_object<EditorSector2>(new_sector_id);
+    EID<EditorSector> new_sector_id = this->new_id();
+    EditorSector&     new_sector    = this->create_object<EditorSector>(new_sector_id);
 
     if (did_sector_splitting) // (A)
     {
@@ -701,7 +709,7 @@ bool EditorLevel::create_line(EditorID line_id, EditorCoord start, EditorCoord e
       assign_loop_to_sector(*this, left_keeps_the_old_sector ? left_enclosed_edges  : right_enclosed_edges, previous_sector_id);
       assign_loop_to_sector(*this, left_keeps_the_old_sector ? right_enclosed_edges : left_enclosed_edges,  new_sector_id     );
 
-      EditorSector2& prev_sector = this->get_object<EditorSector2>(previous_sector_id);
+      EditorSector& prev_sector = this->get_object<EditorSector>(previous_sector_id);
 
       // The parent has to be the same as for the previous sector obviously, because we just split
       // the old sector into 2 new ones.
@@ -712,14 +720,14 @@ bool EditorLevel::create_line(EditorID line_id, EditorCoord start, EditorCoord e
       // one. We have to do this before we patch the hole list
       if (prev_sector.first_hole != INVALID_EDITOR_ID)
       {
-        EID<EditorSector2> hole_rover = prev_sector.first_hole;
+        EID<EditorSector> hole_rover = prev_sector.first_hole;
         StackVector<EditorID, 16> new_sector_holes, old_sector_holes;
 
         // Iterate all old sector holes and decide if they should become holes of the old sector or
         // the new one. Collect them into 2 lists that we will later use to connect their pointers.
         do
         {
-          EditorSector2& hole = this->get_object<EditorSector2>(hole_rover);
+          EditorSector& hole = this->get_object<EditorSector>(hole_rover);
           if (is_sector_within_sector(*this, hole_rover, new_sector_id))
           {
             hole.parent = new_sector_id;
@@ -743,7 +751,7 @@ bool EditorLevel::create_line(EditorID line_id, EditorCoord start, EditorCoord e
 
       // Now we need to fix the hole-list. We became a sibling of the sector we have just split, so
       // we belong into the same parent hole list as it does.
-      insert_hole(*this, this->get_object<EditorSector2>(new_sector.parent), new_sector_id);
+      insert_hole(*this, this->get_object<EditorSector>(new_sector.parent), new_sector_id);
     }
     else // (C)
     {
@@ -754,12 +762,12 @@ bool EditorLevel::create_line(EditorID line_id, EditorCoord start, EditorCoord e
       new_sector.parent = find_parent_sector(*this, VOID_SECTOR_ID, new_sector_id);
 
       // And put ourselves into the parent hole list
-      insert_hole(*this, this->get_object<EditorSector2>(new_sector.parent), new_sector_id);
+      insert_hole(*this, this->get_object<EditorSector>(new_sector.parent), new_sector_id);
     }
   }
   else // (B)
   {
-    EditorSector2& prev_sector = this->get_object<EditorSector2>(previous_sector_id);
+    EditorSector& prev_sector = this->get_object<EditorSector>(previous_sector_id);
 
     // There might be some new edges, have to resolve them
     assign_loop_to_sector(*this, left_enclosed_edges, previous_sector_id);
@@ -768,12 +776,12 @@ bool EditorLevel::create_line(EditorID line_id, EditorCoord start, EditorCoord e
     // our parent.
     if (prev_sector.first_hole != INVALID_EDITOR_ID)
     {
-      StackVector<EID<EditorSector2>, 16> remaning_holes, reparent_holes;
+      StackVector<EID<EditorSector>, 16> remaning_holes, reparent_holes;
 
-      EID<EditorSector2> hole_rover = prev_sector.first_hole;
+      EID<EditorSector> hole_rover = prev_sector.first_hole;
       do
       {
-        EditorSector2& hole = this->get_object<EditorSector2>(hole_rover);
+        EditorSector& hole = this->get_object<EditorSector>(hole_rover);
 
         if (is_sector_within_sector(*this, hole_rover, previous_sector_id))
         {
@@ -795,11 +803,11 @@ bool EditorLevel::create_line(EditorID line_id, EditorCoord start, EditorCoord e
 
       if (reparent_holes.size())
       {
-        EditorSector2& parent = this->get_object<EditorSector2>(prev_sector.parent);
+        EditorSector& parent = this->get_object<EditorSector>(prev_sector.parent);
 
         // The holes that went a level up have to be merged into the parent hole list one by one so
         // that it stays sorted.
-        for (EID<EditorSector2> hole_id : reparent_holes)
+        for (EID<EditorSector> hole_id : reparent_holes)
         {
           insert_hole(*this, parent, hole_id);
         }
@@ -834,8 +842,8 @@ bool EditorLevel::destroy_line(EditorID line_id)
 
   EID<EditorHalfEdge> h1_id  = line->half_edge_a;
   EID<EditorHalfEdge> h2_id  = line->half_edge_b;
-  EID<EditorSector2>  s1_id  = this->get_object<EditorHalfEdge>(h1_id).sector;
-  EID<EditorSector2>  s2_id  = this->get_object<EditorHalfEdge>(h2_id).sector;
+  EID<EditorSector>  s1_id  = this->get_object<EditorHalfEdge>(h1_id).sector;
+  EID<EditorSector>  s2_id  = this->get_object<EditorHalfEdge>(h2_id).sector;
   EID<EditorPoint>    pt1_id = this->get_object<EditorHalfEdge>(h1_id).from;
   EID<EditorPoint>    pt2_id = this->get_object<EditorHalfEdge>(h2_id).from;
 
@@ -844,14 +852,14 @@ bool EditorLevel::destroy_line(EditorID line_id)
   // we are about to delete are left out, everything else survives us.
   StackVector<EID<EditorHalfEdge>, 32> s1_edges, s2_edges;
 
-  auto collect_loop = [&](EID<EditorSector2> sector_id, StackVector<EID<EditorHalfEdge>, 32>& out)
+  auto collect_loop = [&](EID<EditorSector> sector_id, StackVector<EID<EditorHalfEdge>, 32>& out)
   {
     if (sector_id == INVALID_EDITOR_ID)
     {
       return;
     }
 
-    EID<EditorHalfEdge> first_edge_id = this->get_object<EditorSector2>(sector_id).edge;
+    EID<EditorHalfEdge> first_edge_id = this->get_object<EditorSector>(sector_id).edge;
     EID<EditorHalfEdge> edge_rover    = first_edge_id;
     do
     {
@@ -946,15 +954,15 @@ bool EditorLevel::destroy_line(EditorID line_id)
 
     // And whatever sector lies on the other side of the rim becomes our hole again
     EID<EditorHalfEdge> rim_twin_id = this->get_object<EditorHalfEdge>(hole_rim_loop.front()).twin;
-    EID<EditorSector2>  hole_id     = this->get_object<EditorHalfEdge>(rim_twin_id).sector;
+    EID<EditorSector>  hole_id     = this->get_object<EditorHalfEdge>(rim_twin_id).sector;
 
     if (hole_id != INVALID_EDITOR_ID && hole_id != s1_id)
     {
-      EditorSector2& hole = this->get_object<EditorSector2>(hole_id);
+      EditorSector& hole = this->get_object<EditorSector>(hole_id);
 
-      remove_hole(*this, this->get_object<EditorSector2>(hole.parent), hole_id);
+      remove_hole(*this, this->get_object<EditorSector>(hole.parent), hole_id);
       hole.parent = s1_id;
-      insert_hole(*this, this->get_object<EditorSector2>(s1_id), hole_id);
+      insert_hole(*this, this->get_object<EditorSector>(s1_id), hole_id);
     }
 
     return true;
@@ -964,12 +972,12 @@ bool EditorLevel::destroy_line(EditorID line_id)
   // of some enclosing sector. Either way the sector is open now and stops existing.
   if (s1_id == INVALID_EDITOR_ID || s2_id == INVALID_EDITOR_ID)
   {
-    EID<EditorSector2> dead_id   = s1_id != INVALID_EDITOR_ID ? s1_id : s2_id;
-    EID<EditorSector2> parent_id = this->get_object<EditorSector2>(dead_id).parent;
+    EID<EditorSector> dead_id   = s1_id != INVALID_EDITOR_ID ? s1_id : s2_id;
+    EID<EditorSector> parent_id = this->get_object<EditorSector>(dead_id).parent;
 
     // Everything that used to be inside of it now lies directly inside of its parent
     move_holes(*this, dead_id, parent_id);
-    remove_hole(*this, this->get_object<EditorSector2>(parent_id), dead_id);
+    remove_hole(*this, this->get_object<EditorSector>(parent_id), dead_id);
 
     // The edges are still here, they just do not enclose anything anymore
     for (EID<EditorHalfEdge> edge_id : (s1_id != INVALID_EDITOR_ID ? s1_edges : s2_edges))
@@ -991,8 +999,8 @@ bool EditorLevel::destroy_line(EditorID line_id)
   s64  s2_area      = bbox_area_of_loop(*this, s2_edges);
   bool s1_survives  = s1_area != s2_area ? s1_area > s2_area : s1_id < s2_id;
 
-  EID<EditorSector2> survivor_id = s1_survives ? s1_id : s2_id;
-  EID<EditorSector2> dead_id     = s1_survives ? s2_id : s1_id;
+  EID<EditorSector> survivor_id = s1_survives ? s1_id : s2_id;
+  EID<EditorSector> dead_id     = s1_survives ? s2_id : s1_id;
 
   // Both loops became a single one, so walk it and hand the whole thing over to the survivor
   f32                                  merged_angle = 0.0f;
@@ -1004,7 +1012,7 @@ bool EditorLevel::destroy_line(EditorID line_id)
 
   // Everything that was inside of the sector that just died is now inside of the merged one
   move_holes(*this, dead_id, survivor_id);
-  remove_hole(*this, this->get_object<EditorSector2>(this->get_object<EditorSector2>(dead_id).parent), dead_id);
+  remove_hole(*this, this->get_object<EditorSector>(this->get_object<EditorSector>(dead_id).parent), dead_id);
   this->destroy_object(dead_id);
 
   return true;
@@ -1013,7 +1021,7 @@ bool EditorLevel::destroy_line(EditorID line_id)
 //==================================================================================================
 void dump_sector_and_subsectors(const EditorLevel& level, EditorID sector_id, s32 indent)
 {
-  const EditorSector2& sector = level.get_object<EditorSector2>(sector_id);
+  const EditorSector& sector = level.get_object<EditorSector>(sector_id);
 
   for (s32 i = 0; i < indent; ++i) std::cout << " ";
 
@@ -1042,7 +1050,7 @@ void dump_sector_and_subsectors(const EditorLevel& level, EditorID sector_id, s3
     do
     {
       dump_sector_and_subsectors(level, rover_hole, indent + 2);
-      rover_hole = level.get_object<EditorSector2>(rover_hole).next_hole;
+      rover_hole = level.get_object<EditorSector>(rover_hole).next_hole;
     } while (rover_hole != sector.first_hole);
   }
 }
@@ -1293,7 +1301,7 @@ static bool shit = []()
 {
   //test_editor_level_circle_split();
   //test_editor_build_from_actions();
-	test_editor_level_destroy();
+	//test_editor_level_destroy();
   return true;
 }();
 
