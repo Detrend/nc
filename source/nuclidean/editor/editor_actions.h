@@ -24,16 +24,17 @@ struct ActionCreateOrDeleteLine
 
   bool do_create(EditorLevel& level);
   bool do_destroy(EditorLevel& level);
-  void action_do(EditorLevel& level);
+  bool action_do(EditorLevel& level); // creating a line returns true if a new sector is created
   void action_undo(EditorLevel& level);
 };
 
 using EditorAction = std::variant<ActionCreateOrDeleteLine>;
 
+// The action is free to return any return type
 template<typename ActionType>
-void perform_action(EditorLevel& level, ActionType& action)
+auto perform_action(EditorLevel& level, ActionType& action)
 {
-  action.action_do(level);
+  return action.action_do(level);
 }
 
 template<typename ActionType>

@@ -14,6 +14,7 @@
 #include <editor/editor_renderer.h>
 #include <editor/editor_level.h>
 #include <editor/editor_objects_render.h>
+#include <editor/editor_actions.h>
 
 #include <map>
 #include <set>
@@ -78,6 +79,10 @@ struct EditorImpl
   std::map<EditorID, EditorObject>           objects_mirror;
   std::map<EditorID, EditorObjectRenderData> objects_render;
 
+  // Action stack
+  std::vector<EditorAction> action_history;
+  std::vector<EditorAction> undone_actions;
+
   // Sectors whose render data has to be recomputed at the end of the current update
   std::set<EditorID> dirty_sectors;
 
@@ -105,6 +110,46 @@ struct EditorImpl
   void update(f32 dt);
 
   bool try_insert_line_into_map(EditorCoord start, EditorCoord end, bool& sector_created);
+
+  template<typename ActionType>
+  auto do_action(ActionType&& action)
+  {
+    undone_actions.clear(); // no way to redo now
+    action_history.push_back(std::move(action));
+
+    return std::visit([&](auto& action)
+    {
+      return action.action_do(level);
+    }, action_history.back());
+  }
+
+  void undo_last_action()
+  {
+    if (action_history.size())
+    {
+      std::visit([&](auto& action)
+      {
+        action.action_undo(level);
+      }, action_history.back());
+
+      undone_actions.push_back(std::move(action_history.back())); // Add into the redo list
+      action_history.pop_back();
+    }
+  }
+
+  void redo_undone_action()
+  {
+    if (undone_actions.size())
+    {
+      action_history.push_back(std::move(undone_actions.back()));
+      undone_actions.pop_back();
+
+      std::visit([&](auto& action)
+      {
+        action.action_do(level);
+      }, action_history.back());
+    }
+  }
 
   struct EmptyTool
   {
@@ -232,6 +277,8 @@ struct EditorImpl
   vec2 get_mouse_screen_pos();
 
   vec2 get_mouse_wpos();
+
+  bool handle_keybinds();
 
   bool handle_dragging();
 

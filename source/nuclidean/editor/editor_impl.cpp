@@ -301,6 +301,16 @@ void EditorImpl::update(f32 dt)
 
     if (ImGui::BeginMenu("Edit"))
     {
+      if (ImGui::MenuItem("Undo", "Ctrl+Z", nullptr, action_history.size()))
+      {
+        this->undo_last_action();
+      }
+
+      if (ImGui::MenuItem("Redo", "Ctrl+Shift+Z", nullptr, undone_actions.size()))
+      {
+        this->redo_undone_action();
+      }
+
       ImGui::EndMenu();
     }
 
@@ -319,6 +329,7 @@ void EditorImpl::update(f32 dt)
     ImGui::EndMainMenuBar();
   }
 
+  this->handle_keybinds();
   this->handle_dragging() || this->handle_zoom_in_out();
 
   std::visit([&](auto& tool)
@@ -334,7 +345,11 @@ bool EditorImpl::try_insert_line_into_map(EditorCoord start, EditorCoord end, bo
 
   if (level.can_create_line(start, end))
   {
-    sector_created = level.create_line(level.new_id(), start, end);
+    sector_created = do_action(ActionCreateOrDeleteLine
+    {
+      .create = true, .line_id = level.new_id(), .from = start, .to = end
+    });
+
     return true;
   }
 
@@ -508,6 +523,26 @@ vec2 EditorImpl::get_mouse_screen_pos()
 vec2 EditorImpl::get_mouse_wpos()
 {
   return this->screen_to_wpos(this->get_mouse_screen_pos());
+}
+
+//==================================================================================================
+bool EditorImpl::handle_keybinds()
+{
+  bool shift = ImGui::IsKeyDown(ImGuiKey_LeftShift);
+  bool ctrl  = ImGui::IsKeyDown(ImGuiKey_LeftCtrl);
+  bool key_z = ImGui::IsKeyPressed(ImGuiKey_Z);
+
+  if (!shift && ctrl && key_z)
+  {
+    this->undo_last_action();
+  }
+
+  if (shift && ctrl && key_z)
+  {
+    this->redo_undone_action();
+  }
+
+  return true;
 }
 
 //==================================================================================================

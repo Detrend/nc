@@ -23,9 +23,22 @@ bool ActionCreateOrDeleteLine::do_destroy(EditorLevel& level)
 }
 
 //==================================================================================================
-void ActionCreateOrDeleteLine::action_do(EditorLevel& level)
+bool ActionCreateOrDeleteLine::action_do(EditorLevel& level)
 {
-  was_performed = create ? this->do_create(level) : this->do_destroy(level);
+  bool retval = true;
+
+  if (create)
+  {
+    nc_assert(!level.get_any_object(line_id));
+    was_performed = level.can_create_line(from, to);
+    retval = this->do_create(level); // signal that the new sector was actually created..
+  }
+  else
+  {
+    was_performed = this->do_destroy(level);
+  }
+
+  return retval;
 }
 
 //==================================================================================================
