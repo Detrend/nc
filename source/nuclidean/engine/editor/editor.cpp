@@ -26,6 +26,7 @@
 #include <variant>
 #include <memory>
 #include <map>
+#include <set>
 
 //==================================================================================================
 namespace nc::editor
@@ -130,22 +131,44 @@ struct Editor::EditorImpl
   std::map<EditorID, EditorObject>           objects_mirror;
   std::map<EditorID, EditorObjectRenderData> objects_render;
 
+  // Sectors whose render data has to be recomputed at the end of the current update
+  std::set<EditorID> dirty_sectors;
+
   void recompute_sector_render_data(const EditorSector& sector, EditorSectorRenderData& render_data)
   {
-    // Iterate all edges of the sector and push into the points list..
-    render_data.walls.clear();
-
-    EditorID first_edge = sector.edge;
-    EditorID edge       = first_edge;
-
-    do
+    // Iterate all edges of a sector and push its points into the list..
+    auto collect_walls = [&](const EditorSector& walled_sector, std::vector<EditorWall>& walls_out)
     {
-      const EditorHalfEdge& edge_ref = level.get_object<EditorHalfEdge>(edge);
-      const EditorPoint&    pt_ref   = level.get_object<EditorPoint>(edge_ref.from);
-      render_data.walls.push_back(EditorWall{.pt = pt_ref.coords});
-      edge = edge_ref.next;
+      walls_out.clear();
+
+      EditorID first_edge = walled_sector.edge;
+      EditorID edge       = first_edge;
+
+      do
+      {
+        const EditorHalfEdge& edge_ref = level.get_object<EditorHalfEdge>(edge);
+        const EditorPoint&    pt_ref   = level.get_object<EditorPoint>(edge_ref.from);
+        walls_out.push_back(EditorWall{.pt = pt_ref.coords});
+        edge = edge_ref.next;
+      }
+      while (edge != first_edge);
+    };
+
+    collect_walls(sector, render_data.walls);
+
+    // The holes are sectors of their own, we only need their outlines to cut them out of ours
+    render_data.holes.clear();
+    if (sector.first_hole != INVALID_EDITOR_ID)
+    {
+      EditorID hole_id = sector.first_hole;
+      do
+      {
+        const EditorSector& hole = level.get_object<EditorSector>(hole_id);
+        collect_walls(hole, render_data.holes.emplace_back());
+        hole_id = hole.next_hole;
+      }
+      while (hole_id != sector.first_hole);
     }
-    while (edge != first_edge);
 
     // Then recompute the render data
     render_data.recompute_render_data();
@@ -159,14 +182,13 @@ struct Editor::EditorImpl
       return;
     }
 
-    // Create a new sector and set its ID
-    EditorSectorRenderData new_sector {.id = object_id};
+    // Create a new sector and set its ID. Its render data gets computed together with all the
+    // other dirty sectors at the end of the update.
+    objects_render.insert({object_id, EditorSectorRenderData{.id = object_id}});
 
-    // Recompute the render data
-    this->recompute_sector_render_data(sector, new_sector);
-
-    // And move the sector into the list
-    objects_render.insert({object_id, std::move(new_sector)});
+    // We might have become a hole of our parent, which has to cut us out of its surface
+    dirty_sectors.insert(object_id);
+    dirty_sectors.insert(sector.parent);
   }
 
   void on_object_created(EditorID object_id, const EditorLine& line)
@@ -196,7 +218,7 @@ struct Editor::EditorImpl
     std::get<EditorLineRenderData>(objects_render[object_id]).recreate_render_data(p1.coords, p2.coords);
   }
 
-  void on_object_destroyed(EditorID object_id, const EditorSector&)
+  void on_object_destroyed(EditorID object_id, const EditorSector& sector)
   {
     if (object_id == VOID_SECTOR_ID)
     {
@@ -206,9 +228,12 @@ struct Editor::EditorImpl
     // Destroy the sector..
     nc_assert(objects_render.contains(object_id));
     objects_render.erase(object_id);
+
+    // If we were a hole then our parent does not have to cut us out anymore
+    dirty_sectors.insert(sector.parent);
   }
 
-  void on_object_modified(EditorID object_id, const EditorSector&, const EditorSector& new_state)
+  void on_object_modified(EditorID object_id, const EditorSector& old_state, const EditorSector& new_state)
   {
     if (object_id == VOID_SECTOR_ID)
     {
@@ -216,8 +241,32 @@ struct Editor::EditorImpl
     }
 
     nc_assert(objects_render.contains(object_id));
-    EditorSectorRenderData& render_data = std::get<EditorSectorRenderData>(objects_render[object_id]);
-    this->recompute_sector_render_data(new_state, render_data);
+
+    // Our shape might have changed, and so might have the parent we are a hole of
+    dirty_sectors.insert(object_id);
+    dirty_sectors.insert(old_state.parent);
+    dirty_sectors.insert(new_state.parent);
+  }
+
+  // Recomputes the render data of all sectors that got marked as dirty during this update. This
+  // has to happen only once all the changes are known - a sector can be processed before its
+  // parent even exists, and a parent can only cut out holes that are already in place.
+  void recompute_dirty_sectors()
+  {
+    for (EditorID sector_id : dirty_sectors)
+    {
+      // The void does not render anything and the sector might have been destroyed since
+      if (sector_id == VOID_SECTOR_ID || !level.objects.contains(sector_id))
+      {
+        continue;
+      }
+
+      nc_assert(objects_render.contains(sector_id));
+      EditorSectorRenderData& render_data = std::get<EditorSectorRenderData>(objects_render[sector_id]);
+      this->recompute_sector_render_data(level.get_object<EditorSector>(sector_id), render_data);
+    }
+
+    dirty_sectors.clear();
   }
 
   void check_level_state_update()
@@ -262,8 +311,9 @@ struct Editor::EditorImpl
     }
 
     // Then check for the deleted objects..
-    for (const auto&[object_id, object] : objects_mirror)
+    for (auto it = objects_mirror.begin(); it != objects_mirror.end();)
     {
+      const auto&[object_id, object] = *it;
       if (!level.objects.contains(object_id))
       {
         // The object got deleted! Propagate the information
@@ -275,10 +325,16 @@ struct Editor::EditorImpl
           }
         }, object);
 
-        // And erase it from the mirror
-        objects_mirror.erase(object_id);
+        it = objects_mirror.erase(it);
+      }
+      else
+      {
+        ++it;
       }
     }
+
+    // Now that all the changes are known, rebuild the sectors they touched
+    this->recompute_dirty_sectors();
   }
 
   void update(f32 dt)
@@ -399,11 +455,9 @@ struct Editor::EditorImpl
       return false;
     }
 
-    bool handle_selection(EditorImpl& /*editor*/)
+    bool handle_selection(EditorImpl& editor)
     {
-      return false;
-      /*
-      u64 sector_directly_selected = 0;
+      EditorID sector_directly_selected = 0;
       ivec2 closest_wall_a, closest_wall_b, closest_point;
 
       f32 distance_to_closest_point = FLT_MAX;
@@ -412,9 +466,16 @@ struct Editor::EditorImpl
       vec2 cursor_in_world = editor.get_mouse_wpos();
 
       // Update the pointed at sector..
-      for (const auto&[id, sector] : editor.objects_mirror)
+      for (const auto&[id, object] : editor.objects_render)
       {
         // Handle the direct point-at sector - iterate all convex parts
+        const EditorSectorRenderData* sector_ptr = std::get_if<EditorSectorRenderData>(&object);
+        if (!sector_ptr)
+        {
+          continue;
+        }
+
+        const EditorSectorRenderData& sector = *sector_ptr;
         for (const EditorSectorRenderData::IndexList& convex_part_indices : sector.convex_parts)
         {
           u16 idx0 = convex_part_indices[0];
@@ -424,9 +485,9 @@ struct Editor::EditorImpl
             u16 idx1 = convex_part_indices[ i                                  ];
             u16 idx2 = convex_part_indices[(i + 1) % convex_part_indices.size()];
 
-            vec2 pt0 = cast<vec2>(sector.walls[idx0].pt);
-            vec2 pt1 = cast<vec2>(sector.walls[idx1].pt);
-            vec2 pt2 = cast<vec2>(sector.walls[idx2].pt);
+            vec2 pt0 = cast<vec2>(sector.surface_points[idx0]);
+            vec2 pt1 = cast<vec2>(sector.surface_points[idx1]);
+            vec2 pt2 = cast<vec2>(sector.surface_points[idx2]);
 
             if (intersect::point_triangle(cursor_in_world, pt0, pt1, pt2))
             {
@@ -467,8 +528,9 @@ struct Editor::EditorImpl
       if (sector_directly_selected != 0)
       {
         this->current_selection = SelectionType::sector;
-        //this->selection.sector  = sector_directly_selected;
+        this->selection.sector.sector_id = sector_directly_selected;
       }
+      /*
       else if (distance_to_closest_point < 10.0f)
       {
         // Handle closest point
@@ -477,13 +539,13 @@ struct Editor::EditorImpl
       {
         // Handle closest wall
       }
+      */
       else
       {
         this->current_selection = SelectionType::none;
       }
 
       return true;
-      */
     }
 
     void update(EditorImpl& editor, f32 /*dt*/)

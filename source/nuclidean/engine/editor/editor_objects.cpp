@@ -756,9 +756,37 @@ bool EditorLevel::create_line(EditorID line_id, EditorCoord start, EditorCoord e
 
       // Find correct parent
       new_sector.parent = find_parent_sector(*this, VOID_SECTOR_ID, new_sector_id);
+      EditorSector& parent = this->get_object<EditorSector>(new_sector.parent);
+
+      // The new sector might have been drawn around sectors that already exist. Those are holes of
+      // our parent at the moment, but now they lie inside of us, so they become our holes instead.
+      // Anything nested deeper comes along with them.
+      if (parent.first_hole != INVALID_EDITOR_ID)
+      {
+        StackVector<EID<EditorSector>, 16> adopted_holes;
+
+        EID<EditorSector> hole_rover = parent.first_hole;
+        do
+        {
+          if (is_sector_within_sector(*this, hole_rover, new_sector_id))
+          {
+            adopted_holes.push_back(hole_rover);
+          }
+
+          hole_rover = this->get_object<EditorSector>(hole_rover).next_hole;
+        } while (hole_rover != parent.first_hole);
+
+        // Relink only after the walk, removing them from the list while walking it would break it
+        for (EID<EditorSector> hole_id : adopted_holes)
+        {
+          remove_hole(*this, parent, hole_id);
+          this->get_object<EditorSector>(hole_id).parent = new_sector_id;
+          insert_hole(*this, new_sector, hole_id);
+        }
+      }
 
       // And put ourselves into the parent hole list
-      insert_hole(*this, this->get_object<EditorSector>(new_sector.parent), new_sector_id);
+      insert_hole(*this, parent, new_sector_id);
     }
   }
   else // (B)

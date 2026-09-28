@@ -48,6 +48,76 @@ static bool is_sector_inward(const std::vector<ivec2>& pts)
 }
 
 //==================================================================================================
+static bool does_segment_hit_edge(ivec2 a, ivec2 b, ivec2 e1, ivec2 e2)
+{
+  bool e1_at_end = e1 == a || e1 == b;
+  bool e2_at_end = e2 == a || e2 == b;
+
+  if (e1_at_end && e2_at_end)
+  {
+    // The edge is the segment itself
+    return true;
+  }
+
+  ivec2 dir = b - a;
+
+  // Twice the signed triangle areas, exact in 64 bits. The sign says on which side of the segment
+  // (or edge) the tested point lies, zero means it is collinear.
+  s64 e1_side = cast<s64>(dir.x)       * (e1.y - a.y)  - cast<s64>(dir.y)       * (e1.x - a.x);
+  s64 e2_side = cast<s64>(dir.x)       * (e2.y - a.y)  - cast<s64>(dir.y)       * (e2.x - a.x);
+  s64 a_side  = cast<s64>(e2.x - e1.x) * (a.y  - e1.y) - cast<s64>(e2.y - e1.y) * (a.x  - e1.x);
+  s64 b_side  = cast<s64>(e2.x - e1.x) * (b.y  - e1.y) - cast<s64>(e2.y - e1.y) * (b.x  - e1.x);
+
+  // Proper crossing - edge endpoints strictly on opposite sides of the segment and segment
+  // endpoints strictly on opposite sides of the edge
+  bool crosses_segment = (e1_side > 0 && e2_side < 0) || (e1_side < 0 && e2_side > 0);
+  bool crosses_edge    = (a_side  > 0 && b_side  < 0) || (a_side  < 0 && b_side  > 0);
+
+  // Touching - an endpoint of one of them collinear with and inside the bounding box of the other
+  // one. Covers collinear overlaps as well.
+  bool e1_touches = !e1_at_end && e1_side == 0
+                 && min(a.x, b.x) <= e1.x && e1.x <= max(a.x, b.x)
+                 && min(a.y, b.y) <= e1.y && e1.y <= max(a.y, b.y);
+  bool e2_touches = !e2_at_end && e2_side == 0
+                 && min(a.x, b.x) <= e2.x && e2.x <= max(a.x, b.x)
+                 && min(a.y, b.y) <= e2.y && e2.y <= max(a.y, b.y);
+  bool a_touches  = a != e1 && a != e2 && a_side == 0
+                 && min(e1.x, e2.x) <= a.x && a.x <= max(e1.x, e2.x)
+                 && min(e1.y, e2.y) <= a.y && a.y <= max(e1.y, e2.y);
+  bool b_touches  = b != e1 && b != e2 && b_side == 0
+                 && min(e1.x, e2.x) <= b.x && b.x <= max(e1.x, e2.x)
+                 && min(e1.y, e2.y) <= b.y && b.y <= max(e1.y, e2.y);
+
+  return (crosses_segment && crosses_edge) || e1_touches || e2_touches || a_touches || b_touches;
+}
+
+//==================================================================================================
+// Checks if a direction points strictly into the interior of a polygon at one of its vertices. The
+// interior is expected on the left of the polygon, so it spans counter clockwise from the direction
+// towards the next point to the direction towards the previous one.
+static bool points_into_wedge(ivec2 to_before, ivec2 to_after, ivec2 dir)
+{
+  s64 turn         = cast<s64>(to_after.x) * to_before.y - cast<s64>(to_after.y) * to_before.x;
+  s64 after_side   = cast<s64>(to_after.x) * dir.y       - cast<s64>(to_after.y) * dir.x;
+  s64 before_side  = cast<s64>(dir.x)      * to_before.y - cast<s64>(dir.y)      * to_before.x;
+
+  if (turn > 0)
+  {
+    // Convex vertex, the wedge is under 180 degrees and we have to be inside both of its halves
+    return after_side > 0 && before_side > 0;
+  }
+
+  if (turn < 0)
+  {
+    // Concave vertex, the wedge is over 180 degrees and being inside one of the halves is enough
+    return after_side > 0 || before_side > 0;
+  }
+
+  // The polygon goes straight through, so the wedge is the half plane on the left
+  return after_side > 0;
+}
+
+//==================================================================================================
 struct ConvexifyPair
 {
   u16 from = 0;
@@ -70,6 +140,22 @@ static void convexify_sector
   };
 
   u16 count = cast<u16>(indices.size());
+
+  // Once the sector has holes, the points where a hole got connected to the rest appear in the list
+  // more than once (see convexify_surface).
+  auto is_repeated = [&](u16 local_idx)
+  {
+    ivec2 pt = get_idx_pt(local_idx);
+    for (u16 i = 0; i < count; ++i)
+    {
+      if (i != local_idx && get_idx_pt(i) == pt)
+      {
+        return true;
+      }
+    }
+
+    return false;
+  };
 
   // Find a first concave point
   // If none then exit
@@ -120,6 +206,12 @@ static void convexify_sector
       ivec2 point    = get_idx_pt(other_idx);
       ivec2 to_point = point - center_pt;
 
+      if (point == center_pt)
+      {
+        // Another copy of the very same point, which can only happen once the sector has holes
+        continue;
+      }
+
       // Sub-angles created by splitting the concave wedge with the diagonal, expressed as
       // exact 64bit cross products. Positive split_after means the CCW angle from to_after to
       // the diagonal is below 180deg, positive split_before the same for the CCW angle from
@@ -150,10 +242,22 @@ static void convexify_sector
         continue;
       }
 
+      // Each copy of a repeated point borders only its own part of the area around that point.
+      // The diagonal has to arrive into the part belonging to this copy, otherwise splitting here
+      // would tear the polygon apart. For a point that appears only once this always holds
+      // already, so there is no need to check it.
+      if (is_repeated(other_idx))
+      {
+        ivec2 other_to_before = get_idx_pt(other_idx - 1) - point;
+        ivec2 other_to_after  = get_idx_pt(other_idx + 1) - point;
+        if (!points_into_wedge(other_to_before, other_to_after, center_pt - point))
+        {
+          continue;
+        }
+      }
+
       // Check that the diagonal from center to the point does not cross or touch any edge of
-      // the polygon that is not incident to one of them. Touching counts as intersecting so
-      // that diagonals passing exactly through another vertex (which would create zero-area
-      // slivers) get rejected.
+      // the polygon that is not incident to one of them.
       bool intersects = false;
       for (u16 edge_idx = 0; edge_idx < count && !intersects; ++edge_idx)
       {
@@ -164,37 +268,7 @@ static void convexify_sector
           continue;
         }
 
-        ivec2 e1 = get_idx_pt(edge_idx);
-        ivec2 e2 = get_idx_pt(edge_next);
-
-        // Twice the signed triangle areas, exact in 64 bits. The sign says on which side of
-        // the diagonal (or edge) the tested point lies, zero means it is collinear.
-        s64 e1_side = cast<s64>(to_point.x)  * (e1.y - center_pt.y) - cast<s64>(to_point.y)  * (e1.x - center_pt.x);
-        s64 e2_side = cast<s64>(to_point.x)  * (e2.y - center_pt.y) - cast<s64>(to_point.y)  * (e2.x - center_pt.x);
-        s64 c_side  = cast<s64>(e2.x - e1.x) * (center_pt.y - e1.y) - cast<s64>(e2.y - e1.y) * (center_pt.x - e1.x);
-        s64 p_side  = cast<s64>(e2.x - e1.x) * (point.y     - e1.y) - cast<s64>(e2.y - e1.y) * (point.x     - e1.x);
-
-        // Proper crossing - edge endpoints strictly on opposite sides of the diagonal and
-        // diagonal endpoints strictly on opposite sides of the edge
-        bool crosses_diag = (e1_side > 0 && e2_side < 0) || (e1_side < 0 && e2_side > 0);
-        bool crosses_edge = (c_side  > 0 && p_side  < 0) || (c_side  < 0 && p_side  > 0);
-
-        // Touching - an endpoint of one segment collinear with and inside the bounding box of
-        // the other segment. Covers collinear overlaps as well.
-        bool e1_touches = e1_side == 0
-                       && min(center_pt.x, point.x) <= e1.x && e1.x <= max(center_pt.x, point.x)
-                       && min(center_pt.y, point.y) <= e1.y && e1.y <= max(center_pt.y, point.y);
-        bool e2_touches = e2_side == 0
-                       && min(center_pt.x, point.x) <= e2.x && e2.x <= max(center_pt.x, point.x)
-                       && min(center_pt.y, point.y) <= e2.y && e2.y <= max(center_pt.y, point.y);
-        bool c_touches  = c_side == 0
-                       && min(e1.x, e2.x) <= center_pt.x && center_pt.x <= max(e1.x, e2.x)
-                       && min(e1.y, e2.y) <= center_pt.y && center_pt.y <= max(e1.y, e2.y);
-        bool p_touches  = p_side == 0
-                       && min(e1.x, e2.x) <= point.x && point.x <= max(e1.x, e2.x)
-                       && min(e1.y, e2.y) <= point.y && point.y <= max(e1.y, e2.y);
-
-        intersects = (crosses_diag && crosses_edge) || e1_touches || e2_touches || c_touches || p_touches;
+        intersects = does_segment_hit_edge(center_pt, point, get_idx_pt(edge_idx), get_idx_pt(edge_next));
       }
 
       // Check if we found a better point we can connect to
@@ -308,9 +382,147 @@ void EditorSectorRenderData::convexify_surface()
   std::vector<u16> indices(points.size());
   std::iota(indices.begin(), indices.end(), 0_u16);
 
+  std::vector<ConvexifyPair> splits;
+
+  if (!this->holes.empty())
+  {
+    // Hole points go after the outer ones. The holes are stored counter clockwise, but the loop
+    // has to go around them clockwise so that the area of the sector stays on its left.
+    std::vector<std::vector<u16>> hole_loops;
+    for (const std::vector<EditorWall>& hole : this->holes)
+    {
+      std::vector<ivec2> hole_points;
+      std::transform(hole.begin(), hole.end(), std::back_inserter(hole_points), [](auto&& wall)
+      {
+        return wall.pt;
+      });
+
+      nc_assert(is_sector_inward(hole_points));
+
+      std::vector<u16>& hole_loop = hole_loops.emplace_back(hole_points.size());
+      std::iota(hole_loop.begin(), hole_loop.end(), cast<u16>(points.size()));
+      std::reverse(hole_loop.begin(), hole_loop.end());
+
+      points.insert(points.end(), hole_points.begin(), hole_points.end());
+    }
+
+    // Take the holes from the right to the left. Nothing that is still unconnected then lies to
+    // the right of the rightmost point of the current hole, so the loop is always visible from it
+    // and a bridge always exists.
+    auto rightmost_x = [&](const std::vector<u16>& loop)
+    {
+      s32 max_x = points[loop.front()].x;
+      for (u16 point_idx : loop)
+      {
+        max_x = max(max_x, points[point_idx].x);
+      }
+      return max_x;
+    };
+
+    std::sort(hole_loops.begin(), hole_loops.end(), [&](const auto& a, const auto& b)
+    {
+      return rightmost_x(a) > rightmost_x(b);
+    });
+
+    for (u64 hole_idx = 0; hole_idx < hole_loops.size(); ++hole_idx)
+    {
+      const std::vector<u16>& hole_loop = hole_loops[hole_idx];
+
+      // Try all pairs of a loop point and a hole point and keep the shortest bridge that goes
+      // through the sector without touching anything. That is O(n^3) as well, but sectors are
+      // small.
+      u64 best_loop_pos = ~0_u64;
+      u64 best_hole_pos = ~0_u64;
+      u64 best_dist2    = ~0_u64;
+
+      for (u64 loop_pos = 0; loop_pos < indices.size(); ++loop_pos)
+      {
+        ivec2 loop_pt     = points[indices[loop_pos]];
+        ivec2 loop_before = points[indices[(loop_pos + indices.size() - 1) % indices.size()]];
+        ivec2 loop_after  = points[indices[(loop_pos + 1) % indices.size()]];
+
+        for (u64 hole_pos = 0; hole_pos < hole_loop.size(); ++hole_pos)
+        {
+          ivec2 hole_pt     = points[hole_loop[hole_pos]];
+          ivec2 hole_before = points[hole_loop[(hole_pos + hole_loop.size() - 1) % hole_loop.size()]];
+          ivec2 hole_after  = points[hole_loop[(hole_pos + 1) % hole_loop.size()]];
+
+          if (hole_pt == loop_pt)
+          {
+            continue;
+          }
+
+          ivec2 to_hole = hole_pt - loop_pt;
+          u64   dist2   = cast<s64>(to_hole.x) * to_hole.x + cast<s64>(to_hole.y) * to_hole.y;
+          if (dist2 >= best_dist2)
+          {
+            continue;
+          }
+
+          // The bridge has to leave the loop into the sector and enter the hole from the outside
+          if (!points_into_wedge(loop_before - loop_pt, loop_after - loop_pt, to_hole) ||
+              !points_into_wedge(hole_before - hole_pt, hole_after - hole_pt, -to_hole))
+          {
+            continue;
+          }
+
+          // And it must not hit the loop or any of the holes, including this one
+          auto hits_any_edge = [&](const std::vector<u16>& edges_loop)
+          {
+            for (u64 i = 0; i < edges_loop.size(); ++i)
+            {
+              ivec2 e1 = points[edges_loop[i]];
+              ivec2 e2 = points[edges_loop[(i + 1) % edges_loop.size()]];
+              if (does_segment_hit_edge(loop_pt, hole_pt, e1, e2))
+              {
+                return true;
+              }
+            }
+            return false;
+          };
+
+          bool blocked = hits_any_edge(indices);
+          for (u64 other_hole = hole_idx; other_hole < hole_loops.size() && !blocked; ++other_hole)
+          {
+            blocked = hits_any_edge(hole_loops[other_hole]);
+          }
+
+          if (!blocked)
+          {
+            best_loop_pos = loop_pos;
+            best_hole_pos = hole_pos;
+            best_dist2    = dist2;
+          }
+        }
+      }
+
+      nc_assert(best_loop_pos != ~0_u64, "No bridge from a hole to the rest of the sector - invalid holes?");
+
+      // Splice the hole in right after the loop point: across the bridge, around the whole hole
+      // starting from its end of the bridge, back to that end once more, back across the bridge
+      // and on along the loop.
+      u16 loop_point = indices[best_loop_pos];
+      u16 hole_point = hole_loop[best_hole_pos];
+
+      std::vector<u16> spliced;
+      spliced.reserve(indices.size() + hole_loop.size() + 2);
+      spliced.insert(spliced.end(), indices.begin(), indices.begin() + best_loop_pos + 1);
+      spliced.insert(spliced.end(), hole_loop.begin() + best_hole_pos, hole_loop.end());
+      spliced.insert(spliced.end(), hole_loop.begin(), hole_loop.begin() + best_hole_pos);
+      spliced.insert(spliced.end(), {hole_point, loop_point});
+      spliced.insert(spliced.end(), indices.begin() + best_loop_pos + 1, indices.end());
+      indices = std::move(spliced);
+
+      // The bridge separates the convex parts on its two sides just like any other split does
+      splits.push_back(ConvexifyPair{loop_point, hole_point});
+    }
+  }
+
+  // The convex parts index into these
+  this->surface_points = points;
+
   // Convexify now
   this->convex_parts.clear();
-  std::vector<ConvexifyPair> splits;
   convexify_sector(points, indices, splits, convex_parts);
 
   // Build lines for the convex splits (might be empty if the sector is already convex)

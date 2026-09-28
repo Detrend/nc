@@ -35,7 +35,13 @@ struct EditorSectorRenderData
   EditorPrimitivePtr      render_data_splits  = std::make_shared<EditorPrimitive>();
   std::vector<EditorWall> walls;
   u64                     id;
-  std::vector<IndexList>  convex_parts; // Used for selection
+
+  std::vector<std::vector<EditorWall>> holes;
+
+  // The outer walls followed by the walls of all holes. This is what the convex parts index into,
+  // not the walls themselves.
+  std::vector<ivec2>     surface_points;
+  std::vector<IndexList> convex_parts; // Used for selection
 
   void get_render_data(RenderList& list);
   void recompute_lines();
