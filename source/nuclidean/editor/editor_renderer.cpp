@@ -4,9 +4,9 @@
 
 #if NC_EDITOR
 
-#include <engine/editor/editor_renderer.h>
-#include <engine/editor/editor.h>
-#include <engine/editor/rendering_modifier.h>
+#include <editor/editor_renderer.h>
+#include <editor/editor.h>
+#include <editor/rendering_modifier.h>
 
 #include <common.h>
 

@@ -5,7 +5,7 @@
 
 #if NC_EDITOR
 
-#include <engine/editor/editor_types.h>
+#include <editor/editor_types.h>
 
 #include <variant>
 

@@ -4,7 +4,7 @@
 
 #if NC_EDITOR
 
-#include <engine/editor/editor_primitive.h>
+#include <editor/editor_primitive.h>
 #include <engine/graphics/resources/mesh.h>
 
 namespace nc

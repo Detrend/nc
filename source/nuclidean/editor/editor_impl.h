@@ -9,11 +9,11 @@
 #include <types.h>
 #include <math/vector.h>
 
-#include <engine/editor/rendering_modifier.h>
-#include <engine/editor/editor_primitive.h>
-#include <engine/editor/editor_renderer.h>
-#include <engine/editor/editor_level.h>
-#include <engine/editor/editor_objects_render.h>
+#include <editor/rendering_modifier.h>
+#include <editor/editor_primitive.h>
+#include <editor/editor_renderer.h>
+#include <editor/editor_level.h>
+#include <editor/editor_objects_render.h>
 
 #include <map>
 #include <set>

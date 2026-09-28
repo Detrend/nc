@@ -1,15 +1,15 @@
 // Project Nuclidean Source File
 #pragma once
 
-#include <engine/editor/editor.h>
+#include <editor/editor.h>
 
 #if NC_EDITOR
 
 #include <common.h>
 
-#include <engine/editor/editor_impl.h>
+#include <editor/editor_impl.h>
 #include <engine/input/input_system.h>
-#include <engine/editor/editor_system.h>
+#include <editor/editor_system.h>
 
 #include <algorithm> // std::sort
 

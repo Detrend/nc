@@ -4,12 +4,12 @@
 
 #if NC_EDITOR
 
-#include <engine/editor/editor_system.h>
+#include <editor/editor_system.h>
 #include <engine/core/engine_module_types.h>
 #include <engine/core/engine.h>
 #include <engine/core/module_event.h>
 
-#include <engine/editor/editor.h>
+#include <editor/editor.h>
 
 namespace nc
 {

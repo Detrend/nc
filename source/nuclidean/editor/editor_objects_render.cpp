@@ -4,7 +4,7 @@
 
 #if NC_EDITOR
 
-#include <engine/editor/editor_objects_render.h>
+#include <editor/editor_objects_render.h>
 
 #include <math/lingebra.h>
 #include <math/utils.h>

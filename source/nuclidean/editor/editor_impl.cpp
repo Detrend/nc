@@ -4,14 +4,14 @@
 
 #if NC_EDITOR
 
-#include <engine/editor/editor_impl.h>
+#include <editor/editor_impl.h>
 #include <common.h> // nc_assert
 
-#include <engine/editor/editor_primitive.h>
-#include <engine/editor/editor_renderer.h>
-#include <engine/editor/rendering_modifier.h>
-#include <engine/editor/editor_objects_render.h>
-#include <engine/editor/editor_objects.h>
+#include <editor/editor_primitive.h>
+#include <editor/editor_renderer.h>
+#include <editor/rendering_modifier.h>
+#include <editor/editor_objects_render.h>
+#include <editor/editor_objects.h>
 
 #include <math/lingebra.h>   // compMax
 #include <intersect.h>

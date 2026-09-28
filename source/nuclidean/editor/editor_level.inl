@@ -5,7 +5,7 @@
 
 #if NC_EDITOR
 
-#include <engine/editor/editor_level.h>
+#include <editor/editor_level.h>
 
 namespace nc
 {

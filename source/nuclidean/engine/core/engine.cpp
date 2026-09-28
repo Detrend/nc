@@ -22,7 +22,7 @@
 #include <engine/ui/user_interface_system.h>
 
 #if NC_EDITOR
-#include <engine/editor/editor_system.h>
+#include <editor/editor_system.h>
 #endif
 
 #if NC_BENCHMARK

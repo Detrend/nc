@@ -31,7 +31,7 @@
 #include <engine/player/level_types.h>
 #include <engine/player/player.h>
 
-#include <engine/editor/editor.h>
+#include <editor/editor.h>
 
 #include <engine/ui/user_interface_system.h>
 

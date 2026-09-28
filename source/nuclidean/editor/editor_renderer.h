@@ -9,7 +9,7 @@
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/resources/shader_program.h>
 
-#include <engine/editor/editor_primitive.h>
+#include <editor/editor_primitive.h>
 
 #include <math/matrix.h> // mat3
 

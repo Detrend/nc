@@ -6,7 +6,7 @@
 #if NC_EDITOR
 
 #include <types.h>
-#include <engine/editor/editor_primitive.h>
+#include <editor/editor_primitive.h>
 
 #include <math/vector.h>
 #include <common.h>

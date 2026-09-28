@@ -4,8 +4,8 @@
 
 #if NC_EDITOR
 
-#include <engine/editor/editor_actions.h>
-#include <engine/editor/editor_level.h>
+#include <editor/editor_actions.h>
+#include <editor/editor_level.h>
 
 namespace nc
 {

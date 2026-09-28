@@ -7,7 +7,7 @@
 
 #include <types.h>
 #include <common.h>
-#include <engine/editor/editor_types.h>
+#include <editor/editor_types.h>
 #include <math/vector.h>
 
 #include <variant>

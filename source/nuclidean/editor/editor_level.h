@@ -5,7 +5,7 @@
 
 #if NC_EDITOR
 
-#include <engine/editor/editor_objects.h>
+#include <editor/editor_objects.h>
 
 namespace nc
 {
@@ -67,6 +67,6 @@ struct EditorLevel
 
 }
 
-#include <engine/editor/editor_level.inl>
+#include <editor/editor_level.inl>
 
 #endif // #if NC_EDITOR
