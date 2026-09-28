@@ -1,6 +1,10 @@
 // Project Nuclidean Source File
 #pragma once
 
+#include <config.h>
+
+#if NC_EDITOR
+
 #include <engine/graphics/shaders/uniform.h>
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/resources/shader_program.h>
@@ -31,3 +35,5 @@ private:
 };
 
 }
+
+#endif // #if NC_EDITOR

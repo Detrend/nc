@@ -1,14 +1,19 @@
 // Project Nuclidean Source File
 
-#include <engine/editor/editor_sector.h>
+#include <config.h>
+
+#if NC_EDITOR
+
+#include <engine/editor/editor_objects_render.h>
 
 #include <math/lingebra.h>
 #include <math/utils.h>
 
 #include <common.h>
 
-#include <algorithm> // std::transform
+#include <algorithm> // std::transform, std::sort, std::reverse
 #include <numeric>   // std::iota
+#include <iterator>  // std::back_inserter
 
 namespace nc::editor
 {
@@ -576,3 +581,5 @@ void EditorSectorRenderData::recompute_render_data()
 }
 
 }
+
+#endif // #if NC_EDITOR

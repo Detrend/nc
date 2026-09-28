@@ -1,6 +1,11 @@
 // Project Nuclidean Source File
 #pragma once
 
+#include <config.h>
+
+#if NC_EDITOR
+
+#include <types.h>
 #include <vector>
 
 namespace nc
@@ -26,3 +31,5 @@ public:
 using RenderModifierList = std::vector<IEditorPrimitiveRenderingModifier*>;
 
 }
+
+#endif // #if NC_EDITOR

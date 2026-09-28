@@ -1,5 +1,9 @@
 // Project Nuclidean Source File
 
+#include <config.h>
+
+#if NC_EDITOR
+
 #include <engine/editor/editor_primitive.h>
 #include <engine/graphics/resources/mesh.h>
 
@@ -40,3 +44,5 @@ EditorPrimitive::~EditorPrimitive()
 }
 
 }
+
+#endif // #if NC_EDITOR

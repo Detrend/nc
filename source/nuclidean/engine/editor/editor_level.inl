@@ -1,7 +1,11 @@
 // Project Nuclidean Source File
 #pragma once
 
-#include <engine/editor/editor_objects.h>
+#include <config.h>
+
+#if NC_EDITOR
+
+#include <engine/editor/editor_level.h>
 
 namespace nc
 {
@@ -95,3 +99,5 @@ const T& EditorLevel::get_object(EditorID id) const
 }
 
 }
+
+#endif // #if NC_EDITOR

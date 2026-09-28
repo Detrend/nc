@@ -1,6 +1,10 @@
 // Project Nuclidean Source File
 #pragma once
 
+#include <config.h>
+
+#if NC_EDITOR
+
 #include <types.h>
 #include <engine/editor/editor_primitive.h>
 
@@ -8,6 +12,7 @@
 #include <common.h>
 
 #include <vector>
+#include <variant>
 
 namespace nc
 {
@@ -71,4 +76,8 @@ struct EditorLineRenderData
   }
 };
 
+using EditorObjectRenderData = std::variant<EditorGenericRenderData, EditorSectorRenderData, EditorLineRenderData>;
+
 }
+
+#endif // #if NC_EDITOR

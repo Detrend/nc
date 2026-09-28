@@ -1,6 +1,10 @@
 // Project Nuclidean Source File
 #pragma once
 
+#include <config.h>
+
+#if NC_EDITOR
+
 #include <engine/graphics/resources/mesh.h> // MeshHandle
 #include <engine/graphics/gl_types.h>       // GL_LINES
 
@@ -68,3 +72,5 @@ using EditorPrimitivePtr = std::shared_ptr<EditorPrimitive>;
 using RenderList         = std::vector<EditorPrimitivePtr>;
 
 }
+
+#endif // #if NC_EDITOR

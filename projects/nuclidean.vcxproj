@@ -143,8 +143,10 @@
     <ClCompile Include="..\source\nuclidean\engine\editor\editor.cpp" />
     <ClCompile Include="..\source\nuclidean\engine\editor\editor_renderer.cpp" />
     <ClCompile Include="..\source\nuclidean\engine\editor\editor_primitive.cpp" />
-    <ClCompile Include="..\source\nuclidean\engine\editor\editor_sector.cpp" />
-    <ClCompile Include="..\source\nuclidean\engine\editor\editor_objects.cpp" />
+    <ClCompile Include="..\source\nuclidean\engine\editor\editor_objects_render.cpp" />
+    <ClCompile Include="..\source\nuclidean\engine\editor\editor_level.cpp" />
+    <ClCompile Include="..\source\nuclidean\engine\editor\editor_actions.cpp" />
+    <ClCompile Include="..\source\nuclidean\engine\editor\editor_impl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -284,8 +286,12 @@
     <ClInclude Include="..\source\nuclidean\engine\editor\editor_renderer.h" />
     <ClInclude Include="..\source\nuclidean\engine\editor\editor_primitive.h" />
     <ClInclude Include="..\source\nuclidean\engine\editor\rendering_modifier.h" />
-    <ClInclude Include="..\source\nuclidean\engine\editor\editor_sector.h" />
+    <ClInclude Include="..\source\nuclidean\engine\editor\editor_objects_render.h" />
     <ClInclude Include="..\source\nuclidean\engine\editor\editor_objects.h" />
+    <ClInclude Include="..\source\nuclidean\engine\editor\editor_level.h" />
+    <ClInclude Include="..\source\nuclidean\engine\editor\editor_actions.h" />
+    <ClInclude Include="..\source\nuclidean\engine\editor\editor_types.h" />
+    <ClInclude Include="..\source\nuclidean\engine\editor\editor_impl.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\settings.cfg" />
@@ -299,7 +305,7 @@
     <None Include="..\source\nuclidean\stack_allocator.inl" />
     <None Include="..\source\nuclidean\engine\entity\sector_mapping.inl" />
     <None Include="..\source\nuclidean\engine\graphics\ssbo_buffer.inl" />
-    <None Include="..\source\nuclidean\engine\editor\editor_objects.inl" />
+    <None Include="..\source\nuclidean\engine\editor\editor_level.inl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\source\libs\glm\CMakeLists.txt" />

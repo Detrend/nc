@@ -19,8 +19,11 @@
 #include <engine/input/input_system.h>
 #include <engine/game/game_system.h>
 #include <engine/sound/sound_system.h>
-#include <engine/editor/editor_system.h>
 #include <engine/ui/user_interface_system.h>
+
+#if NC_EDITOR
+#include <engine/editor/editor_system.h>
+#endif
 
 #if NC_BENCHMARK
 #include <benchmark/benchmark.h>
@@ -511,7 +514,9 @@ bool Engine::init(const CmdArgs& cmd_args)
   INIT_MODULE(GameSystem);
   INIT_MODULE(SoundSystem);
   INIT_MODULE(UserInterfaceSystem);
+#if NC_EDITOR
   INIT_MODULE(EditorSystem);
+#endif
 
   #undef INIT_MODULE
 

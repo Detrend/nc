@@ -1,8 +1,13 @@
 // Project Nuclidean Source File
 #pragma once
 
+#include <config.h>
+
+#if NC_EDITOR
+
 #include <types.h>
 #include <common.h>
+#include <engine/editor/editor_types.h>
 #include <math/vector.h>
 
 #include <variant>
@@ -14,38 +19,8 @@
 #include <utility>
 #include <tuple>
 
-template<>
-struct std::hash<nc::ivec2>
-{
-  std::size_t operator()(const nc::ivec2& vec) const noexcept
-  {
-    struct Shit
-    {
-      nc::u32 bottom;
-      nc::u32 top;
-    };
-
-    Shit s;
-    s.bottom = cast<nc::u32>(vec.x);
-    s.top    = cast<nc::u32>(vec.y);
-
-    return std::bit_cast<std::size_t>(s);
-  }
-};
-
 namespace nc
 {
-
-using EditorID    = u64;
-using EditorCoord = ivec2;
-
-template<typename T>
-using EID = EditorID;
-
-constexpr EditorID INVALID_EDITOR_ID = 0;
-constexpr EditorID VOID_SECTOR_ID    = 1;
-
-struct EditorLevel;
 
 struct EditorPoint
 {
@@ -107,90 +82,6 @@ struct EditorEntity
 
 using EditorObject = std::variant<EditorPoint, EditorLine, EditorHalfEdge, EditorSector, EditorEntity>;
 
-struct ActionCreateOrDeleteLine;
-using EditorAction = std::variant<ActionCreateOrDeleteLine>;
-
-struct ActionCreateOrDeleteLine
-{
-  bool        create        = true;
-  bool        was_performed = false;
-  EditorID    line_id;
-  EditorCoord from;
-  EditorCoord to;
-
-  bool do_create(EditorLevel& level);
-  bool do_destroy(EditorLevel& level);
-  void action_do(EditorLevel& level);
-  void action_undo(EditorLevel& level);
-};
-
-struct EditorLevel
-{
-  using ObjectMap           = std::map<EditorID, EditorObject>;
-  using PointToHalfEdgesMap = std::unordered_map<EID<EditorPoint>, std::vector<EID<EditorHalfEdge>>>;
-  using CoordToPointMap     = std::unordered_map<EditorCoord, EID<EditorPoint>>;
-
-  // Data themselves
-  ObjectMap           objects;
-  PointToHalfEdgesMap point_to_half_edges;
-  CoordToPointMap     coord_to_point;
-
-  // Creates an empty level, which contains only the void sector
-  EditorLevel();
-
-  // Returns pointer to the object with the given ID. Nullptr if the object does not exist.
-  // Asserts if the object exists and is of a different type.
-  template<typename T>
-  T* try_get_object(EditorID id);
-
-  template<typename T>
-  T& get_object(EditorID id);
-
-  template<typename T>
-  const T& get_object(EditorID id) const;
-
-  EditorObject* get_any_object(EditorID id);
-
-  bool get_point_on_coord(EditorCoord coord, EditorID& id_out);
-
-  EditorID new_id() const;
-
-  template<typename T, typename F>
-  void for_each_object_of_type(F&& lambda);
-
-  template<typename T, typename...Args>
-  T& create_object(EditorID id, Args&&...arguments);
-
-  void destroy_object(EditorID id);
-
-  bool can_create_line(EditorCoord start, EditorCoord end);
-
-  bool create_line(EditorID line_id, EditorCoord start, EditorCoord end);
-
-  bool destroy_line(EditorID line_id);
-
-  // Callback helpers
-  void on_object_created(EditorID   id, const EditorPoint&    point    );
-  void on_object_destroyed(EditorID id, const EditorPoint&    point    );
-  void on_object_created(EditorID   id, const EditorHalfEdge& half_edge);
-  void on_object_destroyed(EditorID id, const EditorHalfEdge& half_edge);
-
-  // Debug function for printing the current status of the level into a text.
-  void dump_to_text();
-};
-
-template<typename ActionType>
-void perform_action(EditorLevel& level, ActionType& action)
-{
-  action.action_do(level);
 }
 
-template<typename ActionType>
-void undo_action(EditorLevel& level, ActionType& action)
-{
-  action.action_undo(level);
-}
-
-}
-
-#include <engine/editor/editor_objects.inl>
+#endif // #if NC_EDITOR

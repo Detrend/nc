@@ -11,6 +11,8 @@
 namespace nc
 {
 
+struct EditorImpl;
+
 class Editor
 {
 public:
@@ -28,7 +30,6 @@ public:
   void on_window_resized(u32 width, u32 height);
 
 private:
-  struct EditorImpl;
   std::unique_ptr<EditorImpl> m_impl;
 };
 

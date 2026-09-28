@@ -1,5 +1,9 @@
 // Project Nuclidean Source File
 
+#include <config.h>
+
+#if NC_EDITOR
+
 #include <engine/editor/editor_renderer.h>
 #include <engine/editor/editor.h>
 #include <engine/editor/rendering_modifier.h>
@@ -89,3 +93,5 @@ void EditorRenderer::render
 }
 
 }
+
+#endif // #if NC_EDITOR
