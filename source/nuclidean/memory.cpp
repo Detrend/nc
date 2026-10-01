@@ -83,7 +83,7 @@ namespace nc {
 #endif
 
   // Does given pointer point into the memory owned by this allocator
-  bool ScratchAllocator::is_owner_of(void* const ptr)
+  bool ScratchAllocator::is_owner_of(void* const ptr) const
   {
     if (!ptr) return false;
 

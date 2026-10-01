@@ -9,6 +9,9 @@
 #include<string>
 #include<vector>
 #include<type_traits>
+#include<deque>
+#include<unordered_map>
+#include<unordered_set>
 
 namespace nc
 {
@@ -103,9 +106,19 @@ namespace nc
   {
       using value_type = T;
       using size_type = std::size_t;
+      using difference_type = std::ptrdiff_t;
+      using is_always_equal = std::true_type;
 
-      ScratchAllocatorStlAdapter() {}
-      template<typename TOther> ScratchAllocatorStlAdapter(const ScratchAllocatorStlAdapter<TOther>&) {}
+      template<typename TOther>
+      struct rebind {
+        using other = ScratchAllocatorStlAdapter<TOther>;
+      };
+
+      constexpr ScratchAllocatorStlAdapter() noexcept {}
+      template<typename TOther> constexpr ScratchAllocatorStlAdapter(const ScratchAllocatorStlAdapter<TOther>&) noexcept {}
+
+      template<typename TOther> constexpr bool operator==(const ScratchAllocatorStlAdapter<TOther>&) noexcept { return true; }
+      template<typename TOther> constexpr bool operator!=(const ScratchAllocatorStlAdapter<TOther>&) noexcept { return false; }
 
       T* allocate(const size_type n)
       {
@@ -141,6 +154,15 @@ namespace nc
 
   template<typename T>
   using scratch_vector = std::vector<T, ScratchAllocatorStlAdapter<T>>;
+
+  template<typename T>
+  using scratch_deque = std::deque<T, ScratchAllocatorStlAdapter<T>>;
+
+  template<typename TKey, typename TValue, typename THasher = std::hash<TKey>, typename TKeyEq = std::equal_to<TKey>>
+  using scratch_unordered_map = std::unordered_map<TKey, TValue, THasher, TKeyEq, ScratchAllocatorStlAdapter<std::pair<const TKey, TValue>>>;
+
+  template<typename TKey, typename THasher = std::hash<TKey>, typename TKeyEq = std::equal_to<TKey>>
+  using scratch_unordered_set = std::unordered_set<TKey, THasher, TKeyEq, ScratchAllocatorStlAdapter<TKey>>;
 
   template<typename T>
   using scratch_unique_ptr = std::unique_ptr<T, typename ScratchAllocatorStlAdapter<T>::Deleter>;
