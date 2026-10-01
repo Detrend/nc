@@ -134,5 +134,12 @@ namespace nc
     return scratch_unique_ptr<T>(scratch_new<T>(std::forward<TArgs>(args)...));
   }
 
+  template<typename... Args>
+  scratch_string scratch_format(std::format_string<Args...> fmt, Args&&... args) {
+    scratch_string ret;
+    std::format_to(std::back_inserter(ret), fmt, std::forward<Args>(args)...);
+    return ret;
+  }
+
 }/// namespace nc
 
