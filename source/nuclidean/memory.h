@@ -33,6 +33,7 @@ namespace nc
 
     struct Scope {
       Scope(ScratchAllocator* const the_allocator,const cstr& the_debug_name);
+      Scope(const Scope&) = delete;
       ~Scope();
 
     private:
@@ -49,6 +50,7 @@ namespace nc
     bool is_empty() const { return bump_ptr == data.get(); }
     size_t get_remaining_capacity() const { return (data.get() + size) - bump_ptr; }
     size_t get_total_capacity() const { return size; }
+    bool is_owner_of(void* const ptr) const;
 
   private:
     std::unique_ptr<unsigned char[]> data;
@@ -75,7 +77,13 @@ namespace nc
   T* scratch_new(TArgs&&... args) {
     if (void* const ret_raw = ScratchAllocator::get().allocate(sizeof(T), alignof(T))) {
       T* const ret = static_cast<T*>(ret_raw);
-      new (ret) T(std::forward<TArgs>(args)...);
+      try {
+        new (ret) T(std::forward<TArgs>(args)...);
+      }
+      catch (...) { // In case the constructor threw an exception, don't forget to free the allocated memory before rethrowing
+        ScratchAllocator::get().free(ret_raw);
+        throw;
+      }
       return ret;
     }
     throw std::bad_alloc();
@@ -83,6 +91,7 @@ namespace nc
 
   template<typename T>
   void scratch_delete(T* const ptr) {
+    if (! ptr) return;
     ptr->~T();
     ScratchAllocator::get().free(ptr);
   }
@@ -93,27 +102,34 @@ namespace nc
   struct ScratchAllocatorStlAdapter 
   {
       using value_type = T;
+      using size_type = std::size_t;
 
       ScratchAllocatorStlAdapter() {}
       template<typename TOther> ScratchAllocatorStlAdapter(const ScratchAllocatorStlAdapter<TOther>&) {}
 
-      T* allocate(const std::size_t n) 
+      T* allocate(const size_type n)
       {
+        constexpr size_type MAX_COUNT = std::numeric_limits<size_type>::max() / sizeof(T);
+        if (n > MAX_COUNT) {
+          throw std::bad_array_new_length();
+        }
+
         if (void* const ret = ScratchAllocator::get().allocate(n * sizeof(T), alignof(T))) {
           return static_cast<T*>(ret);
         }
         throw std::bad_alloc();
       }
 
-      void deallocate(T* const p, [[maybe_unused]] const std::size_t n)
+      void deallocate(T* const p, [[maybe_unused]] const size_type n)
       {
+        if (!p) return;
         ScratchAllocator::get().free(p);
       }
 
       // Can be passed as second parameter to std::unique_ptr
       struct Deleter
       {
-        void operator()(T* const ptr) { scratch_delete(ptr);}
+        void operator()(T* const ptr) { scratch_delete(ptr); }
       };
   };
 

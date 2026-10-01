@@ -43,6 +43,8 @@ namespace nc {
 
   void ScratchAllocator::free([[maybe_unused]] void* const ptr)
   {
+    nc_assert(ptr);
+    nc_assert(this->is_owner_of(ptr));
 #if NC_SCRATCH_ALLOCATOR_CHECKS
     nc_expect(scopes_debug.size() > 0);
     nc_expect(current_top_scope == (scopes_debug.size() - 1));
@@ -57,6 +59,8 @@ namespace nc {
 #if NC_SCRATCH_ALLOCATOR_CHECKS
   size_t ScratchAllocator::find_scope_for_allocation(void* const allocation) const
   {
+    nc_assert(allocation);
+    nc_assert(this->is_owner_of(allocation));
     for (size_t scope_idx = scopes_debug.size(); scope_idx --> 0; ) { // Iterate backwards because we are more likely to search for an allocation that's near the top
       // Iterate over all scopes and check if they're the one where this allocation resides
       if ((scopes_debug[scope_idx].scope_start <= allocation) && ((scopes_debug.size() == (scope_idx + 1)) || (allocation < scopes_debug[scope_idx + 1].scope_start))) {
@@ -78,6 +82,16 @@ namespace nc {
   }
 #endif
 
+  // Does given pointer point into the memory owned by this allocator
+  bool ScratchAllocator::is_owner_of(void* const ptr)
+  {
+    if (!ptr) return false;
+
+    const uintptr_t begin = reinterpret_cast<uintptr_t>(data.get());
+    const uintptr_t end = reinterpret_cast<uintptr_t>(data.get() + size);
+    const uintptr_t p = reinterpret_cast<uintptr_t>(ptr);
+    return (begin <= p) && (p < end);
+  }
 
 
 
