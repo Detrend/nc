@@ -403,4 +403,8 @@ namespace nc {
 namespace nc {
   // Declare our standard token to carry up to 24 chars
   using Token = CompositeToken<2>;
+
+  consteval Token operator ""_T(const char* const val, std::size_t) { return Token(val); }
+  consteval u64 operator ""_TVal(const char* const val, std::size_t) { return BasicToken<>(val).get_raw(); }
+
 }
