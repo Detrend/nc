@@ -4,6 +4,8 @@
 
 #include <cvars.h>
 
+#include <memory.h>
+
 #include <engine/core/engine.h>
 #include <engine/core/engine_module.h>
 #include <engine/core/module_event.h>
@@ -368,6 +370,10 @@ Engine& get_engine()
 //==============================================================================
 int init_engine_and_run_game(const CmdArgs& args)
 {
+  // Make sure Scratch allocator is initialized and scoped for unit tests etc.
+  // Also checks that upon quiting the game, there is nothing left in the scratch allocator
+  auto _root_scratch_scope_guard = ScratchAllocator::get().create_scope("root"); 
+
   // This makes sure that the current directory is in the root of the workspace
   // and "content" and "demo" dirs are directly in the current directory.
   // Changing the current directory might be necessary only if the user runs the
@@ -728,6 +734,7 @@ void Engine::run()
 
     while (!this->should_quit())
     {
+      auto _frame_scratch_scope_guard = ScratchAllocator::get().create_scope("frame"); // Cleanup Scratch at the end of each frame
       auto current_time = std::chrono::high_resolution_clock::now();
       f32 frame_time = eu::duration_to_seconds(previous_time, current_time);
 #if NC_PROFILING
