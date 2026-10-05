@@ -5,7 +5,12 @@
 
 #if NC_EDITOR
 
+#include <editor/editor_types.h>
 #include <editor/editor_objects.h>
+
+#include <map>
+#include <unordered_map>
+#include <vector>
 
 namespace nc
 {
@@ -54,6 +59,10 @@ struct EditorLevel
   bool create_line(EditorID line_id, EditorCoord start, EditorCoord end);
 
   bool destroy_line(EditorID line_id);
+
+  bool can_move_points(const std::map<EID<EditorPoint>, EditorCoord>& new_point_coords);
+
+  void move_points(const std::map<EID<EditorPoint>, EditorCoord>& new_point_coords);
 
   // Callback helpers
   void on_object_created(EditorID   id, const EditorPoint&    point    );

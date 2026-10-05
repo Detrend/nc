@@ -9,6 +9,7 @@
 #include <types.h>
 #include <math/vector.h>
 
+#include <editor/editor_types.h>
 #include <editor/rendering_modifier.h>
 #include <editor/editor_primitive.h>
 #include <editor/editor_renderer.h>
@@ -151,12 +152,6 @@ struct EditorImpl
     }
   }
 
-  struct EmptyTool
-  {
-    void get_render_data(RenderList&) {}
-    void update(EditorImpl&, f32)     {}
-  };
-
   // Enables selection and movement of walls, sectors and entities.
   struct SelectTool : public IEditorPrimitiveRenderingModifier
   {
@@ -168,7 +163,7 @@ struct EditorImpl
       const EditorPrimitive&              primitive
     );
 
-    void get_render_data(RenderList& /*list*/);
+    void get_render_data(EditorImpl& impl, RenderList& /*list*/);
 
     bool handle_dragging(EditorImpl& /*editor*/);
 
@@ -176,36 +171,10 @@ struct EditorImpl
 
     void update(EditorImpl& editor, f32 /*dt*/);
 
-    void get_modifiers(RenderModifierList& list);
+    void get_modifiers(EditorImpl& impl, RenderModifierList& list);
 
-    enum class SelectionType
-    {
-      none,
-      sector,
-      wall,
-      point,
-    };
-
-    SelectionType current_selection = SelectionType::none;
-    union
-    {
-      struct
-      {
-        u64 sector_id;
-      } sector;
-
-      struct
-      {
-        u64 sector_id;
-        u64 wall_idx;
-      } wall;
-
-      struct
-      {
-        u64 sector_id;
-        u64 point_idx;
-      } point;
-    } selection;
+    std::vector<EditorID> selected_objects;
+    EditorID              pointed_at_object = INVALID_EDITOR_ID;
   };
 
   struct BrushTool
@@ -217,9 +186,9 @@ struct EditorImpl
 
     void update(EditorImpl& editor, f32 /*delta*/);
 
-    void get_render_data(RenderList& list);
+    void get_render_data(EditorImpl& impl, RenderList& list);
 
-    void get_modifiers(RenderModifierList& /*list*/);
+    void get_modifiers(EditorImpl& impl, RenderModifierList& /*list*/);
   };
 
   std::variant<SelectTool, BrushTool> tool;
@@ -267,6 +236,8 @@ struct EditorImpl
   void init();
 
   mat3 calc_view_matrix();
+
+  f32  get_zoom_factor() const;
 
   vec2 screen_to_wpos(vec2 screen_pos);
 

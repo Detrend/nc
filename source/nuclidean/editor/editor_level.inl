@@ -77,9 +77,7 @@ T* EditorLevel::try_get_object(EditorID id)
     return nullptr;
   }
 
-  T* typed = std::get_if<T>(&it->second);
-  nc_assert(typed != nullptr);
-  return typed;
+  return std::get_if<T>(&it->second);
 }
 
 //==================================================================================================

@@ -484,7 +484,13 @@ void EditorImpl::init()
 //==================================================================================================
 mat3 EditorImpl::calc_view_matrix()
 {
-  return calc_view_matrix_impl(this->get_offset(), std::exp(this->get_zoom() * 0.1f), this->aspect);
+  return calc_view_matrix_impl(this->get_offset(), this->get_zoom_factor(), this->aspect);
+}
+
+//==================================================================================================
+f32 EditorImpl::get_zoom_factor() const
+{
+  return std::exp(this->get_zoom() * 0.1f);
 }
 
 //==================================================================================================
@@ -603,24 +609,69 @@ void EditorImpl::SelectTool::modify_rendering_properties
   const EditorPrimitive&              primitive
 )
 {
-  if (primitive.type == EditorPrimitiveType::sector && this->current_selection == SelectionType::sector)
+  if (primitive.type == EditorPrimitiveType::sector && this->pointed_at_object == primitive.sector.id)
   {
-    if (primitive.sector.id == this->selection.sector.sector_id)
-    {
-      properties.color *= 2.0f;
-    }
+    properties.color *= 2.0f;
   }
 }
 
 //==================================================================================================
-void EditorImpl::SelectTool::get_render_data(RenderList& /*list*/)
+void EditorImpl::SelectTool::get_render_data(EditorImpl& impl, RenderList& list)
 {
+  std::vector<vec2> points_to_draw;
+
+  // Outline of a sector if selected
+  if (impl.objects_render.contains(this->pointed_at_object))
+  {
+    const EditorObjectRenderData& data = impl.objects_render[this->pointed_at_object];
+    if (const EditorSectorRenderData* sector = std::get_if<EditorSectorRenderData>(&data))
+    {
+      for (u64 i = 0; i < sector->walls.size(); ++i)
+      {
+        u64 i_next = (i+1) % sector->walls.size();
+        points_to_draw.insert(points_to_draw.end(), {sector->walls[i].pt, sector->walls[i_next].pt});
+      }
+    }
+  }
+
+  // Highlight the line if selected
+  if (const EditorLine* line = impl.level.try_get_object<EditorLine>(this->pointed_at_object))
+  {
+    const EditorHalfEdge& h1 = impl.level.get_object<EditorHalfEdge>(line->half_edge_a);
+    const EditorHalfEdge& h2 = impl.level.get_object<EditorHalfEdge>(line->half_edge_b);
+    const EditorPoint&    p1 = impl.level.get_object<EditorPoint>(h1.from);
+    const EditorPoint&    p2 = impl.level.get_object<EditorPoint>(h2.from);
+    points_to_draw.insert(points_to_draw.end(), {p1.coords, p2.coords});
+  }
+
+  // Hightlight the point if selected
+  if (const EditorPoint* point = impl.level.try_get_object<EditorPoint>(this->pointed_at_object))
+  {
+    vec2 offsets[4] = {VEC2_X, VEC2_Y, -VEC2_X, -VEC2_Y};
+    for (u64 i = 0; i < 4; ++i)
+    {
+      u64 i_next = (i+1) % 4;
+      vec2 c1 = cast<vec2>(point->coords) + 0.01f * offsets[i]      / impl.get_zoom_factor();
+      vec2 c2 = cast<vec2>(point->coords) + 0.01f * offsets[i_next] / impl.get_zoom_factor();
+      points_to_draw.insert(points_to_draw.end(), {c1, c2});
+    }
+  }
+
+  if (points_to_draw.size())
+  {
+    EditorPrimitivePtr primitive = std::make_shared<EditorPrimitive>();
+    primitive->refresh_gpu_data(points_to_draw);
+    primitive->properties.line_width = 10.0f;
+    primitive->properties.color      = colors::RED;
+    primitive->order = 80;
+    list.push_back(primitive);
+  }
 }
 
 //==================================================================================================
 bool EditorImpl::SelectTool::handle_dragging(EditorImpl& /*editor*/)
 {
-  if (this->current_selection == SelectionType::none)
+  if (this->pointed_at_object == INVALID_EDITOR_ID)
   {
     return false;
   }
@@ -648,13 +699,13 @@ bool EditorImpl::SelectTool::handle_dragging(EditorImpl& /*editor*/)
 //==================================================================================================
 bool EditorImpl::SelectTool::handle_selection(EditorImpl& editor)
 {
-  EditorID sector_directly_selected = 0;
-  ivec2 closest_wall_a, closest_wall_b, closest_point;
+  vec2 cursor_pos_in_world = editor.get_mouse_wpos();
 
-  f32 distance_to_closest_point = FLT_MAX;
-  f32 distance_to_closest_wall  = FLT_MAX;
+  EditorID sector_directly_selected, closest_wall, closest_point;
+  sector_directly_selected = closest_wall = closest_point = INVALID_EDITOR_ID;
 
-  vec2 cursor_in_world = editor.get_mouse_wpos();
+  f32 dist_to_closest_point = FLT_MAX;
+  f32 dist_to_closest_wall  = FLT_MAX;
 
   // Update the pointed at sector..
   for (const auto&[id, object] : editor.objects_render)
@@ -667,7 +718,7 @@ bool EditorImpl::SelectTool::handle_selection(EditorImpl& editor)
     }
 
     const EditorSectorRenderData& sector = *sector_ptr;
-    for (const EditorSectorRenderData::IndexList& convex_part_indices : sector.convex_parts)
+    for (const auto& convex_part_indices : sector.convex_parts)
     {
       u16 idx0 = convex_part_indices[0];
 
@@ -680,62 +731,81 @@ bool EditorImpl::SelectTool::handle_selection(EditorImpl& editor)
         vec2 pt1 = cast<vec2>(sector.surface_points[idx1]);
         vec2 pt2 = cast<vec2>(sector.surface_points[idx2]);
 
-        if (intersect::point_triangle(cursor_in_world, pt0, pt1, pt2))
+        if (intersect::point_triangle(cursor_pos_in_world, pt0, pt1, pt2))
         {
           sector_directly_selected = id;
-          break;
+          goto end_render_object_loop; // thank you C++ committee for not allowing me to break from 3 loops
         }
       }
     }
+  }
+  end_render_object_loop:
 
-    // Iterate all walls and points of the sector and check their distance
-    for (u64 i = 0; i < sector.walls.size(); ++i)
+  // Now check the proximity to the lines
+  for (const auto&[id, obj] : editor.level.objects)
+  {
+    const EditorLine* line = std::get_if<EditorLine>(&obj);
+    if (!line)
     {
-      u64 i_next = (i + 1) % sector.walls.size();
+      continue;
+    }
 
-      ivec2 pt_a = sector.walls[i     ].pt;
-      ivec2 pt_b = sector.walls[i_next].pt;
+    const EditorHalfEdge& h1 = editor.level.get_object<EditorHalfEdge>(line->half_edge_a);
+    const EditorHalfEdge& h2 = editor.level.get_object<EditorHalfEdge>(line->half_edge_b);
+    const EditorPoint&    p1 = editor.level.get_object<EditorPoint>(h1.from);
+    const EditorPoint&    p2 = editor.level.get_object<EditorPoint>(h2.from);
 
-      // Check point distance
-      f32 pt_dist = distance(cast<vec2>(pt_a), cursor_in_world);
-      if (pt_dist < distance_to_closest_point)
-      {
-        distance_to_closest_point = pt_dist;
-        closest_point             = pt_a;
-      }
-
-      // Check wall distance
-      f32 wall_dist = dist::point_line_2d(cursor_in_world, cast<vec2>(pt_a), cast<vec2>(pt_b));
-      if (wall_dist < distance_to_closest_wall)
-      {
-        distance_to_closest_wall = wall_dist;
-        closest_wall_a           = pt_a;
-        closest_wall_b           = pt_b;
-      }
+    f32 dist = dist::point_line_2d(cursor_pos_in_world, cast<vec2>(p1.coords), cast<vec2>(p2.coords));
+    if (dist < dist_to_closest_wall)
+    {
+      dist_to_closest_wall = dist;
+      closest_wall         = id;
     }
   }
 
-  // Now evaluate what should actually be selected
-  if (sector_directly_selected != 0)
+  // And now the proximity to the points
+  for (const auto&[id, obj] : editor.level.objects)
   {
-    this->current_selection = SelectionType::sector;
-    this->selection.sector.sector_id = sector_directly_selected;
-  }
-  /*
-  else if (distance_to_closest_point < 10.0f)
-  {
-    // Handle closest point
-  }
-  else if (distance_to_closest_wall < 10.0f)
-  {
-    // Handle closest wall
-  }
-  */
-  else
-  {
-    this->current_selection = SelectionType::none;
+    const EditorPoint* point = std::get_if<EditorPoint>(&obj);
+    if (!point)
+    {
+      continue;
+    }
+
+    f32 dist = distance(cursor_pos_in_world, cast<vec2>(point->coords));
+    if (dist < dist_to_closest_point)
+    {
+      dist_to_closest_point = dist;
+      closest_point         = id;
+    }
   }
 
+  constexpr f32 SELECT_THRESHOLD = 0.01f;
+
+  // The distance is in the world space, we need to convert it to the screen space
+  f32 dist_to_closest_point_screen_space = editor.get_zoom_factor() * dist_to_closest_point;
+  f32 dist_to_closest_wall_screen_space  = editor.get_zoom_factor() * dist_to_closest_wall;
+
+  f32      weights[3]{};
+  EditorID objects[3]{};
+
+  weights[0] = dist_to_closest_point_screen_space * 0.1f;
+  weights[1] = dist_to_closest_wall_screen_space;
+  weights[2] = 1.0f;
+  objects[0] = dist_to_closest_point_screen_space < SELECT_THRESHOLD ? closest_point : INVALID_EDITOR_ID;
+  objects[1] = dist_to_closest_wall_screen_space  < SELECT_THRESHOLD ? closest_wall  : INVALID_EDITOR_ID;
+  objects[2] = sector_directly_selected;
+
+  s32 best_idx = -1;
+  for (s32 i = 0; i < 3; ++i)
+  {
+    if ((objects[i] != INVALID_EDITOR_ID) && (best_idx < 0 || weights[i] < weights[best_idx]))
+    {
+      best_idx = i;
+    }
+  }
+
+  this->pointed_at_object = best_idx >= 0 ? objects[best_idx] : INVALID_EDITOR_ID;
   return true;
 }
 
@@ -746,7 +816,7 @@ void EditorImpl::SelectTool::update(EditorImpl& editor, f32 /*dt*/)
 }
 
 //==================================================================================================
-void EditorImpl::SelectTool::get_modifiers(RenderModifierList& list)
+void EditorImpl::SelectTool::get_modifiers(EditorImpl& /*impl*/, RenderModifierList& list)
 {
   list.push_back(this);
 }
@@ -837,10 +907,11 @@ void EditorImpl::BrushTool::update(EditorImpl& editor, f32 /*delta*/)
   // And then refresh the GPU data!
   this->render_data->refresh_gpu_data(points);
   this->render_data->properties.color = line_color;
+  this->render_data->order = 99;
 }
 
 //==================================================================================================
-void EditorImpl::BrushTool::get_render_data(RenderList& list)
+void EditorImpl::BrushTool::get_render_data(EditorImpl& /*impl*/, RenderList& list)
 {
   if (render_data->handle.is_valid())
   {
@@ -854,7 +925,7 @@ void EditorImpl::BrushTool::get_render_data(RenderList& list)
 }
 
 //==================================================================================================
-void EditorImpl::BrushTool::get_modifiers(RenderModifierList& /*list*/)
+void EditorImpl::BrushTool::get_modifiers(EditorImpl& /*impl*/, RenderModifierList& /*list*/)
 {
 
 }

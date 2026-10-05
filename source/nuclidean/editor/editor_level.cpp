@@ -12,7 +12,8 @@
 #include <math/lingebra.h>
 #include <math/utils.h>
 
-#include <algorithm> // std::find, std::remove, std::min, std::max
+#include <algorithm>     // std::find, std::remove, std::min, std::max
+#include <unordered_set> // std::unordered_set
 #include <intrin.h>  // __rdtsc
 #include <cmath>     // std::round, std::cos, std::sin, std::acos
 
@@ -119,13 +120,14 @@ void EditorLevel::destroy_object(EditorID id)
 }
 
 //==================================================================================================
-bool EditorLevel::can_create_line(EditorCoord start, EditorCoord end)
+// Checks if the segment start-end intersects the segment other_a-other_b. Touching in exactly one
+// shared endpoint is fine, everything else (crossing, touching in the middle, overlapping or being
+// the very same segment) counts as an intersection.
+static bool segments_intersect
+(
+  EditorCoord start, EditorCoord end, EditorCoord other_a, EditorCoord other_b
+)
 {
-  if (start == end)
-  {
-    return false;
-  }
-
   auto orientation = [](EditorCoord p, EditorCoord q, EditorCoord r) -> s32
   {
     s64 value = cast<s64>(q.x - p.x) * cast<s64>(r.y - p.y) - cast<s64>(q.y - p.y) * cast<s64>(r.x - p.x);
@@ -138,63 +140,64 @@ bool EditorLevel::can_create_line(EditorCoord start, EditorCoord end)
            std::min(p.y, r.y) <= q.y && q.y <= std::max(p.y, r.y);
   };
 
+  bool share_start_a = start == other_a;
+  bool share_start_b = start == other_b;
+  bool share_end_a   = end   == other_a;
+  bool share_end_b   = end   == other_b;
+  s32  shared_count  = share_start_a + share_start_b + share_end_a + share_end_b;
+
+  // If the new segment shares exactly one endpoint with this line, ignore that shared point -
+  // only flag an intersection if the two segments overlap past it, i.e. they are collinear and
+  // extend beyond the shared point in the same direction.
+  if (shared_count == 1)
+  {
+    EditorCoord shared_point    = (share_start_a || share_start_b) ? start   : end;
+    EditorCoord new_far_point   = (share_start_a || share_start_b) ? end     : start;
+    EditorCoord other_far_point = (share_start_a || share_end_a)   ? other_b : other_a;
+
+    if (orientation(shared_point, new_far_point, other_far_point) != 0)
+    {
+      return false;
+    }
+
+    s64 dot = cast<s64>(new_far_point.x - shared_point.x) * cast<s64>(other_far_point.x - shared_point.x) +
+              cast<s64>(new_far_point.y - shared_point.y) * cast<s64>(other_far_point.y - shared_point.y);
+
+    return dot > 0;
+  }
+
+  s32 o1 = orientation(start,   end,     other_a);
+  s32 o2 = orientation(start,   end,     other_b);
+  s32 o3 = orientation(other_a, other_b, start);
+  s32 o4 = orientation(other_a, other_b, end);
+
+  return (o1 != o2 && o3 != o4)                           ||
+         (o1 == 0 && on_segment(start, other_a, end))     ||
+         (o2 == 0 && on_segment(start, other_b, end))     ||
+         (o3 == 0 && on_segment(other_a, start, other_b)) ||
+         (o4 == 0 && on_segment(other_a, end, other_b));
+}
+
+//==================================================================================================
+bool EditorLevel::can_create_line(EditorCoord start, EditorCoord end)
+{
+  if (start == end)
+  {
+    return false;
+  }
+
   bool has_intersection = false;
 
   // Iterate all lines and check if they do not intersect with this one
-  this->for_each_object_of_type<EditorLine>([&](EditorLine& line)
+  this->for_each_object_of_type<EditorLine>([&](EditorLine& line) -> bool
   {
     EditorHalfEdge& half_edge_a = this->get_object<EditorHalfEdge>(line.half_edge_a);
     EditorHalfEdge& half_edge_b = this->get_object<EditorHalfEdge>(line.half_edge_b);
     EditorCoord     other_a     = this->get_object<EditorPoint>(half_edge_a.from).coords;
     EditorCoord     other_b     = this->get_object<EditorPoint>(half_edge_b.from).coords;
 
-    bool share_start_a = start == other_a;
-    bool share_start_b = start == other_b;
-    bool share_end_a   = end   == other_a;
-    bool share_end_b   = end   == other_b;
-    s32  shared_count  = share_start_a + share_start_b + share_end_a + share_end_b;
-
-    // If the new segment shares exactly one endpoint with this line, ignore that shared point -
-    // only flag an intersection if the two segments overlap past it, i.e. they are collinear and
-    // extend beyond the shared point in the same direction.
-    if (shared_count == 1)
-    {
-      EditorCoord shared_point    = (share_start_a || share_start_b) ? start   : end;
-      EditorCoord new_far_point   = (share_start_a || share_start_b) ? end     : start;
-      EditorCoord other_far_point = (share_start_a || share_end_a)   ? other_b : other_a;
-
-      if (orientation(shared_point, new_far_point, other_far_point) != 0)
-      {
-        return;
-      }
-
-      s64 dot = cast<s64>(new_far_point.x - shared_point.x) * cast<s64>(other_far_point.x - shared_point.x) +
-                cast<s64>(new_far_point.y - shared_point.y) * cast<s64>(other_far_point.y - shared_point.y);
-
-      if (dot <= 0)
-      {
-        return;
-      }
-
-      has_intersection = true;
-      return;
-    }
-
-    s32 o1 = orientation(start,   end,     other_a);
-    s32 o2 = orientation(start,   end,     other_b);
-    s32 o3 = orientation(other_a, other_b, start);
-    s32 o4 = orientation(other_a, other_b, end);
-
-    bool intersects = (o1 != o2 && o3 != o4)                           ||
-                      (o1 == 0 && on_segment(start, other_a, end))     ||
-                      (o2 == 0 && on_segment(start, other_b, end))     ||
-                      (o3 == 0 && on_segment(other_a, start, other_b)) ||
-                      (o4 == 0 && on_segment(other_a, end, other_b));
-
-    if (intersects)
-    {
-      has_intersection = true;
-    }
+    has_intersection = segments_intersect(start, end, other_a, other_b);
+    return !has_intersection; // Stop at the first one we hit
   });
 
   return !has_intersection;
@@ -871,8 +874,8 @@ bool EditorLevel::destroy_line(EditorID line_id)
 
   EID<EditorHalfEdge> h1_id  = line->half_edge_a;
   EID<EditorHalfEdge> h2_id  = line->half_edge_b;
-  EID<EditorSector>  s1_id  = this->get_object<EditorHalfEdge>(h1_id).sector;
-  EID<EditorSector>  s2_id  = this->get_object<EditorHalfEdge>(h2_id).sector;
+  EID<EditorSector>   s1_id  = this->get_object<EditorHalfEdge>(h1_id).sector;
+  EID<EditorSector>   s2_id  = this->get_object<EditorHalfEdge>(h2_id).sector;
   EID<EditorPoint>    pt1_id = this->get_object<EditorHalfEdge>(h1_id).from;
   EID<EditorPoint>    pt2_id = this->get_object<EditorHalfEdge>(h2_id).from;
 
@@ -913,7 +916,9 @@ bool EditorLevel::destroy_line(EditorID line_id)
   this->destroy_object(h1_id);
   this->destroy_object(h2_id);
 
-  // The endpoints might have been used by this line only, in which case they go away with it
+  // The endpoints might have been used by this line only, in which case they go away with it.
+  // The point gets removed from the list if there are no half-edges associated with it during
+  // the "destroy_object" call.
   if (!this->point_to_half_edges.contains(pt1_id))
   {
     this->destroy_object(pt1_id);
@@ -1024,9 +1029,9 @@ bool EditorLevel::destroy_line(EditorID line_id)
   // survives, which is the same rule that decides which half keeps the old sector when a line
   // splits one in two. On a tie the older sector wins, and because the IDs come from a counter that
   // only ever goes up, that is simply the lower one of the two.
-  s64  s1_area      = bbox_area_of_loop(*this, s1_edges);
-  s64  s2_area      = bbox_area_of_loop(*this, s2_edges);
-  bool s1_survives  = s1_area != s2_area ? s1_area > s2_area : s1_id < s2_id;
+  s64  s1_area     = bbox_area_of_loop(*this, s1_edges);
+  s64  s2_area     = bbox_area_of_loop(*this, s2_edges);
+  bool s1_survives = s1_area != s2_area ? s1_area > s2_area : s1_id < s2_id;
 
   EID<EditorSector> survivor_id = s1_survives ? s1_id : s2_id;
   EID<EditorSector> dead_id     = s1_survives ? s2_id : s1_id;
@@ -1045,6 +1050,101 @@ bool EditorLevel::destroy_line(EditorID line_id)
   this->destroy_object(dead_id);
 
   return true;
+}
+
+//==================================================================================================
+bool EditorLevel::can_move_points(const std::map<EID<EditorPoint>, EditorCoord>& new_point_coords)
+{
+  // Iterate all moved points and for each one check if none of the lines outgoing from this point
+  // intersects any other line.
+  // We need to consider only points that actually moved.
+  auto coords_of = [&](EID<EditorPoint> point_id) -> EditorCoord
+  {
+    auto it = new_point_coords.find(point_id);
+    return it != new_point_coords.end() ? it->second : this->get_object<EditorPoint>(point_id).coords;
+  };
+
+  auto did_move = [&](EID<EditorPoint> point_id) -> bool
+  {
+    return coords_of(point_id) != this->get_object<EditorPoint>(point_id).coords;
+  };
+
+  // No point can end up on top of another one, that would turn two points into one and the lines
+  // between them into nonsense. A point that is standing there is a problem, unless it moves away.
+  std::unordered_set<EditorCoord> target_coords;
+  for (const auto&[point_id, new_coord] : new_point_coords)
+  {
+    if (!did_move(point_id))
+    {
+      continue;
+    }
+
+    auto occupant = this->coord_to_point.find(new_coord);
+    if (occupant != this->coord_to_point.end() && occupant->second != point_id && !did_move(occupant->second))
+    {
+      return false;
+    }
+
+    // Two moved points can not land on the same spot either
+    if (!target_coords.insert(new_coord).second)
+    {
+      return false;
+    }
+  }
+
+  // Collect all lines with their coords after the move. Only the ones that touch a moved point can
+  // start intersecting something, the rest stayed where they were and did not intersect before.
+  struct Segment
+  {
+    EditorCoord a, b;
+    bool        moved;
+  };
+
+  std::vector<Segment> segments;
+  this->for_each_object_of_type<EditorLine>([&](const EditorLine& line)
+  {
+    EID<EditorPoint> pt_a = this->get_object<EditorHalfEdge>(line.half_edge_a).from;
+    EID<EditorPoint> pt_b = this->get_object<EditorHalfEdge>(line.half_edge_b).from;
+    segments.push_back(Segment{coords_of(pt_a), coords_of(pt_b), did_move(pt_a) || did_move(pt_b)});
+  });
+
+  // Since no two points share a coordinate, sharing a coordinate means sharing the point and that
+  // is exactly what segments_intersect forgives.
+  for (u64 i = 0; i < segments.size(); ++i)
+  {
+    if (!segments[i].moved)
+    {
+      continue;
+    }
+
+    for (u64 j = 0; j < segments.size(); ++j)
+    {
+      // Pairs of two moved lines get checked only once
+      if (i == j || (segments[j].moved && j < i))
+      {
+        continue;
+      }
+
+      if (segments_intersect(segments[i].a, segments[i].b, segments[j].a, segments[j].b))
+      {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+//==================================================================================================
+void EditorLevel::move_points(const std::map<EID<EditorPoint>, EditorCoord>& new_point_coords)
+{
+  nc_assert(this->can_move_points(new_point_coords));
+
+  // Iterate the points and move them
+  for (const auto&[point_id, new_coord] : new_point_coords)
+  {
+    this->get_object<EditorPoint>(point_id).coords = new_coord;
+  }
 }
 
 //==================================================================================================

@@ -65,8 +65,8 @@ void Editor::render()
 
   std::visit([&](auto& tool_type)
   {
-    tool_type.get_render_data(primitives);
-    tool_type.get_modifiers(modifiers);
+    tool_type.get_render_data(*m_impl, primitives);
+    tool_type.get_modifiers(*m_impl, modifiers);
   },
   m_impl->tool);
 
