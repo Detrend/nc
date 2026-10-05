@@ -139,14 +139,14 @@
     <ClCompile Include="..\source\nuclidean\engine\game\game_helpers.cpp" />
     <ClCompile Include="..\source\nuclidean\engine\sound\sound_emitter.cpp" />
     <ClCompile Include="..\source\nuclidean\engine\sound\sound_handle.cpp" />
-    <ClCompile Include="..\source\nuclidean\engine\editor\editor_system.cpp" />
-    <ClCompile Include="..\source\nuclidean\engine\editor\editor.cpp" />
-    <ClCompile Include="..\source\nuclidean\engine\editor\editor_renderer.cpp" />
-    <ClCompile Include="..\source\nuclidean\engine\editor\editor_primitive.cpp" />
-    <ClCompile Include="..\source\nuclidean\engine\editor\editor_objects_render.cpp" />
-    <ClCompile Include="..\source\nuclidean\engine\editor\editor_level.cpp" />
-    <ClCompile Include="..\source\nuclidean\engine\editor\editor_actions.cpp" />
-    <ClCompile Include="..\source\nuclidean\engine\editor\editor_impl.cpp" />
+    <ClCompile Include="..\source\nuclidean\editor\editor_system.cpp" />
+    <ClCompile Include="..\source\nuclidean\editor\editor.cpp" />
+    <ClCompile Include="..\source\nuclidean\editor\editor_renderer.cpp" />
+    <ClCompile Include="..\source\nuclidean\editor\editor_primitive.cpp" />
+    <ClCompile Include="..\source\nuclidean\editor\editor_objects_render.cpp" />
+    <ClCompile Include="..\source\nuclidean\editor\editor_level.cpp" />
+    <ClCompile Include="..\source\nuclidean\editor\editor_actions.cpp" />
+    <ClCompile Include="..\source\nuclidean\editor\editor_impl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -281,17 +281,17 @@
     <ClInclude Include="..\source\nuclidean\engine\sound\sound_handle.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="..\source\nuclidean\buffer.h" />
-    <ClInclude Include="..\source\nuclidean\engine\editor\editor_system.h" />
-    <ClInclude Include="..\source\nuclidean\engine\editor\editor.h" />
-    <ClInclude Include="..\source\nuclidean\engine\editor\editor_renderer.h" />
-    <ClInclude Include="..\source\nuclidean\engine\editor\editor_primitive.h" />
-    <ClInclude Include="..\source\nuclidean\engine\editor\rendering_modifier.h" />
-    <ClInclude Include="..\source\nuclidean\engine\editor\editor_objects_render.h" />
-    <ClInclude Include="..\source\nuclidean\engine\editor\editor_objects.h" />
-    <ClInclude Include="..\source\nuclidean\engine\editor\editor_level.h" />
-    <ClInclude Include="..\source\nuclidean\engine\editor\editor_actions.h" />
-    <ClInclude Include="..\source\nuclidean\engine\editor\editor_types.h" />
-    <ClInclude Include="..\source\nuclidean\engine\editor\editor_impl.h" />
+    <ClInclude Include="..\source\nuclidean\editor\editor_system.h" />
+    <ClInclude Include="..\source\nuclidean\editor\editor.h" />
+    <ClInclude Include="..\source\nuclidean\editor\editor_renderer.h" />
+    <ClInclude Include="..\source\nuclidean\editor\editor_primitive.h" />
+    <ClInclude Include="..\source\nuclidean\editor\rendering_modifier.h" />
+    <ClInclude Include="..\source\nuclidean\editor\editor_objects_render.h" />
+    <ClInclude Include="..\source\nuclidean\editor\editor_objects.h" />
+    <ClInclude Include="..\source\nuclidean\editor\editor_level.h" />
+    <ClInclude Include="..\source\nuclidean\editor\editor_actions.h" />
+    <ClInclude Include="..\source\nuclidean\editor\editor_types.h" />
+    <ClInclude Include="..\source\nuclidean\editor\editor_impl.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\settings.cfg" />
@@ -305,7 +305,7 @@
     <None Include="..\source\nuclidean\stack_allocator.inl" />
     <None Include="..\source\nuclidean\engine\entity\sector_mapping.inl" />
     <None Include="..\source\nuclidean\engine\graphics\ssbo_buffer.inl" />
-    <None Include="..\source\nuclidean\engine\editor\editor_level.inl" />
+    <None Include="..\source\nuclidean\editor\editor_level.inl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\source\libs\glm\CMakeLists.txt" />
