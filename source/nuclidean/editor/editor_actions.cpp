@@ -60,6 +60,34 @@ void ActionCreateOrDeleteLine::action_undo(EditorLevel& level)
   }
 }
 
+//==================================================================================================
+void ActionMovePoints::init_with_new_coords
+(
+  const EditorLevel& level, std::map<EditorID, EditorCoord>&& move_points
+)
+{
+  // Remember the new coords
+  new_coords = std::move(move_points);
+
+  // And store the old coords for undo
+  for (const auto&[point_id, _] : new_coords)
+  {
+    old_coords[point_id] = level.get_object<EditorPoint>(point_id).coords;
+  }
+}
+
+//==================================================================================================
+void ActionMovePoints::action_do(EditorLevel& level)
+{
+  level.move_points(new_coords);
+}
+
+//==================================================================================================
+void ActionMovePoints::action_undo(EditorLevel& level)
+{
+  level.move_points(old_coords);
+}
+
 }
 
 #endif // #if NC_EDITOR

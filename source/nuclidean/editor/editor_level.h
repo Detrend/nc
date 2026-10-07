@@ -40,7 +40,8 @@ struct EditorLevel
   template<typename T>
   const T& get_object(EditorID id) const;
 
-  EditorObject* get_any_object(EditorID id);
+  EditorObject*       get_any_object(EditorID id);
+  const EditorObject* get_any_object(EditorID id) const;
 
   bool get_point_on_coord(EditorCoord coord, EditorID& id_out);
 

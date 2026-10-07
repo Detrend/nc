@@ -30,8 +30,10 @@ struct EditorPoint
 
 struct EditorHalfEdge
 {
+  // Do not reorder the members because of the ordered initialization
   EditorID from   = INVALID_EDITOR_ID;
   EditorID twin   = INVALID_EDITOR_ID;
+  EditorID line   = INVALID_EDITOR_ID;
   EditorID next   = INVALID_EDITOR_ID;
   EditorID sector = INVALID_EDITOR_ID;
   bool operator==(const EditorHalfEdge&) const = default;

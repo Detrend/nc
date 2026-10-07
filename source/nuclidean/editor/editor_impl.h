@@ -85,26 +85,21 @@ struct EditorImpl
   std::vector<EditorAction> undone_actions;
 
   // Sectors whose render data has to be recomputed at the end of the current update
-  std::set<EditorID> dirty_sectors;
+  std::set<EditorID> dirty_objects;
 
   void recompute_sector_render_data(const EditorSector& sector, EditorSectorRenderData& render_data);
 
   void on_object_created(EditorID object_id, const EditorSector& sector);
-
   void on_object_created(EditorID object_id, const EditorLine& line);
-
   void on_object_destroyed(EditorID object_id, const EditorLine&);
-
   void on_object_modified(EditorID object_id, const EditorLine&, const EditorLine& line);
-
   void on_object_destroyed(EditorID object_id, const EditorSector& sector);
-
   void on_object_modified(EditorID object_id, const EditorSector& old_state, const EditorSector& new_state);
+  void on_object_modified(EditorID object_id, const EditorPoint&, const EditorPoint& point);
 
-  // Recomputes the render data of all sectors that got marked as dirty during this update. This
-  // has to happen only once all the changes are known - a sector can be processed before its
-  // parent even exists, and a parent can only cut out holes that are already in place.
-  void recompute_dirty_sectors();
+  void on_line_modified(EditorID line_id);
+
+  void recompute_dirty_objects();
 
   void check_level_state_update();
 
@@ -118,10 +113,7 @@ struct EditorImpl
     undone_actions.clear(); // no way to redo now
     action_history.push_back(std::move(action));
 
-    return std::visit([&](auto& action)
-    {
-      return action.action_do(level);
-    }, action_history.back());
+    return std::get<ActionType>(action_history.back()).action_do(level);
   }
 
   void undo_last_action()
@@ -155,7 +147,13 @@ struct EditorImpl
   // Enables selection and movement of walls, sectors and entities.
   struct SelectTool : public IEditorPrimitiveRenderingModifier
   {
-    bool is_dragging = false;
+    std::vector<EditorID> selected_objects;
+    std::vector<EditorID> dragged_points;
+    EditorID              pointed_at_object       = INVALID_EDITOR_ID;
+    bool                  is_dragging             = false;
+    vec2                  dragging_start_pt       = VEC2_ZERO;
+    EditorPrimitivePtr    dragging_outline_lines  = std::make_shared<EditorPrimitive>();
+    EditorPrimitivePtr    dragging_outline_points = std::make_shared<EditorPrimitive>();
 
     void modify_rendering_properties
     (
@@ -164,17 +162,11 @@ struct EditorImpl
     );
 
     void get_render_data(EditorImpl& impl, RenderList& /*list*/);
-
+    void deselect_non_existing_objects(EditorImpl& impl);
     bool handle_dragging(EditorImpl& /*editor*/);
-
     bool handle_selection(EditorImpl& editor);
-
     void update(EditorImpl& editor, f32 /*dt*/);
-
     void get_modifiers(EditorImpl& impl, RenderModifierList& list);
-
-    std::vector<EditorID> selected_objects;
-    EditorID              pointed_at_object = INVALID_EDITOR_ID;
   };
 
   struct BrushTool
@@ -185,13 +177,11 @@ struct EditorImpl
     EditorCoord        painting_start = EditorCoord{0};
 
     void update(EditorImpl& editor, f32 /*delta*/);
-
     void get_render_data(EditorImpl& impl, RenderList& list);
-
     void get_modifiers(EditorImpl& impl, RenderModifierList& /*list*/);
   };
 
-  std::variant<SelectTool, BrushTool> tool;
+  std::variant<SelectTool, BrushTool> tool; // not the award winning one
 
   bool is_dragging                      = false;
   vec2 dragging_start_cursor_screen_pos = VEC2_ZERO;
@@ -216,6 +206,7 @@ struct EditorImpl
   }
 
   void snap_to_grid(vec2& coords);
+  vec2 snap_to_grid_inplace(vec2 coords);
 
   vec2 get_offset() const;
 

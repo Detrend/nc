@@ -18,6 +18,8 @@
 
 #include <imgui/imgui.h>
 
+#include <stack_vector.h>
+
 #include <vector>
 #include <variant>
 #include <memory>
@@ -123,8 +125,8 @@ void EditorImpl::on_object_created(EditorID object_id, const EditorSector& secto
   objects_render.insert({object_id, EditorSectorRenderData{.id = object_id}});
 
   // We might have become a hole of our parent, which has to cut us out of its surface
-  dirty_sectors.insert(object_id);
-  dirty_sectors.insert(sector.parent);
+  dirty_objects.insert(object_id);
+  dirty_objects.insert(sector.parent);
 }
 
 //==================================================================================================
@@ -147,14 +149,38 @@ void EditorImpl::on_object_destroyed(EditorID object_id, const EditorLine&)
 }
 
 //==================================================================================================
-void EditorImpl::on_object_modified(EditorID object_id, const EditorLine&, const EditorLine& line)
+void EditorImpl::on_line_modified(EditorID object_id)
 {
+  const EditorLine&   line = level.get_object<EditorLine>(object_id);
   const EditorHalfEdge& h1 = level.get_object<EditorHalfEdge>(line.half_edge_a);
   const EditorHalfEdge& h2 = level.get_object<EditorHalfEdge>(line.half_edge_b);
   const EditorPoint&    p1 = level.get_object<EditorPoint>(h1.from);
   const EditorPoint&    p2 = level.get_object<EditorPoint>(h2.from);
 
   std::get<EditorLineRenderData>(objects_render[object_id]).recreate_render_data(p1.coords, p2.coords);
+}
+
+//==================================================================================================
+void EditorImpl::on_object_modified(EditorID object_id, const EditorLine&, const EditorLine&)
+{
+  this->on_line_modified(object_id);
+}
+
+//==================================================================================================
+void EditorImpl::on_object_modified(EditorID object_id, const EditorPoint&, const EditorPoint&)
+{
+  nc_assert(level.point_to_half_edges.contains(object_id));
+  for (EditorID half_edge_id : level.point_to_half_edges[object_id])
+  {
+    const EditorHalfEdge& hedge = level.get_object<EditorHalfEdge>(half_edge_id);
+
+    this->dirty_objects.insert(hedge.line);
+
+    if (hedge.sector != INVALID_EDITOR_ID)
+    {
+      this->dirty_objects.insert(hedge.sector);
+    }
+  }
 }
 
 //==================================================================================================
@@ -170,7 +196,7 @@ void EditorImpl::on_object_destroyed(EditorID object_id, const EditorSector& sec
   objects_render.erase(object_id);
 
   // If we were a hole then our parent does not have to cut us out anymore
-  dirty_sectors.insert(sector.parent);
+  dirty_objects.insert(sector.parent);
 }
 
 //==================================================================================================
@@ -184,31 +210,35 @@ void EditorImpl::on_object_modified(EditorID object_id, const EditorSector& old_
   nc_assert(objects_render.contains(object_id));
 
   // Our shape might have changed, and so might have the parent we are a hole of
-  dirty_sectors.insert(object_id);
-  dirty_sectors.insert(old_state.parent);
-  dirty_sectors.insert(new_state.parent);
+  dirty_objects.insert(object_id);
+  dirty_objects.insert(old_state.parent);
+  dirty_objects.insert(new_state.parent);
 }
 
 //==================================================================================================
-// Recomputes the render data of all sectors that got marked as dirty during this update. This
-// has to happen only once all the changes are known - a sector can be processed before its
-// parent even exists, and a parent can only cut out holes that are already in place.
-void EditorImpl::recompute_dirty_sectors()
+void EditorImpl::recompute_dirty_objects()
 {
-  for (EditorID sector_id : dirty_sectors)
+  for (EditorID object_id : dirty_objects)
   {
-    // The void does not render anything and the sector might have been destroyed since
-    if (sector_id == VOID_SECTOR_ID || !level.objects.contains(sector_id))
+    // The void does not render anything and the object might have been destroyed since
+    if (object_id == VOID_SECTOR_ID || !level.objects.contains(object_id))
     {
       continue;
     }
 
-    nc_assert(objects_render.contains(sector_id));
-    EditorSectorRenderData& render_data = std::get<EditorSectorRenderData>(objects_render[sector_id]);
-    this->recompute_sector_render_data(level.get_object<EditorSector>(sector_id), render_data);
+    nc_assert(objects_render.contains(object_id));
+    if (auto* render_data = std::get_if<EditorSectorRenderData>(&objects_render[object_id]))
+    {
+      this->recompute_sector_render_data(level.get_object<EditorSector>(object_id), *render_data);
+    }
+
+    if (std::get_if<EditorLineRenderData>(&objects_render[object_id]))
+    {
+      this->on_line_modified(object_id);
+    }
   }
 
-  dirty_sectors.clear();
+  dirty_objects.clear();
 }
 
 //==================================================================================================
@@ -277,7 +307,7 @@ void EditorImpl::check_level_state_update()
   }
 
   // Now that all the changes are known, rebuild the sectors they touched
-  this->recompute_dirty_sectors();
+  this->recompute_dirty_objects();
 }
 
 //==================================================================================================
@@ -360,6 +390,13 @@ bool EditorImpl::try_insert_line_into_map(EditorCoord start, EditorCoord end, bo
 void EditorImpl::snap_to_grid(vec2& coords)
 {
   coords = round(coords);
+}
+
+//==================================================================================================
+vec2 EditorImpl::snap_to_grid_inplace(vec2 coords)
+{
+  this->snap_to_grid(coords);
+  return coords;
 }
 
 //==================================================================================================
@@ -666,18 +703,147 @@ void EditorImpl::SelectTool::get_render_data(EditorImpl& impl, RenderList& list)
     primitive->order = 80;
     list.push_back(primitive);
   }
+
+  if (this->dragging_outline_lines->is_valid())
+  {
+    list.push_back(this->dragging_outline_lines);
+  }
+
+  if (this->dragging_outline_points->is_valid())
+  {
+    list.push_back(this->dragging_outline_points);
+  }
 }
 
 //==================================================================================================
-bool EditorImpl::SelectTool::handle_dragging(EditorImpl& /*editor*/)
+static void collect_points_of_object
+(
+  const EditorLevel& level, EditorID object_id, std::set<EditorID>& points_out
+)
 {
-  if (this->pointed_at_object == INVALID_EDITOR_ID)
+  const EditorObject* object_ptr = level.get_any_object(object_id);
+  if (!object_ptr)
+  {
+    return;
+  }
+
+  if (const EditorSector* sector = std::get_if<EditorSector>(object_ptr))
+  {
+    EditorID half_edge_id = sector->edge;
+    do
+    {
+      const EditorHalfEdge& hedge = level.get_object<EditorHalfEdge>(half_edge_id);
+      points_out.insert(hedge.from);
+      half_edge_id = hedge.next;
+    }
+    while (half_edge_id != sector->edge);
+  }
+  else if (const EditorLine* line = std::get_if<EditorLine>(object_ptr))
+  {
+    points_out.insert(level.get_object<EditorHalfEdge>(line->half_edge_a).from);
+    points_out.insert(level.get_object<EditorHalfEdge>(line->half_edge_b).from);
+  }
+  else if (const EditorPoint* point = std::get_if<EditorPoint>(object_ptr))
+  {
+    points_out.insert(object_id);
+  }
+  else
+  {
+    nc_assert(false, "Not implemented?!");
+  }
+}
+
+//==================================================================================================
+static void calc_move_point_geometry
+(
+  EditorImpl&                            editor,
+  const std::map<EditorID, EditorCoord>& moved_points,
+  EditorPrimitive&                       primitive_lines_out,
+  EditorPrimitive&                       primitive_points_out
+)
+{
+  std::vector<vec2>  geometry_lines;
+  std::vector<vec2>  geometry_points;
+  std::set<EditorID> lines;
+
+  auto get_point_coord = [&](EditorID point_id)->EditorCoord
+  {
+    nc_assert(editor.level.get_any_object(point_id));
+    auto it = moved_points.find(point_id);
+    if (it == moved_points.end())
+    {
+      return editor.level.get_object<EditorPoint>(point_id).coords;
+    }
+
+    return it->second;
+  };
+
+  // Collect all lines that neighbor the points
+  for (const auto&[point_id, _] : moved_points)
+  {
+    nc_assert(editor.level.get_any_object(point_id), "Must exist!");
+    nc_assert(editor.level.point_to_half_edges.contains(point_id));
+
+    for (EditorID half_edge_id : editor.level.point_to_half_edges[point_id])
+    {
+      const EditorHalfEdge& hedge = editor.level.get_object<EditorHalfEdge>(half_edge_id);
+      nc_assert(editor.level.get_any_object(hedge.line) != nullptr);
+      lines.insert(hedge.line);
+    }
+  }
+
+  // Build some geometry from the lines
+  for (EditorID line_id : lines)
+  {
+    const EditorLine&     line = editor.level.get_object<EditorLine>(line_id);
+    const EditorHalfEdge& h1   = editor.level.get_object<EditorHalfEdge>(line.half_edge_a);
+    const EditorHalfEdge& h2   = editor.level.get_object<EditorHalfEdge>(line.half_edge_b);
+    EditorCoord           c1   = get_point_coord(h1.from);
+    EditorCoord           c2   = get_point_coord(h2.from);
+    geometry_lines.insert(geometry_lines.end(), {c1, c2});
+  }
+
+  // Build some geometry from the points
+  for (const auto&[point_id, moved_coord] : moved_points)
+  {
+    constexpr vec2 OFFSETS[] = {VEC2_X, VEC2_Y, -VEC2_X, -VEC2_Y};
+
+    for (u64 offset_idx = 0; offset_idx < 4; ++offset_idx)
+    {
+      for (u64 ti = 0; ti < 2; ++ti)
+      {
+        u64  idx = (offset_idx+ti) % 4;
+        vec2 pt  = cast<vec2>(moved_coord) + OFFSETS[idx] * 0.01f / editor.get_zoom_factor();
+        geometry_points.push_back(pt);
+      }
+    }
+  }
+
+  // Refill the GPU buffers
+  primitive_lines_out.refresh_gpu_data(geometry_lines);
+  primitive_points_out.refresh_gpu_data(geometry_points);
+}
+
+//==================================================================================================
+bool EditorImpl::SelectTool::handle_dragging(EditorImpl& editor)
+{
+  // Reset these always
+  this->dragging_outline_lines  = std::make_shared<EditorPrimitive>();
+  this->dragging_outline_points = std::make_shared<EditorPrimitive>();
+
+  // At this point we know that the IDs belong to existing objects because we called the
+  // "deselect_non_existing_objects" before this.
+  bool is_pointing_at_object = this->pointed_at_object != INVALID_EDITOR_ID;
+  bool is_something_selected = this->selected_objects.size();
+
+  if (!is_pointing_at_object && !is_something_selected)
   {
     return false;
   }
 
-  bool input_allowed = !ImGui::GetIO().WantCaptureMouse;
-  bool holding_right = input_allowed && ImGui::IsMouseReleased(ImGuiMouseButton_Right);
+  bool input_allowed  = !ImGui::GetIO().WantCaptureMouse;
+  bool holding_right  = input_allowed && ImGui::IsMouseDown(ImGuiMouseButton_Right);
+  bool released_mouse = false;
 
   if (holding_right != this->is_dragging)
   {
@@ -686,14 +852,81 @@ bool EditorImpl::SelectTool::handle_dragging(EditorImpl& /*editor*/)
     if (this->is_dragging)
     {
       // Started dragging.. Decide what do we actually want to drag
+      // Compose a list of points to drag based on the current selection or pointed at object
+      StackVector<EditorID, 16> objects_to_consider;
+
+      if (is_something_selected)
+      {
+        objects_to_consider.assign(this->selected_objects.begin(), this->selected_objects.end());
+      }
+      else if (is_pointing_at_object)
+      {
+        objects_to_consider.push_back(this->pointed_at_object);
+      }
+
+      std::set<EditorID> points_to_drag;
+      for (EditorID object : objects_to_consider)
+      {
+        collect_points_of_object(editor.level, object, points_to_drag);
+      }
+
+      // Set the dragged points
+      this->dragged_points.assign(points_to_drag.begin(), points_to_drag.end());
+
+      // Set the position of the mouse when we started dragging
+      this->dragging_start_pt = editor.get_mouse_wpos();
     }
     else
     {
       // Ended dragging
+      released_mouse = true;
     }
   }
 
-  return false;
+  if (this->is_dragging || released_mouse)
+  {
+    vec2 cursor_in_world   = editor.get_mouse_wpos();
+    vec2 offset_from_start = cursor_in_world - this->dragging_start_pt;
+
+    std::map<EditorID, EditorCoord> map_of_new_point_coords;
+
+    for (EditorID pt_id : this->dragged_points)
+    {
+      const EditorPoint& point = editor.level.get_object<EditorPoint>(pt_id);
+
+      EditorCoord new_coord = cast<EditorCoord>(editor.snap_to_grid_inplace(cast<vec2>(point.coords) + offset_from_start));
+      map_of_new_point_coords[pt_id] = new_coord;
+    }
+
+    calc_move_point_geometry
+    (
+      editor, map_of_new_point_coords, *this->dragging_outline_lines, *this->dragging_outline_points
+    );
+
+    bool can_move_points = editor.level.can_move_points(map_of_new_point_coords);
+
+    this->dragging_outline_lines->properties.color = can_move_points ? colors::WHITE : colors::RED;
+    this->dragging_outline_lines->order = 85;
+    this->dragging_outline_points->properties.color = colors::WHITE;
+    this->dragging_outline_points->order = 86;
+
+    // Move the points if possible
+    if (released_mouse)
+    {
+      if (can_move_points)
+      {
+        ActionMovePoints move_action;
+        move_action.init_with_new_coords(editor.level, std::move(map_of_new_point_coords));
+        editor.do_action(std::move(move_action));
+      }
+
+      // Reset the dragged points list
+      this->dragged_points.clear();
+    }
+  }
+
+  // Signal if we should handle the selection or not
+  return this->is_dragging;
 }
 
 //==================================================================================================
@@ -810,8 +1043,25 @@ bool EditorImpl::SelectTool::handle_selection(EditorImpl& editor)
 }
 
 //==================================================================================================
+void EditorImpl::SelectTool::deselect_non_existing_objects(EditorImpl& editor)
+{
+  // Remove all non-existing objects from the selection
+  std::erase_if(this->selected_objects, [&](EditorID id)
+  {
+    return editor.level.get_any_object(id) == nullptr;
+  });
+
+  // Reset the currently pointed id if it does not exist
+  if (editor.level.get_any_object(this->pointed_at_object) == nullptr)
+  {
+    this->pointed_at_object = INVALID_EDITOR_ID;
+  }
+}
+
+//==================================================================================================
 void EditorImpl::SelectTool::update(EditorImpl& editor, f32 /*dt*/)
 {
+  deselect_non_existing_objects(editor);
   handle_dragging(editor) || handle_selection(editor);
 }
 

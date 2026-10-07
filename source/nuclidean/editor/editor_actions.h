@@ -8,6 +8,7 @@
 #include <editor/editor_types.h>
 
 #include <variant>
+#include <map>
 
 namespace nc
 {
@@ -22,13 +23,27 @@ struct ActionCreateOrDeleteLine
   EditorCoord from;
   EditorCoord to;
 
-  bool do_create(EditorLevel& level);
-  bool do_destroy(EditorLevel& level);
-  bool action_do(EditorLevel& level); // creating a line returns true if a new sector is created
+  bool do_create(EditorLevel&   level);
+  bool do_destroy(EditorLevel&  level);
+  bool action_do(EditorLevel&   level); // creating a line returns true if a new sector is created
   void action_undo(EditorLevel& level);
 };
 
-using EditorAction = std::variant<ActionCreateOrDeleteLine>;
+struct ActionMovePoints
+{
+  std::map<EditorID, EditorCoord> new_coords;
+  std::map<EditorID, EditorCoord> old_coords;
+
+  void init_with_new_coords
+  (
+    const EditorLevel& level, std::map<EditorID, EditorCoord>&& move_points
+  );
+
+  void action_do(EditorLevel&   level);
+  void action_undo(EditorLevel& level);
+};
+
+using EditorAction = std::variant<ActionCreateOrDeleteLine, ActionMovePoints>;
 
 // The action is free to return any return type
 template<typename ActionType>

@@ -610,8 +610,8 @@ bool EditorLevel::create_line(EditorID line_id, EditorCoord start, EditorCoord e
 
   // Create the objects
   // TODO: This can be done using one function only
-  this->create_object<EditorHalfEdge>(h1_id,   /*from*/ pt1_id, /*twin*/ h2_id);
-  this->create_object<EditorHalfEdge>(h2_id,   /*from*/ pt2_id, /*twin*/ h1_id);
+  this->create_object<EditorHalfEdge>(h1_id,   /*from*/ pt1_id, /*twin*/ h2_id, /*line*/ line_id);
+  this->create_object<EditorHalfEdge>(h2_id,   /*from*/ pt2_id, /*twin*/ h1_id, /*line*/ line_id);
   this->create_object<EditorLine>    (line_id, /*edge1*/h1_id,  /*edge2*/h2_id);
 
   // We want to accumulate the angle here and then check it at the end..
@@ -860,6 +860,12 @@ EditorObject* EditorLevel::get_any_object(EditorID any_id)
   }
 
   return &this->objects.at(any_id);
+}
+
+//==================================================================================================
+const EditorObject* EditorLevel::get_any_object(EditorID any_id) const
+{
+  return const_cast<EditorLevel*>(this)->get_any_object(any_id);
 }
 
 //==================================================================================================
