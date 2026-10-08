@@ -1,0 +1,1 @@
+.\\tools\\premake5 --cc=clang --cppdialect=C++20 ninja

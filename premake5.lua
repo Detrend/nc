@@ -16,6 +16,31 @@ workspace "Nuclidean"
     --   .\tools\premake5.exe --cc=clang ninja
     --   .\tools\premake5.exe --cc=msc vs2026
 
+    -- Filters that can be nested
+    _filter_stack = {}
+    function _set_filter_to_stack()
+        local actual_filters = {}
+        for _, f in ipairs(_filter_stack) do
+            for _, v in ipairs(f) do
+                table.insert(actual_filters, v)
+            end
+        end
+        --print("workspace filter: " .. table.concat(actual_filters, ", "))
+        filter(actual_filters)
+    end
+    function fbegin(args) -- push filter to the stack
+        if type(args) ~= "table" then args = { args } end
+        _filter_stack[#_filter_stack + 1] = args   
+        _set_filter_to_stack()
+    end
+    function fend() -- pop filter from the stack
+        table.remove(_filter_stack, #_filter_stack)
+        _set_filter_to_stack()
+    end 
+    function felse(args) -- change filter on top of stack to different one
+        fend()
+        fbegin(args)
+    end
 
     location "build"
     targetdir "bin/%{prj.name}_%{cfg.buildcfg}"
@@ -37,38 +62,58 @@ workspace "Nuclidean"
     multiprocessorcompile "On"
     dpiawareness "High"
 
-    filter "configurations:Debug"
+    fbegin "configurations:Debug"
         symbols "On"
         optimize "Off"
-        runtime "Debug"
         linktimeoptimization "Off"
         buffersecuritycheck "on"
         functionlevellinking "on"
         editandcontinue "on"
-    filter "configurations:Test"
+        fbegin {"system:windows"}
+            runtime "Debug"
+        felse {"system:not windows"}
+            defines "_ITERATOR_DEBUG_LEVEL=2"
+        fend()
+    fend()
+    fbegin "configurations:Test"
         symbols "On"
         optimize "Full"
-        runtime "Release"
         linktimeoptimization "On"
         buffersecuritycheck "on"
         functionlevellinking "on"
         editandcontinue "on"
-    filter "configurations:Profiling"
+        fbegin {"system:windows"}
+            runtime "Release"
+        felse {"system:not windows"}
+           defines "_ITERATOR_DEBUG_LEVEL=0"
+        fend()
+    fend()
+    fbegin "configurations:Profiling"
         symbols "On"
         optimize "Full"
-        runtime "Release"
         linktimeoptimization "On"
         buffersecuritycheck "on"
         functionlevellinking "on"
         editandcontinue "on"
-    filter "configurations:Ship"
+        fbegin "system:windows"
+            runtime "Release"
+        felse "system:not windows"
+           defines "_ITERATOR_DEBUG_LEVEL=0"
+        fend()
+    fend()
+    fbegin "configurations:Ship"
         symbols "Off"
         optimize "Full"
-        runtime "Release"
         linktimeoptimization "On"
         buffersecuritycheck "off"
         functionlevellinking "on"
         editandcontinue "off"
+        fbegin {"system:windows"}
+            runtime "Release"
+        felse {"system:not windows"}
+           defines "_ITERATOR_DEBUG_LEVEL=0"
+        fend()
+    fend()
 
 project "Nuclidean"
     files {
@@ -78,12 +123,18 @@ project "Nuclidean"
         "resource/*"
     }
     includedirs "source/nuclidean"
-    uses { "glad", "glm", "stb", "SDL2", "SDL_mixer" }
+    uses { "glad", "glm", "stb", "SDL_mixer" }
+    fbegin "system:windows"
+        uses { "SDL2" }
+    felse "system:not windows"
+        linkoptions { "-lSDL2" }
+        links "wayland-client"
+    fend()
     defines { "_CONSOLE", "SDL_MAIN_HANDLED" }
 
     warnings "Extra"
     fatalwarnings "All"
-    filter "toolset:clang"
+    fbegin "toolset:clang"
         enablewarnings {
             -- Control flow
             "comma", "conditional-uninitialized", "implicit-fallthrough",
@@ -119,16 +170,24 @@ project "Nuclidean"
             "missing-field-initializers",
             "missing-designated-field-initializers"
         }
-
+        fbegin "system:not windows"
+            -- additional warnings disabled for now so that we can compile on Linux. TODO: fix the code to not throw these warnings
+            disablewarnings { 
+                "unknown-pragmas",
+                "unaligned-access",
+                "unused-command-line-argument"
+            }
+        fend()
+    fend()
     characterset "Unicode"
     clr "Off"
     resincludedirs "resource"
 
-    filter "configurations:Debug"
+    fbegin "configurations:Debug"
         kind "ConsoleApp"
         defines "NC_Debug"
         uses "imgui"
-        filter "toolset:clang"
+        fbegin "toolset:clang"
             buildoptions {
                 "-Wno-error=unused",
                 "-Wno-error=unused-parameter",
@@ -137,25 +196,28 @@ project "Nuclidean"
                 "-Wno-error=unused-template",
                 "-Wno-error=unreachable-code-aggressive"
             }
-    filter "configurations:Test"
+        fend()
+    felse "configurations:Test"
         kind "ConsoleApp"
         defines { "NC_Test", "NDEBUG" }
         uses "imgui"
-    filter "configurations:Profiling"
+    felse "configurations:Profiling"
         kind "ConsoleApp"
         defines { "NC_Profiling", "NDEBUG" }
         uses { "imgui", "benchmark" }
-    filter "configurations:Ship"
+    felse "configurations:Ship"
         kind "WindowedApp"
-        entrypoint "mainCRTStartup"
         defines { "NC_Ship", "NDEBUG" }
-
-    filter "action:ninja"
+        fbegin "system:windows"
+            entrypoint "mainCRTStartup"
+            fbegin  "action:ninja" 
+                -- workaround for ninja ignoring `kind "WindowedApp"`
+                linkoptions { "-Xlinker /SUBSYSTEM:WINDOWS", "-Xlinker /ENTRY:mainCRTStartup" }
+            fend()
+        fend()
+    felse {"action:ninja", "system:windows"}
         linkoptions { "-fuse-ld=lld" }
-
-    filter { "configurations:Ship", "action:ninja" }
-        -- workaround for ninja ignoring `kind "WindowedApp"`
-        linkoptions { "-Xlinker /SUBSYSTEM:WINDOWS", "-Xlinker /ENTRY:mainCRTStartup" }
+    fend()
 
 -- ############################ 3rd party libraries ############################
 
@@ -167,31 +229,35 @@ project "benchmark"
     removefiles "source/libs/benchmark/src/benchmark_main.cc"
     includedirs { "source/libs/benchmark/include", "source/libs/benchmark/src" }
     defines {
-        "WIN32",
-        "_WINDOWS",
         "BENCHMARK_STATIC_DEFINE",
-        "_CRT_SECURE_NO_WARNINGS",
         "HAVE_STD_REGEX",
         "HAVE_STEADY_CLOCK",
         'BENCHMARK_VERSION="v1.8.5"'
     }
+    fbegin "system:windows"
+        defines { "WIN32", "_WINDOWS", "_CRT_SECURE_NO_WARNINGS" }
+    fend()
 
     usage "PUBLIC"
         includedirs "source/libs/benchmark/include"
     usage "INTERFACE"
-        links { "benchmark", "Shlwapi" }
+        links { "benchmark" }
+    fbegin "system:windows"
+        links { "shlwapi" }
+    fend()
 
-    filter "configurations:not Debug"
+    fbegin "configurations:not Debug"
         defines "NDEBUG"
-    filter "configurations:not Profiling"
+    felse "configurations:not Profiling"
         excludefrombuild "On"
+    fend()
 
 project "glad"
     kind "StaticLib"
     files "source/libs/glad/*"
     includedirs "source/libs/glad"
     usage "INTERFACE"
-        links { "glad", "opengl32" }
+        links { "glad" }
 
 project "glm"
     kind "StaticLib"
@@ -221,85 +287,88 @@ project "stb"
     usage "INTERFACE"
         links "stb"
 
-project "SDL2"
-    kind "StaticLib"
+if os.target() == "windows" then
+    project "SDL2"
+        kind "StaticLib"
 
-    files {
-        "source/libs/SDL2/**.h",
-        "source/libs/SDL2/src/*.c",
-        "source/libs/SDL2/src/atomic/*.c",
-        "source/libs/SDL2/src/audio/*.c",
-        "source/libs/SDL2/src/cpuinfo/*.c",
-        "source/libs/SDL2/src/dynapi/*.c",
-        "source/libs/SDL2/src/events/*.c",
-        "source/libs/SDL2/src/file/*.c",
-        "source/libs/SDL2/src/haptic/*.c",
-        "source/libs/SDL2/src/hidapi/*.c",
-        "source/libs/SDL2/src/joystick/*.c",
-        "source/libs/SDL2/src/libm/*.c",
-        "source/libs/SDL2/src/locale/*.c",
-        "source/libs/SDL2/src/misc/*.c",
-        "source/libs/SDL2/src/power/*.c",
-        "source/libs/SDL2/src/render/*.c",
-        "source/libs/SDL2/src/sensor/*.c",
-        "source/libs/SDL2/src/stdlib/*.c",
-        "source/libs/SDL2/src/thread/*.c",
-        "source/libs/SDL2/src/timer/*.c",
-        "source/libs/SDL2/src/video/*.c",
-        "source/libs/SDL2/src/*/windows/*.c",
-        "source/libs/SDL2/src/audio/directsound/*.c",
-        "source/libs/SDL2/src/audio/disk/*.c",
-        "source/libs/SDL2/src/audio/dummy/*.c",
-        "source/libs/SDL2/src/audio/wasapi/*.c",
-        "source/libs/SDL2/src/audio/winmm/*.c",
-        "source/libs/SDL2/src/haptic/dummy/*.c",
-        "source/libs/SDL2/src/joystick/dummy/*.c",
-        "source/libs/SDL2/src/joystick/hidapi/*.c",
-        "source/libs/SDL2/src/joystick/virtual/*.c",
-        "source/libs/SDL2/src/render/direct3d/*.c",
-        "source/libs/SDL2/src/render/direct3d11/*.c",
-        "source/libs/SDL2/src/render/direct3d12/*.c",
-        "source/libs/SDL2/src/render/opengl/*.c",
-        "source/libs/SDL2/src/render/opengles2/*.c",
-        "source/libs/SDL2/src/render/software/*.c",
-        "source/libs/SDL2/src/sensor/dummy/*.c",
-        "source/libs/SDL2/src/thread/generic/SDL_syscond.c",
-        "source/libs/SDL2/src/video/dummy/*.c",
-        "source/libs/SDL2/src/video/yuv2rgb/*.c",
-    }
-    removefiles {
-        "source/libs/SDL2/src/hidapi/windows/**",
-        "source/libs/SDL2/src/events/imKStoUCS.c",
-        "source/libs/SDL2/src/events/SDL_keysym_to_scancode.c",
-        "source/libs/SDL2/src/events/SDL_scancode_tables.c",
-        "source/libs/SDL2/src/main/windows/SDL_windows_main.c",
-    }
-    includedirs {
-        "source/libs/SDL2/include",
-        "source/libs/SDL2/src/video/khronos"
-    }
-    defines "_WINDOWS"
-
-    usage "INTERFACE"
-        links {
-            "SDL2", 
-            "user32", 
-            "gdi32", 
-            "winmm", 
-            "imm32", 
-            "ole32", 
-            "oleaut32", 
-            "version", 
-            "uuid", 
-            "advapi32", 
-            "setupapi", 
-            "shell32" 
+        files {
+            "source/libs/SDL2/**.h",
+            "source/libs/SDL2/src/*.c",
+            "source/libs/SDL2/src/atomic/*.c",
+            "source/libs/SDL2/src/audio/*.c",
+            "source/libs/SDL2/src/cpuinfo/*.c",
+            "source/libs/SDL2/src/dynapi/*.c",
+            "source/libs/SDL2/src/events/*.c",
+            "source/libs/SDL2/src/file/*.c",
+            "source/libs/SDL2/src/haptic/*.c",
+            "source/libs/SDL2/src/hidapi/*.c",
+            "source/libs/SDL2/src/joystick/*.c",
+            "source/libs/SDL2/src/libm/*.c",
+            "source/libs/SDL2/src/locale/*.c",
+            "source/libs/SDL2/src/misc/*.c",
+            "source/libs/SDL2/src/power/*.c",
+            "source/libs/SDL2/src/render/*.c",
+            "source/libs/SDL2/src/sensor/*.c",
+            "source/libs/SDL2/src/stdlib/*.c",
+            "source/libs/SDL2/src/thread/*.c",
+            "source/libs/SDL2/src/timer/*.c",
+            "source/libs/SDL2/src/video/*.c",
+            "source/libs/SDL2/src/*/windows/*.c",
+            "source/libs/SDL2/src/audio/directsound/*.c",
+            "source/libs/SDL2/src/audio/disk/*.c",
+            "source/libs/SDL2/src/audio/dummy/*.c",
+            "source/libs/SDL2/src/audio/wasapi/*.c",
+            "source/libs/SDL2/src/audio/winmm/*.c",
+            "source/libs/SDL2/src/haptic/dummy/*.c",
+            "source/libs/SDL2/src/joystick/dummy/*.c",
+            "source/libs/SDL2/src/joystick/hidapi/*.c",
+            "source/libs/SDL2/src/joystick/virtual/*.c",
+            "source/libs/SDL2/src/render/direct3d/*.c",
+            "source/libs/SDL2/src/render/direct3d11/*.c",
+            "source/libs/SDL2/src/render/direct3d12/*.c",
+            "source/libs/SDL2/src/render/opengl/*.c",
+            "source/libs/SDL2/src/render/opengles2/*.c",
+            "source/libs/SDL2/src/render/software/*.c",
+            "source/libs/SDL2/src/sensor/dummy/*.c",
+            "source/libs/SDL2/src/thread/generic/SDL_syscond.c",
+            "source/libs/SDL2/src/video/dummy/*.c",
+            "source/libs/SDL2/src/video/yuv2rgb/*.c",
         }
+        removefiles {
+            "source/libs/SDL2/src/hidapi/windows/**",
+            "source/libs/SDL2/src/events/imKStoUCS.c",
+            "source/libs/SDL2/src/events/SDL_keysym_to_scancode.c",
+            "source/libs/SDL2/src/events/SDL_scancode_tables.c",
+            "source/libs/SDL2/src/main/windows/SDL_windows_main.c",
+        }
+        includedirs {
+            "source/libs/SDL2/include",
+            "source/libs/SDL2/src/video/khronos"
+        }
+        defines "_WINDOWS"
 
-    filter "configurations:Debug"
-        defines "_DEBUG"
-    filter "configurations:not Debug"
-        defines "NDEBUG"
+        usage "INTERFACE"
+            links {
+                "SDL2", 
+                "user32", 
+                "gdi32", 
+                "winmm", 
+                "imm32", 
+                "ole32", 
+                "oleaut32", 
+                "version", 
+                "uuid", 
+                "advapi32", 
+                "setupapi", 
+                "shell32" 
+            }
+
+        fbegin "configurations:Debug"
+            defines "_DEBUG"
+        felse "configurations:not Debug"
+            defines "NDEBUG"
+        fend()
+end
 
 project "SDL_mixer"
     kind "StaticLib"
@@ -317,12 +386,18 @@ project "SDL_mixer"
         "source/libs/SDL_mixer/src/codecs/native_midi",
     }
     links { "SDL2" }
-    defines { "WIN32", "_WINDOWS", "MUSIC_WAV", "MUSIC_MP3_MINIMP3" }
+    defines {"MUSIC_WAV", "MUSIC_MP3_MINIMP3" }
+
+    fbegin "system:windows"
+        links { "SDL2" }
+        defines { "WIN32", "_WINDOWS" }
+    fend()
 
     usage "INTERFACE"
         links "SDL_mixer"
 
-    filter "configurations:Debug"
+    fbegin "configurations:Debug"
         defines "_DEBUG"
-    filter "configurations:not Debug"
+    felse "configurations:not Debug"
         defines { "NDEBUG", "_CRT_SECURE_NO_WARNINGS" }
+    fend()
