@@ -36,7 +36,8 @@ void StackAllocator<T, Cnt>::deallocate(T* ptr, u64 n)
 //==============================================================================
 template<typename T, u64 Cnt>
 StackAllocator<T, Cnt>::StackAllocator(StackData<T, Cnt>* d) noexcept
-: m_data(d)
+  : std::allocator<T>()
+  , m_data(d)
 {
 
 }
@@ -45,7 +46,8 @@ StackAllocator<T, Cnt>::StackAllocator(StackData<T, Cnt>* d) noexcept
 template<typename T, u64 Cnt>
 template<typename U, u64 OtherCnt>
 StackAllocator<T, Cnt>::StackAllocator(const StackAllocator<U, OtherCnt>&) noexcept
-: m_data(nullptr)
+  : std::allocator<T>()
+  , m_data(nullptr)
 {
 
 }
@@ -53,7 +55,8 @@ StackAllocator<T, Cnt>::StackAllocator(const StackAllocator<U, OtherCnt>&) noexc
 //==============================================================================
 template<typename T, u64 Cnt>
 StackAllocator<T, Cnt>::StackAllocator(const StackAllocator<T, Cnt>& other) noexcept
-: m_data(other.m_data)
+  : std::allocator<T>()
+  , m_data(other.m_data)
 {
 
 }
@@ -61,7 +64,8 @@ StackAllocator<T, Cnt>::StackAllocator(const StackAllocator<T, Cnt>& other) noex
 //==============================================================================
 template<typename T, u64 Cnt>
 StackAllocator<T, Cnt>::StackAllocator(StackAllocator<T, Cnt>&& other) noexcept
-: m_data(other.m_data)
+  : std::allocator<T>()
+  , m_data(other.m_data)
 {
   other.m_data = nullptr;
 }
