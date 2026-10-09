@@ -13,12 +13,6 @@
 namespace nc
 {
 
-#if defined(_MSC_VER) && !defined(__clang__)
-#   define NC_MSVC
-#elif defined(__clang__)
-#   define NC_CLANG
-#endif
-
 #if defined(_WIN32)
 #   define NC_OS_WINDOWS
 #elif defined(__linux__)
@@ -27,18 +21,22 @@ namespace nc
 
 
 
-#if defined(NC_CLANG)
+#if NC_COMPILER_CLANG || NC_COMPILER_GCC
 #   define NC_FORCE_INLINE __attribute__((always_inline))
 #   define NC_NEVER_INLINE __attribute__((noinline))
-#   define NC_ANALYZER_NORETURN __attribute__((analyzer_noreturn))
 #   define NC_PUSH_PACKED _Pragma("pack(push, 1)")
 #   define NC_POP_PACKED  _Pragma("pack(pop)")
-#elif defined(NC_MSVC)
+# if NC_COMPILER_CLANG
+#   define NC_ANALYZER_NORETURN __attribute__((analyzer_noreturn))
+# else
+#   define NC_ANALYZER_NORETURN
+# endif
+#elif NC_COMPILER_MSVC
 #   define NC_FORCE_INLINE __forceinline
 #   define NC_NEVER_INLINE __declspec(noinline)
-#   define NC_ANALYZER_NORETURN
 #   define NC_PUSH_PACKED __pragma(pack(push)); __pragma(pack(1));
 #   define NC_POP_PACKED  __pragma(pack(pop));
+#   define NC_ANALYZER_NORETURN
 #endif
 
 #ifdef NC_OS_WINDOWS

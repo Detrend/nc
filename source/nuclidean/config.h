@@ -42,9 +42,15 @@
 #if defined(__clang__)
 #define NC_COMPILER_CLANG NC_CONFIG_ON
 #define NC_COMPILER_MSVC  NC_CONFIG_OFF
+#define NC_COMPILER_GCC   NC_CONFIG_OFF
 #elif defined(_MSC_VER)
 #define NC_COMPILER_CLANG NC_CONFIG_OFF
 #define NC_COMPILER_MSVC  NC_CONFIG_ON
+#define NC_COMPILER_GCC   NC_CONFIG_OFF
+#elif defined(__GNUC__)
+#define NC_COMPILER_CLANG NC_CONFIG_OFF
+#define NC_COMPILER_MSVC  NC_CONFIG_OFF
+#define NC_COMPILER_GCC   NC_CONFIG_ON
 #else
 #error Unsupported compiler
 #endif
