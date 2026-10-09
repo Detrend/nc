@@ -37,7 +37,7 @@ static void handle_player_input(GameInputs& inputs)
   };
 
   // Movement
-  for (const auto[scancode, key_idx] : KEY_MAPPINGS)
+  for (const auto&[scancode, key_idx] : KEY_MAPPINGS)
   {
     if (keyboard_state[scancode])
     {
