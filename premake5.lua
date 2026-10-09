@@ -182,7 +182,6 @@ project "Nuclidean"
         disablewarnings { 
             "switch",
             "missing-field-initializers",
-            "missing-designated-field-initializers"
         }
         fbegin "system:not windows"
             -- additional warnings disabled for now so that we can compile on Linux. TODO: fix the code to not throw these warnings
