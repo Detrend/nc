@@ -71,7 +71,7 @@ namespace nc {
   namespace token_helpers 
   {
 
-    static consteval auto make_char_to_code_table(const std::string& chars_list, const std::string& alt_chars_list)
+    static constexpr std::array<u8, 256> make_char_to_code_table(std::string_view chars_list, std::string_view alt_chars_list)
     {
       if (alt_chars_list.size() > chars_list.size()) {
         nc_crit_constexpr("Alt chars list must not be bigger than chars_list!");
@@ -120,7 +120,7 @@ namespace nc {
 
   private:
 
-    static constexpr auto CHAR_TO_CODE = token_helpers::make_char_to_code_table(TPermittedChars::chars, TPermittedChars::alt);
+    static constexpr std::array<u8, 256> CHAR_TO_CODE = token_helpers::make_char_to_code_table(TPermittedChars::chars, TPermittedChars::alt);
 
 
     static constexpr u64 char_to_code(const char c)
