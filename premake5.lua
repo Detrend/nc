@@ -120,8 +120,10 @@ project "Nuclidean"
         "source/nuclidean/**.h",
         "source/nuclidean/**.inl",
         "source/nuclidean/**.cpp",
-        "resource/*"
     }
+    fbegin "system:windows"
+        files { "resource/*" }
+    fend()
     includedirs "source/nuclidean"
     uses { "glad", "glm", "stb", "SDL_mixer" }
     fbegin "system:windows"
@@ -164,9 +166,13 @@ project "Nuclidean"
             -- Source hygiene
             "header-hygiene", "invalid-utf8", "newline-eof", "undef"
         }
+        fbegin "action:gmake"
+            buildoptions {"-Wno-\\#pragma-messages"} --workaround a dumb bug - in make, the # doesn't get escaped by disablewarnings and everything after it would get commented out lol xxD
+        felse "action: not gmake"
+            disablewarnings {"#pragma-messages"}
+        fend()
         disablewarnings { 
             "switch",
-            "#pragma-messages",
             "missing-field-initializers",
             "missing-designated-field-initializers"
         }
@@ -178,10 +184,23 @@ project "Nuclidean"
                 "unused-command-line-argument"
             }
         fend()
+    felse "toolset:gcc"
+        disablewarnings { 
+            "switch",
+            "missing-field-initializers",
+        }
+        fbegin "system:not windows"
+            -- additional warnings disabled for now so that we can compile on Linux. TODO: fix the code to not throw these warnings
+            disablewarnings { 
+                "unknown-pragmas",
+            }
+        fend()
     fend()
     characterset "Unicode"
     clr "Off"
-    resincludedirs "resource"
+    fbegin "system:windows"
+        resincludedirs "resource"
+    fend()
 
     fbegin "configurations:Debug"
         kind "ConsoleApp"
