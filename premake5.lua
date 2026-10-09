@@ -174,11 +174,6 @@ project "Nuclidean"
             -- Source hygiene
             "header-hygiene", "invalid-utf8", "newline-eof", "undef"
         }
-        fbegin "action:gmake"
-            buildoptions {"-Wno-\\#pragma-messages"} --workaround a dumb bug - in make, the # doesn't get escaped by disablewarnings and everything after it would get commented out lol xxD
-        felse "action: not gmake"
-            disablewarnings {"#pragma-messages"}
-        fend()
         disablewarnings { 
             "switch",
             "missing-field-initializers",
