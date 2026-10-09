@@ -6,6 +6,12 @@
     This software is distributed without any warranty.
     See <http://creativecommons.org/publicdomain/zero/1.0/>.
 */
+
+// [Nucledian]
+#pragma warning(disable:4267)
+#pragma warning(disable:4244)
+// [~Nucledian]
+
 #include <stddef.h>
 #include "minimp3.h"
 
@@ -1391,3 +1397,8 @@ void mp3dec_ex_close(mp3dec_ex_t *dec)
 #endif
 
 #endif /* MINIMP3_IMPLEMENTATION && !_MINIMP3_EX_IMPLEMENTATION_GUARD */
+
+// [Nucledian]
+#pragma warning(default:4267)
+#pragma warning(default:4244)
+// [~Nucledian]
