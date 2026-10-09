@@ -13,7 +13,7 @@ env:
   LLVM_VERSION: 20.1.8
 
 jobs:
-  build:
+  build-win:
     runs-on: windows-latest
 
     defaults:
@@ -68,8 +68,92 @@ jobs:
           path: nuclidean-${{ matrix.config }}-win64.zip
           if-no-files-found: error
 
-  build-vs:
+  build-linux:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [Ship, Test]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install Prerequisites
+        run: |
+          sudo apt install -y clang ninja-build libsdl2-dev zip
+          chmod 777 ./tools/premake5
+
+      - name: Report toolchain versions
+        run: |
+          clang --version
+          ninja --version
+          ./tools/premake5 --version
+
+      - name: Generate build files
+        run: ./tools/premake5 --cc=clang --cppdialect=C++20 ninja
+
+      - name: Build ${{ matrix.config }}
+        run: ninja -C build ${{ matrix.config }}
+
+      - name: Stage package
+        run: |
+          mkdir -p staging
+          cp bin/Nuclidean_${{ matrix.config }}/Nuclidean staging/
+          cp -r content staging/content
+
+      - name: Create archive
+        run: zip -r nuclidean-${{ matrix.config }}-linux64.zip staging
+
+      - name: Upload archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuclidean-${{ matrix.config }}-linux64
+          path: nuclidean-${{ matrix.config }}-linux64.zip
+          if-no-files-found: error
+
+  trybuild-linux-gcc:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [Ship]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install Prerequisites
+        run: |
+          sudo apt install -y g++ ninja-build libsdl2-dev zip
+          chmod 777 ./tools/premake5
+
+      - name: Report toolchain versions
+        run: |
+          g++ --version
+          ninja --version
+          ./tools/premake5 --version
+
+      - name: Generate build files
+        run: ./tools/premake5 --cc=gcc --cppdialect=C++23 ninja
+
+      - name: Build ${{ matrix.config }}
+        run: ninja -C build ${{ matrix.config }}
+
+  trybuild-vs:
     runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [Ship]
+        compiler: [msc, clang]
 
     defaults:
       run:
@@ -85,10 +169,10 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: Generate build files
-        run: tools\premake5.exe --cc=clang --cppdialect=C++23 vs2026
+        run: tools\premake5.exe --cc=${{ matrix.compiler }} --cppdialect=C++23 vs2026
 
-      - name: Build Ship
-        run: msbuild build\Nuclidean.slnx -p:Configuration=Ship -p:Platform=x64 -m
+      - name: Build ${{ matrix.config }}
+        run: msbuild build\Nuclidean.slnx -p:Configuration=${{ matrix.config }} -p:Platform=x64 -m
 
   clang-tidy:
     runs-on: windows-latest
@@ -173,7 +257,7 @@ jobs:
           done
 
   unit-tests:
-    needs: build
+    needs: build-win
     runs-on: windows-latest
 
     defaults:
@@ -194,7 +278,7 @@ jobs:
         run: .\Nuclidean.exe -unit_test
 
   push-artifacts:
-    needs: [build, unit-tests]
+    needs: [build-win, build-linux, unit-tests]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
@@ -209,7 +293,7 @@ jobs:
       - name: Download archives
         uses: actions/download-artifact@v4
         with:
-          pattern: nuclidean-*-win64
+          pattern: nuclidean-*-*64    # match both win64 and linux64
           merge-multiple: true
           path: artifacts
 
