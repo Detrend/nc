@@ -29,22 +29,22 @@ inline Buffer::Buffer()
 template<typename T>
 void Buffer::store(const T& value)
 {
+  nc_assert(size >= sizeof(T));
   T* ptr = recast<T*>(head);
   *ptr = value;
   head = recast<void*>(ptr + 1);
   size -= sizeof(T);
-  nc_assert(size >= 0);
 }
 
 //==============================================================================
 template<typename T>
 T Buffer::load()
 {
+  nc_assert(size >= sizeof(T));
   T* ptr   = recast<T*>(head);
   T  value = *ptr;
   head = recast<T*>(ptr + 1);
   size -= sizeof(T);
-  nc_assert(size >= 0);
   return value;
 }
 
@@ -52,20 +52,20 @@ T Buffer::load()
 template<typename T>
 void Buffer::store_array(const T* first, u64 cnt)
 {
+  nc_assert(size >= (sizeof(T) * cnt));
   std::memcpy(head, first, sizeof(T) * cnt);
   size -= sizeof(T) * cnt;
   head = recast<T*>(head) + cnt;
-  nc_assert(size >= 0);
 }
 
 //==============================================================================
 template<typename T>
 void Buffer::load_array(T* first, u64 cnt)
 {
+  nc_assert(size >= (sizeof(T) * cnt));
   std::memcpy(first, head, sizeof(T) * cnt);
   size -= sizeof(T) * cnt;
   head = recast<T*>(head) + cnt;
-  nc_assert(size >= 0);
 }
 
 //==============================================================================
