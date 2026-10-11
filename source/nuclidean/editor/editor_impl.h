@@ -66,15 +66,15 @@ struct EditorImpl
   static_assert(ARRAY_LENGTH(GRID_SIZES)  == NUM_GRIDS);
   static_assert(ARRAY_LENGTH(GRID_COLORS) == NUM_GRIDS);
 
-  f32                              aspect = 1.0f;
-  ivec2                            screen_size = ivec2{1920, 1080};
-  std::vector<EditorPrimitivePtr>  grids;
-  EditorRenderer                   renderer;
-  vec2                             center = VEC2_ZERO;
-  f32                              zoom   = editor::ZOOM_DEFAULT;
-  u64                              current_snap = 1;
-  f64                              time_since_start = 0.0f;
-  EditorLevel                      level;
+  f32                             aspect           = 1.0f;
+  ivec2                           screen_size      = ivec2{1920, 1080};
+  std::vector<EditorPrimitivePtr> grids;
+  EditorRenderer                  renderer;
+  vec2                            center           = VEC2_ZERO;
+  f32                             zoom             = editor::ZOOM_DEFAULT;
+  u64                             current_snap     = 1;
+  f64                             time_since_start = 0.0f;
+  EditorLevel                     level;
 
   // The object state
   std::map<EditorID, EditorObject>           objects_mirror;
@@ -89,13 +89,13 @@ struct EditorImpl
 
   void recompute_sector_render_data(const EditorSector& sector, EditorSectorRenderData& render_data);
 
-  void on_object_created(EditorID object_id, const EditorSector& sector);
-  void on_object_created(EditorID object_id, const EditorLine& line);
+  void on_object_created(EditorID   object_id, const EditorSector& sector);
+  void on_object_created(EditorID   object_id, const EditorLine& line);
   void on_object_destroyed(EditorID object_id, const EditorLine&);
-  void on_object_modified(EditorID object_id, const EditorLine&, const EditorLine& line);
   void on_object_destroyed(EditorID object_id, const EditorSector& sector);
-  void on_object_modified(EditorID object_id, const EditorSector& old_state, const EditorSector& new_state);
-  void on_object_modified(EditorID object_id, const EditorPoint&, const EditorPoint& point);
+  void on_object_modified(EditorID  object_id, const EditorLine&, const EditorLine& line);
+  void on_object_modified(EditorID  object_id, const EditorSector& old_state, const EditorSector& new_state);
+  void on_object_modified(EditorID  object_id, const EditorPoint&, const EditorPoint& point);
 
   void on_line_modified(EditorID line_id);
 

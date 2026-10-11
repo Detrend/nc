@@ -31,14 +31,7 @@ EditorLevel::EditorLevel()
 //==================================================================================================
 EditorID EditorLevel::new_id() const
 {
-  u64 id = 0;
-  do
-  {
-    id = __rdtsc(); // Cycle counter is indeed a neat randomness source
-  }
-  while (this->objects.contains(id));
-
-  return id;
+  return next_free_id++;
 }
 
 //==================================================================================================
@@ -416,32 +409,6 @@ void iterate_left_most_half_edges
 }
 
 //==================================================================================================
-// Area of the axis aligned bounding box around a loop of half edges. We use it to tell which of two
-// sectors is the bigger one, both when splitting one into two and when merging two back together.
-static s64 bbox_area_of_loop
-(
-  const EditorLevel& level, const StackVector<EID<EditorHalfEdge>, 32>& edges
-)
-{
-  nc_assert(edges.size() > 0);
-
-  EditorCoord min_coords = level.get_object<EditorPoint>(level.get_object<EditorHalfEdge>(edges.front()).from).coords;
-  EditorCoord max_coords = min_coords;
-
-  for (EID<EditorHalfEdge> edge_id : edges)
-  {
-    EditorCoord coords = level.get_object<EditorPoint>(level.get_object<EditorHalfEdge>(edge_id).from).coords;
-
-    min_coords.x = std::min(min_coords.x, coords.x);
-    min_coords.y = std::min(min_coords.y, coords.y);
-    max_coords.x = std::max(max_coords.x, coords.x);
-    max_coords.y = std::max(max_coords.y, coords.y);
-  }
-
-  return cast<s64>(max_coords.x - min_coords.x) * cast<s64>(max_coords.y - min_coords.y);
-}
-
-//==================================================================================================
 // Chains the edges into a cycle and hands the whole loop over to the given sector. The sector then
 // points to the lowest ID edge of the loop - any of them would do, but always picking the same one
 // means the sector ends up identical no matter which edge the walk happened to start from.
@@ -587,7 +554,10 @@ static void move_holes(EditorLevel& level, EID<EditorSector> from_id, EID<Editor
 }
 
 //==================================================================================================
-bool EditorLevel::create_line(EditorID line_id, EditorCoord start, EditorCoord end)
+bool EditorLevel::create_line
+(
+  EditorID line_id, EditorCoord start, EditorCoord end, CreatedSectorCallback callback_created, SplitSectorCallback callback_split
+)
 {
   nc_assert(this->can_create_line(start, end));
   nc_assert(this->get_any_object(line_id) == nullptr);
@@ -697,21 +667,34 @@ bool EditorLevel::create_line(EditorID line_id, EditorCoord start, EditorCoord e
   bool created_new_sector = !connected_parent_to_hole;
   if (created_new_sector)
   {
-    EID<EditorSector> new_sector_id = this->new_id();
-    EditorSector&     new_sector    = this->create_object<EditorSector>(new_sector_id);
+    EditorSectorData  new_data;
+    EID<EditorSector> new_sector_id = INVALID_EDITOR_ID;
+
+    if (callback_created)
+    {
+      // Assign the ID from the callback
+      callback_created(new_sector_id, new_data);
+    }
+    else
+    {
+      // Generate the ID by ourselves
+      new_sector_id = this->new_id();
+    }
+
+    // Check that the ID is valid
+    nc_assert(!this->get_any_object(new_sector_id));
+
+    // Create the new sector from the ID and the data
+    EditorSector& new_sector = this->create_object<EditorSector>(new_sector_id);
+    new_sector.data = std::move(new_data); // Potential move if it is ever something more than POD
 
     if (did_sector_splitting) // (A)
     {
       nc_assert(is_zero(right_signed_angle - PI2, 0.1f)); // This must hold if it was a sector previously
 
-      // The bigger of the two halves keeps the identity of the sector we have just split. Deleting
-      // the line again merges them back and lets the bigger one survive as well, so the sector that
-      // was here before the split is the one that comes out of it.
-      bool left_keeps_the_old_sector =
-        bbox_area_of_loop(*this, left_enclosed_edges) >= bbox_area_of_loop(*this, right_enclosed_edges);
-
-      assign_loop_to_sector(*this, left_keeps_the_old_sector ? left_enclosed_edges  : right_enclosed_edges, previous_sector_id);
-      assign_loop_to_sector(*this, left_keeps_the_old_sector ? right_enclosed_edges : left_enclosed_edges,  new_sector_id     );
+      // The left part of the line keeps the old sector, the right one gets the new one
+      assign_loop_to_sector(*this, left_enclosed_edges,  previous_sector_id);
+      assign_loop_to_sector(*this, right_enclosed_edges, new_sector_id     );
 
       EditorSector& prev_sector = this->get_object<EditorSector>(previous_sector_id);
 
@@ -869,12 +852,16 @@ const EditorObject* EditorLevel::get_any_object(EditorID any_id) const
 }
 
 //==================================================================================================
-bool EditorLevel::destroy_line(EditorID line_id)
+bool EditorLevel::destroy_line
+(
+  EditorID line_id, DestroyedSectorCallback callback_destroyed, MergedSectorsCallback callback_merged
+)
 {
   EditorLine* line = this->try_get_object<EditorLine>(line_id);
   if (line == nullptr)
   {
     // There is no such line, so there is nothing to destroy
+    nc_assert(false);
     return false;
   }
 
@@ -994,7 +981,7 @@ bool EditorLevel::destroy_line(EditorID line_id)
 
     // And whatever sector lies on the other side of the rim becomes our hole again
     EID<EditorHalfEdge> rim_twin_id = this->get_object<EditorHalfEdge>(hole_rim_loop.front()).twin;
-    EID<EditorSector>  hole_id     = this->get_object<EditorHalfEdge>(rim_twin_id).sector;
+    EID<EditorSector>   hole_id     = this->get_object<EditorHalfEdge>(rim_twin_id).sector;
 
     if (hole_id != INVALID_EDITOR_ID && hole_id != s1_id)
     {
@@ -1012,12 +999,18 @@ bool EditorLevel::destroy_line(EditorID line_id)
   // of some enclosing sector. Either way the sector is open now and stops existing.
   if (s1_id == INVALID_EDITOR_ID || s2_id == INVALID_EDITOR_ID)
   {
-    EID<EditorSector> dead_id   = s1_id != INVALID_EDITOR_ID ? s1_id : s2_id;
-    EID<EditorSector> parent_id = this->get_object<EditorSector>(dead_id).parent;
+    EID<EditorSector>   dead_id     = s1_id != INVALID_EDITOR_ID ? s1_id : s2_id;
+    const EditorSector& dead_sector = this->get_object<EditorSector>(dead_id);
+
+    if (callback_destroyed)
+    {
+      // Let the callback know before we destroy the sector
+      callback_destroyed(dead_id, dead_sector.data);
+    }
 
     // Everything that used to be inside of it now lies directly inside of its parent
-    move_holes(*this, dead_id, parent_id);
-    remove_hole(*this, this->get_object<EditorSector>(parent_id), dead_id);
+    move_holes(*this, dead_id, dead_sector.parent);
+    remove_hole(*this, this->get_object<EditorSector>(dead_sector.parent), dead_id);
 
     // The edges are still here, they just do not enclose anything anymore
     for (EID<EditorHalfEdge> edge_id : (s1_id != INVALID_EDITOR_ID ? s1_edges : s2_edges))
@@ -1031,16 +1024,30 @@ bool EditorLevel::destroy_line(EditorID line_id)
     return true;
   }
 
-  // Two different sectors were sharing the line, so they merge into a single one. The bigger one
-  // survives, which is the same rule that decides which half keeps the old sector when a line
-  // splits one in two. On a tie the older sector wins, and because the IDs come from a counter that
-  // only ever goes up, that is simply the lower one of the two.
-  s64  s1_area     = bbox_area_of_loop(*this, s1_edges);
-  s64  s2_area     = bbox_area_of_loop(*this, s2_edges);
-  bool s1_survives = s1_area != s2_area ? s1_area > s2_area : s1_id < s2_id;
+  // Two different sectors were sharing the line, so they merge into a single one. The left one survives.
+  EID<EditorSector> survivor_id, dead_id;
+  EditorSectorData  survivor_data;
 
-  EID<EditorSector> survivor_id = s1_survives ? s1_id : s2_id;
-  EID<EditorSector> dead_id     = s1_survives ? s2_id : s1_id;
+  if (callback_merged)
+  {
+    // Let the callback know before we manipulate it or destroy it
+    callback_merged
+    (
+      s1_id, this->get_object<EditorSector>(s1_id).data,
+      s2_id, this->get_object<EditorSector>(s2_id).data,
+      survivor_id, survivor_data
+    );
+
+    // One of the previous ones has to be the survivor
+    nc_assert(survivor_id == s1_id || survivor_id == s2_id);
+    dead_id = survivor_id == s1_id ? s2_id : s1_id;
+  }
+  else
+  {
+    survivor_id   = s1_id;
+    dead_id       = s2_id;
+    survivor_data = this->get_object<EditorSector>(survivor_id).data;
+  }
 
   // Both loops became a single one, so walk it and hand the whole thing over to the survivor
   f32                                  merged_angle = 0.0f;
@@ -1085,13 +1092,7 @@ bool EditorLevel::can_move_points(const std::map<EID<EditorPoint>, EditorCoord>&
       continue;
     }
 
-    auto occupant = this->coord_to_point.find(new_coord);
-    if (occupant != this->coord_to_point.end() && occupant->second != point_id && !did_move(occupant->second))
-    {
-      return false;
-    }
-
-    // Two moved points can not land on the same spot either
+    // Two moved points can not land on the same spot
     if (!target_coords.insert(new_coord).second)
     {
       return false;
@@ -1142,6 +1143,15 @@ bool EditorLevel::can_move_points(const std::map<EID<EditorPoint>, EditorCoord>&
 }
 
 //==================================================================================================
+EditorCoord EditorLevel::get_line_coord(EditorID line_id, bool first) const
+{
+  const EditorLine& line = this->get_object<EditorLine>(line_id);
+  EditorID half_edge_id = first ? line.half_edge_a : line.half_edge_b;
+  return this->get_object<EditorPoint>(this->get_object<EditorHalfEdge>(half_edge_id).from).coords;
+}
+
+//==================================================================================================
+/*
 void EditorLevel::move_points(const std::map<EID<EditorPoint>, EditorCoord>& new_point_coords)
 {
   nc_assert(this->can_move_points(new_point_coords));
@@ -1152,6 +1162,7 @@ void EditorLevel::move_points(const std::map<EID<EditorPoint>, EditorCoord>& new
     this->get_object<EditorPoint>(point_id).coords = new_coord;
   }
 }
+*/
 
 //==================================================================================================
 void dump_sector_and_subsectors(const EditorLevel& level, EditorID sector_id, s32 indent)
@@ -1430,6 +1441,38 @@ void test_editor_level_destroy()
 
   exit(68);
 }
+
+void test_bug_breaks()
+{
+  EditorLevel level;
+
+	// left one
+	level.create_line(level.new_id(),  ivec2{-2, -2}, {0,  -2});
+	level.create_line(level.new_id(),  ivec2{ 0, -2}, {0,   2});
+	level.create_line(level.new_id(),  ivec2{ 0,  2}, {-2,  2});
+	level.create_line(level.new_id(),  ivec2{-2,  2}, {-2, -2});
+
+	// right one
+	level.create_line(level.new_id(),  ivec2{+2, -2}, {0,  -2});
+	level.create_line(level.new_id(),  ivec2{ 0,  2}, {+2,  2});
+	level.create_line(level.new_id(),  ivec2{+2,  2}, {+2, -2});
+
+	// above them all
+	level.create_line(level.new_id() , ivec2{+4, -4}, {+4, +4});
+	level.create_line(level.new_id() , ivec2{+4, +4}, {-4, +4});
+	level.create_line(level.new_id() , ivec2{-4, +4}, {-4, -4});
+	level.create_line(level.new_id() , ivec2{-4, -4}, {+4, -4});
+
+  exit(111);
+}
+
+/*
+bool shiiiit = []()->bool
+{
+	test_bug_breaks();
+	return false;
+}();
+*/
 
 }
 

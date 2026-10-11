@@ -74,6 +74,8 @@ struct EditorSector
     return parent == INVALID_EDITOR_ID; // Void is the only one that can have an invalid parent
   }
 
+  EditorSectorData data;
+
   bool operator==(const EditorSector&) const = default;
 };
 

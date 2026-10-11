@@ -6,6 +6,7 @@
 #if NC_EDITOR
 
 #include <editor/editor_types.h>
+#include <editor/editor_objects.h>
 
 #include <variant>
 #include <map>
@@ -31,12 +32,31 @@ struct ActionCreateOrDeleteLine
 
 struct ActionMovePoints
 {
-  std::map<EditorID, EditorCoord> new_coords;
-  std::map<EditorID, EditorCoord> old_coords;
+  struct LineToMove
+  {
+    EditorID         line_id; // delete it first then recreate it
+    EditorCoord      c1;      // then recreate on these coords
+    EditorCoord      c2;
+    // The original sector to create if necessary
+    EditorID         sector_id_to_create = INVALID_EDITOR_ID;
+    EditorSectorData sector_data_to_create;
+    // The other, possibly right sector
+    EditorID         other_sector_id_to_create = INVALID_EDITOR_ID;
+    EditorSectorData other_sector_data_to_create;
+    // The destroy part
+    EditorID         sector_id_to_destroy = INVALID_EDITOR_ID;
+    EditorSectorData sector_data_to_destroy;
+    // The other, possibly right sector to destroy
+    EditorID         other_sector_id_to_destroy = INVALID_EDITOR_ID;
+    EditorSectorData other_sector_data_to_destroy;
+  };
+
+  std::vector<LineToMove> lines_to_edit;
+  std::vector<LineToMove> lines_to_undo;
 
   void init_with_new_coords
   (
-    const EditorLevel& level, std::map<EditorID, EditorCoord>&& move_points
+    const EditorLevel& level, const std::map<EditorID, EditorCoord>& move_points
   );
 
   void action_do(EditorLevel&   level);
