@@ -25,6 +25,8 @@ public:
   bool init();
   void terminate();
   void on_event(ModuleEvent& event) override;
+  // Called when the sector floor or ceiling moved this frame.
+  void on_sector_changed(SectorID sector_id) { m_renderer->on_sector_changed(sector_id); }
 
   template<typename TRenderer>
   bool switch_renderer();

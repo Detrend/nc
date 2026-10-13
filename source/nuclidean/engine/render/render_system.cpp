@@ -8,6 +8,7 @@
 
 #include <engine/core/engine.h>
 #include <engine/core/engine_module_types.h>
+#include <engine/graphics/camera.h>
 #include <engine/render/sdl_utils.h>
 #include <engine/render/renderers/opengl_ray_tracer.h>
 
@@ -88,6 +89,10 @@ void RenderSystem::on_event(ModuleEvent& event)
 {
   switch (event.type)
   {
+    case ModuleEventType::after_map_rebuild:
+      m_renderer->on_map_rebuilt();
+      break;
+
     case ModuleEventType::render:
       this->render();
       break;
@@ -104,6 +109,9 @@ void RenderSystem::render()
 #if NC_HOT_RELOAD
   m_renderer->reload_shaders();
 #endif
+
+  if (!Camera::get())
+    return;
 
   s32 width = 0;
   s32 height = 0;

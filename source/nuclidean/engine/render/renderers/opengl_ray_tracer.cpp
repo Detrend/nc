@@ -4,7 +4,11 @@
 #include <common.h>
 #include <config.h>
 #include <logging.h>
+#include <math/matrix.h>
 
+#include <engine/game/game_system.h>
+#include <engine/graphics/camera.h>
+#include <engine/map/map_system.h>
 #include <engine/render/render_system.h>
 #include <engine/render/sdl_utils.h>
 #include <engine/render/opengl/utils.h>
@@ -22,8 +26,20 @@
 
 #include <SDL_video.h>
 
+#include <cmath>
+#include <cstddef>
+#include <vector>
+
 namespace nc::render::renderers
 {
+
+//==============================================================================
+template<typename T>
+static void upload_ssbo(GLuint buffer, const std::vector<T>& data, GLenum usage)
+{
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer);
+  glBufferData(GL_SHADER_STORAGE_BUFFER, cast<GLsizeiptr>(data.size() * sizeof(T)), data.data(), usage);
+}
 
 //==============================================================================
 bool OpenGLRayTracer::init()
@@ -55,6 +71,10 @@ bool OpenGLRayTracer::init()
 #endif
 
   glGenFramebuffers(1, &m_output_framebuffer);
+  glGenBuffers(1, &m_context_buffer);
+  glGenBuffers(1, &m_walls_buffer);
+  glGenBuffers(1, &m_sectors_buffer);
+  glGenBuffers(1, &m_portals_buffer);
 
   m_tracing_shader = opengl::Shader(tracing);
 
@@ -112,8 +132,92 @@ void OpenGLRayTracer::on_window_resized(u32 width, u32 height)
 }
 
 //==============================================================================
+void OpenGLRayTracer::on_map_rebuilt()
+{
+  const MapSectors& map = GameSystem::get().get_map();
+
+  std::vector<Sector> sectors;
+  std::vector<Wall> walls(map.walls.size());
+  std::vector<Portal> portals;
+
+  for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)
+  {
+    const SectorData& sector = map.sectors[sector_id];
+    sectors.push_back(Sector
+    {
+      .walls_offset = sector.first_wall,
+      .walls_count  = cast<u32>(sector.last_wall - sector.first_wall),
+      .floor_y      = map.sectors_dynamic[sector_id].floor_height,
+      .ceil_y       = map.sectors_dynamic[sector_id].ceil_height,
+    });
+
+    for (WallID wall_id = sector.first_wall; wall_id < sector.last_wall; ++wall_id)
+    {
+      const WallData& wall = map.walls[wall_id];
+      walls[wall_id] = Wall
+      {
+        .position  = wall.pos,
+        .portal_id = wall.is_portal() ? cast<u32>(portals.size()) : INVALID,
+      };
+
+      if (!wall.is_portal())
+        continue;
+
+      // Classic portals keep the ray as is, non-euclidean ones move it to the destination portal.
+      mat4 transform = mat4(1.0f);
+      if (wall.render_data_index != INVALID_PORTAL_RENDER_ID)
+        transform = inverse(map.portals_render_data[wall.render_data_index].dest_to_src);
+
+      portals.push_back(Portal
+      {
+        .translation = vec3(transform[3]),
+        .rotation    = std::atan2(transform[2][0], transform[0][0]),
+        .destination_id = wall.portal_sector_id,
+      });
+    }
+  }
+
+  upload_ssbo(m_sectors_buffer, sectors, GL_DYNAMIC_DRAW);
+  upload_ssbo(m_walls_buffer, walls, GL_STATIC_DRAW);
+  upload_ssbo(m_portals_buffer, portals, GL_STATIC_DRAW);
+}
+
+//==============================================================================
+void OpenGLRayTracer::on_sector_changed(SectorID sector_id)
+{
+  const SectorDynData& sector = GameSystem::get().get_map().sectors_dynamic[sector_id];
+  const vec2 heights(sector.floor_height, sector.ceil_height);
+
+  // only the heights change, written at once as they are next to each other
+  static_assert(offsetof(Sector, ceil_y) == offsetof(Sector, floor_y) + sizeof(f32));
+  const GLintptr offset = cast<GLintptr>(sector_id * sizeof(Sector) + offsetof(Sector, floor_y));
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_sectors_buffer);
+  glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, sizeof(heights), &heights);
+}
+
+//==============================================================================
 void OpenGLRayTracer::render()
 {
+  const MapSectors& map = GameSystem::get().get_map();
+  const Camera* const camera = Camera::get();
+
+  const vec3 camera_position = camera->get_position();
+  const SectorID camera_sector_id = map.get_sector_from_point(vec2(camera_position.x, camera_position.z));
+
+  const Context context
+  {
+    .camera_position  = camera_position,
+    .camera_sector_id = camera_sector_id == INVALID_SECTOR_ID ? INVALID : camera_sector_id,
+    .camera_direction = camera->get_forward(),
+  };
+
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, cast<GLuint>(TracingBuffer::walls), m_walls_buffer);
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, cast<GLuint>(TracingBuffer::sectors), m_sectors_buffer);
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, cast<GLuint>(TracingBuffer::portals), m_portals_buffer);
+
+  glBindBufferBase(GL_UNIFORM_BUFFER, cast<GLuint>(TracingUniform::context), m_context_buffer);
+  glBufferData(GL_UNIFORM_BUFFER, sizeof(context), &context, GL_DYNAMIC_DRAW);
+
   glBindImageTexture(cast<GLuint>(TracingImage::out_color), m_output_texture, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA8);
 
   const uvec2 groups = (m_output_resolution + TRACING_GROUP_SIZE - 1u) / TRACING_GROUP_SIZE;

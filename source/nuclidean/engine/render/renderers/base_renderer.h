@@ -3,6 +3,7 @@
 
 #include <config.h>
 #include <types.h>
+#include <engine/map/map_types.h>
 
 #include <memory>
 
@@ -18,6 +19,10 @@ public:
   virtual void terminate() {}
 
   virtual void on_window_resized([[maybe_unused]] u32 width, [[maybe_unused]] u32 height) {}
+  // Called after a level is loaded and its map is built.
+  virtual void on_map_rebuilt() {}
+  // Called when the sector floor or ceiling moved this frame.
+  virtual void on_sector_changed([[maybe_unused]] SectorID sector_id) {}
   virtual void render() = 0;
 
 #if NC_HOT_RELOAD

@@ -24,6 +24,7 @@
 #include <engine/graphics/entities/sky_box.h>
 #include <engine/graphics/resources/texture.h>
 #include <engine/graphics/graphics_system.h>
+#include <engine/render/render_system.h>
 #include <engine/graphics/debug/gizmo.h>
 
 #include <engine/sound/sound_system.h>
@@ -1337,6 +1338,8 @@ void GameSystem::build_map(LevelName level)
   {
     const MapSectors&    map      = GameSystem::get().get_map();
     const SectorMapping& mapping  = GameSystem::get().get_sector_mapping();
+
+    RenderSystem::get().on_sector_changed(sector);
 
     EntityRegistry& registry = GameSystem::get().get_entities();
 
