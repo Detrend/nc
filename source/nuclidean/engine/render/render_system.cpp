@@ -137,15 +137,34 @@ void RenderSystem::render()
 
 #if NC_DEBUG_DRAW
   const f32 delta_time = get_engine().get_delta_time();
+  const f32 work_time = get_engine().get_frame_work_time() * 1000.0f;
   const f32 gpu_time = m_renderer->get_gpu_time();
   const f32 pixel_count = cast<f32>(m_virtual_resolution.x * m_virtual_resolution.y);
   const std::string title = std::format
   (
     "Nuclidean Game. ({}x{}, virtual {}x{}) FPS: {:.2f}, Dt: {:.2f}ms, GPU: {:.2f}ms ({:.2f}ns/px)",
     m_window_resolution.x, m_window_resolution.y, m_virtual_resolution.x, m_virtual_resolution.y,
-    1.0f / delta_time, delta_time * 1000.0f, gpu_time, gpu_time * 1'000'000.0f / pixel_count
+    1.0f / delta_time, work_time, gpu_time, gpu_time * 1'000'000.0f / pixel_count
   );
   SDL_SetWindowTitle(m_window, title.c_str());
+
+  if (CVars::budget_warnings && work_time > CVars::frame_time_budget)
+  {
+    nc_warn
+    (
+      "[render][render system] frame time {:.2f}ms is over the {:.2f}ms budget",
+      work_time, CVars::frame_time_budget
+    );
+  }
+
+  if (CVars::budget_warnings && gpu_time > CVars::gpu_time_budget)
+  {
+    nc_warn
+    (
+      "[render][render system] GPU time {:.2f}ms is over the {:.2f}ms budget",
+      gpu_time, CVars::gpu_time_budget
+    );
+  }
 #endif
 
   m_renderer->render();

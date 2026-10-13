@@ -155,7 +155,7 @@ struct CVars
 
   NC_REGISTER_CVAR(bool, character_physics_stabilize, true, "Extra stabilization iterations for character physics.");
 
-  NC_REGISTER_CVAR_RANGED(f32, fps_limit, 120.0f, 1.0f, 512.0f,
+  NC_REGISTER_CVAR_RANGED(f32, fps_limit, 144.0f, 1.0f, 512.0f,
     "FPS limit if the \"has_fps_limit\" is turned on");
   NC_REGISTER_CVAR_RANGED(f32, fps_min, 30.0f, 1.0f, 2048.0f,
     "FPS limit if the \"has_fps_limit\" is turned on");
@@ -203,6 +203,12 @@ struct CVars
     "Width of the image the game renders into, it is scaled to the window afterwards");
   NC_REGISTER_CVAR_RANGED(s32, virtual_resolution_y, 720, 16, 4320,
     "Height of the image the game renders into, it is scaled to the window afterwards");
+
+  NC_REGISTER_CVAR(bool, budget_warnings, true, "Warns in the console about frames over the time budgets");
+  NC_REGISTER_CVAR_RANGED(f32, frame_time_budget, 1000.0f / 144.0f, 0.1f, 1000.0f,
+    "CPU time budget of a frame without waiting for the FPS limit, in milliseconds");
+  NC_REGISTER_CVAR_RANGED(f32, gpu_time_budget, 1000.0f / 144.0f, 0.1f, 1000.0f,
+    "GPU time budget of rendering a frame, in milliseconds");
 };
 
 }

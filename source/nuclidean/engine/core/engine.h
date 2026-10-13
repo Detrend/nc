@@ -52,6 +52,9 @@ public:
 
   f32  get_delta_time() const;
 
+  // Time the last frame took without waiting for the FPS limit, in seconds.
+  f32  get_frame_work_time() const;
+
   u64  get_frame_idx() const;
 
   bool is_game_paused() const;
@@ -138,8 +141,9 @@ private:
 
   TransitionStateData m_transition_state;
 
-  f32           m_delta_time = 0.0f; // last frame time in seconds
-  u64           m_frame_idx = 0;     // index of a frame, currently only for debug
+  f32           m_delta_time = 0.0f;      // last frame time in seconds
+  f32           m_frame_work_time = 0.0f; // last frame time without waiting for the FPS limit, in seconds
+  u64           m_frame_idx = 0;          // index of a frame, currently only for debug
   GameState     m_game_state = GameState::none;
 
   bool          m_should_quit       : 1 = false;

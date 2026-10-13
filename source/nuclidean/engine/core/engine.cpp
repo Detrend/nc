@@ -738,6 +738,7 @@ void Engine::run()
     {
       auto current_time = std::chrono::high_resolution_clock::now();
       f32 frame_time = eu::duration_to_seconds(previous_time, current_time);
+      m_frame_work_time = frame_time;
 #if NC_PROFILING
       Profiler::get().new_frame(m_frame_idx, frame_time);
       NC_SCOPE_PROFILER(FullFrame)
@@ -878,6 +879,12 @@ void Engine::process_window_event(const SDL_Event& event)
 f32 Engine::get_delta_time() const
 {
   return m_delta_time;
+}
+
+//==============================================================================
+f32 Engine::get_frame_work_time() const
+{
+  return m_frame_work_time;
 }
 
 //==============================================================================
