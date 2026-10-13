@@ -1,3 +1,6 @@
+_OPTIONS["cc"] = _OPTIONS["cc"] or "clang"
+_OPTIONS["cc-output"] = _OPTIONS["cc-output"] or "build/compile_commands.json"
+
 workspace "Nuclidean"
     architecture "x86_64"
     configurations { "Debug", "Test", "Profiling", "Ship" }
