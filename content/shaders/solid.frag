@@ -12,7 +12,7 @@ layout(location = 4) out vec4 g_albedo;
 layout(location = 5) out uint g_sector;
 
 layout(location = 3) uniform vec4 color;
-layout(location = 4) uniform bool unlit = false;
+layout(location = 4) uniform bool unlit;
 
 void main()
 {

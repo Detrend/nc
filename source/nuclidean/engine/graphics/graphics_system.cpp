@@ -182,7 +182,7 @@ std::optional<std::string> GraphicsSystem::try_create_opengl_context(SDL_GLprofi
   nc_log("Created SDL window with size {}x{} for context {}.{}", m_window_width, m_window_height, major, minor);
   SDL_SetWindowResizable(m_window, get_engine().is_editor_mode() ? SDL_TRUE : SDL_FALSE);
 
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor + 1);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor);
   // create opengl context
   m_gl_context = SDL_GL_CreateContext(m_window);
   if (!m_gl_context)

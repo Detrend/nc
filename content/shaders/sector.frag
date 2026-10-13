@@ -74,7 +74,9 @@ void main()
   // uv based on world position
   vec2 uv_meters = abs(normal.y) > 0.99f ? position.xz : vec2(cumulative_wall_len, position.y);
 
-  vec2 uv_pixels = vec2(ivec2((uv_meters + texture_offset) * PIXELS_PER_M));
+  vec2 uv_pixels_raw = (uv_meters + texture_offset) * float(PIXELS_PER_M);
+  ivec2 uv_pixels_int = ivec2(int(uv_pixels_raw.x), int(uv_pixels_raw.y));
+  vec2 uv_pixels = vec2(uv_pixels_int.x, uv_pixels_int.y);
   uv_pixels   = mod(uv_pixels, texture_data.size);
   vec2 uv_0_1 = clamp(uv_pixels / texture_data.size, vec2(0.01f), vec2(0.99f));
   if (normal.y > 0.0f) uv_0_1.x = 1.0f - uv_0_1.x; // flip floor x
