@@ -1,4 +1,5 @@
 #include "tracing.shared.h"
+#include "surfaces.slangh"
 
 BUFFER(StructuredBuffer<Wall>,   walls);
 BUFFER(StructuredBuffer<Sector>, sectors);
@@ -38,7 +39,7 @@ void main(uvec2 pixel: SV_DispatchThreadID)
   const vec3 ray_direction = forward + right * x + up * y;
 
   const Hit hit = trace(context.camera_position, ray_direction, context.camera_sector_id);
-  out_color[pixel] = shade_hit(hit);
+  out_color[pixel] = linear_to_srgb(shade_hit(hit));
 }
 
 enum HitKind
@@ -166,30 +167,47 @@ vec3 rotate_y(vec3 v, f32 angle)
   return vec3(c * v.x + s * v.z, v.y, -s * v.x + c * v.z);
 }
 
-// Color of the surface the ray hit.
+// Linear color of the surface the ray hit.
 float3 shade_hit(Hit hit)
 {
   if (hit.kind == HitKind::floor)
-    return random_color(hit.sector_id);
+    return sample_surface(sectors[hit.sector_id].floor, hit.position.xz, true);
 
   if (hit.kind == HitKind::ceiling)
-    return random_color(hit.sector_id) * 0.5f;
+    return sample_surface(sectors[hit.sector_id].ceiling, hit.position.xz, false);
 
   if (hit.kind == HitKind::wall)
-    return random_color(hit.wall_id);
+  {
+    const Wall wall = walls[hit.wall_id];
+    if (wall.segments_count == 0)
+      return float3(0.0f);
+
+    const f32 length = wall.cumulative_length + distance(wall.position, hit.position.xz);
+    const f32 height = hit.position.y - neighbor_shift(hit);
+    return sample_surface(find_segment(wall, height).surface, vec2(length, height), false);
+  }
 
   return float3(1.0f, 0.0f, 1.0f);
 }
 
-// Color that differs for each id, so neighboring surfaces are easy to tell apart.
-float3 random_color(u32 id)
+// How far the sector behind the wall moved from its default heights, textures of doors and lifts move with it.
+f32 neighbor_shift(Hit hit)
 {
-  // lowbias32 integer hash by Chris Wellons
-  u32 hash = id;
-  hash ^= hash >> 16;
-  hash *= 0x7feb352du;
-  hash ^= hash >> 15;
-  hash *= 0x846ca68bu;
-  hash ^= hash >> 16;
-  return float3(uint3(hash, hash >> 8, hash >> 16) & 0xFFu) / 255.0f;
+  const u32 portal_id = walls[hit.wall_id].portal_id;
+  if (portal_id == INVALID)
+    return 0.0f;
+
+  const Portal portal = portals[portal_id];
+  const Sector neighbor = sectors[portal.destination_id];
+
+  // the wall below the portal opening moves with the neighbor floor, the wall above with its ceiling
+  if (hit.position.y + portal.translation.y < neighbor.floor_y)
+    return neighbor.floor_y - neighbor.default_floor_y;
+  return neighbor.ceil_y - neighbor.default_ceil_y;
+}
+
+// Encodes the linear color to sRGB, which the window expects.
+float3 linear_to_srgb(float3 color)
+{
+  return select(color <= 0.0031308f, color * 12.92f, 1.055f * pow(color, 1.0f / 2.4f) - 0.055f);
 }

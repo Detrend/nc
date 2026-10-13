@@ -159,13 +159,13 @@ static SurfaceData load_json_surface(const nlohmann::json &js)
   {
     std::string texture_name = js["id"];
 
-    TextureID tid     = TextureManager::get()[texture_name].get_texture_id();
+    TextureID tid     = RenderSystem::get().get_game_atlas().get_texture_id(texture_name);
     TextureID alt_tid = tid;
 
     if (js.contains("id_triggered"))
     {
       std::string alt_texture_name = js["id_triggered"];
-      alt_tid = TextureManager::get()[alt_texture_name].get_texture_id();
+      alt_tid = RenderSystem::get().get_game_atlas().get_texture_id(alt_texture_name);
     }
 
     return SurfaceData
@@ -567,11 +567,9 @@ static void load_json_map
   }
   for (auto&& js_skybox : data["skyboxes"])
   {
-    const std::string texture = js_skybox["texture"];
     const float exposure = js_skybox["exposure"];
     const bool use_gamma = js_skybox["use_gamma_correction"];
-    const GLuint sky_box_map = TextureManager::get().get_equirectangular_map(texture, ResLifetime::Game);
-    Entity* const skybox = entities.create_entity<SkyBox>(sky_box_map, exposure, use_gamma);
+    Entity* const skybox = entities.create_entity<SkyBox>(0u, exposure, use_gamma);
     register_entity(skybox, js_skybox);
     load_entity_triggers(js_skybox, skybox);
   }

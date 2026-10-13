@@ -6,6 +6,7 @@
 #include <engine/entity/entity_types.h>
 #include <engine/entity/entity_system.h>
 #include <engine/entity/entity_type_definitions.h>
+#include <engine/render/render_system.h>
 
 #include <engine/sound/sound_emitter.h>
 #include <engine/sound/sound_resources.h>
@@ -295,6 +296,8 @@ void MapDynamics::evaluate_activators
           {
             sector_change_callback(td.wall_type.sector);
           }
+
+          RenderSystem::get().on_segment_changed(seg_id);
 
           info.dirty = false;
         }

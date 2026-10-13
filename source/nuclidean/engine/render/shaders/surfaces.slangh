@@ -1,0 +1,46 @@
+#pragma once
+#include "tracing.shared.h"
+
+BUFFER(StructuredBuffer<WallSegment>, wall_segments);
+BUFFER(StructuredBuffer<Texture>,     textures);
+
+// Game texture atlas. Texels are stored in sRGB, the GPU converts them to linear when fetched.
+TEXTURE(Sampler2D, atlas);
+
+// Texture resolution on every surface.
+static const f32 TEXELS_PER_METER = 48.0f;
+
+// Linear color of the surface texture at the point on the surface, in meters.
+float3 sample_surface(Surface surface, vec2 point, bool flip_x)
+{
+  // hidden surfaces show the sky, which is not rendered yet
+  if (surface.texture_id == INVALID)
+    return float3(0.0f);
+
+  const Texture texture = textures[surface.texture_id];
+  const vec2 size = (vec2)texture.size;
+
+  // floored modulo, so the texture also repeats into negative coordinates
+  const vec2 texels = floor((point + surface.offset) * TEXELS_PER_METER);
+  uvec2 texel = (uvec2)(texels - size * floor(texels / size));
+
+  // image rows go from the top, but surfaces start with the bottom row
+  texel.y = texture.size.y - 1 - texel.y;
+
+  // floors are seen from above, which mirrors them unless x is flipped
+  if (flip_x)
+    texel.x = texture.size.x - 1 - texel.x;
+
+  return atlas.Load(int3((svec2)(texture.position + texel), 0)).rgb;
+}
+
+// Segment of the wall at the height, the last one stretches up to the ceiling.
+WallSegment find_segment(Wall wall, f32 height)
+{
+  const u32 last_segment_id = wall.segments_offset + wall.segments_count - 1;
+
+  u32 segment_id = wall.segments_offset;
+  while (segment_id < last_segment_id && wall_segments[segment_id].end_height <= height)
+    ++segment_id;
+  return wall_segments[segment_id];
+}

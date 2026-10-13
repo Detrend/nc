@@ -19,6 +19,7 @@ public:
   void on_window_resized(u32 width, u32 height) override;
   void on_map_rebuilt() override;
   void on_sector_changed(SectorID sector_id) override;
+  void on_segment_changed(SegmentID segment_id) override;
   void render() override;
 
 #if NC_HOT_RELOAD
@@ -37,6 +38,13 @@ private:
   GLuint m_walls_buffer       = 0;
   GLuint m_sectors_buffer     = 0;
   GLuint m_portals_buffer     = 0;
+
+  // Game texture atlas, stored in sRGB.
+  GLuint m_atlas_texture        = 0;
+  // Placement of each texture within the atlas, indexed by texture id.
+  GLuint m_textures_buffer      = 0;
+  // Segments of all walls, indexed by segment id.
+  GLuint m_wall_segments_buffer = 0;
 
   // Compute shader tracing the scene into the output texture.
   opengl::Shader m_tracing_shader;
