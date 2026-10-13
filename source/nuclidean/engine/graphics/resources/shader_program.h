@@ -36,8 +36,8 @@ public:
   friend class NextLevelPage;
   friend class UiLoadGameButton;
 
-  explicit ShaderProgramHandle(const char* compute_source);
-  ShaderProgramHandle(const char* vertex_source, const char* fragment_source);
+  explicit ShaderProgramHandle(const char* compute_path, const char* compute_source);
+  ShaderProgramHandle(const char* vertex_path, const char* vertex_source, const char* fragment_path, const char* fragment_source);
 
   // Create a program by reading GLSL sources from disk.
   // Paths are relative to the shader source root (see set_shader_root).
@@ -60,7 +60,7 @@ public:
 // Shaders should be manipulated only within render system and related classes.
 private:
   ShaderProgramHandle() {}
-  explicit ShaderProgramHandle(std::initializer_list<std::pair<const char*, GLenum>> shader_sources);
+  explicit ShaderProgramHandle(std::initializer_list<std::tuple<const char*, const char*, GLenum>> shader_sources);
 
   // Attempt to recompile from the given source files and swap the program handle.
   // Returns true on success (old handle replaced), false on error (old handle kept).
@@ -68,7 +68,7 @@ private:
 
   // log_only = true  → log the error with nc_crit, do not abort (used by hot-reload)
   // log_only = false → nc_expect(false, ...) which aborts (used by initial load)
-  std::optional<GLuint> compile_shader(const char* source, GLenum type, bool log_only = false) const;
+  std::optional<GLuint> compile_shader(const char* name, const char* source, GLenum type, bool log_only = false) const;
   std::optional<GLuint> link_program(std::span<const GLuint> shaders, bool log_only = false) const;
 
   // Read a source file relative to the shader root and return its contents.

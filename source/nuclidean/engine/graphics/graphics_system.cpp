@@ -164,6 +164,7 @@ std::optional<std::string> GraphicsSystem::try_create_opengl_context(SDL_GLprofi
   constexpr cstr WINDOW_NAME = "N U C L I D E A N";
   constexpr auto WIN_POS = SDL_WINDOWPOS_UNDEFINED;
 
+  nc_log("Creating SDL window with size {}x{} for context {}.{}", m_window_width, m_window_height, major, minor);
   // create window
   m_window = SDL_CreateWindow(
     WINDOW_NAME, 
@@ -181,6 +182,7 @@ std::optional<std::string> GraphicsSystem::try_create_opengl_context(SDL_GLprofi
   nc_log("Created SDL window with size {}x{} for context {}.{}", m_window_width, m_window_height, major, minor);
   SDL_SetWindowResizable(m_window, get_engine().is_editor_mode() ? SDL_TRUE : SDL_FALSE);
 
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor + 1);
   // create opengl context
   m_gl_context = SDL_GL_CreateContext(m_window);
   if (!m_gl_context)
@@ -214,12 +216,12 @@ bool GraphicsSystem::init()
 
   if(auto err = try_create_opengl_context(SDL_GL_CONTEXT_PROFILE_CORE, 4, 3))
   {
-    nc_warn("Could not create desktop OpenGL context, trying OpenGL ES 3.1 instead: {}", *err);
-    if(auto err_es = try_create_opengl_context(SDL_GL_CONTEXT_PROFILE_ES, 3, 1)){
+    nc_warn("Could not create desktop OpenGL context, trying OpenGL ES instead: {}", *err);
+    if(auto err_es = try_create_opengl_context(SDL_GL_CONTEXT_PROFILE_ES, 3, 0)){
       nc_crit("Error when creating OpenGL ES context:'{}'", *err_es);
       return false;
     }
-    nc_log("Using OpenGL ES 3.1 context");
+    nc_log("Using OpenGL ES context");
     this->m_backend_used = RenderBackend::OpenGLES;
   }else{
     nc_log("Using desktop OpenGL 4.3 context");
@@ -236,9 +238,12 @@ bool GraphicsSystem::init()
   }
 
 #if NC_DEBUG_DRAW
-  glEnable(GL_DEBUG_OUTPUT);
-  glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-  glDebugMessageCallback(&debug_helpers::gl_debug_message, nullptr);
+  if(m_backend_used == RenderBackend::OpenGL)
+  {
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(&debug_helpers::gl_debug_message, nullptr);
+  }
 #endif
 
   glEnable(GL_DEPTH_TEST);

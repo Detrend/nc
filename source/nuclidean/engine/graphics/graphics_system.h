@@ -82,6 +82,8 @@ public:
   SDL_Window* get_window();
   void set_shadows(bool shadows);
 
+  RenderBackend get_used_backend() const { return m_backend_used; }
+
 private:
   void update(f32 delta_seconds);
   void render();

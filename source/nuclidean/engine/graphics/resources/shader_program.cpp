@@ -3,6 +3,7 @@
 #include <logging.h>
 #include <math/lingebra.h>
 #include <engine/graphics/resources/shader_program.h>
+#include <engine/graphics/graphics_system.h>
 
 #include <glad/glad.h>
 
@@ -40,7 +41,7 @@ ShaderProgramHandle ShaderProgramHandle::from_files(const char* vert_path, const
   if (!vert || !frag)
     return ShaderProgramHandle();
 
-  return ShaderProgramHandle(vert->c_str(), frag->c_str());
+  return ShaderProgramHandle(vert_path, vert->c_str(), frag_path, frag->c_str());
 }
 
 //==============================================================================
@@ -50,7 +51,7 @@ ShaderProgramHandle ShaderProgramHandle::from_file(const char* comp_path)
   if (!comp)
     return ShaderProgramHandle();
 
-  return ShaderProgramHandle(comp->c_str());
+  return ShaderProgramHandle(comp_path, comp->c_str());
 }
 
 //==============================================================================
@@ -88,7 +89,7 @@ bool ShaderProgramHandle::try_reload(const std::vector<std::string>& file_paths)
   for (size_t i = 0; i < sources.size(); ++i)
   {
     const GLenum type = get_type(file_paths[i]);
-    const auto shader = compile_shader(sources[i].c_str(), type, /*log_only=*/true);
+    const auto shader = compile_shader(file_paths[i].c_str(), sources[i].c_str(), type, /*log_only=*/true);
     if (!shader)
     {
       compile_error = true;
@@ -116,12 +117,12 @@ bool ShaderProgramHandle::try_reload(const std::vector<std::string>& file_paths)
 }
 
 //==============================================================================
-ShaderProgramHandle::ShaderProgramHandle(const char* compute_source)
-  : ShaderProgramHandle({{compute_source, GL_COMPUTE_SHADER}}) {}
+ShaderProgramHandle::ShaderProgramHandle(const char* compute_path, const char* compute_source)
+  : ShaderProgramHandle({{compute_path, compute_source, GL_COMPUTE_SHADER}}) {}
 
 //==============================================================================
-ShaderProgramHandle::ShaderProgramHandle(const char* vertex_source, const char* fragment_source)
-  : ShaderProgramHandle({{vertex_source, GL_VERTEX_SHADER}, {fragment_source, GL_FRAGMENT_SHADER}}) {}
+ShaderProgramHandle::ShaderProgramHandle(const char* vertex_path,const char* vertex_source, const char* fragment_path, const char* fragment_source)
+  : ShaderProgramHandle({{vertex_path, vertex_source, GL_VERTEX_SHADER}, { fragment_path, fragment_source, GL_FRAGMENT_SHADER}}) {}
 
 //==============================================================================
 bool ShaderProgramHandle::is_valid() const
@@ -142,7 +143,7 @@ ShaderProgramHandle ShaderProgramHandle::invalid()
 }
 
 //==============================================================================
-ShaderProgramHandle::ShaderProgramHandle(std::initializer_list<std::pair<const char*, GLenum>> shader_sources)
+ShaderProgramHandle::ShaderProgramHandle(std::initializer_list<std::tuple<const char*,const char*, GLenum>> shader_sources)
 {
   std::vector<GLuint> shaders;
   shaders.reserve(shader_sources.size());
@@ -157,9 +158,9 @@ ShaderProgramHandle::ShaderProgramHandle(std::initializer_list<std::pair<const c
 
   // compile shader sources
   bool compile_error = false;
-  for (auto&& [source, type] : shader_sources)
+  for (auto&& [name, source, type] : shader_sources)
   {
-    const std::optional<GLuint> shader = compile_shader(source, type);
+    const std::optional<GLuint> shader = compile_shader(name, source, type);
 
     if (!shader)
     {
@@ -190,14 +191,22 @@ ShaderProgramHandle::ShaderProgramHandle(std::initializer_list<std::pair<const c
 }
 
 //==============================================================================
-std::optional<GLuint> ShaderProgramHandle::compile_shader(const char* source, GLenum type, bool log_only) const
+std::optional<GLuint> ShaderProgramHandle::compile_shader(const char* name, const char* source, GLenum type, bool log_only) const
 {
   const GLuint shader = glCreateShader(type);
-  const char*const source_segments[] = {
-    "#version 430 core\n",
+  const char* source_segments[] = {
+    nullptr,
     "#line 1\n",
     source
   };
+  if(GraphicsSystem::get().get_used_backend() == RenderBackend::OpenGLES)
+  {
+    source_segments[0] = "#version 300 es\nprecision highp float;\nprecision highp int;\n";
+  }else if(GraphicsSystem::get().get_used_backend() == RenderBackend::OpenGL)
+  {
+    source_segments[0] = "#version 430 core\n";
+  }
+
   glShaderSource(shader, ARRAY_LENGTH(source_segments), source_segments, nullptr);
   glCompileShader(shader);
 
@@ -211,9 +220,9 @@ std::optional<GLuint> ShaderProgramHandle::compile_shader(const char* source, GL
 
     const std::string message = "Shader compile error: " + std::string(info_log);
     if (log_only)
-      nc_crit("{}", message);
+      nc_crit("'{}': {}", name,  message);
     else
-      nc_expect(false, "{0}", message);
+      nc_expect(false, "'{}': {}", name, message);
     return std::nullopt;
   }
 
