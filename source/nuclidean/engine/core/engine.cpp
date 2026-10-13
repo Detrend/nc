@@ -15,7 +15,7 @@
 #include <engine/entity/sector_mapping.h>
 
 // The engine subsystems
-#include <engine/graphics/graphics_system.h>
+#include <engine/render/render_system.h>
 #include <engine/input/input_system.h>
 #include <engine/game/game_system.h>
 #include <engine/sound/sound_system.h>
@@ -505,20 +505,27 @@ bool Engine::init(const CmdArgs& cmd_args)
   }
 #endif
 
-  // init the modules here..
+  // init the modules here.
   #define INIT_MODULE(_module_class, ...)                     \
   {                                                           \
     auto m = std::make_unique<_module_class>();               \
-    if (!m || !m->init(__VA_ARGS__))                          \
+    _module_class* module = m.get();                          \
+    m_modules[_module_class::get_module_id()] = std::move(m); \
+    if (!module->init(__VA_ARGS__))                           \
     {                                                         \
-      nc_crit("Failed to {} module " #_module_class, m?"init":"create"); \
+      nc_crit("Failed to init module " #_module_class);       \
+      auto terminate_event = ModuleEvent                      \
+      {                                                       \
+        .type = ModuleEventType::terminate,                   \
+      };                                                      \
+      module->on_event(terminate_event);                      \
+      m_modules[_module_class::get_module_id()] = nullptr;    \
       return false;                                           \
     }                                                         \
-    m_module_init_order.push_back(m.get());                   \
-    m_modules[_module_class::get_module_id()] = std::move(m); \
+    m_module_init_order.push_back(module);                    \
   }
 
-  INIT_MODULE(GraphicsSystem);
+  INIT_MODULE(RenderSystem);
   INIT_MODULE(InputSystem);
   INIT_MODULE(GameSystem);
   INIT_MODULE(SoundSystem);
@@ -659,6 +666,7 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
     // Start a level
     set_game_state(GameState::game);
     game_system.request_play_level(LevelName{std::string_view{lvl}});
+    InputSystem::get().lock_player_input(InputLockLayers::menu, false);
   }
 #endif
   else

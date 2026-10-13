@@ -10,6 +10,7 @@
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/resources/texture.h>
+#include <engine/render/render_system.h>
 
 #include <logging.h>
 
@@ -99,7 +100,7 @@ vec2 MenuManager::get_normalized_mouse_pos()
   prev_mousestate = cur_mousestate;
   cur_mousestate = state;
 
-  vec2 dimensions = get_engine().get_module<GraphicsSystem>().get_window_size();
+  vec2 dimensions = RenderSystem::get().get_window_size();
 
   f32 width = dimensions.x;
   f32 height = dimensions.y;

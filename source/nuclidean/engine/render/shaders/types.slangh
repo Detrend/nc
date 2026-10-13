@@ -1,0 +1,16 @@
+#pragma once
+
+typealias u32 = uint32_t;
+typealias s32 = int32_t;
+
+typealias u64 = uint64_t;
+typealias s64 = int64_t;
+
+typealias f32 = float;
+typealias f64 = double;
+
+typealias uvec2 = uint2;
+typealias svec2 = int2;
+
+typealias vec2 = float2;
+typealias vec3 = float3;

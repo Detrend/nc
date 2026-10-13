@@ -14,6 +14,7 @@
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/graphics_system.h>
 #include <engine/player/save_types.h>
+#include <engine/render/render_system.h>
 
 #include <engine/sound/sound_resources.h>
 
@@ -867,7 +868,7 @@ void OptionsPage::save_settings()
 //=============================================================================================
 void OptionsPage::set_windowed()
 {
-  SDL_Window* window = get_engine().get_module<GraphicsSystem>().get_window();
+  SDL_Window* window = RenderSystem::get().get_window();
   SDL_SetWindowFullscreen(window, 0);
   is_windowed = true;
 }
@@ -875,7 +876,7 @@ void OptionsPage::set_windowed()
 //=============================================================================================
 void OptionsPage::set_fullscreen()
 {
-  SDL_Window* window = get_engine().get_module<GraphicsSystem>().get_window();
+  SDL_Window* window = RenderSystem::get().get_window();
   SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
   is_windowed = false;
 }
@@ -946,14 +947,12 @@ void OptionsPage::set_crosshair_more()
 void OptionsPage::shadow_on()
 {
   is_shadows = true;
-  get_engine().get_module<GraphicsSystem>().set_shadows(is_shadows);
 }
 
 //=============================================================================================
 void OptionsPage::shadow_off()
 {
   is_shadows = false;
-  get_engine().get_module<GraphicsSystem>().set_shadows(is_shadows);
 }
 
 //=============================================================================================
