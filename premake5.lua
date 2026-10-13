@@ -1,5 +1,4 @@
 workspace "Nuclidean"
-    architecture "x86_64"
     configurations { "Debug", "Test", "Profiling", "Ship" }
     newoption {
         trigger = "cppdialect",
@@ -11,6 +10,18 @@ workspace "Nuclidean"
         },
         default = "C++20"
     }
+    newoption {
+        trigger = "arch",
+        value = "CPU ISA",
+        description = "Either 'AARCH64' (ARMv8 64-bit) or 'x86_64' (Intel/AMD 64-bit)",
+        allowed = {
+            { "x86_64", "x86_64" },
+            { "AARCH64", "AARCH64" }
+        },
+        default = "x86_64"
+    }
+
+    architecture (_OPTIONS.arch or "x86_64")
 
     -- Use either of these at generation time:
     --   .\tools\premake5.exe --cc=clang ninja
@@ -58,7 +69,9 @@ workspace "Nuclidean"
     warnings "Off"
     conformancemode "On"
     intrinsics "On"
-    vectorextensions "AVX"
+    fbegin "architecture:x86_64"
+        vectorextensions "AVX"
+    fend()
     multiprocessorcompile "On"
     dpiawareness "High"
 

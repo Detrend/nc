@@ -150,32 +150,19 @@ GraphicsSystem& GraphicsSystem::get()
   return get_engine().get_module<GraphicsSystem>();
 }
 
-//==============================================================================
-bool GraphicsSystem::init()
-{
-  NC_TODO("Log out an error when the graphics system initialization fails");
-  NC_TODO("Terminate the already set-up SDL stuff on failed initialization.");
 
-  // init SDL
-  constexpr auto SDL_INIT_FLAGS = SDL_INIT_VIDEO | SDL_INIT_EVENTS;
+std::optional<std::string> GraphicsSystem::try_create_opengl_context(SDL_GLprofile profile, int major, int minor)
+{
+  SDL_GL_ResetAttributes();
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, profile);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, major);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+
   constexpr u32  SDL_WIN_FLAGS = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_ALLOW_HIGHDPI;
   constexpr cstr WINDOW_NAME = "N U C L I D E A N";
   constexpr auto WIN_POS = SDL_WINDOWPOS_UNDEFINED;
-
-  if (SDL_Init(SDL_INIT_FLAGS) < 0)
-  {
-    // failed to init SDL, see what's the issue
-    [[maybe_unused]] cstr error = SDL_GetError();
-    nc_crit("Error when initializing SDL: {}", error);
-    return false;
-  }
-
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-
 
   // create window
   m_window = SDL_CreateWindow(
@@ -189,10 +176,9 @@ bool GraphicsSystem::init()
   if (!m_window)
   {
     [[maybe_unused]] cstr error = SDL_GetError();
-    nc_crit("Error when creating window: {}", error);
-    return false;
+    return std::optional<std::string>(std::format("Error when creating window: {}", error));
   }
-
+  nc_log("Created SDL window with size {}x{} for context {}.{}", m_window_width, m_window_height, major, minor);
   SDL_SetWindowResizable(m_window, get_engine().is_editor_mode() ? SDL_TRUE : SDL_FALSE);
 
   // create opengl context
@@ -200,9 +186,47 @@ bool GraphicsSystem::init()
   if (!m_gl_context)
   {
     [[maybe_unused]] cstr error = SDL_GetError();
-    nc_crit("Error when creating GL_Context: {}", error);
+    SDL_DestroyWindow(m_window);
+    m_window = nullptr;
+    return std::optional<std::string>(std::format("Error when creating GL_Context: {}", error));
+  }
+  nc_log("Created SDL context {}.{}", major, minor);
+  return std::nullopt;
+}
+
+//==============================================================================
+bool GraphicsSystem::init()
+{
+  NC_TODO("Log out an error when the graphics system initialization fails");
+  NC_TODO("Terminate the already set-up SDL stuff on failed initialization.");
+
+  // init SDL
+  constexpr auto SDL_INIT_FLAGS = SDL_INIT_VIDEO | SDL_INIT_EVENTS;
+  
+  if (SDL_Init(SDL_INIT_FLAGS) < 0)
+  {
+    // failed to init SDL, see what's the issue
+    [[maybe_unused]] cstr error = SDL_GetError();
+    nc_crit("Error when initializing SDL: {}", error);
     return false;
   }
+
+
+  if(auto err = try_create_opengl_context(SDL_GL_CONTEXT_PROFILE_CORE, 4, 3))
+  {
+    nc_warn("Could not create desktop OpenGL context, trying OpenGL ES 3.1 instead: {}", *err);
+    if(auto err_es = try_create_opengl_context(SDL_GL_CONTEXT_PROFILE_ES, 3, 1)){
+      nc_crit("Error when creating OpenGL ES context:'{}'", *err_es);
+      return false;
+    }
+    nc_log("Using OpenGL ES 3.1 context");
+    this->m_backend_used = RenderBackend::OpenGLES;
+  }else{
+    nc_log("Using desktop OpenGL 4.3 context");
+    this->m_backend_used = RenderBackend::OpenGL;
+  }
+
+  
 
   // init opengl bindings
   if (!gladLoadGLLoader(SDL_GL_GetProcAddress))
