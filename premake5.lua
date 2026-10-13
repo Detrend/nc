@@ -1,6 +1,20 @@
 _OPTIONS["cc"] = _OPTIONS["cc"] or "clang"
 _OPTIONS["cc-output"] = _OPTIONS["cc-output"] or "build/compile_commands.json"
 
+newaction {
+    trigger = "embed",
+    description = "Embed GLSL into a C++ header as a string constant",
+    execute = function()
+        local input, output, name = table.unpack(_ARGS)
+        local lines = {}
+        for line in io.lines(input) do
+            line = line:gsub("\r$", ""):gsub("\\", "\\\\"):gsub("\"", "\\\"")
+            table.insert(lines, "    \"" .. line .. "\\n\"")
+        end
+        io.writefile(output, "const char " .. name .. "[] =\n" .. table.concat(lines, "\n") .. ";\n")
+    end
+}
+
 workspace "Nuclidean"
     architecture "x86_64"
     configurations { "Debug", "Test", "Profiling", "Ship" }
@@ -78,9 +92,13 @@ project "Nuclidean"
         "source/nuclidean/**.h",
         "source/nuclidean/**.inl",
         "source/nuclidean/**.cpp",
-        "resource/*"
+        "resource/*",
+        "source/nuclidean/**.slang"
     }
-    includedirs "source/nuclidean"
+    includedirs {
+        "source/nuclidean",
+        "%{cfg.objdir}"
+    }
     uses { "glad", "glm", "stb", "SDL2", "SDL_mixer" }
     defines { "_CONSOLE", "SDL_MAIN_HANDLED" }
 
@@ -159,6 +177,22 @@ project "Nuclidean"
     filter { "configurations:Ship", "action:ninja" }
         -- workaround for ninja ignoring `kind "WindowedApp"`
         linkoptions { "-Xlinker /SUBSYSTEM:WINDOWS", "-Xlinker /ENTRY:mainCRTStartup" }
+
+    filter "files:source/nuclidean/**.slang"
+        buildinputs {
+            os.matchfiles("source/nuclidean/**.slang"),
+            os.matchfiles("source/nuclidean/**.slangh"),
+            os.matchfiles("source/nuclidean/**.shared.h")
+        }
+        buildoutputs "%{cfg.objdir}/shaders/%{file.basename}.h"
+        buildcommands {
+            "..\\tools\\slangc.exe %{file.relpath} -target spirv -entry main -O0"
+                .. " -o %{cfg.objdir}/shaders/%{file.basename}.spv",
+            "..\\tools\\spirv-cross.exe %{cfg.objdir}/shaders/%{file.basename}.spv --no-es --version 430"
+                .. " --output %{cfg.objdir}/shaders/%{file.basename}.glsl",
+            "..\\tools\\premake5.exe --file=../premake5.lua embed %{cfg.objdir}/shaders/%{file.basename}.glsl"
+                .. " %{cfg.objdir}/shaders/%{file.basename}.h %{file.basename}"
+        }
 
 -- ############################ 3rd party libraries ############################
 
