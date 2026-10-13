@@ -89,6 +89,14 @@ void OpenGLRayTracer::terminate()
   }
 }
 
+#if NC_HOT_RELOAD
+//==============================================================================
+void OpenGLRayTracer::reload_shaders()
+{
+  m_tracing_shader.reload();
+}
+#endif
+
 //==============================================================================
 void OpenGLRayTracer::on_window_resized(u32 width, u32 height)
 {

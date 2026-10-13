@@ -3,10 +3,10 @@ _OPTIONS["cc-output"] = _OPTIONS["cc-output"] or "build/compile_commands.json"
 
 newaction {
     trigger = "embed",
-    description = "Embed GLSL into a C++ header as a string constant",
+    description = "Embed GLSL into a C++ header as a string constant, prefixed with a comment pointing to its source",
     execute = function()
-        local input, output, name = table.unpack(_ARGS)
-        local lines = {}
+        local input, output, name, source = table.unpack(_ARGS)
+        local lines = { "    \"// source: " .. path.getrelative(_MAIN_SCRIPT_DIR, path.getabsolute(source)) .. "\\n\"" }
         for line in io.lines(input) do
             line = line:gsub("\r$", ""):gsub("\\", "\\\\"):gsub("\"", "\\\"")
             table.insert(lines, "    \"" .. line .. "\\n\"")
@@ -191,7 +191,7 @@ project "Nuclidean"
             "..\\tools\\spirv-cross.exe %{cfg.objdir}/shaders/%{file.basename}.spv --no-es --version 430"
                 .. " --output %{cfg.objdir}/shaders/%{file.basename}.glsl",
             "..\\tools\\premake5.exe --file=../premake5.lua embed %{cfg.objdir}/shaders/%{file.basename}.glsl"
-                .. " %{cfg.objdir}/shaders/%{file.basename}.h %{file.basename}"
+                .. " %{cfg.objdir}/shaders/%{file.basename}.h %{file.basename} %{file.relpath}"
         }
 
 -- ############################ 3rd party libraries ############################

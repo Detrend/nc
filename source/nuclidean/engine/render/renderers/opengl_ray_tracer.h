@@ -18,6 +18,10 @@ public:
   void on_window_resized(u32 width, u32 height) override;
   void render() override;
 
+#if NC_HOT_RELOAD
+  void reload_shaders() override;
+#endif
+
 private:
   SDL_GLContext m_gl_context = nullptr;
 

@@ -101,6 +101,10 @@ void RenderSystem::on_event(ModuleEvent& event)
 //==============================================================================
 void RenderSystem::render()
 {
+#if NC_HOT_RELOAD
+  m_renderer->reload_shaders();
+#endif
+
   s32 width = 0;
   s32 height = 0;
   SDL_GetWindowSizeInPixels(m_window, &width, &height);
