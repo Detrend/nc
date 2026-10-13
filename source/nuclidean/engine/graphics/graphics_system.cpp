@@ -217,7 +217,7 @@ bool GraphicsSystem::init()
   if(auto err = try_create_opengl_context(SDL_GL_CONTEXT_PROFILE_CORE, 4, 3))
   {
     nc_warn("Could not create desktop OpenGL context, trying OpenGL ES instead: {}", *err);
-    if(auto err_es = try_create_opengl_context(SDL_GL_CONTEXT_PROFILE_ES, 3, 0)){
+    if(auto err_es = try_create_opengl_context(SDL_GL_CONTEXT_PROFILE_ES, 3, 1)){
       nc_crit("Error when creating OpenGL ES context:'{}'", *err_es);
       return false;
     }
@@ -261,7 +261,10 @@ bool GraphicsSystem::init()
   ImPlot::CreateContext();
 
   ImGui_ImplSDL2_InitForOpenGL(m_window, m_gl_context);
-  ImGui_ImplOpenGL3_Init(nullptr);
+  const char* imgui_glsl_version = m_backend_used == RenderBackend::OpenGLES
+    ? "#version 300 es"
+    : "#version 430 core";
+  ImGui_ImplOpenGL3_Init(imgui_glsl_version);
 
   imgui_start_frame();
 #endif
