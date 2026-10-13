@@ -37,7 +37,7 @@ public:
   bool recreate_window(SDL_RenderBackend backend);
   SDL_Window* get_window() const { return m_window; }
   // Window size in pixels, cached on each render.
-  vec2 get_window_size() const { return vec2(m_window_size); }
+  vec2 get_window_size() const { return vec2(m_window_resolution); }
   // Textures used during the whole game.
   const render::TextureAtlas& get_game_atlas() const { return m_game_atlas; }
 
@@ -48,7 +48,9 @@ private:
   render::renderers::BaseRendererPtr m_renderer;
   SDL_Window* m_window = nullptr;
   // Window size in pixels, cached on each render.
-  uvec2 m_window_size = uvec2(0, 0);
+  uvec2 m_window_resolution = uvec2(0, 0);
+  // Resolution of the image the game renders into.
+  uvec2 m_virtual_resolution = uvec2(0, 0);
   // Textures used during the whole game.
   render::TextureAtlas m_game_atlas;
 };

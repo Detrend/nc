@@ -198,6 +198,11 @@ struct CVars
 
   NC_REGISTER_CVAR_RANGED(f32, resolution_scale, 1.0f, 0.02f, 2.0f, "Render the game in other than native resolution");
   NC_REGISTER_CVAR       (bool, use_nearest_for_resolution_scale, true, "Use nearest neighbor for resolution scale, otherwise linear");
+
+  NC_REGISTER_CVAR_RANGED(s32, virtual_resolution_x, 1280, 16, 7680,
+    "Width of the image the game renders into, it is scaled to the window afterwards");
+  NC_REGISTER_CVAR_RANGED(s32, virtual_resolution_y, 720, 16, 4320,
+    "Height of the image the game renders into, it is scaled to the window afterwards");
 };
 
 }

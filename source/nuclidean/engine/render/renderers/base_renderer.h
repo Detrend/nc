@@ -3,6 +3,7 @@
 
 #include <config.h>
 #include <types.h>
+#include <math/vector.h>
 #include <engine/map/map_types.h>
 
 #include <memory>
@@ -18,7 +19,10 @@ public:
   virtual bool init() { return true; }
   virtual void terminate() {}
 
-  virtual void on_window_resized([[maybe_unused]] u32 width, [[maybe_unused]] u32 height) {}
+  // Called when the size of the window in pixels changed.
+  virtual void on_window_resolution_changed([[maybe_unused]] uvec2 window_resolution) {}
+  // Called when the resolution of the image the game renders into changed.
+  virtual void on_virtual_resolution_changed([[maybe_unused]] uvec2 virtual_resolution) {}
   // Called after a level is loaded and its map is built.
   virtual void on_map_rebuilt() {}
   // Called when the sector floor or ceiling moved this frame.

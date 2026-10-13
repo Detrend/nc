@@ -16,7 +16,8 @@ public:
   bool init() override;
   void terminate() override;
 
-  void on_window_resized(u32 width, u32 height) override;
+  void on_window_resolution_changed(uvec2 window_resolution) override;
+  void on_virtual_resolution_changed(uvec2 virtual_resolution) override;
   void on_map_rebuilt() override;
   void on_sector_changed(SectorID sector_id) override;
   void on_segment_changed(SegmentID segment_id) override;
@@ -53,7 +54,9 @@ private:
   // Compute shader tracing the scene into the output texture.
   opengl::Shader m_tracing_shader;
   // Resolution of the output texture.
-  uvec2 m_output_resolution = uvec2{0, 0};
+  uvec2 m_virtual_resolution = uvec2{0, 0};
+  // Resolution of the window the output texture is scaled to.
+  uvec2 m_window_resolution  = uvec2{0, 0};
 
 #if NC_DEBUG_DRAW
   // Queries measuring the GPU time of a frame, taken in turns so a result is read only once the GPU has it.

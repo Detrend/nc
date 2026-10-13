@@ -181,14 +181,22 @@ void OpenGLRayTracer::reload_shaders()
 #endif
 
 //==============================================================================
-void OpenGLRayTracer::on_window_resized(u32 width, u32 height)
+void OpenGLRayTracer::on_window_resolution_changed(uvec2 window_resolution)
 {
-  m_output_resolution = uvec2(width, height);
+  m_window_resolution = window_resolution;
+}
 
+//==============================================================================
+void OpenGLRayTracer::on_virtual_resolution_changed(uvec2 virtual_resolution)
+{
+  m_virtual_resolution = virtual_resolution;
+
+  const GLsizei width = cast<GLsizei>(virtual_resolution.x);
+  const GLsizei height = cast<GLsizei>(virtual_resolution.y);
   glDeleteTextures(1, &m_output_texture);
   glGenTextures(1, &m_output_texture);
   glBindTexture(GL_TEXTURE_2D, m_output_texture);
-  glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, cast<GLsizei>(width), cast<GLsizei>(height));
+  glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, width, height);
 
   glBindFramebuffer(GL_READ_FRAMEBUFFER, m_output_framebuffer);
   glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_output_texture, 0);
@@ -335,14 +343,15 @@ void OpenGLRayTracer::render()
 
   glBindImageTexture(cast<GLuint>(TracingImage::out_color), m_output_texture, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA8);
 
-  const uvec2 groups = (m_output_resolution + TRACING_GROUP_SIZE - 1u) / TRACING_GROUP_SIZE;
+  const uvec2 groups = (m_virtual_resolution + TRACING_GROUP_SIZE - 1u) / TRACING_GROUP_SIZE;
   m_tracing_shader.dispatch(groups.x, groups.y, 1, true);
 
-  const GLint width = cast<GLint>(m_output_resolution.x);
-  const GLint height = cast<GLint>(m_output_resolution.y);
+  // scales the virtual image over the whole window
+  const ivec2 source = ivec2(m_virtual_resolution);
+  const ivec2 destination = ivec2(m_window_resolution);
   glBindFramebuffer(GL_READ_FRAMEBUFFER, m_output_framebuffer);
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-  glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+  glBlitFramebuffer(0, 0, source.x, source.y, 0, 0, destination.x, destination.y, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
 #if NC_DEBUG_DRAW
   glEndQuery(GL_TIME_ELAPSED);

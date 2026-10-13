@@ -3,6 +3,7 @@
 
 #include <common.h>
 #include <config.h>
+#include <cvars.h>
 #include <types.h>
 #include <logging.h>
 
@@ -120,22 +121,29 @@ void RenderSystem::render()
   s32 height = 0;
   SDL_GetWindowSizeInPixels(m_window, &width, &height);
 
-  const uvec2 window_size(width, height);
-  if (window_size != m_window_size)
+  const uvec2 window_resolution(width, height);
+  if (window_resolution != m_window_resolution)
   {
-    m_window_size = window_size;
-    m_renderer->on_window_resized(m_window_size.x, m_window_size.y);
+    m_window_resolution = window_resolution;
+    m_renderer->on_window_resolution_changed(m_window_resolution);
+  }
+
+  const uvec2 virtual_resolution(CVars::virtual_resolution_x, CVars::virtual_resolution_y);
+  if (virtual_resolution != m_virtual_resolution)
+  {
+    m_virtual_resolution = virtual_resolution;
+    m_renderer->on_virtual_resolution_changed(m_virtual_resolution);
   }
 
 #if NC_DEBUG_DRAW
   const f32 delta_time = get_engine().get_delta_time();
   const f32 gpu_time = m_renderer->get_gpu_time();
-  const f32 pixel_count = cast<f32>(m_window_size.x * m_window_size.y);
+  const f32 pixel_count = cast<f32>(m_virtual_resolution.x * m_virtual_resolution.y);
   const std::string title = std::format
   (
-    "Nuclidean Game. ({}x{}) FPS: {:.2f}, Dt: {:.2f}ms, GPU: {:.2f}ms ({:.2f}ns/px)",
-    m_window_size.x, m_window_size.y, 1.0f / delta_time, delta_time * 1000.0f,
-    gpu_time, gpu_time * 1'000'000.0f / pixel_count
+    "Nuclidean Game. ({}x{}, virtual {}x{}) FPS: {:.2f}, Dt: {:.2f}ms, GPU: {:.2f}ms ({:.2f}ns/px)",
+    m_window_resolution.x, m_window_resolution.y, m_virtual_resolution.x, m_virtual_resolution.y,
+    1.0f / delta_time, delta_time * 1000.0f, gpu_time, gpu_time * 1'000'000.0f / pixel_count
   );
   SDL_SetWindowTitle(m_window, title.c_str());
 #endif
