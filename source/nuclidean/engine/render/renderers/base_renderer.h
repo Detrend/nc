@@ -27,6 +27,11 @@ public:
   virtual void on_segment_changed([[maybe_unused]] SegmentID segment_id) {}
   virtual void render() = 0;
 
+#if NC_DEBUG_DRAW
+  // GPU time of rendering a recent frame, in milliseconds.
+  virtual f32 get_gpu_time() const { return 0.0f; }
+#endif
+
 #if NC_HOT_RELOAD
   // Called every frame, recompiles shaders whose sources changed, keeping the old ones on failure.
   virtual void reload_shaders() {}

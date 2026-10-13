@@ -22,6 +22,10 @@ public:
   void on_segment_changed(SegmentID segment_id) override;
   void render() override;
 
+#if NC_DEBUG_DRAW
+  f32 get_gpu_time() const override { return m_gpu_time; }
+#endif
+
 #if NC_HOT_RELOAD
   void reload_shaders() override;
 #endif
@@ -50,6 +54,15 @@ private:
   opengl::Shader m_tracing_shader;
   // Resolution of the output texture.
   uvec2 m_output_resolution = uvec2{0, 0};
+
+#if NC_DEBUG_DRAW
+  // Queries measuring the GPU time of a frame, taken in turns so a result is read only once the GPU has it.
+  GLuint m_time_queries[3] = {};
+  // Number of rendered frames, picks the time query of the frame.
+  u64    m_frame_count     = 0;
+  // GPU time of rendering a recent frame, in milliseconds.
+  f32    m_gpu_time        = 0.0f;
+#endif
 };
 
 }

@@ -20,6 +20,9 @@
 #include <SDL.h>
 #include <SDL_video.h>
 
+#include <format>
+#include <string>
+
 namespace nc
 {
 
@@ -123,6 +126,19 @@ void RenderSystem::render()
     m_window_size = window_size;
     m_renderer->on_window_resized(m_window_size.x, m_window_size.y);
   }
+
+#if NC_DEBUG_DRAW
+  const f32 delta_time = get_engine().get_delta_time();
+  const f32 gpu_time = m_renderer->get_gpu_time();
+  const f32 pixel_count = cast<f32>(m_window_size.x * m_window_size.y);
+  const std::string title = std::format
+  (
+    "Nuclidean Game. ({}x{}) FPS: {:.2f}, Dt: {:.2f}ms, GPU: {:.2f}ms ({:.2f}ns/px)",
+    m_window_size.x, m_window_size.y, 1.0f / delta_time, delta_time * 1000.0f,
+    gpu_time, gpu_time * 1'000'000.0f / pixel_count
+  );
+  SDL_SetWindowTitle(m_window, title.c_str());
+#endif
 
   m_renderer->render();
 

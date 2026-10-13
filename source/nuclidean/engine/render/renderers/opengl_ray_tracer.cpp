@@ -29,6 +29,7 @@
 
 #include <cmath>
 #include <cstddef>
+#include <iterator>
 #include <vector>
 
 namespace nc::render::renderers
@@ -118,6 +119,10 @@ bool OpenGLRayTracer::init()
   glGenBuffers(1, &m_walls_buffer);
   glGenBuffers(1, &m_sectors_buffer);
   glGenBuffers(1, &m_portals_buffer);
+
+#if NC_DEBUG_DRAW
+  glGenQueries(cast<GLsizei>(std::size(m_time_queries)), m_time_queries);
+#endif
 
   const TextureAtlas& atlas = render_system.get_game_atlas();
   const GLsizei atlas_width = cast<GLsizei>(atlas.get_size().x);
@@ -302,6 +307,20 @@ void OpenGLRayTracer::render()
     .camera_direction = camera->get_forward(),
   };
 
+#if NC_DEBUG_DRAW
+  // the query was issued a few frames ago, so its result is ready and reading it does not wait for the GPU
+  const GLuint time_query = m_time_queries[m_frame_count % std::size(m_time_queries)];
+  if (m_frame_count >= std::size(m_time_queries))
+  {
+    GLuint64 time = 0;
+    glGetQueryObjectui64v(time_query, GL_QUERY_RESULT, &time);
+    m_gpu_time = cast<f32>(time) / 1'000'000.0f;
+  }
+  ++m_frame_count;
+
+  glBeginQuery(GL_TIME_ELAPSED, time_query);
+#endif
+
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, cast<GLuint>(TracingBuffer::walls), m_walls_buffer);
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, cast<GLuint>(TracingBuffer::sectors), m_sectors_buffer);
   glBindBufferBase(GL_SHADER_STORAGE_BUFFER, cast<GLuint>(TracingBuffer::portals), m_portals_buffer);
@@ -324,6 +343,10 @@ void OpenGLRayTracer::render()
   glBindFramebuffer(GL_READ_FRAMEBUFFER, m_output_framebuffer);
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
   glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+#if NC_DEBUG_DRAW
+  glEndQuery(GL_TIME_ELAPSED);
+#endif
 
 #if NC_IMGUI
   ImGui::Render();
