@@ -347,6 +347,16 @@ static GLuint create_g_buffer(GLint internal_format, GLenum attachment, u32 w, u
   GLenum format = GL_RGBA;
   GLenum type   = GL_FLOAT;
 
+  if (GraphicsSystem::get().get_backend() == RenderBackend::OpenGLES) 
+  {
+      if (internal_format == GL_RGBA32F) {
+          // Not all GL ES hardware supports RGBA32F - fallback to RGBA16F
+          //  TODO: add some more robust logic for checking if GL_RGBA32F is supported on current hardware
+          internal_format = GL_RGBA16F;
+          type            = GL_HALF_FLOAT;
+      }
+  }
+
   // TODO: temp solution
   if (internal_format == GL_R32UI)
   {
