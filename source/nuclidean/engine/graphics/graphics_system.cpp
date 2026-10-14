@@ -203,6 +203,9 @@ static void log_gl_specs()
   glGetIntegerv(GL_MAX_DRAW_BUFFERS, &max_draw_buffers);
   glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_color_attachments);
   nc_log("OpenGL specs - Max draw buffers: {}, Max color attachments: {}", max_draw_buffers, max_color_attachments);
+  nc_log("GL_VERSION: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+  nc_log("GL_RENDERER: {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+  nc_log("GLSL: {}", reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 }
 
 //==============================================================================
@@ -226,7 +229,7 @@ bool GraphicsSystem::init()
   if(auto err = try_create_opengl_context(SDL_GL_CONTEXT_PROFILE_CORE, 4, 3))
   {
     nc_warn("Could not create desktop OpenGL context, trying OpenGL ES instead: {}", *err);
-    if(auto err_es = try_create_opengl_context(SDL_GL_CONTEXT_PROFILE_ES, 3, 1)){
+    if(auto err_es = try_create_opengl_context(SDL_GL_CONTEXT_PROFILE_ES, 3, 0)){
       nc_crit("Error when creating OpenGL ES context:'{}'", *err_es);
       return false;
     }
@@ -240,7 +243,18 @@ bool GraphicsSystem::init()
   
 
   // init opengl bindings
-  if (!gladLoadGLLoader(SDL_GL_GetProcAddress))
+  int glad_result = 0;
+  if (m_backend_used == RenderBackend::OpenGLES)
+  {
+    nc_verbose("GLAD - Loading OpenGL ES bindings");
+    glad_result = gladLoadGLES2Loader(SDL_GL_GetProcAddress);
+  }
+  else if (m_backend_used == RenderBackend::OpenGL)
+  {
+    nc_verbose("GLAD - Loading OpenGL bindings");
+    glad_result = gladLoadGLLoader(SDL_GL_GetProcAddress);
+  }
+  if (!glad_result)
   {
     nc_crit("GL loader failed!");
     return false;
