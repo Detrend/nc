@@ -11,6 +11,8 @@
 #include <engine/graphics/resources/model.h>
 #include <engine/map/map_types.h>            // SectorID
 
+#include <SDL_video.h> // SDL_GLprofile
+
 #include <game/game_types.h>
 #include <cvars.h>
 
@@ -38,6 +40,12 @@ struct RenderGunProperties
 {
   vec2        sway   = VEC2_ZERO;
   std::string sprite = "";
+};
+
+enum class RenderBackend {
+  None,
+  OpenGL,
+  OpenGLES
 };
 
 class GraphicsSystem : public IEngineModule
@@ -74,6 +82,8 @@ public:
   SDL_Window* get_window();
   void set_shadows(bool shadows);
 
+  RenderBackend get_backend() const { return m_backend; }
+
 private:
   void update(f32 delta_seconds);
   void render();
@@ -81,6 +91,7 @@ private:
 
   void query_visibility(VisibilityTree& out) const;
   void create_sector_meshes();
+  std::optional<std::string> try_create_opengl_context(SDL_GLprofile profile, int major, int minor);
 
 #if NC_DEBUG_DRAW
   void render_map_top_down(const VisibilityTree& visible);
@@ -98,6 +109,7 @@ private:
   RendererPtr             m_renderer;
   std::vector<MeshHandle> m_sector_meshes;
   std::vector<bool>       m_dirty_sectors;
+  RenderBackend           m_backend;
 
 #if NC_DEBUG_DRAW
   using DebugRendererPtr = std::unique_ptr<class TopDownDebugRenderer>;

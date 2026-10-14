@@ -151,32 +151,20 @@ GraphicsSystem& GraphicsSystem::get()
 }
 
 //==============================================================================
-bool GraphicsSystem::init()
+std::optional<std::string> GraphicsSystem::try_create_opengl_context(SDL_GLprofile profile, int major, int minor)
 {
-  NC_TODO("Log out an error when the graphics system initialization fails");
-  NC_TODO("Terminate the already set-up SDL stuff on failed initialization.");
+  SDL_GL_ResetAttributes();
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, profile);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, major);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
-  // init SDL
-  constexpr auto SDL_INIT_FLAGS = SDL_INIT_VIDEO | SDL_INIT_EVENTS;
   constexpr u32  SDL_WIN_FLAGS = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_ALLOW_HIGHDPI;
   constexpr cstr WINDOW_NAME = "N U C L I D E A N";
   constexpr auto WIN_POS = SDL_WINDOWPOS_UNDEFINED;
 
-  if (SDL_Init(SDL_INIT_FLAGS) < 0)
-  {
-    // failed to init SDL, see what's the issue
-    [[maybe_unused]] cstr error = SDL_GetError();
-    nc_crit("Error when initializing SDL: {}", error);
-    return false;
-  }
-
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-
-
+  nc_log("Creating SDL window with size {}x{} for context {}.{}", m_window_width, m_window_height, major, minor);
   // create window
   m_window = SDL_CreateWindow(
     WINDOW_NAME, 
@@ -189,10 +177,9 @@ bool GraphicsSystem::init()
   if (!m_window)
   {
     [[maybe_unused]] cstr error = SDL_GetError();
-    nc_crit("Error when creating window: {}", error);
-    return false;
+    return std::optional<std::string>(std::format("Error when creating window: {}", error));
   }
-
+  nc_log("Created SDL window with size {}x{} for context {}.{}", m_window_width, m_window_height, major, minor);
   SDL_SetWindowResizable(m_window, get_engine().is_editor_mode() ? SDL_TRUE : SDL_FALSE);
 
   // create opengl context
@@ -200,21 +187,105 @@ bool GraphicsSystem::init()
   if (!m_gl_context)
   {
     [[maybe_unused]] cstr error = SDL_GetError();
-    nc_crit("Error when creating GL_Context: {}", error);
+    SDL_DestroyWindow(m_window);
+    m_window = nullptr;
+    return std::optional<std::string>(std::format("Error when creating GL_Context: {}", error));
+  }
+  nc_log("Created SDL context {}.{}", major, minor);
+  return std::nullopt;
+}
+
+//==============================================================================
+static void log_gl_specs()
+{
+  GLint max_draw_buffers = 0, max_color_attachments = 0
+      , max_fragment_shader_storage_blocks = 0
+      , max_shader_storage_buffer_bindings = 0
+      , max_texture_size = 0;
+    ;
+  glGetIntegerv(GL_MAX_DRAW_BUFFERS, &max_draw_buffers);
+  glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_color_attachments);
+  glGetIntegerv(GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS, &max_fragment_shader_storage_blocks);
+  glGetIntegerv(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &max_shader_storage_buffer_bindings);
+  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
+
+  nc_log("OpenGL specs...\n\tMax draw buffers: {}\n\tMax color attachments: {}"
+    "\n\tMax fragment shader storage blocks: {}\n\tMax shader storage buffer bindings: {}\n\tMax texture size: {}", 
+      max_draw_buffers, max_color_attachments, max_fragment_shader_storage_blocks, max_shader_storage_buffer_bindings,
+      max_texture_size
+  );
+  nc_log("GL_VERSION: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+  nc_log("GL_RENDERER: {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+  nc_log("GLSL: {}", reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+}
+
+//==============================================================================
+bool GraphicsSystem::init()
+{
+  NC_TODO("Log out an error when the graphics system initialization fails");
+  NC_TODO("Terminate the already set-up SDL stuff on failed initialization.");
+
+  // init SDL
+  constexpr auto SDL_INIT_FLAGS = SDL_INIT_VIDEO | SDL_INIT_EVENTS;
+  
+  if (SDL_Init(SDL_INIT_FLAGS) < 0)
+  {
+    // failed to init SDL, see what's the issue
+    [[maybe_unused]] cstr error = SDL_GetError();
+    nc_crit("Error when initializing SDL: {}", error);
     return false;
   }
 
+
+  if(auto err = try_create_opengl_context(SDL_GL_CONTEXT_PROFILE_CORE, 4, 3))
+  {
+    nc_warn("Could not create desktop OpenGL context, trying OpenGL ES instead: {}", *err);
+    if(auto err_es = try_create_opengl_context(SDL_GL_CONTEXT_PROFILE_ES, 3, 0)){
+      // We are asking for ES 3.0 but expecting to get 3.1,
+      //  which is exactly what happens when we do this on Raspberry Pi5.
+      // For some reason, if we asked directly for 3.1, we would get segfault when creating the window.
+      nc_crit("Error when creating OpenGL ES context:'{}'", *err_es);
+      return false;
+    }
+    nc_log("Using OpenGL ES context");
+    m_backend = RenderBackend::OpenGLES;
+  }else{
+    nc_log("Using desktop OpenGL 4.3 context");
+    m_backend = RenderBackend::OpenGL;
+  }
+
+  
+
   // init opengl bindings
-  if (!gladLoadGLLoader(SDL_GL_GetProcAddress))
+  int glad_result = 0;
+  switch(m_backend)
+  {
+    case RenderBackend::OpenGLES: 
+      glad_result = gladLoadGLES2Loader(SDL_GL_GetProcAddress);
+      // add fallback implementation for an OpenGL-only function that we rely on to ease the burden on users
+      glDepthRange = [](GLdouble n, GLdouble f) -> void { return glDepthRangef(static_cast<GLfloat>(n), static_cast<GLfloat>(f)); };
+      break;
+    case RenderBackend::OpenGL:   
+      glad_result = gladLoadGLLoader(SDL_GL_GetProcAddress);
+      break;
+    default:
+      nc_assert(false, "GLAD - Unknown render backend"); break;
+  }
+  if (!glad_result)
   {
     nc_crit("GL loader failed!");
     return false;
   }
 
+  log_gl_specs();
+
 #if NC_DEBUG_DRAW
-  glEnable(GL_DEBUG_OUTPUT);
-  glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-  glDebugMessageCallback(&debug_helpers::gl_debug_message, nullptr);
+  if(m_backend == RenderBackend::OpenGL)
+  {
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    (&debug_helpers::gl_debug_message, nullptr);
+  }
 #endif
 
   glEnable(GL_DEPTH_TEST);
@@ -232,7 +303,11 @@ bool GraphicsSystem::init()
   ImPlot::CreateContext();
 
   ImGui_ImplSDL2_InitForOpenGL(m_window, m_gl_context);
-  ImGui_ImplOpenGL3_Init(nullptr);
+  ImGui_ImplOpenGL3_Init(
+    (m_backend == RenderBackend::OpenGLES)
+      ? "#version 300 es"
+      : "#version 430 core"
+  );
 
   imgui_start_frame();
 #endif
