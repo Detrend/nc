@@ -5,8 +5,8 @@ out vec4 FragColor;
 
 uniform sampler2D sampler;
 
-layout(location = 4) uniform bool hover = false;
-layout(location = 5) uniform vec4 color = vec4(1, 1, 1, 1);
+layout(location = 4) uniform bool hover;
+layout(location = 5) uniform vec4 color;
 
 void main(void) {
     FragColor = texture(sampler, uv);

@@ -16,13 +16,13 @@ layout(location = 6) uniform int height;
 void main(void) {
 	gl_Position = transformationMatrix * vec4(position, 0.0, 1.0);
 
-	float texX = mod(character, width);
-    float texY = character / width;
+	float texX = mod(float(character), float(width));
+    float texY = float(character) / float(width);
 	
 	vec2 n_uv = a_uv;
 
-    n_uv.x = n_uv.x / width + texX / width;
-    n_uv.y = n_uv.y / height + texY / height;
+    n_uv.x = n_uv.x / float(width) + texX / float(width);
+    n_uv.y = n_uv.y / float(height) + texY / float(height);
 
 	
 	uv = (n_uv * texture_size + texture_pos) / atlas_size;

@@ -63,7 +63,7 @@ layout(location = 1) uniform uint  num_tiles_x;
 layout(location = 2) uniform float ambient_strength;
 layout(location = 3) uniform uint  num_sectors;
 layout(location = 4) uniform uint  num_walls;
-layout(location = 5) uniform bool  do_shadows = true;
+layout(location = 5) uniform bool  do_shadows;
 
 layout(std430, binding = 0) readonly buffer point_light_buffer     { PointLight point_lights[];     };
 layout(std430, binding = 1) readonly buffer light_index_buffer     { uint       light_indices[];    };
@@ -79,7 +79,7 @@ bool invalid_wall_id = false;
 bool max_hops_reached = false;
 bool debug_pixel = false;
 
-float cross(vec2 a, vec2 b)
+float cross2(vec2 a, vec2 b)
 {
   return a.x * b.y - a.y * b.x;
 }
@@ -93,7 +93,7 @@ float get_intersection_t(vec2 ray_origin, vec2 ray_direction, vec2 wall_p0, vec2
   float wall_length = distance(wall_p1, wall_p0);
   vec2 wall_direction = normalize(wall_p1 - wall_p0);
 
-  float denominator = cross(ray_direction, wall_direction);
+  float denominator = cross2(ray_direction, wall_direction);
 
   // rays are parallel
   if (abs(denominator) < 0.001f)
@@ -102,8 +102,8 @@ float get_intersection_t(vec2 ray_origin, vec2 ray_direction, vec2 wall_p0, vec2
   vec2 diff = wall_origin - ray_origin;
   float inv_denominator = 1.0f / denominator;
 
-  float ray_t  = cross(diff, wall_direction) * inv_denominator;
-  float wall_t = cross(diff, ray_direction ) * inv_denominator;
+  float ray_t  = cross2(diff, wall_direction) * inv_denominator;
+  float wall_t = cross2(diff, ray_direction ) * inv_denominator;
 
   // intersection occurs outside of this wall segment
   if (wall_t < 0.0f || wall_t > wall_length + 0.0f)
@@ -114,8 +114,8 @@ float get_intersection_t(vec2 ray_origin, vec2 ray_direction, vec2 wall_p0, vec2
 
 bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, uint start_matrix_id, PointLight light)
 {
-  const uint INVALID_WALL_ID = 65535;
-  const uint MAX_LIGHT_TRAVERSE_SECTORS = 32;
+  const uint INVALID_WALL_ID = 65535u;
+  const uint MAX_LIGHT_TRAVERSE_SECTORS = 32u;
 
   vec3 ray_stitched_origin = stitched_position;
   vec3 ray_origin = position;
@@ -126,7 +126,7 @@ bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, u
   uint current_sector_id = start_sector_id;
   float ray_t = -0.001f;
 
-  for (int hop = 0; hop < MAX_LIGHT_TRAVERSE_SECTORS; ++hop)
+  for (uint hop = 0u; hop < MAX_LIGHT_TRAVERSE_SECTORS; ++hop)
   {
     SectorData sector = sectors[current_sector_id];
     uint wall_index = INVALID_WALL_ID;
@@ -151,7 +151,7 @@ bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, u
       return false;
     }
 
-    for (uint i = 0; i < sector.walls_count; ++i)
+    for (uint i = 0u; i < sector.walls_count; ++i)
     {
       if (sector.walls_offset + i >= num_walls)
       {
@@ -249,7 +249,7 @@ void main()
   vec3 shading_position          = mix(position,          normal,          billboard_f); // Storing shading position here for billboards
   vec3 shading_stitched_position = mix(stitched_position, stitched_normal, billboard_f); // Storing stitched shading position here for billboards
 
-  for (int i = 0; i < data.count; i++)
+  for (uint i = 0u; i < data.count; i++)
   {
     uint light_index = light_indices[data.offset + i];
 
@@ -273,7 +273,7 @@ void main()
     vec3 diffuse = max(angle, 0.0f) * albedo;
 
     vec3 half_direction = normalize(light_direction + view_direction);
-    vec3 specular = specular_strength * pow(clamp(dot(stitched_normal, half_direction), 0.0f, 1.0f), shininess) * vec3(1.0f);
+    vec3 specular = specular_strength * pow(clamp(dot(stitched_normal, half_direction), 0.0f, 1.0f), float(shininess)) * vec3(1.0f);
 
     float attenuation = pow(max(light.radius - distance, 0.0f) / light.radius, light.falloff);
     final_color += (diffuse + specular) * light.color * light.intensity * attenuation;
