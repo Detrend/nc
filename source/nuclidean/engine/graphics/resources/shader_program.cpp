@@ -3,6 +3,7 @@
 #include <logging.h>
 #include <math/lingebra.h>
 #include <engine/graphics/resources/shader_program.h>
+#include <engine/graphics/graphics_system.h>
 
 #include <glad/glad.h>
 
@@ -197,11 +198,20 @@ ShaderProgramHandle::ShaderProgramHandle(std::initializer_list<std::tuple<const 
 std::optional<GLuint> ShaderProgramHandle::compile_shader(const char* name, const char* source, GLenum type, bool log_only) const
 {
   const GLuint shader = glCreateShader(type);
-  const char*const source_segments[] = {
-    "#version 430 core\n",
+  const char* source_segments[] = {
+    nullptr,
     "#line 1\n",
     source
   };
+  if(GraphicsSystem::get().get_backend() == RenderBackend::OpenGLES)
+  {
+    source_segments[0] = "#version 310 es\nprecision highp float;\nprecision highp int;\nprecision highp uint;\n";
+  }
+  else if(GraphicsSystem::get().get_backend() == RenderBackend::OpenGL)
+  {
+    source_segments[0] = "#version 430 core\n";
+  }
+
   glShaderSource(shader, ARRAY_LENGTH(source_segments), source_segments, nullptr);
   glCompileShader(shader);
 
