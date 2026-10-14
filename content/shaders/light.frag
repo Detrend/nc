@@ -56,7 +56,7 @@ layout(binding = 1) uniform sampler2D  g_stitched_position;
 layout(binding = 2) uniform sampler2D  g_normal;
 layout(binding = 3) uniform sampler2D  g_stitched_normal;
 layout(binding = 4) uniform sampler2D  g_albedo;
-layout(binding = 5) uniform usampler2D g_sector;
+layout(binding = 5) highp uniform usampler2D g_sector;
 
 layout(location = 0) uniform vec3  view_position;
 layout(location = 1) uniform uint  num_tiles_x;

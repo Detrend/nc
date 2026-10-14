@@ -363,6 +363,11 @@ static GLuint create_g_buffer(GLint internal_format, GLenum attachment, u32 w, u
     format = GL_RED_INTEGER;
     type   = GL_UNSIGNED_INT;
   }
+  else if (internal_format == GL_RGBA8)
+  {
+    format = GL_RGBA;
+    type   = GL_UNSIGNED_BYTE;
+  }
 
   GLuint g_handle;
   glGenTextures(1, &g_handle);

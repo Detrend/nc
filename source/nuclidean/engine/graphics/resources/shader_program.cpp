@@ -205,7 +205,7 @@ std::optional<GLuint> ShaderProgramHandle::compile_shader(const char* name, cons
   };
   if(GraphicsSystem::get().get_backend() == RenderBackend::OpenGLES)
   {
-    source_segments[0] = "#version 310 es\nprecision highp float;\nprecision highp int;\nprecision highp uint;\n";
+    source_segments[0] = "#version 310 es\nprecision highp float;\nprecision highp int;\n";
   }
   else if(GraphicsSystem::get().get_backend() == RenderBackend::OpenGL)
   {
