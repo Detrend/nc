@@ -32,7 +32,7 @@
 #endif
 
 #if defined(NC_Ship)
-#define NC_BAKED_CVARS NC_CONFIG_ON
+#define NC_BAKED_CVARS NC_CONFIG_OFF
 #define NC_IS_SHIP     NC_CONFIG_ON
 #else
 #define NC_BAKED_CVARS NC_CONFIG_OFF

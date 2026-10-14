@@ -1251,7 +1251,15 @@ void Renderer::render_portal_to_depth(
     // Overwrite the depth value to maximum one
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
     // This makes sure that the final depth will be 1.0 everywhere
-    glDepthRange(1.0, 1.0);
+    if(GraphicsSystem::get().get_used_backend() == RenderBackend::OpenGL)
+    {
+      glDepthRange(1.0, 1.0);
+    }
+    else
+    {
+      nc_assert(GraphicsSystem::get().get_used_backend() == RenderBackend::OpenGLES);
+      glDepthRangef(1.0, 1.0);
+    }
     // No need to reset this later, a it will be changed by the
     // "render_portal_to_color_function"
     glDepthMask(GL_TRUE);
@@ -1275,7 +1283,16 @@ void Renderer::render_portal_to_depth(
 
   if (depth_write)
   {
-    glDepthRange(0.0, 1.0); // Back to normal
+    // Reset the depth range back to normal
+    if(GraphicsSystem::get().get_used_backend() == RenderBackend::OpenGL)
+    {
+      glDepthRange(0.0, 1.0); // Back to normal
+    }
+    else
+    {
+      nc_assert(GraphicsSystem::get().get_used_backend() == RenderBackend::OpenGLES);
+      glDepthRangef(0.0, 1.0);
+    }
   }
 }
 
