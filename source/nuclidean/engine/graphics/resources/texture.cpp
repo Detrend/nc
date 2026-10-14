@@ -534,6 +534,9 @@ void TextureManager::finish_load(ResLifetime lifetime)
   bundle.width = target_width;
   bundle.height = target_height;
 
+  nc_log("Texture atlas for {} resources: {}x{}", lifetime == ResLifetime::Game ? "game" : "level", target_width, target_height);
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
   // diffuse texture atlas
   {
     glGenTextures(1, &bundle.diffuse_handle);

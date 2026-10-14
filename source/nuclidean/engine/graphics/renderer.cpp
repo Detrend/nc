@@ -556,6 +556,7 @@ const
   const ivec2 render_size = get_render_size();
   glViewport(0, 0, render_size.x, render_size.y);
   glBindFramebuffer(GL_FRAMEBUFFER, m_g_buffer);
+  glClearColor(0.0f, 0.5f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   
   const GLuint clear_value = 0;
@@ -607,6 +608,7 @@ void Renderer::do_light_culling_pass(const CameraData& camera) const
 //==============================================================================
 void Renderer::do_lighting_pass(const vec3& view_position) const
 {
+  glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   // bind g-bufers

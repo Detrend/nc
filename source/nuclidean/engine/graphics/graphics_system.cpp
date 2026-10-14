@@ -199,10 +199,22 @@ std::optional<std::string> GraphicsSystem::try_create_opengl_context(SDL_GLprofi
 //==============================================================================
 static void log_gl_specs()
 {
-  GLint max_draw_buffers = 0, max_color_attachments = 0;
+  GLint max_draw_buffers = 0, max_color_attachments = 0
+      , max_fragment_shader_storage_blocks = 0
+      , max_shader_storage_buffer_bindings = 0
+      , max_texture_size = 0;
+    ;
   glGetIntegerv(GL_MAX_DRAW_BUFFERS, &max_draw_buffers);
   glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_color_attachments);
-  nc_log("OpenGL specs - Max draw buffers: {}, Max color attachments: {}", max_draw_buffers, max_color_attachments);
+  glGetIntegerv(GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS, &max_fragment_shader_storage_blocks);
+  glGetIntegerv(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &max_shader_storage_buffer_bindings);
+  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
+
+  nc_log("OpenGL specs - Max draw buffers: {}, Max color attachments: {}"
+    "\n\t Max fragment shader storage blocks: {}, Max shader storage buffer bindings: {}, Max texture size: {}", 
+      max_draw_buffers, max_color_attachments, max_fragment_shader_storage_blocks, max_shader_storage_buffer_bindings,
+      max_texture_size
+  );
   nc_log("GL_VERSION: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
   nc_log("GL_RENDERER: {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
   nc_log("GLSL: {}", reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
@@ -230,6 +242,9 @@ bool GraphicsSystem::init()
   {
     nc_warn("Could not create desktop OpenGL context, trying OpenGL ES instead: {}", *err);
     if(auto err_es = try_create_opengl_context(SDL_GL_CONTEXT_PROFILE_ES, 3, 0)){
+      // We are asking for ES 3.0 but expecting to get 3.1
+      // which is exactly what happens when we do this on Raspberry Pi5
+      // for some reason, if we asked for 3.1 outright, we would get segfault when creating the window.
       nc_crit("Error when creating OpenGL ES context:'{}'", *err_es);
       return false;
     }
@@ -486,7 +501,8 @@ void GraphicsSystem::render()
 #endif
 
   glViewport(0, 0, width, height);
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+  glClearColor(0.5f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 #if NC_DEBUG_DRAW
