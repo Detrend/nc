@@ -244,15 +244,16 @@ bool GraphicsSystem::init()
 
   // init opengl bindings
   int glad_result = 0;
-  if (m_backend_used == RenderBackend::OpenGLES)
+  switch(m_backend_used)
   {
-    nc_verbose("GLAD - Loading OpenGL ES bindings");
-    glad_result = gladLoadGLES2Loader(SDL_GL_GetProcAddress);
-  }
-  else if (m_backend_used == RenderBackend::OpenGL)
-  {
-    nc_verbose("GLAD - Loading OpenGL bindings");
-    glad_result = gladLoadGLLoader(SDL_GL_GetProcAddress);
+    case RenderBackend::OpenGLES: 
+      glad_result = gladLoadGLES2Loader(SDL_GL_GetProcAddress);
+      break;
+    case RenderBackend::OpenGL:   
+      glad_result = gladLoadGLLoader(SDL_GL_GetProcAddress);
+      break;
+    default:
+      nc_assert(false, "GLAD - Unknown render backend"); break;
   }
   if (!glad_result)
   {
