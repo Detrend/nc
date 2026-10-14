@@ -111,7 +111,9 @@ Renderer::Renderer(u32 win_w, u32 win_h)
   // setup texture data ssbo
   // TODO: this should be done every time new texture atlas is created
   {
+    nc_verbose("Setting up texture data ssbo");
     const std::vector<TextureHandle> textures = TextureManager::get().get_textures();
+    nc_verbose("Setting up texture data ssbo with {} textures", textures.size());
     m_textures_ssbo = SSBOBuffer<TextureGPU>(textures.size());
     for (auto&& texture : textures)
     {
@@ -122,6 +124,7 @@ Renderer::Renderer(u32 win_w, u32 win_h)
 
   // setup light culling ssbos
   {
+    nc_verbose("Setting up light culling ssbos");
     const ivec2 render_size = get_render_size();
     const size_t num_tiles_x = (render_size.x + LIGHT_CULLING_TILE_SIZE_X - 1) / LIGHT_CULLING_TILE_SIZE_X;
     const size_t num_tiles_y = (render_size.y + LIGHT_CULLING_TILE_SIZE_Y - 1) / LIGHT_CULLING_TILE_SIZE_Y;
@@ -140,6 +143,7 @@ Renderer::Renderer(u32 win_w, u32 win_h)
   register_shader(m_sector_material,       {shaders::sector::VERTEX_FILE,       shaders::sector::FRAGMENT_FILE});
   register_shader(m_light_culling_shader,  {shaders::light_culling::COMPUTE_FILE});
   register_shader(m_sky_box_material,      {shaders::sky_box::VERTEX_FILE,      shaders::sky_box::FRAGMENT_FILE});
+  nc_verbose("Renderer initialized successfully.");
 }
 
 //==============================================================================
@@ -353,6 +357,26 @@ static GLuint create_g_buffer(GLint internal_format, GLenum attachment, u32 w, u
     format = GL_RED_INTEGER;
     type   = GL_UNSIGNED_INT;
   }
+  else if (internal_format == GL_R8)
+  {
+    format = GL_RED;
+    type   = GL_UNSIGNED_BYTE;
+  }
+  else if (internal_format == GL_RGBA8)
+  {
+    format = GL_RGBA;
+    type   = GL_UNSIGNED_BYTE;
+  }
+  else if (internal_format == GL_RGBA16F)
+  {
+    format = GL_RGBA;
+    type   = GL_HALF_FLOAT;
+  }
+  else if (internal_format == GL_RGBA32F)
+  {
+    format = GL_RGBA;
+    type   = GL_FLOAT;
+  }
 
   GLuint g_handle;
   glGenTextures(1, &g_handle);
@@ -449,15 +473,15 @@ void Renderer::create_renderbuffers(ivec2 dims)
   };
   // TODO: move specular strength to stitched normal g buffer
   // TODO: merge stitched normals and normals into one g buffer
-  m_g_position          = create_g_buffer(GL_RGBA32F    , attachments[0], width, height);
-  m_g_stitched_position = create_g_buffer(GL_RGBA32F    , attachments[1], width, height);
+  m_g_position          = create_g_buffer(GL_RGBA16F    , attachments[0], width, height);
+  m_g_stitched_position = create_g_buffer(GL_RGBA16F    , attachments[1], width, height);
 
   // MR says: Changed these from RGBA8_UNORM to RGBA32F for GA demo because I am storing
   //          shading position and shading stitched position in them for billboards.
-  m_g_normal          = create_g_buffer(GL_RGBA32F, attachments[2], width, height);
-  m_g_stitched_normal = create_g_buffer(GL_RGBA32F, attachments[3], width, height);
+  m_g_normal          = create_g_buffer(GL_RGBA16F, attachments[2], width, height);
+  m_g_stitched_normal = create_g_buffer(GL_RGBA16F, attachments[3], width, height);
 
-  m_g_albedo = create_g_buffer(GL_RGBA8, attachments[4], width, height);
+  m_g_albedo = create_g_buffer(GL_RGBA16F, attachments[4], width, height);
   m_g_sector = create_g_buffer(GL_R32UI, attachments[5], width, height);
   glDrawBuffers(cast<GLsizei>(attachments.size()), attachments.data());
 
@@ -473,8 +497,10 @@ void Renderer::create_renderbuffers(ivec2 dims)
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_g_depth_stencil);
 
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    nc_warn("G-buffer not complete.");
-
+    nc_warn("G-buffer not complete. (status: {})", glCheckFramebufferStatus(GL_FRAMEBUFFER));
+  else
+    nc_verbose("G-buffer created successfully. ({}x{})", width, height);
+  
   if (CVars::resolution_scale != 1.0f) {
     glGenFramebuffers(1, &m_lowres_framebuff);
     glBindFramebuffer(GL_FRAMEBUFFER, m_lowres_framebuff);
@@ -490,7 +516,9 @@ void Renderer::create_renderbuffers(ivec2 dims)
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_lowres_z_stencil);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-      nc_warn("Loweres-buffer not complete.");
+      nc_warn("Loweres-buffer not complete. (status: {})", glCheckFramebufferStatus(GL_FRAMEBUFFER));
+    else
+      nc_verbose("Loweres-buffer created successfully. ({}x{})", width, height);
   }
   else {
     nc_assert(m_lowres_framebuff  == 0);

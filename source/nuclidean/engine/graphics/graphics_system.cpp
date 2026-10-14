@@ -150,13 +150,13 @@ GraphicsSystem& GraphicsSystem::get()
   return get_engine().get_module<GraphicsSystem>();
 }
 
-
+//==============================================================================
 std::optional<std::string> GraphicsSystem::try_create_opengl_context(SDL_GLprofile profile, int major, int minor)
 {
   SDL_GL_ResetAttributes();
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, profile);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, major);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
@@ -182,7 +182,7 @@ std::optional<std::string> GraphicsSystem::try_create_opengl_context(SDL_GLprofi
   nc_log("Created SDL window with size {}x{} for context {}.{}", m_window_width, m_window_height, major, minor);
   SDL_SetWindowResizable(m_window, get_engine().is_editor_mode() ? SDL_TRUE : SDL_FALSE);
 
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor);
+  //SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor);
   // create opengl context
   m_gl_context = SDL_GL_CreateContext(m_window);
   if (!m_gl_context)
@@ -194,6 +194,15 @@ std::optional<std::string> GraphicsSystem::try_create_opengl_context(SDL_GLprofi
   }
   nc_log("Created SDL context {}.{}", major, minor);
   return std::nullopt;
+}
+
+//==============================================================================
+static void log_gl_specs()
+{
+  GLint max_draw_buffers = 0, max_color_attachments = 0;
+  glGetIntegerv(GL_MAX_DRAW_BUFFERS, &max_draw_buffers);
+  glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_color_attachments);
+  nc_log("OpenGL specs - Max draw buffers: {}, Max color attachments: {}", max_draw_buffers, max_color_attachments);
 }
 
 //==============================================================================
@@ -237,6 +246,8 @@ bool GraphicsSystem::init()
     return false;
   }
 
+  log_gl_specs();
+
 #if NC_DEBUG_DRAW
   if(m_backend_used == RenderBackend::OpenGL)
   {
@@ -269,12 +280,14 @@ bool GraphicsSystem::init()
   imgui_start_frame();
 #endif
 
+  nc_verbose("Graphics system initialized successfully.");
   return true;
 }
 
 //==============================================================================
 void GraphicsSystem::on_event(ModuleEvent& event)
 {
+  //nc_verbose("GraphicsSystem::on_event({})", event.type);
   switch (event.type)
   {
     case ModuleEventType::post_init:

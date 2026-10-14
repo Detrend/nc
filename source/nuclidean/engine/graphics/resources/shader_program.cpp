@@ -178,6 +178,7 @@ ShaderProgramHandle::ShaderProgramHandle(std::initializer_list<std::tuple<const 
     return;
   }
 
+  nc_verbose("Linking shader program with {} shaders", shaders.size());
   // create and link shader program
   const std::optional<GLuint> shader_program = link_program(shaders);
   if (!shader_program)

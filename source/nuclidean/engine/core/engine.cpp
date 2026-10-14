@@ -531,12 +531,14 @@ bool Engine::init(const CmdArgs& cmd_args)
   INIT_MODULE(UserInterfaceSystem);
 
   #undef INIT_MODULE
+  nc_verbose("Engine initialized successfully.");
 
   // post init
   this->send_event(ModuleEvent
   {
     .type = ModuleEventType::post_init,
   });
+  nc_verbose("Engine module post-init completed successfully.");
 
   // Boot into the menu or start a demo
   return this->handle_post_init_game_startup(cmd_args);

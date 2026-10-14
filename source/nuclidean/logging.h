@@ -57,5 +57,6 @@ struct crit_exception_t {
 #define nc_warn(...) NC_LOG_GENERIC(nc::logging::LoggingSeverity::warning, __VA_ARGS__)
 #define nc_crit(...) NC_LOG_GENERIC(nc::logging::LoggingSeverity::error, __VA_ARGS__)
 #define nc_crit_constexpr(...) throw ::nc::logging::crit_exception_t(std::format("" __VA_ARGS__), CAPTURE_CURRENT_LOGGING_CONTEXT())
+#define nc_verbose(...) nc_log(__VA_ARGS__) // TODO: implement verbose logging with severity level
 
 }
