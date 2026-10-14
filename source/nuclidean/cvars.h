@@ -83,7 +83,7 @@ NC_REGISTER_CVAR_RANGED(_type, _name, _default_value, _range_min, _range_max, _d
 
 // Ranged external cvar registration
 #define NC_REGISTER_CVAR_EXTERNAL_CPP_RANGED(_name, _range_min, _range_max, _desc)                              \
-NC_REGISTER_CVAR_EXTERNAL_CPP_RANGED(_name, _range_min, _range_max, _desc, __LINE__)                            \
+NC_REGISTER_CVAR_EXTERNAL_CPP_RANGED_IMPL(_name, _range_min, _range_max, _desc, __LINE__)                       \
 
 
 #define NC_REGISTER_CVAR_EXTERNAL_CPP_IMPL(_name, _desc, _line)                                                 \
@@ -104,7 +104,7 @@ struct NC_TOKENJOIN3(_cvar_range_definition, _line, _t)                         
     ::nc::CVars::get_cvar_ranges().insert({ ::nc::CVarName(#_name), ::nc::CVarRange{_range_min, _range_max} }); \
   }                                                                                                             \
 };                                                                                                              \
-static inline NC_TOKENJOIN3(_cvar_range_definition, _line, _t) NC_TOKENJOIN(_cvar_range_definition, _line);                   \
+static inline NC_TOKENJOIN3(_cvar_range_definition, _line, _t) NC_TOKENJOIN(_cvar_range_definition, _line);     \
 NC_REGISTER_CVAR_EXTERNAL_CPP_IMPL(_name, _desc, _line)                                                         \
 
 #else
