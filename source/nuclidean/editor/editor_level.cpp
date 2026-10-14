@@ -197,6 +197,40 @@ bool EditorLevel::can_create_line(EditorCoord start, EditorCoord end)
 }
 
 //==================================================================================================
+EditorID EditorLevel::get_line_between_points(EditorCoord start, EditorCoord end) const
+{
+  auto point_it = this->coord_to_point.find(start);
+  if (point_it == this->coord_to_point.end())
+  {
+    return INVALID_EDITOR_ID;
+  }
+
+  EditorID point_id = point_it->second;
+  auto list_it = this->point_to_half_edges.find(point_id);
+  if (list_it == this->point_to_half_edges.end())
+  {
+    // There is not even a line going from the first point
+    return INVALID_EDITOR_ID;
+  }
+
+  const auto& half_edges_from_start = list_it->second;
+  for (EditorID half_edge_id : half_edges_from_start)
+  {
+    const EditorHalfEdge& hedge    = this->get_object<EditorHalfEdge>(half_edge_id);
+    const EditorHalfEdge& twin     = this->get_object<EditorHalfEdge>(hedge.twin);
+    const EditorPoint&    point_to = this->get_object<EditorPoint>(twin.from);
+
+    // Check if it matches the end-point
+    if (point_to.coords == end)
+    {
+      return hedge.line;
+    }
+  }
+
+  return INVALID_EDITOR_ID;
+}
+
+//==================================================================================================
 // Answers exactly the same question as is_sector_within_sector and picks the midpoints in exactly
 // the same way, but decides each one differently. Instead of summing up the angles it shoots a ray
 // to the left from the midpoint and counts how many edges of sector2 it crosses - an odd count
@@ -1132,7 +1166,16 @@ bool EditorLevel::can_move_points(const std::map<EID<EditorPoint>, EditorCoord>&
         continue;
       }
 
-      if (segments_intersect(segments[i].a, segments[i].b, segments[j].a, segments[j].b))
+      EditorCoord a1 = segments[i].a, b1 = segments[i].b, a2 = segments[j].a, b2 = segments[j].b;
+
+      // The lines match, therefore they can be merged. Report this as ok case
+      if ((a1 == a2 && b1 == b2) || (a1 == b2 && b1 == a2))
+      {
+        continue;
+      }
+
+      // Check the intersection at last
+      if (segments_intersect(a1, b1, a2, b2))
       {
         return false;
       }

@@ -84,6 +84,9 @@ struct EditorLevel
 
   bool can_create_line(EditorCoord start, EditorCoord end);
 
+  // Returns an ID of a line between these 2 points or an invalid id if there is no such line
+  EditorID get_line_between_points(EditorCoord start, EditorCoord end) const;
+
   bool create_line
   (
     EditorID line_id, EditorCoord start, EditorCoord end,
