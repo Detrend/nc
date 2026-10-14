@@ -505,11 +505,11 @@ bool Engine::init(const CmdArgs& cmd_args)
     CVars::fps_limit = 30.0f;
     CVars::invisibility = true;
   }
+#endif
   std::string res_scale_value;
   if (engine_utils::contains_pair_of_args(cmd_args, engine_utils::RES_SCALE_ARG, res_scale_value)) {
     CVars::resolution_scale = static_cast<f32>(std::atof(res_scale_value.c_str()));
   }
-#endif
 
   // init the modules here..
   #define INIT_MODULE(_module_class, ...)                     \
