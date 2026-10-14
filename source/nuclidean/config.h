@@ -7,7 +7,7 @@
 #if defined(NC_Debug) || defined(NC_Test) || defined(NC_Profiling)
 #define NC_TESTS      NC_CONFIG_ON
 #define NC_EDITOR     NC_CONFIG_ON
-#define NC_DEBUG_DRAW NC_CONFIG_OFF
+#define NC_DEBUG_DRAW NC_CONFIG_ON
 #define NC_IMGUI      NC_CONFIG_ON
 #define NC_ASSERTS    NC_CONFIG_ON
 #define NC_PROFILING  NC_CONFIG_ON
