@@ -71,6 +71,8 @@ workspace "Nuclidean"
     intrinsics "On"
     fbegin "architecture:x86_64"
         vectorextensions "AVX"
+    felse "architecture:AARCH64"
+        vectorextensions "NEON"
     fend()
     multiprocessorcompile "On"
     dpiawareness "High"

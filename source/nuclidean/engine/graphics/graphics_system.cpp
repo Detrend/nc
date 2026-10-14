@@ -156,7 +156,7 @@ std::optional<std::string> GraphicsSystem::try_create_opengl_context(SDL_GLprofi
   SDL_GL_ResetAttributes();
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, profile);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, major);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
