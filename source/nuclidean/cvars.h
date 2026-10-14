@@ -53,6 +53,11 @@ struct NC_TOKENJOIN3(cvar_definition_, _name, _t)                               
 static inline NC_TOKENJOIN3(cvar_definition_, _name, _t) NC_TOKENJOIN(_cvar_definition_, _name);                \
 
 
+// Cvar registration, guaranteed to stay mutable even in final builds
+#define NC_REGISTER_CVAR_MUTABLE(_type, _name, _default_value, _desc)                                           \
+NC_REGISTER_CVAR(_type, _name, _default_value, _desc)                                                           \
+
+
 // External cvar registration, has to be done inside of a .cpp
 #define NC_REGISTER_CVAR_EXTERNAL_CPP(_name, _desc)                                                             \
 NC_REGISTER_CVAR_EXTERNAL_CPP_IMPL(_name, _desc, __LINE__)                                                      \
@@ -69,6 +74,11 @@ struct NC_TOKENJOIN3(_cvar_range_definition, _name, _t)                         
 };                                                                                                              \
 static inline NC_TOKENJOIN3(_cvar_range_definition, _name, _t) NC_TOKENJOIN(cvar_range_definition_, _name);     \
 NC_REGISTER_CVAR(_type, _name, _default_value, _desc)                                                           \
+
+
+// Ranged cvar registration, guaranteed to stay mutable even in final builds
+#define NC_REGISTER_CVAR_RANGED_MUTABLE(_type, _name, _default_value, _range_min, _range_max, _desc)            \
+NC_REGISTER_CVAR_RANGED(_type, _name, _default_value, _range_min, _range_max, _desc)                            \
 
 
 // Ranged external cvar registration
@@ -104,11 +114,17 @@ NC_REGISTER_CVAR_EXTERNAL_CPP_IMPL(_name, _desc, _line)                         
 #define NC_REGISTER_CVAR(_type, _name, _default_value, _desc) \
 static constexpr _type _name{_default_value};
 
+#define NC_REGISTER_CVAR_MUTABLE(_type, _name, _default_value, _desc) \
+static inline _type _name{_default_value};
+
 #define NC_REGISTER_CVAR_EXTERNAL_CPP(...)
 #define NC_REGISTER_CVAR_EXTERNAL_CPP_IMPL(...)
 
 #define NC_REGISTER_CVAR_RANGED(_type, _name, _default_value, _range_min, _range_max, _desc) \
 NC_REGISTER_CVAR(_type, _name, _default_value, _desc)
+
+#define NC_REGISTER_CVAR_RANGED_MUTABLE(_type, _name, _default_value, _range_min, _range_max, _desc) \
+NC_REGISTER_CVAR_MUTABLE(_type, _name, _default_value, _desc)
 
 #define NC_REGISTER_CVAR_EXTERNAL_CPP_RANGED(...)
 #define NC_REGISTER_CVAR_EXTERNAL_CPP_RANGED_IMPL(...)
