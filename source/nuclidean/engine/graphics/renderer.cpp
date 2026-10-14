@@ -473,8 +473,8 @@ void Renderer::create_renderbuffers(ivec2 dims)
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_g_depth_stencil);
 
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    nc_warn("G-buffer not complete.");
-
+    nc_warn("G-buffer not complete. (status: {:x})", glCheckFramebufferStatus(GL_FRAMEBUFFER));
+  
   if (CVars::resolution_scale != 1.0f) {
     glGenFramebuffers(1, &m_lowres_framebuff);
     glBindFramebuffer(GL_FRAMEBUFFER, m_lowres_framebuff);
@@ -490,7 +490,7 @@ void Renderer::create_renderbuffers(ivec2 dims)
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_lowres_z_stencil);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-      nc_warn("Loweres-buffer not complete.");
+      nc_warn("Loweres-buffer not complete. (status: {:x})", glCheckFramebufferStatus(GL_FRAMEBUFFER));
   }
   else {
     nc_assert(m_lowres_framebuff  == 0);
