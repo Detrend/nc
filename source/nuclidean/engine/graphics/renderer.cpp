@@ -1040,8 +1040,8 @@ void Renderer::render_entities(const CameraData& camera) const
 
         const vec3 pivot_offset(0.0f, t_height * height_move, 0.0f);
         const vec3 scale(
-          t_width  * appearance.scale * BILLBOARD_TEXTURE_SCALE,
-          t_height * appearance.scale * BILLBOARD_TEXTURE_SCALE,
+          t_width  * appearance.scale * 2.0f * BILLBOARD_TEXTURE_SCALE,
+          t_height * appearance.scale * 2.0f * BILLBOARD_TEXTURE_SCALE,
           1.0f
         );
 

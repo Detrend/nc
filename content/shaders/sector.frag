@@ -37,7 +37,7 @@ layout(location = 3) uniform vec2 level_atlas_size;
 layout(location = 5) uniform uint sector_id;
 layout(location = 6) uniform uint matrix_id;
 
-#define PIXELS_PER_M 48
+#define PIXELS_PER_M 12 //48
 
 layout(std430, binding = 0) buffer texture_buffer {
     TextureData textures[];
