@@ -284,7 +284,7 @@ bool GraphicsSystem::init()
   {
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-    (&debug_helpers::gl_debug_message, nullptr);
+    glDebugMessageCallback(&debug_helpers::gl_debug_message, nullptr);
   }
 #endif
 
