@@ -12,6 +12,7 @@
 #include<deque>
 #include<unordered_map>
 #include<unordered_set>
+#include<source_location>
 
 namespace nc
 {
@@ -35,7 +36,7 @@ namespace nc
     void free([[maybe_unused]] void* const ptr);
 
     struct Scope {
-      Scope(ScratchAllocator* const the_allocator,const cstr& the_debug_name);
+      Scope(ScratchAllocator* const the_allocator, const cstr& the_debug_name);
       Scope(const Scope&) = delete;
       ~Scope();
 
@@ -49,6 +50,7 @@ namespace nc
 
 
     Scope create_scope(const cstr& debug_name) { return Scope(this, debug_name); }
+    Scope create_scope(const std::source_location location = std::source_location::current()) { return create_scope(location.function_name()); }
 
     bool is_empty() const { return bump_ptr == data.get(); }
     size_t get_remaining_capacity() const { return (data.get() + size) - bump_ptr; }
