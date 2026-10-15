@@ -148,6 +148,9 @@ TextureManager& TextureManager::get()
 //==============================================================================
 void TextureManager::load_directory(ResLifetime lifetime, const std::string& path)
 {
+  auto _scratch_scope = ScratchAllocator::get().create_scope();
+  LoadContext ctx; // scratch-allocated stuff lives hear
+
   for (const auto& entry : std::filesystem::recursive_directory_iterator(path))
   {
     const std::filesystem::path& entry_path = entry.path();
@@ -162,7 +165,7 @@ void TextureManager::load_directory(ResLifetime lifetime, const std::string& pat
       if (stem.ends_with("_normal") || stem.ends_with("_specular") || stem.ends_with("_emissive"))
         continue;
 
-      load_texture(entry_path);
+      load_texture(entry_path, ctx);
     }
     // not only cube maps have .hdr extension, but for now we are using HDR textures only for cube maps
     else if (extension == ".hdr")
@@ -171,7 +174,7 @@ void TextureManager::load_directory(ResLifetime lifetime, const std::string& pat
     }
   }
 
-  finish_load(lifetime);
+  finish_load(lifetime, ctx);
 }
 
 //==============================================================================
@@ -313,12 +316,12 @@ static constexpr u32 ATLAS_MAX_MIP_LEVEL = 4;
 static constexpr u32 ATLAS_GUTTER = 1u << ATLAS_MAX_MIP_LEVEL;
 
 //==============================================================================
-static std::vector<unsigned char> pad_with_edge_extend(
+static scratch_vector<unsigned char> pad_with_edge_extend(
   const unsigned char* source, int width, int height, u32 channels, u32 gutter)
 {
   const u32 padded_width  = cast<u32>(width)  + gutter * 2;
   const u32 padded_height = cast<u32>(height) + gutter * 2;
-  std::vector<unsigned char> padded(cast<size_t>(padded_width) * padded_height * channels);
+  scratch_vector<unsigned char> padded(cast<size_t>(padded_width) * padded_height * channels);
 
   for (u32 y = 0; y < padded_height; ++y)
   {
@@ -337,7 +340,7 @@ static std::vector<unsigned char> pad_with_edge_extend(
 }
 
 //==============================================================================
-void TextureManager::load_texture(const std::filesystem::path& path)
+void TextureManager::load_texture(const std::filesystem::path& path, LoadContext& ctx)
 {
   // TODO: use error texture when loading fails
 
@@ -396,16 +399,16 @@ void TextureManager::load_texture(const std::filesystem::path& path)
     return;
   }
 
-  m_load_rects.push_back(stbrp_rect
+  ctx.load_rects.push_back(stbrp_rect
   {
-    .id = cast<int>(m_load_rects.size()),
+    .id = cast<int>(ctx.load_rects.size()),
     .w = width  + cast<int>(ATLAS_GUTTER) * 2,
     .h = height + cast<int>(ATLAS_GUTTER) * 2,
     .x = 0,
     .y = 0,
     .was_packed = 0,
   });
-  m_load_data.push_back(LoadData
+  ctx.load_data.push_back(LoadData
   {
     .width = width,
     .height = height,
@@ -447,7 +450,7 @@ void TextureManager::load_equirectangular_map(const std::string& path, ResLifeti
 }
 
 //==============================================================================
-void TextureManager::push_error_texture_load()
+void TextureManager::push_error_texture_load(LoadContext& ctx)
 {
   constexpr u32 channels = 3;
   constexpr u32 size     = ERROR_TEXTURE_ATLAS_SIZE;
@@ -466,16 +469,16 @@ void TextureManager::push_error_texture_load()
     }
   }
 
-  m_load_rects.push_back(stbrp_rect
+  ctx.load_rects.push_back(stbrp_rect
   {
-    .id = cast<int>(m_load_rects.size()),
+    .id = cast<int>(ctx.load_rects.size()),
     .w  = cast<int>(size) + cast<int>(ATLAS_GUTTER) * 2,
     .h  = cast<int>(size) + cast<int>(ATLAS_GUTTER) * 2,
     .x  = 0,
     .y  = 0,
     .was_packed = 0,
   });
-  m_load_data.push_back(LoadData
+  ctx.load_data.push_back(LoadData
   {
     .width             = cast<int>(size),
     .height            = cast<int>(size),
@@ -492,14 +495,14 @@ void TextureManager::push_error_texture_load()
 }
 
 //==============================================================================
-void TextureManager::finish_load(ResLifetime lifetime)
+void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
 {
   static constexpr u16 DEFAULT_LOAD_TARGET_SIZE = 256;
 
   nc_assert(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
 
   if (lifetime == ResLifetime::Game)
-    push_error_texture_load();
+    push_error_texture_load(ctx);
 
   int target_width = DEFAULT_LOAD_TARGET_SIZE;
   int target_height = DEFAULT_LOAD_TARGET_SIZE;
@@ -507,13 +510,13 @@ void TextureManager::finish_load(ResLifetime lifetime)
   while (true)
   {
     stbrp_context context;
-    std::vector<stbrp_node> nodes(target_width);
+    scratch_vector<stbrp_node> nodes(target_width);
 
     stbrp_init_target(&context, target_width, target_height, nodes.data(), cast<int>(nodes.size()));
-    stbrp_pack_rects(&context, m_load_rects.data(), cast<int>(m_load_rects.size()));
+    stbrp_pack_rects(&context, ctx.load_rects.data(), cast<int>(ctx.load_rects.size()));
 
     bool all_packed = true;
-    for (const auto& rect : m_load_rects)
+    for (const auto& rect : ctx.load_rects)
     {
       if (rect.was_packed == 0)
       {
@@ -554,12 +557,13 @@ void TextureManager::finish_load(ResLifetime lifetime)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    for (u32 i = 0; i < m_load_rects.size(); ++i)
+    for (u32 i = 0; i < ctx.load_rects.size(); ++i)
     {
-      const auto& rect = m_load_rects[i];
-      const auto& load_data = m_load_data[i];
+      auto _scope = ScratchAllocator::get().create_scope("diffuse"); //free the padded data once finished
+      const auto& rect = ctx.load_rects[i];
+      const auto& load_data = ctx.load_data[rect.id];
 
-      const std::vector<unsigned char> padded = pad_with_edge_extend(
+      const scratch_vector<unsigned char> padded = pad_with_edge_extend(
         load_data.diffuse_data, load_data.width, load_data.height,
         cast<u32>(load_data.diffuse_channels), ATLAS_GUTTER);
 
@@ -606,25 +610,27 @@ void TextureManager::finish_load(ResLifetime lifetime)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, ATLAS_MAX_MIP_LEVEL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    std::vector<unsigned char> identity(cast<size_t>(target_width * target_height * 3));
-    for (size_t texel = 0; texel < identity.size(); texel += 3)
     {
-      identity[texel]     = 128;
-      identity[texel + 1] = 128;
-      identity[texel + 2] = 255;
+      std::vector<unsigned char> identity(cast<size_t>(target_width* target_height * 3)); // too big for scratch :(
+      for (size_t texel = 0; texel < identity.size(); texel += 3)
+      {
+        identity[texel] = 128;
+        identity[texel + 1] = 128;
+        identity[texel + 2] = 255;
+      }
+      glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, target_width, target_height, GL_RGB, GL_UNSIGNED_BYTE, identity.data());
     }
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, target_width, target_height, GL_RGB, GL_UNSIGNED_BYTE, identity.data());
 
-    for (u32 i = 0; i < m_load_rects.size(); ++i)
+    for (u32 i = 0; i < ctx.load_rects.size(); ++i)
     {
-      const auto& rect = m_load_rects[i];
-      const auto& load_data = m_load_data[i];
+      auto _scope = ScratchAllocator::get().create_scope("normal"); //free the padded data once finished
+      const auto& rect = ctx.load_rects[i];
+      const auto& load_data = ctx.load_data[rect.id];
 
       if (load_data.normal_data == nullptr)
         continue;
 
-      const std::vector<unsigned char> padded = pad_with_edge_extend(
+      const scratch_vector<unsigned char> padded = pad_with_edge_extend(
         load_data.normal_data, load_data.width, load_data.height,
         cast<u32>(load_data.normal_channels), ATLAS_GUTTER);
 
@@ -656,18 +662,21 @@ void TextureManager::finish_load(ResLifetime lifetime)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    const std::vector<unsigned char> zero(cast<size_t>(target_width * target_height), 0);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, target_width, target_height, GL_RED, GL_UNSIGNED_BYTE, zero.data());
-
-    for (u32 i = 0; i < m_load_rects.size(); ++i)
     {
-      const auto& rect = m_load_rects[i];
-      const auto& load_data = m_load_data[i];
+      const std::vector<unsigned char> zero(cast<size_t>(target_width* target_height), 0);
+      glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, target_width, target_height, GL_RED, GL_UNSIGNED_BYTE, zero.data());
+    }
+
+    for (u32 i = 0; i < ctx.load_rects.size(); ++i)
+    {
+      auto _scope = ScratchAllocator::get().create_scope("specular"); //free the padded data once finished
+      const auto& rect = ctx.load_rects[i];
+      const auto& load_data = ctx.load_data[rect.id];
 
       if (load_data.specular_data == nullptr)
         continue;
 
-      const std::vector<unsigned char> padded = pad_with_edge_extend(
+      const scratch_vector<unsigned char> padded = pad_with_edge_extend(
         load_data.specular_data, load_data.width, load_data.height,
         cast<u32>(load_data.specular_channels), ATLAS_GUTTER);
 
@@ -698,15 +707,16 @@ void TextureManager::finish_load(ResLifetime lifetime)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    for (u32 i = 0; i < m_load_rects.size(); ++i)
+    for (u32 i = 0; i < ctx.load_rects.size(); ++i)
     {
-      const auto& rect = m_load_rects[i];
-      const auto& load_data = m_load_data[i];
+      auto _scope = ScratchAllocator::get().create_scope("emissive"); //free the padded data once finished
+      const auto& rect = ctx.load_rects[i];
+      const auto& load_data = ctx.load_data[rect.id];
 
       if (load_data.emissive_data == nullptr)
         continue;
 
-      const std::vector<unsigned char> padded = pad_with_edge_extend(
+      const scratch_vector<unsigned char> padded = pad_with_edge_extend(
         load_data.emissive_data, load_data.width, load_data.height,
         cast<u32>(load_data.emissive_channels), ATLAS_GUTTER);
 
@@ -725,8 +735,8 @@ void TextureManager::finish_load(ResLifetime lifetime)
     }
   }
 
-  m_load_rects.clear();
-  m_load_data.clear();
+  ctx.load_rects.clear();
+  ctx.load_data.clear();
 }
 
 }

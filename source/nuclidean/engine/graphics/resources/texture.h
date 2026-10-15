@@ -8,6 +8,7 @@
 #include <engine/graphics/gl_types.h>
 #include <engine/graphics/resources/res_lifetime.h>
 #include <engine/graphics/resources/texture_id.h>
+#include <memory.h>
 
 #include <filesystem>
 #include <string>
@@ -113,21 +114,34 @@ private:
 
   TextureManager();
 
+  /** Scratch-allocated temporary data used during the texture loading process */
+  struct LoadContext
+  {
+      /**
+       * During a load operation, each loaded texture's width and height are added here to be processed by stb_rect_pack
+       * in TextureManager::finish_load.
+       */
+      std::vector<stbrp_rect> load_rects;
+      // Stores pixel data and metadata for textures which are currently being loaded.
+      std::vector<LoadData>   load_data;
+  };
+
   TextureAtlasBundle& get_atlas_bundle_mut(ResLifetime lifetime);
   EquirectangularMapMap& get_equirectangular_maps(ResLifetime lifetime);
   const EquirectangularMapMap& get_equirectangular_maps(ResLifetime lifetime) const;
-  void push_error_texture_load();
+  void push_error_texture_load(LoadContext& ctx);
 
   // Get asset name based on it's path.
   std::string get_name(const std::string& path) const;
+
   /**
    * Loads texture from the file. After loading all textures of a specified lifetime, you must call
    * TextureManager::finish_load which will actually load the textures.
    */
-  void load_texture(const std::filesystem::path& path);
+  void load_texture(const std::filesystem::path& path, LoadContext &ctx);
   void load_equirectangular_map(const std::string& path, ResLifetime lifetime);
   // Finishes loading of multiple textures of a specified lifetime. Creates a texture atlas.
-  void finish_load(ResLifetime lifetime);
+  void finish_load(ResLifetime lifetime, LoadContext& ctx);
 
   TextureAtlasBundle m_game_atlas_bundle;
   TextureAtlasBundle m_level_atlas_bundle;
@@ -137,13 +151,6 @@ private:
 
   TextureHandle m_error_texture_handle;
 
-  /**
-   * During a load operation, each loaded texture's width and height are added here to be processed by stb_rect_pack
-   * in TextureManager::finish_load.
-   */
-  std::vector<stbrp_rect> m_load_rects;
-  // Stores pixel data and metadata for textures which are currently being loaded.
-  std::vector<LoadData>   m_load_data;
 
   // Holds the pixel data and properties of a single image which is currently being loaded from disk.
   struct LoadData
