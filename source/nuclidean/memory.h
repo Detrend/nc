@@ -3,6 +3,7 @@
 #include<config.h>
 
 #include<token.h>
+#include<functional.h>
 
 #include<memory>
 
@@ -25,24 +26,31 @@ namespace nc
   {
     static ScratchAllocator& get();
 
+    using uchar = unsigned char;
 
-    ScratchAllocator(std::unique_ptr<unsigned char[]>&& the_data, const size_t the_size);
+    ScratchAllocator(std::unique_ptr<uchar[]>&& the_data, const size_t the_size);
 
-    ScratchAllocator(const size_t the_size) : ScratchAllocator(std::make_unique<unsigned char[]>(the_size), the_size) {}
+    ScratchAllocator(const size_t the_size) : ScratchAllocator(std::make_unique<uchar[]>(the_size), the_size) {}
 
 
     void* allocate(const size_t size_to_alloc, const size_t alignment);
 
     void free([[maybe_unused]] void* const ptr);
 
+    using memcopy_callback_t = FunctionReference<void(void* dst, void* src, size_t size)>;
+    void* reallocate(void* const ptr, const size_t old_size, const size_t new_size, const size_t alignment, memcopy_callback_t memcopy_callback); // TODO: implement this
+
     struct Scope {
-      Scope(ScratchAllocator* const the_allocator, const cstr& the_debug_name);
+      Scope(ScratchAllocator* const the_allocator, const cstr& the_debug_name, std::unique_ptr<uchar[]> &&new_data=nullptr, size_t new_size = 0);
+      Scope(Scope&&) = delete;
       Scope(const Scope&) = delete;
       ~Scope();
 
     private:
       ScratchAllocator* allocator;
-      unsigned char* checkpoint;
+      uchar* checkpoint;
+      std::unique_ptr<uchar[]> data_checkpoint;
+      size_t size_checkpoint;
 #if NC_SCRATCH_ALLOCATOR_CHECKS
       size_t scope_id;
 #endif
@@ -50,24 +58,29 @@ namespace nc
 
 
     Scope create_scope(const cstr& debug_name) { return Scope(this, debug_name); }
+    Scope create_scope(const cstr& debug_name, const size_t new_size) { return Scope(this, debug_name, std::make_unique<uchar[]>(new_size), new_size); }
     Scope create_scope(const std::source_location location = std::source_location::current()) { return create_scope(location.function_name()); }
 
     bool is_empty() const { return bump_ptr == data.get(); }
     size_t get_remaining_capacity() const { return (data.get() + size) - bump_ptr; }
     size_t get_total_capacity() const { return size; }
-    bool is_owner_of(void* const ptr) const;
+#if NC_SCRATCH_ALLOCATOR_CHECKS
+    bool is_owner_of(size_t scope_id, void* const ptr) const;
+#endif
 
   private:
-    std::unique_ptr<unsigned char[]> data;
+    std::unique_ptr<uchar[]> data;
     size_t size;
-    unsigned char* bump_ptr;
+    uchar* bump_ptr;
 
 #if NC_SCRATCH_ALLOCATOR_CHECKS
     static constexpr size_t INVALID_SCOPE_ID = ~static_cast<size_t>(0);
     size_t current_top_scope = INVALID_SCOPE_ID;
     struct scope_info_t {
       cstr            scope_name;
-      unsigned char*  scope_start;
+      uchar*          scope_start;
+      uchar*          allocator_data;
+      size_t          allocator_size;
       size_t          allocations_count;
     };
     std::vector<scope_info_t> scopes_debug;
@@ -180,6 +193,10 @@ namespace nc
     std::format_to(std::back_inserter(ret), fmt, std::forward<Args>(args)...);
     return ret;
   }
+
+
+  static inline constexpr size_t operator ""_kb(const unsigned long long int num) { return static_cast<size_t>(num * 1024u); }
+  static inline constexpr size_t operator ""_mb(const unsigned long long int num) { return static_cast<size_t>(num * 1024_kb); }
 
 }/// namespace nc
 

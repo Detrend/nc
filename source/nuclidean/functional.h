@@ -9,7 +9,22 @@
 
 
 namespace nc {
-  
+
+  template<typename T>
+  struct EmptyFunctionHelper {
+    static_assert(sizeof(EmptyFunctionHelper) < 0, "Instantiating EmptyFunctionHelper with invalid function signature!");
+  };
+  template<typename TRet, typename... TArgs>
+  struct EmptyFunctionHelper<TRet(TArgs...)> {
+    using ptr_t = TRet(*)(TArgs...);
+    static inline constexpr ptr_t value = [](TArgs...) -> TRet { TRet ret; return ret; };
+  };
+  template<typename... TArgs>
+  struct EmptyFunctionHelper<void(TArgs...)> {
+    using ptr_t = void(*)(TArgs...);
+    static inline constexpr ptr_t value = [](TArgs...) -> void{ };
+  };
+
   // Reference to a lambda without ownership semantics
   template<typename TSignature>
   struct FunctionReference
@@ -21,25 +36,33 @@ namespace nc {
   struct FunctionReference<TRet(TArgs...)>
   {
   private:
-    using wrapper_function_t = TRet(*)(const void* const capture, TArgs...);
+    using wrapper_function_t = TRet(const void* const capture, TArgs...);
+    static inline constexpr wrapper_function_t* EMPTY_FUNCTION = EmptyFunctionHelper<wrapper_function_t>::value;
   public:
 
     template<typename TLambda>
     FunctionReference(const TLambda& lambda)
       : lambda(static_cast<const void*>(&lambda))
-      , call_wrapper(static_cast<wrapper_function_t>([](const void* const capture, TArgs... args)->TRet {
+      , call_wrapper(static_cast<wrapper_function_t*>([](const void* const capture, TArgs... args)->TRet {
           return (*static_cast<const TLambda*>(capture))(std::forward<TArgs>(args)...);
         }))
     {}
+
+    FunctionReference()
+      : lambda(nullptr)
+      , call_wrapper(EMPTY_FUNCTION)
+    { }
 
     TRet operator()(TArgs... args)
     {
       return call_wrapper(lambda, std::forward<TArgs>(args)...);
     }
 
+    operator bool()const { return call_wrapper != EMPTY_FUNCTION; }
+
   private:
     const void* lambda;
-    wrapper_function_t call_wrapper;
+    wrapper_function_t* call_wrapper;
   };
 
   // Function invoked on each element of some collection by iterate_*() functions.

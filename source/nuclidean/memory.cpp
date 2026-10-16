@@ -4,13 +4,38 @@
 
 namespace nc {
   
-  static constexpr size_t DEFAULT_SCRATCH_SIZE = static_cast<size_t>(2) * 1024 * 1024; // 2MB
+  static constexpr size_t DEFAULT_SCRATCH_SIZE = static_cast<size_t>(4) * 1024 * 1024; // 4MB
 
   static ScratchAllocator ScratchAllocatorInstance (DEFAULT_SCRATCH_SIZE);
 
   ScratchAllocator& ScratchAllocator::get() { return ScratchAllocatorInstance; }
 
-  ScratchAllocator::ScratchAllocator(std::unique_ptr<unsigned char[]>&& the_data, const size_t the_size)
+
+  static int ptr_compare(void* const a, void* const b)
+  {
+    const uintptr_t ai = reinterpret_cast<uintptr_t>(a);
+    const uintptr_t bi = reinterpret_cast<uintptr_t>(b);
+    return ai < bi ? -1 : (ai > bi ? 1 : 0);
+  }
+  static void* ptr_safe_add(void* const p, ptrdiff_t to_add, void* const lower_bound, void* const upper_bound)
+  {
+    using uchar = unsigned char;
+    if (to_add >= 0) {
+      if ((static_cast<uchar*>(upper_bound) - static_cast<uchar*>(p)) <= to_add) {
+        return nullptr;
+      }
+    }
+    else {
+      if ((static_cast<uchar*>(lower_bound) - static_cast<uchar*>(p)) > to_add) {
+        return nullptr;
+      }
+    }
+    return static_cast<void*>(static_cast<uchar*>(p) + to_add);
+  }
+  
+
+
+  ScratchAllocator::ScratchAllocator(std::unique_ptr<uchar[]>&& the_data, const size_t the_size)
     : data(std::move(the_data))
     , size(the_size)
     , bump_ptr(data.get())
@@ -18,16 +43,18 @@ namespace nc {
 
 
   void* nc::ScratchAllocator::allocate(const size_t size_to_alloc, const size_t alignment) {
+#if NC_SCRATCH_ALLOCATOR_CHECKS
+    nc_expect(scopes_debug.size() > 0);
+    nc_expect(current_top_scope == (scopes_debug.size() - 1));
+    nc_expect(scopes_debug[current_top_scope].scope_start <= bump_ptr);
+#endif
     void* ret = bump_ptr;
     size_t remaining_space = get_remaining_capacity();
     if (std::align(alignment, size_to_alloc, ret, remaining_space)) {
 #if NC_SCRATCH_ALLOCATOR_CHECKS
-      nc_expect(scopes_debug.size() > 0);
-      nc_expect(current_top_scope == (scopes_debug.size() - 1));
-      nc_expect(scopes_debug[current_top_scope].scope_start <= bump_ptr);
       ++scopes_debug[current_top_scope].allocations_count;
 #endif
-      bump_ptr = static_cast<unsigned char*>(ret) + size_to_alloc;
+      bump_ptr = static_cast<uchar*>(ret) + size_to_alloc;
       return ret;
     }
 
@@ -39,16 +66,50 @@ namespace nc {
     return nullptr;
   }
 
+  void* ScratchAllocator::reallocate(void* const ptr, const size_t old_size, const size_t new_size, const size_t alignment, memcopy_callback_t memcopy_callback)
+  {
+    void* const current_last_allocation = ptr_safe_add(bump_ptr, old_size, data.get(), data.get() + size);
+    if (ptr == current_last_allocation) {
+      // We are reallocating the very last allocation - leave it where it is and just reserve additional space for it
+      this->bump_ptr = static_cast<uchar*>(current_last_allocation);
+      void* ret = bump_ptr;
+      size_t remaining_space = get_remaining_capacity();
+      if (std::align(alignment, new_size, ret, remaining_space)) {
+        bump_ptr = static_cast<uchar*>(ret) + new_size;
+        return ret;
+      }
+#if NC_SCRATCH_ALLOCATOR_CHECKS
+      nc_crit("[ScratchAllocator] Failed to fast-reallocate {}->{}B with alignment {}B! (Only {}B is available), at scope `{}`", old_size, new_size, alignment, get_remaining_capacity(), get_current_scope_path_string());
+#else
+      nc_crit("[ScratchAllocator] Failed to fast-reallocate {}->{}B with alignment {}B! (Only {}B is available)", old_size, new_size, alignment, get_remaining_capacity());
+#endif
+      return nullptr;
+    }
+    void* const ret = allocate(new_size, alignment);
+    if (!ret) {
+#if NC_SCRATCH_ALLOCATOR_CHECKS
+      nc_crit("[ScratchAllocator] Failed to slow-reallocate {}->{}B with alignment {}B! (Only {}B is available), at scope `{}`", old_size, new_size, alignment, get_remaining_capacity(), get_current_scope_path_string());
+#else
+      nc_crit("[ScratchAllocator] Failed to slow-reallocate {}->{}B with alignment {}B! (Only {}B is available)", old_size, new_size, alignment, get_remaining_capacity());
+#endif
+    }
+    nc_assert(ptr_compare(ptr, ret) != 0);
+    if (memcopy_callback)
+      memcopy_callback(ret, ptr, std::min<size_t>(old_size, new_size));
+    else
+      std::memcpy(ret, ptr, std::min<size_t>(old_size, new_size));
+    return nullptr;
+  }
 
 
   void ScratchAllocator::free([[maybe_unused]] void* const ptr)
   {
     nc_assert(ptr);
-    nc_assert(this->is_owner_of(ptr));
 #if NC_SCRATCH_ALLOCATOR_CHECKS
     nc_expect(scopes_debug.size() > 0);
     nc_expect(current_top_scope == (scopes_debug.size() - 1));
     const size_t used_scope = find_scope_for_allocation(ptr);
+    nc_assert(this->is_owner_of(used_scope, ptr));
     nc_expect(used_scope != INVALID_SCOPE_ID);
     nc_expect(used_scope <= current_top_scope);
     nc_expect(scopes_debug[used_scope].allocations_count > 0);
@@ -56,11 +117,11 @@ namespace nc {
 #endif
   }
 
+
 #if NC_SCRATCH_ALLOCATOR_CHECKS
   size_t ScratchAllocator::find_scope_for_allocation(void* const allocation) const
   {
     nc_assert(allocation);
-    nc_assert(this->is_owner_of(allocation));
     for (size_t scope_idx = scopes_debug.size(); scope_idx --> 0; ) { // Iterate backwards because we are more likely to search for an allocation that's near the top
       // Iterate over all scopes and check if they're the one where this allocation resides
       if ((scopes_debug[scope_idx].scope_start <= allocation) && ((scopes_debug.size() == (scope_idx + 1)) || (allocation < scopes_debug[scope_idx + 1].scope_start))) {
@@ -80,44 +141,68 @@ namespace nc {
     }
     return ret;
   }
-#endif
 
   // Does given pointer point into the memory owned by this allocator
-  bool ScratchAllocator::is_owner_of(void* const ptr) const
+  bool ScratchAllocator::is_owner_of(size_t scope_id, void* const ptr) const
   {
     if (!ptr) return false;
 
-    const uintptr_t begin = reinterpret_cast<uintptr_t>(data.get());
-    const uintptr_t end = reinterpret_cast<uintptr_t>(data.get() + size);
-    const uintptr_t p = reinterpret_cast<uintptr_t>(ptr);
-    return (begin <= p) && (p < end);
+    const auto& scope = scopes_debug[scope_id];
+
+    if ((ptr_compare(scope.allocator_data, ptr) <= 0) && (ptr_compare(ptr, scope.allocator_data + scope.allocator_size) < 0)) {
+      // Pointer definitely points to the block of memory that this scope allocates from
+      if (ptr_compare(ptr, scope.scope_start) < 0) {
+        return false; // Pointer points somewhere before start of this scope
+      }
+      if ((scopes_debug.size() > (scope_id + 1)) && (scopes_debug[scope_id + 1].allocator_data == scope.allocator_data)) {
+        // There is another scope after this one, allocating from this same block of memory
+        if (ptr_compare(scopes_debug[scope_id + 1].scope_start, ptr) <= 0) {
+          return false; // Pointer points to this next scope or some other after it
+        }
+      }
+      return true; // Pointer points to the memory block used by this scope - not before this scope's checkpoint and not after some succeeding scope's checkpoint -> it points into this scope's memory
+    }
+    return false; // Pointer points to some totally different memory block
   }
+#endif
 
 
 
-  ScratchAllocator::Scope::Scope(ScratchAllocator* const the_allocator, [[maybe_unused]] const cstr& the_debug_name)
-    : allocator(the_allocator), checkpoint(the_allocator->bump_ptr)
+  ScratchAllocator::Scope::Scope(ScratchAllocator* const the_allocator, [[maybe_unused]] const cstr& the_debug_name, std::unique_ptr<uchar[]>&& new_data/*= nullptr */, const size_t new_size/*= 0*/)
+    : allocator(the_allocator), checkpoint(the_allocator->bump_ptr), data_checkpoint(nullptr)
 
 #if NC_SCRATCH_ALLOCATOR_CHECKS
     , scope_id(++the_allocator->current_top_scope)
 #endif
   {
+    if (new_data) {
+      this->data_checkpoint = std::move(allocator->data);
+      this->size_checkpoint = allocator->size;
+      allocator->data = std::move(new_data);
+      allocator->size = new_size;
+      allocator->bump_ptr = allocator->data.get();
+    }
 #if NC_SCRATCH_ALLOCATOR_CHECKS
     nc_expect(allocator->scopes_debug.size() == scope_id);
-    allocator->scopes_debug.emplace_back(scope_info_t{ .scope_name = the_debug_name, .scope_start = checkpoint, .allocations_count = 0 });
+    allocator->scopes_debug.emplace_back(scope_info_t{ .scope_name = the_debug_name, .scope_start = allocator->bump_ptr, .allocator_data = allocator->data.get(), .allocator_size = allocator->size, .allocations_count = 0});
 #endif
   }
 
 
   ScratchAllocator::Scope::~Scope() {
 #if NC_SCRATCH_ALLOCATOR_CHECKS
+    const auto& scope = allocator->scopes_debug[scope_id];
     nc_expect((allocator->scopes_debug.size() == (scope_id + 1)) && (scope_id == allocator->current_top_scope), "Destroying scope '{0}' at index {1} while current scope is '{2}'", allocator->scopes_debug[scope_id].scope_name, scope_id, allocator->get_current_scope_path_string());
-    nc_expect(allocator->scopes_debug[scope_id].scope_start == checkpoint); // If this doesn't hold, we got weird data corruption xD
-    nc_expect(allocator->scopes_debug[scope_id].allocations_count == 0, "Destroying scope '{0}' while it still has {1} unfreed allocations!, at scopes '{2}'", allocator->scopes_debug[scope_id].scope_name, allocator->scopes_debug[scope_id].allocations_count, allocator->get_current_scope_path_string()); // Scope must not be destroyed unless all of its objects have been freed
+    nc_expect(data_checkpoint || (scope.scope_start == checkpoint)); // If this doesn't hold, we got weird data corruption xD, only holds for scopes that didn't provide their own data block
+    nc_expect(scope.allocations_count == 0, "Destroying scope '{0}' while it still has {1} unfreed allocations!, at scopes '{2}'", allocator->scopes_debug[scope_id].scope_name, allocator->scopes_debug[scope_id].allocations_count, allocator->get_current_scope_path_string()); // Scope must not be destroyed unless all of its objects have been freed
     allocator->scopes_debug.pop_back();
     --allocator->current_top_scope;
 #endif
     allocator->bump_ptr = checkpoint;
+    if (data_checkpoint) {
+      allocator->data = std::move(data_checkpoint);
+      allocator->size = size_checkpoint;
+    }
   }
 
 
