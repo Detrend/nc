@@ -5,6 +5,7 @@
 #if NC_EDITOR
 
 #include <editor/editor_objects_render.h>
+#include <editor/editor_types.h>
 
 #include <math/lingebra.h>
 #include <math/utils.h>
@@ -50,6 +51,35 @@ static bool is_sector_inward(const std::vector<ivec2>& pts)
   }
 
   return is_zero(degs - 360.0f, 0.01f);
+}
+
+//==================================================================================================
+static void remove_outline_spikes(std::vector<EditorCoord>& pts)
+{
+  bool removed = true;
+  while (removed && pts.size() >= 3)
+  {
+    removed = false;
+    for (u64 idx = 0; idx < pts.size() && !removed; ++idx)
+    {
+      u64 prev = (idx + pts.size() - 1) % pts.size();
+      u64 next = (idx + 1) % pts.size();
+
+      if (pts[idx] == pts[next])
+      {
+        // The same point twice in a row, keep only one of them
+        pts.erase(pts.begin() + next);
+        removed = true;
+      }
+      else if (pts[prev] == pts[next])
+      {
+        // Tip of a spike, drop it together with the second copy of its base.
+        pts.erase(pts.begin() + max(idx, next));
+        pts.erase(pts.begin() + min(idx, next));
+        removed = true;
+      }
+    }
+  }
 }
 
 //==================================================================================================
@@ -375,12 +405,13 @@ void EditorSectorRenderData::recompute_lines()
 void EditorSectorRenderData::convexify_surface()
 {
   // First allocate it into a point list
-  std::vector<ivec2> points;
+  std::vector<EditorCoord> points;
   std::transform(this->walls.begin(), this->walls.end(), std::back_inserter(points), [](auto&& wall)
   {
     return wall.pt;
   });
 
+  remove_outline_spikes(points);
   nc_assert(is_sector_inward(points));
 
   // Generate indices
@@ -396,12 +427,13 @@ void EditorSectorRenderData::convexify_surface()
     std::vector<std::vector<u16>> hole_loops;
     for (const std::vector<EditorWall>& hole : this->holes)
     {
-      std::vector<ivec2> hole_points;
+      std::vector<EditorCoord> hole_points;
       std::transform(hole.begin(), hole.end(), std::back_inserter(hole_points), [](auto&& wall)
       {
         return wall.pt;
       });
 
+      remove_outline_spikes(hole_points);
       nc_assert(is_sector_inward(hole_points));
 
       std::vector<u16>& hole_loop = hole_loops.emplace_back(hole_points.size());
