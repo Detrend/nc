@@ -176,6 +176,16 @@ void ActionMovePoints::action_do(EditorLevel& level)
       right_data = old_data;
     };
 
+    // Check if there is a line between these 2 points first
+    EditorID possible_line = level.get_line_between_points(line.c1, line.c2);
+    if (possible_line != INVALID_EDITOR_ID)
+    {
+      // If there is a line then don't create other one, there can be only one line between
+      // two points. So we skip the creation, but then later we restore it back during the
+      // undo.
+      continue;
+    }
+
     // And then recreate it at a new position
     level.create_line(line.line_id, line.c1, line.c2, callback_created, callback_split);
   }
@@ -203,7 +213,10 @@ void ActionMovePoints::action_undo(EditorLevel& level)
       new_data = left_data;
     };
 
-    level.destroy_line(line_action.line_id, callback_destroyed, callback_merged);
+    if (level.try_get_object<EditorLine>(line_action.line_id))
+    {
+      level.destroy_line(line_action.line_id, callback_destroyed, callback_merged);
+    }
   }
 
   // Revert the operations in the reverse orders they were originally performed - creations
@@ -235,6 +248,9 @@ void ActionMovePoints::action_undo(EditorLevel& level)
       line_action.line_id, line_action.c1, line_action.c2, callback_created, callback_split
     );
   }
+
+  // Clear the undo steps after performing the undo. If we do the redo then we fill them again.
+  this->lines_to_undo.clear();
 }
 
 }
