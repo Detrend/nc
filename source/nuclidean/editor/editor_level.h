@@ -8,6 +8,8 @@
 #include <editor/editor_types.h>
 #include <editor/editor_objects.h>
 
+#include <stack_vector.h>
+
 #include <map>
 #include <unordered_map>
 #include <vector>
@@ -92,6 +94,14 @@ struct EditorLevel
   // Debug function for printing the current status of the level into a text.
   void dump_to_text();
 };
+
+void iterate_left_most_half_edges
+(
+  const EditorLevel&                    level,
+  EID<EditorHalfEdge>                   start_edge_id,
+  f32&                                  total_signed_angle_out,
+  StackVector<EID<EditorHalfEdge>, 32>& enclosed_edges_out
+);
 
 }
 

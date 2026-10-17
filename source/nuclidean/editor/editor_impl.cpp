@@ -25,6 +25,7 @@
 #include <memory>
 #include <map>
 #include <set>
+#include <algorithm> // std::ranges::find
 
 namespace nc
 {
@@ -71,6 +72,105 @@ static mat3 calc_view_matrix_impl(vec2 offset, f32 zoom, f32 aspect)
 }
 
 //==================================================================================================
+static void cut_holes_out_of_sector
+(
+  const EditorLevel&                    level,
+  const EditorSector&                   sector,
+  std::vector<std::vector<EditorWall>>& holes_out
+)
+{
+  if (sector.first_hole == INVALID_EDITOR_ID)
+  {
+    // No holes..
+    return;
+  }
+
+  // The holes are sectors of their own, we only need their outlines to cut them out of ours.
+  // Beware that the hole sectors can be connected together - sharing a point or a line.
+
+  // Algorithm: iterate the list of holes and for each one find an edge that is not shared between
+  // more holes. Then from this edge trace the left most edges until we return back to it. Make a
+  // hole out of all these edges and remember the IDs of holes within this enclosure to not return
+  // back to them again.
+  StackVector<EditorID, 16> holes_to_skip; // Skip these, already added into the list
+
+  EditorID hole_id = sector.first_hole;
+  do
+  {
+    EditorID curr_hole_id = hole_id;
+    const EditorSector& hole = level.get_object<EditorSector>(curr_hole_id);
+
+    hole_id = hole.next_hole;
+
+    // Check if the hole was not already added before with others that it was connected to
+    if (std::ranges::find(holes_to_skip, curr_hole_id) != holes_to_skip.end())
+    {
+      continue;
+    }
+
+    // Find a first line of the hole that is not shared with any other hole. If no such line
+    // exists then it means that the hole is completely enclosed in between other holes.
+    EditorID exclusive_half_edge_id = INVALID_EDITOR_ID; // Line that is part of only one sector
+    {
+      EditorID half_edge_id = hole.edge;
+      do
+      {
+        const EditorHalfEdge& half_edge = level.get_object<EditorHalfEdge>(half_edge_id);
+        const EditorHalfEdge& twin_edge = level.get_object<EditorHalfEdge>(half_edge.twin);
+
+        if (twin_edge.sector == INVALID_EDITOR_ID)
+        {
+          // No sector on the other side of the line! We found the right edge for the job!
+          exclusive_half_edge_id = half_edge.twin;
+          break;
+        }
+
+        half_edge_id = half_edge.next;
+      }
+      while (half_edge_id != hole.edge);
+    }
+
+    if (exclusive_half_edge_id == INVALID_EDITOR_ID)
+    {
+      // This means that the hole is surrounded by other holes from each side..
+      // None of it's edges will be part of the enclosure, so skip it.
+      continue;
+    }
+
+    // Start a left-most iteration from the edge, which will encircle the outer loop
+    f32 _;
+    StackVector<EditorID, 32> enclosure_edges;
+    iterate_left_most_half_edges(level, exclusive_half_edge_id, _, enclosure_edges);
+
+    // Now append the holes into the list
+    std::vector<EditorWall>& hole_walls = holes_out.emplace_back();
+    std::transform(enclosure_edges.rbegin(), enclosure_edges.rend(), std::back_inserter(hole_walls),
+      [&](EditorID half_edge_id) -> EditorWall
+      {
+        const EditorHalfEdge& half_edge = level.get_object<EditorHalfEdge>(half_edge_id);
+        const EditorPoint&    point     = level.get_object<EditorPoint>(half_edge.from);
+        return EditorWall{.pt = point.coords};
+      });
+
+    // And append new entries into the hole skip list
+    for (EditorID half_edge_id : enclosure_edges)
+    {
+      const EditorHalfEdge& half_edge = level.get_object<EditorHalfEdge>(half_edge_id);
+      const EditorHalfEdge& twin_edge = level.get_object<EditorHalfEdge>(half_edge.twin);
+
+      if (std::ranges::find(holes_to_skip, twin_edge.sector) == holes_to_skip.end())
+      {
+        holes_to_skip.push_back(twin_edge.sector);
+      }
+
+      // This has to hold, there should be no sector on the other side
+      nc_assert(half_edge.sector == INVALID_EDITOR_ID);
+    }
+  }
+  while (hole_id != sector.first_hole);
+}
+
+//==================================================================================================
 void EditorImpl::recompute_sector_render_data(const EditorSector& sector, EditorSectorRenderData& render_data)
 {
   // Iterate all edges of a sector and push its points into the list..
@@ -93,19 +193,9 @@ void EditorImpl::recompute_sector_render_data(const EditorSector& sector, Editor
 
   collect_walls(sector, render_data.walls);
 
-  // The holes are sectors of their own, we only need their outlines to cut them out of ours
+  // Recompute the holes
   render_data.holes.clear();
-  if (sector.first_hole != INVALID_EDITOR_ID)
-  {
-    EditorID hole_id = sector.first_hole;
-    do
-    {
-      const EditorSector& hole = level.get_object<EditorSector>(hole_id);
-      collect_walls(hole, render_data.holes.emplace_back());
-      hole_id = hole.next_hole;
-    }
-    while (hole_id != sector.first_hole);
-  }
+  cut_holes_out_of_sector(this->level, sector, render_data.holes);
 
   // Then recompute the render data
   render_data.recompute_render_data();
