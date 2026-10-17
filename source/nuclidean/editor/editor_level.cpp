@@ -1123,6 +1123,7 @@ bool EditorLevel::destroy_line
   nc_assert(is_zero(merged_angle - PI2, 0.1f));
 
   assign_loop_to_sector(*this, merged_loop, survivor_id);
+  this->get_object<EditorSector>(survivor_id).data = survivor_data;
 
   // Everything that was inside of the sector that just died is now inside of the merged one
   move_holes(*this, dead_id, survivor_id);
