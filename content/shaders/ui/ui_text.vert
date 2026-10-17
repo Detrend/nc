@@ -17,7 +17,7 @@ void main(void) {
 	gl_Position = transformationMatrix * vec4(position, 0.0, 1.0);
 
 	float texX = mod(float(character), float(width));
-    float texY = float(character) / float(width);
+    float texY = floor(float(character) / float(width));
 	
 	vec2 n_uv = a_uv;
 
