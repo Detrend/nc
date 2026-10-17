@@ -37,16 +37,14 @@ EditorID EditorLevel::new_id() const
 //==================================================================================================
 bool EditorLevel::get_point_on_coord(EditorCoord coord, EditorID& id_out)
 {
-  for (auto&[id, object] : objects)
+  auto it = coord_to_point.find(coord);
+  if (it == coord_to_point.end())
   {
-    if (EditorPoint* point = std::get_if<EditorPoint>(&object); point && point->coords == coord)
-    {
-      id_out = id;
-      return true;
-    }
+    return false;
   }
 
-  return false;
+  id_out = it->second;
+  return true;
 }
 
 //==================================================================================================
