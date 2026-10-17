@@ -96,6 +96,12 @@ struct EditorImpl
   void on_object_modified(EditorID  object_id, const EditorLine&, const EditorLine& line);
   void on_object_modified(EditorID  object_id, const EditorSector& old_state, const EditorSector& new_state);
   void on_object_modified(EditorID  object_id, const EditorPoint&, const EditorPoint& point);
+  void on_object_created(EditorID   object_id, const EditorHalfEdge& half_edge);
+  void on_object_destroyed(EditorID object_id, const EditorHalfEdge& half_edge);
+  void on_object_modified(EditorID  object_id, const EditorHalfEdge& old_state, const EditorHalfEdge& new_state);
+
+  // Marks the sector and the parent it is cut out of for the recomputation
+  void mark_sector_dirty(EditorID sector_id);
 
   void on_line_modified(EditorID line_id);
 

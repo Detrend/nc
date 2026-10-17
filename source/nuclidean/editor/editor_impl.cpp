@@ -274,6 +274,41 @@ void EditorImpl::on_object_modified(EditorID object_id, const EditorPoint&, cons
 }
 
 //==================================================================================================
+void EditorImpl::mark_sector_dirty(EditorID sector_id)
+{
+  if (sector_id == INVALID_EDITOR_ID)
+  {
+    return;
+  }
+
+  dirty_objects.insert(sector_id);
+
+  if (const EditorSector* sector = level.try_get_object<EditorSector>(sector_id))
+  {
+    dirty_objects.insert(sector->parent);
+  }
+}
+
+//==================================================================================================
+void EditorImpl::on_object_created(EditorID /*object_id*/, const EditorHalfEdge& half_edge)
+{
+  this->mark_sector_dirty(half_edge.sector);
+}
+
+//==================================================================================================
+void EditorImpl::on_object_destroyed(EditorID /*object_id*/, const EditorHalfEdge& half_edge)
+{
+  this->mark_sector_dirty(half_edge.sector);
+}
+
+//==================================================================================================
+void EditorImpl::on_object_modified(EditorID /*object_id*/, const EditorHalfEdge& old_state, const EditorHalfEdge& new_state)
+{
+  this->mark_sector_dirty(old_state.sector);
+  this->mark_sector_dirty(new_state.sector);
+}
+
+//==================================================================================================
 void EditorImpl::on_object_destroyed(EditorID object_id, const EditorSector& sector)
 {
   if (object_id == VOID_SECTOR_ID)
