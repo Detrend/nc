@@ -205,16 +205,23 @@ void ActionMovePoints::action_undo(EditorLevel& level)
     auto callback_merged = [&]
     (
       EditorID  left_id,  const EditorSectorData& left_data,
-      EditorID /*right_id*/, const EditorSectorData& /*right_data*/,
+      EditorID  right_id, const EditorSectorData& right_data,
       EditorID& new_id,   EditorSectorData&       new_data
     )
     {
-      new_id   = left_id;
-      new_data = left_data;
+      // Keep the sector that existed before the move, the other one was created by it. Recreating
+      // the original line below then splits it back with the original IDs.
+      bool right_existed_before = right_id == line_action.sector_id_to_create ||
+                                  right_id == line_action.other_sector_id_to_create;
+
+      new_id   = right_existed_before ? right_id   : left_id;
+      new_data = right_existed_before ? right_data : left_data;
     };
 
     if (level.try_get_object<EditorLine>(line_action.line_id))
     {
+      // This can happen if the new line was never created because it was merged with another line
+      // that had the exact same corner points.
       level.destroy_line(line_action.line_id, callback_destroyed, callback_merged);
     }
   }

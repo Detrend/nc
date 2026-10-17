@@ -704,7 +704,40 @@ bool EditorLevel::create_line
     EditorSectorData  new_data;
     EID<EditorSector> new_sector_id = INVALID_EDITOR_ID;
 
-    if (callback_created)
+    // When splitting, the previous sector keeps the left loop and the new one gets the right loop,
+    // unless the split callback says otherwise
+    StackVector<EID<EditorHalfEdge>, 32>* prev_sector_loop = &left_enclosed_edges;
+    StackVector<EID<EditorHalfEdge>, 32>* new_sector_loop  = &right_enclosed_edges;
+
+    if (did_sector_splitting && callback_split)
+    {
+      // The callback decides the IDs and data of both halves. Its left side is the one on the left
+      // of the line as it was given to us (the side of half_edge_a), no matter in which direction
+      // we walked it above.
+      EditorSector&     prev_sector = this->get_object<EditorSector>(previous_sector_id);
+      EID<EditorSector> side_a_id   = INVALID_EDITOR_ID;
+      EID<EditorSector> side_b_id   = INVALID_EDITOR_ID;
+      EditorSectorData  side_a_data, side_b_data;
+
+      callback_split(previous_sector_id, prev_sector.data, side_a_id, side_a_data, side_b_id, side_b_data);
+
+      // One of the halves has to keep the previous sector, it can not be renamed
+      nc_assert(side_a_id == previous_sector_id || side_b_id == previous_sector_id);
+      bool prev_on_side_a = side_a_id == previous_sector_id;
+
+      EID<EditorHalfEdge> edge_a = this->get_object<EditorLine>(line_id).half_edge_a;
+      bool side_a_is_left = std::find(left_enclosed_edges.begin(), left_enclosed_edges.end(), edge_a) != left_enclosed_edges.end();
+
+      if (prev_on_side_a != side_a_is_left)
+      {
+        std::swap(prev_sector_loop, new_sector_loop);
+      }
+
+      prev_sector.data = prev_on_side_a ? side_a_data : side_b_data;
+      new_sector_id    = prev_on_side_a ? side_b_id   : side_a_id;
+      new_data         = prev_on_side_a ? side_b_data : side_a_data;
+    }
+    else if (callback_created)
     {
       // Assign the ID from the callback
       callback_created(new_sector_id, new_data);
@@ -726,9 +759,9 @@ bool EditorLevel::create_line
     {
       nc_assert(is_zero(right_signed_angle - PI2, 0.1f)); // This must hold if it was a sector previously
 
-      // The left part of the line keeps the old sector, the right one gets the new one
-      assign_loop_to_sector(*this, left_enclosed_edges,  previous_sector_id);
-      assign_loop_to_sector(*this, right_enclosed_edges, new_sector_id     );
+      // One part of the line keeps the old sector, the other one gets the new one
+      assign_loop_to_sector(*this, *prev_sector_loop, previous_sector_id);
+      assign_loop_to_sector(*this, *new_sector_loop,  new_sector_id     );
 
       EditorSector& prev_sector = this->get_object<EditorSector>(previous_sector_id);
 
