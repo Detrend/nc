@@ -471,9 +471,11 @@ void GraphicsSystem::render()
     {
       editor->render();
     }
+    else
 #endif
-
-    get_engine().get_module<UserInterfaceSystem>().draw();
+    {
+      get_engine().get_module<UserInterfaceSystem>().draw();
+    }
   }
 
 #if NC_IMGUI

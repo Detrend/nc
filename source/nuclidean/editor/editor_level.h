@@ -13,25 +13,6 @@
 #include <vector>
 #include <functional>
 
-
-// The current plan:
-// We want to support the following editor operations:
-// - Create Line
-//   . Creates a line between two points
-//   . If this results in encircling of a sector then a sector is created
-//   . This can also split one sector into two
-//   . Or reorder holes
-// - Destroy Line
-//   . Removes a line
-//   . This can remove a sector
-// - Move Sector/Line/Points/Entity (s)
-//   . Moves a set of objects
-//   . This can have the same consequences as creating a line or destroying it
-// - Splice Edge
-//   . Adds additional point onto an edge, transforming it into 2 edges
-// - Contract Point
-//   . Removes a point and merges the 2 edges that were connected to it
-
 namespace nc
 {
 
@@ -51,7 +32,7 @@ struct EditorLevel
   ObjectMap           objects;
   PointToHalfEdgesMap point_to_half_edges;
   CoordToPointMap     coord_to_point;
-  mutable EditorID    next_free_id = 2;
+  mutable EditorID    next_free_id = 2; // MR says: this is a hack, rework later
 
   // Creates an empty level, which contains only the void sector
   EditorLevel();
