@@ -69,6 +69,7 @@ void EditorRenderer::render
 
   glDisable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   grid_rendering.use();
   grid_rendering.set_uniform(shaders::editor::lines::TRANSFORM, projection);
