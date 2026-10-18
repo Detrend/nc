@@ -45,11 +45,11 @@ constexpr color4 BRUSH_WALL_COL2           = colors::WHITE;
 constexpr f32    BRUSH_WALL_FLASH_INTERVAL = 0.5f;
 
 // Maximum distance from center in all 4 directions.
-constexpr s64 LEVEL_AREA_LIMIT = 512 * 48;
+constexpr s64 LEVEL_AREA_LIMIT = 128 * 48; // 256x256 m
 constexpr f32 ZOOM_LIMIT_MIN   = -100.0f;
 constexpr f32 ZOOM_LIMIT_MAX   =  -10.0f;
 constexpr f32 ZOOM_SPEED       =   50.0f;
-constexpr f32 ZOOM_DEFAULT     =  -30.0f;
+constexpr f32 ZOOM_DEFAULT     =  -70.0f;
 
 }
 
@@ -61,7 +61,7 @@ struct EditorImpl
   static constexpr u64    GRID_SIZES[]  = {1, PX_PER_M, PX_PER_M * 8, PX_PER_M * 64, PX_PER_M * 512};
   static constexpr color4 GRID_COLORS[] =
   {
-    colors::GRAY, colors::WHITE, colors::RED, colors::BLUE, colors::MAGENTA
+    colors::BLUE, colors::BLUE, colors::BLUE, colors::BLUE, colors::BLUE
   };
 
   static_assert(ARRAY_LENGTH(GRID_SIZES)  == NUM_GRIDS);
