@@ -35,7 +35,7 @@ bool ActionCreateOrDeleteLine::action_do(EditorLevel& level)
   {
     nc_assert(!level.get_any_object(line_id));
     was_performed = level.can_create_line(from, to);
-    retval = this->do_create(level); // signal that the new sector was actually created..
+    retval = was_performed && this->do_create(level); // signal that the new sector was actually created..
   }
   else
   {
