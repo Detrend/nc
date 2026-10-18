@@ -405,7 +405,8 @@ void iterate_left_most_half_edges
       // We calculate the angle as a dot product and keep the numerator and denominator separate
       vec2 my_dir_norm        = normalize(cast<vec2>(my_dir));
       vec2 edge_dir_norm      = normalize(cast<vec2>(edge_dir));
-      f32  dot_angle_unsigned = dot(my_dir_norm, edge_dir_norm);
+      // Clamped, because collinear directions can end up a bit over 1 and acos would return NaN
+      f32  dot_angle_unsigned = clamp(dot(my_dir_norm, edge_dir_norm), -1.0f, 1.0f);
       f32  angle_signed       = std::acos(dot_angle_unsigned) * the_sign;
 
       // Edge case - the reverse edge should have -180 degrees, not 180

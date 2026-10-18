@@ -46,7 +46,8 @@ static bool is_sector_inward(const std::vector<ivec2>& pts)
     vec2 dir1 = normalize(cast<vec2>(b - a));
     vec2 dir2 = normalize(cast<vec2>(c - b));
     f32  sign = sgn(cross(dir1, dir2));
-    f32  angle_rad = acos(dot(dir1, dir2)) * sign;
+    // Clamped, because collinear directions can end up a bit over 1 and acos would return NaN
+    f32  angle_rad = acos(clamp(dot(dir1, dir2), -1.0f, 1.0f)) * sign;
     degs += rad2deg(angle_rad);
   }
 
