@@ -80,7 +80,7 @@ void Editor::render()
 
   // Sort the primitives by their order
   std::sort(render_list.primitives.begin(), render_list.primitives.end(),
-  [](const RenderList::PrimitiveAndProperties& a, const RenderList::PrimitiveAndProperties& b)
+  [](const EditorPrimitiveAndProperties& a, const EditorPrimitiveAndProperties& b)
   {
     s64 order_a = a.unique_props.override_order ? a.unique_props.order : a.primitive->properties.order;
     s64 order_b = b.unique_props.override_order ? b.unique_props.order : b.primitive->properties.order;

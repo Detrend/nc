@@ -43,6 +43,26 @@ EditorPrimitive::~EditorPrimitive()
   MeshManager::get().destroy_editor_primitive(handle);
 }
 
+//==================================================================================================
+/*static*/ EditorPrimitiveRenderingProperties EditorPrimitiveRenderingProperties::calc_point_override_props
+(
+  vec2 coords, f32 scale, f32 zoom_factor, u64 author
+)
+{
+  EditorPrimitiveRenderingProperties props;
+
+  props.transform = identity<mat3>();
+  props.transform[0] *= scale / zoom_factor;
+  props.transform[1] *= scale / zoom_factor;
+  props.transform[2] = vec3{coords.x, coords.y, 1.0f};
+  props.override_transform = true;
+
+  props.author_id       = author;
+  props.override_author = true;
+
+  return props;
+}
+
 }
 
 #endif // #if NC_EDITOR

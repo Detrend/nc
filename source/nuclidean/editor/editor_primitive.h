@@ -57,6 +57,11 @@ struct EditorPrimitiveRenderingProperties
     if (other.override_author)
       this->author_id = other.author_id;
   }
+
+  static EditorPrimitiveRenderingProperties calc_point_override_props
+  (
+    vec2 coords, f32 scale, f32 zoom_factor, u64 author
+  );
 };
 
 struct EditorPrimitive : public std::enable_shared_from_this<EditorPrimitive>
@@ -84,14 +89,14 @@ struct EditorPrimitive : public std::enable_shared_from_this<EditorPrimitive>
 
 using EditorPrimitivePtr = std::shared_ptr<EditorPrimitive>;
 
+struct EditorPrimitiveAndProperties
+{
+  EditorPrimitivePtr                 primitive;
+  EditorPrimitiveRenderingProperties unique_props;
+};
+
 struct RenderList
 {
-  struct PrimitiveAndProperties
-  {
-    EditorPrimitivePtr                 primitive;
-    EditorPrimitiveRenderingProperties unique_props;
-  };
-
   void push_back(EditorPrimitivePtr primitive)
   {
     primitives.emplace_back(primitive, EditorPrimitiveRenderingProperties{});
@@ -102,7 +107,7 @@ struct RenderList
     primitives.emplace_back(primitive, props);
   }
 
-  std::vector<PrimitiveAndProperties> primitives;
+  std::vector<EditorPrimitiveAndProperties> primitives;
 };
 
 }

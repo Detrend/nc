@@ -499,6 +499,12 @@ void EditorImpl::update(f32 dt)
       this->change_tool<BrushTool>();
     }
 
+    ImGui::SetNextItemWidth(80);
+    ImGui::Combo
+    (
+      "##Grid snap", recast<int*>(&this->snapping), GRID_SNAP_OPTION_NAMES, GRID_SNAP_OPTIONS_CNT
+    );
+
     ImGui::EndMainMenuBar();
   }
 
@@ -532,7 +538,8 @@ bool EditorImpl::try_insert_line_into_map(EditorCoord start, EditorCoord end, bo
 //==================================================================================================
 void EditorImpl::snap_to_grid(vec2& coords)
 {
-  coords = round(coords);
+  f32 multiplier = cast<f32>(GRID_SNAP_OPTIONS_MULTIPLIERS[this->snapping]);
+  coords = round(round(coords / multiplier) * vec2{multiplier});
 }
 
 //==================================================================================================
@@ -841,9 +848,9 @@ void EditorImpl::SelectTool::get_render_data(RenderList& list)
     list.push_back(this->dragging_outline_lines);
   }
 
-  if (this->dragging_outline_points->is_valid())
+  for (const auto&[primitive, props] : this->dragging_outline_points)
   {
-    list.push_back(this->dragging_outline_points);
+    list.push_back(primitive, props);
   }
 }
 
@@ -888,10 +895,10 @@ static void collect_points_of_object
 //==================================================================================================
 static void calc_move_point_geometry
 (
-  EditorImpl&                            editor,
-  const std::map<EditorID, EditorCoord>& moved_points,
-  EditorPrimitive&                       primitive_lines_out,
-  EditorPrimitive&                       primitive_points_out
+  EditorImpl&                                editor,
+  const std::map<EditorID, EditorCoord>&     moved_points,
+  EditorPrimitive&                           primitive_lines_out,
+  std::vector<EditorPrimitiveAndProperties>& primitive_points_out
 )
 {
   std::vector<vec2>  geometry_lines;
@@ -938,30 +945,27 @@ static void calc_move_point_geometry
   // Build some geometry from the points
   for (const auto&[point_id, moved_coord] : moved_points)
   {
-    constexpr vec2 OFFSETS[] = {VEC2_X, VEC2_Y, -VEC2_X, -VEC2_Y};
+    vec2 pt = cast<vec2>(moved_coord);
 
-    for (u64 offset_idx = 0; offset_idx < 4; ++offset_idx)
-    {
-      for (u64 ti = 0; ti < 2; ++ti)
-      {
-        u64  idx = (offset_idx+ti) % 4;
-        vec2 pt  = cast<vec2>(moved_coord) + OFFSETS[idx] * 0.01f / editor.get_zoom_factor();
-        geometry_points.push_back(pt);
-      }
-    }
+    EditorPrimitivePtr primitive = editor.get_disc_geometry();
+    EditorPrimitiveRenderingProperties props = EditorPrimitiveRenderingProperties::calc_point_override_props
+    (
+      vec2{moved_coord}, 0.003f, editor.get_zoom_factor(), INVALID_EDITOR_ID
+    );
+
+    primitive_points_out.push_back({primitive, props});
   }
 
   // Refill the GPU buffers
   primitive_lines_out.refresh_gpu_data(geometry_lines);
-  primitive_points_out.refresh_gpu_data(geometry_points);
 }
 
 //==================================================================================================
 bool EditorImpl::SelectTool::handle_dragging()
 {
   // Reset these always
-  this->dragging_outline_lines  = std::make_shared<EditorPrimitive>();
-  this->dragging_outline_points = std::make_shared<EditorPrimitive>();
+  this->dragging_outline_lines = std::make_shared<EditorPrimitive>();
+  this->dragging_outline_points.clear();
 
   // At this point we know that the IDs belong to existing objects because we called the
   // "deselect_non_existing_objects" before this.
@@ -1019,6 +1023,7 @@ bool EditorImpl::SelectTool::handle_dragging()
   {
     vec2 cursor_in_world   = editor.get_mouse_wpos();
     vec2 offset_from_start = cursor_in_world - this->dragging_start_pt;
+    EditorCoord offset_snapped = editor.snap_to_grid_inplace(offset_from_start);
 
     std::map<EditorID, EditorCoord> map_of_new_point_coords;
 
@@ -1026,21 +1031,18 @@ bool EditorImpl::SelectTool::handle_dragging()
     {
       const EditorPoint& point = editor.level.get_object<EditorPoint>(pt_id);
 
-      EditorCoord new_coord = cast<EditorCoord>(editor.snap_to_grid_inplace(cast<vec2>(point.coords) + offset_from_start));
-      map_of_new_point_coords[pt_id] = new_coord;
+      map_of_new_point_coords[pt_id] = point.coords + offset_snapped;
     }
 
     calc_move_point_geometry
     (
-      editor, map_of_new_point_coords, *this->dragging_outline_lines, *this->dragging_outline_points
+      editor, map_of_new_point_coords, *this->dragging_outline_lines, this->dragging_outline_points
     );
 
     bool can_move_points = editor.level.can_move_points(map_of_new_point_coords);
 
     this->dragging_outline_lines->properties.color = can_move_points ? colors::WHITE : colors::RED;
     this->dragging_outline_lines->properties.order = 85;
-    this->dragging_outline_points->properties.color = colors::WHITE;
-    this->dragging_outline_points->properties.order = 86;
 
     // Move the points if possible
     if (released_mouse)

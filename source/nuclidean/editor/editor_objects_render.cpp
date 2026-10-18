@@ -579,15 +579,10 @@ void EditorPointRenderData::get_render_data(const EditorImpl& impl, RenderList& 
 {
   constexpr f32 POINT_SIZE = 0.0025f;
 
-  EditorPrimitiveRenderingProperties props;
-  props.transform = identity<mat3>();
-  props.transform[0] *= POINT_SIZE / impl.get_zoom_factor();
-  props.transform[1] *= POINT_SIZE / impl.get_zoom_factor();
-  props.transform[2] = vec3{coords.x, coords.y, 1.0f};
-  props.override_transform = true;
-
-  props.author_id = id;
-  props.override_author = true;
+  EditorPrimitiveRenderingProperties props = EditorPrimitiveRenderingProperties::calc_point_override_props
+  (
+    vec2{this->coords}, POINT_SIZE, impl.get_zoom_factor(), this->id
+  );
 
   list.push_back(impl.get_disc_geometry(), props);
 }

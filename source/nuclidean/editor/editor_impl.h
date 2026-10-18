@@ -91,6 +91,32 @@ struct EditorImpl
 
   mutable EditorPrimitivePtr disc_geometry_primitive;
 
+  enum GridSnappingOptions : int
+  {
+    snap_none = 0,
+    snap_quarter_m,
+    snap_1m,
+    snap_8m,
+    options_count,
+  };
+  GridSnappingOptions snapping = GridSnappingOptions::snap_none;
+
+  static constexpr u64  GRID_SNAP_OPTIONS_CNT = GridSnappingOptions::options_count;
+  static constexpr cstr GRID_SNAP_OPTION_NAMES[]
+  {
+    "No snapping",
+    "Snap 25cm",
+    "Snap 1m",
+    "Snap 8m",
+  };
+  static_assert(ARRAY_LENGTH(GRID_SNAP_OPTION_NAMES) == GRID_SNAP_OPTIONS_CNT);
+
+  static constexpr s32 GRID_SNAP_OPTIONS_MULTIPLIERS[]
+  {
+    1, PX_PER_M / 4, PX_PER_M, PX_PER_M * 8,
+  };
+  static_assert(ARRAY_LENGTH(GRID_SNAP_OPTIONS_MULTIPLIERS) == GRID_SNAP_OPTIONS_CNT);
+
   void recompute_sector_render_data(const EditorSector& sector, EditorSectorRenderData& render_data);
 
   void on_object_created(EditorID   object_id, const EditorSector& sector);
@@ -176,7 +202,8 @@ struct EditorImpl
     bool                  is_dragging             = false;
     vec2                  dragging_start_pt       = VEC2_ZERO;
     EditorPrimitivePtr    dragging_outline_lines  = std::make_shared<EditorPrimitive>();
-    EditorPrimitivePtr    dragging_outline_points = std::make_shared<EditorPrimitive>();
+
+    std::vector<EditorPrimitiveAndProperties> dragging_outline_points;
 
     SelectTool(EditorImpl& impl) : editor(impl) {};
 

@@ -12,7 +12,6 @@ namespace nc
 {
 
 struct EditorPrimitiveRenderingProperties;
-struct EditorPrimitiveRenderingProperties;
 struct EditorPrimitive;
 
 class IEditorPrimitiveRenderingModifier
