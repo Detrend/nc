@@ -375,28 +375,10 @@ static void convexify_sector
 //==================================================================================================
 void EditorSectorRenderData::get_render_data(RenderList& list)
 {
-  if (render_data_lines->is_valid())
-    list.push_back(render_data_lines->shared_from_this());
-
   if (render_data_surface->is_valid())
-    list.push_back(render_data_surface->shared_from_this());
-}
-
-//==================================================================================================
-void EditorSectorRenderData::recompute_lines()
-{
-  std::vector<vec2> points;
-  for (u64 i = 0; i < walls.size(); ++i)
   {
-    u64 idx = i;
-    u64 next_idx = (idx + 1) % walls.size();
-    points.insert(points.end(), {cast<vec2>(walls[idx].pt), cast<vec2>(walls[next_idx].pt)});
+    list.push_back(render_data_surface->shared_from_this());
   }
-
-  render_data_lines->refresh_gpu_data(points);
-  render_data_lines->properties.color = editor::SECTOR_WALL_COL;
-  render_data_lines->type = EditorPrimitiveType::sector;
-  render_data_lines->sector.type = 0;;
 }
 
 //==================================================================================================
@@ -582,15 +564,12 @@ void EditorSectorRenderData::convexify_surface()
   // And surface area
   render_data_surface->refresh_gpu_data(surface_triangle_pts, GL_TRIANGLES);
   render_data_surface->properties.color = editor::SECTOR_SURFACE_COL;
-  render_data_surface->type = EditorPrimitiveType::sector;
-  render_data_surface->sector.type = 2;
-  render_data_surface->sector.id   = this->id;
+  render_data_surface->author_id = this->id; // Mark that it is a sector
 }
 
 //==================================================================================================
 void EditorSectorRenderData::recompute_render_data()
 {
-  //this->recompute_lines();
   this->convexify_surface();
 }
 

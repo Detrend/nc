@@ -35,7 +35,6 @@ struct EditorSectorRenderData
 {
   using IndexList = std::vector<u16>;
 
-  EditorPrimitivePtr      render_data_lines   = std::make_shared<EditorPrimitive>();
   EditorPrimitivePtr      render_data_surface = std::make_shared<EditorPrimitive>();
   std::vector<EditorWall> walls;
   u64                     id;
@@ -48,7 +47,6 @@ struct EditorSectorRenderData
   std::vector<IndexList> convex_parts; // Used for selection
 
   void get_render_data(RenderList& list);
-  void recompute_lines();
   void convexify_surface();
   void recompute_render_data();
 };
@@ -64,6 +62,7 @@ struct EditorLineRenderData
     render_data_line->refresh_gpu_data(std::span<vec2>(points, points+2));
     render_data_line->properties.color = colors::WHITE;
     render_data_line->order = 66;
+    render_data_line->author_id = id;
   }
 
   void get_render_data(RenderList& list)

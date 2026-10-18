@@ -490,7 +490,7 @@ void EditorImpl::update(f32 dt)
 
   std::visit([&](auto& tool)
   {
-    tool.update(*this, dt);
+    tool.update(dt);
   }, this->tool);
 }
 
@@ -800,64 +800,17 @@ void EditorImpl::SelectTool::modify_rendering_properties
   const EditorPrimitive&              primitive
 )
 {
-  if (primitive.type == EditorPrimitiveType::sector && this->pointed_at_object == primitive.sector.id)
+  // Sector coloring..
+  if (primitive.author_id == this->pointed_at_object && primitive.author_id != INVALID_EDITOR_ID)
   {
-    properties.color *= color4{vec3{2.0f}, 1.0f};
+    properties.color = color4{1.0f, 1.0f, 0.0f, properties.color.a};
+    properties.line_width *= 4.0f;
   }
 }
 
 //==================================================================================================
-void EditorImpl::SelectTool::get_render_data(EditorImpl& impl, RenderList& list)
+void EditorImpl::SelectTool::get_render_data(RenderList& list)
 {
-  std::vector<vec2> points_to_draw;
-
-  // Outline of a sector if selected
-  if (impl.objects_render.contains(this->pointed_at_object))
-  {
-    const EditorObjectRenderData& data = impl.objects_render[this->pointed_at_object];
-    if (const EditorSectorRenderData* sector = std::get_if<EditorSectorRenderData>(&data))
-    {
-      for (u64 i = 0; i < sector->walls.size(); ++i)
-      {
-        u64 i_next = (i+1) % sector->walls.size();
-        points_to_draw.insert(points_to_draw.end(), {sector->walls[i].pt, sector->walls[i_next].pt});
-      }
-    }
-  }
-
-  // Highlight the line if selected
-  if (const EditorLine* line = impl.level.try_get_object<EditorLine>(this->pointed_at_object))
-  {
-    const EditorHalfEdge& h1 = impl.level.get_object<EditorHalfEdge>(line->half_edge_a);
-    const EditorHalfEdge& h2 = impl.level.get_object<EditorHalfEdge>(line->half_edge_b);
-    const EditorPoint&    p1 = impl.level.get_object<EditorPoint>(h1.from);
-    const EditorPoint&    p2 = impl.level.get_object<EditorPoint>(h2.from);
-    points_to_draw.insert(points_to_draw.end(), {p1.coords, p2.coords});
-  }
-
-  // Hightlight the point if selected
-  if (const EditorPoint* point = impl.level.try_get_object<EditorPoint>(this->pointed_at_object))
-  {
-    vec2 offsets[4] = {VEC2_X, VEC2_Y, -VEC2_X, -VEC2_Y};
-    for (u64 i = 0; i < 4; ++i)
-    {
-      u64 i_next = (i+1) % 4;
-      vec2 c1 = cast<vec2>(point->coords) + 0.01f * offsets[i]      / impl.get_zoom_factor();
-      vec2 c2 = cast<vec2>(point->coords) + 0.01f * offsets[i_next] / impl.get_zoom_factor();
-      points_to_draw.insert(points_to_draw.end(), {c1, c2});
-    }
-  }
-
-  if (points_to_draw.size())
-  {
-    EditorPrimitivePtr primitive = std::make_shared<EditorPrimitive>();
-    primitive->refresh_gpu_data(points_to_draw);
-    primitive->properties.line_width = 10.0f;
-    primitive->properties.color      = colors::RED;
-    primitive->order = 80;
-    list.push_back(primitive);
-  }
-
   if (this->dragging_outline_lines->is_valid())
   {
     list.push_back(this->dragging_outline_lines);
@@ -979,7 +932,7 @@ static void calc_move_point_geometry
 }
 
 //==================================================================================================
-bool EditorImpl::SelectTool::handle_dragging(EditorImpl& editor)
+bool EditorImpl::SelectTool::handle_dragging()
 {
   // Reset these always
   this->dragging_outline_lines  = std::make_shared<EditorPrimitive>();
@@ -1084,7 +1037,7 @@ bool EditorImpl::SelectTool::handle_dragging(EditorImpl& editor)
 }
 
 //==================================================================================================
-bool EditorImpl::SelectTool::handle_selection(EditorImpl& editor)
+bool EditorImpl::SelectTool::handle_selection()
 {
   vec2 cursor_pos_in_world = editor.get_mouse_wpos();
 
@@ -1197,7 +1150,7 @@ bool EditorImpl::SelectTool::handle_selection(EditorImpl& editor)
 }
 
 //==================================================================================================
-void EditorImpl::SelectTool::deselect_non_existing_objects(EditorImpl& editor)
+void EditorImpl::SelectTool::deselect_non_existing_objects()
 {
   // Remove all non-existing objects from the selection
   std::erase_if(this->selected_objects, [&](EditorID id)
@@ -1213,20 +1166,20 @@ void EditorImpl::SelectTool::deselect_non_existing_objects(EditorImpl& editor)
 }
 
 //==================================================================================================
-void EditorImpl::SelectTool::update(EditorImpl& editor, f32 /*dt*/)
+void EditorImpl::SelectTool::update(f32 /*dt*/)
 {
-  deselect_non_existing_objects(editor);
-  handle_dragging(editor) || handle_selection(editor);
+  deselect_non_existing_objects();
+  handle_dragging() || handle_selection();
 }
 
 //==================================================================================================
-void EditorImpl::SelectTool::get_modifiers(EditorImpl& /*impl*/, RenderModifierList& list)
+void EditorImpl::SelectTool::get_modifiers(RenderModifierList& list)
 {
   list.push_back(this);
 }
 
 //==================================================================================================
-void EditorImpl::BrushTool::update(EditorImpl& editor, f32 /*delta*/)
+void EditorImpl::BrushTool::update(f32 /*delta*/)
 {
   bool input_allowed = !ImGui::GetIO().WantCaptureMouse;
   bool left_click    = input_allowed && ImGui::IsMouseReleased(ImGuiMouseButton_Left);
@@ -1315,7 +1268,7 @@ void EditorImpl::BrushTool::update(EditorImpl& editor, f32 /*delta*/)
 }
 
 //==================================================================================================
-void EditorImpl::BrushTool::get_render_data(EditorImpl& /*impl*/, RenderList& list)
+void EditorImpl::BrushTool::get_render_data(RenderList& list)
 {
   if (render_data->handle.is_valid())
   {
@@ -1329,7 +1282,7 @@ void EditorImpl::BrushTool::get_render_data(EditorImpl& /*impl*/, RenderList& li
 }
 
 //==================================================================================================
-void EditorImpl::BrushTool::get_modifiers(EditorImpl& /*impl*/, RenderModifierList& /*list*/)
+void EditorImpl::BrushTool::get_modifiers(RenderModifierList& /*list*/)
 {
 
 }

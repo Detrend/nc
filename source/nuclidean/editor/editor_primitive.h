@@ -7,6 +7,7 @@
 
 #include <engine/graphics/resources/mesh.h> // MeshHandle
 #include <engine/graphics/gl_types.h>       // GL_LINES
+#include <editor/editor_types.h>            // EditorID
 
 #include <aabb.h> // aabb2
 
@@ -16,14 +17,6 @@
 
 namespace nc
 {
-
-enum class EditorPrimitiveType : u8
-{
-  generic = 0, // pretty much nothing
-  sector,
-  entity,
-  grid,
-};
 
 struct EditorPrimitiveRenderingProperties
 {
@@ -48,24 +41,13 @@ struct EditorPrimitive : public std::enable_shared_from_this<EditorPrimitive>
   // Deallocates the mesh automatically
   ~EditorPrimitive();
 
-  MeshHandle handle = MeshHandle::invalid();
-  aabb2      bbox   = aabb2{};
-  s64        order  = 0;
+  MeshHandle handle    = MeshHandle::invalid();
+  aabb2      bbox      = aabb2{};
+  s64        order     = 0;
+  EditorID   author_id = INVALID_EDITOR_ID; // Optional author ID
 
   // We store these separately so they can be modified
   EditorPrimitiveRenderingProperties properties = EditorPrimitiveRenderingProperties{};
-
-  // Data used for identifying the property later
-  EditorPrimitiveType type = EditorPrimitiveType::generic;
-  struct
-  {
-    u8  type;
-    u64 id;
-  } sector;
-  struct
-  {
-    u64 id;
-  } entity;
 };
 
 using EditorPrimitivePtr = std::shared_ptr<EditorPrimitive>;

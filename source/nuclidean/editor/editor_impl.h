@@ -165,6 +165,7 @@ struct EditorImpl
   // Enables selection and movement of walls, sectors and entities.
   struct SelectTool : public IEditorPrimitiveRenderingModifier
   {
+    EditorImpl&           editor;
     std::vector<EditorID> selected_objects;
     std::vector<EditorID> dragged_points;
     EditorID              pointed_at_object       = INVALID_EDITOR_ID;
@@ -173,33 +174,38 @@ struct EditorImpl
     EditorPrimitivePtr    dragging_outline_lines  = std::make_shared<EditorPrimitive>();
     EditorPrimitivePtr    dragging_outline_points = std::make_shared<EditorPrimitive>();
 
+    SelectTool(EditorImpl& impl) : editor(impl) {};
+
     void modify_rendering_properties
     (
       EditorPrimitiveRenderingProperties& properties,
       const EditorPrimitive&              primitive
     );
 
-    void get_render_data(EditorImpl& impl, RenderList& /*list*/);
-    void deselect_non_existing_objects(EditorImpl& impl);
-    bool handle_dragging(EditorImpl& /*editor*/);
-    bool handle_selection(EditorImpl& editor);
-    void update(EditorImpl& editor, f32 /*dt*/);
-    void get_modifiers(EditorImpl& impl, RenderModifierList& list);
+    void get_render_data(RenderList& /*list*/);
+    void deselect_non_existing_objects();
+    bool handle_dragging();
+    bool handle_selection();
+    void update(f32 /*dt*/);
+    void get_modifiers(RenderModifierList& list);
   };
 
   struct BrushTool
   {
+    EditorImpl&        editor;
     EditorPrimitivePtr cursor         = std::make_shared<EditorPrimitive>();
     EditorPrimitivePtr render_data    = std::make_shared<EditorPrimitive>();
     bool               is_painting    = false;
     EditorCoord        painting_start = EditorCoord{0};
 
-    void update(EditorImpl& editor, f32 /*delta*/);
-    void get_render_data(EditorImpl& impl, RenderList& list);
-    void get_modifiers(EditorImpl& impl, RenderModifierList& /*list*/);
+    BrushTool(EditorImpl& impl) : editor(impl) {};
+
+    void update(f32 /*delta*/);
+    void get_render_data(RenderList& list);
+    void get_modifiers(RenderModifierList& /*list*/);
   };
 
-  std::variant<SelectTool, BrushTool> tool; // not the award winning one
+  std::variant<SelectTool, BrushTool> tool = SelectTool{*this}; // not the award winning one
 
   bool is_dragging                      = false;
   vec2 dragging_start_cursor_screen_pos = VEC2_ZERO;
@@ -220,7 +226,7 @@ struct EditorImpl
     }
 
     // Create the data
-    this->tool = NewToolType{};
+    this->tool.emplace<NewToolType>(*this);
   }
 
   bool is_undo_redo_allowed() const; // is undo/redo allowed now?
