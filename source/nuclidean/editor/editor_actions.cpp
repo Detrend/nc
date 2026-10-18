@@ -17,13 +17,92 @@ namespace nc
 //==================================================================================================
 bool ActionCreateOrDeleteLine::do_create(EditorLevel& level)
 {
-  return level.create_line(line_id, from, to);
+  created_sector_id = INVALID_EDITOR_ID;
+
+  auto callback_created = [&](EditorID& new_id, EditorSectorData& new_data)
+  {
+    if (sector_id_b != INVALID_EDITOR_ID && !level.get_any_object(sector_id_b))
+    {
+      new_id   = sector_id_b;
+      new_data = sector_data_b;
+    }
+    else if (sector_id_a != INVALID_EDITOR_ID && !level.get_any_object(sector_id_a))
+    {
+      new_id   = sector_id_a;
+      new_data = sector_data_a;
+    }
+    else
+    {
+      new_id   = level.new_id();
+      new_data = EditorSectorData{};
+    }
+
+    created_sector_id = new_id;
+  };
+
+  auto callback_split = [&]
+  (
+    EditorID  old_id,  const EditorSectorData& old_data,
+    EditorID& left_id, EditorSectorData&       left_data,
+    EditorID& right_id, EditorSectorData&      right_data
+  )
+  {
+    if (sector_id_a != INVALID_EDITOR_ID)
+    {
+      // Split it back into the two sectors that got merged when the line was destroyed
+      nc_assert(sector_id_b != INVALID_EDITOR_ID); // Both filled out or either only one
+      left_id    = sector_id_a;
+      left_data  = sector_data_a;
+      right_id   = sector_id_b;
+      right_data = sector_data_b;
+    }
+    else
+    {
+      // Keep the left
+      left_id    = old_id;
+      left_data  = old_data;
+      right_id   = level.new_id();
+      right_data = old_data;
+    }
+
+    created_sector_id = left_id == old_id ? right_id : left_id;
+  };
+
+  return level.create_line(line_id, from, to, callback_created, callback_split);
 }
 
 //==================================================================================================
 bool ActionCreateOrDeleteLine::do_destroy(EditorLevel& level)
 {
-  return level.destroy_line(line_id);
+  // Reset first
+  sector_id_a = INVALID_EDITOR_ID;
+  sector_id_b = INVALID_EDITOR_ID;
+
+  auto callback_destroyed = [&](EditorID sector_id, const EditorSectorData& data)
+  {
+    sector_id_a   = sector_id;
+    sector_data_a = data;
+  };
+
+  auto callback_merged = [&]
+  (
+    EditorID  left_id,  const EditorSectorData& left_data,
+    EditorID  right_id, const EditorSectorData& right_data,
+    EditorID& new_id,   EditorSectorData&       new_data
+  )
+  {
+    sector_id_a   = left_id;
+    sector_data_a = left_data;
+    sector_id_b   = right_id;
+    sector_data_b = right_data;
+
+    // Keep the sector that existed before the line was created, if we know which one it was
+    bool keep_right = left_id == created_sector_id;
+    new_id   = keep_right ? right_id   : left_id;
+    new_data = keep_right ? right_data : left_data;
+  };
+
+  return level.destroy_line(line_id, callback_destroyed, callback_merged);
 }
 
 //==================================================================================================

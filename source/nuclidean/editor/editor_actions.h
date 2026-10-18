@@ -24,6 +24,12 @@ struct ActionCreateOrDeleteLine
   EditorCoord from;
   EditorCoord to;
 
+  EditorID         sector_id_a = INVALID_EDITOR_ID;
+  EditorSectorData sector_data_a;
+  EditorID         sector_id_b = INVALID_EDITOR_ID;
+  EditorSectorData sector_data_b;
+  EditorID         created_sector_id = INVALID_EDITOR_ID;
+
   bool do_create(EditorLevel&   level);
   bool do_destroy(EditorLevel&  level);
   bool action_do(EditorLevel&   level); // creating a line returns true if a new sector is created
