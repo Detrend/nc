@@ -14,6 +14,7 @@
 #include <editor/editor_objects.h>
 
 #include <math/lingebra.h>   // compMax
+#include <math/utils.h>      // sgn
 #include <intersect.h>
 
 #include <imgui/imgui.h>
@@ -768,14 +769,23 @@ bool EditorImpl::handle_zoom_in_out()
   f32 wheel = ImGui::GetIO().MouseWheel;
   wheel = floor(wheel * 10.0f) * 0.1f;
 
-  if (!wheel)
+  // Check the desired zoom
+  this->target_zoom = clamp(this->target_zoom + wheel, editor::ZOOM_LIMIT_MIN, editor::ZOOM_LIMIT_MAX);
+  if (this->get_zoom() == this->target_zoom)
   {
     return false;
   }
 
   vec2 world_pos_under_cursor_before_zoom = this->get_mouse_wpos();
-  f32 new_zoom = this->get_zoom() + wheel;
+
+  f32 new_zoom = (this->get_zoom() + this->target_zoom) * 0.5f;
+  if (abs(new_zoom - this->target_zoom) < 0.001f)
+  {
+    new_zoom = this->target_zoom;
+  }
+
   this->set_zoom(new_zoom);
+
   vec2 world_pos_under_cursor_after_zoom = this->get_mouse_wpos();
   vec2 difference = world_pos_under_cursor_after_zoom - world_pos_under_cursor_before_zoom;
   this->set_offset(this->get_offset() - difference);

@@ -48,6 +48,7 @@ constexpr f32    BRUSH_WALL_FLASH_INTERVAL = 0.5f;
 constexpr s64 LEVEL_AREA_LIMIT = 512 * 48;
 constexpr f32 ZOOM_LIMIT_MIN   = -100.0f;
 constexpr f32 ZOOM_LIMIT_MAX   =  -10.0f;
+constexpr f32 ZOOM_SPEED       =   50.0f;
 constexpr f32 ZOOM_DEFAULT     =  -30.0f;
 
 }
@@ -72,6 +73,7 @@ struct EditorImpl
   EditorRenderer                  renderer;
   vec2                            center           = VEC2_ZERO;
   f32                             zoom             = editor::ZOOM_DEFAULT;
+  f32                             target_zoom      = editor::ZOOM_DEFAULT;
   u64                             current_snap     = 1;
   f64                             time_since_start = 0.0f;
   EditorLevel                     level;
