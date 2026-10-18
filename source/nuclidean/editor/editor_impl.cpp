@@ -773,7 +773,7 @@ void EditorImpl::SelectTool::modify_rendering_properties
 {
   if (primitive.type == EditorPrimitiveType::sector && this->pointed_at_object == primitive.sector.id)
   {
-    properties.color *= 2.0f;
+    properties.color *= color4{vec3{2.0f}, 1.0f};
   }
 }
 

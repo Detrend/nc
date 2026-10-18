@@ -20,7 +20,7 @@ namespace nc::editor
 {
 constexpr color4 SECTOR_WALL_COL    = colors::WHITE;
 constexpr color4 SECTOR_SPLITS_COL  = colors::GRAY;
-constexpr color4 SECTOR_SURFACE_COL = colors::NAVY;
+constexpr color4 SECTOR_SURFACE_COL = color4{0.8f, 0.8f, 0.8f, 0.5f};
 }
 
 namespace nc
@@ -380,9 +380,6 @@ void EditorSectorRenderData::get_render_data(RenderList& list)
 
   if (render_data_surface->is_valid())
     list.push_back(render_data_surface->shared_from_this());
-
-  if (render_data_splits->is_valid())
-    list.push_back(render_data_splits->shared_from_this());
 }
 
 //==================================================================================================
@@ -563,14 +560,6 @@ void EditorSectorRenderData::convexify_surface()
   this->convex_parts.clear();
   convexify_sector(points, indices, splits, convex_parts);
 
-  // Build lines for the convex splits (might be empty if the sector is already convex)
-  std::vector<vec2> split_line_pts;
-  for (auto&&[idx1, idx2] : splits)
-  {
-    split_line_pts.push_back(cast<vec2>(points[idx1]));
-    split_line_pts.push_back(cast<vec2>(points[idx2]));
-  }
-
   // Build triangles for the surface
   std::vector<vec2> surface_triangle_pts;
   for (const IndexList& index_list : this->convex_parts)
@@ -589,14 +578,6 @@ void EditorSectorRenderData::convexify_surface()
       surface_triangle_pts.insert(surface_triangle_pts.end(), {pt1, pt2, pt3});
     }
   }
-
-  // And refresh lines
-  render_data_splits->refresh_gpu_data(split_line_pts);
-  render_data_splits->properties.color = editor::SECTOR_SPLITS_COL;
-  render_data_splits->type = EditorPrimitiveType::sector;
-  render_data_splits->sector.type = 1;
-  render_data_splits->sector.id   = this->id;
-  render_data_splits->order       = 10;
 
   // And surface area
   render_data_surface->refresh_gpu_data(surface_triangle_pts, GL_TRIANGLES);

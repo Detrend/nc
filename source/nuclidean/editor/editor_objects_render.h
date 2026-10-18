@@ -37,7 +37,6 @@ struct EditorSectorRenderData
 
   EditorPrimitivePtr      render_data_lines   = std::make_shared<EditorPrimitive>();
   EditorPrimitivePtr      render_data_surface = std::make_shared<EditorPrimitive>();
-  EditorPrimitivePtr      render_data_splits  = std::make_shared<EditorPrimitive>();
   std::vector<EditorWall> walls;
   u64                     id;
 
