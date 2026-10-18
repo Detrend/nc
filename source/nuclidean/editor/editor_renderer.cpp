@@ -60,7 +60,7 @@ EditorRenderer::EditorRenderer()
 void EditorRenderer::render
 (
   mat3                                          projection,
-  const std::span<EditorPrimitivePtr>           primitives,
+  const RenderList&                             render_list,
   std::span<IEditorPrimitiveRenderingModifier*> modifiers
 )
 {
@@ -72,19 +72,23 @@ void EditorRenderer::render
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   grid_rendering.use();
-  grid_rendering.set_uniform(shaders::editor::lines::TRANSFORM, projection);
 
-  for (const EditorPrimitivePtr& primitive : primitives)
+  for (const auto&[primitive, extra_props] : render_list.primitives)
   {
-    EditorPrimitiveRenderingProperties properties_override = primitive->properties;
+    EditorPrimitiveRenderingProperties properties = primitive->properties;
+    properties.merge_with(extra_props);
+
     for (auto* modifier : modifiers)
     {
-      modifier->modify_rendering_properties(properties_override, *primitive);
+      modifier->modify_rendering_properties(properties, *primitive);
     }
 
+    mat3 transform = projection * properties.transform;
+    grid_rendering.set_uniform(shaders::editor::lines::TRANSFORM, transform);
+
     nc_assert(primitive->is_valid());
-    grid_rendering.set_uniform(shaders::editor::lines::COLOR, properties_override.color);
-    glLineWidth(properties_override.line_width);
+    grid_rendering.set_uniform(shaders::editor::lines::COLOR, properties.color);
+    glLineWidth(properties.line_width);
     glBindVertexArray(primitive->handle.get_vao());
     glDrawArrays(primitive->handle.get_draw_mode(), 0, primitive->handle.get_vertex_count());
   }

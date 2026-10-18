@@ -17,10 +17,12 @@
 namespace nc
 {
 
+struct EditorImpl;
+
 struct EditorGenericRenderData
 {
   // Empty by purpose
-  void get_render_data(RenderList& /*list*/)
+  void get_render_data(const EditorImpl& /*impl*/, RenderList& /*list*/)
   {
 
   }
@@ -46,7 +48,7 @@ struct EditorSectorRenderData
   std::vector<ivec2>     surface_points;
   std::vector<IndexList> convex_parts; // Used for selection
 
-  void get_render_data(RenderList& list);
+  void get_render_data(const EditorImpl& impl, RenderList& list);
   void convexify_surface();
   void recompute_render_data();
 };
@@ -61,11 +63,11 @@ struct EditorLineRenderData
     vec2 points[2] = {cast<vec2>(start), cast<vec2>(end)};
     render_data_line->refresh_gpu_data(std::span<vec2>(points, points+2));
     render_data_line->properties.color = colors::WHITE;
-    render_data_line->order = 66;
-    render_data_line->author_id = id;
+    render_data_line->properties.order = 66;
+    render_data_line->properties.author_id = id;
   }
 
-  void get_render_data(RenderList& list)
+  void get_render_data(const EditorImpl& /*impl*/, RenderList& list)
   {
     if (render_data_line->is_valid())
     {
@@ -74,7 +76,15 @@ struct EditorLineRenderData
   }
 };
 
-using EditorObjectRenderData = std::variant<EditorGenericRenderData, EditorSectorRenderData, EditorLineRenderData>;
+struct EditorPointRenderData
+{
+  u64         id = 0;
+  EditorCoord coords;
+
+  void get_render_data(const EditorImpl& impl, RenderList& list);
+};
+
+using EditorObjectRenderData = std::variant<EditorGenericRenderData, EditorSectorRenderData, EditorLineRenderData, EditorPointRenderData>;
 
 }
 

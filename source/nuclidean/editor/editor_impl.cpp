@@ -221,6 +221,15 @@ void EditorImpl::on_object_created(EditorID object_id, const EditorSector& secto
 }
 
 //==================================================================================================
+void EditorImpl::on_object_created(EditorID object_id, const EditorPoint& point)
+{
+  EditorPointRenderData render_data;
+  render_data.id     = object_id;
+  render_data.coords = point.coords;
+  this->objects_render.insert({object_id, std::move(render_data)});
+}
+
+//==================================================================================================
 void EditorImpl::on_object_created(EditorID object_id, const EditorLine& line)
 {
   const EditorHalfEdge& h1 = level.get_object<EditorHalfEdge>(line.half_edge_a);
@@ -235,6 +244,12 @@ void EditorImpl::on_object_created(EditorID object_id, const EditorLine& line)
 
 //==================================================================================================
 void EditorImpl::on_object_destroyed(EditorID object_id, const EditorLine&)
+{
+  objects_render.erase(object_id);
+}
+
+//==================================================================================================
+void EditorImpl::on_object_destroyed(EditorID object_id, const EditorPoint&)
 {
   objects_render.erase(object_id);
 }
@@ -258,7 +273,7 @@ void EditorImpl::on_object_modified(EditorID object_id, const EditorLine&, const
 }
 
 //==================================================================================================
-void EditorImpl::on_object_modified(EditorID object_id, const EditorPoint&, const EditorPoint&)
+void EditorImpl::on_object_modified(EditorID object_id, const EditorPoint&, const EditorPoint& new_point)
 {
   nc_assert(level.point_to_half_edges.contains(object_id));
   for (EditorID half_edge_id : level.point_to_half_edges[object_id])
@@ -272,6 +287,8 @@ void EditorImpl::on_object_modified(EditorID object_id, const EditorPoint&, cons
       this->dirty_objects.insert(hedge.sector);
     }
   }
+
+  std::get<EditorPointRenderData>(this->objects_render[object_id]).coords = new_point.coords;
 }
 
 //==================================================================================================
@@ -797,14 +814,22 @@ bool EditorImpl::handle_zoom_in_out()
 void EditorImpl::SelectTool::modify_rendering_properties
 (
   EditorPrimitiveRenderingProperties& properties,
-  const EditorPrimitive&              primitive
+  const EditorPrimitive&              /*primitive*/
 )
 {
   // Sector coloring..
-  if (primitive.author_id == this->pointed_at_object && primitive.author_id != INVALID_EDITOR_ID)
+  EditorID author = properties.author_id;
+  if (author == this->pointed_at_object && author != INVALID_EDITOR_ID)
   {
     properties.color = color4{1.0f, 1.0f, 0.0f, properties.color.a};
     properties.line_width *= 4.0f;
+
+    bool is_point = editor.level.try_get_object<EditorPoint>(author) != nullptr;
+    if (is_point)
+    {
+      properties.transform[0] *= 2.5f;
+      properties.transform[1] *= 2.5f;
+    }
   }
 }
 
@@ -1013,9 +1038,9 @@ bool EditorImpl::SelectTool::handle_dragging()
     bool can_move_points = editor.level.can_move_points(map_of_new_point_coords);
 
     this->dragging_outline_lines->properties.color = can_move_points ? colors::WHITE : colors::RED;
-    this->dragging_outline_lines->order = 85;
+    this->dragging_outline_lines->properties.order = 85;
     this->dragging_outline_points->properties.color = colors::WHITE;
-    this->dragging_outline_points->order = 86;
+    this->dragging_outline_points->properties.order = 86;
 
     // Move the points if possible
     if (released_mouse)
@@ -1264,7 +1289,7 @@ void EditorImpl::BrushTool::update(f32 /*delta*/)
   // And then refresh the GPU data!
   this->render_data->refresh_gpu_data(points);
   this->render_data->properties.color = line_color;
-  this->render_data->order = 99;
+  this->render_data->properties.order = 99;
 }
 
 //==================================================================================================
@@ -1285,6 +1310,42 @@ void EditorImpl::BrushTool::get_render_data(RenderList& list)
 void EditorImpl::BrushTool::get_modifiers(RenderModifierList& /*list*/)
 {
 
+}
+
+//==================================================================================================
+EditorPrimitivePtr EditorImpl::get_disc_geometry() const
+{
+  if (!disc_geometry_primitive)
+  {
+    disc_geometry_primitive = std::make_shared<EditorPrimitive>();
+
+    auto get_pt_for_angle = [](f32 angle)
+    {
+      return vec2{cos(angle), sin(angle)};
+    };
+
+    vec2 first_pt = get_pt_for_angle(0.0f);
+
+    std::vector<vec2> points;
+
+    constexpr s64 NUM_SEGMENTS = 32;
+    for (s64 i = 1; i < NUM_SEGMENTS-1; ++i)
+    {
+      s64 i_next = i+1;
+      f32 a1 = PI2 * cast<f32>(i     ) / NUM_SEGMENTS;
+      f32 a2 = PI2 * cast<f32>(i_next) / NUM_SEGMENTS;
+
+      vec2 p0 = first_pt;
+      vec2 p1 = get_pt_for_angle(a1);
+      vec2 p2 = get_pt_for_angle(a2);
+
+      points.insert(points.end(), {p0, p1, p2});
+    }
+
+    disc_geometry_primitive->refresh_gpu_data(points, GL_TRIANGLES);
+  }
+
+  return disc_geometry_primitive;
 }
 
 }

@@ -52,20 +52,20 @@ void Editor::update(f32 delta)
 //==================================================================================================
 void Editor::render()
 {
-  RenderList         primitives;
+  RenderList         render_list;
   RenderModifierList modifiers;
 
   for (u64 i = 0; i < EditorImpl::NUM_GRIDS; ++i)
   {
     if (m_impl->grids[i]->handle.is_valid())
     {
-      primitives.push_back(m_impl->grids[i]->shared_from_this());
+      render_list.push_back(m_impl->grids[i]->shared_from_this());
     }
   }
 
   std::visit([&](auto& tool_type)
   {
-    tool_type.get_render_data(primitives);
+    tool_type.get_render_data(render_list);
     tool_type.get_modifiers(modifiers);
   },
   m_impl->tool);
@@ -74,14 +74,17 @@ void Editor::render()
   {
     std::visit([&](auto& casted_type)
     {
-      casted_type.get_render_data(primitives);
+      casted_type.get_render_data(*m_impl, render_list);
     }, object);
   }
 
   // Sort the primitives by their order
-  std::sort(primitives.begin(), primitives.end(), [](const auto& a, const auto& b)
+  std::sort(render_list.primitives.begin(), render_list.primitives.end(),
+  [](const RenderList::PrimitiveAndProperties& a, const RenderList::PrimitiveAndProperties& b)
   {
-    return a->order < b->order;
+    s64 order_a = a.unique_props.override_order ? a.unique_props.order : a.primitive->properties.order;
+    s64 order_b = b.unique_props.override_order ? b.unique_props.order : b.primitive->properties.order;
+    return order_a < order_b;
   });
 
   // Sort the modifiers by their order
@@ -91,7 +94,7 @@ void Editor::render()
   });
 
   mat3 projection = m_impl->calc_view_matrix();
-  m_impl->renderer.render(projection, primitives, modifiers);
+  m_impl->renderer.render(projection, render_list, modifiers);
 }
 
 //==================================================================================================

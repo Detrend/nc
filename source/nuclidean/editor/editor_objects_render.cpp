@@ -6,6 +6,7 @@
 
 #include <editor/editor_objects_render.h>
 #include <editor/editor_types.h>
+#include <editor/editor_impl.h>
 
 #include <math/lingebra.h>
 #include <math/utils.h>
@@ -373,7 +374,7 @@ static void convexify_sector
 }
 
 //==================================================================================================
-void EditorSectorRenderData::get_render_data(RenderList& list)
+void EditorSectorRenderData::get_render_data(const EditorImpl& /*impl*/, RenderList& list)
 {
   if (render_data_surface->is_valid())
   {
@@ -564,13 +565,31 @@ void EditorSectorRenderData::convexify_surface()
   // And surface area
   render_data_surface->refresh_gpu_data(surface_triangle_pts, GL_TRIANGLES);
   render_data_surface->properties.color = editor::SECTOR_SURFACE_COL;
-  render_data_surface->author_id = this->id; // Mark that it is a sector
+  render_data_surface->properties.author_id = this->id; // Mark that it is a sector
 }
 
 //==================================================================================================
 void EditorSectorRenderData::recompute_render_data()
 {
   this->convexify_surface();
+}
+
+//==================================================================================================
+void EditorPointRenderData::get_render_data(const EditorImpl& impl, RenderList& list)
+{
+  constexpr f32 POINT_SIZE = 0.0025f;
+
+  EditorPrimitiveRenderingProperties props;
+  props.transform = identity<mat3>();
+  props.transform[0] *= POINT_SIZE / impl.get_zoom_factor();
+  props.transform[1] *= POINT_SIZE / impl.get_zoom_factor();
+  props.transform[2] = vec3{coords.x, coords.y, 1.0f};
+  props.override_transform = true;
+
+  props.author_id = id;
+  props.override_author = true;
+
+  list.push_back(impl.get_disc_geometry(), props);
 }
 
 }

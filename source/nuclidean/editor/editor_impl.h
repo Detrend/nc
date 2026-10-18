@@ -89,12 +89,16 @@ struct EditorImpl
   // Sectors whose render data has to be recomputed at the end of the current update
   std::set<EditorID> dirty_objects;
 
+  mutable EditorPrimitivePtr disc_geometry_primitive;
+
   void recompute_sector_render_data(const EditorSector& sector, EditorSectorRenderData& render_data);
 
   void on_object_created(EditorID   object_id, const EditorSector& sector);
   void on_object_created(EditorID   object_id, const EditorLine& line);
+  void on_object_created(EditorID   object_id, const EditorPoint& point);
   void on_object_destroyed(EditorID object_id, const EditorLine&);
   void on_object_destroyed(EditorID object_id, const EditorSector& sector);
+  void on_object_destroyed(EditorID object_id, const EditorPoint& point);
   void on_object_modified(EditorID  object_id, const EditorLine&, const EditorLine& line);
   void on_object_modified(EditorID  object_id, const EditorSector& old_state, const EditorSector& new_state);
   void on_object_modified(EditorID  object_id, const EditorPoint&, const EditorPoint& point);
@@ -272,6 +276,8 @@ struct EditorImpl
   bool handle_dragging();
 
   bool handle_zoom_in_out();
+
+  EditorPrimitivePtr get_disc_geometry() const;
 };
 
 }

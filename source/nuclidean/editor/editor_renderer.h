@@ -26,7 +26,7 @@ public:
   void render
   (
     mat3                                          projection,
-    const std::span<EditorPrimitivePtr>           primitives,
+    const RenderList&                             primitives,
     std::span<IEditorPrimitiveRenderingModifier*> modifiers
   );
 
