@@ -124,6 +124,11 @@ struct EditorImpl
 
   void undo_last_action()
   {
+    if (!this->is_undo_redo_allowed())
+    {
+      return;
+    }
+
     if (action_history.size())
     {
       std::visit([&](auto& action)
@@ -138,6 +143,11 @@ struct EditorImpl
 
   void redo_undone_action()
   {
+    if (!this->is_undo_redo_allowed())
+    {
+      return;
+    }
+
     if (undone_actions.size())
     {
       action_history.push_back(std::move(undone_actions.back()));
@@ -210,6 +220,9 @@ struct EditorImpl
     // Create the data
     this->tool = NewToolType{};
   }
+
+  bool is_undo_redo_allowed() const; // is undo/redo allowed now?
+  bool is_delete_allowed()    const; // is deletion of objects allowed now?
 
   void snap_to_grid(vec2& coords);
   vec2 snap_to_grid_inplace(vec2 coords);

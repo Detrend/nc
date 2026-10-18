@@ -694,6 +694,25 @@ vec2 EditorImpl::get_mouse_wpos()
 }
 
 //==================================================================================================
+bool EditorImpl::is_undo_redo_allowed() const
+{
+  if (const SelectTool* select = std::get_if<SelectTool>(&this->tool))
+  {
+    // If dragging something across the screen then we should not be able to do undo/redo
+    return select->is_dragging == false;
+  }
+
+  // Not dragging anythin right now
+  return true;
+}
+
+//==================================================================================================
+bool EditorImpl::is_delete_allowed() const
+{
+  return this->is_undo_redo_allowed();
+}
+
+//==================================================================================================
 bool EditorImpl::handle_keybinds()
 {
   bool shift = ImGui::IsKeyDown(ImGuiKey_LeftShift);
