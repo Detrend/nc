@@ -38,7 +38,7 @@ namespace nc
     void free([[maybe_unused]] void* const ptr);
 
     using memcopy_callback_t = FunctionReference<void(void* dst, void* src, size_t size)>;
-    void* reallocate(void* const ptr, const size_t old_size, const size_t new_size, const size_t alignment, memcopy_callback_t memcopy_callback); // TODO: implement this
+    void* reallocate(void* const ptr, const size_t old_size, const size_t new_size, const size_t alignment, memcopy_callback_t memcopy_callback = memcopy_callback_t{}); // TODO: implement this
 
     struct Scope {
       Scope(ScratchAllocator* const the_allocator, const cstr& the_debug_name, std::unique_ptr<uchar[]> &&new_data=nullptr, size_t new_size = 0);
@@ -113,6 +113,11 @@ namespace nc
     ptr->~T();
     ScratchAllocator::get().free(ptr);
   }
+
+  void* scratch_malloc(const size_t size_to_alloc, const size_t alignment);
+  void* scratch_malloc_safe(const size_t size_to_alloc, const size_t alignment);
+  void* scratch_realloc(void* const ptr, const size_t old_size, const size_t new_size, const size_t alignment);
+  void  scratch_free(void* const ptr);
 
 
   // Template parameter passed to std:: collections to ensure they allocate their memory from ScratchAllocator
