@@ -121,9 +121,9 @@ private:
        * During a load operation, each loaded texture's width and height are added here to be processed by stb_rect_pack
        * in TextureManager::finish_load.
        */
-      std::vector<stbrp_rect> load_rects;
+      scratch_vector<stbrp_rect> load_rects;
       // Stores pixel data and metadata for textures which are currently being loaded.
-      std::vector<LoadData>   load_data;
+      scratch_vector<LoadData>   load_data;
   };
 
   TextureAtlasBundle& get_atlas_bundle_mut(ResLifetime lifetime);
@@ -163,6 +163,7 @@ private:
     int            normal_channels   = 0;
     int            specular_channels = 0;
     int            emissive_channels = 0;
+    int            texture_array_idx =-1;
     // A pointer to the pixel data of the diffuse texture.
     unsigned char* diffuse_data = nullptr;
     // A pointer to the pixel data of the normal texture.

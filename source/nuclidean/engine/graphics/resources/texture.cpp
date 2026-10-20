@@ -148,7 +148,7 @@ TextureManager& TextureManager::get()
 //==============================================================================
 void TextureManager::load_directory(ResLifetime lifetime, const std::string& path)
 {
-  auto _scratch_scope = ScratchAllocator::get().create_scope();
+  auto _scratch_scope = ScratchAllocator::get().create_scope("TextureManager::load_directory()", 384_mb); // Give scratch a big chunk of memory that surely fits all the textures
   LoadContext ctx; // scratch-allocated stuff lives hear
 
   for (const auto& entry : std::filesystem::recursive_directory_iterator(path))
@@ -455,7 +455,7 @@ void TextureManager::push_error_texture_load(LoadContext& ctx)
   constexpr u32 channels = 3;
   constexpr u32 size     = ERROR_TEXTURE_ATLAS_SIZE;
 
-  auto* data = cast<unsigned char*>(std::malloc(cast<size_t>(size) * size * channels));
+  auto* data = cast<unsigned char*>(scratch_malloc_safe(cast<size_t>(size) * size * channels, 16));
 
   for (u32 y = 0; y < size; ++y)
   {
@@ -494,18 +494,37 @@ void TextureManager::push_error_texture_load(LoadContext& ctx)
   });
 }
 
+
+
 //==============================================================================
 void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
 {
-  static constexpr u16 DEFAULT_LOAD_TARGET_SIZE = 256;
+  static constexpr u16 DEFAULT_LOAD_TARGET_SIZE = 2048;
 
   nc_assert(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
 
   if (lifetime == ResLifetime::Game)
     push_error_texture_load(ctx);
 
+  //static constexpr auto get_num_channels_present = [](const TextureManager::LoadData& data) -> u8
+  //  {  return (!!data.diffuse_data) + (!!data.normal_data) + (!!data.specular_data) + (!!data.emissive_data);};
+  //
+  //std::ranges::sort(ctx.load_rects, [&ctx](const stbrp_rect& left_rect, const stbrp_rect& right_rect)->bool {
+  //  const auto& left = ctx.load_data[left_rect.id];
+  //  const auto& right = ctx.load_data[right_rect.id];
+  //  return get_num_channels_present(left) < get_num_channels_present(right);
+  //});
+
   int target_width = DEFAULT_LOAD_TARGET_SIZE;
   int target_height = DEFAULT_LOAD_TARGET_SIZE;
+  u32 atlas_count = 0;
+
+  scratch_vector<stbrp_rect> pending_rects_a = ctx.load_rects;
+  scratch_vector<stbrp_rect> pending_rects_b;
+  pending_rects_b.reserve(ctx.load_rects.size());
+
+  scratch_vector<stbrp_rect>* pending_rects_in = &pending_rects_a;
+  scratch_vector<stbrp_rect>* pending_rects_out = &pending_rects_b;
 
   while (true)
   {
@@ -513,24 +532,26 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
     scratch_vector<stbrp_node> nodes(target_width);
 
     stbrp_init_target(&context, target_width, target_height, nodes.data(), cast<int>(nodes.size()));
-    stbrp_pack_rects(&context, ctx.load_rects.data(), cast<int>(ctx.load_rects.size()));
+    stbrp_pack_rects(&context, pending_rects_in->data(), cast<int>(pending_rects_in->size()));
 
     bool all_packed = true;
     for (const auto& rect : ctx.load_rects)
     {
+      //auto& data = ctx.load_data[rect.id];
       if (rect.was_packed == 0)
       {
+        ctx.load_data[rect.id].texture_array_idx = 
         all_packed = false;
-        break;
+      }
+      else {
+        pending_rects_out->emplace_back(rect);
       }
     }
     if (all_packed)
       break;
 
-    if (target_height < target_width)
-      target_height <<= 1;
-    else
-      target_width <<= 1;
+    std::swap(*pending_rects_in, *pending_rects_out);
+    pending_rects_out->clear();
   }
 
   auto& bundle = get_atlas_bundle_mut(lifetime);
