@@ -72,6 +72,7 @@
 #include <engine/graphics/debug/top_down_debug.h>
 
 #endif
+#include <stack_vector.h>
 
 namespace nc::debug_helpers
 {
@@ -149,14 +150,59 @@ GraphicsSystem& GraphicsSystem::get()
 {
   return get_engine().get_module<GraphicsSystem>();
 }
+//==============================================================================
+
+struct GraphicsSystem::GlLoadingInstructions {
+	SDL_GLprofile profile;
+    RenderBackend result_backend;
+    int requested_major;
+	int requested_minor;
+    int expected_major;
+    int least_expected_minor;
+};
+
+static std::optional<std::pair<int, int>> check_gl_version(GLADloadproc load) {
+    // Parsing logic copypasted from glad's find_coreGL() (which was allegedly inspired by @elmindreda https://github.com/elmindreda/greg/blob/master/templates/greg.c.in#L176 and https://github.com/glfw/glfw/blob/master/src/context.c#L36 )
+    PFNGLGETSTRINGPROC getStringProc = reinterpret_cast<PFNGLGETSTRINGPROC>(load("glGetString"));
+    if (getStringProc == nullptr) return std::nullopt;
+    const GLubyte* const version_raw = getStringProc(GL_VERSION);
+    if (version_raw == nullptr) return std::nullopt;
+
+    const char* prefixes[] = {
+        "OpenGL ES-CM ",
+        "OpenGL ES-CL ",
+        "OpenGL ES ",
+        NULL
+    };
+
+    const char* version = reinterpret_cast<const char*>(version_raw);
+    if (!version) return std::nullopt;
+
+    for (int i = 0; prefixes[i]; i++) {
+        const size_t length = strlen(prefixes[i]);
+        if (strncmp(version, prefixes[i], length) == 0) {
+            version += length;
+            break;
+        }
+    }
+
+    int major, minor;
+#ifdef _MSC_VER
+    sscanf_s(version, "%d.%d", &major, &minor);
+#else
+    sscanf(version, "%d.%d", &major, &minor);
+#endif
+
+	return std::make_pair(major, minor);
+}
 
 //==============================================================================
-std::optional<std::string> GraphicsSystem::try_create_opengl_context(SDL_GLprofile profile, int major, int minor)
+std::optional<std::string> GraphicsSystem::try_create_opengl_context(const GlLoadingInstructions& instructions)
 {
   SDL_GL_ResetAttributes();
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, profile);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, major);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, instructions.profile);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, instructions.requested_major);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, instructions.requested_minor);
   SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
@@ -164,7 +210,7 @@ std::optional<std::string> GraphicsSystem::try_create_opengl_context(SDL_GLprofi
   constexpr cstr WINDOW_NAME = "N U C L I D E A N";
   constexpr auto WIN_POS = SDL_WINDOWPOS_UNDEFINED;
 
-  nc_log("Creating SDL window with size {}x{} for context {}.{}", m_window_width, m_window_height, major, minor);
+  nc_log("Creating SDL window with size {}x{} for context {}.{}", m_window_width, m_window_height, instructions.requested_major, instructions.requested_minor);
   // create window
   m_window = SDL_CreateWindow(
     WINDOW_NAME, 
@@ -179,7 +225,7 @@ std::optional<std::string> GraphicsSystem::try_create_opengl_context(SDL_GLprofi
     [[maybe_unused]] cstr error = SDL_GetError();
     return std::optional<std::string>(std::format("Error when creating window: {}", error));
   }
-  nc_log("Created SDL window with size {}x{} for context {}.{}", m_window_width, m_window_height, major, minor);
+  nc_log("Created SDL window with size {}x{} for context {}.{}", m_window_width, m_window_height, instructions.requested_major, instructions.requested_minor);
   SDL_SetWindowResizable(m_window, get_engine().is_editor_mode() ? SDL_TRUE : SDL_FALSE);
 
   // create opengl context
@@ -191,7 +237,16 @@ std::optional<std::string> GraphicsSystem::try_create_opengl_context(SDL_GLprofi
     m_window = nullptr;
     return std::optional<std::string>(std::format("Error when creating GL_Context: {}", error));
   }
-  nc_log("Created SDL context {}.{}", major, minor);
+  auto [major, minor] = check_gl_version(SDL_GL_GetProcAddress).value_or(std::make_pair(0, 0));
+  nc_log("Created SDL context {}.{} (requested: {}.{}, expected: {}.{})", major, minor, instructions.requested_major, instructions.requested_minor, instructions.expected_major, instructions.least_expected_minor);
+  if(major != instructions.expected_major || minor < instructions.least_expected_minor)
+  {
+    SDL_GL_DeleteContext(m_gl_context);
+    m_gl_context = nullptr;
+    SDL_DestroyWindow(m_window);
+    m_window = nullptr;
+    return std::optional<std::string>(std::format("Error when creating GL_Context: Expected at least {}.{}, got {}.{}", instructions.expected_major, instructions.least_expected_minor, major, minor));
+  }
   return std::nullopt;
 }
 
@@ -220,7 +275,7 @@ static void log_gl_specs()
 }
 
 //==============================================================================
-bool GraphicsSystem::init()
+bool GraphicsSystem::init(bool force_gles)
 {
   NC_TODO("Log out an error when the graphics system initialization fails");
   NC_TODO("Terminate the already set-up SDL stuff on failed initialization.");
@@ -237,21 +292,35 @@ bool GraphicsSystem::init()
   }
 
 
-  if(auto err = try_create_opengl_context(SDL_GL_CONTEXT_PROFILE_CORE, 4, 3))
+  StackVector<GlLoadingInstructions, 4> configs;
+  if(! force_gles) { // Skip if forcing OpenGL ES
+      // Desktop OpenGL 4.3 - our main renderer backend
+      configs.emplace_back(GlLoadingInstructions{ .profile = SDL_GL_CONTEXT_PROFILE_CORE, .result_backend = RenderBackend::OpenGL, .requested_major = 4, .requested_minor = 3, .expected_major = 4, .least_expected_minor = 3 });
+  }
+  // For some reason on RPi5, if we asked directly for 3.1, we would get segfault when creating the window, but we safely get 3.1 by asking for 3.0.
+  configs.emplace_back(GlLoadingInstructions{ .profile = SDL_GL_CONTEXT_PROFILE_ES, .result_backend = RenderBackend::OpenGLES, .requested_major = 3, .requested_minor = 0, .expected_major = 3, .least_expected_minor = 1 });
+  // When not on RPi, ask first for 3.2 because why not (usually I'm curious to learn if the HW being used supports it xD)
+  configs.emplace_back(GlLoadingInstructions{ .profile = SDL_GL_CONTEXT_PROFILE_ES, .result_backend = RenderBackend::OpenGLES, .requested_major = 3, .requested_minor = 2, .expected_major = 3, .least_expected_minor = 1 });
+  // Finally ask directly for GL ES 3.1
+  configs.emplace_back(GlLoadingInstructions{ .profile = SDL_GL_CONTEXT_PROFILE_ES, .result_backend = RenderBackend::OpenGLES, .requested_major = 3, .requested_minor = 1, .expected_major = 3, .least_expected_minor = 1 });
+
+  m_backend = RenderBackend::None;
+  std::optional<std::string> last_error;
+  for (const auto& config : configs) {
+	  auto err = try_create_opengl_context(config);
+      last_error = err;
+      if (err) {
+          continue;
+      }
+      else {
+          m_backend = config.result_backend;
+		  break;
+      }
+  }
+  if(m_backend == RenderBackend::None)
   {
-    nc_warn("Could not create desktop OpenGL context, trying OpenGL ES instead: {}", *err);
-    if(auto err_es = try_create_opengl_context(SDL_GL_CONTEXT_PROFILE_ES, 3, 0)){
-      // We are asking for ES 3.0 but expecting to get 3.1,
-      //  which is exactly what happens when we do this on Raspberry Pi5.
-      // For some reason, if we asked directly for 3.1, we would get segfault when creating the window.
-      nc_crit("Error when creating OpenGL ES context:'{}'", *err_es);
-      return false;
-    }
-    nc_log("Using OpenGL ES context");
-    m_backend = RenderBackend::OpenGLES;
-  }else{
-    nc_log("Using desktop OpenGL 4.3 context");
-    m_backend = RenderBackend::OpenGL;
+    nc_crit("Failed to create OpenGL context: {}", last_error.value_or("Unknown error"));
+    return false;
   }
 
   

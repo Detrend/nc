@@ -73,6 +73,7 @@ namespace engine_utils
 [[maybe_unused]] constexpr cstr RES_SCALE_ARG      = "-res_scale"; // Sets up the resolution_scale cvar (quick hack, should be removed once we have on Options entry for it)
 [[maybe_unused]] constexpr cstr PRESENTATION_ARG   = "-presentation"; // shows prepared slides while demos play in the background; followed by slide texture names
 [[maybe_unused]] constexpr cstr PRINT_COUNTERS_ARG = "-print_counters"; // prints the performance counters [into a file] 
+[[maybe_unused]] constexpr cstr FORCE_GLES_ARG     = "-gles"; // Forces use of OpenGL ES backend even when desktop OpenGL is available. 
 
 //==============================================================================
 static f32 duration_to_seconds(auto t1, auto t2)
@@ -524,7 +525,7 @@ bool Engine::init(const CmdArgs& cmd_args)
     m_modules[_module_class::get_module_id()] = std::move(m); \
   }
 
-  INIT_MODULE(GraphicsSystem);
+  INIT_MODULE(GraphicsSystem, engine_utils::contains_arg(cmd_args, engine_utils::FORCE_GLES_ARG));
   INIT_MODULE(InputSystem);
   INIT_MODULE(GameSystem);
   INIT_MODULE(SoundSystem);

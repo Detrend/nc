@@ -66,7 +66,7 @@ public:
   GraphicsSystem(const GraphicsSystem&)            = delete;
   GraphicsSystem& operator=(const GraphicsSystem&) = delete;
 
-  bool init();
+  bool init(bool force_gles);
   void on_event(ModuleEvent& event) override;
 
   // This returns the mesh handle. If the sector is dirty (was changed)
@@ -91,7 +91,8 @@ private:
 
   void query_visibility(VisibilityTree& out) const;
   void create_sector_meshes();
-  std::optional<std::string> try_create_opengl_context(SDL_GLprofile profile, int major, int minor);
+  struct GlLoadingInstructions;
+  std::optional<std::string> try_create_opengl_context(const GlLoadingInstructions& instructions);
 
 #if NC_DEBUG_DRAW
   void render_map_top_down(const VisibilityTree& visible);
