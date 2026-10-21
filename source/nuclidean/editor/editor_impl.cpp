@@ -754,6 +754,26 @@ bool EditorImpl::handle_keybinds()
     this->redo_undone_action();
   }
 
+  bool key_one = ImGui::IsKeyPressed(ImGuiKey_1);
+  bool key_two = ImGui::IsKeyPressed(ImGuiKey_2);
+
+  if (key_one)
+  {
+    this->change_tool<SelectTool>();
+  }
+
+  if (key_two)
+  {
+    this->change_tool<BrushTool>();
+  }
+
+  // Switch the grid settings
+  bool key_g = ImGui::IsKeyPressed(ImGuiKey_G);
+  if (key_g)
+  {
+    this->snapping = cast<GridSnappingOptions>((this->snapping + 1) % GridSnappingOptions::options_count);
+  }
+
   return true;
 }
 
@@ -824,13 +844,23 @@ void EditorImpl::SelectTool::modify_rendering_properties
   const EditorPrimitive&              /*primitive*/
 )
 {
-  // Sector coloring..
   EditorID author = properties.author_id;
+
+  // First color the selection in green..
+  if (std::ranges::find(this->selected_objects, author) != this->selected_objects.end())
+  {
+    // It is selected!
+    properties.color = color4{0.2f, 1.0f, 0.3f, properties.color.a};
+    properties.line_width *= 2.0f;
+  }
+
+  // Then color the pointed-at object
   if (author == this->pointed_at_object && author != INVALID_EDITOR_ID)
   {
     properties.color = color4{1.0f, 1.0f, 0.0f, properties.color.a};
     properties.line_width *= 4.0f;
 
+    // Increase the scale of points when pointed at
     bool is_point = editor.level.try_get_object<EditorPoint>(author) != nullptr;
     if (is_point)
     {
@@ -1173,6 +1203,31 @@ bool EditorImpl::SelectTool::handle_selection()
   }
 
   this->pointed_at_object = best_idx >= 0 ? objects[best_idx] : INVALID_EDITOR_ID;
+
+  // Handle adding/removing objects from selection list
+  bool left_click = ImGui::IsKeyPressed(ImGuiKey_MouseLeft);
+  if (left_click && this->pointed_at_object != INVALID_EDITOR_ID)
+  {
+    auto it = std::ranges::find(this->selected_objects, this->pointed_at_object);
+    if (it == this->selected_objects.end())
+    {
+      // Not yet selected.. Add it
+      this->selected_objects.push_back(this->pointed_at_object);
+    }
+    else
+    {
+      // It is selected, so remove it..
+      this->selected_objects.erase(it);
+    }
+  }
+
+  // Clear the selection on ESC
+  bool esc_pressed = ImGui::IsKeyPressed(ImGuiKey_Escape);
+  if (esc_pressed)
+  {
+    this->selected_objects.clear();
+  }
+
   return true;
 }
 
