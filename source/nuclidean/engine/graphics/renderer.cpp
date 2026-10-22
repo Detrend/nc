@@ -663,17 +663,17 @@ void Renderer::render_sectors(const CameraData& camera) const
 
   m_textures_ssbo.bind(0);
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, game_atlas.diffuse_handle);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, game_atlas.diffuse_handle);
   glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_2D, level_atlas.diffuse_handle);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, level_atlas.diffuse_handle);
   glActiveTexture(GL_TEXTURE2);
-  glBindTexture(GL_TEXTURE_2D, game_atlas.normal_handle);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, game_atlas.normal_handle);
   glActiveTexture(GL_TEXTURE3);
-  glBindTexture(GL_TEXTURE_2D, level_atlas.normal_handle);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, level_atlas.normal_handle);
   glActiveTexture(GL_TEXTURE4);
-  glBindTexture(GL_TEXTURE_2D, game_atlas.specular_handle);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, game_atlas.specular_handle);
   glActiveTexture(GL_TEXTURE5);
-  glBindTexture(GL_TEXTURE_2D, level_atlas.specular_handle);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, level_atlas.specular_handle);
 
   m_sector_material.use();
   m_sector_material.set_uniform(shaders::sector::VIEW, camera.view);
@@ -981,7 +981,7 @@ void Renderer::render_entities(const CameraData& camera) const
   {
     const auto& group = groups[l];
     const TextureAtlasBundle& atlas = TextureManager::get().get_atlas_bundle(cast<ResLifetime>(l));
-    glBindTexture(GL_TEXTURE_2D, atlas.diffuse_handle);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, atlas.diffuse_handle);
     m_billboard_material.set_uniform(shaders::billboard::ATLAS_SIZE, atlas.get_size());
     m_billboard_material.set_uniform(shaders::billboard::ENABLE_SHADOWS, true);
 
@@ -1004,7 +1004,7 @@ void Renderer::render_entities(const CameraData& camera) const
           appearance, camera
         );
 
-        m_billboard_material.set_uniform(shaders::billboard::TEXTURE_POS, texture.get_pos());
+        m_billboard_material.set_uniform(shaders::billboard::TEXTURE_POS, vec3(texture.get_pos(), static_cast<float>(texture.get_array_idx())));
         m_billboard_material.set_uniform(shaders::billboard::TEXTURE_SIZE, texture.get_size());
 
         const bool bottom_mode = appearance.pivot == Appearance::PivotMode::bottom;
@@ -1041,7 +1041,7 @@ void Renderer::render_entities(const CameraData& camera) const
     }
   }
 
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
   glBindVertexArray(0);
 }
 
@@ -1120,16 +1120,16 @@ const
   m_gun_material.set_uniform(sb::VIEW,           view);
   m_gun_material.set_uniform(sb::PROJECTION,     projection);
   m_gun_material.set_uniform(sb::ATLAS_SIZE,     texture.get_atlas_bundle().get_size());
-  m_gun_material.set_uniform(sb::TEXTURE_POS,    texture.get_pos());
+  m_gun_material.set_uniform(sb::TEXTURE_POS,    vec3(texture.get_pos(), static_cast<float>(texture.get_array_idx())));
   m_gun_material.set_uniform(sb::TEXTURE_SIZE,   texture.get_size());
   m_gun_material.set_uniform(sb::SECTOR_ID,      cast<u32>(sector_id));
   m_gun_material.set_uniform(sb::MATRIX_ID,      matrix_id);
   m_gun_material.set_uniform(sb::ENABLE_SHADOWS, true);
 
-  glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, texture.get_atlas_bundle().diffuse_handle);
   glDrawArrays(texturable_quad.get_draw_mode(), 0, texturable_quad.get_vertex_count());
 
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
   glBindVertexArray(0);
 }
 

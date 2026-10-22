@@ -3,6 +3,7 @@ struct TextureData {
   vec2 pos;
   vec2 size;
   float in_game_atlas;
+  float array_idx;
 };
 
 in vec3 position;
@@ -25,12 +26,12 @@ layout(location = 3) out vec4 g_stitched_normal;
 layout(location = 4) out vec4 g_albedo;
 layout(location = 5) out uint g_sector;
 
-layout(binding = 0) uniform sampler2D game_atlas_sampler;
-layout(binding = 1) uniform sampler2D level_atlas_sampler;
-layout(binding = 2) uniform sampler2D game_normal_sampler;
-layout(binding = 3) uniform sampler2D level_normal_sampler;
-layout(binding = 4) uniform sampler2D game_specular_sampler;
-layout(binding = 5) uniform sampler2D level_specular_sampler;
+layout(binding = 0) uniform mediump sampler2DArray game_atlas_sampler;
+layout(binding = 1) uniform mediump sampler2DArray level_atlas_sampler;
+layout(binding = 2) uniform mediump sampler2DArray game_normal_sampler;
+layout(binding = 3) uniform mediump sampler2DArray level_normal_sampler;
+layout(binding = 4) uniform mediump sampler2DArray game_specular_sampler;
+layout(binding = 5) uniform mediump sampler2DArray level_specular_sampler;
 
 layout(location = 2) uniform vec2 game_atlas_size;
 layout(location = 3) uniform vec2 level_atlas_size;
@@ -80,7 +81,7 @@ void main()
   vec2 uv_0_1 = clamp(uv_pixels / texture_data.size, vec2(0.01f), vec2(0.99f));
   if (normal.y > 0.0f) uv_0_1.x = 1.0f - uv_0_1.x; // flip floor x
   uv_0_1.y = 1.0f - uv_0_1.y; // flip, not sure why, but it was in the original code
-  vec2 uv = (texture_data.pos + uv_0_1 * texture_data.size) / atlas_size;
+  vec3 uv = vec3((texture_data.pos + uv_0_1 * texture_data.size) / atlas_size, texture_data.array_idx);
 
   vec4 color;
   vec3 normal_rgb;

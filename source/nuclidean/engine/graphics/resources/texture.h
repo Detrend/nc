@@ -30,7 +30,7 @@ struct TextureGPU
   vec2 pos;
   vec2 size;
   f32  in_game_atlas;
-  f32  _padding;
+  f32  atlas_idx;
 };
 
 class TextureHandle
@@ -45,11 +45,13 @@ public:
   u32 get_y() const;
   u32 get_width() const;
   u32 get_height() const;
+  u32 get_array_idx() const;
   const TextureAtlasBundle& get_atlas_bundle() const;
   TextureID get_texture_id() const;
 
   vec2 get_pos() const;
   vec2 get_size() const;
+  vec3 get_gpu_pos() const { return vec3(get_pos(), static_cast<float>(get_array_idx())); }
 
   TextureGPU get_gpu_data() const;
 
@@ -58,7 +60,7 @@ public:
 
 private:
   TextureHandle() {}
-  TextureHandle(ResLifetime lifetime, u32 x, u32 y, u32 width, u32 height, u16 generation, TextureID texture_id);
+  TextureHandle(ResLifetime lifetime, u32 x, u32 y, u32 width, u32 height, u32 array_idx, u16 generation, TextureID texture_id);
 
   ResLifetime m_lifetime   = ResLifetime::None;
   u16         m_generation = 0;
@@ -67,6 +69,7 @@ private:
   u32         m_y          = 0;
   u32         m_width      = 0;
   u32         m_height     = 0;
+  u32         m_array_idx  = 0;
 };
 
 using TextureMap = std::unordered_map<std::string, TextureHandle>;

@@ -256,18 +256,19 @@ static void log_gl_specs()
   GLint max_draw_buffers = 0, max_color_attachments = 0
       , max_fragment_shader_storage_blocks = 0
       , max_shader_storage_buffer_bindings = 0
-      , max_texture_size = 0;
+      , max_texture_size = 0, max_texture_array_layers = 0;
     ;
   glGetIntegerv(GL_MAX_DRAW_BUFFERS, &max_draw_buffers);
   glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_color_attachments);
   glGetIntegerv(GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS, &max_fragment_shader_storage_blocks);
   glGetIntegerv(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &max_shader_storage_buffer_bindings);
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
+  glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &max_texture_array_layers);
 
   nc_log("OpenGL specs...\n\tMax draw buffers: {}\n\tMax color attachments: {}"
-    "\n\tMax fragment shader storage blocks: {}\n\tMax shader storage buffer bindings: {}\n\tMax texture size: {}", 
+    "\n\tMax fragment shader storage blocks: {}\n\tMax shader storage buffer bindings: {}\n\tMax texture size: {}\n\tMax texture array layers: {}", 
       max_draw_buffers, max_color_attachments, max_fragment_shader_storage_blocks, max_shader_storage_buffer_bindings,
-      max_texture_size
+      max_texture_size, max_texture_array_layers
   );
   nc_log("GL_VERSION: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
   nc_log("GL_RENDERER: {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));

@@ -54,6 +54,12 @@ u32 TextureHandle::get_height() const
 }
 
 //==============================================================================
+u32 TextureHandle::get_array_idx() const
+{
+  return m_array_idx;
+}
+
+//==============================================================================
 const TextureAtlasBundle& TextureHandle::get_atlas_bundle() const
 {
   return TextureManager::get().get_atlas_bundle(m_lifetime);
@@ -85,6 +91,7 @@ TextureGPU TextureHandle::get_gpu_data() const
       .pos = get_pos(),
       .size = get_size(),
       .in_game_atlas = (get_lifetime() == ResLifetime::Game ? 1.0f : 0.0f),
+      .atlas_idx = static_cast<float>(get_array_idx())
     };
 }
 
@@ -102,6 +109,7 @@ TextureHandle::TextureHandle
   u32 y, 
   u32 width, 
   u32 height, 
+  u32 array_idx,
   u16 generation,
   TextureID texture_id
 )
@@ -112,7 +120,8 @@ TextureHandle::TextureHandle
   m_x(x),
   m_y(y),
   m_width(width),
-  m_height(height)
+  m_height(height),
+  m_array_idx(array_idx)
 {}
 
 //==============================================================================
@@ -499,7 +508,7 @@ void TextureManager::push_error_texture_load(LoadContext& ctx)
 //==============================================================================
 void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
 {
-  static constexpr u16 DEFAULT_LOAD_TARGET_SIZE = 2048;
+  static constexpr u16 DEFAULT_LOAD_TARGET_SIZE = 4096;
 
   nc_assert(lifetime == ResLifetime::Game || lifetime == ResLifetime::Level);
 
@@ -517,41 +526,47 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
 
   int target_width = DEFAULT_LOAD_TARGET_SIZE;
   int target_height = DEFAULT_LOAD_TARGET_SIZE;
-  u32 atlas_count = 0;
+  int atlas_count = 0;
 
-  scratch_vector<stbrp_rect> pending_rects_a = ctx.load_rects;
-  scratch_vector<stbrp_rect> pending_rects_b;
-  pending_rects_b.reserve(ctx.load_rects.size());
-
-  scratch_vector<stbrp_rect>* pending_rects_in = &pending_rects_a;
-  scratch_vector<stbrp_rect>* pending_rects_out = &pending_rects_b;
-
-  while (true)
   {
-    stbrp_context context;
-    scratch_vector<stbrp_node> nodes(target_width);
+    auto _scope = ScratchAllocator::get().create_scope("packing");
+    scratch_vector<stbrp_rect> pending_rects_a = ctx.load_rects;
+    scratch_vector<stbrp_rect> pending_rects_b;
+    pending_rects_b.reserve(ctx.load_rects.size());
 
-    stbrp_init_target(&context, target_width, target_height, nodes.data(), cast<int>(nodes.size()));
-    stbrp_pack_rects(&context, pending_rects_in->data(), cast<int>(pending_rects_in->size()));
+    scratch_vector<stbrp_rect>* pending_rects_in = &pending_rects_a;
+    scratch_vector<stbrp_rect>* pending_rects_out = &pending_rects_b;
 
-    bool all_packed = true;
-    for (const auto& rect : ctx.load_rects)
+    while (true)
     {
-      //auto& data = ctx.load_data[rect.id];
-      if (rect.was_packed == 0)
-      {
-        ctx.load_data[rect.id].texture_array_idx = 
-        all_packed = false;
-      }
-      else {
-        pending_rects_out->emplace_back(rect);
-      }
-    }
-    if (all_packed)
-      break;
+      auto _scope_iteration = ScratchAllocator::get().create_scope("iteration");
+      stbrp_context context;
+      scratch_vector<stbrp_node> nodes(target_width);
 
-    std::swap(*pending_rects_in, *pending_rects_out);
-    pending_rects_out->clear();
+      stbrp_init_target(&context, target_width, target_height, nodes.data(), cast<int>(nodes.size()));
+      stbrp_pack_rects(&context, pending_rects_in->data(), cast<int>(pending_rects_in->size()));
+
+      bool all_packed = true;
+      for (const auto& rect : *pending_rects_in)
+      {
+        auto& data = ctx.load_data[rect.id];
+        if (rect.was_packed == 0)
+        {
+          all_packed = false;
+          pending_rects_out->emplace_back(rect);
+        }
+        else {
+          data.texture_array_idx = atlas_count;
+          ctx.load_rects[rect.id] = rect;
+        }
+      }
+      ++atlas_count;
+      if (all_packed)
+        break;
+
+      std::swap(*pending_rects_in, *pending_rects_out);
+      pending_rects_out->clear();
+    }
   }
 
   auto& bundle = get_atlas_bundle_mut(lifetime);
@@ -570,13 +585,13 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
   // diffuse texture atlas
   {
     glGenTextures(1, &bundle.diffuse_handle);
-    glBindTexture(GL_TEXTURE_2D, bundle.diffuse_handle);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, target_width, target_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, ATLAS_MAX_MIP_LEVEL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, bundle.diffuse_handle);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, target_width, target_height, atlas_count, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, ATLAS_MAX_MIP_LEVEL);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     for (u32 i = 0; i < ctx.load_rects.size(); ++i)
     {
@@ -588,13 +603,15 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
         load_data.diffuse_data, load_data.width, load_data.height,
         cast<u32>(load_data.diffuse_channels), ATLAS_GUTTER);
 
-      glTexSubImage2D(
-        GL_TEXTURE_2D,
+      glTexSubImage3D(
+        GL_TEXTURE_2D_ARRAY,
         0,
         rect.x,
         rect.y,
+        load_data.texture_array_idx,
         rect.w,
         rect.h,
+        1,
         gl_format_from_channels(load_data.diffuse_channels),
         GL_UNSIGNED_BYTE,
         padded.data()
@@ -607,6 +624,7 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
         rect.y + ATLAS_GUTTER,
         load_data.width,
         load_data.height,
+        load_data.texture_array_idx,
         m_generation,
         cast<TextureID>(m_textures.size())
       );
@@ -618,28 +636,28 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
         m_error_texture_handle = handle;
     }
 
-    glGenerateMipmap(GL_TEXTURE_2D);
+    glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
   }
 
   // normal texture atlas
   {
     glGenTextures(1, &bundle.normal_handle);
-    glBindTexture(GL_TEXTURE_2D, bundle.normal_handle);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, target_width, target_height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, ATLAS_MAX_MIP_LEVEL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, bundle.normal_handle);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGB8, target_width, target_height, atlas_count, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, ATLAS_MAX_MIP_LEVEL);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     {
-      std::vector<unsigned char> identity(cast<size_t>(target_width* target_height * 3)); // too big for scratch :(
+      std::vector<unsigned char> identity(cast<size_t>(target_width* target_height * atlas_count * 3)); // too big for scratch :(
       for (size_t texel = 0; texel < identity.size(); texel += 3)
       {
         identity[texel] = 128;
         identity[texel + 1] = 128;
         identity[texel + 2] = 255;
       }
-      glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, target_width, target_height, GL_RGB, GL_UNSIGNED_BYTE, identity.data());
+      glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, target_width, target_height, atlas_count, GL_RGB, GL_UNSIGNED_BYTE, identity.data());
     }
 
     for (u32 i = 0; i < ctx.load_rects.size(); ++i)
@@ -655,13 +673,15 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
         load_data.normal_data, load_data.width, load_data.height,
         cast<u32>(load_data.normal_channels), ATLAS_GUTTER);
 
-      glTexSubImage2D(
-        GL_TEXTURE_2D,
+      glTexSubImage3D(
+        GL_TEXTURE_2D_ARRAY,
         0,
         rect.x,
         rect.y,
+        load_data.texture_array_idx,
         rect.w,
         rect.h,
+        1,
         gl_format_from_channels(load_data.normal_channels),
         GL_UNSIGNED_BYTE,
         padded.data()
@@ -669,23 +689,23 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
       stbi_image_free(load_data.normal_data);
     }
 
-    glGenerateMipmap(GL_TEXTURE_2D);
+    glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
   }
 
   // specular texture atlas
   {
     glGenTextures(1, &bundle.specular_handle);
-    glBindTexture(GL_TEXTURE_2D, bundle.specular_handle);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, target_width, target_height, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, ATLAS_MAX_MIP_LEVEL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, bundle.specular_handle);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_R8, target_width, target_height, atlas_count, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, ATLAS_MAX_MIP_LEVEL);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     {
-      const std::vector<unsigned char> zero(cast<size_t>(target_width* target_height), 0);
-      glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, target_width, target_height, GL_RED, GL_UNSIGNED_BYTE, zero.data());
+      const std::vector<unsigned char> zero(cast<size_t>(target_width* target_height * atlas_count), 0);
+      glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, target_width, target_height, atlas_count, GL_RED, GL_UNSIGNED_BYTE, zero.data());
     }
 
     for (u32 i = 0; i < ctx.load_rects.size(); ++i)
@@ -701,13 +721,15 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
         load_data.specular_data, load_data.width, load_data.height,
         cast<u32>(load_data.specular_channels), ATLAS_GUTTER);
 
-      glTexSubImage2D(
-        GL_TEXTURE_2D,
+      glTexSubImage3D(
+        GL_TEXTURE_2D_ARRAY,
         0,
         rect.x,
         rect.y,
+        load_data.texture_array_idx,
         rect.w,
         rect.h,
+        1,
         gl_format_from_channels(load_data.specular_channels),
         GL_UNSIGNED_BYTE,
         padded.data()
@@ -715,18 +737,18 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
       stbi_image_free(load_data.specular_data);
     }
 
-    glGenerateMipmap(GL_TEXTURE_2D);
+    glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
   }
 
   // emissive texture atlas
   {
     glGenTextures(1, &bundle.emissive_handle);
-    glBindTexture(GL_TEXTURE_2D, bundle.emissive_handle);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, target_width, target_height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, bundle.emissive_handle);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGB8, target_width, target_height, atlas_count, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     for (u32 i = 0; i < ctx.load_rects.size(); ++i)
     {
@@ -741,13 +763,15 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
         load_data.emissive_data, load_data.width, load_data.height,
         cast<u32>(load_data.emissive_channels), ATLAS_GUTTER);
 
-      glTexSubImage2D(
-        GL_TEXTURE_2D,
+      glTexSubImage3D(
+        GL_TEXTURE_2D_ARRAY,
         0,
         rect.x,
         rect.y,
+        load_data.texture_array_idx,
         rect.w,
         rect.h,
+        1,
         gl_format_from_channels(load_data.emissive_channels),
         GL_UNSIGNED_BYTE,
         padded.data()

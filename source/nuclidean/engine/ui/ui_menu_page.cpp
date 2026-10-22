@@ -117,7 +117,7 @@ void NextLevelPage::draw(ShaderProgramHandle button_material, ShaderProgramHandl
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
 
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
   glBindVertexArray(0);
@@ -160,7 +160,7 @@ void NextLevelPage::draw_stats(ShaderProgramHandle digit_material, GLuint VAO)
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
 
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
   glBindVertexArray(0);
@@ -196,14 +196,14 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
     //setting shader
     digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
     digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_gpu_pos());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
     digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
     digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
     digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
     digit_material.set_uniform(shaders::ui_text::HOVER, false);
 
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     display_count = display_count / 10;
@@ -227,14 +227,14 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
     // setting shader uniforms
     digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
     digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_gpu_pos());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size() - vec2(1.0f, 0.0f));
     digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
     digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
     digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
     digit_material.set_uniform(shaders::ui_text::HOVER, false);
 
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     position += pos_dif;
@@ -259,14 +259,14 @@ void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
     //setting shader uniforms
     digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
     digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_gpu_pos());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
     digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
     digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
     digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
     digit_material.set_uniform(shaders::ui_text::HOVER, false);
 
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     display_count = display_count / 10;
@@ -304,14 +304,14 @@ void NextLevelPage::draw_secret_count(ShaderProgramHandle digit_material)
     //setting shader
     digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
     digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_gpu_pos());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
     digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
     digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
     digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
     digit_material.set_uniform(shaders::ui_text::HOVER, false);
 
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     display_count = display_count / 10;
@@ -335,14 +335,14 @@ void NextLevelPage::draw_secret_count(ShaderProgramHandle digit_material)
     // setting shader uniforms
     digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
     digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_gpu_pos());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size() - vec2(1.0f, 0.0f));
     digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
     digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
     digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
     digit_material.set_uniform(shaders::ui_text::HOVER, false);
 
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     position += pos_dif;
@@ -367,14 +367,14 @@ void NextLevelPage::draw_secret_count(ShaderProgramHandle digit_material)
     //setting shader uniforms
     digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
     digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_gpu_pos());
     digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
     digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
     digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
     digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
     digit_material.set_uniform(shaders::ui_text::HOVER, false);
 
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
     display_count = display_count / 10;
@@ -493,7 +493,7 @@ void MainMenuPage::draw(ShaderProgramHandle button_material, GLuint VAO)
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
 
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
   glBindVertexArray(0);
@@ -590,7 +590,7 @@ void NewGamePage::draw(ShaderProgramHandle button_material, GLuint VAO)
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
 
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
   glBindVertexArray(0);
@@ -681,7 +681,7 @@ void OptionsPage::draw(ShaderProgramHandle button_material, GLuint VAO)
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
 
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
   glBindVertexArray(0);
@@ -721,14 +721,14 @@ void OptionsPage::draw(ShaderProgramHandle button_material, GLuint VAO)
     //set uniforms
     digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
     digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-    digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
+    digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_gpu_pos());
     digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
     digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
     digit_shader.set_uniform(shaders::ui_text::HEIGHT, 16);
     digit_shader.set_uniform(shaders::ui_text::WIDTH, 8);
     digit_shader.set_uniform(shaders::ui_text::HOVER, false);
 
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, texture.get_atlas_bundle().diffuse_handle);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
   }
 
@@ -746,21 +746,21 @@ void OptionsPage::draw(ShaderProgramHandle button_material, GLuint VAO)
   // set uniforms
   digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
   digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture_c.get_atlas_bundle().get_size());
-  digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture_c.get_pos());
+  digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture_c.get_gpu_pos());
   digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture_c.get_size());
   digit_shader.set_uniform(shaders::ui_text::CHARACTER, crosshair_step + 11);
   digit_shader.set_uniform(shaders::ui_text::HEIGHT, 2);
   digit_shader.set_uniform(shaders::ui_text::WIDTH, 11);
   digit_shader.set_uniform(shaders::ui_text::HOVER, false);
 
-  glBindTexture(GL_TEXTURE_2D, texture_c.get_atlas_bundle().diffuse_handle);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, texture_c.get_atlas_bundle().diffuse_handle);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
   // unbind
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
 
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
   glBindVertexArray(0);
@@ -1232,7 +1232,7 @@ void LoadGamePage::draw(ShaderProgramHandle button_material, ShaderProgramHandle
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
 
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
   glBindVertexArray(0);
@@ -1261,7 +1261,7 @@ void LoadGamePage::draw(ShaderProgramHandle button_material, ShaderProgramHandle
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
 
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
   glBindVertexArray(0);
@@ -1362,7 +1362,7 @@ void QuitGamePage::draw(ShaderProgramHandle button_material, GLuint VAO)
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
 
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
   glBindVertexArray(0);

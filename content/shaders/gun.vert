@@ -5,7 +5,7 @@ layout(location = 1) in vec2 a_uv;
 out      vec3 position;
 out      vec3 stitched_position;
 out      vec3 normal;
-out      vec2 uv;
+out      vec3 uv;
 out flat vec3 stitched_shading_position;
 out flat vec3 shading_position;
 
@@ -13,7 +13,7 @@ layout(location = 0) uniform mat4 transform;
 layout(location = 1) uniform mat4 view;
 layout(location = 2) uniform mat4 projection;
 layout(location = 3) uniform vec2 atlas_size;
-layout(location = 4) uniform vec2 texture_pos;
+layout(location = 4) uniform vec3 texture_pos;
 layout(location = 5) uniform vec2 texture_size;
 
 void main()
@@ -22,7 +22,7 @@ void main()
   position = (transform * vec4(vec3(0.0f), 1.0f)).xyz;
   stitched_position = (transform * vec4(vec3(0.0f), 1.0f)).xyz;
   normal = (transform * vec4(0.0f, 0.0f, 1.0f, 0.0f)).xyz;
-  uv = (a_uv * texture_size + texture_pos) / atlas_size;
+  uv = vec3((a_uv * texture_size + texture_pos.xy) / atlas_size, texture_pos.z);
 
   stitched_shading_position = (transform * vec4(vec3(0.0f), 1.0f)).xyz;
   shading_position          = (transform * vec4(vec3(0.0f), 1.0f)).xyz;

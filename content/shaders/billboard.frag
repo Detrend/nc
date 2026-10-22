@@ -2,7 +2,7 @@
 in      vec3 position;
 in      vec3 stitched_position;
 in      vec3 normal;
-in      vec2 uv;
+in      vec3 uv;
 in flat vec3 stitched_shading_position;
 in flat vec3 shading_position;
 
@@ -13,7 +13,7 @@ layout(location = 3) out vec4 g_stitched_normal;
 layout(location = 4) out vec4 g_albedo;
 layout(location = 5) out uint g_sector;
 
-layout(binding = 0) uniform sampler2D sampler;
+layout(binding = 0) uniform highp sampler2DArray sampler;
 
 layout(location = 6) uniform uint sector_id;
 layout(location = 8) uniform uint matrix_id;

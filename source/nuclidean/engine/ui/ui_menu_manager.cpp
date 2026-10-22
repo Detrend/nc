@@ -375,12 +375,12 @@ void MenuManager::draw_cursor()
   // setting shader uniforms
   button_material.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
   button_material.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-  button_material.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
+  button_material.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_gpu_pos());
   button_material.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
   button_material.set_uniform(shaders::ui_button::HOVER, false);
 
   // draw
-  glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, texture.get_atlas_bundle().diffuse_handle);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
   // shader unbinding
@@ -388,7 +388,7 @@ void MenuManager::draw_cursor()
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
 
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
   glBindVertexArray(0);
@@ -430,18 +430,18 @@ void MenuManager::draw_presentation()
   // set shader uniforms
   button_material.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
   button_material.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-  button_material.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
+  button_material.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_gpu_pos());
   button_material.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
   button_material.set_uniform(shaders::ui_button::HOVER, false);
 
-  glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, texture.get_atlas_bundle().diffuse_handle);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
   // shader unbinding
   glDisable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
 
-  glBindTexture(GL_TEXTURE_2D, 0);
+  glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
   glBindVertexArray(0);

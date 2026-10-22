@@ -1,11 +1,11 @@
     
-in vec2 uv;
+in vec3 uv;
       
 layout(location = 7) uniform bool hover;
 
 out vec4 FragColor;
 
-uniform sampler2D sampler;
+uniform mediump sampler2DArray  sampler;
 
 void main(void) {
     FragColor = texture(sampler, uv);

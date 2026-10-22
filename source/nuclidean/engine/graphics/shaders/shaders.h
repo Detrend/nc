@@ -37,7 +37,7 @@ namespace nc
       inline constexpr Uniform<1, mat4> VIEW;
       inline constexpr Uniform<2, mat4> PROJECTION;
       inline constexpr Uniform<3, vec2> ATLAS_SIZE;
-      inline constexpr Uniform<4, vec2> TEXTURE_POS;
+      inline constexpr Uniform<4, vec3> TEXTURE_POS;
       inline constexpr Uniform<5, vec2> TEXTURE_SIZE;
       inline constexpr Uniform<6, u32>  SECTOR_ID;
       inline constexpr Uniform<7, mat4> PORTAL_DEST_TO_SRC;
@@ -54,7 +54,7 @@ namespace nc
       inline constexpr Uniform<1, mat4> VIEW;
       inline constexpr Uniform<2, mat4> PROJECTION;
       inline constexpr Uniform<3, vec2> ATLAS_SIZE;
-      inline constexpr Uniform<4, vec2> TEXTURE_POS;
+      inline constexpr Uniform<4, vec3> TEXTURE_POS;
       inline constexpr Uniform<5, vec2> TEXTURE_SIZE;
       inline constexpr Uniform<6, u32>  SECTOR_ID;
       inline constexpr Uniform<7, mat4> PORTAL_DEST_TO_SRC;
@@ -110,7 +110,7 @@ namespace nc
       inline constexpr Uniform<0, mat4> TRANSFORM;
 
       inline constexpr Uniform<1, vec2> ATLAS_SIZE;
-      inline constexpr Uniform<2, vec2> TEXTURE_POS;
+      inline constexpr Uniform<2, vec3> TEXTURE_POS;
       inline constexpr Uniform<3, vec2> TEXTURE_SIZE;
       inline constexpr Uniform<4, bool> HOVER;
       inline constexpr Uniform<5, vec4> COLOR;
@@ -124,7 +124,7 @@ namespace nc
       inline constexpr Uniform<0, mat4> TRANSFORM;
 
       inline constexpr Uniform<1, vec2> ATLAS_SIZE;
-      inline constexpr Uniform<2, vec2> TEXTURE_POS;
+      inline constexpr Uniform<2, vec3> TEXTURE_POS;
       inline constexpr Uniform<3, vec2> TEXTURE_SIZE;
       inline constexpr Uniform<4, s32> CHARACTER;
       inline constexpr Uniform<5, s32> WIDTH;

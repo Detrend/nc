@@ -1,9 +1,9 @@
       
-in vec2 uv;
+in vec3 uv;
       
 out vec4 FragColor;
 
-uniform sampler2D sampler;
+uniform mediump sampler2DArray sampler;
 
 layout(location = 4) uniform bool hover;
 layout(location = 5) uniform vec4 color;
