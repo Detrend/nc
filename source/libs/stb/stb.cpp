@@ -1,3 +1,5 @@
+#include <stddef.h>
+
 #define stbi_default_alignment 16
 
 namespace nc {

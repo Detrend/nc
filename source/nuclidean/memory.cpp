@@ -1,6 +1,7 @@
 #include<memory.h>
 
 #include<common.h>
+#include<cstring>
 
 namespace nc {
   
