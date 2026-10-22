@@ -84,6 +84,7 @@ jobs:
 
       - name: Install Prerequisites
         run: |
+          sudo apt update -y && sudo apt upgrade -y
           sudo apt install -y clang ninja-build libsdl2-dev zip
           chmod 777 ./tools/premake5
 
@@ -131,6 +132,7 @@ jobs:
 
       - name: Install Prerequisites
         run: |
+          sudo apt update -y && sudo apt upgrade -y
           sudo apt install -y g++ ninja-build libsdl2-dev zip
           chmod 777 ./tools/premake5
 
