@@ -132,8 +132,8 @@ jobs:
 
       - name: Install Prerequisites
         run: |
-          sudo apt update -y && sudo apt upgrade -y
-          sudo apt install -y g++ ninja-build libsdl2-dev zip
+          sudo apt update -y
+          sudo apt install -y  --no-install-recommends g++ ninja-build libsdl2-dev zip
           chmod 777 ./tools/premake5
 
       - name: Report toolchain versions
