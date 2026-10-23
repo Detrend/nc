@@ -901,27 +901,28 @@ static bool load_astc(const std::filesystem::path& img_path, const FunctionRefer
     u8 block_width;
     u8 block_height;
     GLenum gl_format;
+    GLenum gl_format_srgb;
   } ASTC_FORMATS[] = {
-      {  4,  4, GL_COMPRESSED_RGBA_ASTC_4x4 },
-      {  5,  4, GL_COMPRESSED_RGBA_ASTC_5x4 },
-      {  5,  5, GL_COMPRESSED_RGBA_ASTC_5x5 },
-      {  6,  5, GL_COMPRESSED_RGBA_ASTC_6x5 },
-      {  6,  6, GL_COMPRESSED_RGBA_ASTC_6x6 },
-      {  8,  5, GL_COMPRESSED_RGBA_ASTC_8x5 },
-      {  8,  6, GL_COMPRESSED_RGBA_ASTC_8x6 },
-      {  8,  8, GL_COMPRESSED_RGBA_ASTC_8x8 },
-      { 10,  5, GL_COMPRESSED_RGBA_ASTC_10x5 },
-      { 10,  6, GL_COMPRESSED_RGBA_ASTC_10x6 },
-      { 10,  8, GL_COMPRESSED_RGBA_ASTC_10x8 },
-      { 10, 10, GL_COMPRESSED_RGBA_ASTC_10x10 },
-      { 12, 10, GL_COMPRESSED_RGBA_ASTC_12x10 },
-      { 12, 12, GL_COMPRESSED_RGBA_ASTC_12x12 },
+      {  4,  4, GL_COMPRESSED_RGBA_ASTC_4x4   , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4   },
+      {  5,  4, GL_COMPRESSED_RGBA_ASTC_5x4   , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4   },
+      {  5,  5, GL_COMPRESSED_RGBA_ASTC_5x5   , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5   },
+      {  6,  5, GL_COMPRESSED_RGBA_ASTC_6x5   , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5   },
+      {  6,  6, GL_COMPRESSED_RGBA_ASTC_6x6   , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6   },
+      {  8,  5, GL_COMPRESSED_RGBA_ASTC_8x5   , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x5   },
+      {  8,  6, GL_COMPRESSED_RGBA_ASTC_8x6   , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x6   },
+      {  8,  8, GL_COMPRESSED_RGBA_ASTC_8x8   , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x8   },
+      { 10,  5, GL_COMPRESSED_RGBA_ASTC_10x5  , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x5  },
+      { 10,  6, GL_COMPRESSED_RGBA_ASTC_10x6  , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x6  },
+      { 10,  8, GL_COMPRESSED_RGBA_ASTC_10x8  , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x8  },
+      { 10, 10, GL_COMPRESSED_RGBA_ASTC_10x10 , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x10 },
+      { 12, 10, GL_COMPRESSED_RGBA_ASTC_12x10 , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x10 },
+      { 12, 12, GL_COMPRESSED_RGBA_ASTC_12x12 , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12 },
   };
 
   GLenum gl_format = 0;
   for (const auto& format : ASTC_FORMATS) {
     if (format.block_width == info.block_width && format.block_height == info.block_height) {
-      gl_format = format.gl_format;
+      gl_format = format.gl_format_srgb;
       break;
     }
   }
