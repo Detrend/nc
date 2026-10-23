@@ -555,13 +555,13 @@ struct TextureAtlasLayoutParameters {
     config_texture_misc_params();
   }
 
-  void define_mipmaps(GLuint handle, ivec3 dims) const {
+  void define_mipmaps(ivec3 dims) const {
     for (GLint mip = 1; mip <= max_mip_level; ++mip) {
       glTexImage3D(GL_TEXTURE_2D_ARRAY, mip, internal_format, dims.x >> mip, dims.y >> mip, dims.z, 0, format, data_type, nullptr);
     }
   }
 
-  void define_mipmap_compressed(GLuint handle, GLint mip, ivec3 dims, GLenum compressed_internal_format, GLsizei compressed_mip_size_per_layer) const {
+  void define_mipmap_compressed(GLint mip, ivec3 dims, GLenum compressed_internal_format, GLsizei compressed_mip_size_per_layer) const {
     glCompressedTexImage3D(GL_TEXTURE_2D_ARRAY, mip, compressed_internal_format, dims.x >> mip, dims.y >> mip, dims.z, 0, compressed_mip_size_per_layer * dims.z, nullptr);
   }
 
@@ -943,7 +943,7 @@ static bool load_astc(const std::filesystem::path& img_path, const FunctionRefer
   return true;
 }
 
-void TextureManager::load_prebaked_atlases(ResLifetime lifetime, LoadContext& ctx, const std::string& path)
+void TextureManager::load_prebaked_atlases(ResLifetime lifetime, [[maybe_unused]]LoadContext& ctx, const std::string& path)
 {
   auto& bundle = get_atlas_bundle_mut(lifetime);
 
@@ -989,7 +989,7 @@ void TextureManager::load_prebaked_atlases(ResLifetime lifetime, LoadContext& ct
   // Load the texture atlas pages
   auto load_page = [&](const std::string& name, const TextureAtlasLayoutParameters& params, GLuint& handle)->void {
       handle = params.gen_and_config_texture(atlas_dims);
-      params.define_mipmaps(handle, atlas_dims);
+      params.define_mipmaps(atlas_dims);
 
       for (GLint mip = 0; mip <= params.max_mip_level; ++mip) {
         for (GLuint layer = 0; layer < static_cast<GLuint>(atlas_dims.z); ++layer) {
@@ -1032,7 +1032,7 @@ void TextureManager::load_prebaked_atlases(ResLifetime lifetime, LoadContext& ct
           if (!was_mip_generated) {
             was_mip_generated = true;
             nc_assert(was_texture_generated && (mip > 0));
-            params.define_mipmap_compressed(handle, mip, atlas_dims, info.format, static_cast<GLsizei>(info.payload_size));
+            params.define_mipmap_compressed(mip, atlas_dims, info.format, static_cast<GLsizei>(info.payload_size));
           }
 
           nc_expect(was_texture_generated && was_mip_generated);
@@ -1044,6 +1044,7 @@ void TextureManager::load_prebaked_atlases(ResLifetime lifetime, LoadContext& ct
     }
   };
 
+  static_cast<void>(load_page);
   load_page_compressed("diffuse", DIFFUSE_TEXTURE_PARAMS, bundle.diffuse_handle);
   load_page_compressed("normal", NORMAL_TEXTURE_PARAMS, bundle.normal_handle);
   load_page_compressed("specular", SPECULAR_TEXTURE_PARAMS, bundle.specular_handle);
