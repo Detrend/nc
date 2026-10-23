@@ -44,6 +44,16 @@ struct ActionCreateOrDeleteLine
   void action_undo(EditorLevel& level);
 };
 
+struct ActionDeleteObjects
+{
+  void init_destruction(const EditorLevel& level, const std::vector<EditorID>& objects_to_destroy);
+
+  std::vector<ActionCreateOrDeleteLine> actions;
+
+  void action_do(EditorLevel&   level);
+  void action_undo(EditorLevel& level);
+};
+
 struct ActionMovePoints
 {
   struct LineToMove
@@ -88,7 +98,7 @@ struct ActionMovePoints
   void action_undo(EditorLevel& level);
 };
 
-using EditorAction = std::variant<ActionCreateOrDeleteLine, ActionMovePoints>;
+using EditorAction = std::variant<ActionCreateOrDeleteLine, ActionDeleteObjects, ActionMovePoints>;
 
 // The action is free to return any return type
 template<typename ActionType>

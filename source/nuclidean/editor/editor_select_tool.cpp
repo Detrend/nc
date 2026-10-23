@@ -427,6 +427,28 @@ bool SelectTool::handle_selection()
 }
 
 //==================================================================================================
+bool SelectTool::handle_deletion()
+{
+  if (this->selected_objects.empty())
+  {
+    // Can do something else this update
+    return false;
+  }
+
+  if (ImGui::IsKeyPressed(ImGuiKey_Delete))
+  {
+    // Handle deletion
+    ActionDeleteObjects action;
+    action.init_destruction(this->editor.level, this->selected_objects);
+    editor.do_action(std::move(action));
+    this->selected_objects.clear(); // Clear the selection
+    return true;
+  }
+
+  return false;
+}
+
+//==================================================================================================
 void SelectTool::deselect_non_existing_objects()
 {
   // Remove all non-existing objects from the selection
@@ -446,7 +468,7 @@ void SelectTool::deselect_non_existing_objects()
 void SelectTool::update(f32 /*dt*/)
 {
   deselect_non_existing_objects();
-  handle_dragging() || handle_selection();
+  handle_deletion() || handle_dragging() || handle_selection();
 }
 
 //==================================================================================================

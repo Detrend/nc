@@ -174,6 +174,77 @@ void ActionCreateOrDeleteLine::action_undo(EditorLevel& level)
 }
 
 //==================================================================================================
+void ActionDeleteObjects::init_destruction
+(
+  const EditorLevel& level, const std::vector<EditorID>& objects_to_destroy
+)
+{
+  // Collect a list of lines..
+  std::set<EditorID> list_of_lines;
+
+  for (EditorID object_to_destroy_id : objects_to_destroy)
+  {
+    if (level.try_get_object<EditorLine>(object_to_destroy_id))
+    {
+      // Destroy the line itself..
+      list_of_lines.insert(object_to_destroy_id);
+    }
+    else if (const EditorPoint* point = level.try_get_object<EditorPoint>(object_to_destroy_id))
+    {
+      // Destroy all lines going from the point..
+      for (EditorID half_edge_id : level.point_to_half_edges.at(object_to_destroy_id))
+      {
+        list_of_lines.insert(level.get_object<EditorHalfEdge>(half_edge_id).line);
+      }
+    }
+    else if (const EditorSector* sector = level.try_get_object<EditorSector>(object_to_destroy_id))
+    {
+      // Erase only the lines that are not shared with other sector
+      EditorID half_edge_id = sector->edge;
+      do
+      {
+        const EditorHalfEdge& half_edge = level.get_object<EditorHalfEdge>(half_edge_id);
+        const EditorHalfEdge& twin_edge = level.get_object<EditorHalfEdge>(half_edge.twin);
+
+        if (twin_edge.sector == INVALID_EDITOR_ID || twin_edge.sector == object_to_destroy_id)
+        {
+          // Delete this one, no other sector sharing it..
+          list_of_lines.insert(half_edge.line);
+        }
+
+        half_edge_id = half_edge.next; // Continue to the next one
+      }
+      while (half_edge_id != sector->edge);
+    }
+  }
+
+  // Transform it into a normal list
+  for (EditorID line_to_destroy_id : list_of_lines)
+  {
+    this->actions.push_back(ActionCreateOrDeleteLine{.create = false, .line_id = line_to_destroy_id});
+  }
+}
+
+//==================================================================================================
+void ActionDeleteObjects::action_do(EditorLevel& level)
+{
+  for (ActionCreateOrDeleteLine& action : this->actions)
+  {
+    action.action_do(level);
+  }
+}
+
+//==================================================================================================
+void ActionDeleteObjects::action_undo(EditorLevel& level)
+{
+  // Go from the back, reverse order than the one we executed them before
+  for (ActionCreateOrDeleteLine& action : this->actions | std::views::reverse)
+  {
+    action.action_undo(level);
+  }
+}
+
+//==================================================================================================
 void ActionMovePoints::init_with_new_coords
 (
   const EditorLevel& level, const std::map<EditorID, EditorCoord>& move_points

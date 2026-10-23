@@ -82,6 +82,13 @@ T* EditorLevel::try_get_object(EditorID id)
 
 //==================================================================================================
 template<typename T>
+const T* EditorLevel::try_get_object(EditorID id) const
+{
+  return const_cast<EditorLevel*>(this)->try_get_object<T>(id);
+}
+
+//==================================================================================================
+template<typename T>
 T& EditorLevel::get_object(EditorID id)
 {
   T* object = this->try_get_object<T>(id);

@@ -42,10 +42,12 @@ struct SelectTool : public IEditorPrimitiveRenderingModifier
 
   void get_render_data(RenderList& /*list*/);
   void deselect_non_existing_objects();
-  bool handle_dragging();
-  bool handle_selection();
   void update(f32 /*dt*/);
   void get_modifiers(RenderModifierList& list);
+
+  bool handle_dragging();
+  bool handle_selection();
+  bool handle_deletion();
 };
 
 }

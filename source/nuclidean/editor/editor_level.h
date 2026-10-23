@@ -49,6 +49,9 @@ struct EditorLevel
   T* try_get_object(EditorID id);
 
   template<typename T>
+  const T* try_get_object(EditorID id) const;
+
+  template<typename T>
   T& get_object(EditorID id);
 
   template<typename T>
