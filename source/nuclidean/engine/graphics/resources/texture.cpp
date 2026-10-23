@@ -6,11 +6,15 @@
 
 #include <glad/glad.h>
 #include <stb/stb_image.h>
+#include <stb/stb_image_write.h>
+#include <json/json.hpp>
+#include <engine/graphics/graphics_system.h>
 
 #include <algorithm>
 #include <array>
 #include <cstdlib>
 #include <vector>
+#include <fstream>
 
 namespace nc
 {
@@ -160,6 +164,19 @@ void TextureManager::load_directory(ResLifetime lifetime, const std::string& pat
   auto _scratch_scope = ScratchAllocator::get().create_scope("TextureManager::load_directory()", 384_mb); // Give scratch a big chunk of memory that surely fits all the textures
   LoadContext ctx; // scratch-allocated stuff lives hear
 
+  bool did_use_packed = false;
+  if (lifetime == ResLifetime::Game) { // TODO: make general
+
+    auto path_packed = std::filesystem::path(path + "-packed") / "game";
+    std::filesystem::path path_packed_manifest = path_packed / "textures.json";
+
+    if (std::filesystem::exists(path_packed_manifest)) {
+      did_use_packed = true;
+
+      this->load_prebaked_atlases(lifetime, ctx, path_packed.string());
+    }
+  }
+
   for (const auto& entry : std::filesystem::recursive_directory_iterator(path))
   {
     const std::filesystem::path& entry_path = entry.path();
@@ -168,7 +185,7 @@ void TextureManager::load_directory(ResLifetime lifetime, const std::string& pat
       continue;
 
     const std::filesystem::path extension = entry_path.extension();
-    if (extension == ".png" || extension == ".jpg")
+    if ((! did_use_packed) && (extension == ".png" || extension == ".jpg"))
     {
       const std::string stem = entry_path.stem().string();
       if (stem.ends_with("_normal") || stem.ends_with("_specular") || stem.ends_with("_emissive"))
@@ -183,7 +200,8 @@ void TextureManager::load_directory(ResLifetime lifetime, const std::string& pat
     }
   }
 
-  finish_load(lifetime, ctx);
+  if(! did_use_packed)
+    finish_load(lifetime, ctx);
 }
 
 //==============================================================================
@@ -503,7 +521,63 @@ void TextureManager::push_error_texture_load(LoadContext& ctx)
   });
 }
 
+//==============================================================================
 
+struct TextureAtlasLayoutParameters {
+  GLint internal_format = GL_SRGB8_ALPHA8;
+  GLenum format = GL_RGBA;
+  GLenum data_type = GL_UNSIGNED_BYTE;
+  GLint min_filter = GL_LINEAR_MIPMAP_LINEAR; // GL_TEXTURE_MIN_FILTER
+  GLint mag_filter = GL_NEAREST;              // GL_TEXTURE_MAG_FILTER
+  GLint max_mip_level = ATLAS_MAX_MIP_LEVEL;  // GL_TEXTURE_MAX_LEVEL
+  GLint wrap_s = GL_CLAMP_TO_EDGE;        // GL_TEXTURE_WRAP_S
+  GLint wrap_t = GL_CLAMP_TO_EDGE;        // GL_TEXTURE_WRAP_T
+
+  void gen_texture(GLuint* const out_handle) const { glGenTextures(1, out_handle);}
+
+  void config_texture(GLuint handle, ivec3 dims) const {
+    glBindTexture(GL_TEXTURE_2D_ARRAY, handle);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, internal_format, /*width:*/dims.x, /*height:*/dims.y, /*layers_count:*/dims.z, 0, format, data_type, nullptr);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, min_filter);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, mag_filter);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, max_mip_level);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, wrap_s);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, wrap_t);
+  }
+  void define_mipmaps(GLuint handle, ivec3 dims) const {
+    for (GLint mip = 1; mip <= max_mip_level; ++mip) {
+      glTexImage3D(GL_TEXTURE_2D_ARRAY, mip, internal_format, dims.x >> mip, dims.y >> mip, dims.z, 0, format, data_type, nullptr);
+    }
+  }
+
+  GLuint gen_and_config_texture(ivec3 dims) const {
+    GLuint ret;
+    gen_texture(&ret);
+    config_texture(ret, dims);
+    return ret;
+  }
+
+};
+constexpr TextureAtlasLayoutParameters DIFFUSE_TEXTURE_PARAMS {
+  .internal_format = GL_SRGB8_ALPHA8,
+  .format = GL_RGBA,
+  .data_type = GL_UNSIGNED_BYTE
+};
+constexpr TextureAtlasLayoutParameters NORMAL_TEXTURE_PARAMS {
+  .internal_format = GL_RGB8,
+  .format = GL_RGB,
+  .data_type = GL_UNSIGNED_BYTE
+};
+constexpr TextureAtlasLayoutParameters SPECULAR_TEXTURE_PARAMS {
+  .internal_format = GL_R8,
+  .format = GL_RED,
+  .data_type = GL_UNSIGNED_BYTE
+};
+constexpr TextureAtlasLayoutParameters EMISSIVE_TEXTURE_PARAMS {
+  .internal_format = GL_RGB8,
+  .format = GL_RGB,
+  .data_type = GL_UNSIGNED_BYTE
+};
 
 //==============================================================================
 void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
@@ -515,18 +589,10 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
   if (lifetime == ResLifetime::Game)
     push_error_texture_load(ctx);
 
-  //static constexpr auto get_num_channels_present = [](const TextureManager::LoadData& data) -> u8
-  //  {  return (!!data.diffuse_data) + (!!data.normal_data) + (!!data.specular_data) + (!!data.emissive_data);};
-  //
-  //std::ranges::sort(ctx.load_rects, [&ctx](const stbrp_rect& left_rect, const stbrp_rect& right_rect)->bool {
-  //  const auto& left = ctx.load_data[left_rect.id];
-  //  const auto& right = ctx.load_data[right_rect.id];
-  //  return get_num_channels_present(left) < get_num_channels_present(right);
-  //});
 
   int target_width = DEFAULT_LOAD_TARGET_SIZE;
   int target_height = DEFAULT_LOAD_TARGET_SIZE;
-  int atlas_count = 0;
+  int layers_count = 0;
 
   {
     auto _scope = ScratchAllocator::get().create_scope("packing");
@@ -556,11 +622,11 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
           pending_rects_out->emplace_back(rect);
         }
         else {
-          data.texture_array_idx = atlas_count;
+          data.texture_array_idx = layers_count;
           ctx.load_rects[rect.id] = rect;
         }
       }
-      ++atlas_count;
+      ++layers_count;
       if (all_packed)
         break;
 
@@ -572,6 +638,7 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
   auto& bundle = get_atlas_bundle_mut(lifetime);
   bundle.width = target_width;
   bundle.height = target_height;
+  bundle.layers_count = layers_count;
 
   GLint max_supported_texture_size;
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_supported_texture_size);
@@ -582,16 +649,11 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
 
   nc_log("Texture atlas for {} resources: {}x{} (max supported {})", lifetime == ResLifetime::Game ? "game" : "level", target_width, target_height, max_supported_texture_size);
 
+  const ivec3 texture_dims(target_width, target_height, layers_count);
   // diffuse texture atlas
   {
-    glGenTextures(1, &bundle.diffuse_handle);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, bundle.diffuse_handle);
-    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGBA8, target_width, target_height, atlas_count, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, ATLAS_MAX_MIP_LEVEL);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    const auto& params = DIFFUSE_TEXTURE_PARAMS;
+    bundle.diffuse_handle = params.gen_and_config_texture(texture_dims);
 
     for (u32 i = 0; i < ctx.load_rects.size(); ++i)
     {
@@ -613,7 +675,7 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
         rect.h,
         1,
         gl_format_from_channels(load_data.diffuse_channels),
-        GL_UNSIGNED_BYTE,
+        params.data_type,
         padded.data()
       );
       stbi_image_free(load_data.diffuse_data);
@@ -641,23 +703,18 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
 
   // normal texture atlas
   {
-    glGenTextures(1, &bundle.normal_handle);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, bundle.normal_handle);
-    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGB8, target_width, target_height, atlas_count, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, ATLAS_MAX_MIP_LEVEL);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    const auto& params = NORMAL_TEXTURE_PARAMS;
+    bundle.normal_handle = params.gen_and_config_texture(texture_dims);
+
     {
-      std::vector<unsigned char> identity(cast<size_t>(target_width* target_height * atlas_count * 3)); // too big for scratch :(
+      std::vector<unsigned char> identity(cast<size_t>(target_width* target_height * layers_count * 3)); // too big for scratch :(
       for (size_t texel = 0; texel < identity.size(); texel += 3)
       {
         identity[texel] = 128;
         identity[texel + 1] = 128;
         identity[texel + 2] = 255;
       }
-      glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, target_width, target_height, atlas_count, GL_RGB, GL_UNSIGNED_BYTE, identity.data());
+      glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, target_width, target_height, layers_count, params.format, params.data_type, identity.data());
     }
 
     for (u32 i = 0; i < ctx.load_rects.size(); ++i)
@@ -683,7 +740,7 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
         rect.h,
         1,
         gl_format_from_channels(load_data.normal_channels),
-        GL_UNSIGNED_BYTE,
+        params.data_type,
         padded.data()
       );
       stbi_image_free(load_data.normal_data);
@@ -694,18 +751,12 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
 
   // specular texture atlas
   {
-    glGenTextures(1, &bundle.specular_handle);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, bundle.specular_handle);
-    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_R8, target_width, target_height, atlas_count, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, ATLAS_MAX_MIP_LEVEL);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    const auto& params = SPECULAR_TEXTURE_PARAMS;
+    bundle.specular_handle = params.gen_and_config_texture(texture_dims);
 
     {
-      const std::vector<unsigned char> zero(cast<size_t>(target_width* target_height * atlas_count), 0);
-      glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, target_width, target_height, atlas_count, GL_RED, GL_UNSIGNED_BYTE, zero.data());
+      const std::vector<unsigned char> zero(cast<size_t>(target_width* target_height * layers_count), 0);
+      glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, 0, target_width, target_height, layers_count, GL_RED, GL_UNSIGNED_BYTE, zero.data());
     }
 
     for (u32 i = 0; i < ctx.load_rects.size(); ++i)
@@ -731,7 +782,7 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
         rect.h,
         1,
         gl_format_from_channels(load_data.specular_channels),
-        GL_UNSIGNED_BYTE,
+        params.data_type,
         padded.data()
       );
       stbi_image_free(load_data.specular_data);
@@ -742,13 +793,8 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
 
   // emissive texture atlas
   {
-    glGenTextures(1, &bundle.emissive_handle);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, bundle.emissive_handle);
-    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, GL_RGB8, target_width, target_height, atlas_count, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    const auto& params = EMISSIVE_TEXTURE_PARAMS;
+    bundle.emissive_handle = params.gen_and_config_texture(texture_dims);
 
     for (u32 i = 0; i < ctx.load_rects.size(); ++i)
     {
@@ -773,15 +819,156 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
         rect.h,
         1,
         gl_format_from_channels(load_data.emissive_channels),
-        GL_UNSIGNED_BYTE,
+        params.data_type,
         padded.data()
       );
       stbi_image_free(load_data.emissive_data);
     }
+    glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
   }
 
   ctx.load_rects.clear();
   ctx.load_data.clear();
 }
 
+void TextureManager::load_prebaked_atlases(ResLifetime lifetime, LoadContext& ctx, const std::string& path)
+{
+  auto& bundle = get_atlas_bundle_mut(lifetime);
+
+  std::filesystem::path dir_path(path);
+  std::filesystem::path cfg_path(dir_path / "textures.json");
+  std::ifstream f(cfg_path);
+  nc_assert(f.is_open(), "No atlas at path '{0}'!", std::filesystem::absolute(cfg_path).string());
+  auto data_js = nlohmann::json::parse(f);
+  auto dims_js = data_js["dims"];
+  ivec3 atlas_dims(dims_js[0], dims_js[1], dims_js[2]);
+
+  bundle.width = atlas_dims.x;
+  bundle.height = atlas_dims.y;
+  bundle.layers_count = atlas_dims.z;
+
+  // Setup data for individual rectangles
+  for (const auto& image_js : data_js["img"]) {
+    const auto pos_js = image_js["pos"];
+    const auto dim_js = image_js["dim"];
+    const std::string name = std::string(image_js["name"]);
+    const int layer = image_js["layer"];
+    const ivec2 pos{ pos_js[0], pos_js[1] };
+    const ivec2 dim{ dim_js[0], dim_js[1] };
+
+    const TextureHandle handle(
+      lifetime,
+      pos.x,
+      pos.y,
+      dim.x,
+      dim.y,
+      layer,
+      m_generation,
+      cast<TextureID>(m_textures.size())
+    );
+    bundle.textures.emplace(name, handle);
+    m_textures.emplace_back(handle);
+
+    if (name == ERROR_TEXTURE_NAME)
+      m_error_texture_handle = handle;
+  }
+
+  // Load the texture atlas pages
+
+  auto load_page = [&](const std::string& name, const TextureAtlasLayoutParameters& params, GLuint& handle)->void {
+      handle = params.gen_and_config_texture(atlas_dims);
+      params.define_mipmaps(handle, atlas_dims);
+
+      for (GLint mip = 0; mip <= params.max_mip_level; ++mip) {
+        for (GLuint layer = 0; layer < static_cast<GLuint>(atlas_dims.z); ++layer) {
+          auto _sc = ScratchAllocator::get().create_scope();
+          std::filesystem::path img_path = dir_path / std::format("{}_{}_mip{}.png", name, layer, mip);
+          int x, y, channels;
+          stbi_uc*const img = stbi_load(img_path.string().c_str(), &x, &y, &channels, 0);
+          nc_expect(img);
+          defer(stbi_image_free(img););
+          nc_expect(x == (atlas_dims.x >> mip));
+          nc_expect(y == (atlas_dims.y >> mip));
+          
+          glTexSubImage3D(GL_TEXTURE_2D_ARRAY, mip, 0, 0, layer, x, y, 1, params.format, params.data_type, img);
+        }
+      }
+    };
+
+  load_page("diffuse", DIFFUSE_TEXTURE_PARAMS, bundle.diffuse_handle);
+  load_page("normal", NORMAL_TEXTURE_PARAMS, bundle.normal_handle);
+  load_page("specular", SPECULAR_TEXTURE_PARAMS, bundle.specular_handle);
+  load_page("emissive", EMISSIVE_TEXTURE_PARAMS, bundle.emissive_handle);
 }
+
+
+
+void TextureManager::dump_atlases(ResLifetime lifetime, const std::string& path)
+{
+  if (GraphicsSystem::get().get_backend() != RenderBackend::OpenGL) {
+    nc_crit("Dumping textures can only be done on Open GL!");
+    return;
+  }
+
+  nc_log("Dumping atlases to {}", path);
+  std::filesystem::create_directories(path);
+  
+  auto _scope = ScratchAllocator::get().create_scope("dump_atlases", 512_mb);
+  const TextureAtlasBundle& atlas_bundle = get_atlas_bundle(lifetime);
+
+  auto dump_texture = [&](GLuint texture_handle, const std::string &name, int channels_count, const TextureAtlasLayoutParameters& params)->void {
+    auto _sc = ScratchAllocator::get().create_scope();
+    const size_t pixel_count_per_page = static_cast<size_t>(atlas_bundle.width) * atlas_bundle.height;
+    const size_t pixel_count = pixel_count_per_page * atlas_bundle.layers_count;
+    const size_t size_in_bytes_per_page = pixel_count_per_page * channels_count;
+    const size_t size_in_bytes = pixel_count * channels_count;
+    unsigned char* buffer = static_cast<unsigned char*>(scratch_malloc(size_in_bytes, 16));
+    defer(scratch_delete(buffer););
+    nc_assert(buffer);
+
+    for (GLint mip = 0; mip <= params.max_mip_level; ++mip) {
+      const GLsizei current_size_in_bytes = static_cast<GLsizei>(size_in_bytes) >> (2 * mip);
+      const GLsizei current_size_in_bytes_per_page = static_cast<GLsizei>(size_in_bytes_per_page) >> (2 * mip);
+      glGetTextureImage(texture_handle, mip, params.format, params.data_type, current_size_in_bytes, buffer);
+
+      for (u32 i = 0; i < atlas_bundle.layers_count; ++i) {
+        unsigned char* start = buffer + (i * current_size_in_bytes_per_page);
+        auto save_path = scratch_format("{}/{}_{}_mip{}.png", path, name, i, mip);
+        nc_log("Dumping to {}", save_path);
+        stbi_write_png(save_path.c_str(), atlas_bundle.width >> mip, atlas_bundle.height >> mip, channels_count, start, 0);
+      }
+    }
+  };
+  
+
+  auto root = nlohmann::json::object();
+  root["dims"] = nlohmann::json::array({ atlas_bundle.width, atlas_bundle.height, atlas_bundle.layers_count });
+  auto images = nlohmann::json::array();
+  for (const auto& texture_kv : atlas_bundle.textures) {
+    auto item = nlohmann::json::object();
+    item["name"] = std::string(texture_kv.first);
+    item["pos"] = nlohmann::json::array({ texture_kv.second.get_x(), texture_kv.second.get_y() });
+    item["dim"] = nlohmann::json::array({ texture_kv.second.get_width(), texture_kv.second.get_height() });
+    item["layer"] = texture_kv.second.get_array_idx();
+    images.emplace_back(item);
+  }
+  root["img"] = images;
+  
+  {
+    auto save_path = scratch_format("{}/textures.json", path);
+    nc_log("Dumping to {}", save_path);
+    std::ofstream(save_path.c_str()) << root.dump();
+  }
+
+  dump_texture(atlas_bundle.diffuse_handle, "diffuse", 4, DIFFUSE_TEXTURE_PARAMS);
+  dump_texture(atlas_bundle.normal_handle, "normal", 3, NORMAL_TEXTURE_PARAMS);
+  dump_texture(atlas_bundle.specular_handle, "specular", 1, SPECULAR_TEXTURE_PARAMS);
+  dump_texture(atlas_bundle.emissive_handle, "emissive", 3, EMISSIVE_TEXTURE_PARAMS);
+}
+
+
+
+
+
+
+} // namespace nc

@@ -25,3 +25,5 @@ save
 /dumps
 *.mscz~
 .vscode
+atlas_dump
+textures-packed

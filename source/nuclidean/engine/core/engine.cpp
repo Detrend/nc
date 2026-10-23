@@ -22,6 +22,7 @@
 #include <engine/game/game_system.h>
 #include <engine/sound/sound_system.h>
 #include <engine/ui/user_interface_system.h>
+#include <engine/graphics/resources/texture.h>
 
 #if NC_BENCHMARK
 #include <benchmark/benchmark.h>
@@ -74,7 +75,7 @@ namespace engine_utils
 [[maybe_unused]] constexpr cstr PRESENTATION_ARG   = "-presentation"; // shows prepared slides while demos play in the background; followed by slide texture names
 [[maybe_unused]] constexpr cstr PRINT_COUNTERS_ARG = "-print_counters"; // prints the performance counters [into a file] 
 [[maybe_unused]] constexpr cstr FORCE_GLES_ARG     = "-gles"; // Forces use of OpenGL ES backend even when desktop OpenGL is available. 
-
+[[maybe_unused]] constexpr cstr DUMP_ATLASES_ARG   = "-atlasdump"; // Dump generated texture atlases into .png image files
 //==============================================================================
 static f32 duration_to_seconds(auto t1, auto t2)
 {
@@ -539,8 +540,14 @@ bool Engine::init(const CmdArgs& cmd_args)
     .type = ModuleEventType::post_init,
   });
 
+  if (engine_utils::contains_arg(cmd_args, engine_utils::DUMP_ATLASES_ARG)) {
+    //TextureManager::get().dump_atlases(ResLifetime::Level, "./atlas_dump/level");
+    TextureManager::get().dump_atlases(ResLifetime::Game, "./atlas_dump/game");
+  }
+
   // Boot into the menu or start a demo
   return this->handle_post_init_game_startup(cmd_args);
+
 }
 
 //==============================================================================

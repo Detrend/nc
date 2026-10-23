@@ -83,6 +83,7 @@ struct TextureAtlasBundle
   GLuint     emissive_handle = 0;
   u32        width = 0;
   u32        height = 0;
+  u32        layers_count = 0;
   TextureMap textures;
 
   vec2 get_size() const;
@@ -98,6 +99,7 @@ public:
   // Load all textures from a directory. They will be loaded into texture atlas of specified lifetime.
   void load_directory(ResLifetime lifetime, const std::string& path);
   void unload(ResLifetime lifetime);
+  void dump_atlases(ResLifetime lifetime, const std::string& path);
 
   const TextureAtlasBundle& get_atlas_bundle(ResLifetime lifetime) const;
   const std::vector<TextureHandle>& get_textures() const;
@@ -145,6 +147,7 @@ private:
   void load_equirectangular_map(const std::string& path, ResLifetime lifetime);
   // Finishes loading of multiple textures of a specified lifetime. Creates a texture atlas.
   void finish_load(ResLifetime lifetime, LoadContext& ctx);
+  void load_prebaked_atlases(ResLifetime, LoadContext& ctx, const std::string& path);
 
   TextureAtlasBundle m_game_atlas_bundle;
   TextureAtlasBundle m_level_atlas_bundle;
