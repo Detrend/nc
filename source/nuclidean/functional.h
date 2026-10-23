@@ -44,7 +44,7 @@ namespace nc {
     FunctionReference(const TLambda& lambda)
       : lambda(static_cast<const void*>(&lambda))
       , call_wrapper(static_cast<wrapper_function_t*>([](const void* const capture, TArgs... args)->TRet {
-          return (*static_cast<const TLambda*>(capture))(std::forward<TArgs>(args)...);
+          return (*reinterpret_cast<const TLambda*>(capture))(std::forward<TArgs>(args)...);
         }))
     {}
 
@@ -53,7 +53,7 @@ namespace nc {
       , call_wrapper(EMPTY_FUNCTION)
     { }
 
-    TRet operator()(TArgs... args)
+    TRet operator()(TArgs... args) const
     {
       return call_wrapper(lambda, std::forward<TArgs>(args)...);
     }
