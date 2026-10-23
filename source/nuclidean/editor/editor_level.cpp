@@ -14,6 +14,8 @@
 
 #include <algorithm>     // std::find, std::remove, std::min, std::max
 #include <unordered_set> // std::unordered_set
+#include <iostream>      // std::cout
+#include <format>        // std::format
 #include <intrin.h>  // __rdtsc
 #include <cmath>     // std::round, std::cos, std::sin, std::acos
 
@@ -589,27 +591,43 @@ static void move_holes(EditorLevel& level, EID<EditorSector> from_id, EID<Editor
 //==================================================================================================
 bool EditorLevel::create_line
 (
-  EditorID line_id, EditorCoord start, EditorCoord end, CreatedSectorCallback callback_created, SplitSectorCallback callback_split
+  EditorID line_id, EditorCoord start, EditorCoord end, CreatedSectorCallback callback_created, SplitSectorCallback callback_split,
+  CreatedPointCallback callback_point, EditorID half_edge_a_id, EditorID half_edge_b_id
 )
 {
   nc_assert(this->can_create_line(start, end));
   nc_assert(this->get_any_object(line_id) == nullptr);
 
-  /*[[indeterminate]]*/
-  EditorID pt1_id, pt2_id;
-
-  if (!this->get_point_on_coord(start, pt1_id))
+  // Reuses an existing point on the coordinate or creates a new one, with an ID from the callback
+  // if it gives us any
+  auto get_or_create_point = [&](EditorCoord coord) -> EditorID
   {
-    this->create_object<EditorPoint>(pt1_id = this->new_id(), start);
-  }
+    EditorID point_id = INVALID_EDITOR_ID;
+    if (this->get_point_on_coord(coord, point_id))
+    {
+      return point_id;
+    }
 
-  if (!this->get_point_on_coord(end, pt2_id))
-  {
-    this->create_object<EditorPoint>(pt2_id = this->new_id(), end);
-  }
+    if (callback_point)
+    {
+      callback_point(coord, point_id);
+    }
+
+    if (point_id == INVALID_EDITOR_ID)
+    {
+      point_id = this->new_id();
+    }
+
+    this->create_object<EditorPoint>(point_id, coord);
+    return point_id;
+  };
+
+  EditorID pt1_id = get_or_create_point(start);
+  EditorID pt2_id = get_or_create_point(end);
 
   // Now that we have both points we can create a line between them and also the 2 edges
-  EditorID h1_id = this->new_id(), h2_id = this->new_id();
+  EditorID h1_id = half_edge_a_id != INVALID_EDITOR_ID ? half_edge_a_id : this->new_id();
+  EditorID h2_id = half_edge_b_id != INVALID_EDITOR_ID ? half_edge_b_id : this->new_id();
 
   // Create the objects
   // TODO: This can be done using one function only
@@ -1541,6 +1559,413 @@ void test_bug_breaks()
 
   exit(111);
 }
+
+//==================================================================================================
+// Everything that has to be the same for two levels to be considered identical. The order of the
+// half edges in point_to_half_edges depends on the order the lines were created in, which does not
+// change anything about the level itself, so it gets sorted.
+struct LevelSnapshot
+{
+  EditorLevel::ObjectMap                    objects;
+  std::map<EditorID, std::vector<EditorID>> point_to_half_edges;
+  std::map<EditorID, EditorCoord>           point_on_coord;
+  EditorID                                  next_free_id;
+
+  bool operator==(const LevelSnapshot&) const = default;
+};
+
+static LevelSnapshot take_snapshot(const EditorLevel& level)
+{
+  LevelSnapshot snapshot;
+  snapshot.objects      = level.objects;
+  snapshot.next_free_id = level.next_free_id;
+
+  for (const auto&[point_id, edges] : level.point_to_half_edges)
+  {
+    std::vector<EditorID> sorted = edges;
+    std::sort(sorted.begin(), sorted.end());
+    snapshot.point_to_half_edges[point_id] = sorted;
+  }
+
+  for (const auto&[coord, point_id] : level.coord_to_point)
+  {
+    snapshot.point_on_coord[point_id] = coord;
+  }
+
+  return snapshot;
+}
+
+static void print_snapshot_diff(const LevelSnapshot& expected, const LevelSnapshot& actual)
+{
+  for (const auto&[id, object] : expected.objects)
+  {
+    auto it = actual.objects.find(id);
+    if (it == actual.objects.end())
+    {
+      std::cout << std::format("    object {} (type {}) is missing\n", id, object.index());
+    }
+    else if (it->second != object)
+    {
+      std::cout << std::format("    object {} (type {}) differs\n", id, object.index());
+    }
+  }
+
+  for (const auto&[id, object] : actual.objects)
+  {
+    if (!expected.objects.contains(id))
+    {
+      std::cout << std::format("    object {} (type {}) is extra\n", id, object.index());
+    }
+  }
+
+  if (expected.point_to_half_edges != actual.point_to_half_edges)
+  {
+    std::cout << "    point_to_half_edges differ\n";
+  }
+
+  if (expected.point_on_coord != actual.point_on_coord)
+  {
+    std::cout << "    coord_to_point differ\n";
+  }
+
+  if (expected.next_free_id != actual.next_free_id)
+  {
+    std::cout << std::format("    next_free_id {} vs {}\n", expected.next_free_id, actual.next_free_id);
+  }
+}
+
+// Checks that all the links between the objects make sense. Returns the number of problems found.
+static u32 validate_level(const EditorLevel& level)
+{
+  u32 problems = 0;
+
+  auto problem = [&](const std::string& text)
+  {
+    std::cout << "    invalid level: " << text << "\n";
+    ++problems;
+  };
+
+  for (const auto&[id, object] : level.objects)
+  {
+    if (const EditorHalfEdge* edge = std::get_if<EditorHalfEdge>(&object))
+    {
+      const EditorObject* twin = level.get_any_object(edge->twin);
+      if (!twin || !std::holds_alternative<EditorHalfEdge>(*twin) || std::get<EditorHalfEdge>(*twin).twin != id)
+      {
+        problem(std::format("half edge {} has a bad twin", id));
+      }
+
+      const EditorObject* line = level.get_any_object(edge->line);
+      if (!line || !std::holds_alternative<EditorLine>(*line) ||
+          (std::get<EditorLine>(*line).half_edge_a != id && std::get<EditorLine>(*line).half_edge_b != id))
+      {
+        problem(std::format("half edge {} has a bad line", id));
+      }
+
+      const EditorObject* from = level.get_any_object(edge->from);
+      if (!from || !std::holds_alternative<EditorPoint>(*from))
+      {
+        problem(std::format("half edge {} has a bad point", id));
+      }
+
+      auto it = level.point_to_half_edges.find(edge->from);
+      if (it == level.point_to_half_edges.end() || std::find(it->second.begin(), it->second.end(), id) == it->second.end())
+      {
+        problem(std::format("half edge {} is not indexed by its point", id));
+      }
+
+      if (edge->sector != INVALID_EDITOR_ID)
+      {
+        const EditorObject* sector = level.get_any_object(edge->sector);
+        const EditorObject* next   = level.get_any_object(edge->next);
+        if (!sector || !std::holds_alternative<EditorSector>(*sector))
+        {
+          problem(std::format("half edge {} has a bad sector", id));
+        }
+        if (!next || !std::holds_alternative<EditorHalfEdge>(*next) || std::get<EditorHalfEdge>(*next).sector != edge->sector)
+        {
+          problem(std::format("half edge {} has a bad next", id));
+        }
+      }
+    }
+    else if (const EditorSector* sector = std::get_if<EditorSector>(&object))
+    {
+      if (sector->is_void())
+      {
+        continue;
+      }
+
+      const EditorObject* sector_edge = level.get_any_object(sector->edge);
+      if (!sector_edge || !std::holds_alternative<EditorHalfEdge>(*sector_edge) || std::get<EditorHalfEdge>(*sector_edge).sector != id)
+      {
+        problem(std::format("sector {} has a bad edge", id));
+      }
+
+      // Has to be in the hole list of its parent
+      const EditorObject* parent = level.get_any_object(sector->parent);
+      bool in_parent_list = false;
+      if (parent && std::holds_alternative<EditorSector>(*parent))
+      {
+        EditorID first = std::get<EditorSector>(*parent).first_hole;
+        EditorID rover = first;
+        u32 guard = 0;
+        while (rover != INVALID_EDITOR_ID && guard++ < 10000)
+        {
+          if (rover == id)
+          {
+            in_parent_list = true;
+            break;
+          }
+
+          rover = level.get_object<EditorSector>(rover).next_hole;
+          if (rover == first)
+          {
+            break;
+          }
+        }
+      }
+
+      if (!in_parent_list)
+      {
+        problem(std::format("sector {} is not a hole of its parent", id));
+      }
+    }
+    else if (const EditorPoint* point = std::get_if<EditorPoint>(&object))
+    {
+      auto it = level.coord_to_point.find(point->coords);
+      if (it == level.coord_to_point.end() || it->second != id)
+      {
+        problem(std::format("point {} is not indexed by its coord", id));
+      }
+
+      if (!level.point_to_half_edges.contains(id))
+      {
+        problem(std::format("point {} has no half edges", id));
+      }
+    }
+  }
+
+  return problems;
+}
+
+//==================================================================================================
+// Moves points around with the move action and checks that the moved objects keep their IDs and that
+// undo and redo bring the level back to exactly the same state as it was before.
+void test_editor_move_keeps_ids()
+{
+  EditorLevel level;
+  u32 failures = 0;
+
+  auto add_loop = [&](std::initializer_list<ivec2> points)
+  {
+    std::vector<ivec2> pts = points;
+    for (u64 i = 0; i < pts.size(); ++i)
+    {
+      ivec2 a = pts[i], b = pts[(i + 1) % pts.size()];
+      if (level.get_line_between_points(a, b) == INVALID_EDITOR_ID)
+      {
+        level.create_line(level.new_id(), a, b);
+      }
+    }
+  };
+
+  auto point_at = [&](ivec2 coord)
+  {
+    EditorID id = INVALID_EDITOR_ID;
+    nc_assert(level.get_point_on_coord(coord, id));
+    return id;
+  };
+
+  // The sector on the inner side of a line, for lines that have the void or nothing on the other side
+  auto sector_of_line = [&](ivec2 a, ivec2 b)
+  {
+    const EditorLine& line = level.get_object<EditorLine>(level.get_line_between_points(a, b));
+    EditorID sa = level.get_object<EditorHalfEdge>(line.half_edge_a).sector;
+    EditorID sb = level.get_object<EditorHalfEdge>(line.half_edge_b).sector;
+    return sa != INVALID_EDITOR_ID ? sa : sb;
+  };
+
+  // Two rooms sharing a wall, the left one has a pillar inside and there is one more room on the side
+  add_loop({{0, 0}, {10, 0}, {10, 10}, {0, 10}});
+  add_loop({{10, 0}, {20, 0}, {20, 10}, {10, 10}});
+  add_loop({{2, 2}, {5, 2}, {5, 5}, {2, 5}});
+  add_loop({{30, 0}, {40, 0}, {40, 10}, {30, 10}});
+
+  const EditorID room_left  = sector_of_line({0, 0},  {0, 10});
+  const EditorID room_right = sector_of_line({20, 0}, {20, 10});
+  const EditorID pillar     = sector_of_line({2, 2},  {5, 2});
+  const EditorID room_side  = sector_of_line({30, 0}, {40, 0});
+
+  failures += validate_level(level);
+  const LevelSnapshot base = take_snapshot(level);
+
+  auto check = [&](bool condition, const std::string& what)
+  {
+    if (!condition)
+    {
+      std::cout << "    FAILED: " << what << "\n";
+      ++failures;
+    }
+  };
+
+  auto check_same = [&](const LevelSnapshot& expected, const std::string& what)
+  {
+    LevelSnapshot actual = take_snapshot(level);
+    if (actual != expected)
+    {
+      std::cout << "    FAILED: " << what << "\n";
+      print_snapshot_diff(expected, actual);
+      ++failures;
+    }
+    failures += validate_level(level);
+  };
+
+  // Moves the points by the offset, checks the IDs, then does undo, redo and undo once more
+  auto test_move = [&](cstr name, std::initializer_list<ivec2> coords, ivec2 offset, auto&& extra_checks)
+  {
+    std::cout << std::format("[move test] {}\n", name);
+    u32 failures_before = failures;
+
+    std::map<EditorID, EditorCoord> new_coords;
+    std::map<EditorID, EditorCoord> expected_coords;
+    for (ivec2 coord : coords)
+    {
+      EditorID id = point_at(coord);
+      new_coords[id]      = coord + offset;
+      expected_coords[id] = coord + offset;
+    }
+
+    check(level.can_move_points(new_coords), "the move should be allowed");
+
+    ActionMovePoints action;
+    action.init_with_new_coords(level, new_coords);
+    perform_action(level, action);
+    failures += validate_level(level);
+
+    // Every object has to survive the move with its ID, nothing new gets created
+    const LevelSnapshot moved = take_snapshot(level);
+    check(moved.next_free_id == base.next_free_id, "no new IDs should have been generated");
+    check(moved.objects.size() == base.objects.size(), "the object count should stay the same");
+    for (const auto&[id, object] : base.objects)
+    {
+      const EditorObject* now = level.get_any_object(id);
+      check(now && now->index() == object.index(), std::format("object {} should still exist with the same type", id));
+    }
+
+    for (const auto&[id, coord] : expected_coords)
+    {
+      const EditorPoint* point = level.try_get_object<EditorPoint>(id);
+      check(point && point->coords == coord, std::format("point {} should be on the new coord", id));
+    }
+
+    extra_checks();
+
+    undo_action(level, action);
+    check_same(base, "undo should restore the original level");
+
+    perform_action(level, action);
+    check_same(moved, "redo should produce the same level as the first do");
+
+    undo_action(level, action);
+    check_same(base, "second undo should restore the original level");
+
+    std::cout << (failures == failures_before ? "  OK\n" : "  FAIL\n");
+  };
+
+  auto no_checks = []{};
+
+  test_move("pillar", {{2, 2}, {5, 2}, {5, 5}, {2, 5}}, {1, 1}, [&]
+  {
+    check(level.get_object<EditorSector>(pillar).parent == room_left, "pillar should stay in the left room");
+  });
+
+  test_move("shared wall", {{10, 0}, {10, 10}}, {2, 0}, no_checks);
+  test_move("single corner", {{0, 0}}, {-3, -1}, no_checks);
+  test_move("single corner of the shared wall", {{10, 10}}, {1, 4}, no_checks);
+  test_move("side room", {{30, 0}, {40, 0}, {40, 10}, {30, 10}}, {5, 5}, no_checks);
+
+  test_move("both rooms with the pillar",
+  {
+    {0, 0}, {10, 0}, {10, 10}, {0, 10}, {20, 0}, {20, 10}, {2, 2}, {5, 2}, {5, 5}, {2, 5}
+  }, {-5, 3}, no_checks);
+
+  test_move("pillar into the right room", {{2, 2}, {5, 2}, {5, 5}, {2, 5}}, {11, 0}, [&]
+  {
+    check(level.get_object<EditorSector>(pillar).parent == room_right, "pillar should be in the right room now");
+  });
+
+  test_move("pillar out of the rooms", {{2, 2}, {5, 2}, {5, 5}, {2, 5}}, {0, 20}, [&]
+  {
+    check(level.get_object<EditorSector>(pillar).parent == VOID_SECTOR_ID, "pillar should be in the void now");
+  });
+
+  // Deleting lines and taking it back has to bring back the same objects as well
+  auto test_delete = [&](cstr name, ivec2 a, ivec2 b)
+  {
+    std::cout << std::format("[delete test] {}\n", name);
+    u32 failures_before = failures;
+
+    ActionCreateOrDeleteLine action;
+    action.create  = false;
+    action.line_id = level.get_line_between_points(a, b);
+
+    perform_action(level, action);
+    failures += validate_level(level);
+    const LevelSnapshot deleted = take_snapshot(level);
+
+    undo_action(level, action);
+    check_same(base, "undo should restore the original level");
+
+    perform_action(level, action);
+    check_same(deleted, "redo should produce the same level as the first do");
+
+    undo_action(level, action);
+    check_same(base, "second undo should restore the original level");
+
+    std::cout << (failures == failures_before ? "  OK\n" : "  FAIL\n");
+  };
+
+  test_delete("shared wall", {10, 0}, {10, 10});
+  test_delete("outer wall of the side room", {30, 0}, {40, 0});
+  test_delete("pillar wall", {2, 2}, {5, 2});
+
+  // Creating a line and taking it back
+  {
+    std::cout << "[create test] split the side room\n";
+    u32 failures_before = failures;
+
+    ActionCreateOrDeleteLine action{.create = true, .line_id = level.new_id(), .from = {30, 0}, .to = {40, 10}};
+    const LevelSnapshot before = take_snapshot(level);
+
+    perform_action(level, action);
+    failures += validate_level(level);
+    const LevelSnapshot created = take_snapshot(level);
+
+    // The first creation generated new IDs for the objects and the IDs never go back
+    LevelSnapshot expected_after_undo = before;
+    expected_after_undo.next_free_id  = created.next_free_id;
+
+    undo_action(level, action);
+    check_same(expected_after_undo, "undo should restore the original level");
+
+    perform_action(level, action);
+    check_same(created, "redo should produce the same level as the first do");
+
+    std::cout << (failures == failures_before ? "  OK\n" : "  FAIL\n");
+  }
+
+  (void)room_side;
+  std::cout << std::format("[move test] done, {} failures\n", failures);
+  exit(failures ? 1 : 0);
+}
+
+/*
+bool run_move_test = []()->bool
+{
+  test_editor_move_keeps_ids();
+  return false;
+}();
+*/
 
 /*
 bool shiiiit = []()->bool

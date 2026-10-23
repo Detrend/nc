@@ -30,6 +30,10 @@ struct EditorLevel
   using MergedSectorsCallback   = std::function<void(EditorID left_id, const EditorSectorData& left_data, EditorID right_id, const EditorSectorData& right_data, EditorID& new_id, EditorSectorData& new_data)>;
   using DestroyedSectorCallback = std::function<void(EditorID sector_id, const EditorSectorData& sector_data)>;
 
+  // Called when a line needs a point on a coordinate where there is none yet. The callback can
+  // leave the ID invalid, in which case a brand new one gets generated.
+  using CreatedPointCallback = std::function<void(EditorCoord coord, EditorID& id_out)>;
+
   // Data themselves
   ObjectMap           objects;
   PointToHalfEdgesMap point_to_half_edges;
@@ -70,10 +74,13 @@ struct EditorLevel
   // Returns an ID of a line between these 2 points or an invalid id if there is no such line
   EditorID get_line_between_points(EditorCoord start, EditorCoord end) const;
 
+  // The half edge IDs can be left invalid, in which case they get generated.
   bool create_line
   (
     EditorID line_id, EditorCoord start, EditorCoord end,
-    CreatedSectorCallback callback_created = nullptr, SplitSectorCallback callback_split = nullptr
+    CreatedSectorCallback callback_created = nullptr, SplitSectorCallback callback_split = nullptr,
+    CreatedPointCallback  callback_point   = nullptr,
+    EditorID half_edge_a_id = INVALID_EDITOR_ID, EditorID half_edge_b_id = INVALID_EDITOR_ID
   );
 
   bool destroy_line

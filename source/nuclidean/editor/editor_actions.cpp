@@ -68,7 +68,26 @@ bool ActionCreateOrDeleteLine::do_create(EditorLevel& level)
     created_sector_id = left_id == old_id ? right_id : left_id;
   };
 
-  return level.create_line(line_id, from, to, callback_created, callback_split);
+  // Bring back the points that died together with the line when it was destroyed
+  auto callback_point = [&](EditorCoord coord, EditorID& id_out)
+  {
+    EditorID wanted_id = coord == from ? point_from : point_to;
+    if (wanted_id != INVALID_EDITOR_ID && !level.get_any_object(wanted_id))
+    {
+      id_out = wanted_id;
+    }
+  };
+
+  auto unused_or_invalid = [&](EditorID id)
+  {
+    return level.get_any_object(id) ? INVALID_EDITOR_ID : id;
+  };
+
+  return level.create_line
+  (
+    line_id, from, to, callback_created, callback_split, callback_point,
+    unused_or_invalid(half_edge_a), unused_or_invalid(half_edge_b)
+  );
 }
 
 //==================================================================================================
@@ -77,6 +96,17 @@ bool ActionCreateOrDeleteLine::do_destroy(EditorLevel& level)
   // Reset first
   sector_id_a = INVALID_EDITOR_ID;
   sector_id_b = INVALID_EDITOR_ID;
+
+  // Remember the rest of the objects of the line, so that we can recreate it with them later
+  if (const EditorLine* line = level.try_get_object<EditorLine>(line_id))
+  {
+    half_edge_a = line->half_edge_a;
+    half_edge_b = line->half_edge_b;
+    point_from  = level.get_object<EditorHalfEdge>(half_edge_a).from;
+    point_to    = level.get_object<EditorHalfEdge>(half_edge_b).from;
+    from        = level.get_object<EditorPoint>(point_from).coords;
+    to          = level.get_object<EditorPoint>(point_to).coords;
+  }
 
   auto callback_destroyed = [&](EditorID sector_id, const EditorSectorData& data)
   {
@@ -190,55 +220,91 @@ void ActionMovePoints::init_with_new_coords
   });
 }
 
+
 //==================================================================================================
-void ActionMovePoints::action_do(EditorLevel& level)
+// Recreates the recorded lines in the reverse order of their destruction. This mirrors the
+// destruction, so the sectors it killed or merged come back with their original IDs and data. The
+// move can change the topology (points or lines merging, sectors ending up inside of others) and
+// break the mirror, in which case we hand out unused recorded IDs and only then brand new ones.
+static void recreate_recorded_lines
+(
+  EditorLevel&                                     level,
+  std::vector<ActionMovePoints::LineRecord>&       records,
+  const std::unordered_map<EditorCoord, EditorID>& point_ids,
+  bool                                             use_new_coords
+)
 {
-  // First delete the lines
-  for (const LineToMove& line : this->lines_to_edit)
+  // Returns the ID back if no object uses it at the moment, an invalid one otherwise
+  auto unused_or_invalid = [&](EditorID id)
   {
-    LineToMove reverse_action;
-    reverse_action.line_id = line.line_id;
-    reverse_action.c1 = level.get_line_coord(line.line_id, true );
-    reverse_action.c2 = level.get_line_coord(line.line_id, false);
-    reverse_action.sector_id_to_create       = INVALID_EDITOR_ID;
-    reverse_action.other_sector_id_to_create = INVALID_EDITOR_ID;
+    return level.get_any_object(id) ? INVALID_EDITOR_ID : id;
+  };
 
-    auto callback_destroyed = [&](EditorID sector_id, const EditorSectorData& data)
-    {
-      reverse_action.sector_id_to_create   = sector_id;
-      reverse_action.sector_data_to_create = data;
-    };
-
-    auto callback_merged = [&]
-    (
-      EditorID  left_id,  const EditorSectorData& left_data,
-      EditorID  right_id, const EditorSectorData& right_data,
-      EditorID& new_id, EditorSectorData&         new_data
-    )
-    {
-      reverse_action.sector_id_to_create         = left_id;
-      reverse_action.sector_data_to_create       = left_data;
-      reverse_action.other_sector_id_to_create   = right_id;
-      reverse_action.other_sector_data_to_create = right_data;
-      // Keep the left because why not
-      new_id   = left_id;
-      new_data = left_data;
-    };
-
-    // Delete it
-    level.destroy_line(line.line_id, callback_destroyed, callback_merged);
-
-    this->lines_to_undo.push_back(reverse_action);
-  }
-
-  // Then create the moved versions
-  for (const LineToMove& line : this->lines_to_edit)
+  // Looks for any sector that the move destroyed and that has not been brought back yet
+  auto find_any_unused_sector = [&](EditorID& id_out, EditorSectorData& data_out) -> bool
   {
-    auto callback_created = [&](EditorID& new_id, EditorSectorData& data)
+    for (const ActionMovePoints::LineRecord& record : records)
     {
-      // No need to do anything
-      new_id = level.new_id();
-      data   = EditorSectorData{};
+      if (unused_or_invalid(record.sector_id_a))
+      {
+        id_out   = record.sector_id_a;
+        data_out = record.sector_data_a;
+        return true;
+      }
+
+      if (unused_or_invalid(record.sector_id_b))
+      {
+        id_out   = record.sector_id_b;
+        data_out = record.sector_data_b;
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  auto callback_point = [&](EditorCoord coord, EditorID& id_out)
+  {
+    auto it = point_ids.find(coord);
+    if (it != point_ids.end())
+    {
+      id_out = unused_or_invalid(it->second);
+    }
+  };
+
+  for (ActionMovePoints::LineRecord& record : records | std::views::reverse)
+  {
+    EditorCoord c1 = use_new_coords ? record.new_c1 : record.old_c1;
+    EditorCoord c2 = use_new_coords ? record.new_c2 : record.old_c2;
+
+    record.created_sector_id = INVALID_EDITOR_ID;
+
+    // There can be only one line between two points. If the moved line ended up on top of another
+    // one then we skip it and the undo brings it back.
+    if (level.get_line_between_points(c1, c2) != INVALID_EDITOR_ID)
+    {
+      continue;
+    }
+
+    auto callback_created = [&](EditorID& new_id, EditorSectorData& new_data)
+    {
+      if (unused_or_invalid(record.sector_id_a))
+      {
+        new_id   = record.sector_id_a;
+        new_data = record.sector_data_a;
+      }
+      else if (unused_or_invalid(record.sector_id_b))
+      {
+        new_id   = record.sector_id_b;
+        new_data = record.sector_data_b;
+      }
+      else if (!find_any_unused_sector(new_id, new_data))
+      {
+        new_id   = level.new_id();
+        new_data = EditorSectorData{};
+      }
+
+      record.created_sector_id = new_id;
     };
 
     auto callback_split = [&]
@@ -248,37 +314,103 @@ void ActionMovePoints::action_do(EditorLevel& level)
       EditorID& right_id, EditorSectorData&       right_data
     )
     {
-      // Keep the left
-      left_id    = old_id;
-      right_id   = level.new_id();
-      left_data  = old_data;
-      right_data = old_data;
+      bool mirrors_merge = (old_id == record.sector_id_a && unused_or_invalid(record.sector_id_b)) ||
+                           (old_id == record.sector_id_b && unused_or_invalid(record.sector_id_a));
+
+      if (mirrors_merge)
+      {
+        // Split it back into the two sectors that got merged when the line was destroyed
+        left_id    = record.sector_id_a;
+        left_data  = record.sector_data_a;
+        right_id   = record.sector_id_b;
+        right_data = record.sector_data_b;
+      }
+      else
+      {
+        // Keep the left and come up with something for the right
+        left_id   = old_id;
+        left_data = old_data;
+
+        if (unused_or_invalid(record.sector_id_a))
+        {
+          right_id   = record.sector_id_a;
+          right_data = record.sector_data_a;
+        }
+        else if (unused_or_invalid(record.sector_id_b))
+        {
+          right_id   = record.sector_id_b;
+          right_data = record.sector_data_b;
+        }
+        else if (!find_any_unused_sector(right_id, right_data))
+        {
+          right_id   = level.new_id();
+          right_data = old_data;
+        }
+      }
+
+      record.created_sector_id = left_id == old_id ? right_id : left_id;
     };
 
-    // Check if there is a line between these 2 points first
-    EditorID possible_line = level.get_line_between_points(line.c1, line.c2);
-    if (possible_line != INVALID_EDITOR_ID)
-    {
-      // If there is a line then don't create other one, there can be only one line between
-      // two points. So we skip the creation, but then later we restore it back during the
-      // undo.
-      continue;
-    }
-
-    // And then recreate it at a new position
-    level.create_line(line.line_id, line.c1, line.c2, callback_created, callback_split);
+    level.create_line
+    (
+      record.line_id, c1, c2, callback_created, callback_split, callback_point,
+      unused_or_invalid(record.half_edge_a), unused_or_invalid(record.half_edge_b)
+    );
   }
 }
 
 //==================================================================================================
-void ActionMovePoints::action_undo(EditorLevel& level)
+void ActionMovePoints::action_do(EditorLevel& level)
 {
-  // Revert the operations in the reverse orders they were originally performed - destructions
-  for (const LineToMove& line_action : this->lines_to_undo | std::views::reverse)
+  // Start from scratch, the redo does the very same thing as the first time
+  this->line_records.clear();
+  this->old_point_ids.clear();
+  this->new_point_ids.clear();
+
+  // Remember everything about the lines before we start destroying them
+  for (const LineToMove& line : this->lines_to_edit)
   {
-    auto callback_destroyed = [&](EditorID /*destroyed_id*/, const EditorSectorData& /*destroyed_data*/)
+    const EditorLine& level_line = level.get_object<EditorLine>(line.line_id);
+
+    LineRecord& record = this->line_records.emplace_back();
+    record.line_id     = line.line_id;
+    record.half_edge_a = level_line.half_edge_a;
+    record.half_edge_b = level_line.half_edge_b;
+    record.old_c1      = level.get_line_coord(line.line_id, true );
+    record.old_c2      = level.get_line_coord(line.line_id, false);
+    record.new_c1      = line.c1;
+    record.new_c2      = line.c2;
+
+    this->old_point_ids[record.old_c1] = level.get_object<EditorHalfEdge>(record.half_edge_a).from;
+    this->old_point_ids[record.old_c2] = level.get_object<EditorHalfEdge>(record.half_edge_b).from;
+  }
+
+  // The points that stay in place come first. If a moved point lands on one of them then the two
+  // merge and the one that was standing there keeps its ID.
+  for (bool moved_points : {false, true})
+  {
+    for (const LineRecord& record : this->line_records)
     {
-      
+      auto add_point = [&](EditorCoord old_coord, EditorCoord new_coord)
+      {
+        if ((old_coord != new_coord) == moved_points)
+        {
+          this->new_point_ids.try_emplace(new_coord, this->old_point_ids.at(old_coord));
+        }
+      };
+
+      add_point(record.old_c1, record.new_c1);
+      add_point(record.old_c2, record.new_c2);
+    }
+  }
+
+  // First delete the lines
+  for (LineRecord& record : this->line_records)
+  {
+    auto callback_destroyed = [&](EditorID sector_id, const EditorSectorData& data)
+    {
+      record.sector_id_a   = sector_id;
+      record.sector_data_a = data;
     };
 
     auto callback_merged = [&]
@@ -288,55 +420,53 @@ void ActionMovePoints::action_undo(EditorLevel& level)
       EditorID& new_id,   EditorSectorData&       new_data
     )
     {
-      // Keep the sector that existed before the move, the other one was created by it. Recreating
-      // the original line below then splits it back with the original IDs.
-      bool right_existed_before = right_id == line_action.sector_id_to_create ||
-                                  right_id == line_action.other_sector_id_to_create;
-
-      new_id   = right_existed_before ? right_id   : left_id;
-      new_data = right_existed_before ? right_data : left_data;
+      record.sector_id_a   = left_id;
+      record.sector_data_a = left_data;
+      record.sector_id_b   = right_id;
+      record.sector_data_b = right_data;
+      // Keep the left because why not
+      new_id   = left_id;
+      new_data = left_data;
     };
 
-    if (level.try_get_object<EditorLine>(line_action.line_id))
+    level.destroy_line(record.line_id, callback_destroyed, callback_merged);
+  }
+
+  // And then recreate them at the new position
+  recreate_recorded_lines(level, this->line_records, this->new_point_ids, true);
+}
+
+//==================================================================================================
+void ActionMovePoints::action_undo(EditorLevel& level)
+{
+  // Destroy the moved lines in the reverse order of their recreation, which mirrors it
+  for (const LineRecord& record : this->line_records)
+  {
+    if (!level.try_get_object<EditorLine>(record.line_id))
     {
       // This can happen if the new line was never created because it was merged with another line
       // that had the exact same corner points.
-      level.destroy_line(line_action.line_id, callback_destroyed, callback_merged);
+      continue;
     }
-  }
 
-  // Revert the operations in the reverse orders they were originally performed - creations
-  for (const LineToMove& line_action : this->lines_to_undo | std::views::reverse)
-  {
-    auto callback_created = [&](EditorID& new_id, EditorSectorData& new_data)
-    {
-      new_id   = line_action.sector_id_to_create;
-      new_data = line_action.sector_data_to_create;
-      nc_assert(new_id != INVALID_EDITOR_ID);
-    };
-
-    auto callback_split = [&]
+    auto callback_merged = [&]
     (
-      EditorID /*old_id*/, const EditorSectorData& /*old_data*/,
-      EditorID& id_left,  EditorSectorData&       data_left,
-      EditorID& id_right, EditorSectorData&       data_right
+      EditorID  left_id,  const EditorSectorData& left_data,
+      EditorID  right_id, const EditorSectorData& right_data,
+      EditorID& new_id,   EditorSectorData&       new_data
     )
     {
-      id_left    = line_action.sector_id_to_create;
-      id_right   = line_action.other_sector_id_to_create;
-      data_left  = line_action.sector_data_to_create;
-      data_right = line_action.other_sector_data_to_create;
-      nc_assert(id_left != INVALID_EDITOR_ID && id_right != INVALID_EDITOR_ID);
+      // Keep the sector that existed before the line was recreated
+      bool keep_right = left_id == record.created_sector_id;
+      new_id   = keep_right ? right_id   : left_id;
+      new_data = keep_right ? right_data : left_data;
     };
 
-    level.create_line
-    (
-      line_action.line_id, line_action.c1, line_action.c2, callback_created, callback_split
-    );
+    level.destroy_line(record.line_id, nullptr, callback_merged);
   }
 
-  // Clear the undo steps after performing the undo. If we do the redo then we fill them again.
-  this->lines_to_undo.clear();
+  // And recreate them on the original place
+  recreate_recorded_lines(level, this->line_records, this->old_point_ids, false);
 }
 
 }
