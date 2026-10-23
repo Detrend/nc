@@ -147,6 +147,8 @@
     <ClCompile Include="..\source\nuclidean\editor\editor_level.cpp" />
     <ClCompile Include="..\source\nuclidean\editor\editor_actions.cpp" />
     <ClCompile Include="..\source\nuclidean\editor\editor_impl.cpp" />
+    <ClCompile Include="..\source\nuclidean\editor\editor_select_tool.cpp" />
+    <ClCompile Include="..\source\nuclidean\editor\editor_brush_tool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\libs\glad\glad.h" />
@@ -292,6 +294,8 @@
     <ClInclude Include="..\source\nuclidean\editor\editor_actions.h" />
     <ClInclude Include="..\source\nuclidean\editor\editor_types.h" />
     <ClInclude Include="..\source\nuclidean\editor\editor_impl.h" />
+    <ClInclude Include="..\source\nuclidean\editor\editor_select_tool.h" />
+    <ClInclude Include="..\source\nuclidean\editor\editor_brush_tool.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\settings.cfg" />

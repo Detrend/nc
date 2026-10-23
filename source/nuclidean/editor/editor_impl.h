@@ -16,6 +16,8 @@
 #include <editor/editor_level.h>
 #include <editor/editor_objects_render.h>
 #include <editor/editor_actions.h>
+#include <editor/editor_select_tool.h>
+#include <editor/editor_brush_tool.h>
 
 #include <map>
 #include <set>
@@ -34,15 +36,8 @@ constexpr f32 GRID_ALPHA = 0.3f;
 // Width/height of one grid cell has to occupy at least this amount of screen in order to be visible
 constexpr f32 GRID_SCREEN_PERCENTAGE_FOR_VISIBILITY = 0.01f;
 
-// The amount of screen space the brush cursor occupies.
-constexpr f32 BRUSH_CURSOR_SCREEN_PERCENTAGE = 0.005f;
-
 // The amount of screen space the normals of the wall occupy.
 constexpr f32 WALL_NORMAL_SCREEN_PERCENTAGE = 0.01f;
-
-constexpr color4 BRUSH_WALL_COL1           = colors::WHITE;
-constexpr color4 BRUSH_WALL_COL2           = colors::WHITE;
-constexpr f32    BRUSH_WALL_FLASH_INTERVAL = 0.5f;
 
 // Maximum distance from center in all 4 directions.
 constexpr s64 LEVEL_AREA_LIMIT = 128 * 48; // 256x256 m
@@ -191,50 +186,6 @@ struct EditorImpl
       }, action_history.back());
     }
   }
-
-  // Enables selection and movement of walls, sectors and entities.
-  struct SelectTool : public IEditorPrimitiveRenderingModifier
-  {
-    EditorImpl&           editor;
-    std::vector<EditorID> selected_objects;
-    std::vector<EditorID> dragged_points;
-    EditorID              pointed_at_object       = INVALID_EDITOR_ID;
-    bool                  is_dragging             = false;
-    vec2                  dragging_start_pt       = VEC2_ZERO;
-    EditorPrimitivePtr    dragging_outline_lines  = std::make_shared<EditorPrimitive>();
-
-    std::vector<EditorPrimitiveAndProperties> dragging_outline_points;
-
-    SelectTool(EditorImpl& impl) : editor(impl) {};
-
-    void modify_rendering_properties
-    (
-      EditorPrimitiveRenderingProperties& properties,
-      const EditorPrimitive&              primitive
-    );
-
-    void get_render_data(RenderList& /*list*/);
-    void deselect_non_existing_objects();
-    bool handle_dragging();
-    bool handle_selection();
-    void update(f32 /*dt*/);
-    void get_modifiers(RenderModifierList& list);
-  };
-
-  struct BrushTool
-  {
-    EditorImpl&        editor;
-    EditorPrimitivePtr cursor         = std::make_shared<EditorPrimitive>();
-    EditorPrimitivePtr render_data    = std::make_shared<EditorPrimitive>();
-    bool               is_painting    = false;
-    EditorCoord        painting_start = EditorCoord{0};
-
-    BrushTool(EditorImpl& impl) : editor(impl) {};
-
-    void update(f32 /*delta*/);
-    void get_render_data(RenderList& list);
-    void get_modifiers(RenderModifierList& /*list*/);
-  };
 
   std::variant<SelectTool, BrushTool> tool = SelectTool{*this}; // not the award winning one
 
