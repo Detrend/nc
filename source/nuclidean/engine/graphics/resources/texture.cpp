@@ -535,25 +535,47 @@ struct TextureAtlasLayoutParameters {
 
   void gen_texture(GLuint* const out_handle) const { glGenTextures(1, out_handle);}
 
-  void config_texture(GLuint handle, ivec3 dims) const {
-    glBindTexture(GL_TEXTURE_2D_ARRAY, handle);
-    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, internal_format, /*width:*/dims.x, /*height:*/dims.y, /*layers_count:*/dims.z, 0, format, data_type, nullptr);
+  void config_texture_misc_params() const {
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, min_filter);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, mag_filter);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_LEVEL, max_mip_level);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, wrap_s);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, wrap_t);
   }
+
+  void config_texture(GLuint handle, ivec3 dims) const {
+    glBindTexture(GL_TEXTURE_2D_ARRAY, handle);
+    glTexImage3D(GL_TEXTURE_2D_ARRAY, 0, internal_format, /*width:*/dims.x, /*height:*/dims.y, /*layers_count:*/dims.z, 0, format, data_type, nullptr);
+    config_texture_misc_params();
+  }
+
+  void config_texture_compressed(GLuint handle, ivec3 dims, GLenum compressed_internal_format, GLsizei compressed_size_per_layer) const {
+    glBindTexture(GL_TEXTURE_2D_ARRAY, handle);
+    glCompressedTexImage3D(GL_TEXTURE_2D_ARRAY, 0, compressed_internal_format, dims.x, dims.y, dims.z, 0, compressed_size_per_layer * dims.z, nullptr);
+    config_texture_misc_params();
+  }
+
   void define_mipmaps(GLuint handle, ivec3 dims) const {
     for (GLint mip = 1; mip <= max_mip_level; ++mip) {
       glTexImage3D(GL_TEXTURE_2D_ARRAY, mip, internal_format, dims.x >> mip, dims.y >> mip, dims.z, 0, format, data_type, nullptr);
     }
   }
 
+  void define_mipmap_compressed(GLuint handle, GLint mip, ivec3 dims, GLenum compressed_internal_format, GLsizei compressed_mip_size_per_layer) const {
+    glCompressedTexImage3D(GL_TEXTURE_2D_ARRAY, mip, compressed_internal_format, dims.x >> mip, dims.y >> mip, dims.z, 0, compressed_mip_size_per_layer * dims.z, nullptr);
+  }
+
   GLuint gen_and_config_texture(ivec3 dims) const {
     GLuint ret;
     gen_texture(&ret);
     config_texture(ret, dims);
+    return ret;
+  }
+
+  GLuint gen_and_config_texture_compressed(ivec3 dims, GLenum compressed_internal_format, GLsizei compressed_size) const {
+    GLuint ret;
+    gen_texture(&ret);
+    config_texture_compressed(ret, dims, compressed_internal_format, compressed_size);
     return ret;
   }
 
@@ -831,6 +853,95 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
   ctx.load_data.clear();
 }
 
+
+//==============================================================================
+
+static u32 read_u24_le(const void*const bytes) {
+  return static_cast<u32>(static_cast<const u8*>(bytes)[0])
+    | (static_cast<u32>(static_cast<const u8*>(bytes)[1]) << 8)
+    | (static_cast<u32>(static_cast<const u8*>(bytes)[2]) << 16)
+    ;
+}
+
+struct AstcImgInfo
+{
+  u8 block_width, block_height, block_depth;
+  u32 width, height, depth;
+  GLenum format;
+  size_t payload_size;
+  unsigned char* data;
+};
+
+
+static bool load_astc(const std::filesystem::path& img_path, const FunctionReference<void(const AstcImgInfo&)>& fn) 
+{
+  std::ifstream f(img_path, std::ios::binary | std::ios::ate);
+  nc_expect(f, "Could not open ASTC file {}", img_path.string());
+  const size_t file_size = static_cast<size_t>(f.tellg());
+  constexpr size_t ASTC_HEADER_SIZE = 16;
+  nc_expect(file_size > ASTC_HEADER_SIZE, "File {} has only {}B", img_path.string(), file_size);
+  f.seekg(0, std::ios::beg);
+  scratch_vector<char> buffer(file_size);
+  nc_expect(f.read(buffer.data(), buffer.size()), "Failed to read file {}", img_path.string());
+  unsigned char* buf = reinterpret_cast<unsigned char*>(buffer.data());
+  nc_expect(buf[0] == 0x13 && buf[1] == 0xAB && buf[2] == 0xA1 && buf[3] == 0x5C, "Invalid ASTC file magic");
+
+  AstcImgInfo info;
+
+  info.block_width = static_cast<u8>(buf[4]);
+  info.block_height = static_cast<u8>(buf[5]);
+  info.block_depth = static_cast<u8>(buf[6]);
+  info.width = read_u24_le(buf + 7);
+  info.height = read_u24_le(buf + 10);
+  info.depth = read_u24_le(buf + 13);
+  nc_expect((info.block_depth == 1) && (info.depth == 1) && (info.width != 0) && (info.height != 0));
+
+  // ASTC RGBA LDR format enums from GL_KHR_texture_compression_astc_ldr.
+  constexpr struct {
+    u8 block_width;
+    u8 block_height;
+    GLenum gl_format;
+  } ASTC_FORMATS[] = {
+      {  4,  4, GL_COMPRESSED_RGBA_ASTC_4x4 },
+      {  5,  4, GL_COMPRESSED_RGBA_ASTC_5x4 },
+      {  5,  5, GL_COMPRESSED_RGBA_ASTC_5x5 },
+      {  6,  5, GL_COMPRESSED_RGBA_ASTC_6x5 },
+      {  6,  6, GL_COMPRESSED_RGBA_ASTC_6x6 },
+      {  8,  5, GL_COMPRESSED_RGBA_ASTC_8x5 },
+      {  8,  6, GL_COMPRESSED_RGBA_ASTC_8x6 },
+      {  8,  8, GL_COMPRESSED_RGBA_ASTC_8x8 },
+      { 10,  5, GL_COMPRESSED_RGBA_ASTC_10x5 },
+      { 10,  6, GL_COMPRESSED_RGBA_ASTC_10x6 },
+      { 10,  8, GL_COMPRESSED_RGBA_ASTC_10x8 },
+      { 10, 10, GL_COMPRESSED_RGBA_ASTC_10x10 },
+      { 12, 10, GL_COMPRESSED_RGBA_ASTC_12x10 },
+      { 12, 12, GL_COMPRESSED_RGBA_ASTC_12x12 },
+  };
+
+  GLenum gl_format = 0;
+  for (const auto& format : ASTC_FORMATS) {
+    if (format.block_width == info.block_width && format.block_height == info.block_height) {
+      gl_format = format.gl_format;
+      break;
+    }
+  }
+  nc_expect(gl_format);
+
+  const size_t blocks_x = (info.width + info.block_width - 1) / info.block_width;
+  const size_t blocks_y = (info.height + info.block_height - 1) / info.block_height;
+  const size_t expected_payload_size = blocks_x * blocks_y * 16;
+  const size_t payload_size = buffer.size() - ASTC_HEADER_SIZE;
+  nc_expect(payload_size == expected_payload_size);
+  nc_expect(payload_size < std::numeric_limits<GLsizei>::max());
+
+  info.format = gl_format;
+  info.payload_size = payload_size;
+  info.data = buf + ASTC_HEADER_SIZE;
+  fn(info);
+
+  return true;
+}
+
 void TextureManager::load_prebaked_atlases(ResLifetime lifetime, LoadContext& ctx, const std::string& path)
 {
   auto& bundle = get_atlas_bundle_mut(lifetime);
@@ -873,8 +984,8 @@ void TextureManager::load_prebaked_atlases(ResLifetime lifetime, LoadContext& ct
       m_error_texture_handle = handle;
   }
 
-  // Load the texture atlas pages
 
+  // Load the texture atlas pages
   auto load_page = [&](const std::string& name, const TextureAtlasLayoutParameters& params, GLuint& handle)->void {
       handle = params.gen_and_config_texture(atlas_dims);
       params.define_mipmaps(handle, atlas_dims);
@@ -895,13 +1006,51 @@ void TextureManager::load_prebaked_atlases(ResLifetime lifetime, LoadContext& ct
       }
     };
 
-  load_page("diffuse", DIFFUSE_TEXTURE_PARAMS, bundle.diffuse_handle);
-  load_page("normal", NORMAL_TEXTURE_PARAMS, bundle.normal_handle);
-  load_page("specular", SPECULAR_TEXTURE_PARAMS, bundle.specular_handle);
-  load_page("emissive", EMISSIVE_TEXTURE_PARAMS, bundle.emissive_handle);
+  std::string compressed_extension = "astc";
+  auto load_page_compressed = [&](const std::string& name, const TextureAtlasLayoutParameters& params, GLuint& handle)->void {
+
+    bool was_texture_generated = false;
+
+    for (GLint mip = 0; mip <= params.max_mip_level; ++mip) {
+      bool was_mip_generated = false;
+      for (GLuint layer = 0; layer < static_cast<GLuint>(atlas_dims.z); ++layer) {
+        auto _sc = ScratchAllocator::get().create_scope();
+
+        std::filesystem::path img_path = dir_path / std::format("{}_{}_mip{}.{}", name, layer, mip, compressed_extension);
+
+        load_astc(img_path, [&](const AstcImgInfo& info)->void {
+          nc_expect(info.width  == static_cast<u32>(atlas_dims.x >> mip));
+          nc_expect(info.height == static_cast<u32>(atlas_dims.y >> mip));
+
+          if (!was_texture_generated) {
+            was_texture_generated = true;
+            was_mip_generated = true;
+            nc_assert(mip == 0);
+            handle = params.gen_and_config_texture_compressed(atlas_dims, info.format, static_cast<GLsizei>(info.payload_size));
+          }
+          if (!was_mip_generated) {
+            was_mip_generated = true;
+            nc_assert(was_texture_generated && (mip > 0));
+            params.define_mipmap_compressed(handle, mip, atlas_dims, info.format, static_cast<GLsizei>(info.payload_size));
+          }
+
+          nc_expect(was_texture_generated && was_mip_generated);
+          glCompressedTexSubImage3D(GL_TEXTURE_2D_ARRAY, mip, 0, 0, layer, atlas_dims.x >> mip, atlas_dims.y >> mip, 1, info.format, info.payload_size, info.data);
+          //glTexSubImage3D(GL_TEXTURE_2D_ARRAY, mip, 0, 0, layer, x, y, 1, params.format, params.data_type, img);
+        });
+
+      }
+    }
+  };
+
+  load_page_compressed("diffuse", DIFFUSE_TEXTURE_PARAMS, bundle.diffuse_handle);
+  load_page_compressed("normal", NORMAL_TEXTURE_PARAMS, bundle.normal_handle);
+  load_page_compressed("specular", SPECULAR_TEXTURE_PARAMS, bundle.specular_handle);
+  load_page_compressed("emissive", EMISSIVE_TEXTURE_PARAMS, bundle.emissive_handle);
 }
 
 
+//==============================================================================
 
 void TextureManager::dump_atlases(ResLifetime lifetime, const std::string& path)
 {
