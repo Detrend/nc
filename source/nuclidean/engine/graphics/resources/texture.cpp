@@ -922,7 +922,7 @@ static bool load_astc(const std::filesystem::path& img_path, const FunctionRefer
   GLenum gl_format = 0;
   for (const auto& format : ASTC_FORMATS) {
     if (format.block_width == info.block_width && format.block_height == info.block_height) {
-      gl_format = format.gl_format_srgb;
+      gl_format = format.gl_format;
       break;
     }
   }
