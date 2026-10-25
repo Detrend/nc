@@ -296,12 +296,12 @@ bool GraphicsSystem::init(bool force_gles)
   StackVector<GlLoadingInstructions, 4> configs;
   if(! force_gles) { // Skip if forcing OpenGL ES
       // Desktop OpenGL 4.3 - our main renderer backend
-      configs.emplace_back(GlLoadingInstructions{ .profile = SDL_GL_CONTEXT_PROFILE_CORE, .result_backend = RenderBackend::OpenGL, .requested_major = 4, .requested_minor = 6, .expected_major = 4, .least_expected_minor = 3 });
+      configs.emplace_back(GlLoadingInstructions{ .profile = SDL_GL_CONTEXT_PROFILE_CORE, .result_backend = RenderBackend::OpenGL, .requested_major = 4, .requested_minor = 3, .expected_major = 4, .least_expected_minor = 3 });
   }
   // For some reason on RPi5, if we asked directly for 3.1, we would get segfault when creating the window, but we safely get 3.1 by asking for 3.0.
-  configs.emplace_back(GlLoadingInstructions{ .profile = SDL_GL_CONTEXT_PROFILE_ES, .result_backend = RenderBackend::OpenGLES, .requested_major = 3, .requested_minor = 0, .expected_major = 3, .least_expected_minor = 1 });
+  //configs.emplace_back(GlLoadingInstructions{ .profile = SDL_GL_CONTEXT_PROFILE_ES, .result_backend = RenderBackend::OpenGLES, .requested_major = 3, .requested_minor = 0, .expected_major = 3, .least_expected_minor = 1 });
   // When not on RPi, ask first for 3.2 because why not (usually I'm curious to learn if the HW being used supports it xD)
-  configs.emplace_back(GlLoadingInstructions{ .profile = SDL_GL_CONTEXT_PROFILE_ES, .result_backend = RenderBackend::OpenGLES, .requested_major = 3, .requested_minor = 2, .expected_major = 3, .least_expected_minor = 1 });
+  //configs.emplace_back(GlLoadingInstructions{ .profile = SDL_GL_CONTEXT_PROFILE_ES, .result_backend = RenderBackend::OpenGLES, .requested_major = 3, .requested_minor = 2, .expected_major = 3, .least_expected_minor = 1 });
   // Finally ask directly for GL ES 3.1
   configs.emplace_back(GlLoadingInstructions{ .profile = SDL_GL_CONTEXT_PROFILE_ES, .result_backend = RenderBackend::OpenGLES, .requested_major = 3, .requested_minor = 1, .expected_major = 3, .least_expected_minor = 1 });
 

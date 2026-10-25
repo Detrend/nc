@@ -9,6 +9,7 @@
 #include <stb/stb_image_write.h>
 #include <json/json.hpp>
 #include <engine/graphics/graphics_system.h>
+#include <engine/graphics/resources/texture_compression_utils.h>
 
 #include <algorithm>
 #include <array>
@@ -856,92 +857,6 @@ void TextureManager::finish_load(ResLifetime lifetime, LoadContext& ctx)
 
 //==============================================================================
 
-static u32 read_u24_le(const void*const bytes) {
-  return static_cast<u32>(static_cast<const u8*>(bytes)[0])
-    | (static_cast<u32>(static_cast<const u8*>(bytes)[1]) << 8)
-    | (static_cast<u32>(static_cast<const u8*>(bytes)[2]) << 16)
-    ;
-}
-
-struct AstcImgInfo
-{
-  u8 block_width, block_height, block_depth;
-  u32 width, height, depth;
-  GLenum format;
-  size_t payload_size;
-  unsigned char* data;
-};
-
-
-static bool load_astc(const std::filesystem::path& img_path, const FunctionReference<void(const AstcImgInfo&)>& fn) 
-{
-  std::ifstream f(img_path, std::ios::binary | std::ios::ate);
-  nc_expect(f, "Could not open ASTC file {}", img_path.string());
-  const size_t file_size = static_cast<size_t>(f.tellg());
-  constexpr size_t ASTC_HEADER_SIZE = 16;
-  nc_expect(file_size > ASTC_HEADER_SIZE, "File {} has only {}B", img_path.string(), file_size);
-  f.seekg(0, std::ios::beg);
-  scratch_vector<char> buffer(file_size);
-  nc_expect(f.read(buffer.data(), buffer.size()), "Failed to read file {}", img_path.string());
-  unsigned char* buf = reinterpret_cast<unsigned char*>(buffer.data());
-  nc_expect(buf[0] == 0x13 && buf[1] == 0xAB && buf[2] == 0xA1 && buf[3] == 0x5C, "Invalid ASTC file magic");
-
-  AstcImgInfo info;
-
-  info.block_width = static_cast<u8>(buf[4]);
-  info.block_height = static_cast<u8>(buf[5]);
-  info.block_depth = static_cast<u8>(buf[6]);
-  info.width = read_u24_le(buf + 7);
-  info.height = read_u24_le(buf + 10);
-  info.depth = read_u24_le(buf + 13);
-  nc_expect((info.block_depth == 1) && (info.depth == 1) && (info.width != 0) && (info.height != 0));
-
-  // ASTC RGBA LDR format enums from GL_KHR_texture_compression_astc_ldr.
-  constexpr struct {
-    u8 block_width;
-    u8 block_height;
-    GLenum gl_format;
-    GLenum gl_format_srgb;
-  } ASTC_FORMATS[] = {
-      {  4,  4, GL_COMPRESSED_RGBA_ASTC_4x4   , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4   },
-      {  5,  4, GL_COMPRESSED_RGBA_ASTC_5x4   , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4   },
-      {  5,  5, GL_COMPRESSED_RGBA_ASTC_5x5   , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5   },
-      {  6,  5, GL_COMPRESSED_RGBA_ASTC_6x5   , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5   },
-      {  6,  6, GL_COMPRESSED_RGBA_ASTC_6x6   , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6   },
-      {  8,  5, GL_COMPRESSED_RGBA_ASTC_8x5   , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x5   },
-      {  8,  6, GL_COMPRESSED_RGBA_ASTC_8x6   , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x6   },
-      {  8,  8, GL_COMPRESSED_RGBA_ASTC_8x8   , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x8   },
-      { 10,  5, GL_COMPRESSED_RGBA_ASTC_10x5  , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x5  },
-      { 10,  6, GL_COMPRESSED_RGBA_ASTC_10x6  , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x6  },
-      { 10,  8, GL_COMPRESSED_RGBA_ASTC_10x8  , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x8  },
-      { 10, 10, GL_COMPRESSED_RGBA_ASTC_10x10 , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x10 },
-      { 12, 10, GL_COMPRESSED_RGBA_ASTC_12x10 , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x10 },
-      { 12, 12, GL_COMPRESSED_RGBA_ASTC_12x12 , GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12 },
-  };
-
-  GLenum gl_format = 0;
-  for (const auto& format : ASTC_FORMATS) {
-    if (format.block_width == info.block_width && format.block_height == info.block_height) {
-      gl_format = format.gl_format;
-      break;
-    }
-  }
-  nc_expect(gl_format);
-
-  const size_t blocks_x = (info.width + info.block_width - 1) / info.block_width;
-  const size_t blocks_y = (info.height + info.block_height - 1) / info.block_height;
-  const size_t expected_payload_size = blocks_x * blocks_y * 16;
-  const size_t payload_size = buffer.size() - ASTC_HEADER_SIZE;
-  nc_expect(payload_size == expected_payload_size);
-  nc_expect(payload_size < std::numeric_limits<GLsizei>::max());
-
-  info.format = gl_format;
-  info.payload_size = payload_size;
-  info.data = buf + ASTC_HEADER_SIZE;
-  fn(info);
-
-  return true;
-}
 
 void TextureManager::load_prebaked_atlases(ResLifetime lifetime, [[maybe_unused]]LoadContext& ctx, const std::string& path)
 {
@@ -1007,8 +922,9 @@ void TextureManager::load_prebaked_atlases(ResLifetime lifetime, [[maybe_unused]
       }
     };
 
-  std::string compressed_extension = "astc";
-  auto load_page_compressed = [&](const std::string& name, const TextureAtlasLayoutParameters& params, GLuint& handle)->void {
+  const bool use_s3tc = std::filesystem::exists(dir_path / "diffuse_0_mip0.dds");
+  const std::string compressed_extension = use_s3tc ? "dds" : "astc";
+  auto load_page_compressed = [&](const std::string& name, const TextureAtlasLayoutParameters& params, GLenum compressed_format, GLuint& handle)->void {
 
     bool was_texture_generated = false;
 
@@ -1019,7 +935,7 @@ void TextureManager::load_prebaked_atlases(ResLifetime lifetime, [[maybe_unused]
 
         std::filesystem::path img_path = dir_path / std::format("{}_{}_mip{}.{}", name, layer, mip, compressed_extension);
 
-        load_astc(img_path, [&](const AstcImgInfo& info)->void {
+        auto load_page = [&](const texture_util::CompressedImgInfo& info)->void {
           nc_expect(info.width  == static_cast<u32>(atlas_dims.x >> mip));
           nc_expect(info.height == static_cast<u32>(atlas_dims.y >> mip));
 
@@ -1037,18 +953,31 @@ void TextureManager::load_prebaked_atlases(ResLifetime lifetime, [[maybe_unused]
 
           nc_expect(was_texture_generated && was_mip_generated);
           glCompressedTexSubImage3D(GL_TEXTURE_2D_ARRAY, mip, 0, 0, layer, atlas_dims.x >> mip, atlas_dims.y >> mip, 1, info.format, info.payload_size, info.data);
-          //glTexSubImage3D(GL_TEXTURE_2D_ARRAY, mip, 0, 0, layer, x, y, 1, params.format, params.data_type, img);
-        });
+        };
+
+        if (use_s3tc)
+          texture_util::load_s3tc(img_path, compressed_format, load_page);
+        else
+          texture_util::load_astc(img_path, load_page);
 
       }
     }
   };
 
   static_cast<void>(load_page);
-  load_page_compressed("diffuse", DIFFUSE_TEXTURE_PARAMS, bundle.diffuse_handle);
-  load_page_compressed("normal", NORMAL_TEXTURE_PARAMS, bundle.normal_handle);
-  load_page_compressed("specular", SPECULAR_TEXTURE_PARAMS, bundle.specular_handle);
-  load_page_compressed("emissive", EMISSIVE_TEXTURE_PARAMS, bundle.emissive_handle);
+  static_cast<void>(load_page_compressed);
+#if 1
+    load_page_compressed("diffuse", DIFFUSE_TEXTURE_PARAMS, 0x8C4F, bundle.diffuse_handle); // GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT
+    load_page_compressed("normal", NORMAL_TEXTURE_PARAMS, 0x83F0, bundle.normal_handle); // GL_COMPRESSED_RGB_S3TC_DXT1_EXT
+    load_page_compressed("specular", SPECULAR_TEXTURE_PARAMS, 0x8DBB, bundle.specular_handle); // GL_COMPRESSED_RED_RGTC1
+    load_page_compressed("emissive", EMISSIVE_TEXTURE_PARAMS, 0x8DBB, bundle.emissive_handle); // GL_COMPRESSED_RED_RGTC1
+#else
+    load_page("diffuse", DIFFUSE_TEXTURE_PARAMS, bundle.diffuse_handle);
+    load_page("normal", NORMAL_TEXTURE_PARAMS, bundle.normal_handle);
+    load_page("specular", SPECULAR_TEXTURE_PARAMS, bundle.specular_handle);
+    load_page("emissive", EMISSIVE_TEXTURE_PARAMS, bundle.emissive_handle);
+#endif
+
 }
 
 

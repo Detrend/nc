@@ -1,4 +1,5 @@
 #!/bin/sh
+# apt install astcenc
 set -eu
 
 usage() {
