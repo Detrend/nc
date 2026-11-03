@@ -24,8 +24,15 @@ void RenderElementCollector::push_back(const RenderElementLight& element)
 }
 
 //==============================================================================
+void RenderElementCollector::push_back(const RenderElementScreenSprite& element)
+{
+  screen_sprites.push_back(element);
+}
+
+//==============================================================================
 void RenderElementCollector::clear()
 {
+  screen_sprites.clear();
   billboards.clear();
   lights.clear();
 }
@@ -101,6 +108,17 @@ PlayerRenderProxy::PlayerRenderProxy(const Appearance& appear, const Camera& cam
 : BillboardRenderProxy(appear)
 , camera(cam)
 {
+}
+
+//==============================================================================
+void PlayerRenderProxy::get_render_elements(RenderElementCollector& collector) const
+{
+  BillboardRenderProxy::get_render_elements(collector);
+
+  if (weapon_sprite.sprite)
+  {
+    collector.push_back(weapon_sprite);
+  }
 }
 
 //==============================================================================

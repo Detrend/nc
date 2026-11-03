@@ -25,10 +25,13 @@ class PlayerRenderProxy : public BillboardRenderProxy
 public:
   PlayerRenderProxy(const Appearance& appear, const Camera& cam);
 
+  void get_render_elements(RenderElementCollector& collector) const override;
+
   bool          has_camera_data() const override;
   const Camera* get_camera_data() const override;
 
-  Camera camera;
+  Camera                    camera;
+  RenderElementScreenSprite weapon_sprite;
 };
 
 class PointLightRenderProxy : public IEntityRenderProxy

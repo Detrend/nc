@@ -36,12 +36,6 @@ struct CameraData
   const VisibilityTree& vis_tree;
 };
 
-struct RenderGunProperties
-{
-  vec2        sway   = VEC2_ZERO;
-  std::string sprite = "";
-};
-
 enum class RenderBackend {
   None,
   OpenGL,

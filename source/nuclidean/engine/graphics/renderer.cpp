@@ -166,12 +166,7 @@ void Renderer::on_window_resized(u32 width, u32 height)
 }
 
 //==============================================================================
-void Renderer::render
-(
-  const VisibilityTree& visibility_tree,
-  const RenderGunProperties& gun_data
-)
-const
+void Renderer::render(const VisibilityTree& visibility_tree) const
 {
   // NOTE: This can consume up to 250 microseconds..
 #if !NC_IS_SHIP
@@ -192,7 +187,7 @@ const
     .portal_dest_to_src = mat4(1.0f),
   };
 
-  do_geometry_pass(camera_data, gun_data);
+  do_geometry_pass(camera_data);
   update_ssbos();
   do_light_culling_pass(camera_data);
   do_lighting_pass(camera_data.position);
@@ -536,11 +531,7 @@ void Renderer::recompute_projection(u32 width, u32 height, f32 fov)
 }
 
 //==============================================================================
-void Renderer::do_geometry_pass
-(
-  const CameraData& camera, const RenderGunProperties& gun
-)
-const
+void Renderer::do_geometry_pass(const CameraData& camera) const
 {
   const ivec2 render_size = get_render_size();
   glViewport(0, 0, render_size.x, render_size.y);
@@ -557,7 +548,7 @@ const
   render_sectors(camera);
   render_entities(camera);
   render_portals(camera);
-  render_gun(camera, gun);
+  render_screen_sprites(camera);
   render_sky_box(camera);
 
   glBindFramebuffer(GL_FRAMEBUFFER, m_lowres_framebuff);
@@ -1063,36 +1054,51 @@ void Renderer::render_portals(const CameraData& camera) const
 }
 
 //==============================================================================
-void Renderer::render_gun
+void Renderer::render_screen_sprites(const CameraData& camera) const
+{
+  if (const RenderProxyRegistry* proxies = GameSystem::get().get_render_proxies())
+  {
+    if (const IEntityRenderProxy* camera_proxy = proxies->get_camera_proxy())
+    {
+      RenderElementCollector collector;
+      camera_proxy->get_render_elements(collector);
+
+      for (const RenderElementScreenSprite& sprite : collector.screen_sprites)
+      {
+        render_screen_sprite(camera, sprite, camera.position);
+      }
+    }
+  }
+}
+
+//==============================================================================
+void Renderer::render_screen_sprite
 (
-  const CameraData& camera, const RenderGunProperties& gun
+  const CameraData& camera, const RenderElementScreenSprite& sprite, vec3 position
 )
 const
 {
   namespace sb = shaders::billboard;
 
-  if (gun.sprite.empty())
+  if (!sprite.sprite)
   {
-    // Early exit if no gun should be rendered
     return;
   }
 
-  const TextureHandle& texture         = TextureManager::get()[gun.sprite];
+  const TextureHandle& texture         = TextureManager::get()[sprite.sprite.to_string()];
   const MeshHandle&    texturable_quad = MeshManager::get().get_texturable_quad();
 
-  f32  gun_zoom = CVars::gun_zoom;
   vec2 win_size = cast<vec2>(get_render_size());
-  vec3 scale    = -vec3{win_size.x * gun_zoom, win_size.y * gun_zoom, 1.0f};
-  f32  trans_x  = 0.5f + gun.sway.x * 0.5f;
-  f32  trans_y  = 0.5f + gun.sway.y * 0.5f;
+  vec3 scale    = -vec3{win_size.x * sprite.scale, win_size.y * sprite.scale, 1.0f};
+  f32  trans_x  = 0.5f + sprite.offset.x * 0.5f;
+  f32  trans_y  = 0.5f + sprite.offset.y * 0.5f;
   vec3 trans    = vec3{trans_x * win_size.x, trans_y * win_size.y, 0.0f};
 
   mat4 transform  = inverse(camera.view);
   mat4 view       = translation(trans) * scaling(scale);
   mat4 projection = ortho(0.0f, win_size.x, win_size.y, 0.0f, -1.0f, 1.0f);
 
-  const vec2 player_position = GameHelpers::get().get_player()->get_position().xz();
-  const SectorID sector_id = GameSystem::get().get_map().get_sector_from_point(player_position);
+  const SectorID sector_id = GameSystem::get().get_map().get_sector_from_point(position.xz());
 
   const u32 matrix_id = cast<u32>(m_sector_matrices_inv.size());
   m_sector_matrices_inv.push_back(inverse(camera.portal_dest_to_src));

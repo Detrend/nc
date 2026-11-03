@@ -32,15 +32,24 @@ struct RenderElementLight
   f32    falloff;
 };
 
+struct RenderElementScreenSprite
+{
+  vec2  offset = VEC2_ZERO;
+  f32   scale  = 1.0f;
+  Token sprite;
+};
+
 struct RenderElementCollector
 {
-  void push_back(const RenderElementBillboard& element);
-  void push_back(const RenderElementLight&     element);
+  void push_back(const RenderElementBillboard&    element);
+  void push_back(const RenderElementLight&        element);
+  void push_back(const RenderElementScreenSprite& element);
 
   void clear();
 
-  std::vector<RenderElementBillboard> billboards;
-  std::vector<RenderElementLight>     lights;
+  std::vector<RenderElementBillboard>    billboards;
+  std::vector<RenderElementLight>        lights;
+  std::vector<RenderElementScreenSprite> screen_sprites;
 };
 
 class IRenderProxy

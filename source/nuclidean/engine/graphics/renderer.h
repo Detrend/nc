@@ -25,7 +25,7 @@ namespace nc
 
 struct Portal;
 struct VisibilityTree;
-struct RenderGunProperties;
+struct RenderElementScreenSprite;
 struct PointLightGPU;
 
 class Renderer
@@ -62,11 +62,7 @@ public:
   Renderer(u32 window_w, u32 window_h);
 
   void on_window_resized(u32 new_width, u32 new_height);
-  void render
-  (
-    const VisibilityTree& visibility_tree,
-    const RenderGunProperties& gun
-  ) const;
+  void render(const VisibilityTree& visibility_tree) const;
 
   const ShaderProgramHandle& get_solid_material() const;
 
@@ -181,7 +177,7 @@ private:
   // recompile any that have changed.  Called at the top of render().
   void check_shader_hot_reload() const;
 
-  void do_geometry_pass(const CameraData& camera, const RenderGunProperties& gun) const;
+  void do_geometry_pass(const CameraData& camera) const;
   void do_light_culling_pass(const CameraData& camera) const;
   void do_lighting_pass(const vec3& view_position) const;
 
@@ -190,7 +186,8 @@ private:
   void render_sectors(const CameraData& camera)  const;
   void render_entities(const CameraData& camera) const;
   void render_portals(const CameraData& camera) const;
-  void render_gun(const CameraData& cam, const RenderGunProperties& gun) const;
+  void render_screen_sprites(const CameraData& camera) const;
+  void render_screen_sprite(const CameraData& cam, const RenderElementScreenSprite& sprite, vec3 position) const;
   void render_sky_box(const CameraData& camera) const;
 
   #pragma region portals rendering

@@ -526,22 +526,6 @@ void GraphicsSystem::update([[maybe_unused]]f32 delta_seconds)
 }
 
 //==============================================================================
-static void grab_render_gun_props(RenderGunProperties& props)
-{
-  const Player* player = GameHelpers::get().get_player();
-
-  if (player)
-  {
-    player->get_gun_props(props);
-  }
-  else
-  {
-    props.sprite = "";
-    props.sway   = VEC2_ZERO;
-  }
-}
-
-//==============================================================================
 void GraphicsSystem::render()
 {
   NC_SCOPE_PROFILER(Render)
@@ -599,9 +583,6 @@ void GraphicsSystem::render()
   VisibilityTree visible_sectors;
   query_visibility(visible_sectors);
 
-  RenderGunProperties gun_props;
-  grab_render_gun_props(gun_props);
-
 #if NC_DEBUG_DRAW
   if (CVars::enable_top_down_debug)
   {
@@ -611,7 +592,7 @@ void GraphicsSystem::render()
   else
 #endif
   {
-    m_renderer->render(visible_sectors, gun_props);
+    m_renderer->render(visible_sectors);
 
     get_engine().get_module<UserInterfaceSystem>().draw();
   }

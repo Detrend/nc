@@ -46,6 +46,7 @@ public:
 
   const IEntityRenderProxy* get_proxy(EntityID id) const;
   const SectorMapping&      get_mapping()          const;
+  const IEntityRenderProxy* get_camera_proxy()     const;
   const Camera*             get_camera()           const;
 
 private:

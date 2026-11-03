@@ -216,9 +216,15 @@ const SectorMapping& RenderProxyRegistry::get_mapping() const
 }
 
 //==============================================================================
+const IEntityRenderProxy* RenderProxyRegistry::get_camera_proxy() const
+{
+  return this->get_proxy(m_camera_entity);
+}
+
+//==============================================================================
 const Camera* RenderProxyRegistry::get_camera() const
 {
-  const IEntityRenderProxy* proxy = this->get_proxy(m_camera_entity);
+  const IEntityRenderProxy* proxy = this->get_camera_proxy();
   return proxy ? proxy->get_camera_data() : nullptr;
 }
 

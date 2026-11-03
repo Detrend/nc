@@ -18,7 +18,7 @@
 #include <engine/entity/entity_system.h>
 #include <engine/enemies/enemy.h>
 
-#include <engine/graphics/graphics_system.h> // RenderGunProperties
+#include <engine/graphics/graphics_system.h>
 
 #include <engine/ui/user_interface_system.h>
 #include <engine/ui/ui_screen_effect.h>
@@ -1010,13 +1010,17 @@ void Player::update
   this->apply_velocity(delta);
   this->update_camera(delta); // Has to be called after "apply_velocity"
 
+  RenderElementScreenSprite weapon_sprite;
+  this->fill_gun_props(weapon_sprite);
+
   this->enqueue_render_command
   (
-    [appear = this->appear, cam = this->camera](IEntityRenderProxy* proxy, f32 /*interp_coeff*/)
+    [appear = this->appear, cam = this->camera, weapon_sprite = std::move(weapon_sprite)](IEntityRenderProxy* proxy, f32 /*interp_coeff*/)
     {
       PlayerRenderProxy* player_proxy = static_cast<PlayerRenderProxy*>(proxy);
-      player_proxy->appearance = appear;
-      player_proxy->camera     = cam;
+      player_proxy->appearance    = appear;
+      player_proxy->camera        = cam;
+      player_proxy->weapon_sprite = weapon_sprite;
     },
     true
   );
@@ -1056,7 +1060,9 @@ Appearance* Player::get_appearance()
 //==============================================================================
 IEntityRenderProxy* Player::allocate_render_proxy() const
 {
-  return new PlayerRenderProxy(this->appear, this->camera);
+  PlayerRenderProxy* proxy = new PlayerRenderProxy(this->appear, this->camera);
+  this->fill_gun_props(proxy->weapon_sprite);
+  return proxy;
 }
 
 //==============================================================================
@@ -1098,7 +1104,7 @@ void Player::store_level_transition_data(LevelTransitionData& data_out) const
 }
 
 //==============================================================================
-void Player::get_gun_props(RenderGunProperties& props_out) const
+void Player::fill_gun_props(RenderElementScreenSprite& props_out) const
 {
   const f32 death_limit    = 2.0f;
   const f32 max_gun_change = CVars::gun_change_time;
@@ -1120,7 +1126,8 @@ void Player::get_gun_props(RenderGunProperties& props_out) const
 
   vec2 sway = default_sway * total_coeff * sway_amount + gun_change_offset;
 
-  props_out.sway = sway;
+  props_out.offset = sway;
+  props_out.scale  = CVars::gun_zoom;
 
   if (this->current_weapon != INVALID_WEAPON_TYPE)
   {
@@ -1133,7 +1140,11 @@ void Player::get_gun_props(RenderGunProperties& props_out) const
     cstr state_name = WEAPON_STATE_NAMES[state];
     u64  anim_frame = cast<u64>(anim_time * (anims.anims[state].frames_cnt));
 
-    props_out.sprite = std::format("{}_{}_{}", set_name, state_name, anim_frame);
+    char buffer[Token::MAX_LENGTH + 1];
+    const auto result = std::format_to_n(buffer, Token::MAX_LENGTH, "{}_{}_{}", set_name, state_name, anim_frame);
+    nc_assert(cast<size_t>(result.size) <= Token::MAX_LENGTH);
+
+    props_out.sprite = std::string_view{buffer, result.out};
   }
 }
 

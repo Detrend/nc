@@ -24,7 +24,7 @@ namespace nc
 {
 // Forward declare, we do not want to include
 struct PlayerSpecificInputs;
-struct RenderGunProperties;
+struct RenderElementScreenSprite;
 struct LevelTransitionData;
 class  Pickup;
 }
@@ -103,7 +103,6 @@ public:
 
   void init_with_level_transition_data(const LevelTransitionData& data_in);
   void store_level_transition_data(LevelTransitionData& data_out) const;
-  void get_gun_props(RenderGunProperties& props) const;
 
 #if NC_HOT_RELOAD
   void hot_reload_set_pos_rot(vec3 pos, f32 yaw, f32 pitch);
@@ -128,6 +127,9 @@ public:
   using WeaponAnimFSM = AnimFSM<WeaponStates::count, WEAPON_TRANSITIONS>;
 
 private:
+  // Fills out the gun properties for the screen sprite
+  void fill_gun_props(RenderElementScreenSprite& props) const;
+
   // apply wish velocity
   void apply_velocity(f32 delta_seconds);
 
