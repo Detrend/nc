@@ -212,7 +212,7 @@ const std::vector<TextureHandle>& TextureManager::get_textures() const
 }
 
 //==============================================================================
-const TextureHandle& TextureManager::operator[](const std::pair<const std::string&, ResLifetime> pair) const
+const TextureHandle& TextureManager::operator[](const std::pair<std::string_view, ResLifetime> pair) const
 {
   const TextureMap& textures = get_atlas_bundle(pair.second).textures;
 
@@ -228,9 +228,22 @@ const TextureHandle& TextureManager::operator[](const std::pair<const std::strin
 }
 
 //==============================================================================
-const TextureHandle& TextureManager::operator[](const std::string& name) const
+const TextureHandle& TextureManager::operator[](std::string_view name) const
 {
   return operator[](std::make_pair(name, ResLifetime::Game));
+}
+
+//==============================================================================
+const TextureHandle& TextureManager::operator[](cstr name) const
+{
+  return operator[](std::string_view{name});
+}
+
+//==============================================================================
+const TextureHandle& TextureManager::operator[](Token name) const
+{
+  const auto chars = name.to_cstring();
+  return operator[](std::string_view{chars.data()});
 }
 
 //==============================================================================

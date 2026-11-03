@@ -14,8 +14,11 @@
 
 #include <stb/stb_rect_pack.h>
 
+#include <token.h>
+
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -68,7 +71,17 @@ private:
   u32         m_height     = 0;
 };
 
-using TextureMap = std::unordered_map<std::string, TextureHandle>;
+struct TextureNameHash
+{
+  using is_transparent = void;
+
+  size_t operator()(std::string_view name) const
+  {
+    return std::hash<std::string_view>{}(name);
+  }
+};
+
+using TextureMap = std::unordered_map<std::string, TextureHandle, TextureNameHash, std::equal_to<>>;
 
 // Bundles texture atlasses which shares UV space.
 struct TextureAtlasBundle
@@ -98,8 +111,10 @@ public:
   const TextureAtlasBundle& get_atlas_bundle(ResLifetime lifetime) const;
   const std::vector<TextureHandle>& get_textures() const;
 
-  const TextureHandle& operator[](const std::pair<const std::string&, ResLifetime> pair) const;
-  const TextureHandle& operator[](const std::string& name) const;
+  const TextureHandle& operator[](const std::pair<std::string_view, ResLifetime> pair) const;
+  const TextureHandle& operator[](std::string_view name) const;
+  const TextureHandle& operator[](cstr name) const;
+  const TextureHandle& operator[](Token name) const;
   const TextureHandle& operator[](u16 texture_id) const;
 
   GLuint get_equirectangular_map(const std::string& name, ResLifetime lifetime) const;

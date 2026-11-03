@@ -691,6 +691,22 @@ void Renderer::render_sectors(const CameraData& camera) const
 }
 
 //==============================================================================
+static const TextureHandle& find_texture_with_suffix(Token sprite, cstr suffix)
+{
+  const auto   name       = sprite.to_cstring();
+  const size_t name_len   = strlen(name.data());
+  const size_t suffix_len = strlen(suffix);
+
+  std::array<char, Token::MAX_LENGTH + 4> buffer;
+  nc_assert(name_len + suffix_len <= buffer.size());
+
+  memcpy(buffer.data(),            name.data(), name_len);
+  memcpy(buffer.data() + name_len, suffix,      suffix_len);
+
+  return TextureManager::get()[std::string_view{buffer.data(), name_len + suffix_len}];
+}
+
+//==============================================================================
 // Chooses the exact texture handle for a given entity from the data in the
 // appearance component.
 static TextureHandle pick_texture_handle_from_appearance
@@ -704,7 +720,7 @@ static TextureHandle pick_texture_handle_from_appearance
     // 1 directional sprite
     case Appearance::SpriteMode::mono:
     {
-      return TextureManager::get()[appear.sprite.to_string()];
+      return TextureManager::get()[appear.sprite];
     }
 
     // 8 directional sprite
@@ -718,7 +734,7 @@ static TextureHandle pick_texture_handle_from_appearance
       if (dir_2d == VEC2_ZERO) [[unlikely]]
       {
         // Not sure if this can even happen legaly
-        return TextureManager::get()[appear.sprite.to_string() + "_d"];
+        return find_texture_with_suffix(appear.sprite, "_d");
       }
 
       // ( 0.0f, -1.0f) ->  0.0f   (looking straight at us)
@@ -754,7 +770,7 @@ static TextureHandle pick_texture_handle_from_appearance
         "_u",  // 5 + 4 = 9
       };
 
-      return TextureManager::get()[appear.sprite.to_string() + SUFFIX_LUT[idx]];
+      return find_texture_with_suffix(appear.sprite, SUFFIX_LUT[idx]);
     }
 
     default:
@@ -1085,7 +1101,7 @@ const
     return;
   }
 
-  const TextureHandle& texture         = TextureManager::get()[sprite.sprite.to_string()];
+  const TextureHandle& texture         = TextureManager::get()[sprite.sprite];
   const MeshHandle&    texturable_quad = MeshManager::get().get_texturable_quad();
 
   vec2 win_size = cast<vec2>(get_render_size());
