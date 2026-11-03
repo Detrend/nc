@@ -32,6 +32,8 @@
 #include <format>
 #include <algorithm> // std::fill
 
+#include <engine/graphics/render_proxies.h>
+
 #if NC_DEBUG_DRAW
 #include <engine/graphics/debug/gizmo.h>
 #endif
@@ -285,6 +287,11 @@ void Enemy::update(f32 delta)
 
   this->handle_movement(delta);
   this->handle_appearance(delta);
+
+  this->enqueue_render_command([appear = this->appear](IEntityRenderProxy* proxy, f32 /*interp_coeff*/)
+  {
+    static_cast<BillboardRenderProxy*>(proxy)->appearance = appear;
+  }, true);
 }
 
 //==============================================================================
@@ -1126,6 +1133,12 @@ bool Enemy::is_physics_enabled() const
 Appearance& Enemy::get_appearance()
 {
   return this->appear;
+}
+
+//==============================================================================
+IEntityRenderProxy* Enemy::allocate_render_proxy() const
+{
+  return new BillboardRenderProxy(this->appear);
 }
 
 }

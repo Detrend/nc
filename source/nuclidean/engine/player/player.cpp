@@ -39,6 +39,7 @@
 #include <engine/entity/entity_type_definitions.h>
 
 #include <profiling.h>
+#include <engine/graphics/render_proxies.h>
 
 #include <algorithm> // std::clamp
 #include <format>    // std::format
@@ -1008,6 +1009,17 @@ void Player::update
   this->calculate_gravity_velocity(delta);
   this->apply_velocity(delta);
   this->update_camera(delta); // Has to be called after "apply_velocity"
+
+  this->enqueue_render_command
+  (
+    [appear = this->appear, cam = this->camera](IEntityRenderProxy* proxy, f32 /*interp_coeff*/)
+    {
+      PlayerRenderProxy* player_proxy = static_cast<PlayerRenderProxy*>(proxy);
+      player_proxy->appearance = appear;
+      player_proxy->camera     = cam;
+    },
+    true
+  );
 }
 
 //==============================================================================
@@ -1039,6 +1051,12 @@ const Appearance* Player::get_appearance() const
 Appearance* Player::get_appearance()
 {
   return &this->appear;
+}
+
+//==============================================================================
+IEntityRenderProxy* Player::allocate_render_proxy() const
+{
+  return new PlayerRenderProxy(this->appear, this->camera);
 }
 
 //==============================================================================

@@ -92,6 +92,8 @@ public:
   const Appearance* get_appearance() const;
   Appearance*       get_appearance();
 
+  IEntityRenderProxy* allocate_render_proxy() const;
+
   WeaponType get_equipped_weapon()         const;
   bool       has_weapon(WeaponType weapon) const;
   void       give_weapon(WeaponType weapon);

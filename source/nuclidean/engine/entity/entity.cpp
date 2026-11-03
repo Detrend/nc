@@ -20,6 +20,7 @@
 #include <game/particle.h>
 
 #include <engine/graphics/entities/prop.h>
+#include <engine/graphics/render_proxy_registry.h>
 
 #include <set>
 #include <map>
@@ -168,6 +169,30 @@ f32 Entity::get_snap_offset() const
   }
 
   return 0.0f;
+}
+
+//==============================================================================
+IEntityRenderProxy* Entity::allocate_render_proxy() const
+{
+  switch (this->get_type())
+  {
+    case EntityTypes::player:      return this->as<Player>()->allocate_render_proxy();
+    case EntityTypes::enemy:       return this->as<Enemy>()->allocate_render_proxy();
+    case EntityTypes::projectile:  return this->as<Projectile>()->allocate_render_proxy();
+    case EntityTypes::pickup:      return this->as<Pickup>()->allocate_render_proxy();
+    case EntityTypes::prop:        return this->as<Prop>()->allocate_render_proxy();
+    case EntityTypes::particle:    return this->as<Particle>()->allocate_render_proxy();
+    case EntityTypes::point_light: return this->as<PointLight>()->allocate_render_proxy();
+    default:                       return nullptr;
+  }
+}
+
+//==============================================================================
+void Entity::enqueue_render_command(EntityRenderLambda&& lambda, bool can_skip)
+{
+  RenderProxyRegistry* proxies = GameSystem::get().get_render_proxies();
+  nc_assert(proxies);
+  proxies->enqueue_command(m_id_and_type, std::move(lambda), can_skip);
 }
 
 //==============================================================================

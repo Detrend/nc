@@ -45,6 +45,8 @@ public:
   Appearance*       get_appearance();
   const Appearance* get_appearance() const;
 
+  IEntityRenderProxy* allocate_render_proxy() const;
+
 private:
   Appearance m_appear;
   EntityID   m_light_opt     = INVALID_ENTITY_ID;

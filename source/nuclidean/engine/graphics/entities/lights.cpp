@@ -5,6 +5,7 @@
 
 #include <engine/game/game_system.h>
 #include <engine/entity/entity_type_definitions.h>
+#include <engine/graphics/render_proxies.h>
 
 namespace nc
 {
@@ -104,6 +105,36 @@ PointLightGPU PointLight::get_gpu_data(const vec3& position, const vec3& stitche
 void PointLight::refresh_entity_radius()
 {
   this->set_radius(radius);
+  this->push_render_state();
+}
+
+//==============================================================================
+static void copy_light_to_proxy(const PointLight& light, PointLightRenderProxy& proxy)
+{
+  proxy.color                  = light.color;
+  proxy.intensity              = light.intensity;
+  proxy.radius                 = light.radius;
+  proxy.falloff                = light.falloff;
+  proxy.intensity_string       = light.intensity_string;
+  proxy.intensity_cycle_len    = light.intensity_cycle_len;
+  proxy.intensity_cycle_offset = light.intensity_cycle_offset;
+}
+
+//==============================================================================
+void PointLight::push_render_state()
+{
+  this->enqueue_render_command([state = *this](IEntityRenderProxy* proxy, f32 /*interp_coeff*/)
+  {
+    copy_light_to_proxy(state, *static_cast<PointLightRenderProxy*>(proxy));
+  }, false);
+}
+
+//==============================================================================
+IEntityRenderProxy* PointLight::allocate_render_proxy() const
+{
+  PointLightRenderProxy* proxy = new PointLightRenderProxy();
+  copy_light_to_proxy(*this, *proxy);
+  return proxy;
 }
 
 }

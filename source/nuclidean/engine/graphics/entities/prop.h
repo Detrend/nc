@@ -30,6 +30,8 @@ public:
 
   SectorSnapType get_snap_type() const;
 
+  IEntityRenderProxy* allocate_render_proxy() const;
+
 private:
   Appearance     m_appear;
   SectorSnapType m_snap;

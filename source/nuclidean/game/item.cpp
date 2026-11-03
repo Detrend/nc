@@ -6,6 +6,7 @@
 
 #include <engine/graphics/resources/texture.h> // graphics
 #include <engine/appearance.h>
+#include <engine/graphics/render_proxies.h>
 
 #include <engine/entity/entity_type_definitions.h> // EntityTypes::pickup
 #include <engine/sound/sound_system.h>             // Playing sounds
@@ -171,6 +172,12 @@ const Appearance& Pickup::get_appearance() const
 Appearance& Pickup::get_appearance()
 {
   return appear;
+}
+
+//==============================================================================
+IEntityRenderProxy* Pickup::allocate_render_proxy() const
+{
+  return new BillboardRenderProxy(appear);
 }
 
 }

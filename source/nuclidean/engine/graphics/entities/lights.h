@@ -94,6 +94,10 @@ public:
   // be properly tracked in the sector to entity mapping.
   void refresh_entity_radius();
 
+  void push_render_state();
+
+  IEntityRenderProxy* allocate_render_proxy() const;
+
   void init
   (
     const vec3&   position,   // Position of the light in the world

@@ -3,6 +3,7 @@
 
 #include <engine/map/map_system.h>
 #include <engine/entity/entity_types.h>
+#include <engine/graphics/render_command.h>
 
 #include <types.h>       // f32
 #include <math/vector.h> // vec3
@@ -15,6 +16,7 @@ namespace nc
 class  EntityRegistry;
 struct Appearance;
 struct IEntityPool;
+class  IEntityRenderProxy;
 
 }
 
@@ -70,6 +72,10 @@ public:
 
   bool              is_physics_enabled() const;
 
+  // Return nullptr if you don't want to be rendered.
+  // Called only once after being created or after a load.
+  IEntityRenderProxy* allocate_render_proxy() const;
+
   // =============================================
   //              Utility
   // =============================================
@@ -91,6 +97,9 @@ public:
   {
     return const_cast<Entity*>(this)->as<T>();
   }
+
+protected:
+  void enqueue_render_command(EntityRenderLambda&& lambda, bool can_skip);
 
 private: friend class EntityRegistry;
   EntityID m_id_and_type = INVALID_ENTITY_ID;

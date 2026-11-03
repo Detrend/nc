@@ -34,6 +34,8 @@ public:
 
   Appearance&       get_appearance();
   const Appearance& get_appearance() const;
+
+  IEntityRenderProxy* allocate_render_proxy() const;
   const EnemyStats& get_stats()      const;
 
   vec3 get_attack_from_pos() const;

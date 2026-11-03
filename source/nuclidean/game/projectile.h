@@ -25,6 +25,8 @@ public:
   const Appearance* get_appearance() const;
   EntityID          get_author_id()  const;
 
+  IEntityRenderProxy* allocate_render_proxy() const;
+
 private:
   bool on_entity_hit(const struct CollisionHit& hit);
   void update_appearance();

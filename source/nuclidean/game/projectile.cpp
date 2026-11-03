@@ -13,6 +13,7 @@
 
 #include <engine/core/engine.h>
 #include <engine/graphics/graphics_system.h>
+#include <engine/graphics/render_proxies.h>
 
 #include <game/projectiles.h>
 #include <game/particle.h>
@@ -225,6 +226,17 @@ void Projectile::update_appearance()
     // TODO: is this necessary? How do we avoid this?
     m_appear.sprite = stats.sprite ? stats.sprite : "";
   }
+
+  this->enqueue_render_command([appear = m_appear](IEntityRenderProxy* proxy, f32 /*interp_coeff*/)
+  {
+    static_cast<BillboardRenderProxy*>(proxy)->appearance = appear;
+  }, true);
+}
+
+//==============================================================================
+IEntityRenderProxy* Projectile::allocate_render_proxy() const
+{
+  return new BillboardRenderProxy(m_appear);
 }
 
 //==============================================================================

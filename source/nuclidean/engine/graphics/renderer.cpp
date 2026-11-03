@@ -14,6 +14,7 @@
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/entities/lights.h>
 #include <engine/graphics/entities/sky_box.h>
+#include <engine/graphics/render_proxy_registry.h>
 
 #include <engine/entity/entity_system.h>
 #include <engine/entity/sector_mapping.h>
@@ -178,7 +179,8 @@ const
 #endif
 
   ivec2 render_size = get_render_size();
-  const Camera* camera = Camera::get();
+  const RenderProxyRegistry* proxies = GameSystem::get().get_render_proxies();
+  const Camera* camera = proxies ? proxies->get_camera() : nullptr;
   if (!camera)
     return;
 
@@ -834,40 +836,19 @@ static mat4 calc_billboard_rotation
 }
 
 //==============================================================================
-static f32 calc_light_radius_mod(const PointLight& light)
-{
-  f32 cycle_len = light.intensity_cycle_len;
-  if (cycle_len <= 0.0f)
-  {
-    return 1.0f;
-  }
-
-  auto string = light.intensity_string.to_cstring();
-  u64 len = strlen(&string[0]);;
-  if (len <= 1)
-  {
-    return 1.0f;
-  }
-
-  f64 time_since_start = GameHelpers::get().get_time_since_start();
-  f64 time = time_since_start + cast<f64>(light.intensity_cycle_offset);
-
-  f32 fraction = cast<f32>(fmod(time, cast<f64>(light.intensity_cycle_len)));
-  u32 string_idx = min(cast<u32>(len * fraction / cycle_len), cast<u32>(len-1));
-  nc_assert(string_idx < len);
-
-  char character = clamp(string[string_idx], 'a', 'z'); // a = 100% intensity, z = 0% intensity
-  return 1.0f - (character - 'a') / cast<f32>('z' - 'a');
-}
-
-//==============================================================================
 void Renderer::render_entities(const CameraData& camera) const
 {
   constexpr f32 BILLBOARD_TEXTURE_SCALE = 1.0f / 2048.0f;
 
+  const RenderProxyRegistry* proxies = GameSystem::get().get_render_proxies();
+  if (!proxies)
+  {
+    return;
+  }
+
   // group entities by texture atlas
-  const auto& mapping = GameSystem::get().get_sector_mapping();
-  const EntityRegistry& registry = GameSystem::get().get_entities();
+  const SectorMapping& mapping = proxies->get_mapping();
+  const MapSectors&    map     = GameSystem::get().get_map();
 
   struct EntityRenderData
   {
@@ -880,91 +861,94 @@ void Renderer::render_entities(const CameraData& camera) const
 
   std::unordered_map<u64, EntityRenderData> groups[3]{};
 
+  RenderElementCollector collector;
+
   for (const auto& frustum : camera.vis_tree.sectors)
   {
     const SectorID sector_id = frustum.sector;
 
     mapping.for_each_in_sector(sector_id, [&](EntityID id, mat4 t)
     {
-      const Entity* entity = registry.get_entity(id);
-      nc_assert(entity);
-      vec3 world_pos  = entity->get_position();
-      vec3 camera_pos = (camera.view * t * vec4{world_pos, 1.0f}).xyz();
+      const IEntityRenderProxy* proxy = proxies->get_proxy(id);
+      nc_assert(proxy);
 
-      const SectorID entity_sector_id = GameSystem::get().get_map().get_sector_from_point(world_pos.xz());
+      collector.clear();
+      proxy->get_render_elements(collector);
 
-      if (id.type == EntityTypes::point_light)
+      const auto element_key = [id](u64 element_idx) -> u64
       {
+        return (element_idx << 32) | cast<u64>(id.as_u32());
+      };
+
+      for (u64 i = 0; i < collector.lights.size(); ++i)
+      {
+        const RenderElementLight& light = collector.lights[i];
+
+        const vec3 light_pos  = proxy->get_position() + light.offset;
+        const vec3 camera_pos = camera.view * t * vec4{light_pos, 1.0f};
+
         // Now, we have to make sure to not include any light twice..
         // However, this is not an easy task, as one light can shine on us from
         // two different portals at the same time. Therefore, we have to first
         // distinguish them by their ID and then by their position.
-        auto [is_unique, index] = m_light_checker.check_redundant(id.as_u32(), camera_pos);
-        if (is_unique)
+        auto [is_unique, index] = m_light_checker.check_redundant(element_key(i), camera_pos);
+        if (!is_unique)
         {
-          // Has to exist because it is in sector mapping
-          nc_assert(registry.get_entity(id));
-
-          const PointLight* light = registry.get_entity(id)->as<PointLight>();
-          // Has to be a light because we would not get here otherwise
-          nc_assert(light); 
-
-          const vec3 light_pos = world_pos;
-          const vec3 stich_pos = camera.portal_dest_to_src * t * vec4(light_pos, 1.0f);
-
-          SectorID light_sector_id = GameSystem::get().get_map().get_sector_from_point(light_pos.xz());
-          if (light_sector_id == INVALID_SECTOR_ID)
-          { 
-            light_sector_id = entity_sector_id;
-          }
-
-          f32 radius_mod = calc_light_radius_mod(*light);
-          const size_t light_gpu_index = m_point_light_ssbo.push_back
-          (
-            light->get_gpu_data(light_pos, stich_pos, light_sector_id, radius_mod)
-          );
-
-          m_light_gpu_data_indices.emplace
-          (
-            (cast<u64>(id.as_u32()) << 32) + index,
-            light_gpu_index
-          );
+          continue;
         }
+
+        const vec3 stich_pos = camera.portal_dest_to_src * t * vec4{light_pos, 1.0f};
+
+        const SectorID light_sector_id = map.get_sector_from_point(light_pos.xz());
+
+        const size_t light_gpu_index = m_point_light_ssbo.push_back(PointLightGPU
+        {
+          .position          = light_pos,
+          .intensity         = light.intensity,
+          .stitched_position = stich_pos,
+          .radius            = light.radius,
+          .color             = light.color,
+          .falloff           = light.falloff,
+          .sector_id         = cast<u32>(light_sector_id),
+        });
+
+        m_light_gpu_data_indices.emplace
+        (
+          (cast<u64>(id.as_u32()) << 32) + index,
+          light_gpu_index
+        );
       }
-      else
+
+      for (u64 i = 0; i < collector.billboards.size(); ++i)
       {
-        const Appearance* appearance = entity->get_appearance();
-        if (!appearance)
-        {
-          return;
-        }
+        const RenderElementBillboard& billboard = collector.billboards[i];
+        const Appearance& appearance = billboard.appearance;
+        const vec3        world_pos  = proxy->get_position() + billboard.offset;
 
         // Do not render player's sprite from up close because it produces a weird looking
         // lines when looking up/down.
         vec3 stich_pos = camera.portal_dest_to_src * t * vec4(world_pos, 1.0f);
         if (distance(stich_pos.xz(), camera.position.xz()) < 0.05f)
         {
-          return;
+          continue;
         }
+
+        const SectorID entity_sector_id = map.get_sector_from_point(world_pos.xz());
 
         NC_TODO("Add multiple lifetimes to rendering of entities.");
 
         // NOTE: The entity will be renderer multiple times, but at least it solves the
         //       bug with billboards disappearing behind portal.s
-        //if (m_entity_checker.check_redundant(id.as_u32(), camera_pos).first)
-        if (true)
-        {
-          auto& group = groups[cast<u64>(ResLifetime::Game)];
-          EntityRenderData& render_data = group[id.as_u32()];
-          const u32 matrix_id = cast<u32>(m_sector_matrices_inv.size());
-          m_sector_matrices_inv.push_back(inverse(camera.portal_dest_to_src));
+        auto& group = groups[cast<u64>(ResLifetime::Game)];
+        EntityRenderData& render_data = group[element_key(i)];
+        const u32 matrix_id = cast<u32>(m_sector_matrices_inv.size());
+        m_sector_matrices_inv.push_back(inverse(camera.portal_dest_to_src));
 
-          render_data.appear    = *appearance;
-          render_data.world_pos = world_pos + vec3{0.0f, appearance->offset, 0.0f};
-          render_data.sector_id = cast<u32>(entity_sector_id);
-          render_data.matrix_id = matrix_id;
-          render_data.transforms.push_back(t);
-        }
+        render_data.appear    = appearance;
+        render_data.world_pos = world_pos + vec3{0.0f, appearance.offset, 0.0f};
+        render_data.sector_id = cast<u32>(entity_sector_id);
+        render_data.matrix_id = matrix_id;
+        render_data.transforms.push_back(t);
       }
     });
   }

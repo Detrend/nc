@@ -39,6 +39,8 @@ public:
   Appearance&       get_appearance();
   const Appearance& get_appearance() const;
 
+  IEntityRenderProxy* allocate_render_proxy() const;
+
 private:
   PickupType type;
   Appearance appear;

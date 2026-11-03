@@ -17,6 +17,7 @@
 #include <engine/entity/sector_mapping.h>
 #include <engine/entity/entity_type_definitions.h>
 #include <game/entity_attachment_manager.h>
+#include <engine/graphics/render_proxy_registry.h>
 
 #include <profiling.h>
 
@@ -144,6 +145,8 @@ void Game::serialize(Buffer& buffer)
         entity.get_height()
       );
     });
+
+    render_proxies->rebuild_from_entities();
   }
 }
 

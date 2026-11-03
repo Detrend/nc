@@ -21,6 +21,7 @@
 #include <engine/map/map_dynamics.h>
 
 #include <engine/graphics/entities/lights.h>
+#include <engine/graphics/render_proxy_registry.h>
 #include <engine/graphics/entities/sky_box.h>
 #include <engine/graphics/resources/texture.h>
 #include <engine/graphics/graphics_system.h>
@@ -556,6 +557,8 @@ static void load_json_map
     {
       light->intensity_cycle_offset = js_light["cycle_offset"];
     }
+
+    light->push_render_state();
   }
   for (auto&& js_light : data["ambient_lights"])
   {
@@ -1119,6 +1122,18 @@ PhysLevel GameSystem::get_level() const
 }
 
 //==============================================================================
+RenderProxyRegistry* GameSystem::get_render_proxies()
+{
+  return game ? game->render_proxies.get() : nullptr;
+}
+
+//==============================================================================
+const RenderProxyRegistry* GameSystem::get_render_proxies() const
+{
+  return game ? game->render_proxies.get() : nullptr;
+}
+
+//==============================================================================
 EntityAttachment& GameSystem::get_attachment_mgr()
 {
   nc_assert(game->attachment);
@@ -1397,8 +1412,11 @@ void GameSystem::build_map(LevelName level)
     }
   };
 
+  game->render_proxies = std::make_unique<RenderProxyRegistry>(*game->entities, *game->map);
+
   game->entities->add_listener(game->mapping.get());
   game->entities->add_listener(game->attachment.get());
+  game->entities->add_listener(game->render_proxies.get());
 
   if (level != Levels::EMPTY_LEVEL)
   {
@@ -1424,6 +1442,8 @@ void GameSystem::build_map(LevelName level)
       game->player_id
     );
   }
+
+  game->render_proxies->on_map_rebuild();
 
   // Now snap all required entities to the floor
   game->entities->for_each(EntityTypes::all, [&](Entity& entity)

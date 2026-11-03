@@ -6,6 +6,7 @@
 #include <engine/game/game_system.h>
 #include <engine/entity/entity_system.h>
 #include <engine/graphics/entities/lights.h>
+#include <engine/graphics/render_proxies.h>
 #include <game/entity_attachment_manager.h>
 
 #include <format>
@@ -137,6 +138,11 @@ void Particle::update(f32 delta)
     f32 frac = m_lifetime / m_duration;
     u32 idx  = cast<u32>(frac * m_img_cnt);
     m_appear.sprite = std::format("{}_{}", as_string, idx);
+
+    this->enqueue_render_command([appear = m_appear](IEntityRenderProxy* proxy, f32 /*interp_coeff*/)
+    {
+      static_cast<BillboardRenderProxy*>(proxy)->appearance = appear;
+    }, true);
   }
 
   // Update the light
@@ -159,6 +165,12 @@ void Particle::update(f32 delta)
 Appearance* Particle::get_appearance()
 {
   return m_img_cnt ? &m_appear : nullptr;
+}
+
+//==============================================================================
+IEntityRenderProxy* Particle::allocate_render_proxy() const
+{
+  return m_img_cnt ? new BillboardRenderProxy(m_appear) : nullptr;
 }
 
 //==============================================================================

@@ -1,0 +1,158 @@
+// Project Nuclidean Source File
+#include <engine/graphics/render_proxies.h>
+#include <engine/game/game_helpers.h>
+
+#include <common.h>
+#include <math/utils.h>
+
+#include <cstring> // strlen
+#include <cmath>   // fmod
+
+namespace nc
+{
+
+//==============================================================================
+void RenderElementCollector::push_back(const RenderElementBillboard& element)
+{
+  billboards.push_back(element);
+}
+
+//==============================================================================
+void RenderElementCollector::push_back(const RenderElementLight& element)
+{
+  lights.push_back(element);
+}
+
+//==============================================================================
+void RenderElementCollector::clear()
+{
+  billboards.clear();
+  lights.clear();
+}
+
+//==============================================================================
+EntityID IEntityRenderProxy::get_entity_id() const
+{
+  return m_entity_id;
+}
+
+//==============================================================================
+f32 IEntityRenderProxy::get_radius() const
+{
+  return m_radius;
+}
+
+//==============================================================================
+f32 IEntityRenderProxy::get_height() const
+{
+  return m_height;
+}
+
+//==============================================================================
+vec3 IEntityRenderProxy::get_position() const
+{
+  return m_position;
+}
+
+//==============================================================================
+void IEntityRenderProxy::set_pos_rad_height(vec3 pos, f32 radius, f32 height)
+{
+  m_position     = pos;
+  m_radius       = radius;
+  m_height       = height;
+  m_bounds_dirty = true;
+}
+
+//==============================================================================
+bool IEntityRenderProxy::has_camera_data() const
+{
+  return false;
+}
+
+//==============================================================================
+const Camera* IEntityRenderProxy::get_camera_data() const
+{
+  return nullptr;
+}
+
+//==============================================================================
+BillboardRenderProxy::BillboardRenderProxy(const Appearance& appear)
+: appearance(appear)
+{
+}
+
+//==============================================================================
+void BillboardRenderProxy::get_render_elements(RenderElementCollector& collector) const
+{
+  if (!appearance.sprite)
+  {
+    return;
+  }
+
+  collector.push_back(RenderElementBillboard
+  {
+    .offset     = VEC3_ZERO,
+    .appearance = appearance,
+  });
+}
+
+//==============================================================================
+PlayerRenderProxy::PlayerRenderProxy(const Appearance& appear, const Camera& cam)
+: BillboardRenderProxy(appear)
+, camera(cam)
+{
+}
+
+//==============================================================================
+bool PlayerRenderProxy::has_camera_data() const
+{
+  return true;
+}
+
+//==============================================================================
+const Camera* PlayerRenderProxy::get_camera_data() const
+{
+  return &camera;
+}
+
+//==============================================================================
+void PointLightRenderProxy::get_render_elements(RenderElementCollector& collector) const
+{
+  collector.push_back(RenderElementLight
+  {
+    .offset    = VEC3_ZERO,
+    .color     = color,
+    .intensity = intensity,
+    .radius    = radius * this->calc_radius_mod(),
+    .falloff   = falloff,
+  });
+}
+
+//==============================================================================
+f32 PointLightRenderProxy::calc_radius_mod() const
+{
+  f32 cycle_len = intensity_cycle_len;
+  if (cycle_len <= 0.0f)
+  {
+    return 1.0f;
+  }
+
+  auto string = intensity_string.to_cstring();
+  u64 len = strlen(&string[0]);
+  if (len <= 1)
+  {
+    return 1.0f;
+  }
+
+  f64 time_since_start = GameHelpers::get().get_time_since_start();
+  f64 time = time_since_start + cast<f64>(intensity_cycle_offset);
+
+  f32 fraction = cast<f32>(fmod(time, cast<f64>(cycle_len)));
+  u32 string_idx = min(cast<u32>(len * fraction / cycle_len), cast<u32>(len-1));
+  nc_assert(string_idx < len);
+
+  char character = clamp(string[string_idx], 'a', 'z'); // a = 100% intensity, z = 0% intensity
+  return 1.0f - (character - 'a') / cast<f32>('z' - 'a');
+}
+
+}

@@ -17,6 +17,7 @@
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/entities/lights.h>
 #include <engine/graphics/entities/sky_box.h>
+#include <engine/graphics/render_proxy_registry.h>
 #include <engine/graphics/resources/res_lifetime.h>
 #include <engine/graphics/resources/texture.h>
 
@@ -458,7 +459,8 @@ void GraphicsSystem::query_visibility(VisibilityTree& tree) const
 
   const auto& map = get_engine().get_map();
 
-  const Camera* camera = Camera::get();
+  const RenderProxyRegistry* proxies = GameSystem::get().get_render_proxies();
+  const Camera* camera = proxies ? proxies->get_camera() : nullptr;
   if (!camera)
     return;
 
@@ -544,6 +546,11 @@ void GraphicsSystem::render()
 {
   NC_SCOPE_PROFILER(Render)
   NC_SCOPE_COUNTER(render)
+
+  if (RenderProxyRegistry* proxies = GameSystem::get().get_render_proxies())
+  {
+    proxies->execute_commands();
+  }
 
   int width = 0, height = 0;
   SDL_GL_GetDrawableSize(m_window, &width, &height);

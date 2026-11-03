@@ -2,6 +2,7 @@
 #include <engine/graphics/entities/prop.h>
 
 #include <engine/entity/entity_type_definitions.h>
+#include <engine/graphics/render_proxies.h>
 
 namespace nc
 {
@@ -49,6 +50,12 @@ const Appearance& Prop::get_appearance() const
 Appearance& Prop::get_appearance()
 {
   return m_appear;
+}
+
+//==============================================================================
+IEntityRenderProxy* Prop::allocate_render_proxy() const
+{
+  return new BillboardRenderProxy(m_appear);
 }
 
 }

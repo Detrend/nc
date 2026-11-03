@@ -117,6 +117,8 @@ Projectile* GameHelpers::spawn_projectile
     {
       light->intensity_cycle_len = PROJECTILE_STATS[type].light_cycle_len;
       light->intensity_string    = PROJECTILE_STATS[type].light_string;
+
+      light->push_render_state();
     }
 
     // And attach it
