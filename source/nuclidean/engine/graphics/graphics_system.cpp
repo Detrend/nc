@@ -18,6 +18,7 @@
 #include <engine/graphics/entities/lights.h>
 #include <engine/graphics/entities/sky_box.h>
 #include <engine/graphics/render_proxy_registry.h>
+#include <engine/graphics/sectors_render_proxy.h>
 #include <engine/graphics/resources/res_lifetime.h>
 #include <engine/graphics/resources/texture.h>
 
@@ -41,6 +42,7 @@
 
 #include <glad/glad.h>
 #include <SDL2/include/SDL.h>
+#include <SDL_video.h> // SDL_GLprofile
 
 #if NC_IMGUI
 #include <imgui/imgui.h>
@@ -406,12 +408,6 @@ void GraphicsSystem::on_event(ModuleEvent& event)
     }
     break;
 
-    case ModuleEventType::after_map_rebuild:
-    {
-      create_sector_meshes();
-    }
-    break;
-
     case ModuleEventType::render:
     {
       this->render();
@@ -457,12 +453,13 @@ void GraphicsSystem::query_visibility(VisibilityTree& tree) const
 
   nc_assert(tree.sectors.empty());
 
-  const auto& map = get_engine().get_map();
-
   const RenderProxyRegistry* proxies = GameSystem::get().get_render_proxies();
-  const Camera* camera = proxies ? proxies->get_camera() : nullptr;
-  if (!camera)
+  const SectorsRenderProxy*  sectors = proxies ? proxies->get_sectors_proxy() : nullptr;
+  const Camera*              camera  = proxies ? proxies->get_camera()        : nullptr;
+  if (!sectors || !camera)
     return;
+
+  const MapSectors& map = sectors->get_map();
 
   const vec3 pos = camera->get_position();
   const vec3 dir = camera->get_forward();
@@ -475,40 +472,6 @@ void GraphicsSystem::query_visibility(VisibilityTree& tree) const
   (
     pos, dir, horizontal_fov, vertical_fov, tree, DEFAULT_RECURSION_DEPTH
   );
-}
-
-//==============================================================================
-const MeshHandle& GraphicsSystem::get_and_update_sector_mesh(SectorID sid)
-{
-  nc_assert(sid < m_sector_meshes.size());
-
-  if (m_dirty_sectors[sid])
-  {
-    std::vector<f32> vertices;
-    GameSystem::get().get_map().sector_to_vertices(sid, vertices);
-
-    MeshManager::get().recreate_sector
-    (
-      m_sector_meshes[sid], vertices.data(), cast<u32>(vertices.size())
-    );
-
-    m_dirty_sectors[sid] = false;
-  }
-
-  return m_sector_meshes[sid];
-}
-
-//==============================================================================
-void GraphicsSystem::mark_sector_dirty(SectorID sid)
-{
-  nc_assert(sid < m_dirty_sectors.size());
-  m_dirty_sectors[sid] = true;
-}
-
-//==============================================================================
-void GraphicsSystem::update_sector_heights(SectorID sector)
-{
-  m_renderer->update_sector_heights(sector);
 }
 
 //==============================================================================
@@ -576,8 +539,6 @@ void GraphicsSystem::render()
   {
     draw_debug_window();
   }
-
-  handle_sector_height_debug();
 #endif
 
   VisibilityTree visible_sectors;
@@ -942,63 +903,6 @@ static void draw_profiling()
 #endif
 
 //==============================================================================
-void GraphicsSystem::handle_sector_height_debug()
-{
-  if (CVars::sector_height_debug)
-  {
-    MapSectors& map = const_cast<MapSectors&>(GameSystem::get().get_map());
-
-    if (ImGui::Begin("Runtime map changes debug"))
-    {
-      static int modify = -1;
-      ImGui::DragInt("Sector to modify", &modify, 1.0f, -1, cast<int>(map.sectors.size()) - 1);
-
-      if (modify != -1)
-      {
-        ImGui::Text("Selected sector %d", modify);
-        SectorDynData& sdd = map.sectors_dynamic[modify];
-
-        bool changed = false;
-
-        changed |= ImGui::DragFloat("Floor height", &sdd.floor_height, 0.01f, 0.0f, 100.0f);
-        changed |= ImGui::DragFloat("Ceil height",  &sdd.ceil_height,  0.01f, 0.0f, 100.0f);
-        sdd.ceil_height = max(sdd.floor_height + 0.1f, sdd.ceil_height);
-
-        if (changed)
-        {
-          SectorID sid = cast<SectorID>(modify);
-          GraphicsSystem::get().mark_sector_dirty(sid);
-
-          map.for_each_portal_of_sector(sid, [&](WallID wall)
-          {
-            SectorID neighbor = map.walls[wall].portal_sector_id;
-            nc_assert(map.is_valid_sector_id(neighbor));
-            GraphicsSystem::get().mark_sector_dirty(neighbor);
-          });
-        }
-      }
-    }
-
-    ImGui::End();
-
-    MapDynamics& dynamics = GameSystem::get().get_map_dynamics();
-    std::vector<s16> activator_values(dynamics.activators.size());
-    dynamics.evaluate_activators(activator_values);
-
-    for (u64 idx = 0; idx < activator_values.size(); ++idx)
-    {
-      int value  = cast<int>(activator_values[idx]);
-      int thresh = cast<int>(dynamics.activators[idx].threshold);
-      int scount = cast<int>(dynamics.activators[idx].affected_sectors.size());
-
-      ImGui::PushID(cast<int>(idx));
-      ImGui::Text("Value/Threshold/SectorCNT: %d/%d/%d", value, thresh, scount);
-      ImGui::PopID();
-    }
-  }
-}
-
-//==============================================================================
 void GraphicsSystem::draw_debug_window()
 {
   if (CVars::display_imgui_demo)
@@ -1055,35 +959,6 @@ void GraphicsSystem::draw_debug_window()
   ImGui::End();
 }
 #endif
-
-//==============================================================================
-void GraphicsSystem::create_sector_meshes()
-{
-  const MapSectors& map          = GameSystem::get().get_map();
-  MeshManager&      mesh_manager = MeshManager::get();
-  std::vector<f32>  vertices;
-
-  m_sector_meshes.clear();
-  m_dirty_sectors.clear();
-  m_sector_meshes.reserve(map.sectors.size());
-  m_dirty_sectors.resize(map.sectors.size(), false);
-
-  for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)
-  {
-    vertices.clear();
-    map.sector_to_vertices(sector_id, vertices);
-
-    const auto mesh = mesh_manager.create_sector
-    (
-      ResLifetime::Level,
-      vertices.data(),
-      cast<u32>(vertices.size())
-    );
-    m_sector_meshes.push_back(mesh);
-  }
-
-  m_renderer->update_sector_ssbos();
-}
 
 //==============================================================================
 vec2 GraphicsSystem::get_window_size()

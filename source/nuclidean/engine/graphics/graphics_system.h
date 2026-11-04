@@ -8,10 +8,7 @@
 
 #include <engine/core/engine_module.h>
 #include <engine/core/engine_module_id.h>
-#include <engine/graphics/resources/model.h>
 #include <engine/map/map_types.h>            // SectorID
-
-#include <SDL_video.h> // SDL_GLprofile
 
 #include <game/game_types.h>
 #include <cvars.h>
@@ -27,6 +24,7 @@ namespace nc
 struct VisibilityTree;
 struct ModuleEvent;
 struct Portal;
+class  ShaderProgramHandle;
 
 struct CameraData
 {
@@ -63,12 +61,6 @@ public:
   bool init(bool force_gles);
   void on_event(ModuleEvent& event) override;
 
-  // This returns the mesh handle. If the sector is dirty (was changed)
-  // then it is recomputed.
-  const MeshHandle& get_and_update_sector_mesh(SectorID sector);
-  void              mark_sector_dirty(SectorID sector);
-  void              update_sector_heights(SectorID sector);
-
   const ShaderProgramHandle& get_solid_material() const;
 
   vec2 get_window_size();
@@ -84,14 +76,12 @@ private:
   void terminate();
 
   void query_visibility(VisibilityTree& out) const;
-  void create_sector_meshes();
   struct GlLoadingInstructions;
   std::optional<std::string> try_create_opengl_context(const GlLoadingInstructions& instructions);
 
 #if NC_DEBUG_DRAW
   void render_map_top_down(const VisibilityTree& visible);
   void draw_debug_window();
-  void handle_sector_height_debug();
 #endif
 
 private:
@@ -102,8 +92,6 @@ private:
   void*       m_gl_context = nullptr;
 
   RendererPtr             m_renderer;
-  std::vector<MeshHandle> m_sector_meshes;
-  std::vector<bool>       m_dirty_sectors;
   RenderBackend           m_backend;
 
 #if NC_DEBUG_DRAW

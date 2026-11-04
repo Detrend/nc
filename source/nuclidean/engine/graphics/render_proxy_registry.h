@@ -14,12 +14,13 @@ namespace nc
 
 class  EntityRegistry;
 class  Camera;
+class  SectorsRenderProxy;
 struct MapSectors;
 
 class RenderProxyRegistry : public IEntityListener
 {
 public:
-  RenderProxyRegistry(EntityRegistry& entities, MapSectors& map);
+  RenderProxyRegistry(const EntityRegistry& entities, const MapSectors& game_map);
   ~RenderProxyRegistry() override;
 
   RenderProxyRegistry(const RenderProxyRegistry&)            = delete;
@@ -29,8 +30,10 @@ public:
   //                              Game side
   // ===========================================================================
   void enqueue_command(EntityID entity, EntityRenderLambda&& lambda, bool can_skip);
+  void enqueue_sectors_command(SectorsRenderLambda&& lambda, bool can_skip);
 
   void on_map_rebuild();
+  void on_sector_changed(SectorID sector);
 
   void rebuild_from_entities();
 
@@ -45,6 +48,8 @@ public:
   void execute_commands();
 
   const IEntityRenderProxy* get_proxy(EntityID id) const;
+  SectorsRenderProxy*       get_sectors_proxy();
+  const SectorsRenderProxy* get_sectors_proxy()    const;
   const SectorMapping&      get_mapping()          const;
   const IEntityRenderProxy* get_camera_proxy()     const;
   const Camera*             get_camera()           const;
@@ -55,16 +60,18 @@ private:
 private:
   using ProxyMap = std::unordered_map<EntityID, std::unique_ptr<IEntityRenderProxy>>;
 
-  EntityRegistry& m_entities;
+  const EntityRegistry& m_entities;
+  const MapSectors&     m_game_map;
 
   // Game side
   std::unordered_set<EntityID> m_entities_with_proxy;
   RenderCommandQueue           m_queue;
 
   // Render side
-  ProxyMap      m_proxies;
-  SectorMapping m_mapping;
-  EntityID      m_camera_entity = INVALID_ENTITY_ID;
+  ProxyMap                            m_proxies;
+  std::unique_ptr<SectorsRenderProxy> m_sectors;
+  std::unique_ptr<SectorMapping>      m_mapping;
+  EntityID                            m_camera_entity = INVALID_ENTITY_ID;
 };
 
 }

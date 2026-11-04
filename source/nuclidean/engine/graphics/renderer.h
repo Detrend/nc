@@ -25,6 +25,8 @@ namespace nc
 
 struct Portal;
 struct VisibilityTree;
+struct MapSectors;
+class  SectorsRenderProxy;
 struct RenderElementScreenSprite;
 struct PointLightGPU;
 
@@ -65,9 +67,6 @@ public:
   void render(const VisibilityTree& visibility_tree) const;
 
   const ShaderProgramHandle& get_solid_material() const;
-
-  void update_sector_ssbos() const;
-  void update_sector_heights(SectorID sector_id) const;
 
   void set_shadows(bool shadows);
 
@@ -182,6 +181,10 @@ private:
   void do_lighting_pass(const vec3& view_position) const;
 
   void update_ssbos() const;
+
+  void sync_sector_ssbos(SectorsRenderProxy& sectors) const;
+  void update_sector_ssbos(const MapSectors& map) const;
+  void update_sector_heights(const MapSectors& map, SectorID sector_id) const;
 
   void render_sectors(const CameraData& camera)  const;
   void render_entities(const CameraData& camera) const;

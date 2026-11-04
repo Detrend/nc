@@ -11,7 +11,7 @@ namespace nc
 {
 
 //==============================================================================
-SectorMapping::SectorMapping(MapSectors& m)
+SectorMapping::SectorMapping(const MapSectors& m)
 : map(m)
 {
   

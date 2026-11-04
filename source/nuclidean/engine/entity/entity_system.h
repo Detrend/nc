@@ -67,6 +67,13 @@ public:
   template<typename T, typename L>
   void for_each(L lambda);
 
+  // The signature of the lambda has to be "void(const Entity&)"
+  template<typename L>
+  void for_each(EntityTypeMask types, L lambda) const;
+
+  template<typename T, typename L>
+  void for_each(L lambda) const;
+
   // Cleans up entities pending for destruction
   void cleanup();
 

@@ -87,6 +87,8 @@ enum class RenderCommandType : u8
   create_proxy,
   destroy_proxy,
   modify_proxy,
+  create_sectors_proxy,
+  modify_sectors_proxy,
 };
 
 struct RenderCommand
@@ -97,7 +99,14 @@ struct RenderCommand
   bool              can_skip      = false;
 
   std::unique_ptr<IEntityRenderProxy> new_proxy;
+  std::unique_ptr<SectorsRenderProxy> new_sectors_proxy;
   EntityRenderLambda                  lambda;
+  SectorsRenderLambda                 sectors_lambda;
+
+  RenderCommand();
+  RenderCommand(RenderCommand&&) noexcept;
+  RenderCommand& operator=(RenderCommand&&) noexcept;
+  ~RenderCommand();
 };
 
 using RenderCommandQueue = std::vector<RenderCommand>;

@@ -24,7 +24,7 @@ namespace nc
 // Useful for spatial queries of entities
 struct SectorMapping : public IEntityListener
 {
-  SectorMapping(MapSectors& map);
+  SectorMapping(const MapSectors& map);
 
   void on_map_rebuild();
 
@@ -67,7 +67,7 @@ struct SectorMapping : public IEntityListener
 
   SectorsToEntities sectors_to_entities;
   EntitiesToSectors entities_to_sectors;
-  MapSectors&       map;
+  const MapSectors& map;
 };
 
 }

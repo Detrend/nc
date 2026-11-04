@@ -52,6 +52,26 @@ void EntityRegistry::for_each(L lambda)
 }
 
 //==============================================================================
+template<typename L>
+void EntityRegistry::for_each(EntityTypeMask types, L lambda) const
+{
+  const_cast<EntityRegistry*>(this)->for_each(types, [&](Entity& entity)
+  {
+    lambda(static_cast<const Entity&>(entity));
+  });
+}
+
+//==============================================================================
+template<typename T, typename L>
+void EntityRegistry::for_each(L lambda) const
+{
+  this->for_each(entity_type_to_mask(T::get_type_static()), [&](const Entity& entity)
+  {
+    lambda(*static_cast<const T*>(&entity));
+  });
+}
+
+//==============================================================================
 template<typename T, typename...Args>
 T* EntityRegistry::create_entity(Args&&...args)
 {

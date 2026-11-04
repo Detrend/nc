@@ -15,6 +15,7 @@
 #include <engine/graphics/entities/lights.h>
 #include <engine/graphics/entities/sky_box.h>
 #include <engine/graphics/render_proxy_registry.h>
+#include <engine/graphics/sectors_render_proxy.h>
 
 #include <engine/entity/entity_system.h>
 #include <engine/entity/sector_mapping.h>
@@ -86,6 +87,20 @@ void Renderer::check_shader_hot_reload() const
     // spam each frame.
     entry.last_write_time = newest;
   }
+}
+
+//==============================================================================
+static SectorsRenderProxy& get_sectors_proxy()
+{
+  RenderProxyRegistry* proxies = GameSystem::get().get_render_proxies();
+  nc_assert(proxies && proxies->get_sectors_proxy());
+  return *proxies->get_sectors_proxy();
+}
+
+//==============================================================================
+static const MapSectors& get_render_map()
+{
+  return get_sectors_proxy().get_map();
 }
 
 //==============================================================================
@@ -174,8 +189,14 @@ void Renderer::render(const VisibilityTree& visibility_tree) const
 #endif
 
   ivec2 render_size = get_render_size();
-  const RenderProxyRegistry* proxies = GameSystem::get().get_render_proxies();
-  const Camera* camera = proxies ? proxies->get_camera() : nullptr;
+  RenderProxyRegistry* proxies = GameSystem::get().get_render_proxies();
+  SectorsRenderProxy*  sectors = proxies ? proxies->get_sectors_proxy() : nullptr;
+  if (!sectors)
+    return;
+
+  sync_sector_ssbos(*sectors);
+
+  const Camera* camera = proxies->get_camera();
   if (!camera)
     return;
 
@@ -223,10 +244,26 @@ const ShaderProgramHandle& Renderer::get_solid_material() const
 }
 
 //==============================================================================
-void Renderer::update_sector_ssbos() const
+void Renderer::sync_sector_ssbos(SectorsRenderProxy& sectors) const
 {
-  const MapSectors& map = GameSystem::get().get_map();
+  bool                  full_upload = sectors.consume_full_upload_request();
+  std::vector<SectorID> changed     = sectors.consume_changed_heights();
 
+  if (full_upload)
+  {
+    update_sector_ssbos(sectors.get_map());
+    return;
+  }
+
+  for (SectorID sector_id : changed)
+  {
+    update_sector_heights(sectors.get_map(), sector_id);
+  }
+}
+
+//==============================================================================
+void Renderer::update_sector_ssbos(const MapSectors& map) const
+{
   m_sectors_ssbo.clear();
   m_walls_ssbo.clear();
   m_portal_matrices_inv_ssbo.clear();
@@ -290,9 +327,8 @@ void Renderer::update_sector_ssbos() const
 }
 
 //==============================================================================
-void Renderer::update_sector_heights(SectorID sector_id) const
+void Renderer::update_sector_heights(const MapSectors& map, SectorID sector_id) const
 {
-  const MapSectors& map = GameSystem::get().get_map();
   const f32 heights[2] =
   {
     map.sectors_dynamic[sector_id].floor_height,
@@ -648,7 +684,7 @@ void Renderer::update_ssbos() const
 //==============================================================================
 void Renderer::render_sectors(const CameraData& camera) const
 {
-  auto& gfx = GraphicsSystem::get();
+  SectorsRenderProxy& sectors = get_sectors_proxy();
   const auto& sectors_to_render = camera.vis_tree.sectors;
 
   const auto& game_atlas = TextureManager::get().get_atlas_bundle(ResLifetime::Game);
@@ -681,7 +717,7 @@ void Renderer::render_sectors(const CameraData& camera) const
     m_sector_material.set_uniform(shaders::sector::MATRIX_ID, matrix_id);
 
     // This returns the mesh and optionally updates it before if it is dirty.
-    const MeshHandle& mesh = gfx.get_and_update_sector_mesh(sector_id);
+    const MeshHandle& mesh = sectors.get_and_update_mesh(sector_id);
 
     glBindVertexArray(mesh.get_vao());
     glDrawArrays(mesh.get_draw_mode(), 0, mesh.get_vertex_count());
@@ -855,7 +891,7 @@ void Renderer::render_entities(const CameraData& camera) const
 
   // group entities by texture atlas
   const SectorMapping& mapping = proxies->get_mapping();
-  const MapSectors&    map     = GameSystem::get().get_map();
+  const MapSectors&    map     = get_render_map();
 
   struct EntityRenderData
   {
@@ -1039,7 +1075,7 @@ void Renderer::render_entities(const CameraData& camera) const
 //==============================================================================
 void Renderer::render_portals(const CameraData& camera) const
 {
-  const MapSectors& map = get_engine().get_map();
+  const MapSectors& map = get_render_map();
 
   glEnable(GL_STENCIL_TEST);
 
@@ -1114,7 +1150,7 @@ const
   mat4 view       = translation(trans) * scaling(scale);
   mat4 projection = ortho(0.0f, win_size.x, win_size.y, 0.0f, -1.0f, 1.0f);
 
-  const SectorID sector_id = GameSystem::get().get_map().get_sector_from_point(position.xz());
+  const SectorID sector_id = get_render_map().get_sector_from_point(position.xz());
 
   const u32 matrix_id = cast<u32>(m_sector_matrices_inv.size());
   m_sector_matrices_inv.push_back(inverse(camera.portal_dest_to_src));
@@ -1273,7 +1309,7 @@ void Renderer::render_portal_to_depth(
 //==============================================================================
 void Renderer::render_portal(const CameraData& camera, const Portal& portal, u8 recursion) const
 {
-  const MapSectors& map = get_engine().get_map();
+  const MapSectors& map = get_render_map();
   const mat4 virtual_view = camera.view * portal.dest_to_src;
   [[maybe_unused]] const vec3 virtual_view_pos = vec3(inverse(virtual_view) * vec4(0.0f, 0.0f, 0.0f, 1.0f));
 

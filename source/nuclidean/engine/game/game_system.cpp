@@ -273,27 +273,30 @@ static vec3 load_json_position(const nlohmann::json& js, const cstr &field_name 
 //==============================================================================
 static void load_empty_map
 (
-  MapSectors&     /*map*/,
-  SectorMapping&  mapping,
-  EntityRegistry& /*entities*/,
-  MapDynamics&    dynamics,
-  EntityID&       player_id
+  MapSectors&          /*map*/,
+  SectorMapping&       mapping,
+  RenderProxyRegistry& render_proxies,
+  EntityRegistry&      /*entities*/,
+  MapDynamics&         dynamics,
+  EntityID&            player_id
 )
 {
   player_id = INVALID_ENTITY_ID;
   mapping.on_map_rebuild();
+  render_proxies.on_map_rebuild();
   dynamics.on_map_rebuild_and_entities_created();
 }
 
 //==============================================================================
 static void load_json_map
 (
-  const LevelName& level_name,
-  MapSectors&      map,
-  SectorMapping&   mapping,
-  EntityRegistry&  entities,
-  MapDynamics&     dynamics,
-  EntityID&        player_id
+  const LevelName&     level_name,
+  MapSectors&          map,
+  SectorMapping&       mapping,
+  RenderProxyRegistry& render_proxies,
+  EntityRegistry&      entities,
+  MapDynamics&         dynamics,
+  EntityID&            player_id
 )
 {
   using namespace map_building;
@@ -454,6 +457,7 @@ static void load_json_map
 
   // Mapping has to be initialized BEFORE creating any entities!!!
   mapping.on_map_rebuild();
+  render_proxies.on_map_rebuild();
 
   std::unordered_map<unsigned, EntityID> entity_tag_to_id;
   const auto register_entity = [&entity_tag_to_id](const Entity* const entity, const nlohmann::json& js) ->void {
@@ -1354,19 +1358,7 @@ void GameSystem::build_map(LevelName level)
     const MapSectors&    map      = GameSystem::get().get_map();
     const SectorMapping& mapping  = GameSystem::get().get_sector_mapping();
 
-    // Rebuild the sector geometry
-    GraphicsSystem::get().mark_sector_dirty(sector);
-
-    // Update sector height on the GPU
-    GraphicsSystem::get().update_sector_heights(sector);
-
-    // Rebuild the geometry for surroundings as well
-    map.for_each_portal_of_sector(sector, [&](WallID wall)
-    {
-      const WallData& wd = map.walls[wall];
-      nc_assert(map.is_valid_sector_id(wd.portal_sector_id));
-      GraphicsSystem::get().mark_sector_dirty(wd.portal_sector_id);
-    });
+    GameSystem::get().get_render_proxies()->on_sector_changed(sector);
 
     EntityRegistry& registry = GameSystem::get().get_entities();
 
@@ -1425,6 +1417,7 @@ void GameSystem::build_map(LevelName level)
       level,
       *game->map,
       *game->mapping,
+      *game->render_proxies,
       *game->entities,
       *game->dynamics,
       game->player_id
@@ -1437,13 +1430,12 @@ void GameSystem::build_map(LevelName level)
     (
       *game->map,
       *game->mapping,
+      *game->render_proxies,
       *game->entities,
       *game->dynamics,
       game->player_id
     );
   }
-
-  game->render_proxies->on_map_rebuild();
 
   // Now snap all required entities to the floor
   game->entities->for_each(EntityTypes::all, [&](Entity& entity)
