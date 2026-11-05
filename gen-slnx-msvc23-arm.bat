@@ -1,0 +1,1 @@
+.\\tools\\premake5-arm.exe --cc=msc --cppdialect=C++23 --arch=AARCH64 vs2026
