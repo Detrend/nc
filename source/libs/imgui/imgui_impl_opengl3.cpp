@@ -138,6 +138,14 @@
 #pragma GCC diagnostic ignored "-Wcast-function-type"       // warning: cast between incompatible function types (for loader)
 #endif
 
+// [Nucledian] 
+// Use the engine's glad function pointers instead of ImGui's built-in gl3w loader.
+// The built-in loader always resolves functions from opengl32.dll on Windows, which is the wrong
+// implementation when the context was created through EGL (ANGLE -> Direct3D 11).
+#define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
+#include <glad/glad.h>
+// [~Nucledian]
+
 // GL includes
 #if defined(IMGUI_IMPL_OPENGL_ES2)
 #if (defined(__APPLE__) && (TARGET_OS_IOS || TARGET_OS_TV))
