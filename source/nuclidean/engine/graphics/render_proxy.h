@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <vector>
+#include <variant>
 
 namespace nc
 {
@@ -71,10 +72,22 @@ public:
 
   void set_pos_rad_height(vec3 pos, f32 radius, f32 height);
 
+  // Camera data can't be stored as a render element because we need to know
+  // where is the camera in the scene to do the occlusion culling and then
+  // only then start collecting the render elements.
   virtual bool          has_camera_data() const;
   virtual const Camera* get_camera_data() const;
 
-private: friend class RenderProxyRegistry;
+  // Persistent proxies get their render elements collected each frame, no
+  // matter if they are visible or not. Has to stay the same for the whole
+  // lifetime of the proxy.
+  virtual bool is_persistent() const;
+
+private:
+  // Necessary to set the ID and the dirty flag
+  friend class RenderProxyRegistry;
+  friend class GameRenderCommandIface;
+
   EntityID m_entity_id    = INVALID_ENTITY_ID;
   vec3     m_position     = VEC3_ZERO;
   f32      m_radius       = 0.0f;
@@ -82,32 +95,54 @@ private: friend class RenderProxyRegistry;
   bool     m_bounds_dirty = false;
 };
 
-enum class RenderCommandType : u8
+// Wipes all proxies, the sectors and the mapping on the render side.
+struct RenderCommandClearScene
 {
-  create_proxy,
-  destroy_proxy,
-  modify_proxy,
-  create_sectors_proxy,
-  modify_sectors_proxy,
 };
 
-struct RenderCommand
+struct RenderCommandCreateProxy
 {
-  EntityID          target_entity = INVALID_ENTITY_ID;
-  RenderCommandType type          = RenderCommandType::modify_proxy;
-
-  bool              can_skip      = false;
-
-  std::unique_ptr<IEntityRenderProxy> new_proxy;
-  std::unique_ptr<SectorsRenderProxy> new_sectors_proxy;
-  EntityRenderLambda                  lambda;
-  SectorsRenderLambda                 sectors_lambda;
-
-  RenderCommand();
-  RenderCommand(RenderCommand&&) noexcept;
-  RenderCommand& operator=(RenderCommand&&) noexcept;
-  ~RenderCommand();
+  EntityID                            entity = INVALID_ENTITY_ID;
+  std::unique_ptr<IEntityRenderProxy> proxy;
 };
+
+struct RenderCommandDestroyProxy
+{
+  EntityID entity = INVALID_ENTITY_ID;
+};
+
+struct RenderCommandModifyProxy
+{
+  EntityID           entity   = INVALID_ENTITY_ID;
+  EntityRenderLambda lambda;
+  bool               can_skip = false;
+};
+
+struct RenderCommandCreateSectorsProxy
+{
+  RenderCommandCreateSectorsProxy();
+  RenderCommandCreateSectorsProxy(RenderCommandCreateSectorsProxy&&) noexcept;
+  RenderCommandCreateSectorsProxy& operator=(RenderCommandCreateSectorsProxy&&) noexcept;
+  ~RenderCommandCreateSectorsProxy();
+
+  std::unique_ptr<SectorsRenderProxy> proxy;
+};
+
+struct RenderCommandModifySectorsProxy
+{
+  SectorsRenderLambda lambda;
+  bool                can_skip = false;
+};
+
+using RenderCommand = std::variant
+<
+  RenderCommandClearScene,
+  RenderCommandCreateProxy,
+  RenderCommandDestroyProxy,
+  RenderCommandModifyProxy,
+  RenderCommandCreateSectorsProxy,
+  RenderCommandModifySectorsProxy
+>;
 
 using RenderCommandQueue = std::vector<RenderCommand>;
 

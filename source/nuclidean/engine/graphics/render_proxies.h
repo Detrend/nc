@@ -29,6 +29,7 @@ public:
 
   bool          has_camera_data() const override;
   const Camera* get_camera_data() const override;
+  bool          is_persistent()   const override;
 
   Camera                    camera;
   RenderElementScreenSprite weapon_sprite;

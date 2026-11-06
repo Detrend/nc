@@ -92,9 +92,9 @@ void Renderer::check_shader_hot_reload() const
 //==============================================================================
 static SectorsRenderProxy& get_sectors_proxy()
 {
-  RenderProxyRegistry* proxies = GameSystem::get().get_render_proxies();
-  nc_assert(proxies && proxies->get_sectors_proxy());
-  return *proxies->get_sectors_proxy();
+  SectorsRenderProxy* sectors = GraphicsSystem::get().get_render_proxies().get_sectors_proxy();
+  nc_assert(sectors);
+  return *sectors;
 }
 
 //==============================================================================
@@ -189,14 +189,14 @@ void Renderer::render(const VisibilityTree& visibility_tree) const
 #endif
 
   ivec2 render_size = get_render_size();
-  RenderProxyRegistry* proxies = GameSystem::get().get_render_proxies();
-  SectorsRenderProxy*  sectors = proxies ? proxies->get_sectors_proxy() : nullptr;
+  RenderProxyRegistry& proxies = GraphicsSystem::get().get_render_proxies();
+  SectorsRenderProxy*  sectors = proxies.get_sectors_proxy();
   if (!sectors)
     return;
 
   sync_sector_ssbos(*sectors);
 
-  const Camera* camera = proxies->get_camera();
+  const Camera* camera = proxies.get_camera();
   if (!camera)
     return;
 
@@ -883,14 +883,10 @@ void Renderer::render_entities(const CameraData& camera) const
 {
   constexpr f32 BILLBOARD_TEXTURE_SCALE = 1.0f / 2048.0f;
 
-  const RenderProxyRegistry* proxies = GameSystem::get().get_render_proxies();
-  if (!proxies)
-  {
-    return;
-  }
+  const RenderProxyRegistry& proxies = GraphicsSystem::get().get_render_proxies();
 
   // group entities by texture atlas
-  const SectorMapping& mapping = proxies->get_mapping();
+  const SectorMapping& mapping = proxies.get_mapping();
   const MapSectors&    map     = get_render_map();
 
   struct EntityRenderData
@@ -912,7 +908,7 @@ void Renderer::render_entities(const CameraData& camera) const
 
     mapping.for_each_in_sector(sector_id, [&](EntityID id, mat4 t)
     {
-      const IEntityRenderProxy* proxy = proxies->get_proxy(id);
+      const IEntityRenderProxy* proxy = proxies.get_proxy(id);
       nc_assert(proxy);
 
       collector.clear();
@@ -1108,18 +1104,20 @@ void Renderer::render_portals(const CameraData& camera) const
 //==============================================================================
 void Renderer::render_screen_sprites(const CameraData& camera) const
 {
-  if (const RenderProxyRegistry* proxies = GameSystem::get().get_render_proxies())
-  {
-    if (const IEntityRenderProxy* camera_proxy = proxies->get_camera_proxy())
-    {
-      RenderElementCollector collector;
-      camera_proxy->get_render_elements(collector);
+  const RenderProxyRegistry& proxies = GraphicsSystem::get().get_render_proxies();
 
-      for (const RenderElementScreenSprite& sprite : collector.screen_sprites)
-      {
-        render_screen_sprite(camera, sprite, camera.position);
-      }
-    }
+  RenderElementCollector collector;
+  for (EntityID id : proxies.get_persistent_proxies())
+  {
+    const IEntityRenderProxy* proxy = proxies.get_proxy(id);
+    nc_assert(proxy);
+
+    proxy->get_render_elements(collector);
+  }
+
+  for (const RenderElementScreenSprite& sprite : collector.screen_sprites)
+  {
+    render_screen_sprite(camera, sprite, camera.position);
   }
 }
 

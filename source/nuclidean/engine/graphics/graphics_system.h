@@ -25,6 +25,8 @@ struct VisibilityTree;
 struct ModuleEvent;
 struct Portal;
 class  ShaderProgramHandle;
+class  GameThreadRenderCommandCollector;
+class  RenderProxyRegistry;
 
 struct CameraData
 {
@@ -70,6 +72,10 @@ public:
 
   RenderBackend get_backend() const { return m_backend; }
 
+  GameThreadRenderCommandCollector& get_command_collector();
+  RenderProxyRegistry&              get_render_proxies();
+  const RenderProxyRegistry&        get_render_proxies() const;
+
 private:
   void update(f32 delta_seconds);
   void render();
@@ -86,13 +92,17 @@ private:
 
 private:
   // Because we do not want to include the whole renderer with this header
-  using RendererPtr = std::unique_ptr<class Renderer>;
+  using RendererPtr         = std::unique_ptr<class Renderer>;
+  using CommandCollectorPtr = std::unique_ptr<GameThreadRenderCommandCollector>;
+  using RenderProxiesPtr    = std::unique_ptr<RenderProxyRegistry>;
 
   SDL_Window* m_window     = nullptr;
   void*       m_gl_context = nullptr;
 
-  RendererPtr             m_renderer;
-  RenderBackend           m_backend;
+  RendererPtr         m_renderer;
+  RenderBackend       m_backend;
+  CommandCollectorPtr m_command_collector;
+  RenderProxiesPtr    m_render_proxies;
 
 #if NC_DEBUG_DRAW
   using DebugRendererPtr = std::unique_ptr<class TopDownDebugRenderer>;

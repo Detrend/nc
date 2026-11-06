@@ -36,7 +36,7 @@ class  GameHelpers;
 class  EntityRegistry;
 class  Player;
 class  EntityAttachment;
-class  RenderProxyRegistry;
+class  GameRenderCommandIface;
 class  Projectile;
 
 class GameSystem : public IEngineModule
@@ -80,8 +80,7 @@ public:
   const EntityAttachment& get_attachment_mgr() const;
   GameHelpers             get_game_helpers()   const;
 
-  RenderProxyRegistry*       get_render_proxies();
-  const RenderProxyRegistry* get_render_proxies() const;
+  GameRenderCommandIface& get_render_iface();
 
   // Request a new level to play - an empty one.
   // Comes in handy in the menu

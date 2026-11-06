@@ -283,6 +283,9 @@ bool GraphicsSystem::init(bool force_gles)
   NC_TODO("Log out an error when the graphics system initialization fails");
   NC_TODO("Terminate the already set-up SDL stuff on failed initialization.");
 
+  m_command_collector = std::make_unique<GameThreadRenderCommandCollector>();
+  m_render_proxies    = std::make_unique<RenderProxyRegistry>();
+
   // init SDL
   constexpr auto SDL_INIT_FLAGS = SDL_INIT_VIDEO | SDL_INIT_EVENTS;
   
@@ -410,6 +413,8 @@ void GraphicsSystem::on_event(ModuleEvent& event)
 
     case ModuleEventType::render:
     {
+      // Everything the game and the UI enqueued this frame forms one queue.
+      m_command_collector->commit_commands();
       this->render();
     }
     break;
@@ -453,9 +458,8 @@ void GraphicsSystem::query_visibility(VisibilityTree& tree) const
 
   nc_assert(tree.sectors.empty());
 
-  const RenderProxyRegistry* proxies = GameSystem::get().get_render_proxies();
-  const SectorsRenderProxy*  sectors = proxies ? proxies->get_sectors_proxy() : nullptr;
-  const Camera*              camera  = proxies ? proxies->get_camera()        : nullptr;
+  const SectorsRenderProxy* sectors = m_render_proxies->get_sectors_proxy();
+  const Camera*             camera  = m_render_proxies->get_camera();
   if (!sectors || !camera)
     return;
 
@@ -494,9 +498,12 @@ void GraphicsSystem::render()
   NC_SCOPE_PROFILER(Render)
   NC_SCOPE_COUNTER(render)
 
-  if (RenderProxyRegistry* proxies = GameSystem::get().get_render_proxies())
+  std::vector<RenderCommandQueue> queues;
+  m_command_collector->collect_queues(queues);
+
+  for (RenderCommandQueue& queue : queues)
   {
-    proxies->execute_commands();
+    m_render_proxies->execute_command_queue(queue);
   }
 
   int width = 0, height = 0;
@@ -975,6 +982,27 @@ SDL_Window* GraphicsSystem::get_window()
 void GraphicsSystem::set_shadows(bool shadows)
 {
   m_renderer->set_shadows(shadows);
+}
+
+//==============================================================================
+GameThreadRenderCommandCollector& GraphicsSystem::get_command_collector()
+{
+  nc_assert(m_command_collector);
+  return *m_command_collector;
+}
+
+//==============================================================================
+RenderProxyRegistry& GraphicsSystem::get_render_proxies()
+{
+  nc_assert(m_render_proxies);
+  return *m_render_proxies;
+}
+
+//==============================================================================
+const RenderProxyRegistry& GraphicsSystem::get_render_proxies() const
+{
+  nc_assert(m_render_proxies);
+  return *m_render_proxies;
 }
 
 }

@@ -30,6 +30,11 @@ namespace nc
 //==============================================================================
 void Game::on_destroy()
 {
+  if (render_iface)
+  {
+    render_iface->on_game_end();
+  }
+
   if (dynamics)
   {
     dynamics->on_destroy();
@@ -146,7 +151,8 @@ void Game::serialize(Buffer& buffer)
       );
     });
 
-    render_proxies->rebuild_from_entities();
+    render_iface->on_map_rebuild();
+    render_iface->rebuild_from_entities();
   }
 }
 

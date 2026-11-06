@@ -83,6 +83,12 @@ const Camera* IEntityRenderProxy::get_camera_data() const
 }
 
 //==============================================================================
+bool IEntityRenderProxy::is_persistent() const
+{
+  return false;
+}
+
+//==============================================================================
 BillboardRenderProxy::BillboardRenderProxy(const Appearance& appear)
 : appearance(appear)
 {
@@ -131,6 +137,12 @@ bool PlayerRenderProxy::has_camera_data() const
 const Camera* PlayerRenderProxy::get_camera_data() const
 {
   return &camera;
+}
+
+//==============================================================================
+bool PlayerRenderProxy::is_persistent() const
+{
+  return true;
 }
 
 //==============================================================================

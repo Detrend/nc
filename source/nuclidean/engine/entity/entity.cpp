@@ -190,9 +190,10 @@ IEntityRenderProxy* Entity::allocate_render_proxy() const
 //==============================================================================
 void Entity::enqueue_render_command(EntityRenderLambda&& lambda, bool can_skip)
 {
-  RenderProxyRegistry* proxies = GameSystem::get().get_render_proxies();
-  nc_assert(proxies);
-  proxies->enqueue_command(m_id_and_type, std::move(lambda), can_skip);
+  GameSystem::get().get_render_iface().enqueue_entity_command
+  (
+    m_id_and_type, std::move(lambda), can_skip
+  );
 }
 
 //==============================================================================

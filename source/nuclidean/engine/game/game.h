@@ -17,7 +17,7 @@ struct MapDynamics;
 struct SectorMapping;
 class  EntityRegistry;
 class  EntityAttachment;
-class  RenderProxyRegistry;
+class  GameRenderCommandIface;
 class  Buffer;
 
 struct Game
@@ -42,7 +42,7 @@ struct Game
   std::unique_ptr<SectorMapping>    mapping;
   std::unique_ptr<MapDynamics>      dynamics;
   std::unique_ptr<EntityAttachment> attachment;
-  std::unique_ptr<RenderProxyRegistry> render_proxies;
+  std::unique_ptr<GameRenderCommandIface> render_iface;
   LevelTransitionData               transition_data;
   u64                               frame_idx = 0;
   f64                               time_since_start = 0.0;

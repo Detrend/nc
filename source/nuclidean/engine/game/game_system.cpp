@@ -273,30 +273,30 @@ static vec3 load_json_position(const nlohmann::json& js, const cstr &field_name 
 //==============================================================================
 static void load_empty_map
 (
-  MapSectors&          /*map*/,
-  SectorMapping&       mapping,
-  RenderProxyRegistry& render_proxies,
-  EntityRegistry&      /*entities*/,
-  MapDynamics&         dynamics,
-  EntityID&            player_id
+  MapSectors&             /*map*/,
+  SectorMapping&          mapping,
+  GameRenderCommandIface& render_iface,
+  EntityRegistry&         /*entities*/,
+  MapDynamics&            dynamics,
+  EntityID&               player_id
 )
 {
   player_id = INVALID_ENTITY_ID;
   mapping.on_map_rebuild();
-  render_proxies.on_map_rebuild();
+  render_iface.on_map_rebuild();
   dynamics.on_map_rebuild_and_entities_created();
 }
 
 //==============================================================================
 static void load_json_map
 (
-  const LevelName&     level_name,
-  MapSectors&          map,
-  SectorMapping&       mapping,
-  RenderProxyRegistry& render_proxies,
-  EntityRegistry&      entities,
-  MapDynamics&         dynamics,
-  EntityID&            player_id
+  const LevelName&        level_name,
+  MapSectors&             map,
+  SectorMapping&          mapping,
+  GameRenderCommandIface& render_iface,
+  EntityRegistry&         entities,
+  MapDynamics&            dynamics,
+  EntityID&               player_id
 )
 {
   using namespace map_building;
@@ -457,7 +457,7 @@ static void load_json_map
 
   // Mapping has to be initialized BEFORE creating any entities!!!
   mapping.on_map_rebuild();
-  render_proxies.on_map_rebuild();
+  render_iface.on_map_rebuild();
 
   std::unordered_map<unsigned, EntityID> entity_tag_to_id;
   const auto register_entity = [&entity_tag_to_id](const Entity* const entity, const nlohmann::json& js) ->void {
@@ -804,7 +804,7 @@ void GameSystem::game_update(f32 delta)
       nc_assert(journal.rover < journal.frames.size());
 
       const DemoDataFrames& frames = journal.frames;
-      const DemoDataFrame&  frame = frames[journal.rover];
+      const DemoDataFrame&  frame  = frames[journal.rover];
 
       bool first_frame = !journal.rover;
       prev_inputs = first_frame ? empty_inputs : frames[journal.rover-1].inputs;
@@ -1126,15 +1126,10 @@ PhysLevel GameSystem::get_level() const
 }
 
 //==============================================================================
-RenderProxyRegistry* GameSystem::get_render_proxies()
+GameRenderCommandIface& GameSystem::get_render_iface()
 {
-  return game ? game->render_proxies.get() : nullptr;
-}
-
-//==============================================================================
-const RenderProxyRegistry* GameSystem::get_render_proxies() const
-{
-  return game ? game->render_proxies.get() : nullptr;
+  nc_assert(game && game->render_iface);
+  return *game->render_iface;
 }
 
 //==============================================================================
@@ -1358,7 +1353,7 @@ void GameSystem::build_map(LevelName level)
     const MapSectors&    map      = GameSystem::get().get_map();
     const SectorMapping& mapping  = GameSystem::get().get_sector_mapping();
 
-    GameSystem::get().get_render_proxies()->on_sector_changed(sector);
+    GameSystem::get().get_render_iface().on_sector_changed(sector);
 
     EntityRegistry& registry = GameSystem::get().get_entities();
 
@@ -1404,11 +1399,14 @@ void GameSystem::build_map(LevelName level)
     }
   };
 
-  game->render_proxies = std::make_unique<RenderProxyRegistry>(*game->entities, *game->map);
+  game->render_iface = std::make_unique<GameRenderCommandIface>
+  (
+    &GraphicsSystem::get().get_command_collector(), *game->entities, *game->map
+  );
 
   game->entities->add_listener(game->mapping.get());
   game->entities->add_listener(game->attachment.get());
-  game->entities->add_listener(game->render_proxies.get());
+  game->entities->add_listener(game->render_iface.get());
 
   if (level != Levels::EMPTY_LEVEL)
   {
@@ -1417,7 +1415,7 @@ void GameSystem::build_map(LevelName level)
       level,
       *game->map,
       *game->mapping,
-      *game->render_proxies,
+      *game->render_iface,
       *game->entities,
       *game->dynamics,
       game->player_id
@@ -1430,7 +1428,7 @@ void GameSystem::build_map(LevelName level)
     (
       *game->map,
       *game->mapping,
-      *game->render_proxies,
+      *game->render_iface,
       *game->entities,
       *game->dynamics,
       game->player_id
