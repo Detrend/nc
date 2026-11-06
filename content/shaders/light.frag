@@ -64,14 +64,15 @@ layout(location = 2) uniform float ambient_strength;
 layout(location = 3) uniform uint  num_sectors;
 layout(location = 4) uniform uint  num_walls;
 layout(location = 5) uniform bool  do_shadows;
+layout(location = 6) uniform uint  sector_matrices_offset; // index of the first sector matrix in matrices_inv
 
 layout(std430, binding = 0) readonly buffer point_light_buffer     { PointLight point_lights[];     };
 layout(std430, binding = 1) readonly buffer light_index_buffer     { uint       light_indices[];    };
 layout(std430, binding = 2) readonly buffer tile_data_buffer       { TileData   tile_data[];        };
 layout(std430, binding = 3) readonly buffer sector_data_buffer     { SectorData sectors[];          };
 layout(std430, binding = 4) readonly buffer wall_data_buffer       { WallData   walls[];            };
-layout(std430, binding = 5) readonly buffer portal_matrices_buffer { mat4       portal_matrices_inv[]; };
-layout(std430, binding = 6) readonly buffer sector_matrices_buffer { mat4       sector_matrices_inv[]; };
+// Portal matrices first, sector matrices from sector_matrices_offset (one buffer to stay within 7 combined output resources on D3D11 FL 11_0 via ANGLE).
+layout(std430, binding = 5) readonly buffer matrices_buffer        { mat4       matrices_inv[];     };
 
 bool out_of_range_sectors = false;
 bool out_of_range_walls = false;
@@ -120,7 +121,7 @@ bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, u
   vec3 ray_stitched_origin = stitched_position;
   vec3 ray_origin = position;
   vec3 ray_stitched_direction = normalize(light.stitched_position - stitched_position);
-  mat4 stitched_to_local = sector_matrices_inv[start_matrix_id];
+  mat4 stitched_to_local = matrices_inv[sector_matrices_offset + start_matrix_id];
   vec3 ray_direction = mat3(stitched_to_local) * ray_stitched_direction;
   
   uint current_sector_id = start_sector_id;
@@ -198,7 +199,7 @@ bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, u
     if (ray_hit_y < dest_sector.floor_y - 0.001f || ray_hit_y > dest_sector.ceil_y + 0.001f)
       return true;
 
-    mat4 portal_matrix = portal_matrices_inv[wall.portal_matrix_index];
+    mat4 portal_matrix = matrices_inv[wall.portal_matrix_index];
     ray_origin = (portal_matrix * vec4(ray_origin, 1.0f)).xyz;
     ray_direction = normalize(mat3(portal_matrix) * ray_direction);
     stitched_to_local = portal_matrix * stitched_to_local;

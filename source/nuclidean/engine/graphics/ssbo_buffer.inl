@@ -186,6 +186,28 @@ inline void SSBOBuffer<T>::update_gpu_data_with(const std::vector<T>& elements)
 
 //==============================================================================
 template<typename T>
+inline void SSBOBuffer<T>::update_gpu_range(size_t first_index, const std::span<T>& elements)
+{
+  const size_t max_count = m_capacity - std::min(first_index, m_capacity);
+  const size_t count     = std::min(max_count, elements.size());
+
+  if (count < elements.size())
+    nc_warn("SSBOBuffer::update_gpu_range: dropping {} of {} item(s), (capacity is {}).", elements.size() - count, elements.size(), m_capacity);
+
+  if (count == 0) return;
+
+  glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_handle);
+  glBufferSubData
+  (
+    GL_SHADER_STORAGE_BUFFER,
+    first_index * sizeof(T),
+    count * sizeof(T),
+    elements.data()
+  );
+}
+
+//==============================================================================
+template<typename T>
 inline T& SSBOBuffer<T>::get_buffer_item(size_t index)
 {
   return m_buffer[index];

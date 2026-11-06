@@ -25,3 +25,4 @@ save
 /dumps
 *.mscz~
 .vscode
+.idea
