@@ -76,7 +76,7 @@ namespace nc {
     std::string ret;
     for (const auto& scope : scopes_debug) {
       if (!ret.empty()) ret.append("/");
-      ret.append(scope.scope_name);
+      ret.append(scope.scope_name.to_cstring().data());
     }
     return ret;
   }
@@ -95,7 +95,7 @@ namespace nc {
 
 
 
-  ScratchAllocator::Scope::Scope(ScratchAllocator* const the_allocator, [[maybe_unused]] const cstr& the_debug_name)
+  ScratchAllocator::Scope::Scope(ScratchAllocator* const the_allocator, [[maybe_unused]] const Name& the_debug_name)
     : allocator(the_allocator), checkpoint(the_allocator->bump_ptr)
 
 #if NC_SCRATCH_ALLOCATOR_CHECKS
@@ -111,9 +111,9 @@ namespace nc {
 
   ScratchAllocator::Scope::~Scope() {
 #if NC_SCRATCH_ALLOCATOR_CHECKS
-    nc_expect((allocator->scopes_debug.size() == (scope_id + 1)) && (scope_id == allocator->current_top_scope), "Destroying scope '{0}' at index {1} while current scope is '{2}'", allocator->scopes_debug[scope_id].scope_name, scope_id, allocator->get_current_scope_path_string());
+    nc_expect((allocator->scopes_debug.size() == (scope_id + 1)) && (scope_id == allocator->current_top_scope), "Destroying scope '{0}' at index {1} while current scope is '{2}'", allocator->scopes_debug[scope_id].scope_name.to_cstring().data(), scope_id, allocator->get_current_scope_path_string());
     nc_expect(allocator->scopes_debug[scope_id].scope_start == checkpoint); // If this doesn't hold, we got weird data corruption xD
-    nc_expect(allocator->scopes_debug[scope_id].allocations_count == 0, "Destroying scope '{0}' while it still has {1} unfreed allocations!, at scopes '{2}'", allocator->scopes_debug[scope_id].scope_name, allocator->scopes_debug[scope_id].allocations_count, allocator->get_current_scope_path_string()); // Scope must not be destroyed unless all of its objects have been freed
+    nc_expect(allocator->scopes_debug[scope_id].allocations_count == 0, "Destroying scope '{0}' while it still has {1} unfreed allocations!, at scopes '{2}'", allocator->scopes_debug[scope_id].scope_name.to_cstring().data(), allocator->scopes_debug[scope_id].allocations_count, allocator->get_current_scope_path_string()); // Scope must not be destroyed unless all of its objects have been freed
     allocator->scopes_debug.pop_back();
     --allocator->current_top_scope;
 #endif
