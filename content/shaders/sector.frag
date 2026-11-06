@@ -39,9 +39,19 @@ layout(location = 6) uniform uint matrix_id;
 
 #define PIXELS_PER_M 48
 
-layout(std430, binding = 0) buffer texture_buffer {
+layout(std430, binding = 0) readonly buffer texture_buffer {
     TextureData textures[];
 };
+
+// ANGLE is dumb and doesn't let us load a whole struct from an SSBO directly, so we have to load field by field xD
+TextureData load_texture_data(int i)
+{
+  TextureData t;
+  t.pos           = textures[i].pos;
+  t.size          = textures[i].size;
+  t.in_game_atlas = textures[i].in_game_atlas;
+  return t;
+}
 
 // copypasted from: https://stackoverflow.com/questions/12964279/whats-the-origin-of-this-glsl-rand-one-liner
 float rand(vec2 co){
@@ -67,7 +77,7 @@ vec3 perturb_normal(vec3 face_in, vec3 normal_ts)
 
 void main()
 {
-  TextureData texture_data = textures[texture_id];
+  TextureData texture_data = load_texture_data(texture_id);
   bool use_game_atlas = texture_data.in_game_atlas == 1.0f;
   vec2 atlas_size = (use_game_atlas ? game_atlas_size : level_atlas_size);
 

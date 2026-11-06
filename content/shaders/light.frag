@@ -74,6 +74,50 @@ layout(std430, binding = 4) readonly buffer wall_data_buffer       { WallData   
 // Portal matrices first, sector matrices from sector_matrices_offset (one buffer to stay within 7 combined output resources on D3D11 FL 11_0 via ANGLE).
 layout(std430, binding = 5) readonly buffer matrices_buffer        { mat4       matrices_inv[];     };
 
+// ANGLE is dumb and doesn't let us load a whole struct from an SSBO directly, so we have to load field by field xD
+PointLight load_point_light(uint i)
+{
+  PointLight l;
+  l.position          = point_lights[i].position;
+  l.intensity         = point_lights[i].intensity;
+  l.stitched_position = point_lights[i].stitched_position;
+  l.radius            = point_lights[i].radius;
+  l.color             = point_lights[i].color;
+  l.falloff           = point_lights[i].falloff;
+  l.sector_id         = point_lights[i].sector_id;
+  return l;
+}
+
+TileData load_tile_data(uint i)
+{
+  TileData t;
+  t.count  = tile_data[i].count;
+  t.offset = tile_data[i].offset;
+  return t;
+}
+
+SectorData load_sector(uint i)
+{
+  SectorData s;
+  s.floor_y      = sectors[i].floor_y;
+  s.ceil_y       = sectors[i].ceil_y;
+  s.walls_offset = sectors[i].walls_offset;
+  s.walls_count  = sectors[i].walls_count;
+  return s;
+}
+
+WallData load_wall(uint i)
+{
+  WallData w;
+  w.start               = walls[i].start;
+  w.end                 = walls[i].end;
+  w.packed_normal       = walls[i].packed_normal;
+  w.destination         = walls[i].destination;
+  w.portal_matrix_index = walls[i].portal_matrix_index;
+  return w;
+}
+
+
 bool out_of_range_sectors = false;
 bool out_of_range_walls = false;
 bool invalid_wall_id = false;
@@ -129,7 +173,7 @@ bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, u
 
   for (uint hop = 0u; hop < MAX_LIGHT_TRAVERSE_SECTORS; ++hop)
   {
-    SectorData sector = sectors[current_sector_id];
+    SectorData sector = load_sector(current_sector_id);
     uint wall_index = INVALID_WALL_ID;
 
     if (current_sector_id == light.sector_id)
@@ -159,7 +203,7 @@ bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, u
         out_of_range_walls = true;
         return false;
       }
-      WallData wall = walls[sector.walls_offset + i];
+      WallData wall = load_wall(sector.walls_offset + i);
 
       vec2 wall_normal = unpackSnorm2x16(wall.packed_normal);
       // wall is facing opposite direction, we can skip it
@@ -186,7 +230,7 @@ bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, u
     if (ray_hit_y < sector.floor_y - 0.001f || ray_hit_y > sector.ceil_y + 0.001f)
       return true;
    
-    WallData wall = walls[sector.walls_offset + wall_index];
+    WallData wall = load_wall(sector.walls_offset + wall_index);
 
     // wall is solid wall (not a portal)
     if (wall.destination == INVALID_WALL_ID)
@@ -195,7 +239,7 @@ bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, u
     current_sector_id = wall.destination;
 
     // check if ray can pass through the portal opening
-    SectorData dest_sector = sectors[current_sector_id];
+    SectorData dest_sector = load_sector(current_sector_id);
     if (ray_hit_y < dest_sector.floor_y - 0.001f || ray_hit_y > dest_sector.ceil_y + 0.001f)
       return true;
 
@@ -244,7 +288,7 @@ void main()
   uvec2 tile_coords = uvec2(gl_FragCoord.xy) / uvec2(TILE_SIZE_X, TILE_SIZE_Y);
   uint tile_index = tile_coords.y * num_tiles_x + tile_coords.x;
 
-  TileData data = tile_data[tile_index];
+  TileData data = load_tile_data(tile_index);
 
   // For billboards we store shading position in "normal" and shading stitched position in "stitched normal"
   vec3 shading_position          = mix(position,          normal,          billboard_f); // Storing shading position here for billboards
@@ -254,7 +298,7 @@ void main()
   {
     uint light_index = light_indices[data.offset + i];
 
-    PointLight light = point_lights[light_index];
+    PointLight light = load_point_light(light_index);
 
     vec3 light_direction = light.stitched_position - stitched_position;
     float distance_squared = dot(light_direction, light_direction);
