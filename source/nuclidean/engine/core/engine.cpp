@@ -63,17 +63,18 @@ static Engine* g_engine = nullptr;
 namespace engine_utils
 {
 
-[[maybe_unused]] constexpr cstr BENCHMARK_ARG      = "-benchmark";
-[[maybe_unused]] constexpr cstr UNIT_TEST_ARG      = "-unit_test";
-[[maybe_unused]] constexpr cstr TEST_FILTER_PREFIX = "-test_filter=";
-[[maybe_unused]] constexpr cstr START_LEVEL_ARG    = "-start_level";
-[[maybe_unused]] constexpr cstr START_DEMO_ARG     = "-start_demo";
-[[maybe_unused]] constexpr cstr FAST_DEMO_ARG      = "-fast_demo";
-[[maybe_unused]] constexpr cstr EDITOR_MODE_ARG    = "-editor_mode"; // sets up bunch of minor stuff to make it more pleasant to use the game for preview when editing a level
-[[maybe_unused]] constexpr cstr RES_SCALE_ARG      = "-res_scale"; // Sets up the resolution_scale cvar (quick hack, should be removed once we have on Options entry for it)
-[[maybe_unused]] constexpr cstr PRESENTATION_ARG   = "-presentation"; // shows prepared slides while demos play in the background; followed by slide texture names
-[[maybe_unused]] constexpr cstr PRINT_COUNTERS_ARG = "-print_counters"; // prints the performance counters [into a file] 
-[[maybe_unused]] constexpr cstr FORCE_GLES_ARG     = "-gles"; // Forces use of OpenGL ES backend even when desktop OpenGL is available. 
+[[maybe_unused]] constexpr cstr BENCHMARK_ARG             = "-benchmark";
+[[maybe_unused]] constexpr cstr UNIT_TEST_ARG             = "-unit_test";
+[[maybe_unused]] constexpr cstr TEST_FILTER_PREFIX        = "-test_filter=";
+[[maybe_unused]] constexpr cstr START_LEVEL_ARG           = "-start_level";
+[[maybe_unused]] constexpr cstr START_DEMO_ARG            = "-start_demo";
+[[maybe_unused]] constexpr cstr FAST_DEMO_ARG             = "-fast_demo";
+[[maybe_unused]] constexpr cstr EDITOR_MODE_ARG           = "-editor_mode"; // sets up bunch of minor stuff to make it more pleasant to use the game for preview when editing a level
+[[maybe_unused]] constexpr cstr RES_SCALE_ARG             = "-res_scale"; // Sets up the resolution_scale cvar (quick hack, should be removed once we have on Options entry for it)
+[[maybe_unused]] constexpr cstr PRESENTATION_ARG          = "-presentation"; // shows prepared slides while demos play in the background; followed by slide texture names
+[[maybe_unused]] constexpr cstr PRINT_COUNTERS_ARG        = "-print_counters"; // prints the performance counters [into a file] 
+[[maybe_unused]] constexpr cstr FORCE_GLES_ARG            = "-gles"; // Forces use of OpenGL ES backend even when desktop OpenGL is available.
+[[maybe_unused]] constexpr cstr FORCE_GPU_API_DLL_ARG     = "-force_gpu_api_dll"; // Forces the game to use graphics api .dlls next to the executable instead of system provided ones (libEGL.dll/libGLESv2.dll = ANGLE on Windows).
 
 //==============================================================================
 static f32 duration_to_seconds(auto t1, auto t2)
@@ -525,7 +526,10 @@ bool Engine::init(const CmdArgs& cmd_args)
     m_modules[_module_class::get_module_id()] = std::move(m); \
   }
 
-  INIT_MODULE(GraphicsSystem, engine_utils::contains_arg(cmd_args, engine_utils::FORCE_GLES_ARG));
+  INIT_MODULE(GraphicsSystem, GraphicsSystem::InitArgs {
+      .force_gles = engine_utils::contains_arg(cmd_args, engine_utils::FORCE_GLES_ARG),
+      .force_gpu_api_dlls = engine_utils::contains_arg(cmd_args, engine_utils::FORCE_GPU_API_DLL_ARG) 
+  });
   INIT_MODULE(InputSystem);
   INIT_MODULE(GameSystem);
   INIT_MODULE(SoundSystem);

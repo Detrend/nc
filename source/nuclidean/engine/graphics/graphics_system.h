@@ -66,7 +66,13 @@ public:
   GraphicsSystem(const GraphicsSystem&)            = delete;
   GraphicsSystem& operator=(const GraphicsSystem&) = delete;
 
-  bool init(bool force_gles);
+  struct InitArgs
+  {
+    bool force_gles         = false;
+    bool force_gpu_api_dlls = false;
+  };
+
+  bool init(const InitArgs& args);
   void on_event(ModuleEvent& event) override;
 
   // This returns the mesh handle. If the sector is dirty (was changed)
