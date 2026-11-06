@@ -92,17 +92,26 @@ void main()
   uv_0_1.y = 1.0f - uv_0_1.y; // flip, not sure why, but it was in the original code
   vec2 uv = (texture_data.pos + uv_0_1 * texture_data.size) / atlas_size;
 
+  // Explicit gradients for mip selection, derived only from the world-space uv. 
+  // Doing gradients based on data read from an SSBO (maps to DX11 UAV) is not allowed under D3D11/ANGLE, because reading from SSBOs
+  // might allegedly result in garbage data being read by the helper non-drawn fragment runs.
+  //
+  // Doint it this way supposedly also helps fix weird line artifacts at tile edges (texture wrapping -> big uv jump -> would select the lowest mip level)
+  vec2 uv_gradient_scale = float(PIXELS_PER_M) / atlas_size;
+  vec2 sampling_dx = dFdx(uv_meters) * uv_gradient_scale;
+  vec2 sampling_dy = dFdy(uv_meters) * uv_gradient_scale;
+
   vec4 color;
   vec3 normal_rgb;
   float specular_strength;
   if (use_game_atlas) {
-    color = texture(game_atlas_sampler, uv);
-    normal_rgb = texture(game_normal_sampler, uv).xyz;
-    specular_strength = texture(game_specular_sampler, uv).r;
+    color = textureGrad(game_atlas_sampler, uv, sampling_dx, sampling_dy);
+    normal_rgb = textureGrad(game_normal_sampler, uv, sampling_dx, sampling_dy).xyz;
+    specular_strength = textureGrad(game_specular_sampler, uv, sampling_dx, sampling_dy).r;
   } else{
-    color = texture(level_atlas_sampler, uv);
-    normal_rgb = texture(level_normal_sampler, uv).xyz;
-    specular_strength = texture(level_specular_sampler, uv).r;
+    color = textureGrad(level_atlas_sampler, uv, sampling_dx, sampling_dy);
+    normal_rgb = textureGrad(level_normal_sampler, uv, sampling_dx, sampling_dy).xyz;
+    specular_strength = textureGrad(level_specular_sampler, uv, sampling_dx, sampling_dy).r;
   }
   //if (color.a < 0.95f)
   //  discard;
