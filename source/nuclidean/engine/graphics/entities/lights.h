@@ -20,6 +20,8 @@ public:
   f32 strength;
 
   void init(f32 strength);
+
+  IEntityRenderProxy* allocate_render_proxy() const;
 };
 
 // GPU data friendly with std430 layout

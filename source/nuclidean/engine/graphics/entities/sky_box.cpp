@@ -1,6 +1,7 @@
 // Project Nuclidean Source File
 #include <engine/graphics/entities/sky_box.h>
 #include <engine/entity/entity_type_definitions.h>
+#include <engine/graphics/render_proxies.h>
 
 namespace nc
 {
@@ -24,6 +25,19 @@ void SkyBox::init(GLuint in_texture_handle, f32 in_exposure, bool in_use_gamma_c
 GLuint SkyBox::get_texture_handle() const
 {
   return texture_handle;
+}
+
+//==============================================================================
+IEntityRenderProxy* SkyBox::allocate_render_proxy() const
+{
+  SkyBoxRenderProxy* proxy = new SkyBoxRenderProxy();
+  proxy->sky_box = RenderElementSkyBox
+  {
+    .texture              = texture_handle,
+    .exposure             = exposure,
+    .use_gamma_correction = use_gamma_correction,
+  };
+  return proxy;
 }
 
 }

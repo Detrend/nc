@@ -13,19 +13,13 @@
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/entities/lights.h>
-#include <engine/graphics/entities/sky_box.h>
 #include <engine/graphics/render_proxy_registry.h>
 #include <engine/graphics/sectors_render_proxy.h>
 
-#include <engine/entity/entity_system.h>
 #include <engine/entity/sector_mapping.h>
-#include <engine/entity/entity_type_definitions.h>
 
 #include <engine/core/engine.h>
 #include <engine/map/map_system.h>
-#include <engine/game/game_system.h>
-#include <engine/game/game_helpers.h>
-#include <engine/player/player.h>
 #include <engine/appearance.h>
 
 #include <array>
@@ -208,6 +202,8 @@ void Renderer::render(const VisibilityTree& visibility_tree) const
     .portal_dest_to_src = mat4(1.0f),
   };
 
+  collect_persistent_elements();
+
   do_geometry_pass(camera_data);
   update_ssbos();
   do_light_culling_pass(camera_data);
@@ -235,6 +231,38 @@ void Renderer::render(const VisibilityTree& visibility_tree) const
 
   m_light_checker.registry.clear();
   m_entity_checker.registry.clear();
+
+  m_persistent_elements.clear();
+}
+
+//==============================================================================
+void Renderer::collect_persistent_elements() const
+{
+  const RenderProxyRegistry& proxies = GraphicsSystem::get().get_render_proxies();
+
+  m_persistent_elements.clear();
+  for (EntityID id : proxies.get_persistent_proxies())
+  {
+    const IEntityRenderProxy* proxy = proxies.get_proxy(id);
+    nc_assert(proxy);
+
+    proxy->get_render_elements(m_persistent_elements);
+  }
+
+  // Only the first sky box and the first ambient light are used.
+  const size_t sky_box_count = m_persistent_elements.sky_boxes.size();
+  if (sky_box_count > 1 && !m_warned_multiple_sky_boxes)
+  {
+    nc_warn("Level defines {} sky boxes; only the first is rendered.", sky_box_count);
+    m_warned_multiple_sky_boxes = true;
+  }
+
+  const size_t ambient_count = m_persistent_elements.ambient_lights.size();
+  if (ambient_count > 1 && !m_warned_multiple_ambient_lights)
+  {
+    nc_warn("Level defines {} ambient lights; only the first is used.", ambient_count);
+    m_warned_multiple_ambient_lights = true;
+  }
 }
 
 //==============================================================================
@@ -659,11 +687,13 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   m_light_material.set_uniform(shaders::light::NUM_WALLS, m_walls_ssbo.gpu_size_u32());
   m_light_material.set_uniform(shaders::light::DO_SHADOWS, m_shadows);
 
-  EntityRegistry& registry = GameSystem::get().get_entities();
-  registry.for_each<AmbientLight>([this](AmbientLight& ambient)
+  // No ambient light if the level does not define one
+  f32 ambient_strength = 0.0f;
+  if (!m_persistent_elements.ambient_lights.empty())
   {
-     m_light_material.set_uniform(shaders::light::AMBIENT_STRENGTH, ambient.strength);
-  });
+    ambient_strength = m_persistent_elements.ambient_lights.front().strength;
+  }
+  m_light_material.set_uniform(shaders::light::AMBIENT_STRENGTH, ambient_strength);
 
   // draw call
   const MeshHandle screen_quad = MeshManager::get().get_screen_quad();
@@ -1104,18 +1134,7 @@ void Renderer::render_portals(const CameraData& camera) const
 //==============================================================================
 void Renderer::render_screen_sprites(const CameraData& camera) const
 {
-  const RenderProxyRegistry& proxies = GraphicsSystem::get().get_render_proxies();
-
-  RenderElementCollector collector;
-  for (EntityID id : proxies.get_persistent_proxies())
-  {
-    const IEntityRenderProxy* proxy = proxies.get_proxy(id);
-    nc_assert(proxy);
-
-    proxy->get_render_elements(collector);
-  }
-
-  for (const RenderElementScreenSprite& sprite : collector.screen_sprites)
+  for (const RenderElementScreenSprite& sprite : m_persistent_elements.screen_sprites)
   {
     render_screen_sprite(camera, sprite, camera.position);
   }
@@ -1176,22 +1195,13 @@ const
 //==============================================================================
 void Renderer::render_sky_box(const CameraData& camera) const
 {
-  EntityRegistry& registry = GameSystem::get().get_entities();
-
-  const SkyBox* sky_box = nullptr;
-  u32 sky_box_count = 0;
-  registry.for_each<SkyBox>([&](const SkyBox& candidate)
+  if (m_persistent_elements.sky_boxes.empty())
   {
-    if (sky_box == nullptr)
-      sky_box = &candidate;
-    ++sky_box_count;
-  });
-
-  if (sky_box_count > 1)
-    nc_warn("Level defines {} skyboxes; only the first is rendered.", sky_box_count);
-
-  if (sky_box == nullptr)
     return;
+  }
+
+  // Only the first one is rendered, see collect_persistent_elements
+  const RenderElementSkyBox& sky_box = m_persistent_elements.sky_boxes.front();
 
   const MeshHandle& cube = MeshManager::get().get_cube();
 
@@ -1204,9 +1214,9 @@ void Renderer::render_sky_box(const CameraData& camera) const
   m_sky_box_material.set_uniform(shaders::sky_box::PROJECTION, m_default_projection);
 
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, sky_box->get_texture_handle());
-  m_sky_box_material.set_uniform(shaders::sky_box::EXPOSURE, sky_box->exposure);
-  m_sky_box_material.set_uniform(shaders::sky_box::USE_GAMMA_CORRECTION, sky_box->use_gamma_correction);
+  glBindTexture(GL_TEXTURE_2D, sky_box.texture);
+  m_sky_box_material.set_uniform(shaders::sky_box::EXPOSURE, sky_box.exposure);
+  m_sky_box_material.set_uniform(shaders::sky_box::USE_GAMMA_CORRECTION, sky_box.use_gamma_correction);
 
   glBindVertexArray(cube.get_vao());
   glDrawArrays(cube.get_draw_mode(), 0, cube.get_vertex_count());

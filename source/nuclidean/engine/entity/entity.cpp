@@ -14,6 +14,7 @@
 #include <engine/player/player.h>
 #include <engine/enemies/enemy.h>
 #include <engine/graphics/entities/lights.h>
+#include <engine/graphics/entities/sky_box.h>
 
 #include <game/projectile.h>
 #include <game/item.h>
@@ -176,14 +177,16 @@ IEntityRenderProxy* Entity::allocate_render_proxy() const
 {
   switch (this->get_type())
   {
-    case EntityTypes::player:      return this->as<Player>()->allocate_render_proxy();
-    case EntityTypes::enemy:       return this->as<Enemy>()->allocate_render_proxy();
-    case EntityTypes::projectile:  return this->as<Projectile>()->allocate_render_proxy();
-    case EntityTypes::pickup:      return this->as<Pickup>()->allocate_render_proxy();
-    case EntityTypes::prop:        return this->as<Prop>()->allocate_render_proxy();
-    case EntityTypes::particle:    return this->as<Particle>()->allocate_render_proxy();
-    case EntityTypes::point_light: return this->as<PointLight>()->allocate_render_proxy();
-    default:                       return nullptr;
+    case EntityTypes::player:        return this->as<Player>()->allocate_render_proxy();
+    case EntityTypes::enemy:         return this->as<Enemy>()->allocate_render_proxy();
+    case EntityTypes::projectile:    return this->as<Projectile>()->allocate_render_proxy();
+    case EntityTypes::pickup:        return this->as<Pickup>()->allocate_render_proxy();
+    case EntityTypes::prop:          return this->as<Prop>()->allocate_render_proxy();
+    case EntityTypes::particle:      return this->as<Particle>()->allocate_render_proxy();
+    case EntityTypes::point_light:   return this->as<PointLight>()->allocate_render_proxy();
+    case EntityTypes::ambient_light: return this->as<AmbientLight>()->allocate_render_proxy();
+    case EntityTypes::sky_box:       return this->as<SkyBox>()->allocate_render_proxy();
+    default:                         return nullptr;
   }
 }
 

@@ -21,6 +21,8 @@ public:
 
   GLuint get_texture_handle() const;
 
+  IEntityRenderProxy* allocate_render_proxy() const;
+
   f32  exposure             = 1.0f;
   bool use_gamma_correction = false;
 

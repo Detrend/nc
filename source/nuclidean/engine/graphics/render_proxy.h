@@ -7,6 +7,7 @@
 
 #include <engine/appearance.h>
 #include <engine/entity/entity_types.h>
+#include <engine/graphics/gl_types.h>
 #include <engine/graphics/render_command.h>
 #include <engine/graphics/ui_draw_list.h>
 
@@ -41,17 +42,35 @@ struct RenderElementScreenSprite
   Token sprite;
 };
 
+// Scene-wide element, only collected from persistent proxies.
+struct RenderElementSkyBox
+{
+  GLuint texture              = 0;
+  f32    exposure             = 1.0f;
+  bool   use_gamma_correction = false;
+};
+
+// Scene-wide element, only collected from persistent proxies.
+struct RenderElementAmbientLight
+{
+  f32 strength = 0.0f;
+};
+
 struct RenderElementCollector
 {
   void push_back(const RenderElementBillboard&    element);
   void push_back(const RenderElementLight&        element);
   void push_back(const RenderElementScreenSprite& element);
+  void push_back(const RenderElementSkyBox&       element);
+  void push_back(const RenderElementAmbientLight& element);
 
   void clear();
 
   std::vector<RenderElementBillboard>    billboards;
   std::vector<RenderElementLight>        lights;
   std::vector<RenderElementScreenSprite> screen_sprites;
+  std::vector<RenderElementSkyBox>       sky_boxes;
+  std::vector<RenderElementAmbientLight> ambient_lights;
 };
 
 class IRenderProxy

@@ -52,4 +52,24 @@ private:
   f32 calc_radius_mod() const;
 };
 
+// Persistent, the sky box is not bound to any place in the level.
+class SkyBoxRenderProxy : public IEntityRenderProxy
+{
+public:
+  void get_render_elements(RenderElementCollector& collector) const override;
+  bool is_persistent() const override;
+
+  RenderElementSkyBox sky_box;
+};
+
+// Persistent, the ambient light is not bound to any place in the level.
+class AmbientLightRenderProxy : public IEntityRenderProxy
+{
+public:
+  void get_render_elements(RenderElementCollector& collector) const override;
+  bool is_persistent() const override;
+
+  RenderElementAmbientLight ambient_light;
+};
+
 }

@@ -18,7 +18,6 @@
 #include <engine/entity/entity_system.h>
 #include <engine/game/game_system.h>
 
-#include <glad/glad.h>
 #include <SDL2/include/SDL.h>
 #include <SDL_mixer/include/SDL_mixer.h>
 

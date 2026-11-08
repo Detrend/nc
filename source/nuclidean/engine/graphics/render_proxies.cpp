@@ -30,11 +30,25 @@ void RenderElementCollector::push_back(const RenderElementScreenSprite& element)
 }
 
 //==============================================================================
+void RenderElementCollector::push_back(const RenderElementSkyBox& element)
+{
+  sky_boxes.push_back(element);
+}
+
+//==============================================================================
+void RenderElementCollector::push_back(const RenderElementAmbientLight& element)
+{
+  ambient_lights.push_back(element);
+}
+
+//==============================================================================
 void RenderElementCollector::clear()
 {
   screen_sprites.clear();
   billboards.clear();
   lights.clear();
+  sky_boxes.clear();
+  ambient_lights.clear();
 }
 
 //==============================================================================
@@ -183,6 +197,30 @@ f32 PointLightRenderProxy::calc_radius_mod() const
 
   char character = clamp(string[string_idx], 'a', 'z'); // a = 100% intensity, z = 0% intensity
   return 1.0f - (character - 'a') / cast<f32>('z' - 'a');
+}
+
+//==============================================================================
+void SkyBoxRenderProxy::get_render_elements(RenderElementCollector& collector) const
+{
+  collector.push_back(sky_box);
+}
+
+//==============================================================================
+bool SkyBoxRenderProxy::is_persistent() const
+{
+  return true;
+}
+
+//==============================================================================
+void AmbientLightRenderProxy::get_render_elements(RenderElementCollector& collector) const
+{
+  collector.push_back(ambient_light);
+}
+
+//==============================================================================
+bool AmbientLightRenderProxy::is_persistent() const
+{
+  return true;
 }
 
 }

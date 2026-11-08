@@ -6,6 +6,7 @@
 #include <engine/graphics/gl_types.h>
 #include <engine/graphics/ssbo_buffer.h>
 #include <engine/graphics/entities/lights.h>
+#include <engine/graphics/render_proxy.h>
 #include <engine/graphics/resources/texture.h>
 #include <engine/graphics/resources/shader_program.h>
 #include <engine/map/map_types.h>
@@ -149,6 +150,12 @@ private:
   mutable std::vector<mat4> m_sector_matrices_inv;
   mutable std::unordered_map<u64, size_t> m_light_gpu_data_indices;
 
+  // Render elements of all persistent proxies, collected once at the start of
+  // each frame and shared by all passes (including the portal ones).
+  mutable RenderElementCollector m_persistent_elements;
+  mutable bool                   m_warned_multiple_sky_boxes      = false;
+  mutable bool                   m_warned_multiple_ambient_lights = false;
+
   GLuint m_g_buffer            = 0;
   GLuint m_g_position          = 0;
   GLuint m_g_stitched_position = 0;
@@ -175,6 +182,9 @@ private:
   // Check each registered shader's source files for modifications and
   // recompile any that have changed.  Called at the top of render().
   void check_shader_hot_reload() const;
+
+  // Fills m_persistent_elements, call once per frame before the passes.
+  void collect_persistent_elements() const;
 
   void do_geometry_pass(const CameraData& camera) const;
   void do_light_culling_pass(const CameraData& camera) const;

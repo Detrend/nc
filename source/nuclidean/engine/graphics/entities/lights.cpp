@@ -24,6 +24,14 @@ void AmbientLight::init(f32 in_strength)
 }
 
 //==============================================================================
+IEntityRenderProxy* AmbientLight::allocate_render_proxy() const
+{
+  AmbientLightRenderProxy* proxy = new AmbientLightRenderProxy();
+  proxy->ambient_light.strength = strength;
+  return proxy;
+}
+
+//==============================================================================
 EntityType DirectionalLight::get_type_static()
 {
   return EntityTypes::directional_light;
