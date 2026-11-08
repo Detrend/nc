@@ -11,7 +11,8 @@
 #include <engine/input/input_system.h>
 #include <engine/sound/sound_system.h>
 #include <engine/core/module_event.h>
-#include <engine/graphics/shaders/shaders.h>
+#include <engine/graphics/ui_draw_list.h>
+#include <engine/graphics/resources/texture.h>
 #include <engine/graphics/graphics_system.h>
 #include <engine/player/save_types.h>
 
@@ -84,45 +85,24 @@ void NextLevelPage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
 }
 
 //=============================================================================================
-void NextLevelPage::draw(ShaderProgramHandle button_material, ShaderProgramHandle digit_material, GLuint VAO)
+void NextLevelPage::draw(UiDrawList& out) const
 {
-  // shader init
-  button_material.use();
-
-  glBindVertexArray(VAO);
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-
-  glDisable(GL_DEPTH_TEST);
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
   // determines wheter next_level or back_to_menu button should be rendered
-  kills_text->draw(button_material);
-  secrets_text->draw(button_material);
+  kills_text->draw(out);
+  secrets_text->draw(out);
   if (get_engine().get_module<GameSystem>().get_level_name() == Levels::LEVEL_2)
   {
-    demo_text->draw(button_material);
-    menu_button->draw(button_material);
+    demo_text->draw(out);
+    menu_button->draw(out);
   }
   else
   {
-    level_text->draw(button_material);
-    next_level_button->draw(button_material);
+    level_text->draw(out);
+    next_level_button->draw(out);
   }
-  completed_text->draw(button_material);
+  completed_text->draw(out);
 
-  // shader unbinding
-  glDisable(GL_BLEND);
-  glEnable(GL_DEPTH_TEST);
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glDisableVertexAttribArray(0);
-  glDisableVertexAttribArray(1);
-  glBindVertexArray(0);
-
-  draw_stats(digit_material, VAO);
+  draw_stats(out);
 }
 
 //=============================================================================================
@@ -139,248 +119,40 @@ void NextLevelPage::set_secret_stats(u32 secrets, u32 revealed)
 }
 
 //=============================================================================================
-void NextLevelPage::draw_stats(ShaderProgramHandle digit_material, GLuint VAO)
+void NextLevelPage::draw_stats(UiDrawList& out) const
 {
-  // shader init
-  digit_material.use();
-
-  glBindVertexArray(VAO);
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-
-  glDisable(GL_DEPTH_TEST);
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  draw_kill_count(digit_material);
-  draw_secret_count(digit_material);
-
-  // unbind
-  glDisable(GL_BLEND);
-  glEnable(GL_DEPTH_TEST);
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glDisableVertexAttribArray(0);
-  glDisableVertexAttribArray(1);
-  glBindVertexArray(0);
+  draw_ratio(out, vec2(0.5f, 0.3f), kill_count,     enemy_count);
+  draw_ratio(out, vec2(0.5f, 0.1f), revealed_count, secret_count);
 }
 
 //=============================================================================================
-void NextLevelPage::draw_kill_count(ShaderProgramHandle digit_material)
+void NextLevelPage::draw_ratio(UiDrawList& out, vec2 position, u32 count, u32 total)
 {
   // renders numbers char by char from right to left
-  u32 display_count = enemy_count;
-
-  vec2 position = vec2(0.5f, 0.3f);
   vec2 pos_dif = vec2(-0.06f, 0.0f);
-  vec2 scale = vec2(0.0277f, 0.066f);
+  vec2 scale   = vec2(0.0277f, 0.066f);
 
-  const TextureManager& manager = TextureManager::get();
-  const TextureHandle& texture = manager["ui_font"];
+  const TextureHandle& font = TextureManager::get()["ui_font"];
 
-  do //DRAW TOTAL ENEMY COUNT
+  auto draw_number = [&](u32 display_count)
   {
-    glActiveTexture(GL_TEXTURE0);
+    do
+    {
+      out.add_char(font, position, scale, cast<s32>(display_count % 10 + '0'));
 
-    glm::mat4 trans_mat = glm::mat4(1.0f);
-    vec2 translate = position;
-    trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
-    trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
+      display_count = display_count / 10;
+      position += pos_dif;
+    } while (display_count > 0);
+  };
 
-    const glm::mat4 final_trans = trans_mat;
+  draw_number(total);
 
-    int digit = display_count % 10;
-    digit += 48; // + '0'
+  // separating '/'
+  UiQuad& slash = out.add_char(font, position, scale, '/');
+  slash.texture_size -= vec2(1.0f, 0.0f);
+  position += pos_dif;
 
-    //setting shader
-    digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
-    digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
-    digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
-    digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
-    digit_material.set_uniform(shaders::ui_text::HOVER, false);
-
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    display_count = display_count / 10;
-    position += pos_dif;
-
-  } while (display_count > 0);
-
-  // DRAW SEPERATING '/'
-  {
-    glActiveTexture(GL_TEXTURE0);
-
-    glm::mat4 trans_mat = glm::mat4(1.0f);
-    vec2 translate = position;
-    trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
-    trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
-
-    const glm::mat4 final_trans = trans_mat;
-
-    int digit = cast<int>('/');
-
-    // setting shader uniforms
-    digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size() - vec2(1.0f, 0.0f));
-    digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
-    digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
-    digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
-    digit_material.set_uniform(shaders::ui_text::HOVER, false);
-
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    position += pos_dif;
-
-    display_count = kill_count;
-  }
-
-  do //DRAW KILL COUNT
-  {
-    glActiveTexture(GL_TEXTURE0);
-
-    glm::mat4 trans_mat = glm::mat4(1.0f);
-    vec2 translate = position;
-    trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
-    trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
-
-    const glm::mat4 final_trans = trans_mat;
-
-    int digit = display_count % 10;
-    digit += 48; // + '0'
-
-    //setting shader uniforms
-    digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
-    digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
-    digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
-    digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
-    digit_material.set_uniform(shaders::ui_text::HOVER, false);
-
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    display_count = display_count / 10;
-    position += pos_dif;
-
-  } while (display_count > 0);
-}
-
-void NextLevelPage::draw_secret_count(ShaderProgramHandle digit_material)
-{
-  // renders numbers char by char from right to left
-  u32 display_count = secret_count;
-
-  vec2 position = vec2(0.5f, 0.1f);
-  vec2 pos_dif = vec2(-0.06f, 0.0f);
-  vec2 scale = vec2(0.0277f, 0.066f);
-
-  const TextureManager& manager = TextureManager::get();
-  const TextureHandle& texture = manager["ui_font"];
-
-  do //DRAW TOTAL ENEMY COUNT
-  {
-    glActiveTexture(GL_TEXTURE0);
-
-    glm::mat4 trans_mat = glm::mat4(1.0f);
-    vec2 translate = position;
-    trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
-    trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
-
-    const glm::mat4 final_trans = trans_mat;
-
-    int digit = display_count % 10;
-    digit += 48; // + '0'
-
-    //setting shader
-    digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
-    digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
-    digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
-    digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
-    digit_material.set_uniform(shaders::ui_text::HOVER, false);
-
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    display_count = display_count / 10;
-    position += pos_dif;
-
-  } while (display_count > 0);
-
-  // DRAW SEPERATING '/'
-  {
-    glActiveTexture(GL_TEXTURE0);
-
-    glm::mat4 trans_mat = glm::mat4(1.0f);
-    vec2 translate = position;
-    trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
-    trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
-
-    const glm::mat4 final_trans = trans_mat;
-
-    int digit = cast<int>('/');
-
-    // setting shader uniforms
-    digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size() - vec2(1.0f, 0.0f));
-    digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
-    digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
-    digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
-    digit_material.set_uniform(shaders::ui_text::HOVER, false);
-
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    position += pos_dif;
-
-    display_count = revealed_count;
-  }
-
-  do //DRAW KILL COUNT
-  {
-    glActiveTexture(GL_TEXTURE0);
-
-    glm::mat4 trans_mat = glm::mat4(1.0f);
-    vec2 translate = position;
-    trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
-    trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
-
-    const glm::mat4 final_trans = trans_mat;
-
-    int digit = display_count % 10;
-    digit += 48; // + '0'
-
-    //setting shader uniforms
-    digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
-    digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
-    digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
-    digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
-    digit_material.set_uniform(shaders::ui_text::HOVER, false);
-
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    display_count = display_count / 10;
-    position += pos_dif;
-
-  } while (display_count > 0);
+  draw_number(count);
 }
 
 //=============================================================================================
@@ -468,35 +240,14 @@ void NewGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
 }
 
 //==============================================================================================
-void MainMenuPage::draw(ShaderProgramHandle button_material, GLuint VAO)
+void MainMenuPage::draw(UiDrawList& out) const
 {
-  //shader init
-  button_material.use();
-
-  glBindVertexArray(VAO);
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-
-  glDisable(GL_DEPTH_TEST);
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  new_game_button->draw(button_material);
-  options_button->draw(button_material);
-  load_button->draw(button_material);
-  save_button->draw(button_material);
-  quit_button->draw(button_material);
-  nuclidean_text->draw(button_material);
-
-  //unbind
-  glDisable(GL_BLEND);
-  glEnable(GL_DEPTH_TEST);
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glDisableVertexAttribArray(0);
-  glDisableVertexAttribArray(1);
-  glBindVertexArray(0);
+  new_game_button->draw(out);
+  options_button->draw(out);
+  load_button->draw(out);
+  save_button->draw(out);
+  quit_button->draw(out);
+  nuclidean_text->draw(out);
 }
 
 //=============================================================================================
@@ -567,33 +318,12 @@ NewGamePage::~NewGamePage()
 }
 
 //==============================================================================================
-void NewGamePage::draw(ShaderProgramHandle button_material, GLuint VAO)
+void NewGamePage::draw(UiDrawList& out) const
 {
-  //shader init
-  button_material.use();
-
-  glBindVertexArray(VAO);
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-
-  glDisable(GL_DEPTH_TEST);
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  level_1_button->draw(button_material);
-  level_2_button->draw(button_material);
-  //level_3_button->draw(button_material);
-  go_back_button->draw(button_material);
-
-  //unbind
-  glDisable(GL_BLEND);
-  glEnable(GL_DEPTH_TEST);
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glDisableVertexAttribArray(0);
-  glDisableVertexAttribArray(1);
-  glBindVertexArray(0);
+  level_1_button->draw(out);
+  level_2_button->draw(out);
+  //level_3_button->draw(out);
+  go_back_button->draw(out);
 }
 
 //==============================================================================================
@@ -625,145 +355,61 @@ void NewGamePage::level_3_func()
 }
 
 //============================================================================================
-void OptionsPage::draw(ShaderProgramHandle button_material, GLuint VAO)
+void OptionsPage::draw(UiDrawList& out) const
 {
-  //shader init
-  button_material.use();
-
-  glBindVertexArray(VAO);
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-
-  glDisable(GL_DEPTH_TEST);
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  sound_text->draw(button_material);
-  music_text->draw(button_material);
-  sensitivity_text->draw(button_material);
-  crosshair_text->draw(button_material);
-  shadow_text->draw(button_material);
+  sound_text->draw(out);
+  music_text->draw(out);
+  sensitivity_text->draw(out);
+  crosshair_text->draw(out);
+  shadow_text->draw(out);
 
   if (is_windowed)
   {
-    windowed_button->draw(button_material);
+    windowed_button->draw(out);
   }
   else
   {
-    fullscreen_button->draw(button_material);
+    fullscreen_button->draw(out);
   }
 
   if (is_shadows)
   {
-    shadow_on_button->draw(button_material);
+    shadow_on_button->draw(out);
   }
   else
   {
-    shadow_off_button->draw(button_material);
+    shadow_off_button->draw(out);
   }
 
-  sound_volume_less->draw(button_material);
-  sound_volume_more->draw(button_material);
+  sound_volume_less->draw(out);
+  sound_volume_more->draw(out);
 
-  music_volume_less->draw(button_material);
-  music_volume_more->draw(button_material);
+  music_volume_less->draw(out);
+  music_volume_more->draw(out);
 
-  sensitivity_more->draw(button_material);
-  sensitivity_less->draw(button_material);
+  sensitivity_more->draw(out);
+  sensitivity_less->draw(out);
 
-  crosshair_less->draw(button_material);
-  crosshair_more->draw(button_material);
+  crosshair_less->draw(out);
+  crosshair_more->draw(out);
 
-  go_back_button->draw(button_material);
-
-  //unbind
-  glDisable(GL_BLEND);
-  glEnable(GL_DEPTH_TEST);
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glDisableVertexAttribArray(0);
-  glDisableVertexAttribArray(1);
-  glBindVertexArray(0);
+  go_back_button->draw(out);
 
   // rendering of settings values
-  // shader init
-  digit_shader.use();
-
-  glBindVertexArray(VAO);
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-
-  glDisable(GL_DEPTH_TEST);
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  // rendering itself
-  std::vector<vec2> positions = { vec2(0.4f, 0.30f), vec2(0.4f, 0.15f), vec2(0.4f, 0.0f) };
-  std::vector<int> steps = { sound_step, music_step, sensitivity_step - 1 }; //sensitivity step is 1 - 10, but we can draw only 0 - 9
+  vec2 positions[] = { vec2(0.4f, 0.30f), vec2(0.4f, 0.15f), vec2(0.4f, 0.0f) };
+  int  steps[]     = { sound_step, music_step, sensitivity_step - 1 }; //sensitivity step is 1 - 10, but we can draw only 0 - 9
 
   const TextureManager& manager = TextureManager::get();
-  const TextureHandle& texture = manager["ui_font"];
+  const TextureHandle&  font    = manager["ui_font"];
 
   // draw numbers in the menu
-  for (size_t i = 0; i < positions.size(); i++)
+  for (size_t i = 0; i < std::size(positions); i++)
   {
-    glm::mat4 trans_mat = glm::mat4(1.0f);
-    vec2 translate = positions[i];
-    trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
-    trans_mat = glm::scale(trans_mat, glm::vec3(0.033f, 0.066f, 1));
-
-    const glm::mat4 final_trans = trans_mat;
-
-    int digit = steps[i] + 48;
-
-    //set uniforms
-    digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-    digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-    digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
-    digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
-    digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
-    digit_shader.set_uniform(shaders::ui_text::HEIGHT, 16);
-    digit_shader.set_uniform(shaders::ui_text::WIDTH, 8);
-    digit_shader.set_uniform(shaders::ui_text::HOVER, false);
-
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    out.add_char(font, positions[i], vec2(0.033f, 0.066f), steps[i] + '0');
   }
 
-  //Draw crosshair in menu
-  // vec2(0.4f, -0.15f)
-  const TextureHandle& texture_c = manager["ui_crosshair"];
-
-  glm::mat4 trans_mat = glm::mat4(1.0f);
-  vec2 translate = vec2(0.4f, -0.15f);
-  trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
-  trans_mat = glm::scale(trans_mat, glm::vec3(0.04f, 0.066f, 1));
-
-  const glm::mat4 final_trans = trans_mat;
-
-  // set uniforms
-  digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-  digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture_c.get_atlas_bundle().get_size());
-  digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture_c.get_pos());
-  digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture_c.get_size());
-  digit_shader.set_uniform(shaders::ui_text::CHARACTER, crosshair_step + 11);
-  digit_shader.set_uniform(shaders::ui_text::HEIGHT, 2);
-  digit_shader.set_uniform(shaders::ui_text::WIDTH, 11);
-  digit_shader.set_uniform(shaders::ui_text::HOVER, false);
-
-  glBindTexture(GL_TEXTURE_2D, texture_c.get_atlas_bundle().diffuse_handle);
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-  // unbind
-  glDisable(GL_BLEND);
-  glEnable(GL_DEPTH_TEST);
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glDisableVertexAttribArray(0);
-  glDisableVertexAttribArray(1);
-  glBindVertexArray(0);
+  // draw crosshair in menu, the texture is a grid of 11x2 crosshairs
+  out.add_glyph(manager["ui_crosshair"], vec2(0.4f, -0.15f), vec2(0.04f, 0.066f), crosshair_step + 11, 11, 2);
 }
 
 //=============================================================================================
@@ -957,8 +603,7 @@ void OptionsPage::shadow_off()
 }
 
 //=============================================================================================
-OptionsPage::OptionsPage() :
-  digit_shader(ShaderProgramHandle::from_files(shaders::ui_text::VERTEX_FILE, shaders::ui_text::FRAGMENT_FILE))
+OptionsPage::OptionsPage()
 {
   sound_text = new UiButton("ui_sound", vec2(-0.3f, 0.30f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::do_nothing, this));
   music_text = new UiButton("ui_music", vec2(-0.3f, 0.15f), vec2(0.3f, 0.066f), std::bind(&OptionsPage::do_nothing, this));
@@ -1209,62 +854,20 @@ void LoadGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
 }
 
 //==============================================================================================
-void LoadGamePage::draw(ShaderProgramHandle button_material, ShaderProgramHandle digit_material, GLuint VAO)
+void LoadGamePage::draw(UiDrawList& out) const
 {
-  //shader init
-  button_material.use();
-
-  glBindVertexArray(VAO);
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-
-  glDisable(GL_DEPTH_TEST);
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
   // render scrolling and go back buttons
-  go_back_button->draw(button_material);
-  page_down_button->draw(button_material);
-  page_up_button->draw(button_material);
-
-  //unbind
-  glDisable(GL_BLEND);
-  glEnable(GL_DEPTH_TEST);
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glDisableVertexAttribArray(0);
-  glDisableVertexAttribArray(1);
-  glBindVertexArray(0);
-
-  //shader init
-  digit_material.use();
-
-  glBindVertexArray(VAO);
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-
-  glDisable(GL_DEPTH_TEST);
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  go_back_button->draw(out);
+  page_down_button->draw(out);
+  page_up_button->draw(out);
 
   //render load game buttons
   for (size_t i = 0 + page * PAGE_SIZE;
     i < load_game_buttons.size() && i < cast<size_t>((page + 1) * PAGE_SIZE);
     i++)
   {
-    load_game_buttons[i]->draw(digit_material);
+    load_game_buttons[i]->draw(out);
   }
-
-  //unbind
-  glDisable(GL_BLEND);
-  glEnable(GL_DEPTH_TEST);
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glDisableVertexAttribArray(0);
-  glDisableVertexAttribArray(1);
-  glBindVertexArray(0);
 }
 
 //=============================================================================================
@@ -1341,31 +944,10 @@ void QuitGamePage::update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse)
 }
 
 //==============================================================================================
-void QuitGamePage::draw(ShaderProgramHandle button_material, GLuint VAO)
+void QuitGamePage::draw(UiDrawList& out) const
 {
-  //shader init
-  button_material.use();
-
-  glBindVertexArray(VAO);
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-
-  glDisable(GL_DEPTH_TEST);
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  yes_button->draw(button_material);
-  no_button->draw(button_material);
-
-  //unbind
-  glDisable(GL_BLEND);
-  glEnable(GL_DEPTH_TEST);
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glDisableVertexAttribArray(0);
-  glDisableVertexAttribArray(1);
-  glBindVertexArray(0);
+  yes_button->draw(out);
+  no_button->draw(out);
 }
 
 //==============================================================================================

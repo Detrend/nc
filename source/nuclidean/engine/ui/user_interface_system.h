@@ -22,7 +22,9 @@ public:
   bool init();
   ~UserInterfaceSystem() override;
 
-  void draw();
+  // Records the whole UI into a draw list and hands it over to the render
+  // thread. Called once per frame after the UI got updated.
+  void submit_draw_list() const;
 
   MenuManager* get_menu_manager();
   UiScreenEffect* get_ui_screen_effect();

@@ -19,6 +19,7 @@
 #include <engine/graphics/entities/sky_box.h>
 #include <engine/graphics/render_proxy_registry.h>
 #include <engine/graphics/sectors_render_proxy.h>
+#include <engine/graphics/ui_renderer.h>
 #include <engine/graphics/resources/res_lifetime.h>
 #include <engine/graphics/resources/texture.h>
 
@@ -32,8 +33,6 @@
 #include <engine/game/game_helpers.h>
 #include <engine/player/level_types.h>
 #include <engine/player/player.h>
-
-#include <engine/ui/user_interface_system.h>
 
 #if NC_DEBUG_DRAW
 // Only for turning off the input when the cvar tweaking window is displayed.
@@ -397,7 +396,8 @@ void GraphicsSystem::on_event(ModuleEvent& event)
   {
     case ModuleEventType::post_init:
     {
-      m_renderer = std::make_unique<Renderer>(m_window_width, m_window_height);
+      m_renderer    = std::make_unique<Renderer>(m_window_width, m_window_height);
+      m_ui_renderer = std::make_unique<UiRenderer>();
 
 #if NC_DEBUG_DRAW
       m_debug_renderer = std::make_unique<TopDownDebugRenderer>(m_window_width, m_window_height);
@@ -439,6 +439,7 @@ void GraphicsSystem::terminate()
 
   MeshManager::get().unload(ResLifetime::Game);
 
+  m_ui_renderer.reset();
   m_renderer.reset();
 #if NC_DEBUG_DRAW
   m_debug_renderer.reset();
@@ -561,8 +562,7 @@ void GraphicsSystem::render()
 #endif
   {
     m_renderer->render(visible_sectors);
-
-    get_engine().get_module<UserInterfaceSystem>().draw();
+    m_ui_renderer->draw(m_render_proxies->get_ui_draw_list());
   }
 
 #if NC_IMGUI

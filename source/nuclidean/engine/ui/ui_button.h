@@ -1,7 +1,6 @@
 // Project Nuclidean Source File
 #pragma once
 
-#include <engine/graphics/resources/shader_program.h>
 #include <engine/game/game_system.h>
 
 #include <functional>
@@ -11,6 +10,8 @@
 
 namespace nc
 {
+struct UiDrawList;
+
 class UiButton
 {
 public:
@@ -29,10 +30,8 @@ public:
   // action to be called when a button is pressed
   virtual void on_click();
 
-  // render the button
-  // draw takes the shader to modify its uniforms
-  // VAO must be bound before this is called
-  virtual void draw(ShaderProgramHandle button_material);
+  // records the button into the UI draw list
+  virtual void draw(UiDrawList& out) const;
 
 protected:
   const char* texture_name;
@@ -53,10 +52,8 @@ public:
   // action to be called when a button is pressed
   void on_click() override;
 
-  // render the button
-  // draw takes the shader to modify its uniforms
-  // VAO must be bound before this is called
-  void draw(ShaderProgramHandle digit_material) override;
+  // records the save name into the UI draw list, one quad per character
+  void draw(UiDrawList& out) const override;
 
 private:
   std::string save_path;

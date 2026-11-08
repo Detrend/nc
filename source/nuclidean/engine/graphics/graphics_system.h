@@ -93,6 +93,7 @@ private:
 private:
   // Because we do not want to include the whole renderer with this header
   using RendererPtr         = std::unique_ptr<class Renderer>;
+  using UiRendererPtr       = std::unique_ptr<class UiRenderer>;
   using CommandCollectorPtr = std::unique_ptr<GameThreadRenderCommandCollector>;
   using RenderProxiesPtr    = std::unique_ptr<RenderProxyRegistry>;
 
@@ -100,6 +101,7 @@ private:
   void*       m_gl_context = nullptr;
 
   RendererPtr         m_renderer;
+  UiRendererPtr       m_ui_renderer;
   RenderBackend       m_backend;
   CommandCollectorPtr m_command_collector;
   RenderProxiesPtr    m_render_proxies;

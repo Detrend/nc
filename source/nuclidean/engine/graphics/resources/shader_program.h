@@ -27,14 +27,8 @@ public:
   friend class GizmoManager;
   friend class GraphicsSystem;
   friend class Renderer;
-  friend class UiButton;
-  friend class UiHudDisplay;
-  friend class MenuManager;
+  friend class UiRenderer;
   friend class TextureManager;
-  friend class OptionsPage;
-  friend class UiScreenEffect;
-  friend class NextLevelPage;
-  friend class UiLoadGameButton;
 
   static ShaderProgramHandle make_compute(const char* compute_name, const char* compute_source);
   static ShaderProgramHandle make_vertex_fragment(const char* vertex_name, const char* vertex_source, const char* fragment_name, const char* fragment_source);

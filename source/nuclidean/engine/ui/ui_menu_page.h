@@ -24,7 +24,7 @@ public:
 
   void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
 
-  void draw(ShaderProgramHandle button_material, GLuint VAO);
+  void draw(UiDrawList& out) const;
 
 private:
   //These methods are for buttons
@@ -53,7 +53,7 @@ public:
   ~NewGamePage();
 
   void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
-  void draw(ShaderProgramHandle button_material, GLuint VAO);
+  void draw(UiDrawList& out) const;
 private:
   // methods for buttons
   void go_back();
@@ -82,11 +82,8 @@ public:
   void save_settings();
 
   void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
-  void draw(ShaderProgramHandle button_material, GLuint VAO);
+  void draw(UiDrawList& out) const;
 private:
-  // shader for writing numbers
-  const ShaderProgramHandle digit_shader;
-
   // methods for buttons
   void do_nothing() {};
 
@@ -152,7 +149,7 @@ private:
 {
 public:
   void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
-  void draw(ShaderProgramHandle button_material, GLuint VAO);
+  void draw(UiDrawList& out) const;
 private:
 };*/
 
@@ -167,7 +164,7 @@ public:
   void update_saves();
 
   void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
-  void draw(ShaderProgramHandle button_material, ShaderProgramHandle digit_material, GLuint VAO);
+  void draw(UiDrawList& out) const;
 private:
   //methods for buttons
   void go_back();
@@ -196,7 +193,7 @@ public:
   ~QuitGamePage();
 
   void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
-  void draw(ShaderProgramHandle button_material, GLuint VAO);
+  void draw(UiDrawList& out) const;
 private:
   //methods for buttons
   void yes_func();
@@ -215,19 +212,18 @@ public:
   ~NextLevelPage();
 
   void update(vec2 mouse_pos, u32 prev_mouse, u32 cur_mouse);
-  void draw(ShaderProgramHandle button_material, ShaderProgramHandle digit_material, GLuint VAO);
+  void draw(UiDrawList& out) const;
 
   // set values to be rendered
   void set_kill_stats(u32 enemies, u32 kills);
   void set_secret_stats(u32 secrets, u32 revealed);
 
 private:
-  // draw the stats (kills so far)
-  void draw_stats(ShaderProgramHandle digit_material, GLuint VAO);
+  // draw the stats (kills and secrets so far)
+  void draw_stats(UiDrawList& out) const;
 
-  // draw the number of kills itself
-  void draw_kill_count(ShaderProgramHandle digit_material);
-  void draw_secret_count(ShaderProgramHandle digit_material);
+  // draw "count/total" right to left, starting at the given position
+  static void draw_ratio(UiDrawList& out, vec2 position, u32 count, u32 total);
 
   //methods for buttons
   void next_level_func();

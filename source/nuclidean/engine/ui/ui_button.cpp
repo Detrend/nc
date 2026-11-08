@@ -3,11 +3,10 @@
 
 #include <engine/sound/sound_system.h>
 #include <engine/sound/sound_resources.h>
-#include <engine/graphics/shaders/shaders.h>
+#include <engine/graphics/ui_draw_list.h>
+#include <engine/graphics/resources/texture.h>
 #include <engine/core/module_event.h>
 #include <engine/ui/user_interface_system.h>
-
-#include <glm/gtc/matrix_transform.hpp>
 
 namespace nc 
 {
@@ -73,33 +72,10 @@ void UiButton::on_click()
 }
 
 //====================================================================================================
-void UiButton::draw(const ShaderProgramHandle button_material)
+void UiButton::draw(UiDrawList& out) const
 {
-  button_material.use();
-
-  const TextureManager& manager = TextureManager::get();
-  const TextureHandle& texture = manager[texture_name];
-
-  glActiveTexture(GL_TEXTURE0);
-
-  // calculate uniforms
-  glm::mat4 trans_mat = glm::mat4(1.0f);
-  vec2 translate = position;
-  trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
-  trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
-
-  const glm::mat4 final_trans = trans_mat;
-
-  // set shader uniforms
-  button_material.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
-  button_material.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-  button_material.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
-  button_material.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
-  button_material.set_uniform(shaders::ui_button::HOVER, isHover);
-  button_material.set_uniform(shaders::ui_button::COLOR, VEC4_ONE);
-
-  glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  const TextureHandle& texture = TextureManager::get()[texture_name];
+  out.add_image(texture, position, scale, isHover);
 }
 
 //==========================================================================================
@@ -124,42 +100,18 @@ void UiLoadGameButton::on_click()
 }
 
 //==============================================================================================
-void UiLoadGameButton::draw(ShaderProgramHandle digit_material)
+void UiLoadGameButton::draw(UiDrawList& out) const
 {
-  const std::string& text = save_path; 
+  vec2 step       = vec2(0.033f, 0.0f);
+  vec2 char_scale = vec2(0.0165f, 0.033f);
 
-  vec2 final_pos = position - vec2(0.5f, 0.0f);
-  vec2 step = vec2(0.033f, 0.0f);
+  const TextureHandle& font = TextureManager::get()["ui_font"];
 
-  const TextureManager& manager = TextureManager::get();
-  const TextureHandle& texture = manager["ui_font"];
-
-  for (size_t c = 0; c < text.size(); c++)
+  vec2 pos = position - vec2(0.5f, 0.0f);
+  for (char c : save_path)
   {
-    glActiveTexture(GL_TEXTURE0);
-
-    glm::mat4 trans_mat = glm::mat4(1.0f);
-    vec2 translate = final_pos;
-    trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0)); trans_mat = glm::scale(trans_mat, glm::vec3(0.0165f, 0.033f, 1));
-
-    const glm::mat4 final_trans = trans_mat;
-
-    int digit = int(text[c]);
-
-    //set uniforms
-    digit_material.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-    digit_material.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
-    digit_material.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
-    digit_material.set_uniform(shaders::ui_text::CHARACTER, digit);
-    digit_material.set_uniform(shaders::ui_text::HEIGHT, 16);
-    digit_material.set_uniform(shaders::ui_text::WIDTH, 8);
-    digit_material.set_uniform(shaders::ui_text::HOVER, isHover);
-
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    final_pos += step;
+    out.add_char(font, pos, char_scale, cast<s32>(c), isHover);
+    pos += step;
   }
 }
 }

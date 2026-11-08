@@ -2,58 +2,14 @@
 #include <engine/ui/ui_hud_display.h>
 #include <engine/core/engine.h>
 #include <engine/player/player.h>
-#include <glm/ext/matrix_transform.hpp>
 #include <engine/graphics/graphics_system.h>
-#include <engine/graphics/shaders/shaders.h>
+#include <engine/graphics/ui_draw_list.h>
+#include <engine/graphics/resources/texture.h>
 
 namespace nc
 {
-UiHudDisplay::UiHudDisplay() :
-  digit_shader(ShaderProgramHandle::from_files(shaders::ui_text::VERTEX_FILE, shaders::ui_text::FRAGMENT_FILE)),
-  text_shader(ShaderProgramHandle::from_files(shaders::ui_button::VERTEX_FILE, shaders::ui_button::FRAGMENT_FILE))
-{
-  init();
-  time_since_secret = TIME_TO_SHOW_SECRET + 1.0f;
-  time_since_saved = TIME_TO_SHOW_SECRET + 1.0f;
-}
 
-//=========================================================================================
-UiHudDisplay::~UiHudDisplay()
-{
-  glDeleteBuffers(1, &VAO);
-  glDeleteBuffers(1, &VBO);
-}
-
-//=========================================================================================
-void UiHudDisplay::init()
-{
-  //create VAO and VBO
-  vec2 vertices[] = { vec2(-1.0f, 1.0f), vec2(0.0f, 0.015f),
-    vec2(-1.0f, -1.0f), vec2(0.0f, 1.0f - 0.015f),
-    vec2(1.0f, 1.0f), vec2(1.0f, 0.015f),
-    vec2(1.0f, -1.0f), vec2(1.0f, 1.0f - 0.015f) };
-
-  glGenBuffers(1, &VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 4, &vertices, GL_STATIC_DRAW);
-
-  glGenVertexArrays(1, &VAO);
-
-  glBindVertexArray(VAO);
-
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 4, &vertices, GL_STATIC_DRAW);
-  // position
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-  glEnableVertexAttribArray(0);
-  // uvs
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), recast<void*>(2 * sizeof(float)));
-  glEnableVertexAttribArray(1);
-
-  glDisableVertexAttribArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindVertexArray(0);
-}
+static constexpr vec2 HUD_DIGIT_SCALE = vec2(0.03f, 0.07f);
 
 //=========================================================================================
 void UiHudDisplay::update(float delta_time)
@@ -74,10 +30,12 @@ void UiHudDisplay::update(float delta_time)
 }
 
 //=========================================================================================
-void UiHudDisplay::draw()
+void UiHudDisplay::draw(UiDrawList& out) const
 {
-  draw_digits();
-  draw_texts();
+  draw_ammo(out);
+  draw_health(out);
+  draw_crosshair(out);
+  draw_texts(out);
 }
 
 //=========================================================================================
@@ -87,299 +45,103 @@ void UiHudDisplay::set_crosshair(int val)
 }
 
 //=========================================================================================
-void UiHudDisplay::draw_digits()
+// Draws 3 digits from right to left, starting at the first_pos. Leading zeroes
+// are drawn as spaces, but at least one digit is always drawn.
+void UiHudDisplay::draw_number
+(
+  UiDrawList&          out,
+  const TextureHandle& font,
+  int                  value,
+  vec2                 first_pos,
+  vec2                 step
+) const
 {
-  //shader init
-  digit_shader.use();
+  bool first = true; // to always render a char
 
-  glBindVertexArray(VAO);
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
+  vec2 pos = first_pos;
+  for (size_t i = 0; i < 3; i++)
+  {
+    int digit = value % 10 + '0';
 
-  glDisable(GL_DEPTH_TEST);
+    if (!first && value == 0)
+    {
+      digit = ' ';
+    }
 
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    out.add_char(font, pos, HUD_DIGIT_SCALE, digit);
 
-  draw_ammo();
-  draw_health();
-  draw_crosshair(); //crosshair is handled using the same shader
-
-  // unbind
-  glDisable(GL_BLEND);
-  glEnable(GL_DEPTH_TEST);
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glDisableVertexAttribArray(0);
-  glDisableVertexAttribArray(1);
-  glBindVertexArray(0);
+    first = false;
+    value = value / 10;
+    pos  += step;
+  }
 }
 
 //===========================================================================================
-void UiHudDisplay::draw_health()
+void UiHudDisplay::draw_health(UiDrawList& out) const
 {
   // draw health from right to left
-  int health = display_health;
-
-  if (health < 0)
-  {
-    health = 0;
-  }
-
-  bool first = true; // to always render a char
-
-  std::vector<vec2> positionHealth = { vec2(-0.68f, -0.78f), vec2(-0.74f, -0.78f), vec2(-0.8f, -0.78f) };
-  vec2 scale = vec2(0.03f, 0.07f);
-
-  const TextureManager& manager = TextureManager::get();
-  const TextureHandle& texture = manager["ui_font"];
-
-  for (size_t i = 0; i < 3; i++)
-  {
-    glm::mat4 trans_mat = glm::mat4(1.0f);
-    vec2 translate = positionHealth[i];
-    trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
-    trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
-
-    const glm::mat4 final_trans = trans_mat;
-
-    int digit = health % 10;
-    digit += 48; //= '+'
-
-    if (!first && health == 0)
-    {
-      digit = 32; //= ' '
-    }
-
-    // set uniforms
-    digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-    digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-    digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
-    digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
-    digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
-    digit_shader.set_uniform(shaders::ui_text::HEIGHT, 16);
-    digit_shader.set_uniform(shaders::ui_text::WIDTH, 8);
-    digit_shader.set_uniform(shaders::ui_text::HOVER, false);
-
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    first = false;
-    health = health / 10;
-  }
+  const TextureHandle& font = TextureManager::get()["ui_font"];
+  draw_number(out, font, max(display_health, 0), vec2(-0.68f, -0.78f), vec2(-0.06f, 0.0f));
 }
 
 //=========================================================================================
-void UiHudDisplay::draw_ammo()
+void UiHudDisplay::draw_ammo(UiDrawList& out) const
 {
-  int ammo = display_ammo;
+  const TextureHandle& font = TextureManager::get()["ui_font"];
 
-  if (ammo < 0)
+  size_t first_quad = out.quads.size();
+  draw_number(out, font, max(display_ammo, 0), vec2(0.8f, -0.78f), vec2(-0.06f, 0.0f));
+
+  if (display_ammo == -1) //if melee, we don't want to use ammo count
   {
-    ammo = 0;
-  }
-
-  bool first = true; // to always render a char
-
-  std::vector<vec2> positionsAmmo = { vec2(0.8f, -0.78f) , vec2(0.74f, -0.78f), vec2(0.68f, -0.78f) };
-  vec2 scale = vec2(0.03f, 0.07f);
-
-  const TextureManager& manager = TextureManager::get();
-  const TextureHandle& texture = manager["ui_font"];
-
-  for (size_t i = 0; i < 3; i++)
-  {
-    glActiveTexture(GL_TEXTURE0);
-
-    glm::mat4 trans_mat = glm::mat4(1.0f);
-    vec2 translate = positionsAmmo[i];
-    trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
-    trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
-
-    const glm::mat4 final_trans = trans_mat;
-
-    int digit = ammo % 10;
-    digit += 48; //= '0'
-
-    if (first && display_ammo == -1) //if melee, we don't want to use ammo count
-    {
-      digit = '-';
-    }
-
-    if (!first && ammo == 0)
-    {
-      digit = 32; // = ' '
-    }
-
-    //set uniforms
-    digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-    digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-    digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
-    digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
-    digit_shader.set_uniform(shaders::ui_text::CHARACTER, digit);
-    digit_shader.set_uniform(shaders::ui_text::HEIGHT, 16);
-    digit_shader.set_uniform(shaders::ui_text::WIDTH, 8);
-    digit_shader.set_uniform(shaders::ui_text::HOVER, false);
-
-    glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    first = false;
-    ammo = ammo / 10;
+    out.quads[first_quad].character = '-';
   }
 }
 
 //=====================================================================================
-void UiHudDisplay::draw_texts()
+void UiHudDisplay::draw_texts(UiDrawList& out) const
 {
   // Drawing texts under the numbers
-
-  std::vector<vec2> positionsTexts = { vec2(-0.74f, -0.9f), vec2(0.74f, -0.9f) };
-  std::vector<vec2> scalesTexts = { vec2(0.09f, 0.035f), vec2(0.06f, 0.035f) };
-  std::vector<const char*> texts = { "ui_health", "ui_ammo" };
-
-  text_shader.use();
-
-  glBindVertexArray(VAO);
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-
-  glDisable(GL_DEPTH_TEST);
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  for (size_t i = 0; i < 2; i++)
-  {
-    // transformation matrices
-    glm::mat4 trans_mat = glm::mat4(1.0f);
-    vec2 translate = positionsTexts[i];
-    trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
-    trans_mat = glm::scale(trans_mat, glm::vec3(scalesTexts[i].x, scalesTexts[i].y, 1));
-
-    const glm::mat4 final_trans = trans_mat;
-
-    // texture pickup
-    const TextureManager& manager2 = TextureManager::get();
-    const TextureHandle& texture2 = manager2[texts[i]];
-
-    //set uniforms
-    text_shader.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
-    text_shader.set_uniform(shaders::ui_button::ATLAS_SIZE, texture2.get_atlas_bundle().get_size());
-    text_shader.set_uniform(shaders::ui_button::TEXTURE_POS, texture2.get_pos());
-    text_shader.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture2.get_size());
-
-    glBindTexture(GL_TEXTURE_2D, texture2.get_atlas_bundle().diffuse_handle);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-  }
-
-  draw_secret_revealed();
-  draw_saved();
-
-  glDisable(GL_BLEND);
-  glEnable(GL_DEPTH_TEST);
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glDisableVertexAttribArray(0);
-  glDisableVertexAttribArray(1);
-  glBindVertexArray(0);
-}
-
-//===========================================================================================
-void UiHudDisplay::draw_crosshair()
-{
-
-  vec2 win_size = get_engine().get_module<GraphicsSystem>().get_window_size();
-
-  vec2 position = vec2(0.0f, 0.0f);
-  vec2 scale = vec2(0.05f, 0.05f * win_size.x / win_size.y);
-
   const TextureManager& manager = TextureManager::get();
-  const TextureHandle& texture = manager["ui_crosshair"];
 
-  glActiveTexture(GL_TEXTURE0);
+  out.add_image(manager["ui_health"], vec2(-0.74f, -0.9f), vec2(0.09f, 0.035f));
+  out.add_image(manager["ui_ammo"],   vec2( 0.74f, -0.9f), vec2(0.06f, 0.035f));
 
-  glm::mat4 trans_mat = glm::mat4(1.0f);
-  vec2 translate = position;
-  trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
-  trans_mat = glm::scale(trans_mat, glm::vec3(scale.x, scale.y, 1));
-
-  const glm::mat4 final_trans = trans_mat;
-
-  // set uniforms
-  digit_shader.set_uniform(shaders::ui_text::TRANSFORM, final_trans);
-  digit_shader.set_uniform(shaders::ui_text::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-  digit_shader.set_uniform(shaders::ui_text::TEXTURE_POS, texture.get_pos());
-  digit_shader.set_uniform(shaders::ui_text::TEXTURE_SIZE, texture.get_size());
-
-  digit_shader.set_uniform(shaders::ui_text::CHARACTER, crosshair + 11);
-
-  digit_shader.set_uniform(shaders::ui_text::HEIGHT, 2);
-  digit_shader.set_uniform(shaders::ui_text::WIDTH, 11);
-  digit_shader.set_uniform(shaders::ui_text::HOVER, false);
-
-  glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  draw_secret_revealed(out);
+  draw_saved(out);
 }
 
 //===========================================================================================
-void UiHudDisplay::draw_secret_revealed()
+void UiHudDisplay::draw_crosshair(UiDrawList& out) const
+{
+  vec2 win_size = get_engine().get_module<GraphicsSystem>().get_window_size();
+  vec2 scale    = vec2(0.05f, 0.05f * win_size.x / win_size.y);
+
+  // the crosshair texture is a grid of 11x2 crosshairs
+  const TextureHandle& texture = TextureManager::get()["ui_crosshair"];
+  out.add_glyph(texture, VEC2_ZERO, scale, crosshair + 11, 11, 2);
+}
+
+//===========================================================================================
+void UiHudDisplay::draw_secret_revealed(UiDrawList& out) const
 {
   if (time_since_secret > TIME_TO_SHOW_SECRET)
   {
     return;
   }
 
-  // transformation matrices
-  glm::mat4 trans_mat = glm::mat4(1.0f);
-  vec2 translate = vec2(0.0f, -0.5f);
-  trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
-  trans_mat = glm::scale(trans_mat, glm::vec3(0.275f, 0.04f, 1));
-
-  const glm::mat4 final_trans = trans_mat;
-
-  // texture pickup
-  const TextureManager& manager = TextureManager::get();
-  const TextureHandle& texture = manager["ui_secret_revealed"];
-
-  //set uniforms
-  text_shader.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
-  text_shader.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-  text_shader.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
-  text_shader.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
-
-  glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  out.add_image(TextureManager::get()["ui_secret_revealed"], vec2(0.0f, -0.5f), vec2(0.275f, 0.04f));
 }
 
 //==========================================================================
-void UiHudDisplay::draw_saved()
+void UiHudDisplay::draw_saved(UiDrawList& out) const
 {
   if (time_since_saved > TIME_TO_SHOW_SECRET)
   {
     return;
   }
 
-  // transformation matrices
-  glm::mat4 trans_mat = glm::mat4(1.0f);
-  vec2 translate = vec2(0.0f, -0.6f);
-  trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
-  trans_mat = glm::scale(trans_mat, glm::vec3(0.275f, 0.04f, 1));
-
-  const glm::mat4 final_trans = trans_mat;
-
-  // texture pickup
-  const TextureManager& manager = TextureManager::get();
-  const TextureHandle& texture = manager["ui_saved"];
-
-  //set uniforms
-  text_shader.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
-  text_shader.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-  text_shader.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
-  text_shader.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
-
-  glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+  out.add_image(TextureManager::get()["ui_saved"], vec2(0.0f, -0.6f), vec2(0.275f, 0.04f));
 }
 
 //===========================================================================================

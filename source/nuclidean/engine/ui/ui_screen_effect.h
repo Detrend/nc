@@ -1,17 +1,18 @@
 // Project Nuclidean Source File
 #pragma once
-#include <engine/graphics/resources/shader_program.h>
+#include <types.h>
 
 namespace nc
 {
+struct UiDrawList;
+
 class UiScreenEffect
 {
   public:
-    UiScreenEffect();
-      
     void update(float delta);
 
-    void draw();
+    // records the screen flash into the UI draw list
+    void draw(UiDrawList& out) const;
 
     // call when player receives damage
     void did_damage(int damage);
@@ -22,9 +23,6 @@ class UiScreenEffect
     void clear_effect();
 
   private:
-      
-    void init();
-
     // consts
     const f32 MAX_DMG_FLASH_DURATION = 2.0f;
     const f32 MAX_PICKUP_FLASH_DURATION = 0.25f;
@@ -32,11 +30,5 @@ class UiScreenEffect
     // properties
     f32 time_since_last_dmg = MAX_DMG_FLASH_DURATION;
     f32 time_since_last_pickup = MAX_PICKUP_FLASH_DURATION;
-  
-    //openGL
-    GLuint VAO;
-    GLuint VBO;
-
-    const ShaderProgramHandle shader;
 };
 }

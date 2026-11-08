@@ -7,7 +7,7 @@
 
 #include <engine/core/engine.h>
 #include <engine/core/module_event.h>
-#include <engine/graphics/shaders/shaders.h>
+#include <engine/graphics/ui_draw_list.h>
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/resources/texture.h>
 
@@ -18,44 +18,14 @@ namespace nc
 {
 
 //============================================================================================
-MenuManager::MenuManager() :
-  button_material(ShaderProgramHandle::from_files(shaders::ui_button::VERTEX_FILE, shaders::ui_button::FRAGMENT_FILE)),
-  digit_material(ShaderProgramHandle::from_files(shaders::ui_text::VERTEX_FILE, shaders::ui_text::FRAGMENT_FILE))
+MenuManager::MenuManager()
 {
-
   main_menu_page = new MainMenuPage();
   options_page = new OptionsPage();
   load_game_page = new LoadGamePage();
   new_game_page = new NewGamePage();
   quit_game_page = new QuitGamePage();
   next_level_page = new NextLevelPage();
-
-  // Create VAO and VBO
-  vec2 vertices[] = { vec2(-1.0f, 1.0f), vec2(0.0f, 0.015f),
-    vec2(-1.0f, -1.0f), vec2(0.0f, 1.0f - 0.015f),
-    vec2(1.0f, 1.0f), vec2(1.0f, 0.015f),
-    vec2(1.0f, -1.0f), vec2(1.0f, 1.0f - 0.015f) };
-
-  glGenBuffers(1, &VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 4, &vertices, GL_STATIC_DRAW);
-
-  glGenVertexArrays(1, &VAO);
-
-  glBindVertexArray(VAO);
-
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 4, &vertices, GL_STATIC_DRAW);
-  // position
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-  glEnableVertexAttribArray(0);
-  // uvs
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), recast<void*>(2 * sizeof(float)));
-  glEnableVertexAttribArray(1);
-
-  glDisableVertexAttribArray(0);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindVertexArray(0);
 }
 
 //============================================================================================
@@ -72,9 +42,6 @@ MenuManager::~MenuManager()
   delete load_game_page;
   delete new_game_page;
   delete next_level_page;
-
-  glDeleteBuffers(1, &VAO);
-  glDeleteBuffers(1, &VBO);
 }
 
 //==============================================================================================
@@ -92,12 +59,17 @@ void MenuManager::on_exit()
 //=============================================================================================
 vec2 MenuManager::get_normalized_mouse_pos()
 {
-  int mouse_x, mouse_y;
-
-  uint32 state = SDL_GetMouseState(&mouse_x, &mouse_y);
-
   prev_mousestate = cur_mousestate;
-  cur_mousestate = state;
+  cur_mousestate  = SDL_GetMouseState(nullptr, nullptr);
+
+  return query_normalized_mouse_pos();
+}
+
+//=============================================================================================
+vec2 MenuManager::query_normalized_mouse_pos()
+{
+  int mouse_x, mouse_y;
+  SDL_GetMouseState(&mouse_x, &mouse_y);
 
   vec2 dimensions = get_engine().get_module<GraphicsSystem>().get_window_size();
 
@@ -291,20 +263,20 @@ void MenuManager::update()
 }
 
 //============================================================================================
-void MenuManager::draw()
+void MenuManager::draw(UiDrawList& out) const
 {
   // presentation mode?
   if (is_presentation)
   {
-    draw_presentation();
+    draw_presentation(out);
     return;
   }
 
   // transition?
   if (is_transition)
   {
-    next_level_page->draw(button_material, digit_material, VAO);
-    draw_cursor();
+    next_level_page->draw(out);
+    draw_cursor(out);
     return;
   }
 
@@ -316,135 +288,51 @@ void MenuManager::draw()
   switch (current_page)
   {
   case MenuPage::main_page:
-    main_menu_page->draw(button_material, VAO);
+    main_menu_page->draw(out);
     break;
   case MenuPage::new_game:
-    new_game_page->draw(button_material, VAO);
+    new_game_page->draw(out);
     break;
   case MenuPage::options:
-    options_page->draw(button_material, VAO);
+    options_page->draw(out);
     break;
   case MenuPage::load:
-    load_game_page->draw(button_material, digit_material, VAO);
+    load_game_page->draw(out);
     break;
   case MenuPage::save:
     break;
   case MenuPage::quit:
-    quit_game_page->draw(button_material, VAO);
+    quit_game_page->draw(out);
     break;
   default:
     break;
   }
 
-  draw_cursor();
+  draw_cursor(out);
 }
 
 //==============================================================================================
-void MenuManager::draw_cursor()
+void MenuManager::draw_cursor(UiDrawList& out) const
 {
-  // shader init
-  button_material.use();
+  vec2 pos = query_normalized_mouse_pos();
 
-  glBindVertexArray(VAO);
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-
-  glDisable(GL_DEPTH_TEST);
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-  vec2 pos = get_normalized_mouse_pos();
-
-  // texture
-  const char* cursor_tex = "ui_cursor";
-
-  const TextureManager& manager = TextureManager::get();
-  const TextureHandle& texture = manager[cursor_tex];
-
-  glActiveTexture(GL_TEXTURE0);
-
-  // getting shader uniforms
-  glm::mat4 trans_mat = glm::mat4(1.0f);
-  vec2 translate = pos + vec2(0.015, -0.02);
-  trans_mat = glm::translate(trans_mat, glm::vec3(translate.x, translate.y, 0));
-  trans_mat = glm::scale(trans_mat, glm::vec3(0.015f, 0.02f, 1));
-
-  const glm::mat4 final_trans = trans_mat;
-
-  // setting shader uniforms
-  button_material.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
-  button_material.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-  button_material.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
-  button_material.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
-  button_material.set_uniform(shaders::ui_button::HOVER, false);
-
-  // draw
-  glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-  // shader unbinding
-
-  glDisable(GL_BLEND);
-  glEnable(GL_DEPTH_TEST);
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glDisableVertexAttribArray(0);
-  glDisableVertexAttribArray(1);
-  glBindVertexArray(0);
+  const TextureHandle& texture = TextureManager::get()["ui_cursor"];
+  out.add_image(texture, pos + vec2(0.015f, -0.02f), vec2(0.015f, 0.02f));
 }
 
 //=============================================================================================
-void MenuManager::draw_presentation()
+void MenuManager::draw_presentation(UiDrawList& out) const
 {
   if (presentation_slides.empty())
   {
     return;
   }
 
-  // shader init
-  button_material.use();
-
-  glBindVertexArray(VAO);
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-
-  glDisable(GL_DEPTH_TEST);
-
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
   // Slide names are validated in set_presentation_slides, so this lookup is safe
-  const TextureManager& manager = TextureManager::get();
-  const TextureHandle& texture = manager[presentation_slides[presentation_index]];
-
-  glActiveTexture(GL_TEXTURE0);
+  const TextureHandle& texture = TextureManager::get()[presentation_slides[presentation_index]];
 
   // full-screen quad
-  glm::mat4 trans_mat = glm::mat4(1.0f);
-  trans_mat = glm::translate(trans_mat, glm::vec3(0.0f, 0.0f, 0.0f));
-  trans_mat = glm::scale(trans_mat, glm::vec3(1.0f, 1.0f, 1.0f));
-
-  const glm::mat4 final_trans = trans_mat;
-
-  // set shader uniforms
-  button_material.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
-  button_material.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
-  button_material.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
-  button_material.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
-  button_material.set_uniform(shaders::ui_button::HOVER, false);
-
-  glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
-  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-  // shader unbinding
-  glDisable(GL_BLEND);
-  glEnable(GL_DEPTH_TEST);
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glDisableVertexAttribArray(0);
-  glDisableVertexAttribArray(1);
-  glBindVertexArray(0);
+  out.add_image(texture, VEC2_ZERO, VEC2_ONE);
 }
 
 //=============================================================================================

@@ -354,6 +354,12 @@ void RenderProxyRegistry::execute(RenderCommandModifySectorsProxy& command)
 }
 
 //==============================================================================
+void RenderProxyRegistry::execute(RenderCommandSetUiDrawList& command)
+{
+  m_ui_draw_list = std::move(command.draw_list);
+}
+
+//==============================================================================
 const IEntityRenderProxy* RenderProxyRegistry::get_proxy(EntityID id) const
 {
   auto it = m_proxies.find(id);
@@ -396,6 +402,12 @@ const Camera* RenderProxyRegistry::get_camera() const
 const std::vector<EntityID>& RenderProxyRegistry::get_persistent_proxies() const
 {
   return m_persistent;
+}
+
+//==============================================================================
+const UiDrawList& RenderProxyRegistry::get_ui_draw_list() const
+{
+  return m_ui_draw_list;
 }
 
 }

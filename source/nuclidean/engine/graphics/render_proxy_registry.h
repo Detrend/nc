@@ -106,6 +106,7 @@ public:
   const SectorMapping&      get_mapping()          const;
   const IEntityRenderProxy* get_camera_proxy()     const;
   const Camera*             get_camera()           const;
+  const UiDrawList&         get_ui_draw_list()     const;
 
   // Proxies that should be collected each frame no matter where the camera looks.
   const std::vector<EntityID>& get_persistent_proxies() const;
@@ -117,6 +118,7 @@ private:
   void execute(RenderCommandModifyProxy&        command);
   void execute(RenderCommandCreateSectorsProxy& command);
   void execute(RenderCommandModifySectorsProxy& command);
+  void execute(RenderCommandSetUiDrawList&      command);
 
 private:
   using ProxyMap = std::unordered_map<EntityID, std::unique_ptr<IEntityRenderProxy>>;
@@ -126,6 +128,7 @@ private:
   std::unique_ptr<SectorsRenderProxy> m_sectors;
   std::unique_ptr<SectorMapping>      m_mapping;
   EntityID                            m_camera_entity = INVALID_ENTITY_ID;
+  UiDrawList                          m_ui_draw_list;
 };
 
 }

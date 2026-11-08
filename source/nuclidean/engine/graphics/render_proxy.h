@@ -8,6 +8,7 @@
 #include <engine/appearance.h>
 #include <engine/entity/entity_types.h>
 #include <engine/graphics/render_command.h>
+#include <engine/graphics/ui_draw_list.h>
 
 #include <memory>
 #include <vector>
@@ -134,6 +135,12 @@ struct RenderCommandModifySectorsProxy
   bool                can_skip = false;
 };
 
+// Probably temporary until we have new UI
+struct RenderCommandSetUiDrawList
+{
+  UiDrawList draw_list;
+};
+
 using RenderCommand = std::variant
 <
   RenderCommandClearScene,
@@ -141,7 +148,8 @@ using RenderCommand = std::variant
   RenderCommandDestroyProxy,
   RenderCommandModifyProxy,
   RenderCommandCreateSectorsProxy,
-  RenderCommandModifySectorsProxy
+  RenderCommandModifySectorsProxy,
+  RenderCommandSetUiDrawList
 >;
 
 using RenderCommandQueue = std::vector<RenderCommand>;

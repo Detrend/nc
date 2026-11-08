@@ -1,6 +1,5 @@
 // Project Nuclidean Source File
 #pragma once
-#include <engine/graphics/resources/shader_program.h>
 #include <engine/ui/ui_button.h>
 #include <engine/ui/ui_menu_page.h>
 
@@ -9,6 +8,8 @@
 
 namespace nc
 {
+struct UiDrawList;
+
 class MenuManager
 {
 public:
@@ -23,7 +24,9 @@ public:
   bool get_is_visible() const;
 
   void update();
-  void draw();
+
+  // records the menu into the UI draw list
+  void draw(UiDrawList& out) const;
 
   void post_init();
 
@@ -42,18 +45,18 @@ public:
   bool set_presentation_slides(const std::vector<std::string>& slide_texture_names);
 
 private:
-  void draw_cursor();
+  void draw_cursor(UiDrawList& out) const;
 
   // presentation mode helpers
   void update_presentation();
-  void draw_presentation();
+  void draw_presentation(UiDrawList& out) const;
 
-  // return position of mouse in (-1, 1) coordinates
+  // return position of mouse in (-1, 1) coordinates and updates the mouse
+  // button states used for detecting clicks
   vec2 get_normalized_mouse_pos();
 
-  //shaders
-  const ShaderProgramHandle button_material;
-  const ShaderProgramHandle digit_material;
+  // return position of mouse in (-1, 1) coordinates
+  static vec2 query_normalized_mouse_pos();
 
   // pages
   MainMenuPage* main_menu_page = nullptr;
@@ -82,9 +85,5 @@ private:
 
   uint32 prev_mousestate = 0;
   uint32 cur_mousestate = 0;
-
-  // openGL properties
-  GLuint VBO;
-  GLuint VAO;
 };
 }

@@ -3,6 +3,9 @@
 #include <engine/core/engine_module_types.h>
 #include <engine/core/module_event.h>
 #include <engine/core/engine.h>
+#include <engine/graphics/graphics_system.h>
+#include <engine/graphics/render_proxy.h>
+#include <engine/graphics/render_proxy_registry.h>
 
 namespace nc
 {
@@ -46,15 +49,22 @@ UiScreenEffect* UserInterfaceSystem::get_ui_screen_effect()
 }
 
 //===========================================================================================
-void UserInterfaceSystem::draw()
+void UserInterfaceSystem::submit_draw_list() const
 {
+  UiDrawList draw_list;
+
   if (get_engine().should_ammo_hp_hud_be_visible())
   {
-    hud_display->draw();
+    hud_display->draw(draw_list);
   }
 
-  menu->draw();
-  screen_effect->draw();
+  menu->draw(draw_list);
+  screen_effect->draw(draw_list);
+
+  GraphicsSystem::get().get_command_collector().enqueue_command(RenderCommandSetUiDrawList
+  {
+    .draw_list = std::move(draw_list),
+  });
 }
 
 //===========================================================================================
@@ -69,10 +79,7 @@ void UserInterfaceSystem::on_event(ModuleEvent& event)
     hud_display->update(event.update.dt);
     menu->update();
     screen_effect->update(event.update.dt);
-    break;
-  case ModuleEventType::render:
-    //draw();
-      
+    submit_draw_list();
     break;
   case ModuleEventType::cleanup:
     break;
