@@ -18,6 +18,9 @@ public:
   void get_render_elements(RenderElementCollector& collector) const override;
 
   Appearance appearance;
+
+protected:
+  BillboardRenderProxy(const Appearance& appear, RenderProxyKind kind);
 };
 
 class PlayerRenderProxy : public BillboardRenderProxy
@@ -29,7 +32,6 @@ public:
 
   bool          has_camera_data() const override;
   const Camera* get_camera_data() const override;
-  bool          is_persistent()   const override;
 
   Camera                    camera;
   RenderElementScreenSprite weapon_sprite;
@@ -38,6 +40,8 @@ public:
 class PointLightRenderProxy : public IEntityRenderProxy
 {
 public:
+  PointLightRenderProxy();
+
   void get_render_elements(RenderElementCollector& collector) const override;
 
   color3 color                  = colors::WHITE;
@@ -52,22 +56,24 @@ private:
   f32 calc_radius_mod() const;
 };
 
-// Persistent, the sky box is not bound to any place in the level.
+// Global, the sky box is not bound to any place in the level.
 class SkyBoxRenderProxy : public IEntityRenderProxy
 {
 public:
+  SkyBoxRenderProxy();
+
   void get_render_elements(RenderElementCollector& collector) const override;
-  bool is_persistent() const override;
 
   RenderElementSkyBox sky_box;
 };
 
-// Persistent, the ambient light is not bound to any place in the level.
+// Global, the ambient light is not bound to any place in the level.
 class AmbientLightRenderProxy : public IEntityRenderProxy
 {
 public:
+  AmbientLightRenderProxy();
+
   void get_render_elements(RenderElementCollector& collector) const override;
-  bool is_persistent() const override;
 
   RenderElementAmbientLight ambient_light;
 };

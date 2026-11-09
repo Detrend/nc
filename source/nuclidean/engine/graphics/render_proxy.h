@@ -81,9 +81,19 @@ public:
   virtual void get_render_elements(RenderElementCollector& collector) const = 0;
 };
 
+// Changes when is the "get_render_elements` called
+enum class RenderProxyKind : u8
+{
+  spatial,            // Is mapped onto sectors, called only if passes occlusion culling
+  spatial_persistent, // Always called once + also if passes occlusion culling
+  global,             // Not mapped onto sectors, but always called once
+};
+
 class IEntityRenderProxy : public IRenderProxy
 {
 public:
+  explicit IEntityRenderProxy(RenderProxyKind kind);
+
   EntityID get_entity_id() const;
 
   f32  get_radius()   const;
@@ -98,21 +108,21 @@ public:
   virtual bool          has_camera_data() const;
   virtual const Camera* get_camera_data() const;
 
-  // Persistent proxies get their render elements collected each frame, no
-  // matter if they are visible or not. Has to stay the same for the whole
-  // lifetime of the proxy.
-  virtual bool is_persistent() const;
+  RenderProxyKind get_kind()      const;
+  bool            is_persistent() const;
+  bool            is_mapped()     const;
 
 private:
   // Necessary to set the ID and the dirty flag
   friend class RenderProxyRegistry;
   friend class GameRenderCommandIface;
 
-  EntityID m_entity_id    = INVALID_ENTITY_ID;
-  vec3     m_position     = VEC3_ZERO;
-  f32      m_radius       = 0.0f;
-  f32      m_height       = 0.0f;
-  bool     m_bounds_dirty = false;
+  RenderProxyKind m_kind;
+  EntityID        m_entity_id    = INVALID_ENTITY_ID;
+  vec3            m_position     = VEC3_ZERO;
+  f32             m_radius       = 0.0f;
+  f32             m_height       = 0.0f;
+  bool            m_bounds_dirty = false;
 };
 
 struct LevelStats

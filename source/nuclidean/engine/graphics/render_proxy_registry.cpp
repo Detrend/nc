@@ -287,7 +287,11 @@ void RenderProxyRegistry::execute(RenderCommandCreateProxy& command)
 
   IEntityRenderProxy* proxy = command.proxy.get();
   m_proxies.emplace(id, std::move(command.proxy));
-  m_mapping->on_entity_create(id, proxy->m_position, proxy->m_radius, proxy->m_height);
+
+  if (proxy->is_mapped())
+  {
+    m_mapping->on_entity_create(id, proxy->m_position, proxy->m_radius, proxy->m_height);
+  }
 
   if (proxy->is_persistent())
   {
@@ -316,7 +320,11 @@ void RenderProxyRegistry::execute(RenderCommandDestroyProxy& command)
     std::erase(m_persistent, id);
   }
 
-  m_mapping->on_entity_destroy(id);
+  if (it->second->is_mapped())
+  {
+    m_mapping->on_entity_destroy(id);
+  }
+
   m_proxies.erase(it);
 
   if (m_camera_entity == id)
@@ -341,7 +349,11 @@ void RenderProxyRegistry::execute(RenderCommandModifyProxy& command)
 
   if (proxy->m_bounds_dirty)
   {
-    m_mapping->on_entity_move(id, proxy->m_position, proxy->m_radius, proxy->m_height);
+    if (proxy->is_mapped())
+    {
+      m_mapping->on_entity_move(id, proxy->m_position, proxy->m_radius, proxy->m_height);
+    }
+
     proxy->m_bounds_dirty = false;
   }
 }

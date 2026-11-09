@@ -87,6 +87,12 @@ void RenderSettings::clear_changes()
 }
 
 //==============================================================================
+IEntityRenderProxy::IEntityRenderProxy(RenderProxyKind kind)
+: m_kind(kind)
+{
+}
+
+//==============================================================================
 EntityID IEntityRenderProxy::get_entity_id() const
 {
   return m_entity_id;
@@ -132,14 +138,33 @@ const Camera* IEntityRenderProxy::get_camera_data() const
 }
 
 //==============================================================================
+RenderProxyKind IEntityRenderProxy::get_kind() const
+{
+  return m_kind;
+}
+
+//==============================================================================
 bool IEntityRenderProxy::is_persistent() const
 {
-  return false;
+  return m_kind != RenderProxyKind::spatial;
+}
+
+//==============================================================================
+bool IEntityRenderProxy::is_mapped() const
+{
+  return m_kind != RenderProxyKind::global;
 }
 
 //==============================================================================
 BillboardRenderProxy::BillboardRenderProxy(const Appearance& appear)
-: appearance(appear)
+: BillboardRenderProxy(appear, RenderProxyKind::spatial)
+{
+}
+
+//==============================================================================
+BillboardRenderProxy::BillboardRenderProxy(const Appearance& appear, RenderProxyKind kind)
+: IEntityRenderProxy(kind)
+, appearance(appear)
 {
 }
 
@@ -160,7 +185,7 @@ void BillboardRenderProxy::get_render_elements(RenderElementCollector& collector
 
 //==============================================================================
 PlayerRenderProxy::PlayerRenderProxy(const Appearance& appear, const Camera& cam)
-: BillboardRenderProxy(appear)
+: BillboardRenderProxy(appear, RenderProxyKind::spatial_persistent)
 , camera(cam)
 {
 }
@@ -188,10 +213,11 @@ const Camera* PlayerRenderProxy::get_camera_data() const
   return &camera;
 }
 
+
 //==============================================================================
-bool PlayerRenderProxy::is_persistent() const
+PointLightRenderProxy::PointLightRenderProxy()
+: IEntityRenderProxy(RenderProxyKind::spatial)
 {
-  return true;
 }
 
 //==============================================================================
@@ -235,27 +261,27 @@ f32 PointLightRenderProxy::calc_radius_mod() const
 }
 
 //==============================================================================
+SkyBoxRenderProxy::SkyBoxRenderProxy()
+: IEntityRenderProxy(RenderProxyKind::global)
+{
+}
+
+//==============================================================================
 void SkyBoxRenderProxy::get_render_elements(RenderElementCollector& collector) const
 {
   collector.push_back(sky_box);
 }
 
 //==============================================================================
-bool SkyBoxRenderProxy::is_persistent() const
+AmbientLightRenderProxy::AmbientLightRenderProxy()
+: IEntityRenderProxy(RenderProxyKind::global)
 {
-  return true;
 }
 
 //==============================================================================
 void AmbientLightRenderProxy::get_render_elements(RenderElementCollector& collector) const
 {
   collector.push_back(ambient_light);
-}
-
-//==============================================================================
-bool AmbientLightRenderProxy::is_persistent() const
-{
-  return true;
 }
 
 }
