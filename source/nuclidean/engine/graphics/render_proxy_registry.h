@@ -59,6 +59,7 @@ public:
   // Commands for entities and sectors
   void enqueue_entity_command(EntityID entity, EntityRenderLambda&& lambda, bool can_skip);
   void enqueue_sectors_command(SectorsRenderLambda&& lambda, bool can_skip);
+  void enqueue_level_stats_command(LevelStatsRenderLambda&& lambda);
 
   // Clears the render scene and recreates the sectors proxy from the current
   // state of the map. Entity proxies have to be created after this.
@@ -107,6 +108,7 @@ public:
   const IEntityRenderProxy* get_camera_proxy()     const;
   const Camera*             get_camera()           const;
   const UiDrawList&         get_ui_draw_list()     const;
+  const LevelStats&         get_level_stats()      const;
 
   // Proxies that should be collected each frame no matter where the camera looks.
   const std::vector<EntityID>& get_persistent_proxies() const;
@@ -118,6 +120,7 @@ private:
   void execute(RenderCommandModifyProxy&        command);
   void execute(RenderCommandCreateSectorsProxy& command);
   void execute(RenderCommandModifySectorsProxy& command);
+  void execute(RenderCommandModifyLevelStats&   command);
   void execute(RenderCommandSetUiDrawList&      command);
 
 private:
@@ -129,6 +132,7 @@ private:
   std::unique_ptr<SectorMapping>      m_mapping;
   EntityID                            m_camera_entity = INVALID_ENTITY_ID;
   UiDrawList                          m_ui_draw_list;
+  LevelStats                          m_level_stats;
 };
 
 }

@@ -13,6 +13,7 @@
 #include <game/game_types.h>
 #include <cvars.h>
 
+#include <optional>
 #include <vector>
 #include <string>
 

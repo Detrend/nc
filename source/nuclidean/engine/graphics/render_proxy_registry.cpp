@@ -102,6 +102,20 @@ void GameRenderCommandIface::enqueue_sectors_command(SectorsRenderLambda&& lambd
 }
 
 //==============================================================================
+void GameRenderCommandIface::enqueue_level_stats_command(LevelStatsRenderLambda&& lambda)
+{
+  if (!m_collector_opt)
+  {
+    return;
+  }
+
+  m_collector_opt->enqueue_command(RenderCommandModifyLevelStats
+  {
+    .lambda = std::move(lambda),
+  });
+}
+
+//==============================================================================
 void GameRenderCommandIface::on_map_rebuild()
 {
   if (!m_collector_opt)
@@ -257,6 +271,7 @@ void RenderProxyRegistry::execute(RenderCommandClearScene& /*command*/)
   m_mapping.reset();
   m_sectors.reset();
   m_camera_entity = INVALID_ENTITY_ID;
+  m_level_stats   = LevelStats{};
 }
 
 //==============================================================================
@@ -354,6 +369,12 @@ void RenderProxyRegistry::execute(RenderCommandModifySectorsProxy& command)
 }
 
 //==============================================================================
+void RenderProxyRegistry::execute(RenderCommandModifyLevelStats& command)
+{
+  command.lambda(m_level_stats);
+}
+
+//==============================================================================
 void RenderProxyRegistry::execute(RenderCommandSetUiDrawList& command)
 {
   m_ui_draw_list = std::move(command.draw_list);
@@ -408,6 +429,12 @@ const std::vector<EntityID>& RenderProxyRegistry::get_persistent_proxies() const
 const UiDrawList& RenderProxyRegistry::get_ui_draw_list() const
 {
   return m_ui_draw_list;
+}
+
+//==============================================================================
+const LevelStats& RenderProxyRegistry::get_level_stats() const
+{
+  return m_level_stats;
 }
 
 }

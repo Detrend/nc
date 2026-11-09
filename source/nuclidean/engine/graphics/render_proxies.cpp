@@ -1,6 +1,7 @@
 // Project Nuclidean Source File
 #include <engine/graphics/render_proxies.h>
-#include <engine/game/game_helpers.h>
+#include <engine/graphics/graphics_system.h>
+#include <engine/graphics/render_proxy_registry.h>
 
 #include <common.h>
 #include <math/utils.h>
@@ -188,8 +189,8 @@ f32 PointLightRenderProxy::calc_radius_mod() const
     return 1.0f;
   }
 
-  f64 time_since_start = GameHelpers::get().get_time_since_start();
-  f64 time = time_since_start + cast<f64>(intensity_cycle_offset);
+  f64 level_time = GraphicsSystem::get().get_render_proxies().get_level_stats().level_time;
+  f64 time = level_time + cast<f64>(intensity_cycle_offset);
 
   f32 fraction = cast<f32>(fmod(time, cast<f64>(cycle_len)));
   u32 string_idx = min(cast<u32>(len * fraction / cycle_len), cast<u32>(len-1));

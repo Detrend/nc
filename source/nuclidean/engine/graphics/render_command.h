@@ -8,10 +8,12 @@
 namespace nc
 {
 
-class IEntityRenderProxy;
-class SectorsRenderProxy;
+class  IEntityRenderProxy;
+class  SectorsRenderProxy;
+struct LevelStats;
 
-using EntityRenderLambda  = std::function<void(IEntityRenderProxy* proxy, f32 interp_coeff)>;
-using SectorsRenderLambda = std::function<void(SectorsRenderProxy* proxy, f32 interp_coeff)>;
+using EntityRenderLambda     = std::function<void(IEntityRenderProxy* proxy, f32 interp_coeff)>;
+using SectorsRenderLambda    = std::function<void(SectorsRenderProxy* proxy, f32 interp_coeff)>;
+using LevelStatsRenderLambda = std::function<void(LevelStats& stats)>;
 
 }

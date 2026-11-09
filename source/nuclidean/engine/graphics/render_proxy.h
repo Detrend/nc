@@ -115,7 +115,12 @@ private:
   bool     m_bounds_dirty = false;
 };
 
-// Wipes all proxies, the sectors and the mapping on the render side.
+struct LevelStats
+{
+  f64 level_time = 0.0; // Seconds since the level started, same as the game time
+};
+
+// Wipes all proxies, the sectors, the mapping and the level stats on the render side.
 struct RenderCommandClearScene
 {
 };
@@ -154,6 +159,12 @@ struct RenderCommandModifySectorsProxy
   bool                can_skip = false;
 };
 
+// Modifies the level stats through a lambda.
+struct RenderCommandModifyLevelStats
+{
+  LevelStatsRenderLambda lambda;
+};
+
 // Probably temporary until we have new UI
 struct RenderCommandSetUiDrawList
 {
@@ -168,6 +179,7 @@ using RenderCommand = std::variant
   RenderCommandModifyProxy,
   RenderCommandCreateSectorsProxy,
   RenderCommandModifySectorsProxy,
+  RenderCommandModifyLevelStats,
   RenderCommandSetUiDrawList
 >;
 

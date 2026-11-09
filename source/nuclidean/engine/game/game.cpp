@@ -63,6 +63,12 @@ void Game::update
 
   time_since_start += dt;
 
+  // We have to sync the render time with the game time
+  render_iface->enqueue_level_stats_command([time = time_since_start](LevelStats& stats)
+  {
+    stats.level_time = time;
+  });
+
   // Handle the player first
   {
     NC_SCOPE_COUNTER(player_update)
