@@ -578,9 +578,6 @@ void GraphicsSystem::update([[maybe_unused]]f32 delta_seconds)
 //==============================================================================
 void GraphicsSystem::render()
 {
-  NC_SCOPE_PROFILER(Render)
-  NC_SCOPE_COUNTER(render)
-
   std::vector<RenderCommandQueue> queues;
   m_command_collector->collect_queues(queues);
 
@@ -617,7 +614,9 @@ void GraphicsSystem::render()
   }
 
 #if NC_DEBUG_DRAW
-  // Note that this call can take up to 200 microseconds
+  // Note that this call can take up to 200 microseconds.
+  // Has to be called from the game thread, SDL window functions must not be
+  // called from the render thread.
   debug_helpers::display_fps_as_title(m_window, m_renderer->get_render_size());
 #endif
 
