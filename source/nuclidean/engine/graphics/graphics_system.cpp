@@ -133,7 +133,74 @@ static void imgui_start_frame()
   ImGui_ImplSDL2_NewFrame();
   ImGui::NewFrame();
 }
+
+//==============================================================================
+struct ImGuiDrawSnapshot::Impl
+{
+  ~Impl()
+  {
+    for (ImDrawList* list : draw_data.CmdLists)
+    {
+      IM_DELETE(list);
+    }
+  }
+
+  ImDrawData draw_data; // CmdLists are owned by the snapshot
+};
+#else
+struct ImGuiDrawSnapshot::Impl
+{
+};
 #endif
+
+//==============================================================================
+ImGuiDrawSnapshot::ImGuiDrawSnapshot()                                         = default;
+ImGuiDrawSnapshot::ImGuiDrawSnapshot(ImGuiDrawSnapshot&&) noexcept            = default;
+ImGuiDrawSnapshot& ImGuiDrawSnapshot::operator=(ImGuiDrawSnapshot&&) noexcept = default;
+ImGuiDrawSnapshot::~ImGuiDrawSnapshot()                                        = default;
+
+//==============================================================================
+void ImGuiDrawSnapshot::capture()
+{
+#if NC_IMGUI
+  m_impl.reset();
+
+  const ImDrawData* source = ImGui::GetDrawData();
+  if (!source || !source->Valid)
+  {
+    return;
+  }
+
+  m_impl = std::make_unique<Impl>();
+  ImDrawData& copy = m_impl->draw_data;
+
+  copy.Valid            = true;
+  copy.CmdListsCount    = source->CmdListsCount;
+  copy.TotalIdxCount    = source->TotalIdxCount;
+  copy.TotalVtxCount    = source->TotalVtxCount;
+  copy.DisplayPos       = source->DisplayPos;
+  copy.DisplaySize      = source->DisplaySize;
+  copy.FramebufferScale = source->FramebufferScale;
+  copy.OwnerViewport    = nullptr; // not used by the OpenGL backend
+
+  copy.CmdLists.reserve(source->CmdLists.Size);
+  for (ImDrawList* list : source->CmdLists)
+  {
+    copy.CmdLists.push_back(list->CloneOutput());
+  }
+#endif
+}
+
+//==============================================================================
+void ImGuiDrawSnapshot::render() const
+{
+#if NC_IMGUI
+  if (m_impl)
+  {
+    ImGui_ImplOpenGL3_RenderDrawData(&m_impl->draw_data);
+  }
+#endif
+}
 
 //==============================================================================
 // Default ctor and dtor in .cpp instead of the .h as we would get a compile
@@ -413,6 +480,10 @@ void GraphicsSystem::on_event(ModuleEvent& event)
 
     case ModuleEventType::render:
     {
+#if NC_IMGUI
+      this->finish_imgui_frame_game_thread();
+#endif
+
 #if NC_DEBUG_DRAW
       // Gizmos get created during the whole game update, snapshot them only
       // after it is finished.
@@ -555,19 +626,6 @@ void GraphicsSystem::render()
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-#if NC_DEBUG_DRAW
-  // Do not forward inputs to the player if the cvar window is visible.
-  InputSystem::get().lock_player_input
-  (
-    InputLockLayers::cvars, CVars::display_debug_window
-  );
-
-  if (CVars::display_debug_window)
-  {
-    draw_debug_window();
-  }
-#endif
-
   VisibilityTree visible_sectors;
   query_visibility(visible_sectors);
 
@@ -585,9 +643,10 @@ void GraphicsSystem::render()
   }
 
 #if NC_IMGUI
-  ImGui::Render();
-  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-  imgui_start_frame(); // start a new frame just after rendering the old one
+  // The frame itself was finished on the game thread, see finish_imgui_frame.
+  // NewFrame of the OpenGL backend only (re)creates its GL objects if needed.
+  ImGui_ImplOpenGL3_NewFrame();
+  m_render_proxies->get_imgui_draw().render();
 #endif
 
 #if NC_DEBUG_DRAW
@@ -925,6 +984,36 @@ static void draw_profiling()
   {
     draw_main_plot<MainPlotType::num_calls>();
   }
+}
+#endif
+
+//==============================================================================
+#if NC_IMGUI
+void GraphicsSystem::finish_imgui_frame_game_thread()
+{
+#if NC_DEBUG_DRAW
+  // Do not forward inputs to the player if the cvar window is visible.
+  InputSystem::get().lock_player_input
+  (
+    InputLockLayers::cvars, CVars::display_debug_window
+  );
+
+  if (CVars::display_debug_window)
+  {
+    draw_debug_window();
+  }
+#endif
+
+  ImGui::Render();
+
+  RenderCommandSetImGuiDrawData command;
+  command.snapshot.capture();
+  m_command_collector->enqueue_command(std::move(command));
+
+  // Start the next frame right away, so ImGui can be used during the whole
+  // game update. The OpenGL backend's NewFrame is called on the render side.
+  ImGui_ImplSDL2_NewFrame();
+  ImGui::NewFrame();
 }
 #endif
 

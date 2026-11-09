@@ -141,8 +141,6 @@ private:
   u32  m_changes = Setting::all;
 };
 
-// Snapshot of one debug gizmo, see GizmoManager. Only produced in builds with
-// NC_DEBUG_DRAW, but defined everywhere to keep the command variant simple.
 struct RenderGizmo
 {
   mat4   transform    = mat4(1.0f);
@@ -150,6 +148,25 @@ struct RenderGizmo
   GLuint vao          = 0;
   GLenum draw_mode    = 0;
   u32    vertex_count = 0;
+};
+
+class ImGuiDrawSnapshot
+{
+public:
+  ImGuiDrawSnapshot();
+  ImGuiDrawSnapshot(ImGuiDrawSnapshot&&) noexcept;
+  ImGuiDrawSnapshot& operator=(ImGuiDrawSnapshot&&) noexcept;
+  ~ImGuiDrawSnapshot();
+
+  // Capture from the game thread
+  void capture();
+
+  // Draw from the render thread
+  void render() const;
+
+private:
+  struct Impl;
+  std::unique_ptr<Impl> m_impl;
 };
 
 // Wipes all proxies, the sectors, the mapping and the level stats on the render side.
@@ -211,6 +228,13 @@ struct RenderCommandSetGizmos
   std::vector<RenderGizmo> gizmos;
 };
 
+// Replaces the ImGui draw data drawn on top of everything. Not affected by
+// clearing the scene.
+struct RenderCommandSetImGuiDrawData
+{
+  ImGuiDrawSnapshot snapshot;
+};
+
 // Probably temporary until we have new UI
 struct RenderCommandSetUiDrawList
 {
@@ -228,6 +252,7 @@ using RenderCommand = std::variant
   RenderCommandModifyLevelStats,
   RenderCommandModifyRenderSettings,
   RenderCommandSetGizmos,
+  RenderCommandSetImGuiDrawData,
   RenderCommandSetUiDrawList
 >;
 

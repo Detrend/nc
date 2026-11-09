@@ -91,6 +91,10 @@ private:
   void draw_debug_window();
 #endif
 
+#if NC_IMGUI
+  void finish_imgui_frame_game_thread();
+#endif
+
 private:
   // Because we do not want to include the whole renderer with this header
   using RendererPtr         = std::unique_ptr<class Renderer>;

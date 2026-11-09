@@ -111,6 +111,7 @@ public:
   const LevelStats&         get_level_stats()      const;
   RenderSettings&           get_render_settings();
   const RenderSettings&     get_render_settings()  const;
+  const ImGuiDrawSnapshot&  get_imgui_draw()       const;
 
   // Debug gizmos to draw this frame, see GizmoManager.
   const std::vector<RenderGizmo>& get_gizmos() const;
@@ -128,6 +129,7 @@ private:
   void execute(RenderCommandModifyLevelStats&     command);
   void execute(RenderCommandModifyRenderSettings& command);
   void execute(RenderCommandSetGizmos&            command);
+  void execute(RenderCommandSetImGuiDrawData&     command);
   void execute(RenderCommandSetUiDrawList&        command);
 
 private:
@@ -142,6 +144,7 @@ private:
   LevelStats                          m_level_stats;
   RenderSettings                      m_render_settings;
   std::vector<RenderGizmo>            m_gizmos;
+  ImGuiDrawSnapshot                   m_imgui_draw;
 };
 
 }
