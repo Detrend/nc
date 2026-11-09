@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 namespace nc
 {
@@ -18,6 +19,7 @@ namespace nc
 // Forward declare so we do not need to include graphics system
 // into this header.
 struct CameraData;
+struct RenderGizmo;
 
 /**
   * Temporary visual marker for debugging. Gizmos are light-weight render objects that can be created and destroyed at
@@ -96,7 +98,17 @@ public:
 
   // Update time to live (TTL) of active gizmos.
   void update_ttls(f32 delta_seconds);
-  void draw_gizmos() const;
+
+  // Game thread side: snapshots all active gizmos for the render side.
+  void collect_gizmos(std::vector<RenderGizmo>& out) const;
+
+  // Render side: draws the gizmos snapshotted by collect_gizmos.
+  static void draw_gizmos
+  (
+    const std::vector<RenderGizmo>& gizmos,
+    const ShaderProgramHandle&      solid_material,
+    const mat4&                     view
+  );
 
 private:
   GizmoManager() {}

@@ -413,6 +413,17 @@ void GraphicsSystem::on_event(ModuleEvent& event)
 
     case ModuleEventType::render:
     {
+#if NC_DEBUG_DRAW
+      // Gizmos get created during the whole game update, snapshot them only
+      // after it is finished.
+      std::vector<RenderGizmo> gizmos;
+      GizmoManager::get().collect_gizmos(gizmos);
+      m_command_collector->enqueue_command(RenderCommandSetGizmos
+      {
+        .gizmos = std::move(gizmos),
+      });
+#endif
+
       // Everything the game and the UI enqueued this frame forms one queue.
       m_command_collector->commit_commands();
       this->render();

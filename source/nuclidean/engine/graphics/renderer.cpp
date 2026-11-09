@@ -609,7 +609,10 @@ void Renderer::do_geometry_pass(const CameraData& camera) const
   glClearBufferuiv(GL_COLOR, 5, &clear_value);
 
 #if NC_DEBUG_DRAW
-  GizmoManager::get().draw_gizmos();
+  GizmoManager::draw_gizmos
+  (
+    GraphicsSystem::get().get_render_proxies().get_gizmos(), m_solid_material, camera.view
+  );
 #endif
 
   render_sectors(camera);

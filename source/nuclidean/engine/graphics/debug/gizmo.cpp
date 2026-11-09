@@ -6,9 +6,9 @@
 #include <math/lingebra.h>
 
 #include <engine/core/engine.h>
-#include <engine/graphics/camera.h>
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/graphics_system.h>
+#include <engine/graphics/render_proxy.h>
 
 #include <engine/graphics/debug/top_down_debug.h>
 
@@ -151,17 +151,8 @@ void GizmoManager::update_ttls(f32 delta_seconds)
 }
 
 //==============================================================================
-void GizmoManager::draw_gizmos() const
+void GizmoManager::collect_gizmos(std::vector<RenderGizmo>& out) const
 {
-  auto& graphics_system = get_engine().get_module<GraphicsSystem>();
-  const Camera* camera = Camera::get();
-  if (camera == nullptr)
-    return;
-
-  const ShaderProgramHandle& solid_material = graphics_system.get_solid_material();
-  solid_material.use();
-  solid_material.set_uniform(shaders::solid::VIEW, camera->get_view());
-
   auto combined_view = std::ranges::views::join
   (
     std::array{ std::views::all(m_gizmos), std::views::all(m_ttl_gizmos) }
@@ -169,12 +160,41 @@ void GizmoManager::draw_gizmos() const
 
   for (const auto& [_, gizmo] : combined_view)
   {
-    solid_material.set_uniform(shaders::solid::UNLIT, gizmo.m_mesh.get_draw_mode() == GL_LINES);
-    solid_material.set_uniform(shaders::solid::COLOR, gizmo.m_color);
-    solid_material.set_uniform(shaders::solid::TRANSFORM, gizmo.m_transform);
+    out.push_back(RenderGizmo
+    {
+      .transform    = gizmo.m_transform,
+      .color        = gizmo.m_color,
+      .vao          = gizmo.m_mesh.get_vao(),
+      .draw_mode    = gizmo.m_mesh.get_draw_mode(),
+      .vertex_count = gizmo.m_mesh.get_vertex_count(),
+    });
+  }
+}
 
-    glBindVertexArray(gizmo.m_mesh.get_vao());
-    glDrawArrays(gizmo.m_mesh.get_draw_mode(), 0, gizmo.m_mesh.get_vertex_count());
+//==============================================================================
+void GizmoManager::draw_gizmos
+(
+  const std::vector<RenderGizmo>& gizmos,
+  const ShaderProgramHandle&      solid_material,
+  const mat4&                     view
+)
+{
+  if (gizmos.empty())
+  {
+    return;
+  }
+
+  solid_material.use();
+  solid_material.set_uniform(shaders::solid::VIEW, view);
+
+  for (const RenderGizmo& gizmo : gizmos)
+  {
+    solid_material.set_uniform(shaders::solid::UNLIT, gizmo.draw_mode == GL_LINES);
+    solid_material.set_uniform(shaders::solid::COLOR, gizmo.color);
+    solid_material.set_uniform(shaders::solid::TRANSFORM, gizmo.transform);
+
+    glBindVertexArray(gizmo.vao);
+    glDrawArrays(gizmo.draw_mode, 0, gizmo.vertex_count);
   }
 }
 

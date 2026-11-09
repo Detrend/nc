@@ -381,6 +381,12 @@ void RenderProxyRegistry::execute(RenderCommandModifyRenderSettings& command)
 }
 
 //==============================================================================
+void RenderProxyRegistry::execute(RenderCommandSetGizmos& command)
+{
+  m_gizmos = std::move(command.gizmos);
+}
+
+//==============================================================================
 void RenderProxyRegistry::execute(RenderCommandSetUiDrawList& command)
 {
   m_ui_draw_list = std::move(command.draw_list);
@@ -453,6 +459,12 @@ RenderSettings& RenderProxyRegistry::get_render_settings()
 const RenderSettings& RenderProxyRegistry::get_render_settings() const
 {
   return m_render_settings;
+}
+
+//==============================================================================
+const std::vector<RenderGizmo>& RenderProxyRegistry::get_gizmos() const
+{
+  return m_gizmos;
 }
 
 }

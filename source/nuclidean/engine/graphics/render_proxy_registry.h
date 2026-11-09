@@ -112,6 +112,9 @@ public:
   RenderSettings&           get_render_settings();
   const RenderSettings&     get_render_settings()  const;
 
+  // Debug gizmos to draw this frame, see GizmoManager.
+  const std::vector<RenderGizmo>& get_gizmos() const;
+
   // Proxies that should be collected each frame no matter where the camera looks.
   const std::vector<EntityID>& get_persistent_proxies() const;
 
@@ -124,6 +127,7 @@ private:
   void execute(RenderCommandModifySectorsProxy&   command);
   void execute(RenderCommandModifyLevelStats&     command);
   void execute(RenderCommandModifyRenderSettings& command);
+  void execute(RenderCommandSetGizmos&            command);
   void execute(RenderCommandSetUiDrawList&        command);
 
 private:
@@ -137,6 +141,7 @@ private:
   UiDrawList                          m_ui_draw_list;
   LevelStats                          m_level_stats;
   RenderSettings                      m_render_settings;
+  std::vector<RenderGizmo>            m_gizmos;
 };
 
 }
