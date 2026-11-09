@@ -114,7 +114,7 @@ void UiHudDisplay::draw_texts(UiDrawList& out) const
 //===========================================================================================
 void UiHudDisplay::draw_crosshair(UiDrawList& out) const
 {
-  vec2 win_size = get_engine().get_module<GraphicsSystem>().get_window_size();
+  vec2 win_size = get_engine().get_module<GraphicsSystem>().get_window_size_game_thread();
   vec2 scale    = vec2(0.05f, 0.05f * win_size.x / win_size.y);
 
   // the crosshair texture is a grid of 11x2 crosshairs

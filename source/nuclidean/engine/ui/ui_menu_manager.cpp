@@ -71,7 +71,7 @@ vec2 MenuManager::query_normalized_mouse_pos()
   int mouse_x, mouse_y;
   SDL_GetMouseState(&mouse_x, &mouse_y);
 
-  vec2 dimensions = get_engine().get_module<GraphicsSystem>().get_window_size();
+  vec2 dimensions = get_engine().get_module<GraphicsSystem>().get_window_size_game_thread();
 
   f32 width = dimensions.x;
   f32 height = dimensions.y;

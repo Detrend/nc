@@ -976,9 +976,11 @@ void GraphicsSystem::draw_debug_window()
 #endif
 
 //==============================================================================
-vec2 GraphicsSystem::get_window_size()
+vec2 GraphicsSystem::get_window_size_game_thread() const
 {
-  return vec2(m_window_width, m_window_height);
+  int width = 0, height = 0;
+  SDL_GetWindowSize(m_window, &width, &height);
+  return vec2(width, height);
 }
 
 //==============================================================================

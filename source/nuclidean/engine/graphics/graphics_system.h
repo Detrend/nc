@@ -66,7 +66,7 @@ public:
 
   const ShaderProgramHandle& get_solid_material() const;
 
-  vec2 get_window_size();
+  vec2 get_window_size_game_thread() const;
 
   SDL_Window* get_window();
   void set_shadows_game_thread(bool shadows);
