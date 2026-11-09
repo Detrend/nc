@@ -69,7 +69,8 @@ public:
 
   const ShaderProgramHandle& get_solid_material() const;
 
-  void set_shadows(bool shadows);
+  // Applies the settings that changed since the last call.
+  void apply_settings(const RenderSettings& settings);
 
 private:
   // One entity can be present in multiple sectors, but we want to render it

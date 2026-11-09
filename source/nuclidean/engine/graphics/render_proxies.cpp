@@ -53,6 +53,40 @@ void RenderElementCollector::clear()
 }
 
 //==============================================================================
+void RenderSettings::set_shadows(bool value)
+{
+  if (m_shadows != value)
+  {
+    m_shadows  = value;
+    m_changes |= Setting::shadows;
+  }
+}
+
+//==============================================================================
+bool RenderSettings::get_shadows() const
+{
+  return m_shadows;
+}
+
+//==============================================================================
+bool RenderSettings::has_changed(Setting setting) const
+{
+  return (m_changes & setting) != 0;
+}
+
+//==============================================================================
+bool RenderSettings::has_any_changes() const
+{
+  return m_changes != 0;
+}
+
+//==============================================================================
+void RenderSettings::clear_changes()
+{
+  m_changes = 0;
+}
+
+//==============================================================================
 EntityID IEntityRenderProxy::get_entity_id() const
 {
   return m_entity_id;

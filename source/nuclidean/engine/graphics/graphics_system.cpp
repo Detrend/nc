@@ -507,6 +507,14 @@ void GraphicsSystem::render()
     m_render_proxies->execute_command_queue(queue);
   }
 
+  // React to the changed settings before anything gets rendered
+  RenderSettings& settings = m_render_proxies->get_render_settings();
+  if (settings.has_any_changes())
+  {
+    m_renderer->apply_settings(settings);
+    settings.clear_changes();
+  }
+
   int width = 0, height = 0;
   SDL_GL_GetDrawableSize(m_window, &width, &height);
 
@@ -978,10 +986,17 @@ SDL_Window* GraphicsSystem::get_window()
 {
   return m_window;
 }
+
 //==============================================================================
-void GraphicsSystem::set_shadows(bool shadows)
+void GraphicsSystem::set_shadows_game_thread(bool shadows)
 {
-  m_renderer->set_shadows(shadows);
+  m_command_collector->enqueue_command(RenderCommandModifyRenderSettings
+  {
+    .lambda = [shadows](RenderSettings& settings)
+    {
+      settings.set_shadows(shadows);
+    },
+  });
 }
 
 //==============================================================================

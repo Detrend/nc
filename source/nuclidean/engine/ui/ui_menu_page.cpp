@@ -592,14 +592,14 @@ void OptionsPage::set_crosshair_more()
 void OptionsPage::shadow_on()
 {
   is_shadows = true;
-  get_engine().get_module<GraphicsSystem>().set_shadows(is_shadows);
+  get_engine().get_module<GraphicsSystem>().set_shadows_game_thread(is_shadows);
 }
 
 //=============================================================================================
 void OptionsPage::shadow_off()
 {
   is_shadows = false;
-  get_engine().get_module<GraphicsSystem>().set_shadows(is_shadows);
+  get_engine().get_module<GraphicsSystem>().set_shadows_game_thread(is_shadows);
 }
 
 //=============================================================================================

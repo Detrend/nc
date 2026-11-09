@@ -69,7 +69,7 @@ public:
   vec2 get_window_size();
 
   SDL_Window* get_window();
-  void set_shadows(bool shadows);
+  void set_shadows_game_thread(bool shadows);
 
   RenderBackend get_backend() const { return m_backend; }
 

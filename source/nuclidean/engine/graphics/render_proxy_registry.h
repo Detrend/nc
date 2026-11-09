@@ -109,19 +109,22 @@ public:
   const Camera*             get_camera()           const;
   const UiDrawList&         get_ui_draw_list()     const;
   const LevelStats&         get_level_stats()      const;
+  RenderSettings&           get_render_settings();
+  const RenderSettings&     get_render_settings()  const;
 
   // Proxies that should be collected each frame no matter where the camera looks.
   const std::vector<EntityID>& get_persistent_proxies() const;
 
 private:
-  void execute(RenderCommandClearScene&         command);
-  void execute(RenderCommandCreateProxy&        command);
-  void execute(RenderCommandDestroyProxy&       command);
-  void execute(RenderCommandModifyProxy&        command);
-  void execute(RenderCommandCreateSectorsProxy& command);
-  void execute(RenderCommandModifySectorsProxy& command);
-  void execute(RenderCommandModifyLevelStats&   command);
-  void execute(RenderCommandSetUiDrawList&      command);
+  void execute(RenderCommandClearScene&           command);
+  void execute(RenderCommandCreateProxy&          command);
+  void execute(RenderCommandDestroyProxy&         command);
+  void execute(RenderCommandModifyProxy&          command);
+  void execute(RenderCommandCreateSectorsProxy&   command);
+  void execute(RenderCommandModifySectorsProxy&   command);
+  void execute(RenderCommandModifyLevelStats&     command);
+  void execute(RenderCommandModifyRenderSettings& command);
+  void execute(RenderCommandSetUiDrawList&        command);
 
 private:
   using ProxyMap = std::unordered_map<EntityID, std::unique_ptr<IEntityRenderProxy>>;
@@ -133,6 +136,7 @@ private:
   EntityID                            m_camera_entity = INVALID_ENTITY_ID;
   UiDrawList                          m_ui_draw_list;
   LevelStats                          m_level_stats;
+  RenderSettings                      m_render_settings;
 };
 
 }

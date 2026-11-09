@@ -368,9 +368,12 @@ void Renderer::update_sector_heights(const MapSectors& map, SectorID sector_id) 
 
 
 //===============================================================================
-void Renderer::set_shadows(bool shadows)
+void Renderer::apply_settings(const RenderSettings& settings)
 {
-  m_shadows = shadows;
+  if (settings.has_changed(RenderSettings::shadows))
+  {
+    m_shadows = settings.get_shadows();
+  }
 }
 
 //==============================================================================

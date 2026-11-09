@@ -120,7 +120,30 @@ struct LevelStats
   f64 level_time = 0.0; // Seconds since the level started, same as the game time
 };
 
+class RenderSettings
+{
+public:
+  enum Setting : u32
+  {
+    shadows = 1u << 0,
+    all = shadows,
+  };
+
+  void set_shadows(bool value);
+  bool get_shadows() const;
+
+  bool has_changed(Setting setting) const;
+  bool has_any_changes()            const;
+  void clear_changes();
+
+private:
+  bool m_shadows = true;
+  u32  m_changes = Setting::all;
+};
+
 // Wipes all proxies, the sectors, the mapping and the level stats on the render side.
+// Does not affect the render settings, these are only for the scene, but not for the
+// global settings.
 struct RenderCommandClearScene
 {
 };
@@ -165,6 +188,12 @@ struct RenderCommandModifyLevelStats
   LevelStatsRenderLambda lambda;
 };
 
+// Modifies the render settings through a lambda.
+struct RenderCommandModifyRenderSettings
+{
+  RenderSettingsRenderLambda lambda;
+};
+
 // Probably temporary until we have new UI
 struct RenderCommandSetUiDrawList
 {
@@ -180,6 +209,7 @@ using RenderCommand = std::variant
   RenderCommandCreateSectorsProxy,
   RenderCommandModifySectorsProxy,
   RenderCommandModifyLevelStats,
+  RenderCommandModifyRenderSettings,
   RenderCommandSetUiDrawList
 >;
 

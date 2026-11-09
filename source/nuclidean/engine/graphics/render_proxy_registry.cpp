@@ -375,6 +375,12 @@ void RenderProxyRegistry::execute(RenderCommandModifyLevelStats& command)
 }
 
 //==============================================================================
+void RenderProxyRegistry::execute(RenderCommandModifyRenderSettings& command)
+{
+  command.lambda(m_render_settings);
+}
+
+//==============================================================================
 void RenderProxyRegistry::execute(RenderCommandSetUiDrawList& command)
 {
   m_ui_draw_list = std::move(command.draw_list);
@@ -435,6 +441,18 @@ const UiDrawList& RenderProxyRegistry::get_ui_draw_list() const
 const LevelStats& RenderProxyRegistry::get_level_stats() const
 {
   return m_level_stats;
+}
+
+//==============================================================================
+RenderSettings& RenderProxyRegistry::get_render_settings()
+{
+  return m_render_settings;
+}
+
+//==============================================================================
+const RenderSettings& RenderProxyRegistry::get_render_settings() const
+{
+  return m_render_settings;
 }
 
 }
