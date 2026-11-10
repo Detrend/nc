@@ -299,7 +299,7 @@ func _change_sector_height(unre: EditorUndoRedoManager, node: Sector, delta: flo
 		unre.add_undo_property(node, 'floor_height', node.floor_height)
 	elif mode == EditorConfig.SectorColoringMode.Ceiling:
 		unre.add_do_property(node, 'ceiling_height', node.ceiling_height + delta * config.ceiling_height_increment)
-		unre.add_undo_property(node, 'floor_height', node.ceiling_height)
+		unre.add_undo_property(node, 'ceiling_height', node.ceiling_height)
 
 
 func _handle_input()->void:
