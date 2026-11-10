@@ -107,6 +107,8 @@ shader.set_uniform(shaders::ui_button::TRANSFORM, final_trans);
 shader.set_uniform(shaders::ui_button::ATLAS_SIZE, texture.get_atlas_bundle().get_size());
 shader.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
 shader.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
+shader.set_uniform(shaders::ui_button::HOVER, false);
+shader.set_uniform(shaders::ui_button::COLOR, VEC4_ONE);
 
 //determine color of flash -> red (damage) has priority
 if ((MAX_DMG_FLASH_DURATION - time_since_last_dmg) == 0)
