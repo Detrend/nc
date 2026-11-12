@@ -13,9 +13,11 @@
 #include <game/game_types.h>
 #include <cvars.h>
 
+#include <atomic>
 #include <optional>
 #include <vector>
 #include <string>
+#include <thread>
 
 struct SDL_Window;
 
@@ -78,6 +80,12 @@ public:
   const RenderProxyRegistry&        get_render_proxies() const;
 
 private:
+  // Needs to be a member in order to access member functions and variables
+#if NC_USING_RENDER_THREAD
+  static void render_thread_loop(GraphicsSystem& graphics_system_ref);
+#endif
+
+  void post_init();
   void update(f32 delta_seconds);
   void render();
   void terminate();
@@ -110,6 +118,11 @@ private:
   RenderBackend       m_backend;
   CommandCollectorPtr m_command_collector;
   RenderProxiesPtr    m_render_proxies;
+
+#if NC_USING_RENDER_THREAD
+  std::thread         m_render_thread;
+  std::atomic<bool>   m_waiting_for_termination = false;
+#endif
 
 #if NC_DEBUG_DRAW
   using DebugRendererPtr = std::unique_ptr<class TopDownDebugRenderer>;

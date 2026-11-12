@@ -14,9 +14,11 @@ namespace nc
 {
 
 #if defined(_WIN32)
-#   define NC_OS_WINDOWS
+  #define NC_OS_WINDOWS NC_CONFIG_ON
+  #define NC_OS_LINUX   NC_CONFIG_OFF
 #elif defined(__linux__)
-#   define NC_OS_LINUX
+  #define NC_OS_WINDOWS NC_CONFIG_OFF
+  #define NC_OS_LINUX   NC_CONFIG_ON
 #endif
 
 
@@ -39,10 +41,10 @@ namespace nc
 #   define NC_ANALYZER_NORETURN
 #endif
 
-#ifdef NC_OS_WINDOWS
+#if NC_OS_WINDOWS
 #   define NC_DEBUGBREAK() __debugbreak()
 #   define NC_TODO(_msg) __pragma(message ("TODO: " _msg))
-#elif defined(NC_OS_LINUX)
+#elif NC_OS_LINUX
 #   define NC_DEBUGBREAK()
 #   define NC_TODO(_msg)
 #endif

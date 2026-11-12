@@ -11,6 +11,7 @@
 #include <engine/core/module_event.h>
 #include <engine/core/is_engine_module.h>
 #include <engine/core/engine_module_types.h>
+#include <engine/core/os.h>
 
 #include <engine/map/map_system.h>
 #include <engine/entity/entity_system.h>
@@ -499,6 +500,8 @@ void Engine::send_event(ModuleEvent&& event)
 //==============================================================================
 bool Engine::init(const CmdArgs& cmd_args)
 {
+  os::set_current_thread_name("Game Thread");
+
   this->m_editor_mode = engine_utils::contains_arg(cmd_args, engine_utils::EDITOR_MODE_ARG);
 #if !NC_IS_SHIP
   if (this->is_editor_mode()) {
@@ -513,16 +516,17 @@ bool Engine::init(const CmdArgs& cmd_args)
   }
 
   // init the modules here..
-  #define INIT_MODULE(_module_class, ...)                     \
-  {                                                           \
-    auto m = std::make_unique<_module_class>();               \
-    if (!m || !m->init(__VA_ARGS__))                          \
-    {                                                         \
-      nc_crit("Failed to {} module " #_module_class, m?"init":"create"); \
-      return false;                                           \
-    }                                                         \
-    m_module_init_order.push_back(m.get());                   \
-    m_modules[_module_class::get_module_id()] = std::move(m); \
+  #define INIT_MODULE(_module_class, ...)                                    \
+  {                                                                          \
+    auto m = std::make_unique<_module_class>();                              \
+    if (!m || !m->init(__VA_ARGS__))                                         \
+    {                                                                        \
+      nc_crit("Failed to {} module " #_module_class, m ? "init" : "create"); \
+      this->terminate_initialized_modules();                                 \
+      return false;                                                          \
+    }                                                                        \
+    m_module_init_order.push_back(m.get());                                  \
+    m_modules[_module_class::get_module_id()] = std::move(m);                \
   }
 
   INIT_MODULE(GraphicsSystem, engine_utils::contains_arg(cmd_args, engine_utils::FORCE_GLES_ARG));
@@ -540,7 +544,13 @@ bool Engine::init(const CmdArgs& cmd_args)
   });
 
   // Boot into the menu or start a demo
-  return this->handle_post_init_game_startup(cmd_args);
+  if (!this->handle_post_init_game_startup(cmd_args))
+  {
+    this->terminate();
+    return false;
+  }
+
+  return true;
 }
 
 //==============================================================================
@@ -805,13 +815,8 @@ void Engine::run()
 }
 
 //==============================================================================
-void Engine::terminate()
+void Engine::terminate_initialized_modules()
 {
-  this->send_event(ModuleEvent
-  {
-    .type = ModuleEventType::pre_terminate
-  });
-
   auto terminate_event = ModuleEvent
   {
     .type = ModuleEventType::terminate,
@@ -823,6 +828,17 @@ void Engine::terminate()
     nc_assert(module);
     module->on_event(terminate_event);
   }
+}
+
+//==============================================================================
+void Engine::terminate()
+{
+  this->send_event(ModuleEvent
+  {
+    .type = ModuleEventType::pre_terminate
+  });
+
+  this->terminate_initialized_modules();
 }
 
 //==============================================================================

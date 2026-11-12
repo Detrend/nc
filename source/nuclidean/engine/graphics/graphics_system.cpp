@@ -10,6 +10,7 @@
 #include <engine/core/engine.h>
 #include <engine/core/engine_module_types.h>
 #include <engine/core/module_event.h>
+#include <engine/core/os.h>
 
 #include <engine/graphics/renderer.h>
 #include <engine/graphics/camera.h>
@@ -79,15 +80,37 @@
 namespace nc::debug_helpers
 {
 
+#if NC_DEBUG_DRAW && NC_USING_RENDER_THREAD
+// Written by the render thread, read by the game thread
+static std::atomic<f32> delta_time_render_thread = 1.0f;
+#endif
+
 //==============================================================================
 #if NC_DEBUG_DRAW
-static void display_fps_as_title(SDL_Window* window, const ivec2 render_res)
+[[maybe_unused]]static void display_fps_as_title(SDL_Window* window, const ivec2 render_res)
 {
-  const auto delta_time = get_engine().get_delta_time();
-  const auto fps_number = 1.0f / delta_time;
-  const auto title_str  = std::format
+  // Game thread counter
+  f32 delta_time_game_thread = get_engine().get_delta_time();
+  f32 fps_number_game_thread = 1.0f / delta_time_game_thread;
+  std::string game_part = std::format
   (
-    "Nuclidean Game. ({}x{}) FPS: {:.2f}, Dt: {:.2f}ms", render_res.x, render_res.y, fps_number, delta_time * 1000.0f
+    "Game: [FPS: {:.2f}, Dt: {:.2f}ms]", fps_number_game_thread, delta_time_game_thread * 1000.0f
+  );
+
+  // Render thread counter
+  std::string render_part;
+#if NC_USING_RENDER_THREAD
+  f32 delta_time_render = delta_time_render_thread.load();
+  f32 fps_number_render_thread = 1.0f / delta_time_render;
+  render_part = std::format
+  (
+    "Render: [FPS: {:.2f}, Dt: {:.2f}ms]", fps_number_render_thread, delta_time_render * 1000.0f
+  );
+#endif
+
+  auto title_str = std::format
+  (
+    "< N U C L I D E A N > ({}x{}) {}, {}", render_res.x, render_res.y, game_part, render_part
   );
 
   SDL_SetWindowTitle(window, title_str.c_str());
@@ -463,12 +486,7 @@ void GraphicsSystem::on_event(ModuleEvent& event)
   {
     case ModuleEventType::post_init:
     {
-      m_renderer    = std::make_unique<Renderer>(m_window_width, m_window_height);
-      m_ui_renderer = std::make_unique<UiRenderer>();
-
-#if NC_DEBUG_DRAW
-      m_debug_renderer = std::make_unique<TopDownDebugRenderer>(m_window_width, m_window_height);
-#endif
+      this->post_init();
     }
     break;
 
@@ -497,7 +515,16 @@ void GraphicsSystem::on_event(ModuleEvent& event)
 
       // Everything the game and the UI enqueued this frame forms one queue.
       m_command_collector->commit_commands();
+
+#if !NC_USING_RENDER_THREAD
+      // Only if rendering from the game thread
       this->render();
+#endif
+
+#if NC_DEBUG_DRAW
+      // Note that this call can take up to 200 microseconds.
+      debug_helpers::display_fps_as_title(m_window, m_renderer->get_render_size());
+#endif
     }
     break;
 
@@ -512,6 +539,18 @@ void GraphicsSystem::on_event(ModuleEvent& event)
 //==============================================================================
 void GraphicsSystem::terminate()
 {
+  // Signal to render thread that it should end and then wait for it..
+#if NC_USING_RENDER_THREAD
+  // The thread is not running if the initialization did not get to post_init.
+  if (m_render_thread.joinable())
+  {
+    m_waiting_for_termination = true;
+    m_render_thread.join();
+    // Make the context current here once again to finish the termination..
+    SDL_GL_MakeCurrent(m_window, m_gl_context);
+  }
+#endif
+
 #if NC_IMGUI
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplSDL2_Shutdown();
@@ -568,6 +607,53 @@ const ShaderProgramHandle& GraphicsSystem::get_solid_material() const
 }
 
 //==============================================================================
+#if NC_USING_RENDER_THREAD
+/*static*/ void GraphicsSystem::render_thread_loop(GraphicsSystem& graphics_system)
+{
+  os::set_current_thread_name("Render Thread");
+
+  // Init - make the GL context current on the render thread
+  SDL_GL_MakeCurrent(graphics_system.m_window, graphics_system.m_gl_context);
+
+  // Run update until we are not asked to stop..
+  while (!graphics_system.m_waiting_for_termination)
+  {
+#if NC_DEBUG_DRAW
+    using namespace std::chrono;
+    auto start_time = high_resolution_clock::now();
+#endif
+    // This both pumps the command queues and does the whole rendering..
+    graphics_system.render();
+#if NC_DEBUG_DRAW
+    auto end_time = high_resolution_clock::now();
+    debug_helpers::delta_time_render_thread.store(duration_cast<microseconds>(end_time - start_time).count() * 0.000'001f);
+#endif
+  }
+
+  // Terminate - the game thread has to make the context current, but we have to
+  // release it on the render thread first.
+  SDL_GL_MakeCurrent(graphics_system.m_window, nullptr);
+}
+#endif
+
+//==============================================================================
+void GraphicsSystem::post_init()
+{
+  m_renderer    = std::make_unique<Renderer>(m_window_width, m_window_height);
+  m_ui_renderer = std::make_unique<UiRenderer>();
+
+#if NC_DEBUG_DRAW
+  m_debug_renderer = std::make_unique<TopDownDebugRenderer>(m_window_width, m_window_height);
+#endif
+
+#if NC_USING_RENDER_THREAD
+  // Start the render thread
+  SDL_GL_MakeCurrent(m_window, nullptr);
+  m_render_thread = std::thread(&GraphicsSystem::render_thread_loop, std::ref(*this));
+#endif
+}
+
+//==============================================================================
 void GraphicsSystem::update([[maybe_unused]]f32 delta_seconds)
 {
 #if NC_DEBUG_DRAW
@@ -613,13 +699,6 @@ void GraphicsSystem::render()
 #endif
   }
 
-#if NC_DEBUG_DRAW
-  // Note that this call can take up to 200 microseconds.
-  // Has to be called from the game thread, SDL window functions must not be
-  // called from the render thread.
-  debug_helpers::display_fps_as_title(m_window, m_renderer->get_render_size());
-#endif
-
   glViewport(0, 0, width, height);
   glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -628,7 +707,7 @@ void GraphicsSystem::render()
   VisibilityTree visible_sectors;
   query_visibility(visible_sectors);
 
-#if NC_DEBUG_DRAW
+#if NC_DEBUG_DRAW && NC_ENABLE_ONLY_WITHOUT_RENDER_THREAD
   if (CVars::enable_top_down_debug)
   {
     // Top down rendering for easier debugging

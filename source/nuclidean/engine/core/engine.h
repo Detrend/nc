@@ -112,6 +112,8 @@ private:
   enum class GameState : u8;
   void set_game_state(GameState new_state);
 
+  void terminate_initialized_modules();
+
 private:
   using ModuleArray  = std::array<std::unique_ptr<IEngineModule>, 8>;
   using ModuleVector = std::vector<IEngineModule*>;

@@ -55,9 +55,17 @@ void Gizmo::create_line(f32 ttl, const vec3& start, const vec3& end, const color
 }
 
 //==============================================================================
-void Gizmo::create_line_2d(cstr category, const vec2& start, const vec2& end, const color4& color)
+void Gizmo::create_line_2d
+(
+  [[maybe_unused]]cstr          category,
+  [[maybe_unused]]const vec2&   start,
+  [[maybe_unused]]const vec2&   end,
+  [[maybe_unused]]const color4& color
+)
 {
+#if NC_ENABLE_ONLY_WITHOUT_RENDER_THREAD
   TopDownDebugRenderer::push_line(category, start, end, color.xyz());
+#endif
 }
 
 //==============================================================================
