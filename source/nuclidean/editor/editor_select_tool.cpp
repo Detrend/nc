@@ -401,10 +401,14 @@ bool SelectTool::handle_selection()
 
   // Handle adding/removing objects from selection list
   bool left_click = ImGui::IsKeyPressed(ImGuiKey_MouseLeft);
+  bool shift      = ImGui::GetIO().KeyShift;
   if (left_click && this->pointed_at_object != INVALID_EDITOR_ID)
   {
-    auto it = std::ranges::find(this->selected_objects, this->pointed_at_object);
-    if (it == this->selected_objects.end())
+    if (!shift)
+    {
+      this->selected_objects.assign(1, this->pointed_at_object);
+    }
+    else if (auto it = std::ranges::find(this->selected_objects, this->pointed_at_object); it == this->selected_objects.end())
     {
       // Not yet selected.. Add it
       this->selected_objects.push_back(this->pointed_at_object);
