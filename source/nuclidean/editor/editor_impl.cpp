@@ -281,10 +281,8 @@ void EditorImpl::on_object_modified(EditorID object_id, const EditorPoint&, cons
 
     this->dirty_objects.insert(hedge.line);
 
-    if (hedge.sector != INVALID_EDITOR_ID)
-    {
-      this->dirty_objects.insert(hedge.sector);
-    }
+    // The sector might be a hole, so its parent has to cut out the new shape as well
+    this->mark_sector_dirty(hedge.sector);
   }
 
   std::get<EditorPointRenderData>(this->objects_render[object_id]).coords = new_point.coords;
