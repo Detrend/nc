@@ -279,8 +279,16 @@ bool SelectTool::handle_dragging()
 
     bool can_move_points = editor.level.can_move_points(map_of_new_point_coords);
 
-    this->dragging_outline_lines->properties.color = can_move_points ? colors::WHITE : colors::RED;
+    color4 outline_color = can_move_points ? colors::WHITE : colors::RED;
+
+    this->dragging_outline_lines->properties.color = outline_color;
     this->dragging_outline_lines->properties.order = 85;
+
+    for (auto&[_, props] : this->dragging_outline_points)
+    {
+      props.color          = outline_color;
+      props.override_color = true;
+    }
 
     // Move the points if possible
     if (released_mouse)
