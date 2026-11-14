@@ -439,17 +439,42 @@ void SelectTool::handle_region_selection(vec2 cursor_pos_in_world)
   bool shift         = ImGui::GetIO().KeyShift;
   bool ctrl          = ImGui::GetIO().KeyCtrl;
   bool esc_pressed   = ImGui::IsKeyPressed(ImGuiKey_Escape);
+  bool dragging_left = ImGui::IsMouseDragging(ImGuiMouseButton_Left);
 
-  if (left_click && this->pointed_at_object != INVALID_EDITOR_ID)
+  // On press we can't tell yet if it is a click or the start of a region selection. Remember where
+  // it happened and decide once the mouse moves far enough (region) or gets released (click).
+  if (left_click)
   {
-    // Both shift and ctrl toggle the object in the selection
-    if (!shift && !ctrl)
+    this->is_click_pending = true;
+    this->region_start_pt  = cursor_pos_in_world;
+  }
+
+  if (this->is_click_pending && dragging_left)
+  {
+    // Moved past the drag threshold while holding, it is a region selection
+    this->is_click_pending    = false;
+    this->is_region_selecting = true;
+  }
+  else if (this->is_click_pending && !holding_left)
+  {
+    // Released without moving, it is a click
+    this->is_click_pending = false;
+
+    if (this->pointed_at_object == INVALID_EDITOR_ID)
+    {
+      // Clicked into empty space, plain click clears the selection
+      if (!shift && !ctrl)
+      {
+        this->selected_objects.clear();
+      }
+    }
+    else if (!shift && !ctrl)
     {
       this->selected_objects.assign(1, this->pointed_at_object);
     }
     else if (auto it = std::ranges::find(this->selected_objects, this->pointed_at_object); it == this->selected_objects.end())
     {
-      // Not yet selected.. Add it
+      // Both shift and ctrl toggle the object in the selection. Not yet selected.. Add it
       this->selected_objects.push_back(this->pointed_at_object);
     }
     else
@@ -458,17 +483,12 @@ void SelectTool::handle_region_selection(vec2 cursor_pos_in_world)
       this->selected_objects.erase(it);
     }
   }
-  else if (left_click)
-  {
-    // Clicked into empty space, start the region selection
-    this->is_region_selecting = true;
-    this->region_start_pt     = cursor_pos_in_world;
-  }
 
   // Clear the selection on ESC
   if (esc_pressed)
   {
     this->selected_objects.clear();
+    this->is_click_pending    = false;
     this->is_region_selecting = false;
   }
 

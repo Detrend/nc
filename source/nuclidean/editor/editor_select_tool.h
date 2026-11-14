@@ -32,6 +32,7 @@ struct SelectTool : public IEditorPrimitiveRenderingModifier
 
   std::vector<EditorPrimitiveAndProperties> dragging_outline_points;
 
+  bool                  is_click_pending    = false; // Pressed, not yet known if click or region
   bool                  is_region_selecting = false;
   vec2                  region_start_pt     = VEC2_ZERO;
   std::vector<EditorID> region_objects;
