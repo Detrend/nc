@@ -98,6 +98,7 @@ void InputSystem::on_event(ModuleEvent& event)
 //==============================================================================
 bool InputSystem::init()
 {
+  SDL_SetRelativeMouseMode(SDL_TRUE);
   return true;
 }
 
