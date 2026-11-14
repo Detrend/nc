@@ -10,6 +10,7 @@
 #include <engine/graphics/shaders/shaders.h>
 #include <engine/graphics/graphics_system.h>
 #include <engine/graphics/resources/texture.h>
+#include <engine/network/network_system.h>
 
 #include <logging.h>
 
@@ -227,6 +228,12 @@ void MenuManager::update()
   {
     vec2 mouse_pos = get_normalized_mouse_pos();
     next_level_page->update(mouse_pos, prev_mousestate, cur_mousestate);
+    return;
+  }
+
+  // multiplayer has no menu
+  if (NetworkSystem::get().is_multiplayer())
+  {
     return;
   }
 
