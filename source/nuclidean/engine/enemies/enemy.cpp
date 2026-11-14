@@ -507,6 +507,11 @@ void Enemy::handle_ai_idle(f32 /*delta*/)
   f32 best_distance = 0.0f;
   entities.for_each<Player>([this, &player, &best_distance](Player& candidate)
   {
+    if (!candidate.is_alive())
+    {
+      return;
+    }
+
     const f32 player_distance = distance(candidate.get_position(), this->get_position());
     const bool better = !player
       || player_distance < best_distance
@@ -566,7 +571,8 @@ void Enemy::handle_ai_alert(f32 delta)
   auto& stats  = this->get_stats();
 
   Entity* target = ecs.get_entity(this->target_id);
-  if (!target)
+  const Player* const target_player = target ? target->as<Player>() : nullptr;
+  if (!target || (target_player && !target_player->is_alive()))
   {
     // Return to idle state if the target is dead or does not exist
     this->state     = EnemyAiState::idle;

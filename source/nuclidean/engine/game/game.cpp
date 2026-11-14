@@ -15,11 +15,12 @@
 #include <game/teleport.h>
 
 // Other
-#include <engine/map/map_system.h>
-#include <engine/map/map_dynamics.h>
 #include <engine/entity/entity_system.h>
-#include <engine/entity/sector_mapping.h>
 #include <engine/entity/entity_type_definitions.h>
+#include <engine/entity/sector_mapping.h>
+#include <engine/game/game_system.h>
+#include <engine/map/map_dynamics.h>
+#include <engine/map/map_system.h>
 #include <game/entity_attachment_manager.h>
 
 #include <profiling.h>
@@ -29,6 +30,9 @@
 
 namespace nc
 {
+
+// Time from full wipe to respawn at start in seconds.
+constexpr f32 RESPAWN_DELAY = 2.0f;
 
 //==============================================================================
 void Game::on_destroy()
@@ -79,6 +83,12 @@ void Game::update
     }
   }
 
+  if (NetworkSystem::get().is_multiplayer())
+  {
+    handle_revives(curr_inputs, dt);
+    handle_respawn_after_wipe();
+  }
+
   // Handle enemies
   {
     NC_SCOPE_COUNTER(enemy_update)
@@ -126,6 +136,49 @@ void Game::update
 
   // And then clean up the dead entities
   entities->cleanup();
+}
+
+//==============================================================================
+void Game::handle_revives(const InputArray& current_inputs, f32 delta_time)
+{
+  for (EntityID dead_id : player_ids)
+  {
+    Player* const dead = entities->get_entity<Player>(dead_id);
+    if (!dead || dead->is_alive())
+    {
+      continue;
+    }
+
+    bool being_revived = false;
+    for (PlayerID player_id = 0; player_id < MAX_PLAYER_COUNT; ++player_id)
+    {
+      const Player* const teammate = entities->get_entity<Player>(player_ids[player_id]);
+      const bool          use_held = current_inputs[player_id].keys & 1 << PlayerKeyInputs::use;
+      being_revived |= teammate && use_held && teammate->can_revive(*dead);
+    }
+
+    dead->update_revive(being_revived, delta_time);
+  }
+}
+
+//==============================================================================
+void Game::handle_respawn_after_wipe()
+{
+  // Alive players have zero time since death
+  for (EntityID entity_id : player_ids)
+  {
+    const Player* const player = entities->get_entity<Player>(entity_id);
+    if (player && player->get_time_since_death() < RESPAWN_DELAY)
+    {
+      return;
+    }
+  }
+
+  entities->for_each<Player>([&](Player& player)
+  {
+    player.revive();
+    player.set_position(spawn_point);
+  });
 }
 
 //==============================================================================

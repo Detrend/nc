@@ -32,6 +32,11 @@ struct Game
     const InputArray& previous_inputs
   );
 
+  // Revives dead players whose teammate holds use next to them.
+  void handle_revives(const InputArray& current_inputs, f32 delta_time);
+
+  // Respawns everyone at the level start once every player is dead.
+  void handle_respawn_after_wipe();
   void on_destroy();
 
   // Save/load data.

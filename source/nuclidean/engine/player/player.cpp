@@ -4,9 +4,10 @@
 
 #include <engine/core/engine.h>
 
-#include <engine/player/player.h>
 #include <engine/input/game_input.h>
 #include <engine/input/input_system.h>
+#include <engine/network/network_system.h>
+#include <engine/player/player.h>
 
 #include <engine/map/map_system.h>
 #include <engine/map/map_dynamics.h>
@@ -61,8 +62,12 @@ constexpr f32 PLAYER_RADIUS      = 0.25f;
 constexpr f32 MELEE_DAMAGE_RANGE = 2.25f;
 constexpr f32 PLAYER_STEP_HEIGHT = 0.9f; // 90cm
 
-constexpr u64  NUM_ANIM_FRAMES = 16;
-constexpr cstr PLAYER_SPRITE   = "player_walk";
+constexpr u64  NUM_ANIM_FRAMES    = 16;
+constexpr cstr PLAYER_SPRITE      = "player_walk";
+constexpr cstr PLAYER_DEAD_SPRITE = "player_dead";
+constexpr f32  PLAYER_SOUND_RANGE = 25.0f;
+constexpr f32  REVIVE_HOLD_TIME   = 2.0f;
+constexpr f32  REVIVE_DISTANCE    = 1.5f;
 
 //==============================================================================
 template<typename T, u8 StackSize>
@@ -401,7 +406,7 @@ void Player::apply_velocity(f32 delta_seconds)
   // Process report only collisions
   for (EntityID report_id : collected_collisions.report_entities)
   {
-    if (report_id.type == EntityTypes::pickup)
+    if (report_id.type == EntityTypes::pickup && this->alive)
     {
       Pickup* pickup = ecs.get_entity<Pickup>(report_id);
       nc_assert(pickup);
@@ -901,13 +906,20 @@ void Player::damage(int damage)
     return;
   }
 
+  const bool local = this->is_local();
   this->current_health -= damage;
-  get_engine().get_module<UserInterfaceSystem>().get_ui_screen_effect()->did_damage(damage);
+  if (local)
+  {
+    get_engine().get_module<UserInterfaceSystem>().get_ui_screen_effect()->did_damage(damage);
+  }
 
   if (this->current_health <= 0)
   {
     this->die();
-    get_engine().get_module<UserInterfaceSystem>().get_ui_screen_effect()->did_damage(200);
+    if (local)
+    {
+      get_engine().get_module<UserInterfaceSystem>().get_ui_screen_effect()->did_damage(200);
+    }
   }
   else
   {
@@ -916,7 +928,7 @@ void Player::damage(int damage)
     vec2 offset = vec2{deg2rad(cos(angle)), deg2rad(sin(angle))} * coeff * CVars::player_hurt_shake_coeff;
     this->rotation_offsets.push_one(offset, 0.2f, 0.1f);
 
-    SoundSystem::get().play_oneshot(Sounds::player_hurt);
+    this->play_sound(Sounds::player_hurt);
   }
 }
 
@@ -943,14 +955,76 @@ void Player::die()
 
   this->velocity.x = this->velocity.z = 0.0f; // Stop on the place
   dead_camera_offset = PLAYER_EYE_HEIGHT;
-  SoundSystem::get().play_oneshot(Sounds::death);
   alive = false;
 
-  // When one player dies, all players die.
-  GameSystem::get().get_entities().for_each<Player>([](Player& player)
+  this->set_height(PLAYER_HEIGHT * 0.25f);
+  this->appear.sprite = PLAYER_DEAD_SPRITE;
+  this->appear.mode   = Appearance::SpriteMode::mono;
+  this->play_sound(Sounds::death);
+}
+
+//==============================================================================
+void Player::revive()
+{
+  this->alive              = true;
+  this->current_health     = CVars::player_revive_health;
+  this->time_since_death   = 0.0f;
+  this->time_being_revived = 0.0f;
+  this->appear.mode        = Appearance::SpriteMode::dir8;
+  this->set_height(PLAYER_HEIGHT);
+  this->update_appearance(0.0f);
+}
+
+//==============================================================================
+bool Player::can_revive(const Player& dead) const
+{
+  const vec3 body_top = dead.get_position() + UP_DIR * dead.get_height();
+
+  return this->alive
+      && distance(this->get_position(), dead.get_position()) <= REVIVE_DISTANCE
+      && !GameSystem::get().get_level().ray_cast_3d(this->get_eye_pos(), body_top, PhysLevel::COLLIDE_NONE);
+}
+
+//==============================================================================
+void Player::update_revive(bool being_revived, f32 delta)
+{
+  this->time_being_revived = being_revived ? this->time_being_revived + delta : 0.0f;
+  if (this->time_being_revived >= REVIVE_HOLD_TIME)
   {
-    player.die();
-  });
+    this->revive();
+    this->play_sound(Sounds::pickup);
+  }
+}
+
+//==============================================================================
+bool Player::is_alive() const
+{
+  return this->alive;
+}
+
+//==============================================================================
+f32 Player::get_time_since_death() const
+{
+  return this->time_since_death;
+}
+
+//==============================================================================
+bool Player::is_local() const
+{
+  return GameHelpers::get().get_player() == this;
+}
+
+//==============================================================================
+void Player::play_sound(SoundID sound) const
+{
+  if (this->is_local())
+  {
+    SoundSystem::get().play_oneshot(sound);
+  }
+  else
+  {
+    GameHelpers::get().play_3d_sound(this->get_position(), sound, PLAYER_SOUND_RANGE, 1.0f);
+  }
 }
 
 //==============================================================================
@@ -1006,7 +1080,7 @@ void Player::update
   else
   {
     time_since_death += delta;
-    if (curr_input.keys & 1 << PlayerKeyInputs::use)
+    if (!NetworkSystem::get().is_multiplayer() && (curr_input.keys & 1 << PlayerKeyInputs::use))
     {
       GameSystem::get().request_level_restart();
     }
@@ -1073,7 +1147,7 @@ void Player::store_level_transition_data(LevelTransitionData& data_out) const
 {
   // save inventory
   data_out.owned_weapons = 0;
-  data_out.health = this->get_health();
+  data_out.health = this->alive ? this->get_health() : CVars::player_revive_health;
 
   for (u32 i = 0; i < WEAPON_CNT; i++)
   {

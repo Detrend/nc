@@ -7,6 +7,7 @@
 #include <engine/entity/entity_system.h>
 #include <engine/entity/entity_type_definitions.h>
 
+#include <engine/player/player.h>
 #include <engine/sound/sound_emitter.h>
 #include <engine/sound/sound_resources.h>
 
@@ -21,6 +22,12 @@
 
 namespace nc
 {
+
+//==============================================================================
+static bool is_alive_player(EntityRegistry& registry, EntityID id)
+{
+  return id.type == EntityTypes::player && registry.get_entity<Player>(id)->is_alive();
+}
 
 //==============================================================================
 MapDynamics::MapDynamics
@@ -234,7 +241,7 @@ void MapDynamics::evaluate_activators
             // Not triggered so far - must check for being triggered
             mapping.for_each_in_sector(sid, [&](EntityID id, mat4)
               {
-                const bool player = td.player_sensitive && (id.type == EntityTypes::player);
+                const bool player = td.player_sensitive && is_alive_player(registry, id);
                 const bool enemy = td.enemy_sensitive && (id.type == EntityTypes::enemy);
                 if (player || enemy)
                   sector_dyn.is_triggered = true;
@@ -250,7 +257,7 @@ void MapDynamics::evaluate_activators
           // Increment the activator for each relevant entity that is inside this sector
           mapping.for_each_in_sector(sid, [&](EntityID id, mat4)
             {
-              const bool player = td.player_sensitive && (id.type == EntityTypes::player);
+              const bool player = td.player_sensitive && is_alive_player(registry, id);
               const bool enemy = td.enemy_sensitive && (id.type == EntityTypes::enemy);
               activator_value += (player || enemy) * td.increment;
               if (out_info) (*out_info)[td.activator].entities.emplace_back(id);
