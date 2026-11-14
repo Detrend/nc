@@ -32,6 +32,12 @@ struct SelectTool : public IEditorPrimitiveRenderingModifier
 
   std::vector<EditorPrimitiveAndProperties> dragging_outline_points;
 
+  bool                  is_region_selecting = false;
+  vec2                  region_start_pt     = VEC2_ZERO;
+  std::vector<EditorID> region_objects;
+  EditorPrimitivePtr    region_outline = std::make_shared<EditorPrimitive>();
+  EditorPrimitivePtr    region_surface = std::make_shared<EditorPrimitive>();
+
   SelectTool(EditorImpl& impl) : editor(impl) {};
 
   void modify_rendering_properties
@@ -47,7 +53,12 @@ struct SelectTool : public IEditorPrimitiveRenderingModifier
 
   bool handle_dragging();
   bool handle_selection();
+  void handle_region_selection(vec2 cursor_pos_in_world);
   bool handle_deletion();
+
+  bool is_selectable(EditorID object) const;
+
+  [[nodiscard]] EditorID find_pointed_at_object(vec2 cursor_pos_in_world) const;
 };
 
 }

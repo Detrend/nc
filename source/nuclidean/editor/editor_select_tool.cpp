@@ -28,6 +28,7 @@
 #include <map>
 #include <set>
 #include <algorithm> // std::ranges::find
+#include <ranges>
 
 namespace nc
 {
@@ -49,8 +50,10 @@ void SelectTool::modify_rendering_properties
     properties.line_width *= 2.0f;
   }
 
-  // Then color the pointed-at object
-  if (author == this->pointed_at_object && author != INVALID_EDITOR_ID)
+  // Then color the pointed-at object and the objects within the region selection
+  bool is_pointed_at = author == this->pointed_at_object;
+  bool is_in_region  = std::ranges::find(this->region_objects, author) != this->region_objects.end();
+  if ((is_pointed_at || is_in_region) && author != INVALID_EDITOR_ID)
   {
     properties.color = color4{1.0f, 1.0f, 0.0f, properties.color.a};
     properties.line_width *= 4.0f;
@@ -76,6 +79,16 @@ void SelectTool::get_render_data(RenderList& list)
   for (const auto&[primitive, props] : this->dragging_outline_points)
   {
     list.push_back(primitive, props);
+  }
+
+  if (this->region_surface->is_valid())
+  {
+    list.push_back(this->region_surface);
+  }
+
+  if (this->region_outline->is_valid())
+  {
+    list.push_back(this->region_outline);
   }
 }
 
@@ -289,10 +302,8 @@ bool SelectTool::handle_dragging()
 }
 
 //==================================================================================================
-bool SelectTool::handle_selection()
+EditorID SelectTool::find_pointed_at_object(vec2 cursor_pos_in_world) const
 {
-  vec2 cursor_pos_in_world = editor.get_mouse_wpos();
-
   EditorID sector_directly_selected, closest_wall, closest_point;
   sector_directly_selected = closest_wall = closest_point = INVALID_EDITOR_ID;
 
@@ -397,14 +408,42 @@ bool SelectTool::handle_selection()
     }
   }
 
-  this->pointed_at_object = best_idx >= 0 ? objects[best_idx] : INVALID_EDITOR_ID;
+  return best_idx >= 0 ? objects[best_idx] : INVALID_EDITOR_ID;
+}
 
-  // Handle adding/removing objects from selection list
-  bool left_click = ImGui::IsKeyPressed(ImGuiKey_MouseLeft);
-  bool shift      = ImGui::GetIO().KeyShift;
+//==================================================================================================
+bool SelectTool::handle_selection()
+{
+  vec2 cursor_pos_in_world = editor.get_mouse_wpos();
+
+  // While selecting a region only the objects within it are highlighted, nothing is pointed at
+  if (!this->is_region_selecting)
+  {
+    this->pointed_at_object = this->find_pointed_at_object(cursor_pos_in_world);
+  }
+  else
+  {
+    this->pointed_at_object = INVALID_EDITOR_ID;
+  }
+
+  this->handle_region_selection(cursor_pos_in_world);
+  return true;
+}
+
+//==================================================================================================
+void SelectTool::handle_region_selection(vec2 cursor_pos_in_world)
+{
+  bool input_allowed = !ImGui::GetIO().WantCaptureMouse;
+  bool left_click    = input_allowed && ImGui::IsMouseClicked(ImGuiMouseButton_Left);
+  bool holding_left  = input_allowed && ImGui::IsMouseDown(ImGuiMouseButton_Left);
+  bool shift         = ImGui::GetIO().KeyShift;
+  bool ctrl          = ImGui::GetIO().KeyCtrl;
+  bool esc_pressed   = ImGui::IsKeyPressed(ImGuiKey_Escape);
+
   if (left_click && this->pointed_at_object != INVALID_EDITOR_ID)
   {
-    if (!shift)
+    // Both shift and ctrl toggle the object in the selection
+    if (!shift && !ctrl)
     {
       this->selected_objects.assign(1, this->pointed_at_object);
     }
@@ -419,15 +458,119 @@ bool SelectTool::handle_selection()
       this->selected_objects.erase(it);
     }
   }
+  else if (left_click)
+  {
+    // Clicked into empty space, start the region selection
+    this->is_region_selecting = true;
+    this->region_start_pt     = cursor_pos_in_world;
+  }
 
   // Clear the selection on ESC
-  bool esc_pressed = ImGui::IsKeyPressed(ImGuiKey_Escape);
   if (esc_pressed)
   {
     this->selected_objects.clear();
+    this->is_region_selecting = false;
   }
 
-  return true;
+  // Reset these always
+  this->region_outline = std::make_shared<EditorPrimitive>();
+  this->region_surface = std::make_shared<EditorPrimitive>();
+
+  if (!this->is_region_selecting)
+  {
+    this->region_objects.clear();
+    return;
+  }
+
+  // Released the button, select the objects that were highlighted until now. Shift appends them
+  // into the selection, ctrl removes them from it.
+  if (!holding_left)
+  {
+    if (ctrl)
+    {
+      // Remove the objects in the region from the selection
+      std::erase_if(this->selected_objects, [&](EditorID object_id)
+      {
+        return std::ranges::find(this->region_objects, object_id) != this->region_objects.end();
+      });
+    }
+    else
+    {
+      if (shift)
+      {
+        // Holding the shift, so just append to the selection..
+        // Beware that the object might be already selected, so we have to check if we are not
+        // inserting it twice!
+        for (EditorID object_id : this->region_objects)
+        {
+          if (std::ranges::find(this->selected_objects, object_id) == this->selected_objects.end())
+          {
+            this->selected_objects.push_back(object_id);
+          }
+        }
+      }
+      else
+      {
+        // If not holding shift then replace the selection directly
+        this->selected_objects.assign(this->region_objects.begin(), this->region_objects.end());
+      }
+    }
+
+    this->is_region_selecting = false;
+    this->region_objects.clear();
+    return;
+  }
+
+  vec2 rect_min = min(this->region_start_pt, cursor_pos_in_world);
+  vec2 rect_max = max(this->region_start_pt, cursor_pos_in_world);
+
+  // An object is within the region if all of its points are
+  this->region_objects.clear();
+  for (const auto&[id, object] : editor.level.objects)
+  {
+    if (!this->is_selectable(id))
+    {
+      continue;
+    }
+
+    std::set<EditorID> points;
+    collect_points_of_object(editor.level, id, points);
+
+    auto is_point_inside = [&](vec2 pt)
+    {
+      return all(greaterThanEqual(pt, rect_min)) && all(lessThanEqual(pt, rect_max));
+    };
+
+    auto to_coords = [&](EditorID point_id)
+    {
+      return cast<vec2>(editor.level.get_object<EditorPoint>(point_id).coords);
+    };
+
+    if (std::ranges::all_of(points | std::views::transform(to_coords), is_point_inside))
+    {
+      this->region_objects.push_back(id);
+    }
+  }
+
+  // Rectangle outline from where we started to the cursor
+  vec2 corners[4] = {rect_min, vec2{rect_max.x, rect_min.y}, rect_max, vec2{rect_min.x, rect_max.y}};
+
+  StackVector<vec2, 8> outline_points;
+  for (u64 i = 0; i < 4; ++i)
+  {
+    outline_points.insert(outline_points.end(), {corners[i], corners[(i + 1) % 4]});
+  }
+
+  this->region_outline->refresh_gpu_data(outline_points);
+  this->region_outline->properties.color = colors::WHITE;
+  this->region_outline->properties.order = 101; // Above everything else
+
+  // Partially transparent surface under the outline
+  vec2 surface_points[6] = {corners[0], corners[1], corners[2], corners[0], corners[2], corners[3]};
+
+  this->region_surface->refresh_gpu_data(surface_points, GL_TRIANGLES);
+  this->region_surface->properties.color = color4{0.2f, 0.4f, 1.0f, 0.25f};
+  this->region_surface->properties.order = 100; // Above everything except the outline
 }
 
 //==================================================================================================
@@ -446,6 +589,22 @@ bool SelectTool::handle_deletion()
     action.init_destruction(this->editor.level, this->selected_objects);
     editor.do_action(std::move(action));
     this->selected_objects.clear(); // Clear the selection
+    return true;
+  }
+
+  return false;
+}
+
+//==================================================================================================
+bool SelectTool::is_selectable(EditorID id) const
+{
+  if (const auto* sector = editor.level.try_get_object<EditorSector>(id); sector && !sector->is_void())
+  {
+    return true;
+  }
+
+  if (editor.level.try_get_object<EditorLine>(id) || editor.level.try_get_object<EditorPoint>(id))
+  {
     return true;
   }
 
