@@ -39,8 +39,6 @@ constexpr f32 GRID_SCREEN_PERCENTAGE_FOR_VISIBILITY = 0.01f;
 // The amount of screen space the normals of the wall occupy.
 constexpr f32 WALL_NORMAL_SCREEN_PERCENTAGE = 0.01f;
 
-// Maximum distance from center in all 4 directions.
-constexpr s64 LEVEL_AREA_LIMIT = 128 * 48; // 256x256 m
 constexpr f32 ZOOM_LIMIT_MIN   = -100.0f;
 constexpr f32 ZOOM_LIMIT_MAX   =  -10.0f;
 constexpr f32 ZOOM_SPEED       =   50.0f;

@@ -42,6 +42,14 @@ using EID = EditorID;
 constexpr EditorID INVALID_EDITOR_ID = 0;
 constexpr EditorID VOID_SECTOR_ID    = 1;
 
+namespace editor
+{
+
+// Maximum distance from center in all 4 directions.
+constexpr s64 LEVEL_AREA_LIMIT = 128 * 48; // 256x256 m
+
+}
+
 }
 
 #endif // #if NC_EDITOR

@@ -172,9 +172,21 @@ static bool segments_intersect
 }
 
 //==================================================================================================
+static bool is_within_level_bounds(EditorCoord coord)
+{
+  return abs(coord.x) <= editor::LEVEL_AREA_LIMIT && abs(coord.y) <= editor::LEVEL_AREA_LIMIT;
+}
+
+//==================================================================================================
 bool EditorLevel::can_create_line(EditorCoord start, EditorCoord end)
 {
   if (start == end)
+  {
+    return false;
+  }
+
+  // The line can not leave the bounds of the level
+  if (!is_within_level_bounds(start) || !is_within_level_bounds(end))
   {
     return false;
   }
@@ -1179,6 +1191,12 @@ bool EditorLevel::can_move_points(const std::map<EID<EditorPoint>, EditorCoord>&
 
     // Two moved points can not land on the same spot
     if (!target_coords.insert(new_coord).second)
+    {
+      return false;
+    }
+
+    // And they can not leave the bounds of the level
+    if (!is_within_level_bounds(new_coord))
     {
       return false;
     }
