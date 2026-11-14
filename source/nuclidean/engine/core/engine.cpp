@@ -638,8 +638,17 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
 
   if (get_module<NetworkSystem>().is_multiplayer())
   {
+    LevelName level = Levels::LEVEL_1;
+#if !NC_IS_SHIP
+    std::string start_level;
+    if (engine_utils::should_play_level(cmd_args, start_level))
+    {
+      level = LevelName{std::string_view{start_level}};
+    }
+#endif
+
     set_game_state(GameState::game);
-    game_system.request_level_change(Levels::LEVEL_1);
+    game_system.request_level_change(level);
   }
   else if (std::string demo; engine_utils::should_play_demo(cmd_args, demo))
   {
