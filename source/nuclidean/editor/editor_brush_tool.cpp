@@ -112,7 +112,7 @@ void BrushTool::update(f32 /*delta*/)
 
   if (is_painting)
   {
-    props.transform[3] = vec3{painting_start, 1.0f};
+    props.transform[2] = vec3{painting_start, 1.0f};
     props.order        = 99;
     props.color        = line_color;
     this->points_render_data.push_back(EditorPrimitiveAndProperties{editor.get_disc_geometry(), props});
