@@ -7,6 +7,7 @@
 
 #include <imgui/imgui_impl_sdl2.h>
 #include <engine/ui/user_interface_system.h>
+#include <engine/network/network_system.h>
 
 #include <SDL2/include/SDL.h>
 
@@ -126,7 +127,7 @@ void InputSystem::update_window_and_pump_messages()
       handle_mouse_wheel(event);
     }
 
-    if (event.type == SDL_KEYDOWN)
+    if (event.type == SDL_KEYDOWN && !NetworkSystem::get().is_multiplayer())
     {
       if (event.key.keysym.scancode == SDL_SCANCODE_F6)
       {
