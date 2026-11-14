@@ -1,15 +1,18 @@
 // Project Nuclidean Source File
 #pragma once
 
-#include <types.h>
 #include <common.h>
-#include <engine/player/level_types.h>
-#include <engine/input/game_input.h>
 #include <token.h>
+#include <types.h>
 
-#include <vector>
+#include <engine/input/game_input.h>
+#include <engine/network/constants.h>
+#include <engine/player/level_types.h>
+
+#include <array>
 #include <chrono>
 #include <span>
+#include <vector>
 
 namespace nc
 {
@@ -88,6 +91,8 @@ struct LevelTransitionData
     health = -67;
   }
 };
+
+using LevelTransitionArray = std::array<LevelTransitionData, MAX_PLAYER_COUNT>;
 
 NC_PUSH_PACKED
 struct DemoDataHeader

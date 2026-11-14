@@ -62,9 +62,9 @@ public:
   // Loads the game from a file.
   void load_game(const std::string& path);
 
-  LevelTransitionData get_transition_data() const;
-  LevelName           get_level_name()      const;
-  LevelName           get_next_level_name() const;
+  LevelTransitionArray get_transition_data() const;
+  LevelName            get_level_name()      const;
+  LevelName            get_next_level_name() const;
 
   const DemoDataFrames& get_demo_frames() const;
 
@@ -93,9 +93,9 @@ public:
   // Plays the level from the start. If demo is non-empty then plays the demo.
   void request_level_change
   (
-    const LevelName&    new_level,
-    DemoDataFrames&&    frames     = {},
-    LevelTransitionData transition = {}
+    const LevelName&     new_level,
+    DemoDataFrames&&     frames     = {},
+    LevelTransitionArray transition = {}
   );
 
   // Called from the action trigger
@@ -124,7 +124,7 @@ private:
   void handle_start_new_level_optionally_with_demo
   (
     LevelName             level,
-    LevelTransitionData   transition_data,
+    LevelTransitionArray  transition_data,
     const DemoDataFrames& demo_optional
   );
 
@@ -201,11 +201,11 @@ private:
 
   struct NextRequestedState
   {
-    LevelName           level;
-    DemoDataFrames      demo;
-    std::string         load_from_file;
-    std::string         save_to_file;
-    LevelTransitionData transition;
+    LevelName            level;
+    DemoDataFrames       demo;
+    std::string          load_from_file;
+    std::string          save_to_file;
+    LevelTransitionArray transition;
   };
 
   GamePtr   game;

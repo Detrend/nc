@@ -49,13 +49,17 @@ void Game::update
 {
   NC_SCOPE_COUNTER(game_update);
 
-  // Init the player with transition data on the first frame. Same code path as
+  // Init the players with transition data on the first frame. Same code path as
   // when playing a demo.
-  if (frame_idx == 0 && !transition_data.is_empty())
+  if (frame_idx == 0)
   {
-    if (Player* player = entities->get_entity<Player>(get_local_player_id()))
+    for (PlayerID player_id = 0; player_id < MAX_PLAYER_COUNT; ++player_id)
     {
-      player->init_with_level_transition_data(transition_data);
+      Player* const player = entities->get_entity<Player>(player_ids[player_id]);
+      if (player && !transition_data[player_id].is_empty())
+      {
+        player->init_with_level_transition_data(transition_data[player_id]);
+      }
     }
   }
 

@@ -1112,7 +1112,7 @@ void GameSystem::load_game(const std::string& path)
 }
 
 //==============================================================================
-LevelTransitionData GameSystem::get_transition_data() const
+LevelTransitionArray GameSystem::get_transition_data() const
 {
   return this->game->transition_data;
 }
@@ -1159,7 +1159,7 @@ void GameSystem::request_level_restart()
 //==============================================================================
 void GameSystem::request_level_change
 (
-  const LevelName& new_level, DemoDataFrames&& frames, LevelTransitionData transition
+  const LevelName& new_level, DemoDataFrames&& frames, LevelTransitionArray transition
 )
 {
   this->scheduled_state = NextRequestedState
@@ -1236,7 +1236,7 @@ void GameSystem::cleanup_map()
 void GameSystem::handle_start_new_level_optionally_with_demo
 (
   LevelName             level,
-  LevelTransitionData   transition_data,
+  LevelTransitionArray  transition_data,
   const DemoDataFrames& demo_optional
 )
 {

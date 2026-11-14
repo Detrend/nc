@@ -1,8 +1,9 @@
 // Project Nuclidean Source File
 #include <common.h>
 #include <config.h>
-
 #include <cvars.h>
+
+#include <game/weapons.h>
 
 #include <engine/core/engine.h>
 #include <engine/core/engine_module.h>
@@ -555,11 +556,11 @@ void Engine::play_random_demo()
   const std::string& demo = demos[std::rand() % demos.size()];
 
   // Play one demo and then exit
-  LevelName           lvl_name;
-  DemoDataFrames      frames;
-  LevelTransitionData transition;
+  LevelName            lvl_name;
+  DemoDataFrames       frames;
+  LevelTransitionArray transition;
 
-  if (!load_demo_from_file(demo, lvl_name, transition, frames))
+  if (!load_demo_from_file(demo, lvl_name, transition[0], frames))
   {
     // Empty level = black screen in the menu
     nc_warn(
@@ -581,7 +582,7 @@ void Engine::loop_current_demo()
 
   LevelName      lvl  = game_system.get_level_name();
   DemoDataFrames demo = game_system.get_demo_frames(); // Intentional copy
-  LevelTransitionData transition = game_system.get_transition_data();
+  LevelTransitionArray transition = game_system.get_transition_data();
 
   game_system.request_level_change(lvl, std::move(demo), transition);
 }
@@ -647,17 +648,28 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
     }
 #endif
 
+    // TODO: remove the starting weapons and ammo once there are proper multiplayer levels
+    LevelTransitionArray start_inventory;
+    for (LevelTransitionData& data : start_inventory)
+    {
+      for (WeaponType weapon = 1; weapon < WeaponTypes::count; ++weapon)
+      {
+        data.owned_weapons |= weapon_flag(weapon);
+        data.ammo[weapon]   = 20;
+      }
+    }
+
     set_game_state(GameState::game);
-    game_system.request_level_change(level);
+    game_system.request_level_change(level, {}, start_inventory);
   }
   else if (std::string demo; engine_utils::should_play_demo(cmd_args, demo))
   {
     // Play one demo and then exit
-    LevelName           lvl_name;
-    DemoDataFrames      frames;
-    LevelTransitionData transition;
+    LevelName            lvl_name;
+    DemoDataFrames       frames;
+    LevelTransitionArray transition;
 
-    if (!load_demo_from_file(demo, lvl_name, transition, frames))
+    if (!load_demo_from_file(demo, lvl_name, transition[0], frames))
     {
       nc_crit("Could not start demo \"{}\", quitting game.", demo);
       return false;
@@ -941,22 +953,33 @@ void Engine::on_level_end()
   {
     case GameState::game:
     {
+      GameSystem&        game_system = GameSystem::get();
+      EntityRegistry&    entities    = game_system.get_entities();
+      const PlayerArray& player_ids  = game_system.get_player_ids();
+
+      // Store the next level (has to happen before calling loop_current_demo)
+      LevelName next_lvl_token = game_system.get_next_level_name();
+      m_transition_state.next_level_name = next_lvl_token;
+
+      for (PlayerID player_id = 0; player_id < MAX_PLAYER_COUNT; ++player_id)
+      {
+        const Player* const player = entities.get_entity<Player>(player_ids[player_id]);
+        if (player)
+        {
+          player->store_level_transition_data(m_transition_state.transition_data[player_id]);
+        }
+      }
+
+      // Multiplayer has no transition screen
+      if (this->get_module<NetworkSystem>().is_multiplayer())
+      {
+        game_system.request_level_change(next_lvl_token, {}, m_transition_state.transition_data);
+        return;
+      }
+
       // Change the state
       set_game_state(GameState::transition);
 
-      // Store the next level (has to happen before calling loop_current_demo)
-      LevelName next_lvl_token = GameSystem::get().get_next_level_name();
-      m_transition_state.next_level_name = next_lvl_token;
-      
-      if (Player* player = GameHelpers::get().get_player())
-      {
-        player->store_level_transition_data(m_transition_state.transition_data);
-      }
-      else
-      {
-        nc_warn("Level transition without player, no transition data to save..");
-      }
-      
       // Enable level transition UI
       UserInterfaceSystem::get().get_menu_manager()->set_transition_screen(true);
 
@@ -1059,8 +1082,8 @@ void Engine::on_next_level_selected_from_menu()
     {
       set_game_state(GameState::game);
 
-      LevelName           lvl        = m_transition_state.next_level_name;
-      LevelTransitionData transition = m_transition_state.transition_data;
+      LevelName            lvl        = m_transition_state.next_level_name;
+      LevelTransitionArray transition = m_transition_state.transition_data;
 
       GameSystem::get().request_level_change(lvl, {}, transition);
       UserInterfaceSystem::get().get_menu_manager()->set_transition_screen(false);
