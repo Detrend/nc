@@ -908,7 +908,7 @@ void GameSystem::game_update(f32 delta)
 //==============================================================================
 void GameSystem::on_level_end()
 {
-  if (journal.state == JournalState::recording)
+  if (journal.state == JournalState::recording && !NetworkSystem::get().is_multiplayer())
   {
     // Save the demo
     this->save_current_demo();
