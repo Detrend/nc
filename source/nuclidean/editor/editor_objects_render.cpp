@@ -577,11 +577,9 @@ void EditorSectorRenderData::recompute_render_data()
 //==================================================================================================
 void EditorPointRenderData::get_render_data(const EditorImpl& impl, RenderList& list)
 {
-  constexpr f32 POINT_SIZE = 0.0025f;
-
   EditorPrimitiveRenderingProperties props = EditorPrimitiveRenderingProperties::calc_point_override_props
   (
-    vec2{this->coords}, POINT_SIZE, impl.get_zoom_factor(), this->id
+    vec2{this->coords}, editor::POINT_SIZE, impl.get_zoom_factor(), this->id
   );
 
   list.push_back(impl.get_disc_geometry(), props);

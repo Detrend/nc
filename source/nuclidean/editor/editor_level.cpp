@@ -172,7 +172,7 @@ static bool segments_intersect
 }
 
 //==================================================================================================
-static bool is_within_level_bounds(EditorCoord coord)
+bool is_within_level_bounds(EditorCoord coord)
 {
   return abs(coord.x) <= editor::LEVEL_AREA_LIMIT && abs(coord.y) <= editor::LEVEL_AREA_LIMIT;
 }

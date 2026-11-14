@@ -30,20 +30,6 @@ void BrushTool::update(f32 /*delta*/)
   vec2 mouse_world_pos = editor.get_mouse_wpos();
   editor.snap_to_grid(mouse_world_pos);
 
-  mat3 screen_to_world = inverse(editor.calc_view_matrix());
-  f32  cursor_len      = screen_to_world[0].x * editor::BRUSH_CURSOR_SCREEN_PERCENTAGE;
-
-  // Cursor
-  constexpr vec2 CURSOR_DIRS[4] = {VEC2_X, VEC2_Y, -VEC2_X, -VEC2_Y};
-  std::vector<vec2> cursor_pts;
-  for (u64 i = 0; i < 4; ++i)
-  {
-    vec2 a = mouse_world_pos + cursor_len * CURSOR_DIRS[i];
-    vec2 b = mouse_world_pos + cursor_len * CURSOR_DIRS[(i+1) % 4];
-    cursor_pts.insert(cursor_pts.end(), {a, b});
-  }
-  cursor->refresh_gpu_data(cursor_pts);
-
   EditorCoord pointing_at    = EditorCoord{mouse_world_pos};
   bool        should_reset   = false;
   bool        should_start   = false;
@@ -87,16 +73,18 @@ void BrushTool::update(f32 /*delta*/)
 
   // Wall pts
   std::vector<vec2> points;
-  color4 line_color = colors::WHITE;
+  color4 line_color   = colors::WHITE;
+  color4 cursor_color = is_within_level_bounds(pointing_at) ? colors::WHITE : colors::RED;
   if (is_painting)
   {
     f32 color_mix = cast<f32>(abs(sin(editor.time_since_start / editor::BRUSH_WALL_FLASH_INTERVAL)));
     line_color = mix(editor::BRUSH_WALL_COL1, editor::BRUSH_WALL_COL2, color_mix);
 
-    // Set a red color if we can't put a line here!
+    // Set a red color if we can't put a line here! The cursor is the end of the line, so as well.
     if (!editor.level.can_create_line(painting_start, pointing_at))
     {
-      line_color = colors::RED;
+      line_color   = colors::RED;
+      cursor_color = colors::RED;
     }
 
     // Create the line from the 2 points
@@ -107,6 +95,28 @@ void BrushTool::update(f32 /*delta*/)
   this->render_data->refresh_gpu_data(points);
   this->render_data->properties.color = line_color;
   this->render_data->properties.order = 99;
+
+  this->points_render_data.clear();
+
+  EditorPrimitiveRenderingProperties props = EditorPrimitiveRenderingProperties::calc_point_override_props
+  (
+    cast<vec2>(pointing_at), editor::POINT_SIZE, editor.get_zoom_factor(), INVALID_EDITOR_ID
+  );
+
+  props.color          = cursor_color;
+  props.override_color = true;
+  props.order          = 100;
+  props.override_order = true;
+
+  this->points_render_data.push_back(EditorPrimitiveAndProperties{editor.get_disc_geometry(), props});
+
+  if (is_painting)
+  {
+    props.transform[3] = vec3{painting_start, 1.0f};
+    props.order        = 99;
+    props.color        = line_color;
+    this->points_render_data.push_back(EditorPrimitiveAndProperties{editor.get_disc_geometry(), props});
+  }
 }
 
 //==================================================================================================
@@ -117,9 +127,9 @@ void BrushTool::get_render_data(RenderList& list)
     list.push_back(render_data->shared_from_this());
   }
 
-  if (cursor->handle.is_valid())
+  for (const auto&[primitive, props] : this->points_render_data)
   {
-    list.push_back(cursor->shared_from_this());
+    list.push_back(primitive, props);
   }
 }
 

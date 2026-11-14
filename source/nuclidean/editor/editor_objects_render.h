@@ -19,6 +19,14 @@ namespace nc
 
 struct EditorImpl;
 
+namespace editor
+{
+
+// Screen size of the rendered points
+constexpr f32 POINT_SIZE = 0.0025f;
+
+}
+
 struct EditorGenericRenderData
 {
   // Empty by purpose

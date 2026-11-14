@@ -105,6 +105,9 @@ struct EditorLevel
   void dump_to_text();
 };
 
+// Checks if the coordinate is within the bounds of the level (LEVEL_AREA_LIMIT)
+bool is_within_level_bounds(EditorCoord coord);
+
 void iterate_left_most_half_edges
 (
   const EditorLevel&                    level,

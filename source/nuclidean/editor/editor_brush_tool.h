@@ -18,9 +18,6 @@ namespace nc
 namespace editor
 {
 
-// The amount of screen space the brush cursor occupies.
-constexpr f32 BRUSH_CURSOR_SCREEN_PERCENTAGE = 0.005f;
-
 constexpr color4 BRUSH_WALL_COL1           = colors::WHITE;
 constexpr color4 BRUSH_WALL_COL2           = colors::WHITE;
 constexpr f32    BRUSH_WALL_FLASH_INTERVAL = 0.5f;
@@ -33,10 +30,12 @@ struct EditorImpl;
 struct BrushTool
 {
   EditorImpl&        editor;
-  EditorPrimitivePtr cursor         = std::make_shared<EditorPrimitive>();
   EditorPrimitivePtr render_data    = std::make_shared<EditorPrimitive>();
   bool               is_painting    = false;
   EditorCoord        painting_start = EditorCoord{0};
+
+  // The cursor point and the start point of the painted line (if painting)
+  std::vector<EditorPrimitiveAndProperties> points_render_data;
 
   BrushTool(EditorImpl& impl) : editor(impl) {};
 
