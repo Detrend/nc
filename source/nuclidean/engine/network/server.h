@@ -2,6 +2,8 @@
 #pragma once
 
 #include <types.h>
+#include <ring_buffer.h>
+
 #include <engine/network/constants.h>
 #include <engine/network/protocol.h>
 #include <engine/network/tcp_socket.h>
@@ -32,7 +34,8 @@ private:
   {
     Status status = Status::none;
     protocol::Connection connection{};
-    bool input_received = false;
+    // Client's inputs from up to the last INPUT_DELAY frames.
+    RingBuffer<PlayerSpecificInputs, INPUT_DELAY> inputs;
     // Game state hash received from the client for the desync check.
     u64  state_hash = 0;
     bool hash_received = false;
@@ -42,7 +45,6 @@ private:
   TCPSocket m_listen_socket;
   std::jthread m_server_thread;
   std::array<ClientData, MAX_PLAYER_COUNT> m_clients;
-  InputArray m_inputs;
 
   // Drains and process client messages.
   void process_messages(PlayerID player_id);

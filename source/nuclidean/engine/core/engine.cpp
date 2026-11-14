@@ -781,10 +781,7 @@ void Engine::run()
       });
 
       // TODO: freeze on server death
-      while (network_system.is_multiplayer() && !network_system.are_inputs_received())
-      {
-        network_system.poll_network();
-      }
+      network_system.wait_for_next_frame_inputs();
 
       // cleanup
       this->send_event(ModuleEvent

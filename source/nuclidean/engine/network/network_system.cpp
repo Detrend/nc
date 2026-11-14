@@ -155,6 +155,10 @@ bool NetworkSystem::init(const CmdArgs& args)
 
   wait_for_game_start();
 
+  // the first INPUT_DELAY - 1 frames run without any inputs
+  for (u8 i = 0; i < INPUT_DELAY - 1; ++i)
+    m_pending_inputs.push_back(InputArray{});
+
   m_is_multiplayer = true;
   return true;
 }
@@ -170,7 +174,6 @@ void NetworkSystem::on_event(ModuleEvent& event)
     if (CVars::net_desync_check && !m_desync_detected)
       sync_state_hash();
 
-    m_input_received = false;
     m_client->send_inputs(InputSystem::get().get_inputs().player_inputs);
 
     // WARNING: Used as temporary workaround to solve desync issues.
@@ -249,12 +252,7 @@ void NetworkSystem::poll_network()
       },
       [this](const AllPlayersInputs& message)
       {
-        get_engine().send_event(ModuleEvent
-        {
-          .type = ModuleEventType::net_input_arrived,
-          .net_inputs = { .inputs = &message.inputs_array },
-        });
-        m_input_received = true;
+        m_pending_inputs.push_back(message.inputs_array);
       },
       [](const PositionSync& message)
       {
@@ -280,6 +278,22 @@ void NetworkSystem::poll_network()
       [](const auto&){ nc_warn("[net][network system] client received invalid message"); }
     );
   }
+}
+
+//==============================================================================
+void NetworkSystem::wait_for_next_frame_inputs()
+{
+  if (!m_is_multiplayer) return;
+
+  while (m_pending_inputs.empty())
+    poll_network();
+
+  get_engine().send_event(ModuleEvent
+  {
+    .type = ModuleEventType::net_input_arrived,
+    .net_inputs = { .inputs = &m_pending_inputs.front() },
+  });
+  m_pending_inputs.pop_front();
 }
 
 //==============================================================================

@@ -2,8 +2,11 @@
 #pragma once
 
 #include <types.h>
+#include <ring_buffer.h>
+
 #include <engine/core/engine_module_id.h>
 #include <engine/core/engine_module.h>
+#include <engine/input/game_input.h>
 #include <engine/network/constants.h>
 
 #include <array>
@@ -41,8 +44,8 @@ public:
   PlayerID get_local_player_id() const { return m_local_player_id; }
   // Determine if a player occupies the given slot. Slots are filled by the server on connect.
   bool is_player_connected(PlayerID player_id) const;
-  // Determine if this frame's input was received.
-  bool are_inputs_received() const { return m_input_received; }
+  // Blocks until the inputs for the next frame arrive.
+  void wait_for_next_frame_inputs();
 
   // Poll available network events. This is non-blocking call.
   void poll_network();
@@ -60,8 +63,8 @@ private:
   PlayerID m_local_player_id = 0;
   // Slot occupancy of all players in the session, including the local one.
   std::array<bool, MAX_PLAYER_COUNT> m_connected_players{};
-  // Determine if this frame's input was received.
-  bool m_input_received = false;
+  // Inputs of all players from the server, waiting to be applied.
+  RingBuffer<InputArray, INPUT_DELAY> m_pending_inputs;
   // Determine if the server answered this frame's state hash.
   bool m_hash_result_received = false;
   // Set on the first desync, the desync check then stays off for the rest of the session.

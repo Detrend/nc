@@ -76,10 +76,9 @@ void Server::process_messages(PlayerID player_id)
 
       const protocol::Message message = *maybe_message;
       message.process(
-        [this, player_id, &client](const protocol::messages::PlayerInputs& message)
+        [&client](const protocol::messages::PlayerInputs& message)
         {
-          m_inputs[player_id] = message.inputs;
-          client.input_received = true;
+          client.inputs.push_back(message.inputs);
         },
         [this](const protocol::messages::PositionSync& message)
         {
@@ -171,7 +170,7 @@ void Server::loop_until_inputs_received()
 
       process_messages(player_id);
 
-      if (!client.input_received)
+      if (client.inputs.empty())
         all_inputs_received = false;
     }
 
@@ -265,7 +264,7 @@ void Server::drain_accepts()
     ClientData& client = m_clients[player_id];
     client.status = Status::connecting;
     client.connection = protocol::Connection{.socket = client_socket};
-    client.input_received = false;
+    client.inputs.clear();
     client.hash_received = false;
   }
 }
@@ -311,7 +310,7 @@ void Server::handle_connection_events()
 
     close_socket(client.connection.socket);
     client.status = Status::none;
-    client.input_received = false;
+    client.inputs.clear();
     client.hash_received = false;
 
     broadcast(protocol::messages::PlayerDisconnected{.player_id = player_id});
@@ -321,10 +320,19 @@ void Server::handle_connection_events()
 //==============================================================================
 void Server::broadcast_all_player_inputs()
 {
-  for (ClientData& client : m_clients)
-    client.input_received = false;
+  protocol::messages::AllPlayersInputs message{};
 
-  broadcast(protocol::messages::AllPlayersInputs{.inputs_array = m_inputs});
+  for (PlayerID player_id = 0; player_id < m_clients.size(); ++player_id)
+  {
+    ClientData& client = m_clients[player_id];
+    if (client.status != Status::connected)
+      continue;
+
+    message.inputs_array[player_id] = client.inputs.front();
+    client.inputs.pop_front();
+  }
+
+  broadcast(message);
 }
 
 //==============================================================================
