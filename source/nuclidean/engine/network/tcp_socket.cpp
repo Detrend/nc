@@ -276,8 +276,11 @@ TransferResult send_raw_data(TCPSocket socket, std::span<const std::byte> data_t
     if (result == SOCKET_ERROR)
     {
       const int error = WSAGetLastError();
-      nc_crit("[net] send() failed: \"{}\"", get_error_message(error));
-      return get_transfer_result(error);
+      const TransferResult transfer_result = get_transfer_result(error);
+      if (transfer_result == TransferResult::error)
+        nc_crit("[net] send() failed: \"{}\"", get_error_message(error));
+
+      return transfer_result;
     }
 
     sent += cast<u64>(result);
@@ -311,8 +314,11 @@ std::pair<TransferResult, size_t> receive_raw_data(TCPSocket socket, std::span<s
       if (error == WSAEWOULDBLOCK)
         return {TransferResult::success, received};
 
-      nc_crit("[net] recv() failed: \"{}\"", get_error_message(error));
-      return {get_transfer_result(error), received};
+      const TransferResult transfer_result = get_transfer_result(error);
+      if (transfer_result == TransferResult::error)
+        nc_crit("[net] recv() failed: \"{}\"", get_error_message(error));
+
+      return {transfer_result, received};
     }
 
     received += result;
