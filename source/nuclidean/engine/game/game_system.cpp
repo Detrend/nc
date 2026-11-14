@@ -1520,7 +1520,7 @@ void GameSystem::build_map(LevelName level)
   }
 
   // Now snap all required entities to the floor
-  game->entities->for_each(EntityTypes::all, [&](Entity& entity)
+  game->entities->for_each(EntityTypeFlags::all, [&](Entity& entity)
   {
     if (f32 out_h; recalc_snap_entity_height(entity, *game->map, *game->mapping, out_h))
     {

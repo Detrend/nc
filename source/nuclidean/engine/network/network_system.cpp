@@ -39,7 +39,9 @@ static nlohmann::json serialize_game_state()
 {
   nlohmann::json entities = nlohmann::json::array();
 
-  GameSystem::get().get_entities().for_each(EntityTypes::all, [&entities](Entity& entity)
+  // Sound emitters live until their sound ends, which may differ per machine
+  constexpr EntityTypeMask HASHED_TYPES = EntityTypeFlags::all & ~EntityTypeFlags::sound_emitter;
+  GameSystem::get().get_entities().for_each(HASHED_TYPES, [&entities](Entity& entity)
   {
     const EntityID id       = entity.get_id();
     const vec3     position = entity.get_position();

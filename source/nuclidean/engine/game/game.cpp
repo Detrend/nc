@@ -147,7 +147,7 @@ void Game::serialize(Buffer& buffer)
   if (buffer.is_deserializing())
   {
     mapping->on_map_rebuild();
-    entities->for_each(EntityTypes::all, [&](Entity& entity)
+    entities->for_each(EntityTypeFlags::all, [&](Entity& entity)
     {
       mapping->on_entity_create
       (
