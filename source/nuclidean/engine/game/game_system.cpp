@@ -1086,8 +1086,13 @@ void GameSystem::save_game(const char*const save_name) const
 }
 
 //==============================================================================
-void GameSystem::quick_save() const
+bool GameSystem::quick_save() const
 {
+  if (NetworkSystem::get().is_multiplayer())
+  {
+    return false;
+  }
+
   // Generate the filename
   [[maybe_unused]] auto lvl = level_name.to_string();
 
@@ -1100,11 +1105,18 @@ void GameSystem::quick_save() const
   {
     .save_to_file = std::move(save_path),
   };
+
+  return true;
 }
 
 //==============================================================================
 void GameSystem::load_game(const std::string& path)
 {
+  if (NetworkSystem::get().is_multiplayer())
+  {
+    return;
+  }
+
   scheduled_state = NextRequestedState
   {
     .load_from_file = path,

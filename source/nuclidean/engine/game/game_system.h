@@ -57,7 +57,8 @@ public:
 
   // Saves the game into a file.
   void save_game(const char* const save_name="") const;
-  void quick_save() const;
+  // Saves the game into the quicksave slot. Returns true if the save happens, false otherwise.
+  bool quick_save() const;
 
   // Loads the game from a file.
   void load_game(const std::string& path);

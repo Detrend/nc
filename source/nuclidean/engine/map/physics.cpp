@@ -1523,6 +1523,37 @@ struct EntityIdAndCoeff
 };
 
 //==============================================================================
+// Checks if the ray passes through the top of a cylinder
+static bool ray_enters_cylinder_top
+(
+  vec3 ray_from,
+  vec3 ray_to,
+  vec2 center,
+  f32  radius,
+  f32  top_y,
+  f32& out_c
+)
+{
+  // Find point where ray is at same height as cylinder top
+  f32 c = 0.0f;
+  if (!collide::ray_plane_xz(ray_from, ray_to, top_y, c) || c < 0.0f || c > 1.0f)
+  {
+    // Ray is parallel with cylinder's top, or shoots above or bellow the cylinder
+    return false;
+  }
+
+  // Looking from above, point must be inside cylinder's circle
+  const vec3 top_point = ray_from + (ray_to - ray_from) * c;
+  if (distance(top_point.xz(), center) > radius)
+  {
+    return false;
+  }
+
+  out_c = c;
+  return true;
+}
+
+//==============================================================================
 template
 <
   CollectReportOnly Collect = CollectReportOnly::No,
@@ -1576,21 +1607,35 @@ struct CylCastEntityIntersector
       return false;
     }
 
+    vec3 normal = vec3{n_int.x, 0.0f, n_int.y};
+
     if constexpr (DoCheckHeight == CheckHeight::Yes)
     {
       f32 entity_h = entity.get_height();
       f32 hit_height = ray_from.y + (ray_to.y - ray_from.y) * c_int;
       f32 h_half = height * 0.5f;
+      f32 top = pos.y + entity_h + h_half;
 
       nc_assert(height >= 0.0f);
 
-      if (hit_height + h_half < pos.y || hit_height - h_half > pos.y + entity_h)
+      if (hit_height + h_half < pos.y)
       {
-        // Under or above the entity
+        // Under the entity
         return false;
       }
+
+      if (hit_height > top)
+      {
+        // Check if ray hits entity from top
+        if (!ray_enters_cylinder_top(ray_from, ray_to, pos.xz(), rad + expand, top, c_int))
+        {
+          return false;
+        }
+
+        normal = UP_DIR;
+      }
     }
-    
+
     if constexpr (Collect == CollectReportOnly::Yes)
     {
       if (report_only & entity_type_to_mask(entity.get_type()))
@@ -1602,7 +1647,7 @@ struct CylCastEntityIntersector
     }
 
     out_c = c_int;
-    out_n = vec3{n_int.x, 0.0f, n_int.y};
+    out_n = normal;
     return true;
   }
 };

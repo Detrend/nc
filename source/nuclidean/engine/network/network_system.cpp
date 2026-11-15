@@ -3,6 +3,7 @@
 
 #include <cvars.h>
 #include <logging.h>
+#include <profiling.h>
 
 #include <engine/core/engine_module_types.h>
 #include <engine/core/module_event.h>
@@ -287,8 +288,11 @@ void NetworkSystem::wait_for_next_frame_inputs()
 {
   if (!m_is_multiplayer) return;
 
-  while (m_pending_inputs.empty())
-    poll_network();
+  {
+    NC_SCOPE_PROFILER(NetWait)
+    while (m_pending_inputs.empty())
+      poll_network();
+  }
 
   get_engine().send_event(ModuleEvent
   {

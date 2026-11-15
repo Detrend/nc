@@ -67,7 +67,7 @@ constexpr cstr PLAYER_SPRITE      = "player_walk";
 constexpr cstr PLAYER_DEAD_SPRITE = "player_dead";
 constexpr f32  PLAYER_SOUND_RANGE = 25.0f;
 constexpr f32  REVIVE_HOLD_TIME   = 2.0f;
-constexpr f32  REVIVE_DISTANCE    = 1.5f;
+constexpr f32  REVIVE_DISTANCE    = 3.0f;
 
 //==============================================================================
 template<typename T, u8 StackSize>
@@ -985,13 +985,32 @@ void Player::revive()
 }
 
 //==============================================================================
+void Player::respawn(vec3 position, vec3 in_forward)
+{
+  this->set_position(position);
+  this->angle_yaw   = atan2f(in_forward.z, -in_forward.x) + HALF_PI;
+  this->angle_pitch = 0.0f;
+  this->forward     = in_forward;
+  this->revive();
+}
+
+//==============================================================================
 bool Player::can_revive(const Player& dead) const
 {
-  const vec3 body_top = dead.get_position() + UP_DIR * dead.get_height();
+  if (!this->alive)
+  {
+    return false;
+  }
 
-  return this->alive
-      && distance(this->get_position(), dead.get_position()) <= REVIVE_DISTANCE
-      && !GameSystem::get().get_level().ray_cast_3d(this->get_eye_pos(), body_top, PhysLevel::COLLIDE_NONE);
+  const vec3 from = this->get_position() + UP_DIR * PLAYER_EYE_HEIGHT;
+  const vec3 to   = from + this->get_look_direction() * REVIVE_DISTANCE;
+
+  const CollisionHit hit = GameSystem::get().get_level().cylinder_cast_3d
+  (
+    from, to, 0.1f, 0.1f, EntityTypeFlags::player
+  );
+
+  return hit.is_entity_hit() && hit.hit.entity.entity_id == dead.get_id();
 }
 
 //==============================================================================

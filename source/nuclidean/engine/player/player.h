@@ -68,7 +68,10 @@ public:
   void die();
   void revive();
 
-  // True when this player is close enough to revive other player.
+  // Revives the player at the spawn.
+  void respawn(vec3 position, vec3 forward);
+
+  // True when this player looks at the dead player's body within revive distance.
   bool can_revive(const Player& dead) const;
 
   // Comes back to life once teammates held use next to the body long enough.

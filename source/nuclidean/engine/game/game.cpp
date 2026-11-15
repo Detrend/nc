@@ -155,6 +155,11 @@ void Game::handle_revives(const InputArray& current_inputs, f32 delta_time)
       const Player* const teammate = entities->get_entity<Player>(player_ids[player_id]);
       const bool          use_held = current_inputs[player_id].keys & 1 << PlayerKeyInputs::use;
       being_revived |= teammate && use_held && teammate->can_revive(*dead);
+
+      if (being_revived)
+      {
+        break;
+      }
     }
 
     dead->update_revive(being_revived, delta_time);
@@ -164,11 +169,10 @@ void Game::handle_revives(const InputArray& current_inputs, f32 delta_time)
 //==============================================================================
 void Game::handle_respawn_after_wipe()
 {
-  // Alive players have zero time since death
   for (EntityID entity_id : player_ids)
   {
     const Player* const player = entities->get_entity<Player>(entity_id);
-    if (player && player->get_time_since_death() < RESPAWN_DELAY)
+    if (player && (player->is_alive() || player->get_time_since_death() < RESPAWN_DELAY))
     {
       return;
     }
@@ -176,8 +180,7 @@ void Game::handle_respawn_after_wipe()
 
   entities->for_each<Player>([&](Player& player)
   {
-    player.revive();
-    player.set_position(spawn_point);
+    player.respawn(spawn_point, spawn_direction);
   });
 }
 
