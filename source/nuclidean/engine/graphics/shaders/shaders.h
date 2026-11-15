@@ -74,6 +74,7 @@ namespace nc
       inline constexpr Uniform<3, u32>  NUM_SECTORS;
       inline constexpr Uniform<4, u32>  NUM_WALLS;
       inline constexpr Uniform<5, bool> DO_SHADOWS;
+      inline constexpr Uniform<6, u32>  SECTOR_MATRICES_OFFSET;
     }
 
     // Sector rendering.

@@ -13,28 +13,39 @@
 namespace nc
 {
 
-#if defined(_MSC_VER) && !defined(__clang__)
-#   define NC_MSVC
-#elif defined(_MSC_VER)
-#   define NC_CLANG
+#if defined(_WIN32)
+#   define NC_OS_WINDOWS
+#elif defined(__linux__)
+#   define NC_OS_LINUX
 #endif
 
-#define NC_TODO(_msg) __pragma(message ("TODO: " _msg))
 
-#ifdef NC_CLANG
+
+#if NC_COMPILER_CLANG || NC_COMPILER_GCC
 #   define NC_FORCE_INLINE __attribute__((always_inline))
 #   define NC_NEVER_INLINE __attribute__((noinline))
-#   define NC_ANALYZER_NORETURN __attribute__((analyzer_noreturn))
 #   define NC_PUSH_PACKED _Pragma("pack(push, 1)")
 #   define NC_POP_PACKED  _Pragma("pack(pop)")
-#elif defined(NC_MSVC)
+# if NC_COMPILER_CLANG
+#   define NC_ANALYZER_NORETURN __attribute__((analyzer_noreturn))
+# else
+#   define NC_ANALYZER_NORETURN
+# endif
+#elif NC_COMPILER_MSVC
 #   define NC_FORCE_INLINE __forceinline
 #   define NC_NEVER_INLINE __declspec(noinline)
-#   define NC_ANALYZER_NORETURN
 #   define NC_PUSH_PACKED __pragma(pack(push)); __pragma(pack(1));
 #   define NC_POP_PACKED  __pragma(pack(pop));
+#   define NC_ANALYZER_NORETURN
 #endif
 
+#ifdef NC_OS_WINDOWS
+#   define NC_DEBUGBREAK() __debugbreak()
+#   define NC_TODO(_msg) __pragma(message ("TODO: " _msg))
+#elif defined(NC_OS_LINUX)
+#   define NC_DEBUGBREAK()
+#   define NC_TODO(_msg)
+#endif
 
 
 // disable warnings for when if-condition evaluates to constant
@@ -55,7 +66,7 @@ NC_ANALYZER_NORETURN inline void assert_fail_impl(const char* const expression_s
   }
 
   logging::log_message_impl(logging::LoggingSeverity::error, actual_message, logging_ctx);
-  __debugbreak();
+  NC_DEBUGBREAK();
 }
 
 //==============================================================================

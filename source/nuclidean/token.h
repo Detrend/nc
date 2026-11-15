@@ -24,8 +24,12 @@
 #include<string_view>
 #include<array>
 #include<exception>
+#include<cstdint>
+#include<limits>
+#include<type_traits>
 
 #include "math/utils.h"
+#include "logging.h"
 
 
 namespace nc {
@@ -67,10 +71,10 @@ namespace nc {
   namespace token_helpers 
   {
 
-    static consteval auto make_char_to_code_table(const std::string& chars_list, const std::string& alt_chars_list)
+    static constexpr std::array<u8, 256> make_char_to_code_table(std::string_view chars_list, std::string_view alt_chars_list)
     {
       if (alt_chars_list.size() > chars_list.size()) {
-        throw new std::exception("Alt chars list must not be bigger than chars_list!");
+        nc_crit_constexpr("Alt chars list must not be bigger than chars_list!");
       }
 
       std::array<u8, 256> ret = {};
@@ -83,9 +87,9 @@ namespace nc {
       return ret;
     }
 
-    static consteval size_t compute_max_token_length(const u64 chars_count) 
+    static consteval size_t compute_max_token_length(const u64 chars_count)
     {
-      u64 max = ULLONG_MAX;
+      u64 max = UINT64_MAX;
       size_t ret = 0;
       for (; max > chars_count; max /= chars_count) {
         ++ret;
@@ -116,19 +120,19 @@ namespace nc {
 
   private:
 
-    static constexpr auto CHAR_TO_CODE = token_helpers::make_char_to_code_table(TPermittedChars::chars, TPermittedChars::alt);
+    static constexpr std::array<u8, 256> CHAR_TO_CODE = token_helpers::make_char_to_code_table(TPermittedChars::chars, TPermittedChars::alt);
 
 
     static constexpr u64 char_to_code(const char c)
     {
       const u8 ret = CHAR_TO_CODE[c];
-      if (!ret) throw std::exception("Unsupported token character!"); //ideally this would be an assert, but those seem to behave problematically in constexpr context
+      if (!ret) nc_crit_constexpr("Unsupported token character!");
       return ret;
     }
 
     static constexpr char code_to_char(const u64 t)
     {
-      if ((t - 1) >= BASE) throw std::exception("Invalid token code!");
+      if ((t - 1) >= BASE) nc_crit_constexpr("Invalid token code!");
       return PERMITTED_CHARS[static_cast<u8>(t - 1)];
     }
 
@@ -141,7 +145,7 @@ namespace nc {
     constexpr BasicToken(const std::string_view& str)
       : raw(0)
     {
-      if (str.size() > MAX_LENGTH) throw std::exception("String too big for a token!");
+      if (str.size() > MAX_LENGTH) nc_crit_constexpr("String too big for a token!");
 
       for (size_t t = str.size(); t-- > 0;) 
       {
@@ -149,10 +153,14 @@ namespace nc {
       }
     }
 
-    template<size_t TSize>
-    static consteval BasicToken Const(const char(&literal)[TSize])
+    static consteval BasicToken Const(const char* const literal)
     {
         return BasicToken(literal);
+    }
+    template<size_t TSize>
+    static consteval BasicToken Const(const std::array<char, TSize>& literal)
+    {
+      return BasicToken(literal.data());
     }
 
     constexpr bool operator==(const BasicToken other) const
@@ -245,8 +253,7 @@ namespace nc {
 
     constexpr CompositeToken(const Segment& other) : storage{ other } {}
 
-    template<size_t TSize>
-    static consteval CompositeToken Const(const char(&literal)[TSize]) 
+    static consteval CompositeToken Const(const char *const literal) 
     {
       return CompositeToken(literal);
     }
@@ -262,7 +269,7 @@ namespace nc {
     constexpr CompositeToken(const std::string_view& str)
       : storage{}
     {
-      if (str.size() > MAX_LENGTH) throw std::exception("String too big for a token!");
+      if (str.size() > MAX_LENGTH) nc_crit_constexpr("String too big for a token!");
 
       for (size_t t = 0; t < TTokenCount; ++t) 
       {
@@ -399,4 +406,8 @@ namespace nc {
 namespace nc {
   // Declare our standard token to carry up to 24 chars
   using Token = CompositeToken<2>;
+
+  consteval Token operator ""_T(const char* const val, std::size_t) { return Token(val); }
+  consteval u64 operator ""_TVal(const char* const val, std::size_t) { return BasicToken<>(val).get_raw(); }
+
 }

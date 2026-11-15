@@ -4,6 +4,7 @@
 #include <cvars.h>
 
 #include <game/weapons.h>
+#include <memory.h>
 
 #include <engine/core/engine.h>
 #include <engine/core/engine_module.h>
@@ -46,6 +47,7 @@
 #include <filesystem>  // std::current_path
 #include <cctype>      // std::tolower
 #include <algorithm>   // std::sort, std::max, std::find
+#include <cstring>     // std::strlen
 #include <string>      // std::string
 #include <string_view> // std::string_view
 #include <format>      // std::format
@@ -62,16 +64,18 @@ static Engine* g_engine = nullptr;
 namespace engine_utils
 {
 
-[[maybe_unused]] constexpr cstr BENCHMARK_ARG      = "-benchmark";
-[[maybe_unused]] constexpr cstr UNIT_TEST_ARG      = "-unit_test";
-[[maybe_unused]] constexpr cstr TEST_FILTER_PREFIX = "-test_filter=";
-[[maybe_unused]] constexpr cstr START_LEVEL_ARG    = "-start_level";
-[[maybe_unused]] constexpr cstr START_DEMO_ARG     = "-start_demo";
-[[maybe_unused]] constexpr cstr FAST_DEMO_ARG      = "-fast_demo";
-[[maybe_unused]] constexpr cstr EDITOR_MODE_ARG    = "-editor_mode"; // sets up bunch of minor stuff to make it more pleasant to use the game for preview when editing a level
-[[maybe_unused]] constexpr cstr RES_SCALE_ARG      = "-res_scale"; // Sets up the resolution_scale cvar (quick hack, should be removed once we have on Options entry for it)
-[[maybe_unused]] constexpr cstr PRESENTATION_ARG   = "-presentation"; // shows prepared slides while demos play in the background; followed by slide texture names
-[[maybe_unused]] constexpr cstr PRINT_COUNTERS_ARG = "-print_counters"; // prints the performance counters [into a file] 
+[[maybe_unused]] constexpr cstr BENCHMARK_ARG             = "-benchmark";
+[[maybe_unused]] constexpr cstr UNIT_TEST_ARG             = "-unit_test";
+[[maybe_unused]] constexpr cstr TEST_FILTER_PREFIX        = "-test_filter=";
+[[maybe_unused]] constexpr cstr START_LEVEL_ARG           = "-start_level";
+[[maybe_unused]] constexpr cstr START_DEMO_ARG            = "-start_demo";
+[[maybe_unused]] constexpr cstr FAST_DEMO_ARG             = "-fast_demo";
+[[maybe_unused]] constexpr cstr EDITOR_MODE_ARG           = "-editor_mode"; // sets up bunch of minor stuff to make it more pleasant to use the game for preview when editing a level
+[[maybe_unused]] constexpr cstr RES_SCALE_ARG             = "-res_scale"; // Sets up the resolution_scale cvar (quick hack, should be removed once we have on Options entry for it)
+[[maybe_unused]] constexpr cstr PRESENTATION_ARG          = "-presentation"; // shows prepared slides while demos play in the background; followed by slide texture names
+[[maybe_unused]] constexpr cstr PRINT_COUNTERS_ARG        = "-print_counters"; // prints the performance counters [into a file] 
+[[maybe_unused]] constexpr cstr FORCE_GLES_ARG            = "-gles"; // Forces use of OpenGL ES backend even when desktop OpenGL is available.
+[[maybe_unused]] constexpr cstr FORCE_GPU_API_DLL_ARG     = "-force_gpu_api_dll"; // Forces the game to use graphics api .dlls next to the executable instead of system provided ones (libEGL.dll/libGLESv2.dll = ANGLE on Windows).
 
 //==============================================================================
 static f32 duration_to_seconds(auto t1, auto t2)
@@ -369,6 +373,10 @@ Engine& get_engine()
 //==============================================================================
 int init_engine_and_run_game(const CmdArgs& args)
 {
+  // Make sure Scratch allocator is initialized and scoped for unit tests etc.
+  // Also checks that upon quiting the game, there is nothing left in the scratch allocator
+  auto _root_scratch_scope_guard = ScratchAllocator::get().create_scope("root"); 
+
   // This makes sure that the current directory is in the root of the workspace
   // and "content" and "demo" dirs are directly in the current directory.
   // Changing the current directory might be necessary only if the user runs the
@@ -500,11 +508,11 @@ bool Engine::init(const CmdArgs& cmd_args)
     CVars::fps_limit = 30.0f;
     CVars::invisibility = true;
   }
+#endif
   std::string res_scale_value;
   if (engine_utils::contains_pair_of_args(cmd_args, engine_utils::RES_SCALE_ARG, res_scale_value)) {
     CVars::resolution_scale = static_cast<f32>(std::atof(res_scale_value.c_str()));
   }
-#endif
 
   // init the modules here..
   #define INIT_MODULE(_module_class, ...)                     \
@@ -512,13 +520,17 @@ bool Engine::init(const CmdArgs& cmd_args)
     auto m = std::make_unique<_module_class>();               \
     if (!m || !m->init(__VA_ARGS__))                          \
     {                                                         \
+      nc_crit("Failed to {} module " #_module_class, m?"init":"create"); \
       return false;                                           \
     }                                                         \
     m_module_init_order.push_back(m.get());                   \
     m_modules[_module_class::get_module_id()] = std::move(m); \
   }
 
-  INIT_MODULE(GraphicsSystem);
+  INIT_MODULE(GraphicsSystem, GraphicsSystem::InitArgs {
+      .force_gles = engine_utils::contains_arg(cmd_args, engine_utils::FORCE_GLES_ARG),
+      .force_gpu_api_dlls = engine_utils::contains_arg(cmd_args, engine_utils::FORCE_GPU_API_DLL_ARG) 
+  });
   INIT_MODULE(InputSystem);
   INIT_MODULE(NetworkSystem, cmd_args);
   INIT_MODULE(GameSystem);
@@ -755,6 +767,7 @@ void Engine::run()
 
     while (!this->should_quit())
     {
+      auto _frame_scratch_scope_guard = ScratchAllocator::get().create_scope("frame"); // Cleanup Scratch at the end of each frame
       auto current_time = std::chrono::high_resolution_clock::now();
       f32 frame_time = eu::duration_to_seconds(previous_time, current_time);
 #if NC_PROFILING

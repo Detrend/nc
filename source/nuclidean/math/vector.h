@@ -47,12 +47,14 @@ using vec = glm::vec<S, T, glm::packed>;
 // as vec4 (even though it has only 3 components) and the extra space
 // is padded out. Therefore, you can't just copy a memory of an array
 // of vec3a to GPU.
-using vec2a = glm::vec<2, f32, glm::aligned>; // aligned to  8 bytes, takes up  8 bytes
-using vec3a = glm::vec<3, f32, glm::aligned>; // aligned to 16 bytes, takes up 16 bytes
-using vec4a = glm::vec<4, f32, glm::aligned>; // aligned to 16 bytes, takes up 16 bytes
-
-template<typename T, u64 S>
-using veca = glm::vec<S, T, glm::aligned>;
+//
+// Commented out for now. If we want to use these sometime in the future, make sure glm::aligned is available on all platforms we support
+//using vec2a = glm::vec<2, f32, glm::aligned>; // aligned to  8 bytes, takes up  8 bytes
+//using vec3a = glm::vec<3, f32, glm::aligned>; // aligned to 16 bytes, takes up 16 bytes
+//using vec4a = glm::vec<4, f32, glm::aligned>; // aligned to 16 bytes, takes up 16 bytes
+//
+//template<typename T, u64 S>
+//using veca = glm::vec<S, T, glm::aligned>;
 
 using color4 = vec4;
 using color3 = vec3;

@@ -369,9 +369,11 @@ TopDownDebugRenderer::TopDownDebugRenderer(u32 w, u32 h)
 : window_width(w)
 , window_height(h)
 {
-  g_top_down_material = ShaderProgramHandle
+  g_top_down_material = ShaderProgramHandle::make_vertex_fragment
   (
+    "<topdown_vertex_shader>",
     TOP_DOWN_VERTEX_SOURCE,
+    "<topdown_fragment_shader>",
     TOP_DOWN_FRAGMENT_SOURCE
   );
   glGenVertexArrays(1, &g_default_vao);

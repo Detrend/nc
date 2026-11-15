@@ -11,6 +11,8 @@
 #include <engine/graphics/resources/model.h>
 #include <engine/map/map_types.h>            // SectorID
 
+#include <SDL_video.h> // SDL_GLprofile
+
 #include <game/game_types.h>
 #include <cvars.h>
 
@@ -40,6 +42,12 @@ struct RenderGunProperties
   std::string sprite = "";
 };
 
+enum class RenderBackend {
+  None,
+  OpenGL,
+  OpenGLES
+};
+
 class GraphicsSystem : public IEngineModule
 {
 public:
@@ -58,7 +66,13 @@ public:
   GraphicsSystem(const GraphicsSystem&)            = delete;
   GraphicsSystem& operator=(const GraphicsSystem&) = delete;
 
-  bool init();
+  struct InitArgs
+  {
+    bool force_gles         = false;
+    bool force_gpu_api_dlls = false;
+  };
+
+  bool init(const InitArgs& args);
   void on_event(ModuleEvent& event) override;
 
   // This returns the mesh handle. If the sector is dirty (was changed)
@@ -74,6 +88,8 @@ public:
   SDL_Window* get_window();
   void set_shadows(bool shadows);
 
+  RenderBackend get_backend() const { return m_backend; }
+
 private:
   void update(f32 delta_seconds);
   void render();
@@ -81,6 +97,8 @@ private:
 
   void query_visibility(VisibilityTree& out) const;
   void create_sector_meshes();
+  struct GlLoadingInstructions;
+  std::optional<std::string> try_create_opengl_context(const GlLoadingInstructions& instructions);
 
 #if NC_DEBUG_DRAW
   void render_map_top_down(const VisibilityTree& visible);
@@ -98,6 +116,7 @@ private:
   RendererPtr             m_renderer;
   std::vector<MeshHandle> m_sector_meshes;
   std::vector<bool>       m_dirty_sectors;
+  RenderBackend           m_backend;
 
 #if NC_DEBUG_DRAW
   using DebugRendererPtr = std::unique_ptr<class TopDownDebugRenderer>;

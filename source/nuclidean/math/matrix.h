@@ -21,12 +21,13 @@ using mat3 = glm::mat<3, 3, f32, glm::packed>;
 using mat2 = glm::mat<2, 2, f32, glm::packed>;
 
 
-template<typename T, u64 W, u64 H>
-using mata = glm::mat<W, H, T, glm::aligned>;
-
-using mat4a = glm::mat<4, 4, f32, glm::aligned>;
-using mat3a = glm::mat<3, 3, f32, glm::aligned>;
-using mat2a = glm::mat<2, 2, f32, glm::aligned>;
+// If we want to use these sometime in the future, make sure glm::aligned is available on all platforms we support
+//template<typename T, u64 W, u64 H>
+//using mata = glm::mat<W, H, T, glm::aligned>;
+//
+//using mat4a = glm::mat<4, 4, f32, glm::aligned>;
+//using mat3a = glm::mat<3, 3, f32, glm::aligned>;
+//using mat2a = glm::mat<2, 2, f32, glm::aligned>;
 
 }
 

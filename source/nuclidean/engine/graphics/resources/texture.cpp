@@ -534,6 +534,15 @@ void TextureManager::finish_load(ResLifetime lifetime)
   bundle.width = target_width;
   bundle.height = target_height;
 
+  GLint max_supported_texture_size;
+  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_supported_texture_size);
+  nc_expect((target_width <= max_supported_texture_size) && (target_height <= max_supported_texture_size), 
+    "Texture atlas size {}x{} exceeds maximum supported texture size {}.", 
+    target_width, target_height, max_supported_texture_size
+  );
+
+  nc_log("Texture atlas for {} resources: {}x{} (max supported {})", lifetime == ResLifetime::Game ? "game" : "level", target_width, target_height, max_supported_texture_size);
+
   // diffuse texture atlas
   {
     glGenTextures(1, &bundle.diffuse_handle);

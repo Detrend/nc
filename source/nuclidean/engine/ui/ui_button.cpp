@@ -96,6 +96,7 @@ void UiButton::draw(const ShaderProgramHandle button_material)
   button_material.set_uniform(shaders::ui_button::TEXTURE_POS, texture.get_pos());
   button_material.set_uniform(shaders::ui_button::TEXTURE_SIZE, texture.get_size());
   button_material.set_uniform(shaders::ui_button::HOVER, isHover);
+  button_material.set_uniform(shaders::ui_button::COLOR, VEC4_ONE);
 
   glBindTexture(GL_TEXTURE_2D, texture.get_atlas_bundle().diffuse_handle);
   glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

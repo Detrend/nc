@@ -151,6 +151,19 @@ void save_bytes_to_file
   u64                size
 )
 {
+  std::filesystem::path dir_path = std::filesystem::path(path).parent_path();
+  if(!std::filesystem::exists(dir_path))
+  {
+    std::filesystem::create_directories(dir_path);
+    nc_log("Created new directory: {}", dir_path.string());
+  }
+  nc_assert(std::filesystem::exists(dir_path));
+  if(!std::filesystem::is_directory(dir_path))
+  {
+    nc_crit("Path exists but is not a directory: {}", dir_path.string());
+    return;
+  }
+
   std::ofstream out(path, std::ios::binary);
   nc_assert(out);
 

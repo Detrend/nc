@@ -41,11 +41,21 @@ void    register_logging_output         (LoggingSeverity severity, const Logging
 void    unregister_logging_output       (LoggingSeverity severity, const LoggingFunction &output);
 
 
+// Throw this exception on error in constexpr functions, either causing compiler error or logging to nc_crit() at runtime
+struct crit_exception_t {
+  constexpr crit_exception_t([[maybe_unused]] const std::string& message, [[maybe_unused]] const nc::logging::LoggingContext& logging_context)
+  {
+    if (! std::is_constant_evaluated()) {
+      nc::logging::log_message_impl(nc::logging::LoggingSeverity::error, message, logging_context);
+    }
+  }
+};
 
 #define NC_LOG_GENERIC(severity, ...)   nc::logging::log_message_impl((severity), std::format("" __VA_ARGS__), CAPTURE_CURRENT_LOGGING_CONTEXT())
 
 #define nc_log(...)  NC_LOG_GENERIC(nc::logging::LoggingSeverity::message, __VA_ARGS__)
 #define nc_warn(...) NC_LOG_GENERIC(nc::logging::LoggingSeverity::warning, __VA_ARGS__)
 #define nc_crit(...) NC_LOG_GENERIC(nc::logging::LoggingSeverity::error, __VA_ARGS__)
+#define nc_crit_constexpr(...) throw ::nc::logging::crit_exception_t(std::format("" __VA_ARGS__), CAPTURE_CURRENT_LOGGING_CONTEXT())
 
 }

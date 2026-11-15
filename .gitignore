@@ -24,3 +24,5 @@ save
 /.godot
 /dumps
 *.mscz~
+.vscode
+.idea

@@ -6,6 +6,7 @@
 #include <engine/graphics/gl_types.h>
 
 #include <vector>
+#include <span>
 
 namespace nc
 {
@@ -32,6 +33,9 @@ public:
   template <typename UnaryOp>
   void update_gpu_data(UnaryOp op, bool reset_capacity = false);
   void update_gpu_data_with(const std::vector<T>& elements);
+  // Writes `elements` directly to GPU starting at item `first_index`, without touching the size counters.
+  // Items that would not fit into the capacity are dropped (with a warning).
+  void update_gpu_range(size_t first_index, const std::span<T>& elements);
   T& get_buffer_item(size_t index);
   void update_gpu_item(size_t index, const T& value);
   void update_gpu_item_bytes(size_t index, size_t byte_offset, const void* data, size_t byte_count);

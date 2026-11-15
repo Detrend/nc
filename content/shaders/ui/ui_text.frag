@@ -1,7 +1,7 @@
     
 in vec2 uv;
       
-layout(location = 7) uniform bool hover = false;
+layout(location = 7) uniform bool hover;
 
 out vec4 FragColor;
 

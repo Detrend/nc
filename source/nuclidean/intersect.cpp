@@ -340,7 +340,7 @@ bool segment_circle
   }
 
   const f32 a2 = 2 * a;
-  const f32 D  = std::sqrtf(D2);
+  const f32 D  = std::sqrt(D2);
 
   const f32 t1 = (-b + D) / a2;
   const f32 t2 = (-b - D) / a2;
@@ -384,8 +384,8 @@ bool ray_wall_3d
 
   out_coeff = FLT_MAX;
 
-  const vec2 start2d = ray_start.xz;
-  const vec2 end2d   = ray_end.xz;
+  const vec2 start2d = ray_start.xz();
+  const vec2 end2d   = ray_end.xz();
   const vec3 ray_dir = ray_end - ray_start;
 
   if (f32 _; !segment_segment(start2d, end2d, wall_a, wall_b, out_coeff, _))
@@ -859,10 +859,10 @@ Frustum2 Frustum2::modified_with_portal(vec2 p1, vec2 p2) const
   vec2 to_p1 = p1 - this->center;
   vec2 to_p2 = p2 - this->center;
 
-  f32 a_l = to_0_pi(std::atan2f(d_l.y,   d_l.x));
-  f32 a_r = to_0_pi(std::atan2f(d_r.y,   d_r.x));
-  f32 b_l = to_0_pi(std::atan2f(to_p2.y, to_p2.x));
-  f32 b_r = to_0_pi(std::atan2f(to_p1.y, to_p1.x));
+  f32 a_l = to_0_pi(std::atan2(d_l.y,   d_l.x));
+  f32 a_r = to_0_pi(std::atan2(d_r.y,   d_r.x));
+  f32 b_l = to_0_pi(std::atan2(to_p2.y, to_p2.x));
+  f32 b_r = to_0_pi(std::atan2(to_p1.y, to_p1.x));
 
   if (f32 i1 = 0, i2 = 0; interval_intersection(a_l, a_r, b_l, b_r, i1, i2))
   {

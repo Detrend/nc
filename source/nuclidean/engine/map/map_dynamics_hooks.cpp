@@ -51,7 +51,7 @@ namespace nc
 
   void ActivatorHook_LevelTransition::load(const ActivatorHookLoadArg& arg)
   {
-    this->destination = std::string_view(arg.data()["destination"]);
+    this->destination = LevelName(std::string(arg.data()["destination"]));
   }
 
   void ActivatorHook_LevelTransition::on_activated_start([[maybe_unused]] const ActivatorHookArg& args)
@@ -127,7 +127,7 @@ namespace nc
 
   void ActivatorHook_Autosave::load([[maybe_unused]] const ActivatorHookLoadArg& arg)
   {
-    this->name = Token(arg.data()["name"]);
+    this->name = Token(std::string(arg.data()["name"]));
   }
 
   void ActivatorHook_Autosave::on_activated_start([[maybe_unused]] const ActivatorHookArg& args)

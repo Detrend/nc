@@ -179,7 +179,7 @@ const
   nc_assert(ver_fov < HALF_PI, "Fix this elsewhere");
 
   // The angle of looking up/down
-  f32 angle_ver = std::atan2f(std::abs(view_dir.y), length(view_dir.xz()));
+  f32 angle_ver = std::atan2(std::abs(view_dir.y), length(view_dir.xz()));
   f32 threshold = HALF_PI - ver_fov * 0.5f;
 
   // This interpolates the horizontal fov lineary between the original value
@@ -199,7 +199,7 @@ const
 
   const auto final_angle = hor_fov >= PI
     ? Frustum2::FULL_ANGLE
-    : std::cosf(hor_fov * 0.5f);
+    : std::cos(hor_fov * 0.5f);
 
   const auto frustum = Frustum2
   {

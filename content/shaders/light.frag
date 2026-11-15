@@ -56,22 +56,67 @@ layout(binding = 1) uniform sampler2D  g_stitched_position;
 layout(binding = 2) uniform sampler2D  g_normal;
 layout(binding = 3) uniform sampler2D  g_stitched_normal;
 layout(binding = 4) uniform sampler2D  g_albedo;
-layout(binding = 5) uniform usampler2D g_sector;
+layout(binding = 5) highp uniform usampler2D g_sector;
 
 layout(location = 0) uniform vec3  view_position;
 layout(location = 1) uniform uint  num_tiles_x;
 layout(location = 2) uniform float ambient_strength;
 layout(location = 3) uniform uint  num_sectors;
 layout(location = 4) uniform uint  num_walls;
-layout(location = 5) uniform bool  do_shadows = true;
+layout(location = 5) uniform bool  do_shadows;
+layout(location = 6) uniform uint  sector_matrices_offset; // index of the first sector matrix in matrices_inv
 
 layout(std430, binding = 0) readonly buffer point_light_buffer     { PointLight point_lights[];     };
 layout(std430, binding = 1) readonly buffer light_index_buffer     { uint       light_indices[];    };
 layout(std430, binding = 2) readonly buffer tile_data_buffer       { TileData   tile_data[];        };
 layout(std430, binding = 3) readonly buffer sector_data_buffer     { SectorData sectors[];          };
 layout(std430, binding = 4) readonly buffer wall_data_buffer       { WallData   walls[];            };
-layout(std430, binding = 5) readonly buffer portal_matrices_buffer { mat4       portal_matrices_inv[]; };
-layout(std430, binding = 6) readonly buffer sector_matrices_buffer { mat4       sector_matrices_inv[]; };
+// Portal matrices first, sector matrices from sector_matrices_offset (one buffer to stay within 7 combined output resources on D3D11 FL 11_0 via ANGLE).
+layout(std430, binding = 5) readonly buffer matrices_buffer        { mat4       matrices_inv[];     };
+
+// ANGLE is dumb and doesn't let us load a whole struct from an SSBO directly, so we have to load field by field xD
+PointLight load_point_light(uint i)
+{
+  PointLight l;
+  l.position          = point_lights[i].position;
+  l.intensity         = point_lights[i].intensity;
+  l.stitched_position = point_lights[i].stitched_position;
+  l.radius            = point_lights[i].radius;
+  l.color             = point_lights[i].color;
+  l.falloff           = point_lights[i].falloff;
+  l.sector_id         = point_lights[i].sector_id;
+  return l;
+}
+
+TileData load_tile_data(uint i)
+{
+  TileData t;
+  t.count  = tile_data[i].count;
+  t.offset = tile_data[i].offset;
+  return t;
+}
+
+SectorData load_sector(uint i)
+{
+  SectorData s;
+  s.floor_y      = sectors[i].floor_y;
+  s.ceil_y       = sectors[i].ceil_y;
+  s.walls_offset = sectors[i].walls_offset;
+  s.walls_count  = sectors[i].walls_count;
+  return s;
+}
+
+WallData load_wall(uint i)
+{
+  WallData w;
+  w.start               = walls[i].start;
+  w.end                 = walls[i].end;
+  w.packed_normal       = walls[i].packed_normal;
+  w.destination         = walls[i].destination;
+  w.portal_matrix_index = walls[i].portal_matrix_index;
+  return w;
+}
+
 
 bool out_of_range_sectors = false;
 bool out_of_range_walls = false;
@@ -79,7 +124,7 @@ bool invalid_wall_id = false;
 bool max_hops_reached = false;
 bool debug_pixel = false;
 
-float cross(vec2 a, vec2 b)
+float cross2(vec2 a, vec2 b)
 {
   return a.x * b.y - a.y * b.x;
 }
@@ -93,7 +138,7 @@ float get_intersection_t(vec2 ray_origin, vec2 ray_direction, vec2 wall_p0, vec2
   float wall_length = distance(wall_p1, wall_p0);
   vec2 wall_direction = normalize(wall_p1 - wall_p0);
 
-  float denominator = cross(ray_direction, wall_direction);
+  float denominator = cross2(ray_direction, wall_direction);
 
   // rays are parallel
   if (abs(denominator) < 0.001f)
@@ -102,8 +147,8 @@ float get_intersection_t(vec2 ray_origin, vec2 ray_direction, vec2 wall_p0, vec2
   vec2 diff = wall_origin - ray_origin;
   float inv_denominator = 1.0f / denominator;
 
-  float ray_t  = cross(diff, wall_direction) * inv_denominator;
-  float wall_t = cross(diff, ray_direction ) * inv_denominator;
+  float ray_t  = cross2(diff, wall_direction) * inv_denominator;
+  float wall_t = cross2(diff, ray_direction ) * inv_denominator;
 
   // intersection occurs outside of this wall segment
   if (wall_t < 0.0f || wall_t > wall_length + 0.0f)
@@ -114,21 +159,21 @@ float get_intersection_t(vec2 ray_origin, vec2 ray_direction, vec2 wall_p0, vec2
 
 bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, uint start_matrix_id, PointLight light)
 {
-  const uint INVALID_WALL_ID = 65535;
-  const uint MAX_LIGHT_TRAVERSE_SECTORS = 32;
+  const uint INVALID_WALL_ID = 65535u;
+  const uint MAX_LIGHT_TRAVERSE_SECTORS = 32u;
 
   vec3 ray_stitched_origin = stitched_position;
   vec3 ray_origin = position;
   vec3 ray_stitched_direction = normalize(light.stitched_position - stitched_position);
-  mat4 stitched_to_local = sector_matrices_inv[start_matrix_id];
+  mat4 stitched_to_local = matrices_inv[sector_matrices_offset + start_matrix_id];
   vec3 ray_direction = mat3(stitched_to_local) * ray_stitched_direction;
   
   uint current_sector_id = start_sector_id;
   float ray_t = -0.001f;
 
-  for (int hop = 0; hop < MAX_LIGHT_TRAVERSE_SECTORS; ++hop)
+  for (uint hop = 0u; hop < MAX_LIGHT_TRAVERSE_SECTORS; ++hop)
   {
-    SectorData sector = sectors[current_sector_id];
+    SectorData sector = load_sector(current_sector_id);
     uint wall_index = INVALID_WALL_ID;
 
     if (current_sector_id == light.sector_id)
@@ -151,14 +196,14 @@ bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, u
       return false;
     }
 
-    for (uint i = 0; i < sector.walls_count; ++i)
+    for (uint i = 0u; i < sector.walls_count; ++i)
     {
       if (sector.walls_offset + i >= num_walls)
       {
         out_of_range_walls = true;
         return false;
       }
-      WallData wall = walls[sector.walls_offset + i];
+      WallData wall = load_wall(sector.walls_offset + i);
 
       vec2 wall_normal = unpackSnorm2x16(wall.packed_normal);
       // wall is facing opposite direction, we can skip it
@@ -185,7 +230,7 @@ bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, u
     if (ray_hit_y < sector.floor_y - 0.001f || ray_hit_y > sector.ceil_y + 0.001f)
       return true;
    
-    WallData wall = walls[sector.walls_offset + wall_index];
+    WallData wall = load_wall(sector.walls_offset + wall_index);
 
     // wall is solid wall (not a portal)
     if (wall.destination == INVALID_WALL_ID)
@@ -194,11 +239,11 @@ bool is_in_shadow(vec3 position, vec3 stitched_position, uint start_sector_id, u
     current_sector_id = wall.destination;
 
     // check if ray can pass through the portal opening
-    SectorData dest_sector = sectors[current_sector_id];
+    SectorData dest_sector = load_sector(current_sector_id);
     if (ray_hit_y < dest_sector.floor_y - 0.001f || ray_hit_y > dest_sector.ceil_y + 0.001f)
       return true;
 
-    mat4 portal_matrix = portal_matrices_inv[wall.portal_matrix_index];
+    mat4 portal_matrix = matrices_inv[wall.portal_matrix_index];
     ray_origin = (portal_matrix * vec4(ray_origin, 1.0f)).xyz;
     ray_direction = normalize(mat3(portal_matrix) * ray_direction);
     stitched_to_local = portal_matrix * stitched_to_local;
@@ -243,17 +288,17 @@ void main()
   uvec2 tile_coords = uvec2(gl_FragCoord.xy) / uvec2(TILE_SIZE_X, TILE_SIZE_Y);
   uint tile_index = tile_coords.y * num_tiles_x + tile_coords.x;
 
-  TileData data = tile_data[tile_index];
+  TileData data = load_tile_data(tile_index);
 
   // For billboards we store shading position in "normal" and shading stitched position in "stitched normal"
   vec3 shading_position          = mix(position,          normal,          billboard_f); // Storing shading position here for billboards
   vec3 shading_stitched_position = mix(stitched_position, stitched_normal, billboard_f); // Storing stitched shading position here for billboards
 
-  for (int i = 0; i < data.count; i++)
+  for (uint i = 0u; i < data.count; i++)
   {
     uint light_index = light_indices[data.offset + i];
 
-    PointLight light = point_lights[light_index];
+    PointLight light = load_point_light(light_index);
 
     vec3 light_direction = light.stitched_position - stitched_position;
     float distance_squared = dot(light_direction, light_direction);
@@ -273,7 +318,7 @@ void main()
     vec3 diffuse = max(angle, 0.0f) * albedo;
 
     vec3 half_direction = normalize(light_direction + view_direction);
-    vec3 specular = specular_strength * pow(clamp(dot(stitched_normal, half_direction), 0.0f, 1.0f), shininess) * vec3(1.0f);
+    vec3 specular = specular_strength * pow(clamp(dot(stitched_normal, half_direction), 0.0f, 1.0f), float(shininess)) * vec3(1.0f);
 
     float attenuation = pow(max(light.radius - distance, 0.0f) / light.radius, light.falloff);
     final_color += (diffuse + specular) * light.color * light.intensity * attenuation;

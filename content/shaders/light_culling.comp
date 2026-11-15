@@ -35,6 +35,21 @@ layout(std430, binding = 1) writeonly buffer light_index_buffer { uint light_ind
 layout(std430, binding = 2) writeonly buffer tile_data_buffer { TileData tile_data[]; };
 layout(std430, binding = 3) buffer light_index_counter_buffer { uint light_index_counter; };
 
+// ANGLE is dumb and doesn't let us load a whole struct from an SSBO directly, so we have to load field by field xD
+PointLight load_point_light(uint i)
+{
+  PointLight l;
+  l.position          = lights[i].position;
+  l.intensity         = lights[i].intensity;
+  l.stitched_position = lights[i].stitched_position;
+  l.radius            = lights[i].radius;
+  l.color             = lights[i].color;
+  l.falloff           = lights[i].falloff;
+  l.sector_id         = lights[i].sector_id;
+  return l;
+}
+
+
 shared uint shared_light_indices[MAX_LIGHTS_PER_TILE];
 shared uint shared_light_count;
 shared vec4 frustum_planes[4];
@@ -60,10 +75,10 @@ void main()
   uvec2 tile_coords = gl_WorkGroupID.xy;
   uint local_thread_index = gl_LocalInvocationIndex;
 
-  if (local_thread_index == 0)
+  if (local_thread_index == 0u)
   {
-    shared_light_count = 0;
-    uvec2 tile_size = uvec2(TILE_SIZE_X, TILE_SIZE_Y);
+    shared_light_count = 0u;
+    uvec2 tile_size = uvec2(uint(TILE_SIZE_X), uint(TILE_SIZE_Y));
 
     // screen space
     uvec2 bottom_left_screen = tile_coords * tile_size;
@@ -100,17 +115,17 @@ void main()
   // TODO: we can find frustum Z min and max for each tile
   barrier();
 
-  uint group_size = TILE_SIZE_X * TILE_SIZE_Y;
+  uint group_size = uint(TILE_SIZE_X) * uint(TILE_SIZE_Y);
 
   for (uint light_index = local_thread_index; light_index < num_lights; light_index += group_size)
   {
-    PointLight light = lights[light_index];
+    PointLight light = load_point_light(light_index);
         
     vec3 light_pos_view = (view * vec4(light.stitched_position, 1.0)).xyz;
     float light_radius = calculate_light_radius(light);
 
     bool is_light_visible = true;
-    for (uint i = 0; i < 4; i++)
+    for (uint i = 0u; i < 4u; i++)
     {
       float distance = get_signed_distance_to_plane(light_pos_view, frustum_planes[i]);
       if (distance < -light_radius)
@@ -126,8 +141,8 @@ void main()
     if ((-light_pos_view.z + light_radius) < 0.0)
         continue;
 
-    uint tile_light_index = atomicAdd(shared_light_count, 1);
-    if (tile_light_index < MAX_LIGHTS_PER_TILE)
+    uint tile_light_index = atomicAdd(shared_light_count, 1u);
+    if (tile_light_index < uint(MAX_LIGHTS_PER_TILE))
     {
         shared_light_indices[tile_light_index] = light_index;
     }
@@ -135,9 +150,9 @@ void main()
 
   barrier();
 
-  if (local_thread_index == 0)
+  if (local_thread_index == 0u)
   {
-    uint tile_light_count = min(shared_light_count, MAX_LIGHTS_PER_TILE);
+    uint tile_light_count = shared_light_count < uint(MAX_LIGHTS_PER_TILE) ? shared_light_count : uint(MAX_LIGHTS_PER_TILE);
     uint offset = atomicAdd(light_index_counter, tile_light_count);
         
     uint tile_index = tile_coords.y * gl_NumWorkGroups.x + tile_coords.x;
@@ -145,7 +160,7 @@ void main()
     tile_data[tile_index].offset = offset;
         
     // TODO: this for loop can be parallelized within the group
-    for (uint i = 0; i < tile_light_count; i++)
+    for (uint i = 0u; i < tile_light_count; i++)
     {
       light_indices[offset + i] = shared_light_indices[i];
     }

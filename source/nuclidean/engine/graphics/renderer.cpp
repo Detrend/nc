@@ -25,6 +25,7 @@
 #include <engine/game/game_helpers.h>
 #include <engine/player/player.h>
 #include <engine/appearance.h>
+#include <memory.h>
 
 #include <array>
 #include <filesystem>
@@ -210,7 +211,6 @@ const
   glViewport(0, 0, m_window_size.x, m_window_size.y);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
   m_point_light_ssbo.clear();
-  m_sector_matrices_inv_ssbo.clear();
 
   m_light_gpu_data_indices.clear();
   m_sector_matrices_inv.clear();
@@ -232,14 +232,13 @@ void Renderer::update_sector_ssbos() const
 
   m_sectors_ssbo.clear();
   m_walls_ssbo.clear();
-  m_portal_matrices_inv_ssbo.clear();
 
-  m_portal_matrices_inv_ssbo.push_back(mat4(1.0f));
+  ScratchScoped<scratch_vector<mat4>> portal_matrices_inv(std::initializer_list<mat4>{ mat4(1.0f) }); // index 0 is expected to be a unit matrix
 
   for (SectorID sector_id = 0; sector_id < map.sectors.size(); ++sector_id)
   {
     std::vector<WallGPU> walls_data;
-    map.for_each_wall_of_sector(sector_id, [this, &map, &walls_data](WallID wall_id)
+    map.for_each_wall_of_sector(sector_id, [&map, &walls_data, &portal_matrices_inv](WallID wall_id)
     {
       const WallData& wall = map.walls[wall_id];
 
@@ -252,7 +251,8 @@ void Renderer::update_sector_ssbos() const
       else
       {
         const mat4& portal_matrix = map.portals_render_data[wall.render_data_index].dest_to_src;
-        matrix_index = m_portal_matrices_inv_ssbo.push_back(inverse(portal_matrix));
+        matrix_index = portal_matrices_inv->size();
+        portal_matrices_inv->push_back(inverse(portal_matrix));
       }
 
       if (walls_data.size() > 0)
@@ -289,7 +289,13 @@ void Renderer::update_sector_ssbos() const
 
   m_sectors_ssbo.update_gpu_data();
   m_walls_ssbo.update_gpu_data();
-  m_portal_matrices_inv_ssbo.update_gpu_data();
+
+  if (portal_matrices_inv->size() > SECTOR_MATRICES_OFFSET)
+  {
+    nc_warn("Too many portal matrices ({}), only {} fit into the matrices SSBO.", portal_matrices_inv->size(), SECTOR_MATRICES_OFFSET);
+    portal_matrices_inv->resize(SECTOR_MATRICES_OFFSET);
+  }
+  m_matrices_inv_ssbo.update_gpu_range(0, *portal_matrices_inv);
 }
 
 //==============================================================================
@@ -347,11 +353,26 @@ static GLuint create_g_buffer(GLint internal_format, GLenum attachment, u32 w, u
   GLenum format = GL_RGBA;
   GLenum type   = GL_FLOAT;
 
+  if (GraphicsSystem::get().get_backend() == RenderBackend::OpenGLES) 
+  {
+      if (internal_format == GL_RGBA32F) {
+          // Not all GL ES hardware supports RGBA32F - fallback to RGBA16F
+          //  TODO: add some more robust logic for checking if GL_RGBA32F is supported on current hardware
+          internal_format = GL_RGBA16F;
+          type            = GL_HALF_FLOAT;
+      }
+  }
+
   // TODO: temp solution
   if (internal_format == GL_R32UI)
   {
     format = GL_RED_INTEGER;
     type   = GL_UNSIGNED_INT;
+  }
+  else if (internal_format == GL_RGBA8)
+  {
+    format = GL_RGBA;
+    type   = GL_UNSIGNED_BYTE;
   }
 
   GLuint g_handle;
@@ -473,8 +494,8 @@ void Renderer::create_renderbuffers(ivec2 dims)
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_g_depth_stencil);
 
   if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    nc_warn("G-buffer not complete.");
-
+    nc_warn("G-buffer not complete. (status: {:x})", glCheckFramebufferStatus(GL_FRAMEBUFFER));
+  
   if (CVars::resolution_scale != 1.0f) {
     glGenFramebuffers(1, &m_lowres_framebuff);
     glBindFramebuffer(GL_FRAMEBUFFER, m_lowres_framebuff);
@@ -490,7 +511,7 @@ void Renderer::create_renderbuffers(ivec2 dims)
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_lowres_z_stencil);
 
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-      nc_warn("Loweres-buffer not complete.");
+      nc_warn("Loweres-buffer not complete. (status: {:x})", glCheckFramebufferStatus(GL_FRAMEBUFFER));
   }
   else {
     nc_assert(m_lowres_framebuff  == 0);
@@ -601,8 +622,7 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   m_light_tiles_ssbo.bind(2);
   m_sectors_ssbo.bind(3);
   m_walls_ssbo.bind(4);
-  m_portal_matrices_inv_ssbo.bind(5);
-  m_sector_matrices_inv_ssbo.bind(6);
+  m_matrices_inv_ssbo.bind(5);
 
   const size_t num_tiles_x = (cast<size_t>(get_render_size().x) + LIGHT_CULLING_TILE_SIZE_X - 1)
     / LIGHT_CULLING_TILE_SIZE_X;
@@ -614,6 +634,7 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
   m_light_material.set_uniform(shaders::light::NUM_SECTORS, m_sectors_ssbo.gpu_size_u32());
   m_light_material.set_uniform(shaders::light::NUM_WALLS, m_walls_ssbo.gpu_size_u32());
   m_light_material.set_uniform(shaders::light::DO_SHADOWS, m_shadows);
+  m_light_material.set_uniform(shaders::light::SECTOR_MATRICES_OFFSET, cast<u32>(SECTOR_MATRICES_OFFSET));
 
   EntityRegistry& registry = GameSystem::get().get_entities();
   registry.for_each<AmbientLight>([this](AmbientLight& ambient)
@@ -634,7 +655,9 @@ void Renderer::do_lighting_pass(const vec3& view_position) const
 void Renderer::update_ssbos() const
 {
   m_point_light_ssbo.update_gpu_data();
-  m_sector_matrices_inv_ssbo.update_gpu_data_with(m_sector_matrices_inv);
+
+  // Matrices beyond the capacity are dropped with a warning (same as before the portal/sector matrix SSBOs were merged).
+  m_matrices_inv_ssbo.update_gpu_range(SECTOR_MATRICES_OFFSET, m_sector_matrices_inv);
 }
 
 //==============================================================================
@@ -1092,7 +1115,7 @@ const
   mat4 view       = translation(trans) * scaling(scale);
   mat4 projection = ortho(0.0f, win_size.x, win_size.y, 0.0f, -1.0f, 1.0f);
 
-  const vec2 player_position = GameHelpers::get().get_player()->get_position().xz;
+  const vec2 player_position = GameHelpers::get().get_player()->get_position().xz();
   const SectorID sector_id = GameSystem::get().get_map().get_sector_from_point(player_position);
 
   const u32 matrix_id = cast<u32>(m_sector_matrices_inv.size());

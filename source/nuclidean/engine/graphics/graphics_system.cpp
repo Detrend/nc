@@ -33,6 +33,8 @@
 
 #include <engine/ui/user_interface_system.h>
 
+#include <memory.h>
+
 #if NC_DEBUG_DRAW
 // Only for turning off the input when the cvar tweaking window is displayed.
 #include <engine/input/input_system.h>
@@ -72,6 +74,7 @@
 #include <engine/graphics/debug/top_down_debug.h>
 
 #endif
+#include <stack_vector.h>
 
 namespace nc::debug_helpers
 {
@@ -149,33 +152,67 @@ GraphicsSystem& GraphicsSystem::get()
 {
   return get_engine().get_module<GraphicsSystem>();
 }
+//==============================================================================
+
+struct GraphicsSystem::GlLoadingInstructions {
+	SDL_GLprofile profile;
+    RenderBackend result_backend;
+    int requested_major;
+	int requested_minor;
+    int expected_major;
+    int least_expected_minor;
+};
+
+static std::optional<std::pair<int, int>> check_gl_version(GLADloadproc load) {
+    // Parsing logic copypasted from glad's find_coreGL() (which was allegedly inspired by @elmindreda https://github.com/elmindreda/greg/blob/master/templates/greg.c.in#L176 and https://github.com/glfw/glfw/blob/master/src/context.c#L36 )
+    PFNGLGETSTRINGPROC getStringProc = reinterpret_cast<PFNGLGETSTRINGPROC>(load("glGetString"));
+    if (getStringProc == nullptr) return std::nullopt;
+    const GLubyte* const version_raw = getStringProc(GL_VERSION);
+    if (version_raw == nullptr) return std::nullopt;
+
+    const char* prefixes[] = {
+        "OpenGL ES-CM ",
+        "OpenGL ES-CL ",
+        "OpenGL ES ",
+        NULL
+    };
+
+    const char* version = reinterpret_cast<const char*>(version_raw);
+    if (!version) return std::nullopt;
+
+    for (int i = 0; prefixes[i]; i++) {
+        const size_t length = strlen(prefixes[i]);
+        if (strncmp(version, prefixes[i], length) == 0) {
+            version += length;
+            break;
+        }
+    }
+
+    int major, minor;
+#ifdef _MSC_VER
+    sscanf_s(version, "%d.%d", &major, &minor);
+#else
+    sscanf(version, "%d.%d", &major, &minor);
+#endif
+
+	return std::make_pair(major, minor);
+}
 
 //==============================================================================
-bool GraphicsSystem::init()
+std::optional<std::string> GraphicsSystem::try_create_opengl_context(const GlLoadingInstructions& instructions)
 {
-  NC_TODO("Log out an error when the graphics system initialization fails");
-  NC_TODO("Terminate the already set-up SDL stuff on failed initialization.");
+  SDL_GL_ResetAttributes();
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, instructions.profile);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, instructions.requested_major);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, instructions.requested_minor);
+  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 
-  // init SDL
-  constexpr auto SDL_INIT_FLAGS = SDL_INIT_VIDEO | SDL_INIT_EVENTS;
   constexpr u32  SDL_WIN_FLAGS = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_MAXIMIZED | SDL_WINDOW_ALLOW_HIGHDPI;
   constexpr cstr WINDOW_NAME = "N U C L I D E A N";
   constexpr auto WIN_POS = SDL_WINDOWPOS_UNDEFINED;
 
-  if (SDL_Init(SDL_INIT_FLAGS) < 0)
-  {
-    // failed to init SDL, see what's the issue
-    [[maybe_unused]] cstr error = SDL_GetError();
-    return false;
-  }
-
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-  SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-
-
+  nc_log("Creating SDL window with size {}x{} for context {}.{}", m_window_width, m_window_height, instructions.requested_major, instructions.requested_minor);
   // create window
   m_window = SDL_CreateWindow(
     WINDOW_NAME, 
@@ -188,9 +225,9 @@ bool GraphicsSystem::init()
   if (!m_window)
   {
     [[maybe_unused]] cstr error = SDL_GetError();
-    return false;
+    return std::optional<std::string>(std::format("Error when creating window: {}", error));
   }
-
+  nc_log("Created SDL window with size {}x{} for context {}.{}", m_window_width, m_window_height, instructions.requested_major, instructions.requested_minor);
   SDL_SetWindowResizable(m_window, get_engine().is_editor_mode() ? SDL_TRUE : SDL_FALSE);
 
   // create opengl context
@@ -198,19 +235,148 @@ bool GraphicsSystem::init()
   if (!m_gl_context)
   {
     [[maybe_unused]] cstr error = SDL_GetError();
+    SDL_DestroyWindow(m_window);
+    m_window = nullptr;
+    return std::optional<std::string>(std::format("Error when creating GL_Context: {}", error));
+  }
+  auto [major, minor] = check_gl_version(SDL_GL_GetProcAddress).value_or(std::make_pair(0, 0));
+  nc_log("Created SDL context {}.{} (requested: {}.{}, expected: {}.{})", major, minor, instructions.requested_major, instructions.requested_minor, instructions.expected_major, instructions.least_expected_minor);
+  if(major != instructions.expected_major || minor < instructions.least_expected_minor)
+  {
+    SDL_GL_DeleteContext(m_gl_context);
+    m_gl_context = nullptr;
+    SDL_DestroyWindow(m_window);
+    m_window = nullptr;
+    return std::optional<std::string>(std::format("Error when creating GL_Context: Expected at least {}.{}, got {}.{}", instructions.expected_major, instructions.least_expected_minor, major, minor));
+  }
+  return std::nullopt;
+}
+
+//==============================================================================
+static void log_gl_specs()
+{
+  GLint max_draw_buffers = 0, max_color_attachments = 0
+      , max_fragment_shader_storage_blocks = 0
+      , max_shader_storage_buffer_bindings = 0
+      , max_texture_size = 0
+      , max_combined_shader_output_resources = 0;
+    ;
+  glGetIntegerv(GL_MAX_DRAW_BUFFERS, &max_draw_buffers);
+  glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_color_attachments);
+  glGetIntegerv(GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS, &max_fragment_shader_storage_blocks);
+  glGetIntegerv(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &max_shader_storage_buffer_bindings);
+  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
+  // Fragment outputs + SSBOs + images used by one program must fit into this (ANGLE on D3D11 FL 11_0 reports only 7).
+  glGetIntegerv(GL_MAX_COMBINED_SHADER_OUTPUT_RESOURCES, &max_combined_shader_output_resources);
+
+  nc_log("OpenGL specs...\n\tMax draw buffers: {}\n\tMax color attachments: {}"
+    "\n\tMax fragment shader storage blocks: {}\n\tMax shader storage buffer bindings: {}\n\tMax texture size: {}"
+    "\n\tMax combined shader output resources: {}",
+      max_draw_buffers, max_color_attachments, max_fragment_shader_storage_blocks, max_shader_storage_buffer_bindings,
+      max_texture_size, max_combined_shader_output_resources
+  );
+  nc_log("GL_VERSION: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+  nc_log("GL_RENDERER: {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+  nc_log("GLSL: {}", reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+  GLint num_extensions;
+  glGetIntegerv(GL_NUM_EXTENSIONS, &num_extensions);
+  ScratchScoped<scratch_string> extensions;
+  for (GLint t = 0; t < num_extensions; ++t) {
+    const char* const extension = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, t));
+    if(! extensions->empty())extensions->append(", ");
+    extensions->append(extension);
+  }
+  nc_log("\nGL Extensions: [{}]\n\n", extensions.value);
+}
+
+//==============================================================================
+bool GraphicsSystem::init(const InitArgs& args)
+{
+  if (args.force_gpu_api_dlls)
+  {
+    // Make SDL create OpenGL (ES) contexts through the .dlls next to the executable (e.g. libEGL.dll / libGLESv2.dll 
+    // Used to force using ANGLE (which on Windows translates to Direct3D 11) instead of the native driver's GL.
+    SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
+  }
+
+  NC_TODO("Log out an error when the graphics system initialization fails");
+  NC_TODO("Terminate the already set-up SDL stuff on failed initialization.");
+
+  // init SDL
+  constexpr auto SDL_INIT_FLAGS = SDL_INIT_VIDEO | SDL_INIT_EVENTS;
+  
+  if (SDL_Init(SDL_INIT_FLAGS) < 0)
+  {
+    // failed to init SDL, see what's the issue
+    [[maybe_unused]] cstr error = SDL_GetError();
+    nc_crit("Error when initializing SDL: {}", error);
     return false;
   }
+
+
+  StackVector<GlLoadingInstructions, 4> configs;
+  if(! args.force_gles) { // Skip if forcing OpenGL ES
+      // Desktop OpenGL 4.3 - our main renderer backend
+      configs.emplace_back(GlLoadingInstructions{ .profile = SDL_GL_CONTEXT_PROFILE_CORE, .result_backend = RenderBackend::OpenGL, .requested_major = 4, .requested_minor = 3, .expected_major = 4, .least_expected_minor = 3 });
+  }
+  // For some reason on RPi5, if we asked directly for 3.1, we would get segfault when creating the window, but we safely get 3.1 by asking for 3.0.
+  configs.emplace_back(GlLoadingInstructions{ .profile = SDL_GL_CONTEXT_PROFILE_ES, .result_backend = RenderBackend::OpenGLES, .requested_major = 3, .requested_minor = 0, .expected_major = 3, .least_expected_minor = 1 });
+  // When not on RPi, ask first for 3.2 because why not (usually I'm curious to learn if the HW being used supports it xD)
+  configs.emplace_back(GlLoadingInstructions{ .profile = SDL_GL_CONTEXT_PROFILE_ES, .result_backend = RenderBackend::OpenGLES, .requested_major = 3, .requested_minor = 2, .expected_major = 3, .least_expected_minor = 1 });
+  // Finally ask directly for GL ES 3.1
+  configs.emplace_back(GlLoadingInstructions{ .profile = SDL_GL_CONTEXT_PROFILE_ES, .result_backend = RenderBackend::OpenGLES, .requested_major = 3, .requested_minor = 1, .expected_major = 3, .least_expected_minor = 1 });
+
+  m_backend = RenderBackend::None;
+  std::optional<std::string> last_error;
+  for (const auto& config : configs) {
+	  auto err = try_create_opengl_context(config);
+      last_error = err;
+      if (err) {
+          continue;
+      }
+      else {
+          m_backend = config.result_backend;
+		  break;
+      }
+  }
+  if(m_backend == RenderBackend::None)
+  {
+    nc_crit("Failed to create OpenGL context: {}", last_error.value_or("Unknown error"));
+    return false;
+  }
+
+  
 
   // init opengl bindings
-  if (!gladLoadGLLoader(SDL_GL_GetProcAddress))
+  int glad_result = 0;
+  switch(m_backend)
   {
+    case RenderBackend::OpenGLES: 
+      glad_result = gladLoadGLES2Loader(SDL_GL_GetProcAddress);
+      // add fallback implementation for an OpenGL-only function that we rely on to ease the burden on users
+      glDepthRange = [](GLdouble n, GLdouble f) -> void { return glDepthRangef(static_cast<GLfloat>(n), static_cast<GLfloat>(f)); };
+      break;
+    case RenderBackend::OpenGL:   
+      glad_result = gladLoadGLLoader(SDL_GL_GetProcAddress);
+      break;
+    default:
+      nc_assert(false, "GLAD - Unknown render backend"); break;
+  }
+  if (!glad_result)
+  {
+    nc_crit("GL loader failed!");
     return false;
   }
 
+  log_gl_specs();
+
 #if NC_DEBUG_DRAW
-  glEnable(GL_DEBUG_OUTPUT);
-  glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-  glDebugMessageCallback(&debug_helpers::gl_debug_message, nullptr);
+  if(m_backend == RenderBackend::OpenGL)
+  {
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(&debug_helpers::gl_debug_message, nullptr);
+  }
 #endif
 
   glEnable(GL_DEPTH_TEST);
@@ -228,7 +394,11 @@ bool GraphicsSystem::init()
   ImPlot::CreateContext();
 
   ImGui_ImplSDL2_InitForOpenGL(m_window, m_gl_context);
-  ImGui_ImplOpenGL3_Init(nullptr);
+  ImGui_ImplOpenGL3_Init(
+    (m_backend == RenderBackend::OpenGLES)
+      ? "#version 300 es"
+      : "#version 430 core"
+  );
 
   imgui_start_frame();
 #endif
@@ -422,6 +592,7 @@ void GraphicsSystem::render()
 #endif
 
   glViewport(0, 0, width, height);
+  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -771,7 +942,8 @@ static void draw_main_plot()
     }
     else
     {
-      ImPlot::PlotInfLines("##InfLine", &idx, 1);
+      ImU64 plot_idx = static_cast<ImU64>(idx);
+      ImPlot::PlotInfLines("##InfLine", &plot_idx, 1);
     }
 
     ImPlot::EndPlot();

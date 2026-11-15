@@ -44,7 +44,7 @@ void lerp_towards(f32& value, f32 target, f32 amount)
 {
   f32 rem = target - value;
   f32 dir = sgn(rem);
-  f32 change = dir * std::min(abs(rem), amount);
+  f32 change = dir * std::min(std::abs(rem), amount);
   value += change;
 }
 
@@ -52,7 +52,7 @@ void lerp_towards(f32& value, f32 target, f32 amount)
 size_t hash_combine(size_t accumulator, size_t next_hash)
 {
   // Copypasted from boost
-  return accumulator ^ next_hash + 0x9e3779b9 + (accumulator << 6) + (accumulator >> 2);
+  return (accumulator ^ next_hash) + 0x9e3779b9 + (accumulator << 6) + (accumulator >> 2);
 }
 
 }
