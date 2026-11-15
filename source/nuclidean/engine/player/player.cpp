@@ -436,6 +436,66 @@ void Player::handle_attack(PlayerSpecificInputs curr_input, PlayerSpecificInputs
   //Try do the actual attack
   bool did_attack = this->get_attack_state(curr_input, prev_input, dt);
 
+  // RAILGUN LOGIC - TEMPORARY
+  if (this->get_equipped_weapon() == WeaponTypes::rail_gun)
+  {
+    PlayerKeyFlags flag = (1 << PlayerKeyInputs::primary);
+    bool holding_now = curr_input.keys & flag;
+    bool holding_prev = prev_input.keys & flag;
+    if (holding_now && !holding_prev)
+    {
+      if (current_ammo[this->current_weapon] == 0)
+      {
+        return;
+      }
+
+      WeaponAnimFSM& fsm = this->get_current_weapon_fsm();
+      if (fsm.get_time() >= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.1f
+        && fsm.get_time() <= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) + 2.25f)
+      {
+
+      }
+      else
+      {
+        this->get_current_weapon_fsm().set_state(WeaponStates::attack);
+      }
+      
+    }
+    else if (holding_now && holding_prev)
+    {
+      WeaponAnimFSM& fsm = this->get_current_weapon_fsm();
+      if (fsm.get_time() >= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.1f &&
+        fsm.get_time() <= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]))
+      {
+        fsm.set_time(get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - .3f);
+      }
+    }
+    else if (holding_prev && !holding_now)
+    {
+      WeaponAnimFSM& fsm = this->get_current_weapon_fsm();
+      if (fsm.get_time() >= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.3f && 
+        fsm.get_time() <= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]))
+      {
+        fsm.set_time(get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.1f);
+        this->current_ammo[this->current_weapon] -= 1;
+      }
+    }
+    else
+    {
+      WeaponAnimFSM& fsm = this->get_current_weapon_fsm();
+      if (fsm.get_time() >= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.1f)
+      {
+        
+      }
+      else
+      {
+        this->get_current_weapon_fsm().set_state(WeaponStates::idle);
+      }
+      
+    }
+    return;
+  }
+
   if (did_attack && this->get_current_weapon_fsm().get_state() == WeaponStates::idle)
   {
     bool is_melee = this->current_weapon == WeaponTypes::wrench;

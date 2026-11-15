@@ -109,6 +109,15 @@ f32 AnimFSM<NS, GOTO, ST, TT>::get_time() const
 
 //==============================================================================
 template<u64 NS, auto GOTO, typename ST, typename TT>
+void AnimFSM<NS, GOTO, ST, TT>::set_time(f32 t)
+{
+  nc_assert(this->time >= 0 && this->time < this->state_lengths[this->state] && 
+    t >= 0 && t < this->state_lengths[this->state]);
+  this->time = t;
+}
+
+//==============================================================================
+template<u64 NS, auto GOTO, typename ST, typename TT>
 f32 AnimFSM<NS, GOTO, ST, TT>::get_time_relative() const
 {
   f32 state_len = this->state_lengths[this->state];
