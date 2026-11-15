@@ -540,6 +540,257 @@ void ActionMovePoints::action_undo(EditorLevel& level)
   recreate_recorded_lines(level, this->line_records, this->old_point_ids, false);
 }
 
+//==================================================================================================
+void ActionSplitOrSpliceLine::init_split(const EditorLevel& level, EditorID line_id, EditorCoord split_coord)
+{
+  const EditorLine& line = level.get_object<EditorLine>(line_id);
+
+  // The path goes the same way as the line does
+  this->split   = true;
+  this->line_ab = PathLine{.line_id = line_id, .half_edge_a = line.half_edge_a, .half_edge_b = line.half_edge_b};
+  this->line_ap = PathLine{.line_id = level.new_id()};
+  this->line_pb = PathLine{.line_id = level.new_id()};
+  this->coord_a = level.get_line_coord(line_id, true);
+  this->coord_b = level.get_line_coord(line_id, false);
+  this->coord_p = split_coord;
+}
+
+//==================================================================================================
+void ActionSplitOrSpliceLine::init_splice(const EditorLevel& level, EditorID point_id)
+{
+  const std::vector<EditorID>& half_edges = level.point_to_half_edges.at(point_id);
+  nc_assert(half_edges.size() == 2, "Only a point with exactly two lines can be spliced");
+
+  // Both half edges go from P. The first one leads to A, the second one to B.
+  const EditorHalfEdge& from_p_to_a = level.get_object<EditorHalfEdge>(half_edges[0]);
+  const EditorHalfEdge& from_p_to_b = level.get_object<EditorHalfEdge>(half_edges[1]);
+  const EditorLine&     line_ap_ref = level.get_object<EditorLine>(from_p_to_a.line);
+  const EditorLine&     line_pb_ref = level.get_object<EditorLine>(from_p_to_b.line);
+
+  // The path goes from A to P, so the line is reversed if its half edge A goes from P. And the other
+  // way around for the line from P to B.
+  this->split   = false;
+  this->line_ap = PathLine{from_p_to_a.line, line_ap_ref.half_edge_a, line_ap_ref.half_edge_b, line_ap_ref.half_edge_a == half_edges[0]};
+  this->line_pb = PathLine{from_p_to_b.line, line_pb_ref.half_edge_a, line_pb_ref.half_edge_b, line_pb_ref.half_edge_a != half_edges[1]};
+  this->line_ab = PathLine{.line_id = level.new_id()};
+  this->point_p = point_id;
+  this->coord_p = level.get_object<EditorPoint>(point_id).coords;
+  this->coord_a = level.get_object<EditorPoint>(level.get_object<EditorHalfEdge>(from_p_to_a.twin).from).coords;
+  this->coord_b = level.get_object<EditorPoint>(level.get_object<EditorHalfEdge>(from_p_to_b.twin).from).coords;
+}
+
+//==================================================================================================
+void ActionSplitOrSpliceLine::remember_sides(const EditorLevel& level, EditorID half_edge_along_path_id)
+{
+  const EditorHalfEdge& along_path   = level.get_object<EditorHalfEdge>(half_edge_along_path_id);
+  const EditorHalfEdge& against_path = level.get_object<EditorHalfEdge>(along_path.twin);
+
+  this->sector_left  = along_path.sector;
+  this->sector_right = against_path.sector;
+
+  if (this->sector_left != INVALID_EDITOR_ID)
+  {
+    this->sector_data_left = level.get_object<EditorSector>(this->sector_left).data;
+  }
+
+  if (this->sector_right != INVALID_EDITOR_ID)
+  {
+    this->sector_data_right = level.get_object<EditorSector>(this->sector_right).data;
+  }
+}
+
+//==================================================================================================
+void ActionSplitOrSpliceLine::destroy_path_line(EditorLevel& level, const PathLine& line)
+{
+  auto callback_merged = [&]
+  (
+    EditorID  left_id,  const EditorSectorData& left_data,
+    EditorID  right_id, const EditorSectorData& right_data,
+    EditorID& new_id,   EditorSectorData&       new_data
+  )
+  {
+    // Keep the sector on the left of the path, the one on the right gets recreated later
+    bool keep_right = right_id == this->sector_left;
+    new_id   = keep_right ? right_id   : left_id;
+    new_data = keep_right ? right_data : left_data;
+  };
+
+  level.destroy_line(line.line_id, nullptr, callback_merged);
+}
+
+//==================================================================================================
+void ActionSplitOrSpliceLine::create_path_line(EditorLevel& level, PathLine& line, EditorCoord from, EditorCoord to)
+{
+  EditorCoord c1 = line.reversed ? to   : from;
+  EditorCoord c2 = line.reversed ? from : to;
+
+  // The side of the half edge A is the left side of the line as it gets created
+  EditorID         side_a_id   = line.reversed ? this->sector_right      : this->sector_left;
+  EditorSectorData side_a_data = line.reversed ? this->sector_data_right : this->sector_data_left;
+  EditorID         side_b_id   = line.reversed ? this->sector_left       : this->sector_right;
+  EditorSectorData side_b_data = line.reversed ? this->sector_data_left  : this->sector_data_right;
+
+  bool side_a_unused = side_a_id != INVALID_EDITOR_ID && !level.get_any_object(side_a_id);
+  bool side_b_unused = side_b_id != INVALID_EDITOR_ID && !level.get_any_object(side_b_id);
+
+  // Bring back the points that died together with the destroyed lines
+  auto callback_point = [&](EditorCoord coord, EditorID& id_out)
+  {
+    EditorID wanted_id = coord == this->coord_a ? this->point_a : (coord == this->coord_b ? this->point_b : this->point_p);
+    if (wanted_id != INVALID_EDITOR_ID && !level.get_any_object(wanted_id))
+    {
+      id_out = wanted_id;
+    }
+  };
+
+  // Only one side of the path was a sector and the destruction killed it, bring it back
+  auto callback_created = [&](EditorID& new_id, EditorSectorData& new_data)
+  {
+    if (side_a_unused)
+    {
+      new_id   = side_a_id;
+      new_data = side_a_data;
+    }
+    else if (side_b_unused)
+    {
+      new_id   = side_b_id;
+      new_data = side_b_data;
+    }
+    else
+    {
+      new_id   = level.new_id();
+      new_data = EditorSectorData{};
+    }
+  };
+
+  // Both sides were sectors and the destruction merged them, split them back
+  auto callback_split = [&]
+  (
+    EditorID  old_id,   const EditorSectorData& old_data,
+    EditorID& left_id,  EditorSectorData&       left_data,
+    EditorID& right_id, EditorSectorData&       right_data
+  )
+  {
+    if ((old_id == side_a_id && side_b_unused) || (old_id == side_b_id && side_a_unused))
+    {
+      left_id    = side_a_id;
+      left_data  = side_a_data;
+      right_id   = side_b_id;
+      right_data = side_b_data;
+    }
+    else
+    {
+      // Should not happen, but keep the old sector on the left and make up a new one
+      left_id    = old_id;
+      left_data  = old_data;
+      right_id   = level.new_id();
+      right_data = old_data;
+    }
+  };
+
+  EditorID half_edge_a = level.get_any_object(line.half_edge_a) ? INVALID_EDITOR_ID : line.half_edge_a;
+  EditorID half_edge_b = level.get_any_object(line.half_edge_b) ? INVALID_EDITOR_ID : line.half_edge_b;
+
+  level.create_line(line.line_id, c1, c2, callback_created, callback_split, callback_point, half_edge_a, half_edge_b);
+
+  // Remember the half edges, so that recreating the line brings back the very same ones
+  const EditorLine& created_line = level.get_object<EditorLine>(line.line_id);
+  line.half_edge_a = created_line.half_edge_a;
+  line.half_edge_b = created_line.half_edge_b;
+}
+
+//==================================================================================================
+void ActionSplitOrSpliceLine::do_split(EditorLevel& level)
+{
+  // Remember everything around the line before destroying it
+  const EditorLine& line = level.get_object<EditorLine>(this->line_ab.line_id);
+  this->line_ab.half_edge_a = line.half_edge_a;
+  this->line_ab.half_edge_b = line.half_edge_b;
+
+  EditorID along_path_id = this->line_ab.reversed ? line.half_edge_b : line.half_edge_a;
+  EditorID against_path_id = this->line_ab.reversed ? line.half_edge_a : line.half_edge_b;
+  this->remember_sides(level, along_path_id);
+  this->point_a = level.get_object<EditorHalfEdge>(along_path_id).from;
+  this->point_b = level.get_object<EditorHalfEdge>(against_path_id).from;
+
+  // Replace the line by the two new ones
+  this->destroy_path_line(level, this->line_ab);
+  this->create_path_line(level, this->line_ap, this->coord_a, this->coord_p);
+  this->create_path_line(level, this->line_pb, this->coord_p, this->coord_b);
+
+  this->point_p = level.coord_to_point.at(this->coord_p);
+}
+
+//==================================================================================================
+void ActionSplitOrSpliceLine::do_splice(EditorLevel& level)
+{
+  // Remember everything around both lines before destroying them
+  const EditorLine& line_ap_ref = level.get_object<EditorLine>(this->line_ap.line_id);
+  const EditorLine& line_pb_ref = level.get_object<EditorLine>(this->line_pb.line_id);
+  this->line_ap.half_edge_a = line_ap_ref.half_edge_a;
+  this->line_ap.half_edge_b = line_ap_ref.half_edge_b;
+  this->line_pb.half_edge_a = line_pb_ref.half_edge_a;
+  this->line_pb.half_edge_b = line_pb_ref.half_edge_b;
+
+  EditorID a_to_p_id = this->line_ap.reversed ? line_ap_ref.half_edge_b : line_ap_ref.half_edge_a;
+  EditorID b_to_p_id = this->line_pb.reversed ? line_pb_ref.half_edge_a : line_pb_ref.half_edge_b;
+  this->remember_sides(level, a_to_p_id);
+  this->point_a = level.get_object<EditorHalfEdge>(a_to_p_id).from;
+  this->point_b = level.get_object<EditorHalfEdge>(b_to_p_id).from;
+  this->point_p = level.coord_to_point.at(this->coord_p);
+
+  // Replace both lines by the single one
+  this->destroy_path_line(level, this->line_ap);
+  this->destroy_path_line(level, this->line_pb);
+  this->create_path_line(level, this->line_ab, this->coord_a, this->coord_b);
+}
+
+//==================================================================================================
+void ActionSplitOrSpliceLine::action_do(EditorLevel& level)
+{
+  if (this->split)
+  {
+    this->was_performed = level.can_split_line(this->line_ab.line_id, this->coord_p);
+  }
+  else
+  {
+    this->was_performed = level.can_splice_point(this->point_p);
+  }
+
+  if (!this->was_performed)
+  {
+    return;
+  }
+
+  if (this->split)
+  {
+    this->do_split(level);
+  }
+  else
+  {
+    this->do_splice(level);
+  }
+}
+
+//==================================================================================================
+void ActionSplitOrSpliceLine::action_undo(EditorLevel& level)
+{
+  // The action did nothing at all, so there is nothing to take back either
+  if (!this->was_performed)
+  {
+    return;
+  }
+
+  if (this->split)
+  {
+    this->do_splice(level);
+  }
+  else
+  {
+    this->do_split(level);
+  }
+}
+
 }
 
 #endif // #if NC_EDITOR

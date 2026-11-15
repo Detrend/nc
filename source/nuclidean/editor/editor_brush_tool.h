@@ -21,6 +21,7 @@ namespace editor
 constexpr color4 BRUSH_WALL_COL1           = colors::WHITE;
 constexpr color4 BRUSH_WALL_COL2           = colors::WHITE;
 constexpr f32    BRUSH_WALL_FLASH_INTERVAL = 0.5f;
+constexpr f32    BRUSH_POINTING_THRESHOLD  = 0.01f;
 
 }
 

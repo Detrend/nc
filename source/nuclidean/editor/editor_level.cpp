@@ -1255,26 +1255,102 @@ bool EditorLevel::can_move_points(const std::map<EID<EditorPoint>, EditorCoord>&
 }
 
 //==================================================================================================
+bool EditorLevel::can_split_line(EID<EditorLine> line_id, EditorCoord split_coord) const
+{
+  if (!this->try_get_object<EditorLine>(line_id))
+  {
+    return false;
+  }
+
+  EditorCoord a = this->get_line_coord(line_id, true);
+  EditorCoord b = this->get_line_coord(line_id, false);
+
+  // The point can't be outside the bounds.
+  // Also, a special case - there can't be a point on these coords already. In theory, this
+  // would be possible and potentially desirable by the user, but would make the implementation
+  // more difficult since the "splice" and "split" actions would not be inverse to each other
+  // anymore..
+  if (!is_within_level_bounds(split_coord) || this->coord_to_point.contains(split_coord))
+  {
+    return false;
+  }
+
+  // The lines can share the point, but one cannot be a subset of another
+  if (segments_intersect(a, split_coord, split_coord, b))
+  {
+    return false;
+  }
+
+  // And they can not intersect any other line. The split line itself does not count as it
+  // gets removed.
+  for (const auto&[id, object] : this->objects)
+  {
+    const EditorLine* line = std::get_if<EditorLine>(&object);
+    if (!line || id == line_id)
+    {
+      continue;
+    }
+
+    EditorCoord other_a = this->get_line_coord(id, true);
+    EditorCoord other_b = this->get_line_coord(id, false);
+
+    if (segments_intersect(a, split_coord, other_a, other_b) || segments_intersect(split_coord, b, other_a, other_b))
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+//==================================================================================================
+bool EditorLevel::can_splice_point(EID<EditorPoint> point_id) const
+{
+  auto half_edges_it = this->point_to_half_edges.find(point_id);
+  if (!this->try_get_object<EditorPoint>(point_id) || half_edges_it == this->point_to_half_edges.end())
+  {
+    return false;
+  }
+
+  // Only a point with exactly two neighbors can be replaced by a line between them
+  const std::vector<EID<EditorHalfEdge>>& half_edges = half_edges_it->second;
+  if (half_edges.size() != 2)
+  {
+    return false;
+  }
+
+  const EditorHalfEdge& from_point_1 = this->get_object<EditorHalfEdge>(half_edges[0]);
+  const EditorHalfEdge& from_point_2 = this->get_object<EditorHalfEdge>(half_edges[1]);
+
+  EditorCoord a = this->get_object<EditorPoint>(this->get_object<EditorHalfEdge>(from_point_1.twin).from).coords;
+  EditorCoord b = this->get_object<EditorPoint>(this->get_object<EditorHalfEdge>(from_point_2.twin).from).coords;
+
+  // The new line can not intersect any other line, which also covers a line between the neighbors
+  // already existing. The two lines of the point do not count, they go away.
+  for (const auto&[id, object] : this->objects)
+  {
+    const EditorLine* line = std::get_if<EditorLine>(&object);
+    if (!line || id == from_point_1.line || id == from_point_2.line)
+    {
+      continue;
+    }
+
+    if (segments_intersect(a, b, this->get_line_coord(id, true), this->get_line_coord(id, false)))
+    {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+//==================================================================================================
 EditorCoord EditorLevel::get_line_coord(EditorID line_id, bool first) const
 {
   const EditorLine& line = this->get_object<EditorLine>(line_id);
   EditorID half_edge_id = first ? line.half_edge_a : line.half_edge_b;
   return this->get_object<EditorPoint>(this->get_object<EditorHalfEdge>(half_edge_id).from).coords;
 }
-
-//==================================================================================================
-/*
-void EditorLevel::move_points(const std::map<EID<EditorPoint>, EditorCoord>& new_point_coords)
-{
-  nc_assert(this->can_move_points(new_point_coords));
-
-  // Iterate the points and move them
-  for (const auto&[point_id, new_coord] : new_point_coords)
-  {
-    this->get_object<EditorPoint>(point_id).coords = new_coord;
-  }
-}
-*/
 
 //==================================================================================================
 void dump_sector_and_subsectors(const EditorLevel& level, EditorID sector_id, s32 indent)

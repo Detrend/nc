@@ -98,7 +98,56 @@ struct ActionMovePoints
   void action_undo(EditorLevel& level);
 };
 
-using EditorAction = std::variant<ActionCreateOrDeleteLine, ActionDeleteObjects, ActionMovePoints>;
+// Splits a line into two by inserting a new point into it, or does the opposite and replaces a
+// point that has exactly two lines by a single line between its neighbors (splice). One is the undo
+// of the other. All the objects keep their IDs, including the sectors on both sides.
+//
+// Everything is described along the path A -> P -> B. The single line goes from A to B, the two
+// lines go from A to P and from P to B.
+struct ActionSplitOrSpliceLine
+{
+  struct PathLine
+  {
+    EditorID line_id     = INVALID_EDITOR_ID;
+    EditorID half_edge_a = INVALID_EDITOR_ID;
+    EditorID half_edge_b = INVALID_EDITOR_ID;
+    bool     reversed    = false; // The half edge A of the line goes against the path
+  };
+
+  bool split         = true; // Split the line, otherwise splice the point
+  bool was_performed = false;
+
+  PathLine line_ab;
+  PathLine line_ap;
+  PathLine line_pb;
+
+  EditorCoord coord_a;
+  EditorCoord coord_b;
+  EditorCoord coord_p;
+  EditorID    point_a = INVALID_EDITOR_ID;
+  EditorID    point_b = INVALID_EDITOR_ID;
+  EditorID    point_p = INVALID_EDITOR_ID;
+
+  // Sectors on the left and on the right side of the path
+  EditorID         sector_left  = INVALID_EDITOR_ID;
+  EditorSectorData sector_data_left;
+  EditorID         sector_right = INVALID_EDITOR_ID;
+  EditorSectorData sector_data_right;
+
+  void init_split(const EditorLevel& level, EditorID line_id, EditorCoord split_coord);
+  void init_splice(const EditorLevel& level, EditorID point_id);
+
+  void do_split(EditorLevel&  level);
+  void do_splice(EditorLevel& level);
+  void remember_sides(const EditorLevel& level, EditorID half_edge_along_path_id);
+  void destroy_path_line(EditorLevel& level, const PathLine& line);
+  void create_path_line(EditorLevel&  level, PathLine& line, EditorCoord from, EditorCoord to);
+
+  void action_do(EditorLevel&   level);
+  void action_undo(EditorLevel& level);
+};
+
+using EditorAction = std::variant<ActionCreateOrDeleteLine, ActionDeleteObjects, ActionMovePoints, ActionSplitOrSpliceLine>;
 
 // The action is free to return any return type
 template<typename ActionType>

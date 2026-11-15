@@ -93,6 +93,13 @@ struct EditorLevel
 
   bool can_move_points(const std::map<EID<EditorPoint>, EditorCoord>& new_point_coords);
 
+  // Can the line be split into two by inserting a new point on the given coordinate?
+  bool can_split_line(EID<EditorLine> line_id, EditorCoord split_coord) const;
+
+  // Can the point be replaced by a single line between its two neighbors? Possible only for points
+  // that are part of exactly two lines.
+  bool can_splice_point(EID<EditorPoint> point_id) const;
+
   EditorCoord get_line_coord(EditorID line_id, bool first) const;
 
   // Callback helpers
