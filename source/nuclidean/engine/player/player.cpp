@@ -251,7 +251,7 @@ void Player::calculate_wish_velocity(PlayerSpecificInputs input, f32 delta_secon
   {
     this->velocity.y = CVars::player_jump_force;
     this->rotation_offsets.push_one(vec2{0, deg2rad(1.0f)} * CVars::player_jump_offset_coeff, 0.3f, 0.05f);
-    SoundSystem::get().play_oneshot(Sounds::player_jump);
+    this->play_sound(Sounds::player_jump);
   }
 }
 
@@ -309,7 +309,10 @@ void Player::handle_weapon_change(PlayerSpecificInputs input, PlayerSpecificInpu
     {
       // Accept only the first one if multiple keys are pressed
       if (current_ammo[i] == 0) {
-        SoundSystem::get().play_oneshot(Sounds::out_of_ammo);
+        if (this->is_local())
+        {
+          SoundSystem::get().play_oneshot(Sounds::out_of_ammo);
+        }
       }
       else {
         this->change_weapon(i);
@@ -458,8 +461,7 @@ void Player::handle_attack(PlayerSpecificInputs curr_input, PlayerSpecificInputs
     this->get_current_weapon_fsm().set_state(WeaponStates::attack);
     if (current_weapon == WeaponTypes::rail_gun)
     {
-      auto& sound_system = SoundSystem::get();
-      sound_system.play_oneshot(WEAPON_STATS[current_weapon].shoot_snd, 0.5f);
+      this->play_sound(WEAPON_STATS[current_weapon].shoot_snd, 0.5f);
     }
   }
 }
@@ -498,7 +500,7 @@ void Player::handle_use(PlayerSpecificInputs curr_input, PlayerSpecificInputs pr
 
       if (did_something)
       {
-        SoundSystem::get().play_oneshot(Sounds::button);
+        this->play_sound(Sounds::button);
       }
     }
   }
@@ -640,7 +642,10 @@ void Player::update_gun_anim(f32 delta)
 
   if (current_ammo[this->current_weapon] == 0 && this->get_current_weapon_fsm().get_state() == WeaponStates::idle)
   {
-    SoundSystem::get().play_oneshot(Sounds::out_of_ammo);
+    if (this->is_local())
+    {
+      SoundSystem::get().play_oneshot(Sounds::out_of_ammo);
+    }
     if (current_ammo[2] > 0 && has_weapon(2)) // Plasma gun
     {
       change_weapon(2);
@@ -682,8 +687,7 @@ void Player::update_appearance([[maybe_unused]]f32 delta)
 //==============================================================================
 void Player::do_attack()
 {
-  auto& sound_system = SoundSystem::get();
-  auto  world        = GameSystem::get().get_level();
+  auto world = GameSystem::get().get_level();
 
   vec3 dir  = this->get_look_direction();
 
@@ -712,7 +716,7 @@ void Player::do_attack()
       {
         s32 dmg = PROJECTILE_STATS[WEAPON_STATS[weapon].projectile].damage;
         enemy->damage(dmg, this->get_id());
-        sound_system.play_oneshot(Sounds::melee_hit);
+        this->play_sound(Sounds::melee_hit);
 
         // Spawn blood particles
         GameSystem::get().get_entities().create_entity<Particle>
@@ -775,7 +779,7 @@ void Player::do_attack()
 
   if (WEAPON_STATS[weapon].shoot_snd != Sounds::railgun)
   {
-    sound_system.play_oneshot(WEAPON_STATS[weapon].shoot_snd, 0.5f);
+    this->play_sound(WEAPON_STATS[weapon].shoot_snd, 0.5f);
   }
   time_since_shoot = 0.0f;
 }
@@ -786,7 +790,7 @@ void Player::change_weapon(WeaponType new_weapon)
   this->current_weapon        = new_weapon;
   this->time_since_gun_change = 0.0f;
 
-  SoundSystem::get().play_oneshot(WEAPON_STATS[new_weapon].equip_sound);
+  this->play_sound(WEAPON_STATS[new_weapon].equip_sound);
 }
 
 //==============================================================================
@@ -797,11 +801,16 @@ void Player::handle_pickup(Pickup& pickup)
     EntityRegistry&      ecs = GameSystem::get().get_entities();
     UserInterfaceSystem& ui  = get_engine().get_module<UserInterfaceSystem>();
 
+    this->play_sound(pickup.get_pickup_sound());
+
     // Destroy if picked up sucessfully.
     ecs.destroy_entity(pickup.get_id());
 
     // Notify UI to show a overlay effect
-    ui.get_ui_screen_effect()->did_pickup();
+    if (this->is_local())
+    {
+      ui.get_ui_screen_effect()->did_pickup();
+    }
   }
 }
 
@@ -1015,15 +1024,15 @@ bool Player::is_local() const
 }
 
 //==============================================================================
-void Player::play_sound(SoundID sound) const
+void Player::play_sound(SoundID sound, f32 volume) const
 {
   if (this->is_local())
   {
-    SoundSystem::get().play_oneshot(sound);
+    SoundSystem::get().play_oneshot(sound, volume);
   }
   else
   {
-    GameHelpers::get().play_3d_sound(this->get_position(), sound, PLAYER_SOUND_RANGE, 1.0f);
+    GameHelpers::get().play_3d_sound(this->get_position(), sound, PLAYER_SOUND_RANGE, volume);
   }
 }
 

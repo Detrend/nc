@@ -182,7 +182,7 @@ private:
   bool is_local() const;
 
   // Plain sound for the local player, 3D sound for the others
-  void play_sound(SoundID sound) const;
+  void play_sound(SoundID sound, f32 volume = 1.0f) const;
 
   // Value interpolated in the [0, 1] interval
   // 0 when not moving or in air otherwise 1
