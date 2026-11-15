@@ -216,12 +216,18 @@ bool SelectTool::handle_dragging()
   }
 
   bool input_allowed  = !ImGui::GetIO().WantCaptureMouse;
+  bool pressed_right  = input_allowed && ImGui::IsMouseClicked(ImGuiMouseButton_Right);
   bool holding_right  = input_allowed && ImGui::IsMouseDown(ImGuiMouseButton_Right);
   bool released_mouse = false;
 
-  if (holding_right != this->is_dragging)
+  // Dragging can start only at the moment the button gets pressed. Holding it first and then moving
+  // over an object must not start dragging it.
+  bool start_dragging = !this->is_dragging && pressed_right;
+  bool stop_dragging  = this->is_dragging && !holding_right;
+
+  if (start_dragging || stop_dragging)
   {
-    this->is_dragging = holding_right;
+    this->is_dragging = start_dragging;
 
     if (this->is_dragging)
     {
