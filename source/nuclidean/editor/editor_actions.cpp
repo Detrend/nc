@@ -199,14 +199,18 @@ void ActionDeleteObjects::init_destruction
     }
     else if (const EditorSector* sector = level.try_get_object<EditorSector>(object_to_destroy_id))
     {
-      // Erase only the lines that are not shared with other sector
+      // Erase only the lines that are not shared with other sector, unless that sector gets
+      // destroyed as well
       EditorID half_edge_id = sector->edge;
       do
       {
         const EditorHalfEdge& half_edge = level.get_object<EditorHalfEdge>(half_edge_id);
         const EditorHalfEdge& twin_edge = level.get_object<EditorHalfEdge>(half_edge.twin);
 
-        if (twin_edge.sector == INVALID_EDITOR_ID || twin_edge.sector == object_to_destroy_id)
+        bool other_side_empty     = twin_edge.sector == INVALID_EDITOR_ID || twin_edge.sector == object_to_destroy_id;
+        bool other_side_destroyed = std::ranges::find(objects_to_destroy, twin_edge.sector) != objects_to_destroy.end();
+
+        if (other_side_empty || other_side_destroyed)
         {
           // Delete this one, no other sector sharing it..
           list_of_lines.insert(half_edge.line);
