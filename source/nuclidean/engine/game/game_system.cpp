@@ -857,7 +857,7 @@ void GameSystem::game_update(f32 delta)
 
       const f32 delta_time = network.is_multiplayer() ? MULTIPLAYER_FIXED_DELTA_TIME : delta;
 
-      if (!network.is_multiplayer() && journal.state == JournalState::recording)
+      if (journal.state == JournalState::recording)
       {
         // Record the inputs as well
         journal.frames.push_back(DemoDataFrame
@@ -908,7 +908,7 @@ void GameSystem::game_update(f32 delta)
 //==============================================================================
 void GameSystem::on_level_end()
 {
-  if (journal.state == JournalState::recording && !NetworkSystem::get().is_multiplayer())
+  if (journal.state == JournalState::recording)
   {
     // Save the demo
     this->save_current_demo();
@@ -1258,7 +1258,8 @@ void GameSystem::handle_start_new_level_optionally_with_demo
   else
   {
     // Record frames
-    journal.reset_and_clear(JournalState::recording);
+    const bool multiplayer = NetworkSystem::get().is_multiplayer();
+    journal.reset_and_clear(multiplayer ? JournalState::none : JournalState::recording);
   }
 
   this->post_level_load();
