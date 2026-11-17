@@ -490,7 +490,7 @@ void Player::handle_railgun(nc::PlayerSpecificInputs& curr_input, nc::PlayerSpec
     auto& sound_system = SoundSystem::get();
     sound_system.play_oneshot(Sounds::railgun_trigger);
   }
-  else if (holding_now && holding_prev) //LOOP ANIM
+  else if (holding_now && holding_prev && this->get_current_weapon_fsm().get_state() == WeaponStates::attack) //LOOP ANIM
   {
     WeaponAnimFSM& fsm = this->get_current_weapon_fsm();
     //first time playing the hum
@@ -511,7 +511,7 @@ void Player::handle_railgun(nc::PlayerSpecificInputs& curr_input, nc::PlayerSpec
       sound_system.play_oneshot(Sounds::railgun_hum);
     }
   }
-  else if (holding_prev && !holding_now) //FIRE ANIM
+  else if (holding_prev && !holding_now && this->get_current_weapon_fsm().get_state() == WeaponStates::attack) //FIRE ANIM
   {
     WeaponAnimFSM& fsm = this->get_current_weapon_fsm();
     if (fsm.get_time() >= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.3f &&
