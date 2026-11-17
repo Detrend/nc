@@ -32,6 +32,8 @@
 
 #if NC_TESTS
 #include <unit_test.h>
+#include <engine/autotest/autotest_runner.h>
+#include <engine/autotest/autotest_system.h>
 #include <format>
 #include <iostream>
 #include <regex>
@@ -66,6 +68,7 @@ namespace engine_utils
 [[maybe_unused]] constexpr cstr BENCHMARK_ARG             = "-benchmark";
 [[maybe_unused]] constexpr cstr UNIT_TEST_ARG             = "-unit_test";
 [[maybe_unused]] constexpr cstr TEST_FILTER_PREFIX        = "-test_filter=";
+[[maybe_unused]] constexpr cstr AUTOTEST_ARG              = "-autotest"; // runs the test scripts from tests/, then exits
 [[maybe_unused]] constexpr cstr START_LEVEL_ARG           = "-start_level";
 [[maybe_unused]] constexpr cstr START_DEMO_ARG            = "-start_demo";
 [[maybe_unused]] constexpr cstr FAST_DEMO_ARG             = "-fast_demo";
@@ -112,7 +115,7 @@ static bool contains_arg(const CmdArgs& cmd_args, cstr search_for)
 //==============================================================================
 static bool contains_pair_of_args
 (
-  const CmdArgs& cmd_args, cstr search_for, std::string& out
+  const CmdArgs& cmd_args, std::string_view search_for, std::string& out
 )
 {
   auto it = std::find_if(cmd_args.begin(), cmd_args.end(),
@@ -399,6 +402,11 @@ int init_engine_and_run_game(const CmdArgs& args)
     // running only tests, exit
     exit_after_benchmarks_and_tests = true;
   }
+
+  if (engine_utils::contains_arg(args, engine_utils::AUTOTEST_ARG))
+  {
+    return autotest::run_tests(args[0], engine_utils::find_text_filter_regex(args));
+  }
 #endif
 
   if (exit_after_benchmarks_and_tests)
@@ -508,6 +516,12 @@ bool Engine::init(const CmdArgs& cmd_args)
     CVars::invisibility = true;
   }
 #endif
+#if NC_TESTS
+  std::string autotest_script;
+  m_autotest = engine_utils::contains_pair_of_args(cmd_args, autotest::SCRIPT_ARG, autotest_script);
+  if (m_autotest)
+    CVars::has_fps_limit = false;
+#endif
   std::string res_scale_value;
   if (engine_utils::contains_pair_of_args(cmd_args, engine_utils::RES_SCALE_ARG, res_scale_value)) {
     CVars::resolution_scale = static_cast<f32>(std::atof(res_scale_value.c_str()));
@@ -526,9 +540,15 @@ bool Engine::init(const CmdArgs& cmd_args)
     m_modules[_module_class::get_module_id()] = std::move(m); \
   }
 
+#if NC_TESTS
+  if (m_autotest)
+  {
+    INIT_MODULE(AutotestSystem, autotest_script);
+  }
+#endif
   INIT_MODULE(GraphicsSystem, GraphicsSystem::InitArgs {
       .force_gles = engine_utils::contains_arg(cmd_args, engine_utils::FORCE_GLES_ARG),
-      .force_gpu_api_dlls = engine_utils::contains_arg(cmd_args, engine_utils::FORCE_GPU_API_DLL_ARG) 
+      .force_gpu_api_dlls = engine_utils::contains_arg(cmd_args, engine_utils::FORCE_GPU_API_DLL_ARG)
   });
   INIT_MODULE(InputSystem);
   INIT_MODULE(GameSystem);
@@ -664,6 +684,13 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
 
     game_system.request_level_change(lvl_name, std::move(frames), transition);
   }
+#if NC_TESTS
+  else if (m_autotest)
+  {
+    // Each test loads its own level
+    set_game_state(GameState::game);
+  }
+#endif
 #if !NC_IS_SHIP
   else if (std::string lvl; engine_utils::should_play_level(cmd_args, lvl))
   {
@@ -758,7 +785,7 @@ void Engine::run()
       }
 
       previous_time = current_time;
-      m_delta_time  = frame_time;
+      m_delta_time  = m_fixed_frame_time > 0.0f ? m_fixed_frame_time : frame_time;
 
       // notify frame start
       this->send_event(ModuleEvent
@@ -769,7 +796,7 @@ void Engine::run()
       // pump messages
       input_system.update_window_and_pump_messages();
 
-      const f32 game_logic_update_time = frame_time * CVars::time_speed;
+      const f32 game_logic_update_time = m_delta_time * CVars::time_speed;
 
       // frame start
       this->send_event(ModuleEvent
@@ -882,6 +909,12 @@ void Engine::process_window_event(const SDL_Event& event)
 f32 Engine::get_delta_time() const
 {
   return m_delta_time;
+}
+
+//==============================================================================
+void Engine::set_fixed_frame_time(f32 seconds)
+{
+  m_fixed_frame_time = seconds;
 }
 
 //==============================================================================

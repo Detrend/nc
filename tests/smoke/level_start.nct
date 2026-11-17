@@ -1,0 +1,7 @@
+# Level loads and the player spawns alive
+@level level_final1
+
+wait 30f
+expect level == level_final1
+expect player_health > 0
+expect level_enemies_killed == 0

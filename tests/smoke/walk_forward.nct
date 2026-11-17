@@ -1,0 +1,7 @@
+# Walking forward moves the player
+@level level_final1
+
+wait 30f
+expect player_x == 13.399998664855957
+press_key_for forward 60f
+expect player_x != 13.399998664855957

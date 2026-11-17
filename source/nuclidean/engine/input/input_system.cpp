@@ -142,7 +142,10 @@ void InputSystem::update_window_and_pump_messages()
     }
   }
 
-  handle_player_input(m_current_inputs);
+  if (m_scripted_inputs)
+    m_current_inputs.player_inputs = *m_scripted_inputs;
+  else
+    handle_player_input(m_current_inputs);
 }
 
 //====================================================================
@@ -265,6 +268,12 @@ void InputSystem::lock_player_input(InputLockLayer layer, bool lock)
 bool InputSystem::are_game_inputs_disabled() const
 {
   return !!m_locked_inputs;
+}
+
+//==============================================================================
+void InputSystem::set_scripted_inputs(const PlayerSpecificInputs& inputs)
+{
+  m_scripted_inputs = inputs;
 }
 
 }

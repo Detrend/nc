@@ -111,10 +111,10 @@ public:
   void reset_enemy_count() { enemy_count = kill_count = 0; }
   void reset_secret_count() { secret_count = revealed_count = 0; }
 
-  u32 get_enemy_count() { return enemy_count; }
-  u32 get_kill_count() { return kill_count; }
-  u32 get_secret_count() { return secret_count; }
-  u32 get_revealed_count() { return revealed_count; }
+  u32 get_enemy_count() const { return enemy_count; }
+  u32 get_kill_count() const { return kill_count; }
+  u32 get_secret_count() const { return secret_count; }
+  u32 get_revealed_count() const { return revealed_count; }
 
 private:
   // Clean up the current map, entities, mapping etc..

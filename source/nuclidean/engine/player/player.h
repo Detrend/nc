@@ -82,7 +82,7 @@ public:
   void    set_health(s32 health);
   void    change_weapon(WeaponType new_weapon);
 
-  s32     get_current_weapon_ammo();
+  s32     get_current_weapon_ammo()       const;
   s32     get_ammo(WeaponType weapon)     const;
   s32     get_max_ammo(WeaponType weapon) const;
 

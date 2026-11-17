@@ -4,11 +4,15 @@
  */
 #pragma once
 
+#include <config.h>
+
 #include <array>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
 #include <source_location>
+#include <string_view>
+#include <utility>
 
 #define NC_INTERNAL_TOKENPASTE2(_a, _b) _a##_b
 #define NC_TOKENJOIN(_a, _b) NC_INTERNAL_TOKENPASTE2(_a, _b)
@@ -62,6 +66,51 @@ namespace nc {
       return result;
     }
 
+    template<auto Value>
+    constexpr std::string_view enum_value_name()
+    {
+#if NC_COMPILER_MSVC
+      constexpr std::string_view signature = __FUNCSIG__;
+      constexpr std::string_view prefix = "enum_value_name<";
+#else
+      constexpr std::string_view signature = __PRETTY_FUNCTION__;
+      constexpr std::string_view prefix = "Value = ";
+#endif
+
+      const std::size_t start = signature.find(prefix) + prefix.size();
+      const std::string_view qualified = signature.substr(start, signature.find_first_of("];>", start) - start);
+      return qualified.substr(qualified.rfind(':') + 1);
+    }
+
+    template<typename Enum, typename Indices = std::make_index_sequence<static_cast<std::size_t>(Enum::count)>>
+    inline constexpr auto ENUM_VALUE_ALL_NAMES = nullptr;
+
+    template<typename Enum, std::size_t... Index>
+    inline constexpr auto ENUM_VALUE_ALL_NAMES<Enum, std::index_sequence<Index...>> =
+      std::array{enum_value_name<static_cast<Enum>(Index)>()...};
+
+    template<typename Enum>
+    constexpr std::string_view enum_value_name(Enum value)
+    {
+      return ENUM_VALUE_ALL_NAMES<Enum>[static_cast<std::size_t>(value)];
+    }
+
+    template<typename Enum>
+    constexpr bool parse_enum(std::string_view name, Enum& out_value)
+    {
+      const auto& names = ENUM_VALUE_ALL_NAMES<Enum>;
+
+      for (std::size_t index = 0; index < names.size(); ++index)
+      {
+        if (names[index] != name)
+          continue;
+
+        out_value = static_cast<Enum>(index);
+        return true;
+      }
+
+      return false;
+    }
 
   } // namespace meta
 } // namespace nc

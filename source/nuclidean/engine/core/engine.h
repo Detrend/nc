@@ -52,6 +52,8 @@ public:
 
   f32  get_delta_time() const;
 
+  void set_fixed_frame_time(f32 seconds);
+
   u64  get_frame_idx() const;
 
   bool is_game_paused() const;
@@ -139,6 +141,7 @@ private:
   TransitionStateData m_transition_state;
 
   f32           m_delta_time = 0.0f; // last frame time in seconds
+  f32           m_fixed_frame_time = 0.0f; // 0 = not fixed frame time
   u64           m_frame_idx = 0;     // index of a frame, currently only for debug
   GameState     m_game_state = GameState::none;
 
@@ -147,6 +150,11 @@ private:
   bool          m_paused            : 1 = false;
   bool          m_editor_mode       : 1 = false;
   bool          m_print_counters    : 1 = false;
+
+#if NC_TESTS
+  // Determine if autotest is active
+  bool          m_autotest          : 1 = false;
+#endif
   std::string   m_counters_output_path;
 };
 

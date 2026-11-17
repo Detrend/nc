@@ -10,7 +10,8 @@ namespace EngineModule
 {
   enum value : EngineModuleId
   {
-    graphics_system = 0,
+    autotest_system = 0,
+    graphics_system = 1,
     input_system,
     game_system,
     sound_system,

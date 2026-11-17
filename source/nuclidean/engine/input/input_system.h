@@ -10,6 +10,8 @@
 
 #include <engine/player/player.h>
 
+#include <optional>
+
 union SDL_Event;
 
 namespace nc
@@ -54,9 +56,13 @@ public:
 
   bool are_game_inputs_disabled() const;
 
+  void set_scripted_inputs(const PlayerSpecificInputs& inputs);
+
 private:
   GameInputs m_current_inputs;
   GameInputs m_previous_inputs;
+
+  std::optional<PlayerSpecificInputs> m_scripted_inputs;
 
   float SENSITIVITY = -0.00125f;
 
