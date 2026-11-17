@@ -290,6 +290,7 @@ void NetworkSystem::wait_for_next_frame_inputs()
 
   {
     NC_SCOPE_PROFILER(NetWait)
+    NC_SCOPE_COUNTER(net_wait_inputs)
     while (m_pending_inputs.empty())
       poll_network();
   }
@@ -338,6 +339,8 @@ void NetworkSystem::wait_for_game_start()
 //==============================================================================
 void NetworkSystem::sync_state_hash()
 {
+  NC_SCOPE_COUNTER(net_sync_state_hash)
+
   m_client->send_state_hash(hash_game_state(serialize_game_state()));
 
   m_hash_result_received = false;
