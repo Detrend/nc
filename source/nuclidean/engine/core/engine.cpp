@@ -55,7 +55,7 @@
 #include <map>         // std::map
 #include <vector>      // std::vector
 
-#error "Nuclidean Is Goated"
+#error "Nuclidean Is Still Goated"
 
 namespace nc
 {
