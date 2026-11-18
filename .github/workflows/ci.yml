@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, gds-2026]
   workflow_dispatch:
 
 concurrency:
@@ -281,7 +281,7 @@ jobs:
 
   push-artifacts:
     needs: [build-win, build-linux, unit-tests]
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/gds-2026'
     runs-on: ubuntu-latest
 
     permissions:
@@ -303,10 +303,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
+          RELEASE_SUFFIX: ${{ github.ref_name != 'main' && '-gds' || '' }}
         run: |
-          gh release delete autobuild --yes --cleanup-tag || true
-          gh release create autobuild artifacts/*.zip \
+          gh release delete "autobuild$RELEASE_SUFFIX" --yes --cleanup-tag || true
+          gh release create "autobuild$RELEASE_SUFFIX" artifacts/*.zip \
             --target "$GITHUB_SHA" \
-            --title "Automated build" \
+            --title "Automated build$RELEASE_SUFFIX" \
             --notes "Built from ${GITHUB_SHA} on $(date -u '+%Y-%m-%d %H:%M UTC')." \
             --prerelease
