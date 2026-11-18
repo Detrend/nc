@@ -144,6 +144,8 @@ private:
   // attack based on input
   void handle_attack(PlayerSpecificInputs input, PlayerSpecificInputs prev_input, f32 delta_seconds);
 
+  void handle_railgun(nc::PlayerSpecificInputs& curr_input, nc::PlayerSpecificInputs& prev_input);
+
   // use (E) raycast
   void handle_use(PlayerSpecificInputs input, PlayerSpecificInputs prev_input, f32 delta_seconds);
 

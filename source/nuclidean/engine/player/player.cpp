@@ -444,6 +444,13 @@ void Player::handle_attack(PlayerSpecificInputs curr_input, PlayerSpecificInputs
   //Try do the actual attack
   bool did_attack = this->get_attack_state(curr_input, prev_input, dt);
 
+  // RAILGUN LOGIC - TEMPORARY
+  if (this->get_equipped_weapon() == WeaponTypes::rail_gun)
+  {
+    handle_railgun(curr_input, prev_input);
+    return;
+  }
+
   if (did_attack && this->get_current_weapon_fsm().get_state() == WeaponStates::idle)
   {
     bool is_melee = this->current_weapon == WeaponTypes::wrench;
@@ -463,6 +470,75 @@ void Player::handle_attack(PlayerSpecificInputs curr_input, PlayerSpecificInputs
     {
       this->play_sound(WEAPON_STATS[current_weapon].shoot_snd, 0.5f);
     }
+  }
+}
+
+//=================================================================================================================
+void Player::handle_railgun(nc::PlayerSpecificInputs& curr_input, nc::PlayerSpecificInputs& prev_input)
+{
+  PlayerKeyFlags flag = (1 << PlayerKeyInputs::primary);
+  bool holding_now = curr_input.keys & flag;
+  bool holding_prev = prev_input.keys & flag;
+  // START ANIM
+  if (holding_now && !holding_prev)
+  {
+    if (current_ammo[this->current_weapon] == 0)
+    {
+      return;
+    }
+
+    WeaponAnimFSM& fsm = this->get_current_weapon_fsm();
+    if (fsm.get_time() >= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.3f
+      && fsm.get_time() <= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) + 2.25f)
+    {
+      return;
+    }
+    this->get_current_weapon_fsm().set_state(WeaponStates::attack);
+    auto& sound_system = SoundSystem::get();
+    sound_system.play_oneshot(Sounds::railgun_trigger);
+  }
+  else if (holding_now && holding_prev && this->get_current_weapon_fsm().get_state() == WeaponStates::attack) //LOOP ANIM
+  {
+    WeaponAnimFSM& fsm = this->get_current_weapon_fsm();
+    //first time playing the hum
+    if (fsm.get_time() >= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.31f &&
+      fsm.get_time() <= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.3f)
+    {
+      fsm.set_time(get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - .3f);
+      auto& sound_system = SoundSystem::get();
+      sound_system.play_oneshot(Sounds::railgun_hum);
+    }
+
+    // loop
+    if (fsm.get_time() >= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.1f &&
+      fsm.get_time() <= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]))
+    {
+      fsm.set_time(get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - .3f);
+      auto& sound_system = SoundSystem::get();
+      sound_system.play_oneshot(Sounds::railgun_hum);
+    }
+  }
+  else if (holding_prev && !holding_now && this->get_current_weapon_fsm().get_state() == WeaponStates::attack) //FIRE ANIM
+  {
+    WeaponAnimFSM& fsm = this->get_current_weapon_fsm();
+    if (fsm.get_time() >= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.3f &&
+      fsm.get_time() <= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.1f)
+    {
+      fsm.set_time(get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.1f);
+      this->current_ammo[this->current_weapon] -= 1;
+      auto& sound_system = SoundSystem::get();
+      sound_system.play_oneshot(Sounds::railgun_fire);
+    }
+  }
+  else
+  {
+    WeaponAnimFSM& fsm = this->get_current_weapon_fsm();
+    if (fsm.get_time() >= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.1f)
+    {
+      return;
+    }
+    // cancel firnig if trigger is released too early
+    this->get_current_weapon_fsm().set_state(WeaponStates::idle);
   }
 }
 
