@@ -62,12 +62,14 @@ constexpr f32 PLAYER_RADIUS      = 0.25f;
 constexpr f32 MELEE_DAMAGE_RANGE = 2.25f;
 constexpr f32 PLAYER_STEP_HEIGHT = 0.9f; // 90cm
 
-constexpr u64  NUM_ANIM_FRAMES    = 16;
-constexpr cstr PLAYER_SPRITE      = "player_walk";
-constexpr cstr PLAYER_DEAD_SPRITE = "player_dead";
-constexpr f32  PLAYER_SOUND_RANGE = 25.0f;
-constexpr f32  REVIVE_HOLD_TIME   = 2.0f;
-constexpr f32  REVIVE_DISTANCE    = 3.0f;
+constexpr u64   NUM_ANIM_FRAMES     = 16;
+constexpr u64   NUM_DYING_FRAMES    = 12;
+constexpr cstr  PLAYER_SPRITE       = "player_walk";
+constexpr Token PLAYER_IDLE_SPRITE  = Token::Const("player_idle_0");
+constexpr cstr  PLAYER_DYING_SPRITE = "player_dying";
+constexpr f32   PLAYER_SOUND_RANGE  = 25.0f;
+constexpr f32   REVIVE_HOLD_TIME    = 2.0f;
+constexpr f32   REVIVE_DISTANCE     = 3.0f;
 
 //==============================================================================
 template<typename T, u8 StackSize>
@@ -159,7 +161,7 @@ void Player::init(vec3 position, vec3 in_forward)
   this->forward = in_forward;
   this->appear = Appearance
   {
-    .sprite    = std::format("{}_{}", PLAYER_SPRITE, 0).c_str(),
+    .sprite    = PLAYER_IDLE_SPRITE,
     .direction = this->get_facing_hor(),
     .scale     = 28.0f,
     .mode      = Appearance::SpriteMode::dir8,
@@ -745,19 +747,29 @@ void Player::update_gun_anim(f32 delta)
 //==============================================================================
 void Player::update_appearance([[maybe_unused]]f32 delta)
 {
+  this->appear.direction = this->get_facing_hor();
+
+  // dying animation stops on its last frame
+  if (!this->alive)
+  {
+    u64 dying_idx = cast<u64>(this->time_since_death * CVars::player_dying_anim_spd);
+    this->appear.sprite = std::format("{}_{}", PLAYER_DYING_SPRITE, min(dying_idx, NUM_DYING_FRAMES-1));
+    return;
+  }
+
   bool is_moving = length(this->velocity.xz()) > 0.01f;
+  if (!is_moving)
+  {
+    this->appear.sprite = PLAYER_IDLE_SPRITE;
+    return;
+  }
+
   f64 anim_spd    = CVars::player_walk_anim_spd;
   f64 since_start = GameHelpers::get().get_time_since_start();
   f64 since_start_mod = std::fmod(since_start * anim_spd, cast<f64>(NUM_ANIM_FRAMES));
 
   u64 frame_idx = clamp<u64>(cast<u64>(since_start_mod), 0, NUM_ANIM_FRAMES-1);
-  if (!is_moving)
-  {
-    frame_idx = 0;
-  }
-
-  this->appear.direction = this->get_facing_hor();
-  this->appear.sprite    = std::format("{}_{}", PLAYER_SPRITE, frame_idx);
+  this->appear.sprite = std::format("{}_{}", PLAYER_SPRITE, frame_idx);
 }
 
 //==============================================================================
@@ -1043,8 +1055,8 @@ void Player::die()
   alive = false;
 
   this->set_height(PLAYER_HEIGHT * 0.25f);
-  this->appear.sprite = PLAYER_DEAD_SPRITE;
-  this->appear.mode   = Appearance::SpriteMode::mono;
+  this->appear.mode = Appearance::SpriteMode::mono;
+  this->update_appearance(0.0f);
   this->play_sound(Sounds::death);
 }
 
@@ -1184,6 +1196,7 @@ void Player::update
   else
   {
     time_since_death += delta;
+    this->update_appearance(delta);
     if (!NetworkSystem::get().is_multiplayer() && (curr_input.keys & 1 << PlayerKeyInputs::use))
     {
       GameSystem::get().request_level_restart();
