@@ -2,8 +2,10 @@
 #include <common.h>
 #include <cvars.h>
 
+#include <engine/entity/entity_types.h>
 #include <engine/game/game_system.h>
 #include <engine/game/game_helpers.h>
+#include <engine/input/game_input.h>
 #include <engine/player/player.h>
 
 #include <engine/core/engine.h>
@@ -19,6 +21,9 @@
 #include <engine/map/physics.h>
 #include <engine/map/map_system.h>
 #include <engine/map/map_dynamics.h>
+
+#include <engine/network/constants.h>
+#include <engine/network/network_system.h>
 
 #include <engine/graphics/entities/lights.h>
 #include <engine/graphics/entities/sky_box.h>
@@ -55,6 +60,7 @@
 #include <stack_vector.h>
 #include <buffer.h>
 
+#include <array>
 #include <fstream>
 #include <filesystem>
 #include <string>
@@ -276,10 +282,14 @@ static void load_empty_map
   SectorMapping&  mapping,
   EntityRegistry& /*entities*/,
   MapDynamics&    dynamics,
-  EntityID&       player_id
+  PlayerArray&    player_ids,
+  vec3&           spawn_point,
+  vec3&           spawn_direction
 )
 {
-  player_id = INVALID_ENTITY_ID;
+  player_ids.fill(INVALID_ENTITY_ID);
+  spawn_point     = VEC3_ZERO;
+  spawn_direction = VEC3_X;
   mapping.on_map_rebuild();
   dynamics.on_map_rebuild_and_entities_created();
 }
@@ -292,7 +302,9 @@ static void load_json_map
   SectorMapping&   mapping,
   EntityRegistry&  entities,
   MapDynamics&     dynamics,
-  EntityID&        player_id
+  PlayerArray&     player_ids,
+  vec3&            spawn_point,
+  vec3&            spawn_direction
 )
 {
   using namespace map_building;
@@ -468,9 +480,27 @@ static void load_json_map
 
     if (js_entity["is_player"] == true)
     {
-      auto* player = entities.create_entity<Player>(position, forward);
-      player_id = player->get_id();
-      register_entity(player, js_entity);
+      spawn_point     = position;
+      spawn_direction = forward;
+
+      if (NetworkSystem::get().is_multiplayer())
+      {
+        for (PlayerID player_id = 0; player_id < MAX_PLAYER_COUNT; ++player_id)
+        {
+          if (!NetworkSystem::get().is_player_connected(player_id))
+            continue;
+
+          const Player* player = entities.create_entity<Player>(position, forward);
+          player_ids[player_id] = player->get_id();
+          register_entity(player, js_entity);
+        }
+      }
+      else
+      {
+        auto* player = entities.create_entity<Player>(position, forward);
+        player_ids[0] = player->get_id();
+        register_entity(player, js_entity);
+      }
     }
     else
     {
@@ -789,10 +819,7 @@ void GameSystem::game_update(f32 delta)
   {
     auto demo_inputs = [this]()
     {
-      PlayerSpecificInputs empty_inputs;
-      PlayerSpecificInputs prev_inputs;
-      PlayerSpecificInputs curr_inputs;
-      f32                  delta_time = 0.0f;
+      f32 delta_time = 0.0f;
 
       nc_assert(journal.rover < journal.frames.size());
 
@@ -800,35 +827,50 @@ void GameSystem::game_update(f32 delta)
       const DemoDataFrame&  frame = frames[journal.rover];
 
       bool first_frame = !journal.rover;
-      prev_inputs = first_frame ? empty_inputs : frames[journal.rover-1].inputs;
-      curr_inputs = frame.inputs;
       delta_time  = frame.delta;
+
+      InputArray curr{};
+      InputArray prev{};
+      curr[0] = frame.inputs;
+      prev[0] = first_frame ? PlayerSpecificInputs{} : frames[journal.rover - 1].inputs;
 
       journal.rover += 1;
 
-      return std::make_tuple(delta_time, curr_inputs, prev_inputs);
+      return std::make_tuple(delta_time, curr, prev);
     };
 
     auto game_inputs = [this, delta]()
     {
-      GameInputs curr_input = InputSystem::get().get_inputs();
-      GameInputs prev_input = InputSystem::get().get_prev_inputs();
+      NetworkSystem& network = NetworkSystem::get();
 
-      PlayerSpecificInputs curr_inputs = curr_input.player_inputs;
-      PlayerSpecificInputs prev_inputs = prev_input.player_inputs;
-      f32                  delta_time  = delta;
+      const PlayerSpecificInputs local = InputSystem::get().get_inputs().player_inputs;
+
+      InputArray curr{};
+      if (network.is_multiplayer())
+      {
+        curr = m_next_tick_inputs;
+      }
+      else
+      {
+        curr[network.get_local_player_id()] = local;
+      }
+
+      const InputArray prev = m_previous_tick_inputs;
+      m_previous_tick_inputs = curr;
+
+      const f32 delta_time = network.is_multiplayer() ? MULTIPLAYER_FIXED_DELTA_TIME : delta;
 
       if (journal.state == JournalState::recording)
       {
         // Record the inputs as well
         journal.frames.push_back(DemoDataFrame
         {
-          .inputs = curr_inputs,
+          .inputs = local,
           .delta  = delta_time,
         });
       }
 
-      return std::make_tuple(delta_time, curr_inputs, prev_inputs);
+      return std::make_tuple(delta_time, curr, prev);
     };
 
     if (journal.state == JournalState::playing)
@@ -962,6 +1004,43 @@ void GameSystem::on_event(ModuleEvent& event)
       this->game_update(event.update.dt);
     }
     break;
+
+    case ModuleEventType::net_input_arrived:
+    {
+      nc_assert(event.net_inputs.inputs != nullptr);
+      m_next_tick_inputs = *event.net_inputs.inputs;
+    }
+    break;
+
+    case ModuleEventType::net_player_spawned:
+    {
+      const PlayerID player_id = event.net_player.player_id;
+      nc_assert(player_id < MAX_PLAYER_COUNT, "invalid net player id - \"{}\"", player_id);
+      nc_assert
+      (
+        game->player_ids[player_id] == INVALID_ENTITY_ID,
+        "net player {} spawned into an occupied slot", player_id
+      );
+
+      const Player* player = game->entities->create_entity<Player>(game->spawn_point, game->spawn_direction);
+      game->player_ids[player_id] = player->get_id();
+    }
+    break;
+
+    case ModuleEventType::net_player_despawned:
+    {
+      const PlayerID player_id = event.net_player.player_id;
+      nc_assert(player_id < MAX_PLAYER_COUNT, "invalid net player id - \"{}\"", player_id);
+      nc_assert
+      (
+        game->player_ids[player_id] != INVALID_ENTITY_ID,
+        "net player {} despawned from an empty slot", player_id
+      );
+
+      game->entities->destroy_entity(game->player_ids[player_id]);
+      game->player_ids[player_id] = INVALID_ENTITY_ID;
+    }
+    break;
   }
 }
 
@@ -986,6 +1065,12 @@ const EntityRegistry& GameSystem::get_entities() const
 }
 
 //==============================================================================
+const PlayerArray& GameSystem::get_player_ids() const
+{
+  return game->player_ids;
+}
+
+//==============================================================================
 void GameSystem::save_game(const char*const save_name) const
 {
   // Generate the filename
@@ -1004,8 +1089,13 @@ void GameSystem::save_game(const char*const save_name) const
 }
 
 //==============================================================================
-void GameSystem::quick_save() const
+bool GameSystem::quick_save() const
 {
+  if (NetworkSystem::get().is_multiplayer())
+  {
+    return false;
+  }
+
   // Generate the filename
   [[maybe_unused]] auto lvl = level_name.to_string();
 
@@ -1018,11 +1108,18 @@ void GameSystem::quick_save() const
   {
     .save_to_file = std::move(save_path),
   };
+
+  return true;
 }
 
 //==============================================================================
 void GameSystem::load_game(const std::string& path)
 {
+  if (NetworkSystem::get().is_multiplayer())
+  {
+    return;
+  }
+
   scheduled_state = NextRequestedState
   {
     .load_from_file = path,
@@ -1030,7 +1127,7 @@ void GameSystem::load_game(const std::string& path)
 }
 
 //==============================================================================
-LevelTransitionData GameSystem::get_transition_data() const
+LevelTransitionArray GameSystem::get_transition_data() const
 {
   return this->game->transition_data;
 }
@@ -1077,7 +1174,7 @@ void GameSystem::request_level_restart()
 //==============================================================================
 void GameSystem::request_level_change
 (
-  const LevelName& new_level, DemoDataFrames&& frames, LevelTransitionData transition
+  const LevelName& new_level, DemoDataFrames&& frames, LevelTransitionArray transition
 )
 {
   this->scheduled_state = NextRequestedState
@@ -1154,7 +1251,7 @@ void GameSystem::cleanup_map()
 void GameSystem::handle_start_new_level_optionally_with_demo
 (
   LevelName             level,
-  LevelTransitionData   transition_data,
+  LevelTransitionArray  transition_data,
   const DemoDataFrames& demo_optional
 )
 {
@@ -1176,7 +1273,8 @@ void GameSystem::handle_start_new_level_optionally_with_demo
   else
   {
     // Record frames
-    journal.reset_and_clear(JournalState::recording);
+    const bool multiplayer = NetworkSystem::get().is_multiplayer();
+    journal.reset_and_clear(multiplayer ? JournalState::none : JournalState::recording);
   }
 
   this->post_level_load();
@@ -1222,11 +1320,19 @@ void GameSystem::handle_load_game(const std::string& savefile)
 
   // Free the data
   std::free(data);
+
+  m_next_tick_inputs = InputArray{};
+  m_previous_tick_inputs = InputArray{};
 }
 
 //==============================================================================
 void GameSystem::handle_save_game(const std::string& savefile)
 {
+  if (NetworkSystem::get().is_multiplayer())
+  {
+    return;
+  }
+
   // Header
   SaveGameHeader header;
   std::memcpy(header.signature, SaveGameHeader::SIGNATURE, SaveGameHeader::SIGNATURE_SIZE);
@@ -1409,7 +1515,9 @@ void GameSystem::build_map(LevelName level)
       *game->mapping,
       *game->entities,
       *game->dynamics,
-      game->player_id
+      game->player_ids,
+      game->spawn_point,
+      game->spawn_direction
     );
   }
   else
@@ -1421,12 +1529,14 @@ void GameSystem::build_map(LevelName level)
       *game->mapping,
       *game->entities,
       *game->dynamics,
-      game->player_id
+      game->player_ids,
+      game->spawn_point,
+      game->spawn_direction
     );
   }
 
   // Now snap all required entities to the floor
-  game->entities->for_each(EntityTypes::all, [&](Entity& entity)
+  game->entities->for_each(EntityTypeFlags::all, [&](Entity& entity)
   {
     if (f32 out_h; recalc_snap_entity_height(entity, *game->map, *game->mapping, out_h))
     {

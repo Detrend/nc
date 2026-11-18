@@ -66,6 +66,16 @@ public:
   void damage(int damage);
   void heal(u32 how_much);
   void die();
+  void revive();
+
+  // Revives the player at the spawn.
+  void respawn(vec3 position, vec3 forward);
+
+  // True when this player looks at the dead player's body within revive distance.
+  bool can_revive(const Player& dead) const;
+
+  // Comes back to life once teammates held use next to the body long enough.
+  void update_revive(bool being_revived, f32 delta);
 
   void update
   (
@@ -76,8 +86,10 @@ public:
 
   const Camera* get_camera() const;
   Camera* get_camera();
-  int     get_health()     const;
-  int     get_max_health() const;
+  int     get_health()           const;
+  int     get_max_health()       const;
+  bool    is_alive()             const;
+  f32     get_time_since_death() const;
 
   void    set_health(s32 health);
   void    change_weapon(WeaponType new_weapon);
@@ -132,6 +144,8 @@ private:
   // attack based on input
   void handle_attack(PlayerSpecificInputs input, PlayerSpecificInputs prev_input, f32 delta_seconds);
 
+  void handle_railgun(nc::PlayerSpecificInputs& curr_input, nc::PlayerSpecificInputs& prev_input);
+
   // use (E) raycast
   void handle_use(PlayerSpecificInputs input, PlayerSpecificInputs prev_input, f32 delta_seconds);
 
@@ -168,6 +182,12 @@ private:
 
   // Alerts enemies close to the player
   void alert_nearby_enemies(f32 distance);
+
+  // True for the player controlled on this machine
+  bool is_local() const;
+
+  // Plain sound for the local player, 3D sound for the others
+  void play_sound(SoundID sound, f32 volume = 1.0f) const;
 
   // Value interpolated in the [0, 1] interval
   // 0 when not moving or in air otherwise 1
@@ -206,6 +226,7 @@ private:
   f32 time_since_start      = 0.0f;
   f32 air_time              = 0.0f;
   f32 time_since_death      = 0.0f;
+  f32 time_being_revived    = 0.0f;
 
   ViewBobStack<vec2, 10> rotation_offsets; // camera rotation offsets
   ViewBobStack<f32,  6>  position_offsets; // camera y-pos offsets

@@ -39,7 +39,7 @@ public:
   static constexpr size_t LIGHT_CULLING_TILE_SIZE_X = 16;
   static constexpr size_t LIGHT_CULLING_TILE_SIZE_Y = 16;
 
-  static constexpr size_t MAX_SECTORS = 4096;
+  static constexpr size_t MAX_SECTORS = 1<<13;
   static constexpr size_t MAX_WALLS = MAX_SECTORS * 8;
   static constexpr size_t MAX_PORTALS = MAX_SECTORS * 4;
 
@@ -148,8 +148,11 @@ private:
   mutable SSBOBuffer<PointLightGPU> m_point_light_ssbo          { MAX_VISIBLE_POINT_LIGHTS  };
   mutable SSBOBuffer<SectorGPU>     m_sectors_ssbo              { MAX_SECTORS               };
   mutable SSBOBuffer<WallGPU>       m_walls_ssbo                { MAX_WALLS                 };
-  mutable SSBOBuffer<mat4>          m_portal_matrices_inv_ssbo  { MAX_PORTALS               };
-  mutable SSBOBuffer<mat4>          m_sector_matrices_inv_ssbo  { MAX_SECTORS               };
+  mutable SSBOBuffer<mat4>          m_matrices_inv_ssbo         { MAX_PORTALS + MAX_SECTORS };
+
+  // Inverse portal matrices live in m_matrices_inv_ssbo[0, MAX_PORTALS), inverse sector matrices (rebuilt every frame) in m_matrices_inv_ssbo[SECTOR_MATRICES_OFFSET, SECTOR_MATRICES_OFFSET + MAX_SECTORS).
+  // note: They share one SSBO so that the lighting shader fits into GL_MAX_COMBINED_SHADER_OUTPUT_RESOURCES = 7 (1 color output + 6 SSBOs), which is what ANGLE reports on Direct3D feature level 11_0.
+  static constexpr size_t SECTOR_MATRICES_OFFSET = MAX_PORTALS;
 
   mutable std::vector<mat4> m_sector_matrices_inv;
   mutable std::unordered_map<u64, size_t> m_light_gpu_data_indices;

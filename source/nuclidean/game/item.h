@@ -6,8 +6,9 @@
 
 #include <game/game_types.h> // PickupType
 
-#include <engine/entity/entity.h>
 #include <engine/appearance.h>
+#include <engine/entity/entity.h>
+#include <engine/sound/sound_types.h>
 
 namespace nc
 {
@@ -35,6 +36,8 @@ public:
   bool is_ammo()   const;
   bool is_weapon() const;
   bool is_heal()   const;
+
+  SoundID get_pickup_sound() const;
 
   Appearance&       get_appearance();
   const Appearance& get_appearance() const;

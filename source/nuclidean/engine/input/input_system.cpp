@@ -98,6 +98,7 @@ void InputSystem::on_event(ModuleEvent& event)
 //==============================================================================
 bool InputSystem::init()
 {
+  SDL_SetRelativeMouseMode(SDL_TRUE);
   return true;
 }
 
@@ -129,8 +130,10 @@ void InputSystem::update_window_and_pump_messages()
     {
       if (event.key.keysym.scancode == SDL_SCANCODE_F6)
       {
-        GameSystem::get().quick_save();
-        get_engine().get_module<UserInterfaceSystem>().get_hud()->show_saved();
+        if (GameSystem::get().quick_save())
+        {
+          get_engine().get_module<UserInterfaceSystem>().get_hud()->show_saved();
+        }
       }
       else if (event.key.keysym.scancode == SDL_SCANCODE_F9)
       {

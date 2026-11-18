@@ -4,9 +4,10 @@
 
 #include <engine/core/engine.h>
 
-#include <engine/player/player.h>
 #include <engine/input/game_input.h>
 #include <engine/input/input_system.h>
+#include <engine/network/network_system.h>
+#include <engine/player/player.h>
 
 #include <engine/map/map_system.h>
 #include <engine/map/map_dynamics.h>
@@ -61,8 +62,14 @@ constexpr f32 PLAYER_RADIUS      = 0.25f;
 constexpr f32 MELEE_DAMAGE_RANGE = 2.25f;
 constexpr f32 PLAYER_STEP_HEIGHT = 0.9f; // 90cm
 
-constexpr u64  NUM_ANIM_FRAMES = 16;
-constexpr cstr PLAYER_SPRITE   = "player_walk";
+constexpr u64   NUM_ANIM_FRAMES     = 16;
+constexpr u64   NUM_DYING_FRAMES    = 12;
+constexpr cstr  PLAYER_SPRITE       = "player_walk";
+constexpr Token PLAYER_IDLE_SPRITE  = Token::Const("player_idle_0");
+constexpr cstr  PLAYER_DYING_SPRITE = "player_dying";
+constexpr f32   PLAYER_SOUND_RANGE  = 25.0f;
+constexpr f32   REVIVE_HOLD_TIME    = 2.0f;
+constexpr f32   REVIVE_DISTANCE     = 3.0f;
 
 //==============================================================================
 template<typename T, u8 StackSize>
@@ -154,7 +161,7 @@ void Player::init(vec3 position, vec3 in_forward)
   this->forward = in_forward;
   this->appear = Appearance
   {
-    .sprite    = std::format("{}_{}", PLAYER_SPRITE, 0).c_str(),
+    .sprite    = PLAYER_IDLE_SPRITE,
     .direction = this->get_facing_hor(),
     .scale     = 28.0f,
     .mode      = Appearance::SpriteMode::dir8,
@@ -246,7 +253,7 @@ void Player::calculate_wish_velocity(PlayerSpecificInputs input, f32 delta_secon
   {
     this->velocity.y = CVars::player_jump_force;
     this->rotation_offsets.push_one(vec2{0, deg2rad(1.0f)} * CVars::player_jump_offset_coeff, 0.3f, 0.05f);
-    SoundSystem::get().play_oneshot(Sounds::player_jump);
+    this->play_sound(Sounds::player_jump);
   }
 }
 
@@ -304,7 +311,10 @@ void Player::handle_weapon_change(PlayerSpecificInputs input, PlayerSpecificInpu
     {
       // Accept only the first one if multiple keys are pressed
       if (current_ammo[i] == 0) {
-        SoundSystem::get().play_oneshot(Sounds::out_of_ammo);
+        if (this->is_local())
+        {
+          SoundSystem::get().play_oneshot(Sounds::out_of_ammo);
+        }
       }
       else {
         this->change_weapon(i);
@@ -401,7 +411,7 @@ void Player::apply_velocity(f32 delta_seconds)
   // Process report only collisions
   for (EntityID report_id : collected_collisions.report_entities)
   {
-    if (report_id.type == EntityTypes::pickup)
+    if (report_id.type == EntityTypes::pickup && this->alive)
     {
       Pickup* pickup = ecs.get_entity<Pickup>(report_id);
       nc_assert(pickup);
@@ -436,6 +446,13 @@ void Player::handle_attack(PlayerSpecificInputs curr_input, PlayerSpecificInputs
   //Try do the actual attack
   bool did_attack = this->get_attack_state(curr_input, prev_input, dt);
 
+  // RAILGUN LOGIC - TEMPORARY
+  if (this->get_equipped_weapon() == WeaponTypes::rail_gun)
+  {
+    handle_railgun(curr_input, prev_input);
+    return;
+  }
+
   if (did_attack && this->get_current_weapon_fsm().get_state() == WeaponStates::idle)
   {
     bool is_melee = this->current_weapon == WeaponTypes::wrench;
@@ -453,9 +470,77 @@ void Player::handle_attack(PlayerSpecificInputs curr_input, PlayerSpecificInputs
     this->get_current_weapon_fsm().set_state(WeaponStates::attack);
     if (current_weapon == WeaponTypes::rail_gun)
     {
-      auto& sound_system = SoundSystem::get();
-      sound_system.play_oneshot(WEAPON_STATS[current_weapon].shoot_snd, 0.5f);
+      this->play_sound(WEAPON_STATS[current_weapon].shoot_snd, 0.5f);
     }
+  }
+}
+
+//=================================================================================================================
+void Player::handle_railgun(nc::PlayerSpecificInputs& curr_input, nc::PlayerSpecificInputs& prev_input)
+{
+  PlayerKeyFlags flag = (1 << PlayerKeyInputs::primary);
+  bool holding_now = curr_input.keys & flag;
+  bool holding_prev = prev_input.keys & flag;
+  // START ANIM
+  if (holding_now && !holding_prev)
+  {
+    if (current_ammo[this->current_weapon] == 0)
+    {
+      return;
+    }
+
+    WeaponAnimFSM& fsm = this->get_current_weapon_fsm();
+    if (fsm.get_time() >= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.3f
+      && fsm.get_time() <= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) + 2.25f)
+    {
+      return;
+    }
+    this->get_current_weapon_fsm().set_state(WeaponStates::attack);
+    auto& sound_system = SoundSystem::get();
+    sound_system.play_oneshot(Sounds::railgun_trigger);
+  }
+  else if (holding_now && holding_prev && this->get_current_weapon_fsm().get_state() == WeaponStates::attack) //LOOP ANIM
+  {
+    WeaponAnimFSM& fsm = this->get_current_weapon_fsm();
+    //first time playing the hum
+    if (fsm.get_time() >= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.31f &&
+      fsm.get_time() <= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.3f)
+    {
+      fsm.set_time(get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - .3f);
+      auto& sound_system = SoundSystem::get();
+      sound_system.play_oneshot(Sounds::railgun_hum);
+    }
+
+    // loop
+    if (fsm.get_time() >= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.1f &&
+      fsm.get_time() <= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]))
+    {
+      fsm.set_time(get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - .3f);
+      auto& sound_system = SoundSystem::get();
+      sound_system.play_oneshot(Sounds::railgun_hum);
+    }
+  }
+  else if (holding_prev && !holding_now && this->get_current_weapon_fsm().get_state() == WeaponStates::attack) //FIRE ANIM
+  {
+    WeaponAnimFSM& fsm = this->get_current_weapon_fsm();
+    if (fsm.get_time() >= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.3f &&
+      fsm.get_time() <= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.1f)
+    {
+      fsm.set_time(get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.1f);
+      this->current_ammo[this->current_weapon] -= 1;
+      auto& sound_system = SoundSystem::get();
+      sound_system.play_oneshot(Sounds::railgun_fire);
+    }
+  }
+  else
+  {
+    WeaponAnimFSM& fsm = this->get_current_weapon_fsm();
+    if (fsm.get_time() >= get_weapon_fire_t(WEAPON_ANIMS[this->current_weapon]) - 0.1f)
+    {
+      return;
+    }
+    // cancel firnig if trigger is released too early
+    this->get_current_weapon_fsm().set_state(WeaponStates::idle);
   }
 }
 
@@ -493,7 +578,7 @@ void Player::handle_use(PlayerSpecificInputs curr_input, PlayerSpecificInputs pr
 
       if (did_something)
       {
-        SoundSystem::get().play_oneshot(Sounds::button);
+        this->play_sound(Sounds::button);
       }
     }
   }
@@ -635,7 +720,10 @@ void Player::update_gun_anim(f32 delta)
 
   if (current_ammo[this->current_weapon] == 0 && this->get_current_weapon_fsm().get_state() == WeaponStates::idle)
   {
-    SoundSystem::get().play_oneshot(Sounds::out_of_ammo);
+    if (this->is_local())
+    {
+      SoundSystem::get().play_oneshot(Sounds::out_of_ammo);
+    }
     if (current_ammo[2] > 0 && has_weapon(2)) // Plasma gun
     {
       change_weapon(2);
@@ -659,26 +747,35 @@ void Player::update_gun_anim(f32 delta)
 //==============================================================================
 void Player::update_appearance([[maybe_unused]]f32 delta)
 {
+  this->appear.direction = this->get_facing_hor();
+
+  // dying animation stops on its last frame
+  if (!this->alive)
+  {
+    u64 dying_idx = cast<u64>(this->time_since_death * CVars::player_dying_anim_spd);
+    this->appear.sprite = std::format("{}_{}", PLAYER_DYING_SPRITE, min(dying_idx, NUM_DYING_FRAMES-1));
+    return;
+  }
+
   bool is_moving = length(this->velocity.xz()) > 0.01f;
+  if (!is_moving)
+  {
+    this->appear.sprite = PLAYER_IDLE_SPRITE;
+    return;
+  }
+
   f64 anim_spd    = CVars::player_walk_anim_spd;
   f64 since_start = GameHelpers::get().get_time_since_start();
   f64 since_start_mod = std::fmod(since_start * anim_spd, cast<f64>(NUM_ANIM_FRAMES));
 
   u64 frame_idx = clamp<u64>(cast<u64>(since_start_mod), 0, NUM_ANIM_FRAMES-1);
-  if (!is_moving)
-  {
-    frame_idx = 0;
-  }
-
-  this->appear.direction = this->get_facing_hor();
-  this->appear.sprite    = std::format("{}_{}", PLAYER_SPRITE, frame_idx);
+  this->appear.sprite = std::format("{}_{}", PLAYER_SPRITE, frame_idx);
 }
 
 //==============================================================================
 void Player::do_attack()
 {
-  auto& sound_system = SoundSystem::get();
-  auto  world        = GameSystem::get().get_level();
+  auto world = GameSystem::get().get_level();
 
   vec3 dir  = this->get_look_direction();
 
@@ -707,7 +804,7 @@ void Player::do_attack()
       {
         s32 dmg = PROJECTILE_STATS[WEAPON_STATS[weapon].projectile].damage;
         enemy->damage(dmg, this->get_id());
-        sound_system.play_oneshot(Sounds::melee_hit);
+        this->play_sound(Sounds::melee_hit);
 
         // Spawn blood particles
         GameSystem::get().get_entities().create_entity<Particle>
@@ -770,7 +867,7 @@ void Player::do_attack()
 
   if (WEAPON_STATS[weapon].shoot_snd != Sounds::railgun)
   {
-    sound_system.play_oneshot(WEAPON_STATS[weapon].shoot_snd, 0.5f);
+    this->play_sound(WEAPON_STATS[weapon].shoot_snd, 0.5f);
   }
   time_since_shoot = 0.0f;
 }
@@ -781,7 +878,7 @@ void Player::change_weapon(WeaponType new_weapon)
   this->current_weapon        = new_weapon;
   this->time_since_gun_change = 0.0f;
 
-  SoundSystem::get().play_oneshot(WEAPON_STATS[new_weapon].equip_sound);
+  this->play_sound(WEAPON_STATS[new_weapon].equip_sound);
 }
 
 //==============================================================================
@@ -792,11 +889,16 @@ void Player::handle_pickup(Pickup& pickup)
     EntityRegistry&      ecs = GameSystem::get().get_entities();
     UserInterfaceSystem& ui  = get_engine().get_module<UserInterfaceSystem>();
 
+    this->play_sound(pickup.get_pickup_sound());
+
     // Destroy if picked up sucessfully.
     ecs.destroy_entity(pickup.get_id());
 
     // Notify UI to show a overlay effect
-    ui.get_ui_screen_effect()->did_pickup();
+    if (this->is_local())
+    {
+      ui.get_ui_screen_effect()->did_pickup();
+    }
   }
 }
 
@@ -901,13 +1003,20 @@ void Player::damage(int damage)
     return;
   }
 
+  const bool local = this->is_local();
   this->current_health -= damage;
-  get_engine().get_module<UserInterfaceSystem>().get_ui_screen_effect()->did_damage(damage);
+  if (local)
+  {
+    get_engine().get_module<UserInterfaceSystem>().get_ui_screen_effect()->did_damage(damage);
+  }
 
   if (this->current_health <= 0)
   {
     this->die();
-    get_engine().get_module<UserInterfaceSystem>().get_ui_screen_effect()->did_damage(200);
+    if (local)
+    {
+      get_engine().get_module<UserInterfaceSystem>().get_ui_screen_effect()->did_damage(200);
+    }
   }
   else
   {
@@ -916,7 +1025,7 @@ void Player::damage(int damage)
     vec2 offset = vec2{deg2rad(cos(angle)), deg2rad(sin(angle))} * coeff * CVars::player_hurt_shake_coeff;
     this->rotation_offsets.push_one(offset, 0.2f, 0.1f);
 
-    SoundSystem::get().play_oneshot(Sounds::player_hurt);
+    this->play_sound(Sounds::player_hurt);
   }
 }
 
@@ -936,13 +1045,102 @@ void Player::heal(u32 how_much)
 //==============================================================================
 void Player::die()
 {
-  if (alive)
+  if (!alive)
   {
-    this->velocity.x = this->velocity.z = 0.0f; // Stop on the place
-    dead_camera_offset = PLAYER_EYE_HEIGHT;
-    SoundSystem::get().play_oneshot(Sounds::death);
+    return;
   }
+
+  this->velocity.x = this->velocity.z = 0.0f; // Stop on the place
+  dead_camera_offset = PLAYER_EYE_HEIGHT;
   alive = false;
+
+  this->set_height(PLAYER_HEIGHT * 0.25f);
+  this->appear.mode = Appearance::SpriteMode::mono;
+  this->update_appearance(0.0f);
+  this->play_sound(Sounds::death);
+}
+
+//==============================================================================
+void Player::revive()
+{
+  this->alive              = true;
+  this->current_health     = CVars::player_revive_health;
+  this->time_since_death   = 0.0f;
+  this->time_being_revived = 0.0f;
+  this->appear.mode        = Appearance::SpriteMode::dir8;
+  this->set_height(PLAYER_HEIGHT);
+  this->update_appearance(0.0f);
+}
+
+//==============================================================================
+void Player::respawn(vec3 position, vec3 in_forward)
+{
+  this->set_position(position);
+  this->angle_yaw   = atan2f(in_forward.z, -in_forward.x) + HALF_PI;
+  this->angle_pitch = 0.0f;
+  this->forward     = in_forward;
+  this->revive();
+}
+
+//==============================================================================
+bool Player::can_revive(const Player& dead) const
+{
+  if (!this->alive)
+  {
+    return false;
+  }
+
+  const vec3 from = this->get_position() + UP_DIR * PLAYER_EYE_HEIGHT;
+  const vec3 to   = from + this->get_look_direction() * REVIVE_DISTANCE;
+
+  const CollisionHit hit = GameSystem::get().get_level().cylinder_cast_3d
+  (
+    from, to, 0.1f, 0.1f, EntityTypeFlags::player
+  );
+
+  return hit.is_entity_hit() && hit.hit.entity.entity_id == dead.get_id();
+}
+
+//==============================================================================
+void Player::update_revive(bool being_revived, f32 delta)
+{
+  this->time_being_revived = being_revived ? this->time_being_revived + delta : 0.0f;
+  if (this->time_being_revived >= REVIVE_HOLD_TIME)
+  {
+    this->revive();
+    this->play_sound(Sounds::pickup);
+  }
+}
+
+//==============================================================================
+bool Player::is_alive() const
+{
+  return this->alive;
+}
+
+//==============================================================================
+f32 Player::get_time_since_death() const
+{
+  return this->time_since_death;
+}
+
+//==============================================================================
+bool Player::is_local() const
+{
+  return GameHelpers::get().get_player() == this;
+}
+
+//==============================================================================
+void Player::play_sound(SoundID sound, f32 volume) const
+{
+  if (this->is_local())
+  {
+    SoundSystem::get().play_oneshot(sound, volume);
+  }
+  else
+  {
+    GameHelpers::get().play_3d_sound(this->get_position(), sound, PLAYER_SOUND_RANGE, volume);
+  }
 }
 
 //==============================================================================
@@ -998,7 +1196,8 @@ void Player::update
   else
   {
     time_since_death += delta;
-    if (curr_input.keys & 1 << PlayerKeyInputs::use)
+    this->update_appearance(delta);
+    if (!NetworkSystem::get().is_multiplayer() && (curr_input.keys & 1 << PlayerKeyInputs::use))
     {
       GameSystem::get().request_level_restart();
     }
@@ -1065,7 +1264,7 @@ void Player::store_level_transition_data(LevelTransitionData& data_out) const
 {
   // save inventory
   data_out.owned_weapons = 0;
-  data_out.health = this->get_health();
+  data_out.health = this->alive ? this->get_health() : CVars::player_revive_health;
 
   for (u32 i = 0; i < WEAPON_CNT; i++)
   {

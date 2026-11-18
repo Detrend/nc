@@ -11,14 +11,13 @@
 #include <engine/player/save_types.h>
 
 #include <engine/input/game_input.h>
+#include <engine/network/constants.h>
 #include <game/game_types.h>
 #include <math/vector.h>
 #include <math/matrix.h>
 
 #include <memory> // std::unique_ptr
-#include <unordered_set>
 #include <string>
-#include <vector>
 #include <optional>
 
 namespace nc
@@ -58,20 +57,22 @@ public:
 
   // Saves the game into a file.
   void save_game(const char* const save_name="") const;
-  void quick_save() const;
+  // Saves the game into the quicksave slot. Returns true if the save happens, false otherwise.
+  bool quick_save() const;
 
   // Loads the game from a file.
   void load_game(const std::string& path);
 
-  LevelTransitionData get_transition_data() const;
-  LevelName           get_level_name()      const;
-  LevelName           get_next_level_name() const;
+  LevelTransitionArray get_transition_data() const;
+  LevelName            get_level_name()      const;
+  LevelName            get_next_level_name() const;
 
   const DemoDataFrames& get_demo_frames() const;
 
   EntityRegistry&         get_entities();
   MapDynamics&            get_map_dynamics();
   const EntityRegistry&   get_entities()       const;
+  const PlayerArray&      get_player_ids()     const;
   const MapSectors&       get_map()            const;
   const SectorMapping&    get_sector_mapping() const;
   PhysLevel               get_level()          const;
@@ -93,9 +94,9 @@ public:
   // Plays the level from the start. If demo is non-empty then plays the demo.
   void request_level_change
   (
-    const LevelName&    new_level,
-    DemoDataFrames&&    frames     = {},
-    LevelTransitionData transition = {}
+    const LevelName&     new_level,
+    DemoDataFrames&&     frames     = {},
+    LevelTransitionArray transition = {}
   );
 
   // Called from the action trigger
@@ -124,7 +125,7 @@ private:
   void handle_start_new_level_optionally_with_demo
   (
     LevelName             level,
-    LevelTransitionData   transition_data,
+    LevelTransitionArray  transition_data,
     const DemoDataFrames& demo_optional
   );
 
@@ -201,16 +202,19 @@ private:
 
   struct NextRequestedState
   {
-    LevelName           level;
-    DemoDataFrames      demo;
-    std::string         load_from_file;
-    std::string         save_to_file;
-    LevelTransitionData transition;
+    LevelName            level;
+    DemoDataFrames       demo;
+    std::string          load_from_file;
+    std::string          save_to_file;
+    LevelTransitionArray transition;
   };
 
   GamePtr   game;
   LevelName level_name = INVALID_LEVEL_NAME;
   Journal   journal;
+
+  InputArray m_next_tick_inputs{};
+  InputArray m_previous_tick_inputs{};
 
   mutable std::optional<NextRequestedState> scheduled_state;
 

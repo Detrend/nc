@@ -1,0 +1,42 @@
+// Project Nuclidean Source File
+#pragma once
+
+#include <engine/input/game_input.h>
+#include <engine/network/constants.h>
+#include <engine/network/protocol.h>
+#include <engine/network/tcp_socket.h>
+
+#include <optional>
+
+namespace nc::net
+{
+
+class Client
+{
+public:
+  Client(IPv4Address server_address, u16 server_port);
+  ~Client();
+
+  // Determine if the connection to the server was established.
+  bool is_connected() const;
+
+  // Send player inputs over the network.
+  void send_inputs(const PlayerSpecificInputs& inputs);
+  // Send position of every player.
+  // WARNING: This should be called only from hosting client.
+  // WARNING: Used as temporary workaround to solve desync issues.
+  void send_positions(const PositionArray& positions);
+  // Send hash of the local game state. Used by the desync check.
+  void send_state_hash(u64 hash);
+  // Pop next received message. If no messages are pending return `std::nullopt`.
+  std::optional<protocol::Message> pop_message();
+
+private:
+  protocol::Connection m_connection{};
+
+  // Send message to the server.
+  void send(const protocol::Message& message);
+
+};
+
+}

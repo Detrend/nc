@@ -1,0 +1,79 @@
+// Project Nuclidean Source File
+#pragma once
+
+#include <types.h>
+#include <ring_buffer.h>
+
+#include <engine/core/engine_module_id.h>
+#include <engine/core/engine_module.h>
+#include <engine/input/game_input.h>
+#include <engine/network/constants.h>
+
+#include <array>
+#include <memory>
+#include <vector>
+#include <string>
+
+namespace nc
+{
+
+using CmdArgs = std::vector<std::string>;
+
+namespace net
+{
+  class Server;
+  class Client;
+}
+
+// TODO: integration tests
+
+class NetworkSystem : public IEngineModule
+{
+public:
+  static EngineModuleId get_module_id();
+  static NetworkSystem& get();
+
+  NetworkSystem();
+  ~NetworkSystem() override;
+
+  bool init(const CmdArgs& args);
+  void on_event(ModuleEvent& event) override;
+
+  // Return true if game is running in multiplayer; false if game is running in singleplayer.
+  bool is_multiplayer() const { return m_is_multiplayer; }
+  PlayerID get_local_player_id() const { return m_local_player_id; }
+  // Determine if a player occupies the given slot. Slots are filled by the server on connect.
+  bool is_player_connected(PlayerID player_id) const;
+  // Blocks until the inputs for the next frame arrive.
+  void wait_for_next_frame_inputs();
+
+  // Poll available network events. This is non-blocking call.
+  void poll_network();
+
+private:
+  // Blocking wait until the server starts the game.
+  void wait_for_game_start();
+  // Send game state hash to the server and block until the server compares it with other clients.
+  void sync_state_hash();
+  // Log local game state.
+  void write_desync_log() const;
+
+  // true if game is running in multiplayer; false if game is running in singleplayer.
+  bool m_is_multiplayer = false;
+  PlayerID m_local_player_id = 0;
+  // Slot occupancy of all players in the session, including the local one.
+  std::array<bool, MAX_PLAYER_COUNT> m_connected_players{};
+  // Inputs of all players from the server, waiting to be applied.
+  RingBuffer<InputArray, INPUT_DELAY> m_pending_inputs;
+  // Determine if the server answered this frame's state hash.
+  bool m_hash_result_received = false;
+  // Set on the first desync, the desync check then stays off for the rest of the session.
+  bool m_desync_detected = false;
+  // u64 m_frame_counter = 0;
+
+  std::unique_ptr<net::Server> m_server;
+  std::unique_ptr<net::Client> m_client;
+  
+};
+
+}

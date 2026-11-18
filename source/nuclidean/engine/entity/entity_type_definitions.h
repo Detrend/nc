@@ -37,7 +37,6 @@ namespace EntityTypes
     teleport,
     // - //
     count,  // <- total number of entity types
-    all = EntityType(-1),
   };
 }
 
@@ -111,6 +110,7 @@ namespace EntityTypeFlags
     particle          = entity_type_to_mask(EntityTypes::particle),
     sound_emitter     = entity_type_to_mask(EntityTypes::sound_emitter),
     teleport          = entity_type_to_mask(EntityTypes::teleport),
+    all               = EntityTypeMask(-1),
   };
 }
 static_assert(EntityTypes::count < 64);

@@ -153,10 +153,14 @@ namespace nc {
       }
     }
 
-    template<size_t TSize>
-    static consteval BasicToken Const(const char(&literal)[TSize])
+    static consteval BasicToken Const(const char* const literal)
     {
         return BasicToken(literal);
+    }
+    template<size_t TSize>
+    static consteval BasicToken Const(const std::array<char, TSize>& literal)
+    {
+      return BasicToken(literal.data());
     }
 
     constexpr bool operator==(const BasicToken other) const
@@ -249,8 +253,7 @@ namespace nc {
 
     constexpr CompositeToken(const Segment& other) : storage{ other } {}
 
-    template<size_t TSize>
-    static consteval CompositeToken Const(const char(&literal)[TSize]) 
+    static consteval CompositeToken Const(const char *const literal) 
     {
       return CompositeToken(literal);
     }

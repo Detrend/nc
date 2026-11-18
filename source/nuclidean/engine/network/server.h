@@ -1,0 +1,73 @@
+// Project Nuclidean Source File
+#pragma once
+
+#include <types.h>
+#include <ring_buffer.h>
+
+#include <engine/network/constants.h>
+#include <engine/network/protocol.h>
+#include <engine/network/tcp_socket.h>
+
+#include <array>
+#include <stop_token>
+#include <thread>
+
+namespace nc::net
+{
+
+class Server
+{
+public:
+  Server(IPv4Address address, u16 port, u32 expected_player_count);
+  ~Server();
+
+private:
+  // Client slot connection status.
+  enum class Status : u8
+  {
+    none,
+    connecting,
+    connected,
+    disconnecting,
+  }; 
+  struct ClientData
+  {
+    Status status = Status::none;
+    protocol::Connection connection{};
+    // Client's inputs from up to the last INPUT_DELAY frames.
+    RingBuffer<PlayerSpecificInputs, INPUT_DELAY> inputs;
+    // Game state hash received from the client for the desync check.
+    u64  state_hash = 0;
+    bool hash_received = false;
+  };
+
+  u32 m_expected_player_count = 0;
+  TCPSocket m_listen_socket;
+  std::jthread m_server_thread;
+  std::array<ClientData, MAX_PLAYER_COUNT> m_clients;
+
+  // Drains and process client messages.
+  void process_messages(PlayerID player_id);
+  // Get unused player id.
+  std::optional<PlayerID> get_free_id() const;
+  u32 get_connected_count() const;
+  // Send message to specified client.
+  void send(ClientData& client, const protocol::Message& message);
+  // Broadcast message to all clients.
+  void broadcast(const protocol::Message& message);
+
+  // Loops until all inputs are received.
+  void loop_until_inputs_received();
+  // Once all clients sent their state hash, compare them and tell clients the result.
+  void check_state_hashes();
+  // Drain all accepts on listen socket.
+  void drain_accepts();
+  // Handle connects/disconnects.
+  void handle_connection_events();
+  // Broadcast all player inputs.
+  void broadcast_all_player_inputs();
+
+  void run_server_thread(const std::stop_token& token);
+};
+
+}

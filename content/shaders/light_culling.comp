@@ -35,6 +35,21 @@ layout(std430, binding = 1) writeonly buffer light_index_buffer { uint light_ind
 layout(std430, binding = 2) writeonly buffer tile_data_buffer { TileData tile_data[]; };
 layout(std430, binding = 3) buffer light_index_counter_buffer { uint light_index_counter; };
 
+// ANGLE is dumb and doesn't let us load a whole struct from an SSBO directly, so we have to load field by field xD
+PointLight load_point_light(uint i)
+{
+  PointLight l;
+  l.position          = lights[i].position;
+  l.intensity         = lights[i].intensity;
+  l.stitched_position = lights[i].stitched_position;
+  l.radius            = lights[i].radius;
+  l.color             = lights[i].color;
+  l.falloff           = lights[i].falloff;
+  l.sector_id         = lights[i].sector_id;
+  return l;
+}
+
+
 shared uint shared_light_indices[MAX_LIGHTS_PER_TILE];
 shared uint shared_light_count;
 shared vec4 frustum_planes[4];
@@ -104,7 +119,7 @@ void main()
 
   for (uint light_index = local_thread_index; light_index < num_lights; light_index += group_size)
   {
-    PointLight light = lights[light_index];
+    PointLight light = load_point_light(light_index);
         
     vec3 light_pos_view = (view * vec4(light.stitched_position, 1.0)).xyz;
     float light_radius = calculate_light_radius(light);

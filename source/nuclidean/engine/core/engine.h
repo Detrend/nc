@@ -128,8 +128,8 @@ private:
 
   struct TransitionStateData
   {
-    Token               next_level_name;
-    LevelTransitionData transition_data;
+    Token                next_level_name;
+    LevelTransitionArray transition_data;
   };
 
 private:

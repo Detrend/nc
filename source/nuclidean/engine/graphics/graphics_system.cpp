@@ -33,6 +33,8 @@
 
 #include <engine/ui/user_interface_system.h>
 
+#include <memory.h>
+
 #if NC_DEBUG_DRAW
 // Only for turning off the input when the cvar tweaking window is displayed.
 #include <engine/input/input_system.h>
@@ -256,27 +258,47 @@ static void log_gl_specs()
   GLint max_draw_buffers = 0, max_color_attachments = 0
       , max_fragment_shader_storage_blocks = 0
       , max_shader_storage_buffer_bindings = 0
-      , max_texture_size = 0;
+      , max_texture_size = 0
+      , max_combined_shader_output_resources = 0;
     ;
   glGetIntegerv(GL_MAX_DRAW_BUFFERS, &max_draw_buffers);
   glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &max_color_attachments);
   glGetIntegerv(GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS, &max_fragment_shader_storage_blocks);
   glGetIntegerv(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &max_shader_storage_buffer_bindings);
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
+  // Fragment outputs + SSBOs + images used by one program must fit into this (ANGLE on D3D11 FL 11_0 reports only 7).
+  glGetIntegerv(GL_MAX_COMBINED_SHADER_OUTPUT_RESOURCES, &max_combined_shader_output_resources);
 
   nc_log("OpenGL specs...\n\tMax draw buffers: {}\n\tMax color attachments: {}"
-    "\n\tMax fragment shader storage blocks: {}\n\tMax shader storage buffer bindings: {}\n\tMax texture size: {}", 
+    "\n\tMax fragment shader storage blocks: {}\n\tMax shader storage buffer bindings: {}\n\tMax texture size: {}"
+    "\n\tMax combined shader output resources: {}",
       max_draw_buffers, max_color_attachments, max_fragment_shader_storage_blocks, max_shader_storage_buffer_bindings,
-      max_texture_size
+      max_texture_size, max_combined_shader_output_resources
   );
   nc_log("GL_VERSION: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
   nc_log("GL_RENDERER: {}", reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
   nc_log("GLSL: {}", reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+  GLint num_extensions;
+  glGetIntegerv(GL_NUM_EXTENSIONS, &num_extensions);
+  ScratchScoped<scratch_string> extensions;
+  for (GLint t = 0; t < num_extensions; ++t) {
+    const char* const extension = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, t));
+    if(! extensions->empty())extensions->append(", ");
+    extensions->append(extension);
+  }
+  nc_log("\nGL Extensions: [{}]\n\n", extensions.value);
 }
 
 //==============================================================================
-bool GraphicsSystem::init(bool force_gles)
+bool GraphicsSystem::init(const InitArgs& args)
 {
+  if (args.force_gpu_api_dlls)
+  {
+    // Make SDL create OpenGL (ES) contexts through the .dlls next to the executable (e.g. libEGL.dll / libGLESv2.dll 
+    // Used to force using ANGLE (which on Windows translates to Direct3D 11) instead of the native driver's GL.
+    SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
+  }
+
   NC_TODO("Log out an error when the graphics system initialization fails");
   NC_TODO("Terminate the already set-up SDL stuff on failed initialization.");
 
@@ -293,7 +315,7 @@ bool GraphicsSystem::init(bool force_gles)
 
 
   StackVector<GlLoadingInstructions, 4> configs;
-  if(! force_gles) { // Skip if forcing OpenGL ES
+  if(! args.force_gles) { // Skip if forcing OpenGL ES
       // Desktop OpenGL 4.3 - our main renderer backend
       configs.emplace_back(GlLoadingInstructions{ .profile = SDL_GL_CONTEXT_PROFILE_CORE, .result_backend = RenderBackend::OpenGL, .requested_major = 4, .requested_minor = 3, .expected_major = 4, .least_expected_minor = 3 });
   }

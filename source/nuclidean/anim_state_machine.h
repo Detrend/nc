@@ -65,6 +65,9 @@ public:
   // Resets the state machine and starts from the given state
   void set_state(State new_state);
 
+  // sets the time of a current state
+  void set_time(f32 time);
+
   // Transitions to the state if not already in that state
   void require_state(State new_state);
 

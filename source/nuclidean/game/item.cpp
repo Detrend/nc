@@ -8,7 +8,6 @@
 #include <engine/appearance.h>
 
 #include <engine/entity/entity_type_definitions.h> // EntityTypes::pickup
-#include <engine/sound/sound_system.h>             // Playing sounds
 
 #include <game/item_resources.h>     // PICKUP_NAMES, PICKUP_SOUNDS
 #include <game/weapons.h>            // WeaponTypes::
@@ -126,11 +125,6 @@ bool Pickup::pick_up(Player& player)
     }
   }
 
-  if (picked_up)
-  {
-    SoundSystem::get().play_oneshot(PICKUP_SOUNDS[this->type]);
-  }
-
   return picked_up;
 }
 
@@ -159,6 +153,12 @@ bool Pickup::is_ammo() const
 {
   return this->type >= PickupTypes::first_ammo
     && this->type <= PickupTypes::last_ammo;
+}
+
+//==============================================================================
+SoundID Pickup::get_pickup_sound() const
+{
+  return PICKUP_SOUNDS[this->type];
 }
 
 //==============================================================================

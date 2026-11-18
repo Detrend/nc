@@ -168,6 +168,8 @@ struct CVars
   NC_REGISTER_CVAR(bool, sector_height_debug,   false, "Sector movement debug.");
   NC_REGISTER_CVAR(bool, invisibility,          false, "Makes the player invisible to enemies.");
   NC_REGISTER_CVAR(bool, billboard_cam_rot,     true,  "True = rotate billboards with camera, False = rotate to the camera");
+  // Treated as immutable.
+  NC_REGISTER_CVAR(bool, net_desync_check,      false,"Multiplayer - hash game state every frame and compare it across clients.");
 
   NC_REGISTER_CVAR(bool, character_physics_stabilize, true, "Extra stabilization iterations for character physics.");
 
@@ -205,10 +207,12 @@ struct CVars
   NC_REGISTER_CVAR_RANGED(f32, player_air_acc_coeff, 0.5f,  0.0f, 01.0f, "Acceleration in air compared to ground.");
   NC_REGISTER_CVAR_RANGED(f32, player_air_dec_coeff, 0.5f,  0.0f, 01.0f, "Deceleration in air compared to ground.");
   NC_REGISTER_CVAR_RANGED(s32, player_max_hp,        100,  50, 300,      "Max HP.");
+  NC_REGISTER_CVAR_RANGED(s32, player_revive_health, 30,   1,  300,      "Health after a revive.");
 
   NC_REGISTER_CVAR_RANGED(s32, medkit_small_hp, 10, 1, 100, "Small medkit HP.");
   NC_REGISTER_CVAR_RANGED(s32, medkit_large_hp, 40, 1, 100, "Large medkit HP.");
   NC_REGISTER_CVAR_RANGED(f32, player_walk_anim_spd, 34.0f, 1.0f, 100.0f, "Speed of player walking animation.");
+  NC_REGISTER_CVAR_RANGED(f32, player_dying_anim_spd, 12.0f, 1.0f, 100.0f, "Speed of player dying animation.");
 
   NC_REGISTER_CVAR_RANGED(f32, mul_frustum_after_nc_portal, 0.95f, 0.0f, 1.0f, "DON'T TOUCH THIS");
 

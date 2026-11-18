@@ -91,9 +91,6 @@ void SoundEmitter::init
   std::vector<PhysLevel::PortalSector> nc_portals;
   if (!lvl.calc_path_and_list_nc_portals(from_pos, listener_pos, nc_portals, m_range))
   {
-    nc_warn(
-      "Spawned a sound with not path to the player. Pos: [{},{},{}]",
-      position.x, position.y, position.z);
     return;
   }
 

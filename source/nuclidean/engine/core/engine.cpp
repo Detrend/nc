@@ -1,9 +1,9 @@
 // Project Nuclidean Source File
 #include <common.h>
 #include <config.h>
-
 #include <cvars.h>
 
+#include <game/weapons.h>
 #include <memory.h>
 
 #include <engine/core/engine.h>
@@ -22,6 +22,7 @@
 #include <engine/game/game_system.h>
 #include <engine/sound/sound_system.h>
 #include <engine/ui/user_interface_system.h>
+#include <engine/network/network_system.h>
 
 #if NC_BENCHMARK
 #include <benchmark/benchmark.h>
@@ -63,17 +64,18 @@ static Engine* g_engine = nullptr;
 namespace engine_utils
 {
 
-[[maybe_unused]] constexpr cstr BENCHMARK_ARG      = "-benchmark";
-[[maybe_unused]] constexpr cstr UNIT_TEST_ARG      = "-unit_test";
-[[maybe_unused]] constexpr cstr TEST_FILTER_PREFIX = "-test_filter=";
-[[maybe_unused]] constexpr cstr START_LEVEL_ARG    = "-start_level";
-[[maybe_unused]] constexpr cstr START_DEMO_ARG     = "-start_demo";
-[[maybe_unused]] constexpr cstr FAST_DEMO_ARG      = "-fast_demo";
-[[maybe_unused]] constexpr cstr EDITOR_MODE_ARG    = "-editor_mode"; // sets up bunch of minor stuff to make it more pleasant to use the game for preview when editing a level
-[[maybe_unused]] constexpr cstr RES_SCALE_ARG      = "-res_scale"; // Sets up the resolution_scale cvar (quick hack, should be removed once we have on Options entry for it)
-[[maybe_unused]] constexpr cstr PRESENTATION_ARG   = "-presentation"; // shows prepared slides while demos play in the background; followed by slide texture names
-[[maybe_unused]] constexpr cstr PRINT_COUNTERS_ARG = "-print_counters"; // prints the performance counters [into a file] 
-[[maybe_unused]] constexpr cstr FORCE_GLES_ARG     = "-gles"; // Forces use of OpenGL ES backend even when desktop OpenGL is available. 
+[[maybe_unused]] constexpr cstr BENCHMARK_ARG             = "-benchmark";
+[[maybe_unused]] constexpr cstr UNIT_TEST_ARG             = "-unit_test";
+[[maybe_unused]] constexpr cstr TEST_FILTER_PREFIX        = "-test_filter=";
+[[maybe_unused]] constexpr cstr START_LEVEL_ARG           = "-start_level";
+[[maybe_unused]] constexpr cstr START_DEMO_ARG            = "-start_demo";
+[[maybe_unused]] constexpr cstr FAST_DEMO_ARG             = "-fast_demo";
+[[maybe_unused]] constexpr cstr EDITOR_MODE_ARG           = "-editor_mode"; // sets up bunch of minor stuff to make it more pleasant to use the game for preview when editing a level
+[[maybe_unused]] constexpr cstr RES_SCALE_ARG             = "-res_scale"; // Sets up the resolution_scale cvar (quick hack, should be removed once we have on Options entry for it)
+[[maybe_unused]] constexpr cstr PRESENTATION_ARG          = "-presentation"; // shows prepared slides while demos play in the background; followed by slide texture names
+[[maybe_unused]] constexpr cstr PRINT_COUNTERS_ARG        = "-print_counters"; // prints the performance counters [into a file] 
+[[maybe_unused]] constexpr cstr FORCE_GLES_ARG            = "-gles"; // Forces use of OpenGL ES backend even when desktop OpenGL is available.
+[[maybe_unused]] constexpr cstr FORCE_GPU_API_DLL_ARG     = "-force_gpu_api_dll"; // Forces the game to use graphics api .dlls next to the executable instead of system provided ones (libEGL.dll/libGLESv2.dll = ANGLE on Windows).
 
 //==============================================================================
 static f32 duration_to_seconds(auto t1, auto t2)
@@ -525,8 +527,12 @@ bool Engine::init(const CmdArgs& cmd_args)
     m_modules[_module_class::get_module_id()] = std::move(m); \
   }
 
-  INIT_MODULE(GraphicsSystem, engine_utils::contains_arg(cmd_args, engine_utils::FORCE_GLES_ARG));
+  INIT_MODULE(GraphicsSystem, GraphicsSystem::InitArgs {
+      .force_gles = engine_utils::contains_arg(cmd_args, engine_utils::FORCE_GLES_ARG),
+      .force_gpu_api_dlls = engine_utils::contains_arg(cmd_args, engine_utils::FORCE_GPU_API_DLL_ARG) 
+  });
   INIT_MODULE(InputSystem);
+  INIT_MODULE(NetworkSystem, cmd_args);
   INIT_MODULE(GameSystem);
   INIT_MODULE(SoundSystem);
   INIT_MODULE(UserInterfaceSystem);
@@ -562,11 +568,11 @@ void Engine::play_random_demo()
   const std::string& demo = demos[std::rand() % demos.size()];
 
   // Play one demo and then exit
-  LevelName           lvl_name;
-  DemoDataFrames      frames;
-  LevelTransitionData transition;
+  LevelName            lvl_name;
+  DemoDataFrames       frames;
+  LevelTransitionArray transition;
 
-  if (!load_demo_from_file(demo, lvl_name, transition, frames))
+  if (!load_demo_from_file(demo, lvl_name, transition[0], frames))
   {
     // Empty level = black screen in the menu
     nc_warn(
@@ -588,7 +594,7 @@ void Engine::loop_current_demo()
 
   LevelName      lvl  = game_system.get_level_name();
   DemoDataFrames demo = game_system.get_demo_frames(); // Intentional copy
-  LevelTransitionData transition = game_system.get_transition_data();
+  LevelTransitionArray transition = game_system.get_transition_data();
 
   game_system.request_level_change(lvl, std::move(demo), transition);
 }
@@ -643,14 +649,39 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
     m_print_counters = true;
   }
 
-  if (std::string demo; engine_utils::should_play_demo(cmd_args, demo))
+  if (get_module<NetworkSystem>().is_multiplayer())
+  {
+    LevelName level = Levels::LEVEL_1;
+#if !NC_IS_SHIP
+    std::string start_level;
+    if (engine_utils::should_play_level(cmd_args, start_level))
+    {
+      level = LevelName{std::string_view{start_level}};
+    }
+#endif
+
+    // TODO: remove the starting weapons and ammo once there are proper multiplayer levels
+    LevelTransitionArray start_inventory;
+    for (LevelTransitionData& data : start_inventory)
+    {
+      for (WeaponType weapon = 1; weapon < WeaponTypes::count; ++weapon)
+      {
+        data.owned_weapons |= weapon_flag(weapon);
+        data.ammo[weapon]   = 20;
+      }
+    }
+
+    set_game_state(GameState::game);
+    game_system.request_level_change(level, {}, start_inventory);
+  }
+  else if (std::string demo; engine_utils::should_play_demo(cmd_args, demo))
   {
     // Play one demo and then exit
-    LevelName           lvl_name;
-    DemoDataFrames      frames;
-    LevelTransitionData transition;
+    LevelName            lvl_name;
+    DemoDataFrames       frames;
+    LevelTransitionArray transition;
 
-    if (!load_demo_from_file(demo, lvl_name, transition, frames))
+    if (!load_demo_from_file(demo, lvl_name, transition[0], frames))
     {
       nc_crit("Could not start demo \"{}\", quitting game.", demo);
       return false;
@@ -729,6 +760,7 @@ void Engine::run()
   auto previous_time = std::chrono::high_resolution_clock::now();
 
   InputSystem& input_system = this->get_module<InputSystem>();
+  NetworkSystem& network_system = this->get_module<NetworkSystem>();
 
   {
     NC_SCOPE_COUNTER(total_runtime)
@@ -745,7 +777,9 @@ void Engine::run()
       eu::limit_min_frametime(frame_time);
 
       // Limit the FPS if desired
-      const f32 min_frame_time = CVars::has_fps_limit ? 1.0f / CVars::fps_limit : 0.0f;
+      const f32 min_frame_time = network_system.is_multiplayer()
+        ? MULTIPLAYER_FIXED_DELTA_TIME
+        : (CVars::has_fps_limit ? 1.0f / CVars::fps_limit : 0.0f);
       while (frame_time < min_frame_time)
       {
         // Spin until the time runs out
@@ -756,22 +790,16 @@ void Engine::run()
       previous_time = current_time;
       m_delta_time  = frame_time;
 
+      // pump messages
+      input_system.update_window_and_pump_messages();
+
       // notify frame start
       this->send_event(ModuleEvent
       {
         .type = ModuleEventType::frame_start,
       });
 
-      // pump messages
-      input_system.update_window_and_pump_messages();
-
       const f32 game_logic_update_time = frame_time * CVars::time_speed;
-
-      // frame start
-      this->send_event(ModuleEvent
-      {
-        .type = ModuleEventType::frame_start,
-      });
 
       // update
       this->send_event(ModuleEvent
@@ -785,6 +813,9 @@ void Engine::run()
       {
         .type = ModuleEventType::render,
       });
+
+      // TODO: freeze on server death
+      network_system.wait_for_next_frame_inputs();
 
       // cleanup
       this->send_event(ModuleEvent
@@ -935,22 +966,33 @@ void Engine::on_level_end()
   {
     case GameState::game:
     {
+      GameSystem&        game_system = GameSystem::get();
+      EntityRegistry&    entities    = game_system.get_entities();
+      const PlayerArray& player_ids  = game_system.get_player_ids();
+
+      // Store the next level (has to happen before calling loop_current_demo)
+      LevelName next_lvl_token = game_system.get_next_level_name();
+      m_transition_state.next_level_name = next_lvl_token;
+
+      for (PlayerID player_id = 0; player_id < MAX_PLAYER_COUNT; ++player_id)
+      {
+        const Player* const player = entities.get_entity<Player>(player_ids[player_id]);
+        if (player)
+        {
+          player->store_level_transition_data(m_transition_state.transition_data[player_id]);
+        }
+      }
+
+      // Multiplayer has no transition screen
+      if (this->get_module<NetworkSystem>().is_multiplayer())
+      {
+        game_system.request_level_change(next_lvl_token, {}, m_transition_state.transition_data);
+        return;
+      }
+
       // Change the state
       set_game_state(GameState::transition);
 
-      // Store the next level (has to happen before calling loop_current_demo)
-      LevelName next_lvl_token = GameSystem::get().get_next_level_name();
-      m_transition_state.next_level_name = next_lvl_token;
-      
-      if (Player* player = GameHelpers::get().get_player())
-      {
-        player->store_level_transition_data(m_transition_state.transition_data);
-      }
-      else
-      {
-        nc_warn("Level transition without player, no transition data to save..");
-      }
-      
       // Enable level transition UI
       UserInterfaceSystem::get().get_menu_manager()->set_transition_screen(true);
 
@@ -1011,7 +1053,10 @@ void Engine::on_menu_state_changed(bool opened)
     case GameState::game:
     {
       // Pause the game
-      this->pause(opened);
+      if (!this->get_module<NetworkSystem>().is_multiplayer())
+      {
+        this->pause(opened);
+      }
 
       // Do not forward mouse movement and keypresses to the player
       InputSystem::get().lock_player_input(InputLockLayers::menu, opened);
@@ -1050,8 +1095,8 @@ void Engine::on_next_level_selected_from_menu()
     {
       set_game_state(GameState::game);
 
-      LevelName           lvl        = m_transition_state.next_level_name;
-      LevelTransitionData transition = m_transition_state.transition_data;
+      LevelName            lvl        = m_transition_state.next_level_name;
+      LevelTransitionArray transition = m_transition_state.transition_data;
 
       GameSystem::get().request_level_change(lvl, {}, transition);
       UserInterfaceSystem::get().get_menu_manager()->set_transition_screen(false);

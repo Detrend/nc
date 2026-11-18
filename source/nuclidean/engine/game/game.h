@@ -2,7 +2,10 @@
 #pragma once
 
 #include <types.h>
+#include <math/vector.h>
 #include <engine/entity/entity_types.h>
+#include <engine/input/game_input.h>
+#include <engine/network/constants.h>
 #include <engine/player/level_types.h>
 #include <engine/player/save_types.h>
 
@@ -24,28 +27,39 @@ struct Game
   // Simulates one frame of the game
   void update
   (
-    f32 delta_time,
-    PlayerSpecificInputs current_inputs,
-    PlayerSpecificInputs previous_inputs
+    f32               delta_time,
+    const InputArray& current_inputs,
+    const InputArray& previous_inputs
   );
 
+  // Revives dead players whose teammate holds use next to them.
+  void handle_revives(const InputArray& current_inputs, f32 delta_time);
+
+  // Respawns everyone at the level start once every player is dead.
+  void handle_respawn_after_wipe();
   void on_destroy();
 
   // Save/load data.
   // When loading, call this AFTER the map has been build.
   void serialize(Buffer& buffer);
 
-  EntityID                          player_id = INVALID_ENTITY_ID;
+  EntityID get_local_player_id() const;
+
+  PlayerArray player_ids        = []() constexpr { PlayerArray array{}; array.fill(INVALID_ENTITY_ID); return array; }();
+  vec3        spawn_point       = VEC3_ZERO;
+  vec3        spawn_direction   = VEC3_X;
+
   std::unique_ptr<MapSectors>       map;
   std::unique_ptr<EntityRegistry>   entities;
   std::unique_ptr<SectorMapping>    mapping;
   std::unique_ptr<MapDynamics>      dynamics;
   std::unique_ptr<EntityAttachment> attachment;
-  LevelTransitionData               transition_data;
-  u64                               frame_idx = 0;
-  f64                               time_since_start = 0.0;
-  bool                              is_level_completed = false;
-  LevelName                         next_level_name    = INVALID_LEVEL_NAME;
+
+  LevelTransitionArray transition_data;
+  u64                  frame_idx          = 0;
+  f64                  time_since_start   = 0.0;
+  bool                 is_level_completed = false;
+  LevelName            next_level_name    = INVALID_LEVEL_NAME;
 };
 
 }

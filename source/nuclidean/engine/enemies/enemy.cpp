@@ -28,7 +28,6 @@
 #include <engine/entity/entity_type_definitions.h>
 #include <profiling.h>
 
-#include <map>
 #include <format>
 #include <algorithm> // std::fill
 
@@ -499,12 +498,31 @@ bool Enemy::is_my_turn_for_visibility_query() const
 //==============================================================================
 void Enemy::handle_ai_idle(f32 /*delta*/)
 {
-  auto game = GameHelpers::get();
+  auto& entities = GameSystem::get().get_entities();
 
-  Player* player = game.get_player();
   this->velocity = VEC3_ZERO;
-
   anim_fsm.require_state(ActorAnimStates::idle);
+
+  const Player* player = nullptr;
+  f32 best_distance = 0.0f;
+  entities.for_each<Player>([this, &player, &best_distance](Player& candidate)
+  {
+    if (!candidate.is_alive())
+    {
+      return;
+    }
+
+    const f32 player_distance = distance(candidate.get_position(), this->get_position());
+    const bool better = !player
+      || player_distance < best_distance
+      || (player_distance == best_distance && candidate.get_id().idx < player->get_id().idx);
+
+    if (better)
+    {
+      best_distance = player_distance;
+      player = &candidate;
+    }
+  });
 
   if (!player)
   {
@@ -553,7 +571,8 @@ void Enemy::handle_ai_alert(f32 delta)
   auto& stats  = this->get_stats();
 
   Entity* target = ecs.get_entity(this->target_id);
-  if (!target)
+  const Player* const target_player = target ? target->as<Player>() : nullptr;
+  if (!target || (target_player && !target_player->is_alive()))
   {
     // Return to idle state if the target is dead or does not exist
     this->state     = EnemyAiState::idle;
