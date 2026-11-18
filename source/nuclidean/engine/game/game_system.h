@@ -91,6 +91,9 @@ public:
   // Restarts the level from the beginning, keeping the transition data from the start
   void request_level_restart();
 
+  // Loads the save last written or loaded in the current level, restarts the level when there is none
+  void request_load_last_save();
+
   // Plays the level from the start. If demo is non-empty then plays the demo.
   void request_level_change
   (
@@ -217,6 +220,9 @@ private:
   InputArray m_previous_tick_inputs{};
 
   mutable std::optional<NextRequestedState> scheduled_state;
+
+  // Last save file of the current level, empty when there is none
+  std::string m_last_save_file;
 
   u32 enemy_count = 0;
   u32 kill_count  = 0;

@@ -1197,9 +1197,14 @@ void Player::update
   {
     time_since_death += delta;
     this->update_appearance(delta);
-    if (!NetworkSystem::get().is_multiplayer() && (curr_input.keys & 1 << PlayerKeyInputs::use))
+    if (!NetworkSystem::get().is_multiplayer())
     {
-      GameSystem::get().request_level_restart();
+      bool use_held = curr_input.keys & 1 << PlayerKeyInputs::use;
+      this->time_being_revived = use_held ? this->time_being_revived + delta : 0.0f;
+      if (this->time_being_revived >= REVIVE_HOLD_TIME)
+      {
+        GameSystem::get().request_load_last_save();
+      }
     }
   }
 

@@ -716,13 +716,16 @@ void GameSystem::frame_start()
   if (scheduled_state_ref.load_from_file.size())
   {
     this->handle_load_game(scheduled_state_ref.load_from_file);
+    this->m_last_save_file = std::move(scheduled_state_ref.load_from_file);
   }
   else if (scheduled_state_ref.save_to_file.size())
   {
     this->handle_save_game(scheduled_state_ref.save_to_file);
+    this->m_last_save_file = std::move(scheduled_state_ref.save_to_file);
   }
   else
   {
+    this->m_last_save_file.clear();
     this->handle_start_new_level_optionally_with_demo
     (
       scheduled_state_ref.level,
@@ -1169,6 +1172,18 @@ void GameSystem::request_empty_level()
 void GameSystem::request_level_restart()
 {
   this->request_level_change(this->level_name, {}, this->game->transition_data);
+}
+
+//==============================================================================
+void GameSystem::request_load_last_save()
+{
+  if (this->m_last_save_file.empty())
+  {
+    this->request_level_restart();
+    return;
+  }
+
+  this->load_game(this->m_last_save_file);
 }
 
 //==============================================================================
