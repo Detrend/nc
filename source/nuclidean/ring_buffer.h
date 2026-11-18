@@ -4,6 +4,7 @@
 #include <types.h>
 
 #include <array>
+#include <cstddef>
 
 namespace nc
 {

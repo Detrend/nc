@@ -1,9 +1,14 @@
 // Project Nuclidean Source File
-#include <winsock2.h> // must be included before anything else includes windows.h
+#include <common.h>
+
+#ifdef NC_OS_WINDOWS
+// must be included before anything else includes windows.h
+#include <winsock2.h> 
+#include <ws2tcpip.h>
+#endif
 
 #include <engine/network/tcp_socket.h>
 
-#include <common.h>
 #include <logging.h>
 #include <types.h>
 
@@ -12,14 +17,14 @@
 #include <format>
 #include <system_error>
 
-#include <ws2tcpip.h>
-
 #if NC_TESTS
 #include <unit_test.h>
 #endif
 
 namespace nc::net
 {
+
+#ifdef NC_OS_WINDOWS
 
 // Determine if WSA was started.
 static bool g_wsa_started = false;
@@ -385,7 +390,90 @@ static TransferResult get_transfer_result(int error_code)
   }
 }
 
+#else
 
+// TODO: better proper multi-os solution
+
+//==============================================================================
+std::string IPv4Address::to_string() const
+{
+  return {};
+}
+
+//==============================================================================
+std::optional<IPv4Address> IPv4Address::parse(std::string_view /*view*/)
+{
+  return std::nullopt;
+}
+
+//==============================================================================
+bool TCPSocket::is_valid() const
+{
+  return false;
+}
+
+//==============================================================================
+bool init()
+{
+  nc_crit("[net] multiplayer is supported only on Windows");
+  return false;
+}
+
+//==============================================================================
+bool shutdown()
+{
+  return true;
+}
+
+//==============================================================================
+std::optional<TCPSocket> create_socket(IPv4Address /*address*/, u16 /*port*/)
+{
+  return std::nullopt;
+}
+
+//==============================================================================
+bool close_socket(TCPSocket& /*socket*/)
+{
+  return true;
+}
+
+//==============================================================================
+bool start_listening(TCPSocket /*server_socket*/, bool /*blocking*/)
+{
+  return false;
+}
+
+//==============================================================================
+bool is_accept_pending(TCPSocket /*server_socket*/)
+{
+  return false;
+}
+
+//==============================================================================
+std::optional<TCPSocket> accept_client(TCPSocket /*server_socket*/, bool /*blocking*/)
+{
+  return std::nullopt;
+}
+
+//==============================================================================
+bool connect(TCPSocket /*client_socket*/, bool /*blocking*/)
+{
+  return false;
+}
+
+//==============================================================================
+TransferResult send_raw_data(TCPSocket /*socket*/, std::span<const std::byte> /*data_to_send*/)
+{
+  return TransferResult::error;
+}
+
+//==============================================================================
+std::pair<TransferResult, size_t> receive_raw_data(TCPSocket /*socket*/, std::span<std::byte> /*data_to_receive*/)
+{
+  return {TransferResult::error, 0};
+}
+
+#endif
 
 }
 
@@ -397,6 +485,8 @@ static TransferResult get_transfer_result(int error_code)
 // -unit_test -test_filter=Net.*
 namespace nc::net
 {
+
+#ifdef NC_OS_WINDOWS
 
 //==============================================================================
 static bool ipv4_address_parse_valid_test(unit_test::TestCtx& /*ctx*/)
@@ -588,6 +678,8 @@ static bool ipv4_address_to_string_test(unit_test::TestCtx& /*ctx*/)
   NC_TEST_SUCCESS;
 }
 NC_UNIT_TEST(ipv4_address_to_string_test)->name("Net IPv4Address To String");
+
+#endif
 
 //==============================================================================
 static_assert(to_bytes(u8{0x01}, u8{0x02}).size() == 2);

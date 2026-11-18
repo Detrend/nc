@@ -151,12 +151,12 @@ project "Nuclidean"
     uses { "glad", "glm", "stb", "SDL_mixer" }
     fbegin "system:windows"
         uses { "SDL2" }
+        links "Ws2_32"
     felse "system:not windows"
         linkoptions { "-lSDL2" }
         links "wayland-client"
     fend()
     defines { "_CONSOLE", "SDL_MAIN_HANDLED" }
-    links "Ws2_32"
 
     warnings "Extra"
     fatalwarnings "All"
