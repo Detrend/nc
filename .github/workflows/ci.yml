@@ -310,3 +310,18 @@ jobs:
             --title "Automated build" \
             --notes "Built from ${GITHUB_SHA} on $(date -u '+%Y-%m-%d %H:%M UTC')." \
             --prerelease
+
+  notify-failure:
+    needs: [build-win, build-linux, trybuild-linux-gcc, trybuild-vs, clang-tidy, check-assets, unit-tests, push-artifacts]
+    if: failure()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Notify Discord
+        env:
+          WEBHOOK_URL: ${{ secrets.FAIL_WEBHOOK_URL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          jq -n --arg c "❌ **Whoopsie doopsie** on \`${GITHUB_REF_NAME}\` (${GITHUB_SHA::7}) by ${GITHUB_ACTOR}
+          ${RUN_URL}" '{content: $c}' \
+            | curl -fsS -H 'Content-Type: application/json' -d @- "$WEBHOOK_URL"
