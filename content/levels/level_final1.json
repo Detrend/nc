@@ -34356,7 +34356,7 @@
 							0.0,
 							0.0
 						],
-						"id": "button_off_0",
+						"id": "button_on_0",
 						"id_triggered": "button_off_0",
 						"offset": [
 							0.200000002980232,
@@ -45077,7 +45077,7 @@
 					{
 						"begin_height": 1.0,
 						"end_height": 2.0,
-						"id": "button_off_0",
+						"id": "button_on_0",
 						"id_triggered": "button_off_0",
 						"offset": [
 							0.550000011920929,
@@ -52453,7 +52453,7 @@
 					{
 						"begin_height": 1.0,
 						"end_height": 2.0,
-						"id": "button_off_0",
+						"id": "button_on_0",
 						"id_triggered": "button_off_0",
 						"offset": [
 							0.550000011920929,
@@ -59486,7 +59486,7 @@
 					{
 						"begin_height": 1.0,
 						"end_height": 2.0,
-						"id": "button_off_0",
+						"id": "button_on_0",
 						"id_triggered": "button_off_0",
 						"offset": [
 							0.550000011920929,
