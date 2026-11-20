@@ -75,6 +75,7 @@ namespace engine_utils
 [[maybe_unused]] constexpr cstr EDITOR_MODE_ARG           = "-editor_mode"; // sets up bunch of minor stuff to make it more pleasant to use the game for preview when editing a level
 [[maybe_unused]] constexpr cstr RES_SCALE_ARG             = "-res_scale"; // Sets up the resolution_scale cvar (quick hack, should be removed once we have on Options entry for it)
 [[maybe_unused]] constexpr cstr PRESENTATION_ARG          = "-presentation"; // shows prepared slides while demos play in the background; followed by slide texture names
+[[maybe_unused]] constexpr cstr PRESENTATION_JSON_ARG     = "-presentation_json"; // shows text slides from a JSON file while demos play in the background; followed by the file path
 [[maybe_unused]] constexpr cstr PRINT_COUNTERS_ARG        = "-print_counters"; // prints the performance counters [into a file] 
 [[maybe_unused]] constexpr cstr FORCE_GLES_ARG            = "-gles"; // Forces use of OpenGL ES backend even when desktop OpenGL is available.
 [[maybe_unused]] constexpr cstr FORCE_GPU_API_DLL_ARG     = "-force_gpu_api_dll"; // Forces the game to use graphics api .dlls next to the executable instead of system provided ones (libEGL.dll/libGLESv2.dll = ANGLE on Windows).
@@ -711,25 +712,38 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
     return false;
   }
 
+  MenuManager* menu = get_module<UserInterfaceSystem>().get_menu_manager();
+
+  // Text presentation: slides with a title and points from a JSON file. Takes
+  // precedence over the image slides.
+  bool has_text_slides = false;
+  if (std::string json_path; engine_utils::contains_pair_of_args(cmd_args, engine_utils::PRESENTATION_JSON_ARG, json_path))
+  {
+    if (!menu->set_text_presentation(json_path))
+    {
+      nc_crit("Could not load the presentation \"{}\", quitting game.", json_path);
+      return false;
+    }
+
+    has_text_slides = true;
+  }
+
   // Presentation mode: show prepared slides while demos play in the background.
   // Slide texture names follow the "-presentation" argument. A demo playlist
   // without slides runs in the presentation mode as well, just without slides
   // (no menu and no HUD, only the demos).
   bool has_playlist = !m_demo_playlist.empty();
-  if (engine_utils::contains_arg(cmd_args, engine_utils::PRESENTATION_ARG) || has_playlist)
+  if (engine_utils::contains_arg(cmd_args, engine_utils::PRESENTATION_ARG) || has_playlist || has_text_slides)
   {
     const std::vector<std::string> slides = engine_utils::collect_values_after_arg
     (
       cmd_args, engine_utils::PRESENTATION_ARG
     );
 
-    MenuManager* menu = get_module<UserInterfaceSystem>().get_menu_manager();
-
     // Validates slides, logs and skips missing ones. Only enter presentation
-    // mode if at least one slide is valid or there is a playlist to play,
-    // otherwise fall back to the menu.
+    // mode if there is something to show, otherwise fall back to the menu.
     bool has_slides = menu->set_presentation_slides(slides);
-    if (has_slides || has_playlist)
+    if (has_slides || has_playlist || has_text_slides)
     {
       set_game_state(GameState::presentation);
       SDL_ShowCursor(SDL_DISABLE); // No mouse cursor over the slides

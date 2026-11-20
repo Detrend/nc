@@ -12,7 +12,19 @@ The engine starts by a call to the function `init_engine_and_run_game` defined i
 - `-demo_segment [sec]` - Default duration for playlist entries that do not specify their own. Without it such entries play until the demo ends.
 - `-presentation [slide ...]` - Shows the given slide textures (switched by left/right arrows) with demos playing in the background.
 
+- `-presentation_json [path]` - Shows text slides from a JSON file with demos playing in the background (takes precedence over `-presentation`). A relative path is relative to the game root (the directory with `content`). Space reveals the next point of the slide or goes to the next slide once all points are visible, left arrow hides the last point or goes back to the previous slide. See [`ui_presentation.h`](../ui/ui_presentation.h) for details.
+
 Example: `NUCLIDEAN.exe -presentation slide_1 slide_2 -demo_playlist lvl1_run:15 lvl2_run:0:30 lvl3_run -demo_segment 20`
+
+Example of a text presentation file (only ASCII characters can be displayed, the image is a texture name from `content/textures`, all keys of a slide are optional):
+```json
+{
+  "slides": [
+    { "title": "Made without an engine", "points": ["Custom C++ engine", "Non-euclidean portals"] },
+    { "title": "Deterministic replays", "points": ["Only inputs are recorded"], "image": "some_screenshot" }
+  ]
+}
+```
 
 The modules of the engine are intialized in the function `Engine::init` and the main loop takes place in `Engine::run`.
 

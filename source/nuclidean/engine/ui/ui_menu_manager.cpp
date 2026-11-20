@@ -1,5 +1,6 @@
 // Project Nuclidean Source File
 #include <engine/ui/ui_menu_manager.h>
+#include <engine/ui/ui_presentation.h>
 
 #include <SDL.h>
 
@@ -184,6 +185,19 @@ bool MenuManager::set_presentation_slides
 }
 
 //=============================================================================
+bool MenuManager::set_text_presentation(const std::string& json_path)
+{
+  auto presentation = std::make_unique<UiTextPresentation>();
+  if (!presentation->load(json_path))
+  {
+    return false;
+  }
+
+  text_presentation = std::move(presentation);
+  return true;
+}
+
+//=============================================================================
 void MenuManager::update_presentation()
 {
   if (presentation_slides.empty())
@@ -216,6 +230,13 @@ void MenuManager::update_presentation()
 //===============================================================================================
 void MenuManager::update()
 {
+  // text presentation mode?
+  if (text_presentation)
+  {
+    text_presentation->update();
+    return;
+  }
+
   // presentation mode?
   if (is_presentation)
   {
@@ -300,6 +321,13 @@ void MenuManager::update()
 //============================================================================================
 void MenuManager::draw()
 {
+  // text presentation mode?
+  if (text_presentation)
+  {
+    text_presentation->draw();
+    return;
+  }
+
   // presentation mode?
   if (is_presentation)
   {

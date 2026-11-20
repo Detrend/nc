@@ -131,7 +131,24 @@ namespace nc
       inline constexpr Uniform<5, s32> WIDTH;
       inline constexpr Uniform<6, s32> HEIGHT;
       inline constexpr Uniform<7, bool> HOVER;
-      
+
+    }
+
+    // Same glyph selection as ui_text, but with a tint and alpha instead of hover.
+    namespace ui_text_colored
+    {
+      inline constexpr const char* VERTEX_FILE   = "ui/ui_text.vert";
+      inline constexpr const char* FRAGMENT_FILE = "ui/ui_text_colored.frag";
+
+      inline constexpr Uniform<0, mat4> TRANSFORM;
+
+      inline constexpr Uniform<1, vec2> ATLAS_SIZE;
+      inline constexpr Uniform<2, vec2> TEXTURE_POS;
+      inline constexpr Uniform<3, vec2> TEXTURE_SIZE;
+      inline constexpr Uniform<4, s32>  CHARACTER;
+      inline constexpr Uniform<5, s32>  WIDTH;
+      inline constexpr Uniform<6, s32>  HEIGHT;
+      inline constexpr Uniform<8, vec4> COLOR;
     }
 
     namespace sky_box

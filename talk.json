@@ -1,0 +1,47 @@
+{
+  "slides": [
+    { "title": "NUCLIDEAN",
+      "points": ["Non-euclidean retro first person shooter",
+                 "Fight agains an alien cult",
+                 "Full of seamless portals and scary monsters"] },
+    {
+      "title": "How it started", "points": 
+      [
+        "University project",
+        "Team of 4 programmers",
+        "Custom engine",
+        "Rendering, physics and AI simulation",
+        "This presentation runs in that engine as well",
+        "With the game on the background"
+      ]
+    },
+    {
+      "title": "How its going", "points": 
+      [
+        "2 years later",
+        "The engine crashes every 15 minutes",
+        "Luckily, levels are 10 minutes",
+        "Testers ragequit in the first 5"
+      ]
+    },
+    {
+      "title": "Team", "points": 
+      [
+        "We found an artist",
+        "A designer",
+        "And a producer",
+        "But none of them have much time",
+        "So instead of progressing with the game design or marketing",
+        "Implemented multiplayer"
+      ]
+    },
+    {
+      "title": "Multiplayer", "points": 
+      [
+        "Thats why we are here",
+        "The game is playable in co-op now",
+        "Playtest if it is even worth it"
+      ]
+    }
+  ]
+}

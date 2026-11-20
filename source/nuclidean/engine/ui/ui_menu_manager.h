@@ -4,11 +4,14 @@
 #include <engine/ui/ui_button.h>
 #include <engine/ui/ui_menu_page.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
 namespace nc
 {
+class UiTextPresentation;
+
 class MenuManager
 {
 public:
@@ -40,6 +43,11 @@ public:
   // validated against the loaded textures; missing ones are logged and skipped.
   // Returns true if at least one valid slide remains.
   bool set_presentation_slides(const std::vector<std::string>& slide_texture_names);
+
+  // Switches the menu into a text presentation mode with slides loaded from a
+  // JSON file (see UiTextPresentation). Takes precedence over the image slides.
+  // Returns false if the file could not be loaded.
+  bool set_text_presentation(const std::string& json_path);
 
 private:
   void draw_cursor();
@@ -75,6 +83,9 @@ private:
   size_t                   presentation_index = 0;    // currently shown slide
   bool                     prev_left_pressed  = false; // arrow-key edge detection
   bool                     prev_right_pressed = false;
+
+  // text presentation mode, null if not active
+  std::unique_ptr<UiTextPresentation> text_presentation;
 
   // input variables
   bool cur_esc_pressed = false;
