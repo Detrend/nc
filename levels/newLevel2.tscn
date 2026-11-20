@@ -2662,6 +2662,21 @@ data = Dictionary[String, Variant]({
 "name": "arena1"
 })
 
+[node name="TeleportHook" type="Node" parent="Activators/Arena1_Trap"]
+script = ExtResource("4_7nxdn")
+
+[node name="D-PlasmaRifle2" parent="Activators/Arena1_Trap/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+position = Vector2(388, -20)
+target = NodePath("../../../../PickUps/Arena1_Trap/PlasmaRifle2")
+
+[node name="D-PlasmaAmmo9" parent="Activators/Arena1_Trap/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+position = Vector2(391, -22)
+target = NodePath("../../../../PickUps/Arena1_Trap/PlasmaAmmo9")
+
+[node name="D-PlasmaAmmo8" parent="Activators/Arena1_Trap/TeleportHook" node_paths=PackedStringArray("target") instance=ExtResource("5_jxsxr")]
+position = Vector2(384, -15)
+target = NodePath("../../../../PickUps/Arena1_Trap/PlasmaAmmo8")
+
 [node name="Arena1_TrapB" type="Node" parent="Activators"]
 script = ExtResource("3_et0pd")
 
@@ -9807,7 +9822,7 @@ position = Vector2(151, -402)
 [node name="Arena1_Trap" type="Node2D" parent="PickUps"]
 
 [node name="PlasmaRifle2" parent="PickUps/Arena1_Trap" instance=ExtResource("11_krcvx")]
-position = Vector2(388, -18)
+position = Vector2(378, 21)
 
 [node name="PlasmaAmmo4" parent="PickUps/Arena1_Trap" instance=ExtResource("12_coai7")]
 position = Vector2(375, -129)
@@ -9825,12 +9840,12 @@ position = Vector2(-31, -119)
 position = Vector2(-18, -119)
 
 [node name="PlasmaAmmo8" parent="PickUps/Arena1_Trap" instance=ExtResource("12_coai7")]
-position = Vector2(384, -14.999999)
+position = Vector2(383, 22.999985)
 rotation = -0.79641646
 scale = Vector2(0.5839682, 0.5839682)
 
 [node name="PlasmaAmmo9" parent="PickUps/Arena1_Trap" instance=ExtResource("12_coai7")]
-position = Vector2(391, -20)
+position = Vector2(385, 22)
 
 [node name="PlasmaAmmo7" parent="PickUps/Arena1_Trap" instance=ExtResource("12_coai7")]
 position = Vector2(460, -23)
