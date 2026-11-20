@@ -133,6 +133,40 @@ glDisableVertexAttribArray(1);
 glBindVertexArray(0);
 }
 
+//===========================================================================================
+void UiScreenEffect::draw_fade(f32 visibility)
+{
+  if (visibility >= 1.0f)
+  {
+    return;
+  }
+
+  shader.use();
+
+  glBindVertexArray(VAO);
+  glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
+
+  glDisable(GL_DEPTH_TEST);
+
+  // The output of the shader is ignored, the blending just multiplies the
+  // framebuffer by the visibility. Works with any texture bound.
+  glEnable(GL_BLEND);
+  glBlendColor(0.0f, 0.0f, 0.0f, visibility);
+  glBlendFunc(GL_ZERO, GL_CONSTANT_ALPHA);
+
+  shader.set_uniform(shaders::ui_button::TRANSFORM, glm::mat4(1.0f));
+
+  glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+  glDisable(GL_BLEND);
+  glEnable(GL_DEPTH_TEST);
+
+  glDisableVertexAttribArray(0);
+  glDisableVertexAttribArray(1);
+  glBindVertexArray(0);
+}
+
 }
 
 

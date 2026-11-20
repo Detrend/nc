@@ -60,6 +60,7 @@
 #include <stack_vector.h>
 #include <buffer.h>
 
+#include <algorithm> // std::clamp, std::min
 #include <array>
 #include <fstream>
 #include <filesystem>
@@ -727,7 +728,8 @@ void GameSystem::frame_start()
     (
       scheduled_state_ref.level,
       scheduled_state_ref.transition,
-      scheduled_state_ref.demo
+      scheduled_state_ref.demo,
+      scheduled_state_ref.demo_range
     );
   }
 
@@ -741,6 +743,7 @@ static u64 calc_num_demo_frames_to_simulate
   f32                   frame_delta,
   const DemoDataFrames& frames,
   u64                   rover_idx,
+  u64                   end_idx,
   f32&                  extra_delta
 )
 {
@@ -748,7 +751,7 @@ static u64 calc_num_demo_frames_to_simulate
   f32 delta_left   = frame_delta + extra_delta;
   u64 simulate_cnt = 0;
 
-  while (rover_idx < frames.size())
+  while (rover_idx < end_idx)
   {
     if (delta_left < frames[rover_idx].delta)
     {
@@ -798,47 +801,19 @@ void GameSystem::game_update(f32 delta)
     {
       num_frames_to_simulate = calc_num_demo_frames_to_simulate
       (
-        delta, journal.frames, journal.rover, journal.extra_delta
+        delta, journal.frames, journal.rover, journal.end_frame, journal.extra_delta
       );
     }
     else
     {
-      num_frames_to_simulate = 1;
+      num_frames_to_simulate = journal.rover < journal.end_frame ? 1 : 0;
     }
   }
 
-  bool is_demo = journal.state == JournalState::playing;
-
   bool level_completed_before = game->is_level_completed;
-
-  bool demo_finished_before 
-    = is_demo
-    && (journal.rover == journal.frames.size() - 1 || game->is_level_completed);
 
   while (num_frames_to_simulate-->0)
   {
-    auto demo_inputs = [this]()
-    {
-      f32 delta_time = 0.0f;
-
-      nc_assert(journal.rover < journal.frames.size());
-
-      const DemoDataFrames& frames = journal.frames;
-      const DemoDataFrame&  frame = frames[journal.rover];
-
-      bool first_frame = !journal.rover;
-      delta_time  = frame.delta;
-
-      InputArray curr{};
-      InputArray prev{};
-      curr[0] = frame.inputs;
-      prev[0] = first_frame ? PlayerSpecificInputs{} : frames[journal.rover - 1].inputs;
-
-      journal.rover += 1;
-
-      return std::make_tuple(delta_time, curr, prev);
-    };
-
     auto game_inputs = [this, delta]()
     {
       NetworkSystem& network = NetworkSystem::get();
@@ -875,7 +850,7 @@ void GameSystem::game_update(f32 delta)
 
     if (journal.state == JournalState::playing)
     {
-      simulate_one_frame(*game, demo_inputs);
+      this->simulate_one_demo_frame();
     }
     else
     {
@@ -888,16 +863,19 @@ void GameSystem::game_update(f32 delta)
   // Now, the other systems have a chance to react to it and potentially
   // overwrite the level that should play.
 
-  bool demo_finished
-    = is_demo
-    && (journal.rover == journal.frames.size() - 1 || game->is_level_completed);
+  // The demo end is reported exactly once. The rover can not get past the
+  // end frame, so it is guaranteed to be reported.
+  bool demo_finished_now
+    = journal.state == JournalState::playing
+    && !journal.end_sent
+    && (journal.rover >= journal.end_frame || game->is_level_completed);
 
   bool level_completed_now = game->is_level_completed && !level_completed_before;
-  bool demo_finished_now   = demo_finished && !demo_finished_before;
 
   if (demo_finished_now)
   {
     // Callback demo end
+    journal.end_sent = true;
     this->on_demo_end();
   }
 
@@ -930,6 +908,49 @@ void GameSystem::on_demo_end()
   {
     .type = ModuleEventType::demo_ended,
   });
+}
+
+//==============================================================================
+void GameSystem::simulate_one_demo_frame()
+{
+  nc_assert(journal.rover < journal.frames.size());
+
+  const DemoDataFrames& frames = journal.frames;
+  const DemoDataFrame&  frame  = frames[journal.rover];
+
+  bool first_frame = !journal.rover;
+
+  InputArray curr{};
+  InputArray prev{};
+  curr[0] = frame.inputs;
+  prev[0] = first_frame ? PlayerSpecificInputs{} : frames[journal.rover - 1].inputs;
+
+  journal.rover += 1;
+
+  game->update(frame.delta, curr, prev);
+}
+
+//==============================================================================
+f32 GameSystem::get_demo_visibility() const
+{
+  // Number of demo frames during which the demo fades in/out
+  constexpr f32 DEMO_FADE_FRAMES = 30.0f;
+
+  if (journal.state != JournalState::playing)
+  {
+    return 1.0f;
+  }
+
+  f32 frames_since_start = cast<f32>(journal.rover - journal.start_frame);
+  f32 frames_until_end
+    = journal.rover < journal.end_frame
+    ? cast<f32>(journal.end_frame - journal.rover)
+    : 0.0f;
+
+  f32 fade_in  = frames_since_start / DEMO_FADE_FRAMES;
+  f32 fade_out = frames_until_end   / DEMO_FADE_FRAMES;
+
+  return std::clamp(std::min(fade_in, fade_out), 0.0f, 1.0f);
 }
 
 //==============================================================================
@@ -1174,13 +1195,17 @@ void GameSystem::request_level_restart()
 //==============================================================================
 void GameSystem::request_level_change
 (
-  const LevelName& new_level, DemoDataFrames&& frames, LevelTransitionArray transition
+  const LevelName&     new_level,
+  DemoDataFrames&&     frames,
+  LevelTransitionArray transition,
+  DemoPlaybackRange    demo_range
 )
 {
   this->scheduled_state = NextRequestedState
   {
     .level      = new_level,
     .demo       = std::move(frames),
+    .demo_range = demo_range,
     .transition = transition
   };
 }
@@ -1252,7 +1277,8 @@ void GameSystem::handle_start_new_level_optionally_with_demo
 (
   LevelName             level,
   LevelTransitionArray  transition_data,
-  const DemoDataFrames& demo_optional
+  const DemoDataFrames& demo_optional,
+  DemoPlaybackRange     demo_range
 )
 {
   this->pre_level_load();
@@ -1269,6 +1295,31 @@ void GameSystem::handle_start_new_level_optionally_with_demo
     // Install frames and play them
     journal.reset_and_clear(JournalState::playing);
     journal.frames = demo_optional;
+
+    // Convert the requested time range to frame indices. The last frame of the
+    // demo is never played, the demo ends when the rover reaches it.
+    f64 end_time   = demo_range.start_time + demo_range.duration;
+    f64 frame_time = 0.0;
+    u64 last_frame = journal.frames.size() - 1;
+
+    journal.start_frame = last_frame;
+    journal.end_frame   = last_frame;
+
+    for (u64 i = 0; i < last_frame; ++i)
+    {
+      if (journal.start_frame == last_frame && frame_time >= demo_range.start_time)
+      {
+        journal.start_frame = i;
+      }
+
+      if (demo_range.duration >= 0.0f && frame_time >= end_time)
+      {
+        journal.end_frame = i;
+        break;
+      }
+
+      frame_time += journal.frames[i].delta;
+    }
   }
   else
   {
@@ -1282,6 +1333,14 @@ void GameSystem::handle_start_new_level_optionally_with_demo
 #if NC_HOT_RELOAD
   notify_hot_reload_post_map_build();
 #endif
+
+  // Fast-forward to the start of the requested part of the demo. Replaying the
+  // inputs is the only way to get there deterministically. This happens on the
+  // same frame as the level load, so the hitch is not visible twice.
+  while (journal.state == JournalState::playing && journal.rover < journal.start_frame)
+  {
+    this->simulate_one_demo_frame();
+  }
 }
 
 //==============================================================================
@@ -1553,7 +1612,10 @@ void GameSystem::Journal::reset(GameSystem::JournalState to_state)
 {
   state       = to_state;
   paused      = false;
+  end_sent    = false;
   rover       = 0;
+  start_frame = 0;
+  end_frame   = 0;
   extra_delta = 0.0f;
 }
 

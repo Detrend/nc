@@ -70,6 +70,8 @@ namespace engine_utils
 [[maybe_unused]] constexpr cstr START_LEVEL_ARG           = "-start_level";
 [[maybe_unused]] constexpr cstr START_DEMO_ARG            = "-start_demo";
 [[maybe_unused]] constexpr cstr FAST_DEMO_ARG             = "-fast_demo";
+[[maybe_unused]] constexpr cstr DEMO_PLAYLIST_ARG         = "-demo_playlist"; // demos played in a loop, followed by entries "name[:start_sec[:duration_sec]]"
+[[maybe_unused]] constexpr cstr DEMO_SEGMENT_ARG          = "-demo_segment"; // default duration in seconds of each playlist entry
 [[maybe_unused]] constexpr cstr EDITOR_MODE_ARG           = "-editor_mode"; // sets up bunch of minor stuff to make it more pleasant to use the game for preview when editing a level
 [[maybe_unused]] constexpr cstr RES_SCALE_ARG             = "-res_scale"; // Sets up the resolution_scale cvar (quick hack, should be removed once we have on Options entry for it)
 [[maybe_unused]] constexpr cstr PRESENTATION_ARG          = "-presentation"; // shows prepared slides while demos play in the background; followed by slide texture names
@@ -587,6 +589,99 @@ void Engine::play_random_demo()
 }
 
 //==============================================================================
+void Engine::play_next_demo()
+{
+  if (m_demo_playlist.empty())
+  {
+    this->play_random_demo();
+    return;
+  }
+
+  const DemoPlaylistEntry& entry = m_demo_playlist[m_demo_playlist_idx];
+  m_demo_playlist_idx = (m_demo_playlist_idx + 1) % m_demo_playlist.size();
+
+  DemoDataFrames frames = entry.frames; // Intentional copy, the entry plays again in the next loop
+
+  GameSystem::get().request_level_change
+  (
+    entry.level, std::move(frames), entry.transition, DemoPlaybackRange
+    {
+      .start_time = entry.start_time,
+      .duration   = entry.duration,
+    }
+  );
+}
+
+//==============================================================================
+bool Engine::load_demo_playlist(const CmdArgs& cmd_args)
+{
+  namespace eu = engine_utils;
+
+  if (!eu::contains_arg(cmd_args, eu::DEMO_PLAYLIST_ARG))
+  {
+    return true;
+  }
+
+  // Duration of the entries that do not specify their own
+  f32 default_duration = -1.0f;
+  if (std::string segment; eu::contains_pair_of_args(cmd_args, eu::DEMO_SEGMENT_ARG, segment))
+  {
+    default_duration = static_cast<f32>(std::atof(segment.c_str()));
+  }
+
+  // Each entry is in a format "demo_name[:start_sec[:duration_sec]]"
+  for (const std::string& entry : eu::collect_values_after_arg(cmd_args, eu::DEMO_PLAYLIST_ARG))
+  {
+    u64 first_colon  = entry.find(':');
+    u64 second_colon = first_colon == std::string::npos
+                     ? std::string::npos
+                     : entry.find(':', first_colon + 1);
+
+    std::string file = entry.substr(0, first_colon);
+    if (!file.ends_with(DEMO_FILE_SUFFIX))
+    {
+      file += DEMO_FILE_SUFFIX;
+    }
+
+    DemoPlaylistEntry demo;
+    demo.duration = default_duration;
+
+    // std::atof stops parsing at the next colon
+    if (first_colon != std::string::npos)
+    {
+      demo.start_time = static_cast<f32>(std::atof(entry.c_str() + first_colon + 1));
+    }
+
+    if (second_colon != std::string::npos)
+    {
+      demo.duration = static_cast<f32>(std::atof(entry.c_str() + second_colon + 1));
+    }
+
+    if (!load_demo_from_file(file, demo.level, demo.transition[0], demo.frames) || demo.frames.size() < 2)
+    {
+      nc_warn("Could not load demo \"{}\" of the playlist, skipping it.", file);
+      continue;
+    }
+
+    nc_log
+    (
+      "Demo playlist entry #{}: \"{}\" from {}s for {}s.",
+      m_demo_playlist.size(), file, demo.start_time, demo.duration
+    );
+
+    m_demo_playlist.push_back(std::move(demo));
+  }
+
+  if (m_demo_playlist.empty())
+  {
+    nc_crit("Demo playlist requested, but none of its demos could be loaded, quitting game.");
+    return false;
+  }
+
+  return true;
+}
+
+//==============================================================================
 void Engine::loop_current_demo()
 {
   // Play demo and go to the level transition state
@@ -610,9 +705,18 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
     cmd_args, engine_utils::FAST_DEMO_ARG
   );
 
+  // Demo playlist: demos played in a loop, each one only for a given time.
+  if (!this->load_demo_playlist(cmd_args))
+  {
+    return false;
+  }
+
   // Presentation mode: show prepared slides while demos play in the background.
-  // Slide texture names follow the "-presentation" argument.
-  if (engine_utils::contains_arg(cmd_args, engine_utils::PRESENTATION_ARG))
+  // Slide texture names follow the "-presentation" argument. A demo playlist
+  // without slides runs in the presentation mode as well, just without slides
+  // (no menu and no HUD, only the demos).
+  bool has_playlist = !m_demo_playlist.empty();
+  if (engine_utils::contains_arg(cmd_args, engine_utils::PRESENTATION_ARG) || has_playlist)
   {
     const std::vector<std::string> slides = engine_utils::collect_values_after_arg
     (
@@ -622,12 +726,14 @@ bool Engine::handle_post_init_game_startup(const CmdArgs& cmd_args)
     MenuManager* menu = get_module<UserInterfaceSystem>().get_menu_manager();
 
     // Validates slides, logs and skips missing ones. Only enter presentation
-    // mode if at least one slide is valid, otherwise fall back to the menu.
-    if (menu->set_presentation_slides(slides))
+    // mode if at least one slide is valid or there is a playlist to play,
+    // otherwise fall back to the menu.
+    bool has_slides = menu->set_presentation_slides(slides);
+    if (has_slides || has_playlist)
     {
       set_game_state(GameState::presentation);
       SDL_ShowCursor(SDL_DISABLE); // No mouse cursor over the slides
-      this->play_random_demo();
+      this->play_next_demo();
       return true;
     }
 
@@ -937,8 +1043,9 @@ void Engine::on_demo_end()
     case GameState::menu:        [[fallthrough]];
     case GameState::presentation:
     {
-      // Schedule a next demo. This overwrites the requests of other systems
-      this->play_random_demo();
+      // Schedule a next demo. This overwrites the requests of other systems.
+      // The slides are not touched, so they stay on the current one.
+      this->play_next_demo();
     }
     break;
 

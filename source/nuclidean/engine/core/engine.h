@@ -100,7 +100,14 @@ private:
 
   void play_random_demo();
 
+  // Plays the next demo from the playlist, or a random one if there is none.
+  void play_next_demo();
+
   void loop_current_demo();
+
+  // Parses and loads demos given by the "-demo_playlist" argument. Returns
+  // false if the playlist was requested, but none of its demos could be loaded.
+  bool load_demo_playlist(const CmdArgs& cmd_args);
 
   void on_event(const ModuleEvent& event);
 
@@ -119,7 +126,7 @@ private:
   enum class GameState : u8
   {
     menu,         // in menu, the demo is playing in the background
-    presentation, // like menu, but shows prepared slides instead of menu UI
+    presentation, // like menu, but shows prepared slides (if any) instead of menu UI
     game,         // the player is playing
     transition,   // during the level transition, demo playing in background
     debug_demo,   // running the demo from console, debug
@@ -132,11 +139,23 @@ private:
     LevelTransitionArray transition_data;
   };
 
+  struct DemoPlaylistEntry
+  {
+    LevelName            level;
+    LevelTransitionArray transition;
+    DemoDataFrames       frames;
+    f32                  start_time = 0.0f;  // seconds skipped from the start
+    f32                  duration   = -1.0f; // negative = until the demo ends
+  };
+
 private:
   ModuleArray   m_modules;
   ModuleVector  m_module_init_order;
 
   TransitionStateData m_transition_state;
+
+  std::vector<DemoPlaylistEntry> m_demo_playlist;
+  u64                            m_demo_playlist_idx = 0; // next demo to play
 
   f32           m_delta_time = 0.0f; // last frame time in seconds
   u64           m_frame_idx = 0;     // index of a frame, currently only for debug

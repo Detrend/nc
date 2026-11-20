@@ -13,6 +13,9 @@ class UiScreenEffect
 
     void draw();
 
+    // Darkens everything rendered so far. Visibility 1 = unchanged, 0 = black.
+    void draw_fade(f32 visibility);
+
     // call when player receives damage
     void did_damage(int damage);
 

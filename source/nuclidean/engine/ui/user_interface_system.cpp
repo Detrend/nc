@@ -3,6 +3,7 @@
 #include <engine/core/engine_module_types.h>
 #include <engine/core/module_event.h>
 #include <engine/core/engine.h>
+#include <engine/game/game_system.h>
 
 namespace nc
 {
@@ -52,6 +53,10 @@ void UserInterfaceSystem::draw()
   {
     hud_display->draw();
   }
+
+  // Fade the level in/out when switching demos. Drawn before the menu so the
+  // presentation slides on top of it stay untouched.
+  screen_effect->draw_fade(GameSystem::get().get_demo_visibility());
 
   menu->draw();
   screen_effect->draw();

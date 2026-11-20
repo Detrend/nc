@@ -37,6 +37,15 @@ class  Player;
 class  EntityAttachment;
 class  Projectile;
 
+// Which part of a demo should be played. Times are in seconds of the recorded
+// game time. The part before the start is simulated instantly (fast-forward)
+// when the demo starts.
+struct DemoPlaybackRange
+{
+  f32 start_time = 0.0f;
+  f32 duration   = -1.0f; // negative = play until the end of the demo
+};
+
 class GameSystem : public IEngineModule
 {
 public:
@@ -91,13 +100,21 @@ public:
   // Restarts the level from the beginning, keeping the transition data from the start
   void request_level_restart();
 
-  // Plays the level from the start. If demo is non-empty then plays the demo.
+  // Plays the level from the start. If demo is non-empty then plays the demo,
+  // optionally only the given part of it.
   void request_level_change
   (
     const LevelName&     new_level,
     DemoDataFrames&&     frames     = {},
-    LevelTransitionArray transition = {}
+    LevelTransitionArray transition = {},
+    DemoPlaybackRange    demo_range = {}
   );
+
+  // Visibility of the playing demo in range <0, 1>. Fades in during the first
+  // and fades out during the last few frames of the played part of a demo, so
+  // the level switch between two demos happens on a black screen. Returns 1 if
+  // no demo is playing.
+  f32 get_demo_visibility() const;
 
   // Called from the action trigger
   void end_level_and_go_to_another_one_from_gamemode(const LevelName& new_level);
@@ -126,8 +143,12 @@ private:
   (
     LevelName             level,
     LevelTransitionArray  transition_data,
-    const DemoDataFrames& demo_optional
+    const DemoDataFrames& demo_optional,
+    DemoPlaybackRange     demo_range
   );
+
+  // Simulates one game frame with inputs from the journal and advances it.
+  void simulate_one_demo_frame();
 
   // Loads the game from this savefile
   void handle_load_game(const std::string& savefile);
@@ -192,8 +213,10 @@ private:
     DemoDataFrames      frames;
     JournalState        state       = DEFAULT_JOURNAL_STATE;
     u64                 rover       = 0;
+    u64                 start_frame = 0;     // first frame of the played part
+    u64                 end_frame   = 0;     // the demo ends when rover gets here
     bool                paused      = false;
-    int                 skip_to     = -1;
+    bool                end_sent    = false; // demo end was already reported
     f32                 extra_delta = 0.0f;
 
     void reset(JournalState to_state);
@@ -204,6 +227,7 @@ private:
   {
     LevelName            level;
     DemoDataFrames       demo;
+    DemoPlaybackRange    demo_range;
     std::string          load_from_file;
     std::string          save_to_file;
     LevelTransitionArray transition;
