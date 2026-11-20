@@ -11,17 +11,18 @@
         "Team of 4 programmers",
         "Custom engine",
         "Rendering, physics and AI simulation",
-        "This presentation runs in that engine as well",
-        "With the game on the background"
+        "This presentation runs in that engine as well"
       ]
     },
     {
       "title": "How its going", "points": 
       [
         "2 years later",
-        "The engine crashes every 15 minutes",
+        "Crashes every 15 minutes",
         "Luckily, levels are 10 minutes",
-        "Testers ragequit in the first 5"
+        "Testers ragequit in the first 5",
+        "But we can run on linux",
+        "And windows phone"
       ]
     },
     {
@@ -38,9 +39,21 @@
     {
       "title": "Multiplayer", "points": 
       [
-        "Thats why we are here",
+        "Thats where you come in",
         "The game is playable in co-op now",
-        "Playtest if it is even worth it"
+        "But its only a prototype",
+        "And we don't even know if it is entertaining",
+        "Based on your feedback",
+        "We either scrap the multiplayer",
+        "Or implement it fully as a first-class feature"
+      ]
+    },
+    {
+      "title": "Playtesters welcome", "points": 
+      [
+        "Playtest the game pls",
+        "Give us your feedback",
+        "Have fun"
       ]
     }
   ]
