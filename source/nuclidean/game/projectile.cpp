@@ -1,6 +1,8 @@
 // Project Nuclidean Source File
 #include <game/projectile.h>
 
+#include <cvars.h>
+
 #include <engine/game/game_system.h>
 #include <engine/game/game_helpers.h>
 
@@ -86,7 +88,7 @@ void Projectile::update(f32 dt)
 
   // TODO: Player can't hit himself right now
   bool player_authored = m_author.type == EntityTypes::player;
-  EntityTypeMask COLLIDE_WITH = player_authored
+  EntityTypeMask COLLIDE_WITH = (player_authored && !CVars::friendly_fire)
     ? (EntityTypeFlags::enemy)
     : (EntityTypeFlags::enemy | EntityTypeFlags::player);
 
@@ -182,6 +184,10 @@ bool Projectile::on_entity_hit(const CollisionHit& hit)
   nc_assert(hit.type == CollisionHit::entity);
 
   EntityID id = hit.hit.entity.entity_id;
+
+  // Projectiles spawn inside the author's own collision cylinder
+  if (id == m_author) return false;
+
   for (u64 i = 0; i < MAX_PENETRATION_CNT; ++i)
     if (m_penetrated_entities[i] == id) return false;
 
