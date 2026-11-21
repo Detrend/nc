@@ -156,6 +156,9 @@ jobs:
       matrix:
         config: [Ship]
         compiler: [msc, clang]
+        include:
+          - compiler: msc
+            msbuild_args: -p:PlatformToolset=v143
 
     defaults:
       run:
@@ -174,7 +177,7 @@ jobs:
         run: tools\premake5.exe --cc=${{ matrix.compiler }} --cppdialect=C++23 vs2026
 
       - name: Build ${{ matrix.config }}
-        run: msbuild build\Nuclidean.slnx -p:Configuration=${{ matrix.config }} -p:Platform=x64 -m
+        run: msbuild build\Nuclidean.slnx -p:Configuration=${{ matrix.config }} -p:Platform=x64 -m ${{ matrix.msbuild_args }}
 
   clang-tidy:
     runs-on: windows-2025
