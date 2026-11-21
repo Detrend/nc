@@ -310,3 +310,31 @@ jobs:
             --title "Automated build" \
             --notes "Built from ${GITHUB_SHA} on $(date -u '+%Y-%m-%d %H:%M UTC')." \
             --prerelease
+
+  notify-failure:
+    needs: [build-win, build-linux, trybuild-linux-gcc, trybuild-vs, clang-tidy, check-assets, unit-tests, push-artifacts]
+    if: failure()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the Discord ID table
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: .github/discord-ids.json
+          sparse-checkout-cone-mode: false
+
+      - name: Notify Discord
+        env:
+          WEBHOOK_URL: ${{ secrets.FAIL_WEBHOOK_URL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          # Fall back to an empty table if the file is missing or not valid JSON,
+          # so a broken table never suppresses the failure notification.
+          ids=$(jq -c . .github/discord-ids.json 2>/dev/null || echo '{}')
+          jq -n --argjson ids "$ids" --arg actor "$GITHUB_ACTOR" \
+            --arg ref "$GITHUB_REF_NAME" --arg sha "${GITHUB_SHA::7}" --arg url "$RUN_URL" '
+            $ids[$actor] as $id
+            | {content: "❌ **Autobuild failed** on `\($ref)` (\($sha)) by \(if $id then "<@\($id)>" else $actor end)\n\($url)",
+               allowed_mentions: {users: (if $id then [$id] else [] end)}}' \
+            | curl -fsS -H 'Content-Type: application/json' -d @- "$WEBHOOK_URL"
