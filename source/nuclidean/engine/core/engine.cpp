@@ -213,7 +213,7 @@ static void change_current_directory_if_necessary()
     }
 
     // Jump up
-    if (auto it = curr_path.rfind("/"))
+    if (auto it = curr_path.rfind('/'))
     {
       curr_path = curr_path.substr(0, it);
     }
