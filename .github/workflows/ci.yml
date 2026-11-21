@@ -14,7 +14,7 @@ env:
 
 jobs:
   build-win:
-    runs-on: windows-2022
+    runs-on: windows-2025
 
     defaults:
       run:
@@ -149,7 +149,7 @@ jobs:
         run: ninja -C build ${{ matrix.config }}
 
   trybuild-vs:
-    runs-on: windows-latest
+    runs-on: windows-2025
 
     strategy:
       fail-fast: false
@@ -177,7 +177,7 @@ jobs:
         run: msbuild build\Nuclidean.slnx -p:Configuration=${{ matrix.config }} -p:Platform=x64 -m
 
   clang-tidy:
-    runs-on: windows-2022
+    runs-on: windows-2025
 
     defaults:
       run:
@@ -260,7 +260,7 @@ jobs:
 
   unit-tests:
     needs: build-win
-    runs-on: windows-2022
+    runs-on: windows-2025
 
     defaults:
       run:
