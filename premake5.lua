@@ -66,6 +66,13 @@ workspace "Nuclidean"
 
     language "C++"
     cppdialect (_OPTIONS.cppdialect or "C++20")
+    -- MSBuild turns C++23 into /std:c++23, but clang-cl expects /std:c++23preview
+    if _OPTIONS.cppdialect == "C++23" then
+        fbegin { "action:vs*", "toolset:clang" }
+            cppdialect "Default"
+            buildoptions "/std:c++23preview"
+        fend()
+    end
     warnings "Off"
     conformancemode "On"
     intrinsics "On"
