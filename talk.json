@@ -22,7 +22,8 @@
         "Luckily, levels are 10 minutes",
         "Testers ragequit in the first 5",
         "But we can run on linux",
-        "And windows phone"
+        "And android",
+        "And raspberry pi"
       ]
     },
     {
@@ -42,7 +43,6 @@
         "Thats where you come in",
         "The game is playable in co-op now",
         "But its only a prototype",
-        "And we don't even know if it is entertaining",
         "Based on your feedback",
         "We either scrap the multiplayer",
         "Or implement it fully as a first-class feature"
