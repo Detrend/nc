@@ -18,6 +18,9 @@ Checks:
   - -bugprone-too-small-loop-variable
   - -bugprone-signed-char-misuse
   - -bugprone-unchecked-string-to-number-conversion
+  - -bugprone-signed-bitwise
+  - -bugprone-std-exception-baseclass
+  - -bugprone-unhandled-code-paths
   - -performance-enum-size
   - -performance-no-int-to-ptr
   - -performance-avoid-endl

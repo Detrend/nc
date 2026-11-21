@@ -553,7 +553,7 @@ struct std::formatter<std::set<nc::ivec2, Comparator>> : std::formatter<std::str
       first = false;
       out += std::format("{}", elem);
     }
-    out += "]";
+    out += ']';
     return std::formatter<std::string>::format(out, ctx);
   }
 };
