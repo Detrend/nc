@@ -52,7 +52,6 @@
 #include <format>      // std::format
 #include <utility>     // std::move
 #include <map>         // std::map
-#include <vector>      // std::vector
 
 namespace nc
 {
