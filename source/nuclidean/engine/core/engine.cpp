@@ -26,7 +26,6 @@
 
 #if NC_BENCHMARK
 #include <benchmark/benchmark.h>
-#include <algorithm>
 #endif
 
 #include <profiling.h>
