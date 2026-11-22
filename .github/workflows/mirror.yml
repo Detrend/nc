@@ -1,0 +1,34 @@
+name: Mirror
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mirror
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    if: github.repository == 'Detrend/nc-private'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Push main to the public repository
+        env:
+          KEY: ${{ secrets.MIRROR_DEPLOY_KEY }}
+        run: |
+          (umask 077; printf '%s\n' "$KEY" | tr -d '\r' > "$RUNNER_TEMP/mirror_key")
+          export GIT_SSH_COMMAND="ssh -i $RUNNER_TEMP/mirror_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
+          git push git@github.com:Detrend/nc.git HEAD:refs/heads/main

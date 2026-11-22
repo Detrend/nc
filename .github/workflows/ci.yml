@@ -14,6 +14,7 @@ env:
 
 jobs:
   build-win:
+    if: github.repository == 'Detrend/nc'
     runs-on: windows-2025
 
     defaults:
@@ -69,6 +70,7 @@ jobs:
           if-no-files-found: error
 
   build-linux:
+    if: github.repository == 'Detrend/nc'
     runs-on: ubuntu-latest
     
     strategy:
@@ -117,6 +119,7 @@ jobs:
           if-no-files-found: error
 
   trybuild-linux-gcc:
+    if: github.repository == 'Detrend/nc'
     runs-on: ubuntu-latest
 
     strategy:
@@ -149,6 +152,7 @@ jobs:
         run: ninja -C build ${{ matrix.config }}
 
   trybuild-vs:
+    if: github.repository == 'Detrend/nc'
     runs-on: windows-2025
 
     strategy:
@@ -180,6 +184,7 @@ jobs:
         run: msbuild build\Nuclidean.slnx -p:Configuration=${{ matrix.config }} -p:Platform=x64 -m ${{ matrix.msbuild_args }}
 
   clang-tidy:
+    if: github.repository == 'Detrend/nc'
     runs-on: windows-2025
 
     defaults:
@@ -210,6 +215,7 @@ jobs:
         run: python 'C:\Program Files\LLVM\bin\run-clang-tidy' -p build -quiet -warnings-as-errors=* source.nuclidean
 
   check-assets:
+    if: github.repository == 'Detrend/nc'
     runs-on: ubuntu-latest
 
     steps:
@@ -330,12 +336,13 @@ jobs:
       - name: Notify Discord
         env:
           WEBHOOK_URL: ${{ secrets.FAIL_WEBHOOK_URL }}
+          AUTHOR: ${{ github.event.head_commit.author.username || github.actor }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           # Fall back to an empty table if the file is missing or not valid JSON,
           # so a broken table never suppresses the failure notification.
           ids=$(jq -c . .github/discord-ids.json 2>/dev/null || echo '{}')
-          jq -n --argjson ids "$ids" --arg actor "$GITHUB_ACTOR" \
+          jq -n --argjson ids "$ids" --arg actor "$AUTHOR" \
             --arg ref "$GITHUB_REF_NAME" --arg sha "${GITHUB_SHA::7}" --arg url "$RUN_URL" '
             $ids[$actor] as $id
             | {content: "❌ **Autobuild failed** on `\($ref)` (\($sha)) by \(if $id then "<@\($id)>" else $actor end)\n\($url)",
